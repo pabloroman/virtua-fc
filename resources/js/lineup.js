@@ -76,6 +76,10 @@ export default function lineupManager(config) {
         opponentAverage: config.opponentAverage || 0,
         opponentFormation: config.opponentFormation || null,
         opponentMentality: config.opponentMentality || null,
+        opponentPlayingStyle: config.opponentPlayingStyle || 'balanced',
+        opponentPressing: config.opponentPressing || 'standard',
+        opponentDefLine: config.opponentDefLine || 'normal',
+        xgConfig: config.xgConfig || null,
         userTeamAverage: config.userTeamAverage || 0,
         isHome: config.isHome || false,
 
@@ -253,6 +257,172 @@ export default function lineupManager(config) {
             // If we have 4+ tips, drop home_advantage to make room for more important ones
             const filtered = tips.length > 4 ? tips.filter(t => t.id !== 'home_advantage') : tips;
             return filtered.slice(0, 4);
+        },
+
+        /**
+         * Calculate pre-match xG preview based on current lineup and tactical selections.
+         * Replicates the MatchSimulator formula: base xG from strength ratio, then
+         * formation, mentality, playing style, pressing, and defensive line modifiers.
+         *
+         * @returns {{ userXG: number, opponentXG: number } | null}
+         */
+        get xgPreview() {
+            const cfg = this.xgConfig;
+            if (!cfg || this.selectedPlayers.length === 0 || !this.opponentAverage) return null;
+
+            const userAvg = this.teamAverage;
+            if (!userAvg) return null;
+
+            // Normalize averages to 0-1 scale
+            const userStrength = userAvg / 100;
+            const oppStrength = this.opponentAverage / 100;
+
+            // Determine home/away strength (user perspective)
+            const homeStrength = this.isHome ? userStrength : oppStrength;
+            const awayStrength = this.isHome ? oppStrength : userStrength;
+
+            // User and opponent tactical selections
+            const userFm = this.selectedFormation;
+            const userMent = this.selectedMentality;
+            const userStyle = this.selectedPlayingStyle;
+            const userPress = this.selectedPressing;
+            const userDefLine = this.selectedDefLine;
+            const oppFm = this.opponentFormation || '4-4-2';
+            const oppMent = this.opponentMentality || 'balanced';
+            const oppStyle = this.opponentPlayingStyle || 'balanced';
+            const oppPress = this.opponentPressing || 'standard';
+            const oppDefLine = this.opponentDefLine || 'normal';
+
+            // Map to home/away perspective
+            const homeFm = this.isHome ? userFm : oppFm;
+            const awayFm = this.isHome ? oppFm : userFm;
+            const homeMent = this.isHome ? userMent : oppMent;
+            const awayMent = this.isHome ? oppMent : userMent;
+            const homeStyle = this.isHome ? userStyle : oppStyle;
+            const awayStyle = this.isHome ? oppStyle : userStyle;
+            const homePress = this.isHome ? userPress : oppPress;
+            const awayPress = this.isHome ? oppPress : userPress;
+            const homeDefLn = this.isHome ? userDefLine : oppDefLine;
+            const awayDefLn = this.isHome ? oppDefLine : userDefLine;
+
+            // --- Base xG from strength ratio ---
+            const strengthRatio = awayStrength > 0 ? homeStrength / awayStrength : 1.0;
+            const ratioExp = cfg.ratio_exponent;
+            const baseGoals = cfg.base_goals;
+            const homeAdv = cfg.home_advantage_goals;
+
+            const fmMods = cfg => this.formationModifiers[cfg] || { attack: 1.0, defense: 1.0 };
+            const homeFmMods = fmMods(homeFm);
+            const awayFmMods = fmMods(awayFm);
+
+            const homeMentMods = cfg.mentalities[homeMent] || { own_goals: 1.0, opponent_goals: 1.0 };
+            const awayMentMods = cfg.mentalities[awayMent] || { own_goals: 1.0, opponent_goals: 1.0 };
+
+            let homeXG = (Math.pow(strengthRatio, ratioExp) * baseGoals + homeAdv)
+                * homeFmMods.attack
+                * awayFmMods.defense
+                * homeMentMods.own_goals
+                * awayMentMods.opponent_goals;
+
+            let awayXG = (Math.pow(1 / strengthRatio, ratioExp) * baseGoals)
+                * awayFmMods.attack
+                * homeFmMods.defense
+                * awayMentMods.own_goals
+                * homeMentMods.opponent_goals;
+
+            // --- Playing Style modifiers ---
+            const homeStyleMods = cfg.playing_styles[homeStyle] || { own_xg: 1.0, opp_xg: 1.0 };
+            const awayStyleMods = cfg.playing_styles[awayStyle] || { own_xg: 1.0, opp_xg: 1.0 };
+            homeXG *= homeStyleMods.own_xg;
+            homeXG *= awayStyleMods.opp_xg;
+            awayXG *= awayStyleMods.own_xg;
+            awayXG *= homeStyleMods.opp_xg;
+
+            // --- Pressing modifiers (use average minute for fade approximation) ---
+            const homePressMods = cfg.pressing[homePress] || { opp_xg: 1.0 };
+            const awayPressMods = cfg.pressing[awayPress] || { opp_xg: 1.0 };
+            homeXG *= awayPressMods.opp_xg;
+            awayXG *= homePressMods.opp_xg;
+
+            // --- Defensive Line modifiers ---
+            const homeDefMods = cfg.defensive_line[homeDefLn] || { own_xg: 1.0, opp_xg: 1.0, physical_threshold: 0 };
+            const awayDefMods = cfg.defensive_line[awayDefLn] || { own_xg: 1.0, opp_xg: 1.0, physical_threshold: 0 };
+
+            let homeDefOwn = homeDefMods.own_xg;
+            let homeDefOpp = homeDefMods.opp_xg;
+            let awayDefOwn = awayDefMods.own_xg;
+            let awayDefOpp = awayDefMods.opp_xg;
+
+            // High line nullification: check opponent's best forward physical ability
+            if (homeDefMods.physical_threshold > 0) {
+                const awayPlayers = this.isHome ? Object.values(this.playersData) : this.selectedPlayers.map(id => this.playersData[id]).filter(Boolean);
+                // For opponent players, use playersData if they're the "away" team
+                // We don't have opponent individual player data in JS, so skip nullification for opponent's high line
+                // Only check user's forwards if user is away
+                if (!this.isHome) {
+                    const bestFwdPhysical = this.selectedPlayers
+                        .map(id => this.playersData[id])
+                        .filter(p => p && p.positionGroup === 'Forward')
+                        .reduce((max, p) => Math.max(max, p.physicalAbility), 0);
+                    if (bestFwdPhysical >= homeDefMods.physical_threshold) {
+                        homeDefOwn = 1.0;
+                        homeDefOpp = 1.0;
+                    }
+                }
+            }
+            if (awayDefMods.physical_threshold > 0) {
+                if (this.isHome) {
+                    const bestFwdPhysical = this.selectedPlayers
+                        .map(id => this.playersData[id])
+                        .filter(p => p && p.positionGroup === 'Forward')
+                        .reduce((max, p) => Math.max(max, p.physicalAbility), 0);
+                    if (bestFwdPhysical >= awayDefMods.physical_threshold) {
+                        awayDefOwn = 1.0;
+                        awayDefOpp = 1.0;
+                    }
+                }
+            }
+
+            homeXG *= homeDefOwn;
+            awayXG *= homeDefOpp;
+            awayXG *= awayDefOwn;
+            homeXG *= awayDefOpp;
+
+            // --- Tactical Interactions ---
+            const interactions = cfg.tactical_interactions;
+
+            // Counter-Attack vs opponent Attacking + High Line
+            if (homeStyle === 'counter_attack' && awayMent === 'attacking' && awayDefLn === 'high_line') {
+                homeXG *= interactions.counter_vs_attacking_high_line || 1.0;
+            }
+            if (awayStyle === 'counter_attack' && homeMent === 'attacking' && homeDefLn === 'high_line') {
+                awayXG *= interactions.counter_vs_attacking_high_line || 1.0;
+            }
+
+            // Possession disrupted by opponent High Press
+            if (homeStyle === 'possession' && awayPress === 'high_press') {
+                homeXG *= interactions.possession_disrupted_by_high_press || 1.0;
+            }
+            if (awayStyle === 'possession' && homePress === 'high_press') {
+                awayXG *= interactions.possession_disrupted_by_high_press || 1.0;
+            }
+
+            // Direct bypasses opponent High Press
+            if (homeStyle === 'direct' && awayPress === 'high_press') {
+                homeXG *= interactions.direct_bypasses_high_press || 1.0;
+            }
+            if (awayStyle === 'direct' && homePress === 'high_press') {
+                awayXG *= interactions.direct_bypasses_high_press || 1.0;
+            }
+
+            // Return from user perspective
+            const userXG = this.isHome ? homeXG : awayXG;
+            const opponentXG = this.isHome ? awayXG : homeXG;
+
+            return {
+                userXG: Math.round(userXG * 100) / 100,
+                opponentXG: Math.round(opponentXG * 100) / 100,
+            };
         },
 
         get slotAssignments() {

@@ -446,4 +446,10 @@ return [
     // MVP
     'mvp' => 'MVP',
     'mvp_of_the_match' => 'MVP del partido',
+
+    // xG Preview
+    'xg_preview' => 'Previsualización xG',
+    'xg_your_team' => 'Tu xG',
+    'xg_opponent' => 'xG Rival',
+    'xg_explanation' => 'Goles esperados según tu alineación y configuración táctica. Cambia al ajustar las tácticas.',
 ];

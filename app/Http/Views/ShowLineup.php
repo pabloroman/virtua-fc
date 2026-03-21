@@ -119,7 +119,7 @@ class ShowLineup
         $userBestXI = $this->lineupService->getBestXIWithAverage($gameId, $game->team_id, $matchDate, $competitionId);
         $userTeamAverage = $userBestXI['average'];
 
-        // Get opponent scouting data (including predicted formation and mentality)
+        // Get opponent scouting data (including predicted formation, mentality, and instructions)
         $opponentData = $this->getOpponentData($gameId, $opponent->id, $matchDate, $competitionId, !$isHome, $userTeamAverage);
 
         // Radar chart data for coach assistant
@@ -218,6 +218,27 @@ class ShowLineup
 
         $tacticalInteractions = config('match_simulation.tactical_interactions');
 
+        // xG preview config: all modifiers needed for frontend calculation
+        $xgConfig = [
+            'base_goals' => config('match_simulation.base_goals', 1.3),
+            'ratio_exponent' => config('match_simulation.ratio_exponent', 2.0),
+            'home_advantage_goals' => config('match_simulation.home_advantage_goals', 0.15),
+            'mentalities' => config('match_simulation.mentalities'),
+            'playing_styles' => collect(config('match_simulation.playing_styles'))->map(fn ($s) => [
+                'own_xg' => $s['own_xg'],
+                'opp_xg' => $s['opp_xg'],
+            ])->all(),
+            'pressing' => collect(config('match_simulation.pressing'))->map(fn ($p) => [
+                'opp_xg' => $p['opp_xg'],
+            ])->all(),
+            'defensive_line' => collect(config('match_simulation.defensive_line'))->map(fn ($d) => [
+                'own_xg' => $d['own_xg'],
+                'opp_xg' => $d['opp_xg'],
+                'physical_threshold' => $d['physical_threshold'],
+            ])->all(),
+            'tactical_interactions' => config('match_simulation.tactical_interactions'),
+        ];
+
         // Pitch grid config for advanced positioning
         $gridConfig = PitchGrid::getGridConfig();
         $currentPitchPositions = $game->tactics?->default_pitch_positions;
@@ -265,6 +286,7 @@ class ShowLineup
             'guidePressingOptions' => $guidePressingOptions,
             'guideDefensiveLines' => $guideDefensiveLines,
             'tacticalInteractions' => $tacticalInteractions,
+            'xgConfig' => $xgConfig,
             'gridConfig' => $gridConfig,
             'currentPitchPositions' => $currentPitchPositions,
             'userRadar' => $userRadar,
@@ -313,6 +335,14 @@ class ShowLineup
             (float) $userTeamAverage
         );
 
+        // Predict their tactical instructions
+        [$predictedStyle, $predictedPressing, $predictedDefLine] = $this->lineupService->selectAIInstructions(
+            $opponentReputation,
+            $opponentIsHome,
+            (float) $teamAverage,
+            (float) $userTeamAverage
+        );
+
         // Get recent form (last 5 matches) via CalendarService
         $form = $this->calendarService->getTeamForm($gameId, $opponentTeamId);
 
@@ -321,6 +351,9 @@ class ShowLineup
             'form' => $form,
             'formation' => $predictedFormation->value,
             'mentality' => $predictedMentality->value,
+            'playingStyle' => $predictedStyle->value,
+            'pressing' => $predictedPressing->value,
+            'defensiveLine' => $predictedDefLine->value,
             'bestXIPlayers' => $bestXI,
         ];
     }
