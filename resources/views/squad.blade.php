@@ -213,7 +213,11 @@
                         <div class="hidden lg:block">
                             <div class="grid items-center px-4 py-2 bg-surface-700/30 border-b border-border-default text-[10px] text-text-muted uppercase tracking-widest font-semibold"
                                  :class="{
+                                    @if($isCareerMode)
                                     'grid-cols-[1fr_48px_32px_52px_88px_88px_80px_64px_64px_56px] gap-1.5': viewMode === 'tactical',
+                                    @else
+                                    'grid-cols-[1fr_48px_32px_52px_88px_88px_80px] gap-1.5': viewMode === 'tactical',
+                                    @endif
                                     'grid-cols-[1fr_48px_32px_52px_88px_64px_64px_56px_80px] gap-1.5': viewMode === 'planning',
                                     'grid-cols-[1fr_48px_32px_52px_48px_48px_48px_40px_48px_48px_48px_64px] gap-1.5': viewMode === 'stats',
                                     'grid-cols-[1fr_48px_32px_52px_100px] gap-1.5': viewMode === 'numbers',
@@ -233,6 +237,7 @@
                                 <template x-if="viewMode === 'tactical'">
                                     <span class="text-center">{{ __('squad.key_stats') }}</span>
                                 </template>
+                                @if($isCareerMode)
                                 <template x-if="viewMode === 'tactical'">
                                     <span class="text-right">{{ __('app.value') }}</span>
                                 </template>
@@ -242,6 +247,7 @@
                                 <template x-if="viewMode === 'tactical'">
                                     <span class="text-center">{{ __('app.contract') }}</span>
                                 </template>
+                                @endif
 
                                 {{-- Planning headers --}}
                                 @if($isCareerMode)
@@ -381,7 +387,11 @@
                                     <div class="hidden lg:grid items-center px-4 py-2.5 gap-2 cursor-pointer"
                                          @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $gp->id]) }}')"
                                          :class="{
+                                            @if($isCareerMode)
                                             'grid-cols-[1fr_48px_32px_52px_88px_88px_80px_64px_64px_56px] gap-1.5': viewMode === 'tactical',
+                                            @else
+                                            'grid-cols-[1fr_48px_32px_52px_88px_88px_80px] gap-1.5': viewMode === 'tactical',
+                                            @endif
                                             'grid-cols-[1fr_48px_32px_52px_88px_64px_64px_56px_80px] gap-1.5': viewMode === 'planning',
                                             'grid-cols-[1fr_48px_32px_52px_48px_48px_48px_40px_48px_48px_48px_64px] gap-1.5': viewMode === 'stats',
                                             'grid-cols-[1fr_48px_32px_52px_100px] gap-1.5': viewMode === 'numbers',
@@ -441,15 +451,17 @@
                                                 </div>
                                             </div>
                                         </template>
+                                        @if($isCareerMode)
                                         <template x-if="viewMode === 'tactical'">
-                                            <span class="text-xs text-text-body text-right tabular-nums">{{ $isCareerMode ? $gp->formatted_market_value : '' }}</span>
+                                            <span class="text-xs text-text-body text-right tabular-nums">{{ $gp->formatted_market_value }}</span>
                                         </template>
                                         <template x-if="viewMode === 'tactical'">
-                                            <span class="text-xs text-text-muted text-right tabular-nums">{{ $isCareerMode ? $gp->formatted_wage : '' }}</span>
+                                            <span class="text-xs text-text-muted text-right tabular-nums">{{ $gp->formatted_wage }}</span>
                                         </template>
                                         <template x-if="viewMode === 'tactical'">
-                                            <span class="text-[11px] text-center tabular-nums @if($isCareerMode && $gp->isContractExpiring($seasonEndDate)) text-accent-red font-medium @else text-text-muted @endif">{{ $isCareerMode ? $gp->contract_expiry_year : '' }}</span>
+                                            <span class="text-[11px] text-center tabular-nums @if($gp->isContractExpiring($seasonEndDate)) text-accent-red font-medium @else text-text-muted @endif">{{ $gp->contract_expiry_year }}</span>
                                         </template>
+                                        @endif
 
                                         {{-- === Planning columns (career only) === --}}
                                         @if($isCareerMode)

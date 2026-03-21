@@ -271,6 +271,7 @@ return [
     'live_pen_missed' => 'Missed',
     'live_pen_round' => 'Round :round',
     'live_pen_winner' => 'wins on penalties!',
+    'live_pen_preparing' => 'Preparing to shoot...',
 
     // Substitutions
     'sub_title' => 'Substitutions',

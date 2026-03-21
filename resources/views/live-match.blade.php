@@ -75,6 +75,7 @@
                     penScored: {!! Js::from(__('game.live_pen_scored')) !!},
                     penMissed: {!! Js::from(__('game.live_pen_missed')) !!},
                     penWinner: {!! Js::from(__('game.live_pen_winner')) !!},
+                    penPreparing: {!! Js::from(__('game.live_pen_preparing')) !!},
                     tournamentChampion: {!! Js::from(__('game.tournament_champion_title')) !!},
                     tournamentRunnerUp: {!! Js::from(__('game.tournament_runner_up_title')) !!},
                     tournamentThird: {!! Js::from(__('game.tournament_third_place_title')) !!},
@@ -368,6 +369,23 @@
                                                 <span class="text-[10px] font-bold shrink-0 px-1.5 py-0.5 rounded"
                                                       :class="kick.scored ? 'bg-accent-green/10 text-accent-green' : 'bg-red-500/10 text-accent-red'"
                                                       x-text="kick.scored ? translations.penScored : translations.penMissed"></span>
+                                            </div>
+                                        </template>
+                                        {{-- Preparing to shoot row --}}
+                                        <template x-if="penaltyPreparing && nextPenaltyKicker">
+                                            <div class="flex items-center gap-2 py-1 text-sm"
+                                                 x-transition:enter="transition ease-out duration-300"
+                                                 x-transition:enter-start="opacity-0 -translate-y-1"
+                                                 x-transition:enter-end="opacity-100 translate-y-0">
+                                                <span class="w-5 text-right text-xs font-heading font-bold text-penalty-text shrink-0"
+                                                      x-text="nextPenaltyKicker.round"></span>
+                                                <img :src="nextPenaltyKicker.side === 'home' ? homeTeamImage : awayTeamImage"
+                                                     class="w-4 h-4 shrink-0 object-contain">
+                                                <span class="flex-1 truncate text-sm text-text-body" x-text="nextPenaltyKicker.playerName"></span>
+                                                <span class="text-[10px] italic text-purple-300 shrink-0" x-text="translations.penPreparing"></span>
+                                            </div>
+                                            <div class="mt-1 h-1 rounded-full bg-surface-700 overflow-hidden">
+                                                <div class="h-full bg-purple-500 rounded-full animate-penalty-bar"></div>
                                             </div>
                                         </template>
                                     </div>
@@ -772,14 +790,15 @@
                             <template x-if="!isTournamentDecisive">
                                 <span class="text-xs font-heading font-semibold uppercase tracking-wider"
                                       :class="{
-                                          'text-accent-green': (userTeamId === homeTeamId && homeScore > awayScore) || (userTeamId === awayTeamId && awayScore > homeScore),
-                                          'text-accent-gold': homeScore === awayScore,
-                                          'text-accent-red': (userTeamId === homeTeamId && homeScore < awayScore) || (userTeamId === awayTeamId && awayScore < homeScore),
+                                          'text-accent-green': knockoutOutcome === 'win' || (!knockoutOutcome && ((userTeamId === homeTeamId && homeScore > awayScore) || (userTeamId === awayTeamId && awayScore > homeScore))),
+                                          'text-accent-gold': !knockoutOutcome && homeScore === awayScore,
+                                          'text-accent-red': knockoutOutcome === 'loss' || (!knockoutOutcome && ((userTeamId === homeTeamId && homeScore < awayScore) || (userTeamId === awayTeamId && awayScore < homeScore))),
                                       }"
-                                      x-text="(userTeamId === homeTeamId && homeScore > awayScore) || (userTeamId === awayTeamId && awayScore > homeScore)
+                                      x-text="knockoutOutcome === 'win' || (!knockoutOutcome && ((userTeamId === homeTeamId && homeScore > awayScore) || (userTeamId === awayTeamId && awayScore > homeScore)))
                                           ? '{{ __('game.live_result_win') }}'
-                                          : (homeScore === awayScore ? '{{ __('game.live_result_draw') }}'
-                                          : '{{ __('game.live_result_loss') }}')"></span>
+                                          : (knockoutOutcome === 'loss' || (!knockoutOutcome && ((userTeamId === homeTeamId && homeScore < awayScore) || (userTeamId === awayTeamId && awayScore < homeScore)))
+                                          ? '{{ __('game.live_result_loss') }}'
+                                          : '{{ __('game.live_result_draw') }}')"></span>
                             </template>
                         </div>
 
