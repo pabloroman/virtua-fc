@@ -340,6 +340,8 @@ return [
     'start_game' => 'Iniciar Partida',
     'start_tournament' => 'Iniciar Torneo',
 
+    'tournament_history' => 'Historial de Torneos',
+
     // Game modes
     'mode_career' => 'Modo Carrera',
     'mode_career_desc' => 'Dirige un club a través de múltiples temporadas',

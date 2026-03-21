@@ -340,6 +340,8 @@ return [
     'start_game' => 'Start Game',
     'start_tournament' => 'Start Tournament',
 
+    'tournament_history' => 'Tournament History',
+
     // Game modes
     'mode_career' => 'Career Mode',
     'mode_career_desc' => 'Manage a club through multiple seasons',
