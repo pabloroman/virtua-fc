@@ -6,7 +6,6 @@ use App\Models\Game;
 use App\Models\GameNotification;
 use App\Models\GamePlayer;
 use App\Modules\Player\Services\InjuryService;
-use App\Models\RenewalNegotiation;
 use App\Models\ScoutReport;
 use App\Models\ShortlistedPlayer;
 use App\Models\Team;
@@ -650,54 +649,6 @@ class NotificationService
     }
 
     // ==========================================
-    // Renewal Negotiation Notifications
-    // ==========================================
-
-    /**
-     * Create a notification for a renewal negotiation result.
-     */
-    public function notifyRenewalResult(Game $game, RenewalNegotiation $negotiation, string $result): GameNotification
-    {
-        $player = $negotiation->gamePlayer;
-
-        return match ($result) {
-            'accepted' => $this->create(
-                game: $game,
-                type: GameNotification::TYPE_RENEWAL_ACCEPTED,
-                title: __('notifications.renewal_accepted_title', ['player' => $player->name]),
-                message: __('notifications.renewal_accepted_message', [
-                    'player' => $player->name,
-                    'wage' => \App\Support\Money::format($negotiation->user_offer),
-                    'years' => $negotiation->contract_years,
-                ]),
-                priority: GameNotification::PRIORITY_MILESTONE,
-                metadata: ['player_id' => $player->id],
-            ),
-            'countered' => $this->create(
-                game: $game,
-                type: GameNotification::TYPE_RENEWAL_COUNTERED,
-                title: __('notifications.renewal_countered_title', ['player' => $player->name]),
-                message: __('notifications.renewal_countered_message', [
-                    'player' => $player->name,
-                    'wage' => \App\Support\Money::format($negotiation->counter_offer),
-                    'years' => $negotiation->preferred_years,
-                ]),
-                priority: GameNotification::PRIORITY_WARNING,
-                metadata: ['player_id' => $player->id],
-            ),
-            'rejected' => $this->create(
-                game: $game,
-                type: GameNotification::TYPE_RENEWAL_REJECTED,
-                title: __('notifications.renewal_rejected_title', ['player' => $player->name]),
-                message: __('notifications.renewal_rejected_message', ['player' => $player->name]),
-                priority: GameNotification::PRIORITY_CRITICAL,
-                metadata: ['player_id' => $player->id],
-            ),
-            default => throw new \InvalidArgumentException("Unexpected renewal result: {$result}"),
-        };
-    }
-
-    // ==========================================
     // AI Transfer Market Notifications
     // ==========================================
 
@@ -845,9 +796,6 @@ class NotificationService
             GameNotification::TYPE_COMPETITION_ELIMINATION => 'eliminated',
             GameNotification::TYPE_ACADEMY_PROSPECT => 'academy',
             GameNotification::TYPE_TRANSFER_COMPLETE => 'transfer_complete',
-            GameNotification::TYPE_RENEWAL_ACCEPTED => 'contract',
-            GameNotification::TYPE_RENEWAL_COUNTERED => 'contract',
-            GameNotification::TYPE_RENEWAL_REJECTED => 'contract',
             GameNotification::TYPE_TRANSFER_BID_RESULT => 'transfer',
             GameNotification::TYPE_LOAN_REQUEST_RESULT => 'loan',
             GameNotification::TYPE_TOURNAMENT_WELCOME => 'trophy',

@@ -241,10 +241,6 @@ return [
     'declined_renewals' => 'No renovados',
 
     // Renewal negotiation
-    'renewal_counter_offers' => 'Contraoferta de Renovación',
-    'renewal_counter_offers_help' => 'Estos jugadores han respondido a tu oferta de renovación',
-    'renewal_offers_sent' => 'Renovaciones en Curso',
-    'renewal_offers_sent_help' => 'Tus ofertas de renovación están siendo consideradas',
     'negotiate' => 'Negociar',
     'negotiating' => 'Negociando...',
     'player_countered' => 'El jugador ha contraofertado',

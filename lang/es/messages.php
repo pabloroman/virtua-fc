@@ -43,7 +43,6 @@ return [
     'renewal_declined' => 'Has decidido no renovar a :player. Se marchará al final de la temporada.',
     'renewal_reconsidered' => 'Has reconsiderado la renovación de :player.',
     'cannot_renew' => 'Este jugador no puede recibir una oferta de renovación.',
-    'renewal_offer_submitted' => 'Oferta de renovación enviada a :player por :wage/año. Respuesta en la próxima jornada.',
     'renewal_invalid_offer' => 'La oferta debe ser mayor que cero.',
 
     // Pre-contract messages

@@ -567,7 +567,7 @@ class ContractService
     }
 
     /**
-     * Evaluate a pending negotiation offer. Called during matchday advance.
+     * Evaluate a pending negotiation offer. Called synchronously during chat negotiation.
      *
      * @return string 'accepted' | 'countered' | 'rejected'
      */
@@ -733,43 +733,6 @@ class ContractService
             'result' => $result,
             'negotiation' => $negotiation,
         ];
-    }
-
-    /**
-     * Resolve all pending negotiations for a game. Called during matchday advance.
-     *
-     * @return Collection<array{negotiation: RenewalNegotiation, result: string}>
-     */
-    public function resolveRenewalNegotiations(Game $game): Collection
-    {
-        $pending = RenewalNegotiation::with(['gamePlayer.player', 'gamePlayer.game', 'gamePlayer.transferOffers'])
-            ->where('game_id', $game->id)
-            ->where('status', RenewalNegotiation::STATUS_OFFER_PENDING)
-            ->get();
-
-        $results = collect();
-
-        foreach ($pending as $negotiation) {
-            $result = $this->evaluateOffer($negotiation);
-            $results->push([
-                'negotiation' => $negotiation->fresh(),
-                'result' => $result,
-            ]);
-        }
-
-        return $results;
-    }
-
-    /**
-     * Get active negotiations for a game (pending or countered).
-     */
-    public function getActiveNegotiations(Game $game): Collection
-    {
-        return RenewalNegotiation::with(['gamePlayer.player'])
-            ->where('game_id', $game->id)
-            ->whereIn('status', [RenewalNegotiation::STATUS_OFFER_PENDING, RenewalNegotiation::STATUS_PLAYER_COUNTERED])
-            ->get()
-            ->keyBy('game_player_id');
     }
 
     /**

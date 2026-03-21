@@ -10,7 +10,6 @@ use App\Models\TransferOffer;
 use App\Modules\Academy\Services\YouthAcademyService;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Transfer\Services\AITransferMarketService;
-use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\LoanService;
 use App\Modules\Transfer\Services\ScoutingService;
 use App\Modules\Transfer\Services\TransferService;
@@ -19,7 +18,6 @@ class CareerActionProcessor
 {
     public function __construct(
         private readonly TransferService $transferService,
-        private readonly ContractService $contractService,
         private readonly ScoutingService $scoutingService,
         private readonly LoanService $loanService,
         private readonly YouthAcademyService $youthAcademyService,
@@ -48,12 +46,6 @@ class CareerActionProcessor
             foreach ($listedOffers->merge($unsolicitedOffers) as $offer) {
                 $this->notificationService->notifyTransferOffer($game, $offer);
             }
-        }
-
-        // Resolve pending renewal negotiations
-        $renewalResults = $this->contractService->resolveRenewalNegotiations($game);
-        foreach ($renewalResults as $result) {
-            $this->notificationService->notifyRenewalResult($game, $result['negotiation'], $result['result']);
         }
 
         // Pre-contract offers (January onwards for expiring contracts)

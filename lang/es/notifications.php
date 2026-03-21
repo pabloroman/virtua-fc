@@ -124,14 +124,6 @@ return [
     'player_released_message' => ':player ha sido liberado de tu plantilla. Indemnización pagada: :severance.',
     'player_released_message_free' => ':player ha sido liberado de tu plantilla.',
 
-    // Renewal negotiations
-    'renewal_accepted_title' => ':player acepta renovar',
-    'renewal_accepted_message' => ':player ha aceptado la renovación por :wage/año durante :years años.',
-    'renewal_countered_title' => ':player contraoferta',
-    'renewal_countered_message' => ':player pide :wage/año durante :years años para renovar.',
-    'renewal_rejected_title' => ':player rechaza renovar',
-    'renewal_rejected_message' => ':player ha rechazado tu oferta de renovación. Se marchará al final de la temporada.',
-
     // Tracking intel
     'tracking_intel_title' => 'Intel sobre :player lista',
     'tracking_report_ready' => 'Tu ojeador ha elaborado un informe sobre :player — rango de habilidad y detalles financieros disponibles.',

@@ -124,14 +124,6 @@ return [
     'player_released_message' => ':player has been released from your squad. Severance paid: :severance.',
     'player_released_message_free' => ':player has been released from your squad.',
 
-    // Renewal negotiations
-    'renewal_accepted_title' => ':player accepts renewal',
-    'renewal_accepted_message' => ':player has accepted the renewal for :wage/yr over :years years.',
-    'renewal_countered_title' => ':player counter offer',
-    'renewal_countered_message' => ':player is asking for :wage/yr over :years years to renew.',
-    'renewal_rejected_title' => ':player rejects renewal',
-    'renewal_rejected_message' => ':player has rejected your renewal offer. They will leave at the end of the season.',
-
     // Tracking intel
     'tracking_intel_title' => 'Intel on :player ready',
     'tracking_report_ready' => 'Your scout has gathered a report on :player — ability range and financial details are now available.',

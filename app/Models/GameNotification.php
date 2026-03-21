@@ -62,9 +62,6 @@ class GameNotification extends Model
     public const TYPE_ACADEMY_EVALUATION = 'academy_evaluation';
     public const TYPE_ACADEMY_BATCH = 'academy_batch';
     public const TYPE_TRANSFER_COMPLETE = 'transfer_complete';
-    public const TYPE_RENEWAL_ACCEPTED = 'renewal_accepted';
-    public const TYPE_RENEWAL_COUNTERED = 'renewal_countered';
-    public const TYPE_RENEWAL_REJECTED = 'renewal_rejected';
     public const TYPE_TRANSFER_BID_RESULT = 'transfer_bid_result';
     public const TYPE_LOAN_REQUEST_RESULT = 'loan_request_result';
     public const TYPE_TOURNAMENT_WELCOME = 'tournament_welcome';
@@ -100,9 +97,6 @@ class GameNotification extends Model
         self::TYPE_ACADEMY_EVALUATION => 'academy',
         self::TYPE_ACADEMY_BATCH => 'academy',
         self::TYPE_TRANSFER_COMPLETE => 'squad',
-        self::TYPE_RENEWAL_ACCEPTED => 'transfers',
-        self::TYPE_RENEWAL_COUNTERED => 'transfers',
-        self::TYPE_RENEWAL_REJECTED => 'transfers',
         self::TYPE_TRANSFER_BID_RESULT => 'scouting',
         self::TYPE_LOAN_REQUEST_RESULT => 'scouting',
         self::TYPE_TOURNAMENT_WELCOME => 'competition',
