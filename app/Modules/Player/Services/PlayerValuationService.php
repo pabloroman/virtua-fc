@@ -118,25 +118,49 @@ class PlayerValuationService
     }
 
     /**
-     * Convert market value to a raw ability score.
+     * Convert market value to a raw ability score via log-linear interpolation.
      *
-     * These tiers are the canonical mapping used bidirectionally:
-     * - Forward: market value -> ability (seeding)
-     * - Reverse: ability -> market value (abilityToMarketValue)
+     * Uses the same anchor points as abilityToBaseValue() but in reverse,
+     * making the forward and reverse mappings near-symmetric.
+     * Small random variance (±1) prevents identical scores for similar values.
      */
     private function marketValueToRawAbility(int $marketValueCents): int
     {
-        return match (true) {
-            $marketValueCents >= 10_000_000_000 => rand(88, 95),  // €100M+
-            $marketValueCents >= 5_000_000_000 => rand(83, 90),   // €50M+
-            $marketValueCents >= 2_000_000_000 => rand(78, 85),   // €20M+
-            $marketValueCents >= 1_000_000_000 => rand(73, 80),   // €10M+
-            $marketValueCents >= 500_000_000 => rand(68, 75),     // €5M+
-            $marketValueCents >= 200_000_000 => rand(63, 70),     // €2M+
-            $marketValueCents >= 100_000_000 => rand(58, 65),     // €1M+
-            $marketValueCents > 0 => rand(50, 60),                // Under €1M
-            default => rand(45, 55),                               // Unknown
-        };
+        $anchors = [
+            [45, 10_000_000],        // €100K
+            [50, 30_000_000],        // €300K
+            [58, 100_000_000],       // €1M
+            [63, 200_000_000],       // €2M
+            [68, 500_000_000],       // €5M
+            [73, 1_000_000_000],     // €10M
+            [78, 2_000_000_000],     // €20M
+            [83, 5_000_000_000],     // €50M
+            [88, 10_000_000_000],    // €100M
+            [95, 20_000_000_000],    // €200M
+        ];
+
+        if ($marketValueCents <= $anchors[0][1]) {
+            return max(40, $anchors[0][0] + rand(-2, 2));
+        }
+
+        $last = count($anchors) - 1;
+        if ($marketValueCents >= $anchors[$last][1]) {
+            return min(99, $anchors[$last][0] + rand(-1, 2));
+        }
+
+        for ($i = 0; $i < $last; $i++) {
+            [$aLow, $vLow] = $anchors[$i];
+            [$aHigh, $vHigh] = $anchors[$i + 1];
+
+            if ($marketValueCents >= $vLow && $marketValueCents <= $vHigh) {
+                $t = (log($marketValueCents) - log($vLow)) / (log($vHigh) - log($vLow));
+                $ability = $aLow + $t * ($aHigh - $aLow);
+
+                return max(40, min(99, (int) round($ability) + rand(-1, 1)));
+            }
+        }
+
+        return $anchors[0][0];
     }
 
     /**
