@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('game_player_template_audits', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('game_player_template_id');
-            $table->uuid('user_id');
+            $table->foreignId('user_id')->constrained('users');
             $table->string('action'); // created, updated, deleted, restored
             $table->json('old_values')->nullable();
             $table->json('new_values');
@@ -21,10 +21,6 @@ return new class extends Migration
                 ->references('id')
                 ->on('game_player_templates')
                 ->onDelete('cascade');
-
-            $table->foreign('user_id')
-                ->references('id')
-                ->on('users');
 
             $table->index('game_player_template_id');
             $table->index('created_at');
