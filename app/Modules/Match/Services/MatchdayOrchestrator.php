@@ -336,7 +336,14 @@ class MatchdayOrchestrator
 
         // Capture performance data before next simulation overwrites it
         $performances = $this->matchSimulator->getMatchPerformances();
-        $mvpPlayerId = $this->calculateMvp($result, $performances);
+        $mvpPlayerId = $this->calculateMvp(
+            $result,
+            $performances,
+            $homePlayers,
+            $awayPlayers,
+            $match->home_team_id,
+            $match->away_team_id,
+        );
 
         return [
             'matchId' => $match->id,
@@ -740,18 +747,58 @@ class MatchdayOrchestrator
     /**
      * Calculate the MVP (Most Valuable Player) for a match.
      *
-     * Combines each player's match performance modifier with event-based bonuses
-     * (goals, assists) and penalties (cards). The player with the highest
-     * combined score is selected as MVP.
+     * Uses position-aware scoring so all position groups can realistically win:
+     * - Normalized performance (0.0-1.0) is the primary factor
+     * - Goal/assist bonuses scale by position rarity (a defender scoring is more noteworthy)
+     * - Goalkeepers and defenders earn clean sheet bonuses
+     * - Goalkeepers are penalized for conceding many goals
+     * - Players on the winning team get a small edge
      *
      * @param  MatchResult  $result  The match result with events
      * @param  array<string, float>  $performances  Map of player ID to performance modifier (0.7-1.3)
+     * @param  \Illuminate\Support\Collection  $homePlayers  Home team lineup players
+     * @param  \Illuminate\Support\Collection  $awayPlayers  Away team lineup players
+     * @param  string  $homeTeamId  Home team ID
+     * @param  string  $awayTeamId  Away team ID
      */
-    private function calculateMvp(MatchResult $result, array $performances): ?string
-    {
+    private function calculateMvp(
+        MatchResult $result,
+        array $performances,
+        \Illuminate\Support\Collection $homePlayers,
+        \Illuminate\Support\Collection $awayPlayers,
+        string $homeTeamId,
+        string $awayTeamId,
+    ): ?string {
         if (empty($performances)) {
             return null;
         }
+
+        // Build lookup maps for position group and team membership
+        $positionGroups = [];
+        $playerTeams = [];
+        foreach ($homePlayers as $player) {
+            $positionGroups[$player->id] = $player->position_group;
+            $playerTeams[$player->id] = $homeTeamId;
+        }
+        foreach ($awayPlayers as $player) {
+            $positionGroups[$player->id] = $player->position_group;
+            $playerTeams[$player->id] = $awayTeamId;
+        }
+
+        $goalsConceded = [
+            $homeTeamId => $result->awayScore,
+            $awayTeamId => $result->homeScore,
+        ];
+
+        $winningTeamId = match (true) {
+            $result->homeScore > $result->awayScore => $homeTeamId,
+            $result->awayScore > $result->homeScore => $awayTeamId,
+            default => null,
+        };
+
+        // Position-scaled event bonuses (rarer contributions score higher)
+        $goalBonuses = ['Goalkeeper' => 0.50, 'Defender' => 0.35, 'Midfielder' => 0.25, 'Forward' => 0.15];
+        $assistBonuses = ['Goalkeeper' => 0.25, 'Defender' => 0.15, 'Midfielder' => 0.10, 'Forward' => 0.10];
 
         // Count events per player
         $goals = [];
@@ -769,16 +816,54 @@ class MatchdayOrchestrator
             };
         }
 
-        // Score each player: base performance + event bonuses
+        // Score each player
         $bestPlayerId = null;
         $bestScore = -INF;
 
         foreach ($performances as $playerId => $performance) {
-            $score = $performance
-                + (($goals[$playerId] ?? 0) * 0.15)
-                + (($assists[$playerId] ?? 0) * 0.08)
-                - (($yellowCards[$playerId] ?? 0) * 0.03)
-                - (($redCards[$playerId] ?? 0) * 0.10);
+            $group = $positionGroups[$playerId] ?? 'Midfielder';
+            $teamId = $playerTeams[$playerId] ?? null;
+            $teamConceded = $teamId ? ($goalsConceded[$teamId] ?? 0) : 0;
+
+            // Normalized performance: map 0.70-1.30 to 0.0-1.0
+            $score = ($performance - 0.70) / 0.60;
+
+            // Position-scaled goal/assist bonuses
+            $score += ($goals[$playerId] ?? 0) * ($goalBonuses[$group] ?? 0.15);
+            $score += ($assists[$playerId] ?? 0) * ($assistBonuses[$group] ?? 0.10);
+
+            // Card penalties
+            $score -= ($yellowCards[$playerId] ?? 0) * 0.10;
+            $score -= ($redCards[$playerId] ?? 0) * 0.30;
+
+            // Clean sheet bonus for goalkeepers and defenders
+            if ($teamConceded === 0) {
+                $score += match ($group) {
+                    'Goalkeeper' => 0.30,
+                    'Defender' => 0.15,
+                    default => 0.0,
+                };
+            } elseif ($teamConceded === 1) {
+                $score += match ($group) {
+                    'Goalkeeper' => 0.10,
+                    'Defender' => 0.05,
+                    default => 0.0,
+                };
+            }
+
+            // Goals conceded penalty for goalkeepers
+            if ($group === 'Goalkeeper') {
+                $score -= match (true) {
+                    $teamConceded >= 4 => 0.20,
+                    $teamConceded >= 3 => 0.10,
+                    default => 0.0,
+                };
+            }
+
+            // Winning team edge
+            if ($winningTeamId !== null && $teamId === $winningTeamId) {
+                $score += 0.08;
+            }
 
             if ($score > $bestScore) {
                 $bestScore = $score;
