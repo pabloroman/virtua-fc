@@ -107,17 +107,30 @@ return [
     'tpl_market_value_cents' => 'Valor (cents)',
     'tpl_contract_until' => 'Contrato Hasta',
     'tpl_annual_wage' => 'Salario Anual',
-    'tpl_fitness' => 'Fit',
-    'tpl_morale' => 'Mor',
-    'tpl_durability' => 'Dur',
-    'tpl_tech' => 'Téc',
-    'tpl_phys' => 'Fís',
-    'tpl_potential' => 'Pot',
-    'tpl_potential_low' => 'Pot Bajo',
-    'tpl_potential_high' => 'Pot Alto',
+    'tpl_fitness' => 'Forma',
+    'tpl_morale' => 'Moral',
+    'tpl_durability' => 'Durabilidad',
+    'tpl_tech' => 'Técnica',
+    'tpl_phys' => 'Física',
+    'tpl_potential' => 'Potencial',
+    'tpl_potential_low' => 'Potencial Bajo',
+    'tpl_potential_high' => 'Potencial Alto',
     'tpl_tier' => 'Nivel',
+    'tpl_nationality' => 'Nacionalidad',
+    'tpl_date_of_birth' => 'Fecha de Nacimiento',
     'tpl_date' => 'Fecha',
     'tpl_action' => 'Acción',
+
+    // Editor sections
+    'section_personal' => 'Datos Personales',
+    'section_game_params' => 'Parámetros de Juego',
+    'section_financial' => 'Financiero',
+
+    // Wage tooltip
+    'wage_tooltip_title' => 'Fórmula de cálculo salarial',
+    'wage_tooltip_tiers' => '% del valor de mercado por nivel:',
+    'wage_tooltip_age' => 'Modificador por edad:',
+    'wage_tooltip_variance' => 'El salario final incluye ±10% de variación aleatoria. Mín: €200K (Liga) / €100K (Segunda).',
 
     // Position groups
     'position_group_goalkeepers' => 'Porteros',

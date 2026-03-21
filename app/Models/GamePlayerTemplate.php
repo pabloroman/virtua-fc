@@ -34,7 +34,7 @@ class GamePlayerTemplate extends Model
     protected $casts = [
         'number' => 'integer',
         'market_value_cents' => 'integer',
-        'contract_until' => 'date',
+        'contract_until' => 'date:Y-m-d',
         'annual_wage' => 'integer',
         'fitness' => 'integer',
         'morale' => 'integer',

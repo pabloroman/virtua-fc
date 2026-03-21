@@ -4,6 +4,7 @@ namespace App\Http\Views;
 
 use App\Models\Team;
 use App\Modules\Editor\Services\PlayerTemplateAdminService;
+use App\Support\CountryCodeMapper;
 use Illuminate\Http\Request;
 
 class AdminPlayerTemplateSquad
@@ -16,6 +17,8 @@ class AdminPlayerTemplateSquad
 
         $grouped = $service->squadForTeam($teamId, $selectedSeason);
         $positions = PlayerTemplateAdminService::allPositions();
+        $countries = CountryCodeMapper::getAllCountries();
+        sort($countries);
 
         return view('admin.player-templates.squad', [
             'team' => $team,
@@ -23,6 +26,7 @@ class AdminPlayerTemplateSquad
             'seasons' => $seasons,
             'selectedSeason' => $selectedSeason,
             'positions' => $positions,
+            'countries' => $countries,
         ]);
     }
 }

@@ -107,17 +107,30 @@ return [
     'tpl_market_value_cents' => 'Value (cents)',
     'tpl_contract_until' => 'Contract Until',
     'tpl_annual_wage' => 'Annual Wage',
-    'tpl_fitness' => 'Fit',
-    'tpl_morale' => 'Mor',
-    'tpl_durability' => 'Dur',
-    'tpl_tech' => 'Tech',
-    'tpl_phys' => 'Phys',
-    'tpl_potential' => 'Pot',
-    'tpl_potential_low' => 'Pot Low',
-    'tpl_potential_high' => 'Pot High',
+    'tpl_fitness' => 'Fitness',
+    'tpl_morale' => 'Morale',
+    'tpl_durability' => 'Durability',
+    'tpl_tech' => 'Technical',
+    'tpl_phys' => 'Physical',
+    'tpl_potential' => 'Potential',
+    'tpl_potential_low' => 'Potential Low',
+    'tpl_potential_high' => 'Potential High',
     'tpl_tier' => 'Tier',
+    'tpl_nationality' => 'Nationality',
+    'tpl_date_of_birth' => 'Date of Birth',
     'tpl_date' => 'Date',
     'tpl_action' => 'Action',
+
+    // Editor sections
+    'section_personal' => 'Personal Details',
+    'section_game_params' => 'Game Parameters',
+    'section_financial' => 'Financial',
+
+    // Wage tooltip
+    'wage_tooltip_title' => 'Wage calculation formula',
+    'wage_tooltip_tiers' => '% of market value by tier:',
+    'wage_tooltip_age' => 'Age modifier:',
+    'wage_tooltip_variance' => 'Final wage includes ±10% random variance. Min: €200K (Liga) / €100K (Segunda).',
 
     // Position groups
     'position_group_goalkeepers' => 'Goalkeepers',

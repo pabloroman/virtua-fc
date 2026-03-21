@@ -55,15 +55,14 @@
                 <table class="min-w-full divide-y divide-border-default">
                     <thead>
                         <tr class="bg-surface-800">
-                            <th class="px-3 py-2 text-left text-[10px] text-text-muted uppercase tracking-wider">#</th>
+                            <th class="px-3 py-2 text-left text-[10px] text-text-muted uppercase tracking-wider w-10">#</th>
                             <th class="px-3 py-2 text-left text-[10px] text-text-muted uppercase tracking-wider">{{ __('admin.tpl_player') }}</th>
                             <th class="px-3 py-2 text-left text-[10px] text-text-muted uppercase tracking-wider hidden md:table-cell">{{ __('admin.tpl_position') }}</th>
                             <th class="px-3 py-2 text-right text-[10px] text-text-muted uppercase tracking-wider hidden md:table-cell">{{ __('admin.tpl_market_value') }}</th>
-                            <th class="px-3 py-2 text-center text-[10px] text-text-muted uppercase tracking-wider">{{ __('admin.tpl_tech') }}</th>
-                            <th class="px-3 py-2 text-center text-[10px] text-text-muted uppercase tracking-wider">{{ __('admin.tpl_phys') }}</th>
+                            <th class="px-3 py-2 text-center text-[10px] text-text-muted uppercase tracking-wider w-[60px]">{{ __('admin.tpl_tech') }}</th>
+                            <th class="px-3 py-2 text-center text-[10px] text-text-muted uppercase tracking-wider w-[60px]">{{ __('admin.tpl_phys') }}</th>
                             <th class="px-3 py-2 text-center text-[10px] text-text-muted uppercase tracking-wider hidden md:table-cell">{{ __('admin.tpl_potential') }}</th>
-                            <th class="px-3 py-2 text-center text-[10px] text-text-muted uppercase tracking-wider hidden lg:table-cell">{{ __('admin.tpl_fitness') }}</th>
-                            <th class="px-3 py-2 text-center text-[10px] text-text-muted uppercase tracking-wider hidden lg:table-cell">{{ __('admin.tpl_tier') }}</th>
+                            <th class="px-3 py-2 text-center text-[10px] text-text-muted uppercase tracking-wider hidden lg:table-cell w-10">{{ __('admin.tpl_tier') }}</th>
                             <th class="px-3 py-2 text-right text-[10px] text-text-muted uppercase tracking-wider">{{ __('admin.actions') }}</th>
                         </tr>
                     </thead>
@@ -74,11 +73,21 @@
                                     saving: false,
                                     error: '',
                                     original: @js($template->toArray()),
-                                    form: @js($template->toArray()),
+                                    form: {
+                                        ...@js($template->toArray()),
+                                        nationality: @js(($template->player?->nationality ?? [])[0] ?? ''),
+                                    },
+                                    marketValueEuros: Math.round(@js($template->market_value_cents) / 100),
+                                    annualWageEuros: Math.round(@js($template->annual_wage) / 100),
                                     async save() {
                                         this.saving = true;
                                         this.error = '';
                                         try {
+                                            const payload = {
+                                                ...this.form,
+                                                market_value_cents: this.marketValueEuros * 100,
+                                                annual_wage: this.annualWageEuros * 100,
+                                            };
                                             const res = await fetch('{{ route('admin.player-templates.update', $template->id) }}', {
                                                 method: 'PUT',
                                                 headers: {
@@ -86,11 +95,11 @@
                                                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
                                                     'Accept': 'application/json',
                                                 },
-                                                body: JSON.stringify(this.form),
+                                                body: JSON.stringify(payload),
                                             });
                                             const data = await res.json();
                                             if (res.ok && data.success) {
-                                                this.original = { ...this.form };
+                                                this.original = { ...payload };
                                                 this.editing = false;
                                             } else {
                                                 const errors = data.errors ? Object.values(data.errors).flat().join(', ') : data.message;
@@ -104,57 +113,56 @@
                                     },
                                     cancel() {
                                         this.form = { ...this.original };
+                                        this.form.nationality = @js(($template->player?->nationality ?? [])[0] ?? '');
+                                        this.marketValueEuros = Math.round(this.original.market_value_cents / 100);
+                                        this.annualWageEuros = Math.round(this.original.annual_wage / 100);
                                         this.editing = false;
                                         this.error = '';
-                                    }
+                                    },
                                 }"
                                 class="bg-surface-800 hover:bg-[rgba(59,130,246,0.05)] transition-colors">
 
-                                {{-- Display mode --}}
-                                <template x-if="!editing">
-                                    <td colspan="10" class="p-0">
-                                        <div class="grid grid-cols-[40px_1fr_auto] md:grid-cols-[40px_1fr_100px_100px_60px_60px_80px_60px_40px_auto] items-center">
-                                            <div class="px-3 py-2.5 text-sm text-text-muted" x-text="original.number || '—'"></div>
-                                            <div class="px-3 py-2.5 text-sm text-text-primary font-medium truncate">{{ $template->player?->name ?? '—' }}</div>
-                                            <div class="px-3 py-2.5 text-xs text-text-muted hidden md:block" x-text="original.position"></div>
-                                            <div class="px-3 py-2.5 text-xs text-text-muted text-right hidden md:block" x-text="original.market_value || '—'"></div>
-                                            <div class="px-3 py-2.5 text-sm text-text-primary text-center" x-text="original.game_technical_ability ?? '—'"></div>
-                                            <div class="px-3 py-2.5 text-sm text-text-primary text-center" x-text="original.game_physical_ability ?? '—'"></div>
-                                            <div class="px-3 py-2.5 text-xs text-text-muted text-center hidden md:block">
-                                                <span x-text="(original.potential_low ?? '?') + '-' + (original.potential_high ?? '?')"></span>
-                                            </div>
-                                            <div class="px-3 py-2.5 text-xs text-text-muted text-center hidden lg:block" x-text="original.fitness"></div>
-                                            <div class="px-3 py-2.5 text-xs text-text-muted text-center hidden lg:block" x-text="original.tier"></div>
-                                            <div class="px-3 py-2.5 text-right flex items-center justify-end gap-1">
-                                                <button @click="editing = true" class="p-1.5 rounded text-text-muted hover:text-accent-blue hover:bg-accent-blue/10 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center" title="{{ __('admin.edit') }}">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" /></svg>
-                                                </button>
-                                                <button @click="$dispatch('open-modal', 'audit-{{ $template->id }}')" class="p-1.5 rounded text-text-muted hover:text-accent-gold hover:bg-accent-gold/10 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center" title="{{ __('admin.history') }}">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                                </button>
-                                                <form method="POST" action="{{ route('admin.player-templates.delete', $template->id) }}" onsubmit="return confirm('{{ __('admin.remove_confirm') }}')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="p-1.5 rounded text-text-muted hover:text-accent-red hover:bg-accent-red/10 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center" title="{{ __('admin.remove_player') }}">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </template>
+                                {{-- Display mode: proper <td> elements --}}
+                                <td x-show="!editing" class="px-3 py-2.5 text-sm text-text-muted" x-text="original.number || '—'"></td>
+                                <td x-show="!editing" class="px-3 py-2.5 text-sm text-text-primary font-medium truncate">{{ $template->player?->name ?? '—' }}</td>
+                                <td x-show="!editing" class="px-3 py-2.5 text-xs text-text-muted hidden md:table-cell" x-text="original.position"></td>
+                                <td x-show="!editing" class="px-3 py-2.5 text-xs text-text-muted text-right hidden md:table-cell">{{ \App\Support\Money::format($template->market_value_cents) }}</td>
+                                <td x-show="!editing" class="px-3 py-2.5 text-sm text-text-primary text-center" x-text="original.game_technical_ability ?? '—'"></td>
+                                <td x-show="!editing" class="px-3 py-2.5 text-sm text-text-primary text-center" x-text="original.game_physical_ability ?? '—'"></td>
+                                <td x-show="!editing" class="px-3 py-2.5 text-xs text-text-muted text-center hidden md:table-cell">
+                                    <span x-text="(original.potential_low ?? '?') + '-' + (original.potential_high ?? '?')"></span>
+                                </td>
+                                <td x-show="!editing" class="px-3 py-2.5 text-xs text-text-muted text-center hidden lg:table-cell" x-text="original.tier"></td>
+                                <td x-show="!editing" class="px-3 py-2.5 text-right">
+                                    <div class="flex items-center justify-end gap-1">
+                                        <button @click="editing = true" class="p-1.5 rounded text-text-muted hover:text-accent-blue hover:bg-accent-blue/10 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center" title="{{ __('admin.edit') }}">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" /></svg>
+                                        </button>
+                                        <button @click="$dispatch('open-modal', 'audit-{{ $template->id }}')" class="p-1.5 rounded text-text-muted hover:text-accent-gold hover:bg-accent-gold/10 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center" title="{{ __('admin.history') }}">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                        </button>
+                                        <form method="POST" action="{{ route('admin.player-templates.delete', $template->id) }}" onsubmit="return confirm('{{ __('admin.remove_confirm') }}')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="p-1.5 rounded text-text-muted hover:text-accent-red hover:bg-accent-red/10 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center" title="{{ __('admin.remove_player') }}">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
 
                                 {{-- Edit mode --}}
-                                <template x-if="editing">
-                                    <td colspan="10" class="p-0">
-                                        <div class="p-3 bg-accent-blue/5 border-l-2 border-accent-blue space-y-3">
-                                            <div class="text-sm font-medium text-text-primary mb-2">{{ $template->player?->name }}</div>
+                                <td x-show="editing" x-cloak colspan="9" class="p-0">
+                                    <div class="p-4 bg-accent-blue/5 border-l-2 border-accent-blue space-y-4">
+                                        <div class="text-sm font-medium text-text-primary">{{ $template->player?->name }}</div>
 
-                                            {{-- Error --}}
-                                            <div x-show="error" x-text="error" class="text-xs text-accent-red bg-accent-red/10 rounded px-3 py-1.5"></div>
+                                        {{-- Error --}}
+                                        <div x-show="error" x-text="error" class="text-xs text-accent-red bg-accent-red/10 rounded px-3 py-1.5"></div>
 
-                                            {{-- Row 1: Basic info --}}
-                                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                        {{-- Section: Personal Details --}}
+                                        <div>
+                                            <div class="text-[10px] text-text-muted uppercase tracking-wider font-semibold mb-2">{{ __('admin.section_personal') }}</div>
+                                            <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
                                                 <div>
                                                     <x-input-label value="{{ __('admin.tpl_number') }}" />
                                                     <x-text-input type="number" x-model="form.number" min="1" max="99" class="w-full" />
@@ -168,17 +176,33 @@
                                                     </x-select-input>
                                                 </div>
                                                 <div>
-                                                    <x-input-label value="{{ __('admin.tpl_market_value') }}" />
-                                                    <x-text-input type="text" x-model="form.market_value" class="w-full" />
+                                                    <x-input-label value="{{ __('admin.tpl_nationality') }}" />
+                                                    <x-select-input x-model="form.nationality" class="w-full">
+                                                        <option value="">—</option>
+                                                        @foreach($countries as $country)
+                                                            <option value="{{ $country }}">{{ $country }}</option>
+                                                        @endforeach
+                                                    </x-select-input>
                                                 </div>
                                                 <div>
-                                                    <x-input-label value="{{ __('admin.tpl_market_value_cents') }}" />
-                                                    <x-text-input type="number" x-model="form.market_value_cents" min="0" class="w-full" />
+                                                    <x-input-label value="{{ __('admin.tpl_contract_until') }}" />
+                                                    <x-text-input type="date" x-model="form.contract_until" class="w-full" />
+                                                </div>
+                                                <div>
+                                                    <x-input-label value="{{ __('admin.tpl_tier') }}" />
+                                                    <x-select-input x-model="form.tier" class="w-full">
+                                                        @for($i = 1; $i <= 5; $i++)
+                                                            <option value="{{ $i }}">{{ $i }}</option>
+                                                        @endfor
+                                                    </x-select-input>
                                                 </div>
                                             </div>
+                                        </div>
 
-                                            {{-- Row 2: Abilities --}}
-                                            <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                                        {{-- Section: Game Parameters --}}
+                                        <div>
+                                            <div class="text-[10px] text-text-muted uppercase tracking-wider font-semibold mb-2">{{ __('admin.section_game_params') }}</div>
+                                            <div class="grid grid-cols-3 md:grid-cols-6 gap-2">
                                                 <div>
                                                     <x-input-label value="{{ __('admin.tpl_tech') }}" />
                                                     <x-text-input type="number" x-model="form.game_technical_ability" min="1" max="99" class="w-full" />
@@ -199,53 +223,43 @@
                                                     <x-input-label value="{{ __('admin.tpl_potential_high') }}" />
                                                     <x-text-input type="number" x-model="form.potential_high" min="1" max="99" class="w-full" />
                                                 </div>
-                                            </div>
-
-                                            {{-- Row 3: Stats --}}
-                                            <div class="grid grid-cols-2 md:grid-cols-6 gap-3">
-                                                <div>
-                                                    <x-input-label value="{{ __('admin.tpl_fitness') }}" />
-                                                    <x-text-input type="number" x-model="form.fitness" min="0" max="100" class="w-full" />
-                                                </div>
-                                                <div>
-                                                    <x-input-label value="{{ __('admin.tpl_morale') }}" />
-                                                    <x-text-input type="number" x-model="form.morale" min="0" max="100" class="w-full" />
-                                                </div>
                                                 <div>
                                                     <x-input-label value="{{ __('admin.tpl_durability') }}" />
                                                     <x-text-input type="number" x-model="form.durability" min="0" max="100" class="w-full" />
                                                 </div>
-                                                <div>
-                                                    <x-input-label value="{{ __('admin.tpl_annual_wage') }}" />
-                                                    <x-text-input type="number" x-model="form.annual_wage" min="0" class="w-full" />
-                                                </div>
-                                                <div>
-                                                    <x-input-label value="{{ __('admin.tpl_contract_until') }}" />
-                                                    <x-text-input type="date" x-model="form.contract_until" class="w-full" />
-                                                </div>
-                                                <div>
-                                                    <x-input-label value="{{ __('admin.tpl_tier') }}" />
-                                                    <x-select-input x-model="form.tier" class="w-full">
-                                                        @for($i = 1; $i <= 5; $i++)
-                                                            <option value="{{ $i }}">{{ $i }}</option>
-                                                        @endfor
-                                                    </x-select-input>
-                                                </div>
-                                            </div>
-
-                                            {{-- Actions --}}
-                                            <div class="flex items-center gap-2 pt-1">
-                                                <x-primary-button type="button" color="blue" size="xs" @click="save()" x-bind:disabled="saving">
-                                                    <span x-show="!saving">{{ __('admin.save') }}</span>
-                                                    <span x-show="saving">...</span>
-                                                </x-primary-button>
-                                                <x-ghost-button type="button" color="slate" size="xs" @click="cancel()">
-                                                    {{ __('admin.cancel') }}
-                                                </x-ghost-button>
                                             </div>
                                         </div>
-                                    </td>
-                                </template>
+
+                                        {{-- Section: Financial --}}
+                                        <div>
+                                            <div class="text-[10px] text-text-muted uppercase tracking-wider font-semibold mb-2">{{ __('admin.section_financial') }}</div>
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                <div>
+                                                    <x-input-label value="{{ __('admin.tpl_market_value') }}" />
+                                                    <x-money-input size="md" x-model="marketValueEuros" :presets="[500000, 2000000, 5000000, 10000000, 20000000, 50000000, 100000000]" />
+                                                </div>
+                                                <div>
+                                                    <div class="flex items-center gap-1.5 mb-1">
+                                                        <x-input-label value="{{ __('admin.tpl_annual_wage') }}" class="mb-0" />
+                                                        @include('admin.player-templates._wage-tooltip')
+                                                    </div>
+                                                    <x-money-input size="md" x-model="annualWageEuros" :presets="[100000, 500000, 1000000, 3000000, 5000000, 10000000, 20000000]" />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {{-- Actions --}}
+                                        <div class="flex items-center gap-2 pt-1">
+                                            <x-primary-button type="button" color="blue" size="xs" @click="save()" x-bind:disabled="saving">
+                                                <span x-show="!saving">{{ __('admin.save') }}</span>
+                                                <span x-show="saving">...</span>
+                                            </x-primary-button>
+                                            <x-ghost-button type="button" color="slate" size="xs" @click="cancel()">
+                                                {{ __('admin.cancel') }}
+                                            </x-ghost-button>
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>

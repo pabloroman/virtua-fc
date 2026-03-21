@@ -29,9 +29,17 @@ class UpdatePlayerTemplate
             'potential_low' => ['nullable', 'integer', 'min:1', 'max:99'],
             'potential_high' => ['nullable', 'integer', 'min:1', 'max:99'],
             'tier' => ['required', 'integer', 'min:1', 'max:5'],
+            'nationality' => ['nullable', 'string', 'max:255'],
         ]);
 
+        $nationality = $validated['nationality'] ?? null;
+        unset($validated['nationality']);
+
         $service->update($template, $validated, $request->user());
+
+        if ($nationality !== null && $template->player) {
+            $template->player->update(['nationality' => array_filter([$nationality])]);
+        }
 
         if ($request->wantsJson()) {
             $template->refresh();
