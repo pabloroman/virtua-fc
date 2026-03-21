@@ -24,6 +24,7 @@ use App\Modules\Manager\Processors\TrophyRecordingProcessor;
 use App\Modules\Season\Processors\UefaQualificationProcessor;
 use App\Modules\Season\Processors\YouthAcademyClosingProcessor;
 use App\Models\Game;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -83,29 +84,43 @@ class SeasonClosingPipeline
 
     /**
      * Close the old season and return transition data for setup.
+     *
+     * @param  int  $startFromStep  Global step index to resume from (skip steps <= this value)
+     * @param  SeasonTransitionData|null  $existingData  Restored DTO from a previous checkpoint
      */
-    public function run(Game $game): SeasonTransitionData
+    public function run(Game $game, int $startFromStep = -1, ?SeasonTransitionData $existingData = null): SeasonTransitionData
     {
         $oldSeason = $game->season;
         $newSeason = $this->incrementSeason($oldSeason);
 
-        $data = new SeasonTransitionData(
+        $data = $existingData ?? new SeasonTransitionData(
             oldSeason: $oldSeason,
             newSeason: $newSeason,
             competitionId: $game->competition_id,
         );
 
-        foreach ($this->processors as $processor) {
+        foreach ($this->processors as $index => $processor) {
+            if ($index <= $startFromStep) {
+                continue;
+            }
+
             try {
-                $data = $processor->process($game, $data);
+                $data = DB::transaction(fn () => $processor->process($game, $data));
             } catch (\Throwable $e) {
                 Log::error('Season closing processor failed', [
                     'processor' => get_class($processor),
+                    'step' => $index,
                     'game_id' => $game->id,
                     'error' => $e->getMessage(),
                 ]);
                 throw $e;
             }
+
+            // Checkpoint: persist completed step and DTO for crash recovery
+            $game->updateQuietly([
+                'season_transition_step' => $index,
+                'season_transition_data' => $data,
+            ]);
         }
 
         return $data;

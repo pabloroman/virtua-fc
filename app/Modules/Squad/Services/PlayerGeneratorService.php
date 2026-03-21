@@ -132,6 +132,121 @@ class PlayerGeneratorService
     }
 
     /**
+     * Create multiple players in bulk using batch inserts.
+     *
+     * Computes all player data in memory, then does two chunked bulk inserts
+     * (Player + GamePlayer) instead of individual creates per player.
+     *
+     * @param  Game  $game
+     * @param  GeneratedPlayerData[]  $dataItems
+     * @return array<array{playerId: string, playerName: string, position: string, teamId: string}>
+     */
+    public function createBulk(Game $game, array $dataItems): array
+    {
+        if (empty($dataItems)) {
+            return [];
+        }
+
+        $minimumWage = $this->contractService->getMinimumWageForTeam($game->team);
+        $seasonYear = (int) $game->season;
+        $currentDate = $game->current_date ?? now();
+
+        $playerRows = [];
+        $gamePlayerRows = [];
+        $results = [];
+
+        foreach ($dataItems as $data) {
+            $excludedNames = ($data->name === null)
+                ? $this->getOrLoadTeamPlayerNames($game->id, $data->teamId)
+                : [];
+            $identity = $this->pickRandomIdentity(excludedNames: $excludedNames);
+            $name = $data->name ?? $identity['name'];
+            $nationality = $data->nationality ?? $identity['nationality'];
+            $age = (int) $data->dateOfBirth->diffInYears($currentDate);
+
+            $playerId = Str::uuid()->toString();
+            $gamePlayerId = Str::uuid()->toString();
+
+            $playerRows[] = [
+                'id' => $playerId,
+                'transfermarkt_id' => 'gen-' . Str::uuid()->toString(),
+                'name' => $name,
+                'nationality' => json_encode($nationality),
+                'date_of_birth' => $data->dateOfBirth->format('Y-m-d'),
+                'technical_ability' => $data->technical,
+                'physical_ability' => $data->physical,
+                'height' => $identity['height'] ?? null,
+                'foot' => $identity['foot'] ?? null,
+            ];
+
+            $averageAbility = (int) round(($data->technical + $data->physical) / 2);
+            $marketValue = $data->marketValueCents ?? $this->valuationService->abilityToMarketValue($averageAbility, $age);
+            $marketValue = max(100_000_00, $marketValue);
+
+            if ($data->potential !== null) {
+                $potential = $data->potential;
+                $potentialLow = $data->potentialLow ?? max($potential - 5, $averageAbility);
+                $potentialHigh = $data->potentialHigh ?? min($potential + 5, 99);
+            } else {
+                $potentialData = $this->developmentService->generatePotential($age, $averageAbility, $marketValue);
+                $potential = $potentialData['potential'];
+                $potentialLow = $potentialData['low'];
+                $potentialHigh = $potentialData['high'];
+            }
+
+            $annualWage = $this->contractService->calculateAnnualWage($marketValue, $minimumWage, $age);
+            $contractUntil = Carbon::createFromDate($seasonYear + $data->contractYears, 6, 30);
+            $number = $this->findNextAvailableNumber($game->id, $data->teamId);
+
+            $gamePlayerRows[] = [
+                'id' => $gamePlayerId,
+                'game_id' => $game->id,
+                'player_id' => $playerId,
+                'team_id' => $data->teamId,
+                'number' => $number,
+                'position' => $data->position,
+                'market_value_cents' => $marketValue,
+                'contract_until' => $contractUntil->format('Y-m-d'),
+                'annual_wage' => $annualWage,
+                'fitness' => mt_rand($data->fitnessMin, $data->fitnessMax),
+                'morale' => mt_rand($data->moraleMin, $data->moraleMax),
+                'durability' => InjuryService::generateDurability(),
+                'game_technical_ability' => $data->technical,
+                'game_physical_ability' => $data->physical,
+                'potential' => $potential,
+                'potential_low' => $potentialLow,
+                'potential_high' => $potentialHigh,
+                'season_appearances' => 0,
+                'tier' => PlayerTierService::tierFromMarketValue($marketValue),
+            ];
+
+            // Update caches for subsequent iterations
+            $teamKey = "{$game->id}:{$data->teamId}";
+            $this->takenNumbersCache[$teamKey][] = $number;
+            $this->teamNamesCache[$teamKey][] = $name;
+
+            $results[] = [
+                'playerId' => $gamePlayerId,
+                'playerName' => $name,
+                'position' => $data->position,
+                'teamId' => $data->teamId,
+            ];
+        }
+
+        // Bulk insert Player records
+        foreach (array_chunk($playerRows, 500) as $chunk) {
+            Player::insert($chunk);
+        }
+
+        // Bulk insert GamePlayer records
+        foreach (array_chunk($gamePlayerRows, 500) as $chunk) {
+            GamePlayer::insert($chunk);
+        }
+
+        return $results;
+    }
+
+    /**
      * Country code → nationality string mapping for weighted selection.
      */
     private const COUNTRY_TO_NATIONALITY = [

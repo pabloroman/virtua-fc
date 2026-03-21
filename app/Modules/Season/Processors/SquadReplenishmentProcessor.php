@@ -129,7 +129,10 @@ class SquadReplenishmentProcessor implements SeasonProcessor
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
-        $generatedPlayers = [];
+        // Collect all player data to generate, then bulk insert at the end
+        $bulkData = [];
+        $bulkMeta = [];
+        $releaseIds = [];
 
         // Get all AI team rosters (grouped by team, excluding free agents)
         $teamRosters = GamePlayer::where('game_id', $game->id)
@@ -146,31 +149,32 @@ class SquadReplenishmentProcessor implements SeasonProcessor
             $positionsToFill = $this->determinePositionsToFill($positionCounts, $players->count());
 
             foreach ($positionsToFill as $position) {
-                $newPlayer = $this->generatePlayer(
-                    $game,
-                    $teamId,
-                    $position,
-                    $teamAvgAbility,
-                    $data->newSeason,
+                $playerData = $this->buildPlayerData(
+                    $game, $teamId, $position, $teamAvgAbility, $data->newSeason,
                 );
-
-                $generatedPlayers[] = [
-                    'playerId' => $newPlayer->id,
-                    'playerName' => $newPlayer->player->name,
-                    'position' => $newPlayer->position,
-                    'teamId' => $teamId,
-                    'type' => 'replenishment',
-                ];
+                $bulkData[] = $playerData;
+                $bulkMeta[] = ['teamId' => $teamId, 'type' => 'replenishment'];
             }
 
             // Phase 2: Youth intake — inject young players to maintain age balance
             $currentSquadSize = $players->count() + count($positionsToFill);
-            $youthPlayers = $this->generateYouthIntake(
-                $game, $teamId, $teamAvgAbility, $currentSquadSize, $data->newSeason,
-            );
+            $youthCount = mt_rand(self::YOUTH_INTAKE_MIN, self::YOUTH_INTAKE_MAX);
 
-            foreach ($youthPlayers as $youth) {
-                $generatedPlayers[] = $youth;
+            // Collect release candidates if squad would exceed cap
+            $slotsAvailable = self::YOUTH_INTAKE_SQUAD_CAP - $currentSquadSize;
+            if ($slotsAvailable < $youthCount) {
+                $toRelease = $youthCount - max(0, $slotsAvailable);
+                $candidates = $this->getOldestWeakestIds($game, $teamId, $toRelease);
+                $releaseIds = array_merge($releaseIds, $candidates);
+            }
+
+            for ($i = 0; $i < $youthCount; $i++) {
+                $position = $this->selectWeightedYouthPosition();
+                $playerData = $this->buildYouthPlayerData(
+                    $game, $teamId, $position, $teamAvgAbility, $data->newSeason,
+                );
+                $bulkData[] = $playerData;
+                $bulkMeta[] = ['teamId' => $teamId, 'type' => 'youth_intake'];
             }
         }
 
@@ -179,37 +183,126 @@ class SquadReplenishmentProcessor implements SeasonProcessor
             ->where('team_id', $game->team_id)
             ->get();
 
+        $emergencyNames = [];
         if ($userPlayers->count() < self::MIN_SQUAD_SIZE) {
             $teamAvgAbility = $this->calculateTeamAverageAbility($userPlayers);
             $positionCounts = $userPlayers->groupBy('position')->map->count();
             $positionsToFill = $this->determinePositionsToFill($positionCounts, $userPlayers->count());
 
-            $emergencyNames = [];
             foreach ($positionsToFill as $position) {
-                $newPlayer = $this->generatePlayer(
-                    $game,
-                    $game->team_id,
-                    $position,
-                    $teamAvgAbility,
-                    $data->newSeason,
+                $playerData = $this->buildPlayerData(
+                    $game, $game->team_id, $position, $teamAvgAbility, $data->newSeason,
                 );
-
-                $emergencyNames[] = $newPlayer->player->name;
-                $generatedPlayers[] = [
-                    'playerId' => $newPlayer->id,
-                    'playerName' => $newPlayer->player->name,
-                    'position' => $newPlayer->position,
-                    'teamId' => $game->team_id,
-                    'type' => 'emergency_replenishment',
-                ];
-            }
-
-            if (! empty($emergencyNames)) {
-                $this->notificationService->notifyEmergencySignings($game, $emergencyNames);
+                $bulkData[] = $playerData;
+                $bulkMeta[] = ['teamId' => $game->team_id, 'type' => 'emergency_replenishment', 'isUserTeam' => true];
             }
         }
 
+        // Batch release old/weak players
+        if (!empty($releaseIds)) {
+            GamePlayer::whereIn('id', $releaseIds)->update(['team_id' => null]);
+        }
+
+        // Bulk insert all generated players
+        $results = $this->playerGenerator->createBulk($game, $bulkData);
+
+        // Build metadata from results
+        $generatedPlayers = [];
+        foreach ($results as $i => $result) {
+            $result['type'] = $bulkMeta[$i]['type'];
+            $generatedPlayers[] = $result;
+
+            if (!empty($bulkMeta[$i]['isUserTeam'])) {
+                $emergencyNames[] = $result['playerName'];
+            }
+        }
+
+        if (!empty($emergencyNames)) {
+            $this->notificationService->notifyEmergencySignings($game, $emergencyNames);
+        }
+
         return $data->setMetadata('squadReplenishment', $generatedPlayers);
+    }
+
+    /**
+     * Build a GeneratedPlayerData for a replenishment player (does not insert to DB).
+     */
+    private function buildPlayerData(
+        Game $game,
+        string $teamId,
+        string $position,
+        int $teamAvgAbility,
+        string $newSeason,
+    ): GeneratedPlayerData {
+        $variance = mt_rand(-10, 10);
+        $baseAbility = max(35, min(90, $teamAvgAbility + $variance));
+
+        $techBias = mt_rand(-5, 5);
+        $technical = max(30, min(95, $baseAbility + $techBias));
+        $physical = max(30, min(95, $baseAbility - $techBias));
+
+        $seasonYear = (int) $newSeason;
+
+        $ageRoll = mt_rand(1, 100);
+        $age = match (true) {
+            $ageRoll <= 10 => mt_rand(19, 20),
+            $ageRoll <= 40 => mt_rand(21, 23),
+            $ageRoll <= 75 => mt_rand(24, 27),
+            default => mt_rand(28, 31),
+        };
+
+        $dateOfBirth = Carbon::createFromDate($seasonYear - $age, mt_rand(1, 12), mt_rand(1, 28));
+
+        return new GeneratedPlayerData(
+            teamId: $teamId,
+            position: $position,
+            technical: $technical,
+            physical: $physical,
+            dateOfBirth: $dateOfBirth,
+            contractYears: mt_rand(2, 4),
+        );
+    }
+
+    /**
+     * Build a GeneratedPlayerData for a youth player (does not insert to DB).
+     */
+    private function buildYouthPlayerData(
+        Game $game,
+        string $teamId,
+        string $position,
+        int $teamAvgAbility,
+        string $newSeason,
+    ): GeneratedPlayerData {
+        $factor = self::YOUTH_ABILITY_FACTOR_MIN
+            + (mt_rand(0, 100) / 100) * (self::YOUTH_ABILITY_FACTOR_MAX - self::YOUTH_ABILITY_FACTOR_MIN);
+        $baseAbility = max(30, min(70, (int) round($teamAvgAbility * $factor)));
+
+        $techBias = mt_rand(-5, 5);
+        $technical = max(25, min(75, $baseAbility + $techBias));
+        $physical = max(25, min(75, $baseAbility - $techBias));
+
+        $ageRoll = mt_rand(1, 100);
+        $age = match (true) {
+            $ageRoll <= 15 => 17,
+            $ageRoll <= 45 => 18,
+            $ageRoll <= 80 => 19,
+            default => 20,
+        };
+
+        $currentDate = $game->current_date;
+        $birthYear = $currentDate->year - $age;
+        $birthMonth = mt_rand(1, $currentDate->month);
+        $maxDay = $birthMonth === $currentDate->month ? $currentDate->day : 28;
+        $dateOfBirth = Carbon::createFromDate($birthYear, $birthMonth, mt_rand(1, $maxDay));
+
+        return new GeneratedPlayerData(
+            teamId: $teamId,
+            position: $position,
+            technical: $technical,
+            physical: $physical,
+            dateOfBirth: $dateOfBirth,
+            contractYears: mt_rand(3, 5),
+        );
     }
 
     /**
@@ -353,131 +446,6 @@ class SquadReplenishmentProcessor implements SeasonProcessor
     }
 
     /**
-     * Generate a player scaled to the team's average ability.
-     */
-    private function generatePlayer(
-        Game $game,
-        string $teamId,
-        string $position,
-        int $teamAvgAbility,
-        string $newSeason,
-    ): GamePlayer {
-        // Ability within ±10% of team average, with some variance
-        $variance = mt_rand(-10, 10);
-        $baseAbility = max(35, min(90, $teamAvgAbility + $variance));
-
-        $techBias = mt_rand(-5, 5);
-        $technical = max(30, min(95, $baseAbility + $techBias));
-        $physical = max(30, min(95, $baseAbility - $techBias));
-
-        $seasonYear = (int) $newSeason;
-
-        // Weighted age distribution that skews younger for natural demographics
-        $ageRoll = mt_rand(1, 100);
-        $age = match (true) {
-            $ageRoll <= 10 => mt_rand(19, 20),
-            $ageRoll <= 40 => mt_rand(21, 23),
-            $ageRoll <= 75 => mt_rand(24, 27),
-            default => mt_rand(28, 31),
-        };
-
-        $dateOfBirth = Carbon::createFromDate($seasonYear - $age, mt_rand(1, 12), mt_rand(1, 28));
-
-        return $this->playerGenerator->create($game, new GeneratedPlayerData(
-            teamId: $teamId,
-            position: $position,
-            technical: $technical,
-            physical: $physical,
-            dateOfBirth: $dateOfBirth,
-            contractYears: mt_rand(2, 4),
-        ));
-    }
-
-    /**
-     * Generate 2-3 youth players for an AI team, simulating youth academy output.
-     * Releases oldest/weakest players if squad is near capacity.
-     *
-     * @return array<array{playerId: string, playerName: string, position: string, teamId: string, type: string}>
-     */
-    private function generateYouthIntake(
-        Game $game,
-        string $teamId,
-        int $teamAvgAbility,
-        int $currentSquadSize,
-        string $newSeason,
-    ): array {
-        $youthCount = mt_rand(self::YOUTH_INTAKE_MIN, self::YOUTH_INTAKE_MAX);
-
-        // Release oldest/weakest players if squad would exceed cap
-        $slotsAvailable = self::YOUTH_INTAKE_SQUAD_CAP - $currentSquadSize;
-        if ($slotsAvailable < $youthCount) {
-            $toRelease = $youthCount - max(0, $slotsAvailable);
-            $this->releaseOldestWeakest($game, $teamId, $toRelease);
-        }
-
-        $generated = [];
-        for ($i = 0; $i < $youthCount; $i++) {
-            $position = $this->selectWeightedYouthPosition();
-            $newPlayer = $this->generateYouthPlayer(
-                $game, $teamId, $position, $teamAvgAbility, $newSeason,
-            );
-
-            $generated[] = [
-                'playerId' => $newPlayer->id,
-                'playerName' => $newPlayer->player->name,
-                'position' => $newPlayer->position,
-                'teamId' => $teamId,
-                'type' => 'youth_intake',
-            ];
-        }
-
-        return $generated;
-    }
-
-    /**
-     * Generate a young player (17-20) scaled below the team's average ability.
-     */
-    private function generateYouthPlayer(
-        Game $game,
-        string $teamId,
-        string $position,
-        int $teamAvgAbility,
-        string $newSeason,
-    ): GamePlayer {
-        $factor = self::YOUTH_ABILITY_FACTOR_MIN
-            + (mt_rand(0, 100) / 100) * (self::YOUTH_ABILITY_FACTOR_MAX - self::YOUTH_ABILITY_FACTOR_MIN);
-        $baseAbility = max(30, min(70, (int) round($teamAvgAbility * $factor)));
-
-        $techBias = mt_rand(-5, 5);
-        $technical = max(25, min(75, $baseAbility + $techBias));
-        $physical = max(25, min(75, $baseAbility - $techBias));
-
-        // Weighted age: 17 (15%), 18 (30%), 19 (35%), 20 (20%)
-        $ageRoll = mt_rand(1, 100);
-        $age = match (true) {
-            $ageRoll <= 15 => 17,
-            $ageRoll <= 45 => 18,
-            $ageRoll <= 80 => 19,
-            default => 20,
-        };
-
-        $currentDate = $game->current_date;
-        $birthYear = $currentDate->year - $age;
-        $birthMonth = mt_rand(1, $currentDate->month);
-        $maxDay = $birthMonth === $currentDate->month ? $currentDate->day : 28;
-        $dateOfBirth = Carbon::createFromDate($birthYear, $birthMonth, mt_rand(1, $maxDay));
-
-        return $this->playerGenerator->create($game, new GeneratedPlayerData(
-            teamId: $teamId,
-            position: $position,
-            technical: $technical,
-            physical: $physical,
-            dateOfBirth: $dateOfBirth,
-            contractYears: mt_rand(3, 5),
-        ));
-    }
-
-    /**
      * Select a random position using weighted distribution for youth intake.
      */
     private function selectWeightedYouthPosition(): string
@@ -496,22 +464,22 @@ class SquadReplenishmentProcessor implements SeasonProcessor
     }
 
     /**
-     * Release the oldest, weakest players from a team to make room for youth.
+     * Get IDs of the oldest, weakest players from a team to release.
      * Only targets players aged 30+ sorted by ability ascending.
+     *
+     * @return string[]
      */
-    private function releaseOldestWeakest(Game $game, string $teamId, int $count): void
+    private function getOldestWeakestIds(Game $game, string $teamId, int $count): array
     {
-        $candidates = GamePlayer::where('game_id', $game->id)
+        return GamePlayer::where('game_id', $game->id)
             ->where('team_id', $teamId)
             ->whereHas('player', function ($q) use ($game) {
                 $q->where('date_of_birth', '<=', $game->current_date->copy()->subYears(30));
             })
             ->get()
             ->sortBy(fn ($p) => ($p->game_technical_ability + $p->game_physical_ability) / 2)
-            ->take($count);
-
-        foreach ($candidates as $player) {
-            $player->update(['team_id' => null]);
-        }
+            ->take($count)
+            ->pluck('id')
+            ->toArray();
     }
 }
