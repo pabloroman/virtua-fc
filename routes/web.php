@@ -97,6 +97,7 @@ use App\Http\Views\ShowTransferActivity;
 use App\Http\Views\ShowOutgoingTransfers;
 use App\Http\Views\ShowLeaderboard;
 use App\Http\Views\ShowManagerProfile;
+use App\Http\Views\ShowTournamentSummary;
 use App\Http\Actions\ProcessTacticalActions;
 use App\Http\Actions\PromoteAcademyPlayer;
 use App\Http\Actions\StartNewSeason;
@@ -118,6 +119,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
     Route::get('/new-game', SelectTeam::class)->name('select-team');
     Route::post('/new-game', InitGame::class)->name('init-game');
+    Route::get('/tournament-summary/{summaryId}', ShowTournamentSummary::class)->name('tournament-summary.show');
 
     // All game routes require ownership verification
     Route::middleware('game.owner')->group(function () {
