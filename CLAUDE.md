@@ -13,7 +13,6 @@ composer dev                                    # Run all services (server, queu
 php artisan test                                # Run tests
 php artisan test --filter=TestClassName          # Run a single test
 php artisan app:seed-reference-data             # Seed reference data (--fresh to reset)
-php artisan app:create-test-game                # Create a test game for local dev
 php artisan app:simulate-match                  # Simulate a match (debugging)
 php artisan app:simulate-season                 # Simulate a full season
 php artisan config:clear                        # Clear config cache after changes
