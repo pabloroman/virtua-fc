@@ -17,6 +17,19 @@ use App\Modules\Player\PlayerAge;
  */
 class PlayerValuationService
 {
+    private const ABILITY_VALUE_ANCHORS = [
+        [45, 10_000_000],        // €100K
+        [50, 30_000_000],        // €300K
+        [58, 100_000_000],       // €1M
+        [63, 200_000_000],       // €2M
+        [68, 500_000_000],       // €5M
+        [73, 1_000_000_000],     // €10M
+        [78, 2_000_000_000],     // €20M
+        [83, 5_000_000_000],     // €50M
+        [88, 10_000_000_000],    // €100M
+        [95, 20_000_000_000],    // €200M
+    ];
+
     /**
      * Convert market value to technical/physical abilities.
      *
@@ -126,18 +139,7 @@ class PlayerValuationService
      */
     private function marketValueToRawAbility(int $marketValueCents): int
     {
-        $anchors = [
-            [45, 10_000_000],        // €100K
-            [50, 30_000_000],        // €300K
-            [58, 100_000_000],       // €1M
-            [63, 200_000_000],       // €2M
-            [68, 500_000_000],       // €5M
-            [73, 1_000_000_000],     // €10M
-            [78, 2_000_000_000],     // €20M
-            [83, 5_000_000_000],     // €50M
-            [88, 10_000_000_000],    // €100M
-            [95, 20_000_000_000],    // €200M
-        ];
+        $anchors = self::ABILITY_VALUE_ANCHORS;
 
         if ($marketValueCents <= $anchors[0][1]) {
             return max(40, $anchors[0][0] + rand(-2, 2));
@@ -160,7 +162,7 @@ class PlayerValuationService
             }
         }
 
-        return $anchors[0][0];
+        return $anchors[0][0]; // @codeCoverageIgnore — unreachable, anchors are contiguous
     }
 
     /**
@@ -228,18 +230,7 @@ class PlayerValuationService
      */
     private function abilityToBaseValue(int $ability): int
     {
-        $anchors = [
-            [45, 10_000_000],        // €100K
-            [50, 30_000_000],        // €300K
-            [58, 100_000_000],       // €1M
-            [63, 200_000_000],       // €2M
-            [68, 500_000_000],       // €5M
-            [73, 1_000_000_000],     // €10M
-            [78, 2_000_000_000],     // €20M
-            [83, 5_000_000_000],     // €50M
-            [88, 10_000_000_000],    // €100M
-            [95, 20_000_000_000],    // €200M
-        ];
+        $anchors = self::ABILITY_VALUE_ANCHORS;
 
         if ($ability <= $anchors[0][0]) {
             return $anchors[0][1];
@@ -262,6 +253,6 @@ class PlayerValuationService
             }
         }
 
-        return $anchors[0][1];
+        return $anchors[0][1]; // @codeCoverageIgnore — unreachable, anchors are contiguous
     }
 }

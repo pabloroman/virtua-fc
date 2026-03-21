@@ -30,6 +30,19 @@ class GamePlayerTemplateService
     }
 
     /**
+     * Delete templates for a specific country's teams only.
+     */
+    public function clearTemplatesForCountry(string $season, string $countryCode): void
+    {
+        DB::table('game_player_templates')
+            ->where('season', $season)
+            ->whereIn('team_id', function ($query) use ($countryCode) {
+                $query->select('id')->from('teams')->where('country', $countryCode);
+            })
+            ->delete();
+    }
+
+    /**
      * Generate pre-computed game_player_templates for a season and country.
      * Additive — call clearTemplates() first if a fresh start is needed.
      *

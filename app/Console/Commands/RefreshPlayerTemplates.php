@@ -6,7 +6,6 @@ use App\Modules\Competition\Services\CountryConfig;
 use App\Modules\Season\Services\GamePlayerTemplateService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Symfony\Component\Console\Command\Command as CommandAlias;
 
 class RefreshPlayerTemplates extends Command
 {
@@ -27,15 +26,19 @@ class RefreshPlayerTemplates extends Command
             $countryFilter = strtoupper($countryFilter);
             if (!in_array($countryFilter, $countryCodes)) {
                 $this->error("Country '{$countryFilter}' is not a playable country.");
-                return CommandAlias::FAILURE;
+                return self::FAILURE;
             }
             $countryCodes = [$countryFilter];
         }
 
         $this->info("Refreshing player templates for season {$season}...");
 
-        DB::transaction(function () use ($templateService, $season, $countryCodes) {
-            $templateService->clearTemplates($season);
+        DB::transaction(function () use ($templateService, $season, $countryCodes, $countryFilter) {
+            if ($countryFilter) {
+                $templateService->clearTemplatesForCountry($season, $countryFilter);
+            } else {
+                $templateService->clearTemplates($season);
+            }
 
             $totalCount = 0;
 
@@ -49,6 +52,6 @@ class RefreshPlayerTemplates extends Command
             $this->info("Total templates: {$totalCount}");
         });
 
-        return CommandAlias::SUCCESS;
+        return self::SUCCESS;
     }
 }
