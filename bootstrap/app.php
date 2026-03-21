@@ -22,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'game.owner' => \App\Http\Middleware\EnsureGameOwnership::class,
             'beta.invite' => \App\Http\Middleware\RequireInviteForRegistration::class,
             'admin' => \App\Http\Middleware\EnsureAdmin::class,
+            'player.editor' => \App\Http\Middleware\EnsurePlayerEditor::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -25,6 +25,9 @@
                             @if($user->has_career_access)
                                 <span class="ml-1 inline-flex items-center rounded-full bg-accent-green/10 px-2 py-0.5 text-xs font-medium text-accent-green ring-1 ring-inset ring-accent-green/20">{{ __('admin.career_access') }}</span>
                             @endif
+                            @if($user->can_edit_players)
+                                <span class="ml-1 inline-flex items-center rounded-full bg-accent-blue/10 px-2 py-0.5 text-xs font-medium text-accent-blue ring-1 ring-inset ring-accent-blue/20">{{ __('admin.player_editing') }}</span>
+                            @endif
                         </td>
                         <td class="px-4 py-3 text-sm text-text-muted hidden md:table-cell">{{ $user->email }}</td>
                         <td class="px-4 py-3 text-sm text-text-muted">{{ $user->games_count }}</td>
@@ -40,6 +43,18 @@
                                     @else
                                         <x-ghost-button type="submit" color="green" size="xs">
                                             {{ __('admin.grant_career') }}
+                                        </x-ghost-button>
+                                    @endif
+                                </form>
+                                <form method="POST" action="{{ route('admin.toggle-player-editing', $user->id) }}" class="inline">
+                                    @csrf
+                                    @if($user->can_edit_players)
+                                        <x-ghost-button type="submit" color="red" size="xs">
+                                            {{ __('admin.revoke_player_editing') }}
+                                        </x-ghost-button>
+                                    @else
+                                        <x-ghost-button type="submit" color="blue" size="xs">
+                                            {{ __('admin.grant_player_editing') }}
                                         </x-ghost-button>
                                     @endif
                                 </form>

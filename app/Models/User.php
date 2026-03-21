@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Storage;
  * @property \Illuminate\Support\Carbon|null $feedback_requested_at
  * @property bool $is_admin
  * @property bool $has_career_access
+ * @property bool $can_edit_players
  * @property string $locale
  * @property string|null $username
  * @property string|null $bio
@@ -66,6 +67,7 @@ class User extends Authenticatable
         'email',
         'password',
         'has_career_access',
+        'can_edit_players',
         'feedback_requested_at',
         'locale',
         'username',
@@ -119,6 +121,7 @@ class User extends Authenticatable
             'feedback_requested_at' => 'datetime',
             'is_admin' => 'boolean',
             'has_career_access' => 'boolean',
+            'can_edit_players' => 'boolean',
             'is_profile_public' => 'boolean',
         ];
     }
