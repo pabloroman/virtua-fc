@@ -25,7 +25,7 @@ class SquadService
         $gameId = $game->id;
 
         // Get all players for user's team with relationships
-        $allPlayers = GamePlayer::with(['player', 'activeLoan', 'transferOffers', 'suspensions', 'activeRenewalNegotiation', 'latestRenewalNegotiation'])
+        $allPlayers = GamePlayer::with(['player', 'game', 'team', 'activeLoan', 'transferOffers', 'suspensions', 'activeRenewalNegotiation', 'latestRenewalNegotiation'])
             ->where('game_id', $gameId)
             ->where('team_id', $game->team_id)
             ->get();
@@ -145,7 +145,8 @@ class SquadService
         // --- Renewal data (career mode) ---
         $renewalData = [];
         if ($isCareerMode) {
-            $renewalEligible = $this->contractService->getPlayersEligibleForRenewal($game);
+            $renewalEligible = $allPlayers->filter(fn ($p) => $p->canBeOfferedRenewal($seasonEndDate))
+                ->sortBy('contract_until');
             foreach ($renewalEligible as $player) {
                 $demand = $this->contractService->calculateRenewalDemand($player);
                 $midpoint = (int) (ceil(($player->annual_wage + $demand['wage']) / 2 / 100 / 10000) * 10000);
