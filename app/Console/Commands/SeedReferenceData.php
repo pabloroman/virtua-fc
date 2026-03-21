@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Modules\Competition\Services\CountryConfig;
-use App\Modules\Season\Services\GamePlayerTemplateService;
 use App\Modules\Player\Services\PlayerValuationService;
 use App\Models\User;
 use App\Support\Money;
@@ -80,7 +79,11 @@ class SeedReferenceData extends Command
 
         // Generate pre-computed game player templates
         try {
-            $this->generateGamePlayerTemplates($countryCodes);
+            $args = ['--season' => '2025'];
+            if ($countryFilter) {
+                $args['--country'] = $countryFilter;
+            }
+            $this->call('app:refresh-player-templates', $args);
         } catch (\Throwable $e) {
             $this->error("FAILED generating game player templates: {$e->getMessage()}");
             $this->error("  at {$e->getFile()}:{$e->getLine()}");
@@ -742,26 +745,6 @@ class SeedReferenceData extends Command
         }
 
         return null;
-    }
-
-    private function generateGamePlayerTemplates(array $countryCodes): void
-    {
-        $this->newLine();
-        $this->info('Generating game player templates...');
-
-        $templateService = app(GamePlayerTemplateService::class);
-        $season = '2025';
-        $totalCount = 0;
-
-        $templateService->clearTemplates($season);
-
-        foreach ($countryCodes as $countryCode) {
-            $count = $templateService->generateTemplates($season, $countryCode);
-            $this->line("  {$countryCode}: {$count} player templates");
-            $totalCount += $count;
-        }
-
-        $this->info("Total templates: {$totalCount}");
     }
 
     private function displaySummary(): void
