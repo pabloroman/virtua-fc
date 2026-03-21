@@ -72,6 +72,15 @@ class TransferOffer extends Model
         'offered_wage',
         'game_date',
         'resolved_at',
+        'negotiation_round',
+        'disposition',
+        'terms_status',
+        'terms_round',
+        'terms_disposition',
+        'player_demand',
+        'preferred_years',
+        'offered_years',
+        'wage_counter_offer',
     ];
 
     protected $casts = [
@@ -81,6 +90,14 @@ class TransferOffer extends Model
         'expires_at' => 'date',
         'game_date' => 'date',
         'resolved_at' => 'date',
+        'negotiation_round' => 'integer',
+        'disposition' => 'float',
+        'terms_round' => 'integer',
+        'terms_disposition' => 'float',
+        'player_demand' => 'integer',
+        'preferred_years' => 'integer',
+        'offered_years' => 'integer',
+        'wage_counter_offer' => 'integer',
     ];
 
     // Offer types
@@ -97,10 +114,11 @@ class TransferOffer extends Model
 
     // Statuses
     public const STATUS_PENDING = 'pending';
-    public const STATUS_AGREED = 'agreed';       // Deal agreed, waiting for transfer window
+    public const STATUS_FEE_AGREED = 'fee_agreed'; // Club fee agreed, personal terms pending
+    public const STATUS_AGREED = 'agreed';          // Deal agreed, waiting for transfer window
     public const STATUS_REJECTED = 'rejected';
     public const STATUS_EXPIRED = 'expired';
-    public const STATUS_COMPLETED = 'completed'; // Transfer finalized at window
+    public const STATUS_COMPLETED = 'completed';    // Transfer finalized at window
 
     // Timing constants
     public const PRE_CONTRACT_OFFER_EXPIRY_DAYS = 14;
@@ -266,9 +284,25 @@ class TransferOffer extends Model
         return (int) static::where('game_id', $gameId)
             ->where('direction', self::DIRECTION_INCOMING)
             ->whereIn('offer_type', [self::TYPE_USER_BID, self::TYPE_LOAN_IN])
-            ->whereIn('status', [self::STATUS_PENDING, self::STATUS_AGREED])
+            ->whereIn('status', [self::STATUS_PENDING, self::STATUS_FEE_AGREED, self::STATUS_AGREED])
             ->selectRaw('COALESCE(SUM(CASE WHEN asking_price > transfer_fee THEN asking_price ELSE transfer_fee END), 0) as total')
             ->value('total');
+    }
+
+    /**
+     * Check if fee has been agreed and personal terms are pending.
+     */
+    public function isFeeAgreed(): bool
+    {
+        return $this->status === self::STATUS_FEE_AGREED;
+    }
+
+    /**
+     * Check if this is a sync-negotiated offer (not async).
+     */
+    public function isSyncNegotiated(): bool
+    {
+        return $this->negotiation_round !== null;
     }
 
     /**
@@ -285,7 +319,7 @@ class TransferOffer extends Model
         $offers = static::where('game_id', $gameId)
             ->where('direction', self::DIRECTION_INCOMING)
             ->whereIn('game_player_id', $playerIds)
-            ->whereIn('status', [self::STATUS_PENDING, self::STATUS_AGREED])
+            ->whereIn('status', [self::STATUS_PENDING, self::STATUS_FEE_AGREED, self::STATUS_AGREED])
             ->get(['game_player_id', 'status', 'offer_type', 'asking_price', 'transfer_fee']);
 
         $statuses = [];

@@ -4,13 +4,21 @@ export default function negotiationChat() {
         open: false,
         messages: [],
         loading: false,
-        negotiationStatus: null, // 'open' | 'accepted' | 'rejected'
+        negotiationStatus: null, // 'open' | 'accepted' | 'rejected' | 'fee_agreed' | 'terms_open' | 'completed'
         round: 0,
         maxRounds: 3,
+
+        // Mode: 'renewal' | 'transfer_fee' | 'personal_terms'
+        mode: 'renewal',
+        // Phase: null (renewal) | 'club_fee' | 'personal_terms'
+        phase: null,
 
         // Player info (set on open)
         playerName: '',
         negotiateUrl: '',
+
+        // Chat title (set on open)
+        chatTitle: '',
 
         // Input state
         offerWage: 0,
@@ -24,7 +32,7 @@ export default function negotiationChat() {
         csrfToken: document.querySelector('meta[name="csrf-token"]')?.content || '',
 
         get isTerminal() {
-            return ['accepted', 'rejected'].includes(this.negotiationStatus);
+            return ['accepted', 'rejected', 'completed'].includes(this.negotiationStatus);
         },
 
         get canSubmit() {
@@ -32,6 +40,9 @@ export default function negotiationChat() {
         },
 
         get wageStep() {
+            if (this.mode === 'transfer_fee') {
+                return this.offerWage >= 10000000 ? 1000000 : 100000;
+            }
             return this.offerWage >= 1000000 ? 100000 : 10000;
         },
 
@@ -62,6 +73,9 @@ export default function negotiationChat() {
         async openChat(detail) {
             this.playerName = detail.playerName;
             this.negotiateUrl = detail.negotiateUrl;
+            this.mode = detail.mode || 'renewal';
+            this.phase = detail.phase || null;
+            this.chatTitle = detail.chatTitle || '';
             this.messages = [];
             this.loading = true;
             this.negotiationStatus = null;
@@ -85,38 +99,79 @@ export default function negotiationChat() {
         async submitOffer() {
             if (!this.canSubmit) return;
 
-            // Show user's offer as a message
-            this.messages.push({
-                sender: 'user',
-                type: 'offer',
-                content: {
+            if (this.phase === 'club_fee') {
+                // Show user's bid as a message
+                this.messages.push({
+                    sender: 'user',
+                    type: 'bid',
+                    content: { fee: this.offerWage },
+                    options: null,
+                });
+                this.clearLastOptions();
+                this.loading = true;
+                await this.delay(400 + Math.random() * 300);
+
+                const data = await this.sendAction('offer', { bid: this.offerWage });
+                if (data) {
+                    this.negotiationStatus = data.negotiation_status;
+                    this.round = data.round || this.round;
+                    this.appendMessages(data.messages);
+
+                    // Handle fee agreed → transition to personal terms
+                    if (data.negotiation_status === 'fee_agreed') {
+                        await this.transitionToPersonalTerms();
+                    } else {
+                        this.prefillFromOptions();
+                    }
+                }
+                this.loading = false;
+            } else if (this.phase === 'personal_terms') {
+                // Show user's wage/years offer
+                this.messages.push({
+                    sender: 'user',
+                    type: 'offer',
+                    content: { wage: this.offerWage, years: this.offerYears },
+                    options: null,
+                });
+                this.clearLastOptions();
+                this.loading = true;
+                await this.delay(400 + Math.random() * 300);
+
+                const data = await this.sendAction('offer_terms', {
                     wage: this.offerWage,
                     years: this.offerYears,
-                },
-                options: null,
-            });
+                });
+                if (data) {
+                    this.negotiationStatus = data.negotiation_status;
+                    this.round = data.round || this.round;
+                    this.appendMessages(data.messages);
+                    this.prefillFromOptions();
+                }
+                this.loading = false;
+            } else {
+                // Renewal mode (original behavior)
+                this.messages.push({
+                    sender: 'user',
+                    type: 'offer',
+                    content: { wage: this.offerWage, years: this.offerYears },
+                    options: null,
+                });
+                this.clearLastOptions();
+                this.loading = true;
+                await this.delay(400 + Math.random() * 300);
 
-            // Clear options from previous agent message
-            this.clearLastOptions();
-
-            this.loading = true;
-
-            // Artificial delay for feel
-            await this.delay(400 + Math.random() * 300);
-
-            const data = await this.sendAction('offer', {
-                wage: this.offerWage,
-                years: this.offerYears,
-            });
-
-            if (data) {
-                this.negotiationStatus = data.negotiation_status;
-                this.round = data.round || this.round;
-                this.appendMessages(data.messages);
-
-                this.prefillFromOptions();
+                const data = await this.sendAction('offer', {
+                    wage: this.offerWage,
+                    years: this.offerYears,
+                });
+                if (data) {
+                    this.negotiationStatus = data.negotiation_status;
+                    this.round = data.round || this.round;
+                    this.appendMessages(data.messages);
+                    this.prefillFromOptions();
+                }
+                this.loading = false;
             }
-            this.loading = false;
         },
 
         async acceptCounter() {
@@ -134,10 +189,60 @@ export default function negotiationChat() {
             this.loading = true;
             await this.delay(300);
 
-            const data = await this.sendAction('accept_counter');
+            if (this.phase === 'personal_terms') {
+                const data = await this.sendAction('accept_terms_counter');
+                if (data) {
+                    this.negotiationStatus = data.negotiation_status;
+                    this.appendMessages(data.messages);
+                }
+            } else if (this.phase === 'club_fee') {
+                const data = await this.sendAction('accept_counter');
+                if (data) {
+                    this.negotiationStatus = data.negotiation_status;
+                    this.appendMessages(data.messages);
+
+                    // Handle fee agreed → transition to personal terms
+                    if (data.negotiation_status === 'fee_agreed') {
+                        await this.transitionToPersonalTerms();
+                    }
+                }
+            } else {
+                // Renewal mode
+                const data = await this.sendAction('accept_counter');
+                if (data) {
+                    this.negotiationStatus = data.negotiation_status;
+                    this.appendMessages(data.messages);
+                }
+            }
+            this.loading = false;
+        },
+
+        async transitionToPersonalTerms() {
+            await this.delay(800);
+
+            // Append transition system message
+            this.messages.push({
+                sender: 'system',
+                type: 'transition',
+                content: { text: this.chatTitle ? '' : '' },
+                options: null,
+            });
+
+            // Switch to personal terms mode
+            this.phase = 'personal_terms';
+            this.mode = 'personal_terms';
+            this.negotiationStatus = 'terms_open';
+            this.round = 0;
+
+            // Fetch player's wage demand
+            this.loading = true;
+            const data = await this.sendAction('start_terms');
             if (data) {
                 this.negotiationStatus = data.negotiation_status;
+                this.round = data.round || 0;
+                this.maxRounds = data.max_rounds || 3;
                 this.appendMessages(data.messages);
+                this.prefillFromOptions();
             }
             this.loading = false;
         },
@@ -202,6 +307,7 @@ export default function negotiationChat() {
         prefillFromOptions() {
             const lastMsg = this.messages[this.messages.length - 1];
             if (lastMsg?.options?.suggestedWage) this.offerWage = lastMsg.options.suggestedWage;
+            if (lastMsg?.options?.suggestedFee) this.offerWage = lastMsg.options.suggestedFee;
             if (lastMsg?.options?.preferredYears) this.offerYears = lastMsg.options.preferredYears;
         },
 

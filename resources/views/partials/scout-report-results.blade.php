@@ -122,24 +122,12 @@
                                         {{-- Technical --}}
                                         <div class="flex items-center justify-between gap-3">
                                             <span class="text-xs text-text-muted w-16 shrink-0">{{ __('transfers.technical') }}</span>
-                                            <div class="flex items-center gap-2 flex-1 justify-end">
-                                                <div class="w-20 h-1.5 bg-bar-track rounded-full overflow-hidden">
-                                                    @php $midTech = ($techRange[0] + $techRange[1]) / 2; @endphp
-                                                    <div class="h-1.5 rounded-full {{ $midTech >= 80 ? 'bg-accent-green' : ($midTech >= 70 ? 'bg-lime-500' : ($midTech >= 60 ? 'bg-accent-gold' : 'bg-surface-600')) }}" style="width: {{ $midTech / 99 * 100 }}%"></div>
-                                                </div>
-                                                <span class="text-xs font-semibold tabular-nums text-text-body">{{ $techRange[0] }}-{{ $techRange[1] }}</span>
-                                            </div>
+                                            <x-ability-bar :range="$techRange" size="sm" class="text-xs font-semibold tabular-nums text-text-body" />
                                         </div>
                                         {{-- Physical --}}
                                         <div class="flex items-center justify-between gap-3">
                                             <span class="text-xs text-text-muted w-16 shrink-0">{{ __('transfers.physical') }}</span>
-                                            <div class="flex items-center gap-2 flex-1 justify-end">
-                                                <div class="w-20 h-1.5 bg-bar-track rounded-full overflow-hidden">
-                                                    @php $midPhys = ($physRange[0] + $physRange[1]) / 2; @endphp
-                                                    <div class="h-1.5 rounded-full {{ $midPhys >= 80 ? 'bg-accent-green' : ($midPhys >= 70 ? 'bg-lime-500' : ($midPhys >= 60 ? 'bg-accent-gold' : 'bg-surface-600')) }}" style="width: {{ $midPhys / 99 * 100 }}%"></div>
-                                                </div>
-                                                <span class="text-xs font-semibold tabular-nums text-text-body">{{ $physRange[0] }}-{{ $physRange[1] }}</span>
-                                            </div>
+                                            <x-ability-bar :range="$physRange" size="sm" class="text-xs font-semibold tabular-nums text-text-body" />
                                         </div>
                                         {{-- Market Value --}}
                                         <div class="flex items-center justify-between pt-1">
@@ -217,14 +205,17 @@
                                             </div>
                                         @else
                                             <div class="flex flex-col sm:flex-row gap-2">
-                                                {{-- Transfer Bid --}}
-                                                <form method="POST" action="{{ route('game.scouting.bid', [$game->id, $player->id]) }}" class="flex items-center gap-2 flex-1">
-                                                    @csrf
-                                                    <x-money-input name="bid_amount" :value="(int)($askingPrice / 100)" :min="0" size="sm" />
-                                                    <x-primary-button size="xs">
-                                                        {{ __('transfers.submit_bid') }}
-                                                    </x-primary-button>
-                                                </form>
+                                                {{-- Transfer Negotiate --}}
+                                                <x-primary-button size="xs"
+                                                    @click="$dispatch('open-negotiation', {
+                                                        playerName: {{ \Illuminate\Support\Js::from($player->name) }},
+                                                        negotiateUrl: {{ \Illuminate\Support\Js::from(route('game.negotiate.transfer', [$game->id, $player->id])) }},
+                                                        mode: 'transfer_fee',
+                                                        phase: 'club_fee',
+                                                        chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_transfer_title')) }}
+                                                    })">
+                                                    {{ __('transfers.negotiate') }}
+                                                </x-primary-button>
                                                 {{-- Loan Request --}}
                                                 <form method="POST" action="{{ route('game.scouting.loan', [$game->id, $player->id]) }}">
                                                     @csrf

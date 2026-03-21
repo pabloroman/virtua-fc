@@ -178,6 +178,7 @@
                                     this.confirmRemoveId = null;
                                 },
                                 bidRoute(id) { return '{{ route('game.scouting.bid', [$game->id, '__ID__']) }}'.replace('__ID__', id); },
+                                negotiateRoute(id) { return '{{ route('game.negotiate.transfer', [$game->id, '__ID__']) }}'.replace('__ID__', id); },
                                 loanRoute(id) { return '{{ route('game.scouting.loan', [$game->id, '__ID__']) }}'.replace('__ID__', id); },
                                 preContractRoute(id) { return '{{ route('game.scouting.pre-contract', [$game->id, '__ID__']) }}'.replace('__ID__', id); },
                                 signFreeAgentRoute(id) { return '{{ route('game.scouting.sign-free-agent', [$game->id, '__ID__']) }}'.replace('__ID__', id); },
@@ -492,30 +493,19 @@
                                                                 </div>
                                                             </template>
 
-                                                            {{-- Action: Bid + Loan --}}
+                                                            {{-- Action: Negotiate + Loan --}}
                                                             <template x-if="!player.isFreeAgent && !player.hasExistingOffer && !(player.isExpiring && isPreContractPeriod) && player.canAffordFee">
-                                                                <div class="flex flex-col sm:flex-row gap-2" x-data="{
-                                                                    holdTimer: null, holdInterval: null,
-                                                                    get step() { return player.bidEuros >= 1000000 ? 100000 : 10000 },
-                                                                    get display() { return '€ ' + new Intl.NumberFormat('es-ES').format(player.bidEuros) },
-                                                                    get atMin() { return player.bidEuros <= 0 },
-                                                                    increment() { player.bidEuros += this.step },
-                                                                    decrement() { player.bidEuros = Math.max(player.bidEuros - this.step, 0) },
-                                                                    startHold(fn) { fn(); this.holdTimer = setTimeout(() => { this.holdInterval = setInterval(() => fn(), 80) }, 400) },
-                                                                    stopHold() { clearTimeout(this.holdTimer); clearInterval(this.holdInterval) }
-                                                                }">
-                                                                    <form :action="bidRoute(player.id)" method="POST" class="flex items-center gap-2 flex-1">
-                                                                        <input type="hidden" name="_token" :value="csrfToken">
-                                                                        <div class="inline-flex items-stretch border border-border-strong rounded-lg overflow-hidden h-[36px]">
-                                                                            <input type="hidden" name="bid_amount" :value="player.bidEuros">
-                                                                            <button type="button" :disabled="atMin" :class="atMin ? 'opacity-40 cursor-not-allowed' : 'hover:bg-surface-700 active:bg-surface-600'" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-surface-700/50 text-text-body font-bold select-none transition-colors" @mousedown.prevent="startHold(() => decrement())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => decrement())" @touchend="stopHold()">&minus;</button>
-                                                                            <input type="text" readonly :value="display" class="min-h-[32px] sm:min-h-0 w-28 text-xs text-center font-semibold text-text-primary bg-surface-800 border-x border-y-0 border-border-strong outline-hidden cursor-default focus:outline-hidden focus:ring-0 focus:border-border-strong">
-                                                                            <button type="button" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-surface-700/50 hover:bg-surface-700 active:bg-surface-600 text-text-body font-bold select-none transition-colors" @mousedown.prevent="startHold(() => increment())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => increment())" @touchend="stopHold()">+</button>
-                                                                        </div>
-                                                                        <x-primary-button size="xs">
-                                                                            {{ __('transfers.submit_bid') }}
-                                                                        </x-primary-button>
-                                                                    </form>
+                                                                <div class="flex flex-col sm:flex-row gap-2">
+                                                                    <x-primary-button size="xs"
+                                                                        @click="$dispatch('open-negotiation', {
+                                                                            playerName: player.name,
+                                                                            negotiateUrl: negotiateRoute(player.id),
+                                                                            mode: 'transfer_fee',
+                                                                            phase: 'club_fee',
+                                                                            chatTitle: '{{ __('transfers.chat_transfer_title') }}'
+                                                                        })">
+                                                                        {{ __('transfers.negotiate') }}
+                                                                    </x-primary-button>
                                                                     <form :action="loanRoute(player.id)" method="POST">
                                                                         <input type="hidden" name="_token" :value="csrfToken">
                                                                         <x-secondary-button type="submit" size="xs">
@@ -679,5 +669,6 @@
 
     <x-scout-search-modal :game="$game" :can-search-internationally="$canSearchInternationally" />
     <x-scout-results-modal />
+    <x-negotiation-chat-modal />
 
 </x-app-layout>

@@ -26,7 +26,7 @@
                     </div>
                     <div class="min-w-0">
                         <h3 class="font-semibold text-text-primary truncate text-sm" x-text="playerName"></h3>
-                        <p class="text-xs text-text-muted">{{ __('transfers.chat_title') }}</p>
+                        <p class="text-xs text-text-muted" x-text="chatTitle || @js(__('transfers.chat_title'))"></p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2 shrink-0">
@@ -90,6 +90,13 @@
                         <template x-if="msg.sender === 'user'">
                             <div class="flex justify-end">
                                 <div class="max-w-[80%]">
+                                    {{-- Transfer fee bid --}}
+                                    <template x-if="msg.type === 'bid'">
+                                        <div class="bg-accent-blue/15 rounded-xl rounded-tr-sm px-3.5 py-2.5 text-sm text-text-body">
+                                            <span x-text="formatWage(msg.content.fee)"></span>
+                                        </div>
+                                    </template>
+                                    {{-- Wage + years offer --}}
                                     <template x-if="msg.type === 'offer'">
                                         <div class="bg-accent-blue/15 rounded-xl rounded-tr-sm px-3.5 py-2.5 text-sm text-text-body">
                                             <span x-text="formatWage(msg.content.wage)"></span>{{ __('squad.per_year') }}
@@ -97,6 +104,7 @@
                                             <span x-text="msg.content.years + (msg.content.years === 1 ? ' {{ __("transfers.year_singular") }}' : ' {{ __("transfers.year_plural") }}')"></span>
                                         </div>
                                     </template>
+                                    {{-- User accepts counter --}}
                                     <template x-if="msg.type === 'accept'">
                                         <div class="bg-accent-green/15 rounded-xl rounded-tr-sm px-3.5 py-2.5 text-sm text-accent-green font-medium">
                                             {{ __('transfers.chat_user_accepts') }}
@@ -109,7 +117,17 @@
                         {{-- System message --}}
                         <template x-if="msg.sender === 'system'">
                             <div class="text-center py-2">
-                                <span class="text-xs text-text-muted" x-text="msg.content.text"></span>
+                                <template x-if="msg.type === 'transition'">
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-accent-blue/10 text-accent-blue border border-accent-blue/20">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                        </svg>
+                                        {{ __('transfers.chat_terms_transition') }}
+                                    </span>
+                                </template>
+                                <template x-if="msg.type !== 'transition'">
+                                    <span class="text-xs text-text-muted" x-text="msg.content.text"></span>
+                                </template>
                             </div>
                         </template>
 
@@ -120,7 +138,12 @@
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                     </svg>
-                                    {{ __('transfers.chat_deal_agreed') }}
+                                    <template x-if="negotiationStatus === 'completed'">
+                                        <span>{{ __('transfers.chat_deal_agreed') }}</span>
+                                    </template>
+                                    <template x-if="negotiationStatus !== 'completed'">
+                                        <span>{{ __('transfers.chat_club_agreement') }}</span>
+                                    </template>
                                 </span>
                             </div>
                         </template>
@@ -155,8 +178,45 @@
                 </template>
             </div>
 
-            {{-- Input area --}}
-            <div class="shrink-0 border-t border-border-strong px-5 py-3 space-y-2.5" x-show="!isTerminal && !loading">
+            {{-- Input area: Transfer fee mode --}}
+            <div class="shrink-0 border-t border-border-strong px-5 py-3 space-y-2.5" x-show="mode === 'transfer_fee' && !isTerminal && !loading && negotiationStatus !== 'fee_agreed'">
+                <div class="flex items-end gap-2">
+                    <div class="flex-1 min-w-0">
+                        <label class="text-[10px] text-text-muted uppercase tracking-wider block mb-1">{{ __('transfers.chat_your_bid') }}</label>
+                        <div class="inline-flex items-stretch border border-border-strong rounded-lg overflow-hidden h-[36px] w-full">
+                            <button type="button"
+                                :disabled="offerWage <= 0"
+                                :class="offerWage <= 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-surface-600'"
+                                class="min-h-[32px] min-w-[32px] flex items-center justify-center bg-surface-700 text-text-body font-bold select-none transition-colors text-sm"
+                                @mousedown.prevent="startHold(() => decrementWage())"
+                                @mouseup="stopHold()" @mouseleave="stopHold()"
+                                @touchstart.prevent="startHold(() => decrementWage())" @touchend="stopHold()"
+                            >&minus;</button>
+                            <input type="text" readonly :value="wageDisplay"
+                                class="min-h-[32px] flex-1 min-w-0 text-center font-semibold text-text-primary bg-surface-800 border-x border-y-0 border-border-strong outline-hidden cursor-default focus:outline-hidden focus:ring-0 text-xs">
+                            <button type="button"
+                                class="min-h-[32px] min-w-[32px] flex items-center justify-center bg-surface-700 hover:bg-surface-600 text-text-body font-bold select-none transition-colors text-sm"
+                                @mousedown.prevent="startHold(() => incrementWage())"
+                                @mouseup="stopHold()" @mouseleave="stopHold()"
+                                @touchstart.prevent="startHold(() => incrementWage())" @touchend="stopHold()"
+                            >+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" @click="submitOffer()"
+                    :disabled="!canSubmit"
+                    :class="!canSubmit ? 'opacity-40 cursor-not-allowed' : 'hover:bg-accent-green/80'"
+                    class="w-full h-[36px] rounded-lg bg-accent-green text-white text-xs font-semibold transition-colors min-h-[36px] flex items-center justify-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                    </svg>
+                    {{ __('transfers.chat_send_offer') }}
+                </button>
+            </div>
+
+            {{-- Input area: Wage + years mode (renewal and personal terms) --}}
+            <div class="shrink-0 border-t border-border-strong px-5 py-3 space-y-2.5" x-show="(mode === 'renewal' || mode === 'personal_terms') && !isTerminal && !loading">
                 <div class="flex items-end gap-2">
                     {{-- Wage stepper --}}
                     <div class="flex-1 min-w-0">
