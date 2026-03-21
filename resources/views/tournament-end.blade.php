@@ -634,57 +634,17 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
             {{-- ============================================ --}}
             {{-- DONATION CTA                                 --}}
             {{-- ============================================ --}}
-            <div class="mb-4">
+            <div class="mt-10">
                 <x-donation-cta />
             </div>
 
             {{-- ============================================ --}}
             {{-- SECTION 4: Bottom CTAs                       --}}
             {{-- ============================================ --}}
-            <div class="mt-10 mb-10 text-center space-y-4" x-data="{ copied: false }">
-                <div>
-                    <x-secondary-button
-                        @click="
-                            const text = @js(__('season.share_text', [
-                                'result' => __('season.result_' . $resultLabel),
-                                'competition' => __($competition->name ?? 'game.wc2026_name'),
-                                'team' => $game->team->name,
-                            ]));
-                            if (navigator.share) {
-                                navigator.share({ text }).catch(() => {});
-                            } else if (navigator.clipboard) {
-                                navigator.clipboard.writeText(text).then(() => {
-                                    copied = true;
-                                    setTimeout(() => copied = false, 2000);
-                                });
-                            } else {
-                                const ta = document.createElement('textarea');
-                                ta.value = text;
-                                ta.style.position = 'fixed';
-                                ta.style.opacity = '0';
-                                document.body.appendChild(ta);
-                                ta.select();
-                                document.execCommand('copy');
-                                document.body.removeChild(ta);
-                                copied = true;
-                                setTimeout(() => copied = false, 2000);
-                            }
-                        "
-                        class="gap-2 px-6 py-3"
-                    >
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                        </svg>
-                        <span x-show="!copied">{{ __('season.share_result') }}</span>
-                        <span x-show="copied" x-cloak class="text-accent-green">{{ __('season.copied_to_clipboard') }}</span>
-                    </x-secondary-button>
-                </div>
-
-                <div class="mb-10">
-                    <x-primary-button-link href="{{ route('select-team') }}" color="green" class="px-8 py-4 text-lg font-bold">
-                        {{ __('season.play_again') }}
-                    </x-primary-button-link>
-                </div>
+            <div class="mt-10 mb-10 text-center">
+                <x-primary-button-link href="{{ route('select-team') }}" color="green" class="px-8 py-4 text-lg font-bold">
+                    {{ __('season.play_again') }}
+                </x-primary-button-link>
             </div>
 
         </div>
