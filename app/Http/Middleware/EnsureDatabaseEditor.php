@@ -6,11 +6,11 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class EnsurePlayerEditor
+class EnsureDatabaseEditor
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (! $request->user()?->is_admin && ! $request->user()?->can_edit_players) {
+        if (! $request->user()?->is_admin && ! $request->user()?->can_edit_database) {
             abort(403);
         }
 
