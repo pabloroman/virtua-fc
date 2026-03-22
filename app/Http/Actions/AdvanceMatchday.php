@@ -21,6 +21,11 @@ class AdvanceMatchday
             return redirect()->route('show-game', $gameId);
         }
 
+        // AI batches still processing — redirect to loading screen
+        if ($game->isProcessingAiBatches()) {
+            return redirect()->route('show-game', $gameId);
+        }
+
         // Set flag and clear any stale result
         $game->update([
             'matchday_advancing_at' => now(),

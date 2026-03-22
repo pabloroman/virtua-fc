@@ -45,6 +45,12 @@ class ProcessMatchdayAdvance implements ShouldQueue, ShouldBeUnique
 
         $result = $orchestrator->advance($game);
 
+        // Dispatch remaining AI batches to background so the live match loads immediately
+        if ($result->type === 'live_match') {
+            $game->update(['ai_batches_processing_at' => now()]);
+            ProcessRemainingBatches::dispatch($game->id);
+        }
+
         // Dispatch SeasonCompleted event for season_complete/done results
         if (in_array($result->type, ['season_complete', 'done'])) {
             $game->refresh();

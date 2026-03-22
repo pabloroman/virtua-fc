@@ -23,6 +23,12 @@ class FinalizeMatch
     {
         $game = Game::findOrFail($gameId);
 
+        // Wait for background AI batches to finish before finalizing
+        $game->clearStuckAiBatches();
+        if ($game->isProcessingAiBatches()) {
+            return redirect()->route('show-game', $gameId);
+        }
+
         $matchId = $game->pending_finalization_match_id;
 
         if (! $matchId) {

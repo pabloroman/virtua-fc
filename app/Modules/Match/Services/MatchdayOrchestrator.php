@@ -74,8 +74,6 @@ class MatchdayOrchestrator
                 $result = $this->processBatch($game, $batch);
 
                 if ($result['playerMatch']) {
-                    $this->autoSimulateRemainingBatches($game);
-
                     return MatchdayAdvanceResult::liveMatch($result['playerMatch']->id);
                 }
 
@@ -128,6 +126,23 @@ class MatchdayOrchestrator
         }
 
         return $result;
+    }
+
+    /**
+     * Process remaining AI-only batches (called from background job).
+     * Returns the number of career action ticks accumulated.
+     */
+    public function processRemainingBatches(Game $game): int
+    {
+        $this->careerActionTicks = 0;
+
+        DB::transaction(function () use ($game) {
+            $game = Game::where('id', $game->id)->lockForUpdate()->first();
+
+            $this->autoSimulateRemainingBatches($game);
+        });
+
+        return $this->careerActionTicks;
     }
 
     /**
