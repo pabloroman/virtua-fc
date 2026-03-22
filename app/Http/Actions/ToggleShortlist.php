@@ -41,10 +41,15 @@ class ToggleShortlist
 
             return redirect()->back()->with('error', $message);
         } else {
+            $intelLevel = $request->input('source') === 'scout_report'
+                ? ShortlistedPlayer::INTEL_REPORT
+                : ShortlistedPlayer::INTEL_SURFACE;
+
             $entry = ShortlistedPlayer::create([
                 'game_id' => $gameId,
                 'game_player_id' => $playerId,
                 'added_at' => $game->current_date,
+                'intel_level' => $intelLevel,
             ]);
 
             // Auto-track if slots available
@@ -92,6 +97,18 @@ class ToggleShortlist
                     'willingnessLabel' => null,
                     'rivalInterest' => false,
                 ];
+
+                if ($entry->hasReportLevel()) {
+                    $detail = $this->scoutingService->getPlayerScoutingDetail($gamePlayer, $game);
+                    $data['player']['techRange'] = $detail['tech_range'];
+                    $data['player']['formattedAskingPrice'] = $detail['formatted_asking_price'];
+                    $data['player']['askingPrice'] = $detail['asking_price'];
+                    $data['player']['canAffordFee'] = $detail['can_afford_fee'];
+                    $data['player']['wageDemand'] = $detail['wage_demand'];
+                    $data['player']['formattedWageDemand'] = $detail['formatted_wage_demand'];
+                    $data['player']['bidEuros'] = (int) ($detail['asking_price'] / 100);
+                    $data['player']['wageEuros'] = (int) ($detail['wage_demand'] / 100);
+                }
             }
 
             $data['trackingCapacity'] = $this->scoutingService->getTrackingCapacity($game);
