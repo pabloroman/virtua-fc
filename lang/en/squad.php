@@ -260,6 +260,8 @@ return [
     'confirm_squad' => 'Confirm squad',
     'squad_confirmed' => 'Squad confirmed!',
     'invalid_selection' => 'Invalid selection. Please check the selected players.',
+    'download_squad' => 'Download squad',
+    'squad_list' => 'Squad List',
 
     // Radar chart
     'radar_gk' => 'Goalkeeping',
