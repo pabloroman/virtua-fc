@@ -7,6 +7,7 @@ use App\Models\GamePlayer;
 use App\Models\TransferOffer;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Transfer\Services\ContractService;
+use App\Modules\Transfer\Services\DispositionService;
 use App\Modules\Transfer\Services\ScoutingService;
 use App\Modules\Transfer\Services\TransferService;
 use App\Support\Money;
@@ -21,6 +22,7 @@ class NegotiateLoan
     public function __construct(
         private readonly TransferService $transferService,
         private readonly ScoutingService $scoutingService,
+        private readonly DispositionService $dispositionService,
         private readonly NotificationService $notificationService,
     ) {}
 
@@ -74,8 +76,8 @@ class NegotiateLoan
             ->first();
 
         if ($existing && $existing->asking_price > $existing->transfer_fee) {
-            $disposition = $this->transferService->calculateLoanDisposition($player, $this->scoutingService);
-            $mood = $this->transferService->getLoanMoodIndicator($disposition);
+            $disposition = $this->dispositionService->calculateSellDisposition($player, $this->scoutingService);
+            $mood = $this->dispositionService->getMoodIndicator($disposition);
             $teamName = $player->team?->name ?? 'Unknown';
 
             return response()->json([
@@ -137,7 +139,7 @@ class NegotiateLoan
         }
 
         $disposition = $evaluation['disposition'];
-        $mood = $this->transferService->getLoanMoodIndicator($disposition);
+        $mood = $this->dispositionService->getMoodIndicator($disposition);
 
         if ($evaluation['result'] === 'accepted') {
             // Free loan — club agrees directly, create offer and complete
@@ -239,8 +241,8 @@ class NegotiateLoan
                             'fee' => Money::format($offer->asking_price),
                         ]),
                         'fee' => (int) ($offer->asking_price / 100),
-                        'mood' => $this->transferService->getLoanMoodIndicator(
-                            $this->transferService->calculateLoanDisposition($player, $this->scoutingService)
+                        'mood' => $this->dispositionService->getMoodIndicator(
+                            $this->dispositionService->calculateSellDisposition($player, $this->scoutingService)
                         ),
                     ], [
                         'canAccept' => true,

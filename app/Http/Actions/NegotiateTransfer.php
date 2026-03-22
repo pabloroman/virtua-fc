@@ -7,6 +7,7 @@ use App\Models\GamePlayer;
 use App\Models\TransferOffer;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Transfer\Services\ContractService;
+use App\Modules\Transfer\Services\DispositionService;
 use App\Modules\Transfer\Services\ScoutingService;
 use App\Modules\Transfer\Services\TransferService;
 use App\Support\Money;
@@ -22,6 +23,7 @@ class NegotiateTransfer
         private readonly TransferService $transferService,
         private readonly ContractService $contractService,
         private readonly ScoutingService $scoutingService,
+        private readonly DispositionService $dispositionService,
         private readonly NotificationService $notificationService,
     ) {}
 
@@ -65,8 +67,8 @@ class NegotiateTransfer
             ->first();
 
         if ($existing && $existing->asking_price > $existing->transfer_fee) {
-            $disposition = $this->transferService->calculateClubDisposition($player, $this->scoutingService);
-            $mood = $this->transferService->getClubMoodIndicator($disposition);
+            $disposition = $this->dispositionService->calculateSellDisposition($player, $this->scoutingService);
+            $mood = $this->dispositionService->getMoodIndicator($disposition);
             $teamName = $player->team?->name ?? 'Unknown';
 
             return response()->json([
@@ -134,8 +136,8 @@ class NegotiateTransfer
 
         // New negotiation — show asking price
         $askingPrice = $this->scoutingService->calculateAskingPrice($player);
-        $disposition = $this->transferService->calculateClubDisposition($player, $this->scoutingService);
-        $mood = $this->transferService->getClubMoodIndicator($disposition);
+        $disposition = $this->dispositionService->calculateSellDisposition($player, $this->scoutingService);
+        $mood = $this->dispositionService->getMoodIndicator($disposition);
         $teamName = $player->team?->name ?? 'Unknown';
 
         $suggestedBidEuros = (int) ($askingPrice / 100);
@@ -211,8 +213,8 @@ class NegotiateTransfer
                             'fee' => Money::format($offer->asking_price),
                         ]),
                         'fee' => (int) ($offer->asking_price / 100),
-                        'mood' => $this->transferService->getClubMoodIndicator(
-                            $this->transferService->calculateClubDisposition($player, $this->scoutingService)
+                        'mood' => $this->dispositionService->getMoodIndicator(
+                            $this->dispositionService->calculateSellDisposition($player, $this->scoutingService)
                         ),
                     ], [
                         'canAccept' => true,

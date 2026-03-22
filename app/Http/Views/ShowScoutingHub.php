@@ -2,6 +2,7 @@
 
 namespace App\Http\Views;
 
+use App\Modules\Transfer\Services\DispositionService;
 use App\Modules\Transfer\Services\ScoutingService;
 use App\Modules\Transfer\Services\TransferHeaderService;
 use App\Models\Game;
@@ -16,6 +17,7 @@ class ShowScoutingHub
 {
     public function __construct(
         private readonly ScoutingService $scoutingService,
+        private readonly DispositionService $dispositionService,
         private readonly TransferHeaderService $headerService,
     ) {}
 
@@ -122,7 +124,7 @@ class ShowScoutingHub
             if ($entry->hasDeepIntel()) {
                 $teammates = $teamRosters->get($gp->team_id, collect());
                 $importance = $this->scoutingService->calculatePlayerImportance($gp, $teammates);
-                $willingness = $this->scoutingService->calculateWillingness($gp, $game, $importance);
+                $willingness = $this->dispositionService->calculateWillingness($gp, $game, $this->scoutingService, $importance);
                 $playerData['willingness'] = $willingness['label'];
                 $playerData['willingnessLabel'] = __('transfers.willingness_' . $willingness['label']);
                 $playerData['rivalInterest'] = $this->scoutingService->calculateRivalInterest($gp, $importance);
