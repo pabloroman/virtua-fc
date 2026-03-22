@@ -70,6 +70,24 @@ return [
     'last_30_days' => 'Last 30 days',
     'logins' => 'Logins',
 
+    // Waitlist
+    'nav_waitlist' => 'Waitlist',
+    'waitlist_title' => 'Waitlist',
+    'waitlist_total' => 'Total',
+    'waitlist_pending' => 'Pending',
+    'waitlist_invited' => 'Invited',
+    'waitlist_registered' => 'Registered',
+    'waitlist_status' => 'Status',
+    'waitlist_signed_up' => 'Signed Up',
+    'waitlist_send_invite' => 'Send Invite',
+    'waitlist_already_invited' => 'This person has already been invited.',
+    'waitlist_invite_sent' => 'Invite sent successfully.',
+    'waitlist_beta_disabled' => 'Beta mode is disabled. Invites cannot be sent.',
+    'waitlist_status_pending' => 'Pending',
+    'waitlist_status_invited' => 'Invited',
+    'waitlist_status_registered' => 'Registered',
+    'search_waitlist_placeholder' => 'Search by name or email...',
+
     // Game stats
     'nav_game_stats' => 'Game Stats',
     'game_stats_title' => 'Game Stats',

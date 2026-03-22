@@ -70,6 +70,24 @@ return [
     'last_30_days' => 'Últimos 30 días',
     'logins' => 'Inicios de sesión',
 
+    // Waitlist
+    'nav_waitlist' => 'Lista de espera',
+    'waitlist_title' => 'Lista de espera',
+    'waitlist_total' => 'Total',
+    'waitlist_pending' => 'Pendientes',
+    'waitlist_invited' => 'Invitados',
+    'waitlist_registered' => 'Registrados',
+    'waitlist_status' => 'Estado',
+    'waitlist_signed_up' => 'Fecha de registro',
+    'waitlist_send_invite' => 'Enviar invitación',
+    'waitlist_already_invited' => 'Esta persona ya ha sido invitada.',
+    'waitlist_invite_sent' => 'Invitación enviada correctamente.',
+    'waitlist_beta_disabled' => 'El modo beta está desactivado. No se pueden enviar invitaciones.',
+    'waitlist_status_pending' => 'Pendiente',
+    'waitlist_status_invited' => 'Invitado',
+    'waitlist_status_registered' => 'Registrado',
+    'search_waitlist_placeholder' => 'Buscar por nombre o email...',
+
     // Game stats
     'nav_game_stats' => 'Estadísticas',
     'game_stats_title' => 'Estadísticas del Juego',
