@@ -13,6 +13,25 @@ class MatchdayService
 {
     private ?Collection $hybridCompetitions = null;
 
+    /**
+     * Columns needed from GameMatch during batch processing.
+     * Excludes write-only columns (possession, MVP, extra time, penalties, round_name).
+     */
+    private const MATCH_BATCH_COLUMNS = [
+        'id', 'game_id', 'competition_id', 'round_number',
+        'home_team_id', 'away_team_id', 'scheduled_date',
+        'home_lineup', 'away_lineup',
+        'home_formation', 'away_formation',
+        'home_mentality', 'away_mentality',
+        'home_playing_style', 'away_playing_style',
+        'home_pressing', 'away_pressing',
+        'home_defensive_line', 'away_defensive_line',
+        'home_slot_assignment', 'away_slot_assignment',
+        'cup_tie_id', 'played',
+        'home_score', 'away_score',
+        'substitutions',
+    ];
+
     public function __construct(
         private readonly CompetitionHandlerResolver $handlerResolver,
         private readonly KnockoutCupHandler $cupHandler,
@@ -49,7 +68,8 @@ class MatchdayService
         $targetDate = $nextMatch->scheduled_date->toDateString();
 
         // Get ALL unplayed matches on this date across all competitions
-        $matchesOnDate = GameMatch::where('game_id', $game->id)
+        $matchesOnDate = GameMatch::select(self::MATCH_BATCH_COLUMNS)
+            ->where('game_id', $game->id)
             ->where('played', false)
             ->whereDate('scheduled_date', $targetDate)
             ->get();
@@ -72,7 +92,8 @@ class MatchdayService
 
         foreach ($leagueMatches->groupBy('competition_id') as $competitionId => $compMatches) {
             $roundNumber = $compMatches->first()->round_number;
-            $fullRound = GameMatch::where('game_id', $game->id)
+            $fullRound = GameMatch::select(self::MATCH_BATCH_COLUMNS)
+                ->where('game_id', $game->id)
                 ->where('competition_id', $competitionId)
                 ->where('round_number', $roundNumber)
                 ->whereNull('cup_tie_id')
