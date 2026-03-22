@@ -228,9 +228,14 @@ export function isValidGridCell(slotLabel, col, row, gridConfig) {
     if (slotLabel === 'GK') {
         const zone = gridConfig.zones['GK'];
         if (!zone) return false;
-        return col >= zone[0] && col <= zone[1] && row >= zone[2] && row <= zone[3];
+        const inOwnZone = col >= zone[0] && col <= zone[1] && row >= zone[2] && row <= zone[3];
+        return inOwnZone || (row >= 1 && col >= 0 && col < gridConfig.cols);
     }
-    return col >= 0 && col < gridConfig.cols && row >= 1 && row < gridConfig.rows;
+    // Outfield: rows 1-13 OR the GK cell (4,0)
+    if (col >= 0 && col < gridConfig.cols && row >= 1 && row < gridConfig.rows) {
+        return true;
+    }
+    return col === 4 && row === 0;
 }
 
 /**

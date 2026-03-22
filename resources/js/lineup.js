@@ -587,7 +587,6 @@ export default function lineupManager(config) {
          */
         selectForRepositioning(slotId) {
             const slot = this.currentSlots.find(s => s.id === slotId);
-            if (slot && slot.role === 'Goalkeeper') return;
             this.assigningSlotId = null;
             if (this.positioningSlotId === slotId) {
                 this.positioningSlotId = null;
@@ -609,11 +608,9 @@ export default function lineupManager(config) {
             const newPositions = { ...this.pitchPositions };
 
             if (occupying) {
-                // Don't swap with GK
-                if (occupying.role === 'Goalkeeper') return;
-
-                // Move occupying slot to dragged slot's old cell
+                // Move occupying slot to dragged slot's old cell (validate reverse direction)
                 const draggedCell = this.getSlotCell(slotId);
+                if (draggedCell && !this.isValidGridCell(occupying.label, draggedCell.col, draggedCell.row)) return;
                 if (draggedCell) {
                     newPositions[String(occupying.id)] = [draggedCell.col, draggedCell.row];
                 }
@@ -652,12 +649,17 @@ export default function lineupManager(config) {
 
             if (!this.isValidGridCell(slot.label, col, row)) return 'invalid';
 
-            // Occupied by GK = blocked; occupied by outfield = swappable (treat as valid)
+            // Occupied cells are swappable (treat as valid with appropriate color)
             const occupying = this._findSlotAtCell(col, row, activeSlotId);
-            if (occupying && occupying.role === 'Goalkeeper') return 'occupied';
+            if (occupying && occupying.role === 'Goalkeeper') return 'valid-gk';
 
-            // GK stays simple
-            if (slot.role === 'Goalkeeper') return 'valid';
+            // GK repositioning: show zone-colored hints for outfield cells
+            if (slot.role === 'Goalkeeper') {
+                if (row === 0) return 'valid';
+                if (row <= 4) return 'valid-def';
+                if (row <= 9) return 'valid-mid';
+                return 'valid-fwd';
+            }
 
             // Color outfield cells by zone for visual guidance
             if (row <= 4) return 'valid-def';
@@ -672,7 +674,6 @@ export default function lineupManager(config) {
          */
         startDrag(slotId, event) {
             const slot = this.currentSlots.find(s => s.id === slotId);
-            if (slot && slot.role === 'Goalkeeper') return;
 
             // Prevent default to avoid text selection and scroll on touch
             event.preventDefault();
