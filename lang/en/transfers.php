@@ -303,6 +303,7 @@ return [
     'chat_user_accepts' => 'Deal!',
     'chat_deal_agreed' => 'Contract agreed',
     'chat_club_agreement' => 'Club agreement reached',
+    'chat_renewal_agreed' => 'Renewal agreed',
     'chat_deal_failed' => 'Negotiation failed',
     'chat_continue' => 'Continue',
     'chat_round' => 'Round :current/:max',
