@@ -3,6 +3,21 @@
         {{ __('admin.users_title') }}
     </h1>
 
+    <form method="GET" action="{{ route('admin.users') }}" class="mb-4">
+        <div class="relative max-w-xs">
+            <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-muted pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+                type="text"
+                name="search"
+                value="{{ $search ?? '' }}"
+                placeholder="{{ __('admin.search_users_placeholder') }}"
+                class="w-full bg-surface-700 border border-border-default rounded-md text-xs text-text-primary placeholder-slate-500 pl-8 pr-3 py-1.5 focus:outline-hidden focus:border-accent-blue/50 min-h-[44px]"
+            />
+        </div>
+    </form>
+
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-border-default">
             <thead>
@@ -85,7 +100,19 @@
                         </td>
                     </tr>
                 @endforeach
+
+                @if($users->isEmpty())
+                    <tr>
+                        <td colspan="5" class="px-4 py-8 text-center text-sm text-text-muted">
+                            {{ __('admin.no_users_found') }}
+                        </td>
+                    </tr>
+                @endif
             </tbody>
         </table>
+    </div>
+
+    <div class="mt-6">
+        {{ $users->links() }}
     </div>
 </x-admin-layout>

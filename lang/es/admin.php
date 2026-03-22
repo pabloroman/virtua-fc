@@ -32,6 +32,8 @@ return [
     'grant_database_editing' => 'Dar Editor',
     'revoke_database_editing' => 'Quitar Editor',
     'current_user' => 'Tú',
+    'search_users_placeholder' => 'Buscar por nombre o email...',
+    'no_users_found' => 'No se encontraron usuarios',
     'impersonating_banner' => 'Estás suplantando a :name (:email)',
     'stop_impersonating' => 'Dejar de suplantar',
 
