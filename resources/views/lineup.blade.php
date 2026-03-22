@@ -305,6 +305,7 @@
                                                                 </div>
                                                                 <span class="text-[8px] text-text-faint">{{ $player->fitness }}%</span>
                                                             </div>
+                                                            <x-morale-indicator :value="$player->morale" class="shrink-0" />
                                                             @endif
                                                         </div>
                                                     </div>
