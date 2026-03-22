@@ -301,7 +301,7 @@ class NegotiateTransfer
         // Check for existing countered terms to resume
         if ($offer->terms_status === 'countered') {
             $disposition = $this->contractService->calculateTransferDisposition($player, $game, $offer->terms_round ?? 1);
-            $mood = $this->contractService->getMoodIndicator($disposition);
+            $mood = $this->contractService->getMoodIndicator($disposition, 'transfer');
 
             return response()->json([
                 'status' => 'ok',
@@ -327,9 +327,23 @@ class NegotiateTransfer
             ]);
         }
 
-        $demand = $this->contractService->calculateTransferWageDemand($player, $this->scoutingService);
+        // Reuse stored demand if already calculated, otherwise compute and persist
+        if ($offer->player_demand && $offer->preferred_years) {
+            $demand = [
+                'wage' => $offer->player_demand,
+                'contractYears' => $offer->preferred_years,
+                'formattedWage' => Money::format($offer->player_demand),
+            ];
+        } else {
+            $demand = $this->contractService->calculateTransferWageDemand($player, $this->scoutingService);
+            $offer->update([
+                'player_demand' => $demand['wage'],
+                'preferred_years' => $demand['contractYears'],
+            ]);
+        }
+
         $disposition = $this->contractService->calculateTransferDisposition($player, $game);
-        $mood = $this->contractService->getMoodIndicator($disposition);
+        $mood = $this->contractService->getMoodIndicator($disposition, 'transfer');
 
         return response()->json([
             'status' => 'ok',
@@ -400,7 +414,7 @@ class NegotiateTransfer
                         ]),
                         'wage' => (int) ($offer->wage_counter_offer / 100),
                         'years' => $offer->preferred_years,
-                        'mood' => $this->contractService->getMoodIndicator($offer->terms_disposition),
+                        'mood' => $this->contractService->getMoodIndicator($offer->terms_disposition, 'transfer'),
                     ], [
                         'canAccept' => true,
                         'suggestedWage' => $this->calculateMidpointInEuros($offer->offered_wage, $offer->wage_counter_offer),

@@ -44,6 +44,14 @@ return [
     'rejected_bids' => 'Ofertas Rechazadas',
     'bid_rejected' => 'Oferta rechazada',
 
+    // Active negotiations
+    'active_negotiations' => 'Negociaciones activas',
+    'active_negotiations_description' => 'Ofertas en curso por jugadores que estás fichando.',
+    'withdraw_offer' => 'Retirar',
+    'offer_withdrawn' => 'Oferta retirada por :player.',
+    'resume_negotiation' => 'Negociar',
+    'confirm_withdraw' => '¿Seguro que quieres retirar esta oferta?',
+
     // Incoming transfers
     'incoming_transfers' => 'Fichajes Entrantes',
     'completing_when_window' => 'se completará cuando abra la ventana de :window',
@@ -238,6 +246,9 @@ return [
     'mood_willing' => 'Dispuesto a renovar',
     'mood_open' => 'Abierto a negociar',
     'mood_reluctant' => 'Reticente',
+    'mood_willing_sign' => 'Dispuesto a fichar',
+    'mood_open_sign' => 'Abierto a negociar',
+    'mood_reluctant_sign' => 'Reticente',
     'contract_duration' => 'Duración del contrato',
 
     // Explorer

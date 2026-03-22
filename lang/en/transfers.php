@@ -44,6 +44,14 @@ return [
     'rejected_bids' => 'Rejected Bids',
     'bid_rejected' => 'Bid rejected',
 
+    // Active negotiations
+    'active_negotiations' => 'Active negotiations',
+    'active_negotiations_description' => 'Ongoing offers for players you are signing.',
+    'withdraw_offer' => 'Withdraw',
+    'offer_withdrawn' => 'Offer withdrawn for :player.',
+    'resume_negotiation' => 'Negotiate',
+    'confirm_withdraw' => 'Are you sure you want to withdraw this offer?',
+
     // Incoming transfers
     'incoming_transfers' => 'Incoming Transfers',
     'completing_when_window' => 'will be completed when the :window window opens',
@@ -233,6 +241,9 @@ return [
     'mood_willing' => 'Willing to renew',
     'mood_open' => 'Open to negotiate',
     'mood_reluctant' => 'Reluctant',
+    'mood_willing_sign' => 'Willing to sign',
+    'mood_open_sign' => 'Open to negotiate',
+    'mood_reluctant_sign' => 'Reluctant',
     'contract_duration' => 'Contract duration',
 
     // Explorer

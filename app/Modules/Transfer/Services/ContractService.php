@@ -508,8 +508,19 @@ class ContractService
      *
      * @return array{label: string, color: string}
      */
-    public function getMoodIndicator(float $disposition): array
+    public function getMoodIndicator(float $disposition, string $context = 'renewal'): array
     {
+        if ($context === 'transfer') {
+            if ($disposition >= 0.65) {
+                return ['label' => __('transfers.mood_willing_sign'), 'color' => 'green'];
+            }
+            if ($disposition >= 0.40) {
+                return ['label' => __('transfers.mood_open_sign'), 'color' => 'amber'];
+            }
+
+            return ['label' => __('transfers.mood_reluctant_sign'), 'color' => 'red'];
+        }
+
         if ($disposition >= 0.65) {
             return ['label' => __('transfers.mood_willing'), 'color' => 'green'];
         }

@@ -20,6 +20,13 @@ class ShowIncomingTransfers
         $game = Game::with(['team', 'finances'])->findOrFail($gameId);
         abort_if($game->isTournamentMode(), 404);
 
+        $activeNegotiations = TransferOffer::with(['gamePlayer.player', 'gamePlayer.team', 'sellingTeam'])
+            ->where('game_id', $gameId)
+            ->whereIn('status', [TransferOffer::STATUS_PENDING, TransferOffer::STATUS_FEE_AGREED])
+            ->where('direction', TransferOffer::DIRECTION_INCOMING)
+            ->orderByDesc('game_date')
+            ->get();
+
         $recentSignings = TransferOffer::with(['gamePlayer.player', 'gamePlayer.team', 'sellingTeam'])
             ->where('game_id', $gameId)
             ->where('status', TransferOffer::STATUS_COMPLETED)
@@ -40,6 +47,7 @@ class ShowIncomingTransfers
 
         return view('incoming-transfers', [
             'game' => $game,
+            'activeNegotiations' => $activeNegotiations,
             'recentSignings' => $recentSignings,
             'incomingAgreedTransfers' => $incomingAgreedTransfers,
             'loansIn' => $loansIn,

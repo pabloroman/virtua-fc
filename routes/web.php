@@ -47,6 +47,7 @@ use App\Http\Actions\NegotiateTransfer;
 use App\Http\Actions\ReleasePlayer;
 use App\Http\Actions\RejectTransferOffer;
 use App\Http\Actions\RequestLoan;
+use App\Http\Actions\WithdrawTransferOffer;
 use App\Http\Actions\SaveLineup;
 use App\Http\Actions\SaveTacticalPreset;
 use App\Http\Actions\DeleteTacticalPreset;
@@ -163,6 +164,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/game/{gameId}/transfers/unlist/{playerId}', UnlistPlayerFromTransfer::class)->name('game.transfers.unlist');
         Route::post('/game/{gameId}/transfers/accept/{offerId}', AcceptTransferOffer::class)->name('game.transfers.accept');
         Route::post('/game/{gameId}/transfers/reject/{offerId}', RejectTransferOffer::class)->name('game.transfers.reject');
+        Route::post('/game/{gameId}/transfers/withdraw/{offerId}', WithdrawTransferOffer::class)->name('game.transfers.withdraw');
         Route::post('/game/{gameId}/negotiate/renewal/{playerId}', NegotiateRenewal::class)->name('game.negotiate.renewal');
         Route::post('/game/{gameId}/negotiate/transfer/{playerId}', NegotiateTransfer::class)->name('game.negotiate.transfer');
         Route::post('/game/{gameId}/transfers/decline-renewal/{playerId}', DeclineRenewal::class)->name('game.transfers.decline-renewal');
