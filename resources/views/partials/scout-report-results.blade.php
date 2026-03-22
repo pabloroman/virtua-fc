@@ -187,18 +187,17 @@
                                                 {{ __('transfers.transfer_agreed') }}
                                             </div>
                                         @elseif($isExpiring && $isPreContractPeriod)
-                                            {{-- Pre-contract offer form --}}
-                                            @php $preContractWage = $detail['pre_contract_wage_demand'] ?? $wageDemand; @endphp
-                                            <form method="POST" action="{{ route('game.scouting.pre-contract', [$game->id, $player->id]) }}" class="space-y-2">
-                                                @csrf
-                                                <label class="block text-xs font-medium text-text-secondary">{{ __('transfers.offered_wage_euros') }}</label>
-                                                <div class="flex items-center gap-2">
-                                                    <x-money-input name="offered_wage" :value="(int)($preContractWage / 100)" :min="0" size="sm" />
-                                                    <x-primary-button color="green" size="xs">
-                                                        {{ __('transfers.submit_pre_contract') }}
-                                                    </x-primary-button>
-                                                </div>
-                                            </form>
+                                            {{-- Pre-contract negotiation --}}
+                                            <x-primary-button size="xs" color="green"
+                                                @click="$dispatch('open-negotiation', {
+                                                    playerName: {{ \Illuminate\Support\Js::from($player->name) }},
+                                                    negotiateUrl: {{ \Illuminate\Support\Js::from(route('game.negotiate.pre-contract', [$game->id, $player->id])) }},
+                                                    mode: 'pre_contract',
+                                                    phase: 'personal_terms',
+                                                    chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_pre_contract_title')) }}
+                                                })">
+                                                {{ __('transfers.negotiate_pre_contract') }}
+                                            </x-primary-button>
                                         @elseif(!$canAffordFee)
                                             <div class="text-xs text-accent-red font-medium">
                                                 {{ __('transfers.transfer_fee_exceeds_budget') }}
@@ -217,12 +216,16 @@
                                                     {{ __('transfers.negotiate') }}
                                                 </x-primary-button>
                                                 {{-- Loan Request --}}
-                                                <form method="POST" action="{{ route('game.scouting.loan', [$game->id, $player->id]) }}">
-                                                    @csrf
-                                                    <x-secondary-button type="submit" size="xs">
-                                                        {{ __('transfers.request_loan') }}
-                                                    </x-secondary-button>
-                                                </form>
+                                                <x-secondary-button size="xs"
+                                                    @click="$dispatch('open-negotiation', {
+                                                        playerName: {{ \Illuminate\Support\Js::from($player->name) }},
+                                                        negotiateUrl: {{ \Illuminate\Support\Js::from(route('game.negotiate.loan', [$game->id, $player->id])) }},
+                                                        mode: 'loan',
+                                                        phase: 'club_fee',
+                                                        chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_loan_title')) }}
+                                                    })">
+                                                    {{ __('transfers.request_loan') }}
+                                                </x-secondary-button>
                                             </div>
                                         @endif
                                     </div>

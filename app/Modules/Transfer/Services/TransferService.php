@@ -1593,6 +1593,199 @@ class TransferService
         return $this->acceptOffer($offer);
     }
 
+    // =========================================
+    // SYNCHRONOUS LOAN FEE NEGOTIATION
+    // =========================================
+
+    /**
+     * Synchronous loan fee negotiation. Creates or continues a negotiation,
+     * evaluates the bid immediately, and returns the result.
+     *
+     * @return array{result: string, offer: TransferOffer}
+     */
+    public function negotiateLoanFeeSync(Game $game, GamePlayer $player, int $bidCents, ScoutingService $scoutingService): array
+    {
+        // Check for existing countered offer to resume
+        $existing = TransferOffer::where('game_id', $game->id)
+            ->where('game_player_id', $player->id)
+            ->where('offering_team_id', $game->team_id)
+            ->where('offer_type', TransferOffer::TYPE_LOAN_IN)
+            ->where('status', TransferOffer::STATUS_PENDING)
+            ->whereNotNull('negotiation_round')
+            ->where('asking_price', '>', 0)
+            ->first();
+
+        if ($existing) {
+            // Resume: update bid, increment round
+            if ($bidCents > $this->availableBudget($game) + $existing->transfer_fee) {
+                throw new \InvalidArgumentException(__('messages.bid_exceeds_budget'));
+            }
+
+            $existing->update([
+                'transfer_fee' => $bidCents,
+                'negotiation_round' => min($existing->negotiation_round + 1, ContractService::MAX_NEGOTIATION_ROUNDS),
+            ]);
+            $offer = $existing;
+        } else {
+            // New negotiation: create offer and mark as sync
+            if ($bidCents > $this->availableBudget($game)) {
+                throw new \InvalidArgumentException(__('messages.bid_exceeds_budget'));
+            }
+
+            $existingBid = TransferOffer::where('game_id', $game->id)
+                ->where('game_player_id', $player->id)
+                ->where('offering_team_id', $game->team_id)
+                ->where('offer_type', TransferOffer::TYPE_LOAN_IN)
+                ->where('status', TransferOffer::STATUS_PENDING)
+                ->exists();
+
+            if ($existingBid) {
+                throw new \InvalidArgumentException(__('transfers.already_bidding'));
+            }
+
+            $offer = TransferOffer::create([
+                'game_id' => $game->id,
+                'game_player_id' => $player->id,
+                'offering_team_id' => $game->team_id,
+                'selling_team_id' => $player->team_id,
+                'offer_type' => TransferOffer::TYPE_LOAN_IN,
+                'direction' => TransferOffer::DIRECTION_INCOMING,
+                'transfer_fee' => $bidCents,
+                'status' => TransferOffer::STATUS_PENDING,
+                'expires_at' => $game->current_date->addDays(30),
+                'game_date' => $game->current_date,
+                'negotiation_round' => 1,
+                'disposition' => $this->calculateLoanDisposition($player, $scoutingService),
+            ]);
+        }
+
+        // Evaluate: compare bid to asking price
+        $evaluation = $scoutingService->evaluateLoanRequestSync($player, $game);
+        $askingFee = $evaluation['loan_fee'];
+
+        if ($offer->transfer_fee >= $askingFee) {
+            // Accepted
+            $offer->update([
+                'status' => TransferOffer::STATUS_PENDING,
+                'asking_price' => $askingFee,
+                'resolved_at' => $game->current_date,
+            ]);
+
+            // Complete the loan
+            return $this->completeSyncLoan($offer, $game);
+        }
+
+        // Check if close enough for counter (within 70% of asking)
+        $counterThreshold = (int) ($askingFee * 0.70);
+
+        if ($offer->transfer_fee >= $counterThreshold && $offer->negotiation_round < ContractService::MAX_NEGOTIATION_ROUNDS) {
+            $counterFee = (int) (($offer->transfer_fee + $askingFee) / 2);
+            $counterFee = (int) (round($counterFee / 10_000_000) * 10_000_000);
+
+            $offer->update([
+                'asking_price' => $counterFee,
+            ]);
+            return ['result' => 'countered', 'offer' => $offer->fresh()];
+        }
+
+        // Rejected
+        $offer->update([
+            'status' => TransferOffer::STATUS_REJECTED,
+            'asking_price' => $askingFee,
+            'resolved_at' => $game->current_date,
+        ]);
+        return ['result' => 'rejected', 'offer' => $offer->fresh()];
+    }
+
+    /**
+     * Accept a club's counter-offer on a loan fee.
+     */
+    public function acceptLoanFeeCounter(Game $game, TransferOffer $offer): array
+    {
+        if (!$offer->isPending() || !$offer->isSyncNegotiated() || !$offer->asking_price || $offer->asking_price <= $offer->transfer_fee) {
+            throw new \InvalidArgumentException(__('messages.transfer_failed'));
+        }
+
+        $counterAmount = $offer->asking_price;
+        $available = $this->availableBudget($game) + $offer->transfer_fee;
+
+        if ($counterAmount > $available) {
+            throw new \InvalidArgumentException(__('messages.bid_exceeds_budget'));
+        }
+
+        $offer->update([
+            'transfer_fee' => $counterAmount,
+            'resolved_at' => $game->current_date,
+        ]);
+
+        return $this->completeSyncLoan($offer, $game);
+    }
+
+    /**
+     * Complete a sync-negotiated loan. Calls completeLoanIn if window open,
+     * otherwise marks as agreed.
+     *
+     * @return array{result: string, offer: TransferOffer}
+     */
+    public function completeSyncLoan(TransferOffer $offer, Game $game): array
+    {
+        if ($game->isTransferWindowOpen()) {
+            $this->completeLoanIn($offer, $game);
+            return ['result' => 'accepted', 'offer' => $offer->fresh()];
+        }
+
+        $offer->update([
+            'status' => TransferOffer::STATUS_AGREED,
+            'resolved_at' => $game->current_date,
+        ]);
+        return ['result' => 'accepted', 'offer' => $offer->fresh()];
+    }
+
+    /**
+     * Calculate club's disposition for a loan request.
+     * Similar to sale disposition but more willing (loan is temporary).
+     */
+    public function calculateLoanDisposition(GamePlayer $player, ScoutingService $scoutingService): float
+    {
+        $disposition = 0.55;
+
+        $importance = $scoutingService->calculatePlayerImportance($player);
+        if ($importance >= 0.85) {
+            $disposition -= 0.25;
+        } elseif ($importance >= 0.60) {
+            $disposition -= 0.10;
+        } elseif ($importance <= 0.30) {
+            $disposition += 0.15;
+        }
+
+        // Age (young players more likely to be loaned for development)
+        $age = $player->age($player->game->current_date);
+        if ($age <= 23) {
+            $disposition += 0.10;
+        } elseif ($age >= 30) {
+            $disposition += 0.05;
+        }
+
+        return max(0.10, min(0.95, $disposition));
+    }
+
+    /**
+     * Get mood indicator for loan disposition.
+     *
+     * @return array{label: string, color: string}
+     */
+    public function getLoanMoodIndicator(float $disposition): array
+    {
+        if ($disposition >= 0.65) {
+            return ['label' => __('transfers.mood_willing_loan'), 'color' => 'green'];
+        }
+        if ($disposition >= 0.40) {
+            return ['label' => __('transfers.mood_open_loan'), 'color' => 'amber'];
+        }
+
+        return ['label' => __('transfers.mood_reluctant_loan'), 'color' => 'red'];
+    }
+
     /**
      * Calculate selling club's disposition (willingness to sell).
      * Higher = more willing.

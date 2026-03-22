@@ -736,6 +736,72 @@ class ScoutingService
     }
 
     // =========================================
+    // SYNCHRONOUS LOAN EVALUATION
+    // =========================================
+
+    /**
+     * Deterministic loan request evaluation for sync negotiation.
+     * Returns result, asking loan fee, mood, and rejection reason.
+     *
+     * @return array{result: string, loan_fee: int, disposition: float, rejection_reason: ?string}
+     */
+    public function evaluateLoanRequestSync(GamePlayer $player, Game $game): array
+    {
+        $teamName = $player->team?->name ?? 'Unknown';
+
+        // Reputation gate
+        $reputationModifier = $this->calculateReputationModifier($game->team, $player);
+        if ($reputationModifier < 0.50) {
+            return [
+                'result' => 'rejected',
+                'loan_fee' => 0,
+                'disposition' => 0.10,
+                'rejection_reason' => 'reputation',
+            ];
+        }
+
+        $importance = $this->calculatePlayerImportance($player);
+
+        // Key player — outright rejection
+        if ($importance > 0.70) {
+            return [
+                'result' => 'rejected',
+                'loan_fee' => 0,
+                'disposition' => 0.15,
+                'rejection_reason' => 'key_player',
+            ];
+        }
+
+        // Calculate disposition for mood indicator
+        $disposition = 0.50;
+        $disposition += (1.0 - $importance) * 0.30; // Less important = more willing
+        $disposition += ($reputationModifier - 0.50) * 0.20; // Higher rep = more willing
+        $disposition = max(0.10, min(0.95, $disposition));
+
+        // Fringe player — free loan
+        if ($importance < 0.30) {
+            return [
+                'result' => 'accepted',
+                'loan_fee' => 0,
+                'disposition' => $disposition,
+                'rejection_reason' => null,
+            ];
+        }
+
+        // Mid-range player (0.30-0.70) — demand a loan fee
+        $feeRate = 0.05 + ($importance * 0.05); // 5-10% of market value
+        $loanFee = (int) ($player->market_value_cents * $feeRate);
+        $loanFee = (int) (round($loanFee / 10_000_000) * 10_000_000); // Round to €100K
+
+        return [
+            'result' => 'conditional',
+            'loan_fee' => max($loanFee, 10_000_000), // Minimum €100K
+            'disposition' => $disposition,
+            'rejection_reason' => null,
+        ];
+    }
+
+    // =========================================
     // WAGE DEMAND
     // =========================================
 
@@ -752,6 +818,7 @@ class ScoutingService
             $player->market_value_cents,
             $minimumWage,
             $player->age($player->game->current_date),
+            deterministic: true,
         );
 
         // Round to nearest 100K (cents)
@@ -1092,13 +1159,26 @@ class ScoutingService
             $score += 5; // Young players seeking opportunities
         }
 
-        // Reputation gap penalty: players are reluctant to move to lower-rep clubs
+        // Reputation gap: penalize moving down, reward moving up
         $reputationModifier = $this->calculateReputationModifier($game->team, $player);
         if ($reputationModifier < 1.0) {
-            // Scale the score down proportionally to the reputation gap
-            // e.g. modifier 0.75 (1 tier gap) → score * 0.75
-            // e.g. modifier 0.20 (3 tier gap) → score * 0.20
+            // Moving down: scale the score down proportionally to the reputation gap
             $score = (int) ($score * $reputationModifier);
+        } elseif ($player->team_id) {
+            // Moving up: bonus based on how many tiers above the buying club is
+            $sourceReputation = TeamReputation::resolveLevel($player->game_id, $player->team_id);
+            $offeringReputation = TeamReputation::resolveLevel($player->game_id, $game->team_id);
+            $sourceIndex = ClubProfile::getReputationTierIndex($sourceReputation);
+            $offeringIndex = ClubProfile::getReputationTierIndex($offeringReputation);
+            $upwardGap = $offeringIndex - $sourceIndex;
+
+            if ($upwardGap >= 3) {
+                $score += 30; // Dream move (e.g. local → elite)
+            } elseif ($upwardGap === 2) {
+                $score += 20; // Big step up
+            } elseif ($upwardGap === 1) {
+                $score += 10; // Step up
+            }
         }
 
         $score = min(100, max(0, $score + rand(-5, 5)));

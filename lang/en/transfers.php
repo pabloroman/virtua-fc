@@ -352,4 +352,28 @@ return [
     'chat_buyer_rejected' => ':team has withdrawn their interest. The deal is off.',
     'chat_buyer_deal_complete' => 'Sale agreed! :player will join :team for :fee.',
     'chat_offer_rejected' => 'You have rejected the offer for :player. The player is not for sale.',
+
+    // Pre-contract negotiation chat
+    'chat_pre_contract_title' => 'Pre-Contract Negotiation',
+    'chat_pre_contract_demand' => ':player\'s agent wants :wage/year for :years years to sign a pre-contract.',
+    'chat_pre_contract_counter' => ':player\'s agent insists on :wage/year for :years years.',
+    'chat_pre_contract_accepted' => ':player has agreed to a pre-contract! He will join your club in the summer.',
+    'chat_pre_contract_rejected' => ':player\'s agent has walked away. No pre-contract agreement.',
+    'chat_pre_contract_deal' => 'Pre-contract agreed',
+    'negotiate_pre_contract' => 'Pre-Contract',
+
+    // Loan negotiation chat
+    'chat_loan_title' => 'Loan Negotiation',
+    'chat_loan_demand' => ':team would loan :player for a fee of :fee.',
+    'chat_loan_counter' => ':team insists on a loan fee of :fee.',
+    'chat_loan_accepted_free' => ':team is happy to loan :player at no cost. Welcome aboard!',
+    'chat_loan_completed' => ':player has joined on loan until the end of the season!',
+    'chat_loan_agreed' => ':player\'s loan has been agreed. The move will complete when the transfer window opens.',
+    'chat_loan_rejected' => ':team has rejected the loan request. Negotiations have broken down.',
+    'chat_loan_rejected_key_player' => ':team has rejected the request. :player is a key player for them.',
+    'chat_loan_rejected_reputation' => ':player is not interested in joining your club on loan.',
+    'chat_loan_deal' => 'Loan agreed',
+    'mood_willing_loan' => 'Willing to loan',
+    'mood_open_loan' => 'Open to loan',
+    'mood_reluctant_loan' => 'Reluctant to loan',
 ];

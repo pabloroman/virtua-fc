@@ -357,4 +357,28 @@ return [
     'chat_buyer_rejected' => ':team ha retirado su interés. La negociación ha fracasado.',
     'chat_buyer_deal_complete' => '¡Venta acordada! :player se unirá a :team por :fee.',
     'chat_offer_rejected' => 'Has rechazado la oferta por :player. El jugador no está en venta.',
+
+    // Pre-contract negotiation chat
+    'chat_pre_contract_title' => 'Negociación de Pre-Contrato',
+    'chat_pre_contract_demand' => 'El agente de :player pide :wage/año durante :years años para firmar un pre-contrato.',
+    'chat_pre_contract_counter' => 'El agente de :player insiste en :wage/año durante :years años.',
+    'chat_pre_contract_accepted' => '¡:player ha aceptado un pre-contrato! Se unirá a tu club en verano.',
+    'chat_pre_contract_rejected' => 'El agente de :player se ha marchado. No hay acuerdo de pre-contrato.',
+    'chat_pre_contract_deal' => 'Pre-contrato acordado',
+    'negotiate_pre_contract' => 'Pre-Contrato',
+
+    // Loan negotiation chat
+    'chat_loan_title' => 'Negociación de Cesión',
+    'chat_loan_demand' => ':team cedería a :player por una tarifa de :fee.',
+    'chat_loan_counter' => ':team insiste en una tarifa de cesión de :fee.',
+    'chat_loan_accepted_free' => '¡:team acepta ceder a :player sin coste! ¡Bienvenido!',
+    'chat_loan_completed' => '¡:player se ha unido en cesión hasta final de temporada!',
+    'chat_loan_agreed' => 'La cesión de :player ha sido acordada. El traspaso se completará cuando abra la ventana de fichajes.',
+    'chat_loan_rejected' => ':team ha rechazado la solicitud de cesión. Las negociaciones se han roto.',
+    'chat_loan_rejected_key_player' => ':team ha rechazado la solicitud. :player es un jugador clave para ellos.',
+    'chat_loan_rejected_reputation' => ':player no está interesado en unirse a tu club en cesión.',
+    'chat_loan_deal' => 'Cesión acordada',
+    'mood_willing_loan' => 'Dispuesto a ceder',
+    'mood_open_loan' => 'Abierto a cesión',
+    'mood_reluctant_loan' => 'Reticente a ceder',
 ];

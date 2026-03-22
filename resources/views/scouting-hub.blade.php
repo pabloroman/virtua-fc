@@ -178,8 +178,8 @@
                                     this.confirmRemoveId = null;
                                 },
                                 negotiateRoute(id) { return '{{ route('game.negotiate.transfer', [$game->id, '__ID__']) }}'.replace('__ID__', id); },
-                                loanRoute(id) { return '{{ route('game.scouting.loan', [$game->id, '__ID__']) }}'.replace('__ID__', id); },
-                                preContractRoute(id) { return '{{ route('game.scouting.pre-contract', [$game->id, '__ID__']) }}'.replace('__ID__', id); },
+                                loanRoute(id) { return '{{ route('game.negotiate.loan', [$game->id, '__ID__']) }}'.replace('__ID__', id); },
+                                preContractRoute(id) { return '{{ route('game.negotiate.pre-contract', [$game->id, '__ID__']) }}'.replace('__ID__', id); },
                                 signFreeAgentRoute(id) { return '{{ route('game.scouting.sign-free-agent', [$game->id, '__ID__']) }}'.replace('__ID__', id); },
                             }" @shortlist-toggled.window="handleToggle($event.detail)">
 
@@ -459,30 +459,16 @@
 
                                                             {{-- Action: Pre-contract --}}
                                                             <template x-if="!player.isFreeAgent && !player.hasExistingOffer && player.isExpiring && isPreContractPeriod">
-                                                                <form :action="preContractRoute(player.id)" method="POST" class="space-y-2">
-                                                                    <input type="hidden" name="_token" :value="csrfToken">
-                                                                    <label class="block text-xs font-medium text-text-secondary">{{ __('transfers.offered_wage_euros') }}</label>
-                                                                    <div class="flex items-center gap-2" x-data="{
-                                                                        holdTimer: null, holdInterval: null,
-                                                                        get step() { return player.wageEuros >= 1000000 ? 100000 : 10000 },
-                                                                        get display() { return '€ ' + new Intl.NumberFormat('es-ES').format(player.wageEuros) },
-                                                                        get atMin() { return player.wageEuros <= 0 },
-                                                                        increment() { player.wageEuros += this.step },
-                                                                        decrement() { player.wageEuros = Math.max(player.wageEuros - this.step, 0) },
-                                                                        startHold(fn) { fn(); this.holdTimer = setTimeout(() => { this.holdInterval = setInterval(() => fn(), 80) }, 400) },
-                                                                        stopHold() { clearTimeout(this.holdTimer); clearInterval(this.holdInterval) }
-                                                                    }">
-                                                                        <div class="inline-flex items-stretch border border-border-strong rounded-lg overflow-hidden h-[36px]">
-                                                                            <input type="hidden" name="offered_wage" :value="player.wageEuros">
-                                                                            <button type="button" :disabled="atMin" :class="atMin ? 'opacity-40 cursor-not-allowed' : 'hover:bg-surface-700 active:bg-surface-600'" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-surface-700/50 text-text-body font-bold select-none transition-colors" @mousedown.prevent="startHold(() => decrement())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => decrement())" @touchend="stopHold()">&minus;</button>
-                                                                            <input type="text" readonly :value="display" class="min-h-[32px] sm:min-h-0 w-28 text-xs text-center font-semibold text-text-primary bg-surface-800 border-x border-y-0 border-border-strong outline-hidden cursor-default focus:outline-hidden focus:ring-0 focus:border-border-strong">
-                                                                            <button type="button" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-surface-700/50 hover:bg-surface-700 active:bg-surface-600 text-text-body font-bold select-none transition-colors" @mousedown.prevent="startHold(() => increment())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => increment())" @touchend="stopHold()">+</button>
-                                                                        </div>
-                                                                        <x-primary-button color="green" size="xs">
-                                                                            {{ __('transfers.submit_pre_contract') }}
-                                                                        </x-primary-button>
-                                                                    </div>
-                                                                </form>
+                                                                <x-primary-button size="xs" color="green"
+                                                                    @click="$dispatch('open-negotiation', {
+                                                                        playerName: player.name,
+                                                                        negotiateUrl: preContractRoute(player.id),
+                                                                        mode: 'pre_contract',
+                                                                        phase: 'personal_terms',
+                                                                        chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_pre_contract_title')) }}
+                                                                    })">
+                                                                    {{ __('transfers.negotiate_pre_contract') }}
+                                                                </x-primary-button>
                                                             </template>
 
                                                             {{-- Action: Can't afford --}}
@@ -501,16 +487,20 @@
                                                                             negotiateUrl: negotiateRoute(player.id),
                                                                             mode: 'transfer_fee',
                                                                             phase: 'club_fee',
-                                                                            chatTitle: '{{ __('transfers.chat_transfer_title') }}'
+                                                                            chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_transfer_title')) }}
                                                                         })">
                                                                         {{ __('transfers.negotiate') }}
                                                                     </x-primary-button>
-                                                                    <form :action="loanRoute(player.id)" method="POST">
-                                                                        <input type="hidden" name="_token" :value="csrfToken">
-                                                                        <x-secondary-button type="submit" size="xs">
-                                                                            {{ __('transfers.request_loan') }}
-                                                                        </x-secondary-button>
-                                                                    </form>
+                                                                    <x-secondary-button size="xs"
+                                                                        @click="$dispatch('open-negotiation', {
+                                                                            playerName: player.name,
+                                                                            negotiateUrl: loanRoute(player.id),
+                                                                            mode: 'loan',
+                                                                            phase: 'club_fee',
+                                                                            chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_loan_title')) }}
+                                                                        })">
+                                                                        {{ __('transfers.request_loan') }}
+                                                                    </x-secondary-button>
                                                                 </div>
                                                             </template>
                                                         </div>

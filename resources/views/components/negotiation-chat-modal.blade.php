@@ -153,7 +153,13 @@
                                     <template x-if="mode === 'renewal'">
                                         <span>{{ __('transfers.chat_renewal_agreed') }}</span>
                                     </template>
-                                    <template x-if="mode !== 'renewal' && negotiationStatus === 'completed'">
+                                    <template x-if="negotiationStatus === 'completed' && mode === 'pre_contract'">
+                                        <span>{{ __('transfers.chat_pre_contract_deal') }}</span>
+                                    </template>
+                                    <template x-if="negotiationStatus === 'completed' && mode === 'loan'">
+                                        <span>{{ __('transfers.chat_loan_deal') }}</span>
+                                    </template>
+                                    <template x-if="mode !== 'renewal' && negotiationStatus === 'completed' && mode !== 'pre_contract' && mode !== 'loan'">
                                         <span>{{ __('transfers.chat_deal_agreed') }}</span>
                                     </template>
                                     <template x-if="mode !== 'renewal' && negotiationStatus !== 'completed'">
@@ -193,8 +199,8 @@
                 </template>
             </div>
 
-            {{-- Input area: Transfer fee mode --}}
-            <div class="shrink-0 border-t border-border-strong px-5 py-3 space-y-2.5" x-show="mode === 'transfer_fee' && !isTerminal && !loading && negotiationStatus !== 'fee_agreed'">
+            {{-- Input area: Transfer fee / loan fee mode --}}
+            <div class="shrink-0 border-t border-border-strong px-5 py-3 space-y-2.5" x-show="(mode === 'transfer_fee' || mode === 'loan') && !isTerminal && !loading && negotiationStatus !== 'fee_agreed'">
                 <div class="flex items-end gap-2">
                     <div class="flex-1 min-w-0">
                         <label class="text-[10px] text-text-muted uppercase tracking-wider block mb-1">{{ __('transfers.chat_your_bid') }}</label>
@@ -230,8 +236,8 @@
                 </button>
             </div>
 
-            {{-- Input area: Wage + years mode (renewal and personal terms) --}}
-            <div class="shrink-0 border-t border-border-strong px-5 py-3 space-y-2.5" x-show="(mode === 'renewal' || mode === 'personal_terms') && !isTerminal && !loading">
+            {{-- Input area: Wage + years mode (renewal, personal terms, and pre-contract) --}}
+            <div class="shrink-0 border-t border-border-strong px-5 py-3 space-y-2.5" x-show="(mode === 'renewal' || mode === 'personal_terms' || mode === 'pre_contract') && !isTerminal && !loading">
                 <div class="flex items-end gap-2">
                     {{-- Wage stepper --}}
                     <div class="flex-1 min-w-0">
