@@ -134,14 +134,17 @@ class SquadReplenishmentProcessor implements SeasonProcessor
         $bulkMeta = [];
         $releaseIds = [];
 
-        // Get all AI team rosters (grouped by team, excluding free agents)
-        $teamRosters = GamePlayer::where('game_id', $game->id)
+        // Get AI team IDs, then process one team at a time to bound memory
+        $aiTeamIds = GamePlayer::where('game_id', $game->id)
             ->whereNotNull('team_id')
             ->where('team_id', '!=', $game->team_id)
-            ->get()
-            ->groupBy('team_id');
+            ->distinct()
+            ->pluck('team_id');
 
-        foreach ($teamRosters as $teamId => $players) {
+        foreach ($aiTeamIds as $teamId) {
+            $players = GamePlayer::where('game_id', $game->id)
+                ->where('team_id', $teamId)
+                ->get();
             $teamAvgAbility = $this->calculateTeamAverageAbility($players);
             $positionCounts = $players->groupBy('position')->map->count();
 
@@ -476,9 +479,8 @@ class SquadReplenishmentProcessor implements SeasonProcessor
             ->whereHas('player', function ($q) use ($game) {
                 $q->where('date_of_birth', '<=', $game->current_date->copy()->subYears(30));
             })
-            ->get()
-            ->sortBy(fn ($p) => ($p->game_technical_ability + $p->game_physical_ability) / 2)
-            ->take($count)
+            ->orderByRaw('(COALESCE(game_technical_ability, 0) + COALESCE(game_physical_ability, 0)) ASC')
+            ->limit($count)
             ->pluck('id')
             ->toArray();
     }

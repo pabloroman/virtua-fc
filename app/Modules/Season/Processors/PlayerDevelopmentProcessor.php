@@ -29,58 +29,58 @@ class PlayerDevelopmentProcessor implements SeasonProcessor
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
-        // Process development for ALL players in the game
-        $players = GamePlayer::with(['player', 'game'])
-            ->where('game_id', $game->id)
-            ->get();
-
         $allChanges = [];
         $upsertRows = [];
 
-        foreach ($players as $player) {
-            $change = $this->developmentService->calculateDevelopment($player);
+        // Process development in chunks to bound memory usage
+        GamePlayer::with(['player', 'game'])
+            ->where('game_id', $game->id)
+            ->chunk(200, function ($chunk) use (&$allChanges, &$upsertRows, $game) {
+                foreach ($chunk as $player) {
+                    $change = $this->developmentService->calculateDevelopment($player);
 
-            $previousAbility = (int) round(($change['techBefore'] + $change['physBefore']) / 2);
-            $previousMarketValue = $player->market_value_cents ?? 0;
+                    $previousAbility = (int) round(($change['techBefore'] + $change['physBefore']) / 2);
+                    $previousMarketValue = $player->market_value_cents ?? 0;
 
-            // Recalculate market value for ALL players (even if ability didn't change,
-            // age increased by 1 which affects value)
-            $newAbility = (int) round(($change['techAfter'] + $change['physAfter']) / 2);
-            $newMarketValue = $this->valuationService->abilityToMarketValue(
-                $newAbility,
-                $player->age($game->current_date),
-                $previousAbility
-            );
+                    // Recalculate market value for ALL players (even if ability didn't change,
+                    // age increased by 1 which affects value)
+                    $newAbility = (int) round(($change['techAfter'] + $change['physAfter']) / 2);
+                    $newMarketValue = $this->valuationService->abilityToMarketValue(
+                        $newAbility,
+                        $player->age($game->current_date),
+                        $previousAbility
+                    );
 
-            // Collect row for batch upsert (includes abilities + market value in one operation)
-            $upsertRows[] = [
-                'id' => $player->id,
-                'game_id' => $player->game_id,
-                'player_id' => $player->player_id,
-                'team_id' => $player->team_id,
-                'position' => $player->position,
-                'game_technical_ability' => $change['techAfter'],
-                'game_physical_ability' => $change['physAfter'],
-                'market_value_cents' => $newMarketValue,
-            ];
+                    // Collect row for batch upsert (includes abilities + market value in one operation)
+                    $upsertRows[] = [
+                        'id' => $player->id,
+                        'game_id' => $player->game_id,
+                        'player_id' => $player->player_id,
+                        'team_id' => $player->team_id,
+                        'position' => $player->position,
+                        'game_technical_ability' => $change['techAfter'],
+                        'game_physical_ability' => $change['physAfter'],
+                        'market_value_cents' => $newMarketValue,
+                    ];
 
-            if ($change['techChange'] !== 0 || $change['physChange'] !== 0 || $newMarketValue !== $previousMarketValue) {
-                $allChanges[] = [
-                    'playerId' => $player->id,
-                    'playerName' => $player->name,
-                    'teamId' => $player->team_id,
-                    'age' => $player->age($game->current_date),
-                    'techBefore' => $change['techBefore'],
-                    'techAfter' => $change['techAfter'],
-                    'physBefore' => $change['physBefore'],
-                    'physAfter' => $change['physAfter'],
-                    'overallBefore' => $previousAbility,
-                    'overallAfter' => $newAbility,
-                    'marketValueBefore' => $previousMarketValue,
-                    'marketValueAfter' => $newMarketValue,
-                ];
-            }
-        }
+                    if ($change['techChange'] !== 0 || $change['physChange'] !== 0 || $newMarketValue !== $previousMarketValue) {
+                        $allChanges[] = [
+                            'playerId' => $player->id,
+                            'playerName' => $player->name,
+                            'teamId' => $player->team_id,
+                            'age' => $player->age($game->current_date),
+                            'techBefore' => $change['techBefore'],
+                            'techAfter' => $change['techAfter'],
+                            'physBefore' => $change['physBefore'],
+                            'physAfter' => $change['physAfter'],
+                            'overallBefore' => $previousAbility,
+                            'overallAfter' => $newAbility,
+                            'marketValueBefore' => $previousMarketValue,
+                            'marketValueAfter' => $newMarketValue,
+                        ];
+                    }
+                }
+            });
 
         // Batch upsert all development changes + market values in one query
         if (!empty($upsertRows)) {
