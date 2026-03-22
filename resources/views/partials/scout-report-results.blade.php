@@ -48,7 +48,6 @@
                     $wageDemand = $detail['wage_demand'] ?? 0;
                     $formattedWageDemand = $detail['formatted_wage_demand'] ?? '-';
                     $canAffordFee = $detail['can_afford_fee'] ?? false;
-                    $canAffordWage = $detail['can_afford_wage'] ?? false;
                     $techRange = $detail['tech_range'] ?? [0, 0];
                     $physRange = $detail['phys_range'] ?? [0, 0];
                     $isExpiring = !$isFreeAgent && $player->contract_until && $player->contract_until <= $game->getSeasonEndDate();
@@ -94,7 +93,7 @@
                                 @click.stop="if(toggling) return; toggling = true; fetch('{{ route('game.scouting.shortlist.toggle', [$game->id, $player->id]) }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } }).then(r => r.json()).then(data => { if(data.success === false) { alert(data.message); toggling = false; return; } shortlisted = !shortlisted; toggling = false; window.dispatchEvent(new CustomEvent('shortlist-toggled', { detail: { action: data.action, playerId: data.playerId, player: data.player || null } })); }).catch(() => { toggling = false; })"
                                 class="sm:min-h-0"
                                 x-bind:class="shortlisted ? 'text-accent-gold hover:text-amber-400' : 'text-text-body hover:text-accent-gold'"
-                                x-bind:title="shortlisted ? @js(__('transfers.remove_from_shortlist')) : @js(__('transfers.add_to_shortlist'))"
+                                x-bind:title="shortlisted ? {{ \Illuminate\Support\Js::from(__('transfers.remove_from_shortlist')) }} : {{ \Illuminate\Support\Js::from(__('transfers.add_to_shortlist')) }}"
                             >
                                 <svg class="w-5 h-5" x-bind:fill="shortlisted ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
@@ -167,7 +166,7 @@
                                         </div>
                                         <div class="flex items-center justify-between">
                                             <span class="text-xs text-text-muted">{{ __('transfers.wage_demand') }}</span>
-                                            <span class="text-xs font-semibold {{ $canAffordWage ? 'text-text-primary' : 'text-accent-gold' }}">{{ $formattedWageDemand }}{{ __('squad.per_year') }}</span>
+                                            <span class="text-xs font-semibold text-text-body">{{ $formattedWageDemand }}{{ __('squad.per_year') }}</span>
                                         </div>
                                         <div class="flex items-center justify-between pt-1 border-t border-border-strong">
                                             <span class="text-xs text-text-muted">{{ __('transfers.your_transfer_budget') }}</span>
@@ -178,18 +177,12 @@
                                     {{-- Action Buttons --}}
                                     <div class="mt-4 space-y-2">
                                         @if($isFreeAgent)
-                                            @if($canAffordWage)
                                                 <form method="POST" action="{{ route('game.scouting.sign-free-agent', [$game->id, $player->id]) }}">
                                                     @csrf
                                                     <x-primary-button color="green" size="xs">
                                                         {{ __('transfers.sign_free_agent') }}
                                                     </x-primary-button>
                                                 </form>
-                                            @else
-                                                <div class="text-xs text-accent-gold font-medium">
-                                                    {{ __('transfers.wage_exceeds_budget') }}
-                                                </div>
-                                            @endif
                                         @elseif($hasOffer && $offerStatus === 'pending' && !$offerIsCounter)
                                             <div class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-accent-gold/10 text-accent-gold border border-accent-gold/20">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>

@@ -291,6 +291,8 @@ return [
     'stop_tracking' => 'Stop',
     'track_to_unlock' => 'Track to unlock intel',
     'track_to_unlock_desc' => 'Assign your scout to track this player. Intel unlocks over matchdays.',
+    'tracking_in_progress_title' => 'Scout tracking active',
+    'tracking_in_progress_desc' => 'Your scout is tracking this player. Intel will unlock on the next matchday.',
     'tracking_in_progress' => 'Tracking...',
     'no_tracking_slots' => 'No tracking slots available',
     'willingness' => 'Willingness',

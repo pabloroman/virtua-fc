@@ -852,16 +852,9 @@ class ScoutingService
         $preContractWageDemand = $isExpiring ? $this->calculatePreContractWageDemand($player) : null;
 
         $investment = $game->currentInvestment;
-        $finances = $game->currentFinances;
         $committedBudget = TransferOffer::committedBudget($game->id);
         $availableBudget = ($investment->transfer_budget ?? 0) - $committedBudget;
         $canAffordFee = $askingPrice <= $availableBudget;
-        $currentWageBill = GamePlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->sum('annual_wage');
-        // Allow up to 10% over projected wages for flexibility
-        $maxWages = $finances ? (int) ($finances->projected_wages * 1.10) : 0;
-        $canAffordWage = ($currentWageBill + $wageDemand) <= $maxWages;
 
         // Fuzzy ability range - higher scouting tier = more accurate
         $techAbility = $player->current_technical_ability;
@@ -882,7 +875,6 @@ class ScoutingService
             'pre_contract_wage_demand' => $preContractWageDemand,
             'importance' => $importance,
             'can_afford_fee' => $canAffordFee,
-            'can_afford_wage' => $canAffordWage,
             'transfer_budget' => $investment->transfer_budget ?? 0,
             'formatted_transfer_budget' => $investment ? $investment->formatted_transfer_budget : '€ 0',
             'tech_range' => [max(1, $techAbility - $fuzz), min(99, $techAbility + $fuzz)],

@@ -4,17 +4,18 @@ namespace App\Http\Actions;
 
 use App\Models\Game;
 use App\Models\GamePlayer;
-use App\Models\ShortlistedPlayer;
+use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\ScoutingService;
-use App\Support\Money;
+use App\Modules\Transfer\Services\TransferService;
 use Illuminate\Http\Request;
 
 class SignFreeAgent
 {
     public function __construct(
-        private readonly ContractService $contractService,
         private readonly ScoutingService $scoutingService,
+        private readonly TransferService $transferService,
+        private readonly NotificationService $notificationService,
     ) {}
 
     public function __invoke(Request $request, string $gameId, string $playerId)
@@ -40,33 +41,10 @@ class SignFreeAgent
                 ->with('error', __('messages.free_agent_reputation_too_low'));
         }
 
-        // Check wage affordability
         $wageDemand = $this->scoutingService->calculateWageDemand($player);
-        $currentWageBill = GamePlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->sum('annual_wage');
-        $finances = $game->currentFinances;
-        $maxWages = $finances ? (int) ($finances->projected_wages * 1.10) : 0;
 
-        if (($currentWageBill + $wageDemand) > $maxWages) {
-            return redirect()->route('game.transfers', $gameId)
-                ->with('error', __('messages.wage_budget_exceeded'));
-        }
-
-        // Sign the free agent
-        $seasonYear = (int) $game->season;
-        $contractYears = $player->age($game->current_date) >= 32 ? 1 : mt_rand(2, 3);
-        $newContractEnd = \Carbon\Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
-
-        $player->update([
-            'team_id' => $game->team_id,
-            'number' => GamePlayer::nextAvailableNumber($game->id, $game->team_id),
-            'contract_until' => $newContractEnd,
-            'annual_wage' => $wageDemand,
-        ]);
-
-        // Remove from shortlist to free up scouting slot
-        ShortlistedPlayer::removeForPlayer($game->id, $player->id);
+        $offer = $this->transferService->signFreeAgent($game, $player, $wageDemand);
+        $this->notificationService->notifyTransferComplete($game, $offer);
 
         return redirect()->route('game.transfers', $gameId)
             ->with('success', __('messages.free_agent_signed', ['player' => $player->name]));

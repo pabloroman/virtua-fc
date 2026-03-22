@@ -310,7 +310,7 @@
                                                 <x-team-crest :team="$transfer->sellingTeam" class="w-6 h-6 shrink-0" />
                                                 @endif
                                                 <span class="text-text-secondary">
-                                                    {{ $transfer->gamePlayer->player->name }} &larr; {{ $transfer->sellingTeam?->name ?? 'Unknown' }}
+                                                    {{ $transfer->gamePlayer->player->name }} &larr; {{ $transfer->sellingTeam?->name ?? __('squad.free_transfer') }}
                                                 </span>
                                             </div>
                                             <span class="font-semibold text-accent-green">{{ $transfer->formatted_transfer_fee }}</span>

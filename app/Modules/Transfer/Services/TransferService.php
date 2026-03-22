@@ -1192,6 +1192,53 @@ class TransferService
      *
      * @return bool True if transfer completed immediately, false if waiting for window
      */
+    /**
+     * Sign a free agent: assign to team, create offer/transfer records.
+     */
+    public function signFreeAgent(Game $game, GamePlayer $player, int $wageDemand): TransferOffer
+    {
+        $seasonYear = (int) $game->season;
+        $contractYears = $player->age($game->current_date) >= 32 ? 1 : mt_rand(2, 3);
+        $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
+
+        $player->update([
+            'team_id' => $game->team_id,
+            'number' => GamePlayer::nextAvailableNumber($game->id, $game->team_id),
+            'contract_until' => $newContractEnd,
+            'annual_wage' => $wageDemand,
+        ]);
+
+        $offer = TransferOffer::create([
+            'game_id' => $game->id,
+            'game_player_id' => $player->id,
+            'offering_team_id' => $game->team_id,
+            'selling_team_id' => null,
+            'offer_type' => TransferOffer::TYPE_USER_BID,
+            'direction' => TransferOffer::DIRECTION_INCOMING,
+            'transfer_fee' => 0,
+            'offered_wage' => $wageDemand,
+            'status' => TransferOffer::STATUS_COMPLETED,
+            'resolved_at' => $game->current_date,
+            'expires_at' => $game->current_date,
+            'game_date' => $game->current_date,
+        ]);
+
+        GameTransfer::record(
+            gameId: $game->id,
+            gamePlayerId: $player->id,
+            fromTeamId: null,
+            toTeamId: $game->team_id,
+            transferFee: 0,
+            type: GameTransfer::TYPE_FREE_AGENT,
+            season: $game->season,
+            window: $this->getCurrentWindow($game),
+        );
+
+        ShortlistedPlayer::removeForPlayer($game->id, $player->id);
+
+        return $offer;
+    }
+
     public function acceptIncomingOffer(TransferOffer $offer): bool
     {
         $game = $offer->game;

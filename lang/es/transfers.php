@@ -296,6 +296,8 @@ return [
     'stop_tracking' => 'Parar',
     'track_to_unlock' => 'Rastrea para desbloquear intel',
     'track_to_unlock_desc' => 'Asigna a tu ojeador para rastrear a este jugador. La información se desbloquea cada jornada.',
+    'tracking_in_progress_title' => 'Ojeador rastreando',
+    'tracking_in_progress_desc' => 'Tu ojeador está rastreando a este jugador. La información se desbloqueará en la próxima jornada.',
     'tracking_in_progress' => 'Rastreando...',
     'no_tracking_slots' => 'Sin seguimientos disponibles',
     'willingness' => 'Disposición',
