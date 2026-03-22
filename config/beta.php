@@ -50,4 +50,15 @@ return [
 
     'allow_new_season' => (bool) env('ALLOW_NEW_SEASON', false),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Payment Webhook Secret
+    |--------------------------------------------------------------------------
+    |
+    | Secret token used to verify incoming payment webhook requests.
+    |
+    */
+
+    'webhook_secret' => env('PAYMENT_WEBHOOK_SECRET'),
+
 ];

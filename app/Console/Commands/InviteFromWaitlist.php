@@ -2,12 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Mail\BetaInvite;
-use App\Models\InviteCode;
 use App\Models\WaitlistEntry;
+use App\Services\BetaInviteService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
 
 class InviteFromWaitlist extends Command
 {
@@ -18,6 +15,12 @@ class InviteFromWaitlist extends Command
                             {--expires= : Expiration date for invite codes (Y-m-d)}';
 
     protected $description = 'Generate and send invite codes to waitlisted emails (by email or batch count)';
+
+    public function __construct(
+        private readonly BetaInviteService $inviteService,
+    ) {
+        parent::__construct();
+    }
 
     public function handle(): int
     {
@@ -53,13 +56,13 @@ class InviteFromWaitlist extends Command
             return self::FAILURE;
         }
 
-        if ($entry->inviteCode()->exists()) {
+        if ($this->inviteService->hasAlreadyBeenInvited($email)) {
             $this->error("Email {$email} has already been invited.");
 
             return self::FAILURE;
         }
 
-        $this->sendInvite($entry);
+        $this->inviteService->invite($entry, $this->option('expires'));
         $this->info("Invited: {$entry->name} <{$email}>");
 
         return self::SUCCESS;
@@ -95,7 +98,7 @@ class InviteFromWaitlist extends Command
                 continue;
             }
 
-            $this->sendInvite($entry);
+            $this->inviteService->invite($entry, $this->option('expires'));
             $this->info("  Invited: {$entry->name} <{$entry->email}>");
             $sent++;
 
@@ -109,31 +112,5 @@ class InviteFromWaitlist extends Command
         $this->info("{$action}: {$sent} of {$entries->count()} waitlist entries.");
 
         return self::SUCCESS;
-    }
-
-    private function sendInvite(WaitlistEntry $entry): void
-    {
-        $invite = InviteCode::create([
-            'code' => $this->generateCode(),
-            'email' => strtolower($entry->email),
-            'max_uses' => 1,
-            'expires_at' => $this->option('expires'),
-        ]);
-
-        Mail::to($entry->email)->send(new BetaInvite($invite));
-
-        $invite->update([
-            'invite_sent' => true,
-            'invite_sent_at' => now(),
-        ]);
-    }
-
-    private function generateCode(): string
-    {
-        do {
-            $code = strtoupper(Str::random(8));
-        } while (InviteCode::where('code', $code)->exists());
-
-        return $code;
     }
 }
