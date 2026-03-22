@@ -74,7 +74,6 @@
                             || $pendingBids->isNotEmpty()
                             || $incomingAgreedTransfers->isNotEmpty()
                             || $loansIn->isNotEmpty()
-                            || $rejectedBids->isNotEmpty()
                             || $recentSignings->isNotEmpty();
                     @endphp
 
@@ -262,41 +261,6 @@
                             @endif
 
                             {{-- ============================================= --}}
-                            {{-- CONTEXT: Rejected Bids --}}
-                            {{-- ============================================= --}}
-                            @if($rejectedBids->isNotEmpty())
-                            <div class="opacity-60">
-                                <h4 class="font-heading text-sm font-semibold text-text-muted uppercase tracking-widest mb-3">{{ __('transfers.rejected_bids') }}</h4>
-                                <div class="space-y-2">
-                                    @foreach($rejectedBids as $bid)
-                                    <div class="bg-surface-800 border border-border-default rounded-xl p-4">
-                                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-                                            <div class="flex items-center gap-4">
-                                                @if($bid->sellingTeam)
-                                                <x-team-crest :team="$bid->sellingTeam" class="w-8 h-8 grayscale shrink-0" />
-                                                @endif
-                                                <div>
-                                                    <div class="font-medium text-text-body">
-                                                        {{ $bid->gamePlayer->player->name }}
-                                                        <span class="text-text-secondary font-normal">{{ __('transfers.from') }}</span>
-                                                        {{ $bid->sellingTeam?->name ?? 'Unknown' }}
-                                                    </div>
-                                                    <div class="text-xs text-text-muted">
-                                                        {{ $bid->gamePlayer->position_name }} &middot; {{ $bid->gamePlayer->age($game->current_date) }} {{ __('app.years') }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="text-right">
-                                                <div class="text-sm font-bold text-accent-red line-through">{{ $bid->formatted_transfer_fee }}</div>
-                                                <div class="text-xs text-accent-red">{{ __('transfers.bid_rejected') }}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                            @endif
-
                             {{-- ============================================= --}}
                             {{-- FULL-WIDTH: Recent Signings --}}
                             {{-- ============================================= --}}

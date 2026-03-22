@@ -43,14 +43,6 @@ class ShowIncomingTransfers
             ->orderByDesc('resolved_at')
             ->get();
 
-        $rejectedBids = TransferOffer::with(['gamePlayer.player', 'gamePlayer.team', 'sellingTeam'])
-            ->where('game_id', $gameId)
-            ->where('status', TransferOffer::STATUS_REJECTED)
-            ->where('direction', TransferOffer::DIRECTION_INCOMING)
-            ->where('resolved_at', '>=', $game->current_date->subDays(7))
-            ->orderByDesc('resolved_at')
-            ->get();
-
         $incomingAgreedTransfers = TransferOffer::with(['gamePlayer.player', 'gamePlayer.team', 'sellingTeam'])
             ->where('game_id', $gameId)
             ->where('status', TransferOffer::STATUS_AGREED)
@@ -66,7 +58,6 @@ class ShowIncomingTransfers
             'game' => $game,
             'counterOffers' => $counterOffers,
             'pendingBids' => $regularPendingBids,
-            'rejectedBids' => $rejectedBids,
             'recentSignings' => $recentSignings,
             'incomingAgreedTransfers' => $incomingAgreedTransfers,
             'loansIn' => $loansIn,
