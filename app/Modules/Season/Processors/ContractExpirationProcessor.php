@@ -2,6 +2,8 @@
 
 namespace App\Modules\Season\Processors;
 
+use App\Models\ClubProfile;
+use App\Models\TeamReputation;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Transfer\Services\ContractService;
@@ -53,8 +55,17 @@ class ContractExpirationProcessor implements SeasonProcessor
             ->whereNull('pending_annual_wage') // Exclude players who renewed
             ->get();
 
-        // Pre-calculate team averages for AI non-renewal decisions
+        // Pre-calculate team averages and reputations for AI non-renewal decisions
         $aiTeamAverages = $this->calculateAITeamAverages($game);
+        $aiTeamIds = $expiredPlayers
+            ->filter(fn ($p) => $p->team_id !== $game->team_id)
+            ->pluck('team_id')
+            ->unique()
+            ->values()
+            ->all();
+        $teamReputations = !empty($aiTeamIds)
+            ? TeamReputation::resolveLevels($game->id, $aiTeamIds)
+            : collect();
 
         $releasedPlayers = [];
         $autoRenewedPlayers = [];
@@ -83,16 +94,18 @@ class ContractExpirationProcessor implements SeasonProcessor
 
         foreach ($aiExpiredByTeam as $teamId => $teamExpiredPlayers) {
             $teamAvg = $aiTeamAverages[$teamId] ?? 55;
+            $teamReputation = $teamReputations->get($teamId, ClubProfile::REPUTATION_LOCAL);
+            $teamRepIndex = ClubProfile::getReputationTierIndex($teamReputation);
             $freeAgentCount = 0;
 
             // Sort by non-renewal likelihood (most likely to leave first)
             $sorted = $teamExpiredPlayers->sortByDesc(
-                fn ($p) => $this->nonRenewalScore($p, $teamAvg)
+                fn ($p) => $this->nonRenewalScore($p, $teamAvg, $teamRepIndex)
             );
 
             foreach ($sorted as $player) {
                 $shouldRelease = $freeAgentCount < self::MAX_FREE_AGENTS_PER_TEAM
-                    && $this->shouldNotRenew($player, $teamAvg);
+                    && $this->shouldNotRenew($player, $teamAvg, $teamRepIndex);
 
                 if ($shouldRelease) {
                     // Become a free agent (team_id = null)
@@ -135,14 +148,37 @@ class ContractExpirationProcessor implements SeasonProcessor
     }
 
     /**
-     * Determine if an AI player should NOT be renewed (become free agent).
+     * Non-renewal chance by tier gap (player tier index - team reputation index).
+     * Positive gap = player is too good for the club → wants to leave.
+     *
+     * Gap 0 or negative: player fits or is below team level → very unlikely to leave.
+     * Gap 1: slightly above team level → small chance.
+     * Gap 2+: significantly above team level → high chance.
      */
-    private function shouldNotRenew(GamePlayer $player, int $teamAvg): bool
+    private const TIER_GAP_NON_RENEWAL_CHANCE = [
+        0 => 2,   // fits the club → 2%
+        1 => 15,  // slightly above → 15%
+        2 => 40,  // clearly above → 40%
+        3 => 65,  // way above → 65%
+        4 => 80,  // massively above → 80%
+    ];
+
+    /**
+     * Determine if an AI player should NOT be renewed (become free agent).
+     *
+     * Factors:
+     * 1. Age + ability vs team average (aging/declining players)
+     * 2. Player tier vs team reputation (ambition — elite players leave smaller clubs)
+     * 3. High-tier players at matching clubs are strongly protected from leaving
+     */
+    private function shouldNotRenew(GamePlayer $player, int $teamAvg, int $teamRepIndex): bool
     {
         $ability = $this->getPlayerAbility($player);
         $age = $player->age($player->game->current_date);
+        $playerTierIndex = ($player->tier ?? 1) - 1; // normalize to 0-4
+        $tierGap = max(0, $playerTierIndex - $teamRepIndex);
 
-        // Age 33+ and below team average → 70% chance
+        // Age 33+ and below team average → 70% chance (declining player, club lets go)
         if ($age >= 33 && $ability < $teamAvg) {
             return mt_rand(1, 100) <= 70;
         }
@@ -152,23 +188,46 @@ class ContractExpirationProcessor implements SeasonProcessor
             return mt_rand(1, 100) <= 30;
         }
 
-        // Baseline random chance → 5%
-        return mt_rand(1, 100) <= 5;
+        // Ambition-based non-renewal: player tier vs team reputation
+        if ($tierGap > 0) {
+            $chance = self::TIER_GAP_NON_RENEWAL_CHANCE[$tierGap] ?? 80;
+            return mt_rand(1, 100) <= $chance;
+        }
+
+        // High-tier players (4-5) at matching/better clubs almost always renew
+        if ($playerTierIndex >= 3) {
+            return mt_rand(1, 100) <= 1; // 1% — elite players don't walk from top clubs
+        }
+
+        // Baseline random chance → 3%
+        return mt_rand(1, 100) <= 3;
     }
 
     /**
      * Score how likely a player is to not be renewed (higher = more likely).
+     * Used for sorting — players most likely to leave are processed first.
      */
-    private function nonRenewalScore(GamePlayer $player, int $teamAvg): int
+    private function nonRenewalScore(GamePlayer $player, int $teamAvg, int $teamRepIndex): int
     {
         $ability = $this->getPlayerAbility($player);
         $age = $player->age($player->game->current_date);
+        $playerTierIndex = ($player->tier ?? 1) - 1;
+        $tierGap = max(0, $playerTierIndex - $teamRepIndex);
+
         $score = max(0, $age - 28) + max(0, $teamAvg - $ability);
 
         if ($age >= 33 && $ability < $teamAvg) {
             $score += 10;
         } elseif ($age >= 30 && $ability < $teamAvg - 10) {
             $score += 5;
+        }
+
+        // Ambition: players above their team's level are more likely to leave
+        $score += $tierGap * 8;
+
+        // High-tier players at matching clubs are least likely to leave
+        if ($tierGap <= 0 && $playerTierIndex >= 3) {
+            $score -= 15;
         }
 
         return $score;
