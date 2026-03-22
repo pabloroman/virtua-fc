@@ -5,4 +5,4 @@ use App\Http\Actions\JoinWaitlist;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/waitlist', JoinWaitlist::class);
-Route::post('/webhooks/payment', HandlePaymentWebhook::class);
+Route::post('/webhooks/ko-fi', HandlePaymentWebhook::class);

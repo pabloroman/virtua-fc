@@ -59,6 +59,6 @@ return [
     |
     */
 
-    'webhook_secret' => env('PAYMENT_WEBHOOK_SECRET'),
+    'webhook_secret' => env('KO_FI_VERIFICATION_TOKEN'),
 
 ];
