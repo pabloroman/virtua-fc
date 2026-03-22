@@ -925,6 +925,16 @@ class MatchSimulator
             $events = $events->merge($goalEvents)->sortBy('minute')->values();
         }
 
+        // Generate narrative events (shots, saves, attacks) for match texture
+        $narrativeEvents = $this->generateNarrativeEvents(
+            $homeTeam->id, $awayTeam->id,
+            $homePlayers, $awayPlayers,
+            $homeExpectedGoals, $awayExpectedGoals,
+            $fromMinute, 93,
+            $homeScore, $awayScore,
+        );
+        $events = $events->merge($narrativeEvents)->sortBy('minute')->values();
+
         $possession = $this->calculatePossession(
             $homeStrength, $awayStrength,
             $homeFormation, $awayFormation,
@@ -1711,5 +1721,233 @@ class MatchSimulator
         $base = max(50, min(95, $base));
 
         return $this->percentChance($base);
+    }
+
+    /**
+     * Generate narrative events (shots, saves, attacks) to fill in the match story.
+     * These are derived from xG to maintain consistency with simulation results.
+     * They do NOT affect match outcomes — purely for display.
+     *
+     * @return Collection<MatchEventData>
+     */
+    private function generateNarrativeEvents(
+        string $homeTeamId,
+        string $awayTeamId,
+        Collection $homePlayers,
+        Collection $awayPlayers,
+        float $homeXG,
+        float $awayXG,
+        int $fromMinute,
+        int $toMinute,
+        int $homeGoals,
+        int $awayGoals,
+    ): Collection {
+        $cfg = config('match_simulation.narrative', []);
+        $events = collect();
+
+        if ($homePlayers->isEmpty() && $awayPlayers->isEmpty()) {
+            return $events;
+        }
+
+        foreach ([
+            ['team' => $homeTeamId, 'opp' => $awayTeamId, 'players' => $homePlayers, 'oppPlayers' => $awayPlayers, 'xg' => $homeXG, 'goals' => $homeGoals],
+            ['team' => $awayTeamId, 'opp' => $homeTeamId, 'players' => $awayPlayers, 'oppPlayers' => $homePlayers, 'xg' => $awayXG, 'goals' => $awayGoals],
+        ] as $side) {
+            if ($side['players']->isEmpty()) {
+                continue;
+            }
+
+            $xg = max(0.1, $side['xg']);
+
+            // Calculate counts from xG (subtract actual goals since those are already events)
+            $shotsOnTarget = max(0, $this->poissonRandom($xg * ($cfg['shots_on_target_per_xg'] ?? 3.5)) - $side['goals']);
+            $shotsOffTarget = max(0, $this->poissonRandom($xg * ($cfg['shots_off_target_per_xg'] ?? 2.5)));
+            $totalShots = $shotsOnTarget + $shotsOffTarget;
+            $dangerousAttacks = max(0, $this->poissonRandom($totalShots * ($cfg['dangerous_attacks_per_shot'] ?? 1.8)));
+            $greatSaves = 0;
+            $nearMisses = 0;
+            $keyPasses = 0;
+
+            // Great saves come from this team's shots on target being saved by opponent GK
+            for ($i = 0; $i < $shotsOnTarget; $i++) {
+                if ($this->percentChance(($cfg['great_save_chance'] ?? 0.35) * 100)) {
+                    $greatSaves++;
+                }
+            }
+
+            // Near misses come from shots off target
+            for ($i = 0; $i < $shotsOffTarget; $i++) {
+                if ($this->percentChance(($cfg['near_miss_chance'] ?? 0.30) * 100)) {
+                    $nearMisses++;
+                }
+            }
+
+            // Key passes
+            $keyPasses = max(0, $this->poissonRandom($shotsOnTarget * ($cfg['key_passes_per_shot_on_target'] ?? 0.8)));
+
+            // Generate events distributed across match minutes
+            $minuteRange = max(1, $toMinute - $fromMinute);
+
+            // Shots on target
+            for ($i = 0; $i < $shotsOnTarget; $i++) {
+                $minute = $fromMinute + 1 + mt_rand(0, $minuteRange - 1);
+                $shooter = $this->pickPlayerByPosition($side['players'], self::GOAL_SCORING_WEIGHTS);
+                $events->push(MatchEventData::shotOnTarget($side['team'], $shooter->id, $minute));
+            }
+
+            // Shots off target
+            for ($i = 0; $i < $shotsOffTarget; $i++) {
+                $minute = $fromMinute + 1 + mt_rand(0, $minuteRange - 1);
+                $shooter = $this->pickPlayerByPosition($side['players'], self::GOAL_SCORING_WEIGHTS);
+                $events->push(MatchEventData::shotOffTarget($side['team'], $shooter->id, $minute));
+            }
+
+            // Dangerous attacks
+            for ($i = 0; $i < $dangerousAttacks; $i++) {
+                $minute = $fromMinute + 1 + mt_rand(0, $minuteRange - 1);
+                $attacker = $this->pickPlayerByPosition($side['players'], self::ASSIST_WEIGHTS);
+                $events->push(MatchEventData::dangerousAttack($side['team'], $attacker->id, $minute));
+            }
+
+            // Great saves (attributed to opponent's goalkeeper)
+            $oppGk = $side['oppPlayers']->first(fn ($p) => $p->position === 'Goalkeeper');
+            if ($oppGk && $greatSaves > 0) {
+                for ($i = 0; $i < $greatSaves; $i++) {
+                    $minute = $fromMinute + 1 + mt_rand(0, $minuteRange - 1);
+                    $events->push(MatchEventData::greatSave($side['opp'], $oppGk->id, $minute));
+                }
+            }
+
+            // Near misses
+            for ($i = 0; $i < $nearMisses; $i++) {
+                $minute = $fromMinute + 1 + mt_rand(0, $minuteRange - 1);
+                $shooter = $this->pickPlayerByPosition($side['players'], self::GOAL_SCORING_WEIGHTS);
+                $events->push(MatchEventData::nearMiss($side['team'], $shooter->id, $minute));
+            }
+
+            // Key passes
+            for ($i = 0; $i < $keyPasses; $i++) {
+                $minute = $fromMinute + 1 + mt_rand(0, $minuteRange - 1);
+                $passer = $this->pickPlayerByPosition($side['players'], self::ASSIST_WEIGHTS);
+                $events->push(MatchEventData::keyPass($side['team'], $passer->id, $minute));
+            }
+        }
+
+        return $events;
+    }
+
+    /**
+     * Generate tactical insight events based on match state and tactical context.
+     * These provide actionable advice to help users make better decisions.
+     * Called from the view/action layer where user team context is available.
+     *
+     * @return Collection<MatchEventData>
+     */
+    public function generateInsights(
+        string $userTeamId,
+        string $opponentTeamId,
+        Collection $userPlayers,
+        Collection $opponentPlayers,
+        int $fromMinute,
+        PressingIntensity $userPressing,
+        PressingIntensity $oppPressing,
+        DefensiveLineHeight $userDefLine,
+        DefensiveLineHeight $oppDefLine,
+        Mentality $userMentality,
+        Mentality $oppMentality,
+        PlayingStyle $userPlayingStyle,
+    ): Collection {
+        $insights = collect();
+
+        if ($userPlayers->isEmpty()) {
+            return $insights;
+        }
+
+        // Insight: User's high press is fading (minute 60-65)
+        if ($userPressing === PressingIntensity::HIGH_PRESS && $fromMinute <= 60) {
+            $insights->push(MatchEventData::insight($userTeamId, mt_rand(60, 65), 'press_fading'));
+        }
+
+        // Insight: Opponent's high press is fading
+        if ($oppPressing === PressingIntensity::HIGH_PRESS && $fromMinute <= 60) {
+            $insights->push(MatchEventData::insight($userTeamId, mt_rand(60, 65), 'opponent_press_fading'));
+        }
+
+        // Insight: High line being exploited by fast forward
+        if ($userDefLine === DefensiveLineHeight::HIGH_LINE) {
+            $bestOppForward = $opponentPlayers
+                ->filter(fn ($p) => in_array($p->position, ['Centre-Forward', 'Second Striker', 'Left Winger', 'Right Winger']))
+                ->sortByDesc('physical_ability')
+                ->first();
+
+            $threshold = config('match_simulation.defensive_line.high_line.physical_threshold', 80);
+            if ($bestOppForward && $bestOppForward->physical_ability >= $threshold) {
+                $minute = max($fromMinute + 5, mt_rand(20, 35));
+                if ($minute <= 90) {
+                    $insights->push(MatchEventData::insight($userTeamId, $minute, 'high_line_exploited', [
+                        'playerName' => $bestOppForward->player?->name ?? '',
+                    ]));
+                }
+            }
+        }
+
+        // Insight: Counter-attack opportunity (opponent has high line + attacking)
+        if ($oppDefLine === DefensiveLineHeight::HIGH_LINE
+            && $oppMentality === Mentality::ATTACKING
+            && $userPlayingStyle !== PlayingStyle::COUNTER_ATTACK
+        ) {
+            $minute = max($fromMinute + 3, mt_rand(15, 30));
+            if ($minute <= 90) {
+                $insights->push(MatchEventData::insight($userTeamId, $minute, 'counter_opportunity'));
+            }
+        }
+
+        // Insight: Player struggling (at half-time, minute 45-50)
+        if ($fromMinute <= 45) {
+            foreach ($userPlayers as $player) {
+                $perf = $this->getMatchPerformance($player);
+                $rating = self::performanceToRating($perf);
+                if ($rating < 5.5) {
+                    $insights->push(MatchEventData::insight($userTeamId, mt_rand(45, 50), 'player_struggling', [
+                        'playerName' => $player->player?->name ?? '',
+                        'playerId' => $player->id,
+                        'rating' => round($rating, 1),
+                    ]));
+                    break; // Only highlight worst performer
+                }
+            }
+        }
+
+        // Insight: Player having outstanding match (at half-time)
+        if ($fromMinute <= 45) {
+            $bestPerformer = null;
+            $bestRating = 0;
+            foreach ($userPlayers as $player) {
+                $perf = $this->getMatchPerformance($player);
+                $rating = self::performanceToRating($perf);
+                if ($rating > 8.0 && $rating > $bestRating) {
+                    $bestPerformer = $player;
+                    $bestRating = $rating;
+                }
+            }
+            if ($bestPerformer) {
+                $insights->push(MatchEventData::insight($userTeamId, 45, 'player_excellent', [
+                    'playerName' => $bestPerformer->player?->name ?? '',
+                    'playerId' => $bestPerformer->id,
+                    'rating' => round($bestRating, 1),
+                ]));
+            }
+        }
+
+        // Insight: Squad tiring (minute 70+)
+        if ($fromMinute <= 70) {
+            $avgFitness = $userPlayers->avg('fitness');
+            if ($avgFitness < 75) {
+                $insights->push(MatchEventData::insight($userTeamId, mt_rand(68, 72), 'energy_low'));
+            }
+        }
+
+        // Filter out insights that are before fromMinute
+        return $insights->filter(fn ($e) => $e->minute > $fromMinute);
     }
 }

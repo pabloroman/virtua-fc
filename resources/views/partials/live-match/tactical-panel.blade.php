@@ -253,8 +253,8 @@
                                                             <span class="skew-x-12" x-text="player.positionAbbr"></span>
                                                         </span>
                                                         <span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-semibold shrink-0"
-                                                              :class="getOvrBadgeClasses(player.overallScore)"
-                                                              x-text="player.overallScore"></span>
+                                                              :class="getPlayerRating(player.id) ? getPlayerRatingClass(getPlayerRating(player.id)) : getOvrBadgeClasses(player.overallScore)"
+                                                              x-text="getPlayerRating(player.id) ? getPlayerRating(player.id).toFixed(1) : player.overallScore"></span>
                                                         <span class="flex-1 truncate font-medium" x-text="player.name"></span>
                                                         {{-- Yellow card indicator --}}
                                                         <span x-show="isPlayerYellowCarded(player.id)"

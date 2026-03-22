@@ -174,6 +174,19 @@ export default function liveMatch(config) {
         processingStatusUrl: config.processingStatusUrl || '',
         _processingPollTimer: null,
 
+        // Player ratings state
+        playerRatings: config.playerRatings || {},
+        _liveRatingModifiers: {},  // Event-based modifiers applied on top of base ratings
+
+        // Lineup display (Alpine-rendered for dynamic ratings)
+        homeLineupDisplay: config.homeLineupDisplay || [],
+        awayLineupDisplay: config.awayLineupDisplay || [],
+
+        // Insight state
+        activeInsight: null,
+        activeInsightText: '',
+        _insightDismissTimer: null,
+
         // Animation loop
         _lastTick: null,
         _animFrame: null,
@@ -374,10 +387,18 @@ export default function liveMatch(config) {
             this.revealedEvents.unshift(event); // newest first
             this.latestEvent = event;
 
+            // Apply player rating modifier for this event
+            this.applyRatingModifier(event);
+
             if (event.type === 'goal' || event.type === 'own_goal') {
                 this.updateScore(event);
                 this.triggerGoalFlash();
                 this.pauseForDrama(1500);
+            }
+
+            // Auto-pause and show banner for tactical insights
+            if (event.type === 'insight') {
+                this.showInsightBanner(event);
             }
 
             // Auto-open tactical panel on substitutions tab when user's player gets injured
@@ -396,6 +417,14 @@ export default function liveMatch(config) {
             this.lastRevealedETIndex = index;
             this.revealedEvents.unshift(event);
             this.latestEvent = event;
+
+            // Apply player rating modifier for this event
+            this.applyRatingModifier(event);
+
+            // Auto-pause and show banner for tactical insights
+            if (event.type === 'insight') {
+                this.showInsightBanner(event);
+            }
 
             if (event.type === 'goal' || event.type === 'own_goal') {
                 this.updateScore(event);
@@ -1359,6 +1388,23 @@ export default function liveMatch(config) {
                     this.resetPossessionTarget();
                 }
 
+                // Merge narrative events from resimulation
+                if (result.narrativeEvents && result.narrativeEvents.length > 0) {
+                    if (isET) {
+                        this.extraTimeEvents.push(...result.narrativeEvents);
+                        this.extraTimeEvents.sort((a, b) => a.minute - b.minute);
+                    } else {
+                        this.events.push(...result.narrativeEvents);
+                        this.events.sort((a, b) => a.minute - b.minute);
+                    }
+                }
+
+                // Update player ratings (reset modifiers since server recalculated)
+                if (result.playerRatings) {
+                    this.playerRatings = result.playerRatings;
+                    this._liveRatingModifiers = {};
+                }
+
                 // Close the panel and resume
                 this.closeTacticalPanel();
             } catch (err) {
@@ -1925,6 +1971,172 @@ export default function liveMatch(config) {
                 const eventSide = this.getEventSide(event);
                 return eventSide === side;
             }).length;
+        },
+
+        // =====================================================================
+        // Live Stats (computed from narrative events)
+        // =====================================================================
+
+        _narrativeTypes: ['shot_on_target', 'shot_off_target', 'dangerous_attack', 'great_save', 'near_miss', 'key_pass'],
+
+        isNarrativeEvent(type) {
+            return this._narrativeTypes.includes(type);
+        },
+
+        getLiveStat(stat, side) {
+            const allEvents = [...this.revealedEvents, ...this.extraTimeEvents.filter(e => this.revealedEvents.length >= this.events.length)];
+            switch (stat) {
+                case 'shots':
+                    return allEvents.filter(e => {
+                        if (!['shot_on_target', 'shot_off_target', 'goal'].includes(e.type)) return false;
+                        return this.getEventSide(e) === side;
+                    }).length;
+                case 'shotsOnTarget':
+                    return allEvents.filter(e => {
+                        if (!['shot_on_target', 'goal'].includes(e.type)) return false;
+                        return this.getEventSide(e) === side;
+                    }).length;
+                case 'dangerousAttacks':
+                    return allEvents.filter(e => {
+                        if (e.type !== 'dangerous_attack') return false;
+                        return this.getEventSide(e) === side;
+                    }).length;
+                default:
+                    return 0;
+            }
+        },
+
+        getShotBarWidth(side) {
+            const home = this.getLiveStat('shots', 'home');
+            const away = this.getLiveStat('shots', 'away');
+            const total = home + away;
+            if (total === 0) return 50;
+            return side === 'home'
+                ? Math.round((home / total) * 100)
+                : Math.round((away / total) * 100);
+        },
+
+        getMomentum() {
+            // Rolling 15-minute window: positive = home momentum, negative = away
+            const windowSize = 15;
+            const minute = this.currentMinute;
+            const minStart = Math.max(0, minute - windowSize);
+            const allEvents = [...this.revealedEvents, ...this.extraTimeEvents.filter(e => this.revealedEvents.length >= this.events.length)];
+            const recentEvents = allEvents.filter(e =>
+                e.minute >= minStart && e.minute <= minute &&
+                ['shot_on_target', 'dangerous_attack', 'goal', 'key_pass'].includes(e.type)
+            );
+            let score = 0;
+            recentEvents.forEach(e => {
+                const side = this.getEventSide(e);
+                const weight = e.type === 'goal' ? 3 : (e.type === 'shot_on_target' ? 2 : 1);
+                score += (side === 'home' ? weight : -weight);
+            });
+            return Math.max(-5, Math.min(5, score)); // Clamp to ±5
+        },
+
+        // =====================================================================
+        // Narrative Event Labels
+        // =====================================================================
+
+        getNarrativeLabel(event) {
+            const labels = {
+                'shot_on_target': this.translations.shotOnTarget || 'Shot on target',
+                'shot_off_target': this.translations.shotOffTarget || 'Shot off target',
+                'dangerous_attack': this.translations.dangerousAttack || 'Dangerous attack',
+                'great_save': this.translations.greatSave || 'Great save',
+                'near_miss': this.translations.nearMiss || 'Near miss',
+                'key_pass': this.translations.keyPass || 'Key pass',
+            };
+            return labels[event.type] || event.type;
+        },
+
+        // =====================================================================
+        // Tactical Insights
+        // =====================================================================
+
+        getInsightText(event) {
+            const key = event.metadata?.insight_key;
+            const params = event.metadata?.params || {};
+            const texts = {
+                'press_fading': this.translations.insightPressFading || 'Your high press is losing effectiveness',
+                'opponent_press_fading': this.translations.insightOpponentPressFading || "Opponent's pressing is fading",
+                'high_line_exploited': (this.translations.insightHighLineExploited || 'Your high line is being beaten by their pace').replace(':player', params.playerName || ''),
+                'counter_opportunity': this.translations.insightCounterOpportunity || "Opponent's high line is vulnerable to counters",
+                'player_struggling': (this.translations.insightPlayerStruggling || ':player is having a poor match (:rating)').replace(':player', params.playerName || '').replace(':rating', params.rating || ''),
+                'player_excellent': (this.translations.insightPlayerExcellent || ':player is having an outstanding match').replace(':player', params.playerName || ''),
+                'energy_low': this.translations.insightEnergyLow || 'Your squad is tiring — consider fresh legs',
+            };
+            return texts[key] || key || '';
+        },
+
+        showInsightBanner(event) {
+            this.activeInsight = event;
+            this.activeInsightText = this.getInsightText(event);
+            // Auto-pause for insight
+            if (!this.userPaused) {
+                this.isPaused = true;
+            }
+            // Auto-dismiss after 4 seconds
+            if (this._insightDismissTimer) clearTimeout(this._insightDismissTimer);
+            this._insightDismissTimer = setTimeout(() => this.dismissInsight(), 4000);
+        },
+
+        dismissInsight() {
+            this.activeInsight = null;
+            this.activeInsightText = '';
+            if (this._insightDismissTimer) {
+                clearTimeout(this._insightDismissTimer);
+                this._insightDismissTimer = null;
+            }
+            // Resume if we auto-paused
+            if (this.isPaused && !this.userPaused) {
+                this.isPaused = false;
+            }
+        },
+
+        // =====================================================================
+        // Player Ratings
+        // =====================================================================
+
+        _ratingEventModifiers: {
+            'goal': 0.8,
+            'assist': 0.5,
+            'key_pass': 0.2,
+            'shot_on_target': 0.1,
+            'yellow_card': -0.3,
+            'red_card': -1.5,
+            'own_goal': -1.0,
+            'injury': -0.5,
+        },
+
+        applyRatingModifier(event) {
+            const mod = this._ratingEventModifiers[event.type];
+            if (!mod || !event.gamePlayerId) return;
+            if (!this._liveRatingModifiers[event.gamePlayerId]) {
+                this._liveRatingModifiers[event.gamePlayerId] = 0;
+            }
+            this._liveRatingModifiers[event.gamePlayerId] += mod;
+        },
+
+        getPlayerRating(playerId) {
+            const base = this.playerRatings[playerId];
+            if (base === undefined) return '-';
+            const mod = this._liveRatingModifiers[playerId] || 0;
+            const rating = Math.max(1.0, Math.min(10.0, base + mod));
+            return rating.toFixed(1);
+        },
+
+        getPlayerRatingClass(playerId) {
+            const base = this.playerRatings[playerId];
+            if (base === undefined) return 'bg-surface-700 text-text-secondary';
+            const mod = this._liveRatingModifiers[playerId] || 0;
+            const rating = Math.max(1.0, Math.min(10.0, base + mod));
+            if (rating >= 8.0) return 'bg-accent-green/20 text-accent-green';
+            if (rating >= 7.0) return 'bg-accent-green/10 text-accent-green';
+            if (rating <= 5.0) return 'bg-accent-red/20 text-accent-red';
+            if (rating <= 5.5) return 'bg-accent-orange/15 text-accent-orange';
+            return 'bg-surface-700 text-text-secondary';
         },
 
         // =============================

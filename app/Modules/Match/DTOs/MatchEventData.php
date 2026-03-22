@@ -78,6 +78,86 @@ readonly class MatchEventData
         ]);
     }
 
+    /**
+     * Create a shot on target event (narrative).
+     */
+    public static function shotOnTarget(string $teamId, string $gamePlayerId, int $minute): self
+    {
+        return new self($teamId, $gamePlayerId, $minute, 'shot_on_target');
+    }
+
+    /**
+     * Create a shot off target event (narrative).
+     */
+    public static function shotOffTarget(string $teamId, string $gamePlayerId, int $minute): self
+    {
+        return new self($teamId, $gamePlayerId, $minute, 'shot_off_target');
+    }
+
+    /**
+     * Create a dangerous attack event (narrative).
+     */
+    public static function dangerousAttack(string $teamId, string $gamePlayerId, int $minute): self
+    {
+        return new self($teamId, $gamePlayerId, $minute, 'dangerous_attack');
+    }
+
+    /**
+     * Create a great save event (narrative).
+     */
+    public static function greatSave(string $teamId, string $gamePlayerId, int $minute): self
+    {
+        return new self($teamId, $gamePlayerId, $minute, 'great_save');
+    }
+
+    /**
+     * Create a near miss event (narrative).
+     */
+    public static function nearMiss(string $teamId, string $gamePlayerId, int $minute): self
+    {
+        return new self($teamId, $gamePlayerId, $minute, 'near_miss');
+    }
+
+    /**
+     * Create a key pass event (narrative).
+     */
+    public static function keyPass(string $teamId, string $gamePlayerId, int $minute): self
+    {
+        return new self($teamId, $gamePlayerId, $minute, 'key_pass');
+    }
+
+    /**
+     * Create a tactical insight event.
+     */
+    public static function insight(string $teamId, int $minute, string $insightKey, array $params = []): self
+    {
+        return new self($teamId, '', $minute, 'insight', [
+            'insight_key' => $insightKey,
+            'params' => $params,
+        ]);
+    }
+
+    /**
+     * Check if this is a narrative event (not persisted to DB).
+     */
+    public function isNarrative(): bool
+    {
+        return in_array($this->type, self::NARRATIVE_TYPES);
+    }
+
+    /**
+     * Event types that are narrative only (not stored in DB).
+     */
+    public const NARRATIVE_TYPES = [
+        'shot_on_target',
+        'shot_off_target',
+        'dangerous_attack',
+        'great_save',
+        'near_miss',
+        'key_pass',
+        'insight',
+    ];
+
     public function toArray(): array
     {
         return [

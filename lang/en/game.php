@@ -448,4 +448,29 @@ return [
     // MVP
     'mvp' => 'MVP',
     'mvp_of_the_match' => 'MVP of the Match',
+
+    // Narrative events
+    'live_shot_on_target' => 'Shot on target',
+    'live_shot_off_target' => 'Shot off target',
+    'live_dangerous_attack' => 'Dangerous attack',
+    'live_great_save' => 'Great save',
+    'live_near_miss' => 'Near miss',
+    'live_key_pass' => 'Key pass',
+
+    // Live stats
+    'live_stat_shots' => 'Shots',
+    'live_stat_shots_on_target' => 'Shots on Target',
+    'live_stat_dangerous_attacks' => 'Dangerous Attacks',
+    'live_stat_momentum' => 'Momentum',
+    'live_match_rating' => 'Match Rating',
+
+    // Tactical insights
+    'tactical_insight' => 'Tactical Insight',
+    'insight_press_fading' => 'Your high press is losing effectiveness',
+    'insight_opponent_press_fading' => "Opponent's pressing is fading — consider pushing higher",
+    'insight_high_line_exploited' => 'Your high line is being beaten by :player\'s pace',
+    'insight_counter_opportunity' => "Opponent's high line is vulnerable to counters",
+    'insight_player_struggling' => ':player is having a poor match (:rating)',
+    'insight_player_excellent' => ':player is having an outstanding match',
+    'insight_energy_low' => 'Your squad is tiring — consider fresh legs',
 ];

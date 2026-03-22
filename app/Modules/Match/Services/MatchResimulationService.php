@@ -155,7 +155,21 @@ class MatchResimulationService
         // 10. Apply the new remainder events
         $this->applyNewEvents($match, $game, $remainderResult, $competitionId);
 
-        // 11. Update match score and possession
+        // 10b. Extract narrative events from remainder result for frontend
+        $narrativeEvents = $remainderResult->events
+            ->filter(fn (MatchEventData $e) => $e->isNarrative())
+            ->map(fn (MatchEventData $e) => $e->toArray())
+            ->values()
+            ->all();
+
+        // 10c. Capture player ratings from simulator
+        $performances = $this->matchSimulator->getMatchPerformances();
+        $playerRatings = [];
+        foreach ($performances as $playerId => $perf) {
+            $playerRatings[$playerId] = \App\Modules\Match\Services\MatchSimulator::performanceToRating($perf);
+        }
+
+        // 11. Update match score, possession, narrative events, and ratings
         // Note: Score-dependent side effects (standings, cup ties, GK stats, prize money)
         // are NOT handled here. They are deferred to FinalizeMatch, which applies them
         // once after the user finishes the live match. This eliminates the need for
@@ -165,11 +179,14 @@ class MatchResimulationService
             'away_score' => $newAwayScore,
             'home_possession' => $remainderResult->homePossession,
             'away_possession' => $remainderResult->awayPossession,
+            'narrative_events' => $narrativeEvents,
+            'player_ratings' => $playerRatings,
         ]);
 
         return new ResimulationResult(
             $newHomeScore, $newAwayScore, $oldHomeScore, $oldAwayScore,
             $remainderResult->homePossession, $remainderResult->awayPossession,
+            $narrativeEvents, $playerRatings,
         );
     }
 
@@ -263,17 +280,33 @@ class MatchResimulationService
             // 9. Apply the new remainder events
             $this->applyNewEvents($match, $game, $remainderResult, $competitionId);
 
-            // 10. Update ET scores and possession (not regular-time scores)
+            // 9b. Extract narrative events and player ratings
+            $narrativeEvents = $remainderResult->events
+                ->filter(fn (MatchEventData $e) => $e->isNarrative())
+                ->map(fn (MatchEventData $e) => $e->toArray())
+                ->values()
+                ->all();
+
+            $performances = $this->matchSimulator->getMatchPerformances();
+            $playerRatings = [];
+            foreach ($performances as $playerId => $perf) {
+                $playerRatings[$playerId] = MatchSimulator::performanceToRating($perf);
+            }
+
+            // 10. Update ET scores, possession, narrative events, and ratings
             $match->update([
                 'home_score_et' => $newHomeScore,
                 'away_score_et' => $newAwayScore,
                 'home_possession' => $remainderResult->homePossession,
                 'away_possession' => $remainderResult->awayPossession,
+                'narrative_events' => $narrativeEvents,
+                'player_ratings' => $playerRatings,
             ]);
 
             return new ResimulationResult(
                 $newHomeScore, $newAwayScore, $oldHomeScore, $oldAwayScore,
                 $remainderResult->homePossession, $remainderResult->awayPossession,
+                $narrativeEvents, $playerRatings,
             );
         });
     }
@@ -445,8 +478,11 @@ class MatchResimulationService
         $competition = \App\Models\Competition::find($competitionId);
         $handlerType = $competition->handler_type ?? 'league';
 
+        // Filter out narrative events (not persisted to DB)
+        $persistableEvents = $events->reject(fn (MatchEventData $e) => $e->isNarrative());
+
         // Bulk insert match events
-        $rows = $events->map(fn (MatchEventData $e) => [
+        $rows = $persistableEvents->map(fn (MatchEventData $e) => [
             'id' => Str::uuid()->toString(),
             'game_id' => $game->id,
             'game_match_id' => $match->id,
@@ -466,7 +502,7 @@ class MatchResimulationService
         $statIncrements = [];
         $specialEvents = [];
 
-        foreach ($events as $event) {
+        foreach ($persistableEvents as $event) {
             $playerId = $event->gamePlayerId;
             $type = $event->type;
 

@@ -448,4 +448,29 @@ return [
     // MVP
     'mvp' => 'MVP',
     'mvp_of_the_match' => 'MVP del partido',
+
+    // Narrative events
+    'live_shot_on_target' => 'Tiro a puerta',
+    'live_shot_off_target' => 'Tiro fuera',
+    'live_dangerous_attack' => 'Ataque peligroso',
+    'live_great_save' => 'Gran parada',
+    'live_near_miss' => 'Casi gol',
+    'live_key_pass' => 'Pase clave',
+
+    // Live stats
+    'live_stat_shots' => 'Tiros',
+    'live_stat_shots_on_target' => 'Tiros a puerta',
+    'live_stat_dangerous_attacks' => 'Ataques peligrosos',
+    'live_stat_momentum' => 'Inercia',
+    'live_match_rating' => 'Valoración',
+
+    // Tactical insights
+    'tactical_insight' => 'Consejo táctico',
+    'insight_press_fading' => 'Tu presión alta está perdiendo efectividad',
+    'insight_opponent_press_fading' => 'La presión del rival está disminuyendo — considera presionar más',
+    'insight_high_line_exploited' => 'Tu línea alta está siendo superada por la velocidad de :player',
+    'insight_counter_opportunity' => 'La línea alta del rival es vulnerable al contraataque',
+    'insight_player_struggling' => ':player está teniendo un mal partido (:rating)',
+    'insight_player_excellent' => ':player está teniendo un partido excepcional',
+    'insight_energy_low' => 'Tu equipo se está cansando — considera hacer cambios',
 ];

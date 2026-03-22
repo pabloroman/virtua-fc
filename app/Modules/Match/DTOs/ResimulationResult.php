@@ -11,5 +11,7 @@ readonly class ResimulationResult
         public int $oldAwayScore,
         public int $homePossession = 50,
         public int $awayPossession = 50,
+        public array $narrativeEvents = [],
+        public array $playerRatings = [],
     ) {}
 }

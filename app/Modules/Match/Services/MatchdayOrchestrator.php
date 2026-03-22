@@ -345,6 +345,52 @@ class MatchdayOrchestrator
             $match->away_team_id,
         );
 
+        // Extract narrative events and player ratings for the live match experience
+        $narrativeEvents = $result->events
+            ->filter(fn (MatchEventData $e) => $e->isNarrative())
+            ->map(fn (MatchEventData $e) => $e->toArray())
+            ->values()
+            ->all();
+
+        // Convert performances to display ratings (1-10 scale)
+        $playerRatings = [];
+        foreach ($performances as $playerId => $perf) {
+            $playerRatings[$playerId] = MatchSimulator::performanceToRating($perf);
+        }
+
+        // Generate tactical insights for user's match
+        if ($isUserMatch) {
+            $userTeamId = $game->team_id;
+            $opponentTeamId = $isUserHome ? $match->away_team_id : $match->home_team_id;
+            $userPlayers = $isUserHome ? $homePlayers : $awayPlayers;
+            $opponentPlayers = $isUserHome ? $awayPlayers : $homePlayers;
+            $userPressing = $isUserHome ? $homePressing : $awayPressing;
+            $oppPressing = $isUserHome ? $awayPressing : $homePressing;
+            $userDefLine = $isUserHome ? $homeDefLine : $awayDefLine;
+            $oppDefLine = $isUserHome ? $awayDefLine : $homeDefLine;
+            $userMentality = $isUserHome ? $homeMentality : $awayMentality;
+            $oppMentality = $isUserHome ? $awayMentality : $homeMentality;
+            $userPlayingStyle = $isUserHome ? $homePlayingStyle : $awayPlayingStyle;
+
+            $insights = $this->matchSimulator->generateInsights(
+                $userTeamId, $opponentTeamId,
+                $userPlayers, $opponentPlayers,
+                0, $userPressing, $oppPressing,
+                $userDefLine, $oppDefLine,
+                $userMentality, $oppMentality,
+                $userPlayingStyle,
+            );
+
+            $insightEvents = $insights->map(fn (MatchEventData $e) => $e->toArray())->values()->all();
+            $narrativeEvents = array_merge($narrativeEvents, $insightEvents);
+        }
+
+        // Store narrative events and ratings on the match for live match display
+        $match->update([
+            'narrative_events' => $narrativeEvents,
+            'player_ratings' => $playerRatings,
+        ]);
+
         return [
             'matchId' => $match->id,
             'homeTeamId' => $match->home_team_id,
@@ -355,7 +401,7 @@ class MatchdayOrchestrator
             'awayPossession' => $result->awayPossession,
             'competitionId' => $match->competition_id,
             'mvpPlayerId' => $mvpPlayerId,
-            'events' => $result->events->map(fn (MatchEventData $e) => $e->toArray())->all(),
+            'events' => $result->events->reject(fn (MatchEventData $e) => $e->isNarrative())->map(fn (MatchEventData $e) => $e->toArray())->all(),
         ];
     }
 

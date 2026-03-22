@@ -67,6 +67,9 @@
                 manualAssignments: {{ Js::from($slotAssignments) }},
                 mvpPlayerName: {!! $mvpPlayerName ? Js::from($mvpPlayerName) : 'null' !!},
                 mvpPlayerTeamId: {!! $mvpPlayerTeamId ? "'" . $mvpPlayerTeamId . "'" : 'null' !!},
+                playerRatings: {{ Js::from($playerRatings) }},
+                homeLineupDisplay: {{ Js::from($homeLineupDisplay) }},
+                awayLineupDisplay: {{ Js::from($awayLineupDisplay) }},
                 translations: {
                     unsavedTacticalChanges: {!! Js::from(__('game.tactical_unsaved_changes')) !!},
                     extraTime: {!! Js::from(__('game.live_extra_time')) !!},
@@ -96,6 +99,25 @@
                     confirmPressing: {!! Js::from(__('game.confirm_pressing')) !!},
                     confirmDefLine: {!! Js::from(__('game.confirm_def_line')) !!},
                     mvpOfTheMatch: {!! Js::from(__('game.mvp_of_the_match')) !!},
+                    shotOnTarget: {!! Js::from(__('game.live_shot_on_target')) !!},
+                    shotOffTarget: {!! Js::from(__('game.live_shot_off_target')) !!},
+                    dangerousAttack: {!! Js::from(__('game.live_dangerous_attack')) !!},
+                    greatSave: {!! Js::from(__('game.live_great_save')) !!},
+                    nearMiss: {!! Js::from(__('game.live_near_miss')) !!},
+                    keyPass: {!! Js::from(__('game.live_key_pass')) !!},
+                    statShots: {!! Js::from(__('game.live_stat_shots')) !!},
+                    statShotsOnTarget: {!! Js::from(__('game.live_stat_shots_on_target')) !!},
+                    statDangerousAttacks: {!! Js::from(__('game.live_stat_dangerous_attacks')) !!},
+                    statMomentum: {!! Js::from(__('game.live_stat_momentum')) !!},
+                    matchRating: {!! Js::from(__('game.live_match_rating')) !!},
+                    insightPressFading: {!! Js::from(__('game.insight_press_fading')) !!},
+                    insightOpponentPressFading: {!! Js::from(__('game.insight_opponent_press_fading')) !!},
+                    insightHighLineExploited: {!! Js::from(__('game.insight_high_line_exploited')) !!},
+                    insightCounterOpportunity: {!! Js::from(__('game.insight_counter_opportunity')) !!},
+                    insightPlayerStruggling: {!! Js::from(__('game.insight_player_struggling')) !!},
+                    insightPlayerExcellent: {!! Js::from(__('game.insight_player_excellent')) !!},
+                    insightEnergyLow: {!! Js::from(__('game.insight_energy_low')) !!},
+                    tacticalInsight: {!! Js::from(__('game.tactical_insight')) !!},
                 },
              })"
              x-on:keydown.escape.window="if (!tacticalPanelOpen) skipToEnd()"
@@ -311,6 +333,28 @@
 
                 </div>{{-- /sticky padding --}}
                 </div>{{-- /sticky header --}}
+
+                {{-- Tactical Insight Banner --}}
+                <div x-show="activeInsight" x-cloak
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 -translate-y-2"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100"
+                     x-transition:leave-end="opacity-0"
+                     class="mx-4 mb-2">
+                    <div class="flex items-start gap-2.5 px-3 py-2.5 rounded-lg bg-accent-blue/10 border border-accent-blue/20"
+                         @click="dismissInsight()">
+                        <svg class="w-4 h-4 text-accent-blue shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        </svg>
+                        <div class="flex-1 min-w-0">
+                            <span class="text-[10px] font-semibold uppercase tracking-wider text-accent-blue" x-text="translations.tacticalInsight"></span>
+                            <p class="text-xs text-text-body mt-0.5" x-text="activeInsightText"></p>
+                        </div>
+                        <span class="text-[10px] text-text-muted shrink-0 mt-0.5">✕</span>
+                    </div>
+                </div>
 
                 {{-- Tab Navigation --}}
                 <div class="flex items-center justify-center gap-0 px-4 border-b border-border-default overflow-x-auto scrollbar-hide">
@@ -559,7 +603,29 @@
 
                 {{-- Tab: Stats --}}
                 <div x-show="activeTab === 'stats'" x-cloak class="px-4 sm:px-6 md:px-8 py-4">
-                    <div class="max-w-lg mx-auto space-y-4">
+                    <div class="max-w-lg mx-auto space-y-3">
+
+                        {{-- Momentum Indicator --}}
+                        <div class="mb-2">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-[10px] font-semibold uppercase tracking-wider"
+                                      :class="getMomentum() > 0 ? 'text-accent-green' : 'text-text-muted'"
+                                      x-text="getMomentum() > 0 ? '▲' : ''"></span>
+                                <span class="text-[10px] text-text-muted uppercase tracking-wider" x-text="translations.statMomentum"></span>
+                                <span class="text-[10px] font-semibold uppercase tracking-wider"
+                                      :class="getMomentum() < 0 ? 'text-accent-red' : 'text-text-muted'"
+                                      x-text="getMomentum() < 0 ? '▲' : ''"></span>
+                            </div>
+                            <div class="flex h-2.5 rounded-full overflow-hidden bg-surface-700">
+                                <div class="h-full transition-all duration-1000 ease-out rounded-l-full"
+                                     :class="getMomentum() >= 0 ? 'bg-accent-green' : 'bg-surface-700'"
+                                     :style="'width: ' + (50 + getMomentum() * 3) + '%'"></div>
+                                <div class="w-0.5 h-full bg-surface-600 shrink-0"></div>
+                                <div class="h-full transition-all duration-1000 ease-out rounded-r-full flex-1"
+                                     :class="getMomentum() < 0 ? 'bg-accent-red' : 'bg-surface-700'"></div>
+                            </div>
+                        </div>
+
                         {{-- Possession --}}
                         <div>
                             <div class="flex items-center justify-between mb-1.5">
@@ -568,13 +634,44 @@
                                 <span class="font-heading font-bold text-sm text-text-primary tabular-nums" x-text="awayPossession + '%'"></span>
                             </div>
                             <div class="flex h-2 rounded-full overflow-hidden gap-0.5">
-                                <div class="h-full rounded-l-full bg-blue-500 transition-all duration-700" :style="'width: ' + homePossession + '%'"></div>
-                                <div class="h-full rounded-r-full bg-blue-800 transition-all duration-700" :style="'width: ' + awayPossession + '%'"></div>
+                                <div class="h-full rounded-l-full bg-accent-blue transition-all duration-700" :style="'width: ' + homePossession + '%'"></div>
+                                <div class="h-full rounded-r-full bg-accent-blue/40 transition-all duration-700" :style="'width: ' + awayPossession + '%'"></div>
+                            </div>
+                        </div>
+
+                        {{-- Shots --}}
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="font-heading font-bold text-sm text-text-primary tabular-nums" x-text="getLiveStat('shots', 'home')"></span>
+                                <span class="text-[10px] text-text-muted uppercase tracking-wider" x-text="translations.statShots"></span>
+                                <span class="font-heading font-bold text-sm text-text-primary tabular-nums" x-text="getLiveStat('shots', 'away')"></span>
+                            </div>
+                            <div class="flex h-1.5 rounded-full overflow-hidden gap-0.5">
+                                <div class="h-full rounded-l-full bg-accent-blue/60 transition-all duration-700" :style="'width: ' + getShotBarWidth('home') + '%'"></div>
+                                <div class="h-full rounded-r-full bg-accent-blue/30 transition-all duration-700" :style="'width: ' + getShotBarWidth('away') + '%'"></div>
+                            </div>
+                        </div>
+
+                        {{-- Shots on Target --}}
+                        <div>
+                            <div class="flex items-center justify-between">
+                                <span class="font-heading font-bold text-sm text-text-primary tabular-nums" x-text="getLiveStat('shotsOnTarget', 'home')"></span>
+                                <span class="text-[10px] text-text-muted uppercase tracking-wider" x-text="translations.statShotsOnTarget"></span>
+                                <span class="font-heading font-bold text-sm text-text-primary tabular-nums" x-text="getLiveStat('shotsOnTarget', 'away')"></span>
+                            </div>
+                        </div>
+
+                        {{-- Dangerous Attacks --}}
+                        <div>
+                            <div class="flex items-center justify-between">
+                                <span class="font-heading font-bold text-sm text-text-primary tabular-nums" x-text="getLiveStat('dangerousAttacks', 'home')"></span>
+                                <span class="text-[10px] text-text-muted uppercase tracking-wider" x-text="translations.statDangerousAttacks"></span>
+                                <span class="font-heading font-bold text-sm text-text-primary tabular-nums" x-text="getLiveStat('dangerousAttacks', 'away')"></span>
                             </div>
                         </div>
 
                         {{-- Goals --}}
-                        <div>
+                        <div class="pt-3 border-t border-border-default">
                             <div class="flex items-center justify-between">
                                 <span class="font-heading font-bold text-sm text-text-primary tabular-nums" x-text="homeScore"></span>
                                 <span class="text-[10px] text-text-muted uppercase tracking-wider">{{ __('game.live_stat_goals') }}</span>
@@ -583,7 +680,7 @@
                         </div>
 
                         {{-- Cards --}}
-                        <div class="flex items-center justify-between pt-3 border-t border-border-default">
+                        <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                 <div class="flex items-center gap-1">
                                     <div class="w-3 h-4 rounded-[2px] bg-accent-gold"></div>
@@ -609,19 +706,10 @@
 
                         {{-- Substitutions --}}
                         <div>
-                            <div class="flex items-center justify-between mb-1.5">
+                            <div class="flex items-center justify-between">
                                 <span class="font-heading font-bold text-sm text-text-primary tabular-nums" x-text="getStatCount('substitution', 'home')"></span>
                                 <span class="text-[10px] text-text-muted uppercase tracking-wider">{{ __('game.live_stat_subs') }}</span>
                                 <span class="font-heading font-bold text-sm text-text-primary tabular-nums" x-text="getStatCount('substitution', 'away')"></span>
-                            </div>
-                        </div>
-
-                        {{-- Injuries --}}
-                        <div>
-                            <div class="flex items-center justify-between mb-1.5">
-                                <span class="font-heading font-bold text-sm text-text-primary tabular-nums" x-text="getStatCount('injury', 'home')"></span>
-                                <span class="text-[10px] text-text-muted uppercase tracking-wider">{{ __('game.live_stat_injuries') }}</span>
-                                <span class="font-heading font-bold text-sm text-text-primary tabular-nums" x-text="getStatCount('injury', 'away')"></span>
                             </div>
                         </div>
                     </div>
@@ -638,24 +726,18 @@
                                 <span class="text-[10px] text-text-muted ml-auto">{{ $homeFormation }}</span>
                             </div>
                             <div class="space-y-0.5">
-                                @forelse($homeLineupDisplay as $p)
-                                    <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-surface-800/50">
-                                        <span class="inline-flex items-center justify-center w-6 h-6 text-[10px] -skew-x-12 font-semibold text-white shrink-0
-                                            {{ match($p['positionGroup']) {
-                                                'GK' => 'bg-amber-600',
-                                                'DEF' => 'bg-blue-600',
-                                                'MID' => 'bg-green-600',
-                                                'FWD' => 'bg-red-600',
-                                                default => 'bg-surface-600',
-                                            } }}">
-                                            <span class="skew-x-12">{{ $p['positionAbbr'] }}</span>
+                                <template x-for="p in homeLineupDisplay" :key="p.id">
+                                    <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-surface-700/50">
+                                        <span class="inline-flex items-center justify-center w-6 h-6 text-[10px] -skew-x-12 font-semibold text-white shrink-0"
+                                              :class="{'bg-amber-600': p.positionGroup==='GK', 'bg-blue-600': p.positionGroup==='DEF', 'bg-green-600': p.positionGroup==='MID', 'bg-red-600': p.positionGroup==='FWD', 'bg-surface-600': !['GK','DEF','MID','FWD'].includes(p.positionGroup)}">
+                                            <span class="skew-x-12" x-text="p.positionAbbr"></span>
                                         </span>
-                                        <span class="text-xs text-text-body flex-1 truncate">{{ $p['name'] }}</span>
-                                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full text-[9px] font-semibold bg-surface-700 text-text-secondary shrink-0">{{ $p['overallScore'] }}</span>
+                                        <span class="text-xs text-text-body flex-1 truncate" x-text="p.name"></span>
+                                        <span class="inline-flex items-center justify-center min-w-[28px] h-5 rounded-full text-[9px] font-semibold shrink-0 tabular-nums px-1"
+                                              :class="getPlayerRatingClass(p.id)"
+                                              x-text="getPlayerRating(p.id)"></span>
                                     </div>
-                                @empty
-                                    <p class="text-xs text-text-muted italic px-3 py-3">{{ __('game.lineup_unknown') }}</p>
-                                @endforelse
+                                </template>
                             </div>
                         </div>
 
@@ -667,24 +749,18 @@
                                 <span class="text-[10px] text-text-muted ml-auto">{{ $awayFormation }}</span>
                             </div>
                             <div class="space-y-0.5">
-                                @forelse($awayLineupDisplay as $p)
-                                    <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-surface-800/50">
-                                        <span class="inline-flex items-center justify-center w-6 h-6 text-[10px] -skew-x-12 font-semibold text-white shrink-0
-                                            {{ match($p['positionGroup']) {
-                                                'GK' => 'bg-amber-600',
-                                                'DEF' => 'bg-blue-600',
-                                                'MID' => 'bg-green-600',
-                                                'FWD' => 'bg-red-600',
-                                                default => 'bg-surface-600',
-                                            } }}">
-                                            <span class="skew-x-12">{{ $p['positionAbbr'] }}</span>
+                                <template x-for="p in awayLineupDisplay" :key="p.id">
+                                    <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-surface-700/50">
+                                        <span class="inline-flex items-center justify-center w-6 h-6 text-[10px] -skew-x-12 font-semibold text-white shrink-0"
+                                              :class="{'bg-amber-600': p.positionGroup==='GK', 'bg-blue-600': p.positionGroup==='DEF', 'bg-green-600': p.positionGroup==='MID', 'bg-red-600': p.positionGroup==='FWD', 'bg-surface-600': !['GK','DEF','MID','FWD'].includes(p.positionGroup)}">
+                                            <span class="skew-x-12" x-text="p.positionAbbr"></span>
                                         </span>
-                                        <span class="text-xs text-text-body flex-1 truncate">{{ $p['name'] }}</span>
-                                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full text-[9px] font-semibold bg-surface-700 text-text-secondary shrink-0">{{ $p['overallScore'] }}</span>
+                                        <span class="text-xs text-text-body flex-1 truncate" x-text="p.name"></span>
+                                        <span class="inline-flex items-center justify-center min-w-[28px] h-5 rounded-full text-[9px] font-semibold shrink-0 tabular-nums px-1"
+                                              :class="getPlayerRatingClass(p.id)"
+                                              x-text="getPlayerRating(p.id)"></span>
                                     </div>
-                                @empty
-                                    <p class="text-xs text-text-muted italic px-3 py-3">{{ __('game.lineup_unknown') }}</p>
-                                @endforelse
+                                </template>
                             </div>
                         </div>
                     </div>

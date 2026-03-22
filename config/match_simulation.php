@@ -325,6 +325,31 @@ return [
     | reduction from recalculating with 10 players instead of 11.
     |
     */
+    /*
+    |--------------------------------------------------------------------------
+    | Narrative Events
+    |--------------------------------------------------------------------------
+    |
+    | Controls the generation of narrative events (shots, saves, attacks, etc.)
+    | that provide match texture without affecting outcomes. Counts are derived
+    | from xG to maintain consistency with simulation results.
+    |
+    */
+    'narrative' => [
+        // Shots on target ≈ xG × this multiplier (goals are a subset)
+        'shots_on_target_per_xg' => 3.5,
+        // Shots off target ≈ xG × this multiplier
+        'shots_off_target_per_xg' => 2.5,
+        // Dangerous attacks ≈ total shots × this multiplier
+        'dangerous_attacks_per_shot' => 1.8,
+        // Fraction of opponent's shots on target that become great saves
+        'great_save_chance' => 0.35,
+        // Fraction of shots off target that become near misses
+        'near_miss_chance' => 0.30,
+        // Key passes ≈ shots on target × this multiplier
+        'key_passes_per_shot_on_target' => 0.8,
+    ],
+
     'red_card_impact' => [
         'attack_modifier' => 0.80,      // 20% reduction in xG for the 10-man team
         'defense_modifier' => 1.15,     // 15% boost in opponent xG when facing 10 men

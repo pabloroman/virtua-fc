@@ -60,6 +60,25 @@ class ShowLiveMatch
 
         $events = MatchResimulationService::formatMatchEvents($regularEvents);
 
+        // Merge narrative events (stored on match, not in DB events table)
+        $narrativeEvents = $playerMatch->narrative_events ?? [];
+        $regularNarrative = array_filter($narrativeEvents, fn ($e) => ($e['minute'] ?? 0) <= 93);
+        foreach ($regularNarrative as $ne) {
+            $events[] = [
+                'minute' => $ne['minute'],
+                'type' => $ne['event_type'],
+                'playerName' => '',
+                'teamId' => $ne['team_id'],
+                'gamePlayerId' => $ne['game_player_id'] ?? '',
+                'metadata' => $ne['metadata'] ?? null,
+            ];
+        }
+        // Sort all events by minute
+        usort($events, fn ($a, $b) => $a['minute'] <=> $b['minute']);
+
+        // Player ratings for live display
+        $playerRatings = $playerMatch->player_ratings ?? [];
+
         // Load other matches from the same competition/matchday for the ticker
         // For Swiss-format competitions, round_number overlaps between league phase
         // and knockout phase, so also filter by round_name to avoid mixing results.
@@ -187,6 +206,7 @@ class ShowLiveMatch
             ->whereIn('id', $ids)
             ->get()
             ->map(fn ($p) => [
+                'id' => $p->id,
                 'name' => $p->player->name ?? '',
                 'positionAbbr' => PositionMapper::toAbbreviation($p->position),
                 'positionGroup' => $p->position_group,
@@ -313,6 +333,7 @@ class ShowLiveMatch
             'gridConfig' => $gridConfig,
             'pitchPositions' => $game->tactics?->default_pitch_positions ?? [],
             'slotAssignments' => $game->tactics?->default_slot_assignments ?? [],
+            'playerRatings' => $playerRatings,
         ]);
     }
 

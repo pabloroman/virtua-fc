@@ -154,6 +154,8 @@ class TacticalChangeService
             'homePossession' => $result->homePossession,
             'awayPossession' => $result->awayPossession,
             'substitutions' => $substitutionDetails,
+            'narrativeEvents' => $result->narrativeEvents,
+            'playerRatings' => $result->playerRatings,
         ];
 
         if ($isExtraTime) {

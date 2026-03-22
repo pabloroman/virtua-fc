@@ -117,6 +117,8 @@ class GameMatch extends Model
         'away_possession',
         'mvp_player_id',
         'substitutions',
+        'narrative_events',
+        'player_ratings',
     ];
 
     protected $casts = [
@@ -145,6 +147,8 @@ class GameMatch extends Model
         'home_possession' => 'integer',
         'away_possession' => 'integer',
         'substitutions' => 'array',
+        'narrative_events' => 'array',
+        'player_ratings' => 'array',
     ];
 
     public function game(): BelongsTo
