@@ -17,7 +17,7 @@
 
                     {{-- Tab Navigation --}}
                     <x-section-nav :items="[
-                        ['href' => route('game.transfers', $game->id), 'label' => __('transfers.incoming'), 'active' => false, 'badge' => $counterOfferCount > 0 ? $counterOfferCount : null],
+                        ['href' => route('game.transfers', $game->id), 'label' => __('transfers.incoming'), 'active' => false],
                         ['href' => route('game.transfers.outgoing', $game->id), 'label' => __('transfers.outgoing'), 'active' => false, 'badge' => $salidaBadgeCount > 0 ? $salidaBadgeCount : null],
                         ['href' => route('game.scouting', $game->id), 'label' => __('transfers.scouting_tab'), 'active' => false],
                         ['href' => route('game.explore', $game->id), 'label' => __('transfers.explore_tab'), 'active' => true],

@@ -542,66 +542,6 @@ class TransferService
     }
 
     /**
-     * Resolve pending incoming bids after the next matchday.
-     * Called each matchday; evaluates user bids that haven't been resolved yet.
-     */
-    public function resolveIncomingBids(Game $game, ScoutingService $scoutingService): Collection
-    {
-        $pendingBids = TransferOffer::with(['gamePlayer.player', 'gamePlayer.team'])
-            ->where('game_id', $game->id)
-            ->where('direction', TransferOffer::DIRECTION_INCOMING)
-            ->where('offer_type', TransferOffer::TYPE_USER_BID)
-            ->where('status', TransferOffer::STATUS_PENDING)
-            ->whereNull('resolved_at')
-            ->whereNull('negotiation_round') // Skip sync-negotiated offers
-            ->get();
-
-        $resolvedOffers = collect();
-
-        foreach ($pendingBids as $offer) {
-            $evaluation = $scoutingService->evaluateBid($offer->gamePlayer, $offer->transfer_fee, $game);
-
-            if ($evaluation['result'] === 'accepted') {
-                $offer->update([
-                    'asking_price' => $evaluation['asking_price'],
-                ]);
-                $completedImmediately = $this->acceptIncomingOffer($offer);
-
-                $resolvedOffers->push([
-                    'offer' => $offer->fresh(),
-                    'result' => 'accepted',
-                    'completed' => $completedImmediately,
-                ]);
-            } elseif ($evaluation['result'] === 'counter') {
-                $offer->update([
-                    'asking_price' => $evaluation['counter_amount'],
-                    'resolved_at' => $game->current_date,
-                ]);
-
-                $resolvedOffers->push([
-                    'offer' => $offer->fresh(),
-                    'result' => 'counter',
-                    'completed' => false,
-                ]);
-            } else {
-                $offer->update([
-                    'status' => TransferOffer::STATUS_REJECTED,
-                    'asking_price' => $evaluation['asking_price'],
-                    'resolved_at' => $game->current_date,
-                ]);
-
-                $resolvedOffers->push([
-                    'offer' => $offer->fresh(),
-                    'result' => 'rejected',
-                    'completed' => false,
-                ]);
-            }
-        }
-
-        return $resolvedOffers;
-    }
-
-    /**
      * Resolve pending incoming loan requests after the next matchday.
      * Called each matchday; evaluates user loan requests that haven't been resolved yet.
      */
@@ -1438,65 +1378,6 @@ class TransferService
     }
 
     /**
-     * Submit a new bid for a player. Returns the created offer or null if budget is insufficient.
-     */
-    public function submitBid(Game $game, GamePlayer $player, int $bidAmountCents, ScoutingService $scoutingService): TransferOffer
-    {
-        if ($bidAmountCents > $this->availableBudget($game)) {
-            throw new \InvalidArgumentException(__('messages.bid_exceeds_budget'));
-        }
-
-        // Prevent duplicate pending bids for the same player
-        $existingBid = TransferOffer::where('game_id', $game->id)
-            ->where('game_player_id', $player->id)
-            ->where('offering_team_id', $game->team_id)
-            ->where('status', TransferOffer::STATUS_PENDING)
-            ->exists();
-
-        if ($existingBid) {
-            throw new \InvalidArgumentException(__('transfers.already_bidding'));
-
-        }
-
-        $wageDemand = $scoutingService->calculateWageDemand($player);
-
-        return TransferOffer::create([
-            'game_id' => $game->id,
-            'game_player_id' => $player->id,
-            'offering_team_id' => $game->team_id,
-            'selling_team_id' => $player->team_id,
-            'offer_type' => TransferOffer::TYPE_USER_BID,
-            'direction' => TransferOffer::DIRECTION_INCOMING,
-            'transfer_fee' => $bidAmountCents,
-            'offered_wage' => $wageDemand,
-            'status' => TransferOffer::STATUS_PENDING,
-            'expires_at' => $game->current_date->addDays(30),
-            'game_date' => $game->current_date,
-        ]);
-    }
-
-    /**
-     * Accept a counter-offer. Returns ['completed' => bool] on success or null if budget is insufficient.
-     */
-    public function acceptCounterOffer(Game $game, TransferOffer $offer): ?array
-    {
-        $counterAmount = $offer->asking_price;
-
-        // Committed budget already includes this offer's transfer_fee — subtract it to avoid double-counting
-        $available = $this->availableBudget($game) + $offer->transfer_fee;
-
-        if ($counterAmount > $available) {
-            return null;
-        }
-
-        $offer->update(['transfer_fee' => $counterAmount]);
-
-        $completedImmediately = $this->acceptIncomingOffer($offer);
-
-        return ['completed' => $completedImmediately];
-    }
-
-    /**
      * Complete a loan-out (user's player goes to AI team).
      */
     private function completeLoanOut(TransferOffer $offer, Game $game): void
@@ -1571,9 +1452,35 @@ class TransferService
             ]);
             $offer = $existing;
         } else {
-            // New negotiation: create via submitBid, then mark as sync
-            $offer = $this->submitBid($game, $player, $bidCents, $scoutingService);
-            $offer->update([
+            // New negotiation: create offer and mark as sync
+            if ($bidCents > $this->availableBudget($game)) {
+                throw new \InvalidArgumentException(__('messages.bid_exceeds_budget'));
+            }
+
+            $existingBid = TransferOffer::where('game_id', $game->id)
+                ->where('game_player_id', $player->id)
+                ->where('offering_team_id', $game->team_id)
+                ->where('status', TransferOffer::STATUS_PENDING)
+                ->exists();
+
+            if ($existingBid) {
+                throw new \InvalidArgumentException(__('transfers.already_bidding'));
+            }
+
+            $wageDemand = $scoutingService->calculateWageDemand($player);
+
+            $offer = TransferOffer::create([
+                'game_id' => $game->id,
+                'game_player_id' => $player->id,
+                'offering_team_id' => $game->team_id,
+                'selling_team_id' => $player->team_id,
+                'offer_type' => TransferOffer::TYPE_USER_BID,
+                'direction' => TransferOffer::DIRECTION_INCOMING,
+                'transfer_fee' => $bidCents,
+                'offered_wage' => $wageDemand,
+                'status' => TransferOffer::STATUS_PENDING,
+                'expires_at' => $game->current_date->addDays(30),
+                'game_date' => $game->current_date,
                 'negotiation_round' => 1,
                 'disposition' => $this->calculateClubDisposition($player, $scoutingService),
             ]);

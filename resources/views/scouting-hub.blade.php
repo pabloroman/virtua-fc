@@ -19,7 +19,7 @@
                     {{-- Tab Navigation + How it works --}}
                     <div x-data="{ helpOpen: false }">
                         <x-section-nav :items="[
-                            ['href' => route('game.transfers', $game->id), 'label' => __('transfers.incoming'), 'active' => false, 'badge' => $counterOfferCount > 0 ? $counterOfferCount : null],
+                            ['href' => route('game.transfers', $game->id), 'label' => __('transfers.incoming'), 'active' => false],
                             ['href' => route('game.transfers.outgoing', $game->id), 'label' => __('transfers.outgoing'), 'active' => false, 'badge' => $salidaBadgeCount > 0 ? $salidaBadgeCount : null],
                             ['href' => route('game.scouting', $game->id), 'label' => __('transfers.scouting_tab'), 'active' => true],
                             ['href' => route('game.explore', $game->id), 'label' => __('transfers.explore_tab'), 'active' => false],
@@ -177,7 +177,6 @@
                                     this.expandedId = this.expandedId === player.id ? null : player.id;
                                     this.confirmRemoveId = null;
                                 },
-                                bidRoute(id) { return '{{ route('game.scouting.bid', [$game->id, '__ID__']) }}'.replace('__ID__', id); },
                                 negotiateRoute(id) { return '{{ route('game.negotiate.transfer', [$game->id, '__ID__']) }}'.replace('__ID__', id); },
                                 loanRoute(id) { return '{{ route('game.scouting.loan', [$game->id, '__ID__']) }}'.replace('__ID__', id); },
                                 preContractRoute(id) { return '{{ route('game.scouting.pre-contract', [$game->id, '__ID__']) }}'.replace('__ID__', id); },

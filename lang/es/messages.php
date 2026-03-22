@@ -19,15 +19,8 @@ return [
     'wage_budget_exceeded' => 'Fichar a este jugador superaría tu presupuesto salarial.',
 
     // Bid/loan submission confirmations
-    'bid_submitted' => 'Tu oferta por :player ha sido enviada. Recibirás respuesta próximamente.',
     'bid_already_exists' => 'Ya tienes una oferta pendiente por este jugador.',
     'loan_request_submitted' => 'Tu solicitud de cesión por :player ha sido enviada. Recibirás respuesta próximamente.',
-
-    // Counter offer
-    'counter_offer_accepted' => '¡Contraoferta aceptada! :player se unirá cuando abra la ventana de :window.',
-    'counter_offer_accepted_immediate' => '¡Fichaje completado! :player se ha unido a tu plantilla.',
-    'counter_offer_rejected' => 'Has rechazado la contraoferta por :player.',
-    'counter_offer_expired' => 'Esta oferta ya no está disponible.',
 
     // Loan messages
     'loan_agreed' => ':message La cesión comenzará cuando abra la ventana de :window.',

@@ -19,15 +19,8 @@ return [
     'wage_budget_exceeded' => 'Signing this player would exceed your wage budget.',
 
     // Bid/loan submission confirmations
-    'bid_submitted' => 'Your bid for :player has been submitted. You will receive a response soon.',
     'bid_already_exists' => 'You already have a pending bid for this player.',
     'loan_request_submitted' => 'Your loan request for :player has been submitted. You will receive a response soon.',
-
-    // Counter offer
-    'counter_offer_accepted' => 'Counter offer accepted! :player will join when the :window window opens.',
-    'counter_offer_accepted_immediate' => 'Transfer complete! :player has joined your squad.',
-    'counter_offer_rejected' => 'You rejected the counter offer for :player.',
-    'counter_offer_expired' => 'This offer is no longer available.',
 
     // Loan messages
     'loan_agreed' => ':message The loan will begin when the :window window opens.',

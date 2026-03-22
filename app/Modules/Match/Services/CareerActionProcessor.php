@@ -60,12 +60,6 @@ class CareerActionProcessor
             $this->notificationService->notifyPreContractResult($game, $result['offer']);
         }
 
-        // Resolve pending incoming bids (deferred from user submission)
-        $resolvedBids = $this->transferService->resolveIncomingBids($game, $this->scoutingService);
-        foreach ($resolvedBids as $result) {
-            $this->notificationService->notifyBidResult($game, $result['offer'], $result['result']);
-        }
-
         // Resolve pending incoming loan requests (deferred from user submission)
         $resolvedLoans = $this->transferService->resolveIncomingLoanRequests($game, $this->scoutingService);
         foreach ($resolvedLoans as $result) {

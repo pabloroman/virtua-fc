@@ -62,7 +62,6 @@ class GameNotification extends Model
     public const TYPE_ACADEMY_EVALUATION = 'academy_evaluation';
     public const TYPE_ACADEMY_BATCH = 'academy_batch';
     public const TYPE_TRANSFER_COMPLETE = 'transfer_complete';
-    public const TYPE_TRANSFER_BID_RESULT = 'transfer_bid_result';
     public const TYPE_LOAN_REQUEST_RESULT = 'loan_request_result';
     public const TYPE_TOURNAMENT_WELCOME = 'tournament_welcome';
     public const TYPE_AI_TRANSFER_ACTIVITY = 'ai_transfer_activity';
@@ -97,7 +96,6 @@ class GameNotification extends Model
         self::TYPE_ACADEMY_EVALUATION => 'academy',
         self::TYPE_ACADEMY_BATCH => 'academy',
         self::TYPE_TRANSFER_COMPLETE => 'squad',
-        self::TYPE_TRANSFER_BID_RESULT => 'scouting',
         self::TYPE_LOAN_REQUEST_RESULT => 'scouting',
         self::TYPE_TOURNAMENT_WELCOME => 'competition',
         self::TYPE_AI_TRANSFER_ACTIVITY => 'transfer-activity',
@@ -210,8 +208,8 @@ class GameNotification extends Model
      */
     public function getNavigationRoute(): string
     {
-        // Accepted/counter bid and loan results navigate to incoming transfers tab
-        if (in_array($this->type, [self::TYPE_TRANSFER_BID_RESULT, self::TYPE_LOAN_REQUEST_RESULT])) {
+        // Accepted/rejected loan results navigate to incoming transfers tab
+        if ($this->type === self::TYPE_LOAN_REQUEST_RESULT) {
             $result = $this->metadata['result'] ?? null;
             return ($result === 'rejected') ? 'game.scouting' : 'game.transfers';
         }
@@ -330,11 +328,6 @@ class GameNotification extends Model
                 'icon_bg' => 'bg-amber-500/10',
                 'icon_text' => 'text-amber-500',
                 'dot' => 'bg-amber-500',
-            ],
-            self::TYPE_TRANSFER_BID_RESULT => [
-                'icon_bg' => 'bg-blue-500/10',
-                'icon_text' => 'text-blue-500',
-                'dot' => 'bg-blue-500',
             ],
             self::TYPE_LOAN_REQUEST_RESULT => [
                 'icon_bg' => 'bg-purple-500/10',

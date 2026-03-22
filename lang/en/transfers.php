@@ -29,15 +29,9 @@ return [
     'loans_out_section' => 'Active Loans (Out)',
     'loan_searches_section' => 'Searching for Loan Destination',
     'loan_searches_help' => 'Players looking for a club to go on loan',
-    'counter_offers_received' => 'Counter Offer(s) Received',
-    'counter_offers_help' => 'Clubs have responded with a different price than you offered',
-
     // Legacy keys kept for compatibility
     'loans' => 'Loans',
 
-    // Pending bids
-    'your_pending_bids' => 'Your Pending Bids',
-    'pending_bids_help' => 'Bids sent that are awaiting a response from the selling club',
     'loan_request' => 'Loan Request',
     'loan_no_fee' => 'Loan (no fee)',
     'free_transfer' => 'Free (no contract)',
@@ -46,8 +40,6 @@ return [
     'sign' => 'Sign',
     'window_closed_for_signing' => 'Transfer window closed — signing unavailable.',
     'wage_exceeds_budget' => 'Wage demand exceeds your wage budget.',
-    'response_next_matchday' => 'Response on the next matchday',
-
     // Rejected bids
     'rejected_bids' => 'Rejected Bids',
     'bid_rejected' => 'Bid rejected',
@@ -122,8 +114,6 @@ return [
     'bid_awaiting_response' => 'Awaiting Response',
     'counter_offer_received' => 'Counter Offer Received',
     'transfer_agreed' => 'Transfer Agreed',
-    'accept_counter' => 'Accept Counter Offer',
-    'reject_counter' => 'Reject',
     'already_bidding' => 'You already have a bid for this player',
     'scouting_assessment' => 'Scouting Assessment',
     'financial_details' => 'Financial Details',
@@ -180,10 +170,6 @@ return [
 
     // Scout search button
     'new_scout_search' => 'New Search',
-
-    // Counter-offer detail
-    'your_bid_amount' => 'Your bid: :amount',
-    'they_ask' => 'They ask: :amount',
 
     // Transfers help text
     'transfers_help_toggle' => 'How do transfers work?',

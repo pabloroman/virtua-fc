@@ -29,15 +29,9 @@ return [
     'loans_out_section' => 'Cesiones Activas (Salidas)',
     'loan_searches_section' => 'Buscando Destino de Cesión',
     'loan_searches_help' => 'Jugadores buscando un club para ser cedidos',
-    'counter_offers_received' => 'Contraoferta(s) Recibida(s)',
-    'counter_offers_help' => 'Los clubes han respondido con un precio diferente al que ofreciste',
-
     // Legacy keys kept for compatibility
     'loans' => 'Cesiones',
 
-    // Pending bids
-    'your_pending_bids' => 'Tus Ofertas Pendientes',
-    'pending_bids_help' => 'Ofertas enviadas que están esperando respuesta del club vendedor',
     'loan_request' => 'Solicitud de Cesión',
     'loan_no_fee' => 'Cesión (sin coste)',
     'free_transfer' => 'Libre (sin contrato)',
@@ -46,8 +40,6 @@ return [
     'sign' => 'Fichar',
     'window_closed_for_signing' => 'Ventana de fichajes cerrada — no se puede fichar.',
     'wage_exceeds_budget' => 'El salario solicitado supera tu presupuesto salarial.',
-    'response_next_matchday' => 'Respuesta en la próxima jornada',
-
     // Rejected bids
     'rejected_bids' => 'Ofertas Rechazadas',
     'bid_rejected' => 'Oferta rechazada',
@@ -123,8 +115,6 @@ return [
     'bid_awaiting_response' => 'Esperando Respuesta',
     'counter_offer_received' => 'Contraoferta Recibida',
     'transfer_agreed' => 'Fichaje Acordado',
-    'accept_counter' => 'Aceptar Contraoferta',
-    'reject_counter' => 'Rechazar',
     'already_bidding' => 'Ya tienes una oferta por este jugador',
     'scouting_assessment' => 'Evaluación del Ojeador',
     'financial_details' => 'Detalles Financieros',
@@ -185,10 +175,6 @@ return [
 
     // Scout search button
     'new_scout_search' => 'Nueva Búsqueda',
-
-    // Counter-offer detail
-    'your_bid_amount' => 'Tu oferta: :amount',
-    'they_ask' => 'Piden: :amount',
 
     // Transfers help text
     'transfers_help_toggle' => '¿Cómo funcionan los traspasos?',
