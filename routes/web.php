@@ -42,6 +42,7 @@ use App\Http\Actions\ProcessExtraTime;
 use App\Http\Actions\ProcessPenalties;
 use App\Http\Actions\InitGame;
 use App\Http\Actions\ListPlayerForTransfer;
+use App\Http\Actions\NegotiateCounterOffer;
 use App\Http\Actions\NegotiateRenewal;
 use App\Http\Actions\NegotiateTransfer;
 use App\Http\Actions\ReleasePlayer;
@@ -167,6 +168,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/game/{gameId}/transfers/withdraw/{offerId}', WithdrawTransferOffer::class)->name('game.transfers.withdraw');
         Route::post('/game/{gameId}/negotiate/renewal/{playerId}', NegotiateRenewal::class)->name('game.negotiate.renewal');
         Route::post('/game/{gameId}/negotiate/transfer/{playerId}', NegotiateTransfer::class)->name('game.negotiate.transfer');
+        Route::post('/game/{gameId}/negotiate/counter-offer/{offerId}', NegotiateCounterOffer::class)->name('game.negotiate.counter-offer');
         Route::post('/game/{gameId}/transfers/decline-renewal/{playerId}', DeclineRenewal::class)->name('game.transfers.decline-renewal');
         Route::post('/game/{gameId}/transfers/reconsider-renewal/{playerId}', ReconsiderRenewal::class)->name('game.transfers.reconsider-renewal');
         Route::post('/game/{gameId}/squad/release/{playerId}', ReleasePlayer::class)->name('game.squad.release');

@@ -616,6 +616,64 @@ class ScoutingService
     }
 
     /**
+     * Evaluate the user's counter-offer from the AI buyer's perspective.
+     *
+     * Called when the user counters an unsolicited or listed offer with a higher asking price.
+     * The AI club evaluates whether to accept, counter, or walk away.
+     *
+     * @return array{result: string, counter_amount: int|null}
+     */
+    public function evaluateCounterOffer(TransferOffer $offer, int $userAskingPrice, Game $game): array
+    {
+        $player = $offer->gamePlayer;
+        $marketValue = $player->market_value_cents;
+
+        // Calculate AI club's squad value to determine budget ceiling
+        $offeringTeamSquadValue = GamePlayer::where('game_id', $game->id)
+            ->where('team_id', $offer->offering_team_id)
+            ->sum('market_value_cents');
+
+        // AI club's max willingness: min of squad-value ceiling and market-value ceiling
+        $squadValueCeiling = (int) ($offeringTeamSquadValue * 0.25);
+        $marketValueCeiling = (int) ($marketValue * 1.30);
+        $maxWillingness = min($squadValueCeiling, $marketValueCeiling);
+
+        // Ensure max willingness is at least the current offer
+        $maxWillingness = max($maxWillingness, $offer->transfer_fee);
+
+        if ($userAskingPrice <= (int) ($maxWillingness * 0.95)) {
+            return [
+                'result' => 'accepted',
+                'counter_amount' => null,
+            ];
+        }
+
+        if ($userAskingPrice <= (int) ($maxWillingness * 1.15)) {
+            // Counter with midpoint of user's ask and AI's current bid, rounded to nearest €100K
+            $counterAmount = (int) (($userAskingPrice + $offer->transfer_fee) / 2);
+            $counterAmount = (int) (round($counterAmount / 10_000_000) * 10_000_000);
+
+            // If rounding makes counter equal to or below the current bid, just accept
+            if ($counterAmount <= $offer->transfer_fee) {
+                return [
+                    'result' => 'accepted',
+                    'counter_amount' => null,
+                ];
+            }
+
+            return [
+                'result' => 'countered',
+                'counter_amount' => $counterAmount,
+            ];
+        }
+
+        return [
+            'result' => 'rejected',
+            'counter_amount' => null,
+        ];
+    }
+
+    /**
      * Check if player is a key player (top 3 by ability on their team).
      */
     private function isKeyPlayer(GamePlayer $player): bool

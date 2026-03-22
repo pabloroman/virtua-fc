@@ -73,13 +73,19 @@
                                                 x-text="msg.content.mood.label"></span>
                                         </div>
                                     </template>
-                                    {{-- Accept counter-offer --}}
+                                    {{-- Accept / Reject counter-offer --}}
                                     <template x-if="msg.options?.canAccept">
-                                        <div class="pt-1">
+                                        <div class="pt-1 flex gap-2">
                                             <button type="button" @click="acceptCounter()"
                                                 class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-accent-green/15 text-accent-green hover:bg-accent-green/25 transition-colors min-h-[36px]">
                                                 {{ __('transfers.chat_accept') }}
                                             </button>
+                                            <template x-if="phase === 'counter_offer'">
+                                                <button type="button" @click="rejectOffer()"
+                                                    class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-accent-red/15 text-accent-red hover:bg-accent-red/25 transition-colors min-h-[36px]">
+                                                    {{ __('transfers.chat_reject') }}
+                                                </button>
+                                            </template>
                                         </div>
                                     </template>
                                 </div>
@@ -108,6 +114,12 @@
                                     <template x-if="msg.type === 'accept'">
                                         <div class="bg-accent-green/15 rounded-xl rounded-tr-sm px-3.5 py-2.5 text-sm text-accent-green font-medium">
                                             {{ __('transfers.chat_user_accepts') }}
+                                        </div>
+                                    </template>
+                                    {{-- User rejects offer --}}
+                                    <template x-if="msg.type === 'reject'">
+                                        <div class="bg-accent-red/15 rounded-xl rounded-tr-sm px-3.5 py-2.5 text-sm text-accent-red font-medium">
+                                            {{ __('transfers.chat_user_rejects') }}
                                         </div>
                                     </template>
                                 </div>
