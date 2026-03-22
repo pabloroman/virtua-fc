@@ -149,7 +149,17 @@ class MatchdayOrchestrator
             ->unique()
             ->values();
 
-        $allPlayers = GamePlayer::with(['player'])
+        $allPlayers = GamePlayer::select([
+                'id', 'game_id', 'player_id', 'team_id', 'position',
+                'fitness', 'morale', 'durability',
+                'game_technical_ability', 'game_physical_ability',
+                'injury_until', 'injury_type',
+                'appearances', 'goals', 'own_goals', 'assists',
+                'yellow_cards', 'red_cards',
+                'goals_conceded', 'clean_sheets',
+                'season_appearances',
+            ])
+            ->with(['player:id,name,date_of_birth,technical_ability,physical_ability'])
             ->where('game_id', $game->id)
             ->whereIn('team_id', $teamIds)
             ->get();
