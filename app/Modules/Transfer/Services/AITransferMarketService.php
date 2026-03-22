@@ -498,7 +498,7 @@ class AITransferMarketService
         $score = 0;
 
         // Position surplus: more surplus = more expendable
-        $surplus = $groupCount - (DispositionService::IDEAL_GROUP_COUNTS[$group] ?? 4);
+        $surplus = $groupCount - (ClubDispositionService::IDEAL_GROUP_COUNTS[$group] ?? 4);
         if ($surplus > 0) {
             $score += $surplus * 3;
         }
@@ -568,7 +568,7 @@ class AITransferMarketService
         }
 
         // Surplus bonus — easier to let go if position group is stocked
-        $surplus = $groupCount - (DispositionService::IDEAL_GROUP_COUNTS[$group] ?? 4);
+        $surplus = $groupCount - (ClubDispositionService::IDEAL_GROUP_COUNTS[$group] ?? 4);
         if ($surplus > 0) {
             $score += min(4, $surplus * 2);
         }
@@ -635,7 +635,7 @@ class AITransferMarketService
             // Position need (groupCounts is kept accurate via adjustGroupCount)
             $buyerGroupCounts = $groupCounts->get($teamId, collect());
             $currentGroupCount = $buyerGroupCounts->get($posGroup, 0);
-            $need = max(0, (DispositionService::IDEAL_GROUP_COUNTS[$posGroup] ?? 4) - $currentGroupCount);
+            $need = max(0, (ClubDispositionService::IDEAL_GROUP_COUNTS[$posGroup] ?? 4) - $currentGroupCount);
 
             $score = $need * 10;
             // Reputation proximity bonus (closer = more realistic)
@@ -707,7 +707,7 @@ class AITransferMarketService
             // Position need (groupCounts is kept accurate via adjustGroupCount)
             $buyerGroupCounts = $groupCounts->get($teamId, collect());
             $currentGroupCount = $buyerGroupCounts->get($posGroup, 0);
-            $need = max(0, (DispositionService::IDEAL_GROUP_COUNTS[$posGroup] ?? 4) - $currentGroupCount);
+            $need = max(0, (ClubDispositionService::IDEAL_GROUP_COUNTS[$posGroup] ?? 4) - $currentGroupCount);
 
             $score = $need * 10;
             // Reputation distance bonus: one step up is most common

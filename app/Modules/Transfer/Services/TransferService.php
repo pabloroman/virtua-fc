@@ -23,7 +23,7 @@ use Illuminate\Support\Str;
 class TransferService
 {
     public function __construct(
-        private readonly DispositionService $dispositionService,
+        private readonly ClubDispositionService $dispositionService,
     ) {}
 
     /**

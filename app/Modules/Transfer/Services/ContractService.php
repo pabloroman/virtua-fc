@@ -64,7 +64,6 @@ class ContractService
     ];
 
     private const FLEXIBILITY_RATIO = 0.18;
-    private const AMBITION_PENALTY_PER_TIER_GAP = 0.12;
 
     /**
      * Calculate annual wage for a player based on market value and age.
@@ -267,69 +266,6 @@ class ContractService
     // =========================================
 
     /**
-     * Renewal premium: players want a raise to renew.
-     */
-    private const RENEWAL_PREMIUM = 1.15; // 15% raise
-
-    /**
-     * Default renewal contract length in years.
-     */
-    private const DEFAULT_RENEWAL_YEARS = 3;
-
-    /**
-     * Calculate what wage a player demands for a contract renewal.
-     * Players expect a raise over their current wage, based on market value.
-     *
-     * @param GamePlayer $player
-     * @return array{wage: int, contractYears: int, formattedWage: string}
-     */
-    public function calculateRenewalDemand(GamePlayer $player): array
-    {
-        $minimumWage = $this->getMinimumWageForTeam($player->team);
-
-        // Calculate fair market wage based on current market value
-        $marketWage = $this->calculateAnnualWage(
-            $player->market_value_cents,
-            $minimumWage,
-            $player->age($player->game->current_date)
-        );
-
-        // Player wants the higher of: current wage + premium, or market wage
-        $currentWageWithPremium = (int) ($player->annual_wage * self::RENEWAL_PREMIUM);
-        $demandedWage = max($currentWageWithPremium, $marketWage);
-
-        // Round to nearest €10K for wages under €1M, €100K otherwise
-        $roundingUnit = $demandedWage < 100_000_000 ? 1_000_000 : 10_000_000;
-        $demandedWage = (int) (round($demandedWage / $roundingUnit) * $roundingUnit);
-
-        // Ensure the demand is at least above the current wage
-        if ($demandedWage <= $player->annual_wage) {
-            $demandedWage = $player->annual_wage + $roundingUnit;
-        }
-
-        // Contract length based on age
-        $contractYears = $this->calculateRenewalYears($player->age($player->game->current_date));
-
-        return [
-            'wage' => $demandedWage,
-            'contractYears' => $contractYears,
-            'formattedWage' => Money::format($demandedWage),
-        ];
-    }
-
-    /**
-     * Calculate how many years a player will sign for based on age.
-     */
-    private function calculateRenewalYears(int $age): int
-    {
-        return match (true) {
-            $age >= PlayerAge::PRIME_END => 1,
-            $age < PlayerAge::YOUNG_END => 5,
-            default => self::DEFAULT_RENEWAL_YEARS,
-        };
-    }
-
-    /**
      * Process a contract renewal offer.
      * Updates contract end date immediately, stores pending wage for end of season.
      *
@@ -430,116 +366,6 @@ class ContractService
     public const MAX_NEGOTIATION_ROUNDS = 3;
 
     /**
-     * Calculate a player's disposition score (0.10 – 0.95).
-     * Higher = more willing to accept a lower wage.
-     */
-    public function calculateDisposition(GamePlayer $player, int $round = 1): float
-    {
-        $disposition = 0.50;
-
-        // Morale bonus
-        $morale = $player->morale;
-        if ($morale >= 80) {
-            $disposition += 0.15;
-        } elseif ($morale >= 60) {
-            $disposition += 0.08;
-        } elseif ($morale < 40) {
-            $disposition -= 0.10;
-        }
-
-        // Appearances bonus
-        $appearances = $player->season_appearances ?? $player->appearances ?? 0;
-        if ($appearances >= 25) {
-            $disposition += 0.10;
-        } elseif ($appearances >= 15) {
-            $disposition += 0.05;
-        } elseif ($appearances < 10) {
-            $disposition -= 0.10;
-        }
-
-        // Age factor
-        $age = $player->age($player->game->current_date);
-        if ($age >= PlayerAge::PRIME_END) {
-            $disposition += 0.12;
-        } elseif ($age >= PlayerAge::primePhaseAge(0.5)) {
-            $disposition += 0.05;
-        } elseif ($age <= PlayerAge::YOUNG_END) {
-            $disposition -= 0.08;
-        }
-
-        // Round penalty
-        if ($round === 2) {
-            $disposition -= 0.05;
-        } elseif ($round >= 3) {
-            $disposition -= 0.10;
-        }
-
-        // Pre-contract pressure (Jan-May)
-        $game = $player->game;
-        $month = $game->current_date->month;
-        if ($month >= 1 && $month <= 5) {
-            // Has a concrete pre-contract offer
-            if ($player->relationLoaded('transferOffers')) {
-                $hasPreContractOffer = $player->transferOffers->contains(function ($offer) {
-                    return $offer->offer_type === TransferOffer::TYPE_PRE_CONTRACT
-                        && $offer->status === TransferOffer::STATUS_PENDING;
-                });
-            } else {
-                $hasPreContractOffer = $player->transferOffers()
-                    ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-                    ->where('status', TransferOffer::STATUS_PENDING)
-                    ->exists();
-            }
-
-            if ($hasPreContractOffer) {
-                $disposition -= 0.15;
-            } else {
-                $disposition -= 0.08;
-            }
-        }
-
-        // Ambition: players too good for their team's reputation want to move up
-        $reputationLevel = TeamReputation::resolveLevel($player->game_id, $player->team_id);
-        $teamReputationIndex = ClubProfile::getReputationTierIndex($reputationLevel); // 0-4
-        $playerTierIndex = $player->tier - 1; // normalize to 0-4
-
-        $tierGap = $playerTierIndex - $teamReputationIndex;
-        if ($tierGap > 0) {
-            $disposition -= $tierGap * self::AMBITION_PENALTY_PER_TIER_GAP;
-        }
-
-        return max(0.10, min(0.95, $disposition));
-    }
-
-    /**
-     * Get the mood label and color for a disposition score.
-     *
-     * @return array{label: string, color: string}
-     */
-    public function getMoodIndicator(float $disposition, string $context = 'renewal'): array
-    {
-        if ($context === 'transfer') {
-            if ($disposition >= 0.65) {
-                return ['label' => __('transfers.mood_willing_sign'), 'color' => 'green'];
-            }
-            if ($disposition >= 0.40) {
-                return ['label' => __('transfers.mood_open_sign'), 'color' => 'amber'];
-            }
-
-            return ['label' => __('transfers.mood_reluctant_sign'), 'color' => 'red'];
-        }
-
-        if ($disposition >= 0.65) {
-            return ['label' => __('transfers.mood_willing'), 'color' => 'green'];
-        }
-        if ($disposition >= 0.40) {
-            return ['label' => __('transfers.mood_open'), 'color' => 'amber'];
-        }
-
-        return ['label' => __('transfers.mood_reluctant'), 'color' => 'red'];
-    }
-
-    /**
      * Calculate the years modifier based on offered vs preferred years.
      */
     private function calculateYearsModifier(int $offeredYears, int $preferredYears): float
@@ -561,7 +387,7 @@ class ContractService
      */
     public function initiateNegotiation(GamePlayer $player, int $offerWage, int $offeredYears): RenewalNegotiation
     {
-        $demand = $this->calculateRenewalDemand($player);
+        $demand = app(PlayerDispositionService::class)->calculateWageDemand($player, 'renewal', app(ScoutingService::class));
 
         // Check for any previous negotiations (for round carry-over)
         $previousNegotiation = RenewalNegotiation::where('game_player_id', $player->id)
@@ -596,7 +422,7 @@ class ContractService
     public function evaluateOffer(RenewalNegotiation $negotiation): string
     {
         $player = $negotiation->gamePlayer;
-        $disposition = $this->calculateDisposition($player, $negotiation->round);
+        $disposition = app(PlayerDispositionService::class)->calculateDisposition($player, 'renewal', $negotiation->round);
 
         // Calculate minimum acceptable wage
         $flexibility = $disposition * self::FLEXIBILITY_RATIO;
@@ -982,70 +808,6 @@ class ContractService
     // =========================================
 
     /**
-     * Calculate a player's disposition for a transfer (willingness to join).
-     * Different from renewal — considers team attractiveness, not appearances.
-     */
-    public function calculateTransferDisposition(GamePlayer $player, Game $buyingClubGame, int $round = 1): float
-    {
-        $disposition = 0.50;
-
-        // Morale (content player = open to moves)
-        $morale = $player->morale;
-        if ($morale >= 70) {
-            $disposition += 0.10;
-        } elseif ($morale < 40) {
-            $disposition -= 0.05;
-        }
-
-        // Age (older = wants a good final contract)
-        $age = $player->age($player->game->current_date);
-        if ($age >= PlayerAge::PRIME_END) {
-            $disposition += 0.10;
-        } elseif ($age <= PlayerAge::YOUNG_END) {
-            $disposition -= 0.05;
-        }
-
-        // Team reputation comparison
-        $buyingRep = $buyingClubGame->team?->reputation ?? 50;
-        $currentRep = $player->team?->reputation ?? 50;
-        if ($buyingRep > $currentRep + 10) {
-            $disposition += 0.15;
-        } elseif ($buyingRep >= $currentRep - 10) {
-            $disposition += 0.05;
-        } else {
-            $disposition -= 0.10;
-        }
-
-        // Round penalty
-        if ($round === 2) {
-            $disposition -= 0.05;
-        } elseif ($round >= 3) {
-            $disposition -= 0.10;
-        }
-
-        return max(0.10, min(0.95, $disposition));
-    }
-
-    /**
-     * Calculate the wage demand for a transfer (what player wants to join).
-     *
-     * @return array{wage: int, contractYears: int, formattedWage: string}
-     */
-    public function calculateTransferWageDemand(GamePlayer $player, ScoutingService $scoutingService): array
-    {
-        $wage = $scoutingService->calculateWageDemand($player);
-        $age = $player->age($player->game->current_date);
-
-        $contractYears = $age >= PlayerAge::PRIME_END ? 1 : ($age >= PlayerAge::primePhaseAge(0.6) ? 2 : 3);
-
-        return [
-            'wage' => $wage,
-            'contractYears' => $contractYears,
-            'formattedWage' => Money::format($wage),
-        ];
-    }
-
-    /**
      * Synchronous personal terms negotiation for transfers.
      * Initiates or continues negotiation, evaluates immediately.
      *
@@ -1065,7 +827,7 @@ class ContractService
             ]);
         } else {
             // New terms negotiation
-            $demand = $this->calculateTransferWageDemand($player, $scoutingService);
+            $demand = app(PlayerDispositionService::class)->calculateWageDemand($player, 'transfer', $scoutingService);
             $offer->update([
                 'terms_status' => 'pending',
                 'terms_round' => 1,
@@ -1077,7 +839,7 @@ class ContractService
         }
 
         // Evaluate
-        $disposition = $this->calculateTransferDisposition($player, $buyingClubGame, $offer->terms_round);
+        $disposition = app(PlayerDispositionService::class)->calculateDisposition($player, 'transfer', $offer->terms_round, $buyingClubGame);
         $offer->update(['terms_disposition' => $disposition]);
 
         $flexibility = $disposition * 0.30;
@@ -1144,65 +906,6 @@ class ContractService
     // =========================================
 
     /**
-     * Calculate a player's disposition for a pre-contract (willingness to sign).
-     * Higher base than transfer — player is running out of contract, more motivated.
-     */
-    public function calculatePreContractDisposition(GamePlayer $player, Game $buyingClubGame, int $round = 1, ?ScoutingService $scoutingService = null): float
-    {
-        $disposition = 0.60;
-
-        // Morale
-        $morale = $player->morale;
-        if ($morale >= 70) {
-            $disposition += 0.10;
-        } elseif ($morale < 40) {
-            $disposition -= 0.05;
-        }
-
-        // Age (older = wants security)
-        $age = $player->age($player->game->current_date);
-        if ($age >= 32) {
-            $disposition += 0.12;
-        } elseif ($age <= 23) {
-            $disposition -= 0.05;
-        }
-
-        // Round penalty
-        if ($round === 2) {
-            $disposition -= 0.05;
-        } elseif ($round >= 3) {
-            $disposition -= 0.10;
-        }
-
-        // Apply reputation gap modifier (same scale the scout willingness uses)
-        if ($scoutingService && $buyingClubGame->team) {
-            $reputationModifier = $scoutingService->calculateReputationModifier($buyingClubGame->team, $player);
-            $disposition *= $reputationModifier;
-        }
-
-        return max(0.10, min(0.95, $disposition));
-    }
-
-    /**
-     * Calculate the wage demand for a pre-contract signing.
-     *
-     * @return array{wage: int, contractYears: int, formattedWage: string}
-     */
-    public function calculatePreContractWageDemand(GamePlayer $player, ScoutingService $scoutingService): array
-    {
-        $wage = $scoutingService->calculatePreContractWageDemand($player);
-        $age = $player->age($player->game->current_date);
-
-        $contractYears = $age >= 33 ? 1 : ($age >= 30 ? 2 : 3);
-
-        return [
-            'wage' => $wage,
-            'contractYears' => $contractYears,
-            'formattedWage' => Money::format($wage),
-        ];
-    }
-
-    /**
      * Synchronous personal terms negotiation for pre-contracts.
      *
      * @return array{result: string, offer: TransferOffer}
@@ -1221,7 +924,7 @@ class ContractService
             ]);
         } else {
             // New terms negotiation
-            $demand = $this->calculatePreContractWageDemand($player, $scoutingService);
+            $demand = app(PlayerDispositionService::class)->calculateWageDemand($player, 'pre_contract', $scoutingService);
             $offer->update([
                 'terms_status' => 'pending',
                 'terms_round' => 1,
@@ -1233,7 +936,7 @@ class ContractService
         }
 
         // Evaluate
-        $disposition = $this->calculatePreContractDisposition($player, $buyingClubGame, $offer->terms_round, $scoutingService);
+        $disposition = app(PlayerDispositionService::class)->calculateDisposition($player, 'pre_contract', $offer->terms_round, $buyingClubGame, $scoutingService);
         $offer->update(['terms_disposition' => $disposition]);
 
         $flexibility = $disposition * 0.30;

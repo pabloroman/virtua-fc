@@ -2,7 +2,7 @@
 
 namespace App\Http\Views;
 
-use App\Modules\Transfer\Services\DispositionService;
+use App\Modules\Transfer\Services\ClubDispositionService;
 use App\Modules\Transfer\Services\ScoutingService;
 use App\Modules\Transfer\Services\TransferHeaderService;
 use App\Models\Game;
@@ -17,7 +17,7 @@ class ShowScoutingHub
 {
     public function __construct(
         private readonly ScoutingService $scoutingService,
-        private readonly DispositionService $dispositionService,
+        private readonly ClubDispositionService $dispositionService,
         private readonly TransferHeaderService $headerService,
     ) {}
 

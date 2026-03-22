@@ -8,7 +8,7 @@ use App\Models\GamePlayer;
 use App\Models\TeamReputation;
 use App\Modules\Player\PlayerAge;
 
-class DispositionService
+class ClubDispositionService
 {
     /**
      * Ideal squad depth per position group.

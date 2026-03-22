@@ -6,6 +6,8 @@ use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\RenewalNegotiation;
 use App\Modules\Transfer\Services\ContractService;
+use App\Modules\Transfer\Services\PlayerDispositionService;
+use App\Modules\Transfer\Services\ScoutingService;
 use App\Support\Money;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,6 +19,8 @@ class NegotiateRenewal
 
     public function __construct(
         private readonly ContractService $contractService,
+        private readonly PlayerDispositionService $playerDispositionService,
+        private readonly ScoutingService $scoutingService,
     ) {}
 
     public function __invoke(Request $request, string $gameId, string $playerId): JsonResponse
@@ -53,8 +57,8 @@ class NegotiateRenewal
             ->first();
 
         if ($existing) {
-            $disposition = $this->contractService->calculateDisposition($player, $existing->round);
-            $mood = $this->contractService->getMoodIndicator($disposition);
+            $disposition = $this->playerDispositionService->calculateDisposition($player, 'renewal', $existing->round);
+            $mood = $this->playerDispositionService->getMoodIndicator($disposition);
 
             return response()->json([
                 'status' => 'ok',
@@ -88,9 +92,9 @@ class NegotiateRenewal
             ], 422);
         }
 
-        $demand = $this->contractService->calculateRenewalDemand($player);
-        $disposition = $this->contractService->calculateDisposition($player);
-        $mood = $this->contractService->getMoodIndicator($disposition);
+        $demand = $this->playerDispositionService->calculateWageDemand($player, 'renewal', $this->scoutingService);
+        $disposition = $this->playerDispositionService->calculateDisposition($player, 'renewal');
+        $mood = $this->playerDispositionService->getMoodIndicator($disposition);
 
         return response()->json([
             'status' => 'ok',
@@ -162,7 +166,7 @@ class NegotiateRenewal
                         ]),
                         'wage' => (int) ($negotiation->counter_offer / 100),
                         'years' => $negotiation->preferred_years,
-                        'mood' => $this->contractService->getMoodIndicator($negotiation->disposition),
+                        'mood' => $this->playerDispositionService->getMoodIndicator($negotiation->disposition),
                     ], [
                         'canAccept' => true,
                         'suggestedWage' => $this->calculateMidpointInEuros($negotiation->user_offer, $negotiation->counter_offer),

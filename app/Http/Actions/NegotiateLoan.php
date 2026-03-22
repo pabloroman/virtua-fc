@@ -7,7 +7,7 @@ use App\Models\GamePlayer;
 use App\Models\TransferOffer;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Transfer\Services\ContractService;
-use App\Modules\Transfer\Services\DispositionService;
+use App\Modules\Transfer\Services\ClubDispositionService;
 use App\Modules\Transfer\Services\ScoutingService;
 use App\Modules\Transfer\Services\TransferService;
 use App\Support\Money;
@@ -22,7 +22,7 @@ class NegotiateLoan
     public function __construct(
         private readonly TransferService $transferService,
         private readonly ScoutingService $scoutingService,
-        private readonly DispositionService $dispositionService,
+        private readonly ClubDispositionService $dispositionService,
         private readonly NotificationService $notificationService,
     ) {}
 
