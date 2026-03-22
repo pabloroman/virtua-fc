@@ -138,10 +138,13 @@
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                     </svg>
-                                    <template x-if="negotiationStatus === 'completed'">
+                                    <template x-if="mode === 'renewal'">
+                                        <span>{{ __('transfers.chat_renewal_agreed') }}</span>
+                                    </template>
+                                    <template x-if="mode !== 'renewal' && negotiationStatus === 'completed'">
                                         <span>{{ __('transfers.chat_deal_agreed') }}</span>
                                     </template>
-                                    <template x-if="negotiationStatus !== 'completed'">
+                                    <template x-if="mode !== 'renewal' && negotiationStatus !== 'completed'">
                                         <span>{{ __('transfers.chat_club_agreement') }}</span>
                                     </template>
                                 </span>

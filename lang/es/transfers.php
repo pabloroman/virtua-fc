@@ -308,6 +308,7 @@ return [
     'chat_user_accepts' => '¡Trato!',
     'chat_deal_agreed' => 'Fichaje acordado',
     'chat_club_agreement' => 'Acuerdo entre clubes',
+    'chat_renewal_agreed' => 'Renovación acordada',
     'chat_deal_failed' => 'Negociación fallida',
     'chat_continue' => 'Continuar',
     'chat_round' => 'Ronda :current/:max',
