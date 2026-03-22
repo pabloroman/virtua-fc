@@ -7,6 +7,8 @@ use App\Models\GamePlayer;
 use App\Models\TransferOffer;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Transfer\Services\ContractService;
+use App\Modules\Transfer\Services\ClubDispositionService;
+use App\Modules\Transfer\Services\PlayerDispositionService;
 use App\Modules\Transfer\Services\ScoutingService;
 use App\Support\Money;
 use Illuminate\Http\JsonResponse;
@@ -20,6 +22,8 @@ class NegotiatePreContract
     public function __construct(
         private readonly ContractService $contractService,
         private readonly ScoutingService $scoutingService,
+        private readonly ClubDispositionService $dispositionService,
+        private readonly PlayerDispositionService $playerDispositionService,
         private readonly NotificationService $notificationService,
     ) {}
 
@@ -115,7 +119,7 @@ class NegotiatePreContract
         }
 
         // Calculate wage demand (deterministic — no variance)
-        $demand = $this->contractService->calculatePreContractWageDemand($player, $this->scoutingService);
+        $demand = $this->playerDispositionService->calculateWageDemand($player, 'pre_contract', $this->scoutingService);
         $mood = $this->getWillingnessMood($player, $game);
         $demandInEuros = (int) ($demand['wage'] / 100);
 
@@ -289,7 +293,7 @@ class NegotiatePreContract
      */
     private function getWillingnessMood(GamePlayer $player, Game $game): array
     {
-        $willingness = $this->scoutingService->calculateWillingness($player, $game);
+        $willingness = $this->dispositionService->calculateWillingness($player, $game, $this->scoutingService);
 
         return match ($willingness['label']) {
             'very_interested', 'open' => ['label' => __('transfers.mood_willing_sign'), 'color' => 'green'],

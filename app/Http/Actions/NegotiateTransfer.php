@@ -7,6 +7,8 @@ use App\Models\GamePlayer;
 use App\Models\TransferOffer;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Transfer\Services\ContractService;
+use App\Modules\Transfer\Services\ClubDispositionService;
+use App\Modules\Transfer\Services\PlayerDispositionService;
 use App\Modules\Transfer\Services\ScoutingService;
 use App\Modules\Transfer\Services\TransferService;
 use App\Support\Money;
@@ -22,6 +24,8 @@ class NegotiateTransfer
         private readonly TransferService $transferService,
         private readonly ContractService $contractService,
         private readonly ScoutingService $scoutingService,
+        private readonly ClubDispositionService $dispositionService,
+        private readonly PlayerDispositionService $playerDispositionService,
         private readonly NotificationService $notificationService,
     ) {}
 
@@ -65,8 +69,8 @@ class NegotiateTransfer
             ->first();
 
         if ($existing && $existing->asking_price > $existing->transfer_fee) {
-            $disposition = $this->transferService->calculateClubDisposition($player, $this->scoutingService);
-            $mood = $this->transferService->getClubMoodIndicator($disposition);
+            $disposition = $this->dispositionService->calculateSellDisposition($player, $this->scoutingService);
+            $mood = $this->dispositionService->getMoodIndicator($disposition);
             $teamName = $player->team?->name ?? 'Unknown';
 
             return response()->json([
@@ -134,8 +138,8 @@ class NegotiateTransfer
 
         // New negotiation — show asking price
         $askingPrice = $this->scoutingService->calculateAskingPrice($player);
-        $disposition = $this->transferService->calculateClubDisposition($player, $this->scoutingService);
-        $mood = $this->transferService->getClubMoodIndicator($disposition);
+        $disposition = $this->dispositionService->calculateSellDisposition($player, $this->scoutingService);
+        $mood = $this->dispositionService->getMoodIndicator($disposition);
         $teamName = $player->team?->name ?? 'Unknown';
 
         $suggestedBidEuros = (int) ($askingPrice / 100);
@@ -211,8 +215,8 @@ class NegotiateTransfer
                             'fee' => Money::format($offer->asking_price),
                         ]),
                         'fee' => (int) ($offer->asking_price / 100),
-                        'mood' => $this->transferService->getClubMoodIndicator(
-                            $this->transferService->calculateClubDisposition($player, $this->scoutingService)
+                        'mood' => $this->dispositionService->getMoodIndicator(
+                            $this->dispositionService->calculateSellDisposition($player, $this->scoutingService)
                         ),
                     ], [
                         'canAccept' => true,
@@ -300,8 +304,8 @@ class NegotiateTransfer
 
         // Check for existing countered terms to resume
         if ($offer->terms_status === 'countered') {
-            $disposition = $this->contractService->calculateTransferDisposition($player, $game, $offer->terms_round ?? 1);
-            $mood = $this->contractService->getMoodIndicator($disposition, 'transfer');
+            $disposition = $this->playerDispositionService->calculateDisposition($player, 'transfer', $offer->terms_round ?? 1, $game);
+            $mood = $this->playerDispositionService->getMoodIndicator($disposition, 'transfer');
 
             return response()->json([
                 'status' => 'ok',
@@ -335,15 +339,15 @@ class NegotiateTransfer
                 'formattedWage' => Money::format($offer->player_demand),
             ];
         } else {
-            $demand = $this->contractService->calculateTransferWageDemand($player, $this->scoutingService);
+            $demand = $this->playerDispositionService->calculateWageDemand($player, 'transfer', $this->scoutingService);
             $offer->update([
                 'player_demand' => $demand['wage'],
                 'preferred_years' => $demand['contractYears'],
             ]);
         }
 
-        $disposition = $this->contractService->calculateTransferDisposition($player, $game);
-        $mood = $this->contractService->getMoodIndicator($disposition, 'transfer');
+        $disposition = $this->playerDispositionService->calculateDisposition($player, 'transfer', 1, $game);
+        $mood = $this->playerDispositionService->getMoodIndicator($disposition, 'transfer');
 
         return response()->json([
             'status' => 'ok',
@@ -414,7 +418,7 @@ class NegotiateTransfer
                         ]),
                         'wage' => (int) ($offer->wage_counter_offer / 100),
                         'years' => $offer->preferred_years,
-                        'mood' => $this->contractService->getMoodIndicator($offer->terms_disposition, 'transfer'),
+                        'mood' => $this->playerDispositionService->getMoodIndicator($offer->terms_disposition, 'transfer'),
                     ], [
                         'canAccept' => true,
                         'suggestedWage' => $this->calculateMidpointInEuros($offer->offered_wage, $offer->wage_counter_offer),
