@@ -14,6 +14,9 @@ use App\Modules\Player\Services\PlayerTierService;
 
 class GamePlayerTemplateService
 {
+    /** @var array<string, list<string>> Transfermarkt ID → secondary positions */
+    private ?array $secondaryPositionsMap = null;
+
     public function __construct(
         private ContractService $contractService,
         private PlayerDevelopmentService $developmentService,
@@ -257,12 +260,15 @@ class GamePlayerTemplateService
             $currentAbility
         );
 
+        $secondaryPositions = $this->getSecondaryPositions($playerData['id']);
+
         return [
             'season' => $season,
             'player_id' => $player->id,
             'team_id' => $teamId,
             'number' => isset($playerData['number']) ? (int) $playerData['number'] : null,
             'position' => $playerData['position'] ?? 'Unknown',
+            'secondary_positions' => json_encode($secondaryPositions),
             'market_value' => $playerData['marketValue'] ?? null,
             'market_value_cents' => $marketValueCents,
             'contract_until' => $contractUntil,
@@ -311,5 +317,41 @@ class GamePlayerTemplateService
             return $matches[1];
         }
         return null;
+    }
+
+    /**
+     * Get secondary positions for a player by Transfermarkt ID.
+     *
+     * @return list<string>
+     */
+    private function getSecondaryPositions(string $transfermarktId): array
+    {
+        if ($this->secondaryPositionsMap === null) {
+            $this->secondaryPositionsMap = $this->loadSecondaryPositionsMap();
+        }
+
+        return $this->secondaryPositionsMap[$transfermarktId] ?? [];
+    }
+
+    /**
+     * Load the secondary positions data file, keyed by Transfermarkt ID.
+     *
+     * @return array<string, list<string>>
+     */
+    private function loadSecondaryPositionsMap(): array
+    {
+        $path = base_path('data/players/player_positions_ES.json');
+        if (!file_exists($path)) {
+            return [];
+        }
+
+        $entries = json_decode(file_get_contents($path), true);
+        $map = [];
+
+        foreach ($entries as $entry) {
+            $map[$entry['id']] = $entry['positions'] ?? [];
+        }
+
+        return $map;
     }
 }
