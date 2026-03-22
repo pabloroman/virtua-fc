@@ -8,13 +8,14 @@ use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Services\SeasonClosingPipeline;
 use App\Modules\Season\Services\SeasonSetupPipeline;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class ProcessSeasonTransition implements ShouldQueue
+class ProcessSeasonTransition implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -22,10 +23,17 @@ class ProcessSeasonTransition implements ShouldQueue
 
     public int $timeout = 300;
 
+    public int $uniqueFor = 600;
+
     public function __construct(
         public string $gameId,
     ) {
         $this->onQueue('setup');
+    }
+
+    public function uniqueId(): string
+    {
+        return $this->gameId;
     }
 
     public function handle(

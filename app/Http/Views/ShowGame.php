@@ -37,6 +37,7 @@ class ShowGame
             // Re-dispatch if stuck for > 2 minutes
             if ($game->season_transitioning_at->lt(now()->subMinutes(2))) {
                 ProcessSeasonTransition::dispatch($game->id);
+                $game->update(['season_transitioning_at' => now()]);
             }
             return view('game-loading', [
                 'game' => $game,
