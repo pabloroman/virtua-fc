@@ -32,13 +32,13 @@ class EmptySquadSimulationTest extends TestCase
 
         // Run 20 simulations to verify the empty team never scores
         for ($i = 0; $i < 20; $i++) {
-            $result = $this->simulator->simulate(
+            $output = $this->simulator->simulate(
                 $homeTeam, $awayTeam,
                 $homePlayers, $awayPlayers,
             );
 
-            $this->assertEquals(0, $result->awayScore, "Empty squad should never score (iteration {$i})");
-            $this->assertGreaterThanOrEqual(0, $result->homeScore);
+            $this->assertEquals(0, $output->result->awayScore, "Empty squad should never score (iteration {$i})");
+            $this->assertGreaterThanOrEqual(0, $output->result->homeScore);
         }
     }
 
@@ -51,13 +51,13 @@ class EmptySquadSimulationTest extends TestCase
         $awayPlayers = $this->createLineup($game, $awayTeam, 11, 75);
 
         for ($i = 0; $i < 20; $i++) {
-            $result = $this->simulator->simulate(
+            $output = $this->simulator->simulate(
                 $homeTeam, $awayTeam,
                 $homePlayers, $awayPlayers,
             );
 
-            $this->assertEquals(0, $result->homeScore, "Empty squad should never score (iteration {$i})");
-            $this->assertGreaterThanOrEqual(0, $result->awayScore);
+            $this->assertEquals(0, $output->result->homeScore, "Empty squad should never score (iteration {$i})");
+            $this->assertGreaterThanOrEqual(0, $output->result->awayScore);
         }
     }
 
@@ -72,15 +72,15 @@ class EmptySquadSimulationTest extends TestCase
         // Run multiple times to find a match where the home team scores
         $foundGoalEvents = false;
         for ($i = 0; $i < 50; $i++) {
-            $result = $this->simulator->simulate(
+            $output = $this->simulator->simulate(
                 $homeTeam, $awayTeam,
                 $homePlayers, $awayPlayers,
             );
 
-            if ($result->homeScore > 0) {
+            if ($output->result->homeScore > 0) {
                 // Verify goal events exist for every home goal
-                $goalEvents = $result->events->filter(fn ($e) => $e->type === 'goal');
-                $this->assertEquals($result->homeScore, $goalEvents->count(),
+                $goalEvents = $output->result->events->filter(fn ($e) => $e->type === 'goal');
+                $this->assertEquals($output->result->homeScore, $goalEvents->count(),
                     'Each home goal should have a corresponding event');
                 $foundGoalEvents = true;
                 break;
@@ -118,13 +118,13 @@ class EmptySquadSimulationTest extends TestCase
 
         // Simulate remainder from minute 60 (like after a substitution)
         for ($i = 0; $i < 20; $i++) {
-            $result = $this->simulator->simulateRemainder(
+            $output = $this->simulator->simulateRemainder(
                 $homeTeam, $awayTeam,
                 $homePlayers, $awayPlayers,
                 fromMinute: 60,
             );
 
-            $this->assertEquals(0, $result->awayScore, "Empty squad should never score in remainder (iteration {$i})");
+            $this->assertEquals(0, $output->result->awayScore, "Empty squad should never score in remainder (iteration {$i})");
         }
     }
 }

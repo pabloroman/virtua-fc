@@ -122,7 +122,7 @@ class MatchResimulationService
         }
 
         // 8. Re-simulate the remainder
-        $remainderResult = $this->matchSimulator->simulateRemainder(
+        $remainderOutput = $this->matchSimulator->simulateRemainder(
             $match->homeTeam,
             $match->awayTeam,
             $homePlayers,
@@ -148,6 +148,7 @@ class MatchResimulationService
         );
 
         // 9. Calculate new final score
+        $remainderResult = $remainderOutput->result;
         $newHomeScore = $scoreAtMinute['home'] + $remainderResult->homeScore;
         $newAwayScore = $scoreAtMinute['away'] + $remainderResult->awayScore;
 

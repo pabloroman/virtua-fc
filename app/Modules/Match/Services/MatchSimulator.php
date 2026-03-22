@@ -4,6 +4,7 @@ namespace App\Modules\Match\Services;
 
 use App\Modules\Match\DTOs\MatchEventData;
 use App\Modules\Match\DTOs\MatchResult;
+use App\Modules\Match\DTOs\MatchSimulationOutput;
 use App\Modules\Lineup\Enums\DefensiveLineHeight;
 use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Enums\Mentality;
@@ -114,7 +115,7 @@ class MatchSimulator
         ?Collection $homeBenchPlayers = null,
         ?Collection $awayBenchPlayers = null,
         string $matchSeed = '',
-    ): MatchResult {
+    ): MatchSimulationOutput {
         return $this->simulateRemainder(
             $homeTeam, $awayTeam,
             $homePlayers, $awayPlayers,
@@ -485,14 +486,6 @@ class MatchSimulator
     }
 
     /**
-     * Reset match performance cache (call before each new match simulation).
-     */
-    private function resetMatchPerformance(): void
-    {
-        $this->matchPerformance = [];
-    }
-
-    /**
      * Get the effective overall score for a player in this match.
      * Combines base ability with match-day performance.
      */
@@ -501,17 +494,6 @@ class MatchSimulator
         $performance = $this->getMatchPerformance($player);
 
         return $player->overall_score * $performance;
-    }
-
-    /**
-     * Get all match performance modifiers after simulation.
-     * Useful for post-match player ratings display.
-     *
-     * @return array<string, float> Map of player ID to performance modifier (0.7-1.3)
-     */
-    public function getMatchPerformances(): array
-    {
-        return $this->matchPerformance;
     }
 
     /**
@@ -750,8 +732,8 @@ class MatchSimulator
         ?Collection $homeBenchPlayers = null,
         ?Collection $awayBenchPlayers = null,
         string $matchSeed = '',
-    ): MatchResult {
-        $this->resetMatchPerformance();
+    ): MatchSimulationOutput {
+        $this->matchPerformance = [];
 
         $homeFormation = $homeFormation ?? Formation::F_4_4_2;
         $awayFormation = $awayFormation ?? Formation::F_4_4_2;
@@ -952,7 +934,10 @@ class MatchSimulator
             $matchSeed,
         );
 
-        return new MatchResult($homeScore, $awayScore, $events, $possession['home'], $possession['away']);
+        return new MatchSimulationOutput(
+            new MatchResult($homeScore, $awayScore, $events, $possession['home'], $possession['away']),
+            $this->matchPerformance,
+        );
     }
 
     /**

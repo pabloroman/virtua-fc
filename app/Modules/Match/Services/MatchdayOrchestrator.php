@@ -313,7 +313,7 @@ class MatchdayOrchestrator
         $homeDefLine = DefensiveLineHeight::tryFrom($match->home_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
         $awayDefLine = DefensiveLineHeight::tryFrom($match->away_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
 
-        $result = $this->matchSimulator->simulate(
+        $output = $this->matchSimulator->simulate(
             $match->homeTeam,
             $match->awayTeam,
             $homePlayers,
@@ -334,8 +334,8 @@ class MatchdayOrchestrator
             matchSeed: $match->id,
         );
 
-        // Capture performance data before next simulation overwrites it
-        $performances = $this->matchSimulator->getMatchPerformances();
+        $result = $output->result;
+        $performances = $output->performances;
         $mvpPlayerId = $this->calculateMvp(
             $result,
             $performances,
