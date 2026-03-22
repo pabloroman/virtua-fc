@@ -10,7 +10,7 @@ export default function negotiationChat() {
 
         // Mode: 'renewal' | 'transfer_fee' | 'personal_terms'
         mode: 'renewal',
-        // Phase: null (renewal) | 'club_fee' | 'personal_terms'
+        // Phase: null (renewal) | 'club_fee' | 'personal_terms' | 'counter_offer'
         phase: null,
 
         // Player info (set on open)
@@ -40,7 +40,7 @@ export default function negotiationChat() {
         },
 
         get wageStep() {
-            if (this.mode === 'transfer_fee') {
+            if (this.mode === 'transfer_fee' || this.phase === 'counter_offer') {
                 return this.offerWage >= 10000000 ? 1000000 : 100000;
             }
             return this.offerWage >= 1000000 ? 100000 : 10000;
@@ -104,7 +104,27 @@ export default function negotiationChat() {
         async submitOffer() {
             if (!this.canSubmit) return;
 
-            if (this.phase === 'club_fee') {
+            if (this.phase === 'counter_offer') {
+                // Counter-offer: user is seller demanding a higher price
+                this.messages.push({
+                    sender: 'user',
+                    type: 'bid',
+                    content: { fee: this.offerWage },
+                    options: null,
+                });
+                this.clearLastOptions();
+                this.loading = true;
+                await this.delay(400 + Math.random() * 300);
+
+                const data = await this.sendAction('counter', { bid: this.offerWage });
+                if (data) {
+                    this.negotiationStatus = data.negotiation_status;
+                    this.round = data.round || this.round;
+                    this.appendMessages(data.messages);
+                    this.prefillFromOptions();
+                }
+                this.loading = false;
+            } else if (this.phase === 'club_fee') {
                 // Show user's bid as a message
                 this.messages.push({
                     sender: 'user',
@@ -194,7 +214,14 @@ export default function negotiationChat() {
             this.loading = true;
             await this.delay(300);
 
-            if (this.phase === 'personal_terms') {
+            if (this.phase === 'counter_offer') {
+                // Counter-offer: user accepts AI buyer's latest bid
+                const data = await this.sendAction('accept_counter');
+                if (data) {
+                    this.negotiationStatus = data.negotiation_status;
+                    this.appendMessages(data.messages);
+                }
+            } else if (this.phase === 'personal_terms') {
                 const data = await this.sendAction('accept_terms_counter');
                 if (data) {
                     this.negotiationStatus = data.negotiation_status;
@@ -218,6 +245,28 @@ export default function negotiationChat() {
                     this.negotiationStatus = data.negotiation_status;
                     this.appendMessages(data.messages);
                 }
+            }
+            this.loading = false;
+        },
+
+        async rejectOffer() {
+            if (this.loading || this.isTerminal) return;
+
+            this.messages.push({
+                sender: 'user',
+                type: 'reject',
+                content: { text: '' },
+                options: null,
+            });
+            this.clearLastOptions();
+
+            this.loading = true;
+            await this.delay(300);
+
+            const data = await this.sendAction('reject');
+            if (data) {
+                this.negotiationStatus = data.negotiation_status;
+                this.appendMessages(data.messages);
             }
             this.loading = false;
         },

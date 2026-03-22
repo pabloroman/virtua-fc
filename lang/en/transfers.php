@@ -311,7 +311,9 @@ return [
     'chat_agent_accepted' => ':player has agreed to :wage/year for :years years. Deal done!',
     'chat_agent_rejected' => ':player\'s agent has left the table. Negotiations have broken down.',
     'chat_accept' => 'Accept',
+    'chat_reject' => 'Reject',
     'chat_user_accepts' => 'Deal!',
+    'chat_user_rejects' => 'Not for sale',
     'chat_deal_agreed' => 'Contract agreed',
     'chat_club_agreement' => 'Club agreement reached',
     'chat_renewal_agreed' => 'Renewal agreed',
@@ -339,4 +341,15 @@ return [
     'chat_player_counter_transfer' => ':player\'s agent insists on :wage/year for :years years.',
     'chat_transfer_complete' => ':player has signed! Welcome to the team.',
     'chat_terms_rejected' => ':player\'s agent has walked away. The deal is off.',
+
+    // Counter-offer negotiation (user selling)
+    'counter_offer_title' => 'Counter-offer',
+    'counter_must_be_higher' => 'Your asking price must be higher than the current offer.',
+    'chat_buyer_opening' => ':team has offered :fee for :player. What is your asking price?',
+    'chat_buyer_counter' => ':team raises their offer to :fee.',
+    'chat_buyer_counter_resume' => ':team\'s latest offer is :fee.',
+    'chat_buyer_accepted' => ':team accepts your price of :fee for :player!',
+    'chat_buyer_rejected' => ':team has withdrawn their interest. The deal is off.',
+    'chat_buyer_deal_complete' => 'Sale agreed! :player will join :team for :fee.',
+    'chat_offer_rejected' => 'You have rejected the offer for :player. The player is not for sale.',
 ];

@@ -1540,6 +1540,59 @@ class TransferService
         return $offer->fresh();
     }
 
+    // =========================================
+    // SYNCHRONOUS COUNTER-OFFER NEGOTIATION
+    // =========================================
+
+    /**
+     * Handle user counter-offering an unsolicited or listed bid.
+     *
+     * The user demands a higher price for their player. The AI buying club
+     * evaluates whether to raise their bid, counter, or walk away.
+     *
+     * @return array{result: string, offer: TransferOffer}
+     */
+    public function negotiateCounterOfferSync(Game $game, TransferOffer $offer, int $userAskingCents, ScoutingService $scoutingService): array
+    {
+        // Increment negotiation round
+        $offer->update([
+            'asking_price' => $userAskingCents,
+            'negotiation_round' => ($offer->negotiation_round ?? 0) + 1,
+        ]);
+
+        $evaluation = $scoutingService->evaluateCounterOffer($offer, $userAskingCents, $game);
+
+        if ($evaluation['result'] === 'accepted') {
+            $offer->update([
+                'transfer_fee' => $userAskingCents,
+            ]);
+            return ['result' => 'accepted', 'offer' => $offer->fresh()];
+        }
+
+        if ($evaluation['result'] === 'countered' && $offer->negotiation_round < ContractService::MAX_NEGOTIATION_ROUNDS) {
+            $offer->update([
+                'transfer_fee' => $evaluation['counter_amount'],
+            ]);
+            return ['result' => 'countered', 'offer' => $offer->fresh()];
+        }
+
+        // Rejected (or countered but at max rounds)
+        $offer->update([
+            'status' => TransferOffer::STATUS_REJECTED,
+            'resolved_at' => $game->current_date,
+        ]);
+        return ['result' => 'rejected', 'offer' => $offer->fresh()];
+    }
+
+    /**
+     * User accepts the AI buyer's latest counter-bid.
+     * Completes the sale via the standard acceptOffer flow.
+     */
+    public function acceptCounterOfferBid(TransferOffer $offer): bool
+    {
+        return $this->acceptOffer($offer);
+    }
+
     /**
      * Calculate selling club's disposition (willingness to sell).
      * Higher = more willing.

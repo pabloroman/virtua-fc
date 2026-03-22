@@ -316,7 +316,9 @@ return [
     'chat_agent_accepted' => ':player ha aceptado :wage/año por :years años. ¡Hecho!',
     'chat_agent_rejected' => 'El agente de :player ha abandonado la mesa. La negociación ha fracasado.',
     'chat_accept' => 'Aceptar',
+    'chat_reject' => 'Rechazar',
     'chat_user_accepts' => '¡Trato!',
+    'chat_user_rejects' => 'No está en venta',
     'chat_deal_agreed' => 'Fichaje acordado',
     'chat_club_agreement' => 'Acuerdo entre clubes',
     'chat_renewal_agreed' => 'Renovación acordada',
@@ -344,4 +346,15 @@ return [
     'chat_player_counter_transfer' => 'El agente de :player insiste en :wage/año durante :years años.',
     'chat_transfer_complete' => '¡:player ha firmado! Bienvenido al equipo.',
     'chat_terms_rejected' => 'El agente de :player se ha marchado. El acuerdo se ha roto.',
+
+    // Counter-offer negotiation (user selling)
+    'counter_offer_title' => 'Contraoferta',
+    'counter_must_be_higher' => 'Tu precio debe ser superior a la oferta actual.',
+    'chat_buyer_opening' => ':team ha ofrecido :fee por :player. ¿Cuál es tu precio?',
+    'chat_buyer_counter' => ':team sube su oferta a :fee.',
+    'chat_buyer_counter_resume' => 'La última oferta de :team es :fee.',
+    'chat_buyer_accepted' => '¡:team acepta tu precio de :fee por :player!',
+    'chat_buyer_rejected' => ':team ha retirado su interés. La negociación ha fracasado.',
+    'chat_buyer_deal_complete' => '¡Venta acordada! :player se unirá a :team por :fee.',
+    'chat_offer_rejected' => 'Has rechazado la oferta por :player. El jugador no está en venta.',
 ];
