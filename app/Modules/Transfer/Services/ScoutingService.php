@@ -313,10 +313,15 @@ class ScoutingService
         }
 
         // Expiring contract filter (last year of contract)
+        $seasonEnd = $game->getSeasonEndDate();
         if (! empty($filters['expiring_contract'])) {
-            $seasonEnd = $game->getSeasonEndDate();
             $query->whereNotNull('contract_until')
                 ->where('contract_until', '<=', $seasonEnd);
+        } else {
+            $query->where(function ($q) use ($seasonEnd) {
+                $q->whereNull('contract_until')
+                    ->orWhere('contract_until', '>', $seasonEnd);
+            });
         }
 
         // Exclude players already on loan
