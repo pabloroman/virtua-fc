@@ -110,8 +110,7 @@ class NegotiateTransfer
         $mood = $this->transferService->getClubMoodIndicator($disposition);
         $teamName = $player->team?->name ?? 'Unknown';
 
-        $suggestedBid = (int) (round(($askingPrice * 0.90) / 10_000_000) * 10_000_000);
-        $suggestedBidEuros = (int) ($suggestedBid / 100);
+        $suggestedBidEuros = (int) ($askingPrice / 100);
 
         return response()->json([
             'status' => 'ok',
