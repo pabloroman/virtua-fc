@@ -102,11 +102,10 @@ class AdvanceMatchdayTest extends TestCase
             ]);
         }
 
-        // Advance matchday
+        // Advance matchday — only the player's match is simulated synchronously
         $action = app(AdvanceMatchday::class);
         $response = $action($this->game->id);
 
-        // Both matches should be played (same matchday, different dates)
         $this->assertDatabaseHas('game_matches', [
             'game_id' => $this->game->id,
             'round_number' => 1,
@@ -114,11 +113,12 @@ class AdvanceMatchdayTest extends TestCase
             'played' => true,
         ]);
 
+        // AI match is deferred — not yet played
         $this->assertDatabaseHas('game_matches', [
             'game_id' => $this->game->id,
             'round_number' => 1,
             'home_team_id' => $team3->id,
-            'played' => true,
+            'played' => false,
         ]);
 
         // Finalize the user's match (standings are deferred until finalization)
@@ -127,6 +127,28 @@ class AdvanceMatchdayTest extends TestCase
             GameMatch::find($this->game->pending_finalization_match_id),
             $this->game,
         );
+
+        // Player's team standings updated after finalization
+        $playerStanding = GameStanding::where('game_id', $this->game->id)
+            ->where('team_id', $this->playerTeam->id)->first();
+        $opponentStanding = GameStanding::where('game_id', $this->game->id)
+            ->where('team_id', $this->opponentTeam->id)->first();
+        $this->assertEquals(1, $playerStanding->played);
+        $this->assertEquals(1, $opponentStanding->played);
+
+        // Advance again — picks up the deferred AI match
+        $this->game->refresh();
+        $this->game->update(['matchday_advancing_at' => now(), 'matchday_advance_result' => null]);
+        app(\App\Modules\Match\Jobs\ProcessMatchdayAdvance::class, ['gameId' => $this->game->id])
+            ->handle(app(\App\Modules\Match\Services\MatchdayOrchestrator::class), app(\App\Modules\Season\Services\ActivationTracker::class));
+
+        // Now the AI match should be played
+        $this->assertDatabaseHas('game_matches', [
+            'game_id' => $this->game->id,
+            'round_number' => 1,
+            'home_team_id' => $team3->id,
+            'played' => true,
+        ]);
 
         // All 4 teams should have 1 game played in standings
         $standings = GameStanding::where('game_id', $this->game->id)->get();

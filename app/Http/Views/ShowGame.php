@@ -76,17 +76,6 @@ class ShowGame
             };
         }
 
-        // Show loading screen while AI batches are processing in background
-        $game->clearStuckAiBatches();
-        if ($game->isProcessingAiBatches()) {
-            return view('game-loading', [
-                'game' => $game,
-                'title' => __('game.simulating_matches'),
-                'message' => __('game.simulating_matches_message'),
-                'showCrest' => true,
-            ]);
-        }
-
         // Show loading screen while matchday advance runs in background
         if ($game->isAdvancingMatchday()) {
             $nextMatch = $this->loadNextMatch($game);

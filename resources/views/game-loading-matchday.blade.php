@@ -80,7 +80,7 @@ $comp = $nextMatch->competition;
                         } catch (e) {
                             // Silently retry on network error
                         }
-                    }, 2000);
+                    }, 1000);
                 }
             };
         }

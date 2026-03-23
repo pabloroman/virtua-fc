@@ -129,23 +129,6 @@ class MatchdayOrchestrator
     }
 
     /**
-     * Process remaining AI-only batches (called from background job).
-     * Returns the number of career action ticks accumulated.
-     */
-    public function processRemainingBatches(Game $game): int
-    {
-        $this->careerActionTicks = 0;
-
-        DB::transaction(function () use ($game) {
-            $game = Game::where('id', $game->id)->lockForUpdate()->first();
-
-            $this->autoSimulateRemainingBatches($game);
-        });
-
-        return $this->careerActionTicks;
-    }
-
-    /**
      * Process a single batch of matches: load players, simulate, process results.
      *
      * @return array{playerMatch: ?GameMatch}
@@ -161,8 +144,8 @@ class MatchdayOrchestrator
         $playerMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
 
         // When the player's match is in this batch, simulate ONLY the player's
-        // match synchronously. Remaining AI matches stay unplayed and are picked
-        // up by ProcessRemainingBatches in the background.
+        // match synchronously. Remaining AI matches stay unplayed and are
+        // processed at the start of the next advance.
         if ($playerMatch) {
             $matches = $matches->filter(fn ($m) => $m->id === $playerMatch->id);
             $handlers = array_intersect_key($handlers, $matches->pluck('competition_id')->flip()->all());
