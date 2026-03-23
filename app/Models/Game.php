@@ -130,6 +130,7 @@ class Game extends Model
         'pending_finalization_match_id',
         'matchday_advancing_at',
         'matchday_advance_result',
+        'remaining_batches_processing_at',
         'deleting_at',
     ];
 
@@ -148,6 +149,7 @@ class Game extends Model
         'career_actions_processing_at' => 'datetime',
         'matchday_advancing_at' => 'datetime',
         'matchday_advance_result' => 'array',
+        'remaining_batches_processing_at' => 'datetime',
         'deleting_at' => 'datetime',
     ];
 
@@ -208,6 +210,30 @@ class Game extends Model
             'matchday_advancing_at' => null,
             'matchday_advance_result' => null,
         ]);
+
+        return true;
+    }
+
+    public function isProcessingRemainingBatches(): bool
+    {
+        return $this->remaining_batches_processing_at !== null;
+    }
+
+    /**
+     * Clear a stuck remaining batches flag (> 2 minutes old).
+     * Returns true if the flag was cleared.
+     */
+    public function clearStuckRemainingBatches(): bool
+    {
+        if (! $this->isProcessingRemainingBatches()) {
+            return false;
+        }
+
+        if (! $this->remaining_batches_processing_at->lt(now()->subMinutes(2))) {
+            return false;
+        }
+
+        $this->update(['remaining_batches_processing_at' => null]);
 
         return true;
     }

@@ -4,6 +4,7 @@ namespace App\Http\Views;
 
 use App\Models\Game;
 use App\Modules\Match\Jobs\ProcessMatchdayAdvance;
+use App\Modules\Match\Jobs\ProcessRemainingBatches;
 use App\Modules\Season\Jobs\ProcessSeasonTransition;
 use App\Modules\Season\Jobs\SetupNewGame;
 use App\Modules\Season\Services\SeasonClosingPipeline;
@@ -42,6 +43,12 @@ class GameSetupStatus
         // Recovery: clear flag if career actions are stuck for > 2 minutes
         $game->clearStuckCareerActions();
 
+        // Recovery: re-dispatch if remaining batches processing is stuck for > 2 minutes
+        if ($game->isProcessingRemainingBatches() && $game->remaining_batches_processing_at->lt(now()->subMinutes(2))) {
+            ProcessRemainingBatches::dispatch($game->id, 0);
+            $game->update(['remaining_batches_processing_at' => now()]);
+        }
+
         // Recovery: re-dispatch if matchday advance is stuck for > 2 minutes
         if ($game->isAdvancingMatchday() && $game->matchday_advancing_at->lt(now()->subMinutes(2))) {
             ProcessMatchdayAdvance::dispatch($game->id);
@@ -59,6 +66,7 @@ class GameSetupStatus
             'ready' => $game->isSetupComplete()
                 && !$game->isTransitioningSeason()
                 && !$game->isProcessingCareerActions()
+                && !$game->isProcessingRemainingBatches()
                 && !$game->isAdvancingMatchday(),
             'progress' => $progress,
         ]);

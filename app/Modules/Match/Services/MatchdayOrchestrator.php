@@ -13,6 +13,7 @@ use App\Modules\Match\DTOs\MatchdayAdvanceResult;
 use App\Modules\Match\DTOs\MatchEventData;
 use App\Modules\Match\DTOs\MatchResult;
 use App\Modules\Match\Jobs\ProcessCareerActions;
+use App\Modules\Match\Jobs\ProcessRemainingBatches;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Squad\Services\EligibilityService;
 use App\Modules\Player\Services\InjuryService;
@@ -71,10 +72,18 @@ class MatchdayOrchestrator
 
             // Process batches until one involves the player's team or the season ends
             while ($batch = $this->matchdayService->getNextMatchBatch($game)) {
-                $result = $this->processBatch($game, $batch);
+                // Check if this batch contains the player's match
+                $batchHasPlayerMatch = $batch['matches']->contains(
+                    fn ($m) => $m->involvesTeam($game->team_id)
+                );
+
+                // When the player's match is in the batch, only simulate their match
+                // — sibling AI matches are deferred to background processing
+                $result = $this->processBatch($game, $batch, $batchHasPlayerMatch);
 
                 if ($result['playerMatch']) {
-                    $this->autoSimulateRemainingBatches($game);
+                    // Defer remaining batches to background — user sees live match immediately
+                    $this->deferRemainingBatches($game);
 
                     return MatchdayAdvanceResult::liveMatch($result['playerMatch']->id);
                 }
@@ -112,8 +121,10 @@ class MatchdayOrchestrator
             return MatchdayAdvanceResult::seasonComplete();
         });
 
-        // Dispatch career actions to background after transaction commits
-        if ($this->careerActionTicks > 0) {
+        // When remaining batches are deferred to background, career actions are
+        // dispatched by processRemainingBatches() after all batches complete.
+        // Only dispatch here for non-deferred flows (season_complete, done, blocked).
+        if ($result->type !== 'live_match' && $this->careerActionTicks > 0) {
             $updated = Game::where('id', $game->id)
                 ->whereNull('career_actions_processing_at')
                 ->update(['career_actions_processing_at' => now()]);
@@ -135,12 +146,20 @@ class MatchdayOrchestrator
      *
      * @return array{playerMatch: ?GameMatch}
      */
-    private function processBatch(Game $game, array $batch): array
+    private function processBatch(Game $game, array $batch, bool $playerMatchOnly = false): array
     {
         $matches = $batch['matches'];
         $handlers = $batch['handlers'];
         $matchday = $batch['matchday'];
         $currentDate = $batch['currentDate'];
+
+        // When playerMatchOnly is true, filter batch to only the player's match
+        // (sibling AI matches in the same batch are deferred to background processing)
+        $playerMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
+        if ($playerMatchOnly && $playerMatch) {
+            $matches = collect([$playerMatch]);
+            $handlers = array_intersect_key($handlers, [$playerMatch->competition_id => true]);
+        }
 
         // --- Load players ---
         $teamIds = $matches->pluck('home_team_id')
@@ -273,6 +292,61 @@ class MatchdayOrchestrator
 
             $this->processBatch($game, $nextBatch);
             $game->refresh()->setRelations([]);
+        }
+    }
+
+    /**
+     * Set flag and dispatch background job to process remaining batches.
+     * Called after the player's match batch is processed during advance().
+     */
+    private function deferRemainingBatches(Game $game): void
+    {
+        $updated = Game::where('id', $game->id)
+            ->whereNull('remaining_batches_processing_at')
+            ->update(['remaining_batches_processing_at' => now()]);
+
+        if ($updated) {
+            try {
+                ProcessRemainingBatches::dispatch($game->id, $this->careerActionTicks);
+            } catch (\Throwable $e) {
+                Game::where('id', $game->id)->update(['remaining_batches_processing_at' => null]);
+            }
+        }
+    }
+
+    /**
+     * Process remaining batches in the background (called by ProcessRemainingBatches job).
+     * Simulates all unplayed batches and dispatches career actions when done.
+     */
+    public function processRemainingBatches(Game $game, int $priorCareerActionTicks): void
+    {
+        $this->careerActionTicks = 0;
+
+        DB::transaction(function () use ($game) {
+            $game = Game::where('id', $game->id)->lockForUpdate()->first();
+
+            $this->autoSimulateRemainingBatches($game);
+        });
+
+        // Total career action ticks = prior (from advance's synchronous batches) + new (from background batches)
+        $totalTicks = $priorCareerActionTicks + $this->careerActionTicks;
+
+        // Clear the remaining batches flag
+        Game::where('id', $game->id)->update(['remaining_batches_processing_at' => null]);
+
+        // Dispatch career actions if any ticks accumulated
+        if ($totalTicks > 0) {
+            $updated = Game::where('id', $game->id)
+                ->whereNull('career_actions_processing_at')
+                ->update(['career_actions_processing_at' => now()]);
+
+            if ($updated) {
+                try {
+                    ProcessCareerActions::dispatch($game->id, $totalTicks);
+                } catch (\Throwable $e) {
+                    Game::where('id', $game->id)->update(['career_actions_processing_at' => null]);
+                }
+            }
         }
     }
 
