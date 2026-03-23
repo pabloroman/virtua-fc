@@ -44,9 +44,9 @@
             {{-- Player info strip --}}
             <div x-show="playerInfo" x-cloak class="shrink-0 border-b border-border-strong px-5 py-2.5 bg-surface-700/30">
                 <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
-                    {{-- Position badge --}}
+                    {{-- Position badge (mirrors x-position-badge size="sm", dynamic because data comes from Alpine) --}}
                     <template x-if="playerInfo?.position">
-                        <span class="inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold rounded -skew-x-12 leading-none"
+                        <span class="inline-flex items-center justify-center w-5 h-5 text-[10px] -skew-x-12 font-semibold"
                             :class="(playerInfo.positionBg || 'bg-surface-600') + ' ' + (playerInfo.positionText || 'text-text-primary')">
                             <span class="skew-x-12" x-text="playerInfo.position"></span>
                         </span>
