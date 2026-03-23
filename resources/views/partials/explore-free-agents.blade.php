@@ -93,23 +93,26 @@
                     {{-- Negotiate button --}}
                     <td class="py-2.5 pr-2 text-center">
                         @if($willingness !== 'unwilling')
-                            @php $posDisp = $gp->position_display; @endphp
-                            <x-icon-button
-                                x-data
-                                @click.prevent="$dispatch('open-negotiation', {
-                                    playerName: @js($gp->name),
-                                    negotiateUrl: @js(route('game.negotiate.free-agent', [$game->id, $gp->id])),
-                                    mode: 'free_agent',
-                                    phase: 'personal_terms',
-                                    chatTitle: @js(__('transfers.chat_free_agent_title')),
-                                    playerInfo: @js([
+                            @php
+                                $posDisp = $gp->position_display;
+                                $freeAgentPayload = \Illuminate\Support\Js::from([
+                                    'playerName' => $gp->name,
+                                    'negotiateUrl' => route('game.negotiate.free-agent', [$game->id, $gp->id]),
+                                    'mode' => 'free_agent',
+                                    'phase' => 'personal_terms',
+                                    'chatTitle' => __('transfers.chat_free_agent_title'),
+                                    'playerInfo' => [
                                         'age' => $gp->age($game->current_date),
                                         'position' => $posDisp['abbreviation'],
                                         'positionBg' => $posDisp['bg'],
                                         'positionText' => $posDisp['text'],
                                         'marketValue' => \App\Support\Money::format($gp->market_value_cents),
-                                    ])
-                                })"
+                                    ],
+                                ]);
+                            @endphp
+                            <x-icon-button
+                                x-data
+                                x-on:click.prevent="$dispatch('open-negotiation', {{ $freeAgentPayload }})"
                                 class="rounded-full text-text-body hover:text-accent-green"
                                 title="{{ __('transfers.explore_negotiate') }}">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

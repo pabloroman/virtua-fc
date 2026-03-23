@@ -478,12 +478,12 @@
                                         @php
                                             $hasPendingOffer = $preContractOffers->where('game_player_id', $player->id)->isNotEmpty();
                                         @endphp
-                                        @php $posDisp = $player->position_display; @endphp
-                                        <tr x-data class="border-t border-border-default transition-colors cursor-pointer {{ $hasPendingOffer ? 'bg-accent-red/10' : 'hover:bg-[rgba(59,130,246,0.05)]' }}"
-                                            @click="$dispatch('open-negotiation', {
-                                                playerName: @js($player->name),
-                                                negotiateUrl: @js(route('game.negotiate.renewal', [$game->id, $player->id])),
-                                                playerInfo: @js([
+                                        @php
+                                            $posDisp = $player->position_display;
+                                            $renewalPayload = \Illuminate\Support\Js::from([
+                                                'playerName' => $player->name,
+                                                'negotiateUrl' => route('game.negotiate.renewal', [$game->id, $player->id]),
+                                                'playerInfo' => [
                                                     'age' => $player->age($game->current_date),
                                                     'wage' => $player->formatted_wage,
                                                     'tec' => $player->technical_ability,
@@ -491,8 +491,11 @@
                                                     'position' => $posDisp['abbreviation'],
                                                     'positionBg' => $posDisp['bg'],
                                                     'positionText' => $posDisp['text'],
-                                                ])
-                                            })">
+                                                ],
+                                            ]);
+                                        @endphp
+                                        <tr x-data class="border-t border-border-default transition-colors cursor-pointer {{ $hasPendingOffer ? 'bg-accent-red/10' : 'hover:bg-[rgba(59,130,246,0.05)]' }}"
+                                            x-on:click="$dispatch('open-negotiation', {{ $renewalPayload }})">
                                             <td class="py-2.5 pl-4 text-center">
                                                 <x-position-badge :position="$player->position" size="sm" />
                                             </td>

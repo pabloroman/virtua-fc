@@ -74,24 +74,27 @@ $canNegotiateFreeAgent = $isFreeAgent && !$isOwnTeam;
     {{-- Offer button --}}
     <td class="py-2 pr-1 text-center">
         @if($canOffer)
-            @php $posDisp = $player->position_display; @endphp
-            <x-icon-button
-                x-data
-                @click.prevent="$dispatch('open-negotiation', {
-                    playerName: @js($player->name),
-                    negotiateUrl: @js(route('game.negotiate.transfer', [$game->id, $player->id])),
-                    mode: 'transfer_fee',
-                    phase: 'club_fee',
-                    chatTitle: @js(__('transfers.chat_transfer_title')),
-                    playerInfo: @js([
+            @php
+                $posDisp = $player->position_display;
+                $offerPayload = \Illuminate\Support\Js::from([
+                    'playerName' => $player->name,
+                    'negotiateUrl' => route('game.negotiate.transfer', [$game->id, $player->id]),
+                    'mode' => 'transfer_fee',
+                    'phase' => 'club_fee',
+                    'chatTitle' => __('transfers.chat_transfer_title'),
+                    'playerInfo' => [
                         'age' => $player->age($game->current_date),
                         'position' => $posDisp['abbreviation'],
                         'positionBg' => $posDisp['bg'],
                         'positionText' => $posDisp['text'],
                         'marketValue' => \App\Support\Money::format($player->market_value_cents),
                         'contractYear' => $player->contract_until?->year,
-                    ])
-                })"
+                    ],
+                ]);
+            @endphp
+            <x-icon-button
+                x-data
+                x-on:click.prevent="$dispatch('open-negotiation', {{ $offerPayload }})"
                 class="rounded-full text-text-body hover:text-accent-blue"
                 title="{{ __('transfers.explore_make_offer') }}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -99,23 +102,26 @@ $canNegotiateFreeAgent = $isFreeAgent && !$isOwnTeam;
                 </svg>
             </x-icon-button>
         @elseif($canNegotiateFreeAgent)
-            @php $posDisp = $player->position_display; @endphp
-            <x-icon-button
-                x-data
-                @click.prevent="$dispatch('open-negotiation', {
-                    playerName: @js($player->name),
-                    negotiateUrl: @js(route('game.negotiate.free-agent', [$game->id, $player->id])),
-                    mode: 'free_agent',
-                    phase: 'personal_terms',
-                    chatTitle: @js(__('transfers.chat_free_agent_title')),
-                    playerInfo: @js([
+            @php
+                $posDisp = $player->position_display;
+                $freeAgentPayload = \Illuminate\Support\Js::from([
+                    'playerName' => $player->name,
+                    'negotiateUrl' => route('game.negotiate.free-agent', [$game->id, $player->id]),
+                    'mode' => 'free_agent',
+                    'phase' => 'personal_terms',
+                    'chatTitle' => __('transfers.chat_free_agent_title'),
+                    'playerInfo' => [
                         'age' => $player->age($game->current_date),
                         'position' => $posDisp['abbreviation'],
                         'positionBg' => $posDisp['bg'],
                         'positionText' => $posDisp['text'],
                         'marketValue' => \App\Support\Money::format($player->market_value_cents),
-                    ])
-                })"
+                    ],
+                ]);
+            @endphp
+            <x-icon-button
+                x-data
+                x-on:click.prevent="$dispatch('open-negotiation', {{ $freeAgentPayload }})"
                 class="rounded-full text-text-body hover:text-accent-green"
                 title="{{ __('transfers.explore_negotiate') }}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
