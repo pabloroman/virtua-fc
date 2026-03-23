@@ -20,15 +20,15 @@ return [
     |   awayXG = (1/strengthRatio ^ ratioExponent) × baseGoals
     |
     | When teams are equal (ratio=1.0), both get base_goals (1.3 xG).
-    | When elite faces bottom (ratio ~1.30), elite gets ~2.20 xG vs ~0.77.
+    | When elite faces bottom (ratio ~1.30), elite gets ~2.36 xG vs ~0.72.
     | The stronger team is ALWAYS favored regardless of venue.
     |
     | Real-world La Liga average: ~2.5 goals per match
     |
     */
     'base_goals' => 1.3,                // avg xG per team when evenly matched (~2.6 total)
-    'ratio_exponent' => 2.0,            // amplifies strength ratio into xG gap
-    'home_advantage_goals' => 0.15,     // fixed home xG bonus
+    'ratio_exponent' => 2.3,            // amplifies strength ratio into xG gap
+    'home_advantage_goals' => 0.20,     // fixed home xG bonus
 
     /*
     |--------------------------------------------------------------------------
@@ -125,8 +125,8 @@ return [
         '3-4-3'   => ['attack' => 1.12, 'defense' => 1.08],   // Very attacking, exposed
         '3-5-2'   => ['attack' => 1.00, 'defense' => 0.96],   // Midfield control
         '4-1-4-1' => ['attack' => 0.95, 'defense' => 0.92],   // Defensive midfield shield
-        '5-3-2'   => ['attack' => 0.88, 'defense' => 0.86],   // Defensive, hard to break
-        '5-4-1'   => ['attack' => 0.80, 'defense' => 0.82],   // Park the bus
+        '5-3-2'   => ['attack' => 0.88, 'defense' => 0.88],   // Defensive, hard to break
+        '5-4-1'   => ['attack' => 0.80, 'defense' => 0.86],   // Park the bus
     ],
 
     /*
@@ -140,7 +140,7 @@ return [
     |
     */
     'mentalities' => [
-        'defensive' => ['own_goals' => 0.80, 'opponent_goals' => 0.70],
+        'defensive' => ['own_goals' => 0.80, 'opponent_goals' => 0.78],
         'balanced'  => ['own_goals' => 1.00, 'opponent_goals' => 1.00],
         'attacking' => ['own_goals' => 1.15, 'opponent_goals' => 1.10],
     ],

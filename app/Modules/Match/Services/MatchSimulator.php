@@ -375,12 +375,12 @@ class MatchSimulator
             return 0.0;
         }
 
-        // Bonus scales from 0 at 85 to ~0.25 at 100
-        // Formula: (rating - 85) / 60 gives 0.0 to 0.25 range
+        // Bonus scales from 0 at 85 to ~0.30 at 100
+        // Formula: (rating - 85) / 50 gives 0.0 to 0.30 range
         // Only truly elite forwards provide a noticeable boost
-        // A 94-rated Mbappé gets +0.15 expected goals
-        // A 88-rated striker gets +0.05 expected goals
-        return ($bestForwardScore - 85) / 60;
+        // A 94-rated forward gets +0.18 expected goals
+        // A 88-rated striker gets +0.06 expected goals
+        return ($bestForwardScore - 85) / 50;
     }
 
     /**
