@@ -219,31 +219,17 @@ $tabs = [
             <div class="max-h-[80vh] overflow-y-auto">
                 <div class="p-4 md:p-6">
                     {{-- Team Header --}}
-                    <div class="flex items-center gap-3 mb-5">
+                    <div class="flex items-center gap-3 mb-4">
                         <x-team-crest :team="$game->team" class="w-10 h-10" />
                         <h3 class="text-lg font-bold text-text-primary">{{ $game->team->name }}</h3>
                     </div>
 
                     {{-- Position Groups --}}
                     @foreach ($tabs as $groupKey => $label)
-                    <div x-show="selectedByGroup('{{ $groupKey }}').length > 0" class="mb-4 last:mb-0">
-                        <div class="flex items-center gap-2 mb-2">
-                            <h4 class="text-xs font-semibold text-text-muted uppercase tracking-wider">{{ $label }}</h4>
-                            <span class="text-xs text-text-muted" x-text="'(' + selectedByGroup('{{ $groupKey }}').length + ')'"></span>
-                        </div>
-                        <div class="bg-surface-700 rounded-lg divide-y divide-border-default">
-                            <template x-for="player in selectedByGroup('{{ $groupKey }}')" :key="player.transfermarkt_id">
-                                <div class="flex items-center gap-3 px-3 py-2.5">
-                                    <span class="inline-flex items-center justify-center w-7 h-7 text-xs -skew-x-12 font-semibold"
-                                          :class="player.position_bg + ' ' + player.position_text">
-                                        <span class="skew-x-12" x-text="player.position_abbreviation"></span>
-                                    </span>
-                                    <span class="flex-1 text-sm font-medium text-text-primary truncate" x-text="player.name"></span>
-                                    <span class="text-xs text-text-secondary" x-text="player.age + ' {{ __('squad.years_abbr') }}'"></span>
-                                    <span class="w-8 text-center text-sm font-bold text-text-body" x-text="player.overall"></span>
-                                </div>
-                            </template>
-                        </div>
+                    <div x-show="selectedByGroup('{{ $groupKey }}').length > 0" class="mb-3 last:mb-0">
+                        <h4 class="text-xs font-semibold text-text-muted uppercase tracking-wider mb-1">{{ $label }}</h4>
+                        <p class="text-sm text-text-primary leading-relaxed"
+                           x-text="selectedByGroup('{{ $groupKey }}').map(p => p.name).join(', ')"></p>
                     </div>
                     @endforeach
                 </div>
