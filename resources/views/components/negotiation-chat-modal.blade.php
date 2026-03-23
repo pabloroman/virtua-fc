@@ -92,27 +92,11 @@
                         </span>
                     </template>
 
-                    {{-- TEC (range from scouting) --}}
-                    <template x-if="playerInfo?.tecRange">
-                        <span class="text-text-secondary">
-                            <span class="text-text-muted">{{ __('squad.technical_abbr') }}</span>
-                            <span class="font-semibold text-text-primary tabular-nums" x-text="playerInfo.tecRange[0] + '-' + playerInfo.tecRange[1]"></span>
-                        </span>
-                    </template>
-
-                    {{-- FIS (exact) --}}
+                    {{-- FIS (exact, own players only) --}}
                     <template x-if="playerInfo?.fis != null">
                         <span class="text-text-secondary">
                             <span class="text-text-muted">{{ __('squad.physical_abbr') }}</span>
                             <span class="font-semibold text-text-primary tabular-nums" x-text="playerInfo.fis"></span>
-                        </span>
-                    </template>
-
-                    {{-- FIS (range from scouting) --}}
-                    <template x-if="playerInfo?.fisRange">
-                        <span class="text-text-secondary">
-                            <span class="text-text-muted">{{ __('squad.physical_abbr') }}</span>
-                            <span class="font-semibold text-text-primary tabular-nums" x-text="playerInfo.fisRange[0] + '-' + playerInfo.fisRange[1]"></span>
                         </span>
                     </template>
                 </div>

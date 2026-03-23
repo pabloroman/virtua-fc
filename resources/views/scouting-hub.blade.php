@@ -466,7 +466,7 @@
                                                                         mode: 'pre_contract',
                                                                         phase: 'personal_terms',
                                                                         chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_pre_contract_title')) }},
-                                                                        playerInfo: { age: player.age, position: player.positionAbbr, positionBg: player.positionBg, positionText: player.positionText, marketValue: player.formattedMarketValue, contractYear: player.contractYear, tecRange: player.techRange, fisRange: player.physRange }
+                                                                        playerInfo: { age: player.age, position: player.positionAbbr, positionBg: player.positionBg, positionText: player.positionText, marketValue: player.formattedMarketValue, contractYear: player.contractYear }
                                                                     })">
                                                                     {{ __('transfers.negotiate_pre_contract') }}
                                                                 </x-primary-button>
@@ -489,7 +489,7 @@
                                                                             mode: 'transfer_fee',
                                                                             phase: 'club_fee',
                                                                             chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_transfer_title')) }},
-                                                                            playerInfo: { age: player.age, position: player.positionAbbr, positionBg: player.positionBg, positionText: player.positionText, marketValue: player.formattedMarketValue, contractYear: player.contractYear, tecRange: player.techRange, fisRange: player.physRange }
+                                                                            playerInfo: { age: player.age, position: player.positionAbbr, positionBg: player.positionBg, positionText: player.positionText, marketValue: player.formattedMarketValue, contractYear: player.contractYear }
                                                                         })">
                                                                         {{ __('transfers.negotiate') }}
                                                                     </x-primary-button>
@@ -500,7 +500,7 @@
                                                                             mode: 'loan',
                                                                             phase: 'club_fee',
                                                                             chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_loan_title')) }},
-                                                                            playerInfo: { age: player.age, position: player.positionAbbr, positionBg: player.positionBg, positionText: player.positionText, marketValue: player.formattedMarketValue, contractYear: player.contractYear, tecRange: player.techRange, fisRange: player.physRange }
+                                                                            playerInfo: { age: player.age, position: player.positionAbbr, positionBg: player.positionBg, positionText: player.positionText, marketValue: player.formattedMarketValue, contractYear: player.contractYear }
                                                                         })">
                                                                         {{ __('transfers.request_loan') }}
                                                                     </x-secondary-button>

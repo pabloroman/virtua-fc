@@ -142,8 +142,6 @@
                                                             'chatTitle' => __('transfers.chat_transfer_title'),
                                                             'playerInfo' => [
                                                                 'age' => $gp->age($game->current_date),
-                                                                'tec' => $gp->technical_ability,
-                                                                'fis' => $gp->physical_ability,
                                                                 'position' => $posDisp['abbreviation'],
                                                                 'positionBg' => $posDisp['bg'],
                                                                 'positionText' => $posDisp['text'],

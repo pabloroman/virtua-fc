@@ -192,8 +192,6 @@
                                                 $posDisp = $player->position_display;
                                                 $scoutPlayerInfo = \Illuminate\Support\Js::from([
                                                     'age' => $player->age($game->current_date),
-                                                    'tec' => $player->technical_ability,
-                                                    'fis' => $player->physical_ability,
                                                     'position' => $posDisp['abbreviation'],
                                                     'positionBg' => $posDisp['bg'],
                                                     'positionText' => $posDisp['text'],
@@ -221,8 +219,6 @@
                                                 $posDisp = $player->position_display;
                                                 $scoutPlayerInfo = \Illuminate\Support\Js::from([
                                                     'age' => $player->age($game->current_date),
-                                                    'tec' => $player->technical_ability,
-                                                    'fis' => $player->physical_ability,
                                                     'position' => $posDisp['abbreviation'],
                                                     'positionBg' => $posDisp['bg'],
                                                     'positionText' => $posDisp['text'],
