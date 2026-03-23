@@ -71,14 +71,7 @@ class NegotiateFreeAgent
         }
 
         // Check for existing countered offer to resume
-        $existing = TransferOffer::where('game_id', $game->id)
-            ->where('game_player_id', $player->id)
-            ->where('offering_team_id', $game->team_id)
-            ->where('offer_type', TransferOffer::TYPE_USER_BID)
-            ->where('transfer_fee', 0)
-            ->where('status', TransferOffer::STATUS_PENDING)
-            ->where('terms_status', 'countered')
-            ->first();
+        $existing = $this->findPendingFreeAgentOffer($game, $player, 'countered');
 
         if ($existing) {
             $mood = $this->getWillingnessMood($player, $game);
@@ -123,10 +116,9 @@ class NegotiateFreeAgent
             ], 422);
         }
 
-        $wageDemand = $this->scoutingService->calculateWageDemand($player);
-        $contractYears = $player->age($game->current_date) >= 32 ? 1 : 3;
+        $demand = $this->contractService->calculateFreeAgentWageDemand($player, $this->scoutingService);
         $mood = $this->getWillingnessMood($player, $game);
-        $demandInEuros = (int) ($wageDemand / 100);
+        $demandInEuros = (int) ($demand['wage'] / 100);
 
         return response()->json([
             'status' => 'ok',
@@ -137,16 +129,16 @@ class NegotiateFreeAgent
                 $this->agentMessage('demand', [
                     'text' => __('transfers.chat_free_agent_demand', [
                         'player' => $player->name,
-                        'wage' => Money::format($wageDemand),
-                        'years' => $contractYears,
+                        'wage' => $demand['formattedWage'],
+                        'years' => $demand['contractYears'],
                     ]),
                     'wage' => $demandInEuros,
-                    'years' => $contractYears,
+                    'years' => $demand['contractYears'],
                     'mood' => $mood,
                 ], [
                     'canAccept' => false,
                     'suggestedWage' => $demandInEuros,
-                    'preferredYears' => $contractYears,
+                    'preferredYears' => $demand['contractYears'],
                 ]),
             ],
         ]);
@@ -159,16 +151,9 @@ class NegotiateFreeAgent
             'years' => ['required', 'integer', 'min:1', 'max:5'],
         ]);
 
-        $offer = TransferOffer::where('game_id', $game->id)
-            ->where('game_player_id', $player->id)
-            ->where('offering_team_id', $game->team_id)
-            ->where('offer_type', TransferOffer::TYPE_USER_BID)
-            ->where('transfer_fee', 0)
-            ->where('status', TransferOffer::STATUS_PENDING)
-            ->first();
+        $offer = $this->findPendingFreeAgentOffer($game, $player);
 
         if (!$offer) {
-            // Create on first round
             $offer = TransferOffer::create([
                 'game_id' => $game->id,
                 'game_player_id' => $player->id,
@@ -184,10 +169,9 @@ class NegotiateFreeAgent
             ]);
         }
 
-        $offerWageCents = $validated['wage'] * 100;
-        $offeredYears = $validated['years'];
-
-        $result = $this->negotiateFreeAgentTerms($offer, $offerWageCents, $offeredYears, $game);
+        $result = $this->contractService->negotiateFreeAgentTermsSync(
+            $offer, $validated['wage'] * 100, $validated['years'], $game, $this->scoutingService
+        );
 
         $offer = $result['offer'];
 
@@ -233,14 +217,7 @@ class NegotiateFreeAgent
 
     private function handleAcceptTermsCounter(Game $game, GamePlayer $player): JsonResponse
     {
-        $offer = TransferOffer::where('game_id', $game->id)
-            ->where('game_player_id', $player->id)
-            ->where('offering_team_id', $game->team_id)
-            ->where('offer_type', TransferOffer::TYPE_USER_BID)
-            ->where('transfer_fee', 0)
-            ->where('status', TransferOffer::STATUS_PENDING)
-            ->where('terms_status', 'countered')
-            ->first();
+        $offer = $this->findPendingFreeAgentOffer($game, $player, 'countered');
 
         if (!$offer) {
             return response()->json([
@@ -249,80 +226,10 @@ class NegotiateFreeAgent
             ], 422);
         }
 
-        $offer->update([
-            'offered_wage' => $offer->wage_counter_offer,
-            'offered_years' => $offer->preferred_years,
-            'terms_status' => 'accepted',
-        ]);
-
+        $this->contractService->acceptFreeAgentTermsCounter($offer);
         $offer->refresh();
 
         return $this->completeFreeAgentSigning($offer, $game, $player);
-    }
-
-    private function negotiateFreeAgentTerms(TransferOffer $offer, int $offerWageCents, int $offeredYears, Game $game): array
-    {
-        $player = $offer->gamePlayer;
-
-        if ($offer->terms_status === 'countered') {
-            $offer->update([
-                'terms_round' => min(($offer->terms_round ?? 1) + 1, self::MAX_ROUNDS),
-                'offered_wage' => $offerWageCents,
-                'offered_years' => $offeredYears,
-                'wage_counter_offer' => null,
-            ]);
-        } else {
-            $wageDemand = $this->scoutingService->calculateWageDemand($player);
-            $contractYears = $player->age($game->current_date) >= 32 ? 1 : 3;
-            $offer->update([
-                'terms_status' => 'pending',
-                'terms_round' => 1,
-                'player_demand' => $wageDemand,
-                'preferred_years' => $contractYears,
-                'offered_wage' => $offerWageCents,
-                'offered_years' => $offeredYears,
-            ]);
-        }
-
-        // Evaluate using willingness as disposition
-        $willingness = $this->scoutingService->calculateWillingness($player, $game);
-        $disposition = $willingness['score'] / 100.0;
-        $offer->update(['terms_disposition' => $disposition]);
-
-        $flexibility = $disposition * 0.30;
-        $minimumAcceptable = (int) ($offer->player_demand * (1.0 - $flexibility));
-
-        $yearsModifier = $this->calculateYearsModifier($offeredYears, $offer->preferred_years);
-        $effectiveOffer = (int) ($offerWageCents * $yearsModifier);
-
-        if ($effectiveOffer >= $minimumAcceptable) {
-            $offer->update([
-                'terms_status' => 'accepted',
-                'status' => TransferOffer::STATUS_COMPLETED,
-                'resolved_at' => $game->current_date,
-            ]);
-            return ['result' => 'accepted', 'offer' => $offer->fresh()];
-        }
-
-        $counterThreshold = (int) ($minimumAcceptable * 0.85);
-
-        if ($effectiveOffer >= $counterThreshold && $offer->terms_round < self::MAX_ROUNDS) {
-            $counterWage = (int) (($minimumAcceptable + $offer->player_demand) / 2);
-            $counterWage = (int) (round($counterWage / 10_000_000) * 10_000_000);
-
-            $offer->update([
-                'terms_status' => 'countered',
-                'wage_counter_offer' => $counterWage,
-            ]);
-            return ['result' => 'countered', 'offer' => $offer->fresh()];
-        }
-
-        $offer->update([
-            'terms_status' => 'rejected',
-            'status' => TransferOffer::STATUS_REJECTED,
-            'resolved_at' => $game->current_date,
-        ]);
-        return ['result' => 'rejected', 'offer' => $offer->fresh()];
     }
 
     private function completeFreeAgentSigning(TransferOffer $offer, Game $game, GamePlayer $player): JsonResponse
@@ -347,6 +254,22 @@ class NegotiateFreeAgent
 
     // ── Helpers ──
 
+    private function findPendingFreeAgentOffer(Game $game, GamePlayer $player, ?string $termsStatus = null): ?TransferOffer
+    {
+        $query = TransferOffer::where('game_id', $game->id)
+            ->where('game_player_id', $player->id)
+            ->where('offering_team_id', $game->team_id)
+            ->where('offer_type', TransferOffer::TYPE_USER_BID)
+            ->where('transfer_fee', 0)
+            ->where('status', TransferOffer::STATUS_PENDING);
+
+        if ($termsStatus) {
+            $query->where('terms_status', $termsStatus);
+        }
+
+        return $query->first();
+    }
+
     private function agentMessage(string $type, array $content, ?array $options = null): array
     {
         return [
@@ -360,19 +283,6 @@ class NegotiateFreeAgent
     private function calculateMidpointInEuros(int $centsA, int $centsB): int
     {
         return (int) (ceil(($centsA + $centsB) / 2 / 100 / 10000) * 10000);
-    }
-
-    private function calculateYearsModifier(int $offeredYears, int $preferredYears): float
-    {
-        $diff = $offeredYears - $preferredYears;
-
-        return match (true) {
-            $diff >= 2 => 1.15,
-            $diff === 1 => 1.05,
-            $diff === 0 => 1.0,
-            $diff === -1 => 0.90,
-            default => 0.80,
-        };
     }
 
     private function getWillingnessMood(GamePlayer $player, Game $game): array

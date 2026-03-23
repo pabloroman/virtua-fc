@@ -1293,4 +1293,111 @@ class ContractService
 
         return $offer->fresh();
     }
+
+    // ── Free Agent Negotiation ──
+
+    /**
+     * Calculate a free agent's wage demand and preferred contract years.
+     */
+    public function calculateFreeAgentWageDemand(GamePlayer $player, ScoutingService $scoutingService): array
+    {
+        $wage = $scoutingService->calculateWageDemand($player);
+        $age = $player->age($player->game->current_date);
+        $contractYears = $age >= 32 ? 1 : 3;
+
+        return [
+            'wage' => $wage,
+            'formattedWage' => Money::format($wage),
+            'contractYears' => $contractYears,
+        ];
+    }
+
+    /**
+     * Negotiate personal terms with a free agent (synchronous, round-by-round).
+     *
+     * @return array{result: 'accepted'|'countered'|'rejected', offer: TransferOffer}
+     */
+    public function negotiateFreeAgentTermsSync(TransferOffer $offer, int $offerWageCents, int $offeredYears, Game $game, ScoutingService $scoutingService): array
+    {
+        $player = $offer->gamePlayer;
+
+        if ($offer->terms_status === 'countered') {
+            $offer->update([
+                'terms_round' => min(($offer->terms_round ?? 1) + 1, self::MAX_NEGOTIATION_ROUNDS),
+                'offered_wage' => $offerWageCents,
+                'offered_years' => $offeredYears,
+                'wage_counter_offer' => null,
+            ]);
+        } else {
+            $demand = $this->calculateFreeAgentWageDemand($player, $scoutingService);
+            $offer->update([
+                'terms_status' => 'pending',
+                'terms_round' => 1,
+                'player_demand' => $demand['wage'],
+                'preferred_years' => $demand['contractYears'],
+                'offered_wage' => $offerWageCents,
+                'offered_years' => $offeredYears,
+            ]);
+        }
+
+        // Evaluate using willingness as disposition
+        $willingness = $scoutingService->calculateWillingness($player, $game);
+        $disposition = $willingness['score'] / 100.0;
+        $offer->update(['terms_disposition' => $disposition]);
+
+        $flexibility = $disposition * 0.30;
+        $minimumAcceptable = (int) ($offer->player_demand * (1.0 - $flexibility));
+
+        $yearsModifier = $this->calculateYearsModifier($offeredYears, $offer->preferred_years);
+        $effectiveOffer = (int) ($offerWageCents * $yearsModifier);
+
+        if ($effectiveOffer >= $minimumAcceptable) {
+            $offer->update([
+                'terms_status' => 'accepted',
+                'status' => TransferOffer::STATUS_COMPLETED,
+                'resolved_at' => $game->current_date,
+            ]);
+            return ['result' => 'accepted', 'offer' => $offer->fresh()];
+        }
+
+        $counterThreshold = (int) ($minimumAcceptable * 0.85);
+
+        if ($effectiveOffer >= $counterThreshold && $offer->terms_round < self::MAX_NEGOTIATION_ROUNDS) {
+            $counterWage = (int) (($minimumAcceptable + $offer->player_demand) / 2);
+            $counterWage = (int) (round($counterWage / 10_000_000) * 10_000_000);
+
+            $offer->update([
+                'terms_status' => 'countered',
+                'wage_counter_offer' => $counterWage,
+            ]);
+            return ['result' => 'countered', 'offer' => $offer->fresh()];
+        }
+
+        $offer->update([
+            'terms_status' => 'rejected',
+            'status' => TransferOffer::STATUS_REJECTED,
+            'resolved_at' => $game->current_date,
+        ]);
+        return ['result' => 'rejected', 'offer' => $offer->fresh()];
+    }
+
+    /**
+     * Accept the free agent's counter-offer on personal terms.
+     */
+    public function acceptFreeAgentTermsCounter(TransferOffer $offer): TransferOffer
+    {
+        if ($offer->terms_status !== 'countered') {
+            throw new \InvalidArgumentException(__('messages.transfer_failed'));
+        }
+
+        $offer->update([
+            'offered_wage' => $offer->wage_counter_offer,
+            'offered_years' => $offer->preferred_years,
+            'terms_status' => 'accepted',
+            'status' => TransferOffer::STATUS_COMPLETED,
+            'resolved_at' => $offer->game->current_date,
+        ]);
+
+        return $offer->fresh();
+    }
 }
