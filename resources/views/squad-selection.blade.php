@@ -232,6 +232,14 @@ $tabs = [
                            x-text="selectedByGroup('{{ $groupKey }}').map(p => p.name).join(', ')"></p>
                     </div>
                     @endforeach
+
+                    {{-- Brand Footer --}}
+                    <div class="mt-5 pt-4 border-t border-border-default flex flex-col items-center gap-1.5">
+                        <div class="-skew-x-12 bg-red-600 px-2 py-0.5">
+                            <span class="skew-x-12 inline-block text-sm font-extrabold text-white tracking-tight" style="font-family: 'Barlow Semi Condensed', sans-serif;">Virtua FC</span>
+                        </div>
+                        <p class="text-[11px] text-text-muted">Juega a ser seleccionador en virtuafc.com</p>
+                    </div>
                 </div>
             </div>
         </x-modal>
