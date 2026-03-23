@@ -127,6 +127,7 @@ class Game extends Model
         'season_transition_step',
         'season_transition_data',
         'career_actions_processing_at',
+        'ai_batches_processing_at',
         'pending_finalization_match_id',
         'matchday_advancing_at',
         'matchday_advance_result',
@@ -146,6 +147,7 @@ class Game extends Model
         'season_transition_step' => 'integer',
         'season_transition_data' => 'json',
         'career_actions_processing_at' => 'datetime',
+        'ai_batches_processing_at' => 'datetime',
         'matchday_advancing_at' => 'datetime',
         'matchday_advance_result' => 'array',
         'deleting_at' => 'datetime',
@@ -180,6 +182,11 @@ class Game extends Model
         return $this->career_actions_processing_at !== null;
     }
 
+    public function isProcessingAiBatches(): bool
+    {
+        return $this->ai_batches_processing_at !== null;
+    }
+
     public function isAdvancingMatchday(): bool
     {
         return $this->matchday_advancing_at !== null;
@@ -208,6 +215,25 @@ class Game extends Model
             'matchday_advancing_at' => null,
             'matchday_advance_result' => null,
         ]);
+
+        return true;
+    }
+
+    /**
+     * Clear a stuck AI batches flag (> 2 minutes old).
+     * Returns true if the flag was cleared.
+     */
+    public function clearStuckAiBatches(): bool
+    {
+        if (! $this->isProcessingAiBatches()) {
+            return false;
+        }
+
+        if (! $this->ai_batches_processing_at->lt(now()->subMinutes(2))) {
+            return false;
+        }
+
+        $this->update(['ai_batches_processing_at' => null]);
 
         return true;
     }
