@@ -255,7 +255,7 @@ return [
     'explore_teams_count' => ':count teams',
     'explore_squad_title' => 'Squad',
     'explore_no_teams' => 'No teams available.',
-    'explore_scouting_nudge' => 'Want more info? Start a scout search.',
+    'explore_scouting_nudge' => 'Want more info? Start a scout search from the Scouting tab.',
     'explore_on_loan' => 'On loan from :club',
     'explore_loaned_out' => 'Loaned to :club',
     'explore_contract_year' => 'Contract',
@@ -281,6 +281,16 @@ return [
     'explore_europe' => 'Europe',
     'explore_europe_hint' => 'Browse European teams outside the top 5 leagues.',
     'explore_window_closed_hint' => 'Transfer window closed',
+    'explore_make_offer' => 'Make offer',
+    'explore_negotiate' => 'Negotiate',
+    'explore_offer_hint' => 'Make offers directly or shortlist players for scouting. Without a scout report, you\'ll negotiate blind.',
+
+    // Free agent negotiation chat
+    'chat_free_agent_title' => 'Free Agent Negotiation',
+    'chat_free_agent_demand' => ':player\'s agent wants :wage/year for :years years.',
+    'chat_free_agent_counter' => ':player\'s agent insists on :wage/year for :years years.',
+    'chat_free_agent_accepted' => ':player has signed! Welcome to the team.',
+    'chat_free_agent_rejected' => ':player\'s agent has walked away. No deal.',
 
     // Tracking
     'tracking_slots' => ':used/:max tracking slots',

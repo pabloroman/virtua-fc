@@ -353,6 +353,8 @@
                     </div>
     </div>
 
+    <x-negotiation-chat-modal />
+
     <script>
         function exploreApp() {
             return {

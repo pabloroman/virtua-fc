@@ -32,6 +32,8 @@ class ExploreSquad
             'team' => $team,
             'players' => $players,
             'game' => $game,
+            'isTransferWindow' => $game->isTransferWindowOpen(),
+            'isOwnTeam' => $teamId === $game->team_id,
         ]);
     }
 }

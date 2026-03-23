@@ -8,7 +8,7 @@ export default function negotiationChat() {
         round: 0,
         maxRounds: 3,
 
-        // Mode: 'renewal' | 'transfer_fee' | 'personal_terms' | 'pre_contract' | 'loan'
+        // Mode: 'renewal' | 'transfer_fee' | 'personal_terms' | 'pre_contract' | 'loan' | 'free_agent'
         mode: 'renewal',
         // Phase: null (renewal) | 'club_fee' | 'personal_terms' | 'counter_offer'
         phase: null,
@@ -152,7 +152,7 @@ export default function negotiationChat() {
                     }
                 }
                 this.loading = false;
-            } else if (this.phase === 'personal_terms' || this.mode === 'pre_contract') {
+            } else if (this.phase === 'personal_terms' || this.mode === 'pre_contract' || this.mode === 'free_agent') {
                 // Show user's wage/years offer
                 this.messages.push({
                     sender: 'user',
@@ -223,7 +223,7 @@ export default function negotiationChat() {
                     this.negotiationStatus = data.negotiation_status;
                     this.appendMessages(data.messages);
                 }
-            } else if (this.phase === 'personal_terms' || this.mode === 'pre_contract') {
+            } else if (this.phase === 'personal_terms' || this.mode === 'pre_contract' || this.mode === 'free_agent') {
                 const data = await this.sendAction('accept_terms_counter');
                 if (data) {
                     this.negotiationStatus = data.negotiation_status;

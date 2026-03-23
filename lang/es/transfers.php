@@ -286,6 +286,16 @@ return [
     'explore_europe' => 'Europa',
     'explore_europe_hint' => 'Explora equipos europeos fuera de las 5 grandes ligas.',
     'explore_window_closed_hint' => 'Ventana de fichajes cerrada',
+    'explore_make_offer' => 'Hacer oferta',
+    'explore_negotiate' => 'Negociar',
+    'explore_offer_hint' => 'Haz ofertas directas o añade jugadores a tu lista de seguimiento. Sin informe de ojeador, negociarás a ciegas.',
+
+    // Free agent negotiation chat
+    'chat_free_agent_title' => 'Negociación con Agente Libre',
+    'chat_free_agent_demand' => 'El agente de :player pide :wage/año durante :years años.',
+    'chat_free_agent_counter' => 'El agente de :player insiste en :wage/año durante :years años.',
+    'chat_free_agent_accepted' => '¡:player ha firmado! Bienvenido al equipo.',
+    'chat_free_agent_rejected' => 'El agente de :player se ha marchado. No hay acuerdo.',
 
     // Tracking
     'tracking_slots' => ':used/:max seguimientos',

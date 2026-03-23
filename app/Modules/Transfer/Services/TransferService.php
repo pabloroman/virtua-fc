@@ -1180,6 +1180,41 @@ class TransferService
         return $offer;
     }
 
+    /**
+     * Complete a free agent signing from a negotiated offer (wage already agreed).
+     */
+    public function completeFreeAgentSigning(Game $game, GamePlayer $player, TransferOffer $offer): void
+    {
+        $seasonYear = (int) $game->season;
+        $contractYears = $offer->offered_years ?? ($player->age($game->current_date) >= 32 ? 1 : 3);
+        $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
+
+        $player->update([
+            'team_id' => $game->team_id,
+            'number' => GamePlayer::nextAvailableNumber($game->id, $game->team_id),
+            'contract_until' => $newContractEnd,
+            'annual_wage' => $offer->offered_wage,
+        ]);
+
+        $offer->update([
+            'status' => TransferOffer::STATUS_COMPLETED,
+            'resolved_at' => $game->current_date,
+        ]);
+
+        GameTransfer::record(
+            gameId: $game->id,
+            gamePlayerId: $player->id,
+            fromTeamId: null,
+            toTeamId: $game->team_id,
+            transferFee: 0,
+            type: GameTransfer::TYPE_FREE_AGENT,
+            season: $game->season,
+            window: $this->getCurrentWindow($game),
+        );
+
+        ShortlistedPlayer::removeForPlayer($game->id, $player->id);
+    }
+
     public function acceptIncomingOffer(TransferOffer $offer): bool
     {
         $game = $offer->game;

@@ -2,6 +2,7 @@
 /** @var \Illuminate\Support\Collection<App\Models\GamePlayer> $players */
 /** @var App\Models\Game $game */
 /** @var string $query */
+/** @var bool $isTransferWindow */
 @endphp
 
 {{-- Header --}}
@@ -29,12 +30,13 @@
                     <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider hidden md:table-cell">{{ __('transfers.explore_search_team') }}</th>
                     <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider text-center hidden md:table-cell">{{ __('transfers.explore_age') }}</th>
                     <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider hidden md:table-cell">{{ __('transfers.explore_value') }}</th>
+                    <th class="py-2.5 w-10"></th>
                     <th class="py-2.5 pr-4 w-10"></th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($players as $player)
-                <x-explore-player-row :player="$player" :game="$game" :show-team="true" />
+                <x-explore-player-row :player="$player" :game="$game" :show-team="true" :is-transfer-window="$isTransferWindow" :is-own-team="$player->team_id === $game->team_id" />
                 @endforeach
             </tbody>
         </table>
