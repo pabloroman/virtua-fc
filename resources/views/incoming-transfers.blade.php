@@ -132,12 +132,24 @@
                                                 </div>
                                                 <div class="flex gap-2">
                                                     @php
+                                                        $gp = $offer->gamePlayer;
+                                                        $posDisp = $gp->position_display;
                                                         $negotiationDetail = \Illuminate\Support\Js::from([
-                                                            'playerName' => $offer->gamePlayer->player->name,
-                                                            'negotiateUrl' => route('game.negotiate.transfer', [$game->id, $offer->gamePlayer->id]),
+                                                            'playerName' => $gp->player->name,
+                                                            'negotiateUrl' => route('game.negotiate.transfer', [$game->id, $gp->id]),
                                                             'mode' => 'transfer_fee',
                                                             'phase' => 'club_fee',
                                                             'chatTitle' => __('transfers.chat_transfer_title'),
+                                                            'playerInfo' => [
+                                                                'age' => $gp->age($game->current_date),
+                                                                'tec' => $gp->technical_ability,
+                                                                'fis' => $gp->physical_ability,
+                                                                'position' => $posDisp['abbreviation'],
+                                                                'positionBg' => $posDisp['bg'],
+                                                                'positionText' => $posDisp['text'],
+                                                                'marketValue' => $gp->formatted_market_value,
+                                                                'contractYear' => $gp->contract_expiry_year,
+                                                            ],
                                                         ]);
                                                     @endphp
                                                     <x-primary-button size="xs" type="button" x-on:click="$dispatch('open-negotiation', {{ $negotiationDetail }})">

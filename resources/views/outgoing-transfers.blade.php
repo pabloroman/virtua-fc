@@ -132,12 +132,23 @@
                                                 </div>
                                                 <div class="flex flex-wrap gap-2">
                                                     @php
+                                                        $gp = $offer->gamePlayer;
+                                                        $posDisp = $gp->position_display;
                                                         $counterOfferDetail = \Illuminate\Support\Js::from([
-                                                            'playerName' => $offer->gamePlayer->player->name,
+                                                            'playerName' => $gp->player->name,
                                                             'negotiateUrl' => route('game.negotiate.counter-offer', [$game->id, $offer->id]),
                                                             'mode' => 'transfer_fee',
                                                             'phase' => 'counter_offer',
                                                             'chatTitle' => __('transfers.counter_offer_title'),
+                                                            'playerInfo' => [
+                                                                'age' => $gp->age($game->current_date),
+                                                                'wage' => $gp->formatted_wage,
+                                                                'tec' => $gp->technical_ability,
+                                                                'fis' => $gp->physical_ability,
+                                                                'position' => $posDisp['abbreviation'],
+                                                                'positionBg' => $posDisp['bg'],
+                                                                'positionText' => $posDisp['text'],
+                                                            ],
                                                         ]);
                                                     @endphp
                                                     <x-primary-button type="button" x-on:click="$dispatch('open-negotiation', {{ $counterOfferDetail }})">
@@ -183,9 +194,19 @@
                                                     @php $offeredPlayer = $renewalEligiblePlayers->firstWhere('id', $offer->game_player_id); @endphp
                                                     @if($offeredPlayer)
                                                         @php
+                                                            $posDisp = $offeredPlayer->position_display;
                                                             $renewalDetail = \Illuminate\Support\Js::from([
                                                                 'playerName' => $offeredPlayer->name,
                                                                 'negotiateUrl' => route('game.negotiate.renewal', [$game->id, $offeredPlayer->id]),
+                                                                'playerInfo' => [
+                                                                    'age' => $offeredPlayer->age($game->current_date),
+                                                                    'wage' => $offeredPlayer->formatted_wage,
+                                                                    'tec' => $offeredPlayer->technical_ability,
+                                                                    'fis' => $offeredPlayer->physical_ability,
+                                                                    'position' => $posDisp['abbreviation'],
+                                                                    'positionBg' => $posDisp['bg'],
+                                                                    'positionText' => $posDisp['text'],
+                                                                ],
                                                             ]);
                                                         @endphp
                                                         <x-action-button color="green" type="button" x-on:click="$dispatch('open-negotiation', {{ $renewalDetail }})">
@@ -235,12 +256,23 @@
                                                 </div>
                                                 <div class="flex flex-wrap gap-2">
                                                     @php
+                                                        $gp = $offer->gamePlayer;
+                                                        $posDisp = $gp->position_display;
                                                         $counterOfferDetail = \Illuminate\Support\Js::from([
-                                                            'playerName' => $offer->gamePlayer->player->name,
+                                                            'playerName' => $gp->player->name,
                                                             'negotiateUrl' => route('game.negotiate.counter-offer', [$game->id, $offer->id]),
                                                             'mode' => 'transfer_fee',
                                                             'phase' => 'counter_offer',
                                                             'chatTitle' => __('transfers.counter_offer_title'),
+                                                            'playerInfo' => [
+                                                                'age' => $gp->age($game->current_date),
+                                                                'wage' => $gp->formatted_wage,
+                                                                'tec' => $gp->technical_ability,
+                                                                'fis' => $gp->physical_ability,
+                                                                'position' => $posDisp['abbreviation'],
+                                                                'positionBg' => $posDisp['bg'],
+                                                                'positionText' => $posDisp['text'],
+                                                            ],
                                                         ]);
                                                     @endphp
                                                     <x-primary-button type="button" x-on:click="$dispatch('open-negotiation', {{ $counterOfferDetail }})">
@@ -446,10 +478,20 @@
                                         @php
                                             $hasPendingOffer = $preContractOffers->where('game_player_id', $player->id)->isNotEmpty();
                                         @endphp
+                                        @php $posDisp = $player->position_display; @endphp
                                         <tr x-data class="border-t border-border-default transition-colors cursor-pointer {{ $hasPendingOffer ? 'bg-accent-red/10' : 'hover:bg-[rgba(59,130,246,0.05)]' }}"
                                             @click="$dispatch('open-negotiation', {
                                                 playerName: @js($player->name),
-                                                negotiateUrl: @js(route('game.negotiate.renewal', [$game->id, $player->id]))
+                                                negotiateUrl: @js(route('game.negotiate.renewal', [$game->id, $player->id])),
+                                                playerInfo: @js([
+                                                    'age' => $player->age($game->current_date),
+                                                    'wage' => $player->formatted_wage,
+                                                    'tec' => $player->technical_ability,
+                                                    'fis' => $player->physical_ability,
+                                                    'position' => $posDisp['abbreviation'],
+                                                    'positionBg' => $posDisp['bg'],
+                                                    'positionText' => $posDisp['text'],
+                                                ])
                                             })">
                                             <td class="py-2.5 pl-4 text-center">
                                                 <x-position-badge :position="$player->position" size="sm" />

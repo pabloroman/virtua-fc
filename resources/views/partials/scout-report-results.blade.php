@@ -188,13 +188,27 @@
                                             </div>
                                         @elseif($isExpiring && $isPreContractPeriod)
                                             {{-- Pre-contract negotiation --}}
+                                            @php
+                                                $posDisp = $player->position_display;
+                                                $scoutPlayerInfo = \Illuminate\Support\Js::from([
+                                                    'age' => $player->age($game->current_date),
+                                                    'tec' => $player->technical_ability,
+                                                    'fis' => $player->physical_ability,
+                                                    'position' => $posDisp['abbreviation'],
+                                                    'positionBg' => $posDisp['bg'],
+                                                    'positionText' => $posDisp['text'],
+                                                    'marketValue' => $player->formatted_market_value,
+                                                    'contractYear' => $player->contract_expiry_year,
+                                                ]);
+                                            @endphp
                                             <x-primary-button size="xs" color="green"
                                                 @click="$dispatch('open-negotiation', {
                                                     playerName: {{ \Illuminate\Support\Js::from($player->name) }},
                                                     negotiateUrl: {{ \Illuminate\Support\Js::from(route('game.negotiate.pre-contract', [$game->id, $player->id])) }},
                                                     mode: 'pre_contract',
                                                     phase: 'personal_terms',
-                                                    chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_pre_contract_title')) }}
+                                                    chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_pre_contract_title')) }},
+                                                    playerInfo: {{ $scoutPlayerInfo }}
                                                 })">
                                                 {{ __('transfers.negotiate_pre_contract') }}
                                             </x-primary-button>
@@ -203,6 +217,19 @@
                                                 {{ __('transfers.transfer_fee_exceeds_budget') }}
                                             </div>
                                         @else
+                                            @php
+                                                $posDisp = $player->position_display;
+                                                $scoutPlayerInfo = \Illuminate\Support\Js::from([
+                                                    'age' => $player->age($game->current_date),
+                                                    'tec' => $player->technical_ability,
+                                                    'fis' => $player->physical_ability,
+                                                    'position' => $posDisp['abbreviation'],
+                                                    'positionBg' => $posDisp['bg'],
+                                                    'positionText' => $posDisp['text'],
+                                                    'marketValue' => $player->formatted_market_value,
+                                                    'contractYear' => $player->contract_expiry_year,
+                                                ]);
+                                            @endphp
                                             <div class="flex flex-col sm:flex-row gap-2">
                                                 {{-- Transfer Negotiate --}}
                                                 <x-primary-button size="xs"
@@ -211,7 +238,8 @@
                                                         negotiateUrl: {{ \Illuminate\Support\Js::from(route('game.negotiate.transfer', [$game->id, $player->id])) }},
                                                         mode: 'transfer_fee',
                                                         phase: 'club_fee',
-                                                        chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_transfer_title')) }}
+                                                        chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_transfer_title')) }},
+                                                        playerInfo: {{ $scoutPlayerInfo }}
                                                     })">
                                                     {{ __('transfers.negotiate') }}
                                                 </x-primary-button>
@@ -222,7 +250,8 @@
                                                         negotiateUrl: {{ \Illuminate\Support\Js::from(route('game.negotiate.loan', [$game->id, $player->id])) }},
                                                         mode: 'loan',
                                                         phase: 'club_fee',
-                                                        chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_loan_title')) }}
+                                                        chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_loan_title')) }},
+                                                        playerInfo: {{ $scoutPlayerInfo }}
                                                     })">
                                                     {{ __('transfers.request_loan') }}
                                                 </x-secondary-button>

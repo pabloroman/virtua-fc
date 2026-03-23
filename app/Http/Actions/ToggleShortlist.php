@@ -86,6 +86,7 @@ class ToggleShortlist
                     'matchdaysTracked' => $entry->matchdays_tracked ?? 0,
                     'hasExistingOffer' => false,
                     'techRange' => null,
+                    'physRange' => null,
                     'formattedAskingPrice' => null,
                     'askingPrice' => null,
                     'canAffordFee' => false,
@@ -101,6 +102,7 @@ class ToggleShortlist
                 if ($entry->hasReportLevel()) {
                     $detail = $this->scoutingService->getPlayerScoutingDetail($gamePlayer, $game);
                     $data['player']['techRange'] = $detail['tech_range'];
+                    $data['player']['physRange'] = $detail['phys_range'];
                     $data['player']['formattedAskingPrice'] = $detail['formatted_asking_price'];
                     $data['player']['askingPrice'] = $detail['asking_price'];
                     $data['player']['canAffordFee'] = $detail['can_afford_fee'];

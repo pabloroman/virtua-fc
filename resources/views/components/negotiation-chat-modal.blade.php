@@ -41,6 +41,83 @@
                 </div>
             </div>
 
+            {{-- Player info strip --}}
+            <div x-show="playerInfo" x-cloak class="shrink-0 border-b border-border-strong px-5 py-2.5 bg-surface-700/30">
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+                    {{-- Position badge --}}
+                    <template x-if="playerInfo?.position">
+                        <span class="inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold rounded -skew-x-12 leading-none"
+                            :class="(playerInfo.positionBg || 'bg-surface-600') + ' ' + (playerInfo.positionText || 'text-text-primary')">
+                            <span class="skew-x-12" x-text="playerInfo.position"></span>
+                        </span>
+                    </template>
+
+                    {{-- Age --}}
+                    <template x-if="playerInfo?.age">
+                        <span class="text-text-secondary">
+                            <span class="text-text-muted">{{ __('transfers.chat_player_age') }}</span>
+                            <span class="font-semibold text-text-primary tabular-nums" x-text="playerInfo.age"></span>
+                        </span>
+                    </template>
+
+                    {{-- Salary (own player) --}}
+                    <template x-if="playerInfo?.wage">
+                        <span class="text-text-secondary">
+                            <span class="text-text-muted">{{ __('transfers.chat_player_salary') }}</span>
+                            <span class="font-semibold text-text-primary" x-text="playerInfo.wage"></span>
+                        </span>
+                    </template>
+
+                    {{-- Market value (other player) --}}
+                    <template x-if="playerInfo?.marketValue">
+                        <span class="text-text-secondary">
+                            <span class="text-text-muted">{{ __('transfers.chat_player_value') }}</span>
+                            <span class="font-semibold text-text-primary" x-text="playerInfo.marketValue"></span>
+                        </span>
+                    </template>
+
+                    {{-- Contract year (other player) --}}
+                    <template x-if="playerInfo?.contractYear">
+                        <span class="text-text-secondary">
+                            <span class="text-text-muted">{{ __('transfers.chat_player_contract') }}</span>
+                            <span class="font-semibold text-text-primary tabular-nums" x-text="playerInfo.contractYear"></span>
+                        </span>
+                    </template>
+
+                    {{-- TEC (exact) --}}
+                    <template x-if="playerInfo?.tec != null">
+                        <span class="text-text-secondary">
+                            <span class="text-text-muted">{{ __('squad.technical_abbr') }}</span>
+                            <span class="font-semibold text-text-primary tabular-nums" x-text="playerInfo.tec"></span>
+                        </span>
+                    </template>
+
+                    {{-- TEC (range from scouting) --}}
+                    <template x-if="playerInfo?.tecRange">
+                        <span class="text-text-secondary">
+                            <span class="text-text-muted">{{ __('squad.technical_abbr') }}</span>
+                            <span class="font-semibold text-text-primary tabular-nums" x-text="playerInfo.tecRange[0] + '-' + playerInfo.tecRange[1]"></span>
+                        </span>
+                    </template>
+
+                    {{-- FIS (exact) --}}
+                    <template x-if="playerInfo?.fis != null">
+                        <span class="text-text-secondary">
+                            <span class="text-text-muted">{{ __('squad.physical_abbr') }}</span>
+                            <span class="font-semibold text-text-primary tabular-nums" x-text="playerInfo.fis"></span>
+                        </span>
+                    </template>
+
+                    {{-- FIS (range from scouting) --}}
+                    <template x-if="playerInfo?.fisRange">
+                        <span class="text-text-secondary">
+                            <span class="text-text-muted">{{ __('squad.physical_abbr') }}</span>
+                            <span class="font-semibold text-text-primary tabular-nums" x-text="playerInfo.fisRange[0] + '-' + playerInfo.fisRange[1]"></span>
+                        </span>
+                    </template>
+                </div>
+            </div>
+
             {{-- Messages --}}
             <div x-ref="chatMessages" class="flex-1 overflow-y-auto px-5 py-4 space-y-3">
                 <template x-for="(msg, idx) in messages" :key="idx">

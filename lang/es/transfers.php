@@ -378,6 +378,13 @@ return [
     'chat_loan_rejected_key_player' => ':team ha rechazado la solicitud. :player es un jugador clave para ellos.',
     'chat_loan_rejected_reputation' => ':player no está interesado en unirse a tu club en cesión.',
     'chat_loan_deal' => 'Cesión acordada',
+
+    // Chat player info strip
+    'chat_player_age' => 'Edad',
+    'chat_player_salary' => 'Salario',
+    'chat_player_value' => 'Valor',
+    'chat_player_contract' => 'Contrato',
+
     'mood_willing_loan' => 'Dispuesto a ceder',
     'mood_open_loan' => 'Abierto a cesión',
     'mood_reluctant_loan' => 'Reticente a ceder',

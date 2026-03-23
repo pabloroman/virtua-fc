@@ -465,7 +465,8 @@
                                                                         negotiateUrl: preContractRoute(player.id),
                                                                         mode: 'pre_contract',
                                                                         phase: 'personal_terms',
-                                                                        chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_pre_contract_title')) }}
+                                                                        chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_pre_contract_title')) }},
+                                                                        playerInfo: { age: player.age, position: player.positionAbbr, positionBg: player.positionBg, positionText: player.positionText, marketValue: player.formattedMarketValue, contractYear: player.contractYear, tecRange: player.techRange, fisRange: player.physRange }
                                                                     })">
                                                                     {{ __('transfers.negotiate_pre_contract') }}
                                                                 </x-primary-button>
@@ -487,7 +488,8 @@
                                                                             negotiateUrl: negotiateRoute(player.id),
                                                                             mode: 'transfer_fee',
                                                                             phase: 'club_fee',
-                                                                            chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_transfer_title')) }}
+                                                                            chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_transfer_title')) }},
+                                                                            playerInfo: { age: player.age, position: player.positionAbbr, positionBg: player.positionBg, positionText: player.positionText, marketValue: player.formattedMarketValue, contractYear: player.contractYear, tecRange: player.techRange, fisRange: player.physRange }
                                                                         })">
                                                                         {{ __('transfers.negotiate') }}
                                                                     </x-primary-button>
@@ -497,7 +499,8 @@
                                                                             negotiateUrl: loanRoute(player.id),
                                                                             mode: 'loan',
                                                                             phase: 'club_fee',
-                                                                            chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_loan_title')) }}
+                                                                            chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_loan_title')) }},
+                                                                            playerInfo: { age: player.age, position: player.positionAbbr, positionBg: player.positionBg, positionText: player.positionText, marketValue: player.formattedMarketValue, contractYear: player.contractYear, tecRange: player.techRange, fisRange: player.physRange }
                                                                         })">
                                                                         {{ __('transfers.request_loan') }}
                                                                     </x-secondary-button>

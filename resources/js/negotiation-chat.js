@@ -16,6 +16,7 @@ export default function negotiationChat() {
         // Player info (set on open)
         playerName: '',
         negotiateUrl: '',
+        playerInfo: null,
 
         // Chat title (set on open)
         chatTitle: '',
@@ -76,6 +77,7 @@ export default function negotiationChat() {
             this.mode = detail.mode || 'renewal';
             this.phase = detail.phase || null;
             this.chatTitle = detail.chatTitle || '';
+            this.playerInfo = detail.playerInfo || null;
             this.messages = [];
             this.loading = true;
             this.negotiationStatus = null;

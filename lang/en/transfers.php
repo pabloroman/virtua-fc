@@ -373,6 +373,13 @@ return [
     'chat_loan_rejected_key_player' => ':team has rejected the request. :player is a key player for them.',
     'chat_loan_rejected_reputation' => ':player is not interested in joining your club on loan.',
     'chat_loan_deal' => 'Loan agreed',
+
+    // Chat player info strip
+    'chat_player_age' => 'Age',
+    'chat_player_salary' => 'Salary',
+    'chat_player_value' => 'Value',
+    'chat_player_contract' => 'Contract',
+
     'mood_willing_loan' => 'Willing to loan',
     'mood_open_loan' => 'Open to loan',
     'mood_reluctant_loan' => 'Reluctant to loan',
