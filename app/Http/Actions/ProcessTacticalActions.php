@@ -47,6 +47,8 @@ class ProcessTacticalActions
             'playing_style' => ['nullable', 'string', Rule::enum(PlayingStyle::class)],
             'pressing' => ['nullable', 'string', Rule::enum(PressingIntensity::class)],
             'defensive_line' => ['nullable', 'string', Rule::enum(DefensiveLineHeight::class)],
+            'pitch_positions' => 'nullable|array',
+            'pitch_positions.*' => 'array|size:2',
             'previousSubstitutions' => 'array',
             'previousSubstitutions.*.playerOutId' => 'required|string',
             'previousSubstitutions.*.playerInId' => 'required|string',
@@ -94,6 +96,7 @@ class ProcessTacticalActions
             $validated['pressing'] ?? null,
             $validated['defensive_line'] ?? null,
             isExtraTime: $isExtraTime,
+            pitchPositions: $validated['pitch_positions'] ?? null,
         );
 
         return response()->json($result);

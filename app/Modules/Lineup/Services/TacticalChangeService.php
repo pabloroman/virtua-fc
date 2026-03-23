@@ -35,6 +35,7 @@ class TacticalChangeService
         ?string $pressing = null,
         ?string $defensiveLine = null,
         bool $isExtraTime = false,
+        ?array $pitchPositions = null,
     ): array {
         $isUserHome = $match->isHomeTeam($game->team_id);
         $prefix = $isUserHome ? 'home' : 'away';
@@ -44,6 +45,16 @@ class TacticalChangeService
 
         if ($formation !== null) {
             $matchUpdates["{$prefix}_formation"] = $formation;
+
+            // When the formation changes, clear stale slot assignments — slot IDs
+            // map to different positions per formation.
+            if ($formation !== $match->{"{$prefix}_formation"}) {
+                $game->tactics?->update([
+                    'default_pitch_positions' => $pitchPositions,
+                    'default_slot_assignments' => null,
+                ]);
+                $pitchPositions = null; // already saved
+            }
         }
         if ($mentality !== null) {
             $matchUpdates["{$prefix}_mentality"] = $mentality;
@@ -60,6 +71,11 @@ class TacticalChangeService
 
         if (! empty($matchUpdates)) {
             $match->update($matchUpdates);
+        }
+
+        // Persist pitch positions (if not already saved during formation change)
+        if ($pitchPositions !== null && $game->tactics) {
+            $game->tactics->update(['default_pitch_positions' => $pitchPositions]);
         }
 
         // Build allSubs = previous + new (with minute)

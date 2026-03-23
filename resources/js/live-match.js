@@ -87,6 +87,7 @@ export default function liveMatch(config) {
         dragPosition: null,
         positioningSlotId: null,
         livePitchPositions: config.pitchPositions || {},
+        _pitchPositionsFormation: config.activeFormation || '4-4-2',
         manualAssignments: config.manualAssignments || {},
         _savedPitchPositions: config.pitchPositions ? { ...config.pitchPositions } : {},
         _positionJustApplied: false,
@@ -1210,6 +1211,11 @@ export default function liveMatch(config) {
                     }));
                 }
 
+                // Include pitch positions if any were customized
+                if (Object.keys(this.livePitchPositions).length > 0) {
+                    payload.pitch_positions = this.livePitchPositions;
+                }
+
                 // Include tactical changes if any
                 if (this.hasTacticalChanges) {
                     if (this.pendingFormation !== null && this.pendingFormation !== this.activeFormation) {
@@ -1272,8 +1278,13 @@ export default function liveMatch(config) {
                     const formationChanged = result.formation !== this.activeFormation;
                     this.activeFormation = result.formation;
                     if (formationChanged) {
-                        this.livePitchPositions = {};
-                        this._savedPitchPositions = {};
+                        // Only clear positions if they belong to the old formation —
+                        // the user may have already dragged players during preview.
+                        if (this._pitchPositionsFormation !== result.formation) {
+                            this.livePitchPositions = {};
+                            this._savedPitchPositions = {};
+                        }
+                        this._pitchPositionsFormation = result.formation;
                         this.manualAssignments = {};
                     }
                 }
@@ -1607,9 +1618,8 @@ export default function liveMatch(config) {
 
             // Skip manual assignments when previewing a different formation — slot IDs
             // are formation-specific, so old mappings would place players incorrectly.
-            // Assignments stay in memory so switching back to the original formation restores them.
             const effectiveFormation = this.pendingFormation ?? this.activeFormation;
-            const useManualAssignments = (effectiveFormation === this.activeFormation) ? this.manualAssignments : {};
+            const useManualAssignments = (effectiveFormation === this._pitchPositionsFormation) ? this.manualAssignments : {};
             const assignments = assignPlayersToSlots(slots, activeLineup, this.slotCompatibility, useManualAssignments);
 
             // Preview pending subs on the pitch: swap out → in
@@ -1655,7 +1665,11 @@ export default function liveMatch(config) {
         getEffectivePosition(slotId) {
             const gc = this.gridConfig;
             if (!gc) return null;
-            return _getEffectivePosition(slotId, this.livePitchPositions, this.currentPitchSlots, gc.cols, gc.rows);
+            // Only apply custom positions when the formation matches — slot IDs
+            // map to different grid cells per formation.
+            const effectiveFormation = this.pendingFormation ?? this.activeFormation;
+            const positions = (effectiveFormation === this._pitchPositionsFormation) ? this.livePitchPositions : {};
+            return _getEffectivePosition(slotId, positions, this.currentPitchSlots, gc.cols, gc.rows);
         },
 
         getShirtStyle(role) {
@@ -1837,12 +1851,17 @@ export default function liveMatch(config) {
         },
 
         getSlotCell(slotId) {
-            const customPos = this.livePitchPositions[String(slotId)];
-            if (customPos) return { col: customPos[0], row: customPos[1] };
+            const effectiveFormation = this.pendingFormation ?? this.activeFormation;
+            // Only use custom positions when the formation matches — slot IDs
+            // map to different positions per formation, so overrides from
+            // a previous formation would place players incorrectly.
+            if (effectiveFormation === this._pitchPositionsFormation) {
+                const customPos = this.livePitchPositions[String(slotId)];
+                if (customPos) return { col: customPos[0], row: customPos[1] };
+            }
             const gc = this.gridConfig;
             if (!gc) return null;
-            const formation = this.pendingFormation ?? this.activeFormation;
-            const defaultCells = gc.defaultCells[formation];
+            const defaultCells = gc.defaultCells[effectiveFormation];
             return defaultCells ? defaultCells[slotId] : null;
         },
 
@@ -1862,7 +1881,11 @@ export default function liveMatch(config) {
             if (!_isValidGridCell(slot.label, col, row, this.gridConfig)) return;
 
             const occupying = this._findSlotAtCell(col, row, slotId);
-            const newPositions = { ...this.livePitchPositions };
+            // If the formation changed, start fresh — old positions are for different slots.
+            const effectiveFormation = this.pendingFormation ?? this.activeFormation;
+            const newPositions = (effectiveFormation === this._pitchPositionsFormation)
+                ? { ...this.livePitchPositions }
+                : {};
 
             if (occupying) {
                 if (occupying.role === 'Goalkeeper') return;
@@ -1874,6 +1897,7 @@ export default function liveMatch(config) {
 
             newPositions[String(slotId)] = [col, row];
             this.livePitchPositions = newPositions;
+            this._pitchPositionsFormation = this.pendingFormation ?? this.activeFormation;
             this._savedPitchPositions = JSON.parse(JSON.stringify(newPositions));
             this._positionJustApplied = true;
             this.positioningSlotId = null;
