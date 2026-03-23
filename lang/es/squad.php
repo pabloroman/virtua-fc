@@ -261,7 +261,7 @@ return [
     'squad_confirmed' => '¡Convocatoria confirmada!',
     'invalid_selection' => 'Selección inválida. Verifica los jugadores seleccionados.',
     'download_squad' => 'Descargar convocatoria',
-    'squad_list' => 'Lista de convocatoria',
+    'squad_list' => 'Lista de convocados',
 
     // Radar chart
     'radar_gk' => 'Portería',
