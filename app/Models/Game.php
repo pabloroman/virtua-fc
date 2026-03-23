@@ -194,24 +194,10 @@ class Game extends Model
 
     /**
      * Clear a stuck matchday advance flag (> 2 minutes old).
-     * Returns true if the flag was cleared.
      */
     public function clearStuckMatchdayAdvance(): bool
     {
-        if (! $this->isAdvancingMatchday()) {
-            return false;
-        }
-
-        if (! $this->matchday_advancing_at->lt(now()->subMinutes(2))) {
-            return false;
-        }
-
-        $this->update([
-            'matchday_advancing_at' => null,
-            'matchday_advance_result' => null,
-        ]);
-
-        return true;
+        return $this->clearStuckFlag('matchday_advancing_at', ['matchday_advance_result']);
     }
 
     public function isProcessingRemainingBatches(): bool
@@ -221,38 +207,37 @@ class Game extends Model
 
     /**
      * Clear a stuck remaining batches flag (> 2 minutes old).
-     * Returns true if the flag was cleared.
      */
     public function clearStuckRemainingBatches(): bool
     {
-        if (! $this->isProcessingRemainingBatches()) {
-            return false;
-        }
-
-        if (! $this->remaining_batches_processing_at->lt(now()->subMinutes(2))) {
-            return false;
-        }
-
-        $this->update(['remaining_batches_processing_at' => null]);
-
-        return true;
+        return $this->clearStuckFlag('remaining_batches_processing_at');
     }
 
     /**
      * Clear a stuck career actions flag (> 2 minutes old).
-     * Returns true if the flag was cleared.
      */
     public function clearStuckCareerActions(): bool
     {
-        if (! $this->isProcessingCareerActions()) {
+        return $this->clearStuckFlag('career_actions_processing_at');
+    }
+
+    /**
+     * Clear a stuck processing flag if it's older than 2 minutes.
+     */
+    private function clearStuckFlag(string $column, array $extraColumns = []): bool
+    {
+        if ($this->$column === null) {
             return false;
         }
 
-        if (! $this->career_actions_processing_at->lt(now()->subMinutes(2))) {
+        if (! $this->$column->lt(now()->subMinutes(2))) {
             return false;
         }
 
-        $this->update(['career_actions_processing_at' => null]);
+        $this->update(array_merge(
+            [$column => null],
+            array_fill_keys($extraColumns, null),
+        ));
 
         return true;
     }

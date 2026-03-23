@@ -32,25 +32,26 @@ class MatchResultProcessor
      */
     public function processAll(string $gameId, int $matchday, string $currentDate, array $matchResults, ?string $deferMatchId = null, $allPlayers = null): void
     {
+        // Load game once for previous date capture and date guard
+        $game = Game::find($gameId);
+
         // Capture previous date BEFORE updating game state (used for recovery calculation)
-        $previousDate = Game::where('id', $gameId)->value('current_date');
-        $previousDate = $previousDate ? Carbon::parse($previousDate) : null;
+        $previousDate = $game->current_date ? Carbon::parse($game->current_date) : null;
 
         // 1. Update game state (replaces onMatchdayAdvanced projector)
         // Only advance current_date forward — background batch processing must not
         // regress the date that was already set by the player's batch.
-        $newDate = Carbon::parse($currentDate)->toDateString();
-        $game = Game::find($gameId);
+        $newDate = Carbon::parse($currentDate);
         $updateData = ['current_matchday' => $matchday];
-        if (! $game->current_date || Carbon::parse($newDate)->gte($game->current_date)) {
-            $updateData['current_date'] = $newDate;
+        if (! $game->current_date || $newDate->gte($game->current_date)) {
+            $updateData['current_date'] = $newDate->toDateString();
         }
         Game::where('id', $gameId)->update($updateData);
 
         // 2. Bulk update match records (scores + played)
         $this->bulkUpdateMatchScores($matchResults);
 
-        // Load shared context once
+        // Reload game with post-update state for the rest of the method
         $game = Game::find($gameId);
         $matchIds = array_column($matchResults, 'matchId');
         $matches = GameMatch::whereIn('id', $matchIds)->get()->keyBy('id');

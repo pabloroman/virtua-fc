@@ -82,9 +82,6 @@ class MatchdayOrchestrator
                 $result = $this->processBatch($game, $batch, $batchHasPlayerMatch);
 
                 if ($result['playerMatch']) {
-                    // Defer remaining batches to background — user sees live match immediately
-                    $this->deferRemainingBatches($game);
-
                     return MatchdayAdvanceResult::liveMatch($result['playerMatch']->id);
                 }
 
@@ -121,21 +118,13 @@ class MatchdayOrchestrator
             return MatchdayAdvanceResult::seasonComplete();
         });
 
-        // When remaining batches are deferred to background, career actions are
-        // dispatched by processRemainingBatches() after all batches complete.
-        // Only dispatch here for non-deferred flows (season_complete, done, blocked).
-        if ($result->type !== 'live_match' && $this->careerActionTicks > 0) {
-            $updated = Game::where('id', $game->id)
-                ->whereNull('career_actions_processing_at')
-                ->update(['career_actions_processing_at' => now()]);
-
-            if ($updated) {
-                try {
-                    ProcessCareerActions::dispatch($game->id, $this->careerActionTicks);
-                } catch (\Throwable $e) {
-                    Game::where('id', $game->id)->update(['career_actions_processing_at' => null]);
-                }
-            }
+        // Dispatch post-transaction work now that all DB changes are committed
+        if ($result->type === 'live_match') {
+            // Defer remaining batches to background — user sees live match immediately.
+            // Career actions are dispatched by processRemainingBatches() after all batches complete.
+            $this->deferRemainingBatches($game);
+        } elseif ($this->careerActionTicks > 0) {
+            $this->dispatchCareerActions($game->id, $this->careerActionTicks);
         }
 
         return $result;
@@ -194,7 +183,7 @@ class MatchdayOrchestrator
         $this->lineupService->ensureLineupsForMatches($matches, $game, $allPlayers, $suspendedPlayerIds, $clubProfiles);
 
         // --- Check for forfeit (user's team has < 7 available players) ---
-        $playerMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
+        // $playerMatch was already resolved above (line 158) — reuse it after filtering
         $forfeitResult = null;
 
         if ($playerMatch) {
@@ -296,8 +285,30 @@ class MatchdayOrchestrator
     }
 
     /**
+     * Atomically set a processing flag and dispatch a career actions job.
+     */
+    private function dispatchCareerActions(string $gameId, int $ticks): void
+    {
+        if ($ticks <= 0) {
+            return;
+        }
+
+        $updated = Game::where('id', $gameId)
+            ->whereNull('career_actions_processing_at')
+            ->update(['career_actions_processing_at' => now()]);
+
+        if ($updated) {
+            try {
+                ProcessCareerActions::dispatch($gameId, $ticks);
+            } catch (\Throwable $e) {
+                Game::where('id', $gameId)->update(['career_actions_processing_at' => null]);
+            }
+        }
+    }
+
+    /**
      * Set flag and dispatch background job to process remaining batches.
-     * Called after the player's match batch is processed during advance().
+     * Called after the transaction commits in advance().
      */
     private function deferRemainingBatches(Game $game): void
     {
@@ -335,19 +346,7 @@ class MatchdayOrchestrator
         Game::where('id', $game->id)->update(['remaining_batches_processing_at' => null]);
 
         // Dispatch career actions if any ticks accumulated
-        if ($totalTicks > 0) {
-            $updated = Game::where('id', $game->id)
-                ->whereNull('career_actions_processing_at')
-                ->update(['career_actions_processing_at' => now()]);
-
-            if ($updated) {
-                try {
-                    ProcessCareerActions::dispatch($game->id, $totalTicks);
-                } catch (\Throwable $e) {
-                    Game::where('id', $game->id)->update(['career_actions_processing_at' => null]);
-                }
-            }
-        }
+        $this->dispatchCareerActions($game->id, $totalTicks);
     }
 
     private function simulateMatches($matches, Game $game, $allPlayers): array

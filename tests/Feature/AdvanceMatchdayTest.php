@@ -341,40 +341,8 @@ class AdvanceMatchdayTest extends TestCase
     {
         Queue::fake([ProcessRemainingBatches::class]);
 
-        // Create additional teams for an AI-only sibling match
-        $team3 = Team::factory()->create(['name' => 'Team 3']);
-        $team4 = Team::factory()->create(['name' => 'Team 4']);
+        [$team3] = $this->createMatchdayWithAiSibling();
 
-        // Same matchday: player match + AI match
-        GameMatch::factory()->create([
-            'game_id' => $this->game->id,
-            'competition_id' => $this->leagueCompetition->id,
-            'round_number' => 1,
-            'home_team_id' => $this->playerTeam->id,
-            'away_team_id' => $this->opponentTeam->id,
-            'scheduled_date' => Carbon::parse('2024-08-16'),
-        ]);
-
-        GameMatch::factory()->create([
-            'game_id' => $this->game->id,
-            'competition_id' => $this->leagueCompetition->id,
-            'round_number' => 1,
-            'home_team_id' => $team3->id,
-            'away_team_id' => $team4->id,
-            'scheduled_date' => Carbon::parse('2024-08-17'),
-        ]);
-
-        foreach ([$this->playerTeam, $this->opponentTeam, $team3, $team4] as $team) {
-            GameStanding::create([
-                'game_id' => $this->game->id,
-                'competition_id' => $this->leagueCompetition->id,
-                'team_id' => $team->id,
-                'position' => 0, 'played' => 0, 'won' => 0, 'drawn' => 0,
-                'lost' => 0, 'goals_for' => 0, 'goals_against' => 0, 'points' => 0,
-            ]);
-        }
-
-        // Advance matchday using the orchestrator directly
         $orchestrator = app(MatchdayOrchestrator::class);
         $result = $orchestrator->advance($this->game);
 
@@ -404,38 +372,7 @@ class AdvanceMatchdayTest extends TestCase
 
     public function test_process_remaining_batches_simulates_all_and_clears_flag(): void
     {
-        // Create additional teams for an AI-only sibling match
-        $team3 = Team::factory()->create(['name' => 'Team 3']);
-        $team4 = Team::factory()->create(['name' => 'Team 4']);
-
-        // Same matchday: player match + AI match
-        GameMatch::factory()->create([
-            'game_id' => $this->game->id,
-            'competition_id' => $this->leagueCompetition->id,
-            'round_number' => 1,
-            'home_team_id' => $this->playerTeam->id,
-            'away_team_id' => $this->opponentTeam->id,
-            'scheduled_date' => Carbon::parse('2024-08-16'),
-        ]);
-
-        GameMatch::factory()->create([
-            'game_id' => $this->game->id,
-            'competition_id' => $this->leagueCompetition->id,
-            'round_number' => 1,
-            'home_team_id' => $team3->id,
-            'away_team_id' => $team4->id,
-            'scheduled_date' => Carbon::parse('2024-08-17'),
-        ]);
-
-        foreach ([$this->playerTeam, $this->opponentTeam, $team3, $team4] as $team) {
-            GameStanding::create([
-                'game_id' => $this->game->id,
-                'competition_id' => $this->leagueCompetition->id,
-                'team_id' => $team->id,
-                'position' => 0, 'played' => 0, 'won' => 0, 'drawn' => 0,
-                'lost' => 0, 'goals_for' => 0, 'goals_against' => 0, 'points' => 0,
-            ]);
-        }
+        [$team3] = $this->createMatchdayWithAiSibling();
 
         // Fake the queue to prevent ProcessRemainingBatches from auto-running
         Queue::fake([ProcessRemainingBatches::class]);
@@ -480,5 +417,46 @@ class AdvanceMatchdayTest extends TestCase
         // Redirects to /game/{id}
         $this->assertStringContainsString('/game/', $response->getTargetUrl());
         $this->assertStringContainsString($this->game->id, $response->getTargetUrl());
+    }
+
+    /**
+     * Create a matchday with the player's match and an AI-only sibling match.
+     *
+     * @return array{Team, Team} The two AI teams
+     */
+    private function createMatchdayWithAiSibling(): array
+    {
+        $team3 = Team::factory()->create(['name' => 'Team 3']);
+        $team4 = Team::factory()->create(['name' => 'Team 4']);
+
+        GameMatch::factory()->create([
+            'game_id' => $this->game->id,
+            'competition_id' => $this->leagueCompetition->id,
+            'round_number' => 1,
+            'home_team_id' => $this->playerTeam->id,
+            'away_team_id' => $this->opponentTeam->id,
+            'scheduled_date' => Carbon::parse('2024-08-16'),
+        ]);
+
+        GameMatch::factory()->create([
+            'game_id' => $this->game->id,
+            'competition_id' => $this->leagueCompetition->id,
+            'round_number' => 1,
+            'home_team_id' => $team3->id,
+            'away_team_id' => $team4->id,
+            'scheduled_date' => Carbon::parse('2024-08-17'),
+        ]);
+
+        foreach ([$this->playerTeam, $this->opponentTeam, $team3, $team4] as $team) {
+            GameStanding::create([
+                'game_id' => $this->game->id,
+                'competition_id' => $this->leagueCompetition->id,
+                'team_id' => $team->id,
+                'position' => 0, 'played' => 0, 'won' => 0, 'drawn' => 0,
+                'lost' => 0, 'goals_for' => 0, 'goals_against' => 0, 'points' => 0,
+            ]);
+        }
+
+        return [$team3, $team4];
     }
 }
