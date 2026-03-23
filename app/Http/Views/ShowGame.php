@@ -57,18 +57,8 @@ class ShowGame
             ]);
         }
 
-        // Show loading screen while AI batches are processing in background
-        $game->clearStuckAiBatches();
-        if ($game->isProcessingAiBatches()) {
-            return view('game-loading', [
-                'game' => $game,
-                'title' => __('game.simulating_matches'),
-                'message' => __('game.simulating_matches_message'),
-                'showCrest' => true,
-            ]);
-        }
-
         // Matchday advance completed — consume result and redirect
+        // (checked before AI batches so live_match redirect isn't blocked by background processing)
         if ($advanceResult = $game->matchday_advance_result) {
             $game->update(['matchday_advance_result' => null]);
             $result = MatchdayAdvanceResult::fromArray($advanceResult);
@@ -84,6 +74,17 @@ class ShowGame
                     ? redirect()->route($result->pendingAction['route'], $gameId)->with('warning', __('messages.action_required'))
                     : redirect()->route('show-game', $gameId)->with('warning', __('messages.action_required')),
             };
+        }
+
+        // Show loading screen while AI batches are processing in background
+        $game->clearStuckAiBatches();
+        if ($game->isProcessingAiBatches()) {
+            return view('game-loading', [
+                'game' => $game,
+                'title' => __('game.simulating_matches'),
+                'message' => __('game.simulating_matches_message'),
+                'showCrest' => true,
+            ]);
         }
 
         // Show loading screen while matchday advance runs in background

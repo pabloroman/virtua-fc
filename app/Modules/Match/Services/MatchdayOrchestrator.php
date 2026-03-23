@@ -157,6 +157,17 @@ class MatchdayOrchestrator
         $matchday = $batch['matchday'];
         $currentDate = $batch['currentDate'];
 
+        // --- Detect player match early ---
+        $playerMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
+
+        // When the player's match is in this batch, simulate ONLY the player's
+        // match synchronously. Remaining AI matches stay unplayed and are picked
+        // up by ProcessRemainingBatches in the background.
+        if ($playerMatch) {
+            $matches = $matches->filter(fn ($m) => $m->id === $playerMatch->id);
+            $handlers = array_intersect_key($handlers, $matches->pluck('competition_id')->flip()->all());
+        }
+
         // --- Load players ---
         $teamIds = $matches->pluck('home_team_id')
             ->merge($matches->pluck('away_team_id'))
@@ -190,7 +201,6 @@ class MatchdayOrchestrator
         $this->lineupService->ensureLineupsForMatches($matches, $game, $allPlayers, $suspendedPlayerIds, $clubProfiles);
 
         // --- Check for forfeit (user's team has < 7 available players) ---
-        $playerMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
         $forfeitResult = null;
 
         if ($playerMatch) {

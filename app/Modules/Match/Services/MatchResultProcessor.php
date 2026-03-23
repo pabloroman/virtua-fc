@@ -36,11 +36,15 @@ class MatchResultProcessor
         $previousDate = Game::where('id', $gameId)->value('current_date');
         $previousDate = $previousDate ? Carbon::parse($previousDate) : null;
 
-        // 1. Update game state (replaces onMatchdayAdvanced projector)
-        Game::where('id', $gameId)->update([
-            'current_matchday' => $matchday,
-            'current_date' => Carbon::parse($currentDate)->toDateString(),
-        ]);
+        // 1. Update game state (only advance forward — background batches may
+        // process earlier dates from the same round after the player's batch)
+        $newDate = Carbon::parse($currentDate)->toDateString();
+        Game::where('id', $gameId)
+            ->where('current_date', '<=', $newDate)
+            ->update([
+                'current_matchday' => $matchday,
+                'current_date' => $newDate,
+            ]);
 
         // 2. Bulk update match records (scores + played)
         $this->bulkUpdateMatchScores($matchResults);

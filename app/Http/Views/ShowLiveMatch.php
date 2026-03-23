@@ -68,6 +68,7 @@ class ShowLiveMatch
             ->where('competition_id', $playerMatch->competition_id)
             ->where('round_number', $playerMatch->round_number)
             ->where('id', '!=', $playerMatch->id)
+            ->where('played', true)
             ->when(
                 $playerMatch->round_name,
                 fn ($q) => $q->where('round_name', $playerMatch->round_name),
