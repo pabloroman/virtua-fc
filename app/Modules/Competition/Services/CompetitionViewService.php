@@ -26,9 +26,50 @@ class CompetitionViewService
 
     public function getTeamForms(Collection $standings): array
     {
+        $this->backfillMissingForms($standings);
+
         return $standings->mapWithKeys(fn ($s) => [
             $s->team_id => $s->form ? str_split($s->form) : [],
         ])->all();
+    }
+
+    private function backfillMissingForms(Collection $standings): void
+    {
+        $needsBackfill = $standings->filter(fn ($s) => $s->form === null && $s->played > 0);
+
+        if ($needsBackfill->isEmpty()) {
+            return;
+        }
+
+        $first = $needsBackfill->first();
+        $matches = GameMatch::where('game_id', $first->game_id)
+            ->where('competition_id', $first->competition_id)
+            ->where('played', true)
+            ->whereNull('cup_tie_id')
+            ->orderBy('scheduled_date')
+            ->get();
+
+        $matchesByTeam = [];
+        foreach ($matches as $match) {
+            $matchesByTeam[$match->home_team_id][] = $match;
+            $matchesByTeam[$match->away_team_id][] = $match;
+        }
+
+        foreach ($needsBackfill as $standing) {
+            $teamMatches = $matchesByTeam[$standing->team_id] ?? [];
+            $form = '';
+
+            foreach ($teamMatches as $match) {
+                $isHome = $match->home_team_id === $standing->team_id;
+                $teamScore = $isHome ? $match->home_score : $match->away_score;
+                $oppScore = $isHome ? $match->away_score : $match->home_score;
+
+                $form .= $teamScore > $oppScore ? 'W' : ($teamScore < $oppScore ? 'L' : 'D');
+            }
+
+            $standing->form = $form !== '' ? substr($form, -5) : null;
+            $standing->save();
+        }
     }
 
     public function getTopScorers(string $gameId, string $competitionId): Collection
