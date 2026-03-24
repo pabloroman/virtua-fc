@@ -76,6 +76,8 @@ return [
     'formation_tip_4141' => 'Defensiva. :attack ataque, :defense goles en contra.',
     'formation_tip_532' => 'Muy defensiva. :attack ataque, :defense goles en contra.',
     'formation_tip_541' => 'Ultra defensiva. :attack ataque, :defense goles en contra.',
+    'formation_tip_4123' => 'Ofensiva con ancla defensiva. :attack ataque, :defense goles en contra.',
+    'formation_tip_4321' => 'Creativa, ataque estrecho. :attack ataque, :defense goles en contra.',
 
     // Mentality tooltips
     'mentality_tip_defensive' => 'Tus goles :own, goles rival :opponent. Cierra el partido.',

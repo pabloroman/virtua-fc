@@ -127,6 +127,8 @@ return [
         '4-1-4-1' => ['attack' => 0.95, 'defense' => 0.92],   // Defensive midfield shield
         '5-3-2'   => ['attack' => 0.88, 'defense' => 0.88],   // Defensive, hard to break
         '5-4-1'   => ['attack' => 0.80, 'defense' => 0.86],   // Park the bus
+        '4-1-2-3' => ['attack' => 1.10, 'defense' => 1.02],   // Attacking with DM anchor
+        '4-3-2-1' => ['attack' => 1.05, 'defense' => 0.98],   // Creative, narrow attack
     ],
 
     /*

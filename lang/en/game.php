@@ -76,6 +76,8 @@ return [
     'formation_tip_4141' => 'Defensive. :attack attack, :defense goals conceded.',
     'formation_tip_532' => 'Very defensive. :attack attack, :defense goals conceded.',
     'formation_tip_541' => 'Ultra defensive. :attack attack, :defense goals conceded.',
+    'formation_tip_4123' => 'Attacking with DM anchor. :attack attack, :defense goals conceded.',
+    'formation_tip_4321' => 'Creative, narrow attack. :attack attack, :defense goals conceded.',
 
     // Mentality tooltips
     'mentality_tip_defensive' => 'Your goals :own, opponent goals :opponent. Shut the game down.',
