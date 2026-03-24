@@ -380,14 +380,14 @@ return [
 
     // Loan negotiation chat
     'chat_loan_title' => 'Loan Negotiation',
-    'chat_loan_demand' => ':team would loan :player for a fee of :fee.',
-    'chat_loan_counter' => ':team insists on a loan fee of :fee.',
-    'chat_loan_accepted_free' => ':team is happy to loan :player at no cost. Welcome aboard!',
+    'chat_loan_accepted' => ':team accepts the loan of :player. Salary: :salary/yr.',
     'chat_loan_completed' => ':player has joined on loan until the end of the season!',
     'chat_loan_agreed' => ':player\'s loan has been agreed. The move will complete when the transfer window opens.',
     'chat_loan_rejected' => ':team has rejected the loan request. Negotiations have broken down.',
     'chat_loan_rejected_key_player' => ':team has rejected the request. :player is a key player for them.',
     'chat_loan_rejected_reputation' => ':player is not interested in joining your club on loan.',
+    'chat_loan_rejected_player' => ':player is not interested in joining your club on loan.',
+    'chat_loan_confirm' => 'Confirm loan',
     'chat_loan_deal' => 'Loan agreed',
 
     // Chat player info strip

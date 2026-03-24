@@ -727,14 +727,11 @@ class ScoutingService
      */
     public function evaluateLoanRequestSync(GamePlayer $player, Game $game): array
     {
-        $teamName = $player->team?->name ?? 'Unknown';
-
-        // Reputation gate
+        // Gate 1: Reputation — club won't negotiate with low-rep teams
         $reputationModifier = $this->calculateReputationModifier($game->team, $player);
         if ($reputationModifier < 0.50) {
             return [
                 'result' => 'rejected',
-                'loan_fee' => 0,
                 'disposition' => 0.10,
                 'rejection_reason' => 'reputation',
             ];
@@ -742,11 +739,10 @@ class ScoutingService
 
         $importance = $this->calculatePlayerImportance($player);
 
-        // Key player — outright rejection
+        // Gate 1: Key player — club refuses to loan
         if ($importance > 0.70) {
             return [
                 'result' => 'rejected',
-                'loan_fee' => 0,
                 'disposition' => 0.15,
                 'rejection_reason' => 'key_player',
             ];
@@ -754,28 +750,22 @@ class ScoutingService
 
         // Calculate disposition for mood indicator
         $disposition = 0.50;
-        $disposition += (1.0 - $importance) * 0.30; // Less important = more willing
-        $disposition += ($reputationModifier - 0.50) * 0.20; // Higher rep = more willing
+        $disposition += (1.0 - $importance) * 0.30;
+        $disposition += ($reputationModifier - 0.50) * 0.20;
         $disposition = max(0.10, min(0.95, $disposition));
 
-        // Fringe player — free loan
-        if ($importance < 0.30) {
+        // Gate 2: Player willingness — player may not want to join
+        $willingness = $this->calculateWillingness($player, $game, $importance);
+        if (in_array($willingness['label'], ['not_interested', 'reluctant'])) {
             return [
-                'result' => 'accepted',
-                'loan_fee' => 0,
+                'result' => 'rejected',
                 'disposition' => $disposition,
-                'rejection_reason' => null,
+                'rejection_reason' => 'player_refused',
             ];
         }
 
-        // Mid-range player (0.30-0.70) — demand a loan fee
-        $feeRate = 0.05 + ($importance * 0.05); // 5-10% of market value
-        $loanFee = (int) ($player->market_value_cents * $feeRate);
-        $loanFee = (int) (round($loanFee / 10_000_000) * 10_000_000); // Round to €100K
-
         return [
-            'result' => 'conditional',
-            'loan_fee' => max($loanFee, 10_000_000), // Minimum €100K
+            'result' => 'accepted',
             'disposition' => $disposition,
             'rejection_reason' => null,
         ];

@@ -36,12 +36,16 @@ export default function negotiationChat() {
             return ['accepted', 'rejected', 'completed'].includes(this.negotiationStatus);
         },
 
+        get isAwaitingConfirmation() {
+            return this.negotiationStatus === 'awaiting_confirmation';
+        },
+
         get canSubmit() {
             return !this.loading && !this.isTerminal && this.offerWage > 0;
         },
 
         get wageStep() {
-            if (this.mode === 'transfer_fee' || this.mode === 'loan' || this.phase === 'counter_offer') {
+            if (this.mode === 'transfer_fee' || this.phase === 'counter_offer') {
                 return this.offerWage >= 10000000 ? 1000000 : 100000;
             }
             return this.offerWage >= 1000000 ? 100000 : 10000;
@@ -126,7 +130,7 @@ export default function negotiationChat() {
                     this.prefillFromOptions();
                 }
                 this.loading = false;
-            } else if (this.phase === 'club_fee' || this.mode === 'loan') {
+            } else if (this.phase === 'club_fee') {
                 // Show user's bid as a message
                 this.messages.push({
                     sender: 'user',
@@ -229,7 +233,7 @@ export default function negotiationChat() {
                     this.negotiationStatus = data.negotiation_status;
                     this.appendMessages(data.messages);
                 }
-            } else if (this.phase === 'club_fee' || this.mode === 'loan') {
+            } else if (this.phase === 'club_fee') {
                 const data = await this.sendAction('accept_counter');
                 if (data) {
                     this.negotiationStatus = data.negotiation_status;
@@ -247,6 +251,28 @@ export default function negotiationChat() {
                     this.negotiationStatus = data.negotiation_status;
                     this.appendMessages(data.messages);
                 }
+            }
+            this.loading = false;
+        },
+
+        async confirmLoan() {
+            if (this.loading || this.isTerminal) return;
+
+            this.messages.push({
+                sender: 'user',
+                type: 'accept',
+                content: { text: '' },
+                options: null,
+            });
+            this.clearLastOptions();
+
+            this.loading = true;
+            await this.delay(400 + Math.random() * 300);
+
+            const data = await this.sendAction('confirm');
+            if (data) {
+                this.negotiationStatus = data.negotiation_status;
+                this.appendMessages(data.messages);
             }
             this.loading = false;
         },

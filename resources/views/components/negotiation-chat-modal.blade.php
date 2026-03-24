@@ -149,6 +149,15 @@
                                             </template>
                                         </div>
                                     </template>
+                                    {{-- Confirm loan --}}
+                                    <template x-if="msg.options?.canConfirm">
+                                        <div class="pt-1">
+                                            <button type="button" @click="confirmLoan()"
+                                                class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-accent-green/15 text-accent-green hover:bg-accent-green/25 transition-colors min-h-[36px]">
+                                                {{ __('transfers.chat_loan_confirm') }}
+                                            </button>
+                                        </div>
+                                    </template>
                                 </div>
                             </div>
                         </template>
@@ -261,7 +270,7 @@
             </div>
 
             {{-- Input area: Transfer fee / loan fee mode --}}
-            <div class="shrink-0 border-t border-border-strong px-5 py-3 space-y-2.5" x-show="(mode === 'transfer_fee' || mode === 'loan') && !isTerminal && !loading && negotiationStatus !== 'fee_agreed'">
+            <div class="shrink-0 border-t border-border-strong px-5 py-3 space-y-2.5" x-show="mode === 'transfer_fee' && !isTerminal && !loading && negotiationStatus !== 'fee_agreed'">
                 <div class="flex items-end gap-2">
                     <div class="flex-1 min-w-0">
                         <label class="text-[10px] text-text-muted uppercase tracking-wider block mb-1">{{ __('transfers.chat_your_bid') }}</label>
