@@ -1355,6 +1355,20 @@ class TransferService
 
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
 
+        // Record the loan salary as a financial transaction
+        $parentTeam = Team::find($parentTeamId);
+        FinancialTransaction::recordExpense(
+            gameId: $game->id,
+            category: FinancialTransaction::CATEGORY_LOAN,
+            amount: $player->annual_wage,
+            description: __('finances.tx_loan_in', [
+                'player' => $player->player->name ?? $player->id,
+                'team' => $parentTeam->name ?? '',
+            ]),
+            transactionDate: $game->current_date,
+            relatedPlayerId: $player->id,
+        );
+
         // Remove from shortlist to free up scouting slot
         ShortlistedPlayer::removeForPlayer($game->id, $player->id);
     }

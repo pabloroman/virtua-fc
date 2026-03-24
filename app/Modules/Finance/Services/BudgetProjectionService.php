@@ -240,6 +240,9 @@ class BudgetProjectionService
     {
         return GamePlayer::where('game_id', $game->id)
             ->where('team_id', $game->team_id)
+            ->whereDoesntHave('activeLoan', function ($q) use ($game) {
+                $q->where('loan_team_id', $game->team_id);
+            })
             ->sum('annual_wage');
     }
 
