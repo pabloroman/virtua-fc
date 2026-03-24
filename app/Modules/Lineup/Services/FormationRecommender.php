@@ -18,8 +18,58 @@ class FormationRecommender
         $assigned = [];
         $usedPlayerIds = [];
 
-        // Sort slots by specificity (GK first, then positions with fewer compatible players)
-        $sortedSlots = collect($slots)->sortBy(function ($slot) {
+        // Pass 0: Reserve natural position fits first (compatibility 100)
+        // This prevents suboptimal cascading where a natural RW takes an RW slot,
+        // forcing an RM into CM instead of the now-vacant RW.
+        $sortedByRating = $players->sortByDesc(function ($player) {
+            return $player->overall_score ?? $player['overallScore'] ?? $player['overall_score'];
+        });
+
+        foreach ($sortedByRating as $player) {
+            $playerId = $player->id ?? $player['id'];
+            if (in_array($playerId, $usedPlayerIds)) {
+                continue;
+            }
+
+            $position = $player->position ?? $player['position'];
+            $overallScore = $player->overall_score ?? $player['overallScore'] ?? $player['overall_score'];
+
+            // Find an empty slot where this player has natural compatibility (100)
+            foreach ($slots as &$slot) {
+                $slotId = $slot['id'];
+                $alreadyFilled = collect($assigned)->contains(fn ($a) => $a['slot']['id'] === $slotId && $a['player'] !== null);
+                if ($alreadyFilled) {
+                    continue;
+                }
+
+                $compatibility = PositionSlotMapper::getCompatibilityScore($position, $slot['label']);
+                if ($compatibility === 100) {
+                    $effectiveRating = PositionSlotMapper::getEffectiveRating($overallScore, $position, $slot['label']);
+                    $assigned[] = [
+                        'slot' => $slot,
+                        'player' => [
+                            'id' => $playerId,
+                            'name' => $player->name ?? $player['name'],
+                            'position' => $position,
+                            'overallScore' => $overallScore,
+                            'compatibility' => $compatibility,
+                            'effectiveRating' => $effectiveRating,
+                        ],
+                        'compatibility' => $compatibility,
+                        'effectiveRating' => $effectiveRating,
+                    ];
+                    $usedPlayerIds[] = $playerId;
+                    break;
+                }
+            }
+            unset($slot);
+        }
+
+        // Sort remaining slots by specificity (GK first, then positions with fewer compatible players)
+        $assignedSlotIds = collect($assigned)->pluck('slot.id')->all();
+        $sortedSlots = collect($slots)->filter(function ($slot) use ($assignedSlotIds) {
+            return ! in_array($slot['id'], $assignedSlotIds);
+        })->sortBy(function ($slot) {
             $compatibleCount = count(PositionSlotMapper::getCompatiblePositions($slot['label']));
             // GK has priority (only 1 compatible position)
             if ($slot['label'] === 'GK') return 0;

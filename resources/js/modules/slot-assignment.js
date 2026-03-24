@@ -32,8 +32,29 @@ export function assignPlayersToSlots(slots, players, slotCompatibility, manualAs
     const unassignedPlayers = players.filter(p => !assigned.has(p.id));
 
     if (emptySlots.length > 0 && unassignedPlayers.length > 0) {
+        // Pass 0: Reserve natural position fits first (compatibility 100)
+        // This prevents suboptimal cascading where a natural RW takes an RW slot,
+        // forcing an RM into CM instead of the now-vacant RW.
+        const naturalCandidates = [...unassignedPlayers]
+            .filter(p => !assigned.has(p.id))
+            .sort((a, b) => b.overallScore - a.overallScore);
+
+        naturalCandidates.forEach(player => {
+            if (assigned.has(player.id)) return;
+            const naturalSlot = slots.find(s =>
+                !s.player &&
+                (slotCompatibility[s.label]?.[player.position] ?? 0) === 100
+            );
+            if (naturalSlot) {
+                naturalSlot.player = { ...player, compatibility: 100 };
+                naturalSlot.compatibility = 100;
+                assigned.add(player.id);
+            }
+        });
+
         const rolePriority = { 'Goalkeeper': 0, 'Forward': 1, 'Defender': 2, 'Midfielder': 3 };
-        const sortedEmpty = [...emptySlots].sort((a, b) => {
+        const remainingEmpty = slots.filter(s => !s.player);
+        const sortedEmpty = [...remainingEmpty].sort((a, b) => {
             const aPriority = rolePriority[a.role] ?? 99;
             const bPriority = rolePriority[b.role] ?? 99;
             if (aPriority !== bPriority) return aPriority - bPriority;
