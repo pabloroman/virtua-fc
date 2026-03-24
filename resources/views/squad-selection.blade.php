@@ -16,6 +16,9 @@ $tabs = [
         activeTab: 'goalkeepers',
         players: @js($candidatesByGroup),
         maxPlayers: 26,
+        groupLabels: @js($tabs),
+        teamName: @js($game->team->name),
+        teamCrestUrl: @js($game->team->image),
 
         togglePlayer(id) {
             const idx = this.selectedIds.indexOf(id);
@@ -48,6 +51,146 @@ $tabs = [
 
         selectedByGroup(group) {
             return this.players[group].filter(p => this.selectedIds.includes(p.transfermarkt_id));
+        },
+
+        async downloadSquadImage() {
+            const width = 800;
+            const padding = 40;
+            const contentWidth = width - padding * 2;
+            const groups = ['goalkeepers', 'defenders', 'midfielders', 'forwards'];
+
+            await document.fonts.ready;
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = width;
+            canvas.height = 1400;
+
+            const wrapText = (text, maxWidth) => {
+                const words = text.split(' ');
+                const lines = [];
+                let line = '';
+                for (const word of words) {
+                    const test = line ? line + ' ' + word : word;
+                    if (ctx.measureText(test).width > maxWidth && line) {
+                        lines.push(line);
+                        line = word;
+                    } else {
+                        line = test;
+                    }
+                }
+                if (line) lines.push(line);
+                return lines;
+            };
+
+            // Background
+            ctx.fillStyle = '#0b1120';
+            ctx.fillRect(0, 0, width, canvas.height);
+
+            let y = padding;
+
+            // Load team crest
+            let crestLoaded = false;
+            const crestSize = 48;
+            try {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                await new Promise((resolve, reject) => {
+                    img.onload = resolve;
+                    img.onerror = reject;
+                    img.src = this.teamCrestUrl;
+                });
+                ctx.drawImage(img, padding, y, crestSize, crestSize);
+                crestLoaded = true;
+            } catch {}
+
+            // Team name
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 24px Inter, sans-serif';
+            const nameX = crestLoaded ? padding + crestSize + 16 : padding;
+            const nameY = crestLoaded ? y + crestSize / 2 + 8 : y + 24;
+            ctx.fillText(this.teamName, nameX, nameY);
+
+            y += crestSize + 32;
+
+            // Divider
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(padding, y);
+            ctx.lineTo(width - padding, y);
+            ctx.stroke();
+            y += 24;
+
+            // Position groups
+            for (const group of groups) {
+                const players = this.selectedByGroup(group);
+                if (players.length === 0) continue;
+
+                ctx.fillStyle = '#64748b';
+                ctx.font = '600 11px Inter, sans-serif';
+                ctx.letterSpacing = '1px';
+                ctx.fillText(this.groupLabels[group].toUpperCase(), padding, y);
+                ctx.letterSpacing = '0px';
+                y += 20;
+
+                ctx.fillStyle = '#e2e8f0';
+                ctx.font = '400 15px Inter, sans-serif';
+                const text = players.map(p => p.name).join(', ');
+                const lines = wrapText(text, contentWidth);
+                for (const line of lines) {
+                    ctx.fillText(line, padding, y);
+                    y += 22;
+                }
+                y += 20;
+            }
+
+            // Brand footer divider
+            y += 4;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+            ctx.beginPath();
+            ctx.moveTo(padding, y);
+            ctx.lineTo(width - padding, y);
+            ctx.stroke();
+            y += 28;
+
+            // Virtua FC badge
+            const badgeText = 'Virtua FC';
+            ctx.font = '800 14px "Barlow Semi Condensed", sans-serif';
+            const badgeWidth = ctx.measureText(badgeText).width + 16;
+            const badgeHeight = 22;
+            const badgeX = (width - badgeWidth) / 2;
+
+            ctx.save();
+            ctx.transform(1, 0, -0.21, 1, 0, 0); // skew-x ~-12deg
+            ctx.fillStyle = '#dc2626';
+            ctx.fillRect(badgeX, y, badgeWidth, badgeHeight);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(badgeText, badgeX + 8, y + 16);
+            ctx.restore();
+
+            y += badgeHeight + 12;
+
+            ctx.fillStyle = '#64748b';
+            ctx.font = '400 11px Inter, sans-serif';
+            const tagline = 'virtuafc.com';
+            const tagWidth = ctx.measureText(tagline).width;
+            ctx.fillText(tagline, (width - tagWidth) / 2, y);
+
+            y += padding;
+
+            // Trim canvas to actual content height
+            const finalCanvas = document.createElement('canvas');
+            finalCanvas.width = width;
+            finalCanvas.height = y;
+            const fctx = finalCanvas.getContext('2d');
+            fctx.drawImage(canvas, 0, 0);
+
+            // Trigger download
+            const link = document.createElement('a');
+            link.download = this.teamName.replace(/[^a-zA-Z0-9]/g, '_') + '_squad.png';
+            link.href = finalCanvas.toDataURL('image/png');
+            link.click();
         },
     }" class="min-h-screen pb-32 md:pb-8">
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
@@ -191,7 +334,7 @@ $tabs = [
                     <x-secondary-button
                         type="button"
                         x-bind:disabled="!canConfirm"
-                        @click="$dispatch('open-modal', 'squad-download')"
+                        @click="downloadSquadImage()"
                         class="shrink-0"
                     >
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
@@ -212,36 +355,5 @@ $tabs = [
                 </div>
             </div>
         </div>
-        {{-- Squad Download Modal --}}
-        <x-modal name="squad-download" maxWidth="md">
-            <x-modal-header modal-name="squad-download">{{ __('squad.squad_list') }}</x-modal-header>
-
-            <div class="max-h-[80vh] overflow-y-auto">
-                <div class="p-4 md:p-6">
-                    {{-- Team Header --}}
-                    <div class="flex items-center gap-3 mb-4">
-                        <x-team-crest :team="$game->team" class="w-10 h-10" />
-                        <h3 class="text-lg font-bold text-text-primary">{{ $game->team->name }}</h3>
-                    </div>
-
-                    {{-- Position Groups --}}
-                    @foreach ($tabs as $groupKey => $label)
-                    <div x-show="selectedByGroup('{{ $groupKey }}').length > 0" class="mb-3 last:mb-0">
-                        <h4 class="text-xs font-semibold text-text-muted uppercase tracking-wider mb-1">{{ $label }}</h4>
-                        <p class="text-sm text-text-primary leading-relaxed"
-                           x-text="selectedByGroup('{{ $groupKey }}').map(p => p.name).join(', ')"></p>
-                    </div>
-                    @endforeach
-
-                    {{-- Brand Footer --}}
-                    <div class="mt-5 pt-4 border-t border-border-default flex flex-col items-center gap-1.5">
-                        <div class="-skew-x-12 bg-red-600 px-2 py-0.5">
-                            <span class="skew-x-12 inline-block text-sm font-extrabold text-white tracking-tight" style="font-family: 'Barlow Semi Condensed', sans-serif;">Virtua FC</span>
-                        </div>
-                        <p class="text-[11px] text-text-muted">Juega a ser seleccionador en virtuafc.com</p>
-                    </div>
-                </div>
-            </div>
-        </x-modal>
     </div>
 </x-app-layout>
