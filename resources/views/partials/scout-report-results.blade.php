@@ -48,6 +48,7 @@
                     $wageDemand = $detail['wage_demand'] ?? 0;
                     $formattedWageDemand = $detail['formatted_wage_demand'] ?? '-';
                     $canAffordFee = $detail['can_afford_fee'] ?? false;
+                    $canAffordLoan = $detail['can_afford_loan'] ?? false;
                     $onCooldown = $detail['on_cooldown'] ?? false;
                     $techRange = $detail['tech_range'] ?? [0, 0];
                     $physRange = $detail['phys_range'] ?? [0, 0];
@@ -216,9 +217,37 @@
                                                 })">
                                                 {{ __('transfers.negotiate_pre_contract') }}
                                             </x-primary-button>
-                                        @elseif(!$canAffordFee)
+                                        @elseif(!$canAffordFee && !$canAffordLoan)
                                             <div class="text-xs text-accent-red font-medium">
-                                                {{ __('transfers.transfer_fee_exceeds_budget') }}
+                                                {{ __('transfers.loan_fee_exceeds_budget') }}
+                                            </div>
+                                        @elseif(!$canAffordFee && $canAffordLoan)
+                                            @php
+                                                $posDisp = $player->position_display;
+                                                $scoutPlayerInfo = \Illuminate\Support\Js::from([
+                                                    'age' => $player->age($game->current_date),
+                                                    'position' => $posDisp['abbreviation'],
+                                                    'positionBg' => $posDisp['bg'],
+                                                    'positionText' => $posDisp['text'],
+                                                    'marketValue' => $player->formatted_market_value,
+                                                    'contractYear' => $player->contract_expiry_year,
+                                                ]);
+                                            @endphp
+                                            <div class="flex flex-col gap-2">
+                                                <div class="text-xs text-accent-gold font-medium">
+                                                    {{ __('transfers.transfer_fee_exceeds_budget_loan_available') }}
+                                                </div>
+                                                <x-secondary-button size="xs"
+                                                    @click="$dispatch('open-negotiation', {
+                                                        playerName: {{ \Illuminate\Support\Js::from($player->name) }},
+                                                        negotiateUrl: {{ \Illuminate\Support\Js::from(route('game.negotiate.loan', [$game->id, $player->id])) }},
+                                                        mode: 'loan',
+                                                        phase: 'club_fee',
+                                                        chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_loan_title')) }},
+                                                        playerInfo: {{ $scoutPlayerInfo }}
+                                                    })">
+                                                    {{ __('transfers.request_loan') }}
+                                                </x-secondary-button>
                                             </div>
                                         @else
                                             @php

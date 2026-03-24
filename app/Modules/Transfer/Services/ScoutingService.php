@@ -781,6 +781,25 @@ class ScoutingService
         ];
     }
 
+    /**
+     * Estimate loan fee for UI budget gating (mirrors evaluateLoanRequestSync formula).
+     *
+     * Key players (>0.70) return 0 because the club rejects the loan outright,
+     * so budget is not the limiting factor.
+     */
+    private function estimateLoanFee(GamePlayer $player, float $importance): int
+    {
+        if ($importance < 0.30 || $importance > 0.70) {
+            return 0;
+        }
+
+        $feeRate = 0.05 + ($importance * 0.05);
+        $loanFee = (int) ($player->market_value_cents * $feeRate);
+        $loanFee = (int) (round($loanFee / 10_000_000) * 10_000_000);
+
+        return max($loanFee, 10_000_000); // Minimum €100K
+    }
+
     // =========================================
     // WAGE DEMAND
     // =========================================
@@ -972,6 +991,8 @@ class ScoutingService
         $committedBudget = TransferOffer::committedBudget($game->id);
         $availableBudget = ($investment->transfer_budget ?? 0) - $committedBudget;
         $canAffordFee = $askingPrice <= $availableBudget;
+        $estimatedLoanFee = $this->estimateLoanFee($player, $importance);
+        $canAffordLoan = $isFreeAgent || $estimatedLoanFee <= $availableBudget;
 
         // Fuzzy ability range - higher scouting tier = more accurate
         $techAbility = $player->current_technical_ability;
@@ -992,6 +1013,7 @@ class ScoutingService
             'pre_contract_wage_demand' => $preContractWageDemand,
             'importance' => $importance,
             'can_afford_fee' => $canAffordFee,
+            'can_afford_loan' => $canAffordLoan,
             'transfer_budget' => $investment->transfer_budget ?? 0,
             'formatted_transfer_budget' => $investment ? $investment->formatted_transfer_budget : '€ 0',
             'tech_range' => [max(1, $techAbility - $fuzz), min(99, $techAbility + $fuzz)],

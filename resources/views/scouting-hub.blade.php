@@ -480,10 +480,30 @@
                                                                 </x-primary-button>
                                                             </template>
 
-                                                            {{-- Action: Can't afford --}}
-                                                            <template x-if="!player.isFreeAgent && !player.hasExistingOffer && !player.onCooldown && !(player.isExpiring && isPreContractPeriod) && !player.canAffordFee">
+                                                            {{-- Action: Can't afford transfer or loan --}}
+                                                            <template x-if="!player.isFreeAgent && !player.hasExistingOffer && !player.onCooldown && !(player.isExpiring && isPreContractPeriod) && !player.canAffordFee && !player.canAffordLoan">
                                                                 <div class="text-xs text-accent-red font-medium">
-                                                                    {{ __('transfers.transfer_fee_exceeds_budget') }}
+                                                                    {{ __('transfers.loan_fee_exceeds_budget') }}
+                                                                </div>
+                                                            </template>
+
+                                                            {{-- Action: Can't afford transfer, but can afford loan --}}
+                                                            <template x-if="!player.isFreeAgent && !player.hasExistingOffer && !player.onCooldown && !(player.isExpiring && isPreContractPeriod) && !player.canAffordFee && player.canAffordLoan">
+                                                                <div class="flex flex-col gap-2">
+                                                                    <div class="text-xs text-accent-gold font-medium">
+                                                                        {{ __('transfers.transfer_fee_exceeds_budget_loan_available') }}
+                                                                    </div>
+                                                                    <x-secondary-button size="xs"
+                                                                        @click="$dispatch('open-negotiation', {
+                                                                            playerName: player.name,
+                                                                            negotiateUrl: loanRoute(player.id),
+                                                                            mode: 'loan',
+                                                                            phase: 'club_fee',
+                                                                            chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_loan_title')) }},
+                                                                            playerInfo: { age: player.age, position: player.positionAbbr, positionBg: player.positionBg, positionText: player.positionText, marketValue: player.formattedMarketValue, contractYear: player.contractYear }
+                                                                        })">
+                                                                        {{ __('transfers.request_loan') }}
+                                                                    </x-secondary-button>
                                                                 </div>
                                                             </template>
 

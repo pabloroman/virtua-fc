@@ -89,6 +89,7 @@ class ToggleShortlist
                     'formattedAskingPrice' => null,
                     'askingPrice' => null,
                     'canAffordFee' => false,
+                    'canAffordLoan' => false,
                     'wageDemand' => null,
                     'formattedWageDemand' => null,
                     'bidEuros' => 0,
@@ -104,6 +105,7 @@ class ToggleShortlist
                     $data['player']['formattedAskingPrice'] = $detail['formatted_asking_price'];
                     $data['player']['askingPrice'] = $detail['asking_price'];
                     $data['player']['canAffordFee'] = $detail['can_afford_fee'];
+                    $data['player']['canAffordLoan'] = $detail['can_afford_loan'];
                     $data['player']['wageDemand'] = $detail['wage_demand'];
                     $data['player']['formattedWageDemand'] = $detail['formatted_wage_demand'];
                     $data['player']['bidEuros'] = (int) ($detail['asking_price'] / 100);

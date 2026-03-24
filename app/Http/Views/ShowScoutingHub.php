@@ -97,6 +97,7 @@ class ShowScoutingHub
                 'formattedAskingPrice' => null,
                 'askingPrice' => null,
                 'canAffordFee' => false,
+                'canAffordLoan' => false,
                 'wageDemand' => null,
                 'formattedWageDemand' => null,
                 'bidEuros' => 0,
@@ -113,6 +114,7 @@ class ShowScoutingHub
                 $playerData['formattedAskingPrice'] = $detail['formatted_asking_price'];
                 $playerData['askingPrice'] = $detail['asking_price'];
                 $playerData['canAffordFee'] = $detail['can_afford_fee'];
+                $playerData['canAffordLoan'] = $detail['can_afford_loan'];
                 $playerData['wageDemand'] = $detail['wage_demand'];
                 $playerData['formattedWageDemand'] = $detail['formatted_wage_demand'];
                 $playerData['bidEuros'] = (int) ($detail['asking_price'] / 100);
