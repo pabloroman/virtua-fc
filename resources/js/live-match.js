@@ -5,13 +5,11 @@ import {
     getNumberStyle as _getNumberStyle,
     getPlayerEnergy as _getPlayerEnergy,
     getEnergyColor,
-    assignPlayersToSlots,
-    getEventCoords as _getEventCoords,
-    getDragPosition,
-    getCellFromClientCoords,
     isValidGridCell as _isValidGridCell,
     getZoneColorClass as _getZoneColorClass,
 } from './modules/pitch-renderer.js';
+import { createPitchGrid } from './modules/pitch-grid.js';
+import { assignPlayersToSlots } from './modules/slot-assignment.js';
 
 export default function liveMatch(config) {
     return {
@@ -91,9 +89,6 @@ export default function liveMatch(config) {
         manualAssignments: config.manualAssignments || {},
         _savedPitchPositions: config.pitchPositions ? { ...config.pitchPositions } : {},
         _positionJustApplied: false,
-        _dragStartCoords: null,
-        _wasDragging: false,
-        _livePitchEl: null,
 
         // Tactical change state
         pendingFormation: null,
@@ -189,9 +184,27 @@ export default function liveMatch(config) {
         },
 
         init() {
-            // Bind drag handlers for pitch repositioning
-            this._boundDragMove = (e) => this._onDragMove(e);
-            this._boundDragEnd = (e) => this._onDragEnd(e);
+            // Integrate shared pitch grid module (positioning + drag-and-drop)
+            const grid = createPitchGrid(() => this, {
+                allowGkDrag: false,
+                allowGkReposition: false,
+                allowGkSwap: false,
+                dragThreshold: 5,
+                onTapFallback: (slot) => this.handlePitchPlayerClick(slot),
+                onPositionChanged: (positions) => {
+                    this._pitchPositionsFormation = this.pendingFormation ?? this.activeFormation;
+                    this._savedPitchPositions = JSON.parse(JSON.stringify(positions));
+                    this._positionJustApplied = true;
+                },
+                pitchElementId: 'live-pitch-field',
+                getPositions: () => this.livePitchPositions,
+                setPositions: (p) => { this.livePitchPositions = p },
+                getFormationGuard: () => ({
+                    effective: this.pendingFormation ?? this.activeFormation,
+                    tracked: this._pitchPositionsFormation,
+                }),
+            });
+            Object.assign(this, grid);
 
             // Start polling for career actions completion
             this.startProcessingPoll();
@@ -1765,180 +1778,14 @@ export default function liveMatch(config) {
         },
 
         // =====================================================================
-        // Pitch Drag & Repositioning (live match)
+        // Pitch Drag & Repositioning — provided by pitch-grid module via Object.assign in init()
+        // Methods: getSlotCell, isCellOccupied, selectForRepositioning,
+        //          setSlotGridPosition, handleGridCellClick, getGridCellState,
+        //          startDrag, _findSlotAtCell, _getPitchElement, _wasDragging
         // =====================================================================
-
-        _getLivePitchElement() {
-            if (!this._livePitchEl) {
-                this._livePitchEl = document.getElementById('live-pitch-field');
-            }
-            return this._livePitchEl;
-        },
-
-        startDrag(slotId, event) {
-            const slot = this.currentPitchSlots.find(s => s.id === slotId);
-            if (slot && slot.role === 'Goalkeeper') return;
-
-            event.preventDefault();
-
-            // Record start coords for tap-vs-drag threshold
-            const coords = _getEventCoords(event);
-            this._dragStartCoords = { x: coords.clientX, y: coords.clientY };
-            this._wasDragging = false;
-            this._pendingDragSlotId = slotId;
-
-            document.addEventListener('mousemove', this._boundDragMove);
-            document.addEventListener('mouseup', this._boundDragEnd);
-            document.addEventListener('touchmove', this._boundDragMove, { passive: false });
-            document.addEventListener('touchend', this._boundDragEnd);
-        },
-
-        _onDragMove(event) {
-            if (!this._pendingDragSlotId && this.draggingSlotId === null) return;
-            event.preventDefault();
-
-            const coords = _getEventCoords(event);
-
-            // Check if we've exceeded the tap-vs-drag threshold (5px)
-            if (this._pendingDragSlotId && !this.draggingSlotId) {
-                const dx = coords.clientX - this._dragStartCoords.x;
-                const dy = coords.clientY - this._dragStartCoords.y;
-                if (Math.sqrt(dx * dx + dy * dy) < 5) return;
-
-                // Threshold exceeded — activate drag
-                this.draggingSlotId = this._pendingDragSlotId;
-                this._pendingDragSlotId = null;
-                this._wasDragging = true;
-                this.positioningSlotId = null;
-            }
-
-            this.dragPosition = getDragPosition(coords.clientX, coords.clientY, this._getLivePitchElement());
-        },
-
-        _onDragEnd(event) {
-            // If drag threshold was never exceeded, treat as a tap (click)
-            if (this._pendingDragSlotId) {
-                const slot = this.currentPitchSlots.find(s => s.id === this._pendingDragSlotId);
-                this._pendingDragSlotId = null;
-                this._dragStartCoords = null;
-                document.removeEventListener('mousemove', this._boundDragMove);
-                document.removeEventListener('mouseup', this._boundDragEnd);
-                document.removeEventListener('touchmove', this._boundDragMove);
-                document.removeEventListener('touchend', this._boundDragEnd);
-                if (slot) {
-                    this.handlePitchPlayerClick(slot);
-                }
-                return;
-            }
-
-            const coords = _getEventCoords(event);
-
-            if (this.draggingSlotId !== null) {
-                const cell = getCellFromClientCoords(coords.clientX, coords.clientY, this._getLivePitchElement(), this.gridConfig);
-                if (cell) {
-                    this.setSlotGridPosition(this.draggingSlotId, cell.col, cell.row);
-                }
-            }
-
-            this.draggingSlotId = null;
-            this.dragPosition = null;
-            this._dragStartCoords = null;
-
-            document.removeEventListener('mousemove', this._boundDragMove);
-            document.removeEventListener('mouseup', this._boundDragEnd);
-            document.removeEventListener('touchmove', this._boundDragMove);
-            document.removeEventListener('touchend', this._boundDragEnd);
-        },
-
-        getSlotCell(slotId) {
-            const effectiveFormation = this.pendingFormation ?? this.activeFormation;
-            // Only use custom positions when the formation matches — slot IDs
-            // map to different positions per formation, so overrides from
-            // a previous formation would place players incorrectly.
-            if (effectiveFormation === this._pitchPositionsFormation) {
-                const customPos = this.livePitchPositions[String(slotId)];
-                if (customPos) return { col: customPos[0], row: customPos[1] };
-            }
-            const gc = this.gridConfig;
-            if (!gc) return null;
-            const defaultCells = gc.defaultCells[effectiveFormation];
-            return defaultCells ? defaultCells[slotId] : null;
-        },
-
-        _findSlotAtCell(col, row, excludeSlotId) {
-            const assignments = this.slotAssignments;
-            for (const slot of assignments) {
-                if (slot.id === excludeSlotId || !slot.player) continue;
-                const cell = this.getSlotCell(slot.id);
-                if (cell && cell.col === col && cell.row === row) return slot;
-            }
-            return null;
-        },
-
-        setSlotGridPosition(slotId, col, row) {
-            const slot = this.currentPitchSlots.find(s => s.id === slotId);
-            if (!slot) return;
-            if (!_isValidGridCell(slot.label, col, row, this.gridConfig)) return;
-
-            const occupying = this._findSlotAtCell(col, row, slotId);
-            // If the formation changed, start fresh — old positions are for different slots.
-            const effectiveFormation = this.pendingFormation ?? this.activeFormation;
-            const newPositions = (effectiveFormation === this._pitchPositionsFormation)
-                ? { ...this.livePitchPositions }
-                : {};
-
-            if (occupying) {
-                if (occupying.role === 'Goalkeeper') return;
-                const draggedCell = this.getSlotCell(slotId);
-                if (draggedCell) {
-                    newPositions[String(occupying.id)] = [draggedCell.col, draggedCell.row];
-                }
-            }
-
-            newPositions[String(slotId)] = [col, row];
-            this.livePitchPositions = newPositions;
-            this._pitchPositionsFormation = this.pendingFormation ?? this.activeFormation;
-            this._savedPitchPositions = JSON.parse(JSON.stringify(newPositions));
-            this._positionJustApplied = true;
-            this.positioningSlotId = null;
-        },
-
-        selectForRepositioning(slotId) {
-            const slot = this.currentPitchSlots.find(s => s.id === slotId);
-            if (slot && slot.role === 'Goalkeeper') return;
-            if (this.positioningSlotId === slotId) {
-                this.positioningSlotId = null;
-            } else {
-                this.positioningSlotId = slotId;
-            }
-        },
-
-        handleGridCellClick(col, row) {
-            if (this.positioningSlotId === null) return;
-            this.setSlotGridPosition(this.positioningSlotId, col, row);
-        },
 
         isValidGridCell(slotLabel, col, row) {
             return _isValidGridCell(slotLabel, col, row, this.gridConfig);
-        },
-
-        getGridCellState(col, row) {
-            if (this.positioningSlotId === null && this.draggingSlotId === null) return 'neutral';
-
-            const activeSlotId = this.positioningSlotId ?? this.draggingSlotId;
-            const slot = this.currentPitchSlots.find(s => s.id === activeSlotId);
-            if (!slot) return 'neutral';
-
-            if (!_isValidGridCell(slot.label, col, row, this.gridConfig)) return 'invalid';
-
-            const occupying = this._findSlotAtCell(col, row, activeSlotId);
-            if (occupying && occupying.role === 'Goalkeeper') return 'occupied';
-
-            if (slot.role === 'Goalkeeper') return 'valid';
-
-            if (row <= 4) return 'valid-def';
-            if (row <= 9) return 'valid-mid';
-            return 'valid-fwd';
         },
 
         getZoneColorClass(role) {
