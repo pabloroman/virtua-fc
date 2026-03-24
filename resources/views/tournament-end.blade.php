@@ -69,10 +69,267 @@ $formatGoalGroup = function ($goals) {
 
 $homeGoalLines = $formatGoalGroup($homeGoals);
 $awayGoalLines = $formatGoalGroup($awayGoals);
+
+// Prepare squad data for image download
+$positionGroupOrder = ['Goalkeeper', 'Defender', 'Midfielder', 'Forward'];
+$positionGroupLabels = [
+    'Goalkeeper' => __('squad.goalkeepers'),
+    'Defender' => __('squad.defenders'),
+    'Midfielder' => __('squad.midfielders'),
+    'Forward' => __('squad.forwards'),
+];
+$squadByGroup = [];
+foreach ($positionGroupOrder as $group) {
+    $players = $yourAppearances->filter(fn($gp) => $gp->position_group === $group);
+    if ($players->isNotEmpty()) {
+        $squadByGroup[$group] = $players->map(fn($gp) => [
+            'name' => $gp->player->name,
+            'appearances' => $gp->appearances,
+            'goals' => $gp->goals,
+            'assists' => $gp->assists,
+        ])->values()->toArray();
+    }
+}
 @endphp
 
 <x-app-layout :hide-footer="true">
-    <div class="min-h-screen bg-surface-900">
+    <div class="min-h-screen bg-surface-900" x-data="{
+        teamName: @js($game->team->name),
+        teamCrestUrl: @js($game->team->image),
+        resultLabel: @js(__('season.result_' . $resultLabel)),
+        isChampion: @js($isChampion),
+        record: @js($yourRecord),
+        squadByGroup: @js($squadByGroup),
+        groupLabels: @js($positionGroupLabels),
+        statLabels: @js([
+            'played' => __('season.played_abbr'),
+            'won' => __('season.won'),
+            'drawn' => __('season.drawn'),
+            'lost' => __('season.lost'),
+            'gf' => __('season.goals_for'),
+            'ga' => __('season.goals_against'),
+            'gd' => __('season.goal_diff_abbr'),
+            'apps' => __('squad.appearances'),
+            'goals' => __('squad.goals'),
+            'assists' => __('squad.assists'),
+        ]),
+
+        async downloadTournamentImage() {
+            const width = 800;
+            const padding = 40;
+            const contentWidth = width - padding * 2;
+
+            await document.fonts.ready;
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = width;
+            canvas.height = 2000;
+
+            const wrapText = (text, maxWidth) => {
+                const words = text.split(' ');
+                const lines = [];
+                let line = '';
+                for (const word of words) {
+                    const test = line ? line + ' ' + word : word;
+                    if (ctx.measureText(test).width > maxWidth && line) {
+                        lines.push(line);
+                        line = word;
+                    } else {
+                        line = test;
+                    }
+                }
+                if (line) lines.push(line);
+                return lines;
+            };
+
+            // Background
+            ctx.fillStyle = '#0b1120';
+            ctx.fillRect(0, 0, width, canvas.height);
+
+            let y = padding;
+
+            // Load team crest
+            let crestLoaded = false;
+            const crestSize = 52;
+            try {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                await new Promise((resolve, reject) => {
+                    img.onload = resolve;
+                    img.onerror = reject;
+                    img.src = this.teamCrestUrl;
+                });
+                ctx.drawImage(img, padding, y, crestSize, crestSize);
+                crestLoaded = true;
+            } catch {}
+
+            // Team name
+            const textX = crestLoaded ? padding + crestSize + 16 : padding;
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 24px Inter, sans-serif';
+            ctx.fillText(this.teamName, textX, y + 22);
+
+            // Result badge
+            ctx.fillStyle = this.isChampion ? '#f59e0b' : '#94a3b8';
+            ctx.font = '700 12px Inter, sans-serif';
+            ctx.letterSpacing = '1px';
+            ctx.fillText(this.resultLabel.toUpperCase(), textX, y + 44);
+            ctx.letterSpacing = '0px';
+
+            y += crestSize + 28;
+
+            // Divider
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(padding, y);
+            ctx.lineTo(width - padding, y);
+            ctx.stroke();
+            y += 20;
+
+            // Stats row
+            const stats = [
+                { label: this.statLabels.played, value: this.record.played, color: '#ffffff' },
+                { label: this.statLabels.won, value: this.record.won, color: '#22c55e' },
+                { label: this.statLabels.drawn, value: this.record.drawn, color: '#94a3b8' },
+                { label: this.statLabels.lost, value: this.record.lost, color: '#ef4444' },
+                { label: this.statLabels.gf, value: this.record.goalsFor, color: '#ffffff' },
+                { label: this.statLabels.ga, value: this.record.goalsAgainst, color: '#ffffff' },
+                { label: this.statLabels.gd, value: (this.record.goalsFor - this.record.goalsAgainst >= 0 ? '+' : '') + (this.record.goalsFor - this.record.goalsAgainst), color: this.record.goalsFor - this.record.goalsAgainst >= 0 ? '#22c55e' : '#ef4444' },
+            ];
+
+            const colWidth = contentWidth / stats.length;
+            for (let i = 0; i < stats.length; i++) {
+                const cx = padding + colWidth * i + colWidth / 2;
+
+                ctx.fillStyle = stats[i].color;
+                ctx.font = 'bold 22px Inter, sans-serif';
+                const valText = String(stats[i].value);
+                ctx.fillText(valText, cx - ctx.measureText(valText).width / 2, y + 4);
+
+                ctx.fillStyle = '#64748b';
+                ctx.font = '600 9px Inter, sans-serif';
+                ctx.letterSpacing = '1px';
+                const lblText = stats[i].label.toUpperCase();
+                ctx.fillText(lblText, cx - ctx.measureText(lblText).width / 2, y + 20);
+                ctx.letterSpacing = '0px';
+            }
+            y += 40;
+
+            // Divider
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+            ctx.beginPath();
+            ctx.moveTo(padding, y);
+            ctx.lineTo(width - padding, y);
+            ctx.stroke();
+            y += 20;
+
+            // Column headers for squad
+            const nameColX = padding;
+            const appsColX = width - padding - 120;
+            const goalsColX = width - padding - 70;
+            const assistsColX = width - padding - 20;
+
+            ctx.fillStyle = '#64748b';
+            ctx.font = '600 9px Inter, sans-serif';
+            ctx.letterSpacing = '1px';
+            let hdr = this.statLabels.apps.toUpperCase();
+            ctx.fillText(hdr, appsColX - ctx.measureText(hdr).width / 2, y);
+            hdr = this.statLabels.goals.toUpperCase();
+            ctx.fillText(hdr, goalsColX - ctx.measureText(hdr).width / 2, y);
+            hdr = this.statLabels.assists.toUpperCase();
+            ctx.fillText(hdr, assistsColX - ctx.measureText(hdr).width / 2, y);
+            ctx.letterSpacing = '0px';
+            y += 18;
+
+            // Squad by position group
+            const groupOrder = ['Goalkeeper', 'Defender', 'Midfielder', 'Forward'];
+            for (const group of groupOrder) {
+                const players = this.squadByGroup[group];
+                if (!players || players.length === 0) continue;
+
+                ctx.fillStyle = '#64748b';
+                ctx.font = '600 11px Inter, sans-serif';
+                ctx.letterSpacing = '1px';
+                ctx.fillText((this.groupLabels[group] || group).toUpperCase(), padding, y);
+                ctx.letterSpacing = '0px';
+                y += 18;
+
+                for (const p of players) {
+                    // Player name
+                    ctx.fillStyle = '#e2e8f0';
+                    ctx.font = '400 14px Inter, sans-serif';
+                    ctx.fillText(p.name, nameColX, y);
+
+                    // Apps
+                    ctx.fillStyle = '#cbd5e1';
+                    ctx.font = '600 13px Inter, sans-serif';
+                    let val = String(p.appearances);
+                    ctx.fillText(val, appsColX - ctx.measureText(val).width / 2, y);
+
+                    // Goals
+                    ctx.fillStyle = p.goals > 0 ? '#cbd5e1' : '#475569';
+                    val = String(p.goals);
+                    ctx.fillText(val, goalsColX - ctx.measureText(val).width / 2, y);
+
+                    // Assists
+                    ctx.fillStyle = p.assists > 0 ? '#cbd5e1' : '#475569';
+                    val = String(p.assists);
+                    ctx.fillText(val, assistsColX - ctx.measureText(val).width / 2, y);
+
+                    y += 20;
+                }
+                y += 10;
+            }
+
+            // Brand footer divider
+            y += 4;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+            ctx.beginPath();
+            ctx.moveTo(padding, y);
+            ctx.lineTo(width - padding, y);
+            ctx.stroke();
+            y += 28;
+
+            // Virtua FC badge
+            const badgeText = 'Virtua FC';
+            ctx.font = '800 14px \"Barlow Semi Condensed\", sans-serif';
+            const badgeWidth = ctx.measureText(badgeText).width + 16;
+            const badgeHeight = 22;
+            const badgeX = (width - badgeWidth) / 2;
+
+            ctx.save();
+            ctx.transform(1, 0, -0.21, 1, 0, 0);
+            ctx.fillStyle = '#dc2626';
+            ctx.fillRect(badgeX, y, badgeWidth, badgeHeight);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(badgeText, badgeX + 8, y + 16);
+            ctx.restore();
+
+            y += badgeHeight + 12;
+
+            ctx.fillStyle = '#64748b';
+            ctx.font = '400 11px Inter, sans-serif';
+            const tagline = 'virtuafc.com';
+            const tagWidth = ctx.measureText(tagline).width;
+            ctx.fillText(tagline, (width - tagWidth) / 2, y);
+
+            y += padding;
+
+            // Trim canvas
+            const finalCanvas = document.createElement('canvas');
+            finalCanvas.width = width;
+            finalCanvas.height = y;
+            const fctx = finalCanvas.getContext('2d');
+            fctx.drawImage(canvas, 0, 0);
+
+            const link = document.createElement('a');
+            link.download = this.teamName.replace(/[^a-zA-Z0-9]/g, '_') + '_tournament.png';
+            link.href = finalCanvas.toDataURL('image/png');
+            link.click();
+        },
+    }">
 
         {{-- ============================================ --}}
         {{-- SECTION 1: Hero Header + Final Scoreboard    --}}
@@ -641,7 +898,15 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
             {{-- ============================================ --}}
             {{-- SECTION 4: Bottom CTAs                       --}}
             {{-- ============================================ --}}
-            <div class="mt-10 mb-10 text-center">
+            <div class="mt-10 mb-10 flex flex-col sm:flex-row items-center justify-center gap-3">
+                <x-secondary-button
+                    type="button"
+                    @click="downloadTournamentImage()"
+                    class="px-6 py-4 text-base"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+                    <span class="ml-1.5">{{ __('squad.download_squad') }}</span>
+                </x-secondary-button>
                 <x-primary-button-link href="{{ route('select-team') }}" color="green" class="px-8 py-4 text-lg font-bold">
                     {{ __('season.play_again') }}
                 </x-primary-button-link>
