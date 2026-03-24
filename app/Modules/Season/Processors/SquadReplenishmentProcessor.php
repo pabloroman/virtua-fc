@@ -119,10 +119,20 @@ class SquadReplenishmentProcessor implements SeasonProcessor
         $bulkMeta = [];
         $releaseIds = [];
 
-        // Single bulk load: all players with eager-loaded date_of_birth for release candidate filtering
-        $playersByTeam = GamePlayer::where('game_id', $game->id)
-            ->whereNotNull('team_id')
-            ->with('player:id,date_of_birth')
+        // Single bulk load: only the columns we actually need, join for date_of_birth
+        $playersByTeam = GamePlayer::where('game_players.game_id', $game->id)
+            ->whereNotNull('game_players.team_id')
+            ->join('players', 'game_players.player_id', '=', 'players.id')
+            ->select([
+                'game_players.id',
+                'game_players.team_id',
+                'game_players.position',
+                'game_players.game_technical_ability',
+                'game_players.game_physical_ability',
+                'game_players.number',
+                'players.date_of_birth',
+                'players.name as player_name',
+            ])
             ->get()
             ->groupBy('team_id');
 
@@ -187,6 +197,16 @@ class SquadReplenishmentProcessor implements SeasonProcessor
         // Batch release old/weak players
         if (!empty($releaseIds)) {
             GamePlayer::whereIn('id', $releaseIds)->update(['team_id' => null]);
+        }
+
+        // Seed name/number caches from data we already loaded (zero extra queries)
+        foreach ($playersByTeam as $teamId => $players) {
+            $this->playerGenerator->seedCaches(
+                $game->id,
+                $teamId,
+                $players->pluck('player_name')->toArray(),
+                $players->pluck('number')->filter()->values()->toArray(),
+            );
         }
 
         // Bulk insert all generated players
@@ -455,10 +475,10 @@ class SquadReplenishmentProcessor implements SeasonProcessor
      */
     private function getOldestWeakestIds(Collection $players, Carbon $currentDate, int $count): array
     {
-        $cutoff = PlayerAge::dateOfBirthCutoff(PlayerAge::MIN_RETIREMENT_OUTFIELD, $currentDate);
+        $cutoff = PlayerAge::dateOfBirthCutoff(PlayerAge::MIN_RETIREMENT_OUTFIELD, $currentDate)->format('Y-m-d');
 
         return $players
-            ->filter(fn ($gp) => $gp->player && $gp->player->date_of_birth <= $cutoff)
+            ->filter(fn ($gp) => $gp->date_of_birth && substr($gp->date_of_birth, 0, 10) <= $cutoff)
             ->sortBy(fn ($gp) => ($gp->game_technical_ability ?? 0) + ($gp->game_physical_ability ?? 0))
             ->take($count)
             ->pluck('id')
