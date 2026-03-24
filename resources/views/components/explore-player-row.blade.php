@@ -2,14 +2,13 @@
     'player',
     'game',
     'showTeam' => false,
-    'isTransferWindow' => false,
     'isOwnTeam' => false,
 ])
 
 @php
 /** @var App\Models\GamePlayer $player */
 /** @var App\Models\Game $game */
-$canOffer = $isTransferWindow && !$isOwnTeam && $player->team_id !== null;
+$canOffer = !$isOwnTeam && $player->team_id !== null;
 $isFreeAgent = $player->team_id === null;
 $canNegotiateFreeAgent = $isFreeAgent && !$isOwnTeam;
 @endphp

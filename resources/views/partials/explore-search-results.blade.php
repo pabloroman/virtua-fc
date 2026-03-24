@@ -2,7 +2,6 @@
 /** @var \Illuminate\Support\Collection<App\Models\GamePlayer> $players */
 /** @var App\Models\Game $game */
 /** @var string $query */
-/** @var bool $isTransferWindow */
 @endphp
 
 {{-- Header --}}
@@ -36,7 +35,7 @@
             </thead>
             <tbody>
                 @foreach($players as $player)
-                <x-explore-player-row :player="$player" :game="$game" :show-team="true" :is-transfer-window="$isTransferWindow" :is-own-team="$player->team_id === $game->team_id" />
+                <x-explore-player-row :player="$player" :game="$game" :show-team="true" :is-own-team="$player->team_id === $game->team_id" />
                 @endforeach
             </tbody>
         </table>

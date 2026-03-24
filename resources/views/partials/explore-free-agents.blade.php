@@ -1,7 +1,6 @@
 @php
 /** @var \Illuminate\Support\Collection<App\Models\GamePlayer> $players */
 /** @var App\Models\Game $game */
-/** @var bool $isTransferWindow */
 @endphp
 
 {{-- Header --}}
