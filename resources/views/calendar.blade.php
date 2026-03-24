@@ -35,14 +35,16 @@
                             <span class="text-red-500">{{ $seasonStats['losses'] }}L</span>
                         </div>
                         @if($seasonStats['played'] > 0)
-                        <div class="w-full bg-bar-track rounded-full h-2 overflow-hidden">
+                        <div class="w-full rounded-full h-2 overflow-hidden">
                             @php
                                 $winWidth = ($seasonStats['wins'] / $seasonStats['played']) * 100;
                                 $drawWidth = ($seasonStats['draws'] / $seasonStats['played']) * 100;
+                                $lossWidth = ($seasonStats['losses'] / $seasonStats['played']) * 100;
                             @endphp
                             <div class="h-2 flex">
                                 <div class="bg-accent-green" style="width: {{ $winWidth }}%"></div>
                                 <div class="bg-surface-600" style="width: {{ $drawWidth }}%"></div>
+                                <div class="bg-accent-red" style="width: {{ $lossWidth }}%"></div>
                             </div>
                         </div>
                         <div class="text-xs text-text-muted mt-1 text-right">{{ __('game.win_rate', ['percent' => $seasonStats['winPercent']]) }}</div>
