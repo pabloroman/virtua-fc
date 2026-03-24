@@ -11,6 +11,7 @@ import {
 import { createPitchGrid } from './modules/pitch-grid.js';
 import { assignPlayersToSlots } from './modules/slot-assignment.js';
 import { createPenaltyShootout } from './modules/penalty-shootout.js';
+import { createSubstitutionManager } from './modules/substitution-manager.js';
 
 export default function liveMatch(config) {
     return {
@@ -209,6 +210,10 @@ export default function liveMatch(config) {
             // Integrate penalty shootout module
             const penalties = createPenaltyShootout(() => this);
             Object.assign(this, penalties);
+
+            // Integrate substitution manager module
+            const subs = createSubstitutionManager(() => this);
+            Object.assign(this, subs);
 
             // Start polling for career actions completion
             this.startProcessingPoll();
@@ -1260,117 +1265,14 @@ export default function liveMatch(config) {
         },
 
         // =============================
-        // Substitution methods
+        // Substitution methods — provided by substitution-manager module via Object.assign in init()
+        // Getters: redCardedPlayerIds, yellowCardedPlayerIds, effectiveMaxSubstitutions,
+        //          effectiveMaxWindows, windowsUsed, hasWindowsLeft, subsRemaining,
+        //          canSubstitute, canAddMoreToPending, availableLineupForPicker,
+        //          availableBenchForPicker, availableLineupPlayers, availableBenchPlayers
+        // Methods: isPlayerYellowCarded, resetSubstitutions, addPendingSub,
+        //          removePendingSub, getActiveLineupPlayers
         // =============================
-
-        get redCardedPlayerIds() {
-            return this.revealedEvents
-                .filter(e => e.type === 'red_card' && e.teamId === this.userTeamId)
-                .map(e => e.gamePlayerId);
-        },
-
-        get yellowCardedPlayerIds() {
-            return this.revealedEvents
-                .filter(e => e.type === 'yellow_card' && e.teamId === this.userTeamId)
-                .map(e => e.gamePlayerId);
-        },
-
-        isPlayerYellowCarded(playerId) {
-            return this.yellowCardedPlayerIds.includes(playerId);
-        },
-
-        // Dynamic limits: 6 subs / 4 windows during ET in knockout, 5/3 otherwise
-        get effectiveMaxSubstitutions() {
-            return (this.isKnockout && this.hasExtraTime) ? 6 : this.maxSubstitutions;
-        },
-
-        get effectiveMaxWindows() {
-            return (this.isKnockout && this.hasExtraTime) ? 4 : this.maxWindows;
-        },
-
-        get windowsUsed() {
-            // Count unique minutes in substitutionsMade — each unique minute = one window
-            const minutes = new Set(this.substitutionsMade.map(s => s.minute));
-            return minutes.size;
-        },
-
-        get hasWindowsLeft() {
-            return this.windowsUsed < this.effectiveMaxWindows;
-        },
-
-        get subsRemaining() {
-            return this.effectiveMaxSubstitutions - this.substitutionsMade.length - this.pendingSubs.length;
-        },
-
-        get canSubstitute() {
-            return this.substitutionsMade.length + this.pendingSubs.length < this.effectiveMaxSubstitutions;
-        },
-
-        get canAddMoreToPending() {
-            return this.canSubstitute && this.pendingSubs.length < this.subsRemaining;
-        },
-
-        // Lineup players considering both confirmed subs AND pending subs in this window
-        get availableLineupForPicker() {
-            const confirmedOutIds = this.substitutionsMade.map(s => s.playerOutId);
-            const confirmedInIds = this.substitutionsMade.map(s => s.playerInId);
-            const pendingOutIds = this.pendingSubs.map(s => s.playerOut.id);
-            const pendingInIds = this.pendingSubs.map(s => s.playerIn.id);
-            const allOutIds = [...confirmedOutIds, ...pendingOutIds];
-            const allInIds = [...confirmedInIds, ...pendingInIds];
-            const redCarded = this.redCardedPlayerIds;
-
-            // Original lineup players still on pitch
-            const onPitch = this.lineupPlayers.filter(p =>
-                !allOutIds.includes(p.id) && !redCarded.includes(p.id)
-            );
-
-            // Players who came on (confirmed or pending) and are still on pitch
-            const subsOnPitch = this.benchPlayers.filter(p =>
-                allInIds.includes(p.id) && !allOutIds.includes(p.id) && !redCarded.includes(p.id)
-            );
-
-            return [...onPitch, ...subsOnPitch].sort((a, b) => a.positionSort - b.positionSort);
-        },
-
-        // Bench players minus those already subbed in (confirmed or pending)
-        get availableBenchForPicker() {
-            const confirmedInIds = this.substitutionsMade.map(s => s.playerInId);
-            const pendingInIds = this.pendingSubs.map(s => s.playerIn.id);
-            const allInIds = [...confirmedInIds, ...pendingInIds];
-            return this.benchPlayers.filter(p => !allInIds.includes(p.id)).sort((a, b) => a.positionSort - b.positionSort);
-        },
-
-        // Keep old getters for the tactical bar display (confirmed subs only)
-        get availableLineupPlayers() {
-            return this.availableLineupForPicker;
-        },
-
-        get availableBenchPlayers() {
-            return this.availableBenchForPicker;
-        },
-
-        resetSubstitutions() {
-            this.selectedPlayerOut = null;
-            this.selectedPlayerIn = null;
-            this.livePitchSelectedOutId = null;
-            this.pendingSubs = [];
-        },
-
-        addPendingSub() {
-            if (!this.selectedPlayerOut || !this.selectedPlayerIn) return;
-            this.pendingSubs.push({
-                playerOut: { ...this.selectedPlayerOut },
-                playerIn: { ...this.selectedPlayerIn },
-            });
-            this.selectedPlayerOut = null;
-            this.selectedPlayerIn = null;
-            this.livePitchSelectedOutId = null;
-        },
-
-        removePendingSub(index) {
-            this.pendingSubs.splice(index, 1);
-        },
 
 
         recalculateScore() {
@@ -1524,21 +1426,7 @@ export default function liveMatch(config) {
             return assignments;
         },
 
-        /**
-         * Get the current active lineup players (starting XI with substitutions applied).
-         */
-        getActiveLineupPlayers() {
-            const subbedOutIds = new Set(this.substitutionsMade.map(s => s.playerOutId));
-            const subbedInIds = new Set(this.substitutionsMade.map(s => s.playerInId));
-
-            // Filter starting lineup: remove subbed out players
-            const remaining = this.lineupPlayers.filter(p => !subbedOutIds.has(p.id));
-
-            // Add subbed-in players from bench
-            const subbedIn = this.benchPlayers.filter(p => subbedInIds.has(p.id));
-
-            return [...remaining, ...subbedIn];
-        },
+        // getActiveLineupPlayers — provided by substitution-manager module
 
         getEffectivePosition(slotId) {
             const gc = this.gridConfig;
