@@ -53,7 +53,7 @@ class ShowScoutingHub
         }
 
         // Check existing offers for shortlisted players (map player_id => status details)
-        $existingOfferStatuses = TransferOffer::getOfferStatusesForPlayers($gameId, $shortlistedPlayerIds);
+        $existingOfferStatuses = TransferOffer::getOfferStatusesForPlayers($gameId, $shortlistedPlayerIds, $game->current_date);
 
         // Pre-load team rosters for all shortlisted players' teams (avoids N+1 in calculatePlayerImportance)
         $teamIds = collect($shortlistedPlayers)->pluck('gamePlayer.team_id')->filter()->unique();
@@ -87,10 +87,11 @@ class ShowScoutingHub
                 'intelLevel' => $entry->intel_level,
                 'isTracking' => $entry->is_tracking,
                 'matchdaysTracked' => $entry->matchdays_tracked,
-                'hasExistingOffer' => isset($existingOfferStatuses[$gp->id]),
+                'hasExistingOffer' => isset($existingOfferStatuses[$gp->id]) && ($existingOfferStatuses[$gp->id]['status'] ?? null) !== null,
                 'offerStatus' => $existingOfferStatuses[$gp->id]['status'] ?? null,
                 'offerIsCounter' => $existingOfferStatuses[$gp->id]['isCounter'] ?? false,
                 'offerType' => $existingOfferStatuses[$gp->id]['offerType'] ?? null,
+                'onCooldown' => $existingOfferStatuses[$gp->id]['onCooldown'] ?? false,
                 // Locked by default — populated below if intel level warrants it
                 'techRange' => null,
                 'formattedAskingPrice' => null,

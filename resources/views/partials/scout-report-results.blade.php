@@ -48,6 +48,7 @@
                     $wageDemand = $detail['wage_demand'] ?? 0;
                     $formattedWageDemand = $detail['formatted_wage_demand'] ?? '-';
                     $canAffordFee = $detail['can_afford_fee'] ?? false;
+                    $onCooldown = $detail['on_cooldown'] ?? false;
                     $techRange = $detail['tech_range'] ?? [0, 0];
                     $physRange = $detail['phys_range'] ?? [0, 0];
                     $isExpiring = !$isFreeAgent && $player->contract_until && $player->contract_until <= $game->getSeasonEndDate();
@@ -185,6 +186,11 @@
                                             <div class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-accent-green/10 text-accent-green border border-accent-green/20">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                                                 {{ __('transfers.transfer_agreed') }}
+                                            </div>
+                                        @elseif($onCooldown)
+                                            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-surface-700 text-text-muted border border-border-default">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                {{ __('transfers.negotiation_cooldown_short') }}
                                             </div>
                                         @elseif($isExpiring && $isPreContractPeriod)
                                             {{-- Pre-contract negotiation --}}

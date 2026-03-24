@@ -114,6 +114,14 @@ class NegotiateLoan
             ], 422);
         }
 
+        // Cooldown: must wait at least one matchday after a rejected negotiation
+        if (TransferOffer::hasNegotiationCooldown($game->id, $player->id, $game->team_id, $game->current_date)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => __('transfers.negotiation_cooldown'),
+            ], 422);
+        }
+
         // Evaluate loan feasibility
         $evaluation = $this->scoutingService->evaluateLoanRequestSync($player, $game);
         $teamName = $player->team?->name ?? 'Unknown';

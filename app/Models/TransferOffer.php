@@ -306,11 +306,26 @@ class TransferOffer extends Model
     }
 
     /**
+     * Check if a negotiation cooldown is active for a player.
+     * After a rejected negotiation, the user must wait at least one matchday before retrying.
+     */
+    public static function hasNegotiationCooldown(string $gameId, string $playerId, string $teamId, $currentDate): bool
+    {
+        return static::where('game_id', $gameId)
+            ->where('game_player_id', $playerId)
+            ->where('offering_team_id', $teamId)
+            ->where('direction', self::DIRECTION_INCOMING)
+            ->where('status', self::STATUS_REJECTED)
+            ->where('resolved_at', '>=', $currentDate)
+            ->exists();
+    }
+
+    /**
      * Get offer status details for a set of players.
-     * Returns a map of game_player_id => ['status' => ..., 'isCounter' => bool, 'offerType' => ...].
+     * Returns a map of game_player_id => ['status' => ..., 'isCounter' => bool, 'offerType' => ..., 'onCooldown' => bool].
      * Prioritizes agreed offers over pending when multiple exist.
      */
-    public static function getOfferStatusesForPlayers(string $gameId, array $playerIds): array
+    public static function getOfferStatusesForPlayers(string $gameId, array $playerIds, $currentDate = null): array
     {
         if (empty($playerIds)) {
             return [];
@@ -332,7 +347,32 @@ class TransferOffer extends Model
                         && $offer->asking_price
                         && $offer->asking_price > $offer->transfer_fee,
                     'offerType' => $offer->offer_type,
+                    'onCooldown' => false,
                 ];
+            }
+        }
+
+        // Check cooldown for players without active offers
+        if ($currentDate) {
+            $cooldownPlayerIds = array_diff($playerIds, array_keys($statuses));
+
+            if (!empty($cooldownPlayerIds)) {
+                $cooldownIds = static::where('game_id', $gameId)
+                    ->where('direction', self::DIRECTION_INCOMING)
+                    ->whereIn('game_player_id', $cooldownPlayerIds)
+                    ->where('status', self::STATUS_REJECTED)
+                    ->where('resolved_at', '>=', $currentDate)
+                    ->distinct()
+                    ->pluck('game_player_id');
+
+                foreach ($cooldownIds as $pid) {
+                    $statuses[$pid] = [
+                        'status' => null,
+                        'isCounter' => false,
+                        'offerType' => null,
+                        'onCooldown' => true,
+                    ];
+                }
             }
         }
 

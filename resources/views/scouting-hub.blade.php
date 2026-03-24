@@ -423,8 +423,16 @@
                                                                 </div>
                                                             </template>
 
+                                                            {{-- Action: Negotiation cooldown --}}
+                                                            <template x-if="player.onCooldown && !player.hasExistingOffer">
+                                                                <div class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-surface-700 text-text-muted border border-border-default">
+                                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                                    {{ __('transfers.negotiation_cooldown_short') }}
+                                                                </div>
+                                                            </template>
+
                                                             {{-- Action: Free agent signing --}}
-                                                            <template x-if="player.isFreeAgent && !player.hasExistingOffer">
+                                                            <template x-if="player.isFreeAgent && !player.hasExistingOffer && !player.onCooldown">
                                                                 <form :action="signFreeAgentRoute(player.id)" method="POST">
                                                                     <input type="hidden" name="_token" :value="csrfToken">
                                                                     <x-primary-button color="green" size="xs">
@@ -458,7 +466,7 @@
                                                             </template>
 
                                                             {{-- Action: Pre-contract --}}
-                                                            <template x-if="!player.isFreeAgent && !player.hasExistingOffer && player.isExpiring && isPreContractPeriod">
+                                                            <template x-if="!player.isFreeAgent && !player.hasExistingOffer && !player.onCooldown && player.isExpiring && isPreContractPeriod">
                                                                 <x-primary-button size="xs" color="green"
                                                                     @click="$dispatch('open-negotiation', {
                                                                         playerName: player.name,
@@ -473,14 +481,14 @@
                                                             </template>
 
                                                             {{-- Action: Can't afford --}}
-                                                            <template x-if="!player.isFreeAgent && !player.hasExistingOffer && !(player.isExpiring && isPreContractPeriod) && !player.canAffordFee">
+                                                            <template x-if="!player.isFreeAgent && !player.hasExistingOffer && !player.onCooldown && !(player.isExpiring && isPreContractPeriod) && !player.canAffordFee">
                                                                 <div class="text-xs text-accent-red font-medium">
                                                                     {{ __('transfers.transfer_fee_exceeds_budget') }}
                                                                 </div>
                                                             </template>
 
                                                             {{-- Action: Negotiate + Loan --}}
-                                                            <template x-if="!player.isFreeAgent && !player.hasExistingOffer && !(player.isExpiring && isPreContractPeriod) && player.canAffordFee">
+                                                            <template x-if="!player.isFreeAgent && !player.hasExistingOffer && !player.onCooldown && !(player.isExpiring && isPreContractPeriod) && player.canAffordFee">
                                                                 <div class="flex flex-col sm:flex-row gap-2">
                                                                     <x-primary-button size="xs"
                                                                         @click="$dispatch('open-negotiation', {

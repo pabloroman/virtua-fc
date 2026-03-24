@@ -123,6 +123,8 @@ return [
     'counter_offer_received' => 'Counter Offer Received',
     'transfer_agreed' => 'Transfer Agreed',
     'already_bidding' => 'You already have a bid for this player',
+    'negotiation_cooldown' => 'Negotiations with this player broke down recently. Wait until the next matchday to try again.',
+    'negotiation_cooldown_short' => 'Wait until next matchday',
     'scouting_assessment' => 'Scouting Assessment',
     'financial_details' => 'Financial Details',
     'estimated_asking_price' => 'Estimated Asking Price',

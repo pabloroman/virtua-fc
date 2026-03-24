@@ -132,6 +132,14 @@ class NegotiateTransfer
             ], 422);
         }
 
+        // Cooldown: must wait at least one matchday after a rejected negotiation
+        if (TransferOffer::hasNegotiationCooldown($game->id, $player->id, $game->team_id, $game->current_date)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => __('transfers.negotiation_cooldown'),
+            ], 422);
+        }
+
         // New negotiation — show asking price
         $askingPrice = $this->scoutingService->calculateAskingPrice($player);
         $disposition = $this->transferService->calculateClubDisposition($player, $this->scoutingService);

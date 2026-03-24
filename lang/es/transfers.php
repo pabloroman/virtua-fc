@@ -124,6 +124,8 @@ return [
     'counter_offer_received' => 'Contraoferta Recibida',
     'transfer_agreed' => 'Fichaje Acordado',
     'already_bidding' => 'Ya tienes una oferta por este jugador',
+    'negotiation_cooldown' => 'Las negociaciones con este jugador se rompieron recientemente. Espera a la siguiente jornada para intentarlo de nuevo.',
+    'negotiation_cooldown_short' => 'Espera a la próxima jornada',
     'scouting_assessment' => 'Evaluación del Ojeador',
     'financial_details' => 'Detalles Financieros',
     'estimated_asking_price' => 'Precio de Venta Estimado',

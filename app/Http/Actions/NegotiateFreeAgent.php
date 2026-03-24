@@ -116,6 +116,14 @@ class NegotiateFreeAgent
             ], 422);
         }
 
+        // Cooldown: must wait at least one matchday after a rejected negotiation
+        if (TransferOffer::hasNegotiationCooldown($game->id, $player->id, $game->team_id, $game->current_date)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => __('transfers.negotiation_cooldown'),
+            ], 422);
+        }
+
         $demand = $this->contractService->calculateFreeAgentWageDemand($player, $this->scoutingService);
         $mood = $this->getWillingnessMood($player, $game);
         $demandInEuros = (int) ($demand['wage'] / 100);
