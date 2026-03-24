@@ -121,7 +121,15 @@ class MatchResimulationService
             }
         }
 
-        // 8. Re-simulate the remainder
+        // 8. Count existing substitutions per team to enforce the limit
+        $userSubCount = count($allSubstitutions);
+        $opponentSubCount = collect($match->substitutions ?? [])
+            ->filter(fn ($s) => $s['team_id'] !== $game->team_id)
+            ->count();
+        $homeExistingSubs = $isUserHome ? $userSubCount : $opponentSubCount;
+        $awayExistingSubs = $isUserHome ? $opponentSubCount : $userSubCount;
+
+        // 9. Re-simulate the remainder
         $remainderOutput = $this->matchSimulator->simulateRemainder(
             $match->homeTeam,
             $match->awayTeam,
@@ -145,17 +153,19 @@ class MatchResimulationService
             $awayDefLine,
             $homeBenchPlayers,
             $awayBenchPlayers,
+            homeExistingSubstitutions: $homeExistingSubs,
+            awayExistingSubstitutions: $awayExistingSubs,
         );
 
-        // 9. Calculate new final score
+        // 10. Calculate new final score
         $remainderResult = $remainderOutput->result;
         $newHomeScore = $scoreAtMinute['home'] + $remainderResult->homeScore;
         $newAwayScore = $scoreAtMinute['away'] + $remainderResult->awayScore;
 
-        // 10. Apply the new remainder events
+        // 11. Apply the new remainder events
         $this->applyNewEvents($match, $game, $remainderResult, $competitionId);
 
-        // 11. Update match score and possession
+        // 12. Update match score and possession
         // Note: Score-dependent side effects (standings, cup ties, GK stats, prize money)
         // are NOT handled here. They are deferred to FinalizeMatch, which applies them
         // once after the user finishes the live match. This eliminates the need for

@@ -10,6 +10,7 @@ use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Enums\Mentality;
 use App\Modules\Lineup\Enums\PlayingStyle;
 use App\Modules\Lineup\Enums\PressingIntensity;
+use App\Modules\Lineup\Services\SubstitutionService;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Team;
@@ -755,6 +756,8 @@ class MatchSimulator
         ?Collection $homeBenchPlayers = null,
         ?Collection $awayBenchPlayers = null,
         string $matchSeed = '',
+        int $homeExistingSubstitutions = 0,
+        int $awayExistingSubstitutions = 0,
     ): MatchSimulationOutput {
         $this->matchPerformance = [];
 
@@ -837,11 +840,14 @@ class MatchSimulator
             // so team strength reflects the replacement player
             $injuryMaxMinute = 85;
             $lineupChanged = false;
+            $maxSubs = $fromMinute > 90
+                ? SubstitutionService::MAX_ET_SUBSTITUTIONS
+                : SubstitutionService::MAX_SUBSTITUTIONS;
 
             if (! in_array($homeTeam->id, $existingInjuryTeamIds) && $fromMinute + 1 <= $injuryMaxMinute) {
                 $homeInjuryEvents = $this->generateInjuryEventsInRange($homeTeam->id, $homePlayersForInjury, $fromMinute + 1, $injuryMaxMinute, $game);
                 $events = $events->merge($homeInjuryEvents);
-                if ($homeInjuryEvents->isNotEmpty() && $homeBenchPlayers !== null && $homeBenchPlayers->isNotEmpty()) {
+                if ($homeInjuryEvents->isNotEmpty() && $homeBenchPlayers !== null && $homeBenchPlayers->isNotEmpty() && $homeExistingSubstitutions < $maxSubs) {
                     [$subEvents, $homePlayers, $homeBenchPlayers] = $this->processInjurySubstitution(
                         $homeTeam->id, $homeInjuryEvents, $homePlayers, $homeBenchPlayers
                     );
@@ -854,7 +860,7 @@ class MatchSimulator
             if (! in_array($awayTeam->id, $existingInjuryTeamIds) && $fromMinute + 1 <= $injuryMaxMinute) {
                 $awayInjuryEvents = $this->generateInjuryEventsInRange($awayTeam->id, $awayPlayersForInjury, $fromMinute + 1, $injuryMaxMinute, $game);
                 $events = $events->merge($awayInjuryEvents);
-                if ($awayInjuryEvents->isNotEmpty() && $awayBenchPlayers !== null && $awayBenchPlayers->isNotEmpty()) {
+                if ($awayInjuryEvents->isNotEmpty() && $awayBenchPlayers !== null && $awayBenchPlayers->isNotEmpty() && $awayExistingSubstitutions < $maxSubs) {
                     [$subEvents, $awayPlayers, $awayBenchPlayers] = $this->processInjurySubstitution(
                         $awayTeam->id, $awayInjuryEvents, $awayPlayers, $awayBenchPlayers
                     );
