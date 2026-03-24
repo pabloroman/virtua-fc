@@ -115,80 +115,31 @@ foreach ($positionGroupOrder as $group) {
         ]),
 
         async downloadTournamentImage() {
-            const width = 800;
-            const padding = 40;
-            const contentWidth = width - padding * 2;
+            const ci = window.canvasImage;
+            const { canvas, ctx, width, padding, contentWidth } = ci.createCanvasContext(800, 2000);
+            ci.fillBackground(ctx, width, 2000);
 
             await document.fonts.ready;
 
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = width;
-            canvas.height = 2000;
-
-            const wrapText = (text, maxWidth) => {
-                const words = text.split(' ');
-                const lines = [];
-                let line = '';
-                for (const word of words) {
-                    const test = line ? line + ' ' + word : word;
-                    if (ctx.measureText(test).width > maxWidth && line) {
-                        lines.push(line);
-                        line = word;
-                    } else {
-                        line = test;
-                    }
-                }
-                if (line) lines.push(line);
-                return lines;
-            };
-
-            // Background
-            ctx.fillStyle = '#0b1120';
-            ctx.fillRect(0, 0, width, canvas.height);
-
             let y = padding;
+            const crestHeight = 52;
+            const crestWidth = 69; // 4:3 flag ratio
+            const crest = await ci.drawTeamCrest(ctx, this.teamCrestUrl, padding, y, crestWidth, crestHeight);
 
-            // Load team crest
-            let crestLoaded = false;
-            const crestSize = 52;
-            try {
-                const img = new Image();
-                img.crossOrigin = 'anonymous';
-                await new Promise((resolve, reject) => {
-                    img.onload = resolve;
-                    img.onerror = reject;
-                    img.src = this.teamCrestUrl;
-                });
-                ctx.drawImage(img, padding, y, crestSize, crestSize);
-                crestLoaded = true;
-            } catch {}
-
-            // Team name
-            const textX = crestLoaded ? padding + crestSize + 16 : padding;
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 24px Inter, sans-serif';
-            ctx.fillText(this.teamName, textX, y + 22);
+            const textX = crest.loaded ? padding + crestWidth + 16 : padding;
+            ci.drawTeamName(ctx, this.teamName, textX, y + 22);
 
             // Result badge
             ctx.fillStyle = this.isChampion ? '#f59e0b' : '#94a3b8';
             ctx.font = '700 12px Inter, sans-serif';
-            ctx.letterSpacing = '1px';
             ctx.fillText(this.resultLabel.toUpperCase(), textX, y + 44);
-            ctx.letterSpacing = '0px';
 
-            y += crestSize + 28;
-
-            // Divider
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(padding, y);
-            ctx.lineTo(width - padding, y);
-            ctx.stroke();
+            y += crestHeight + 28;
+            ci.drawDivider(ctx, padding, width - padding, y);
             y += 20;
 
             // Stats row
+            const gd = this.record.goalsFor - this.record.goalsAgainst;
             const stats = [
                 { label: this.statLabels.played, value: this.record.played, color: '#ffffff' },
                 { label: this.statLabels.won, value: this.record.won, color: '#22c55e' },
@@ -196,7 +147,7 @@ foreach ($positionGroupOrder as $group) {
                 { label: this.statLabels.lost, value: this.record.lost, color: '#ef4444' },
                 { label: this.statLabels.gf, value: this.record.goalsFor, color: '#ffffff' },
                 { label: this.statLabels.ga, value: this.record.goalsAgainst, color: '#ffffff' },
-                { label: this.statLabels.gd, value: (this.record.goalsFor - this.record.goalsAgainst >= 0 ? '+' : '') + (this.record.goalsFor - this.record.goalsAgainst), color: this.record.goalsFor - this.record.goalsAgainst >= 0 ? '#22c55e' : '#ef4444' },
+                { label: this.statLabels.gd, value: (gd >= 0 ? '+' : '') + gd, color: gd >= 0 ? '#22c55e' : '#ef4444' },
             ];
 
             const colWidth = contentWidth / stats.length;
@@ -210,19 +161,12 @@ foreach ($positionGroupOrder as $group) {
 
                 ctx.fillStyle = '#64748b';
                 ctx.font = '600 9px Inter, sans-serif';
-                ctx.letterSpacing = '1px';
                 const lblText = stats[i].label.toUpperCase();
                 ctx.fillText(lblText, cx - ctx.measureText(lblText).width / 2, y + 20);
-                ctx.letterSpacing = '0px';
             }
             y += 40;
 
-            // Divider
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-            ctx.beginPath();
-            ctx.moveTo(padding, y);
-            ctx.lineTo(width - padding, y);
-            ctx.stroke();
+            ci.drawDivider(ctx, padding, width - padding, y);
             y += 20;
 
             // Column headers for squad
@@ -233,14 +177,12 @@ foreach ($positionGroupOrder as $group) {
 
             ctx.fillStyle = '#64748b';
             ctx.font = '600 9px Inter, sans-serif';
-            ctx.letterSpacing = '1px';
             let hdr = this.statLabels.apps.toUpperCase();
             ctx.fillText(hdr, appsColX - ctx.measureText(hdr).width / 2, y);
             hdr = this.statLabels.goals.toUpperCase();
             ctx.fillText(hdr, goalsColX - ctx.measureText(hdr).width / 2, y);
             hdr = this.statLabels.assists.toUpperCase();
             ctx.fillText(hdr, assistsColX - ctx.measureText(hdr).width / 2, y);
-            ctx.letterSpacing = '0px';
             y += 18;
 
             // Squad by position group
@@ -249,31 +191,23 @@ foreach ($positionGroupOrder as $group) {
                 const players = this.squadByGroup[group];
                 if (!players || players.length === 0) continue;
 
-                ctx.fillStyle = '#64748b';
-                ctx.font = '600 11px Inter, sans-serif';
-                ctx.letterSpacing = '1px';
-                ctx.fillText((this.groupLabels[group] || group).toUpperCase(), padding, y);
-                ctx.letterSpacing = '0px';
+                ci.drawSectionLabel(ctx, this.groupLabels[group] || group, padding, y);
                 y += 18;
 
                 for (const p of players) {
-                    // Player name
                     ctx.fillStyle = '#e2e8f0';
                     ctx.font = '400 14px Inter, sans-serif';
                     ctx.fillText(p.name, nameColX, y);
 
-                    // Apps
                     ctx.fillStyle = '#cbd5e1';
                     ctx.font = '600 13px Inter, sans-serif';
                     let val = String(p.appearances);
                     ctx.fillText(val, appsColX - ctx.measureText(val).width / 2, y);
 
-                    // Goals
                     ctx.fillStyle = p.goals > 0 ? '#cbd5e1' : '#475569';
                     val = String(p.goals);
                     ctx.fillText(val, goalsColX - ctx.measureText(val).width / 2, y);
 
-                    // Assists
                     ctx.fillStyle = p.assists > 0 ? '#cbd5e1' : '#475569';
                     val = String(p.assists);
                     ctx.fillText(val, assistsColX - ctx.measureText(val).width / 2, y);
@@ -283,51 +217,8 @@ foreach ($positionGroupOrder as $group) {
                 y += 10;
             }
 
-            // Brand footer divider
-            y += 4;
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-            ctx.beginPath();
-            ctx.moveTo(padding, y);
-            ctx.lineTo(width - padding, y);
-            ctx.stroke();
-            y += 28;
-
-            // Virtua FC badge
-            const badgeText = 'Virtua FC';
-            ctx.font = '800 14px \"Barlow Semi Condensed\", sans-serif';
-            const badgeWidth = ctx.measureText(badgeText).width + 16;
-            const badgeHeight = 22;
-            const badgeX = (width - badgeWidth) / 2;
-
-            ctx.save();
-            ctx.transform(1, 0, -0.21, 1, 0, 0);
-            ctx.fillStyle = '#dc2626';
-            ctx.fillRect(badgeX, y, badgeWidth, badgeHeight);
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText(badgeText, badgeX + 8, y + 16);
-            ctx.restore();
-
-            y += badgeHeight + 12;
-
-            ctx.fillStyle = '#64748b';
-            ctx.font = '400 11px Inter, sans-serif';
-            const tagline = 'virtuafc.com';
-            const tagWidth = ctx.measureText(tagline).width;
-            ctx.fillText(tagline, (width - tagWidth) / 2, y);
-
-            y += padding;
-
-            // Trim canvas
-            const finalCanvas = document.createElement('canvas');
-            finalCanvas.width = width;
-            finalCanvas.height = y;
-            const fctx = finalCanvas.getContext('2d');
-            fctx.drawImage(canvas, 0, 0);
-
-            const link = document.createElement('a');
-            link.download = this.teamName.replace(/[^a-zA-Z0-9]/g, '_') + '_tournament.png';
-            link.href = finalCanvas.toDataURL('image/png');
-            link.click();
+            y = ci.drawBrandFooter(ctx, width, y);
+            ci.trimAndDownload(canvas, y, this.teamName.replace(/[^a-zA-Z0-9]/g, '_') + '_tournament.png');
         },
     }">
 
