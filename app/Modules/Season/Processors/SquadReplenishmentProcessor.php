@@ -10,6 +10,7 @@ use App\Modules\Squad\Services\PlayerGeneratorService;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Modules\Player\PlayerAge;
+use App\Support\PositionMapper;
 use Carbon\Carbon;
 
 /**
@@ -99,24 +100,6 @@ class SquadReplenishmentProcessor implements SeasonProcessor
         'Second Striker' => 1,
     ];
 
-    /**
-     * Map each canonical position to its group.
-     */
-    private const POSITION_TO_GROUP = [
-        'Goalkeeper' => 'Goalkeeper',
-        'Centre-Back' => 'Defender',
-        'Left-Back' => 'Defender',
-        'Right-Back' => 'Defender',
-        'Defensive Midfield' => 'Midfielder',
-        'Central Midfield' => 'Midfielder',
-        'Attacking Midfield' => 'Midfielder',
-        'Left Midfield' => 'Midfielder',
-        'Right Midfield' => 'Midfielder',
-        'Left Winger' => 'Forward',
-        'Right Winger' => 'Forward',
-        'Centre-Forward' => 'Forward',
-        'Second Striker' => 'Forward',
-    ];
 
     public function __construct(
         private readonly PlayerGeneratorService $playerGenerator,
@@ -388,7 +371,7 @@ class SquadReplenishmentProcessor implements SeasonProcessor
     {
         $candidates = [];
         foreach (self::POSITION_TARGETS as $position => $target) {
-            if (self::POSITION_TO_GROUP[$position] !== $group) {
+            if (PositionMapper::getPositionGroup($position) !== $group) {
                 continue;
             }
             $current = $positionCounts->get($position, 0);
@@ -410,7 +393,7 @@ class SquadReplenishmentProcessor implements SeasonProcessor
         // If not enough candidates from targets (e.g. all positions at target but group still short),
         // pick the first position in the group
         if (count($result) < $count) {
-            $firstInGroup = array_search($group, self::POSITION_TO_GROUP);
+            $firstInGroup = PositionMapper::getPositionsByGroup($group)[0];
             for ($i = count($result); $i < $count; $i++) {
                 $result[] = $firstInGroup;
             }
@@ -425,10 +408,8 @@ class SquadReplenishmentProcessor implements SeasonProcessor
     private function countGroupPlayers($positionCounts, string $group): int
     {
         $total = 0;
-        foreach (self::POSITION_TO_GROUP as $position => $posGroup) {
-            if ($posGroup === $group) {
-                $total += $positionCounts->get($position, 0);
-            }
+        foreach (PositionMapper::getPositionsByGroup($group) as $position) {
+            $total += $positionCounts->get($position, 0);
         }
         return $total;
     }

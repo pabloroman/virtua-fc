@@ -13,6 +13,7 @@ use App\Models\Team;
 use App\Models\TeamReputation;
 use App\Models\TransferOffer;
 use App\Support\Money;
+use App\Support\PositionMapper;
 use Illuminate\Support\Collection;
 use App\Modules\Player\PlayerAge;
 use App\Modules\Player\Services\PlayerTierService;
@@ -114,27 +115,6 @@ class ScoutingService
     // SCOUT SEARCH
     // =========================================
 
-    /**
-     * Map filter position values to actual position strings.
-     */
-    private const POSITION_MAP = [
-        'GK' => ['Goalkeeper'],
-        'CB' => ['Centre-Back'],
-        'LB' => ['Left-Back'],
-        'RB' => ['Right-Back'],
-        'DM' => ['Defensive Midfield'],
-        'CM' => ['Central Midfield'],
-        'AM' => ['Attacking Midfield'],
-        'LW' => ['Left Winger'],
-        'RW' => ['Right Winger'],
-        'CF' => ['Centre-Forward'],
-        'SS' => ['Second Striker'],
-        'LM' => ['Left Midfield'],
-        'RM' => ['Right Midfield'],
-        'any_defender' => ['Centre-Back', 'Left-Back', 'Right-Back'],
-        'any_midfielder' => ['Defensive Midfield', 'Central Midfield', 'Attacking Midfield', 'Left Midfield', 'Right Midfield'],
-        'any_forward' => ['Left Winger', 'Right Winger', 'Centre-Forward', 'Second Striker'],
-    ];
 
     /**
      * Get the currently searching scout report for a game.
@@ -247,7 +227,7 @@ class ScoutingService
     public function generateResults(Game $game, ScoutReport $report): void
     {
         $filters = $report->filters;
-        $positions = self::POSITION_MAP[$filters['position']] ?? [];
+        $positions = PositionMapper::getPositionsForFilter($filters['position']) ?? [];
 
         $query = GamePlayer::with(['player', 'team'])
             ->where('game_id', $game->id)

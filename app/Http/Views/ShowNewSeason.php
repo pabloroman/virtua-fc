@@ -116,7 +116,7 @@ class ShowNewSeason
         $positionGroups = $squad->groupBy(fn ($p) => PositionMapper::getPositionGroup($p->position));
 
         $positionCoverage = [];
-        foreach (['Goalkeeper', 'Defender', 'Midfielder', 'Forward'] as $group) {
+        foreach (PositionMapper::getAllGroups() as $group) {
             $players = $positionGroups->get($group, collect());
             $count = $players->count();
             $avgAbility = $count > 0 ? (int) round($players->avg('overall_score')) : 0;

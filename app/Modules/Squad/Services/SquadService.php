@@ -112,8 +112,7 @@ class SquadService
         }
 
         // --- Position Depth Chart ---
-        $positionSlots = ['GK', 'CB', 'LB', 'RB', 'DM', 'CM', 'AM', 'LW', 'RW', 'CF'];
-        $depthChart = $this->buildDepthChart($allPlayers, $positionSlots);
+        $depthChart = $this->buildDepthChart($allPlayers);
 
         // --- Contract Watchlist (career mode) ---
         $expiringThisSeason = collect();
@@ -201,27 +200,12 @@ class SquadService
         ];
     }
 
-    private function buildDepthChart($players, array $slots): array
+    private function buildDepthChart($players): array
     {
-        // Map canonical positions to their primary slot
-        $positionToSlot = [
-            'Goalkeeper' => 'GK',
-            'Centre-Back' => 'CB',
-            'Left-Back' => 'LB',
-            'Right-Back' => 'RB',
-            'Defensive Midfield' => 'DM',
-            'Central Midfield' => 'CM',
-            'Attacking Midfield' => 'AM',
-            'Left Midfield' => 'LW',   // Group with LW
-            'Right Midfield' => 'RW',  // Group with RW
-            'Left Winger' => 'LW',
-            'Right Winger' => 'RW',
-            'Centre-Forward' => 'CF',
-            'Second Striker' => 'CF',   // Group with CF
-        ];
+        $positionToSlot = PositionSlotMapper::getPositionToSlotMap();
 
         $depth = [];
-        foreach ($slots as $slot) {
+        foreach (PositionSlotMapper::getAllSlots() as $slot) {
             $depth[$slot] = [
                 'count' => 0,
                 'players' => [],

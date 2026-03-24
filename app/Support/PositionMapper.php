@@ -194,4 +194,94 @@ class PositionMapper
 
         return __("positions.{$key}");
     }
+
+    /**
+     * Get all 13 canonical position names.
+     *
+     * @return string[]
+     */
+    public static function getAllPositions(): array
+    {
+        return array_keys(self::$positionToKey);
+    }
+
+    /**
+     * Get all 4 position group names in positional order.
+     *
+     * @return string[]
+     */
+    public static function getAllGroups(): array
+    {
+        return ['Goalkeeper', 'Defender', 'Midfielder', 'Forward'];
+    }
+
+    /**
+     * Get all canonical positions belonging to a group.
+     *
+     * @return string[]
+     */
+    public static function getPositionsByGroup(string $group): array
+    {
+        return array_keys(array_filter(
+            self::$positionToGroup,
+            fn (string $g) => $g === $group,
+        ));
+    }
+
+    /**
+     * Sort order for positions (lower = earlier). Used for display ordering.
+     */
+    public static function positionSortOrder(string $position): int
+    {
+        return match ($position) {
+            'Goalkeeper' => 1,
+            'Centre-Back' => 10,
+            'Left-Back' => 11,
+            'Right-Back' => 12,
+            'Defensive Midfield' => 20,
+            'Central Midfield' => 21,
+            'Left Midfield' => 22,
+            'Right Midfield' => 23,
+            'Attacking Midfield' => 24,
+            'Left Winger' => 30,
+            'Right Winger' => 31,
+            'Second Striker' => 32,
+            'Centre-Forward' => 33,
+            default => 99,
+        };
+    }
+
+    /**
+     * Resolve a position filter key to canonical position names.
+     *
+     * Accepts individual slot codes (GK, CB, LM, SS, etc.) and group filters
+     * (any_defender, any_midfielder, any_forward).
+     *
+     * @return string[]|null  Null if the filter key is not recognized.
+     */
+    public static function getPositionsForFilter(string $filterKey): ?array
+    {
+        // Group filters
+        $groupName = match ($filterKey) {
+            'any_defender' => 'Defender',
+            'any_midfielder' => 'Midfielder',
+            'any_forward' => 'Forward',
+            default => null,
+        };
+
+        if ($groupName !== null) {
+            return self::getPositionsByGroup($groupName);
+        }
+
+        // Individual position filter (slot code → translation key → position name)
+        $translationKey = self::$filterToKey[$filterKey] ?? null;
+        if ($translationKey === null) {
+            return null;
+        }
+
+        // Find the canonical position whose translation key matches
+        $position = array_search($translationKey, self::$positionToKey, true);
+
+        return $position !== false ? [$position] : null;
+    }
 }

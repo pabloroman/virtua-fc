@@ -189,4 +189,49 @@ class PositionSlotMapper
             default => 'Midfielder',
         };
     }
+
+    /**
+     * Get all slot codes (12 slots, excluding SS which shares CF).
+     *
+     * @return string[]
+     */
+    public static function getAllSlots(): array
+    {
+        return array_keys(self::SLOT_COMPATIBILITY);
+    }
+
+    /**
+     * Get the primary (natural) slot for a canonical position.
+     *
+     * Returns the slot where the position has a compatibility score of 100.
+     * Second Striker maps to CF (both have score 100 in CF).
+     */
+    public static function getPositionPrimarySlot(string $position): ?string
+    {
+        foreach (self::SLOT_COMPATIBILITY as $slot => $positions) {
+            if (($positions[$position] ?? 0) === 100) {
+                return $slot;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the full position-to-primary-slot mapping for all 13 canonical positions.
+     *
+     * @return array<string, string>  [position_name => slot_code]
+     */
+    public static function getPositionToSlotMap(): array
+    {
+        $map = [];
+        foreach (PositionMapper::getAllPositions() as $position) {
+            $slot = self::getPositionPrimarySlot($position);
+            if ($slot !== null) {
+                $map[$position] = $slot;
+            }
+        }
+
+        return $map;
+    }
 }
