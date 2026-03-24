@@ -323,6 +323,7 @@ return [
     'alert_low_fitness' => ':count jugadores con baja forma física',
     'alert_thin_position' => 'Solo :count jugador(es) en :position — poca cobertura',
     'alert_no_cover' => 'Sin cobertura en :position',
+    'alert_no_natural_cover' => 'Sin :position natural — cobertura parcial disponible',
     'alert_window_closing' => 'La ventana de traspasos cierra el :date',
 
     // Number grid

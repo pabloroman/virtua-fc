@@ -323,6 +323,7 @@ return [
     'alert_low_fitness' => ':count players with low fitness',
     'alert_thin_position' => 'Only :count player(s) at :position — thin cover',
     'alert_no_cover' => 'No cover at :position',
+    'alert_no_natural_cover' => 'No natural :position — partial cover available',
     'alert_window_closing' => 'Transfer window closes on :date',
 
     // Number grid

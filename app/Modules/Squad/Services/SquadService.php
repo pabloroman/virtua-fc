@@ -256,10 +256,20 @@ class SquadService
                     'message' => __('squad.alert_thin_position', ['position' => PositionSlotMapper::getSlotDisplayName($slot), 'count' => $data['count']]),
                 ];
             } elseif ($slot !== 'GK' && $data['count'] === 0) {
-                $alerts[] = [
-                    'type' => 'danger',
-                    'message' => __('squad.alert_no_cover', ['position' => PositionSlotMapper::getSlotDisplayName($slot)]),
-                ];
+                $hasCompatibleCover = $players->contains(fn ($p) => PositionSlotMapper::getCompatibilityScore($p->position, $slot) >= 60);
+                $positionName = PositionSlotMapper::getSlotDisplayName($slot);
+
+                if ($hasCompatibleCover) {
+                    $alerts[] = [
+                        'type' => 'warning',
+                        'message' => __('squad.alert_no_natural_cover', ['position' => $positionName]),
+                    ];
+                } else {
+                    $alerts[] = [
+                        'type' => 'danger',
+                        'message' => __('squad.alert_no_cover', ['position' => $positionName]),
+                    ];
+                }
             }
         }
 
