@@ -4,7 +4,12 @@ import {
     getShirtStyle as _getShirtStyle,
     getNumberStyle as _getNumberStyle,
     getPlayerEnergy as _getPlayerEnergy,
-    getEnergyColor,
+    getEnergyColor as _getEnergyColor,
+    getEnergyBarBg as _getEnergyBarBg,
+    getEnergyTextColor as _getEnergyTextColor,
+    calculateDrainRate as _calculateDrainRate,
+    getOvrBadgeClasses as _getOvrBadgeClasses,
+    getPositionBadgeColor as _getPositionBadgeColor,
     isValidGridCell as _isValidGridCell,
     getZoneColorClass as _getZoneColorClass,
 } from './modules/pitch-renderer.js';
@@ -970,20 +975,11 @@ export default function liveMatch(config) {
         },
 
         getPositionBadgeColor(group) {
-            const colors = {
-                'Goalkeeper': 'bg-amber-500',
-                'Defender': 'bg-blue-600',
-                'Midfielder': 'bg-emerald-600',
-                'Forward': 'bg-red-600',
-            };
-            return colors[group] || 'bg-emerald-600';
+            return _getPositionBadgeColor(group);
         },
 
         getOvrBadgeClasses(score) {
-            if (score >= 80) return 'bg-emerald-500 text-white';
-            if (score >= 70) return 'bg-lime-500 text-white';
-            if (score >= 60) return 'bg-amber-500 text-white';
-            return 'bg-slate-300 text-slate-700';
+            return _getOvrBadgeClasses(score);
         },
 
         getRatingBadgeClass(value) {
@@ -1023,41 +1019,27 @@ export default function liveMatch(config) {
         },
 
         // =============================
-        // Energy / Stamina
+        // Energy / Stamina — delegated to pitch-renderer
         // =============================
 
         calculateDrainRate(physicalAbility, age, positionGroup) {
-            const baseDrain = 0.75;
-            const physicalBonus = (physicalAbility - 50) * 0.005;
-            const agePenalty = Math.max(0, (age - 28)) * 0.015;
-            let drain = baseDrain - physicalBonus + agePenalty;
-            if (positionGroup === 'Goalkeeper') drain *= 0.5;
-            return Math.max(0, drain);
+            return _calculateDrainRate(physicalAbility, age, positionGroup);
         },
 
         getPlayerEnergy(player) {
-            if (player.minuteEntered === null || player.minuteEntered === undefined) return 100;
-            const minutesPlayed = Math.max(0, Math.floor(this.currentMinute) - player.minuteEntered);
-            const drain = this.calculateDrainRate(player.physicalAbility, player.age, player.positionGroup);
-            return Math.max(0, Math.round(100 - drain * minutesPlayed));
+            return _getPlayerEnergy(player, this.currentMinute);
         },
 
         getEnergyColor(energy) {
-            if (energy > 60) return 'bg-emerald-500';
-            if (energy > 30) return 'bg-amber-400';
-            return 'bg-red-500';
+            return _getEnergyColor(energy);
         },
 
         getEnergyBarBg(energy) {
-            if (energy > 60) return 'bg-emerald-500/20';
-            if (energy > 30) return 'bg-amber-400/20';
-            return 'bg-red-500/20';
+            return _getEnergyBarBg(energy);
         },
 
         getEnergyTextColor(energy) {
-            if (energy > 60) return 'text-emerald-600';
-            if (energy > 30) return 'text-amber-600';
-            return 'text-red-600';
+            return _getEnergyTextColor(energy);
         },
 
         get secondHalfEvents() {
