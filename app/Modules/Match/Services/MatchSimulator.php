@@ -152,36 +152,59 @@ class MatchSimulator
     ): Collection {
         // Build map of player_id => minute they were removed
         $removedAt = [];
+        // Build map of player_id => minute they entered (substituted in)
+        $enteredAt = [];
+
         foreach ($events as $event) {
             if (in_array($event->type, ['injury', 'red_card', 'substitution']) && ! isset($removedAt[$event->gamePlayerId])) {
                 $removedAt[$event->gamePlayerId] = $event->minute;
             }
+            if ($event->type === 'substitution' && isset($event->metadata['player_in_id'])) {
+                $enteredAt[$event->metadata['player_in_id']] = $event->minute;
+            }
         }
 
-        if (empty($removedAt)) {
+        if (empty($removedAt) && empty($enteredAt)) {
             return $events;
         }
 
-        return $events->map(function (MatchEventData $event) use ($removedAt, $homePlayers, $awayPlayers) {
+        return $events->map(function (MatchEventData $event) use ($removedAt, $enteredAt, $homePlayers, $awayPlayers) {
             if (! in_array($event->type, ['goal', 'assist'])) {
                 return $event;
             }
 
-            if (! isset($removedAt[$event->gamePlayerId])) {
+            $needsReassignment = false;
+
+            // Player was removed (injury/red card/sub out) at or before this event
+            if (isset($removedAt[$event->gamePlayerId]) && $event->minute >= $removedAt[$event->gamePlayerId]) {
+                $needsReassignment = true;
+            }
+
+            // Player hadn't entered the match yet (sub in after this event)
+            if (isset($enteredAt[$event->gamePlayerId]) && $event->minute < $enteredAt[$event->gamePlayerId]) {
+                $needsReassignment = true;
+            }
+
+            if (! $needsReassignment) {
                 return $event;
             }
 
-            if ($event->minute < $removedAt[$event->gamePlayerId]) {
-                return $event;
-            }
-
-            // Find the team's players and exclude anyone removed at or before this minute
+            // Find the team's players and exclude anyone not on the pitch at this minute
             $teamPlayers = $homePlayers->contains('id', $event->gamePlayerId)
                 ? $homePlayers
                 : $awayPlayers;
 
-            $availablePlayers = $teamPlayers->reject(function ($p) use ($removedAt, $event) {
-                return isset($removedAt[$p->id]) && $removedAt[$p->id] <= $event->minute;
+            $availablePlayers = $teamPlayers->reject(function ($p) use ($removedAt, $enteredAt, $event) {
+                // Exclude players removed at or before this minute
+                if (isset($removedAt[$p->id]) && $removedAt[$p->id] <= $event->minute) {
+                    return true;
+                }
+                // Exclude players who haven't entered yet at this minute
+                if (isset($enteredAt[$p->id]) && $enteredAt[$p->id] > $event->minute) {
+                    return true;
+                }
+
+                return false;
             });
 
             $replacement = $event->type === 'goal'
