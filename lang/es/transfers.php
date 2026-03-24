@@ -385,13 +385,13 @@ return [
 
     // Loan negotiation chat
     'chat_loan_title' => 'Negociación de Cesión',
-    'chat_loan_accepted' => ':team acepta la cesión de :player. Salario: :salary/año.',
+    'chat_loan_accepted' => ':team acepta la cesión de :player. Coste: :salary/año.',
     'chat_loan_completed' => '¡:player se ha unido en cesión hasta final de temporada!',
     'chat_loan_agreed' => 'La cesión de :player ha sido acordada. El traspaso se completará cuando abra la ventana de fichajes.',
     'chat_loan_rejected' => ':team ha rechazado la solicitud de cesión. Las negociaciones se han roto.',
     'chat_loan_rejected_key_player' => ':team ha rechazado la solicitud. :player es un jugador clave para ellos.',
-    'chat_loan_rejected_reputation' => ':player no está interesado en unirse a tu club en cesión.',
-    'chat_loan_rejected_player' => ':player no está interesado en unirse a tu club en cesión.',
+    'chat_loan_rejected_reputation' => ':player no está interesado en unirse a tu club en calidad de cedido.',
+    'chat_loan_rejected_player' => ':player no está interesado en unirse a tu club en calidad de cedido.',
     'chat_loan_confirm' => 'Confirmar cesión',
     'chat_loan_deal' => 'Cesión acordada',
 

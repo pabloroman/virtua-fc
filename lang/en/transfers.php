@@ -380,7 +380,7 @@ return [
 
     // Loan negotiation chat
     'chat_loan_title' => 'Loan Negotiation',
-    'chat_loan_accepted' => ':team accepts the loan of :player. Salary: :salary/yr.',
+    'chat_loan_accepted' => ':team accepts the loan of :player. Cost: :salary/yr.',
     'chat_loan_completed' => ':player has joined on loan until the end of the season!',
     'chat_loan_agreed' => ':player\'s loan has been agreed. The move will complete when the transfer window opens.',
     'chat_loan_rejected' => ':team has rejected the loan request. Negotiations have broken down.',
