@@ -10,6 +10,7 @@ import {
 } from './modules/pitch-renderer.js';
 import { createPitchGrid } from './modules/pitch-grid.js';
 import { assignPlayersToSlots } from './modules/slot-assignment.js';
+import { createPenaltyShootout } from './modules/penalty-shootout.js';
 
 export default function liveMatch(config) {
     return {
@@ -141,7 +142,6 @@ export default function liveMatch(config) {
         revealedPenaltyKicks: [],   // Kicks revealed so far (animated)
         penaltyPreparing: false,    // Shows "preparing to shoot" state
         nextPenaltyKicker: null,    // Next kicker about to shoot
-        _penaltyRevealTimer: null,
 
         // Tactical panel state
         tacticalPanelOpen: false,
@@ -205,6 +205,10 @@ export default function liveMatch(config) {
                 }),
             });
             Object.assign(this, grid);
+
+            // Integrate penalty shootout module
+            const penalties = createPenaltyShootout(() => this);
+            Object.assign(this, penalties);
 
             // Start polling for career actions completion
             this.startProcessingPoll();
@@ -685,15 +689,7 @@ export default function liveMatch(config) {
             }
 
             // If penalties are being animated, fast-forward the reveal
-            if (this.phase === 'penalties' && this.penaltyKicks.length > 0
-                && this.revealedPenaltyKicks.length < this.penaltyKicks.length) {
-                clearTimeout(this._penaltyRevealTimer);
-                this.penaltyPreparing = false;
-                this.nextPenaltyKicker = null;
-                this.revealedPenaltyKicks = [...this.penaltyKicks];
-                setTimeout(() => this.enterFullTime(), 500);
-                return;
-            }
+            if (this.skipPenaltyReveal()) return;
 
             if (this.isKnockout && !this.hasExtraTime && !this._skippingToEnd) {
                 // For knockout matches, first skip to end of regular time
@@ -766,121 +762,11 @@ export default function liveMatch(config) {
         },
 
         // =============================
-        // Penalty picker & shootout
+        // Penalty picker & shootout — provided by penalty-shootout module via Object.assign in init()
+        // Methods: openPenaltyPicker, availablePenaltyPlayers, addPenaltyKicker,
+        //          removePenaltyKicker, confirmPenaltyKickers, revealPenaltyKicks,
+        //          skipPenaltyReveal, penaltyHomeScore, penaltyAwayScore, penaltyWinner
         // =============================
-
-        openPenaltyPicker() {
-            this.selectedPenaltyKickers = [];
-            this.penaltyPickerOpen = true;
-            document.body.classList.add('overflow-y-hidden');
-        },
-
-        get availablePenaltyPlayers() {
-            const selectedIds = this.selectedPenaltyKickers.map(k => k.id);
-            const confirmedOutIds = this.substitutionsMade.map(s => s.playerOutId);
-            const confirmedInIds = this.substitutionsMade.map(s => s.playerInId);
-            const redCarded = this.redCardedPlayerIds;
-
-            // Original lineup players still on pitch
-            const onPitch = this.lineupPlayers.filter(p =>
-                !confirmedOutIds.includes(p.id) && !redCarded.includes(p.id) && !selectedIds.includes(p.id)
-            );
-            // Players who came on via substitution
-            const subsOnPitch = this.benchPlayers.filter(p =>
-                confirmedInIds.includes(p.id) && !confirmedOutIds.includes(p.id)
-                && !redCarded.includes(p.id) && !selectedIds.includes(p.id)
-            );
-
-            return [...onPitch, ...subsOnPitch]
-                .sort((a, b) => (b.overallScore ?? 50) - (a.overallScore ?? 50));
-        },
-
-        addPenaltyKicker(player) {
-            if (this.selectedPenaltyKickers.length >= 5) return;
-            this.selectedPenaltyKickers.push({ ...player });
-        },
-
-        removePenaltyKicker(index) {
-            this.selectedPenaltyKickers.splice(index, 1);
-        },
-
-        async confirmPenaltyKickers() {
-            if (this.selectedPenaltyKickers.length < 5 || this.penaltyProcessing) return;
-            this.penaltyProcessing = true;
-
-            const kickerOrder = this.selectedPenaltyKickers.map(k => k.id);
-
-            try {
-                const response = await fetch(this.penaltiesUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': this.csrfToken,
-                        'Accept': 'application/json',
-                    },
-                    body: JSON.stringify({ kickerOrder }),
-                });
-
-                if (!response.ok) {
-                    console.error('Penalty request failed');
-                    this.penaltyProcessing = false;
-                    return;
-                }
-
-                const result = await response.json();
-
-                this.penaltyResult = {
-                    home: result.homeScore,
-                    away: result.awayScore,
-                };
-                this.penaltyKicks = result.kicks || [];
-                this._needsPenalties = false;
-
-                // Close picker and start kick-by-kick reveal
-                this.penaltyPickerOpen = false;
-                document.body.classList.remove('overflow-y-hidden');
-                this.revealPenaltyKicks();
-            } catch (err) {
-                console.error('Penalty request failed:', err);
-            } finally {
-                this.penaltyProcessing = false;
-            }
-        },
-
-        revealPenaltyKicks() {
-            this.revealedPenaltyKicks = [];
-            this.penaltyPreparing = false;
-            this.nextPenaltyKicker = null;
-            let idx = 0;
-
-            const showPreparing = () => {
-                if (idx >= this.penaltyKicks.length) {
-                    this.penaltyPreparing = false;
-                    this.nextPenaltyKicker = null;
-                    // All kicks revealed, transition to full time
-                    this._penaltyRevealTimer = setTimeout(() => this.enterFullTime(), 2000);
-                    return;
-                }
-
-                // Show "preparing to shoot" with the next kicker's info
-                this.nextPenaltyKicker = this.penaltyKicks[idx];
-                this.penaltyPreparing = true;
-
-                // After the preparation phase, reveal the result
-                this._penaltyRevealTimer = setTimeout(() => {
-                    this.penaltyPreparing = false;
-                    this.nextPenaltyKicker = null;
-                    this.revealedPenaltyKicks.push(this.penaltyKicks[idx]);
-                    idx++;
-
-                    // Pause before next kicker prepares
-                    this._penaltyRevealTimer = setTimeout(showPreparing, 600);
-                }, 1500);
-            };
-
-            // Start after a short pause
-            this._penaltyRevealTimer = setTimeout(showPreparing, 800);
-        },
 
         // =============================
         // Extra time display helpers
@@ -922,28 +808,7 @@ export default function liveMatch(config) {
                 || (this.phase === 'full_time' && this.hasExtraTime);
         },
 
-        get penaltyHomeScore() {
-            if (this.penaltyKicks.length > 0) {
-                return this.revealedPenaltyKicks.filter(k => k.side === 'home' && k.scored).length;
-            }
-            return this.penaltyResult ? this.penaltyResult.home : 0;
-        },
-
-        get penaltyAwayScore() {
-            if (this.penaltyKicks.length > 0) {
-                return this.revealedPenaltyKicks.filter(k => k.side === 'away' && k.scored).length;
-            }
-            return this.penaltyResult ? this.penaltyResult.away : 0;
-        },
-
-        get penaltyWinner() {
-            if (!this.penaltyResult) return null;
-            const homeWon = this.penaltyResult.home > this.penaltyResult.away;
-            return {
-                name: homeWon ? this.homeTeamName : this.awayTeamName,
-                image: homeWon ? this.homeTeamImage : this.awayTeamImage,
-            };
-        },
+        // penaltyHomeScore, penaltyAwayScore, penaltyWinner — provided by penalty-shootout module
 
         // =============================
         // Knockout outcome (works for all knockout matches, not just tournament)
@@ -1903,7 +1768,7 @@ export default function liveMatch(config) {
             clearTimeout(this.pauseTimer);
             clearTimeout(this._kickoffTimeout);
             clearTimeout(this._startETTimeout);
-            clearTimeout(this._penaltyRevealTimer);
+            this._destroyPenaltyTimers();
             clearInterval(this._processingPollTimer);
             document.body.classList.remove('overflow-y-hidden');
         },
