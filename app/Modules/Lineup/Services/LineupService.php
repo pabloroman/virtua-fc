@@ -32,11 +32,7 @@ class LineupService
             ->get();
 
         // Batch load suspended player IDs for this competition (single query)
-        $suspendedPlayerIds = PlayerSuspension::where('competition_id', $competitionId)
-            ->where('matches_remaining', '>', 0)
-            ->whereIn('game_player_id', $players->pluck('id'))
-            ->pluck('game_player_id')
-            ->toArray();
+        $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($competitionId);
 
         // Filter in memory using pre-loaded suspension data
         return $players->filter(function (GamePlayer $player) use ($matchDate, $suspendedPlayerIds) {

@@ -60,10 +60,7 @@ class SubstitutionService
         }
 
         // Pre-load all suspended player IDs for this competition (single query)
-        $suspendedPlayerIds = PlayerSuspension::where('competition_id', $match->competition_id)
-            ->where('matches_remaining', '>', 0)
-            ->pluck('game_player_id')
-            ->all();
+        $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($match->competition_id);
 
         // Validate each sub in the batch
         $batchOutIds = [];
@@ -182,10 +179,7 @@ class SubstitutionService
         }
 
         // Pre-load suspended player IDs for this competition (single query)
-        $suspendedPlayerIds = PlayerSuspension::where('competition_id', $match->competition_id)
-            ->where('matches_remaining', '>', 0)
-            ->pluck('game_player_id')
-            ->all();
+        $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($match->competition_id);
 
         $opponentPlayers = $opponentSquad->filter(fn ($p) => in_array($p->id, $opponentLineupIds));
         $opponentBench = $opponentSquad

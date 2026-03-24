@@ -146,10 +146,7 @@ class ShowLiveMatch
             ->all();
 
         // Batch load suspended player IDs for this competition
-        $suspendedPlayerIds = PlayerSuspension::where('competition_id', $playerMatch->competition_id)
-            ->where('matches_remaining', '>', 0)
-            ->pluck('game_player_id')
-            ->toArray();
+        $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($playerMatch->competition_id);
 
         // Bench players (all squad players NOT in the starting lineup, not suspended, not injured)
         $matchDate = $playerMatch->scheduled_date;
