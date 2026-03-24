@@ -255,7 +255,7 @@ class ShowLiveMatch
         $formationSlots = [];
         foreach (Formation::cases() as $formation) {
             $formationSlots[$formation->value] = array_map(function ($slot) {
-                $slot['displayLabel'] = PositionMapper::slotToDisplayAbbreviation($slot['label']);
+                $slot['displayLabel'] = PositionSlotMapper::slotToDisplayAbbreviation($slot['label']);
 
                 return $slot;
             }, $formation->pitchSlots());

@@ -13,7 +13,6 @@ use App\Modules\Player\Services\InjuryService;
 use App\Models\TeamReputation;
 use App\Models\Game;
 use App\Support\PitchGrid;
-use App\Support\PositionMapper;
 use App\Support\PositionSlotMapper;
 use App\Support\TeamColors;
 
@@ -112,7 +111,7 @@ class ShowLineup
         $formationSlots = [];
         foreach (Formation::cases() as $formation) {
             $formationSlots[$formation->value] = array_map(function ($slot) {
-                $slot['displayLabel'] = PositionMapper::slotToDisplayAbbreviation($slot['label']);
+                $slot['displayLabel'] = PositionSlotMapper::slotToDisplayAbbreviation($slot['label']);
 
                 return $slot;
             }, $formation->pitchSlots());

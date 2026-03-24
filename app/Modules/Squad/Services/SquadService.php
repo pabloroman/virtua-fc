@@ -10,7 +10,7 @@ use App\Modules\Player\PlayerAge;
 use App\Modules\Player\Services\InjuryService;
 use App\Modules\Player\Services\PlayerDevelopmentService;
 use App\Modules\Transfer\Services\ContractService;
-use App\Support\PositionMapper;
+use App\Support\PositionSlotMapper;
 
 class SquadService
 {
@@ -269,12 +269,12 @@ class SquadService
             if ($slot === 'GK' && $data['count'] < 2) {
                 $alerts[] = [
                     'type' => 'danger',
-                    'message' => __('squad.alert_thin_position', ['position' => PositionMapper::slotToDisplayAbbreviation($slot), 'count' => $data['count']]),
+                    'message' => __('squad.alert_thin_position', ['position' => PositionSlotMapper::slotToDisplayAbbreviation($slot), 'count' => $data['count']]),
                 ];
             } elseif ($slot !== 'GK' && $data['count'] === 0) {
                 $alerts[] = [
                     'type' => 'danger',
-                    'message' => __('squad.alert_no_cover', ['position' => PositionMapper::slotToDisplayAbbreviation($slot)]),
+                    'message' => __('squad.alert_no_cover', ['position' => PositionSlotMapper::slotToDisplayAbbreviation($slot)]),
                 ];
             }
         }

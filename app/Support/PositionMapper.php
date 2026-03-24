@@ -24,27 +24,6 @@ class PositionMapper
     ];
 
     /**
-     * Map internal slot codes to translation key prefixes.
-     */
-    private static array $slotToKey = [
-        'GK' => 'goalkeeper',
-        'CB' => 'centre_back',
-        'LB' => 'left_back',
-        'RB' => 'right_back',
-        'LWB' => 'left_wing_back',
-        'RWB' => 'right_wing_back',
-        'DM' => 'defensive_midfield',
-        'CM' => 'central_midfield',
-        'AM' => 'attacking_midfield',
-        'LM' => 'left_midfield',
-        'RM' => 'right_midfield',
-        'LW' => 'left_winger',
-        'RW' => 'right_winger',
-        'CF' => 'centre_forward',
-        'SS' => 'second_striker',
-    ];
-
-    /**
      * Map canonical position names to position groups.
      */
     private static array $positionToGroup = [
@@ -110,16 +89,6 @@ class PositionMapper
         $key = self::$positionToKey[$position] ?? null;
 
         return $key ? __("positions.{$key}") : $position;
-    }
-
-    /**
-     * Get localized abbreviation for an internal slot code (GK, CB, LWB, etc.).
-     */
-    public static function slotToDisplayAbbreviation(string $slotCode): string
-    {
-        $key = self::$slotToKey[$slotCode] ?? null;
-
-        return $key ? __("positions.{$key}_abbr") : $slotCode;
     }
 
     /**
