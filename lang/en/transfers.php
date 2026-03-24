@@ -352,6 +352,7 @@ return [
     'chat_player_demand_transfer' => ':player\'s agent wants :wage/year for :years years.',
     'chat_player_counter_transfer' => ':player\'s agent insists on :wage/year for :years years.',
     'chat_transfer_complete' => ':player has signed! Welcome to the team.',
+    'chat_transfer_complete_pending' => ':player has signed! The player will join the team in the next transfer window.',
     'chat_terms_rejected' => ':player\'s agent has walked away. The deal is off.',
 
     // Counter-offer negotiation (user selling)

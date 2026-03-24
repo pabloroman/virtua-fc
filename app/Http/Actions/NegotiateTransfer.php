@@ -476,6 +476,10 @@ class NegotiateTransfer
             $this->notificationService->notifyTransferComplete($game, $offer->refresh());
         }
 
+        $messageKey = $completedImmediately
+            ? 'transfers.chat_transfer_complete'
+            : 'transfers.chat_transfer_complete_pending';
+
         return response()->json([
             'status' => 'ok',
             'negotiation_status' => 'completed',
@@ -483,7 +487,7 @@ class NegotiateTransfer
             'max_rounds' => self::MAX_ROUNDS,
             'messages' => [
                 $this->agentMessage('accepted', [
-                    'text' => __('transfers.chat_transfer_complete', [
+                    'text' => __($messageKey, [
                         'player' => $player->name,
                     ]),
                 ]),
