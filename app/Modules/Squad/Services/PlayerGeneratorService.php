@@ -50,8 +50,6 @@ class PlayerGeneratorService
      * Allows callers that already have the data (e.g. from a bulk query) to
      * populate caches without triggering any additional database queries.
      *
-     * @param  string  $gameId
-     * @param  string  $teamId
      * @param  string[]  $playerNames
      * @param  int[]  $takenNumbers
      */
@@ -60,36 +58,6 @@ class PlayerGeneratorService
         $key = "{$gameId}:{$teamId}";
         $this->teamNamesCache[$key] = $playerNames;
         $this->takenNumbersCache[$key] = $takenNumbers;
-    }
-
-    /**
-     * Preload name and number caches for all teams in a game in two queries.
-     *
-     * Call this before createBulk() to avoid per-team cache-miss queries.
-     */
-    public function preloadCaches(string $gameId): void
-    {
-        // Preload all team player names in one query
-        $allNames = GamePlayer::where('game_players.game_id', $gameId)
-            ->whereNotNull('game_players.team_id')
-            ->join('players', 'game_players.player_id', '=', 'players.id')
-            ->select('game_players.team_id', 'players.name')
-            ->get();
-
-        foreach ($allNames->groupBy('team_id') as $teamId => $rows) {
-            $this->teamNamesCache["{$gameId}:{$teamId}"] = $rows->pluck('name')->toArray();
-        }
-
-        // Preload all taken squad numbers in one query
-        $allNumbers = GamePlayer::where('game_id', $gameId)
-            ->whereNotNull('team_id')
-            ->whereNotNull('number')
-            ->select('team_id', 'number')
-            ->get();
-
-        foreach ($allNumbers->groupBy('team_id') as $teamId => $rows) {
-            $this->takenNumbersCache["{$gameId}:{$teamId}"] = $rows->pluck('number')->toArray();
-        }
     }
 
     /**
@@ -443,7 +411,6 @@ class PlayerGeneratorService
                 ->all();
         }
 
-        // Build hash set for O(1) lookups instead of O(n) in_array scans
         $takenSet = array_flip($this->takenNumbersCache[$key]);
 
         for ($n = 2; $n <= 99; $n++) {

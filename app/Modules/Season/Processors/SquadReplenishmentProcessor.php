@@ -119,7 +119,6 @@ class SquadReplenishmentProcessor implements SeasonProcessor
         $bulkMeta = [];
         $releaseIds = [];
 
-        // Single bulk load: only the columns we actually need, join for date_of_birth
         $playersByTeam = GamePlayer::where('game_players.game_id', $game->id)
             ->whereNotNull('game_players.team_id')
             ->join('players', 'game_players.player_id', '=', 'players.id')
@@ -199,15 +198,16 @@ class SquadReplenishmentProcessor implements SeasonProcessor
             GamePlayer::whereIn('id', $releaseIds)->update(['team_id' => null]);
         }
 
-        // Seed name/number caches from data we already loaded (zero extra queries)
+        // Avoids per-team cache-miss queries during createBulk()
         foreach ($playersByTeam as $teamId => $players) {
             $this->playerGenerator->seedCaches(
                 $game->id,
                 $teamId,
                 $players->pluck('player_name')->toArray(),
-                $players->pluck('number')->filter()->values()->toArray(),
+                $players->pluck('number')->filter()->toArray(),
             );
         }
+        unset($playersByTeam);
 
         // Bulk insert all generated players
         $results = $this->playerGenerator->createBulk($game, $bulkData);
@@ -475,10 +475,10 @@ class SquadReplenishmentProcessor implements SeasonProcessor
      */
     private function getOldestWeakestIds(Collection $players, Carbon $currentDate, int $count): array
     {
-        $cutoff = PlayerAge::dateOfBirthCutoff(PlayerAge::MIN_RETIREMENT_OUTFIELD, $currentDate)->format('Y-m-d');
+        $cutoff = PlayerAge::dateOfBirthCutoff(PlayerAge::MIN_RETIREMENT_OUTFIELD, $currentDate);
 
         return $players
-            ->filter(fn ($gp) => $gp->date_of_birth && substr($gp->date_of_birth, 0, 10) <= $cutoff)
+            ->filter(fn ($gp) => $gp->date_of_birth && Carbon::parse($gp->date_of_birth)->lte($cutoff))
             ->sortBy(fn ($gp) => ($gp->game_technical_ability ?? 0) + ($gp->game_physical_ability ?? 0))
             ->take($count)
             ->pluck('id')
