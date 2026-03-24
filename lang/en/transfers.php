@@ -133,6 +133,7 @@ return [
     'transfer_fee_exceeds_budget' => 'The transfer fee exceeds your budget. You cannot bid for this player.',
     'transfer_fee_exceeds_budget_loan_available' => 'The transfer fee exceeds your budget, but you can request a loan.',
     'loan_fee_exceeds_budget' => 'Both the transfer and loan fees exceed your budget.',
+    'loan_cost_salary' => 'Loan cost (salary)',
     'asking_price' => 'Asking price',
     'request_loan' => 'Request Loan',
 

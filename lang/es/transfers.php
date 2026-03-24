@@ -134,6 +134,7 @@ return [
     'transfer_fee_exceeds_budget' => 'El precio de traspaso excede tu presupuesto. No puedes pujar por este jugador.',
     'transfer_fee_exceeds_budget_loan_available' => 'El precio de traspaso excede tu presupuesto, pero puedes solicitar una cesión.',
     'loan_fee_exceeds_budget' => 'Tanto el traspaso como la cesión exceden tu presupuesto.',
+    'loan_cost_salary' => 'Coste cesión (salario)',
     'asking_price' => 'Precio pedido',
     'request_loan' => 'Solicitar Cesión',
 

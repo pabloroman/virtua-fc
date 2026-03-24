@@ -218,8 +218,13 @@
                                                 {{ __('transfers.negotiate_pre_contract') }}
                                             </x-primary-button>
                                         @elseif(!$canAffordFee && !$canAffordLoan)
-                                            <div class="text-xs text-accent-red font-medium">
-                                                {{ __('transfers.loan_fee_exceeds_budget') }}
+                                            <div>
+                                                <div class="text-xs text-accent-red font-medium">
+                                                    {{ __('transfers.loan_fee_exceeds_budget') }}
+                                                </div>
+                                                <div class="text-xs text-text-muted mt-1">
+                                                    {{ __('transfers.loan_cost_salary') }}: <span class="text-text-body font-medium">{{ $formattedWageDemand }}{{ __('squad.per_year') }}</span>
+                                                </div>
                                             </div>
                                         @elseif(!$canAffordFee && $canAffordLoan)
                                             @php
@@ -236,6 +241,9 @@
                                             <div class="flex flex-col gap-2">
                                                 <div class="text-xs text-accent-gold font-medium">
                                                     {{ __('transfers.transfer_fee_exceeds_budget_loan_available') }}
+                                                </div>
+                                                <div class="text-xs text-text-muted">
+                                                    {{ __('transfers.loan_cost_salary') }}: <span class="text-text-body font-medium">{{ $formattedWageDemand }}{{ __('squad.per_year') }}</span>
                                                 </div>
                                                 <x-secondary-button size="xs"
                                                     @click="$dispatch('open-negotiation', {
