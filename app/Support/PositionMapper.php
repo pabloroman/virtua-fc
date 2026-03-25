@@ -196,6 +196,16 @@ class PositionMapper
     }
 
     /**
+     * Get all individual position filter options (code => translation key prefix).
+     *
+     * @return array<string, string>
+     */
+    public static function getFilterOptions(): array
+    {
+        return self::$filterToKey;
+    }
+
+    /**
      * Get all 13 canonical position names.
      *
      * @return string[]

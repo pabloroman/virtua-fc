@@ -54,6 +54,6 @@ return [
 
     // Scout filter groups
     'any_defender' => 'Any Defender (CB, LB, RB)',
-    'any_midfielder' => 'Any Midfielder (DM, CM, AM)',
+    'any_midfielder' => 'Any Midfielder (DM, CM, AM, LM, RM)',
     'any_forward' => 'Any Forward (LW, RW, CF, SS)',
 ];

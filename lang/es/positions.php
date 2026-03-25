@@ -54,6 +54,6 @@ return [
 
     // Scout filter groups
     'any_defender' => 'Cualquier Defensa (CT, LI, LD)',
-    'any_midfielder' => 'Cualquier Centrocampista (MCD, MC, MP)',
+    'any_midfielder' => 'Cualquier Centrocampista (MCD, MC, MP, MI, MD)',
     'any_forward' => 'Cualquier Delantero (EI, ED, DC, SD)',
 ];
