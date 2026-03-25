@@ -20,8 +20,10 @@ class BudgetLoanService
         }
 
         $percentage = config('finances.loan.max_percentage', 0.10);
+        $raw = (int) ($finances->projected_total_revenue * $percentage);
 
-        return (int) ($finances->projected_total_revenue * $percentage);
+        // Round down to nearest €100K (10_000_000 cents) for a clean number
+        return (int) (floor($raw / 10_000_000) * 10_000_000);
     }
 
     /**

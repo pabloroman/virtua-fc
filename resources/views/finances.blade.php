@@ -346,7 +346,7 @@
                                         <div class="space-y-3">
                                             <div>
                                                 <label class="text-[10px] text-text-muted uppercase tracking-widest block mb-1">{{ __('finances.loan_amount_label') }}</label>
-                                                <x-money-input name="amount" :value="$loanMax" :min="$loanMin" size="sm" x-model.number="amount" />
+                                                <x-money-input name="amount" :value="$loanMax" :min="$loanMin" :max="$loanMax" size="sm" x-model.number="amount" />
                                             </div>
                                             <div class="bg-surface-700/30 rounded-lg p-3 space-y-1.5">
                                                 <div class="flex items-center justify-between text-[11px]">
