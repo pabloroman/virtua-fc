@@ -16,14 +16,16 @@ class ShowAcademyPlayerDetail
             ->where('team_id', $game->team_id)
             ->findOrFail($playerId);
 
-        $revealPhase = $academyPlayer->seasons_in_academy > 1
-            ? 2
-            : YouthAcademyService::getRevealPhase($game);
+        $tier = $game->currentInvestment->youth_academy_tier ?? 0;
+        $canCallUp = ! $academyPlayer->is_on_loan
+            && ! $academyPlayer->is_called_up
+            && YouthAcademyService::getCalledUpCount($game) < YouthAcademyService::getMaxCallups($tier)
+            && ! \App\Modules\Transfer\Services\ContractService::isSquadFull($game);
 
         return view('partials.academy-player-detail', [
             'game' => $game,
             'academyPlayer' => $academyPlayer,
-            'revealPhase' => $revealPhase,
+            'canCallUp' => $canCallUp,
         ]);
     }
 }

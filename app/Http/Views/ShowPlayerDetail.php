@@ -2,6 +2,7 @@
 
 namespace App\Http\Views;
 
+use App\Modules\Academy\Services\YouthAcademyService;
 use App\Modules\Transfer\Services\ContractService;
 use App\Models\Game;
 use App\Models\GamePlayer;
@@ -11,6 +12,7 @@ class ShowPlayerDetail
 {
     public function __construct(
         private readonly ContractService $contractService,
+        private readonly YouthAcademyService $youthAcademyService,
     ) {}
 
     public function __invoke(string $gameId, string $playerId)
@@ -44,6 +46,9 @@ class ShowPlayerDetail
 
         $severance = $canRelease ? $this->contractService->calculateSeverance($game, $gamePlayer) : 0;
 
+        $canSendToAcademy = $game->isCareerMode()
+            && $this->youthAcademyService->canSendToAcademy($gamePlayer, $game);
+
         return view('partials.player-detail', [
             'game' => $game,
             'gamePlayer' => $gamePlayer,
@@ -51,6 +56,7 @@ class ShowPlayerDetail
             'renewalNegotiation' => $renewalNegotiation,
             'canRelease' => $canRelease,
             'severance' => $severance,
+            'canSendToAcademy' => $canSendToAcademy,
         ]);
     }
 }

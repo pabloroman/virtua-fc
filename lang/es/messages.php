@@ -84,6 +84,15 @@ return [
     'academy_player_promoted' => ':player ha sido subido al primer equipo.',
     'academy_player_dismissed' => ':player ha sido despedido de la cantera.',
     'academy_player_loaned' => ':player ha sido cedido.',
+    'academy_player_called_up' => ':player ha sido convocado al primer equipo.',
+    'academy_player_recalled' => ':player ha sido devuelto a la cantera.',
+    'academy_player_on_loan' => 'Este jugador está actualmente cedido.',
+    'academy_player_already_called_up' => 'Este jugador ya está convocado.',
+    'callup_limit_reached' => 'Has alcanzado el número máximo de convocatorias para tu nivel de cantera.',
+    'player_sent_to_academy' => ':player ha sido enviado de vuelta a la cantera.',
+    'cannot_send_to_academy' => 'Este jugador no puede ser enviado a la cantera. Puede ser demasiado mayor o la cantera está llena.',
+    'academy_over_capacity' => 'La cantera supera la capacidad. Debes liberar :excess plaza(s).',
+    'academy_must_decide_21' => 'Los jugadores de 21+ años deben ser subidos o despedidos.',
 
     // Player release messages
     'player_released' => ':player ha sido liberado. Indemnización pagada: :severance.',

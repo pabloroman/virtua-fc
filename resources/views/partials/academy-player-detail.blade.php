@@ -1,13 +1,11 @@
 @php
     /** @var App\Models\Game $game */
     /** @var App\Models\AcademyPlayer $academyPlayer */
-    /** @var int $revealPhase */
 
     $positionDisplay = $academyPlayer->position_display;
     $nationalityFlag = $academyPlayer->nationality_flag;
 
     $overallColor = match(true) {
-        $revealPhase < 1 => 'bg-surface-600',
         $academyPlayer->overall >= 80 => 'bg-accent-green',
         $academyPlayer->overall >= 70 => 'bg-lime-500',
         $academyPlayer->overall >= 60 => 'bg-accent-gold',
@@ -47,11 +45,13 @@
 
             @if($academyPlayer->is_on_loan)
                 <span class="inline-block mt-2 text-[10px] font-semibold bg-violet-500/10 text-violet-400 px-2 py-0.5 rounded-full">{{ __('squad.academy_on_loan') }}</span>
+            @elseif($academyPlayer->is_called_up)
+                <span class="inline-block mt-2 text-[10px] font-semibold bg-accent-blue/10 text-accent-blue px-2 py-0.5 rounded-full">{{ __('squad.academy_called_up') }}</span>
             @endif
         </div>
 
         <div class="w-14 h-14 md:w-16 md:h-16 rounded-xl {{ $overallColor }} flex items-center justify-center shrink-0">
-            <span class="text-xl md:text-2xl font-bold {{ $revealPhase >= 1 ? 'text-white' : 'text-text-secondary' }}">{{ $revealPhase >= 1 ? $academyPlayer->overall : '?' }}</span>
+            <span class="text-xl md:text-2xl font-bold text-white">{{ $academyPlayer->overall }}</span>
         </div>
     </div>
 </div>
@@ -63,27 +63,20 @@
     <div class="p-5">
         <h4 class="font-heading text-[11px] font-semibold uppercase tracking-widest text-text-secondary mb-4">{{ __('squad.abilities') }}</h4>
 
-        @if($revealPhase >= 1)
-            <div class="space-y-3">
-                <x-stat-bar :label="__('squad.technical_full')" :value="$academyPlayer->technical_ability" />
-                <x-stat-bar :label="__('squad.physical_full')" :value="$academyPlayer->physical_ability" />
+        <div class="space-y-3">
+            <x-stat-bar :label="__('squad.technical_full')" :value="$academyPlayer->technical_ability" />
+            <x-stat-bar :label="__('squad.physical_full')" :value="$academyPlayer->physical_ability" />
 
-                <div class="flex items-center justify-between pt-3 border-t border-border-default">
-                    <span class="text-[11px] text-text-muted uppercase tracking-wide font-semibold">{{ __('squad.overall') }}</span>
-                    <span class="text-xs font-semibold tabular-nums
-                        @if($academyPlayer->overall >= 80) text-accent-green
-                        @elseif($academyPlayer->overall >= 70) text-lime-500
-                        @elseif($academyPlayer->overall >= 60) text-accent-gold
-                        @else text-text-muted
-                        @endif">{{ $academyPlayer->overall }}</span>
-                </div>
+            <div class="flex items-center justify-between pt-3 border-t border-border-default">
+                <span class="text-[11px] text-text-muted uppercase tracking-wide font-semibold">{{ __('squad.overall') }}</span>
+                <span class="text-xs font-semibold tabular-nums
+                    @if($academyPlayer->overall >= 80) text-accent-green
+                    @elseif($academyPlayer->overall >= 70) text-lime-500
+                    @elseif($academyPlayer->overall >= 60) text-accent-gold
+                    @else text-text-muted
+                    @endif">{{ $academyPlayer->overall }}</span>
             </div>
-        @else
-            <div class="py-8 text-center">
-                <span class="text-2xl text-text-body">?</span>
-                <p class="text-xs text-text-secondary mt-2">{{ __('squad.academy_phase_unknown') }}</p>
-            </div>
-        @endif
+        </div>
     </div>
 
     {{-- Details --}}
@@ -92,11 +85,7 @@
         <div class="space-y-3">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] text-text-muted uppercase tracking-wide">{{ __('game.potential') }}</span>
-                @if($revealPhase >= 2)
-                    <span class="text-xs font-semibold text-text-primary">{{ $academyPlayer->potential_range }}</span>
-                @else
-                    <span class="text-xs font-semibold text-text-body">?</span>
-                @endif
+                <span class="text-xs font-semibold text-text-primary">{{ $academyPlayer->potential_range }}</span>
             </div>
             <div class="flex items-center justify-between">
                 <span class="text-[11px] text-text-muted uppercase tracking-wide">{{ __('squad.discovered') }}</span>
@@ -111,8 +100,27 @@
 </div>
 
 {{-- Actions --}}
-@unless($academyPlayer->is_on_loan)
+@if($academyPlayer->is_called_up)
     <div class="px-5 py-4 border-t border-border-default flex flex-wrap gap-2">
+        <form method="POST" action="{{ route('game.academy.recall', [$game->id, $academyPlayer->id]) }}">
+            @csrf
+            <x-action-button color="amber">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
+                {{ __('squad.academy_recall') }}
+            </x-action-button>
+        </form>
+    </div>
+@elseif(!$academyPlayer->is_on_loan)
+    <div class="px-5 py-4 border-t border-border-default flex flex-wrap gap-2">
+        @if($canCallUp ?? false)
+            <form method="POST" action="{{ route('game.academy.callup', [$game->id, $academyPlayer->id]) }}">
+                @csrf
+                <x-action-button color="blue">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg>
+                    {{ __('squad.academy_callup') }}
+                </x-action-button>
+            </form>
+        @endif
         <form method="POST" action="{{ route('game.academy.promote', [$game->id, $academyPlayer->id]) }}">
             @csrf
             <x-action-button color="blue">
@@ -135,4 +143,4 @@
             </x-action-button>
         </form>
     </div>
-@endunless
+@endif

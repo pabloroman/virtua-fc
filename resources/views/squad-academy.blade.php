@@ -25,17 +25,24 @@
         {{-- Summary strip --}}
         <div class="flex gap-2.5 overflow-x-auto scrollbar-hide pb-1 mb-6">
             <x-summary-card :label="__('squad.academy_tier')" :value="$tierDescription" :value-class="$tier >= 3 ? 'text-accent-green' : ($tier >= 1 ? 'text-accent-blue' : 'text-text-secondary')" />
-            <x-summary-card :label="__('squad.academy_phase_label')">
-                <div class="mt-1">
-                    @if($revealPhase === 0)
-                        <span class="text-xs font-semibold bg-surface-700 text-text-muted px-2 py-1 rounded-full">{{ __('squad.academy_phase_unknown') }}</span>
-                    @elseif($revealPhase === 1)
-                        <span class="text-xs font-semibold bg-accent-blue/10 text-accent-blue px-2 py-1 rounded-full">{{ __('squad.academy_phase_glimpse') }}</span>
-                    @else
-                        <span class="text-xs font-semibold bg-accent-green/10 text-accent-green px-2 py-1 rounded-full">{{ __('squad.academy_phase_verdict') }}</span>
-                    @endif
-                </div>
-            </x-summary-card>
+            @if($capacity > 0)
+                <x-summary-card :label="__('squad.academy_capacity')">
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="font-heading text-xl font-bold {{ $academyCount > $capacity ? 'text-accent-red' : 'text-text-primary' }}">{{ $academyCount }}/{{ $capacity }}</span>
+                        <div class="w-16 h-1.5 bg-bar-track rounded-full overflow-hidden">
+                            <div class="h-full rounded-full {{ $academyCount > $capacity ? 'bg-accent-red' : ($academyCount >= $capacity - 1 ? 'bg-accent-gold' : 'bg-emerald-500') }}"
+                                 style="width: {{ min(100, ($academyCount / max($capacity, 1)) * 100) }}%"></div>
+                        </div>
+                    </div>
+                </x-summary-card>
+            @endif
+            @if($maxCallups > 0)
+                <x-summary-card :label="__('squad.academy_callups')">
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="font-heading text-xl font-bold {{ $calledUpCount >= $maxCallups ? 'text-accent-gold' : 'text-text-primary' }}">{{ $calledUpCount }}/{{ $maxCallups }}</span>
+                    </div>
+                </x-summary-card>
+            @endif
         </div>
 
         {{-- How it works (collapsible) --}}
@@ -52,28 +59,41 @@
 
             <div x-show="open" x-transition class="mt-3 bg-surface-700/50 border border-border-default rounded-lg p-4 text-sm">
                 <p class="text-text-secondary mb-4">{{ __('squad.academy_help_development') }}</p>
-                {{-- Reveal phases --}}
-                <div>
-                    <p class="font-semibold text-text-body mb-2">{{ __('squad.academy_help_phases_title') }}</p>
-                    <ul class="space-y-2">
-                        <li class="flex gap-2">
-                            <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-surface-600 text-text-secondary text-xs font-bold">0</span>
-                            <span class="text-text-secondary">{{ __('squad.academy_help_phase_0') }}</span>
-                        </li>
-                        <li class="flex gap-2">
-                            <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-accent-blue/20 text-accent-blue text-xs font-bold">1</span>
-                            <span class="text-text-secondary">{{ __('squad.academy_help_phase_1') }}</span>
-                        </li>
-                        <li class="flex gap-2">
-                            <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-accent-green/20 text-accent-green text-xs font-bold">2</span>
-                            <span class="text-text-secondary">{{ __('squad.academy_help_phase_2') }}</span>
-                        </li>
-                    </ul>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    {{-- Actions --}}
+                    <div>
+                        <p class="font-semibold text-text-body mb-2">{{ __('squad.academy_help_actions_title') }}</p>
+                        <ul class="space-y-2">
+                            <li class="flex gap-2">
+                                <span class="text-accent-green shrink-0">↑</span>
+                                <span class="text-text-secondary">{{ __('squad.academy_help_promote') }}</span>
+                            </li>
+                            <li class="flex gap-2">
+                                <span class="text-accent-blue shrink-0">⇄</span>
+                                <span class="text-text-secondary">{{ __('squad.academy_help_callup') }}</span>
+                            </li>
+                            <li class="flex gap-2">
+                                <span class="text-indigo-400 shrink-0">⇄</span>
+                                <span class="text-text-secondary">{{ __('squad.academy_help_loan') }}</span>
+                            </li>
+                            <li class="flex gap-2">
+                                <span class="text-accent-red shrink-0">✕</span>
+                                <span class="text-text-secondary">{{ __('squad.academy_help_dismiss') }}</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {{-- Evaluations --}}
+                    <div>
+                        <p class="font-semibold text-text-body mb-2">{{ __('squad.academy_help_evaluations_title') }}</p>
+                        <p class="text-text-muted mb-2">{{ __('squad.academy_help_evaluation_desc') }}</p>
+                        <p class="mt-3 text-xs text-text-secondary">{{ __('squad.academy_help_age_rule') }} {{ __('squad.academy_help_capacity_rule') }}</p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        @if($academyCount === 0 && $loanedPlayers->isEmpty())
+        @if($academyCount === 0 && $loanedPlayers->isEmpty() && $calledUpPlayers->isEmpty())
             <div class="text-center py-16">
                 <div class="inline-flex items-center justify-center w-16 h-16 bg-surface-700 rounded-full mb-4">
                     <svg class="w-8 h-8 fill-surface-600" stroke="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M48 195.8l209.2 86.1c9.8 4 20.2 6.1 30.8 6.1s21-2.1 30.8-6.1l242.4-99.8c9-3.7 14.8-12.4 14.8-22.1s-5.8-18.4-14.8-22.1L318.8 38.1C309 34.1 298.6 32 288 32s-21 2.1-30.8 6.1L14.8 137.9C5.8 141.6 0 150.3 0 160L0 456c0 13.3 10.7 24 24 24s24-10.7 24-24l0-260.2zm48 71.7L96 384c0 53 86 96 192 96s192-43 192-96l0-116.6-142.9 58.9c-15.6 6.4-32.2 9.7-49.1 9.7s-33.5-3.3-49.1-9.7L96 267.4z"/></svg>
@@ -87,7 +107,7 @@
                 <div x-data class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
                     {{-- Table header --}}
                     <div class="hidden md:block">
-                        <div class="grid grid-cols-[40px_1fr_48px_48px_48px_56px_56px] gap-1.5 items-center px-4 py-2 bg-surface-700/30 border-b border-border-default text-[10px] text-text-muted uppercase tracking-widest font-semibold">
+                        <div class="grid grid-cols-[40px_1fr_48px_48px_48px_56px_56px_100px] gap-1.5 items-center px-4 py-2 bg-surface-700/30 border-b border-border-default text-[10px] text-text-muted uppercase tracking-widest font-semibold">
                             <span></span>
                             <span>{{ __('app.name') }}</span>
                             <span class="text-center">{{ __('app.age') }}</span>
@@ -95,6 +115,7 @@
                             <span class="text-center">{{ __('squad.physical') }}</span>
                             <span class="text-center">{{ __('squad.pot') }}</span>
                             <span class="text-center">{{ __('squad.overall') }}</span>
+                            <span class="text-center">{{ __('squad.academy_actions') }}</span>
                         </div>
                     </div>
 
@@ -114,11 +135,9 @@
                             </div>
 
                             @foreach($group['players'] as $prospect)
-                                @php $playerReveal = $prospect->seasons_in_academy > 1 ? 2 : $revealPhase; @endphp
-
                                 {{-- Mobile row --}}
-                                <div class="md:hidden px-4 py-3 border-b border-border-default cursor-pointer" @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')">
-                                    <div class="flex items-center gap-3">
+                                <div class="md:hidden px-4 py-3 border-b border-border-default">
+                                    <div class="flex items-center gap-3 cursor-pointer" @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')">
                                         <x-player-avatar :name="$prospect->name" :position-group="\App\Support\PositionMapper::getPositionGroup($prospect->position)" :position-abbrev="\App\Support\PositionMapper::toAbbreviation($prospect->position)" />
                                         <div class="flex-1 min-w-0">
                                             <div class="flex items-center gap-2">
@@ -127,24 +146,31 @@
                                             </div>
                                             <div class="text-xs text-text-secondary mt-0.5">{{ trans_choice('squad.academy_seasons', $prospect->seasons_in_academy, ['count' => $prospect->seasons_in_academy]) }}</div>
                                         </div>
-                                        @if($playerReveal >= 1)
-                                            <x-rating-badge :value="$prospect->overall" class="shrink-0" />
-                                        @else
-                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-xs font-semibold bg-surface-600 text-text-secondary">?</span>
+                                        <x-rating-badge :value="$prospect->overall" class="shrink-0" />
+                                    </div>
+                                    {{-- Mobile action buttons --}}
+                                    <div class="flex gap-1.5 mt-2">
+                                        @if($canCallUp)
+                                            <form method="POST" action="{{ route('game.academy.callup', [$game->id, $prospect->id]) }}" class="flex-1">
+                                                @csrf
+                                                <x-pill-button size="sm" class="w-full min-h-[44px] bg-surface-700 text-accent-blue">{{ __('squad.academy_callup') }}</x-pill-button>
+                                            </form>
                                         @endif
+                                        <form method="POST" action="{{ route('game.academy.promote', [$game->id, $prospect->id]) }}" class="flex-1">
+                                            @csrf
+                                            <x-pill-button size="sm" class="w-full min-h-[44px] bg-surface-700 text-accent-green">{{ __('squad.academy_promote') }}</x-pill-button>
+                                        </form>
                                     </div>
                                 </div>
 
                                 {{-- Desktop row --}}
-                                <div class="hidden md:grid grid-cols-[40px_1fr_48px_48px_48px_56px_56px] gap-1.5 items-center px-4 py-2.5 border-b border-border-default cursor-pointer hover:bg-surface-700/30 transition-colors"
-                                     @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')"
-                                >
+                                <div class="hidden md:grid grid-cols-[40px_1fr_48px_48px_48px_56px_56px_100px] gap-1.5 items-center px-4 py-2.5 border-b border-border-default hover:bg-surface-700/30 transition-colors">
                                     {{-- Position --}}
                                     <div class="flex justify-center">
                                         <x-position-badge :position="$prospect->position" size="sm" :tooltip="\App\Support\PositionMapper::toDisplayName($prospect->position)" class="cursor-help" />
                                     </div>
                                     {{-- Name --}}
-                                    <div class="flex items-center gap-2 min-w-0">
+                                    <div class="flex items-center gap-2 min-w-0 cursor-pointer" @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')">
                                         @if($prospect->nationality_flag)
                                             <img src="{{ Storage::disk('assets')->url('flags/' . $prospect->nationality_flag['code'] . '.svg') }}" class="w-4 h-3 rounded-sm shadow-xs shrink-0" title="{{ $prospect->nationality_flag['name'] }}">
                                         @endif
@@ -155,36 +181,66 @@
                                     <span class="text-xs text-text-secondary text-center tabular-nums">{{ $prospect->age }}</span>
                                     {{-- Technical --}}
                                     <div class="flex justify-center">
-                                        @if($playerReveal >= 1)
-                                            <span class="text-xs font-medium tabular-nums @if($prospect->technical_ability >= 80) text-accent-green @elseif($prospect->technical_ability >= 70) text-lime-500 @elseif($prospect->technical_ability >= 60) text-text-body @else text-text-secondary @endif">{{ $prospect->technical_ability }}</span>
-                                        @else
-                                            <span class="text-xs text-text-body">?</span>
-                                        @endif
+                                        <span class="text-xs font-medium tabular-nums @if($prospect->technical_ability >= 80) text-accent-green @elseif($prospect->technical_ability >= 70) text-lime-500 @elseif($prospect->technical_ability >= 60) text-text-body @else text-text-secondary @endif">{{ $prospect->technical_ability }}</span>
                                     </div>
                                     {{-- Physical --}}
                                     <div class="flex justify-center">
-                                        @if($playerReveal >= 1)
-                                            <span class="text-xs font-medium tabular-nums @if($prospect->physical_ability >= 80) text-accent-green @elseif($prospect->physical_ability >= 70) text-lime-500 @elseif($prospect->physical_ability >= 60) text-text-body @else text-text-secondary @endif">{{ $prospect->physical_ability }}</span>
-                                        @else
-                                            <span class="text-xs text-text-body">?</span>
-                                        @endif
+                                        <span class="text-xs font-medium tabular-nums @if($prospect->physical_ability >= 80) text-accent-green @elseif($prospect->physical_ability >= 70) text-lime-500 @elseif($prospect->physical_ability >= 60) text-text-body @else text-text-secondary @endif">{{ $prospect->physical_ability }}</span>
                                     </div>
                                     {{-- Potential range --}}
-                                    <span class="text-xs text-center tabular-nums {{ $playerReveal >= 2 ? 'text-text-muted' : 'text-text-body' }}">
-                                        {{ $playerReveal >= 2 ? $prospect->potential_range : '?' }}
-                                    </span>
+                                    <span class="text-xs text-center tabular-nums text-text-muted">{{ $prospect->potential_range }}</span>
                                     {{-- Overall --}}
                                     <div class="flex justify-center">
-                                        @if($playerReveal >= 1)
-                                            <x-rating-badge :value="$prospect->overall" size="sm" />
-                                        @else
-                                            <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg text-[11px] font-semibold bg-surface-600 text-text-secondary">?</span>
+                                        <x-rating-badge :value="$prospect->overall" size="sm" />
+                                    </div>
+                                    {{-- Actions --}}
+                                    <div class="flex justify-center gap-1">
+                                        @if($canCallUp)
+                                            <form method="POST" action="{{ route('game.academy.callup', [$game->id, $prospect->id]) }}">
+                                                @csrf
+                                                <button type="submit" class="text-[10px] font-semibold px-2 py-1 rounded bg-accent-blue/10 text-accent-blue hover:bg-accent-blue/20 transition-colors" title="{{ __('squad.academy_callup') }}">{{ __('squad.academy_callup') }}</button>
+                                            </form>
                                         @endif
+                                        <form method="POST" action="{{ route('game.academy.promote', [$game->id, $prospect->id]) }}">
+                                            @csrf
+                                            <button type="submit" class="text-[10px] font-semibold px-2 py-1 rounded bg-accent-green/10 text-accent-green hover:bg-accent-green/20 transition-colors" title="{{ __('squad.academy_promote') }}">{{ __('squad.academy_promote') }}</button>
+                                        </form>
                                     </div>
                                 </div>
                             @endforeach
                         @endif
                     @endforeach
+                </div>
+            @endif
+
+            {{-- Called-up players section --}}
+            @if($calledUpPlayers->isNotEmpty())
+                <div x-data class="mt-6">
+                    <x-section-card :title="__('squad.academy_called_up') . ' (' . $calledUpPlayers->count() . '/' . $maxCallups . ')'">
+                        <div class="divide-y divide-border-default">
+                            @foreach($calledUpPlayers as $prospect)
+                                <div class="flex items-center gap-3 px-4 py-3 hover:bg-surface-700/30 transition-colors">
+                                    <x-player-avatar :name="$prospect->name" :position-group="\App\Support\PositionMapper::getPositionGroup($prospect->position)" :position-abbrev="\App\Support\PositionMapper::toAbbreviation($prospect->position)" size="sm" />
+                                    <div class="flex-1 min-w-0 cursor-pointer" @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm font-medium text-text-primary truncate">{{ $prospect->name }}</span>
+                                            <span class="text-[10px] font-semibold bg-accent-blue/10 text-accent-blue px-1.5 py-0.5 rounded-full">{{ __('squad.academy_called_up') }}</span>
+                                        </div>
+                                        <div class="text-xs text-text-secondary mt-0.5">{{ $prospect->position_display['name'] ?? $prospect->position }}</div>
+                                    </div>
+                                    @if($prospect->nationality_flag)
+                                        <img src="{{ Storage::disk('assets')->url('flags/' . $prospect->nationality_flag['code'] . '.svg') }}" class="w-5 h-4 rounded-sm shadow-xs shrink-0 hidden md:block" title="{{ $prospect->nationality_flag['name'] }}">
+                                    @endif
+                                    <span class="text-xs text-text-secondary hidden md:block">{{ $prospect->age }}</span>
+                                    <x-rating-badge :value="$prospect->overall" size="sm" class="shrink-0" />
+                                    <form method="POST" action="{{ route('game.academy.recall', [$game->id, $prospect->id]) }}">
+                                        @csrf
+                                        <button type="submit" class="text-[10px] font-semibold px-2 py-1 rounded bg-accent-gold/10 text-accent-gold hover:bg-accent-gold/20 transition-colors">{{ __('squad.academy_recall') }}</button>
+                                    </form>
+                                </div>
+                            @endforeach
+                        </div>
+                    </x-section-card>
                 </div>
             @endif
 

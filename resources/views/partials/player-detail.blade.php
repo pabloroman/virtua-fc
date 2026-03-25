@@ -218,6 +218,15 @@
                 </x-action-button>
             </form>
         @endif
+        @if($canSendToAcademy ?? false)
+            <form method="POST" action="{{ route('game.player.send-to-academy', [$game->id, $gamePlayer->id]) }}" x-data x-on:submit="if (!confirm('{{ __('squad.send_to_academy_confirm', ['player' => $gamePlayer->name]) }}')) $event.preventDefault()">
+                @csrf
+                <x-action-button color="violet">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
+                    {{ __('squad.send_to_academy') }}
+                </x-action-button>
+            </form>
+        @endif
         @if($canManage)
             <form method="POST" action="{{ route('game.loans.out', [$game->id, $gamePlayer->id]) }}">
                 @csrf

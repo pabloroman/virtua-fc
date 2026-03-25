@@ -2,7 +2,10 @@
 
 namespace App\Modules\Academy\Services;
 
+use App\Modules\Player\PlayerAge;
+use App\Modules\Player\Services\PlayerTierService;
 use App\Modules\Squad\DTOs\GeneratedPlayerData;
+use App\Modules\Transfer\Services\ContractService;
 use App\Models\AcademyPlayer;
 use App\Models\Game;
 use App\Models\GamePlayer;
@@ -14,14 +17,47 @@ use App\Modules\Squad\Services\PlayerGeneratorService;
 class YouthAcademyService
 {
     /**
-     * Tier configuration: [min_arrivals, max_arrivals, min_potential, max_potential, min_ability, max_ability]
+     * Tier configuration: [capacity, min_arrivals, max_arrivals, max_callups]
      */
     private const TIER_CONFIG = [
-        0 => [0, 0, 0, 0, 0, 0],
-        1 => [2, 3, 60, 70, 35, 50],
-        2 => [3, 5, 65, 75, 40, 55],
-        3 => [4, 6, 68, 78, 40, 55],
-        4 => [4, 6, 75, 85, 45, 60],
+        0 => [0, 0, 0, 0],
+        1 => [4, 2, 3, 1],
+        2 => [6, 3, 5, 1],
+        3 => [7, 4, 6, 2],
+        4 => [8, 4, 6, 3],
+    ];
+
+    /**
+     * Ability ranges corresponding to each PlayerTier (derived from PlayerValuationService anchors).
+     */
+    private const TIER_ABILITY_RANGES = [
+        1 => [40, 57],   // Developing (< €1M)
+        2 => [58, 67],   // Average (€1M-€5M)
+        3 => [68, 77],   // Good (€5M-€20M)
+        4 => [78, 83],   // Excellent (€20M-€50M)
+        5 => [83, 90],   // World Class (€50M+)
+    ];
+
+    /**
+     * How many tiers below the first team's median tier academy players spawn.
+     */
+    private const ACADEMY_TIER_OFFSET = [
+        0 => 0,
+        1 => 2,  // basic: 2 tiers below
+        2 => 2,  // good: 2 tiers below
+        3 => 1,  // elite: 1 tier below
+        4 => 1,  // world-class: 1 tier below
+    ];
+
+    /**
+     * How many tiers above the target ability tier the potential ceiling reaches.
+     */
+    private const POTENTIAL_CEILING_OFFSET = [
+        0 => 0,
+        1 => 1,
+        2 => 1,
+        3 => 2,
+        4 => 2,
     ];
 
     private const ESTIMATED_MATCHDAYS = 38;
@@ -29,8 +65,8 @@ class YouthAcademyService
     /**
      * Season growth rates for development.
      */
-    private const GROWTH_RATE_ACADEMY = 0.30;
-    private const GROWTH_RATE_LOAN = 0.38;
+    private const GROWTH_RATE_ACADEMY = 0.45;
+    private const GROWTH_RATE_LOAN = 0.50;
 
     /**
      * Positions with weights for random selection.
@@ -54,6 +90,7 @@ class YouthAcademyService
 
     /**
      * Generate a batch of new academy prospects at season start.
+     * Quality is now relative to the first team's median PlayerTier.
      *
      * @return Collection<int, AcademyPlayer>
      */
@@ -66,13 +103,15 @@ class YouthAcademyService
         }
 
         $config = self::TIER_CONFIG[$tier];
-        [$minArrivals, $maxArrivals, $minPotential, $maxPotential, $minAbility, $maxAbility] = $config;
+        [$capacity, $minArrivals, $maxArrivals] = $config;
 
         $count = rand($minArrivals, $maxArrivals);
+        $teamMedianTier = $this->getTeamMedianTier($game);
+
         $prospects = collect();
 
         for ($i = 0; $i < $count; $i++) {
-            $prospects->push($this->createAcademyProspect($game, $minPotential, $maxPotential, $minAbility, $maxAbility));
+            $prospects->push($this->createAcademyProspect($game, $tier, $teamMedianTier));
         }
 
         return $prospects;
@@ -81,13 +120,14 @@ class YouthAcademyService
     /**
      * Develop all academy players' abilities for one matchday.
      * Growth is applied each matchday as a small increment toward potential.
-     * Only non-loaned players develop (loaned players develop off-screen at season end).
+     * Only non-loaned, non-called-up players develop (loaned develop at season end, called-up via first-team system).
      */
     public function developPlayers(Game $game): void
     {
         $players = AcademyPlayer::where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->where('is_on_loan', false)
+            ->whereNull('called_up_game_player_id')
             ->get();
 
         if ($players->isEmpty()) {
@@ -201,28 +241,72 @@ class YouthAcademyService
     }
 
     /**
-     * Get the reveal phase based on the game's current matchday.
+     * Recall all called-up players back to the academy at season end.
+     * Syncs abilities from the GamePlayer back to AcademyPlayer before deleting.
      *
-     * Phase 0: Stats hidden (matchdays 1-9)
-     * Phase 1: Abilities visible (matchday 10 until winter window)
-     * Phase 2: Potential visible (winter window onward)
+     * @return Collection<int, AcademyPlayer> The recalled players
      */
-    public static function getRevealPhase(Game $game): int
+    public function recallAllCallups(Game $game): Collection
     {
-        if ($game->isWinterWindowOpen() || $game->isStartOfWinterWindow()) {
-            return 2;
+        $calledUpPlayers = AcademyPlayer::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->whereNotNull('called_up_game_player_id')
+            ->get();
+
+        foreach ($calledUpPlayers as $academyPlayer) {
+            $this->recallFromFirstTeam($academyPlayer);
         }
 
-        // After winter window (February onward), stay at phase 2
-        if ($game->current_date && $game->current_date->month >= 2 && $game->current_date->month <= 6) {
-            return 2;
-        }
+        return $calledUpPlayers;
+    }
 
-        if ($game->current_matchday >= 10) {
-            return 1;
-        }
+    /**
+     * Get the academy capacity (max seats) for a given tier.
+     */
+    public static function getCapacity(int $tier): int
+    {
+        return self::TIER_CONFIG[$tier][0] ?? 0;
+    }
 
-        return 0;
+    /**
+     * Get the number of currently occupied seats (non-loaned, non-called-up players).
+     */
+    public static function getOccupiedSeats(Game $game): int
+    {
+        return AcademyPlayer::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->where('is_on_loan', false)
+            ->whereNull('called_up_game_player_id')
+            ->count();
+    }
+
+    /**
+     * Get the total number of academy players (including loaned and called-up).
+     */
+    public static function getTotalPlayers(Game $game): int
+    {
+        return AcademyPlayer::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->count();
+    }
+
+    /**
+     * Get the number of currently called-up players.
+     */
+    public static function getCalledUpCount(Game $game): int
+    {
+        return AcademyPlayer::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->whereNotNull('called_up_game_player_id')
+            ->count();
+    }
+
+    /**
+     * Get the maximum call-ups allowed for a given tier.
+     */
+    public static function getMaxCallups(int $tier): int
+    {
+        return self::TIER_CONFIG[$tier][3] ?? 0;
     }
 
     /**
@@ -271,6 +355,144 @@ class YouthAcademyService
     }
 
     /**
+     * Call up an academy player to the first team temporarily.
+     * Creates a GamePlayer linked to the AcademyPlayer so the player can participate in matches.
+     */
+    public function callUpToFirstTeam(AcademyPlayer $academy, Game $game): GamePlayer
+    {
+        $gamePlayer = $this->playerGenerator->create($game, new GeneratedPlayerData(
+            teamId: $academy->team_id,
+            position: $academy->position,
+            technical: $academy->technical_ability,
+            physical: $academy->physical_ability,
+            dateOfBirth: $academy->date_of_birth,
+            contractYears: 1,
+            name: $academy->name,
+            nationality: $academy->nationality,
+            potential: $academy->potential,
+            potentialLow: $academy->potential_low,
+            potentialHigh: $academy->potential_high,
+            fitnessMin: 85,
+            fitnessMax: 100,
+            moraleMin: 70,
+            moraleMax: 90,
+        ));
+
+        $gamePlayer->update(['is_academy_callup' => true]);
+        $academy->update(['called_up_game_player_id' => $gamePlayer->id]);
+
+        return $gamePlayer;
+    }
+
+    /**
+     * Recall a called-up player back to the academy.
+     * Syncs abilities from the GamePlayer back to AcademyPlayer before deleting.
+     */
+    public function recallFromFirstTeam(AcademyPlayer $academy): void
+    {
+        $gamePlayer = $academy->calledUpGamePlayer;
+
+        if (! $gamePlayer) {
+            $academy->update(['called_up_game_player_id' => null]);
+
+            return;
+        }
+
+        // Sync abilities back from GamePlayer (may have developed through matches)
+        $academy->update([
+            'technical_ability' => $gamePlayer->game_technical_ability,
+            'physical_ability' => $gamePlayer->game_physical_ability,
+            'called_up_game_player_id' => null,
+        ]);
+
+        $gamePlayer->delete();
+    }
+
+    /**
+     * Check if a call-up is allowed for this academy tier.
+     */
+    public function canCallUp(Game $game): bool
+    {
+        $tier = $game->currentInvestment->youth_academy_tier ?? 0;
+        $maxCallups = self::getMaxCallups($tier);
+        $currentCallups = self::getCalledUpCount($game);
+
+        return $currentCallups < $maxCallups && ! ContractService::isSquadFull($game);
+    }
+
+    /**
+     * Send a first-team player back to the academy.
+     * Creates a new AcademyPlayer from the GamePlayer's current abilities.
+     */
+    public function sendToAcademy(GamePlayer $gamePlayer, Game $game): AcademyPlayer
+    {
+        $player = $gamePlayer->player;
+
+        $academyPlayer = AcademyPlayer::create([
+            'id' => Str::uuid()->toString(),
+            'game_id' => $game->id,
+            'team_id' => $game->team_id,
+            'name' => $player->name,
+            'nationality' => $player->nationality,
+            'date_of_birth' => $player->date_of_birth,
+            'position' => $gamePlayer->position,
+            'technical_ability' => $gamePlayer->game_technical_ability,
+            'physical_ability' => $gamePlayer->game_physical_ability,
+            'potential' => $gamePlayer->potential,
+            'potential_low' => $gamePlayer->potential_low,
+            'potential_high' => $gamePlayer->potential_high,
+            'appeared_at' => $game->current_date,
+            'is_on_loan' => false,
+            'joined_season' => (int) $game->season,
+            'initial_technical' => $gamePlayer->game_technical_ability,
+            'initial_physical' => $gamePlayer->game_physical_ability,
+        ]);
+
+        $gamePlayer->delete();
+
+        return $academyPlayer;
+    }
+
+    /**
+     * Check if a first-team player can be sent back to the academy.
+     */
+    public function canSendToAcademy(GamePlayer $gamePlayer, Game $game): bool
+    {
+        $player = $gamePlayer->player;
+        $age = (int) $player->date_of_birth->diffInYears($game->current_date);
+
+        if ($age > PlayerAge::ACADEMY_END) {
+            return false;
+        }
+
+        if ($gamePlayer->is_academy_callup) {
+            return false;
+        }
+
+        if ($gamePlayer->transfer_status !== null) {
+            return false;
+        }
+
+        if ($gamePlayer->team_id !== $game->team_id) {
+            return false;
+        }
+
+        $tier = $game->currentInvestment->youth_academy_tier ?? 0;
+        $capacity = self::getCapacity($tier);
+        $occupied = self::getOccupiedSeats($game);
+
+        return $occupied < $capacity;
+    }
+
+    /**
+     * Check if a player must be promoted or dismissed (age 21+).
+     */
+    public static function mustDecide(AcademyPlayer $player): bool
+    {
+        return $player->age > PlayerAge::ACADEMY_END;
+    }
+
+    /**
      * Get the expected new arrivals range for a tier.
      *
      * @return array{min: int, max: int}
@@ -279,7 +501,7 @@ class YouthAcademyService
     {
         $config = self::TIER_CONFIG[$tier] ?? self::TIER_CONFIG[0];
 
-        return ['min' => $config[0], 'max' => $config[1]];
+        return ['min' => $config[1], 'max' => $config[2]];
     }
 
     public static function getTierDescription(int $tier): string
@@ -295,9 +517,8 @@ class YouthAcademyService
         $config = self::TIER_CONFIG[$tier] ?? self::TIER_CONFIG[0];
 
         return [
-            'min_prospects' => $config[0],
-            'max_prospects' => $config[1],
-            'potential_range' => $config[2] > 0 ? "{$config[2]}-{$config[3]}" : 'N/A',
+            'min_prospects' => $config[1],
+            'max_prospects' => $config[2],
         ];
     }
 
@@ -311,26 +532,36 @@ class YouthAcademyService
 
     /**
      * Create an academy prospect record.
+     * Quality is calibrated relative to the first team's median PlayerTier.
      */
     private function createAcademyProspect(
         Game $game,
-        int $minPotential,
-        int $maxPotential,
-        int $minAbility,
-        int $maxAbility,
+        int $academyTier,
+        int $teamMedianTier,
     ): AcademyPlayer {
         $position = $this->selectPosition();
-        $technical = rand($minAbility, $maxAbility);
-        $physical = rand($minAbility, $maxAbility);
+
+        // Determine target ability tier and potential ceiling tier
+        $targetTier = max(1, $teamMedianTier - self::ACADEMY_TIER_OFFSET[$academyTier]);
+        $ceilingTier = min(5, $targetTier + self::POTENTIAL_CEILING_OFFSET[$academyTier]);
+
+        $abilityRange = self::TIER_ABILITY_RANGES[$targetTier];
+        $ceilingRange = self::TIER_ABILITY_RANGES[$ceilingTier];
+
+        $technical = rand($abilityRange[0], $abilityRange[1]);
+        $physical = rand($abilityRange[0], $abilityRange[1]);
+
+        // Potential ranges from the top of target tier to the top of ceiling tier
+        $potential = rand($abilityRange[1], $ceilingRange[1]);
+        $potential = min(95, max($potential, max($technical, $physical)));
+
+        $potentialVariance = rand(3, 8);
+        $potentialLow = max($potential - $potentialVariance, max($technical, $physical));
+        $potentialHigh = min($potential + $potentialVariance, 99);
 
         $age = rand(17, 19);
         $currentYear = (int) $game->season;
         $dateOfBirth = Carbon::createFromDate($currentYear - $age, rand(1, 12), rand(1, 28));
-
-        $potential = rand($minPotential, $maxPotential);
-        $potentialVariance = rand(3, 8);
-        $potentialLow = max($potential - $potentialVariance, max($technical, $physical));
-        $potentialHigh = min($potential + $potentialVariance, 99);
 
         $teamName = $game->team->name;
         $nationalityFilter = self::CANTERA_TEAMS[$teamName] ?? null;
@@ -357,6 +588,27 @@ class YouthAcademyService
             'initial_technical' => $technical,
             'initial_physical' => $physical,
         ]);
+    }
+
+    /**
+     * Get the median PlayerTier of the first team's squad.
+     */
+    private function getTeamMedianTier(Game $game): int
+    {
+        $tiers = GamePlayer::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->where('is_academy_callup', false)
+            ->pluck('tier')
+            ->sort()
+            ->values();
+
+        if ($tiers->isEmpty()) {
+            return 2; // fallback for empty squads
+        }
+
+        $midIndex = intdiv($tiers->count(), 2);
+
+        return $tiers[$midIndex];
     }
 
     /**

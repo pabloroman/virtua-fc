@@ -21,6 +21,7 @@ class ShowAcademy
         $prospects = AcademyPlayer::where('game_id', $gameId)
             ->where('team_id', $game->team_id)
             ->where('is_on_loan', false)
+            ->whereNull('called_up_game_player_id')
             ->get()
             ->sortBy(fn ($p) => $this->sortOrder($p));
 
@@ -30,13 +31,22 @@ class ShowAcademy
             ->get()
             ->sortBy(fn ($p) => $this->sortOrder($p));
 
+        $calledUpPlayers = AcademyPlayer::where('game_id', $gameId)
+            ->where('team_id', $game->team_id)
+            ->whereNotNull('called_up_game_player_id')
+            ->get()
+            ->sortBy(fn ($p) => $this->sortOrder($p));
+
         $grouped = $prospects->groupBy(fn ($p) => $p->position_group);
 
         $expiringContractsCount = $this->contractService->getPlayersEligibleForRenewal($game)->count();
 
         $tier = $game->currentInvestment->youth_academy_tier ?? 0;
         $tierDescription = YouthAcademyService::getTierDescription($tier);
-        $revealPhase = YouthAcademyService::getRevealPhase($game);
+        $capacity = YouthAcademyService::getCapacity($tier);
+        $calledUpCount = $calledUpPlayers->count();
+        $maxCallups = YouthAcademyService::getMaxCallups($tier);
+        $canCallUp = $calledUpCount < $maxCallups && ! \App\Modules\Transfer\Services\ContractService::isSquadFull($game);
 
         return view('squad-academy', [
             'game' => $game,
@@ -45,11 +55,15 @@ class ShowAcademy
             'midfielders' => $grouped->get('Midfielder', collect()),
             'forwards' => $grouped->get('Forward', collect()),
             'loanedPlayers' => $loanedPlayers,
+            'calledUpPlayers' => $calledUpPlayers,
             'academyCount' => $prospects->count(),
             'expiringContractsCount' => $expiringContractsCount,
             'tier' => $tier,
             'tierDescription' => $tierDescription,
-            'revealPhase' => $revealPhase,
+            'capacity' => $capacity,
+            'calledUpCount' => $calledUpCount,
+            'maxCallups' => $maxCallups,
+            'canCallUp' => $canCallUp,
         ]);
     }
 

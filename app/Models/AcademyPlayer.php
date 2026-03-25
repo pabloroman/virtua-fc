@@ -23,12 +23,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $potential_high
  * @property \Illuminate\Support\Carbon $appeared_at
  * @property bool $is_on_loan
+ * @property string|null $called_up_game_player_id
  * @property int|null $joined_season
  * @property int|null $initial_technical
  * @property int|null $initial_physical
  * @property-read \App\Models\Game $game
+ * @property-read \App\Models\GamePlayer|null $calledUpGamePlayer
  * @property-read int $age
  * @property-read array|null $nationality_flag
+ * @property-read bool $is_called_up
  * @property-read int $overall
  * @property-read array $position_display
  * @property-read string $position_group
@@ -72,6 +75,7 @@ class AcademyPlayer extends Model
         'potential_high',
         'appeared_at',
         'is_on_loan',
+        'called_up_game_player_id',
         'joined_season',
         'initial_technical',
         'initial_physical',
@@ -87,6 +91,7 @@ class AcademyPlayer extends Model
         'potential_low' => 'integer',
         'potential_high' => 'integer',
         'is_on_loan' => 'boolean',
+        'called_up_game_player_id' => 'string',
         'joined_season' => 'integer',
         'initial_technical' => 'integer',
         'initial_physical' => 'integer',
@@ -100,6 +105,16 @@ class AcademyPlayer extends Model
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);
+    }
+
+    public function calledUpGamePlayer(): BelongsTo
+    {
+        return $this->belongsTo(GamePlayer::class, 'called_up_game_player_id');
+    }
+
+    public function getIsCalledUpAttribute(): bool
+    {
+        return $this->called_up_game_player_id !== null;
     }
 
     public function getAgeAttribute(): int
