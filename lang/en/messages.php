@@ -84,7 +84,6 @@ return [
     'academy_player_promoted' => ':player has been promoted to the first team.',
     'academy_player_dismissed' => ':player has been dismissed from the academy.',
     'academy_player_loaned' => ':player has been loaned out.',
-    'academy_over_capacity' => 'The academy is over capacity. You must free :excess place(s).',
     'academy_must_decide_21' => 'Players aged 21+ must be promoted or dismissed.',
 
     // Player release messages

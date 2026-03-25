@@ -25,17 +25,7 @@
         {{-- Summary strip --}}
         <div class="flex gap-2.5 overflow-x-auto scrollbar-hide pb-1 mb-6">
             <x-summary-card :label="__('squad.academy_tier')" :value="$tierDescription" :value-class="$tier >= 3 ? 'text-accent-green' : ($tier >= 1 ? 'text-accent-blue' : 'text-text-secondary')" />
-            @if($capacity > 0)
-                <x-summary-card :label="__('squad.academy_capacity')">
-                    <div class="flex items-center gap-2 mt-1">
-                        <span class="font-heading text-xl font-bold {{ $academyCount > $capacity ? 'text-accent-red' : 'text-text-primary' }}">{{ $academyCount }}/{{ $capacity }}</span>
-                        <div class="w-16 h-1.5 bg-bar-track rounded-full overflow-hidden">
-                            <div class="h-full rounded-full {{ $academyCount > $capacity ? 'bg-accent-red' : ($academyCount >= $capacity - 1 ? 'bg-accent-gold' : 'bg-emerald-500') }}"
-                                 style="width: {{ min(100, ($academyCount / max($capacity, 1)) * 100) }}%"></div>
-                        </div>
-                    </div>
-                </x-summary-card>
-            @endif
+            <x-summary-card :label="__('squad.academy_players')" :value="$academyCount" />
         </div>
 
         {{-- How it works (collapsible) --}}
@@ -76,7 +66,7 @@
                     <div>
                         <p class="font-semibold text-text-body mb-2">{{ __('squad.academy_help_evaluations_title') }}</p>
                         <p class="text-text-muted mb-2">{{ __('squad.academy_help_evaluation_desc') }}</p>
-                        <p class="mt-3 text-xs text-text-secondary">{{ __('squad.academy_help_age_rule') }} {{ __('squad.academy_help_capacity_rule') }}</p>
+                        <p class="mt-3 text-xs text-text-secondary">{{ __('squad.academy_help_age_rule') }}</p>
                     </div>
                 </div>
             </div>

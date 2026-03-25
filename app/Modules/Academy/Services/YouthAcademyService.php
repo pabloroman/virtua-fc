@@ -15,14 +15,14 @@ use App\Modules\Squad\Services\PlayerGeneratorService;
 class YouthAcademyService
 {
     /**
-     * Tier configuration: [capacity, min_arrivals, max_arrivals]
+     * Tier configuration: [min_arrivals, max_arrivals]
      */
     private const TIER_CONFIG = [
-        0 => [0, 0, 0],
-        1 => [4, 2, 3],
-        2 => [6, 3, 5],
-        3 => [7, 4, 6],
-        4 => [8, 4, 6],
+        0 => [0, 0],
+        1 => [2, 3],
+        2 => [3, 5],
+        3 => [4, 6],
+        4 => [4, 6],
     ];
 
     /**
@@ -101,7 +101,7 @@ class YouthAcademyService
         }
 
         $config = self::TIER_CONFIG[$tier];
-        [$capacity, $minArrivals, $maxArrivals] = $config;
+        [$minArrivals, $maxArrivals] = $config;
 
         $count = rand($minArrivals, $maxArrivals);
         $teamMedianTier = $this->getTeamMedianTier($game);
@@ -238,25 +238,6 @@ class YouthAcademyService
     }
 
     /**
-     * Get the academy capacity (max seats) for a given tier.
-     */
-    public static function getCapacity(int $tier): int
-    {
-        return self::TIER_CONFIG[$tier][0] ?? 0;
-    }
-
-    /**
-     * Get the number of currently occupied seats (non-loaned players).
-     */
-    public static function getOccupiedSeats(Game $game): int
-    {
-        return AcademyPlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->where('is_on_loan', false)
-            ->count();
-    }
-
-    /**
      * Get the total number of academy players (including loaned).
      */
     public static function getTotalPlayers(Game $game): int
@@ -328,7 +309,7 @@ class YouthAcademyService
     {
         $config = self::TIER_CONFIG[$tier] ?? self::TIER_CONFIG[0];
 
-        return ['min' => $config[1], 'max' => $config[2]];
+        return ['min' => $config[0], 'max' => $config[1]];
     }
 
     public static function getTierDescription(int $tier): string
@@ -344,8 +325,8 @@ class YouthAcademyService
         $config = self::TIER_CONFIG[$tier] ?? self::TIER_CONFIG[0];
 
         return [
-            'min_prospects' => $config[1],
-            'max_prospects' => $config[2],
+            'min_prospects' => $config[0],
+            'max_prospects' => $config[1],
         ];
     }
 

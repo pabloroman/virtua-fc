@@ -192,6 +192,7 @@ return [
     'academy' => 'Cantera',
     'promote_to_first_team' => 'Subir al Primer Equipo',
     'academy_tier' => 'Nivel de Cantera',
+    'academy_players' => 'Jugadores',
     'no_academy_prospects' => 'No hay canteranos disponibles.',
     'academy_explanation' => 'Los nuevos canteranos llegan al inicio de cada temporada según tu inversión en cantera.',
     'academy_dismiss' => 'Despedir',
@@ -212,9 +213,8 @@ return [
     'academy_help_loan' => 'Ceder — se desarrolla más rápido cedido y regresa al final de temporada',
     'academy_help_dismiss' => 'Despedir — abandona el club de forma permanente',
     'academy_help_evaluations_title' => 'Evaluación de fin de temporada',
-    'academy_help_evaluation_desc' => 'Al final de temporada debes decidir qué hacer con cada canterano. También puedes enviar jugadores jóvenes del primer equipo (20 años o menos) de vuelta a la cantera en cualquier momento.',
+    'academy_help_evaluation_desc' => 'Al final de temporada debes decidir qué hacer con cada canterano.',
     'academy_help_age_rule' => 'Los jugadores de 21 o más años no pueden seguir en la cantera: debes subirlos o despedirlos.',
-    'academy_help_capacity_rule' => 'Si superas la capacidad, debes liberar plazas antes de poder continuar la temporada.',
 
     'academy_tier_0' => 'Sin Cantera',
     'academy_tier_1' => 'Cantera Básica',

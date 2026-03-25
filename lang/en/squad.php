@@ -192,6 +192,7 @@ return [
     'academy' => 'Academy',
     'promote_to_first_team' => 'Promote to First Team',
     'academy_tier' => 'Academy Tier',
+    'academy_players' => 'Players',
     'no_academy_prospects' => 'No academy prospects available.',
     'academy_explanation' => 'New academy prospects arrive at the start of each season based on your academy investment.',
     'academy_dismiss' => 'Dismiss',
@@ -212,9 +213,8 @@ return [
     'academy_help_loan' => 'Loan - develops faster on loan and returns at end of season',
     'academy_help_dismiss' => 'Dismiss - leaves the club permanently',
     'academy_help_evaluations_title' => 'Season-end evaluation',
-    'academy_help_evaluation_desc' => 'At the end of the season you must decide what to do with each academy player. You can also send young first-team players (age 20 or under) back to the academy at any time.',
+    'academy_help_evaluation_desc' => 'At the end of the season you must decide what to do with each academy player.',
     'academy_help_age_rule' => 'Players aged 21 or older cannot stay in the academy: they must be promoted or dismissed.',
-    'academy_help_capacity_rule' => 'If you exceed capacity, you must free up places before you can continue the season.',
 
     'academy_tier_0' => 'No Academy',
     'academy_tier_1' => 'Basic Academy',

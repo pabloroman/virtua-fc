@@ -1,13 +1,13 @@
 # Youth Academy: "La Cantera" (B Team)
 
-The youth academy functions as a B team, producing homegrown talent calibrated to your squad's quality level. Academy players are generated 1-2 tiers below your first team and can be promoted permanently, loaned out, or dismissed. Young first-team players (age 20 or under) can also be sent back to the academy.
+The youth academy functions as a B team, producing homegrown talent calibrated to your squad's quality level. Academy players are generated 1-2 tiers below your first team and can be promoted permanently, loaned out, or dismissed. Promotion is a one-way, permanent move.
 
 ## Season Rhythm
 
 ```
 Season start → New batch arrives (all stats visible)
 Throughout    → Players develop each matchday
-Any time      → Promote / loan / send back from first team
+Any time      → Promote / loan / dismiss
 Season end    → Mandatory evaluation: keep / promote / loan / dismiss
 ```
 
@@ -25,16 +25,14 @@ Higher academy tiers produce players closer to first-team quality with higher po
 
 ## Tiers
 
-Academy tier (from budget allocation) determines capacity and batch size:
+Academy tier (from budget allocation) determines batch size and potential ceiling. The academy has no capacity limit.
 
-| Tier | Capacity | Arrivals |
-|------|----------|----------|
-| 1 — Basic | 4 | 2-3 |
-| 2 — Good | 6 | 3-5 |
-| 3 — Elite | 7 | 4-6 |
-| 4 — World-Class | 8 | 4-6 |
-
-Capacity pressure is the core tension — new arrivals can exceed remaining seats, especially if you kept players from previous seasons.
+| Tier | Arrivals | Potential Ceiling Offset |
+|------|----------|------------------------|
+| 1 — Basic | 2-3 | +1 tier |
+| 2 — Good | 3-5 | +1 tier |
+| 3 — Elite | 4-6 | +2 tiers |
+| 4 — World-Class | 4-6 | +2 tiers |
 
 "Cantera" teams (e.g., Athletic Bilbao) only generate Spanish nationality prospects.
 
