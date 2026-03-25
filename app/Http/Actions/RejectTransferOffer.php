@@ -29,6 +29,10 @@ class RejectTransferOffer
             abort(403, 'You can only reject offers for your own players.');
         }
 
+        if ($offer->gamePlayer->isLoanedIn($game->team_id)) {
+            abort(403, 'Cannot reject offers for loaned players.');
+        }
+
         $team = $offer->offeringTeam;
 
         $this->transferService->rejectOffer($offer);

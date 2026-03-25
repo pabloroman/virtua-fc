@@ -108,6 +108,10 @@ class TransferService
      */
     public function listPlayer(GamePlayer $player): void
     {
+        if ($player->isOnLoan()) {
+            return;
+        }
+
         $player->update([
             'transfer_status' => GamePlayer::TRANSFER_STATUS_LISTED,
             'transfer_listed_at' => $player->game->current_date,
@@ -190,12 +194,14 @@ class TransferService
             $teamPlayers = $allPlayersGrouped->get($game->team_id, collect());
             $listedPlayers = $teamPlayers->filter(
                 fn ($p) => $p->transfer_status === GamePlayer::TRANSFER_STATUS_LISTED
+                    && !$p->isLoanedIn($game->team_id)
             );
         } else {
             $listedPlayers = GamePlayer::with('transferOffers')
                 ->where('game_id', $game->id)
                 ->where('team_id', $game->team_id)
                 ->where('transfer_status', GamePlayer::TRANSFER_STATUS_LISTED)
+                ->whereDoesntHave('activeLoan')
                 ->get();
         }
 
@@ -268,7 +274,8 @@ class TransferService
         if ($allPlayersGrouped !== null) {
             $teamPlayers = $allPlayersGrouped->get($game->team_id, collect());
             $starPlayers = $teamPlayers
-                ->filter(fn ($p) => $p->transfer_status === null)
+                ->filter(fn ($p) => $p->transfer_status === null
+                    && !$p->isLoanedIn($game->team_id))
                 ->sortByDesc('market_value_cents')
                 ->take(self::STAR_PLAYER_COUNT);
         } else {
@@ -276,6 +283,7 @@ class TransferService
                 ->where('game_id', $game->id)
                 ->where('team_id', $game->team_id)
                 ->whereNull('transfer_status')
+                ->whereDoesntHave('activeLoan')
                 ->orderByDesc('market_value_cents')
                 ->limit(self::STAR_PLAYER_COUNT)
                 ->get();
@@ -359,9 +367,13 @@ class TransferService
         if ($allPlayersGrouped !== null) {
             $teamPlayers = $allPlayersGrouped->get($game->team_id, collect());
             // Filter to players with expiring contracts who can receive offers
-            $expiringPlayers = $teamPlayers->filter(function ($player) use ($seasonEndDate) {
+            $expiringPlayers = $teamPlayers->filter(function ($player) use ($seasonEndDate, $game) {
                 // Check if contract is expiring
                 if (!$player->contract_until || !$player->contract_until->lte($seasonEndDate)) {
+                    return false;
+                }
+                // Skip loaned-in players — they belong to their parent club
+                if ($player->isLoanedIn($game->team_id)) {
                     return false;
                 }
                 // Retiring players won't sign pre-contracts
@@ -399,6 +411,7 @@ class TransferService
             $expiringPlayers = GamePlayer::with(['game', 'transferOffers', 'latestRenewalNegotiation', 'activeRenewalNegotiation'])
                 ->where('game_id', $game->id)
                 ->where('team_id', $game->team_id)
+                ->whereDoesntHave('activeLoan')
                 ->get()
                 ->filter(fn ($player) => $player->canReceivePreContractOffers($seasonEndDate));
         }

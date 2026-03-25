@@ -29,6 +29,10 @@ class AcceptTransferOffer
             abort(403, 'You can only accept offers for your own players.');
         }
 
+        if ($offer->gamePlayer->isLoanedIn($game->team_id)) {
+            abort(403, 'Cannot accept offers for loaned players.');
+        }
+
         $playerName = $offer->gamePlayer->player->name;
         $team = $offer->offeringTeam;
         $fee = $offer->formatted_transfer_fee;
