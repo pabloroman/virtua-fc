@@ -58,7 +58,7 @@ export function createSubstitutionManager(ctx) {
     }
 
     function getCanAddMoreToPending() {
-        return getCanSubstitute() && ctx().pendingSubs.length < getSubsRemaining();
+        return getSubsRemaining() > 1;
     }
 
     // Lineup players considering both confirmed subs AND pending subs in this window
