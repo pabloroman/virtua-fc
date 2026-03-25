@@ -109,7 +109,7 @@
         <div class="flex flex-wrap gap-1">
             <template x-for="p in presets" :key="p">
                 <button type="button"
-                    @click="euros = p"
+                    @click="euros = Math.max(min, max !== null ? Math.min(p, max) : p)"
                     :class="euros === p ? 'bg-accent-blue/20 text-accent-blue border-accent-blue/30' : 'bg-surface-700/50 text-text-muted border-border-default hover:bg-surface-700 hover:text-text-secondary'"
                     class="px-2 py-0.5 text-[11px] font-medium rounded border transition-colors"
                     x-text="formatPreset(p)"
