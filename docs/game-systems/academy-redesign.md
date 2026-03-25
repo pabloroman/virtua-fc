@@ -17,7 +17,7 @@ Academy prospect quality is derived from your first team's median player tier (v
 
 1. **First-team median tier** — computed from `GamePlayer.tier` column
 2. **Target ability tier** — `max(1, median - ACADEMY_TIER_OFFSET[academyTier])`
-3. **Potential ceiling tier** — `min(5, target + POTENTIAL_CEILING_OFFSET[academyTier])`
+3. **Potential ceiling tier** — `min(5, median + POTENTIAL_CEILING_OFFSET[academyTier])`
 4. **Ability** — random within `TIER_ABILITY_RANGES[targetTier]`
 5. **Potential** — random from top of target tier range to top of ceiling tier range
 

@@ -351,7 +351,7 @@ class YouthAcademyService
 
         // Determine target ability tier and potential ceiling tier
         $targetTier = max(1, $teamMedianTier - self::ACADEMY_TIER_OFFSET[$academyTier]);
-        $ceilingTier = min(5, $targetTier + self::POTENTIAL_CEILING_OFFSET[$academyTier]);
+        $ceilingTier = min(5, $teamMedianTier + self::POTENTIAL_CEILING_OFFSET[$academyTier]);
 
         $abilityRange = self::TIER_ABILITY_RANGES[$targetTier];
         $ceilingRange = self::TIER_ABILITY_RANGES[$ceilingTier];
