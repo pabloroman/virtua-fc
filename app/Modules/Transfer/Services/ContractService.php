@@ -557,6 +557,24 @@ class ContractService
     }
 
     /**
+     * Round a counter-offer wage to an appropriate granularity.
+     *
+     * Uses €10K for wages under €1M, €100K otherwise (matching calculateRenewalDemand).
+     * Ensures the result is never below minimumAcceptable by rounding up if needed.
+     */
+    private function roundCounterOffer(int $wage, int $minimumAcceptable): int
+    {
+        $unit = $wage < 100_000_000 ? 1_000_000 : 10_000_000;
+        $rounded = (int) (round($wage / $unit) * $unit);
+
+        if ($rounded < $minimumAcceptable) {
+            $rounded = (int) (ceil($wage / $unit) * $unit);
+        }
+
+        return $rounded;
+    }
+
+    /**
      * Initiate a new renewal negotiation.
      */
     public function initiateNegotiation(GamePlayer $player, int $offerWage, int $offeredYears): RenewalNegotiation
@@ -631,7 +649,7 @@ class ContractService
 
         if ($effectiveOffer >= $counterThreshold && $negotiation->round < self::MAX_NEGOTIATION_ROUNDS) {
             $counterWage = (int) (($minimumAcceptable + $negotiation->player_demand) / 2);
-            $counterWage = (int) (round($counterWage / 10_000_000) * 10_000_000);
+            $counterWage = $this->roundCounterOffer($counterWage, $minimumAcceptable);
 
             // Never raise above previous counter
             if ($negotiation->counter_offer !== null && $counterWage > $negotiation->counter_offer) {
@@ -1098,7 +1116,7 @@ class ContractService
 
         if ($effectiveOffer >= $counterThreshold && $offer->terms_round < self::MAX_NEGOTIATION_ROUNDS) {
             $counterWage = (int) (($minimumAcceptable + $offer->player_demand) / 2);
-            $counterWage = (int) (round($counterWage / 10_000_000) * 10_000_000);
+            $counterWage = $this->roundCounterOffer($counterWage, $minimumAcceptable);
 
             // Never raise above previous counter
             if ($offer->wage_counter_offer !== null && $counterWage > $offer->wage_counter_offer) {
@@ -1256,7 +1274,7 @@ class ContractService
 
         if ($effectiveOffer >= $counterThreshold && $offer->terms_round < self::MAX_NEGOTIATION_ROUNDS) {
             $counterWage = (int) (($minimumAcceptable + $offer->player_demand) / 2);
-            $counterWage = (int) (round($counterWage / 10_000_000) * 10_000_000);
+            $counterWage = $this->roundCounterOffer($counterWage, $minimumAcceptable);
 
             $offer->update([
                 'terms_status' => 'countered',
@@ -1364,7 +1382,7 @@ class ContractService
 
         if ($effectiveOffer >= $counterThreshold && $offer->terms_round < self::MAX_NEGOTIATION_ROUNDS) {
             $counterWage = (int) (($minimumAcceptable + $offer->player_demand) / 2);
-            $counterWage = (int) (round($counterWage / 10_000_000) * 10_000_000);
+            $counterWage = $this->roundCounterOffer($counterWage, $minimumAcceptable);
 
             $offer->update([
                 'terms_status' => 'countered',
