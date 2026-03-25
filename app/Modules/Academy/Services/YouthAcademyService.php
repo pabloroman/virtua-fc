@@ -312,66 +312,6 @@ class YouthAcademyService
     }
 
     /**
-     * Send a first-team player back to the academy.
-     * Creates a new AcademyPlayer from the GamePlayer's current abilities.
-     */
-    public function sendToAcademy(GamePlayer $gamePlayer, Game $game): AcademyPlayer
-    {
-        $player = $gamePlayer->player;
-
-        $academyPlayer = AcademyPlayer::create([
-            'id' => Str::uuid()->toString(),
-            'game_id' => $game->id,
-            'team_id' => $game->team_id,
-            'name' => $player->name,
-            'nationality' => $player->nationality,
-            'date_of_birth' => $player->date_of_birth,
-            'position' => $gamePlayer->position,
-            'technical_ability' => $gamePlayer->game_technical_ability,
-            'physical_ability' => $gamePlayer->game_physical_ability,
-            'potential' => $gamePlayer->potential,
-            'potential_low' => $gamePlayer->potential_low,
-            'potential_high' => $gamePlayer->potential_high,
-            'appeared_at' => $game->current_date,
-            'is_on_loan' => false,
-            'joined_season' => (int) $game->season,
-            'initial_technical' => $gamePlayer->game_technical_ability,
-            'initial_physical' => $gamePlayer->game_physical_ability,
-        ]);
-
-        $gamePlayer->delete();
-
-        return $academyPlayer;
-    }
-
-    /**
-     * Check if a first-team player can be sent back to the academy.
-     */
-    public function canSendToAcademy(GamePlayer $gamePlayer, Game $game): bool
-    {
-        $player = $gamePlayer->player;
-        $age = (int) $player->date_of_birth->diffInYears($game->current_date);
-
-        if ($age > PlayerAge::ACADEMY_END) {
-            return false;
-        }
-
-        if ($gamePlayer->transfer_status !== null) {
-            return false;
-        }
-
-        if ($gamePlayer->team_id !== $game->team_id) {
-            return false;
-        }
-
-        $tier = $game->currentInvestment->youth_academy_tier ?? 0;
-        $capacity = self::getCapacity($tier);
-        $occupied = self::getOccupiedSeats($game);
-
-        return $occupied < $capacity;
-    }
-
-    /**
      * Check if a player must be promoted or dismissed (age 21+).
      */
     public static function mustDecide(AcademyPlayer $player): bool

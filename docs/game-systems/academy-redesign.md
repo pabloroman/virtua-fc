@@ -45,10 +45,6 @@ Academy players grow toward their potential every matchday. Growth rates:
 - **Academy** — 0.45 per matchday (fast enough to see meaningful progress within a season)
 - **On loan** — 0.50 per matchday (accelerated, but player is unavailable)
 
-## Send to Academy
-
-First-team players aged 20 or under can be sent back to the academy if there's capacity. This creates a new `AcademyPlayer` from the `GamePlayer`'s current abilities and removes the `GamePlayer` record.
-
 ## Player Management
 
 Players can be managed individually at any time via the academy page:
@@ -66,7 +62,6 @@ Players naturally leave the academy when they age past the academy age limit.
 
 | File | Purpose |
 |------|---------|
-| `app/Modules/Academy/Services/YouthAcademyService.php` | Batch generation, development, send-back, capacity, all actions |
+| `app/Modules/Academy/Services/YouthAcademyService.php` | Batch generation, development, capacity, all actions |
 | `app/Modules/Season/Processors/YouthAcademyClosingProcessor.php` | Season-end: loan development, returns |
 | `app/Modules/Season/Processors/YouthAcademySetupProcessor.php` | Season-setup: evaluation trigger |
-| `app/Http/Actions/SendToAcademy.php` | Send first-team player back to academy |

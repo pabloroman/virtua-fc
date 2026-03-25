@@ -93,7 +93,6 @@ use App\Http\Views\ShowSeasonEnd;
 use App\Http\Views\ShowTournamentEnd;
 use App\Http\Actions\DismissAcademyPlayer;
 use App\Http\Actions\LoanAcademyPlayer;
-use App\Http\Actions\SendToAcademy;
 use App\Http\Views\ShowAcademy;
 use App\Http\Views\GameSetupStatus;
 use App\Http\Views\ShowAcademyPlayerDetail;
@@ -138,7 +137,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/game/{gameId}/academy/{playerId}/promote', PromoteAcademyPlayer::class)->name('game.academy.promote');
         Route::post('/game/{gameId}/academy/{playerId}/loan', LoanAcademyPlayer::class)->name('game.academy.loan');
         Route::post('/game/{gameId}/academy/{playerId}/dismiss', DismissAcademyPlayer::class)->name('game.academy.dismiss');
-        Route::post('/game/{gameId}/player/{playerId}/send-to-academy', SendToAcademy::class)->name('game.player.send-to-academy');
         Route::get('/game/{gameId}/finances', ShowFinances::class)->name('game.finances');
         Route::get('/game/{gameId}/transfers', ShowIncomingTransfers::class)->name('game.transfers');
         Route::get('/game/{gameId}/transfers/outgoing', ShowOutgoingTransfers::class)->name('game.transfers.outgoing');

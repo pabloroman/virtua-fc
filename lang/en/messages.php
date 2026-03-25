@@ -84,8 +84,6 @@ return [
     'academy_player_promoted' => ':player has been promoted to the first team.',
     'academy_player_dismissed' => ':player has been dismissed from the academy.',
     'academy_player_loaned' => ':player has been loaned out.',
-    'player_sent_to_academy' => ':player has been sent back to the academy.',
-    'cannot_send_to_academy' => 'This player cannot be sent to the academy. They may be too old, or the academy is full.',
     'academy_over_capacity' => 'The academy is over capacity. You must free :excess place(s).',
     'academy_must_decide_21' => 'Players aged 21+ must be promoted or dismissed.',
 

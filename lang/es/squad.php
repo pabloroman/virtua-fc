@@ -204,9 +204,6 @@ return [
     'academy_on_loan' => 'Cedido',
     'academy_actions' => 'Acciones',
     'academy_seasons' => ':count temporada|:count temporadas',
-    'send_to_academy' => 'Enviar a la Cantera',
-    'send_to_academy_confirm' => '¿Enviar a :player de vuelta a la cantera? Será eliminado de la plantilla del primer equipo.',
-
     // Academy help text
     'academy_help_toggle' => '¿Cómo funciona la cantera?',
     'academy_help_development' => 'La cantera funciona como tu equipo B, generando jugadores calibrados al nivel de tu plantilla. Los canteranos se desarrollan a lo largo de la temporada y pueden ser subidos al primer equipo cuando estén listos.',

@@ -204,9 +204,6 @@ return [
     'academy_on_loan' => 'On Loan',
     'academy_actions' => 'Actions',
     'academy_seasons' => ':count season|:count seasons',
-    'send_to_academy' => 'Send to Academy',
-    'send_to_academy_confirm' => 'Send :player back to the academy? They will be removed from the first team squad.',
-
     // Academy help text
     'academy_help_toggle' => 'How does the academy work?',
     'academy_help_development' => 'The academy functions as your B team, producing players calibrated to your squad level. Academy players develop throughout the season and can be promoted to the first team when ready.',
