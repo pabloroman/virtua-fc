@@ -55,6 +55,7 @@ return [
     'funnel_first_match_played' => 'First match played',
     'funnel_5_matches_played' => '5 matches played',
     'funnel_season_completed' => 'Season completed',
+    'funnel_access_granted' => 'Access granted',
     'funnel_tournament_completed' => 'Tournament completed',
     'mode_career' => 'Career',
     'mode_tournament' => 'Tournament',
