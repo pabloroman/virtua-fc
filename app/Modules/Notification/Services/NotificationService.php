@@ -587,17 +587,6 @@ class NotificationService
         );
     }
 
-    public function notifyAcademyEvaluation(Game $game): GameNotification
-    {
-        return $this->create(
-            game: $game,
-            type: GameNotification::TYPE_ACADEMY_EVALUATION,
-            title: __('notifications.academy_evaluation_title'),
-            message: __('notifications.academy_evaluation_message'),
-            priority: GameNotification::PRIORITY_CRITICAL,
-        );
-    }
-
     // ==========================================
     // AI Transfer Market Notifications
     // ==========================================

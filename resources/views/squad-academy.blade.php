@@ -25,17 +25,6 @@
         {{-- Summary strip --}}
         <div class="flex gap-2.5 overflow-x-auto scrollbar-hide pb-1 mb-6">
             <x-summary-card :label="__('squad.academy_tier')" :value="$tierDescription" :value-class="$tier >= 3 ? 'text-accent-green' : ($tier >= 1 ? 'text-accent-blue' : 'text-text-secondary')" />
-            @if($capacity > 0)
-                <x-summary-card :label="__('squad.academy_capacity')">
-                    <div class="flex items-center gap-2 mt-1">
-                        <span class="font-heading text-xl font-bold {{ $academyCount > $capacity ? 'text-accent-red' : 'text-text-primary' }}">{{ $academyCount }}/{{ $capacity }}</span>
-                        <div class="w-16 h-1.5 bg-bar-track rounded-full overflow-hidden">
-                            <div class="h-full rounded-full {{ $academyCount > $capacity ? 'bg-accent-red' : ($academyCount >= $capacity - 1 ? 'bg-accent-gold' : 'bg-emerald-500') }}"
-                                 style="width: {{ min(100, ($academyCount / max($capacity, 1)) * 100) }}%"></div>
-                        </div>
-                    </div>
-                </x-summary-card>
-            @endif
             <x-summary-card :label="__('squad.academy_phase_label')">
                 <div class="mt-1">
                     @if($revealPhase === 0)
@@ -63,38 +52,23 @@
 
             <div x-show="open" x-transition class="mt-3 bg-surface-700/50 border border-border-default rounded-lg p-4 text-sm">
                 <p class="text-text-secondary mb-4">{{ __('squad.academy_help_development') }}</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    {{-- Reveal phases --}}
-                    <div>
-                        <p class="font-semibold text-text-body mb-2">{{ __('squad.academy_help_phases_title') }}</p>
-                        <ul class="space-y-2">
-                            <li class="flex gap-2">
-                                <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-surface-600 text-text-secondary text-xs font-bold">0</span>
-                                <span class="text-text-secondary">{{ __('squad.academy_help_phase_0') }}</span>
-                            </li>
-                            <li class="flex gap-2">
-                                <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-accent-blue/20 text-accent-blue text-xs font-bold">1</span>
-                                <span class="text-text-secondary">{{ __('squad.academy_help_phase_1') }}</span>
-                            </li>
-                            <li class="flex gap-2">
-                                <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-accent-green/20 text-accent-green text-xs font-bold">2</span>
-                                <span class="text-text-secondary">{{ __('squad.academy_help_phase_2') }}</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    {{-- Evaluations --}}
-                    <div>
-                        <p class="font-semibold text-text-body mb-2">{{ __('squad.academy_help_evaluations_title') }}</p>
-                        <p class="text-text-muted mb-2">{{ __('squad.academy_help_evaluation_desc') }}</p>
-                        <ul class="space-y-1 text-text-secondary">
-                            <li class="flex gap-2"><span class="text-accent-green shrink-0">↑</span> {{ __('squad.academy_help_promote') }}</li>
-                            <li class="flex gap-2"><span class="text-accent-blue shrink-0">⇄</span> {{ __('squad.academy_help_loan') }}</li>
-                            <li class="flex gap-2"><span class="text-text-secondary shrink-0">✓</span> {{ __('squad.academy_help_keep') }}</li>
-                            <li class="flex gap-2"><span class="text-accent-red shrink-0">✕</span> {{ __('squad.academy_help_dismiss') }}</li>
-                        </ul>
-                        <p class="mt-3 text-xs text-text-secondary">{{ __('squad.academy_help_age_rule') }} {{ __('squad.academy_help_capacity_rule') }}</p>
-                    </div>
+                {{-- Reveal phases --}}
+                <div>
+                    <p class="font-semibold text-text-body mb-2">{{ __('squad.academy_help_phases_title') }}</p>
+                    <ul class="space-y-2">
+                        <li class="flex gap-2">
+                            <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-surface-600 text-text-secondary text-xs font-bold">0</span>
+                            <span class="text-text-secondary">{{ __('squad.academy_help_phase_0') }}</span>
+                        </li>
+                        <li class="flex gap-2">
+                            <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-accent-blue/20 text-accent-blue text-xs font-bold">1</span>
+                            <span class="text-text-secondary">{{ __('squad.academy_help_phase_1') }}</span>
+                        </li>
+                        <li class="flex gap-2">
+                            <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-accent-green/20 text-accent-green text-xs font-bold">2</span>
+                            <span class="text-text-secondary">{{ __('squad.academy_help_phase_2') }}</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>

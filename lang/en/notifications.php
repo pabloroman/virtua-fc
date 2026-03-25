@@ -84,9 +84,6 @@ return [
     // Academy
     'academy_batch_title' => 'New academy prospects',
     'academy_batch_message' => ':count new players have arrived at the academy.',
-    'academy_evaluation_title' => 'Academy evaluation',
-    'academy_evaluation_message' => 'It\'s time to evaluate your academy players.',
-
     // Loan request results
     'loan_accepted_title' => 'Loan request for :player accepted',
     'loan_accepted' => ':team have accepted your loan request for :player.',

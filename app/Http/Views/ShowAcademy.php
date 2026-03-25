@@ -4,7 +4,6 @@ namespace App\Http\Views;
 
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Academy\Services\YouthAcademyService;
-use App\Models\AcademyPlayer;
 use App\Models\Game;
 
 class ShowAcademy
@@ -36,7 +35,6 @@ class ShowAcademy
 
         $tier = $game->currentInvestment->youth_academy_tier ?? 0;
         $tierDescription = YouthAcademyService::getTierDescription($tier);
-        $capacity = YouthAcademyService::getCapacity($tier);
         $revealPhase = YouthAcademyService::getRevealPhase($game);
 
         return view('squad-academy', [
@@ -50,7 +48,6 @@ class ShowAcademy
             'expiringContractsCount' => $expiringContractsCount,
             'tier' => $tier,
             'tierDescription' => $tierDescription,
-            'capacity' => $capacity,
             'revealPhase' => $revealPhase,
         ]);
     }

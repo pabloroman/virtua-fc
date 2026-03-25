@@ -59,7 +59,6 @@ class GameNotification extends Model
     public const TYPE_COMPETITION_ADVANCEMENT = 'competition_advancement';
     public const TYPE_COMPETITION_ELIMINATION = 'competition_elimination';
     public const TYPE_ACADEMY_PROSPECT = 'academy_prospect';
-    public const TYPE_ACADEMY_EVALUATION = 'academy_evaluation';
     public const TYPE_ACADEMY_BATCH = 'academy_batch';
     public const TYPE_TRANSFER_COMPLETE = 'transfer_complete';
     public const TYPE_LOAN_REQUEST_RESULT = 'loan_request_result';
@@ -93,7 +92,6 @@ class GameNotification extends Model
         self::TYPE_COMPETITION_ADVANCEMENT => 'competition',
         self::TYPE_COMPETITION_ELIMINATION => 'competition',
         self::TYPE_ACADEMY_PROSPECT => 'academy',
-        self::TYPE_ACADEMY_EVALUATION => 'academy',
         self::TYPE_ACADEMY_BATCH => 'academy',
         self::TYPE_TRANSFER_COMPLETE => 'squad',
         self::TYPE_LOAN_REQUEST_RESULT => 'scouting',
@@ -323,11 +321,6 @@ class GameNotification extends Model
                 'icon_bg' => 'bg-lime-500/10',
                 'icon_text' => 'text-lime-500',
                 'dot' => 'bg-lime-500',
-            ],
-            self::TYPE_ACADEMY_EVALUATION => [
-                'icon_bg' => 'bg-amber-500/10',
-                'icon_text' => 'text-amber-500',
-                'dot' => 'bg-amber-500',
             ],
             self::TYPE_LOAN_REQUEST_RESULT => [
                 'icon_bg' => 'bg-purple-500/10',

@@ -11,15 +11,13 @@ use App\Modules\Season\Processors\NewSeasonResetProcessor;
 use App\Modules\Season\Processors\PreSeasonFixtureProcessor;
 use App\Modules\Season\Processors\SquadCapEnforcementProcessor;
 use App\Modules\Season\Processors\StandingsResetProcessor;
-use App\Modules\Season\Processors\YouthAcademySetupProcessor;
 use App\Models\Game;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
  * Sets up the new season: fixtures, standings, budgets, competitions,
- * academy evaluation, and new-season setup. Used by both new game creation
- * and season transitions.
+ * and new-season setup. Used by both new game creation and season transitions.
  */
 class SeasonSetupPipeline
 {
@@ -30,7 +28,6 @@ class SeasonSetupPipeline
         LeagueFixtureProcessor $fixtureGeneration,
         StandingsResetProcessor $standingsReset,
         BudgetProjectionProcessor $budgetProjection,
-        YouthAcademySetupProcessor $youthAcademySetup,
         ContinentalAndCupInitProcessor $competitionInitialization,
         SquadCapEnforcementProcessor $squadCapEnforcement,
         PreSeasonFixtureProcessor $preSeasonFixture,
@@ -40,7 +37,6 @@ class SeasonSetupPipeline
             $fixtureGeneration,
             $standingsReset,
             $budgetProjection,
-            $youthAcademySetup,
             $competitionInitialization,
             $squadCapEnforcement,
             $preSeasonFixture,

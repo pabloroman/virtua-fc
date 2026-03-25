@@ -2,7 +2,6 @@
 
 namespace App\Modules\Academy\Services;
 
-use App\Modules\Player\PlayerAge;
 use App\Modules\Squad\DTOs\GeneratedPlayerData;
 use App\Models\AcademyPlayer;
 use App\Models\Game;
@@ -15,14 +14,14 @@ use App\Modules\Squad\Services\PlayerGeneratorService;
 class YouthAcademyService
 {
     /**
-     * Tier configuration: [capacity, min_arrivals, max_arrivals, min_potential, max_potential, min_ability, max_ability]
+     * Tier configuration: [min_arrivals, max_arrivals, min_potential, max_potential, min_ability, max_ability]
      */
     private const TIER_CONFIG = [
-        0 => [0, 0, 0, 0, 0, 0, 0],
-        1 => [4, 2, 3, 60, 70, 35, 50],
-        2 => [6, 3, 5, 65, 75, 40, 55],
-        3 => [7, 4, 6, 68, 78, 40, 55],
-        4 => [8, 4, 6, 75, 85, 45, 60],
+        0 => [0, 0, 0, 0, 0, 0],
+        1 => [2, 3, 60, 70, 35, 50],
+        2 => [3, 5, 65, 75, 40, 55],
+        3 => [4, 6, 68, 78, 40, 55],
+        4 => [4, 6, 75, 85, 45, 60],
     ];
 
     private const ESTIMATED_MATCHDAYS = 38;
@@ -67,7 +66,7 @@ class YouthAcademyService
         }
 
         $config = self::TIER_CONFIG[$tier];
-        [, $minArrivals, $maxArrivals, $minPotential, $maxPotential, $minAbility, $maxAbility] = $config;
+        [$minArrivals, $maxArrivals, $minPotential, $maxPotential, $minAbility, $maxAbility] = $config;
 
         $count = rand($minArrivals, $maxArrivals);
         $prospects = collect();
@@ -227,40 +226,11 @@ class YouthAcademyService
     }
 
     /**
-     * Get the academy capacity (max seats) for a given tier.
-     */
-    public static function getCapacity(int $tier): int
-    {
-        return self::TIER_CONFIG[$tier][0] ?? 0;
-    }
-
-    /**
-     * Get the number of currently occupied seats (non-loaned players).
-     */
-    public static function getOccupiedSeats(Game $game): int
-    {
-        return AcademyPlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->where('is_on_loan', false)
-            ->count();
-    }
-
-    /**
-     * Get the total number of academy players (including loaned).
-     */
-    public static function getTotalPlayers(Game $game): int
-    {
-        return AcademyPlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->count();
-    }
-
-    /**
      * Mark a player as loaned out.
      */
     public function loanPlayer(AcademyPlayer $player): void
     {
-        $player->update(['is_on_loan' => true, 'evaluation_needed' => false]);
+        $player->update(['is_on_loan' => true]);
     }
 
     /**
@@ -301,14 +271,6 @@ class YouthAcademyService
     }
 
     /**
-     * Check if a player must be promoted or dismissed (age 21+).
-     */
-    public static function mustDecide(AcademyPlayer $player): bool
-    {
-        return $player->age > PlayerAge::ACADEMY_END;
-    }
-
-    /**
      * Get the expected new arrivals range for a tier.
      *
      * @return array{min: int, max: int}
@@ -317,7 +279,7 @@ class YouthAcademyService
     {
         $config = self::TIER_CONFIG[$tier] ?? self::TIER_CONFIG[0];
 
-        return ['min' => $config[1], 'max' => $config[2]];
+        return ['min' => $config[0], 'max' => $config[1]];
     }
 
     public static function getTierDescription(int $tier): string
@@ -333,9 +295,9 @@ class YouthAcademyService
         $config = self::TIER_CONFIG[$tier] ?? self::TIER_CONFIG[0];
 
         return [
-            'min_prospects' => $config[1],
-            'max_prospects' => $config[2],
-            'potential_range' => $config[3] > 0 ? "{$config[3]}-{$config[4]}" : 'N/A',
+            'min_prospects' => $config[0],
+            'max_prospects' => $config[1],
+            'potential_range' => $config[2] > 0 ? "{$config[2]}-{$config[3]}" : 'N/A',
         ];
     }
 

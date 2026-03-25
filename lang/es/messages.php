@@ -82,12 +82,8 @@ return [
 
     // Academy
     'academy_player_promoted' => ':player ha sido subido al primer equipo.',
-    'academy_evaluation_required' => 'Debes evaluar a los canteranos antes de continuar.',
-    'academy_evaluation_complete' => 'Evaluación de cantera completada.',
     'academy_player_dismissed' => ':player ha sido despedido de la cantera.',
     'academy_player_loaned' => ':player ha sido cedido.',
-    'academy_over_capacity' => 'La cantera supera la capacidad. Debes liberar :excess plaza(s).',
-    'academy_must_decide_21' => 'Los jugadores de 21+ años deben ser subidos o despedidos.',
 
     // Player release messages
     'player_released' => ':player ha sido liberado. Indemnización pagada: :severance.',

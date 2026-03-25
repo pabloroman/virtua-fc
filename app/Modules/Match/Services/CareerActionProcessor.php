@@ -2,7 +2,6 @@
 
 namespace App\Modules\Match\Services;
 
-use App\Models\AcademyPlayer;
 use App\Models\Game;
 use App\Models\GameNotification;
 use App\Models\GamePlayer;
@@ -100,20 +99,6 @@ class CareerActionProcessor
 
         // Develop academy players each matchday
         $this->youthAcademyService->developPlayers($game);
-
-        // Add pending action if any players still need evaluation (from season-end)
-        $needsEval = AcademyPlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->where('is_on_loan', false)
-            ->where('evaluation_needed', true)
-            ->exists();
-
-        if ($needsEval) {
-            if (! $game->hasPendingAction('academy_evaluation')) {
-                $game->addPendingAction('academy_evaluation', 'game.squad.academy.evaluate');
-                $this->notificationService->notifyAcademyEvaluation($game);
-            }
-        }
 
         // Notify user when a transfer window opens
         $this->processTransferWindowOpen($game);
