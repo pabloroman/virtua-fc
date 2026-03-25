@@ -86,7 +86,7 @@
                 <div x-data class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
                     {{-- Table header --}}
                     <div class="hidden md:block">
-                        <div class="grid grid-cols-[40px_1fr_48px_48px_48px_56px_56px_100px] gap-1.5 items-center px-4 py-2 bg-surface-700/30 border-b border-border-default text-[10px] text-text-muted uppercase tracking-widest font-semibold">
+                        <div class="grid grid-cols-[40px_1fr_48px_48px_48px_56px_56px] gap-1.5 items-center px-4 py-2 bg-surface-700/30 border-b border-border-default text-[10px] text-text-muted uppercase tracking-widest font-semibold">
                             <span></span>
                             <span>{{ __('app.name') }}</span>
                             <span class="text-center">{{ __('app.age') }}</span>
@@ -94,7 +94,6 @@
                             <span class="text-center">{{ __('squad.physical') }}</span>
                             <span class="text-center">{{ __('squad.pot') }}</span>
                             <span class="text-center">{{ __('squad.overall') }}</span>
-                            <span class="text-center">{{ __('squad.academy_actions') }}</span>
                         </div>
                     </div>
 
@@ -115,8 +114,8 @@
 
                             @foreach($group['players'] as $prospect)
                                 {{-- Mobile row --}}
-                                <div class="md:hidden px-4 py-3 border-b border-border-default">
-                                    <div class="flex items-center gap-3 cursor-pointer" @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')">
+                                <div class="md:hidden px-4 py-3 border-b border-border-default cursor-pointer hover:bg-surface-700/30 transition-colors" @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')">
+                                    <div class="flex items-center gap-3">
                                         <x-player-avatar :name="$prospect->name" :position-group="\App\Support\PositionMapper::getPositionGroup($prospect->position)" :position-abbrev="\App\Support\PositionMapper::toAbbreviation($prospect->position)" />
                                         <div class="flex-1 min-w-0">
                                             <div class="flex items-center gap-2">
@@ -127,23 +126,16 @@
                                         </div>
                                         <x-rating-badge :value="$prospect->overall" class="shrink-0" />
                                     </div>
-                                    {{-- Mobile action button --}}
-                                    <div class="flex gap-1.5 mt-2">
-                                        <form method="POST" action="{{ route('game.academy.promote', [$game->id, $prospect->id]) }}" class="flex-1">
-                                            @csrf
-                                            <x-pill-button size="sm" class="w-full min-h-[44px] bg-surface-700 text-accent-green">{{ __('squad.academy_promote') }}</x-pill-button>
-                                        </form>
-                                    </div>
                                 </div>
 
                                 {{-- Desktop row --}}
-                                <div class="hidden md:grid grid-cols-[40px_1fr_48px_48px_48px_56px_56px_100px] gap-1.5 items-center px-4 py-2.5 border-b border-border-default hover:bg-surface-700/30 transition-colors">
+                                <div class="hidden md:grid grid-cols-[40px_1fr_48px_48px_48px_56px_56px] gap-1.5 items-center px-4 py-2.5 border-b border-border-default hover:bg-surface-700/30 transition-colors cursor-pointer" @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')">
                                     {{-- Position --}}
                                     <div class="flex justify-center">
                                         <x-position-badge :position="$prospect->position" size="sm" :tooltip="\App\Support\PositionMapper::toDisplayName($prospect->position)" class="cursor-help" />
                                     </div>
                                     {{-- Name --}}
-                                    <div class="flex items-center gap-2 min-w-0 cursor-pointer" @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')">
+                                    <div class="flex items-center gap-2 min-w-0">
                                         @if($prospect->nationality_flag)
                                             <img src="{{ Storage::disk('assets')->url('flags/' . $prospect->nationality_flag['code'] . '.svg') }}" class="w-4 h-3 rounded-sm shadow-xs shrink-0" title="{{ $prospect->nationality_flag['name'] }}">
                                         @endif
@@ -165,13 +157,6 @@
                                     {{-- Overall --}}
                                     <div class="flex justify-center">
                                         <x-rating-badge :value="$prospect->overall" size="sm" />
-                                    </div>
-                                    {{-- Actions --}}
-                                    <div class="flex justify-center gap-1">
-                                        <form method="POST" action="{{ route('game.academy.promote', [$game->id, $prospect->id]) }}">
-                                            @csrf
-                                            <button type="submit" class="text-[10px] font-semibold px-2 py-1 rounded bg-accent-green/10 text-accent-green hover:bg-accent-green/20 transition-colors" title="{{ __('squad.academy_promote') }}">{{ __('squad.academy_promote') }}</button>
-                                        </form>
                                     </div>
                                 </div>
                             @endforeach

@@ -203,7 +203,6 @@ return [
     'academy_promote' => 'Promote',
     'academy_promote_desc' => 'Player joins the first team with a professional contract.',
     'academy_on_loan' => 'On Loan',
-    'academy_actions' => 'Actions',
     'academy_seasons' => ':count season|:count seasons',
     // Academy help text
     'academy_help_toggle' => 'How does the academy work?',

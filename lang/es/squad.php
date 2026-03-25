@@ -203,7 +203,6 @@ return [
     'academy_promote' => 'Subir',
     'academy_promote_desc' => 'El jugador se incorpora al primer equipo con contrato profesional.',
     'academy_on_loan' => 'Cedido',
-    'academy_actions' => 'Acciones',
     'academy_seasons' => ':count temporada|:count temporadas',
     // Academy help text
     'academy_help_toggle' => '¿Cómo funciona la cantera?',
