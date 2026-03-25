@@ -63,10 +63,10 @@ class YouthAcademyService
      */
     private const POTENTIAL_FLOOR = [
         0 => 0,
-        1 => 55,
-        2 => 60,
-        3 => 68,
-        4 => 75,
+        1 => 45,
+        2 => 50,
+        3 => 55,
+        4 => 60,
     ];
 
     private const ESTIMATED_MATCHDAYS = 38;
