@@ -52,19 +52,11 @@ class FinalizeMatch
             ->exists();
 
         if (! $hasRemainingMatches) {
-            if (! $game->isTournamentMode()) {
-                event(new SeasonCompleted($game));
-            }
-
-            // Tournament complete: snapshot + delete + redirect to summary
             if ($game->isTournamentMode()) {
-                $this->activationTracker->record($game->user_id, ActivationEvent::EVENT_TOURNAMENT_COMPLETED, $game->id, Game::MODE_TOURNAMENT);
-
-                $summary = $this->snapshotService->createSnapshot($game);
-                $this->deletionService->delete($game);
-
-                return redirect()->route('tournament-summary.show', $summary->id);
+                return $this->completeTournament($game);
             }
+
+            event(new SeasonCompleted($game));
         }
 
         // Tournament auto-simulation: advance all remaining matches and go to summary
@@ -96,6 +88,11 @@ class FinalizeMatch
             $game->refresh()->setRelations([]);
         }
 
+        return $this->completeTournament($game);
+    }
+
+    private function completeTournament(Game $game)
+    {
         $this->activationTracker->record($game->user_id, ActivationEvent::EVENT_TOURNAMENT_COMPLETED, $game->id, Game::MODE_TOURNAMENT);
 
         $summary = $this->snapshotService->createSnapshot($game);

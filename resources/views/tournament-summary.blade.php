@@ -28,32 +28,21 @@ $yourGoalScorers = collect($yourSquadStats)->where('goals', '>', 0)->sortByDesc(
 $yourAppearances = collect($yourSquadStats)->where('appearances', '>', 0)->sortByDesc('appearances');
 
 // Group squad by position for image download
-$positionGroupMap = fn ($pos) => match ($pos) {
-    'Goalkeeper' => 'Goalkeeper',
-    'Centre-Back', 'Left-Back', 'Right-Back' => 'Defender',
-    'Defensive Midfield', 'Central Midfield', 'Attacking Midfield',
-    'Left Midfield', 'Right Midfield' => 'Midfielder',
-    'Left Winger', 'Right Winger', 'Centre-Forward', 'Second Striker' => 'Forward',
-    default => 'Midfielder',
-};
 $positionGroupLabels = [
     'Goalkeeper' => __('squad.goalkeepers'),
     'Defender' => __('squad.defenders'),
     'Midfielder' => __('squad.midfielders'),
     'Forward' => __('squad.forwards'),
 ];
-$squadByGroup = [];
-foreach (['Goalkeeper', 'Defender', 'Midfielder', 'Forward'] as $group) {
-    $players = $yourAppearances->filter(fn($p) => $positionGroupMap($p['position']) === $group);
-    if ($players->isNotEmpty()) {
-        $squadByGroup[$group] = $players->map(fn($p) => [
-            'name' => $p['player_name'],
-            'appearances' => $p['appearances'],
-            'goals' => $p['goals'],
-            'assists' => $p['assists'],
-        ])->values()->toArray();
-    }
-}
+$squadByGroup = $yourAppearances
+    ->groupBy(fn($p) => \App\Support\PositionMapper::getPositionGroup($p['position']))
+    ->map(fn($players) => $players->map(fn($p) => [
+        'name' => $p['player_name'],
+        'appearances' => $p['appearances'],
+        'goals' => $p['goals'],
+        'assists' => $p['assists'],
+    ])->values()->toArray())
+    ->toArray();
 
 // Result badge colors
 $resultBadgeClass = match($resultLabel) {

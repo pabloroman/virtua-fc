@@ -29,9 +29,9 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <div class="bg-surface-800 border border-border-default rounded-xl p-4">
                 <div class="text-xs text-text-muted uppercase tracking-wider mb-1">
-                    {{ $mode === 'tournament' ? __('admin.funnel_access_granted') : __('admin.invites_sent') }}
+                    {{ $mode === \App\Models\Game::MODE_TOURNAMENT ? __('admin.funnel_access_granted') : __('admin.invites_sent') }}
                 </div>
-                <div class="text-2xl font-bold text-text-primary">{{ number_format($mode === 'tournament' ? $totalRegistered : $totalInvites) }}</div>
+                <div class="text-2xl font-bold text-text-primary">{{ number_format($mode === \App\Models\Game::MODE_TOURNAMENT ? $totalRegistered : $totalInvites) }}</div>
             </div>
             <div class="bg-surface-800 border border-border-default rounded-xl p-4">
                 <div class="text-xs text-text-muted uppercase tracking-wider mb-1">{{ __('admin.conversion_to_first_match') }}</div>
