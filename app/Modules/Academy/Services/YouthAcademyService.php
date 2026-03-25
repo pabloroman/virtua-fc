@@ -2,7 +2,6 @@
 
 namespace App\Modules\Academy\Services;
 
-use App\Modules\Player\PlayerAge;
 use App\Modules\Squad\DTOs\GeneratedPlayerData;
 use App\Models\AcademyPlayer;
 use App\Models\Game;
@@ -33,7 +32,7 @@ class YouthAcademyService
         2 => [58, 67],   // Average (€1M-€5M)
         3 => [68, 77],   // Good (€5M-€20M)
         4 => [78, 83],   // Excellent (€20M-€50M)
-        5 => [83, 90],   // World Class (€50M+)
+        5 => [84, 90],   // World Class (€50M+)
     ];
 
     /**
@@ -99,7 +98,6 @@ class YouthAcademyService
 
     /**
      * Generate a batch of new academy prospects at season start.
-     * Quality is now relative to the first team's median PlayerTier.
      *
      * @return Collection<int, AcademyPlayer>
      */
@@ -116,11 +114,14 @@ class YouthAcademyService
 
         $count = rand($minArrivals, $maxArrivals);
         $teamMedianTier = $this->getTeamMedianTier($game);
+        $excludedNames = $this->getExistingPlayerNames($game);
 
         $prospects = collect();
 
         for ($i = 0; $i < $count; $i++) {
-            $prospects->push($this->createAcademyProspect($game, $tier, $teamMedianTier));
+            $prospect = $this->createAcademyProspect($game, $tier, $teamMedianTier, $excludedNames);
+            $excludedNames[] = $prospect->name;
+            $prospects->push($prospect);
         }
 
         return $prospects;
@@ -249,16 +250,6 @@ class YouthAcademyService
     }
 
     /**
-     * Get the total number of academy players (including loaned).
-     */
-    public static function getTotalPlayers(Game $game): int
-    {
-        return AcademyPlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->count();
-    }
-
-    /**
      * Mark a player as loaned out.
      */
     public function loanPlayer(AcademyPlayer $player): void
@@ -301,14 +292,6 @@ class YouthAcademyService
         $academy->delete();
 
         return $gamePlayer;
-    }
-
-    /**
-     * Check if a player must be promoted or dismissed (age 21+).
-     */
-    public static function mustDecide(AcademyPlayer $player): bool
-    {
-        return $player->age > PlayerAge::ACADEMY_END;
     }
 
     /**
@@ -357,6 +340,7 @@ class YouthAcademyService
         Game $game,
         int $academyTier,
         int $teamMedianTier,
+        array $excludedNames,
     ): AcademyPlayer {
         $position = $this->selectPosition();
 
@@ -386,7 +370,6 @@ class YouthAcademyService
         $teamName = $game->team->name;
         $nationalityFilter = self::CANTERA_TEAMS[$teamName] ?? null;
         $teamCountry = $nationalityFilter ? null : $game->team->country;
-        $excludedNames = $this->getExistingPlayerNames($game);
         $identity = $this->playerGenerator->pickRandomIdentity($nationalityFilter, $teamCountry, $excludedNames);
 
         return AcademyPlayer::create([
