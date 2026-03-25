@@ -95,7 +95,7 @@
                         @elseif($continueToHome)
                             <x-primary-button-link :href="route('show-game', $game->id)">{{ __('app.continue') }}</x-primary-button-link>
                         @else
-                            <x-primary-button type="button" @click="$dispatch('show-pre-match', @js(route('game.pre-match-data', $game->id)))">
+                            <x-primary-button type="button" @click="$dispatch('show-pre-match', '{{ route('game.pre-match-data', $game->id) }}')">
                                 {{ __('app.continue') }}
                             </x-primary-button>
                         @endif
@@ -226,7 +226,7 @@
                 .then(html => { this.content = html; this.loading = false; })
                 .catch(() => { this.loading = false; });
         }
-    }" @show-pre-match.window="loadPreMatch($event.detail)">
+    }" x-on:show-pre-match.window="loadPreMatch($event.detail)">
         <x-modal name="pre-match" maxWidth="lg">
             <x-modal-header modalName="pre-match">{{ __('messages.pre_match_title') }}</x-modal-header>
             <div class="p-4 md:p-6">

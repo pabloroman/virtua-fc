@@ -7,6 +7,7 @@ use App\Models\PlayerSuspension;
 use App\Modules\Squad\DTOs\SuspensionRuleSet;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class EligibilityService
@@ -35,6 +36,37 @@ class EligibilityService
         $player->injury_type = $injuryType;
         $player->injury_until = \Illuminate\Support\Carbon::instance($matchDate->copy()->addWeeks($weeksOut));
         $player->save();
+    }
+
+    /**
+     * Batch-apply injuries to multiple players in a single query.
+     *
+     * @param  array<array{playerId: string, injuryType: string, injuryUntil: Carbon}>  $injuries
+     */
+    public function batchApplyInjuries(array $injuries): void
+    {
+        if (empty($injuries)) {
+            return;
+        }
+
+        $typeCases = [];
+        $untilCases = [];
+        $ids = [];
+        foreach ($injuries as $injury) {
+            $id = $injury['playerId'];
+            $type = str_replace("'", "''", $injury['injuryType']);
+            $until = $injury['injuryUntil']->toDateTimeString();
+            $ids[] = "'{$id}'";
+            $typeCases[] = "WHEN id = '{$id}' THEN '{$type}'";
+            $untilCases[] = "WHEN id = '{$id}' THEN '{$until}'";
+        }
+
+        $idList = implode(',', $ids);
+        DB::statement(
+            'UPDATE game_players SET injury_type = CASE ' . implode(' ', $typeCases) . ' END, '
+            . 'injury_until = CASE ' . implode(' ', $untilCases) . ' END '
+            . "WHERE id IN ({$idList})"
+        );
     }
 
     /**

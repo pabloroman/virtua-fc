@@ -135,6 +135,9 @@ return [
     'pre_match_starting_xi' => 'Starting XI',
     'pre_match_no_lineup_set' => 'No lineup configured',
 
+    // Matchday advance
+    'advance_failed' => 'Something went wrong advancing the matchday. Please try again.',
+
     // Budget loan messages
     'budget_loan_approved' => 'Loan of :amount approved and added to your transfer budget.',
     'loan_not_available' => 'A budget loan is not available right now.',

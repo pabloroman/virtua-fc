@@ -103,6 +103,7 @@ class StandingsCalculator
             ->get()
             ->keyBy('team_id');
 
+        $formUpdates = [];
         foreach ($matchResults as $result) {
             $homeChar = $result['homeScore'] > $result['awayScore'] ? 'W' : ($result['homeScore'] < $result['awayScore'] ? 'L' : 'D');
             $awayChar = $result['awayScore'] > $result['homeScore'] ? 'W' : ($result['awayScore'] < $result['homeScore'] ? 'L' : 'D');
@@ -111,9 +112,20 @@ class StandingsCalculator
                 $standing = $standings[$teamId] ?? null;
                 if ($standing) {
                     $standing->form = substr(($standing->form ?? '') . $char, -5);
-                    $standing->save();
+                    $formUpdates[$standing->id] = $standing->form;
                 }
             }
+        }
+
+        if (! empty($formUpdates)) {
+            $cases = [];
+            $updateIds = [];
+            foreach ($formUpdates as $id => $form) {
+                $cases[] = "WHEN id = '{$id}' THEN '{$form}'";
+                $updateIds[] = "'{$id}'";
+            }
+            $updateIdList = implode(',', $updateIds);
+            DB::statement('UPDATE game_standings SET form = CASE ' . implode(' ', $cases) . " END WHERE id IN ({$updateIdList})");
         }
     }
 

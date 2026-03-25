@@ -428,7 +428,8 @@ class MatchResultProcessor
             }
         }
 
-        // Process injury events individually (already efficient — one save per injury)
+        // Process injury events in batch
+        $injuryBatch = [];
         foreach ($injuryEvents as $eventData) {
             $player = $players->get($eventData['game_player_id']);
             if (! $player) {
@@ -446,12 +447,11 @@ class MatchResultProcessor
                 continue;
             }
 
-            $this->eligibilityService->applyInjury(
-                $player,
-                $injuryType,
-                $weeksOut,
-                $matchDate
-            );
+            $injuryBatch[] = [
+                'playerId' => $player->id,
+                'injuryType' => $injuryType,
+                'injuryUntil' => $projectedUntil,
+            ];
 
             $isUserTeamPlayer = $player->team_id === $game->team_id;
             $isDeferredMatch = $eventData['matchId'] === $deferMatchId;
@@ -461,6 +461,8 @@ class MatchResultProcessor
                 $this->notificationService->notifyInjury($game, $player, $injuryType, $weeksOut);
             }
         }
+
+        $this->eligibilityService->batchApplyInjuries($injuryBatch);
     }
 
     /**

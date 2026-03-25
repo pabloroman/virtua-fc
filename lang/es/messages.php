@@ -135,6 +135,9 @@ return [
     'pre_match_starting_xi' => 'Once Titular',
     'pre_match_no_lineup_set' => 'Alineación no configurada',
 
+    // Matchday advance
+    'advance_failed' => 'Error al avanzar la jornada. Inténtalo de nuevo.',
+
     // Budget loan messages
     'budget_loan_approved' => 'Préstamo de :amount aprobado y añadido a tu presupuesto de fichajes.',
     'loan_not_available' => 'Un préstamo presupuestario no está disponible ahora mismo.',
