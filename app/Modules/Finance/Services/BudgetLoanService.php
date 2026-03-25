@@ -3,11 +3,16 @@
 namespace App\Modules\Finance\Services;
 
 use App\Models\BudgetLoan;
+use App\Models\FinancialTransaction;
 use App\Models\Game;
 use App\Models\GameInvestment;
+use App\Modules\Notification\Services\NotificationService;
 
 class BudgetLoanService
 {
+    public function __construct(
+        private readonly NotificationService $notificationService,
+    ) {}
     /**
      * Calculate the maximum loan amount for a game (10% of projected total revenue).
      */
@@ -100,6 +105,22 @@ class BudgetLoanService
         // Add loan amount to transfer budget
         $investment = $game->currentInvestment;
         $investment->increment('transfer_budget', $amountInCents);
+
+        // Record financial transaction
+        FinancialTransaction::recordIncome(
+            gameId: $game->id,
+            category: FinancialTransaction::CATEGORY_BUDGET_LOAN,
+            amount: $loan->amount,
+            description: __('finances.tx_budget_loan_received', ['amount' => $loan->formatted_amount]),
+            transactionDate: $game->current_date->toDateString(),
+        );
+
+        // Notify the user
+        $this->notificationService->notifyBudgetLoanTaken(
+            $game,
+            $loan->formatted_amount,
+            $loan->formatted_repayment_amount,
+        );
 
         return $loan;
     }
