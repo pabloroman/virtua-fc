@@ -225,7 +225,7 @@ class ShowLineup
         // xG preview config: all modifiers needed for frontend calculation
         $xgConfig = [
             'base_goals' => config('match_simulation.base_goals', 1.3),
-            'ratio_exponent' => config('match_simulation.ratio_exponent', 2.0),
+            'skill_dominance' => config('match_simulation.skill_dominance', 2.0),
             'home_advantage_goals' => config('match_simulation.home_advantage_goals', 0.15),
             'mentalities' => config('match_simulation.mentalities'),
             'playing_styles' => collect(config('match_simulation.playing_styles'))->map(fn ($s) => [

@@ -44,7 +44,7 @@ class SeasonSimulationService
         // Simulate every home/away fixture (N × (N-1) matches)
         $teamList = $teams->values();
         $baseGoals = config('match_simulation.base_goals', 1.3);
-        $ratioExponent = config('match_simulation.ratio_exponent', 2.0);
+        $skillDominance = config('match_simulation.skill_dominance', 2.0);
         $homeAdvantageGoals = config('match_simulation.home_advantage_goals', 0.15);
 
         for ($i = 0; $i < $teamList->count(); $i++) {
@@ -62,7 +62,7 @@ class SeasonSimulationService
 
                 $result = $this->simulateMatchResult(
                     $homeStrength, $awayStrength,
-                    $baseGoals, $ratioExponent, $homeAdvantageGoals
+                    $baseGoals, $skillDominance, $homeAdvantageGoals
                 );
 
                 $homeGoals = $result[0];
@@ -124,13 +124,13 @@ class SeasonSimulationService
         float $homeStrength,
         float $awayStrength,
         float $baseGoals,
-        float $ratioExponent,
+        float $skillDominance,
         float $homeAdvantageGoals,
     ): array {
         $strengthRatio = $awayStrength > 0 ? $homeStrength / $awayStrength : 1.0;
 
-        $homeXG = pow($strengthRatio, $ratioExponent) * $baseGoals + $homeAdvantageGoals;
-        $awayXG = pow(1 / $strengthRatio, $ratioExponent) * $baseGoals;
+        $homeXG = pow($strengthRatio, $skillDominance) * $baseGoals + $homeAdvantageGoals;
+        $awayXG = pow(1 / $strengthRatio, $skillDominance) * $baseGoals;
 
         return [
             $this->poissonRandom($homeXG),

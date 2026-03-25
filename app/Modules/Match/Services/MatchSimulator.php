@@ -638,19 +638,19 @@ class MatchSimulator
         float $baseGoals,
         float $matchFraction,
     ): array {
-        $ratioExponent = config('match_simulation.ratio_exponent', 2.0);
+        $skillDominance = config('match_simulation.skill_dominance', 2.0);
         $homeAdvantageGoals = config('match_simulation.home_advantage_goals', 0.15);
 
         $strengthRatio = $awayStrength > 0 ? $homeStrength / $awayStrength : 1.0;
 
-        $homeXG = (pow($strengthRatio, $ratioExponent) * $baseGoals + $homeAdvantageGoals)
+        $homeXG = (pow($strengthRatio, $skillDominance) * $baseGoals + $homeAdvantageGoals)
             * $homeFormation->attackModifier()
             * $awayFormation->defenseModifier()
             * $homeMentality->ownGoalsModifier()
             * $awayMentality->opponentGoalsModifier()
             * $matchFraction;
 
-        $awayXG = (pow(1 / $strengthRatio, $ratioExponent) * $baseGoals)
+        $awayXG = (pow(1 / $strengthRatio, $skillDominance) * $baseGoals)
             * $awayFormation->attackModifier()
             * $homeFormation->defenseModifier()
             * $awayMentality->ownGoalsModifier()

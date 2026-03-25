@@ -75,7 +75,7 @@ export function calculateXgPreview({
 
     // --- Base xG from strength ratio ---
     const strengthRatio = awayStrength > 0 ? homeStrength / awayStrength : 1.0;
-    const ratioExp = cfg.ratio_exponent;
+    const ratioExp = cfg.skill_dominance;
     const baseGoals = cfg.base_goals;
     const homeAdv = cfg.home_advantage_goals;
 

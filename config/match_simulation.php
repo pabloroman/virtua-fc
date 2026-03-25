@@ -16,18 +16,33 @@ return [
     |
     | The xG formula uses strength RATIOS rather than shares:
     |
-    |   homeXG = (strengthRatio ^ ratioExponent) × baseGoals + homeAdvantage
-    |   awayXG = (1/strengthRatio ^ ratioExponent) × baseGoals
+    |   homeXG = (strengthRatio ^ skill_dominance) × baseGoals + homeAdvantage
+    |   awayXG = (1/strengthRatio ^ skill_dominance) × baseGoals
     |
     | When teams are equal (ratio=1.0), both get base_goals (1.3 xG).
-    | When elite faces bottom (ratio ~1.30), elite gets ~2.36 xG vs ~0.72.
     | The stronger team is ALWAYS favored regardless of venue.
     |
     | Real-world La Liga average: ~2.5 goals per match
     |
+    | skill_dominance: Controls how much team quality determines match outcomes.
+    | Higher values widen the xG gap between strong and weak teams, meaning
+    | the better team wins more often. Lower values compress the gap, leading
+    | to more upsets and tighter leagues.
+    |
+    |   1.0 = linear, minimal skill advantage → frequent upsets (~60/40 skill/luck)
+    |   1.5 = moderate, noticeable quality gap → some upsets (~70/30)
+    |   2.3 = default, strong quality gap → realistic La Liga feel (~80/20)
+    |   3.0 = high, dominant teams rarely lose (~90/10)
+    |   4.0 = extreme, top teams almost never drop points (~95/5)
+    |
+    | Example with elite (str 0.72) vs bottom (str 0.55), ratio ≈ 1.31:
+    |   skill_dominance 1.0 → xG: 1.70 vs 0.99 (upset ~25% of the time)
+    |   skill_dominance 2.3 → xG: 2.36 vs 0.72 (upset ~10% of the time)
+    |   skill_dominance 4.0 → xG: 3.53 vs 0.48 (upset ~2% of the time)
+    |
     */
     'base_goals' => 1.3,                // avg xG per team when evenly matched (~2.6 total)
-    'ratio_exponent' => 2.3,            // amplifies strength ratio into xG gap
+    'skill_dominance' => 2.3,           // how much team quality widens the xG gap (see above)
     'home_advantage_goals' => 0.20,     // fixed home xG bonus
 
     /*
