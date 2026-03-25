@@ -89,15 +89,16 @@ class ShowFinances
         $purchaseSpending = (int) $activityTotals->purchase_spending;
         $infrastructureSpending = (int) $activityTotals->infrastructure_spending;
 
-        // Initial transfer budget = current budget - sales + purchases + mid-season infrastructure
-        $initialTransferBudget = $investment
-            ? $investment->transfer_budget - $salesRevenue + $purchaseSpending + $infrastructureSpending
-            : 0;
-
-        $hasTransferActivity = $salesRevenue > 0 || $purchaseSpending > 0 || $infrastructureSpending > 0;
-
         // Budget loan data
         $activeLoan = $this->loanService->activeLoan($game);
+        $loanAmount = $activeLoan?->amount ?? 0;
+
+        // Initial transfer budget = current budget - sales + purchases + infrastructure - loan
+        $initialTransferBudget = $investment
+            ? $investment->transfer_budget - $salesRevenue + $purchaseSpending + $infrastructureSpending - $loanAmount
+            : 0;
+
+        $hasTransferActivity = $salesRevenue > 0 || $purchaseSpending > 0 || $infrastructureSpending > 0 || $loanAmount > 0;
         $canRequestLoan = $this->loanService->canRequestLoan($game);
         $maxLoanAmount = $this->loanService->maxLoanAmount($game);
 
