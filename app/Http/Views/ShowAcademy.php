@@ -4,6 +4,7 @@ namespace App\Http\Views;
 
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Academy\Services\YouthAcademyService;
+use App\Models\AcademyPlayer;
 use App\Models\Game;
 
 class ShowAcademy
