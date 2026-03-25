@@ -139,6 +139,9 @@ class SetupNewGame implements ShouldQueue
         }
 
         $rows = CompetitionTeam::where('season', $this->season)
+            ->whereNotIn('team_id', function ($query) {
+                $query->select('id')->from('teams')->where('type', 'national');
+            })
             ->get()
             ->map(fn ($ct) => [
                 'game_id' => $this->gameId,
