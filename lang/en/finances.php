@@ -180,6 +180,8 @@ return [
 
     'category_severance' => 'Severance',
     'category_infrastructure' => 'Infrastructure',
+    'category_budget_loan' => 'Budget Loan',
+    'category_loan_repayment' => 'Loan Repayment',
 
     // Infrastructure upgrades
     'upgrade' => 'Upgrade',
@@ -194,4 +196,23 @@ return [
     'tx_player_released' => ':player released (severance)',
     'tx_cup_advancement' => ':competition - Round :round advancement',
     'tx_infrastructure_upgrade' => ':area upgraded from Tier :from to Tier :to',
+    'tx_budget_loan_received' => 'Budget loan received: :amount',
+
+    // Budget loan
+    'budget_loan' => 'Budget Loan',
+    'loan_active' => 'Active',
+    'loan_principal' => 'Loan received',
+    'loan_interest' => 'Interest (15%)',
+    'loan_repayment' => 'End-of-season repayment',
+    'loan_repayment_hint' => 'Repaid automatically at the end of the season. The repayment reduces next season\'s available surplus.',
+    'loan_description' => 'Borrow against projected revenue to boost your transfer budget. Repaid with interest at end of season.',
+    'loan_max_available' => 'Max available',
+    'loan_request_button' => 'Request Loan',
+    'loan_amount_label' => 'Amount (€)',
+    'loan_interest_rate' => 'Interest rate',
+    'loan_total_repayment' => 'Total repayment',
+    'loan_warning' => 'The full repayment will be deducted from next season\'s surplus.',
+    'loan_confirm' => 'Confirm Loan',
+    'loan_cancel' => 'Cancel',
+    'loan_not_available_desc' => 'Loans can be requested during transfer windows when no other loan is active.',
 ];

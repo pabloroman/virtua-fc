@@ -50,6 +50,7 @@ use App\Http\Actions\NegotiateRenewal;
 use App\Http\Actions\NegotiateTransfer;
 use App\Http\Actions\ReleasePlayer;
 use App\Http\Actions\RejectTransferOffer;
+use App\Http\Actions\RequestBudgetLoan;
 use App\Http\Actions\RequestLoan;
 use App\Http\Actions\WithdrawTransferOffer;
 use App\Http\Actions\SaveLineup;
@@ -221,6 +222,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/game/{gameId}/budget', ShowBudgetAllocation::class)->name('game.budget');
         Route::post('/game/{gameId}/budget', SaveBudgetAllocation::class)->name('game.budget.save');
         Route::post('/game/{gameId}/infrastructure/upgrade', UpgradeInfrastructure::class)->name('game.infrastructure.upgrade');
+        Route::post('/game/{gameId}/budget-loan', RequestBudgetLoan::class)->name('game.budget-loan');
 
         // Welcome Tutorial (new games only)
         Route::get('/game/{gameId}/welcome', ShowWelcome::class)->name('game.welcome');

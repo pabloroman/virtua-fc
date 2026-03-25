@@ -123,4 +123,10 @@ return [
     'game_limit_reached' => 'Has alcanzado el límite máximo de 3 partidas. Elimina una para crear otra nueva.',
     'career_mode_requires_invite' => '¡El modo carrera requiere una invitación. Juega el Mundial gratis!',
     'tournament_mode_requires_access' => 'El modo torneo requiere acceso. Contacta con un administrador para empezar.',
+
+    // Budget loan messages
+    'budget_loan_approved' => 'Préstamo de :amount aprobado y añadido a tu presupuesto de fichajes.',
+    'loan_not_available' => 'Un préstamo presupuestario no está disponible ahora mismo.',
+    'loan_below_minimum' => 'El importe del préstamo está por debajo del mínimo.',
+    'loan_exceeds_maximum' => 'El importe del préstamo supera el máximo permitido.',
 ];

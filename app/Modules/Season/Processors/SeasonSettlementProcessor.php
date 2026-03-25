@@ -4,6 +4,8 @@ namespace App\Modules\Season\Processors;
 
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
+use App\Modules\Finance\Services\BudgetLoanService;
+use App\Models\BudgetLoan;
 use App\Models\FinancialTransaction;
 use App\Models\TeamReputation;
 use App\Models\Game;
@@ -92,6 +94,17 @@ class SeasonSettlementProcessor implements SeasonProcessor
             'variance' => $variance,
         ]);
 
+        // Repay any active budget loan
+        $loanRepayment = 0;
+        $activeLoan = BudgetLoan::where('game_id', $game->id)
+            ->where('status', BudgetLoan::STATUS_ACTIVE)
+            ->first();
+
+        if ($activeLoan) {
+            $loanService = app(BudgetLoanService::class);
+            $loanRepayment = $loanService->repayLoan($activeLoan);
+        }
+
         // Store in metadata for season-end display
         $data->setMetadata('finances', [
             'projected_position' => $finances->projected_position,
@@ -102,6 +115,7 @@ class SeasonSettlementProcessor implements SeasonProcessor
             'actual_surplus' => $actualSurplus,
             'variance' => $variance,
             'has_debt' => $variance < 0,
+            'loan_repayment' => $loanRepayment,
         ]);
 
         return $data;

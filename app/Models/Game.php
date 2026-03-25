@@ -393,6 +393,16 @@ class Game extends Model
         return $this->hasMany(Loan::class)->where('status', Loan::STATUS_ACTIVE);
     }
 
+    public function budgetLoans(): HasMany
+    {
+        return $this->hasMany(BudgetLoan::class);
+    }
+
+    public function activeBudgetLoan(): HasOne
+    {
+        return $this->hasOne(BudgetLoan::class)->where('status', BudgetLoan::STATUS_ACTIVE);
+    }
+
     public function scoutReports(): HasMany
     {
         return $this->hasMany(ScoutReport::class);

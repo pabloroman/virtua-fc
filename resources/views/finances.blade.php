@@ -9,6 +9,9 @@
 /** @var int $purchaseSpending */
 /** @var int $infrastructureSpending */
 /** @var bool $hasTransferActivity */
+/** @var App\Models\BudgetLoan|null $activeLoan */
+/** @var bool $canRequestLoan */
+/** @var int $maxLoanAmount */
 @endphp
 
 <x-app-layout>
@@ -289,6 +292,94 @@
 
             {{-- RIGHT COLUMN (1/3) --}}
             <div class="space-y-6">
+
+                {{-- Budget Loan --}}
+                @if($investment)
+                <x-section-card :title="__('finances.budget_loan')">
+                    <div class="p-4">
+                        @if($activeLoan)
+                            {{-- Active loan display --}}
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="inline-flex items-center px-2 py-0.5 text-[10px] font-bold rounded-full bg-accent-gold/10 text-accent-gold uppercase tracking-wider">{{ __('finances.loan_active') }}</span>
+                                </div>
+                                <div class="flex items-center justify-between py-1.5">
+                                    <span class="text-sm text-text-muted">{{ __('finances.loan_principal') }}</span>
+                                    <span class="text-sm font-semibold text-accent-green">+{{ $activeLoan->formatted_amount }}</span>
+                                </div>
+                                <div class="flex items-center justify-between py-1.5">
+                                    <span class="text-sm text-text-muted">{{ __('finances.loan_interest') }}</span>
+                                    <span class="text-sm font-medium text-accent-red">{{ $activeLoan->formatted_interest_amount }}</span>
+                                </div>
+                                <div class="border-t border-border-default pt-2">
+                                    <div class="flex items-center justify-between py-1">
+                                        <span class="text-sm font-semibold text-text-body">{{ __('finances.loan_repayment') }}</span>
+                                        <span class="text-sm font-bold text-text-primary">{{ $activeLoan->formatted_repayment_amount }}</span>
+                                    </div>
+                                </div>
+                                <p class="text-[10px] text-text-faint mt-2">{{ __('finances.loan_repayment_hint') }}</p>
+                            </div>
+                        @elseif($canRequestLoan && $maxLoanAmount > 0)
+                            {{-- Request loan form --}}
+                            <div x-data="{ amount: 0, showForm: false, max: {{ $maxLoanAmount / 100 }}, min: {{ config('finances.loan.minimum', 50_000_000) / 100 }}, interestRate: {{ config('finances.loan.interest_rate', 1500) }} }">
+                                <p class="text-sm text-text-secondary mb-3">{{ __('finances.loan_description') }}</p>
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('finances.loan_max_available') }}</span>
+                                    <span class="font-heading text-lg font-bold text-text-primary">{{ \App\Support\Money::format($maxLoanAmount) }}</span>
+                                </div>
+
+                                <template x-if="!showForm">
+                                    <x-ghost-button color="amber" size="xs" @click="showForm = true; amount = max" class="w-full justify-center gap-1.5 font-semibold py-2">
+                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                                        {{ __('finances.loan_request_button') }}
+                                    </x-ghost-button>
+                                </template>
+
+                                <div x-show="showForm" x-cloak class="space-y-3">
+                                    <form method="POST" action="{{ route('game.budget-loan', $game->id) }}">
+                                        @csrf
+                                        <div class="space-y-3">
+                                            <div>
+                                                <label class="text-[10px] text-text-muted uppercase tracking-widest block mb-1">{{ __('finances.loan_amount_label') }}</label>
+                                                <input type="number"
+                                                    name="amount"
+                                                    x-model.number="amount"
+                                                    :min="min"
+                                                    :max="max"
+                                                    step="100000"
+                                                    class="w-full bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent-blue focus:border-accent-blue"
+                                                >
+                                            </div>
+                                            <div class="bg-surface-700/30 rounded-lg p-3 space-y-1.5">
+                                                <div class="flex items-center justify-between text-[11px]">
+                                                    <span class="text-text-muted">{{ __('finances.loan_interest_rate') }}</span>
+                                                    <span class="text-text-secondary font-medium" x-text="(interestRate / 100) + '%'"></span>
+                                                </div>
+                                                <div class="flex items-center justify-between text-[11px]">
+                                                    <span class="text-text-muted">{{ __('finances.loan_total_repayment') }}</span>
+                                                    <span class="text-accent-red font-semibold" x-text="'€' + Math.round(amount * (1 + interestRate / 10000)).toLocaleString('en')"></span>
+                                                </div>
+                                            </div>
+                                            <p class="text-[10px] text-accent-gold">{{ __('finances.loan_warning') }}</p>
+                                            <div class="flex gap-2">
+                                                <x-primary-button color="amber" size="xs" class="flex-1 justify-center">
+                                                    {{ __('finances.loan_confirm') }}
+                                                </x-primary-button>
+                                                <x-ghost-button color="slate" size="xs" @click="showForm = false" type="button" class="flex-1 justify-center">
+                                                    {{ __('finances.loan_cancel') }}
+                                                </x-ghost-button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        @else
+                            {{-- Loan not available --}}
+                            <p class="text-sm text-text-muted">{{ __('finances.loan_not_available_desc') }}</p>
+                        @endif
+                    </div>
+                </x-section-card>
+                @endif
 
                 {{-- Infrastructure --}}
                 @if($investment)

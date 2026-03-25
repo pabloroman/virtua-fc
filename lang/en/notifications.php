@@ -133,4 +133,11 @@ return [
     'reputation_change_title' => 'Club reputation changed',
     'reputation_improved' => 'Your club\'s reputation has grown to :tier. Sponsors, players and fans are taking notice.',
     'reputation_declined' => 'Your club\'s reputation has dropped to :tier. Time to rebuild and return to former glory.',
+
+    // Budget loan
+    'budget_loan_taken_title' => 'Budget loan secured',
+    'budget_loan_taken_message' => 'The club has secured a loan of :amount. Repayment of :repayment will be deducted from next season\'s budget.',
+    'budget_loan_repaid_title' => 'Budget loan repaid',
+    'budget_loan_repaid_message' => 'The budget loan has been repaid (:repayment with interest).',
+    'budget_loan_repaid_with_debt' => 'The budget loan repayment of :repayment exceeded available surplus. The shortfall has been carried as debt.',
 ];

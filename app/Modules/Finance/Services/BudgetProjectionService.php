@@ -2,6 +2,7 @@
 
 namespace App\Modules\Finance\Services;
 
+use App\Models\BudgetLoan;
 use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\CompetitionEntry;
@@ -310,11 +311,18 @@ class BudgetProjectionService
             ->where('type', FinancialTransaction::TYPE_EXPENSE)
             ->sum('amount');
 
+        // Budget loan repayment from the previous season
+        $loanRepayment = BudgetLoan::where('game_id', $game->id)
+            ->where('season', $previousSeason)
+            ->where('status', BudgetLoan::STATUS_REPAID)
+            ->sum('repayment_amount');
+
         return $previousFinances->actual_surplus
             + $previousFinances->carried_surplus
             - $previousFinances->carried_debt
             - $infrastructure
-            - $transferSpending;
+            - $transferSpending
+            - $loanRepayment;
     }
 
     /**

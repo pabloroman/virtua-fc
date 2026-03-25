@@ -2,6 +2,7 @@
 
 namespace App\Http\Views;
 
+use App\Modules\Finance\Services\BudgetLoanService;
 use App\Modules\Finance\Services\BudgetProjectionService;
 use App\Models\FinancialTransaction;
 use App\Models\Game;
@@ -13,6 +14,7 @@ class ShowFinances
 {
     public function __construct(
         private readonly BudgetProjectionService $projectionService,
+        private readonly BudgetLoanService $loanService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -94,6 +96,11 @@ class ShowFinances
 
         $hasTransferActivity = $salesRevenue > 0 || $purchaseSpending > 0 || $infrastructureSpending > 0;
 
+        // Budget loan data
+        $activeLoan = $this->loanService->activeLoan($game);
+        $canRequestLoan = $this->loanService->canRequestLoan($game);
+        $maxLoanAmount = $this->loanService->maxLoanAmount($game);
+
         return view('finances', [
             'game' => $game,
             'finances' => $finances,
@@ -111,6 +118,9 @@ class ShowFinances
             'purchaseSpending' => $purchaseSpending,
             'infrastructureSpending' => $infrastructureSpending,
             'hasTransferActivity' => $hasTransferActivity,
+            'activeLoan' => $activeLoan,
+            'canRequestLoan' => $canRequestLoan,
+            'maxLoanAmount' => $maxLoanAmount,
         ]);
     }
 }

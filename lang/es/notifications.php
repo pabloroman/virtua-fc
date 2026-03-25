@@ -133,4 +133,11 @@ return [
     'reputation_change_title' => 'Reputación del club modificada',
     'reputation_improved' => 'La reputación de tu club ha ascendido a :tier. Patrocinadores, jugadores y aficionados lo notan.',
     'reputation_declined' => 'La reputación de tu club ha descendido a :tier. Es hora de reconstruir y recuperar la gloria pasada.',
+
+    // Budget loan
+    'budget_loan_taken_title' => 'Préstamo presupuestario concedido',
+    'budget_loan_taken_message' => 'El club ha obtenido un préstamo de :amount. La devolución de :repayment se descontará del presupuesto de la próxima temporada.',
+    'budget_loan_repaid_title' => 'Préstamo presupuestario devuelto',
+    'budget_loan_repaid_message' => 'El préstamo presupuestario ha sido devuelto (:repayment con intereses).',
+    'budget_loan_repaid_with_debt' => 'La devolución del préstamo de :repayment superó el superávit disponible. El déficit se arrastra como deuda.',
 ];

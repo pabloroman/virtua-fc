@@ -180,6 +180,8 @@ return [
 
     'category_severance' => 'Indemnización',
     'category_infrastructure' => 'Infraestructura',
+    'category_budget_loan' => 'Préstamo Presupuestario',
+    'category_loan_repayment' => 'Devolución de Préstamo',
 
     // Infrastructure upgrades
     'upgrade' => 'Mejorar',
@@ -194,4 +196,23 @@ return [
     'tx_player_released' => ':player liberado (indemnización)',
     'tx_cup_advancement' => ':competition - Ronda :round superada',
     'tx_infrastructure_upgrade' => ':area mejorada de Nivel :from a Nivel :to',
+    'tx_budget_loan_received' => 'Préstamo presupuestario recibido: :amount',
+
+    // Budget loan
+    'budget_loan' => 'Préstamo Presupuestario',
+    'loan_active' => 'Activo',
+    'loan_principal' => 'Préstamo recibido',
+    'loan_interest' => 'Intereses (15%)',
+    'loan_repayment' => 'Devolución a fin de temporada',
+    'loan_repayment_hint' => 'Se devuelve automáticamente al final de la temporada. La devolución reduce el superávit disponible de la próxima temporada.',
+    'loan_description' => 'Pide un préstamo contra los ingresos proyectados para aumentar tu presupuesto de fichajes. Se devuelve con intereses al final de la temporada.',
+    'loan_max_available' => 'Máximo disponible',
+    'loan_request_button' => 'Solicitar Préstamo',
+    'loan_amount_label' => 'Importe (€)',
+    'loan_interest_rate' => 'Tipo de interés',
+    'loan_total_repayment' => 'Devolución total',
+    'loan_warning' => 'La devolución completa se deducirá del superávit de la próxima temporada.',
+    'loan_confirm' => 'Confirmar Préstamo',
+    'loan_cancel' => 'Cancelar',
+    'loan_not_available_desc' => 'Los préstamos se pueden solicitar durante las ventanas de fichajes cuando no hay otro préstamo activo.',
 ];

@@ -721,6 +721,35 @@ class NotificationService
         );
     }
 
+    public function notifyBudgetLoanTaken(Game $game, string $formattedAmount, string $formattedRepayment): GameNotification
+    {
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_BUDGET_LOAN,
+            title: __('notifications.budget_loan_taken_title'),
+            message: __('notifications.budget_loan_taken_message', [
+                'amount' => $formattedAmount,
+                'repayment' => $formattedRepayment,
+            ]),
+            priority: GameNotification::PRIORITY_WARNING,
+        );
+    }
+
+    public function notifyBudgetLoanRepaid(Game $game, string $formattedRepayment, bool $createdDebt): GameNotification
+    {
+        $message = $createdDebt
+            ? __('notifications.budget_loan_repaid_with_debt', ['repayment' => $formattedRepayment])
+            : __('notifications.budget_loan_repaid_message', ['repayment' => $formattedRepayment]);
+
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_BUDGET_LOAN,
+            title: __('notifications.budget_loan_repaid_title'),
+            message: $message,
+            priority: $createdDebt ? GameNotification::PRIORITY_WARNING : GameNotification::PRIORITY_INFO,
+        );
+    }
+
     // ==========================================
     // Helpers
     // ==========================================
@@ -754,6 +783,7 @@ class NotificationService
             GameNotification::TYPE_TRACKING_INTEL_READY => 'scout',
             GameNotification::TYPE_EMERGENCY_SIGNING => 'transfer_complete',
             GameNotification::TYPE_MATCH_FORFEIT => 'eliminated',
+            GameNotification::TYPE_BUDGET_LOAN => 'transfer',
             default => 'bell',
         };
     }

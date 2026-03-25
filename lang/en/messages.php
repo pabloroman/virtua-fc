@@ -123,4 +123,10 @@ return [
     'game_limit_reached' => 'You have reached the maximum limit of 3 games. Delete one to create another.',
     'career_mode_requires_invite' => 'Career mode requires an invitation. Play the World Cup for free!',
     'tournament_mode_requires_access' => 'Tournament mode requires access. Contact an admin to get started.',
+
+    // Budget loan messages
+    'budget_loan_approved' => 'Loan of :amount approved and added to your transfer budget.',
+    'loan_not_available' => 'A budget loan is not available right now.',
+    'loan_below_minimum' => 'The loan amount is below the minimum.',
+    'loan_exceeds_maximum' => 'The loan amount exceeds the maximum allowed.',
 ];
