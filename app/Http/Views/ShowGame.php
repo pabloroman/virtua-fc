@@ -37,11 +37,23 @@ class ShowGame
             // Re-dispatch if stuck for > 2 minutes
             if ($game->season_transitioning_at->lt(now()->subMinutes(2))) {
                 ProcessSeasonTransition::dispatch($game->id);
+                $game->update(['season_transitioning_at' => now()]);
             }
             return view('game-loading', [
                 'game' => $game,
                 'title' => __('game.preparing_season'),
                 'message' => __('game.setup_loading_message'),
+                'showCrest' => true,
+            ]);
+        }
+
+        // Show loading screen while remaining batches are processing in background
+        $game->clearStuckRemainingBatches();
+        if ($game->isProcessingRemainingBatches()) {
+            return view('game-loading', [
+                'game' => $game,
+                'title' => __('game.simulating_matches'),
+                'message' => __('game.simulating_matches_message'),
                 'showCrest' => true,
             ]);
         }

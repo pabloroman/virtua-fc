@@ -45,8 +45,8 @@ class ProcessMatchdayAdvance implements ShouldQueue, ShouldBeUnique
 
         $result = $orchestrator->advance($game);
 
-        // Dispatch SeasonCompleted event for season_complete/done results
-        if (in_array($result->type, ['season_complete', 'done'])) {
+        // Dispatch SeasonCompleted event for season_complete/done results (career mode only)
+        if (! $game->isTournamentMode() && in_array($result->type, ['season_complete', 'done'])) {
             $game->refresh();
             event(new SeasonCompleted($game));
         }
@@ -55,19 +55,21 @@ class ProcessMatchdayAdvance implements ShouldQueue, ShouldBeUnique
         $game->refresh();
         $activationTracker->record($game->user_id, ActivationEvent::EVENT_FIRST_MATCH_PLAYED, $game->id, $game->game_mode);
 
-        $alreadyRecorded = ActivationEvent::where('user_id', $game->user_id)
-            ->where('game_id', $game->id)
-            ->where('event', ActivationEvent::EVENT_5_MATCHES_PLAYED)
-            ->exists();
+        if (! $game->isTournamentMode()) {
+            $alreadyRecorded = ActivationEvent::where('user_id', $game->user_id)
+                ->where('game_id', $game->id)
+                ->where('event', ActivationEvent::EVENT_5_MATCHES_PLAYED)
+                ->exists();
 
-        if (! $alreadyRecorded) {
-            $matchesPlayed = GameMatch::where('game_id', $game->id)
-                ->where('played', true)
-                ->where(fn ($q) => $q->where('home_team_id', $game->team_id)->orWhere('away_team_id', $game->team_id))
-                ->count();
+            if (! $alreadyRecorded) {
+                $matchesPlayed = GameMatch::where('game_id', $game->id)
+                    ->where('played', true)
+                    ->where(fn ($q) => $q->where('home_team_id', $game->team_id)->orWhere('away_team_id', $game->team_id))
+                    ->count();
 
-            if ($matchesPlayed >= 5) {
-                $activationTracker->record($game->user_id, ActivationEvent::EVENT_5_MATCHES_PLAYED, $game->id, $game->game_mode);
+                if ($matchesPlayed >= 5) {
+                    $activationTracker->record($game->user_id, ActivationEvent::EVENT_5_MATCHES_PLAYED, $game->id, $game->game_mode);
+                }
             }
         }
 

@@ -76,6 +76,8 @@ return [
     'formation_tip_4141' => 'Defensive. :attack attack, :defense goals conceded.',
     'formation_tip_532' => 'Very defensive. :attack attack, :defense goals conceded.',
     'formation_tip_541' => 'Ultra defensive. :attack attack, :defense goals conceded.',
+    'formation_tip_4123' => 'Attacking with DM anchor. :attack attack, :defense goals conceded.',
+    'formation_tip_4321' => 'Creative, narrow attack. :attack attack, :defense goals conceded.',
 
     // Mentality tooltips
     'mentality_tip_defensive' => 'Your goals :own, opponent goals :opponent. Shut the game down.',
@@ -271,6 +273,7 @@ return [
     'live_pen_missed' => 'Missed',
     'live_pen_round' => 'Round :round',
     'live_pen_winner' => 'wins on penalties!',
+    'live_pen_preparing' => 'Preparing to shoot...',
 
     // Substitutions
     'sub_title' => 'Substitutions',
@@ -337,13 +340,16 @@ return [
     'start_game' => 'Start Game',
     'start_tournament' => 'Start Tournament',
 
+    'tournament_history' => 'Tournament History',
+
     // Game modes
     'mode_career' => 'Career Mode',
     'mode_career_desc' => 'Manage a club through multiple seasons',
-    'mode_tournament' => 'World Cup',
+    'mode_tournament' => 'National team',
     'mode_tournament_desc' => 'Manage a national team in the World Cup',
     'mode_tournament_badge' => 'World Cup',
     'wc2026_name' => 'World Cup 2026',
+    'career_requires_invite' => 'Coming soon',
 
     // Season Goals
     'goal_title' => 'Win the League',
@@ -446,4 +452,10 @@ return [
     // MVP
     'mvp' => 'MVP',
     'mvp_of_the_match' => 'MVP of the Match',
+
+    // xG Preview
+    'xg_preview' => 'xG Preview',
+    'xg_your_team' => 'Your xG',
+    'xg_opponent' => 'Opponent xG',
+    'xg_explanation' => 'Expected goals based on your lineup and tactical setup. Changes as you adjust tactics.',
 ];

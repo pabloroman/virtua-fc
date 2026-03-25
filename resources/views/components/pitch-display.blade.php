@@ -67,6 +67,7 @@
                                         'bg-blue-500/25': state === 'valid-def',
                                         'bg-emerald-500/25': state === 'valid-mid',
                                         'bg-red-500/25': state === 'valid-fwd',
+                                        'bg-amber-500/25': state === 'valid-gk',
                                         [getZoneColorClass('Goalkeeper')]: state === 'valid',
                                         'bg-surface-800/5': state === 'occupied',
                                         'bg-black/15': state === 'invalid',

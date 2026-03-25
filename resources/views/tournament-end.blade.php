@@ -69,10 +69,51 @@ $formatGoalGroup = function ($goals) {
 
 $homeGoalLines = $formatGoalGroup($homeGoals);
 $awayGoalLines = $formatGoalGroup($awayGoals);
+
+// Prepare squad data for image download
+$positionGroupOrder = ['Goalkeeper', 'Defender', 'Midfielder', 'Forward'];
+$positionGroupLabels = [
+    'Goalkeeper' => __('squad.goalkeepers'),
+    'Defender' => __('squad.defenders'),
+    'Midfielder' => __('squad.midfielders'),
+    'Forward' => __('squad.forwards'),
+];
+$squadByGroup = [];
+foreach ($positionGroupOrder as $group) {
+    $players = $yourAppearances->filter(fn($gp) => $gp->position_group === $group);
+    if ($players->isNotEmpty()) {
+        $squadByGroup[$group] = $players->map(fn($gp) => [
+            'name' => $gp->player->name,
+            'appearances' => $gp->appearances,
+            'goals' => $gp->goals,
+            'assists' => $gp->assists,
+        ])->values()->toArray();
+    }
+}
 @endphp
 
 <x-app-layout :hide-footer="true">
-    <div class="min-h-screen bg-surface-900">
+    <div class="min-h-screen bg-surface-900" x-data="tournamentSummary({
+        teamName: @js($game->team->name),
+        teamCrestUrl: @js($game->team->image),
+        resultLabel: @js(__('season.result_' . $resultLabel)),
+        isChampion: @js($isChampion),
+        record: @js($yourRecord),
+        squadByGroup: @js($squadByGroup),
+        groupLabels: @js($positionGroupLabels),
+        statLabels: @js([
+            'played' => __('season.played_abbr'),
+            'won' => __('season.won'),
+            'drawn' => __('season.drawn'),
+            'lost' => __('season.lost'),
+            'gf' => __('season.goals_for'),
+            'ga' => __('season.goals_against'),
+            'gd' => __('season.goal_diff_abbr'),
+            'apps' => __('squad.appearances'),
+            'goals' => __('squad.goals'),
+            'assists' => __('squad.assists'),
+        ]),
+    })">
 
         {{-- ============================================ --}}
         {{-- SECTION 1: Hero Header + Final Scoreboard    --}}
@@ -448,7 +489,7 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                                                 <th class="text-center py-2 w-10">{{ __('squad.appearances') }}</th>
                                                 <th class="text-center py-2 w-10">{{ __('squad.goals') }}</th>
                                                 <th class="text-center py-2 w-10">{{ __('squad.assists') }}</th>
-                                                <th class="text-center py-2 w-10 text-accent-yellow">{{ __('squad.mvp') }}</th>
+                                                <th class="text-center py-2 w-10 text-accent-gold">{{ __('squad.mvp') }}</th>
                                                 <th class="text-center py-2 w-10 hidden md:table-cell">{{ __('squad.yellow_cards') }}</th>
                                                 <th class="text-center py-2 w-10 hidden md:table-cell">{{ __('squad.red_cards') }}</th>
                                             </tr>
@@ -462,7 +503,7 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                                                 <td class="text-center py-1.5 {{ $gp->goals > 0 ? 'font-semibold text-text-body' : 'text-text-muted' }}">{{ $gp->goals }}</td>
                                                 <td class="text-center py-1.5 {{ $gp->assists > 0 ? 'font-semibold text-text-body' : 'text-text-muted' }}">{{ $gp->assists }}</td>
                                                 @php $gpMvpCount = $mvpCounts[$gp->id] ?? 0; @endphp
-                                                <td class="text-center py-1.5 {{ $gpMvpCount > 0 ? 'font-semibold text-accent-yellow' : 'text-text-muted' }}">{{ $gpMvpCount }}</td>
+                                                <td class="text-center py-1.5 {{ $gpMvpCount > 0 ? 'font-semibold text-accent-gold' : 'text-text-muted' }}">{{ $gpMvpCount }}</td>
                                                 <td class="text-center py-1.5 hidden md:table-cell {{ $gp->yellow_cards > 0 ? 'text-accent-gold font-medium' : 'text-text-muted' }}">{{ $gp->yellow_cards }}</td>
                                                 <td class="text-center py-1.5 hidden md:table-cell {{ $gp->red_cards > 0 ? 'text-accent-red font-medium' : 'text-text-muted' }}">{{ $gp->red_cards }}</td>
                                             </tr>
@@ -593,10 +634,10 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
 
                     {{-- Most MVPs --}}
                     <x-section-card>
-                        <div class="bg-accent-yellow/10 px-5 py-4 border-b border-accent-yellow/20">
+                        <div class="bg-accent-gold/10 px-5 py-4 border-b border-accent-gold/20">
                             <div class="flex items-center gap-2 mb-1">
                                 <span class="text-lg">&#9733;</span>
-                                <span class="font-heading text-xs text-accent-yellow font-semibold uppercase tracking-widest">{{ __('season.most_mvps') }}</span>
+                                <span class="font-heading text-xs text-accent-gold font-semibold uppercase tracking-widest">{{ __('season.most_mvps') }}</span>
                             </div>
                             @if($topMvps->isNotEmpty())
                             @php $mvpWinner = $topMvps->first(); @endphp
@@ -606,8 +647,8 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                                     <span class="font-bold text-text-primary truncate">{{ $mvpWinner->gamePlayer->player->name }}</span>
                                 </div>
                                 <div class="shrink-0 text-right">
-                                    <span class="font-heading text-2xl md:text-3xl font-bold text-accent-yellow">{{ $mvpWinner->count }}</span>
-                                    <span class="text-xs text-accent-yellow/70 ml-0.5">{{ __('season.mvp_awards') }}</span>
+                                    <span class="font-heading text-2xl md:text-3xl font-bold text-accent-gold">{{ $mvpWinner->count }}</span>
+                                    <span class="text-xs text-accent-gold/70 ml-0.5">{{ __('season.mvp_awards') }}</span>
                                 </div>
                             </div>
                             @else
@@ -617,7 +658,7 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                         @if($topMvps->count() > 1)
                         <div class="px-5 py-3 space-y-1.5">
                             @foreach($topMvps->skip(1) as $mvp)
-                            <div class="flex items-center gap-2.5 {{ $mvp->gamePlayer->team_id === $game->team_id ? 'bg-accent-yellow/10 -mx-2 px-2 rounded-sm' : '' }}">
+                            <div class="flex items-center gap-2.5 {{ $mvp->gamePlayer->team_id === $game->team_id ? 'bg-accent-gold/10 -mx-2 px-2 rounded-sm' : '' }}">
                                 <span class="w-5 text-center text-xs font-bold text-text-secondary">{{ $loop->iteration + 1 }}</span>
                                 <x-team-crest :team="$mvp->gamePlayer->team" class="w-4 h-4 shrink-0" />
                                 <span class="flex-1 text-sm text-text-body truncate">{{ $mvp->gamePlayer->player->name }}</span>
@@ -634,57 +675,25 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
             {{-- ============================================ --}}
             {{-- DONATION CTA                                 --}}
             {{-- ============================================ --}}
-            <div class="mb-4">
+            <div class="mt-10">
                 <x-donation-cta />
             </div>
 
             {{-- ============================================ --}}
             {{-- SECTION 4: Bottom CTAs                       --}}
             {{-- ============================================ --}}
-            <div class="mt-10 mb-10 text-center space-y-4" x-data="{ copied: false }">
-                <div>
-                    <x-secondary-button
-                        @click="
-                            const text = @js(__('season.share_text', [
-                                'result' => __('season.result_' . $resultLabel),
-                                'competition' => __($competition->name ?? 'game.wc2026_name'),
-                                'team' => $game->team->name,
-                            ]));
-                            if (navigator.share) {
-                                navigator.share({ text }).catch(() => {});
-                            } else if (navigator.clipboard) {
-                                navigator.clipboard.writeText(text).then(() => {
-                                    copied = true;
-                                    setTimeout(() => copied = false, 2000);
-                                });
-                            } else {
-                                const ta = document.createElement('textarea');
-                                ta.value = text;
-                                ta.style.position = 'fixed';
-                                ta.style.opacity = '0';
-                                document.body.appendChild(ta);
-                                ta.select();
-                                document.execCommand('copy');
-                                document.body.removeChild(ta);
-                                copied = true;
-                                setTimeout(() => copied = false, 2000);
-                            }
-                        "
-                        class="gap-2 px-6 py-3"
-                    >
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                        </svg>
-                        <span x-show="!copied">{{ __('season.share_result') }}</span>
-                        <span x-show="copied" x-cloak class="text-accent-green">{{ __('season.copied_to_clipboard') }}</span>
-                    </x-secondary-button>
-                </div>
-
-                <div class="mb-10">
-                    <x-primary-button-link href="{{ route('select-team') }}" color="green" class="px-8 py-4 text-lg font-bold">
-                        {{ __('season.play_again') }}
-                    </x-primary-button-link>
-                </div>
+            <div class="mt-10 mb-10 flex flex-col sm:flex-row items-center justify-center gap-3">
+                <x-secondary-button
+                    type="button"
+                    @click="downloadTournamentImage()"
+                    class="px-6 py-4 text-base"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+                    <span class="ml-1.5">{{ __('squad.download_squad') }}</span>
+                </x-secondary-button>
+                <x-primary-button-link href="{{ route('select-team') }}" color="green" class="px-8 py-4 text-lg font-bold">
+                    {{ __('season.play_again') }}
+                </x-primary-button-link>
             </div>
 
         </div>

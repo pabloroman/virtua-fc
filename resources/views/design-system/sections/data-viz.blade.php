@@ -5,7 +5,7 @@
     {{-- Ability Bar --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-text-primary mb-2">Ability Bar</h3>
-        <p class="text-sm text-text-secondary mb-4">Displays a player stat value with a colored progress bar. Color-coded by threshold: green (80+), lime (70+), amber (60+), slate (below 60). Uses the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">x-ability-bar</code> component.</p>
+        <p class="text-sm text-text-secondary mb-4">Displays a player stat value with a colored progress bar. Color-coded by threshold: green (80+), lime (70+), amber (60+), orange (below 60). Supports single values and ranges (for scouting reports). Uses the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">x-ability-bar</code> component.</p>
 
         <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 space-y-4 mb-3">
             <div>
@@ -39,6 +39,19 @@
                     </div>
                 </div>
             </div>
+            <div>
+                <div class="text-xs text-text-muted mb-2">Range mode (for scouting reports)</div>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-4">
+                        <span class="text-xs text-text-muted w-20">High</span>
+                        <x-ability-bar :range="[75, 82]" size="sm" class="text-xs font-semibold tabular-nums text-text-body" />
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="text-xs text-text-muted w-20">Low</span>
+                        <x-ability-bar :range="[48, 54]" size="sm" class="text-xs font-semibold tabular-nums text-text-body" />
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div x-data="{ copied: false }" class="relative mb-4">
@@ -47,8 +60,11 @@
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
-            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="code">&lt;x-ability-bar :value="$player-&gt;technical_ability" size="sm" /&gt;
-&lt;x-ability-bar :value="85" size="md" class="text-xs font-medium text-emerald-400" /&gt;</code></pre>
+            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="code">&lt;!-- Single value --&gt;
+&lt;x-ability-bar :value="$player-&gt;technical_ability" size="sm" /&gt;
+
+&lt;!-- Range (scouting reports) --&gt;
+&lt;x-ability-bar :range="$techRange" size="sm" class="text-xs font-semibold tabular-nums text-text-body" /&gt;</code></pre>
         </div>
 
         <div class="overflow-x-auto">
@@ -65,8 +81,14 @@
                     <tr class="border-b border-border-default">
                         <td class="py-2 pr-4 font-mono text-xs text-accent-blue">value</td>
                         <td class="py-2 pr-4 text-text-secondary">int</td>
-                        <td class="py-2 pr-4 font-mono text-xs text-text-secondary">required</td>
-                        <td class="py-2 text-text-secondary">Current ability value</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-secondary">null</td>
+                        <td class="py-2 text-text-secondary">Single ability value (provide either value or range)</td>
+                    </tr>
+                    <tr class="border-b border-border-default">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">range</td>
+                        <td class="py-2 pr-4 text-text-secondary">array</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-secondary">null</td>
+                        <td class="py-2 text-text-secondary">[min, max] range — displays as "min-max", bar uses midpoint</td>
                     </tr>
                     <tr class="border-b border-border-default">
                         <td class="py-2 pr-4 font-mono text-xs text-accent-blue">max</td>

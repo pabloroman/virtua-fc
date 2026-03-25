@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VirtuaFC: Selección Nacional — Dirige tu selección nacional de fútbol</title>
+    <meta name="description" content="Conviértete en seleccionador nacional. Elige entre 48 selecciones reales, arma tu plantilla de 26 jugadores y lleva a tu país a la gloria. Gratis, sin descargas, sin anuncios.">
+    <meta name="keywords" content="football manager, seleccionador nacional, juego de fútbol, selección nacional, simulador fútbol, manager online, juego gratis fútbol, dirigir selección">
+    <meta name="author" content="VirtuaFC">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://virtuafc.com/">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="VirtuaFC: Selección Nacional — Dirige tu selección nacional de fútbol">
+    <meta property="og:description" content="Conviértete en seleccionador nacional. Elige entre 48 selecciones reales, arma tu plantilla y lleva a tu país a la gloria. Gratis, sin descargas, sin anuncios.">
+    <meta property="og:url" content="https://virtuafc.com/">
+    <meta property="og:site_name" content="VirtuaFC">
+    <meta property="og:locale" content="es_ES">
+    <!-- <meta property="og:image" content="https://virtuafc.com/og-image.jpg"> -->
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="VirtuaFC: Selección Nacional — Dirige tu selección nacional de fútbol">
+    <meta name="twitter:description" content="Conviértete en seleccionador nacional. Elige entre 48 selecciones reales, arma tu plantilla y lleva a tu país a la gloria. Gratis, sin descargas, sin anuncios.">
+    <!-- <meta name="twitter:image" content="https://virtuafc.com/og-image.jpg"> -->
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&family=Barlow+Semi+Condensed:wght@800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        heading: ['Barlow Condensed', 'sans-serif'],
+                        body: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        surface: {
+                            900: '#0B1120',
+                            800: '#0F172A',
+                            700: '#1E293B',
+                            600: '#334155',
+                        },
+                        accent: {
+                            blue: '#3B82F6',
+                            gold: '#F59E0B',
+                            green: '#22C55E',
+                            red: '#EF4444',
+                            orange: '#F97316',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Barlow Condensed', sans-serif; }
+
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: #0B1120; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+
+        html { scroll-behavior: smooth; }
+
+        /* ── Hero background layers ── */
+        .hero-section {
+            position: relative;
+            overflow: hidden;
+            background:
+                radial-gradient(ellipse 600px 400px at 50% 20%, rgba(59,130,246,0.10) 0%, transparent 70%),
+                radial-gradient(ellipse 400px 300px at 70% 60%, rgba(245,158,11,0.04) 0%, transparent 70%),
+                #0B1120;
+        }
+
+        /* Scanline overlay — retro CRT feel */
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.04) 2px,
+                rgba(0, 0, 0, 0.04) 4px
+            );
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* Grid pattern — broadcast/scoreboard aesthetic */
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+            background-size: 64px 64px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Diagonal gold accent stripe */
+        .hero-stripe {
+            position: absolute;
+            top: -20%;
+            right: 8%;
+            width: 2px;
+            height: 140%;
+            background: linear-gradient(180deg, transparent, rgba(245,158,11,0.15), rgba(245,158,11,0.08), transparent);
+            transform: rotate(15deg);
+            pointer-events: none;
+            z-index: 3;
+        }
+        .hero-stripe-2 {
+            position: absolute;
+            top: -20%;
+            right: 10%;
+            width: 1px;
+            height: 140%;
+            background: linear-gradient(180deg, transparent, rgba(245,158,11,0.08), transparent);
+            transform: rotate(15deg);
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        /* ── Country name rotation ── */
+        .country-rotator {
+            display: inline-block;
+            overflow: hidden;
+            vertical-align: bottom;
+            height: 1.5em;
+            position: relative;
+            top: 2px;
+        }
+
+        .country-track {
+            display: flex;
+            flex-direction: column;
+            animation: rotate-countries 10s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+
+        .country-track span {
+            display: block;
+            height: 1.5em;
+            line-height: 1.5;
+            white-space: nowrap;
+        }
+
+        @keyframes rotate-countries {
+            0%, 18%   { transform: translateY(0); }
+            22%, 43%  { transform: translateY(-20%); }
+            47%, 68%  { transform: translateY(-40%); }
+            72%, 93%  { transform: translateY(-60%); }
+            97%, 100% { transform: translateY(-80%); }
+        }
+
+        /* ── CTA shimmer ── */
+        .cta-btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+        .cta-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+            transform: translateX(-100%);
+            animation: shimmer 3s infinite;
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            40%, 100% { transform: translateX(100%); }
+        }
+
+        /* ── Angle divider ── */
+        .angle-divider {
+            position: relative;
+        }
+        .angle-divider::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: #0F172A;
+            clip-path: polygon(0 100%, 100% 20%, 100% 100%);
+            z-index: 10;
+        }
+
+        /* ── Step connector line ── */
+        .step-connector {
+            position: absolute;
+            top: 44px;
+            left: 15%;
+            right: 15%;
+            height: 1px;
+            border-top: 2px dashed rgba(59,130,246,0.15);
+            z-index: 0;
+        }
+
+        /* ── Step number watermark ── */
+        .step-watermark {
+            position: absolute;
+            top: -8px;
+            right: 12px;
+            font-size: 6rem;
+            line-height: 1;
+            opacity: 0.04;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── Feature card hover ── */
+        .feature-card {
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .feature-card:hover {
+            border-color: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            border-radius: 4px 0 0 4px;
+        }
+        .feature-card.card-blue::before { background: #3B82F6; }
+        .feature-card.card-green::before { background: #22C55E; }
+        .feature-card.card-orange::before { background: #F97316; }
+        .feature-card.card-red::before { background: #EF4444; }
+
+        .feature-card.card-blue:hover { box-shadow: inset 0 0 60px -20px rgba(59,130,246,0.06); }
+        .feature-card.card-green:hover { box-shadow: inset 0 0 60px -20px rgba(34,197,94,0.06); }
+        .feature-card.card-orange:hover { box-shadow: inset 0 0 60px -20px rgba(249,115,22,0.06); }
+        .feature-card.card-red:hover { box-shadow: inset 0 0 60px -20px rgba(239,68,68,0.06); }
+
+        /* ── Scroll reveal ── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .reveal.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.35s; }
+
+        /* ── Step number glow pulse ── */
+        @keyframes glow-pulse {
+            0%, 100% { text-shadow: 0 0 20px rgba(59,130,246,0.05); }
+            50% { text-shadow: 0 0 40px rgba(59,130,246,0.12); }
+        }
+        .glow-number {
+            animation: glow-pulse 4s ease-in-out infinite;
+        }
+
+        /* ── CTA section background ── */
+        .cta-section {
+            position: relative;
+            overflow: hidden;
+        }
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 500px 300px at 50% 60%, rgba(245,158,11,0.06) 0%, transparent 70%),
+                linear-gradient(180deg, #0F172A, #0B1120);
+            pointer-events: none;
+        }
+
+        /* ── Gold text glow ── */
+        .gold-glow {
+            text-shadow: 0 0 30px rgba(245,158,11,0.25), 0 0 60px rgba(245,158,11,0.08);
+        }
+
+        /* ── Top bar ── */
+        .top-bar {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        /* ── Badge pill ── */
+        .badge-pill {
+            background: linear-gradient(135deg, rgba(245,158,11,0.12), rgba(245,158,11,0.05));
+            border: 1px solid rgba(245,158,11,0.2);
+        }
+
+        /* ── Trust badge icons ── */
+        .trust-item {
+            position: relative;
+        }
+        .trust-item::after {
+            content: '';
+            position: absolute;
+            right: -1px;
+            top: 25%;
+            height: 50%;
+            width: 1px;
+            background: rgba(255,255,255,0.08);
+        }
+        .trust-item:last-child::after {
+            display: none;
+        }
+
+        /* ── Reduced motion ── */
+        @media (prefers-reduced-motion: reduce) {
+            .country-track { animation: none; }
+            .cta-btn::after { animation: none; }
+            .glow-number { animation: none; }
+            .reveal {
+                opacity: 1;
+                transform: none;
+                transition: none;
+            }
+            html { scroll-behavior: auto; }
+        }
+    </style>
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "VirtuaFC: Selección Nacional",
+        "description": "Conviértete en seleccionador nacional. Elige entre 48 selecciones reales, arma tu plantilla de 26 jugadores y compite gratis desde el navegador.",
+        "url": "https://virtuafc.com/",
+        "applicationCategory": "GameApplication",
+        "operatingSystem": "Web",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "EUR"
+        },
+        "inLanguage": "es",
+        "genre": "Sports, Simulation, Strategy"
+    }
+    </script>
+</head>
+<body class="bg-surface-900 text-white min-h-screen antialiased">
+
+    <!-- ── Top Bar ── -->
+    <header class="top-bar fixed top-0 left-0 right-0 z-50 bg-surface-900/80 border-b border-white/5" role="banner">
+        <nav class="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between" aria-label="Navegación principal">
+            <a href="/" aria-label="VirtuaFC — Inicio" class="-skew-x-12 bg-red-600 px-2.5 sm:px-3 py-0.5">
+                <span class="skew-x-12 inline-block text-base sm:text-lg font-extrabold text-white tracking-tight" style="font-family: 'Barlow Semi Condensed', sans-serif;">Virtua FC</span>
+            </a>
+            <a href="#cta" class="cta-btn bg-accent-blue hover:bg-blue-600 text-white text-xs font-semibold px-4 py-2 rounded-lg">
+                Jugar ahora
+            </a>
+        </nav>
+    </header>
+
+    <main>
+    <!-- ── Hero Section ── -->
+    <section class="hero-section angle-divider min-h-screen flex items-center justify-center pt-14" aria-label="VirtuaFC: Selección Nacional">
+        <div class="hero-stripe"></div>
+        <div class="hero-stripe-2"></div>
+
+        <div class="relative z-10 text-center px-4 sm:px-6 py-20 max-w-4xl mx-auto">
+            <!-- Title -->
+            <h1 class="font-heading font-extrabold text-5xl sm:text-7xl lg:text-[6.5rem] tracking-tight leading-[0.9] mb-3">
+                VirtuaFC
+            </h1>
+
+            <!-- Subtitle -->
+            <p class="font-heading font-bold text-xl sm:text-3xl lg:text-4xl uppercase tracking-[0.18em] text-accent-gold gold-glow mb-10 sm:mb-14">
+                Selección Nacional
+            </p>
+
+            <!-- Tagline with animated country -->
+            <p class="text-lg sm:text-xl lg:text-2xl text-slate-300 leading-normal mb-2">
+                Llevas años dirigiendo a
+                <span class="country-rotator text-accent-gold gold-glow font-semibold">
+                    <span class="country-track">
+                        <span>España</span>
+                        <span>Argentina</span>
+                        <span>Inglaterra</span>
+                        <span>Brasil</span>
+                        <span>España</span>
+                    </span>
+                </span>
+                desde el sofá.
+            </p>
+
+            <!-- Subtagline -->
+            <p class="text-lg sm:text-xl lg:text-2xl font-semibold text-white mb-10 sm:mb-12">
+                Ahora hazlo oficial.
+            </p>
+
+            <!-- CTA -->
+            <a href="#" class="cta-btn inline-block bg-accent-blue hover:bg-blue-600 text-white font-heading font-bold text-base sm:text-lg uppercase tracking-wider px-8 sm:px-10 py-3.5 sm:py-4 rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30">
+                Juega gratis
+            </a>
+
+            <!-- Trust badges -->
+            <div class="flex flex-wrap items-center justify-center gap-0 mt-10 sm:mt-12 text-xs sm:text-sm text-slate-400">
+                <div class="trust-item flex items-center gap-2 px-4 sm:px-5 py-1.5">
+                    <svg class="w-4 h-4 text-accent-green shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    <span>100% Gratis</span>
+                </div>
+                <div class="trust-item flex items-center gap-2 px-4 sm:px-5 py-1.5">
+                    <svg class="w-4 h-4 text-accent-blue shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>48 Selecciones Reales</span>
+                </div>
+                <div class="trust-item flex items-center gap-2 px-4 sm:px-5 py-1.5">
+                    <svg class="w-4 h-4 text-accent-gold shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                    </svg>
+                    <span>Sin anuncios</span>
+                </div>
+            </div>
+
+            <!-- Browser play -->
+            <div class="mt-10 sm:mt-14 max-w-sm mx-auto">
+                <div class="flex items-center justify-center gap-2.5 mb-2">
+                    <svg class="w-4 h-4 text-accent-blue shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                    </svg>
+                    <span class="text-sm font-medium text-white">Juega en el navegador</span>
+                </div>
+                <p class="text-xs text-slate-500 leading-relaxed">
+                    Sin descargas, sin instalación, sin requisitos. Abre el navegador y empieza a jugar. En tu portátil, tablet o móvil.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── How It Works ── -->
+    <section class="bg-surface-800 py-20 lg:py-32 px-4 sm:px-6" aria-label="Cómo se juega">
+        <div class="max-w-5xl mx-auto">
+            <!-- Section header -->
+            <div class="text-center mb-16 lg:mb-20 reveal">
+                <span class="font-heading font-semibold text-xs tracking-[0.25em] uppercase text-accent-gold mb-4 block">
+                    Así se juega
+                </span>
+                <h2 class="font-heading font-bold text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight">
+                    Del pitido inicial<br class="sm:hidden"> a la final en tres pasos
+                </h2>
+            </div>
+
+            <!-- Steps grid -->
+            <div class="relative grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
+                <!-- Connector line (desktop only) -->
+                <div class="step-connector hidden md:block"></div>
+
+                <!-- Step 1 -->
+                <div class="relative bg-surface-900/50 border border-white/5 rounded-2xl p-6 lg:p-8 text-center reveal reveal-delay-1">
+                    <span class="step-watermark font-heading font-extrabold glow-number text-accent-blue">01</span>
+                    <div class="relative z-10">
+                        <div class="w-14 h-14 rounded-full bg-accent-blue/10 border border-accent-blue/20 flex items-center justify-center mx-auto mb-5">
+                            <svg class="w-6 h-6 text-accent-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+                            </svg>
+                        </div>
+                        <h3 class="font-heading font-bold text-lg sm:text-xl uppercase tracking-wide mb-3">
+                            Elige tu nación
+                        </h3>
+                        <p class="text-sm text-slate-400 leading-relaxed">
+                            Elige entre 48 selecciones clasificadas. Brasil, Argentina, España, Alemania, Inglaterra, Francia — o lleva a los más humildes hasta el final.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="relative bg-surface-900/50 border border-white/5 rounded-2xl p-6 lg:p-8 text-center reveal reveal-delay-2">
+                    <span class="step-watermark font-heading font-extrabold glow-number text-accent-blue">02</span>
+                    <div class="relative z-10">
+                        <div class="w-14 h-14 rounded-full bg-accent-blue/10 border border-accent-blue/20 flex items-center justify-center mx-auto mb-5">
+                            <svg class="w-6 h-6 text-accent-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="font-heading font-bold text-lg sm:text-xl uppercase tracking-wide mb-3">
+                            Arma tu plantilla
+                        </h3>
+                        <p class="text-sm text-slate-400 leading-relaxed">
+                            Selecciona tu plantilla de 26 jugadores. Elige tu formación. Define tu once titular. Gestiona forma física, lesiones y emparejamientos ronda a ronda.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="relative bg-surface-900/50 border border-white/5 rounded-2xl p-6 lg:p-8 text-center reveal reveal-delay-3">
+                    <span class="step-watermark font-heading font-extrabold glow-number text-accent-blue">03</span>
+                    <div class="relative z-10">
+                        <div class="w-14 h-14 rounded-full bg-accent-blue/10 border border-accent-blue/20 flex items-center justify-center mx-auto mb-5">
+                            <svg class="w-6 h-6 text-accent-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                            </svg>
+                        </div>
+                        <h3 class="font-heading font-bold text-lg sm:text-xl uppercase tracking-wide mb-3">
+                            Gana el campeonato
+                        </h3>
+                        <p class="text-sm text-slate-400 leading-relaxed">
+                            Supera la fase de 12 grupos. Sobrevive a dieciseisavos, octavos, cuartos y semifinales. Penaltis incluidos.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Angle divider (surface-800 → surface-900) ── -->
+    <div class="h-16 sm:h-20 bg-surface-800 relative">
+        <div class="absolute inset-0" style="background: #0B1120; clip-path: polygon(0 60%, 100% 0, 100% 100%, 0 100%);"></div>
+    </div>
+
+    <!-- ── What You Control ── -->
+    <section class="bg-surface-900 py-20 lg:py-32 px-4 sm:px-6" aria-label="Características del juego">
+        <div class="max-w-5xl mx-auto">
+            <!-- Section header -->
+            <div class="text-center mb-14 lg:mb-20 reveal">
+                <span class="font-heading font-semibold text-xs tracking-[0.25em] uppercase text-accent-gold mb-4 block">
+                    Control total
+                </span>
+                <h2 class="font-heading font-bold text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight">
+                    Tú tomas cada decisión
+                </h2>
+            </div>
+
+            <!-- Features 2×2 grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-6">
+
+                <!-- Feature 1 — Tactics -->
+                <div class="feature-card card-blue bg-surface-800 border border-white/5 rounded-2xl p-6 lg:p-8 reveal reveal-delay-1">
+                    <div class="pl-3">
+                        <div class="w-10 h-10 rounded-lg bg-accent-blue/10 flex items-center justify-center mb-4">
+                            <svg class="w-5 h-5 text-accent-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+                            </svg>
+                        </div>
+                        <h3 class="font-heading font-bold text-base sm:text-lg uppercase tracking-wide mb-2 text-white">
+                            Tácticas y Formación
+                        </h3>
+                        <p class="text-sm text-slate-400 leading-relaxed">
+                            Define tu formación, elige tu once titular y planifica tus cambios. Cada rival exige un planteamiento diferente.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Feature 2 — Squad -->
+                <div class="feature-card card-green bg-surface-800 border border-white/5 rounded-2xl p-6 lg:p-8 reveal reveal-delay-2">
+                    <div class="pl-3">
+                        <div class="w-10 h-10 rounded-lg bg-accent-green/10 flex items-center justify-center mb-4">
+                            <svg class="w-5 h-5 text-accent-green" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="font-heading font-bold text-base sm:text-lg uppercase tracking-wide mb-2 text-white">
+                            Gestión de Plantilla
+                        </h3>
+                        <p class="text-sm text-slate-400 leading-relaxed">
+                            Controla la forma física y las lesiones durante toda la competición. Rota con cabeza o arriesga perder jugadores clave en el momento decisivo.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Feature 3 — Match Simulation -->
+                <div class="feature-card card-orange bg-surface-800 border border-white/5 rounded-2xl p-6 lg:p-8 reveal reveal-delay-3">
+                    <div class="pl-3">
+                        <div class="w-10 h-10 rounded-lg bg-accent-orange/10 flex items-center justify-center mb-4">
+                            <svg class="w-5 h-5 text-accent-orange" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="font-heading font-bold text-base sm:text-lg uppercase tracking-wide mb-2 text-white">
+                            Simulación de Partidos
+                        </h3>
+                        <p class="text-sm text-slate-400 leading-relaxed">
+                            Cada partido se simula con eventos detallados — goles, tarjetas, cambios, lesiones. Observa cómo tus decisiones cobran vida en tiempo real.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Feature 4 — Knockout Drama -->
+                <div class="feature-card card-red bg-surface-800 border border-white/5 rounded-2xl p-6 lg:p-8 reveal reveal-delay-4">
+                    <div class="pl-3">
+                        <div class="w-10 h-10 rounded-lg bg-accent-red/10 flex items-center justify-center mb-4">
+                            <svg class="w-5 h-5 text-accent-red" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                        <h3 class="font-heading font-bold text-base sm:text-lg uppercase tracking-wide mb-2 text-white">
+                            Drama de Eliminatorias
+                        </h3>
+                        <p class="text-sm text-slate-400 leading-relaxed">
+                            Prórroga. Penaltis. Goles en el último minuto. Las eliminatorias traen la tensión que hace grande al fútbol internacional.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Final CTA ── -->
+    <section id="cta" class="cta-section py-24 lg:py-36 px-4 sm:px-6" aria-label="Empieza a jugar">
+        <div class="relative z-10 max-w-3xl mx-auto text-center reveal">
+            <h2 class="font-heading font-bold text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight mb-6 leading-tight">
+                Tu selección te espera.<br>Toma el mando.
+            </h2>
+            <p class="text-slate-400 text-sm sm:text-base mb-10 max-w-md mx-auto">
+                Gratis. Sin anuncios. Sin pagar para ganar.
+            </p>
+            <a href="#" class="cta-btn inline-block bg-accent-blue hover:bg-blue-600 text-white font-heading font-bold text-base sm:text-lg uppercase tracking-wider px-8 sm:px-10 py-3.5 sm:py-4 rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30">
+                Juega gratis
+            </a>
+        </div>
+    </section>
+
+    </main>
+
+    <!-- ── Footer ── -->
+    <footer class="border-t border-white/5 py-8 px-4 sm:px-6">
+        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600">
+            <span>&copy; VirtuaFC</span>
+            <div class="flex items-center gap-6">
+                <a href="#" class="hover:text-slate-400 transition-colors">Privacidad</a>
+                <a href="#" class="hover:text-slate-400 transition-colors">Términos</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ── Scroll reveal JS ── -->
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                }
+            });
+        }, { threshold: 0.12 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    </script>
+
+</body>
+</html>

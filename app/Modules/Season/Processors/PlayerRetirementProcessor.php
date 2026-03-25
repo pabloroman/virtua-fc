@@ -4,6 +4,7 @@ namespace App\Modules\Season\Processors;
 
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
+use App\Modules\Player\PlayerAge;
 use App\Modules\Player\Services\PlayerRetirementService;
 use App\Models\Game;
 use App\Models\GamePlayer;
@@ -82,7 +83,7 @@ class PlayerRetirementProcessor implements SeasonProcessor
         // Find players old enough to consider retirement who haven't announced yet.
         // Pre-filter by minimum retirement age (33 for outfield) to reduce the candidate
         // set from ~500 to ~20-40 before PHP-side probability evaluation.
-        $minRetirementCutoff = now()->subYears(33);
+        $minRetirementCutoff = PlayerAge::dateOfBirthCutoff(PlayerAge::MIN_RETIREMENT_OUTFIELD, $game->current_date);
 
         $candidates = GamePlayer::with(['player', 'team', 'game'])
             ->where('game_id', $game->id)

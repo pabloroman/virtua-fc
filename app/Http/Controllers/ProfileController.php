@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Jobs\DeleteUserJob;
 use App\Models\Game;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -43,15 +44,16 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
-        // Delete all user's games first to avoid FK constraint violations
-        Game::where('user_id', $user->id)->each(fn (Game $game) => $game->delete());
+        // Mark all games as deleting so they're hidden from UI immediately
+        Game::where('user_id', $user->id)->update(['deleting_at' => now()]);
 
         Auth::logout();
 
-        $user->delete();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        // Dispatch background job to delete games and user
+        DeleteUserJob::dispatch($user->id);
 
         return Redirect::to('/');
     }

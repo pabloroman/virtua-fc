@@ -124,10 +124,13 @@ class Game extends Model
         'pending_actions',
         'setup_completed_at',
         'season_transitioning_at',
+        'season_transition_step',
+        'season_transition_data',
         'career_actions_processing_at',
         'pending_finalization_match_id',
         'matchday_advancing_at',
         'matchday_advance_result',
+        'remaining_batches_processing_at',
         'deleting_at',
     ];
 
@@ -141,9 +144,12 @@ class Game extends Model
         'pending_actions' => 'array',
         'setup_completed_at' => 'datetime',
         'season_transitioning_at' => 'datetime',
+        'season_transition_step' => 'integer',
+        'season_transition_data' => 'json',
         'career_actions_processing_at' => 'datetime',
         'matchday_advancing_at' => 'datetime',
         'matchday_advance_result' => 'array',
+        'remaining_batches_processing_at' => 'datetime',
         'deleting_at' => 'datetime',
     ];
 
@@ -188,41 +194,50 @@ class Game extends Model
 
     /**
      * Clear a stuck matchday advance flag (> 2 minutes old).
-     * Returns true if the flag was cleared.
      */
     public function clearStuckMatchdayAdvance(): bool
     {
-        if (! $this->isAdvancingMatchday()) {
-            return false;
-        }
+        return $this->clearStuckFlag('matchday_advancing_at', ['matchday_advance_result']);
+    }
 
-        if (! $this->matchday_advancing_at->lt(now()->subMinutes(2))) {
-            return false;
-        }
+    public function isProcessingRemainingBatches(): bool
+    {
+        return $this->remaining_batches_processing_at !== null;
+    }
 
-        $this->update([
-            'matchday_advancing_at' => null,
-            'matchday_advance_result' => null,
-        ]);
-
-        return true;
+    /**
+     * Clear a stuck remaining batches flag (> 2 minutes old).
+     */
+    public function clearStuckRemainingBatches(): bool
+    {
+        return $this->clearStuckFlag('remaining_batches_processing_at');
     }
 
     /**
      * Clear a stuck career actions flag (> 2 minutes old).
-     * Returns true if the flag was cleared.
      */
     public function clearStuckCareerActions(): bool
     {
-        if (! $this->isProcessingCareerActions()) {
+        return $this->clearStuckFlag('career_actions_processing_at');
+    }
+
+    /**
+     * Clear a stuck processing flag if it's older than 2 minutes.
+     */
+    private function clearStuckFlag(string $column, array $extraColumns = []): bool
+    {
+        if ($this->$column === null) {
             return false;
         }
 
-        if (! $this->career_actions_processing_at->lt(now()->subMinutes(2))) {
+        if (! $this->$column->lt(now()->subMinutes(2))) {
             return false;
         }
 
-        $this->update(['career_actions_processing_at' => null]);
+        $this->update(array_merge(
+            [$column => null],
+            array_fill_keys($extraColumns, null),
+        ));
 
         return true;
     }
@@ -376,6 +391,16 @@ class Game extends Model
     public function activeLoans(): HasMany
     {
         return $this->hasMany(Loan::class)->where('status', Loan::STATUS_ACTIVE);
+    }
+
+    public function budgetLoans(): HasMany
+    {
+        return $this->hasMany(BudgetLoan::class);
+    }
+
+    public function activeBudgetLoan(): HasOne
+    {
+        return $this->hasOne(BudgetLoan::class)->where('status', BudgetLoan::STATUS_ACTIVE);
     }
 
     public function scoutReports(): HasMany
@@ -571,19 +596,13 @@ class Game extends Model
 
         $month = $this->current_date->month;
 
-        // If we're before or in winter window (Jan), next is summer (July)
-        // If we're after winter but before summer (Feb-Jun), next is summer
-        // If we're in or after summer (Jul-Dec), next is winter (Jan)
-        if ($month >= 2 && $month <= 6) {
+        // Jan-Jun: next window is summer (July)
+        // Jul-Dec: next window is winter (January)
+        if ($month >= 1 && $month <= 6) {
             return __('app.summer_window');
         }
 
-        if ($month >= 8 && $month <= 12) {
-            return __('app.winter_window');
-        }
-
-        // Currently in a window
-        return $this->getCurrentWindowName() ?? __('app.summer_window');
+        return __('app.winter_window');
     }
 
     /**

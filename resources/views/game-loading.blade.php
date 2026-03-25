@@ -24,12 +24,22 @@
 
             {{-- Description --}}
             <p class="text-text-secondary max-w-md mx-auto">{{ $message }}</p>
+
+            {{-- Progress bar --}}
+            <div x-show="progress !== null" x-cloak class="mt-6 max-w-xs mx-auto">
+                <div class="w-full bg-surface-700 rounded-full h-2 overflow-hidden">
+                    <div class="bg-accent-blue h-2 rounded-full transition-all duration-500 ease-out"
+                         :style="`width: ${progress}%`"></div>
+                </div>
+                <p class="text-text-tertiary text-xs mt-2" x-text="`${progress}%`"></p>
+            </div>
         </div>
     </div>
 
     <script>
         function loadingPoller() {
             return {
+                progress: null,
                 startPolling() {
                     const pollUrl = '{{ route("game.setup-status", $game->id) }}';
 
@@ -37,7 +47,11 @@
                         try {
                             const response = await fetch(pollUrl);
                             const data = await response.json();
+                            if (data.progress !== null && data.progress !== undefined) {
+                                this.progress = data.progress;
+                            }
                             if (data.ready) {
+                                this.progress = 100;
                                 clearInterval(interval);
                                 window.location.reload();
                             }

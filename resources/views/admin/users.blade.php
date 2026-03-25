@@ -3,6 +3,21 @@
         {{ __('admin.users_title') }}
     </h1>
 
+    <form method="GET" action="{{ route('admin.users') }}" class="mb-4">
+        <div class="relative max-w-xs">
+            <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-muted pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+                type="text"
+                name="search"
+                value="{{ $search ?? '' }}"
+                placeholder="{{ __('admin.search_users_placeholder') }}"
+                class="w-full bg-surface-700 border border-border-default rounded-md text-xs text-text-primary placeholder-slate-500 pl-8 pr-3 py-1.5 focus:outline-hidden focus:border-accent-blue/50 min-h-[44px]"
+            />
+        </div>
+    </form>
+
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-border-default">
             <thead>
@@ -22,12 +37,57 @@
                             @if($user->is_admin)
                                 <span class="ml-1 inline-flex items-center rounded-full bg-purple-500/10 px-2 py-0.5 text-xs font-medium text-purple-500 ring-1 ring-inset ring-purple-500/20">Admin</span>
                             @endif
+                            @if($user->has_career_access)
+                                <span class="ml-1 inline-flex items-center rounded-full bg-accent-green/10 px-2 py-0.5 text-xs font-medium text-accent-green ring-1 ring-inset ring-accent-green/20">{{ __('admin.career_access') }}</span>
+                            @endif
+                            @if($user->has_tournament_access)
+                                <span class="ml-1 inline-flex items-center rounded-full bg-accent-gold/10 px-2 py-0.5 text-xs font-medium text-accent-gold ring-1 ring-inset ring-accent-gold/20">{{ __('admin.tournament_access') }}</span>
+                            @endif
+                            @if($user->can_edit_database)
+                                <span class="ml-1 inline-flex items-center rounded-full bg-accent-blue/10 px-2 py-0.5 text-xs font-medium text-accent-blue ring-1 ring-inset ring-accent-blue/20">{{ __('admin.database_editing') }}</span>
+                            @endif
                         </td>
                         <td class="px-4 py-3 text-sm text-text-muted hidden md:table-cell">{{ $user->email }}</td>
                         <td class="px-4 py-3 text-sm text-text-muted">{{ $user->games_count }}</td>
                         <td class="px-4 py-3 text-sm text-text-muted hidden md:table-cell">{{ $user->created_at->format('d/m/Y') }}</td>
-                        <td class="px-4 py-3 text-right">
+                        <td class="px-4 py-3 text-right whitespace-nowrap">
                             @if($user->id !== auth()->id())
+                                <form method="POST" action="{{ route('admin.toggle-career', $user->id) }}" class="inline">
+                                    @csrf
+                                    @if($user->has_career_access)
+                                        <x-ghost-button type="submit" color="red" size="xs">
+                                            {{ __('admin.revoke_career') }}
+                                        </x-ghost-button>
+                                    @else
+                                        <x-ghost-button type="submit" color="green" size="xs">
+                                            {{ __('admin.grant_career') }}
+                                        </x-ghost-button>
+                                    @endif
+                                </form>
+                                <form method="POST" action="{{ route('admin.toggle-tournament', $user->id) }}" class="inline">
+                                    @csrf
+                                    @if($user->has_tournament_access)
+                                        <x-ghost-button type="submit" color="red" size="xs">
+                                            {{ __('admin.revoke_tournament') }}
+                                        </x-ghost-button>
+                                    @else
+                                        <x-ghost-button type="submit" color="amber" size="xs">
+                                            {{ __('admin.grant_tournament') }}
+                                        </x-ghost-button>
+                                    @endif
+                                </form>
+                                <form method="POST" action="{{ route('admin.toggle-database-editing', $user->id) }}" class="inline">
+                                    @csrf
+                                    @if($user->can_edit_database)
+                                        <x-ghost-button type="submit" color="red" size="xs">
+                                            {{ __('admin.revoke_database_editing') }}
+                                        </x-ghost-button>
+                                    @else
+                                        <x-ghost-button type="submit" color="blue" size="xs">
+                                            {{ __('admin.grant_database_editing') }}
+                                        </x-ghost-button>
+                                    @endif
+                                </form>
                                 <form method="POST" action="{{ route('admin.impersonate', $user->id) }}" class="inline">
                                     @csrf
                                     <x-ghost-button type="submit" color="blue" size="xs">
@@ -40,7 +100,19 @@
                         </td>
                     </tr>
                 @endforeach
+
+                @if($users->isEmpty())
+                    <tr>
+                        <td colspan="5" class="px-4 py-8 text-center text-sm text-text-muted">
+                            {{ __('admin.no_users_found') }}
+                        </td>
+                    </tr>
+                @endif
             </tbody>
         </table>
+    </div>
+
+    <div class="mt-6">
+        {{ $users->links() }}
     </div>
 </x-admin-layout>

@@ -24,24 +24,11 @@ class ShowPlayerDetail
 
         $canRenew = $gamePlayer->canBeOfferedRenewal();
         $renewalNegotiation = null;
-        $renewalDemand = null;
-        $renewalMidpoint = null;
-        $renewalMood = null;
 
         if ($game->isCareerMode() && $gamePlayer->isContractExpiring()) {
             $renewalNegotiation = RenewalNegotiation::where('game_player_id', $gamePlayer->id)
-                ->whereIn('status', [
-                    RenewalNegotiation::STATUS_OFFER_PENDING,
-                    RenewalNegotiation::STATUS_PLAYER_COUNTERED,
-                ])
+                ->where('status', RenewalNegotiation::STATUS_PLAYER_COUNTERED)
                 ->first();
-
-            if ($canRenew) {
-                $renewalDemand = $this->contractService->calculateRenewalDemand($gamePlayer);
-                $renewalMidpoint = (int) (ceil(($gamePlayer->annual_wage + $renewalDemand['wage']) / 2 / 100 / 10000) * 10000);
-                $disposition = $this->contractService->calculateDisposition($gamePlayer);
-                $renewalMood = $this->contractService->getMoodIndicator($disposition);
-            }
         }
 
         // Release data
@@ -62,9 +49,6 @@ class ShowPlayerDetail
             'gamePlayer' => $gamePlayer,
             'canRenew' => $canRenew,
             'renewalNegotiation' => $renewalNegotiation,
-            'renewalDemand' => $renewalDemand,
-            'renewalMidpoint' => $renewalMidpoint,
-            'renewalMood' => $renewalMood,
             'canRelease' => $canRelease,
             'severance' => $severance,
         ]);

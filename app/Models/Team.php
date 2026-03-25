@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,6 +13,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 /**
  * @property string $id
  * @property int|null $transfermarkt_id
+ * @property string|null $fifa_code
+ * @property bool $is_placeholder
  * @property string $name
  * @property string $country
  * @property string|null $image
@@ -46,6 +49,8 @@ class Team extends Model
     protected $fillable = [
         'transfermarkt_id',
         'type',
+        'fifa_code',
+        'is_placeholder',
         'name',
         'country',
         'parent_team_id',
@@ -57,8 +62,14 @@ class Team extends Model
 
     protected $casts = [
         'stadium_seats' => 'integer',
+        'is_placeholder' => 'boolean',
         'colors' => 'array',
     ];
+
+    public function scopeWorldCupEligible(Builder $query): Builder
+    {
+        return $query->where('type', 'national')->whereNotNull('fifa_code');
+    }
 
     public function competitions(): BelongsToMany
     {

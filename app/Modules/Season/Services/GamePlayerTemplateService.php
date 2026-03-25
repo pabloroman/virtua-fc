@@ -2,8 +2,6 @@
 
 namespace App\Modules\Season\Services;
 
-use App\Models\Player;
-use App\Models\Team;
 use App\Modules\Competition\Services\CountryConfig;
 use App\Support\Money;
 use Carbon\Carbon;
@@ -30,6 +28,19 @@ class GamePlayerTemplateService
     }
 
     /**
+     * Delete templates for a specific country's teams only.
+     */
+    public function clearTemplatesForCountry(string $season, string $countryCode): void
+    {
+        DB::table('game_player_templates')
+            ->where('season', $season)
+            ->whereIn('team_id', function ($query) use ($countryCode) {
+                $query->select('id')->from('teams')->where('country', $countryCode);
+            })
+            ->delete();
+    }
+
+    /**
      * Generate pre-computed game_player_templates for a season and country.
      * Additive — call clearTemplates() first if a fresh start is needed.
      *
@@ -37,14 +48,21 @@ class GamePlayerTemplateService
      */
     public function generateTemplates(string $season, string $countryCode): int
     {
-        $allTeams = Team::whereNotNull('transfermarkt_id')->get()->keyBy('transfermarkt_id');
-        $allPlayers = Player::all()->keyBy('transfermarkt_id');
+        $allTeamIds = DB::table('teams')
+            ->whereNotNull('transfermarkt_id')
+            ->pluck('id', 'transfermarkt_id')
+            ->toArray();
+
+        $allPlayers = DB::table('players')
+            ->select('id', 'transfermarkt_id', 'date_of_birth', 'technical_ability', 'physical_ability')
+            ->get()
+            ->keyBy('transfermarkt_id');
 
         $countryConfig = app(CountryConfig::class);
         $competitionIds = $countryConfig->playerInitializationOrder($countryCode);
         $continentalIds = $countryConfig->continentalSupportIds($countryCode);
 
-        $templateRows = [];
+        $totalCount = 0;
 
         // Track already-processed teams (including from prior country runs)
         $processedTeamIds = DB::table('game_player_templates')
@@ -68,30 +86,32 @@ class GamePlayerTemplateService
                 continue;
             }
 
-            $rows = $this->generateForCompetition($competitionId, $season, $allTeams, $allPlayers, $processedTeamIds, $processedPlayerIds);
-            foreach ($rows as $row) {
-                $templateRows[] = $row;
-                $processedTeamIds[$row['team_id']] = true;
-                $processedPlayerIds[$row['player_id']] = true;
-            }
+            $rows = $this->generateForCompetition($competitionId, $season, $allTeamIds, $allPlayers, $processedTeamIds, $processedPlayerIds);
+            $totalCount += $this->insertAndTrack($rows, $processedTeamIds, $processedPlayerIds);
         }
 
         // Swiss format gap teams (UCL, UEL — teams not already covered)
         $swissIds = $countryConfig->swissFormatCompetitionIds($countryCode);
         foreach ($swissIds as $competitionId) {
-            $rows = $this->generateForSwissGapTeams($competitionId, $season, $allTeams, $allPlayers, $processedTeamIds, $processedPlayerIds);
-            foreach ($rows as $row) {
-                $templateRows[] = $row;
-                $processedTeamIds[$row['team_id']] = true;
-                $processedPlayerIds[$row['player_id']] = true;
-            }
+            $rows = $this->generateForSwissGapTeams($competitionId, $season, $allTeamIds, $allPlayers, $processedTeamIds, $processedPlayerIds);
+            $totalCount += $this->insertAndTrack($rows, $processedTeamIds, $processedPlayerIds);
         }
 
-        foreach (array_chunk($templateRows, 500) as $chunk) {
+        return $totalCount;
+    }
+
+    private function insertAndTrack(array $rows, array &$processedTeamIds, array &$processedPlayerIds): int
+    {
+        foreach ($rows as $row) {
+            $processedTeamIds[$row['team_id']] = true;
+            $processedPlayerIds[$row['player_id']] = true;
+        }
+
+        foreach (array_chunk($rows, 500) as $chunk) {
             DB::table('game_player_templates')->insert($chunk);
         }
 
-        return count($templateRows);
+        return count($rows);
     }
 
     /**
@@ -100,7 +120,7 @@ class GamePlayerTemplateService
     private function generateForCompetition(
         string $competitionId,
         string $season,
-        Collection $allTeams,
+        array $allTeamIds,
         Collection $allPlayers,
         array $processedTeamIds = [],
         array $processedPlayerIds = [],
@@ -127,18 +147,18 @@ class GamePlayerTemplateService
                 continue;
             }
 
-            $team = $allTeams->get($transfermarktId);
-            if (!$team) {
+            $teamId = $allTeamIds[$transfermarktId] ?? null;
+            if (!$teamId) {
                 continue;
             }
 
             // Skip teams already processed by a prior country run
-            if (isset($processedTeamIds[$team->id])) {
+            if (isset($processedTeamIds[$teamId])) {
                 continue;
             }
 
             foreach ($club['players'] ?? [] as $playerData) {
-                $row = $this->prepareTemplateRow($season, $team, $playerData, $minimumWage, $allPlayers);
+                $row = $this->prepareTemplateRow($season, $teamId, $playerData, $minimumWage, $allPlayers);
                 if ($row && !isset($processedPlayerIds[$row['player_id']])) {
                     $rows[] = $row;
                     $processedPlayerIds[$row['player_id']] = true;
@@ -155,7 +175,7 @@ class GamePlayerTemplateService
     private function generateForSwissGapTeams(
         string $competitionId,
         string $season,
-        Collection $allTeams,
+        array $allTeamIds,
         Collection $allPlayers,
         array $processedTeamIds,
         array $processedPlayerIds = [],
@@ -176,18 +196,18 @@ class GamePlayerTemplateService
                 continue;
             }
 
-            $team = $allTeams->get($transfermarktId);
-            if (!$team) {
+            $teamId = $allTeamIds[$transfermarktId] ?? null;
+            if (!$teamId) {
                 continue;
             }
 
             // Skip teams already processed from tier/pool competitions
-            if (isset($processedTeamIds[$team->id])) {
+            if (isset($processedTeamIds[$teamId])) {
                 continue;
             }
 
             foreach ($club['players'] ?? [] as $playerData) {
-                $row = $this->prepareTemplateRow($season, $team, $playerData, $minimumWage, $allPlayers);
+                $row = $this->prepareTemplateRow($season, $teamId, $playerData, $minimumWage, $allPlayers);
                 if ($row && !isset($processedPlayerIds[$row['player_id']])) {
                     $rows[] = $row;
                     $processedPlayerIds[$row['player_id']] = true;
@@ -204,7 +224,7 @@ class GamePlayerTemplateService
      */
     private function prepareTemplateRow(
         string $season,
-        Team $team,
+        string $teamId,
         array $playerData,
         int $minimumWage,
         Collection $allPlayers,
@@ -224,7 +244,8 @@ class GamePlayerTemplateService
         }
 
         $referenceDate = Carbon::parse("{$season}-08-15");
-        $age = (int) $player->date_of_birth->diffInYears($referenceDate);
+        $dob = Carbon::parse($player->date_of_birth);
+        $age = (int) $dob->diffInYears($referenceDate);
         $marketValueCents = Money::parseMarketValue($playerData['marketValue'] ?? null);
         $annualWage = $this->contractService->calculateAnnualWage($marketValueCents, $minimumWage, $age);
 
@@ -239,7 +260,7 @@ class GamePlayerTemplateService
         return [
             'season' => $season,
             'player_id' => $player->id,
-            'team_id' => $team->id,
+            'team_id' => $teamId,
             'number' => isset($playerData['number']) ? (int) $playerData['number'] : null,
             'position' => $playerData['position'] ?? 'Unknown',
             'market_value' => $playerData['marketValue'] ?? null,

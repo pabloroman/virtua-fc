@@ -103,6 +103,45 @@
             @endforeach
         </ul>
 
+        {{-- Tournament History --}}
+        @if($tournamentHistory->isNotEmpty())
+        <div class="mt-10">
+            <h3 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary mb-6">{{ __('game.tournament_history') }}</h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                @foreach($tournamentHistory as $summary)
+                @php
+                    $resultBadgeClass = match($summary->result_label) {
+                        'champion'          => 'bg-accent-gold/20 text-accent-gold border-accent-gold/20',
+                        'runner_up'         => 'bg-surface-600 text-text-body border-border-default',
+                        'third_place'       => 'bg-accent-orange/10 text-accent-orange border-accent-orange/20',
+                        'semi_finalist'     => 'bg-accent-blue/10 text-blue-400 border-accent-blue/20',
+                        'quarter_finalist'  => 'bg-accent-blue/10 text-accent-blue border-accent-blue/20',
+                        default             => 'bg-surface-700 text-text-secondary border-border-default',
+                    };
+                @endphp
+                <a href="{{ route('tournament-summary.show', $summary->id) }}" class="block group">
+                    <div class="rounded-lg bg-surface-800 border border-border-default p-4 transition hover:border-accent-blue/50 hover:bg-surface-700">
+                        <div class="flex items-center gap-3">
+                            <x-team-crest :team="$summary->team" class="w-10 h-10 shrink-0" />
+                            <div class="min-w-0 flex-1">
+                                <div class="font-semibold text-text-primary text-sm truncate">{{ $summary->team->name }}</div>
+                                <div class="text-xs text-text-secondary truncate">{{ __($summary->competition->name ?? 'game.wc2026_name') }}</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between mt-3 pt-3 border-t border-border-default">
+                            <span class="inline-block px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide rounded-full border {{ $resultBadgeClass }}">
+                                {{ __('season.result_' . $summary->result_label) }}
+                            </span>
+                            <span class="text-[10px] text-text-muted">{{ $summary->tournament_date->format('d/m/Y') }}</span>
+                        </div>
+                    </div>
+                </a>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
         {{-- Manager Profile --}}
         <div class="mt-10">
             <h3 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary mb-6">{{ __('profile.your_manager_profile') }}</h3>

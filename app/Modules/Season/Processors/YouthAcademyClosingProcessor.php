@@ -9,7 +9,7 @@ use App\Models\Game;
 
 /**
  * Handles academy closing at season end:
- * 1. Develop loaned players (full season at 1.5x rate)
+ * 1. Develop loaned players (full season at accelerated rate)
  * 2. Return loaned players to academy
  */
 class YouthAcademyClosingProcessor implements SeasonProcessor
@@ -25,7 +25,7 @@ class YouthAcademyClosingProcessor implements SeasonProcessor
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
-        // 1. Develop loaned players at 1.5x rate before returning
+        // 1. Develop loaned players at higher rate before returning
         $this->youthAcademyService->developLoanedPlayers($game);
 
         // 2. Return loaned players to academy

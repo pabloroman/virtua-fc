@@ -36,6 +36,14 @@ return [
         2 => 0.70,  // Segunda: 70% of base operating expenses
     ],
 
+    // Budget loan configuration.
+    // Allows the user to borrow against projected revenue to boost transfer budget.
+    'loan' => [
+        'max_percentage' => 0.10,       // 10% of projected total revenue
+        'interest_rate' => 1500,        // 15% interest (in basis points: 1500 = 15%)
+        'minimum' => 50_000_000,        // €500K minimum loan (in cents)
+    ],
+
     // Position-based commercial revenue growth multipliers.
     // Key = max position (inclusive), value = multiplier applied to projected commercial revenue.
     'commercial_growth' => [

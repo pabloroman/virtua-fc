@@ -405,5 +405,6 @@
   ],
   "stadiumName": "Estádio do Dragão",
   "stadiumSeats": "50033",
-  "transfermarktId": "720"
+  "transfermarktId": "720",
+  "country": "PT"
 }

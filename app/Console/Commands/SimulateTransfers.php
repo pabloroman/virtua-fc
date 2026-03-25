@@ -32,7 +32,7 @@ class SimulateTransfers extends Command
             : Game::with('team')->latest('created_at')->first();
 
         if (! $game) {
-            $this->error('No game found. Create one with php artisan app:create-test-game');
+            $this->error('No game found. Create one via the web UI first.');
             return 1;
         }
 

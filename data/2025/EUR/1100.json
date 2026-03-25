@@ -407,5 +407,6 @@
   ],
   "stadiumName": "Brann Stadion",
   "stadiumSeats": "17500",
-  "transfermarktId": "1100"
+  "transfermarktId": "1100",
+  "country": "NO"
 }

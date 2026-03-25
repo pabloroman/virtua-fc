@@ -1,7 +1,7 @@
 <?php
 
 return [
-    // Display names
+    // Player position display names (13 canonical positions)
     'goalkeeper' => 'Portero',
     'centre_back' => 'Central',
     'left_back' => 'Lateral Izquierdo',
@@ -16,7 +16,7 @@ return [
     'centre_forward' => 'Delantero Centro',
     'second_striker' => 'Segundo Delantero',
 
-    // Abbreviations
+    // Player position abbreviations
     'goalkeeper_abbr' => 'PO',
     'centre_back_abbr' => 'CT',
     'left_back_abbr' => 'LI',
@@ -30,8 +30,6 @@ return [
     'right_winger_abbr' => 'ED',
     'centre_forward_abbr' => 'DC',
     'second_striker_abbr' => 'SD',
-    'left_wing_back_abbr' => 'CRI',
-    'right_wing_back_abbr' => 'CRD',
 
     // Labels with abbreviation (for scouting dropdown)
     'goalkeeper_label' => 'Portero (PO)',
@@ -58,8 +56,4 @@ return [
     'any_defender' => 'Cualquier Defensa (CT, LI, LD)',
     'any_midfielder' => 'Cualquier Centrocampista (MCD, MC, MP)',
     'any_forward' => 'Cualquier Delantero (EI, ED, DC, SD)',
-
-    // Slot display names (for PositionSlotMapper)
-    'left_wing_back' => 'Carrilero Izquierdo',
-    'right_wing_back' => 'Carrilero Derecho',
 ];

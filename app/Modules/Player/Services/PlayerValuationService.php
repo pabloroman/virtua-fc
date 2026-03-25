@@ -2,6 +2,8 @@
 
 namespace App\Modules\Player\Services;
 
+use App\Modules\Player\PlayerAge;
+
 /**
  * Single source of truth for all ability <-> market value conversions.
  *
@@ -15,6 +17,19 @@ namespace App\Modules\Player\Services;
  */
 class PlayerValuationService
 {
+    private const ABILITY_VALUE_ANCHORS = [
+        [45, 10_000_000],        // €100K
+        [50, 30_000_000],        // €300K
+        [58, 100_000_000],       // €1M
+        [63, 200_000_000],       // €2M
+        [68, 500_000_000],       // €5M
+        [73, 1_000_000_000],     // €10M
+        [78, 2_000_000_000],     // €20M
+        [83, 5_000_000_000],     // €50M
+        [88, 10_000_000_000],    // €100M
+        [95, 20_000_000_000],    // €200M
+    ];
+
     /**
      * Convert market value to technical/physical abilities.
      *
@@ -48,10 +63,8 @@ class PlayerValuationService
         $technical = (int) round($baseAbility + ($technicalRatio - 0.5) * $variance * 2);
         $physical = (int) round($baseAbility + (0.5 - $technicalRatio) * $variance * 2);
 
-        if ($age > 33) {
-            $physical = (int) round($physical * 0.92);
-        } elseif ($age > 30) {
-            $physical = (int) round($physical * 0.96);
+        if ($age > PlayerAge::PRIME_END) {
+            $physical = (int) round($physical * 0.90);
         }
 
         $technical = max(30, min(99, $technical));
@@ -94,7 +107,7 @@ class PlayerValuationService
         if ($previousAbility !== null) {
             $change = $averageAbility - $previousAbility;
 
-            if ($age <= 24 && $change > 0) {
+            if ($age <= PlayerAge::YOUNG_END && $change > 0) {
                 // Young players who improve get bigger boost (confirming potential)
                 $trendMultiplier = match (true) {
                     $change >= 5 => 1.4,
@@ -118,25 +131,38 @@ class PlayerValuationService
     }
 
     /**
-     * Convert market value to a raw ability score.
+     * Convert market value to a raw ability score via log-linear interpolation.
      *
-     * These tiers are the canonical mapping used bidirectionally:
-     * - Forward: market value -> ability (seeding)
-     * - Reverse: ability -> market value (abilityToMarketValue)
+     * Uses the same anchor points as abilityToBaseValue() but in reverse,
+     * making the forward and reverse mappings near-symmetric.
+     * Small random variance (±1) prevents identical scores for similar values.
      */
     private function marketValueToRawAbility(int $marketValueCents): int
     {
-        return match (true) {
-            $marketValueCents >= 10_000_000_000 => rand(88, 95),  // €100M+
-            $marketValueCents >= 5_000_000_000 => rand(83, 90),   // €50M+
-            $marketValueCents >= 2_000_000_000 => rand(78, 85),   // €20M+
-            $marketValueCents >= 1_000_000_000 => rand(73, 80),   // €10M+
-            $marketValueCents >= 500_000_000 => rand(68, 75),     // €5M+
-            $marketValueCents >= 200_000_000 => rand(63, 70),     // €2M+
-            $marketValueCents >= 100_000_000 => rand(58, 65),     // €1M+
-            $marketValueCents > 0 => rand(50, 60),                // Under €1M
-            default => rand(45, 55),                               // Unknown
-        };
+        $anchors = self::ABILITY_VALUE_ANCHORS;
+
+        if ($marketValueCents <= $anchors[0][1]) {
+            return max(40, $anchors[0][0] + rand(-2, 2));
+        }
+
+        $last = count($anchors) - 1;
+        if ($marketValueCents >= $anchors[$last][1]) {
+            return min(99, $anchors[$last][0] + rand(-1, 2));
+        }
+
+        for ($i = 0; $i < $last; $i++) {
+            [$aLow, $vLow] = $anchors[$i];
+            [$aHigh, $vHigh] = $anchors[$i + 1];
+
+            if ($marketValueCents >= $vLow && $marketValueCents <= $vHigh) {
+                $t = (log($marketValueCents) - log($vLow)) / (log($vHigh) - log($vLow));
+                $ability = $aLow + $t * ($aHigh - $aLow);
+
+                return max(40, min(99, (int) round($ability) + rand(-1, 1)));
+            }
+        }
+
+        return $anchors[0][0]; // @codeCoverageIgnore — unreachable, anchors are contiguous
     }
 
     /**
@@ -147,7 +173,7 @@ class PlayerValuationService
      */
     private function adjustAbilityForAge(int $rawAbility, int $marketValueCents, int $age): int
     {
-        if ($age < 23) {
+        if ($age < PlayerAge::YOUNG_END) {
             // Base cap increases with age: 17yo = 75, 22yo = 85
             $ageCap = 75 + ($age - 17) * 2;
 
@@ -165,7 +191,8 @@ class PlayerValuationService
             return min($rawAbility, $ageCap);
         }
 
-        if ($age <= 31) {
+        // Boost starts 3 years before official veteran age.
+        if ($age <= PlayerAge::PRIME_END - 3) {
             return $rawAbility;
         }
 
@@ -203,18 +230,7 @@ class PlayerValuationService
      */
     private function abilityToBaseValue(int $ability): int
     {
-        $anchors = [
-            [45, 10_000_000],        // €100K
-            [50, 30_000_000],        // €300K
-            [58, 100_000_000],       // €1M
-            [63, 200_000_000],       // €2M
-            [68, 500_000_000],       // €5M
-            [73, 1_000_000_000],     // €10M
-            [78, 2_000_000_000],     // €20M
-            [83, 5_000_000_000],     // €50M
-            [88, 10_000_000_000],    // €100M
-            [95, 20_000_000_000],    // €200M
-        ];
+        $anchors = self::ABILITY_VALUE_ANCHORS;
 
         if ($ability <= $anchors[0][0]) {
             return $anchors[0][1];
@@ -237,6 +253,6 @@ class PlayerValuationService
             }
         }
 
-        return $anchors[0][1];
+        return $anchors[0][1]; // @codeCoverageIgnore — unreachable, anchors are contiguous
     }
 }

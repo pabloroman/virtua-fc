@@ -76,6 +76,8 @@ return [
     'formation_tip_4141' => 'Defensiva. :attack ataque, :defense goles en contra.',
     'formation_tip_532' => 'Muy defensiva. :attack ataque, :defense goles en contra.',
     'formation_tip_541' => 'Ultra defensiva. :attack ataque, :defense goles en contra.',
+    'formation_tip_4123' => 'Ofensiva con ancla defensiva. :attack ataque, :defense goles en contra.',
+    'formation_tip_4321' => 'Creativa, ataque estrecho. :attack ataque, :defense goles en contra.',
 
     // Mentality tooltips
     'mentality_tip_defensive' => 'Tus goles :own, goles rival :opponent. Cierra el partido.',
@@ -271,6 +273,7 @@ return [
     'live_pen_missed' => 'Fallo',
     'live_pen_round' => 'Ronda :round',
     'live_pen_winner' => 'gana en los penaltis',
+    'live_pen_preparing' => 'Preparándose para lanzar...',
 
     // Substitutions
     'sub_title' => 'Sustituciones',
@@ -337,13 +340,16 @@ return [
     'start_game' => 'Iniciar Partida',
     'start_tournament' => 'Iniciar Torneo',
 
+    'tournament_history' => 'Historial de Torneos',
+
     // Game modes
     'mode_career' => 'Modo Carrera',
     'mode_career_desc' => 'Dirige un club a través de múltiples temporadas',
-    'mode_tournament' => 'Copa del Mundo',
+    'mode_tournament' => 'Selección nacional',
     'mode_tournament_desc' => 'Dirige una selección en el Mundial',
     'mode_tournament_badge' => 'Copa del Mundo',
     'wc2026_name' => 'Copa del Mundo 2026',
+    'career_requires_invite' => 'Próximamente',
 
     // Season Goals
     'goal_title' => 'Ganar la Liga',
@@ -446,4 +452,10 @@ return [
     // MVP
     'mvp' => 'MVP',
     'mvp_of_the_match' => 'MVP del partido',
+
+    // xG Preview
+    'xg_preview' => 'Previsualización xG',
+    'xg_your_team' => 'Tu xG',
+    'xg_opponent' => 'xG Rival',
+    'xg_explanation' => 'Goles esperados según tu alineación y configuración táctica. Cambia al ajustar las tácticas.',
 ];

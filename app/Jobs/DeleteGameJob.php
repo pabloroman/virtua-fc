@@ -15,7 +15,9 @@ class DeleteGameJob implements ShouldQueue
 
     public function __construct(
         public string $gameId,
-    ) {}
+    ) {
+        $this->onQueue('setup');
+    }
 
     public function handle(): void
     {

@@ -414,5 +414,6 @@
   ],
   "stadiumName": "MCH Arena",
   "stadiumSeats": "11809",
-  "transfermarktId": "865"
+  "transfermarktId": "865",
+  "country": "DK"
 }

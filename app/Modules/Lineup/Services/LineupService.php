@@ -9,6 +9,7 @@ use App\Modules\Lineup\Enums\PlayingStyle;
 use App\Modules\Lineup\Enums\PressingIntensity;
 use App\Models\Game;
 use App\Models\GameMatch;
+use App\Support\PositionMapper;
 use App\Models\GamePlayer;
 use App\Models\PlayerSuspension;
 use Carbon\Carbon;
@@ -32,11 +33,7 @@ class LineupService
             ->get();
 
         // Batch load suspended player IDs for this competition (single query)
-        $suspendedPlayerIds = PlayerSuspension::where('competition_id', $competitionId)
-            ->where('matches_remaining', '>', 0)
-            ->whereIn('game_player_id', $players->pluck('id'))
-            ->pluck('game_player_id')
-            ->toArray();
+        $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($competitionId);
 
         // Filter in memory using pre-loaded suspension data
         return $players->filter(function (GamePlayer $player) use ($matchDate, $suspendedPlayerIds) {
@@ -90,22 +87,7 @@ class LineupService
      */
     public static function positionSortOrder(string $position): int
     {
-        return match ($position) {
-            'Goalkeeper' => 1,
-            'Centre-Back' => 10,
-            'Left-Back' => 11,
-            'Right-Back' => 12,
-            'Defensive Midfield' => 20,
-            'Central Midfield' => 21,
-            'Left Midfield' => 22,
-            'Right Midfield' => 23,
-            'Attacking Midfield' => 24,
-            'Left Winger' => 30,
-            'Right Winger' => 31,
-            'Second Striker' => 32,
-            'Centre-Forward' => 33,
-            default => 99,
-        };
+        return PositionMapper::positionSortOrder($position);
     }
 
     /**

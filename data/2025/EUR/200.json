@@ -404,5 +404,6 @@
   ],
   "stadiumName": "Stadion \"Galgenwaard\"",
   "stadiumSeats": "23750",
-  "transfermarktId": "200"
+  "transfermarktId": "200",
+  "country": "NL"
 }

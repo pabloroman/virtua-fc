@@ -12,6 +12,8 @@ enum Formation: string
     case F_4_1_4_1 = '4-1-4-1';
     case F_5_3_2 = '5-3-2';
     case F_5_4_1 = '5-4-1';
+    case F_4_1_2_3 = '4-1-2-3';
+    case F_4_3_2_1 = '4-3-2-1';
 
     public function requirements(): array
     {
@@ -24,6 +26,8 @@ enum Formation: string
             self::F_4_1_4_1 => ['Goalkeeper' => 1, 'Defender' => 4, 'Midfielder' => 5, 'Forward' => 1],
             self::F_5_3_2 => ['Goalkeeper' => 1, 'Defender' => 5, 'Midfielder' => 3, 'Forward' => 2],
             self::F_5_4_1 => ['Goalkeeper' => 1, 'Defender' => 5, 'Midfielder' => 4, 'Forward' => 1],
+            self::F_4_1_2_3 => ['Goalkeeper' => 1, 'Defender' => 4, 'Midfielder' => 3, 'Forward' => 3],
+            self::F_4_3_2_1 => ['Goalkeeper' => 1, 'Defender' => 4, 'Midfielder' => 5, 'Forward' => 1],
         };
     }
 
@@ -65,6 +69,8 @@ enum Formation: string
             self::F_4_1_4_1 => 'game.formation_tip_4141',
             self::F_5_3_2 => 'game.formation_tip_532',
             self::F_5_4_1 => 'game.formation_tip_541',
+            self::F_4_1_2_3 => 'game.formation_tip_4123',
+            self::F_4_3_2_1 => 'game.formation_tip_4321',
         };
 
         return __($key, ['attack' => $attackPct, 'defense' => $defensePct]);
@@ -144,11 +150,11 @@ enum Formation: string
                 ['id' => 1, 'role' => 'Defender', 'col' => 2, 'row' => 3, 'label' => 'CB'],
                 ['id' => 2, 'role' => 'Defender', 'col' => 4, 'row' => 3, 'label' => 'CB'],
                 ['id' => 3, 'role' => 'Defender', 'col' => 6, 'row' => 3, 'label' => 'CB'],
-                ['id' => 4, 'role' => 'Midfielder', 'col' => 0, 'row' => 7, 'label' => 'LWB'],
+                ['id' => 4, 'role' => 'Midfielder', 'col' => 0, 'row' => 7, 'label' => 'LM'],
                 ['id' => 5, 'role' => 'Midfielder', 'col' => 2, 'row' => 7, 'label' => 'CM'],
                 ['id' => 6, 'role' => 'Midfielder', 'col' => 4, 'row' => 7, 'label' => 'CM'],
-                ['id' => 7, 'role' => 'Midfielder', 'col' => 6, 'row' => 7, 'label' => 'RWB'],
-                ['id' => 8, 'role' => 'Midfielder', 'col' => 8, 'row' => 7, 'label' => 'CM'],
+                ['id' => 7, 'role' => 'Midfielder', 'col' => 6, 'row' => 7, 'label' => 'CM'],
+                ['id' => 8, 'role' => 'Midfielder', 'col' => 8, 'row' => 7, 'label' => 'RM'],
                 ['id' => 9, 'role' => 'Forward', 'col' => 3, 'row' => 11, 'label' => 'CF'],
                 ['id' => 10, 'role' => 'Forward', 'col' => 5, 'row' => 11, 'label' => 'CF'],
             ],
@@ -158,7 +164,7 @@ enum Formation: string
                 ['id' => 2, 'role' => 'Defender', 'col' => 3, 'row' => 3, 'label' => 'CB'],
                 ['id' => 3, 'role' => 'Defender', 'col' => 5, 'row' => 3, 'label' => 'CB'],
                 ['id' => 4, 'role' => 'Defender', 'col' => 7, 'row' => 3, 'label' => 'RB'],
-                ['id' => 5, 'role' => 'Midfielder', 'col' => 4, 'row' => 6, 'label' => 'DM'],
+                ['id' => 5, 'role' => 'Midfielder', 'col' => 4, 'row' => 5, 'label' => 'DM'],
                 ['id' => 6, 'role' => 'Midfielder', 'col' => 1, 'row' => 8, 'label' => 'LM'],
                 ['id' => 7, 'role' => 'Midfielder', 'col' => 3, 'row' => 8, 'label' => 'CM'],
                 ['id' => 8, 'role' => 'Midfielder', 'col' => 5, 'row' => 8, 'label' => 'CM'],
@@ -167,11 +173,11 @@ enum Formation: string
             ],
             self::F_5_3_2 => [
                 ['id' => 0, 'role' => 'Goalkeeper', 'col' => 4, 'row' => 0, 'label' => 'GK'],
-                ['id' => 1, 'role' => 'Defender', 'col' => 0, 'row' => 3, 'label' => 'LWB'],
+                ['id' => 1, 'role' => 'Defender', 'col' => 0, 'row' => 3, 'label' => 'LB'],
                 ['id' => 2, 'role' => 'Defender', 'col' => 2, 'row' => 3, 'label' => 'CB'],
                 ['id' => 3, 'role' => 'Defender', 'col' => 4, 'row' => 3, 'label' => 'CB'],
                 ['id' => 4, 'role' => 'Defender', 'col' => 6, 'row' => 3, 'label' => 'CB'],
-                ['id' => 5, 'role' => 'Defender', 'col' => 8, 'row' => 3, 'label' => 'RWB'],
+                ['id' => 5, 'role' => 'Defender', 'col' => 8, 'row' => 3, 'label' => 'RB'],
                 ['id' => 6, 'role' => 'Midfielder', 'col' => 2, 'row' => 7, 'label' => 'CM'],
                 ['id' => 7, 'role' => 'Midfielder', 'col' => 4, 'row' => 7, 'label' => 'CM'],
                 ['id' => 8, 'role' => 'Midfielder', 'col' => 6, 'row' => 7, 'label' => 'CM'],
@@ -180,16 +186,42 @@ enum Formation: string
             ],
             self::F_5_4_1 => [
                 ['id' => 0, 'role' => 'Goalkeeper', 'col' => 4, 'row' => 0, 'label' => 'GK'],
-                ['id' => 1, 'role' => 'Defender', 'col' => 0, 'row' => 3, 'label' => 'LWB'],
+                ['id' => 1, 'role' => 'Defender', 'col' => 0, 'row' => 3, 'label' => 'LB'],
                 ['id' => 2, 'role' => 'Defender', 'col' => 2, 'row' => 3, 'label' => 'CB'],
                 ['id' => 3, 'role' => 'Defender', 'col' => 4, 'row' => 3, 'label' => 'CB'],
                 ['id' => 4, 'role' => 'Defender', 'col' => 6, 'row' => 3, 'label' => 'CB'],
-                ['id' => 5, 'role' => 'Defender', 'col' => 8, 'row' => 3, 'label' => 'RWB'],
+                ['id' => 5, 'role' => 'Defender', 'col' => 8, 'row' => 3, 'label' => 'RB'],
                 ['id' => 6, 'role' => 'Midfielder', 'col' => 1, 'row' => 7, 'label' => 'LM'],
                 ['id' => 7, 'role' => 'Midfielder', 'col' => 3, 'row' => 7, 'label' => 'CM'],
                 ['id' => 8, 'role' => 'Midfielder', 'col' => 5, 'row' => 7, 'label' => 'CM'],
                 ['id' => 9, 'role' => 'Midfielder', 'col' => 7, 'row' => 7, 'label' => 'RM'],
                 ['id' => 10, 'role' => 'Forward', 'col' => 4, 'row' => 11, 'label' => 'CF'],
+            ],
+            self::F_4_1_2_3 => [
+                ['id' => 0, 'role' => 'Goalkeeper', 'col' => 4, 'row' => 0, 'label' => 'GK'],
+                ['id' => 1, 'role' => 'Defender', 'col' => 1, 'row' => 3, 'label' => 'LB'],
+                ['id' => 2, 'role' => 'Defender', 'col' => 3, 'row' => 3, 'label' => 'CB'],
+                ['id' => 3, 'role' => 'Defender', 'col' => 5, 'row' => 3, 'label' => 'CB'],
+                ['id' => 4, 'role' => 'Defender', 'col' => 7, 'row' => 3, 'label' => 'RB'],
+                ['id' => 5, 'role' => 'Midfielder', 'col' => 4, 'row' => 5, 'label' => 'DM'],
+                ['id' => 6, 'role' => 'Midfielder', 'col' => 3, 'row' => 8, 'label' => 'CM'],
+                ['id' => 7, 'role' => 'Midfielder', 'col' => 5, 'row' => 8, 'label' => 'CM'],
+                ['id' => 8, 'role' => 'Forward', 'col' => 1, 'row' => 10, 'label' => 'LW'],
+                ['id' => 9, 'role' => 'Forward', 'col' => 4, 'row' => 11, 'label' => 'CF'],
+                ['id' => 10, 'role' => 'Forward', 'col' => 7, 'row' => 10, 'label' => 'RW'],
+            ],
+            self::F_4_3_2_1 => [
+                ['id' => 0, 'role' => 'Goalkeeper', 'col' => 4, 'row' => 0, 'label' => 'GK'],
+                ['id' => 1, 'role' => 'Defender', 'col' => 1, 'row' => 3, 'label' => 'LB'],
+                ['id' => 2, 'role' => 'Defender', 'col' => 3, 'row' => 3, 'label' => 'CB'],
+                ['id' => 3, 'role' => 'Defender', 'col' => 5, 'row' => 3, 'label' => 'CB'],
+                ['id' => 4, 'role' => 'Defender', 'col' => 7, 'row' => 3, 'label' => 'RB'],
+                ['id' => 5, 'role' => 'Midfielder', 'col' => 2, 'row' => 6, 'label' => 'CM'],
+                ['id' => 6, 'role' => 'Midfielder', 'col' => 4, 'row' => 6, 'label' => 'CM'],
+                ['id' => 7, 'role' => 'Midfielder', 'col' => 6, 'row' => 6, 'label' => 'CM'],
+                ['id' => 8, 'role' => 'Midfielder', 'col' => 3, 'row' => 9, 'label' => 'AM'],
+                ['id' => 9, 'role' => 'Midfielder', 'col' => 5, 'row' => 9, 'label' => 'AM'],
+                ['id' => 10, 'role' => 'Forward', 'col' => 4, 'row' => 12, 'label' => 'CF'],
             ],
         };
     }

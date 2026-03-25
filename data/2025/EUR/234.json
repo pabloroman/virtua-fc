@@ -465,5 +465,6 @@
   ],
   "stadiumName": "Stadion Feyenoord \"De Kuip\"",
   "stadiumSeats": "47500",
-  "transfermarktId": "234"
+  "transfermarktId": "234",
+  "country": "NL"
 }

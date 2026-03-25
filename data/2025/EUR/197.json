@@ -390,5 +390,6 @@
   ],
   "stadiumName": "epet Arena",
   "stadiumSeats": "18243",
-  "transfermarktId": "197"
+  "transfermarktId": "197",
+  "country": "CZ"
 }

@@ -6,7 +6,9 @@ use App\Events\SeasonCompleted;
 use App\Models\ActivationEvent;
 use App\Modules\Match\Services\MatchdayOrchestrator;
 use App\Modules\Match\Services\MatchFinalizationService;
+use App\Modules\Report\Services\TournamentSnapshotService;
 use App\Modules\Season\Services\ActivationTracker;
+use App\Modules\Season\Services\GameDeletionService;
 use App\Models\Game;
 use App\Models\GameMatch;
 use Illuminate\Http\Request;
@@ -17,6 +19,8 @@ class FinalizeMatch
         private readonly MatchFinalizationService $finalizationService,
         private readonly MatchdayOrchestrator $orchestrator,
         private readonly ActivationTracker $activationTracker,
+        private readonly TournamentSnapshotService $snapshotService,
+        private readonly GameDeletionService $deletionService,
     ) {}
 
     public function __invoke(Request $request, string $gameId)
@@ -48,6 +52,10 @@ class FinalizeMatch
             ->exists();
 
         if (! $hasRemainingMatches) {
+            if ($game->isTournamentMode()) {
+                return $this->completeTournament($game);
+            }
+
             event(new SeasonCompleted($game));
         }
 
@@ -80,8 +88,16 @@ class FinalizeMatch
             $game->refresh()->setRelations([]);
         }
 
+        return $this->completeTournament($game);
+    }
+
+    private function completeTournament(Game $game)
+    {
         $this->activationTracker->record($game->user_id, ActivationEvent::EVENT_TOURNAMENT_COMPLETED, $game->id, Game::MODE_TOURNAMENT);
 
-        return redirect()->route('game.tournament-end', $game->id);
+        $summary = $this->snapshotService->createSnapshot($game);
+        $this->deletionService->delete($game);
+
+        return redirect()->route('tournament-summary.show', $summary->id);
     }
 }

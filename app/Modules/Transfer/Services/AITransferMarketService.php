@@ -9,6 +9,7 @@ use App\Models\GameTransfer;
 use App\Models\Team;
 use App\Models\TeamReputation;
 use App\Modules\Notification\Services\NotificationService;
+use App\Modules\Player\PlayerAge;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -522,10 +523,8 @@ class AITransferMarketService
 
         // Aging player
         $age = $player->age($currentDate);
-        if ($age >= 35) {
+        if ($age >= PlayerAge::PRIME_END) {
             $score += 3;
-        } elseif ($age >= 32) {
-            $score += 2;
         }
 
         // Random variance
@@ -570,9 +569,9 @@ class AITransferMarketService
 
         // Prime age premium
         $age = $player->age($currentDate);
-        if ($age >= 22 && $age <= 28) {
+        if ($age >= PlayerAge::YOUNG_END && $age <= PlayerAge::primePhaseAge(0.5)) {
             $score += 3;
-        } elseif ($age >= 19 && $age <= 21) {
+        } elseif ($age >= PlayerAge::ACADEMY_END && $age < PlayerAge::YOUNG_END) {
             $score += 1;
         }
 

@@ -24,7 +24,7 @@ class CountryConfig
     public function playableCountryCodes(): array
     {
         return collect($this->allCountries())
-            ->filter(fn (array $config, string $code) => $code !== 'XX' && !empty($config['tiers']) && empty($config['tournament']))
+            ->filter(fn (array $config) => !empty($config['tiers']) && empty($config['tournament']))
             ->keys()
             ->all();
     }

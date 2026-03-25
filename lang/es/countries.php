@@ -19,6 +19,7 @@ return [
     'Brazil' => 'Brasil',
     'Bulgaria' => 'Bulgaria',
     'Cabo Verde' => 'Cabo Verde',
+    'Cape Verde' => 'Cabo Verde',
     'Cameroon' => 'Camerún',
     'Canada' => 'Canadá',
     'Chile' => 'Chile',
@@ -31,6 +32,7 @@ return [
     'Croatia' => 'Croacia',
     'Cuba' => 'Cuba',
     'Curaçao' => 'Curazao',
+    'Cyprus' => 'Chipre',
     'Czechia' => 'Chequia',
     'Czech Republic' => 'Chequia',
     'Denmark' => 'Dinamarca',
@@ -104,6 +106,7 @@ return [
     'Turkey' => 'Turquía',
     'Türkiye' => 'Turquía',
     'Ukraine' => 'Ucrania',
+    'United Kingdom' => 'Reino Unido',
     'United Arab Emirates' => 'Emiratos Árabes Unidos',
     'USA' => 'EE. UU.',
     'United States' => 'Estados Unidos',
@@ -112,4 +115,12 @@ return [
     'Venezuela' => 'Venezuela',
     'Vietnam' => 'Vietnam',
     'Wales' => 'Gales',
+
+    // WC2026 placeholder teams
+    'Winner UEFA Playoff A' => 'Playoff UEFA A',
+    'Winner UEFA Playoff B' => 'Playoff UEFA B',
+    'Winner UEFA Playoff C' => 'Playoff UEFA C',
+    'Winner UEFA Playoff D' => 'Playoff UEFA D',
+    'Winner FIFA Playoff 1' => 'Playoff FIFA 1',
+    'Winner FIFA Playoff 2' => 'Playoff FIFA 2',
 ];

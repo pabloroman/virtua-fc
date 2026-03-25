@@ -19,15 +19,8 @@ return [
     'wage_budget_exceeded' => 'Signing this player would exceed your wage budget.',
 
     // Bid/loan submission confirmations
-    'bid_submitted' => 'Your bid for :player has been submitted. You will receive a response soon.',
     'bid_already_exists' => 'You already have a pending bid for this player.',
     'loan_request_submitted' => 'Your loan request for :player has been submitted. You will receive a response soon.',
-
-    // Counter offer
-    'counter_offer_accepted' => 'Counter offer accepted! :player will join when the :window window opens.',
-    'counter_offer_accepted_immediate' => 'Transfer complete! :player has joined your squad.',
-    'counter_offer_rejected' => 'You rejected the counter offer for :player.',
-    'counter_offer_expired' => 'This offer is no longer available.',
 
     // Loan messages
     'loan_agreed' => ':message The loan will begin when the :window window opens.',
@@ -43,7 +36,6 @@ return [
     'renewal_declined' => 'You have decided not to renew :player. They will leave at the end of the season.',
     'renewal_reconsidered' => 'You have reconsidered :player\'s renewal.',
     'cannot_renew' => 'This player cannot receive a renewal offer.',
-    'renewal_offer_submitted' => 'Renewal offer sent to :player for :wage/yr. Response on the next matchday.',
     'renewal_invalid_offer' => 'The offer must be greater than zero.',
 
     // Pre-contract messages
@@ -90,11 +82,8 @@ return [
 
     // Academy
     'academy_player_promoted' => ':player has been promoted to the first team.',
-    'academy_evaluation_required' => 'You must evaluate academy players before continuing.',
-    'academy_evaluation_complete' => 'Academy evaluation complete.',
     'academy_player_dismissed' => ':player has been dismissed from the academy.',
     'academy_player_loaned' => ':player has been loaned out.',
-    'academy_over_capacity' => 'The academy is over capacity. You must free :excess place(s).',
     'academy_must_decide_21' => 'Players aged 21+ must be promoted or dismissed.',
 
     // Player release messages
@@ -129,4 +118,12 @@ return [
     // Game management
     'game_deleted' => 'Game is being deleted.',
     'game_limit_reached' => 'You have reached the maximum limit of 3 games. Delete one to create another.',
+    'career_mode_requires_invite' => 'Career mode requires an invitation. Play the World Cup for free!',
+    'tournament_mode_requires_access' => 'Tournament mode requires access. Contact an admin to get started.',
+
+    // Budget loan messages
+    'budget_loan_approved' => 'Loan of :amount approved and added to your transfer budget.',
+    'loan_not_available' => 'A budget loan is not available right now.',
+    'loan_below_minimum' => 'The loan amount is below the minimum.',
+    'loan_exceeds_maximum' => 'The loan amount exceeds the maximum allowed.',
 ];

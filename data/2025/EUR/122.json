@@ -372,5 +372,6 @@
   ],
   "stadiumName": "Merkur Arena",
   "stadiumSeats": "16364",
-  "transfermarktId": "122"
+  "transfermarktId": "122",
+  "country": "AT"
 }

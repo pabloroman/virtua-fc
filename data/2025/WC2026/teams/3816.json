@@ -8,7 +8,7 @@
       "foot": "right",
       "height": "1,99m",
       "id": "292985",
-      "marketValue": "€1.50m",
+      "marketValue": "€2.50m",
       "name": "Álvaro Montero",
       "position": "Goalkeeper"
     },
@@ -56,6 +56,16 @@
       "position": "Centre-Back"
     },
     {
+      "contract": "Oct 12, 2023",
+      "dateOfBirth": "May 2, 2001",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "716276",
+      "marketValue": "€12.00m",
+      "name": "Yerson Mosquera",
+      "position": "Centre-Back"
+    },
+    {
       "contract": "Sep 10, 2021",
       "dateOfBirth": "Mar 9, 1999",
       "foot": "right",
@@ -76,6 +86,16 @@
       "position": "Centre-Back"
     },
     {
+      "contract": "Sep 10, 2024",
+      "dateOfBirth": "Jan 8, 2001",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "686965",
+      "marketValue": "€9.00m",
+      "name": "Juan Cabal",
+      "position": "Left-Back"
+    },
+    {
       "contract": "Jan 16, 2022",
       "dateOfBirth": "Mar 6, 1997",
       "foot": "left",
@@ -84,6 +104,16 @@
       "marketValue": "€2.80m",
       "name": "Álvaro Angulo",
       "number": "8",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Sep 12, 2018",
+      "dateOfBirth": "Sep 2, 1993",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "332560",
+      "marketValue": "€2.50m",
+      "name": "Deiver Machado",
       "position": "Left-Back"
     },
     {
@@ -146,7 +176,7 @@
       "foot": "right",
       "height": "1,77m",
       "id": "857948",
-      "marketValue": "€7.00m",
+      "marketValue": "€6.50m",
       "name": "Kevin Castaño",
       "number": "5",
       "position": "Defensive Midfield"
@@ -157,7 +187,7 @@
       "foot": "right",
       "height": "1,73m",
       "id": "936981",
-      "marketValue": "€3.50m",
+      "marketValue": "€5.00m",
       "name": "Gustavo Puerta",
       "position": "Central Midfield"
     },
@@ -178,8 +208,18 @@
       "foot": "right",
       "height": "1,80m",
       "id": "354145",
-      "marketValue": "€9.00m",
+      "marketValue": "€11.00m",
       "name": "Jorge Carrascal",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Oct 17, 2012",
+      "dateOfBirth": "Jan 18, 1993",
+      "foot": "left",
+      "height": "1,68m",
+      "id": "122582",
+      "marketValue": "€2.00m",
+      "name": "Juan Fernando Quintero",
       "position": "Attacking Midfield"
     },
     {
@@ -210,8 +250,18 @@
       "foot": "right",
       "height": "1,71m",
       "id": "957461",
-      "marketValue": "€5.00m",
+      "marketValue": "€8.00m",
       "name": "Andrés Gómez",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 17, 2021",
+      "dateOfBirth": "May 24, 2000",
+      "foot": "left",
+      "height": "1,65m",
+      "id": "491553",
+      "marketValue": "€5.50m",
+      "name": "Jáminton Campaz",
       "position": "Left Winger"
     },
     {
@@ -250,7 +300,7 @@
       "foot": "right",
       "height": "1,81m",
       "id": "424784",
-      "marketValue": "€22.00m",
+      "marketValue": "€28.00m",
       "name": "Luis Suárez",
       "number": "19",
       "position": "Centre-Forward"

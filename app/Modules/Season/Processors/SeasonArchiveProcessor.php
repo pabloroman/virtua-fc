@@ -14,6 +14,7 @@ use App\Models\GameStanding;
 use App\Models\GameTransfer;
 use App\Models\MatchEvent;
 use App\Models\SeasonArchive;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Archives season data before stats are reset.
@@ -150,28 +151,32 @@ class SeasonArchiveProcessor implements SeasonProcessor
      */
     private function capturePlayerStats(Game $game): array
     {
-        return GamePlayer::with('player')
+        $stats = [];
+
+        GamePlayer::with('player')
             ->where('game_id', $game->id)
             ->whereNotNull('team_id')
-            ->get()
-            ->map(function ($player) {
-                return [
-                    'player_id' => $player->id,
-                    'reference_player_id' => $player->player_id,
-                    'name' => $player->name,
-                    'team_id' => $player->team_id,
-                    'position' => $player->position,
-                    'appearances' => $player->appearances,
-                    'goals' => $player->goals,
-                    'assists' => $player->assists,
-                    'own_goals' => $player->own_goals,
-                    'yellow_cards' => $player->yellow_cards,
-                    'red_cards' => $player->red_cards,
-                    'goals_conceded' => $player->goals_conceded,
-                    'clean_sheets' => $player->clean_sheets,
-                ];
-            })
-            ->toArray();
+            ->chunk(200, function ($chunk) use (&$stats) {
+                foreach ($chunk as $player) {
+                    $stats[] = [
+                        'player_id' => $player->id,
+                        'reference_player_id' => $player->player_id,
+                        'name' => $player->name,
+                        'team_id' => $player->team_id,
+                        'position' => $player->position,
+                        'appearances' => $player->appearances,
+                        'goals' => $player->goals,
+                        'assists' => $player->assists,
+                        'own_goals' => $player->own_goals,
+                        'yellow_cards' => $player->yellow_cards,
+                        'red_cards' => $player->red_cards,
+                        'goals_conceded' => $player->goals_conceded,
+                        'clean_sheets' => $player->clean_sheets,
+                    ];
+                }
+            });
+
+        return $stats;
     }
 
     /**
@@ -274,26 +279,30 @@ class SeasonArchiveProcessor implements SeasonProcessor
      */
     private function captureMatchResults(Game $game): array
     {
-        return GameMatch::where('game_id', $game->id)
+        $results = [];
+
+        GameMatch::where('game_id', $game->id)
             ->where('played', true)
-            ->get()
-            ->map(function ($match) {
-                return [
-                    'home_team_id' => $match->home_team_id,
-                    'away_team_id' => $match->away_team_id,
-                    'home_score' => $match->home_score,
-                    'away_score' => $match->away_score,
-                    'is_extra_time' => $match->is_extra_time,
-                    'home_score_et' => $match->home_score_et,
-                    'away_score_et' => $match->away_score_et,
-                    'home_score_penalties' => $match->home_score_penalties,
-                    'away_score_penalties' => $match->away_score_penalties,
-                    'competition_id' => $match->competition_id,
-                    'round_number' => $match->round_number,
-                    'date' => $match->scheduled_date->toDateString(),
-                ];
-            })
-            ->toArray();
+            ->chunk(200, function ($chunk) use (&$results) {
+                foreach ($chunk as $match) {
+                    $results[] = [
+                        'home_team_id' => $match->home_team_id,
+                        'away_team_id' => $match->away_team_id,
+                        'home_score' => $match->home_score,
+                        'away_score' => $match->away_score,
+                        'is_extra_time' => $match->is_extra_time,
+                        'home_score_et' => $match->home_score_et,
+                        'away_score_et' => $match->away_score_et,
+                        'home_score_penalties' => $match->home_score_penalties,
+                        'away_score_penalties' => $match->away_score_penalties,
+                        'competition_id' => $match->competition_id,
+                        'round_number' => $match->round_number,
+                        'date' => $match->scheduled_date->toDateString(),
+                    ];
+                }
+            });
+
+        return $results;
     }
 
     /**
@@ -321,7 +330,7 @@ class SeasonArchiveProcessor implements SeasonProcessor
             return null;
         }
 
-        return base64_encode(gzcompress(json_encode($events), 9));
+        return base64_encode(gzcompress(json_encode($events), 6));
     }
 
     /**
@@ -329,29 +338,43 @@ class SeasonArchiveProcessor implements SeasonProcessor
      */
     private function captureTransferActivity(Game $game): array
     {
-        return GameTransfer::where('game_id', $game->id)
+        $activity = [];
+
+        GameTransfer::where('game_id', $game->id)
             ->where('season', $game->season)
-            ->get()
-            ->map(function ($transfer) {
-                return [
-                    'game_player_id' => $transfer->game_player_id,
-                    'from_team_id' => $transfer->from_team_id,
-                    'to_team_id' => $transfer->to_team_id,
-                    'transfer_fee' => $transfer->transfer_fee,
-                    'type' => $transfer->type,
-                    'window' => $transfer->window,
-                ];
-            })
-            ->toArray();
+            ->chunk(200, function ($chunk) use (&$activity) {
+                foreach ($chunk as $transfer) {
+                    $activity[] = [
+                        'game_player_id' => $transfer->game_player_id,
+                        'from_team_id' => $transfer->from_team_id,
+                        'to_team_id' => $transfer->to_team_id,
+                        'transfer_fee' => $transfer->transfer_fee,
+                        'type' => $transfer->type,
+                        'window' => $transfer->window,
+                    ];
+                }
+            });
+
+        return $activity;
     }
 
     /**
      * Delete archived data from active tables.
+     *
+     * Match events are deleted in batches to avoid long-running queries
+     * and excessive lock durations on remote PostgreSQL.
      */
     private function deleteArchivedData(Game $game): void
     {
-        // Delete match events
-        MatchEvent::where('game_id', $game->id)->delete();
+        // Delete match events in batches (largest table, thousands of rows per season)
+        DB::table('match_events')
+            ->where('game_id', $game->id)
+            ->orderBy('id')
+            ->chunk(1000, function ($rows) {
+                DB::table('match_events')
+                    ->whereIn('id', $rows->pluck('id'))
+                    ->delete();
+            });
 
         // Delete played matches (keep unplayed fixtures for potential reference)
         GameMatch::where('game_id', $game->id)

@@ -251,7 +251,7 @@ class PreContractBalanceTest extends TestCase
         );
 
         $premiumWage = $this->scoutingService->calculatePreContractWageDemand($player);
-        $lowOffer = (int) ($premiumWage * 0.70); // Way below threshold
+        $lowOffer = (int) ($premiumWage * 0.50); // Way below 85% threshold (even with ±10% wage variance between calls)
 
         $result = $this->scoutingService->evaluatePreContractOffer($player, $lowOffer, $game->team);
         $this->assertFalse($result['accepted']);

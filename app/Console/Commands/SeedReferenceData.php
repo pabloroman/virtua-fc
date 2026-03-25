@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Modules\Competition\Services\CountryConfig;
-use App\Modules\Season\Services\GamePlayerTemplateService;
 use App\Modules\Player\Services\PlayerValuationService;
 use App\Models\User;
 use App\Support\Money;
@@ -21,7 +20,6 @@ class SeedReferenceData extends Command
 {
     protected $signature = 'app:seed-reference-data
                             {--fresh : Clear existing data before seeding}
-                            {--profile=production : Profile to seed (production, test)}
                             {--country= : Seed only a specific country (e.g., ES)}';
 
     protected $description = 'Seed teams, competitions, fixtures, and players from 2025 season JSON data files';
@@ -31,16 +29,7 @@ class SeedReferenceData extends Command
 
     public function handle(): int
     {
-        $profile = $this->option('profile');
         $countryFilter = $this->option('country');
-
-        $validProfiles = ['production', 'test'];
-        if (!in_array($profile, $validProfiles)) {
-            $this->error("Unknown profile: {$profile}. Available: " . implode(', ', $validProfiles));
-            return CommandAlias::FAILURE;
-        }
-
-        $this->info("Using profile: {$profile}");
 
         if ($this->option('fresh')) {
             $this->clearExistingData();
@@ -51,17 +40,12 @@ class SeedReferenceData extends Command
         }
 
         $countryConfig = app(CountryConfig::class);
-
-        // Determine which countries to seed based on profile
-        $countryCodes = match ($profile) {
-            'test' => ['XX'],
-            default => $countryConfig->playableCountryCodes(),
-        };
+        $countryCodes = $countryConfig->playableCountryCodes();
 
         if ($countryFilter) {
             $countryFilter = strtoupper($countryFilter);
             if (!in_array($countryFilter, $countryCodes)) {
-                $this->error("Country '{$countryFilter}' not found in profile '{$profile}'.");
+                $this->error("Country '{$countryFilter}' is not a playable country.");
                 return CommandAlias::FAILURE;
             }
             $countryCodes = [$countryFilter];
@@ -95,7 +79,11 @@ class SeedReferenceData extends Command
 
         // Generate pre-computed game player templates
         try {
-            $this->generateGamePlayerTemplates($countryCodes);
+            $args = ['--season' => '2025'];
+            if ($countryFilter) {
+                $args['--country'] = $countryFilter;
+            }
+            $this->call('app:refresh-player-templates', $args);
         } catch (\Throwable $e) {
             $this->error("FAILED generating game player templates: {$e->getMessage()}");
             $this->error("  at {$e->getFile()}:{$e->getLine()}");
@@ -420,6 +408,11 @@ class SeedReferenceData extends Command
                         : 0,
                 ]);
                 $teamsByTransfermarktId[$transfermarktId] = $teamId;
+            } else {
+                // Update country if JSON provides a more specific one than the pool default
+                if (isset($data['country'])) {
+                    DB::table('teams')->where('id', $teamId)->update(['country' => $teamCountry]);
+                }
             }
 
             $teamIdMap[$transfermarktId] = $teamId;
@@ -757,26 +750,6 @@ class SeedReferenceData extends Command
         }
 
         return null;
-    }
-
-    private function generateGamePlayerTemplates(array $countryCodes): void
-    {
-        $this->newLine();
-        $this->info('Generating game player templates...');
-
-        $templateService = app(GamePlayerTemplateService::class);
-        $season = '2025';
-        $totalCount = 0;
-
-        $templateService->clearTemplates($season);
-
-        foreach ($countryCodes as $countryCode) {
-            $count = $templateService->generateTemplates($season, $countryCode);
-            $this->line("  {$countryCode}: {$count} player templates");
-            $totalCount += $count;
-        }
-
-        $this->info("Total templates: {$totalCount}");
     }
 
     private function displaySummary(): void

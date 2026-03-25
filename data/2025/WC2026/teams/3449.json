@@ -8,9 +8,19 @@
       "foot": "right",
       "height": "1,90m",
       "id": "492319",
-      "marketValue": "€3.80m",
+      "marketValue": "€7.00m",
       "name": "Franco Israel",
-      "number": "12",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jan 28, 2022",
+      "dateOfBirth": "Mar 23, 1993",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "264014",
+      "marketValue": "€4.00m",
+      "name": "Sergio Rochet",
+      "number": "1",
       "position": "Goalkeeper"
     },
     {
@@ -19,7 +29,7 @@
       "foot": "right",
       "height": "1,84m",
       "id": "320739",
-      "marketValue": "€2.20m",
+      "marketValue": "€2.50m",
       "name": "Santiago Mele",
       "number": "23",
       "position": "Goalkeeper"
@@ -32,7 +42,22 @@
       "id": "563089",
       "marketValue": "€1.50m",
       "name": "Cristopher Fiermarín",
-      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "dateOfBirth": "Nov 26, 2005",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "1236474",
+      "name": "Kevin Martínez",
+      "position": "Goalkeeper"
+    },
+    {
+      "dateOfBirth": "Jun 13, 2008",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1339500",
+      "name": "Paulo Da Costa",
       "position": "Goalkeeper"
     },
     {
@@ -41,7 +66,7 @@
       "foot": "right",
       "height": "1,92m",
       "id": "480267",
-      "marketValue": "€25.00m",
+      "marketValue": "€55.00m",
       "name": "Ronald Araujo",
       "position": "Centre-Back"
     },
@@ -51,7 +76,7 @@
       "foot": "right",
       "height": "1,85m",
       "id": "250845",
-      "marketValue": "€14.00m",
+      "marketValue": "€20.00m",
       "name": "José María Giménez",
       "position": "Centre-Back"
     },
@@ -61,9 +86,19 @@
       "foot": "right",
       "height": "1,90m",
       "id": "438001",
-      "marketValue": "€10.00m",
+      "marketValue": "€8.00m",
       "name": "Santiago Bueno",
       "number": "2",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Sep 23, 2022",
+      "dateOfBirth": "Aug 18, 1999",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "532389",
+      "marketValue": "€6.50m",
+      "name": "Sebastián Cáceres",
       "position": "Centre-Back"
     },
     {
@@ -72,20 +107,16 @@
       "foot": "right",
       "height": "1,85m",
       "id": "852980",
-      "marketValue": "€4.00m",
+      "marketValue": "€3.50m",
       "name": "Nicolás Marichal",
-      "number": "3",
       "position": "Centre-Back"
     },
     {
-      "contract": "Jun 15, 2023",
-      "dateOfBirth": "Feb 15, 2000",
-      "foot": "left",
-      "height": "1,79m",
-      "id": "572675",
-      "marketValue": "€22.00m",
-      "name": "Maxi Araújo",
-      "position": "Left-Back"
+      "dateOfBirth": "May 14, 2008",
+      "height": "1,80m",
+      "id": "1339498",
+      "name": "Brian Barboza",
+      "position": "Centre-Back"
     },
     {
       "contract": "Jan 28, 2022",
@@ -99,24 +130,23 @@
       "position": "Left-Back"
     },
     {
+      "contract": "Jun 15, 2023",
+      "dateOfBirth": "Feb 15, 2000",
+      "foot": "left",
+      "height": "1,79m",
+      "id": "572675",
+      "marketValue": "€14.00m",
+      "name": "Maxi Araújo",
+      "position": "Left-Back"
+    },
+    {
       "contract": "Sep 3, 2021",
       "dateOfBirth": "Aug 24, 1998",
       "foot": "left",
       "height": "1,84m",
       "id": "496268",
-      "marketValue": "€14.00m",
+      "marketValue": "€12.00m",
       "name": "Joaquín Piquerez",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Oct 10, 2025",
-      "dateOfBirth": "Mar 29, 2000",
-      "foot": "left",
-      "height": "1,72m",
-      "id": "446106",
-      "marketValue": "€5.50m",
-      "name": "Juan Manuel Sanabria",
-      "number": "18",
       "position": "Left-Back"
     },
     {
@@ -125,8 +155,19 @@
       "foot": "left",
       "height": "1,80m",
       "id": "439072",
-      "marketValue": "€4.00m",
+      "marketValue": "€10.00m",
       "name": "Matías Viña",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Oct 10, 2025",
+      "dateOfBirth": "Mar 29, 2000",
+      "foot": "left",
+      "height": "1,72m",
+      "id": "446106",
+      "marketValue": "€8.00m",
+      "name": "Juan Manuel Sanabria",
+      "number": "18",
       "position": "Left-Back"
     },
     {
@@ -135,9 +176,8 @@
       "foot": "left",
       "height": "1,72m",
       "id": "373916",
-      "marketValue": "€2.00m",
+      "marketValue": "€1.80m",
       "name": "Marcelo Saracchi",
-      "number": "6",
       "position": "Left-Back"
     },
     {
@@ -146,20 +186,8 @@
       "foot": "right",
       "height": "1,86m",
       "id": "953901",
-      "marketValue": "€10.00m",
+      "marketValue": "€2.00m",
       "name": "Santiago Mouriño",
-      "number": "4",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Sep 10, 2025",
-      "dateOfBirth": "Mar 3, 2004",
-      "foot": "right",
-      "height": "1,77m",
-      "id": "1038224",
-      "marketValue": "€3.50m",
-      "name": "Kevin Amaro",
-      "number": "7",
       "position": "Right-Back"
     },
     {
@@ -168,9 +196,30 @@
       "foot": "right",
       "height": "1,83m",
       "id": "430339",
-      "marketValue": "€1.50m",
+      "marketValue": "€2.00m",
       "name": "José Luis Rodríguez",
       "number": "14",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Nov 10, 2017",
+      "dateOfBirth": "Mar 24, 1993",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "188862",
+      "marketValue": "€1.50m",
+      "name": "Guillermo Varela",
+      "number": "13",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Sep 10, 2025",
+      "dateOfBirth": "Mar 3, 2004",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "1038224",
+      "marketValue": "€800k",
+      "name": "Kevin Amaro",
       "position": "Right-Back"
     },
     {
@@ -179,7 +228,7 @@
       "foot": "right",
       "height": "1,82m",
       "id": "476701",
-      "marketValue": "€30.00m",
+      "marketValue": "€50.00m",
       "name": "Manuel Ugarte",
       "position": "Defensive Midfield"
     },
@@ -189,8 +238,18 @@
       "foot": "right",
       "height": "1,87m",
       "id": "354362",
-      "marketValue": "€27.00m",
+      "marketValue": "€35.00m",
       "name": "Rodrigo Bentancur",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Mar 23, 2018",
+      "dateOfBirth": "Feb 11, 1996",
+      "foot": "right",
+      "height": "1,66m",
+      "id": "318077",
+      "marketValue": "€15.00m",
+      "name": "Lucas Torreira",
       "position": "Defensive Midfield"
     },
     {
@@ -199,7 +258,7 @@
       "foot": "right",
       "height": "1,85m",
       "id": "707447",
-      "marketValue": "€9.00m",
+      "marketValue": "€4.50m",
       "name": "Emiliano Martínez",
       "number": "5",
       "position": "Defensive Midfield"
@@ -210,7 +269,7 @@
       "foot": "right",
       "height": "1,81m",
       "id": "462070",
-      "marketValue": "€3.00m",
+      "marketValue": "€2.70m",
       "name": "Nicolás Fonseca",
       "number": "8",
       "position": "Defensive Midfield"
@@ -220,18 +279,24 @@
       "foot": "left",
       "height": "1,85m",
       "id": "895679",
-      "marketValue": "€1.50m",
+      "marketValue": "€500k",
       "name": "Santiago Homenchenko",
-      "number": "3",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Oct 10, 2025",
+      "dateOfBirth": "Feb 22, 2008",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "1339508",
+      "name": "Julio Daguer",
       "position": "Defensive Midfield"
     },
     {
       "dateOfBirth": "Nov 10, 2008",
       "height": "1,83m",
       "id": "1379676",
-      "marketValue": "€25k",
       "name": "Pablo Alcoba",
-      "number": "17",
       "position": "Defensive Midfield"
     },
     {
@@ -240,9 +305,20 @@
       "foot": "right",
       "height": "1,82m",
       "id": "369081",
-      "marketValue": "€120.00m",
+      "marketValue": "€130.00m",
       "name": "Federico Valverde",
       "number": "15",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Oct 9, 2020",
+      "dateOfBirth": "Jun 1, 1997",
+      "foot": "right",
+      "height": "1,67m",
+      "id": "397458",
+      "marketValue": "€18.00m",
+      "name": "Nicolás de la Cruz",
+      "number": "7",
       "position": "Central Midfield"
     },
     {
@@ -251,9 +327,8 @@
       "foot": "right",
       "height": "1,78m",
       "id": "606752",
-      "marketValue": "€20.00m",
+      "marketValue": "€16.00m",
       "name": "Rodrigo Zalazar",
-      "number": "10",
       "position": "Central Midfield"
     },
     {
@@ -272,7 +347,7 @@
       "foot": "right",
       "height": "1,74m",
       "id": "248410",
-      "marketValue": "€15.00m",
+      "marketValue": "€14.00m",
       "name": "Giorgian de Arrascaeta",
       "position": "Attacking Midfield"
     },
@@ -282,16 +357,16 @@
       "foot": "right",
       "height": "1,76m",
       "id": "465818",
-      "marketValue": "€6.50m",
+      "marketValue": "€6.00m",
       "name": "Brian Rodríguez",
       "position": "Left Winger"
     },
     {
-      "dateOfBirth": "Nov 10, 2008",
-      "foot": "both",
-      "height": "1,83m",
-      "id": "1422395",
-      "name": "Mateo Alcoba",
+      "dateOfBirth": "Feb 4, 2008",
+      "foot": "left",
+      "height": "1,64m",
+      "id": "1248273",
+      "name": "Facundo Martínez",
       "position": "Left Winger"
     },
     {
@@ -300,7 +375,7 @@
       "foot": "left",
       "height": "1,77m",
       "id": "465822",
-      "marketValue": "€13.00m",
+      "marketValue": "€14.00m",
       "name": "Facundo Torres",
       "number": "21",
       "position": "Right Winger"
@@ -311,8 +386,18 @@
       "foot": "right",
       "height": "1,75m",
       "id": "676318",
-      "marketValue": "€6.00m",
+      "marketValue": "€10.00m",
       "name": "Facundo Pellistri",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Sep 12, 2023",
+      "dateOfBirth": "Apr 17, 2002",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "657746",
+      "marketValue": "€6.00m",
+      "name": "Cristian Olivera",
       "position": "Right Winger"
     },
     {
@@ -321,10 +406,19 @@
       "foot": "right",
       "height": "1,73m",
       "id": "577407",
-      "marketValue": "€2.00m",
+      "marketValue": "€800k",
       "name": "Ignacio Laquintana",
-      "number": "11",
       "position": "Right Winger"
+    },
+    {
+      "contract": "Oct 16, 2019",
+      "dateOfBirth": "Jun 24, 1999",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "546543",
+      "marketValue": "€65.00m",
+      "name": "Darwin Núñez",
+      "position": "Centre-Forward"
     },
     {
       "contract": "Mar 26, 2024",
@@ -332,9 +426,19 @@
       "foot": "right",
       "height": "1,79m",
       "id": "856143",
-      "marketValue": "€10.00m",
+      "marketValue": "€7.50m",
       "name": "Luciano Rodríguez",
-      "number": "19",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Sep 6, 2021",
+      "dateOfBirth": "May 19, 2001",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "812625",
+      "marketValue": "€4.00m",
+      "name": "Agustín Álvarez",
+      "number": "9",
       "position": "Centre-Forward"
     },
     {
@@ -349,24 +453,29 @@
       "position": "Centre-Forward"
     },
     {
-      "contract": "Sep 6, 2021",
-      "dateOfBirth": "May 19, 2001",
-      "foot": "right",
-      "height": "1,77m",
-      "id": "812625",
-      "marketValue": "€3.70m",
-      "name": "Agustín Álvarez",
-      "number": "9",
-      "position": "Centre-Forward"
-    },
-    {
       "contract": "Nov 16, 2024",
       "dateOfBirth": "Oct 1, 1994",
       "foot": "left",
       "height": "1,82m",
       "id": "189410",
-      "marketValue": "€2.50m",
+      "marketValue": "€3.00m",
       "name": "Rodrigo Aguirre",
+      "position": "Centre-Forward"
+    },
+    {
+      "dateOfBirth": "Jan 1, 2006",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "1062319",
+      "name": "Luciano González",
+      "position": "Centre-Forward"
+    },
+    {
+      "dateOfBirth": "Mar 28, 2008",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "1339511",
+      "name": "Nicolas Azambuja",
       "position": "Centre-Forward"
     }
   ],

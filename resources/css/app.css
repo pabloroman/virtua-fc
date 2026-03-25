@@ -130,6 +130,13 @@ input[type="radio"]:checked {
   --color-goal-highlight: var(--goal-highlight);
   --color-penalty-text: var(--penalty-text);
   --color-penalty-score: var(--penalty-score);
+
+  --animate-penalty-bar: penalty-bar 1.5s ease-in-out forwards;
+}
+
+@keyframes penalty-bar {
+  0% { width: 0%; }
+  100% { width: 100%; }
 }
 
 /*

@@ -84,17 +84,6 @@ return [
     // Academy
     'academy_batch_title' => 'Nuevos canteranos',
     'academy_batch_message' => ':count nuevos jugadores han llegado a la cantera.',
-    'academy_evaluation_title' => 'Evaluación de cantera',
-    'academy_evaluation_message' => 'Es momento de evaluar a tus canteranos.',
-
-    // Transfer bid results
-    'bid_accepted_title' => 'Oferta por :player aceptada',
-    'bid_accepted' => ':team ha aceptado tu oferta por :player — fichaje acordado por :fee.',
-    'bid_counter_offer_title' => 'Contraoferta por :player',
-    'bid_counter_offer' => ':team pide :asking por :player (ofreciste :offered).',
-    'bid_rejected_title' => 'Oferta por :player rechazada',
-    'bid_rejected' => ':team ha rechazado tu oferta por :player.',
-
     // Loan request results
     'loan_accepted_title' => 'Cesión de :player aceptada',
     'loan_accepted' => ':team ha aceptado tu solicitud de cesión por :player.',
@@ -124,14 +113,6 @@ return [
     'player_released_message' => ':player ha sido liberado de tu plantilla. Indemnización pagada: :severance.',
     'player_released_message_free' => ':player ha sido liberado de tu plantilla.',
 
-    // Renewal negotiations
-    'renewal_accepted_title' => ':player acepta renovar',
-    'renewal_accepted_message' => ':player ha aceptado la renovación por :wage/año durante :years años.',
-    'renewal_countered_title' => ':player contraoferta',
-    'renewal_countered_message' => ':player pide :wage/año durante :years años para renovar.',
-    'renewal_rejected_title' => ':player rechaza renovar',
-    'renewal_rejected_message' => ':player ha rechazado tu oferta de renovación. Se marchará al final de la temporada.',
-
     // Tracking intel
     'tracking_intel_title' => 'Intel sobre :player lista',
     'tracking_report_ready' => 'Tu ojeador ha elaborado un informe sobre :player — rango de habilidad y detalles financieros disponibles.',
@@ -149,4 +130,11 @@ return [
     'reputation_change_title' => 'Reputación del club modificada',
     'reputation_improved' => 'La reputación de tu club ha ascendido a :tier. Patrocinadores, jugadores y aficionados lo notan.',
     'reputation_declined' => 'La reputación de tu club ha descendido a :tier. Es hora de reconstruir y recuperar la gloria pasada.',
+
+    // Budget loan
+    'budget_loan_taken_title' => 'Préstamo presupuestario concedido',
+    'budget_loan_taken_message' => 'El club ha obtenido un préstamo de :amount. La devolución de :repayment se descontará del presupuesto de la próxima temporada.',
+    'budget_loan_repaid_title' => 'Préstamo presupuestario devuelto',
+    'budget_loan_repaid_message' => 'El préstamo presupuestario ha sido devuelto (:repayment con intereses).',
+    'budget_loan_repaid_with_debt' => 'La devolución del préstamo de :repayment superó el superávit disponible. El déficit se arrastra como deuda.',
 ];

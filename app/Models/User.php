@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Notifications\ActivateAccount;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -21,6 +21,9 @@ use Illuminate\Support\Facades\Storage;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $feedback_requested_at
  * @property bool $is_admin
+ * @property bool $has_career_access
+ * @property bool $has_tournament_access
+ * @property bool $can_edit_database
  * @property string $locale
  * @property string|null $username
  * @property string|null $bio
@@ -64,6 +67,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'has_career_access',
+        'has_tournament_access',
+        'can_edit_database',
         'feedback_requested_at',
         'locale',
         'username',
@@ -116,8 +122,21 @@ class User extends Authenticatable
             'password' => 'hashed',
             'feedback_requested_at' => 'datetime',
             'is_admin' => 'boolean',
+            'has_career_access' => 'boolean',
+            'has_tournament_access' => 'boolean',
+            'can_edit_database' => 'boolean',
             'is_profile_public' => 'boolean',
         ];
+    }
+
+    public function canPlayCareerMode(): bool
+    {
+        return $this->is_admin || $this->has_career_access;
+    }
+
+    public function canPlayTournamentMode(): bool
+    {
+        return $this->is_admin || $this->has_tournament_access;
     }
 
     public function getInitials(): string
@@ -134,5 +153,21 @@ class User extends Authenticatable
     public function getAvatarUrl(): string
     {
         return Storage::disk('assets')->url('managers/'.($this->avatar ?? 'blue').'.png');
+    }
+
+    public function isActivated(): bool
+    {
+        return $this->email_verified_at !== null;
+    }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        if (! $this->isActivated()) {
+            $this->notify(new ActivateAccount($token));
+
+            return;
+        }
+
+        parent::sendPasswordResetNotification($token);
     }
 }

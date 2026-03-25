@@ -118,7 +118,7 @@
             <x-flash-message type="error" :message="session('error')" class="mt-4" />
 
             {{-- Squad trim warning --}}
-            @if($game->hasPendingAction('squad_trim') || $squadSize > \App\Modules\Transfer\Services\ContractService::MAX_SQUAD_SIZE)
+            @if($squadSize > \App\Modules\Transfer\Services\ContractService::MAX_SQUAD_SIZE)
             <div class="mt-4 p-4 bg-accent-gold/10 border border-accent-gold/20 rounded-lg flex items-center gap-3">
                 <svg class="w-5 h-5 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
@@ -213,7 +213,11 @@
                         <div class="hidden lg:block">
                             <div class="grid items-center px-4 py-2 bg-surface-700/30 border-b border-border-default text-[10px] text-text-muted uppercase tracking-widest font-semibold"
                                  :class="{
+                                    @if($isCareerMode)
                                     'grid-cols-[1fr_48px_32px_52px_88px_88px_80px_64px_64px_56px] gap-1.5': viewMode === 'tactical',
+                                    @else
+                                    'grid-cols-[1fr_48px_32px_52px_88px_88px_80px] gap-1.5': viewMode === 'tactical',
+                                    @endif
                                     'grid-cols-[1fr_48px_32px_52px_88px_64px_64px_56px_80px] gap-1.5': viewMode === 'planning',
                                     'grid-cols-[1fr_48px_32px_52px_48px_48px_48px_40px_48px_48px_48px_64px] gap-1.5': viewMode === 'stats',
                                     'grid-cols-[1fr_48px_32px_52px_100px] gap-1.5': viewMode === 'numbers',
@@ -233,6 +237,7 @@
                                 <template x-if="viewMode === 'tactical'">
                                     <span class="text-center">{{ __('squad.key_stats') }}</span>
                                 </template>
+                                @if($isCareerMode)
                                 <template x-if="viewMode === 'tactical'">
                                     <span class="text-right">{{ __('app.value') }}</span>
                                 </template>
@@ -242,6 +247,7 @@
                                 <template x-if="viewMode === 'tactical'">
                                     <span class="text-center">{{ __('app.contract') }}</span>
                                 </template>
+                                @endif
 
                                 {{-- Planning headers --}}
                                 @if($isCareerMode)
@@ -273,7 +279,7 @@
                                     <span class="text-center" x-data x-tooltip.raw="{{ __('squad.legend_assists') }}">{{ __('squad.assists') }}</span>
                                 </template>
                                 <template x-if="viewMode === 'stats'">
-                                    <span class="text-center text-accent-yellow" x-data x-tooltip.raw="{{ __('squad.legend_mvp') }}">{{ __('squad.mvp') }}</span>
+                                    <span class="text-center text-accent-gold" x-data x-tooltip.raw="{{ __('squad.legend_mvp') }}">{{ __('squad.mvp') }}</span>
                                 </template>
                                 <template x-if="viewMode === 'stats'">
                                     <span class="text-center" x-data x-tooltip.raw="{{ __('squad.clean_sheets_full') }}">{{ __('squad.clean_sheets') }}</span>
@@ -381,7 +387,11 @@
                                     <div class="hidden lg:grid items-center px-4 py-2.5 gap-2 cursor-pointer"
                                          @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $gp->id]) }}')"
                                          :class="{
+                                            @if($isCareerMode)
                                             'grid-cols-[1fr_48px_32px_52px_88px_88px_80px_64px_64px_56px] gap-1.5': viewMode === 'tactical',
+                                            @else
+                                            'grid-cols-[1fr_48px_32px_52px_88px_88px_80px] gap-1.5': viewMode === 'tactical',
+                                            @endif
                                             'grid-cols-[1fr_48px_32px_52px_88px_64px_64px_56px_80px] gap-1.5': viewMode === 'planning',
                                             'grid-cols-[1fr_48px_32px_52px_48px_48px_48px_40px_48px_48px_48px_64px] gap-1.5': viewMode === 'stats',
                                             'grid-cols-[1fr_48px_32px_52px_100px] gap-1.5': viewMode === 'numbers',
@@ -441,15 +451,17 @@
                                                 </div>
                                             </div>
                                         </template>
+                                        @if($isCareerMode)
                                         <template x-if="viewMode === 'tactical'">
-                                            <span class="text-xs text-text-body text-right tabular-nums">{{ $isCareerMode ? $gp->formatted_market_value : '' }}</span>
+                                            <span class="text-xs text-text-body text-right tabular-nums">{{ $gp->formatted_market_value }}</span>
                                         </template>
                                         <template x-if="viewMode === 'tactical'">
-                                            <span class="text-xs text-text-muted text-right tabular-nums">{{ $isCareerMode ? $gp->formatted_wage : '' }}</span>
+                                            <span class="text-xs text-text-muted text-right tabular-nums">{{ $gp->formatted_wage }}</span>
                                         </template>
                                         <template x-if="viewMode === 'tactical'">
-                                            <span class="text-[11px] text-center tabular-nums @if($isCareerMode && $gp->isContractExpiring($seasonEndDate)) text-accent-red font-medium @else text-text-muted @endif">{{ $isCareerMode ? $gp->contract_expiry_year : '' }}</span>
+                                            <span class="text-[11px] text-center tabular-nums @if($gp->isContractExpiring($seasonEndDate)) text-accent-red font-medium @else text-text-muted @endif">{{ $gp->contract_expiry_year }}</span>
                                         </template>
+                                        @endif
 
                                         {{-- === Planning columns (career only) === --}}
                                         @if($isCareerMode)
@@ -502,7 +514,7 @@
                                         </template>
                                         <template x-if="viewMode === 'stats'">
                                             @php $mvpCount = $mvpCounts[$gp->id] ?? 0; @endphp
-                                            <span class="text-xs text-center tabular-nums {{ $mvpCount > 0 ? 'font-medium text-accent-yellow' : 'text-text-muted' }}">{{ $mvpCount }}</span>
+                                            <span class="text-xs text-center tabular-nums {{ $mvpCount > 0 ? 'font-medium text-accent-gold' : 'text-text-muted' }}">{{ $mvpCount }}</span>
                                         </template>
                                         <template x-if="viewMode === 'stats'">
                                             <span class="text-xs text-text-secondary text-center tabular-nums">{{ $gp->clean_sheets }}</span>
@@ -600,4 +612,5 @@
     </div>
 
     <x-player-detail-modal />
+    <x-negotiation-chat-modal />
 </x-app-layout>

@@ -6,7 +6,6 @@ use App\Models\Game;
 use App\Models\GameNotification;
 use App\Models\GamePlayer;
 use App\Modules\Player\Services\InjuryService;
-use App\Models\RenewalNegotiation;
 use App\Models\ScoutReport;
 use App\Models\ShortlistedPlayer;
 use App\Models\Team;
@@ -357,56 +356,6 @@ class NotificationService
     }
 
     /**
-     * Create a notification for a transfer bid result.
-     */
-    public function notifyBidResult(Game $game, TransferOffer $offer, string $result): GameNotification
-    {
-        $player = $offer->gamePlayer;
-        $sellingTeam = $offer->sellingTeam ?? $player->team;
-        $teamName = $sellingTeam?->name ?? '';
-
-        return match ($result) {
-            'accepted' => $this->create(
-                game: $game,
-                type: GameNotification::TYPE_TRANSFER_BID_RESULT,
-                title: __('notifications.bid_accepted_title', ['player' => $player->name]),
-                message: __('notifications.bid_accepted', [
-                    'team' => $teamName,
-                    'player' => $player->name,
-                    'fee' => $offer->formatted_transfer_fee,
-                ]),
-                priority: GameNotification::PRIORITY_MILESTONE,
-                metadata: ['offer_id' => $offer->id, 'player_id' => $player->id, 'result' => 'accepted'],
-            ),
-            'counter' => $this->create(
-                game: $game,
-                type: GameNotification::TYPE_TRANSFER_BID_RESULT,
-                title: __('notifications.bid_counter_offer_title', ['player' => $player->name]),
-                message: __('notifications.bid_counter_offer', [
-                    'team' => $teamName,
-                    'player' => $player->name,
-                    'asking' => $offer->formatted_asking_price,
-                    'offered' => $offer->formatted_transfer_fee,
-                ]),
-                priority: GameNotification::PRIORITY_WARNING,
-                metadata: ['offer_id' => $offer->id, 'player_id' => $player->id, 'result' => 'counter'],
-            ),
-            'rejected' => $this->create(
-                game: $game,
-                type: GameNotification::TYPE_TRANSFER_BID_RESULT,
-                title: __('notifications.bid_rejected_title', ['player' => $player->name]),
-                message: __('notifications.bid_rejected', [
-                    'team' => $teamName,
-                    'player' => $player->name,
-                ]),
-                priority: GameNotification::PRIORITY_WARNING,
-                metadata: ['offer_id' => $offer->id, 'player_id' => $player->id, 'result' => 'rejected'],
-            ),
-            default => throw new \InvalidArgumentException("Unexpected bid result: {$result}"),
-        };
-    }
-
-    /**
      * Create a notification for a loan request result.
      */
     public function notifyLoanRequestResult(Game $game, TransferOffer $offer, string $result): GameNotification
@@ -638,65 +587,6 @@ class NotificationService
         );
     }
 
-    public function notifyAcademyEvaluation(Game $game): GameNotification
-    {
-        return $this->create(
-            game: $game,
-            type: GameNotification::TYPE_ACADEMY_EVALUATION,
-            title: __('notifications.academy_evaluation_title'),
-            message: __('notifications.academy_evaluation_message'),
-            priority: GameNotification::PRIORITY_CRITICAL,
-        );
-    }
-
-    // ==========================================
-    // Renewal Negotiation Notifications
-    // ==========================================
-
-    /**
-     * Create a notification for a renewal negotiation result.
-     */
-    public function notifyRenewalResult(Game $game, RenewalNegotiation $negotiation, string $result): GameNotification
-    {
-        $player = $negotiation->gamePlayer;
-
-        return match ($result) {
-            'accepted' => $this->create(
-                game: $game,
-                type: GameNotification::TYPE_RENEWAL_ACCEPTED,
-                title: __('notifications.renewal_accepted_title', ['player' => $player->name]),
-                message: __('notifications.renewal_accepted_message', [
-                    'player' => $player->name,
-                    'wage' => \App\Support\Money::format($negotiation->user_offer),
-                    'years' => $negotiation->contract_years,
-                ]),
-                priority: GameNotification::PRIORITY_MILESTONE,
-                metadata: ['player_id' => $player->id],
-            ),
-            'countered' => $this->create(
-                game: $game,
-                type: GameNotification::TYPE_RENEWAL_COUNTERED,
-                title: __('notifications.renewal_countered_title', ['player' => $player->name]),
-                message: __('notifications.renewal_countered_message', [
-                    'player' => $player->name,
-                    'wage' => \App\Support\Money::format($negotiation->counter_offer),
-                    'years' => $negotiation->preferred_years,
-                ]),
-                priority: GameNotification::PRIORITY_WARNING,
-                metadata: ['player_id' => $player->id],
-            ),
-            'rejected' => $this->create(
-                game: $game,
-                type: GameNotification::TYPE_RENEWAL_REJECTED,
-                title: __('notifications.renewal_rejected_title', ['player' => $player->name]),
-                message: __('notifications.renewal_rejected_message', ['player' => $player->name]),
-                priority: GameNotification::PRIORITY_CRITICAL,
-                metadata: ['player_id' => $player->id],
-            ),
-            default => throw new \InvalidArgumentException("Unexpected renewal result: {$result}"),
-        };
-    }
-
     // ==========================================
     // AI Transfer Market Notifications
     // ==========================================
@@ -820,6 +710,35 @@ class NotificationService
         );
     }
 
+    public function notifyBudgetLoanTaken(Game $game, string $formattedAmount, string $formattedRepayment): GameNotification
+    {
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_BUDGET_LOAN,
+            title: __('notifications.budget_loan_taken_title'),
+            message: __('notifications.budget_loan_taken_message', [
+                'amount' => $formattedAmount,
+                'repayment' => $formattedRepayment,
+            ]),
+            priority: GameNotification::PRIORITY_WARNING,
+        );
+    }
+
+    public function notifyBudgetLoanRepaid(Game $game, string $formattedRepayment, bool $createdDebt): GameNotification
+    {
+        $message = $createdDebt
+            ? __('notifications.budget_loan_repaid_with_debt', ['repayment' => $formattedRepayment])
+            : __('notifications.budget_loan_repaid_message', ['repayment' => $formattedRepayment]);
+
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_BUDGET_LOAN,
+            title: __('notifications.budget_loan_repaid_title'),
+            message: $message,
+            priority: $createdDebt ? GameNotification::PRIORITY_WARNING : GameNotification::PRIORITY_INFO,
+        );
+    }
+
     // ==========================================
     // Helpers
     // ==========================================
@@ -845,10 +764,6 @@ class NotificationService
             GameNotification::TYPE_COMPETITION_ELIMINATION => 'eliminated',
             GameNotification::TYPE_ACADEMY_PROSPECT => 'academy',
             GameNotification::TYPE_TRANSFER_COMPLETE => 'transfer_complete',
-            GameNotification::TYPE_RENEWAL_ACCEPTED => 'contract',
-            GameNotification::TYPE_RENEWAL_COUNTERED => 'contract',
-            GameNotification::TYPE_RENEWAL_REJECTED => 'contract',
-            GameNotification::TYPE_TRANSFER_BID_RESULT => 'transfer',
             GameNotification::TYPE_LOAN_REQUEST_RESULT => 'loan',
             GameNotification::TYPE_TOURNAMENT_WELCOME => 'trophy',
             GameNotification::TYPE_AI_TRANSFER_ACTIVITY => 'transfer',
@@ -857,6 +772,7 @@ class NotificationService
             GameNotification::TYPE_TRACKING_INTEL_READY => 'scout',
             GameNotification::TYPE_EMERGENCY_SIGNING => 'transfer_complete',
             GameNotification::TYPE_MATCH_FORFEIT => 'eliminated',
+            GameNotification::TYPE_BUDGET_LOAN => 'transfer',
             default => 'bell',
         };
     }

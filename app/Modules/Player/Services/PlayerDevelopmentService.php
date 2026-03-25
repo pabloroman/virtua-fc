@@ -3,6 +3,7 @@
 namespace App\Modules\Player\Services;
 
 use App\Models\GamePlayer;
+use App\Modules\Player\PlayerAge;
 use App\Modules\Player\Services\DevelopmentCurve;
 
 /**
@@ -142,7 +143,7 @@ class PlayerDevelopmentService
         $valueBonus = $this->getValuePotentialBonus($age, $marketValueCents);
 
         // Calculate potential range based on age
-        if ($age <= 20) {
+        if ($age <= PlayerAge::ACADEMY_END) {
             // Young players: high potential ceiling
             // Base range 8-20, plus value bonus for proven youngsters
             $basePotentialRange = rand(8, 20);
@@ -154,14 +155,14 @@ class PlayerDevelopmentService
             $basePotentialRange = rand(4, 12);
             $potentialRange = $basePotentialRange + (int) ($valueBonus * 0.6);
             $uncertainty = rand(4, 7);
-        } elseif ($age <= 31) {
+        } elseif ($age <= PlayerAge::PRIME_END) {
             // Peak players: small potential margin
             // Base range 0-5, plus small value bonus
             $basePotentialRange = rand(0, 5);
             $potentialRange = $basePotentialRange + (int) ($valueBonus * 0.3);
             $uncertainty = rand(2, 4);
         } else {
-            // Veterans (32+): potential reflects proven quality
+            // Veterans: potential reflects proven quality
             // Exceptional market value = they've proven their ceiling
             $potentialRange = $this->getVeteranPotentialBonus($age, $currentAbility, $marketValueCents);
             $uncertainty = 2; // Low uncertainty - we know what they can do
@@ -316,7 +317,7 @@ class PlayerDevelopmentService
                 'technical' => $projectedTech,
                 'physical' => $projectedPhys,
                 'overall' => (int) round(($projectedTech + $projectedPhys) / 2),
-                'status' => DevelopmentCurve::getStatus($age),
+                'status' => PlayerAge::developmentStatus($age),
             ];
 
             // Use projected values for next iteration

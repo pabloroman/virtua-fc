@@ -362,31 +362,4 @@ return [
         'continental_slots' => [],
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Test Country (used by test suite)
-    |--------------------------------------------------------------------------
-    */
-
-    'XX' => [
-        'name' => 'Test Country',
-
-        'tiers' => [
-            1 => [
-                'competition' => 'TEST1',
-                'teams' => 4,
-                'handler' => 'league',
-            ],
-        ],
-
-        'domestic_cups' => [
-            'TESTCUP' => [
-                'handler' => 'knockout_cup',
-            ],
-        ],
-
-        'promotions' => [],
-        'continental_slots' => [],
-    ],
-
 ];

@@ -10,7 +10,6 @@
       "id": "130164",
       "marketValue": "€20.00m",
       "name": "Jordan Pickford",
-      "number": "1",
       "position": "Goalkeeper"
     },
     {
@@ -20,7 +19,6 @@
       "id": "566799",
       "marketValue": "€18.00m",
       "name": "James Trafford",
-      "number": "22",
       "position": "Goalkeeper"
     },
     {
@@ -31,7 +29,6 @@
       "id": "258919",
       "marketValue": "€15.00m",
       "name": "Dean Henderson",
-      "number": "13",
       "position": "Goalkeeper"
     },
     {
@@ -52,7 +49,6 @@
       "id": "392757",
       "marketValue": "€45.00m",
       "name": "Marc Guéhi",
-      "number": "6",
       "position": "Centre-Back"
     },
     {
@@ -63,7 +59,6 @@
       "id": "413403",
       "marketValue": "€35.00m",
       "name": "Ezri Konsa",
-      "number": "5",
       "position": "Centre-Back"
     },
     {
@@ -84,7 +79,6 @@
       "id": "632349",
       "marketValue": "€22.00m",
       "name": "Jarell Quansah",
-      "number": "3",
       "position": "Centre-Back"
     },
     {
@@ -95,8 +89,46 @@
       "id": "346314",
       "marketValue": "€13.00m",
       "name": "Trevoh Chalobah",
-      "number": "23",
       "position": "Centre-Back"
+    },
+    {
+      "contract": "Mar 21, 2025",
+      "dateOfBirth": "May 9, 1992",
+      "foot": "left",
+      "height": "2,01m",
+      "id": "134270",
+      "marketValue": "€7.00m",
+      "name": "Dan Burn",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Mar 21, 2025",
+      "dateOfBirth": "Sep 26, 2006",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "890721",
+      "marketValue": "€10.00m",
+      "name": "Myles Lewis-Skelly",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Sep 9, 2025",
+      "dateOfBirth": "Aug 9, 2000",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "483348",
+      "marketValue": "€8.00m",
+      "name": "Djed Spence",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Nov 13, 2025",
+      "dateOfBirth": "Mar 21, 2005",
+      "foot": "left",
+      "height": "1,93m",
+      "id": "743413",
+      "name": "Nico O'Reilly",
+      "position": "Left-Back"
     },
     {
       "contract": "Jun 7, 2018",
@@ -149,6 +181,16 @@
       "position": "Defensive Midfield"
     },
     {
+      "contract": "Nov 17, 2010",
+      "dateOfBirth": "Jun 17, 1990",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "61651",
+      "marketValue": "€3.50m",
+      "name": "Jordan Henderson",
+      "position": "Defensive Midfield"
+    },
+    {
       "contract": "Mar 22, 2019",
       "dateOfBirth": "Jan 14, 1999",
       "foot": "right",
@@ -156,7 +198,6 @@
       "id": "357662",
       "marketValue": "€110.00m",
       "name": "Declan Rice",
-      "number": "4",
       "position": "Central Midfield"
     },
     {
@@ -187,7 +228,6 @@
       "id": "567576",
       "marketValue": "€24.00m",
       "name": "Elliot Anderson",
-      "number": "23",
       "position": "Central Midfield"
     },
     {
@@ -268,7 +308,6 @@
       "id": "503743",
       "marketValue": "€40.00m",
       "name": "Morgan Rogers",
-      "number": "15",
       "position": "Attacking Midfield"
     },
     {
@@ -289,7 +328,6 @@
       "id": "258923",
       "marketValue": "€55.00m",
       "name": "Marcus Rashford",
-      "number": "11",
       "position": "Left Winger"
     },
     {
@@ -310,7 +348,6 @@
       "id": "314875",
       "marketValue": "€45.00m",
       "name": "Jarrod Bowen",
-      "number": "20",
       "position": "Right Winger"
     },
     {
@@ -331,7 +368,6 @@
       "id": "132098",
       "marketValue": "€90.00m",
       "name": "Harry Kane",
-      "number": "9",
       "position": "Centre-Forward"
     },
     {

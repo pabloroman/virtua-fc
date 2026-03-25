@@ -2,6 +2,7 @@
 
 namespace App\Modules\Transfer\Services;
 
+use App\Modules\Player\PlayerAge;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\ScoutingService;
 use App\Models\ClubProfile;
@@ -36,8 +37,8 @@ class TransferService
     /**
      * Age adjustments for transfer pricing.
      */
-    private const AGE_PREMIUM_UNDER_23 = 1.10;  // Young talent premium
-    private const AGE_PENALTY_PER_YEAR_OVER_29 = 0.05;  // 5% per year
+    private const AGE_PREMIUM_YOUNG = 1.10;  // Young talent premium
+    private const AGE_DECLINE_PENALTY_PER_YEAR = 0.05;  // 5% per year
 
     /**
      * Offer expiry in days.
@@ -107,6 +108,10 @@ class TransferService
      */
     public function listPlayer(GamePlayer $player): void
     {
+        if ($player->isOnLoan()) {
+            return;
+        }
+
         $player->update([
             'transfer_status' => GamePlayer::TRANSFER_STATUS_LISTED,
             'transfer_listed_at' => $player->game->current_date,
@@ -189,12 +194,14 @@ class TransferService
             $teamPlayers = $allPlayersGrouped->get($game->team_id, collect());
             $listedPlayers = $teamPlayers->filter(
                 fn ($p) => $p->transfer_status === GamePlayer::TRANSFER_STATUS_LISTED
+                    && !$p->isLoanedIn($game->team_id)
             );
         } else {
             $listedPlayers = GamePlayer::with('transferOffers')
                 ->where('game_id', $game->id)
                 ->where('team_id', $game->team_id)
                 ->where('transfer_status', GamePlayer::TRANSFER_STATUS_LISTED)
+                ->whereDoesntHave('activeLoan')
                 ->get();
         }
 
@@ -267,7 +274,8 @@ class TransferService
         if ($allPlayersGrouped !== null) {
             $teamPlayers = $allPlayersGrouped->get($game->team_id, collect());
             $starPlayers = $teamPlayers
-                ->filter(fn ($p) => $p->transfer_status === null)
+                ->filter(fn ($p) => $p->transfer_status === null
+                    && !$p->isLoanedIn($game->team_id))
                 ->sortByDesc('market_value_cents')
                 ->take(self::STAR_PLAYER_COUNT);
         } else {
@@ -275,6 +283,7 @@ class TransferService
                 ->where('game_id', $game->id)
                 ->where('team_id', $game->team_id)
                 ->whereNull('transfer_status')
+                ->whereDoesntHave('activeLoan')
                 ->orderByDesc('market_value_cents')
                 ->limit(self::STAR_PLAYER_COUNT)
                 ->get();
@@ -358,9 +367,13 @@ class TransferService
         if ($allPlayersGrouped !== null) {
             $teamPlayers = $allPlayersGrouped->get($game->team_id, collect());
             // Filter to players with expiring contracts who can receive offers
-            $expiringPlayers = $teamPlayers->filter(function ($player) use ($seasonEndDate) {
+            $expiringPlayers = $teamPlayers->filter(function ($player) use ($seasonEndDate, $game) {
                 // Check if contract is expiring
                 if (!$player->contract_until || !$player->contract_until->lte($seasonEndDate)) {
+                    return false;
+                }
+                // Skip loaned-in players — they belong to their parent club
+                if ($player->isLoanedIn($game->team_id)) {
                     return false;
                 }
                 // Retiring players won't sign pre-contracts
@@ -398,6 +411,7 @@ class TransferService
             $expiringPlayers = GamePlayer::with(['game', 'transferOffers', 'latestRenewalNegotiation', 'activeRenewalNegotiation'])
                 ->where('game_id', $game->id)
                 ->where('team_id', $game->team_id)
+                ->whereDoesntHave('activeLoan')
                 ->get()
                 ->filter(fn ($player) => $player->canReceivePreContractOffers($seasonEndDate));
         }
@@ -541,65 +555,6 @@ class TransferService
     }
 
     /**
-     * Resolve pending incoming bids after the next matchday.
-     * Called each matchday; evaluates user bids that haven't been resolved yet.
-     */
-    public function resolveIncomingBids(Game $game, ScoutingService $scoutingService): Collection
-    {
-        $pendingBids = TransferOffer::with(['gamePlayer.player', 'gamePlayer.team'])
-            ->where('game_id', $game->id)
-            ->where('direction', TransferOffer::DIRECTION_INCOMING)
-            ->where('offer_type', TransferOffer::TYPE_USER_BID)
-            ->where('status', TransferOffer::STATUS_PENDING)
-            ->whereNull('resolved_at')
-            ->get();
-
-        $resolvedOffers = collect();
-
-        foreach ($pendingBids as $offer) {
-            $evaluation = $scoutingService->evaluateBid($offer->gamePlayer, $offer->transfer_fee, $game);
-
-            if ($evaluation['result'] === 'accepted') {
-                $offer->update([
-                    'asking_price' => $evaluation['asking_price'],
-                ]);
-                $completedImmediately = $this->acceptIncomingOffer($offer);
-
-                $resolvedOffers->push([
-                    'offer' => $offer->fresh(),
-                    'result' => 'accepted',
-                    'completed' => $completedImmediately,
-                ]);
-            } elseif ($evaluation['result'] === 'counter') {
-                $offer->update([
-                    'asking_price' => $evaluation['counter_amount'],
-                    'resolved_at' => $game->current_date,
-                ]);
-
-                $resolvedOffers->push([
-                    'offer' => $offer->fresh(),
-                    'result' => 'counter',
-                    'completed' => false,
-                ]);
-            } else {
-                $offer->update([
-                    'status' => TransferOffer::STATUS_REJECTED,
-                    'asking_price' => $evaluation['asking_price'],
-                    'resolved_at' => $game->current_date,
-                ]);
-
-                $resolvedOffers->push([
-                    'offer' => $offer->fresh(),
-                    'result' => 'rejected',
-                    'completed' => false,
-                ]);
-            }
-        }
-
-        return $resolvedOffers;
-    }
-
-    /**
      * Resolve pending incoming loan requests after the next matchday.
      * Called each matchday; evaluates user loan requests that haven't been resolved yet.
      */
@@ -699,6 +654,10 @@ class TransferService
 
         // Mark offer as completed
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
+
+        if ($fromTeamId === $game->team_id) {
+            ContractService::clearSquadTrimIfResolved($game);
+        }
     }
 
     /**
@@ -826,6 +785,8 @@ class TransferService
 
         // Remove from shortlist to free up scouting slot
         ShortlistedPlayer::removeForPlayer($game->id, $player->id);
+
+        ContractService::clearSquadTrimIfResolved($game);
     }
 
     /**
@@ -891,11 +852,11 @@ class TransferService
         $age = $player->age($player->game->current_date);
         $ageModifier = 1.0;
 
-        if ($age < 23) {
-            $ageModifier = self::AGE_PREMIUM_UNDER_23;
-        } elseif ($age > 29) {
-            $yearsOver29 = $age - 29;
-            $ageModifier = max(0.5, 1.0 - ($yearsOver29 * self::AGE_PENALTY_PER_YEAR_OVER_29));
+        if ($age < PlayerAge::YOUNG_END) {
+            $ageModifier = self::AGE_PREMIUM_YOUNG;
+        } elseif ($age > PlayerAge::primePhaseAge(0.5)) {
+            $yearsOverMidPrime = $age - PlayerAge::primePhaseAge(0.5);
+            $ageModifier = max(0.5, 1.0 - ($yearsOverMidPrime * self::AGE_DECLINE_PENALTY_PER_YEAR));
         }
 
         $finalPrice = (int) ($baseValue * $typeModifier * $ageModifier);
@@ -1185,6 +1146,88 @@ class TransferService
      *
      * @return bool True if transfer completed immediately, false if waiting for window
      */
+    /**
+     * Sign a free agent: assign to team, create offer/transfer records.
+     */
+    public function signFreeAgent(Game $game, GamePlayer $player, int $wageDemand): TransferOffer
+    {
+        $seasonYear = (int) $game->season;
+        $contractYears = $player->age($game->current_date) >= 32 ? 1 : mt_rand(2, 3);
+        $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
+
+        $player->update([
+            'team_id' => $game->team_id,
+            'number' => GamePlayer::nextAvailableNumber($game->id, $game->team_id),
+            'contract_until' => $newContractEnd,
+            'annual_wage' => $wageDemand,
+        ]);
+
+        $offer = TransferOffer::create([
+            'game_id' => $game->id,
+            'game_player_id' => $player->id,
+            'offering_team_id' => $game->team_id,
+            'selling_team_id' => null,
+            'offer_type' => TransferOffer::TYPE_USER_BID,
+            'direction' => TransferOffer::DIRECTION_INCOMING,
+            'transfer_fee' => 0,
+            'offered_wage' => $wageDemand,
+            'status' => TransferOffer::STATUS_COMPLETED,
+            'resolved_at' => $game->current_date,
+            'expires_at' => $game->current_date,
+            'game_date' => $game->current_date,
+        ]);
+
+        GameTransfer::record(
+            gameId: $game->id,
+            gamePlayerId: $player->id,
+            fromTeamId: null,
+            toTeamId: $game->team_id,
+            transferFee: 0,
+            type: GameTransfer::TYPE_FREE_AGENT,
+            season: $game->season,
+            window: $this->getCurrentWindow($game),
+        );
+
+        ShortlistedPlayer::removeForPlayer($game->id, $player->id);
+
+        return $offer;
+    }
+
+    /**
+     * Complete a free agent signing from a negotiated offer (wage already agreed).
+     */
+    public function completeFreeAgentSigning(Game $game, GamePlayer $player, TransferOffer $offer): void
+    {
+        $seasonYear = (int) $game->season;
+        $contractYears = $offer->offered_years ?? ($player->age($game->current_date) >= 32 ? 1 : 3);
+        $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
+
+        $player->update([
+            'team_id' => $game->team_id,
+            'number' => GamePlayer::nextAvailableNumber($game->id, $game->team_id),
+            'contract_until' => $newContractEnd,
+            'annual_wage' => $offer->offered_wage,
+        ]);
+
+        $offer->update([
+            'status' => TransferOffer::STATUS_COMPLETED,
+            'resolved_at' => $game->current_date,
+        ]);
+
+        GameTransfer::record(
+            gameId: $game->id,
+            gamePlayerId: $player->id,
+            fromTeamId: null,
+            toTeamId: $game->team_id,
+            transferFee: 0,
+            type: GameTransfer::TYPE_FREE_AGENT,
+            season: $game->season,
+            window: $this->getCurrentWindow($game),
+        );
+
+        ShortlistedPlayer::removeForPlayer($game->id, $player->id);
+    }
+
     public function acceptIncomingOffer(TransferOffer $offer): bool
     {
         $game = $offer->game;
@@ -1229,7 +1272,7 @@ class TransferService
 
         // Transfer player to user's team
         $age = $player->age($game->current_date);
-        $contractYears = $age >= 35 ? 2 : ($age >= 32 ? 3 : rand(3, 5));
+        $contractYears = $offer->offered_years ?? ($age > PlayerAge::PRIME_END ? 2 : ($age >= PlayerAge::PRIME_END ? 3 : rand(3, 5)));
         $newContractEnd = Carbon::parse($game->current_date)->addYears($contractYears);
 
         $player->update([
@@ -1325,6 +1368,20 @@ class TransferService
 
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
 
+        // Record the loan salary as a financial transaction
+        $parentTeam = Team::find($parentTeamId);
+        FinancialTransaction::recordExpense(
+            gameId: $game->id,
+            category: FinancialTransaction::CATEGORY_LOAN,
+            amount: $player->annual_wage,
+            description: __('finances.tx_loan_in', [
+                'player' => $player->player->name ?? $player->id,
+                'team' => $parentTeam->name ?? '',
+            ]),
+            transactionDate: $game->current_date,
+            relatedPlayerId: $player->id,
+        );
+
         // Remove from shortlist to free up scouting slot
         ShortlistedPlayer::removeForPlayer($game->id, $player->id);
     }
@@ -1383,65 +1440,6 @@ class TransferService
     }
 
     /**
-     * Submit a new bid for a player. Returns the created offer or null if budget is insufficient.
-     */
-    public function submitBid(Game $game, GamePlayer $player, int $bidAmountCents, ScoutingService $scoutingService): TransferOffer
-    {
-        if ($bidAmountCents > $this->availableBudget($game)) {
-            throw new \InvalidArgumentException(__('messages.bid_exceeds_budget'));
-        }
-
-        // Prevent duplicate pending bids for the same player
-        $existingBid = TransferOffer::where('game_id', $game->id)
-            ->where('game_player_id', $player->id)
-            ->where('offering_team_id', $game->team_id)
-            ->where('status', TransferOffer::STATUS_PENDING)
-            ->exists();
-
-        if ($existingBid) {
-            throw new \InvalidArgumentException(__('transfers.already_bidding'));
-
-        }
-
-        $wageDemand = $scoutingService->calculateWageDemand($player);
-
-        return TransferOffer::create([
-            'game_id' => $game->id,
-            'game_player_id' => $player->id,
-            'offering_team_id' => $game->team_id,
-            'selling_team_id' => $player->team_id,
-            'offer_type' => TransferOffer::TYPE_USER_BID,
-            'direction' => TransferOffer::DIRECTION_INCOMING,
-            'transfer_fee' => $bidAmountCents,
-            'offered_wage' => $wageDemand,
-            'status' => TransferOffer::STATUS_PENDING,
-            'expires_at' => $game->current_date->addDays(30),
-            'game_date' => $game->current_date,
-        ]);
-    }
-
-    /**
-     * Accept a counter-offer. Returns ['completed' => bool] on success or null if budget is insufficient.
-     */
-    public function acceptCounterOffer(Game $game, TransferOffer $offer): ?array
-    {
-        $counterAmount = $offer->asking_price;
-
-        // Committed budget already includes this offer's transfer_fee — subtract it to avoid double-counting
-        $available = $this->availableBudget($game) + $offer->transfer_fee;
-
-        if ($counterAmount > $available) {
-            return null;
-        }
-
-        $offer->update(['transfer_fee' => $counterAmount]);
-
-        $completedImmediately = $this->acceptIncomingOffer($offer);
-
-        return ['completed' => $completedImmediately];
-    }
-
-    /**
      * Complete a loan-out (user's player goes to AI team).
      */
     private function completeLoanOut(TransferOffer $offer, Game $game): void
@@ -1479,5 +1477,285 @@ class TransferService
         );
 
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
+
+        ContractService::clearSquadTrimIfResolved($game);
+    }
+
+    // =========================================
+    // SYNCHRONOUS TRANSFER NEGOTIATION
+    // =========================================
+
+    /**
+     * Synchronous club fee negotiation. Creates or continues a negotiation,
+     * evaluates the bid immediately, and returns the result.
+     *
+     * @return array{result: string, offer: TransferOffer}
+     */
+    public function negotiateTransferFeeSync(Game $game, GamePlayer $player, int $bidCents, ScoutingService $scoutingService): array
+    {
+        // Check for existing countered offer to resume
+        $existing = TransferOffer::where('game_id', $game->id)
+            ->where('game_player_id', $player->id)
+            ->where('offering_team_id', $game->team_id)
+            ->where('status', TransferOffer::STATUS_PENDING)
+            ->whereNotNull('negotiation_round')
+            ->where('asking_price', '>', 0)
+            ->first();
+
+        if ($existing) {
+            // Resume: update bid, increment round
+            if ($bidCents > $this->availableBudget($game) + $existing->transfer_fee) {
+                throw new \InvalidArgumentException(__('messages.bid_exceeds_budget'));
+            }
+
+            $existing->update([
+                'transfer_fee' => $bidCents,
+                'negotiation_round' => min($existing->negotiation_round + 1, ContractService::MAX_NEGOTIATION_ROUNDS),
+            ]);
+            $offer = $existing;
+        } else {
+            // New negotiation: create offer and mark as sync
+            if ($bidCents > $this->availableBudget($game)) {
+                throw new \InvalidArgumentException(__('messages.bid_exceeds_budget'));
+            }
+
+            $existingBid = TransferOffer::where('game_id', $game->id)
+                ->where('game_player_id', $player->id)
+                ->where('offering_team_id', $game->team_id)
+                ->where('status', TransferOffer::STATUS_PENDING)
+                ->exists();
+
+            if ($existingBid) {
+                throw new \InvalidArgumentException(__('transfers.already_bidding'));
+            }
+
+            $wageDemand = $scoutingService->calculateWageDemand($player);
+
+            $offer = TransferOffer::create([
+                'game_id' => $game->id,
+                'game_player_id' => $player->id,
+                'offering_team_id' => $game->team_id,
+                'selling_team_id' => $player->team_id,
+                'offer_type' => TransferOffer::TYPE_USER_BID,
+                'direction' => TransferOffer::DIRECTION_INCOMING,
+                'transfer_fee' => $bidCents,
+                'offered_wage' => $wageDemand,
+                'status' => TransferOffer::STATUS_PENDING,
+                'expires_at' => $game->current_date->addDays(30),
+                'game_date' => $game->current_date,
+                'negotiation_round' => 1,
+                'disposition' => $this->calculateClubDisposition($player, $scoutingService),
+            ]);
+        }
+
+        // Immediately evaluate — pass previous counter as ceiling so the club never raises
+        $previousCounter = $existing ? $existing->asking_price : null;
+        $evaluation = $scoutingService->evaluateBid($player, $offer->transfer_fee, $game, $previousCounter);
+
+        if ($evaluation['result'] === 'accepted') {
+            $offer->update([
+                'status' => TransferOffer::STATUS_FEE_AGREED,
+                'asking_price' => $evaluation['asking_price'],
+                'resolved_at' => $game->current_date,
+            ]);
+            return ['result' => 'accepted', 'offer' => $offer->fresh()];
+        }
+
+        if ($evaluation['result'] === 'counter' && $offer->negotiation_round < ContractService::MAX_NEGOTIATION_ROUNDS) {
+            $offer->update([
+                'asking_price' => $evaluation['counter_amount'],
+            ]);
+            return ['result' => 'countered', 'offer' => $offer->fresh()];
+        }
+
+        // Rejected (or countered but at max rounds)
+        $offer->update([
+            'status' => TransferOffer::STATUS_REJECTED,
+            'asking_price' => $evaluation['asking_price'],
+            'resolved_at' => $game->current_date,
+        ]);
+        return ['result' => 'rejected', 'offer' => $offer->fresh()];
+    }
+
+    /**
+     * Accept a club's counter-offer on the transfer fee.
+     */
+    public function acceptTransferFeeCounter(Game $game, TransferOffer $offer): TransferOffer
+    {
+        if (!$offer->isPending() || !$offer->isSyncNegotiated() || !$offer->asking_price || $offer->asking_price <= $offer->transfer_fee) {
+            throw new \InvalidArgumentException(__('messages.transfer_failed'));
+        }
+
+        $counterAmount = $offer->asking_price;
+        $available = $this->availableBudget($game) + $offer->transfer_fee;
+
+        if ($counterAmount > $available) {
+            throw new \InvalidArgumentException(__('messages.bid_exceeds_budget'));
+        }
+
+        $offer->update([
+            'transfer_fee' => $counterAmount,
+            'status' => TransferOffer::STATUS_FEE_AGREED,
+            'resolved_at' => $game->current_date,
+        ]);
+
+        return $offer->fresh();
+    }
+
+    // =========================================
+    // SYNCHRONOUS COUNTER-OFFER NEGOTIATION
+    // =========================================
+
+    /**
+     * Handle user counter-offering an unsolicited or listed bid.
+     *
+     * The user demands a higher price for their player. The AI buying club
+     * evaluates whether to raise their bid, counter, or walk away.
+     *
+     * @return array{result: string, offer: TransferOffer}
+     */
+    public function negotiateCounterOfferSync(Game $game, TransferOffer $offer, int $userAskingCents, ScoutingService $scoutingService): array
+    {
+        // Increment negotiation round
+        $offer->update([
+            'asking_price' => $userAskingCents,
+            'negotiation_round' => ($offer->negotiation_round ?? 0) + 1,
+        ]);
+
+        $evaluation = $scoutingService->evaluateCounterOffer($offer, $userAskingCents, $game);
+
+        if ($evaluation['result'] === 'accepted') {
+            $offer->update([
+                'transfer_fee' => $userAskingCents,
+            ]);
+            return ['result' => 'accepted', 'offer' => $offer->fresh()];
+        }
+
+        if ($evaluation['result'] === 'countered' && $offer->negotiation_round < ContractService::MAX_NEGOTIATION_ROUNDS) {
+            $offer->update([
+                'transfer_fee' => $evaluation['counter_amount'],
+            ]);
+            return ['result' => 'countered', 'offer' => $offer->fresh()];
+        }
+
+        // Rejected (or countered but at max rounds)
+        $offer->update([
+            'status' => TransferOffer::STATUS_REJECTED,
+            'resolved_at' => $game->current_date,
+        ]);
+        return ['result' => 'rejected', 'offer' => $offer->fresh()];
+    }
+
+    /**
+     * User accepts the AI buyer's latest counter-bid.
+     * Completes the sale via the standard acceptOffer flow.
+     */
+    public function acceptCounterOfferBid(TransferOffer $offer): bool
+    {
+        return $this->acceptOffer($offer);
+    }
+
+    // =========================================
+    // SYNCHRONOUS LOAN FEE NEGOTIATION
+    // =========================================
+
+    /**
+     * Complete a sync-negotiated loan. Calls completeLoanIn if window open,
+     * otherwise marks as agreed.
+     *
+     * @return array{result: string, offer: TransferOffer}
+     */
+    public function completeSyncLoan(TransferOffer $offer, Game $game): array
+    {
+        if ($game->isTransferWindowOpen()) {
+            $this->completeLoanIn($offer, $game);
+            return ['result' => 'accepted', 'offer' => $offer->fresh()];
+        }
+
+        $offer->update([
+            'status' => TransferOffer::STATUS_AGREED,
+            'resolved_at' => $game->current_date,
+        ]);
+        return ['result' => 'accepted', 'offer' => $offer->fresh()];
+    }
+
+    /**
+     * Get mood indicator for loan disposition.
+     *
+     * @return array{label: string, color: string}
+     */
+    public function getLoanMoodIndicator(float $disposition): array
+    {
+        if ($disposition >= 0.65) {
+            return ['label' => __('transfers.mood_willing_loan'), 'color' => 'green'];
+        }
+        if ($disposition >= 0.40) {
+            return ['label' => __('transfers.mood_open_loan'), 'color' => 'amber'];
+        }
+
+        return ['label' => __('transfers.mood_reluctant_loan'), 'color' => 'red'];
+    }
+
+    /**
+     * Calculate selling club's disposition (willingness to sell).
+     * Higher = more willing.
+     */
+    public function calculateClubDisposition(GamePlayer $player, ScoutingService $scoutingService): float
+    {
+        $disposition = 0.50;
+
+        // Player importance (key players are harder to buy)
+        $importance = $scoutingService->calculatePlayerImportance($player);
+        if ($importance >= 0.85) {
+            $disposition -= 0.20;
+        } elseif ($importance >= 0.60) {
+            $disposition -= 0.10;
+        } elseif ($importance <= 0.30) {
+            $disposition += 0.10;
+        }
+
+        // Contract length (longer = more reluctant)
+        if ($player->contract_until) {
+            $yearsLeft = $player->game->current_date->diffInYears($player->contract_until);
+            if ($yearsLeft >= 4) {
+                $disposition -= 0.10;
+            } elseif ($yearsLeft <= 1) {
+                $disposition += 0.15;
+            }
+        } else {
+            $disposition += 0.20; // No contract = very willing
+        }
+
+        // Transfer listed = very willing
+        if ($player->transfer_status === 'listed') {
+            $disposition += 0.20;
+        }
+
+        // Age (older = more willing to sell)
+        $age = $player->age($player->game->current_date);
+        if ($age >= PlayerAge::PRIME_END) {
+            $disposition += 0.10;
+        } elseif ($age < PlayerAge::YOUNG_END) {
+            $disposition -= 0.05;
+        }
+
+        return max(0.10, min(0.95, $disposition));
+    }
+
+    /**
+     * Get mood indicator for club disposition.
+     *
+     * @return array{label: string, color: string}
+     */
+    public function getClubMoodIndicator(float $disposition): array
+    {
+        if ($disposition >= 0.65) {
+            return ['label' => __('transfers.mood_willing_sell'), 'color' => 'green'];
+        }
+        if ($disposition >= 0.40) {
+            return ['label' => __('transfers.mood_open_sell'), 'color' => 'amber'];
+        }
+
+        return ['label' => __('transfers.mood_reluctant_sell'), 'color' => 'red'];
     }
 }

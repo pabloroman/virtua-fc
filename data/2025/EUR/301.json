@@ -429,5 +429,6 @@
   ],
   "stadiumName": "Arena Națională",
   "stadiumSeats": "55634",
-  "transfermarktId": "301"
+  "transfermarktId": "301",
+  "country": "RO"
 }

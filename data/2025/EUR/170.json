@@ -444,5 +444,6 @@
   ],
   "stadiumName": "Allianz-Stadion",
   "stadiumSeats": "28345",
-  "transfermarktId": "170"
+  "transfermarktId": "170",
+  "country": "AT"
 }

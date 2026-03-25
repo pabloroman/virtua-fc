@@ -43,31 +43,19 @@ final class SelectTeam
         // Load World Cup teams for tournament mode
         $wcTeams = collect();
         $wcFeaturedTeams = collect();
-        $hasTournamentMode = Competition::where('id', 'WC2026')->exists();
+        $hasTournamentMode = $request->user()->canPlayTournamentMode() && Competition::where('id', 'WC2026')->exists();
 
         if ($hasTournamentMode) {
-            $mappingPath = base_path('data/2025/WC2026/team_mapping.json');
+            $allWcTeams = Team::worldCupEligible()
+                ->where('is_placeholder', false)
+                ->get()
+                ->sortBy('name') // PHP sort: name accessor applies i18n translation
+                ->values();
 
-            if (file_exists($mappingPath)) {
-                $teamMapping = json_decode(file_get_contents($mappingPath), true);
-
-                $uuids = collect($teamMapping)
-                    ->reject(fn ($entry) => $entry['is_placeholder'] ?? false)
-                    ->pluck('uuid')
-                    ->all();
-
-                $allWcTeams = Team::whereIn('id', $uuids)->get()->sortBy('name')->values();
-
-                // Featured national teams shown as larger cards
-                $featuredCodes = ['ESP', 'ARG', 'BRA', 'ENG', 'FRA', 'GER', 'POR', 'NED', 'ITA'];
-                $featuredUuids = collect($teamMapping)
-                    ->only($featuredCodes)
-                    ->pluck('uuid')
-                    ->all();
-
-                $wcFeaturedTeams = $allWcTeams->filter(fn ($t) => in_array($t->id, $featuredUuids))->values();
-                $wcTeams = $allWcTeams->reject(fn ($t) => in_array($t->id, $featuredUuids))->values();
-            }
+            // Featured national teams shown as larger cards
+            $featuredCodes = ['ESP', 'ARG', 'BRA', 'ENG', 'FRA', 'GER', 'POR', 'NED'];
+            $wcFeaturedTeams = $allWcTeams->filter(fn ($t) => in_array($t->fifa_code, $featuredCodes))->values();
+            $wcTeams = $allWcTeams->reject(fn ($t) => in_array($t->fifa_code, $featuredCodes))->values();
         }
 
         return view('select-team', [
@@ -75,6 +63,7 @@ final class SelectTeam
             'wcTeams' => $wcTeams,
             'wcFeaturedTeams' => $wcFeaturedTeams,
             'hasTournamentMode' => $hasTournamentMode,
+            'hasCareerAccess' => $request->user()->canPlayCareerMode(),
         ]);
     }
 }

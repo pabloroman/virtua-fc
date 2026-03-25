@@ -45,8 +45,11 @@ class MatchFinalizationService
         // 4. Clear the pending flag
         $game->update(['pending_finalization_match_id' => null]);
 
-        // 5. Generate any pending knockout/playoff fixtures now that standings are final
-        if ($match->cup_tie_id === null && $competition) {
+        // 5. Generate any pending knockout/playoff fixtures now that standings are final.
+        // This covers both league matches (where standings determine playoff seedings)
+        // and cup ties (where completing a round may trigger the next round draw,
+        // especially for group_stage_cup competitions like the World Cup).
+        if ($competition) {
             $handler = $this->handlerResolver->resolve($competition);
             $handler->beforeMatches($game, $game->current_date->toDateString());
         }

@@ -35,15 +35,16 @@ class ShowScoutReportResults
                 ->get();
 
             // Gather scouting details and existing offer statuses for each player
-            $offerStatuses = TransferOffer::getOfferStatusesForPlayers($gameId, $players->pluck('id')->toArray());
+            $offerStatuses = TransferOffer::getOfferStatusesForPlayers($gameId, $players->pluck('id')->toArray(), $game->current_date);
 
             foreach ($players as $player) {
                 $detail = $this->scoutingService->getPlayerScoutingDetail($player, $game);
                 $offerInfo = $offerStatuses[$player->id] ?? null;
-                $detail['has_existing_offer'] = $offerInfo !== null;
+                $detail['has_existing_offer'] = $offerInfo !== null && $offerInfo['status'] !== null;
                 $detail['offer_status'] = $offerInfo['status'] ?? null;
                 $detail['offer_is_counter'] = $offerInfo['isCounter'] ?? false;
                 $detail['offer_type'] = $offerInfo['offerType'] ?? null;
+                $detail['on_cooldown'] = $offerInfo['onCooldown'] ?? false;
                 $playerDetails[$player->id] = $detail;
             }
         }

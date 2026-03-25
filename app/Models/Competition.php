@@ -57,6 +57,26 @@ class Competition extends Model
     public const SCOPE_DOMESTIC = 'domestic';
     public const SCOPE_CONTINENTAL = 'continental';
 
+    /**
+     * Short display names for competitions, keyed by competition ID.
+     * Falls back to the full name if not mapped here.
+     */
+    private const SHORT_NAMES = [
+        'ESP1'    => 'Liga',
+        'ESP2'    => 'Liga 2',
+        'ESPCUP'  => 'Copa',
+        'ESPSUP'  => 'Supercopa',
+        'ENG1'    => 'Premier',
+        'DEU1'    => 'Bundesliga',
+        'FRA1'    => 'Ligue 1',
+        'ITA1'    => 'Serie A',
+        'UCL'     => 'UCL',
+        'UEL'     => 'UEL',
+        'UECL'    => 'UECL',
+        'WC2026'  => 'Mundial',
+        'PRESEASON' => 'Amistoso',
+    ];
+
     protected $fillable = [
         'id',
         'name',
@@ -79,6 +99,11 @@ class Competition extends Model
         return $this->belongsToMany(Team::class, 'competition_teams')
             ->withPivot('season')
             ->orderBy('name');
+    }
+
+    public function shortName(): string
+    {
+        return self::SHORT_NAMES[$this->id] ?? $this->name;
     }
 
     public function isLeague(): bool

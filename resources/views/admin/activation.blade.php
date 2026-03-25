@@ -5,7 +5,7 @@
 
         {{-- Mode tabs --}}
         <div class="flex items-center gap-2 mb-4 overflow-x-auto scrollbar-hide">
-            @foreach(['all' => __('admin.mode_all'), 'career' => __('admin.mode_career'), 'tournament' => __('admin.mode_tournament')] as $value => $label)
+            @foreach(['career' => __('admin.mode_career'), 'tournament' => __('admin.mode_tournament')] as $value => $label)
                 <a href="{{ route('admin.activation', ['mode' => $value, 'period' => $period]) }}"
                    class="px-4 py-2 text-sm font-medium rounded-lg transition-colors min-h-[44px] flex items-center shrink-0
                           {{ $mode === $value ? 'bg-accent-primary text-white' : 'bg-surface-700 text-text-secondary hover:text-text-primary' }}">
@@ -28,12 +28,10 @@
         {{-- Summary cards --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <div class="bg-surface-800 border border-border-default rounded-xl p-4">
-                <div class="text-xs text-text-muted uppercase tracking-wider mb-1">{{ __('admin.invites_sent') }}</div>
-                <div class="text-2xl font-bold text-text-primary">{{ number_format($totalInvites) }}</div>
-            </div>
-            <div class="bg-surface-800 border border-border-default rounded-xl p-4">
-                <div class="text-xs text-text-muted uppercase tracking-wider mb-1">{{ __('admin.users_registered') }}</div>
-                <div class="text-2xl font-bold text-text-primary">{{ number_format($totalRegistered) }}</div>
+                <div class="text-xs text-text-muted uppercase tracking-wider mb-1">
+                    {{ $mode === \App\Models\Game::MODE_TOURNAMENT ? __('admin.funnel_access_granted') : __('admin.invites_sent') }}
+                </div>
+                <div class="text-2xl font-bold text-text-primary">{{ number_format($mode === \App\Models\Game::MODE_TOURNAMENT ? $totalRegistered : $totalInvites) }}</div>
             </div>
             <div class="bg-surface-800 border border-border-default rounded-xl p-4">
                 <div class="text-xs text-text-muted uppercase tracking-wider mb-1">{{ __('admin.conversion_to_first_match') }}</div>

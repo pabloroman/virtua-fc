@@ -13,7 +13,6 @@ composer dev                                    # Run all services (server, queu
 php artisan test                                # Run tests
 php artisan test --filter=TestClassName          # Run a single test
 php artisan app:seed-reference-data             # Seed reference data (--fresh to reset)
-php artisan app:create-test-game                # Create a test game for local dev
 php artisan app:simulate-match                  # Simulate a match (debugging)
 php artisan app:simulate-season                 # Simulate a full season
 php artisan config:clear                        # Clear config cache after changes
@@ -87,6 +86,10 @@ These are non-obvious rules that prevent bugs. Read carefully.
 - **UUID primary keys** throughout.
 - **No wall-clock timestamps on game models.** Time follows the game-universe calendar (`current_date` on `Game`). Models should set `public $timestamps = false` and omit `$table->timestamps()` from migrations (except `users`).
 - **`currentFinances` and `currentInvestment`** relationships use `$this->season` internally. Always use lazy loading — never eager load with `with()`.
+
+### Player Age Boundaries
+
+**Never hardcode age values in queries or business logic.** Use constants from `App\Modules\Player\PlayerAge` (e.g., `PlayerAge::MIN_RETIREMENT_OUTFIELD`, `PlayerAge::PRIME_END`). To convert an age constant to a date-of-birth cutoff for database queries, use `PlayerAge::dateOfBirthCutoff($age, $referenceDate)` instead of `$date->subYears($age)`. This keeps age boundaries in a single source of truth.
 
 ### Internationalization
 

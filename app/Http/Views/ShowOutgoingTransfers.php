@@ -10,7 +10,6 @@ use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\RenewalNegotiation;
 use App\Models\TransferOffer;
-use App\Support\Money;
 
 class ShowOutgoingTransfers
 {
@@ -107,45 +106,7 @@ class ShowOutgoingTransfers
 
         // Contract renewal data
         $renewalEligiblePlayers = $this->contractService->getPlayersEligibleForRenewal($game);
-        $renewalDemands = [];
-        $renewalMoods = [];
-        foreach ($renewalEligiblePlayers as $player) {
-            $demand = $this->contractService->calculateRenewalDemand($player);
-            $renewalDemands[$player->id] = $demand;
-            $disposition = $this->contractService->calculateDisposition($player);
-            $renewalMoods[$player->id] = $this->contractService->getMoodIndicator($disposition);
-        }
         $pendingRenewals = $this->contractService->getPlayersWithPendingRenewals($game);
-
-        // Active negotiations (pending or countered)
-        $activeNegotiations = $this->contractService->getActiveNegotiations($game);
-        $negotiatingPlayers = $this->contractService->getPlayersInNegotiation($game);
-
-        // Also compute moods for negotiating players
-        foreach ($negotiatingPlayers as $player) {
-            if (!isset($renewalMoods[$player->id])) {
-                $negotiation = $activeNegotiations->get($player->id);
-                $round = $negotiation ? $negotiation->round : 1;
-                $disposition = $this->contractService->calculateDisposition($player, $round);
-                $renewalMoods[$player->id] = $this->contractService->getMoodIndicator($disposition);
-            }
-        }
-
-        // Pre-compute renewal offer midpoints (rounded up to nearest 10K)
-        $renewalMidpoints = [];
-        foreach ($negotiatingPlayers as $player) {
-            $demand = $renewalDemands[$player->id] ?? null;
-            $negotiation = $activeNegotiations->get($player->id);
-            $renewalMidpoints[$player->id] = $demand
-                ? (int) (ceil(($player->annual_wage + $demand['wage']) / 2 / 100 / 10000) * 10000)
-                : (int) (ceil($negotiation->counter_offer / 100 / 10000) * 10000);
-        }
-        foreach ($renewalEligiblePlayers as $player) {
-            $demand = $renewalDemands[$player->id] ?? null;
-            $renewalMidpoints[$player->id] = $demand
-                ? (int) (ceil(($player->annual_wage + $demand['wage']) / 2 / 100 / 10000) * 10000)
-                : 0;
-        }
 
         // Declined renewals
         $seasonEndDate = $game->getSeasonEndDate();
@@ -171,13 +132,8 @@ class ShowOutgoingTransfers
             'loansOut' => $loansOut,
             'loanSearches' => $loanSearches,
             'renewalEligiblePlayers' => $renewalEligiblePlayers,
-            'renewalDemands' => $renewalDemands,
-            'renewalMoods' => $renewalMoods,
             'pendingRenewals' => $pendingRenewals,
             'declinedRenewals' => $declinedRenewals,
-            'activeNegotiations' => $activeNegotiations,
-            'negotiatingPlayers' => $negotiatingPlayers,
-            'renewalMidpoints' => $renewalMidpoints,
             ...$this->headerService->getHeaderData($game),
         ]);
     }

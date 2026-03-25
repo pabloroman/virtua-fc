@@ -10,7 +10,6 @@
     $isHome = $match->home_team_id === $game->team_id;
     $opponent = $isHome ? $match->awayTeam : $match->homeTeam;
     $isNextMatch = $highlightNext && !$match->played && $nextMatchId !== null && $nextMatchId === $match->id;
-    $compColors = \App\Support\CompetitionColors::badge($match->competition);
     $compDot = \App\Support\CompetitionColors::dot($match->competition);
 
     // Calculate result styling
@@ -46,6 +45,12 @@
         <span class="text-xs truncate {{ $isNextMatch ? 'text-text-primary font-medium' : 'text-text-body' }}">{{ $opponent->name }}</span>
     </div>
 
+    {{-- Competition pill: short name on mobile, full on desktop --}}
+    <div class="shrink-0">
+        <span class="md:hidden"><x-competition-pill :competition="$match->competition" :short="true" class="scale-90 origin-right" /></span>
+        <span class="hidden md:inline"><x-competition-pill :competition="$match->competition" class="scale-90 origin-right" /></span>
+    </div>
+
     {{-- Result / Status --}}
     <div class="shrink-0 text-right">
         @if($showScore && $match->played)
@@ -55,8 +60,6 @@
             </div>
         @elseif($isNextMatch)
             <span class="px-1.5 py-0.5 rounded-full bg-accent-blue/10 text-[9px] font-semibold text-accent-blue uppercase tracking-wider">{{ __('game.next') }}</span>
-        @else
-            <span class="text-[11px] text-text-faint">-</span>
         @endif
     </div>
 </div>

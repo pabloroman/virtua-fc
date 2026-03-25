@@ -14,12 +14,12 @@ class PlayerConditionService
     private const MIN_FITNESS = 40;
 
     // Morale changes
-    private const MORALE_WIN = [3, 6];
-    private const MORALE_DRAW = [-1, 2];
-    private const MORALE_LOSS = [-6, -2];
+    private const MORALE_WIN = [4, 8];
+    private const MORALE_DRAW = [0, 2];
+    private const MORALE_LOSS = [-4, -1];
 
     // Bench frustration: morale penalty applied each match a player doesn't feature
-    private const MORALE_BENCH_FRUSTRATION = [2, 3];
+    private const MORALE_BENCH_FRUSTRATION = [1, 2];
 
     // Individual event morale impacts
     private const MORALE_GOAL = [2, 4];
@@ -28,7 +28,7 @@ class PlayerConditionService
 
     // Morale bounds
     private const MAX_MORALE = 100;
-    private const MIN_MORALE = 40;
+    private const MIN_MORALE = 50;
 
     /**
      * Batch-update fitness and morale for all players across all matches in a matchday.
@@ -227,8 +227,8 @@ class PlayerConditionService
         // Better players get more frustrated — star players have higher expectations.
         if (!$playedMatch) {
             $ability = $player->current_technical_ability;
-            // Multiplier ranges from ~0.3x (ability 20) to ~1.5x (ability 100)
-            $frustrationMultiplier = 0.3 + ($ability / 100.0) * 1.2;
+            // Multiplier ranges from ~0.3x (ability 20) to ~1.0x (ability 100)
+            $frustrationMultiplier = 0.3 + ($ability / 100.0) * 0.7;
             $baseFrustration = rand(self::MORALE_BENCH_FRUSTRATION[0], self::MORALE_BENCH_FRUSTRATION[1]);
             $change -= max(1, (int) round($baseFrustration * $frustrationMultiplier));
         }

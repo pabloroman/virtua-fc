@@ -21,6 +21,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class SetupTournamentGame implements ShouldQueue
@@ -52,12 +53,9 @@ class SetupTournamentGame implements ShouldQueue
         $groupsPath = base_path('data/2025/WC2026/groups.json');
         $groupsData = json_decode(file_get_contents($groupsPath), true);
 
-        // Build FIFA code → Team UUID map from team_mapping.json
-        $mappingPath = base_path('data/2025/WC2026/team_mapping.json');
-        $mapping = json_decode(file_get_contents($mappingPath), true);
-        $teamKeyMap = collect($mapping)->mapWithKeys(
-            fn ($data, $fifaCode) => [$fifaCode => $data['uuid']]
-        )->toArray();
+        // Build FIFA code → Team UUID map from the database
+        $nationalTeams = Team::worldCupEligible()->get(['id', 'fifa_code', 'transfermarkt_id']);
+        $teamKeyMap = $nationalTeams->pluck('id', 'fifa_code')->toArray();
 
         // Step 1: Create competition entries for all WC teams
         $this->createCompetitionEntries();
@@ -70,7 +68,8 @@ class SetupTournamentGame implements ShouldQueue
 
         // Step 4: Create game players for teams with JSON rosters
         $currentDate = $game->current_date ?? Carbon::parse('2025-06-10');
-        $this->createGamePlayers($mapping, $developmentService, $currentDate);
+        $teamsWithRosters = $nationalTeams->filter(fn ($t) => $t->transfermarkt_id !== null);
+        $this->createGamePlayers($teamsWithRosters, $developmentService, $currentDate);
 
         // Compute tiers for all players based on market value
         app(PlayerTierService::class)->recomputeAllTiersForGame($this->gameId);
@@ -186,8 +185,10 @@ class SetupTournamentGame implements ShouldQueue
 
     /**
      * Create game players only for teams that have JSON roster files.
+     *
+     * @param \Illuminate\Support\Collection<int, Team> $teamsWithRosters
      */
-    private function createGamePlayers(array $teamMapping, PlayerDevelopmentService $developmentService, Carbon $currentDate): void
+    private function createGamePlayers(Collection $teamsWithRosters, PlayerDevelopmentService $developmentService, Carbon $currentDate): void
     {
         if (GamePlayer::where('game_id', $this->gameId)->exists()) {
             return;
@@ -197,19 +198,14 @@ class SetupTournamentGame implements ShouldQueue
         $allPlayers = Player::all()->keyBy('transfermarkt_id');
         $playerRows = [];
 
-        // Only process teams that have a transfermarkt_id (i.e., have JSON roster files)
-        $teamsWithRosters = collect($teamMapping)->filter(
-            fn ($data) => $data['transfermarkt_id'] !== null
-        );
-
-        foreach ($teamsWithRosters as $fifaCode => $teamData) {
-            $filePath = "{$basePath}/{$teamData['transfermarkt_id']}.json";
+        foreach ($teamsWithRosters as $team) {
+            $filePath = "{$basePath}/{$team->transfermarkt_id}.json";
             if (!file_exists($filePath)) {
                 continue;
             }
 
             // Skip user's team — their players are created during squad selection
-            if ($teamData['uuid'] === $this->teamId) {
+            if ($team->id === $this->teamId) {
                 continue;
             }
 
@@ -242,7 +238,7 @@ class SetupTournamentGame implements ShouldQueue
                     'id' => Str::uuid()->toString(),
                     'game_id' => $this->gameId,
                     'player_id' => $player->id,
-                    'team_id' => $teamData['uuid'],
+                    'team_id' => $team->id,
                     'number' => null,
                     'position' => $playerData['position'] ?? 'Central Midfield',
                     'market_value' => null,

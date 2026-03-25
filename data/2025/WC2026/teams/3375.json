@@ -8,9 +8,18 @@
       "foot": "right",
       "height": "1,83m",
       "id": "262749",
-      "marketValue": "€40.00m",
+      "marketValue": "€35.00m",
       "name": "David Raya",
       "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "dateOfBirth": "May 4, 2001",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "561613",
+      "marketValue": "€40.00m",
+      "name": "Joan García",
       "position": "Goalkeeper"
     },
     {
@@ -19,7 +28,7 @@
       "foot": "right",
       "height": "1,90m",
       "id": "262396",
-      "marketValue": "€28.00m",
+      "marketValue": "€25.00m",
       "name": "Unai Simón",
       "number": "23",
       "position": "Goalkeeper"
@@ -30,31 +39,29 @@
       "foot": "right",
       "height": "1,91m",
       "id": "212862",
-      "marketValue": "€25.00m",
+      "marketValue": "€14.00m",
       "name": "Álex Remiro",
       "number": "13",
       "position": "Goalkeeper"
     },
     {
-      "contract": "Mar 22, 2024",
-      "dateOfBirth": "Jan 22, 2007",
-      "foot": "right",
-      "height": "1,84m",
-      "id": "962110",
-      "marketValue": "€70.00m",
-      "name": "Pau Cubarsí",
-      "number": "15",
+      "contract": "Jun 4, 2021",
+      "dateOfBirth": "May 27, 1994",
+      "foot": "left",
+      "height": "1,91m",
+      "id": "176553",
+      "marketValue": "€9.00m",
+      "name": "Aymeric Laporte",
+      "number": "14",
       "position": "Centre-Back"
     },
     {
-      "contract": "Jun 15, 2023",
-      "dateOfBirth": "Nov 11, 1996",
+      "dateOfBirth": "Jun 27, 2004",
       "foot": "right",
-      "height": "1,87m",
-      "id": "351809",
-      "marketValue": "€40.00m",
-      "name": "Robin Le Normand",
-      "number": "3",
+      "height": "1,91m",
+      "id": "646750",
+      "marketValue": "€35.00m",
+      "name": "Cristhian Mosquera",
       "position": "Centre-Back"
     },
     {
@@ -74,19 +81,19 @@
       "foot": "both",
       "height": "1,97m",
       "id": "890290",
-      "marketValue": "€18.00m",
+      "marketValue": "€65.00m",
       "name": "Dean Huijsen",
       "position": "Centre-Back"
     },
     {
-      "contract": "Jun 4, 2021",
-      "dateOfBirth": "May 27, 1994",
-      "foot": "left",
-      "height": "1,91m",
-      "id": "176553",
-      "marketValue": "€18.00m",
-      "name": "Aymeric Laporte",
-      "number": "14",
+      "contract": "Mar 22, 2024",
+      "dateOfBirth": "Jan 22, 2007",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "962110",
+      "marketValue": "€80.00m",
+      "name": "Pau Cubarsí",
+      "number": "15",
       "position": "Centre-Back"
     },
     {
@@ -99,36 +106,63 @@
       "position": "Centre-Back"
     },
     {
+      "dateOfBirth": "Jan 9, 2001",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "466794",
+      "marketValue": "€35.00m",
+      "name": "Eric García",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 15, 2023",
+      "dateOfBirth": "Nov 11, 1996",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "351809",
+      "marketValue": "€40.00m",
+      "name": "Robin Le Normand",
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jun 20, 2003",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "844637",
+      "marketValue": "€15.00m",
+      "name": "Marc Pubill",
+      "position": "Centre-Back"
+    },
+    {
       "contract": "Nov 16, 2023",
       "dateOfBirth": "Sep 20, 1995",
       "foot": "left",
       "height": "1,71m",
       "id": "193082",
-      "marketValue": "€40.00m",
+      "marketValue": "€24.00m",
       "name": "Alejandro Grimaldo",
       "number": "17",
       "position": "Left-Back"
     },
     {
-      "contract": "Jun 8, 2021",
       "dateOfBirth": "Jul 22, 1998",
       "foot": "left",
       "height": "1,73m",
       "id": "284857",
-      "marketValue": "€30.00m",
+      "marketValue": "€50.00m",
       "name": "Marc Cucurella",
-      "number": "22",
       "position": "Left-Back"
     },
     {
-      "contract": "Mar 28, 2021",
-      "dateOfBirth": "Sep 13, 1999",
+      "contract": "Sep 4, 2014",
+      "dateOfBirth": "Jan 11, 1992",
       "foot": "right",
       "height": "1,73m",
-      "id": "553875",
-      "marketValue": "€45.00m",
-      "name": "Pedro Porro",
-      "number": "12",
+      "id": "138927",
+      "marketValue": "€10.00m",
+      "name": "Daniel Carvajal",
       "position": "Right-Back"
     },
     {
@@ -137,9 +171,20 @@
       "foot": "right",
       "height": "1,84m",
       "id": "282411",
-      "marketValue": "€28.00m",
+      "marketValue": "€22.00m",
       "name": "Marcos Llorente",
       "number": "5",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Mar 28, 2021",
+      "dateOfBirth": "Sep 13, 1999",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "553875",
+      "marketValue": "€40.00m",
+      "name": "Pedro Porro",
+      "number": "12",
       "position": "Right-Back"
     },
     {
@@ -153,14 +198,24 @@
       "position": "Right-Back"
     },
     {
-      "contract": "Sep 4, 2014",
-      "dateOfBirth": "Jan 11, 1992",
+      "contract": "Jun 8, 2021",
+      "dateOfBirth": "Feb 2, 1999",
       "foot": "right",
-      "height": "1,73m",
-      "id": "138927",
-      "marketValue": "€10.00m",
-      "name": "Daniel Carvajal",
-      "position": "Right-Back"
+      "height": "1,81m",
+      "id": "423440",
+      "marketValue": "€80.00m",
+      "name": "Martín Zubimendi",
+      "number": "18",
+      "position": "Defensive Midfield"
+    },
+    {
+      "dateOfBirth": "Oct 29, 2001",
+      "foot": "left",
+      "height": "1,74m",
+      "id": "709372",
+      "marketValue": "€25.00m",
+      "name": "Carlos Romero",
+      "position": "Left-Back"
     },
     {
       "contract": "Mar 23, 2018",
@@ -168,60 +223,29 @@
       "foot": "right",
       "height": "1,91m",
       "id": "357565",
-      "marketValue": "€130.00m",
+      "marketValue": "€65.00m",
       "name": "Rodri",
       "position": "Defensive Midfield"
     },
     {
-      "contract": "Jun 8, 2021",
-      "dateOfBirth": "Feb 2, 1999",
-      "foot": "right",
-      "height": "1,81m",
-      "id": "423440",
-      "marketValue": "€60.00m",
-      "name": "Martín Zubimendi",
-      "number": "18",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Mar 25, 2021",
-      "dateOfBirth": "Nov 25, 2002",
-      "foot": "right",
-      "height": "1,74m",
-      "id": "683840",
-      "marketValue": "€100.00m",
-      "name": "Pedri",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Oct 6, 2021",
-      "dateOfBirth": "Aug 5, 2004",
+      "contract": "Nov 16, 2023",
+      "dateOfBirth": "Jun 28, 1997",
       "foot": "right",
       "height": "1,73m",
-      "id": "646740",
-      "marketValue": "€80.00m",
-      "name": "Gavi",
+      "id": "261504",
+      "marketValue": "€20.00m",
+      "name": "Aleix García",
+      "number": "8",
       "position": "Central Midfield"
     },
     {
-      "contract": "Nov 18, 2024",
-      "dateOfBirth": "Jun 15, 2003",
+      "contract": "Sep 2, 2021",
+      "dateOfBirth": "Jan 2, 1997",
       "foot": "right",
-      "height": "1,81m",
-      "id": "775605",
-      "marketValue": "€50.00m",
-      "name": "Pablo Barrios",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Sep 3, 2020",
-      "dateOfBirth": "Jun 22, 1996",
-      "foot": "left",
-      "height": "1,89m",
-      "id": "338424",
-      "marketValue": "€45.00m",
-      "name": "Mikel Merino",
-      "number": "6",
+      "height": "1,80m",
+      "id": "372246",
+      "marketValue": "€8.00m",
+      "name": "Carlos Soler",
       "position": "Central Midfield"
     },
     {
@@ -236,14 +260,34 @@
       "position": "Central Midfield"
     },
     {
-      "contract": "Nov 16, 2023",
-      "dateOfBirth": "Jun 28, 1997",
+      "contract": "Oct 6, 2021",
+      "dateOfBirth": "Aug 5, 2004",
       "foot": "right",
       "height": "1,73m",
-      "id": "261504",
-      "marketValue": "€20.00m",
-      "name": "Aleix García",
-      "number": "8",
+      "id": "646740",
+      "marketValue": "€80.00m",
+      "name": "Gavi",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Sep 3, 2020",
+      "dateOfBirth": "Jun 22, 1996",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "338424",
+      "marketValue": "€45.00m",
+      "name": "Mikel Merino",
+      "number": "6",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Nov 18, 2024",
+      "dateOfBirth": "Jun 15, 2003",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "775605",
+      "marketValue": "€50.00m",
+      "name": "Pablo Barrios",
       "position": "Central Midfield"
     },
     {
@@ -252,8 +296,18 @@
       "foot": "right",
       "height": "1,78m",
       "id": "357885",
-      "marketValue": "€9.00m",
+      "marketValue": "€8.00m",
       "name": "Pablo Fornals",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Mar 25, 2021",
+      "dateOfBirth": "Nov 25, 2002",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "683840",
+      "marketValue": "€150.00m",
+      "name": "Pedri",
       "position": "Central Midfield"
     },
     {
@@ -273,7 +327,7 @@
       "foot": "right",
       "height": "1,74m",
       "id": "636703",
-      "marketValue": "€50.00m",
+      "marketValue": "€100.00m",
       "name": "Fermín López",
       "position": "Attacking Midfield"
     },
@@ -288,23 +342,22 @@
       "position": "Attacking Midfield"
     },
     {
-      "contract": "Sep 24, 2022",
-      "dateOfBirth": "Jul 12, 2002",
-      "foot": "right",
-      "height": "1,81m",
-      "id": "709187",
-      "marketValue": "€70.00m",
-      "name": "Nico Williams",
-      "position": "Left Winger"
+      "contract": "May 30, 2028",
+      "dateOfBirth": "Jan 21, 1996",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "296622",
+      "marketValue": "€15.00m",
+      "name": "Marco Asensio",
+      "position": "Attacking Midfield"
     },
     {
-      "contract": "Sep 12, 2023",
-      "dateOfBirth": "Jul 20, 2001",
+      "dateOfBirth": "Dec 27, 2001",
       "foot": "right",
-      "height": "1,74m",
-      "id": "548111",
-      "marketValue": "€50.00m",
-      "name": "Álex Baena",
+      "height": "1,75m",
+      "id": "616369",
+      "marketValue": "€18.00m",
+      "name": "Ander Barrenetxea",
       "position": "Left Winger"
     },
     {
@@ -318,26 +371,33 @@
       "position": "Left Winger"
     },
     {
-      "contract": "Sep 8, 2023",
-      "dateOfBirth": "Jul 13, 2007",
-      "foot": "left",
-      "height": "1,80m",
-      "id": "937958",
-      "marketValue": "€180.00m",
-      "name": "Lamine Yamal",
-      "number": "19",
-      "position": "Right Winger"
+      "contract": "Sep 24, 2022",
+      "dateOfBirth": "Jul 12, 2002",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "709187",
+      "marketValue": "€70.00m",
+      "name": "Nico Williams",
+      "position": "Left Winger"
     },
     {
-      "contract": "Oct 6, 2021",
-      "dateOfBirth": "Oct 20, 2002",
+      "dateOfBirth": "Jul 13, 2003",
       "foot": "right",
-      "height": "1,72m",
-      "id": "568157",
-      "marketValue": "€30.00m",
-      "name": "Yéremy Pino",
-      "number": "11",
-      "position": "Right Winger"
+      "height": "1,73m",
+      "id": "935231",
+      "marketValue": "€20.00m",
+      "name": "Víctor Muñoz",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Sep 12, 2023",
+      "dateOfBirth": "Jul 20, 2001",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "548111",
+      "marketValue": "€45.00m",
+      "name": "Álex Baena",
+      "position": "Left Winger"
     },
     {
       "contract": "Sep 7, 2025",
@@ -351,46 +411,26 @@
       "position": "Right Winger"
     },
     {
-      "contract": "Nov 18, 2024",
-      "dateOfBirth": "May 5, 2004",
-      "foot": "right",
-      "height": "1,93m",
-      "id": "991268",
-      "marketValue": "€50.00m",
-      "name": "Samu Aghehowa",
-      "position": "Centre-Forward"
-    },
-    {
-      "contract": "May 29, 2016",
-      "dateOfBirth": "Apr 21, 1997",
+      "contract": "Sep 8, 2023",
+      "dateOfBirth": "Jul 13, 2007",
       "foot": "left",
-      "height": "1,81m",
-      "id": "351478",
+      "height": "1,80m",
+      "id": "937958",
+      "marketValue": "€200.00m",
+      "name": "Lamine Yamal",
+      "number": "19",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Oct 6, 2021",
+      "dateOfBirth": "Oct 20, 2002",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "568157",
       "marketValue": "€35.00m",
-      "name": "Mikel Oyarzabal",
-      "number": "21",
-      "position": "Centre-Forward"
-    },
-    {
-      "contract": "Sep 3, 2020",
-      "dateOfBirth": "Feb 29, 2000",
-      "foot": "right",
-      "height": "1,82m",
-      "id": "398184",
-      "marketValue": "€28.00m",
-      "name": "Ferran Torres",
-      "number": "7",
-      "position": "Centre-Forward"
-    },
-    {
-      "contract": "Nov 15, 2014",
-      "dateOfBirth": "Oct 23, 1992",
-      "foot": "right",
-      "height": "1,89m",
-      "id": "128223",
-      "marketValue": "€13.00m",
-      "name": "Álvaro Morata",
-      "position": "Centre-Forward"
+      "name": "Yéremy Pino",
+      "number": "11",
+      "position": "Right Winger"
     },
     {
       "contract": "Jun 5, 2024",
@@ -408,9 +448,51 @@
       "foot": "right",
       "height": "1,87m",
       "id": "278359",
-      "marketValue": "€4.00m",
+      "marketValue": "€3.00m",
       "name": "Borja Iglesias",
       "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Sep 3, 2020",
+      "dateOfBirth": "Feb 29, 2000",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "398184",
+      "marketValue": "€50.00m",
+      "name": "Ferran Torres",
+      "number": "7",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "May 29, 2016",
+      "dateOfBirth": "Apr 21, 1997",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "351478",
+      "marketValue": "€25.00m",
+      "name": "Mikel Oyarzabal",
+      "number": "21",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Nov 18, 2024",
+      "dateOfBirth": "May 5, 2004",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "991268",
+      "marketValue": "€50.00m",
+      "name": "Samu Aghehowa",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Nov 15, 2014",
+      "dateOfBirth": "Oct 23, 1992",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "128223",
+      "marketValue": "€13.00m",
+      "name": "Álvaro Morata",
       "position": "Centre-Forward"
     }
   ],

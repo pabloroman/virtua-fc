@@ -84,17 +84,6 @@ return [
     // Academy
     'academy_batch_title' => 'New academy prospects',
     'academy_batch_message' => ':count new players have arrived at the academy.',
-    'academy_evaluation_title' => 'Academy evaluation',
-    'academy_evaluation_message' => 'It\'s time to evaluate your academy players.',
-
-    // Transfer bid results
-    'bid_accepted_title' => 'Bid for :player accepted',
-    'bid_accepted' => ':team have accepted your bid for :player — transfer agreed for :fee.',
-    'bid_counter_offer_title' => 'Counter offer for :player',
-    'bid_counter_offer' => ':team want :asking for :player (you offered :offered).',
-    'bid_rejected_title' => 'Bid for :player rejected',
-    'bid_rejected' => ':team have rejected your bid for :player.',
-
     // Loan request results
     'loan_accepted_title' => 'Loan request for :player accepted',
     'loan_accepted' => ':team have accepted your loan request for :player.',
@@ -124,14 +113,6 @@ return [
     'player_released_message' => ':player has been released from your squad. Severance paid: :severance.',
     'player_released_message_free' => ':player has been released from your squad.',
 
-    // Renewal negotiations
-    'renewal_accepted_title' => ':player accepts renewal',
-    'renewal_accepted_message' => ':player has accepted the renewal for :wage/yr over :years years.',
-    'renewal_countered_title' => ':player counter offer',
-    'renewal_countered_message' => ':player is asking for :wage/yr over :years years to renew.',
-    'renewal_rejected_title' => ':player rejects renewal',
-    'renewal_rejected_message' => ':player has rejected your renewal offer. They will leave at the end of the season.',
-
     // Tracking intel
     'tracking_intel_title' => 'Intel on :player ready',
     'tracking_report_ready' => 'Your scout has gathered a report on :player — ability range and financial details are now available.',
@@ -149,4 +130,11 @@ return [
     'reputation_change_title' => 'Club reputation changed',
     'reputation_improved' => 'Your club\'s reputation has grown to :tier. Sponsors, players and fans are taking notice.',
     'reputation_declined' => 'Your club\'s reputation has dropped to :tier. Time to rebuild and return to former glory.',
+
+    // Budget loan
+    'budget_loan_taken_title' => 'Budget loan secured',
+    'budget_loan_taken_message' => 'The club has secured a loan of :amount. Repayment of :repayment will be deducted from next season\'s budget.',
+    'budget_loan_repaid_title' => 'Budget loan repaid',
+    'budget_loan_repaid_message' => 'The budget loan has been repaid (:repayment with interest).',
+    'budget_loan_repaid_with_debt' => 'The budget loan repayment of :repayment exceeded available surplus. The shortfall has been carried as debt.',
 ];

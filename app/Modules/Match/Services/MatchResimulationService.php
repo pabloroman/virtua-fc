@@ -84,15 +84,15 @@ class MatchResimulationService
         $homeDefLine = DefensiveLineHeight::tryFrom($match->home_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
         $awayDefLine = DefensiveLineHeight::tryFrom($match->away_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
 
-        // 5. Exclude red-carded players
-        $redCardedPlayerIds = MatchEvent::where('game_match_id', $match->id)
-            ->where('event_type', 'red_card')
+        // 5. Exclude red-carded and substituted-out players
+        $unavailablePlayerIds = MatchEvent::where('game_match_id', $match->id)
+            ->whereIn('event_type', ['red_card', 'substitution'])
             ->where('minute', '<=', $minute)
             ->pluck('game_player_id')
             ->all();
 
-        $homePlayers = $homePlayers->reject(fn ($p) => in_array($p->id, $redCardedPlayerIds));
-        $awayPlayers = $awayPlayers->reject(fn ($p) => in_array($p->id, $redCardedPlayerIds));
+        $homePlayers = $homePlayers->reject(fn ($p) => in_array($p->id, $unavailablePlayerIds));
+        $awayPlayers = $awayPlayers->reject(fn ($p) => in_array($p->id, $unavailablePlayerIds));
 
         // 6. Get existing injuries/yellows for context
         $existingInjuryTeamIds = MatchEvent::where('game_match_id', $match->id)
@@ -121,8 +121,16 @@ class MatchResimulationService
             }
         }
 
-        // 8. Re-simulate the remainder
-        $remainderResult = $this->matchSimulator->simulateRemainder(
+        // 8. Count existing substitutions per team to enforce the limit
+        $userSubCount = count($allSubstitutions);
+        $opponentSubCount = collect($match->substitutions ?? [])
+            ->filter(fn ($s) => $s['team_id'] !== $game->team_id)
+            ->count();
+        $homeExistingSubs = $isUserHome ? $userSubCount : $opponentSubCount;
+        $awayExistingSubs = $isUserHome ? $opponentSubCount : $userSubCount;
+
+        // 9. Re-simulate the remainder
+        $remainderOutput = $this->matchSimulator->simulateRemainder(
             $match->homeTeam,
             $match->awayTeam,
             $homePlayers,
@@ -145,16 +153,19 @@ class MatchResimulationService
             $awayDefLine,
             $homeBenchPlayers,
             $awayBenchPlayers,
+            homeExistingSubstitutions: $homeExistingSubs,
+            awayExistingSubstitutions: $awayExistingSubs,
         );
 
-        // 9. Calculate new final score
+        // 10. Calculate new final score
+        $remainderResult = $remainderOutput->result;
         $newHomeScore = $scoreAtMinute['home'] + $remainderResult->homeScore;
         $newAwayScore = $scoreAtMinute['away'] + $remainderResult->awayScore;
 
-        // 10. Apply the new remainder events
+        // 11. Apply the new remainder events
         $this->applyNewEvents($match, $game, $remainderResult, $competitionId);
 
-        // 11. Update match score and possession
+        // 12. Update match score and possession
         // Note: Score-dependent side effects (standings, cup ties, GK stats, prize money)
         // are NOT handled here. They are deferred to FinalizeMatch, which applies them
         // once after the user finishes the live match. This eliminates the need for
@@ -212,15 +223,15 @@ class MatchResimulationService
             $homeDefLine = DefensiveLineHeight::tryFrom($match->home_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
             $awayDefLine = DefensiveLineHeight::tryFrom($match->away_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
 
-            // 5. Exclude red-carded players
-            $redCardedPlayerIds = MatchEvent::where('game_match_id', $match->id)
-                ->where('event_type', 'red_card')
+            // 5. Exclude red-carded and substituted-out players
+            $unavailablePlayerIds = MatchEvent::where('game_match_id', $match->id)
+                ->whereIn('event_type', ['red_card', 'substitution'])
                 ->where('minute', '<=', $minute)
                 ->pluck('game_player_id')
                 ->all();
 
-            $homePlayers = $homePlayers->reject(fn ($p) => in_array($p->id, $redCardedPlayerIds));
-            $awayPlayers = $awayPlayers->reject(fn ($p) => in_array($p->id, $redCardedPlayerIds));
+            $homePlayers = $homePlayers->reject(fn ($p) => in_array($p->id, $unavailablePlayerIds));
+            $awayPlayers = $awayPlayers->reject(fn ($p) => in_array($p->id, $unavailablePlayerIds));
 
             // 6. Build entry minute maps from substitutions
             $isUserHome = $match->isHomeTeam($game->team_id);

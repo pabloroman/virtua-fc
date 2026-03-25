@@ -60,10 +60,7 @@ class SubstitutionService
         }
 
         // Pre-load all suspended player IDs for this competition (single query)
-        $suspendedPlayerIds = PlayerSuspension::where('competition_id', $match->competition_id)
-            ->where('matches_remaining', '>', 0)
-            ->pluck('game_player_id')
-            ->all();
+        $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($match->competition_id);
 
         // Validate each sub in the batch
         $batchOutIds = [];
@@ -168,13 +165,30 @@ class SubstitutionService
             ->get();
 
         $opponentLineupIds = $isUserHome ? ($match->away_lineup ?? []) : ($match->home_lineup ?? []);
+
+        // Apply opponent substitutions from match record (auto-subs from initial simulation)
+        // so that injured/subbed-out players are excluded and their replacements are included.
+        foreach ($match->substitutions ?? [] as $sub) {
+            if ($sub['team_id'] === $opponentTeamId) {
+                $opponentLineupIds = array_values(array_filter(
+                    $opponentLineupIds,
+                    fn ($id) => $id !== $sub['player_out_id']
+                ));
+                $opponentLineupIds[] = $sub['player_in_id'];
+            }
+        }
+
+        // Pre-load suspended player IDs for this competition (single query)
+        $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($match->competition_id);
+
         $opponentPlayers = $opponentSquad->filter(fn ($p) => in_array($p->id, $opponentLineupIds));
         $opponentBench = $opponentSquad
             ->reject(fn ($p) => in_array($p->id, $opponentLineupIds))
             ->reject(fn ($p) => $p->isInjured($match->scheduled_date))
+            ->reject(fn ($p) => in_array($p->id, $suspendedPlayerIds))
             ->values();
 
-        // User bench: squad minus active lineup minus subbed-out players minus injured
+        // User bench: squad minus active lineup minus subbed-out players minus injured/suspended
         $activeLineupIds = $userLineup->pluck('id')->all();
         $subbedOutIds = array_column($substitutions, 'playerOutId');
         $userSquad = GamePlayer::with('player')
@@ -185,6 +199,7 @@ class SubstitutionService
             ->reject(fn ($p) => in_array($p->id, $activeLineupIds))
             ->reject(fn ($p) => in_array($p->id, $subbedOutIds))
             ->reject(fn ($p) => $p->isInjured($match->scheduled_date))
+            ->reject(fn ($p) => in_array($p->id, $suspendedPlayerIds))
             ->values();
 
         return [

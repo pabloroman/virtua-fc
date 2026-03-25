@@ -20,7 +20,6 @@ class StressTest extends Command
     protected $signature = 'app:stress-test
                             {--games=1 : Number of games to create and simulate}
                             {--seasons=1 : Number of seasons to simulate per game}
-                            {--profile=test : Data profile (test=4-team league, production=full La Liga)}
                             {--skip-creation : Skip game creation, use existing games}
                             {--seed : Re-seed reference data before starting}
                             {--csv= : Write detailed metrics to a CSV file}';
@@ -33,12 +32,11 @@ class StressTest extends Command
     {
         $gameCount = (int) $this->option('games');
         $seasonCount = (int) $this->option('seasons');
-        $profile = $this->option('profile');
         $skipCreation = $this->option('skip-creation');
         $csvPath = $this->option('csv');
 
         $this->info("=== VirtuaFC Stress Test ===");
-        $this->info("Games: {$gameCount} | Seasons: {$seasonCount} | Profile: {$profile}");
+        $this->info("Games: {$gameCount} | Seasons: {$seasonCount}");
         $this->newLine();
 
         // Seed if requested
@@ -46,7 +44,6 @@ class StressTest extends Command
             $this->info('Seeding reference data...');
             $this->call('app:seed-reference-data', [
                 '--fresh' => true,
-                '--profile' => $profile,
             ]);
             $this->newLine();
         }
@@ -70,7 +67,7 @@ class StressTest extends Command
             $this->info("Using {$games->count()} existing games.");
         } else {
             $this->info("--- Phase 1: Creating {$gameCount} games ---");
-            $games = $this->createGames($gameCount, $gameCreationService, $profile);
+            $games = $this->createGames($gameCount, $gameCreationService);
 
             if ($games->isEmpty()) {
                 $this->error('Failed to create any games.');
@@ -108,14 +105,12 @@ class StressTest extends Command
         return Command::SUCCESS;
     }
 
-    private function createGames(int $count, GameCreationService $gameCreationService, string $profile): \Illuminate\Support\Collection
+    private function createGames(int $count, GameCreationService $gameCreationService): \Illuminate\Support\Collection
     {
         $games = collect();
 
         // Find a team to use
-        $team = $profile === 'test'
-            ? Team::where('name', 'Real Madrid')->first() ?? Team::first()
-            : Team::where('name', 'Real Madrid')->first() ?? Team::first();
+        $team = Team::where('name', 'Real Madrid')->first() ?? Team::first();
 
         if (! $team) {
             $this->error('No teams found. Run with --seed first.');

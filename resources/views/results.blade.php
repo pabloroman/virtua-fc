@@ -121,7 +121,7 @@
                     @if($playerMatch->mvpPlayer)
                         <div class="mt-3 pt-3 border-t border-border-default">
                             <div class="flex items-center justify-center gap-2 text-sm">
-                                <span class="text-accent-yellow text-base">&#9733;</span>
+                                <span class="text-accent-gold text-base">&#9733;</span>
                                 <span class="text-text-secondary">{{ __('game.mvp') }}</span>
                                 <span class="font-semibold text-text-primary">{{ $playerMatch->mvpPlayer->player->name }}</span>
                                 <span class="text-xs px-1.5 py-0.5 rounded bg-surface-700 text-text-muted">

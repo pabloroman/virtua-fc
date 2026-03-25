@@ -4,11 +4,13 @@ namespace App\Modules\Match\Services;
 
 use App\Modules\Match\DTOs\MatchEventData;
 use App\Modules\Match\DTOs\MatchResult;
+use App\Modules\Match\DTOs\MatchSimulationOutput;
 use App\Modules\Lineup\Enums\DefensiveLineHeight;
 use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Enums\Mentality;
 use App\Modules\Lineup\Enums\PlayingStyle;
 use App\Modules\Lineup\Enums\PressingIntensity;
+use App\Modules\Lineup\Services\SubstitutionService;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Team;
@@ -114,7 +116,7 @@ class MatchSimulator
         ?Collection $homeBenchPlayers = null,
         ?Collection $awayBenchPlayers = null,
         string $matchSeed = '',
-    ): MatchResult {
+    ): MatchSimulationOutput {
         return $this->simulateRemainder(
             $homeTeam, $awayTeam,
             $homePlayers, $awayPlayers,
@@ -151,36 +153,59 @@ class MatchSimulator
     ): Collection {
         // Build map of player_id => minute they were removed
         $removedAt = [];
+        // Build map of player_id => minute they entered (substituted in)
+        $enteredAt = [];
+
         foreach ($events as $event) {
-            if (in_array($event->type, ['injury', 'red_card']) && ! isset($removedAt[$event->gamePlayerId])) {
+            if (in_array($event->type, ['injury', 'red_card', 'substitution']) && ! isset($removedAt[$event->gamePlayerId])) {
                 $removedAt[$event->gamePlayerId] = $event->minute;
+            }
+            if ($event->type === 'substitution' && isset($event->metadata['player_in_id'])) {
+                $enteredAt[$event->metadata['player_in_id']] = $event->minute;
             }
         }
 
-        if (empty($removedAt)) {
+        if (empty($removedAt) && empty($enteredAt)) {
             return $events;
         }
 
-        return $events->map(function (MatchEventData $event) use ($removedAt, $homePlayers, $awayPlayers) {
+        return $events->map(function (MatchEventData $event) use ($removedAt, $enteredAt, $homePlayers, $awayPlayers) {
             if (! in_array($event->type, ['goal', 'assist'])) {
                 return $event;
             }
 
-            if (! isset($removedAt[$event->gamePlayerId])) {
+            $needsReassignment = false;
+
+            // Player was removed (injury/red card/sub out) at or before this event
+            if (isset($removedAt[$event->gamePlayerId]) && $event->minute >= $removedAt[$event->gamePlayerId]) {
+                $needsReassignment = true;
+            }
+
+            // Player hadn't entered the match yet (sub in after this event)
+            if (isset($enteredAt[$event->gamePlayerId]) && $event->minute < $enteredAt[$event->gamePlayerId]) {
+                $needsReassignment = true;
+            }
+
+            if (! $needsReassignment) {
                 return $event;
             }
 
-            if ($event->minute < $removedAt[$event->gamePlayerId]) {
-                return $event;
-            }
-
-            // Find the team's players and exclude anyone removed at or before this minute
+            // Find the team's players and exclude anyone not on the pitch at this minute
             $teamPlayers = $homePlayers->contains('id', $event->gamePlayerId)
                 ? $homePlayers
                 : $awayPlayers;
 
-            $availablePlayers = $teamPlayers->reject(function ($p) use ($removedAt, $event) {
-                return isset($removedAt[$p->id]) && $removedAt[$p->id] <= $event->minute;
+            $availablePlayers = $teamPlayers->reject(function ($p) use ($removedAt, $enteredAt, $event) {
+                // Exclude players removed at or before this minute
+                if (isset($removedAt[$p->id]) && $removedAt[$p->id] <= $event->minute) {
+                    return true;
+                }
+                // Exclude players who haven't entered yet at this minute
+                if (isset($enteredAt[$p->id]) && $enteredAt[$p->id] > $event->minute) {
+                    return true;
+                }
+
+                return false;
             });
 
             $replacement = $event->type === 'goal'
@@ -374,12 +399,12 @@ class MatchSimulator
             return 0.0;
         }
 
-        // Bonus scales from 0 at 85 to ~0.25 at 100
-        // Formula: (rating - 85) / 60 gives 0.0 to 0.25 range
+        // Bonus scales from 0 at 85 to ~0.30 at 100
+        // Formula: (rating - 85) / 50 gives 0.0 to 0.30 range
         // Only truly elite forwards provide a noticeable boost
-        // A 94-rated Mbappé gets +0.15 expected goals
-        // A 88-rated striker gets +0.05 expected goals
-        return ($bestForwardScore - 85) / 60;
+        // A 94-rated forward gets +0.18 expected goals
+        // A 88-rated striker gets +0.06 expected goals
+        return ($bestForwardScore - 85) / 50;
     }
 
     /**
@@ -485,14 +510,6 @@ class MatchSimulator
     }
 
     /**
-     * Reset match performance cache (call before each new match simulation).
-     */
-    private function resetMatchPerformance(): void
-    {
-        $this->matchPerformance = [];
-    }
-
-    /**
      * Get the effective overall score for a player in this match.
      * Combines base ability with match-day performance.
      */
@@ -501,17 +518,6 @@ class MatchSimulator
         $performance = $this->getMatchPerformance($player);
 
         return $player->overall_score * $performance;
-    }
-
-    /**
-     * Get all match performance modifiers after simulation.
-     * Useful for post-match player ratings display.
-     *
-     * @return array<string, float> Map of player ID to performance modifier (0.7-1.3)
-     */
-    public function getMatchPerformances(): array
-    {
-        return $this->matchPerformance;
     }
 
     /**
@@ -750,8 +756,10 @@ class MatchSimulator
         ?Collection $homeBenchPlayers = null,
         ?Collection $awayBenchPlayers = null,
         string $matchSeed = '',
-    ): MatchResult {
-        $this->resetMatchPerformance();
+        int $homeExistingSubstitutions = 0,
+        int $awayExistingSubstitutions = 0,
+    ): MatchSimulationOutput {
+        $this->matchPerformance = [];
 
         $homeFormation = $homeFormation ?? Formation::F_4_4_2;
         $awayFormation = $awayFormation ?? Formation::F_4_4_2;
@@ -832,11 +840,14 @@ class MatchSimulator
             // so team strength reflects the replacement player
             $injuryMaxMinute = 85;
             $lineupChanged = false;
+            $maxSubs = $fromMinute > 90
+                ? SubstitutionService::MAX_ET_SUBSTITUTIONS
+                : SubstitutionService::MAX_SUBSTITUTIONS;
 
             if (! in_array($homeTeam->id, $existingInjuryTeamIds) && $fromMinute + 1 <= $injuryMaxMinute) {
                 $homeInjuryEvents = $this->generateInjuryEventsInRange($homeTeam->id, $homePlayersForInjury, $fromMinute + 1, $injuryMaxMinute, $game);
                 $events = $events->merge($homeInjuryEvents);
-                if ($homeInjuryEvents->isNotEmpty() && $homeBenchPlayers !== null && $homeBenchPlayers->isNotEmpty()) {
+                if ($homeInjuryEvents->isNotEmpty() && $homeBenchPlayers !== null && $homeBenchPlayers->isNotEmpty() && $homeExistingSubstitutions < $maxSubs) {
                     [$subEvents, $homePlayers, $homeBenchPlayers] = $this->processInjurySubstitution(
                         $homeTeam->id, $homeInjuryEvents, $homePlayers, $homeBenchPlayers
                     );
@@ -849,7 +860,7 @@ class MatchSimulator
             if (! in_array($awayTeam->id, $existingInjuryTeamIds) && $fromMinute + 1 <= $injuryMaxMinute) {
                 $awayInjuryEvents = $this->generateInjuryEventsInRange($awayTeam->id, $awayPlayersForInjury, $fromMinute + 1, $injuryMaxMinute, $game);
                 $events = $events->merge($awayInjuryEvents);
-                if ($awayInjuryEvents->isNotEmpty() && $awayBenchPlayers !== null && $awayBenchPlayers->isNotEmpty()) {
+                if ($awayInjuryEvents->isNotEmpty() && $awayBenchPlayers !== null && $awayBenchPlayers->isNotEmpty() && $awayExistingSubstitutions < $maxSubs) {
                     [$subEvents, $awayPlayers, $awayBenchPlayers] = $this->processInjurySubstitution(
                         $awayTeam->id, $awayInjuryEvents, $awayPlayers, $awayBenchPlayers
                     );
@@ -952,7 +963,10 @@ class MatchSimulator
             $matchSeed,
         );
 
-        return new MatchResult($homeScore, $awayScore, $events, $possession['home'], $possession['away']);
+        return new MatchSimulationOutput(
+            new MatchResult($homeScore, $awayScore, $events, $possession['home'], $possession['away']),
+            $this->matchPerformance,
+        );
     }
 
     /**

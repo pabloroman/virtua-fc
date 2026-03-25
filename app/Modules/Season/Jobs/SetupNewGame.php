@@ -114,7 +114,11 @@ class SetupNewGame implements ShouldQueue
             }
 
             // Mark setup as complete
-            Game::where('id', $this->gameId)->update(['setup_completed_at' => now()]);
+            Game::where('id', $this->gameId)->update([
+                'setup_completed_at' => now(),
+                'season_transition_step' => null,
+                'season_transition_data' => null,
+            ]);
 
             // Record activation event
             app(\App\Modules\Season\Services\ActivationTracker::class)

@@ -1,13 +1,11 @@
 @php
     /** @var App\Models\Game $game */
     /** @var App\Models\AcademyPlayer $academyPlayer */
-    /** @var int $revealPhase */
 
     $positionDisplay = $academyPlayer->position_display;
     $nationalityFlag = $academyPlayer->nationality_flag;
 
     $overallColor = match(true) {
-        $revealPhase < 1 => 'bg-surface-600',
         $academyPlayer->overall >= 80 => 'bg-accent-green',
         $academyPlayer->overall >= 70 => 'bg-lime-500',
         $academyPlayer->overall >= 60 => 'bg-accent-gold',
@@ -51,7 +49,7 @@
         </div>
 
         <div class="w-14 h-14 md:w-16 md:h-16 rounded-xl {{ $overallColor }} flex items-center justify-center shrink-0">
-            <span class="text-xl md:text-2xl font-bold {{ $revealPhase >= 1 ? 'text-white' : 'text-text-secondary' }}">{{ $revealPhase >= 1 ? $academyPlayer->overall : '?' }}</span>
+            <span class="text-xl md:text-2xl font-bold text-white">{{ $academyPlayer->overall }}</span>
         </div>
     </div>
 </div>
@@ -63,27 +61,20 @@
     <div class="p-5">
         <h4 class="font-heading text-[11px] font-semibold uppercase tracking-widest text-text-secondary mb-4">{{ __('squad.abilities') }}</h4>
 
-        @if($revealPhase >= 1)
-            <div class="space-y-3">
-                <x-stat-bar :label="__('squad.technical_full')" :value="$academyPlayer->technical_ability" />
-                <x-stat-bar :label="__('squad.physical_full')" :value="$academyPlayer->physical_ability" />
+        <div class="space-y-3">
+            <x-stat-bar :label="__('squad.technical_full')" :value="$academyPlayer->technical_ability" />
+            <x-stat-bar :label="__('squad.physical_full')" :value="$academyPlayer->physical_ability" />
 
-                <div class="flex items-center justify-between pt-3 border-t border-border-default">
-                    <span class="text-[11px] text-text-muted uppercase tracking-wide font-semibold">{{ __('squad.overall') }}</span>
-                    <span class="text-xs font-semibold tabular-nums
-                        @if($academyPlayer->overall >= 80) text-accent-green
-                        @elseif($academyPlayer->overall >= 70) text-lime-500
-                        @elseif($academyPlayer->overall >= 60) text-accent-gold
-                        @else text-text-muted
-                        @endif">{{ $academyPlayer->overall }}</span>
-                </div>
+            <div class="flex items-center justify-between pt-3 border-t border-border-default">
+                <span class="text-[11px] text-text-muted uppercase tracking-wide font-semibold">{{ __('squad.overall') }}</span>
+                <span class="text-xs font-semibold tabular-nums
+                    @if($academyPlayer->overall >= 80) text-accent-green
+                    @elseif($academyPlayer->overall >= 70) text-lime-500
+                    @elseif($academyPlayer->overall >= 60) text-accent-gold
+                    @else text-text-muted
+                    @endif">{{ $academyPlayer->overall }}</span>
             </div>
-        @else
-            <div class="py-8 text-center">
-                <span class="text-2xl text-text-body">?</span>
-                <p class="text-xs text-text-secondary mt-2">{{ __('squad.academy_phase_unknown') }}</p>
-            </div>
-        @endif
+        </div>
     </div>
 
     {{-- Details --}}
@@ -92,11 +83,7 @@
         <div class="space-y-3">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] text-text-muted uppercase tracking-wide">{{ __('game.potential') }}</span>
-                @if($revealPhase >= 2)
-                    <span class="text-xs font-semibold text-text-primary">{{ $academyPlayer->potential_range }}</span>
-                @else
-                    <span class="text-xs font-semibold text-text-body">?</span>
-                @endif
+                <span class="text-xs font-semibold text-text-primary">{{ $academyPlayer->potential_range }}</span>
             </div>
             <div class="flex items-center justify-between">
                 <span class="text-[11px] text-text-muted uppercase tracking-wide">{{ __('squad.discovered') }}</span>

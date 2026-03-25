@@ -429,5 +429,6 @@
   ],
   "stadiumName": "Huvepharma Arena",
   "stadiumSeats": "10423",
-  "transfermarktId": "31614"
+  "transfermarktId": "31614",
+  "country": "BG"
 }

@@ -53,7 +53,7 @@ class ShowScoutingHub
         }
 
         // Check existing offers for shortlisted players (map player_id => status details)
-        $existingOfferStatuses = TransferOffer::getOfferStatusesForPlayers($gameId, $shortlistedPlayerIds);
+        $existingOfferStatuses = TransferOffer::getOfferStatusesForPlayers($gameId, $shortlistedPlayerIds, $game->current_date);
 
         // Pre-load team rosters for all shortlisted players' teams (avoids N+1 in calculatePlayerImportance)
         $teamIds = collect($shortlistedPlayers)->pluck('gamePlayer.team_id')->filter()->unique();
@@ -79,22 +79,26 @@ class ShowScoutingHub
                 'age' => $gp->age($game->current_date),
                 'teamName' => $gp->team?->name,
                 'teamImage' => $gp->team?->image,
-                'isExpiring' => $gp->contract_until && $gp->contract_until <= $game->getSeasonEndDate(),
+                'isFreeAgent' => $gp->team_id === null,
+                'isExpiring' => $gp->team_id !== null && $gp->contract_until && $gp->contract_until <= $game->getSeasonEndDate(),
                 'contractYear' => $gp->contract_until?->format('Y'),
                 'marketValue' => $gp->market_value_cents,
                 'formattedMarketValue' => Money::format($gp->market_value_cents),
                 'intelLevel' => $entry->intel_level,
                 'isTracking' => $entry->is_tracking,
                 'matchdaysTracked' => $entry->matchdays_tracked,
-                'hasExistingOffer' => isset($existingOfferStatuses[$gp->id]),
+                'hasExistingOffer' => isset($existingOfferStatuses[$gp->id]) && ($existingOfferStatuses[$gp->id]['status'] ?? null) !== null,
                 'offerStatus' => $existingOfferStatuses[$gp->id]['status'] ?? null,
                 'offerIsCounter' => $existingOfferStatuses[$gp->id]['isCounter'] ?? false,
                 'offerType' => $existingOfferStatuses[$gp->id]['offerType'] ?? null,
+                'onCooldown' => $existingOfferStatuses[$gp->id]['onCooldown'] ?? false,
                 // Locked by default — populated below if intel level warrants it
                 'techRange' => null,
                 'formattedAskingPrice' => null,
                 'askingPrice' => null,
                 'canAffordFee' => false,
+                'canAffordLoan' => false,
+                'availableBudget' => 0,
                 'wageDemand' => null,
                 'formattedWageDemand' => null,
                 'bidEuros' => 0,
@@ -111,6 +115,8 @@ class ShowScoutingHub
                 $playerData['formattedAskingPrice'] = $detail['formatted_asking_price'];
                 $playerData['askingPrice'] = $detail['asking_price'];
                 $playerData['canAffordFee'] = $detail['can_afford_fee'];
+                $playerData['canAffordLoan'] = $detail['can_afford_loan'];
+                $playerData['availableBudget'] = (int) ($detail['available_budget'] / 100);
                 $playerData['wageDemand'] = $detail['wage_demand'];
                 $playerData['formattedWageDemand'] = $detail['formatted_wage_demand'];
                 $playerData['bidEuros'] = (int) ($detail['asking_price'] / 100);

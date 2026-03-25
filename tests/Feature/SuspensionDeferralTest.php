@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Http\Actions\AdvanceMatchday;
+use App\Modules\Lineup\Services\SubstitutionService;
 use App\Modules\Match\Services\MatchFinalizationService;
 use App\Models\Competition;
 use App\Models\Game;
@@ -348,6 +349,68 @@ class SuspensionDeferralTest extends TestCase
             1,
             $newSuspension->matches_remaining,
             'New red card suspension should NOT be served — it applies to the next match'
+        );
+    }
+
+    public function test_suspended_player_excluded_from_resimulation_bench(): void
+    {
+        // Create squads for both teams
+        $this->createSquad($this->playerTeam);
+        $this->createSquad($this->opponentTeam);
+
+        // Create a suspended bench player on the user's team
+        $suspendedPlayer = GamePlayer::factory()
+            ->forGame($this->game)
+            ->forTeam($this->playerTeam)
+            ->create(['position' => 'Right Winger']);
+
+        PlayerSuspension::create([
+            'game_player_id' => $suspendedPlayer->id,
+            'competition_id' => $this->competition->id,
+            'matches_remaining' => 1,
+            'yellow_cards' => 5,
+        ]);
+
+        // Build a lineup from non-suspended players (11 starters)
+        $lineup = GamePlayer::where('game_id', $this->game->id)
+            ->where('team_id', $this->playerTeam->id)
+            ->where('id', '!=', $suspendedPlayer->id)
+            ->limit(11)
+            ->pluck('id')
+            ->toArray();
+
+        $opponentLineup = GamePlayer::where('game_id', $this->game->id)
+            ->where('team_id', $this->opponentTeam->id)
+            ->limit(11)
+            ->pluck('id')
+            ->toArray();
+
+        $match = GameMatch::factory()->create([
+            'game_id' => $this->game->id,
+            'competition_id' => $this->competition->id,
+            'round_number' => 1,
+            'home_team_id' => $this->playerTeam->id,
+            'away_team_id' => $this->opponentTeam->id,
+            'scheduled_date' => Carbon::parse('2024-08-16'),
+            'played' => true,
+            'home_score' => 1,
+            'away_score' => 0,
+            'home_lineup' => $lineup,
+            'away_lineup' => $opponentLineup,
+        ]);
+
+        // Build the user lineup collection as loadTeamsForResimulation expects
+        $userLineup = GamePlayer::with('player')->whereIn('id', $lineup)->get();
+
+        $service = app(SubstitutionService::class);
+        $result = $service->loadTeamsForResimulation($match, $this->game, $userLineup, []);
+
+        // Suspended player should NOT be in the user's bench
+        $homeBenchIds = $result['homeBench']->pluck('id')->toArray();
+        $this->assertNotContains(
+            $suspendedPlayer->id,
+            $homeBenchIds,
+            'Suspended player should NOT appear in the resimulation bench'
         );
     }
 

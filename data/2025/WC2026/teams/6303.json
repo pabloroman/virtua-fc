@@ -10,7 +10,6 @@
       "id": "423619",
       "marketValue": "€7.00m",
       "name": "Luis Malagón",
-      "number": "1",
       "position": "Goalkeeper"
     },
     {
@@ -32,6 +31,25 @@
       "id": "356042",
       "marketValue": "€3.80m",
       "name": "Carlos Acevedo",
+      "position": "Goalkeeper"
+    },
+    {
+      "dateOfBirth": "Jan 29, 1998",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "661481",
+      "marketValue": "€2.50m",
+      "name": "Carlos Moreno",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 14, 2005",
+      "dateOfBirth": "Jul 13, 1985",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "29559",
+      "marketValue": "€800k",
+      "name": "Guillermo Ochoa",
       "position": "Goalkeeper"
     },
     {
@@ -106,6 +124,16 @@
       "position": "Centre-Back"
     },
     {
+      "contract": "Sep 10, 2025",
+      "dateOfBirth": "Jan 9, 1998",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "553816",
+      "marketValue": "€1.50m",
+      "name": "Juan José Purata",
+      "position": "Centre-Back"
+    },
+    {
       "contract": "Oct 9, 2016",
       "dateOfBirth": "Aug 15, 1994",
       "foot": "left",
@@ -114,6 +142,16 @@
       "marketValue": "€3.80m",
       "name": "Jesús Gallardo",
       "number": "23",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 7, 2025",
+      "dateOfBirth": "May 12, 2004",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "1066953",
+      "marketValue": "€2.00m",
+      "name": "Mateo Chávez",
       "position": "Left-Back"
     },
     {
@@ -144,6 +182,26 @@
       "id": "668529",
       "marketValue": "€5.00m",
       "name": "Rodrigo Huescas",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Mar 27, 2019",
+      "dateOfBirth": "Dec 10, 1997",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "356044",
+      "marketValue": "€2.80m",
+      "name": "Jorge Sánchez",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Sep 1, 2022",
+      "dateOfBirth": "May 18, 2002",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "686449",
+      "marketValue": "€1.20m",
+      "name": "Emilio Lara",
       "position": "Right-Back"
     },
     {
@@ -235,7 +293,6 @@
       "id": "597728",
       "marketValue": "€6.50m",
       "name": "Marcel Ruiz",
-      "number": "14",
       "position": "Central Midfield"
     },
     {
@@ -246,6 +303,15 @@
       "id": "889435",
       "marketValue": "€3.50m",
       "name": "Obed Vargas",
+      "position": "Central Midfield"
+    },
+    {
+      "dateOfBirth": "Jun 21, 2000",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "737125",
+      "marketValue": "€3.00m",
+      "name": "Jeremy Márquez",
       "position": "Central Midfield"
     },
     {
@@ -266,6 +332,16 @@
       "id": "371171",
       "marketValue": "€3.00m",
       "name": "Alexis Gutiérrez",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 29, 2025",
+      "dateOfBirth": "Oct 14, 2008",
+      "foot": "right",
+      "height": "1,68m",
+      "id": "1155723",
+      "marketValue": "€2.00m",
+      "name": "Gilberto Mora",
       "position": "Attacking Midfield"
     },
     {
@@ -296,6 +372,16 @@
       "id": "424689",
       "marketValue": "€5.50m",
       "name": "Alexis Vega",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Nov 19, 2025",
+      "dateOfBirth": "Jul 23, 2001",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "950873",
+      "marketValue": "€1.20m",
+      "name": "Jorge Ruvalcaba",
       "position": "Left Winger"
     },
     {
@@ -357,6 +443,26 @@
       "id": "206040",
       "marketValue": "€5.00m",
       "name": "Raúl Jiménez",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Nov 19, 2025",
+      "dateOfBirth": "Apr 20, 2003",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "837619",
+      "marketValue": "€1.50m",
+      "name": "Armando González",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Sep 3, 2016",
+      "dateOfBirth": "Feb 15, 1991",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "160700",
+      "marketValue": "€750k",
+      "name": "Ángel Sepúlveda",
       "position": "Centre-Forward"
     }
   ],

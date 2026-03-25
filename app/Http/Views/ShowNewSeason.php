@@ -5,6 +5,7 @@ namespace App\Http\Views;
 use App\Modules\Finance\Services\BudgetProjectionService;
 use App\Modules\Season\Services\SeasonGoalService;
 use App\Modules\Season\Jobs\SetupNewGame;
+use App\Modules\Season\Jobs\SetupTournamentGame;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GameInvestment;
@@ -28,13 +29,20 @@ class ShowNewSeason
         if (!$game->isSetupComplete()) {
             // If stuck for > 2 minutes, re-dispatch the setup job
             if ($game->created_at->lt(now()->subMinutes(2))) {
-                SetupNewGame::dispatch(
-                    gameId: $game->id,
-                    teamId: $game->team_id,
-                    competitionId: $game->competition_id,
-                    season: $game->season,
-                    gameMode: $game->game_mode ?? Game::MODE_CAREER,
-                );
+                if ($game->isTournamentMode()) {
+                    SetupTournamentGame::dispatch(
+                        gameId: $game->id,
+                        teamId: $game->team_id,
+                    );
+                } else {
+                    SetupNewGame::dispatch(
+                        gameId: $game->id,
+                        teamId: $game->team_id,
+                        competitionId: $game->competition_id,
+                        season: $game->season,
+                        gameMode: $game->game_mode ?? Game::MODE_CAREER,
+                    );
+                }
             }
             return view('game-loading', [
                 'game' => $game,
@@ -116,7 +124,7 @@ class ShowNewSeason
         $positionGroups = $squad->groupBy(fn ($p) => PositionMapper::getPositionGroup($p->position));
 
         $positionCoverage = [];
-        foreach (['Goalkeeper', 'Defender', 'Midfielder', 'Forward'] as $group) {
+        foreach (PositionMapper::getAllGroups() as $group) {
             $players = $positionGroups->get($group, collect());
             $count = $players->count();
             $avgAbility = $count > 0 ? (int) round($players->avg('overall_score')) : 0;

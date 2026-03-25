@@ -33,6 +33,10 @@
         opponentAverage: {{ $opponentData['teamAverage'] ?: 0 }},
         opponentFormation: @js($opponentData['formation'] ?? null),
         opponentMentality: @js($opponentData['mentality'] ?? null),
+        opponentPlayingStyle: @js($opponentData['playingStyle'] ?? 'balanced'),
+        opponentPressing: @js($opponentData['pressing'] ?? 'standard'),
+        opponentDefLine: @js($opponentData['defensiveLine'] ?? 'normal'),
+        xgConfig: @js($xgConfig),
         userTeamAverage: {{ $userTeamAverage ?: 0 }},
         isHome: @js($isHome),
         presets: @js($presetsConfig),
@@ -305,6 +309,7 @@
                                                                 </div>
                                                                 <span class="text-[8px] text-text-faint">{{ $player->fitness }}%</span>
                                                             </div>
+                                                            <x-morale-indicator :value="$player->morale" class="shrink-0" />
                                                             @endif
                                                         </div>
                                                     </div>

@@ -429,5 +429,6 @@
   ],
   "stadiumName": "De Adelaarshorst",
   "stadiumSeats": "10400",
-  "transfermarktId": "1435"
+  "transfermarktId": "1435",
+  "country": "NL"
 }

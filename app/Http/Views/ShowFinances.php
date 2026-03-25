@@ -2,6 +2,7 @@
 
 namespace App\Http\Views;
 
+use App\Modules\Finance\Services\BudgetLoanService;
 use App\Modules\Finance\Services\BudgetProjectionService;
 use App\Models\FinancialTransaction;
 use App\Models\Game;
@@ -13,6 +14,7 @@ class ShowFinances
 {
     public function __construct(
         private readonly BudgetProjectionService $projectionService,
+        private readonly BudgetLoanService $loanService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -87,12 +89,18 @@ class ShowFinances
         $purchaseSpending = (int) $activityTotals->purchase_spending;
         $infrastructureSpending = (int) $activityTotals->infrastructure_spending;
 
-        // Initial transfer budget = current budget - sales + purchases + mid-season infrastructure
+        // Budget loan data
+        $activeLoan = $this->loanService->activeLoan($game);
+        $loanAmount = $activeLoan?->amount ?? 0;
+
+        // Initial transfer budget = current budget - sales + purchases + infrastructure - loan
         $initialTransferBudget = $investment
-            ? $investment->transfer_budget - $salesRevenue + $purchaseSpending + $infrastructureSpending
+            ? $investment->transfer_budget - $salesRevenue + $purchaseSpending + $infrastructureSpending - $loanAmount
             : 0;
 
-        $hasTransferActivity = $salesRevenue > 0 || $purchaseSpending > 0 || $infrastructureSpending > 0;
+        $hasTransferActivity = $salesRevenue > 0 || $purchaseSpending > 0 || $infrastructureSpending > 0 || $loanAmount > 0;
+        $canRequestLoan = $this->loanService->canRequestLoan($game);
+        $maxLoanAmount = $this->loanService->maxLoanAmount($game);
 
         return view('finances', [
             'game' => $game,
@@ -111,6 +119,9 @@ class ShowFinances
             'purchaseSpending' => $purchaseSpending,
             'infrastructureSpending' => $infrastructureSpending,
             'hasTransferActivity' => $hasTransferActivity,
+            'activeLoan' => $activeLoan,
+            'canRequestLoan' => $canRequestLoan,
+            'maxLoanAmount' => $maxLoanAmount,
         ]);
     }
 }

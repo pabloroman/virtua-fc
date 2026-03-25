@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Team;
 use App\Modules\Player\Services\PlayerValuationService;
 use App\Support\CountryCodeMapper;
 use App\Support\Money;
@@ -33,35 +34,32 @@ class ReplaceWcPlaceholder extends Command
             return CommandAlias::FAILURE;
         }
 
-        // Load team mapping
-        $mappingPath = base_path('data/2025/WC2026/team_mapping.json');
-        $mapping = json_decode(file_get_contents($mappingPath), true);
+        // Look up placeholder team from the database
+        $team = Team::where('fifa_code', $placeholderCode)
+            ->where('is_placeholder', true)
+            ->first();
 
-        if (!isset($mapping[$placeholderCode])) {
-            $this->error("Placeholder code '{$placeholderCode}' not found in team_mapping.json.");
+        if (!$team) {
+            $this->error("Placeholder team with FIFA code '{$placeholderCode}' not found.");
             return CommandAlias::FAILURE;
         }
 
-        $entry = $mapping[$placeholderCode];
-        if (!$entry['is_placeholder']) {
-            $this->error("'{$placeholderCode}' is not a placeholder team.");
-            return CommandAlias::FAILURE;
-        }
-
-        $teamId = $entry['uuid'];
+        $oldName = $team->getRawOriginal('name');
         $countryCode = CountryCodeMapper::toCode($newName);
 
         // Update Team record
         $updateData = [
             'name' => $newName,
             'country' => $countryCode,
+            'fifa_code' => $newFifaCode,
+            'is_placeholder' => false,
         ];
         if ($transfermarktId) {
             $updateData['transfermarkt_id'] = $transfermarktId;
         }
 
-        DB::table('teams')->where('id', $teamId)->update($updateData);
-        $this->info("Updated team: {$entry['name']} → {$newName}");
+        $team->update($updateData);
+        $this->info("Updated team: {$oldName} → {$newName}");
 
         // Seed players if roster JSON exists
         if ($transfermarktId) {
@@ -74,21 +72,8 @@ class ReplaceWcPlaceholder extends Command
             }
         }
 
-        // Update team_mapping.json
-        unset($mapping[$placeholderCode]);
-        $mapping[$newFifaCode] = [
-            'uuid' => $teamId,
-            'csv_id' => $entry['csv_id'],
-            'name' => $newName,
-            'group' => $entry['group'],
-            'is_placeholder' => false,
-            'transfermarkt_id' => $transfermarktId,
-        ];
-        file_put_contents($mappingPath, json_encode($mapping, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-        $this->info("Updated team_mapping.json: {$placeholderCode} → {$newFifaCode}");
-
         // Regenerate groups.json with new FIFA code
-        $this->regenerateGroupsJson($mapping, $placeholderCode, $newFifaCode);
+        $this->regenerateGroupsJson($placeholderCode, $newFifaCode);
 
         $this->newLine();
         $this->info('Placeholder replacement complete!');
@@ -161,7 +146,7 @@ class ReplaceWcPlaceholder extends Command
         return $count;
     }
 
-    private function regenerateGroupsJson(array $mapping, string $oldCode, string $newCode): void
+    private function regenerateGroupsJson(string $oldCode, string $newCode): void
     {
         $groupsPath = base_path('data/2025/WC2026/groups.json');
         $content = file_get_contents($groupsPath);

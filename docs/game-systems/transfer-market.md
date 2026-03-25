@@ -47,7 +47,9 @@ Annual wages are calculated from market value (tiered percentage) × age modifie
 
 ### Renewals
 
-Multi-round negotiation. The player's **disposition** (flexibility) is influenced by morale, appearances, age, negotiation round, and whether they have pending pre-contract offers. Disposition determines how far below their demand they'll accept. Offering more/fewer contract years also adjusts the effective offer. See `ContractService`.
+Multi-round negotiation. The player's **disposition** (flexibility) is influenced by morale, appearances, age, negotiation round, whether they have pending pre-contract offers, and **ambition** (tier gap between player and team reputation — high-tier players at low-reputation clubs are progressively harder to retain). Disposition determines how far below their demand they'll accept (max ~17% discount). Offering more/fewer contract years also adjusts the effective offer.
+
+Players will not accept wages below their current salary (**salary floor**), except veterans (33+) with high morale who value stability over money. See `ContractService`.
 
 ### Pre-Contracts
 

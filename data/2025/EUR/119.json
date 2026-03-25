@@ -397,5 +397,6 @@
   ],
   "stadiumName": "Bloomfield",
   "stadiumSeats": "29150",
-  "transfermarktId": "119"
+  "transfermarktId": "119",
+  "country": "IL"
 }
