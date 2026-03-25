@@ -298,13 +298,12 @@ class ContractService
         $currentWageWithPremium = (int) ($player->annual_wage * self::RENEWAL_PREMIUM);
         $demandedWage = max($currentWageWithPremium, $marketWage);
 
-        // Round to nearest €10K for wages under €1M, €100K otherwise
-        $roundingUnit = $demandedWage < 100_000_000 ? 1_000_000 : 10_000_000;
-        $demandedWage = (int) (round($demandedWage / $roundingUnit) * $roundingUnit);
+        $demandedWage = $this->roundWage($demandedWage);
 
         // Ensure the demand is at least above the current wage
         if ($demandedWage <= $player->annual_wage) {
-            $demandedWage = $player->annual_wage + $roundingUnit;
+            $unit = $demandedWage < 100_000_000 ? 1_000_000 : 10_000_000;
+            $demandedWage = $player->annual_wage + $unit;
         }
 
         // Contract length based on age
@@ -557,17 +556,24 @@ class ContractService
     }
 
     /**
-     * Round a counter-offer wage to an appropriate granularity.
-     *
-     * Uses €10K for wages under €1M, €100K otherwise (matching calculateRenewalDemand).
-     * Ensures the result is never below minimumAcceptable by rounding up if needed.
+     * Adaptive wage rounding: €10K for wages under €1M, €100K otherwise.
+     */
+    private function roundWage(int $wageCents): int
+    {
+        $unit = $wageCents < 100_000_000 ? 1_000_000 : 10_000_000;
+
+        return (int) (round($wageCents / $unit) * $unit);
+    }
+
+    /**
+     * Round a counter-offer wage, ensuring it never drops below minimumAcceptable.
      */
     private function roundCounterOffer(int $wage, int $minimumAcceptable): int
     {
-        $unit = $wage < 100_000_000 ? 1_000_000 : 10_000_000;
-        $rounded = (int) (round($wage / $unit) * $unit);
+        $rounded = $this->roundWage($wage);
 
         if ($rounded < $minimumAcceptable) {
+            $unit = $wage < 100_000_000 ? 1_000_000 : 10_000_000;
             $rounded = (int) (ceil($wage / $unit) * $unit);
         }
 
