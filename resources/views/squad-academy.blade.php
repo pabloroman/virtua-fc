@@ -41,8 +41,13 @@
             </x-ghost-button>
 
             <div x-show="open" x-transition class="mt-3 bg-surface-700/50 border border-border-default rounded-lg p-4 text-sm">
-                <p class="text-text-secondary mb-4">{{ __('squad.academy_help_development') }}</p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    {{-- Overview --}}
+                    <div>
+                        <p class="text-text-secondary mb-3">{{ __('squad.academy_help_development') }}</p>
+                        <p class="text-text-secondary">{{ __('squad.academy_help_age_rule') }}</p>
+                    </div>
+
                     {{-- Actions --}}
                     <div>
                         <p class="font-semibold text-text-body mb-2">{{ __('squad.academy_help_actions_title') }}</p>
@@ -60,13 +65,6 @@
                                 <span class="text-text-secondary">{{ __('squad.academy_help_dismiss') }}</span>
                             </li>
                         </ul>
-                    </div>
-
-                    {{-- Evaluations --}}
-                    <div>
-                        <p class="font-semibold text-text-body mb-2">{{ __('squad.academy_help_evaluations_title') }}</p>
-                        <p class="text-text-muted mb-2">{{ __('squad.academy_help_evaluation_desc') }}</p>
-                        <p class="mt-3 text-xs text-text-secondary">{{ __('squad.academy_help_age_rule') }}</p>
                     </div>
                 </div>
             </div>

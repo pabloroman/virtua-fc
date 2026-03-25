@@ -211,8 +211,6 @@ return [
     'academy_help_promote' => 'Subir — se incorpora permanentemente al primer equipo con contrato profesional',
     'academy_help_loan' => 'Ceder — se desarrolla más rápido cedido y regresa al final de temporada',
     'academy_help_dismiss' => 'Despedir — abandona el club de forma permanente',
-    'academy_help_evaluations_title' => 'Evaluación de fin de temporada',
-    'academy_help_evaluation_desc' => 'Al final de temporada debes decidir qué hacer con cada canterano.',
     'academy_help_age_rule' => 'Los jugadores de 21 o más años no pueden seguir en la cantera: debes subirlos o despedirlos.',
 
     'academy_tier_0' => 'Sin Cantera',
