@@ -321,7 +321,12 @@
                             </div>
                         @elseif($canRequestLoan && $maxLoanAmount > 0)
                             {{-- Request loan form --}}
-                            <div x-data="{ amount: 0, showForm: false, max: {{ $maxLoanAmount / 100 }}, min: {{ config('finances.loan.minimum', 50_000_000) / 100 }}, interestRate: {{ config('finances.loan.interest_rate', 1500) }} }">
+                            @php
+                                $loanMin = config('finances.loan.minimum', 50_000_000) / 100;
+                                $loanMax = $maxLoanAmount / 100;
+                                $loanInterestRate = config('finances.loan.interest_rate', 1500);
+                            @endphp
+                            <div x-data="{ amount: {{ $loanMax }}, showForm: false, interestRate: {{ $loanInterestRate }} }">
                                 <p class="text-sm text-text-secondary mb-3">{{ __('finances.loan_description') }}</p>
                                 <div class="flex items-center justify-between mb-3">
                                     <span class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('finances.loan_max_available') }}</span>
@@ -329,7 +334,7 @@
                                 </div>
 
                                 <template x-if="!showForm">
-                                    <x-ghost-button color="amber" size="xs" @click="showForm = true; amount = max" class="w-full justify-center gap-1.5 font-semibold py-2">
+                                    <x-ghost-button color="amber" size="xs" @click="showForm = true" class="w-full justify-center gap-1.5 font-semibold py-2">
                                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
                                         {{ __('finances.loan_request_button') }}
                                     </x-ghost-button>
@@ -341,14 +346,7 @@
                                         <div class="space-y-3">
                                             <div>
                                                 <label class="text-[10px] text-text-muted uppercase tracking-widest block mb-1">{{ __('finances.loan_amount_label') }}</label>
-                                                <input type="number"
-                                                    name="amount"
-                                                    x-model.number="amount"
-                                                    :min="min"
-                                                    :max="max"
-                                                    step="100000"
-                                                    class="w-full bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent-blue focus:border-accent-blue"
-                                                >
+                                                <x-money-input name="amount" :value="$loanMax" :min="$loanMin" size="sm" x-model.number="amount" />
                                             </div>
                                             <div class="bg-surface-700/30 rounded-lg p-3 space-y-1.5">
                                                 <div class="flex items-center justify-between text-[11px]">
@@ -357,7 +355,7 @@
                                                 </div>
                                                 <div class="flex items-center justify-between text-[11px]">
                                                     <span class="text-text-muted">{{ __('finances.loan_total_repayment') }}</span>
-                                                    <span class="text-accent-red font-semibold" x-text="'€' + Math.round(amount * (1 + interestRate / 10000)).toLocaleString('en')"></span>
+                                                    <span class="text-accent-red font-semibold" x-text="'€' + Math.round(amount * (1 + interestRate / 10000)).toLocaleString('es-ES')"></span>
                                                 </div>
                                             </div>
                                             <p class="text-[10px] text-accent-gold">{{ __('finances.loan_warning') }}</p>
