@@ -58,6 +58,17 @@ class YouthAcademyService
         4 => 2,
     ];
 
+    /**
+     * Absolute minimum potential guaranteed by academy tier, regardless of team level.
+     */
+    private const POTENTIAL_FLOOR = [
+        0 => 0,
+        1 => 55,
+        2 => 60,
+        3 => 68,
+        4 => 75,
+    ];
+
     private const ESTIMATED_MATCHDAYS = 38;
 
     /**
@@ -359,8 +370,10 @@ class YouthAcademyService
         $technical = rand($abilityRange[0], $abilityRange[1]);
         $physical = rand($abilityRange[0], $abilityRange[1]);
 
-        // Potential ranges from the top of target tier to the top of ceiling tier
-        $potential = rand($abilityRange[1], $ceilingRange[1]);
+        // Potential ranges from the top of target tier to the top of ceiling tier,
+        // with a guaranteed floor based on academy investment
+        $potentialFloor = max($abilityRange[1], self::POTENTIAL_FLOOR[$academyTier]);
+        $potential = rand($potentialFloor, $ceilingRange[1]);
         $potential = min(95, max($potential, max($technical, $physical)));
 
         $potentialVariance = rand(3, 8);
