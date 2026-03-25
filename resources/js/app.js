@@ -1,6 +1,7 @@
 import './bootstrap';
 
 import Alpine from 'alpinejs';
+import Collapse from '@alpinejs/collapse';
 import Tooltip from '@ryangjchandler/alpine-tooltip';
 import liveMatch from './live-match';
 import lineupManager from './lineup';
@@ -9,6 +10,7 @@ import squadSelection from './squad-selection';
 import tournamentSummary from './tournament-summary';
 import * as canvasImage from './modules/canvas-image';
 
+Alpine.plugin(Collapse);
 Alpine.plugin(Tooltip);
 
 Alpine.data('liveMatch', liveMatch);
