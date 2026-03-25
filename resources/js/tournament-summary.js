@@ -1,9 +1,8 @@
 import {
     createCanvasContext,
     fillBackground,
-    drawTeamCrest,
-    drawTeamName,
-    drawDivider,
+    drawTeamHeader,
+    drawStatsRow,
     drawSectionLabel,
     drawBrandFooter,
     trimAndDownload,
@@ -27,25 +26,19 @@ export default function tournamentSummary(config) {
             await document.fonts.ready;
 
             let y = padding;
-            const crestHeight = 52;
-            const crestWidth = 69; // 4:3 flag ratio
-            const crest = await drawTeamCrest(ctx, this.teamCrestUrl, padding, y, crestWidth, crestHeight);
 
-            const textX = crest.loaded ? padding + crestWidth + 16 : padding;
-            drawTeamName(ctx, this.teamName, textX, y + 22);
-
-            // Result badge
-            ctx.fillStyle = this.isChampion ? '#f59e0b' : '#94a3b8';
-            ctx.font = '700 12px Inter, sans-serif';
-            ctx.fillText(this.resultLabel.toUpperCase(), textX, y + 44);
-
-            y += crestHeight + 28;
-            drawDivider(ctx, padding, width - padding, y);
-            y += 20;
+            // Team header
+            y = await drawTeamHeader(ctx, {
+                crestUrl: this.teamCrestUrl,
+                name: this.teamName,
+                subtitle: this.resultLabel,
+                subtitleColor: this.isChampion ? '#f59e0b' : '#94a3b8',
+                padding, width, y,
+            });
 
             // Stats row
             const gd = this.record.goalsFor - this.record.goalsAgainst;
-            const stats = [
+            y = drawStatsRow(ctx, [
                 { label: this.statLabels.played, value: this.record.played, color: '#ffffff' },
                 { label: this.statLabels.won, value: this.record.won, color: '#22c55e' },
                 { label: this.statLabels.drawn, value: this.record.drawn, color: '#94a3b8' },
@@ -53,26 +46,7 @@ export default function tournamentSummary(config) {
                 { label: this.statLabels.gf, value: this.record.goalsFor, color: '#ffffff' },
                 { label: this.statLabels.ga, value: this.record.goalsAgainst, color: '#ffffff' },
                 { label: this.statLabels.gd, value: (gd >= 0 ? '+' : '') + gd, color: gd >= 0 ? '#22c55e' : '#ef4444' },
-            ];
-
-            const colWidth = contentWidth / stats.length;
-            for (let i = 0; i < stats.length; i++) {
-                const cx = padding + colWidth * i + colWidth / 2;
-
-                ctx.fillStyle = stats[i].color;
-                ctx.font = 'bold 22px Inter, sans-serif';
-                const valText = String(stats[i].value);
-                ctx.fillText(valText, cx - ctx.measureText(valText).width / 2, y + 4);
-
-                ctx.fillStyle = '#64748b';
-                ctx.font = '600 9px Inter, sans-serif';
-                const lblText = stats[i].label.toUpperCase();
-                ctx.fillText(lblText, cx - ctx.measureText(lblText).width / 2, y + 20);
-            }
-            y += 40;
-
-            drawDivider(ctx, padding, width - padding, y);
-            y += 20;
+            ], { padding, contentWidth, y });
 
             // Column headers for squad
             const nameColX = padding;
@@ -119,7 +93,7 @@ export default function tournamentSummary(config) {
 
                     y += 20;
                 }
-                y += 10;
+                y += 4;
             }
 
             y = drawBrandFooter(ctx, width, y);

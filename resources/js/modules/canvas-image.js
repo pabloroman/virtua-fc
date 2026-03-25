@@ -1,6 +1,6 @@
 /**
  * Shared Canvas drawing primitives for generating downloadable PNG images.
- * Used by squad-selection.js and tournament-end.blade.php.
+ * Used by squad-selection.js, tournament-summary.js, and season-summary.js.
  */
 
 const DEFAULT_WIDTH = 800;
@@ -75,12 +75,63 @@ export function drawSectionLabel(ctx, text, x, y) {
     ctx.fillText(text.toUpperCase(), x, y);
 }
 
-export function drawBrandFooter(ctx, width, y) {
+/**
+ * Draw a team header block: crest + name + optional subtitle line.
+ * Returns the new y position after the header (including divider).
+ */
+export async function drawTeamHeader(ctx, { crestUrl, name, subtitle, subtitleColor, padding, width, y }) {
+    const crestHeight = 52;
+    const crestWidth = 52;
+    const crest = await drawTeamCrest(ctx, crestUrl, padding, y, crestWidth, crestHeight);
+
+    const textX = crest.loaded ? padding + crestWidth + 16 : padding;
+    drawTeamName(ctx, name, textX, y + 22);
+
+    if (subtitle) {
+        ctx.fillStyle = subtitleColor || COLORS.muted;
+        ctx.font = '700 12px Inter, sans-serif';
+        ctx.fillText(subtitle.toUpperCase(), textX, y + 44);
+    }
+
+    y += crestHeight + 24;
+    drawDivider(ctx, padding, width - padding, y);
+    y += 24;
+    return y;
+}
+
+/**
+ * Draw a centered stats row with columns of value + label.
+ * Each stat: { label: string, value: string|number, color: string }.
+ * Returns the new y position after the row (including bottom divider).
+ */
+export function drawStatsRow(ctx, stats, { padding, contentWidth, y }) {
+    const colWidth = contentWidth / stats.length;
+    for (let i = 0; i < stats.length; i++) {
+        const cx = padding + colWidth * i + colWidth / 2;
+
+        ctx.fillStyle = stats[i].color;
+        ctx.font = 'bold 22px Inter, sans-serif';
+        const valText = String(stats[i].value);
+        ctx.fillText(valText, cx - ctx.measureText(valText).width / 2, y + 4);
+
+        ctx.fillStyle = COLORS.muted;
+        ctx.font = '600 9px Inter, sans-serif';
+        const lblText = stats[i].label.toUpperCase();
+        ctx.fillText(lblText, cx - ctx.measureText(lblText).width / 2, y + 20);
+    }
+    y += 40;
+
+    drawDivider(ctx, padding, padding + contentWidth, y);
+    y += 20;
+    return y;
+}
+
+export function drawBrandFooter(ctx, width, y, { tagline = 'Juega a ser seleccionador en virtuafc.com' } = {}) {
     const padding = DEFAULT_PADDING;
 
-    y += 4;
+    y += 16;
     drawDivider(ctx, padding, width - padding, y);
-    y += 28;
+    y += 16;
 
     // Virtua FC badge — compensate skew to visually center
     const badgeText = 'Virtua FC';
@@ -98,12 +149,11 @@ export function drawBrandFooter(ctx, width, y) {
     ctx.fillText(badgeText, badgeX + 8, y + 16);
     ctx.restore();
 
-    y += badgeHeight + 12;
+    y += badgeHeight + 18;
 
     // Tagline
     ctx.fillStyle = COLORS.muted;
     ctx.font = '400 11px Inter, sans-serif';
-    const tagline = 'Juega a ser seleccionador en virtuafc.com';
     const tagWidth = ctx.measureText(tagline).width;
     ctx.fillText(tagline, (width - tagWidth) / 2, y);
 

@@ -39,7 +39,64 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
 @endphp
 
 <x-app-layout :hide-footer="true">
-<div class="min-h-screen py-6 md:py-8">
+@php
+    $seasonHighlights = collect([
+        $teamTopScorer && $teamTopScorer->goals > 0 ? ['label' => __('season.goals'), 'playerName' => $teamTopScorer->player->name, 'value' => $teamTopScorer->goals] : null,
+        $teamTopAssister && $teamTopAssister->assists > 0 ? ['label' => __('season.assists'), 'playerName' => $teamTopAssister->player->name, 'value' => $teamTopAssister->assists] : null,
+        $teamMostAppearances && $teamMostAppearances->appearances > 0 ? ['label' => __('season.appearances'), 'playerName' => $teamMostAppearances->player->name, 'value' => $teamMostAppearances->appearances] : null,
+        $teamMvpLeader ? ['label' => __('season.mvp_awards'), 'playerName' => $teamMvpLeader->gamePlayer->player->name, 'value' => $teamMvpLeader->count] : null,
+    ])->filter()->values()->toArray();
+
+    $otherComps = collect($otherCompetitionResults)->map(function ($result) {
+        $comp = $result['competition'];
+        if ($result['wonCompetition']) {
+            $resultText = __('season.champion_label');
+        } elseif ($result['roundName']) {
+            $resultText = __($result['roundName']);
+        } else {
+            $resultText = '';
+        }
+        return ['name' => __($comp->name), 'result' => $resultText, 'isChampion' => $result['wonCompetition']];
+    })->toArray();
+
+    $positionLabel = $playerStanding
+        ? $playerStanding->position . 'º'
+        : '';
+    $seasonSubtitle = $game->formatted_season . ' · ' . $positionLabel;
+@endphp
+<div class="min-h-screen py-6 md:py-8" x-data="seasonSummary({
+    teamName: @js($game->team->name),
+    teamCrestUrl: @js($game->team->image),
+    subtitle: @js($seasonSubtitle),
+    subtitleColor: @js($isChampion ? '#f59e0b' : '#94a3b8'),
+    record: @js([
+        'played' => $playerStanding?->played ?? 0,
+        'won' => $playerStanding?->won ?? 0,
+        'drawn' => $playerStanding?->drawn ?? 0,
+        'lost' => $playerStanding?->lost ?? 0,
+        'gf' => $playerStanding?->goals_for ?? 0,
+        'ga' => $playerStanding?->goals_against ?? 0,
+        'pts' => $playerStanding?->points ?? 0,
+    ]),
+    highlights: @js($seasonHighlights),
+    homeRecord: @js($homeRecord),
+    awayRecord: @js($awayRecord),
+    otherCompetitions: @js($otherComps),
+    labels: @js([
+        'played' => __('season.played_abbr'),
+        'won' => __('season.won'),
+        'drawn' => __('season.drawn'),
+        'lost' => __('season.lost'),
+        'gf' => __('season.goals_for'),
+        'ga' => __('season.goals_against'),
+        'gd' => __('season.goal_diff_abbr'),
+        'pts' => __('season.pts_abbr'),
+        'teamHighlights' => __('season.team_in_numbers'),
+        'homeRecord' => __('season.home_record'),
+        'awayRecord' => __('season.away_record'),
+        'otherCompetitions' => __('season.your_other_competitions'),
+    ]),
+})">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {{-- ============================================================ --}}
@@ -595,7 +652,15 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
         {{-- CTA: Start New Season                                         --}}
         {{-- ============================================================ --}}
 
-        <div class="text-center py-6 md:py-10">
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 py-6 md:py-10">
+            <x-secondary-button
+                type="button"
+                @click="downloadSeasonImage()"
+                class="px-6 py-4 text-base"
+            >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+                <span class="ml-1.5">{{ __('season.download_season') }}</span>
+            </x-secondary-button>
             @if(config('beta.allow_new_season'))
             <form method="post" action="{{ route('game.start-new-season', $game->id) }}" x-data="{ loading: false }" @submit="loading = true">
                 @csrf

@@ -1,9 +1,7 @@
 import {
     createCanvasContext,
     fillBackground,
-    drawTeamCrest,
-    drawTeamName,
-    drawDivider,
+    drawTeamHeader,
     drawSectionLabel,
     drawBrandFooter,
     trimAndDownload,
@@ -60,16 +58,12 @@ export default function squadSelection(config) {
             await document.fonts.ready;
 
             let y = padding;
-            const crestHeight = 48;
-            const crestWidth = 64; // 4:3 flag ratio
-            const crest = await drawTeamCrest(ctx, this.teamCrestUrl, padding, y, crestWidth, crestHeight);
-            const nameX = crest.loaded ? padding + crestWidth + 16 : padding;
-            const nameY = crest.loaded ? y + crestHeight / 2 + 8 : y + 24;
-            drawTeamName(ctx, this.teamName, nameX, nameY);
-
-            y += crestHeight + 32;
-            drawDivider(ctx, padding, width - padding, y);
-            y += 24;
+            y = await drawTeamHeader(ctx, {
+                crestUrl: this.teamCrestUrl,
+                name: this.teamName,
+                padding, width, y,
+            });
+            y += 4; // extra spacing before squad list
 
             const groups = ['goalkeepers', 'defenders', 'midfielders', 'forwards'];
             for (const group of groups) {

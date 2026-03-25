@@ -160,4 +160,5 @@ return [
     'play_again' => 'Play Again',
     'copied_to_clipboard' => 'Copied!',
     'your_squad_stats' => 'Your Squad Stats',
+    'download_season' => 'Download season',
 ];
