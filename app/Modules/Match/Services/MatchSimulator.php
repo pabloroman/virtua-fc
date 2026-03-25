@@ -464,6 +464,95 @@ class MatchSimulator
     }
 
     /**
+     * Generate a correlated (home, away) scoreline using the Dixon-Coles model.
+     *
+     * Improves on independent Poisson by adjusting probabilities for low-scoring
+     * outcomes via a correlation parameter (rho). Negative rho increases 0-0 and
+     * 1-1 draws while slightly decreasing 1-0 and 0-1 results, matching real
+     * football data more closely than independent Poisson.
+     *
+     * @return array{0: int, 1: int} [homeGoals, awayGoals]
+     */
+    private function dixonColesRandom(float $homeXG, float $awayXG): array
+    {
+        $rho = config('match_simulation.dixon_coles_rho', -0.13);
+        $maxGoals = 8;
+
+        // Build joint probability table with Dixon-Coles tau correction
+        $probabilities = [];
+        $cumulative = 0.0;
+
+        for ($i = 0; $i <= $maxGoals; $i++) {
+            $pHome = $this->poissonPmf($i, $homeXG);
+            for ($j = 0; $j <= $maxGoals; $j++) {
+                $pAway = $this->poissonPmf($j, $awayXG);
+                $tau = $this->dixonColesTau($i, $j, $homeXG, $awayXG, $rho);
+                $prob = $pHome * $pAway * $tau;
+                $cumulative += $prob;
+                $probabilities[] = [$i, $j, $cumulative];
+            }
+        }
+
+        // Normalize and sample from the joint distribution
+        $rand = (mt_rand() / mt_getrandmax()) * $cumulative;
+
+        foreach ($probabilities as [$home, $away, $cum]) {
+            if ($rand <= $cum) {
+                return [$home, $away];
+            }
+        }
+
+        // Fallback (should never reach here)
+        return [$this->poissonRandom($homeXG), $this->poissonRandom($awayXG)];
+    }
+
+    /**
+     * Poisson probability mass function: P(X = k) given expected value lambda.
+     */
+    private function poissonPmf(int $k, float $lambda): float
+    {
+        if ($lambda <= 0) {
+            return $k === 0 ? 1.0 : 0.0;
+        }
+
+        return exp(-$lambda) * pow($lambda, $k) / $this->factorial($k);
+    }
+
+    /**
+     * Dixon-Coles tau correction factor for low-scoring outcomes.
+     *
+     * Only adjusts probabilities when both teams score 0 or 1 goals.
+     * For all other scorelines, tau = 1 (no adjustment).
+     */
+    private function dixonColesTau(int $homeGoals, int $awayGoals, float $homeXG, float $awayXG, float $rho): float
+    {
+        if ($homeGoals === 0 && $awayGoals === 0) {
+            return 1.0 - $homeXG * $awayXG * $rho;
+        }
+        if ($homeGoals === 1 && $awayGoals === 0) {
+            return 1.0 + $awayXG * $rho;
+        }
+        if ($homeGoals === 0 && $awayGoals === 1) {
+            return 1.0 + $homeXG * $rho;
+        }
+        if ($homeGoals === 1 && $awayGoals === 1) {
+            return 1.0 - $rho;
+        }
+
+        return 1.0;
+    }
+
+    private function factorial(int $n): float
+    {
+        $result = 1.0;
+        for ($i = 2; $i <= $n; $i++) {
+            $result *= $i;
+        }
+
+        return $result;
+    }
+
+    /**
      * Return true with given percentage chance.
      */
     private function percentChance(float $percent): bool
@@ -833,8 +922,7 @@ class MatchSimulator
         $awayExpectedGoals *= $this->calculateGoalkeeperModifier($homePlayers);
         $homeExpectedGoals *= $this->calculateGoalkeeperModifier($awayPlayers);
 
-        $homeScore = $this->poissonRandom($homeExpectedGoals);
-        $awayScore = $this->poissonRandom($awayExpectedGoals);
+        [$homeScore, $awayScore] = $this->dixonColesRandom($homeExpectedGoals, $awayExpectedGoals);
 
         // A team with no players cannot score — force their goals to 0.
         // This prevents phantom goals that have no events, which would be

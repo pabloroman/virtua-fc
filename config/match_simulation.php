@@ -69,16 +69,30 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Goal Distribution
+    | Goal Distribution (Dixon-Coles Model)
     |--------------------------------------------------------------------------
     |
-    | Controls the Poisson distribution for goal scoring.
+    | Goals are generated using the Dixon-Coles model, an improvement over
+    | independent Poisson that correlates home and away goals. This produces
+    | more realistic scoreline distributions, especially for low-scoring games.
+    |
+    | dixon_coles_rho: Correlation between home and away goals (-0.25 to 0.00)
+    |   -0.00 = no correction (equivalent to independent Poisson)
+    |   -0.10 = mild correction, slightly more draws
+    |   -0.13 = default, matches real football data (recommended)
+    |   -0.20 = strong correction, noticeably more 0-0 and 1-1 draws
+    |   -0.25 = extreme, very draw-heavy results
+    |
+    |   Negative rho increases 0-0 and 1-1 probabilities while slightly
+    |   decreasing 1-0 and 0-1 results. This matches the real-world pattern
+    |   where teams "cancel each other out" more often than Poisson predicts.
     |
     | max_goals_cap: Maximum goals a team can score (prevents 10-0 results)
     |   - 0 = no cap
     |   - 7 = realistic cap (historical max in La Liga is 9-0)
     |
     */
+    'dixon_coles_rho' => -0.13,         // goal correlation: 0 = independent Poisson, -0.13 = realistic
     'max_goals_cap' => 6,
 
     /*

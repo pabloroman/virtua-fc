@@ -111,6 +111,7 @@ class SimulateMatch extends Command
                 ['performance_std_dev', config('match_simulation.performance_std_dev', 0.05)],
                 ['performance_min', config('match_simulation.performance_min', 0.90)],
                 ['performance_max', config('match_simulation.performance_max', 1.10)],
+                ['dixon_coles_rho', config('match_simulation.dixon_coles_rho', -0.13)],
             ]
         );
 
