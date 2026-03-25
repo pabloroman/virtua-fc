@@ -44,7 +44,7 @@ class YouthAcademyService
         1 => 2,  // basic: 2 tiers below
         2 => 2,  // good: 2 tiers below
         3 => 1,  // elite: 1 tier below
-        4 => 1,  // world-class: 1 tier below
+        4 => 0,  // world-class: same tier as first team
     ];
 
     /**
@@ -381,8 +381,7 @@ class YouthAcademyService
         $potentialHigh = min($potential + $potentialVariance, 99);
 
         $age = rand(17, 19);
-        $currentYear = (int) $game->season;
-        $dateOfBirth = Carbon::createFromDate($currentYear - $age, rand(1, 12), rand(1, 28));
+        $dateOfBirth = $game->current_date->copy()->subYears($age)->subDays(rand(0, 364));
 
         $teamName = $game->team->name;
         $nationalityFilter = self::CANTERA_TEAMS[$teamName] ?? null;
