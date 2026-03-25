@@ -23,22 +23,22 @@
         </div>
 
         {{-- Summary strip --}}
-        <div class="flex gap-2.5 overflow-x-auto scrollbar-hide pb-1 mb-6">
-            <x-summary-card :label="__('squad.academy_tier')" :value="$tierDescription" :value-class="$tier >= 3 ? 'text-accent-green' : ($tier >= 1 ? 'text-accent-blue' : 'text-text-secondary')" />
-            <x-summary-card :label="__('squad.academy_players')" :value="$academyCount" />
-        </div>
-
-        {{-- How it works (collapsible) --}}
         <div x-data="{ open: false }" class="mb-6">
-            <x-ghost-button color="slate" @click="open = !open" class="gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-text-secondary shrink-0">
-                    <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z" clip-rule="evenodd" />
-                </svg>
-                <span>{{ __('squad.academy_help_toggle') }}</span>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 transition-transform" :class="open ? 'rotate-180' : ''">
-                    <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                </svg>
-            </x-ghost-button>
+            <div class="flex items-center gap-2.5 overflow-x-auto scrollbar-hide pb-1">
+                <x-summary-card :label="__('squad.academy_tier')" :value="$tierDescription" :value-class="$tier >= 3 ? 'text-accent-green' : ($tier >= 1 ? 'text-accent-blue' : 'text-text-secondary')" />
+                <x-summary-card :label="__('squad.academy_players')" :value="$academyCount" />
+                <div class="ml-auto shrink-0">
+                    <x-ghost-button color="slate" @click="open = !open" class="gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-text-secondary shrink-0">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z" clip-rule="evenodd" />
+                        </svg>
+                        <span>{{ __('squad.academy_help_toggle') }}</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 transition-transform" :class="open ? 'rotate-180' : ''">
+                            <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                        </svg>
+                    </x-ghost-button>
+                </div>
+            </div>
 
             <div x-show="open" x-transition class="mt-3 bg-surface-700/50 border border-border-default rounded-lg p-4 text-sm">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
