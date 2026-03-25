@@ -269,6 +269,31 @@
                 </template>
             </div>
 
+            {{-- Budget constraint banner --}}
+            <div x-show="mode === 'transfer_fee' && availableBudget > 0 && !isTerminal && negotiationStatus !== 'fee_agreed' && availableBudget < (messages[0]?.content?.fee || 0)"
+                 x-cloak class="shrink-0 border-t border-border-strong px-5 py-2.5">
+                <div class="rounded-lg bg-accent-gold/10 border border-accent-gold/20 px-3 py-2">
+                    <div class="flex items-start gap-2">
+                        <svg class="w-4 h-4 text-accent-gold shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.072 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                        </svg>
+                        <div class="min-w-0">
+                            <p class="text-xs text-accent-gold font-medium">{{ __('transfers.budget_cap_warning') }}</p>
+                            <p class="text-xs text-text-muted mt-0.5">
+                                {{ __('transfers.budget_available') }}: <span class="text-text-body font-semibold" x-text="'€ ' + new Intl.NumberFormat('es-ES').format(availableBudget)"></span>
+                            </p>
+                            <template x-if="budgetLoanAvailable">
+                                <a :href="budgetLoanUrl" target="_blank"
+                                   class="inline-flex items-center gap-1 mt-1 text-xs text-accent-blue hover:underline font-medium">
+                                    {{ __('transfers.request_budget_loan') }}
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                </a>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {{-- Input area: Transfer fee / loan fee mode --}}
             <div class="shrink-0 border-t border-border-strong px-5 py-3 space-y-2.5" x-show="mode === 'transfer_fee' && !isTerminal && !loading && negotiationStatus !== 'fee_agreed'">
                 <div class="flex items-end gap-2">

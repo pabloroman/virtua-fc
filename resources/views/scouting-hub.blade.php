@@ -480,8 +480,8 @@
                                                                 </x-primary-button>
                                                             </template>
 
-                                                            {{-- Action: Can't afford transfer or loan --}}
-                                                            <template x-if="!player.isFreeAgent && !player.hasExistingOffer && !player.onCooldown && !(player.isExpiring && isPreContractPeriod) && !player.canAffordFee && !player.canAffordLoan">
+                                                            {{-- Action: Budget is zero and can't afford loan — fully blocked --}}
+                                                            <template x-if="!player.isFreeAgent && !player.hasExistingOffer && !player.onCooldown && !(player.isExpiring && isPreContractPeriod) && player.availableBudget <= 0 && !player.canAffordLoan">
                                                                 <div>
                                                                     <div class="text-xs text-accent-red font-medium">
                                                                         {{ __('transfers.loan_fee_exceeds_budget') }}
@@ -492,54 +492,40 @@
                                                                 </div>
                                                             </template>
 
-                                                            {{-- Action: Can't afford transfer, but can afford loan --}}
-                                                            <template x-if="!player.isFreeAgent && !player.hasExistingOffer && !player.onCooldown && !(player.isExpiring && isPreContractPeriod) && !player.canAffordFee && player.canAffordLoan">
+                                                            {{-- Action: Negotiate + Loan (soft block: always show when budget > 0 or can afford loan) --}}
+                                                            <template x-if="!player.isFreeAgent && !player.hasExistingOffer && !player.onCooldown && !(player.isExpiring && isPreContractPeriod) && (player.availableBudget > 0 || player.canAffordLoan)">
                                                                 <div class="flex flex-col gap-2">
-                                                                    <div class="text-xs text-accent-gold font-medium">
-                                                                        {{ __('transfers.transfer_fee_exceeds_budget_loan_available') }}
+                                                                    <template x-if="!player.canAffordFee">
+                                                                        <div class="text-xs text-accent-gold font-medium">
+                                                                            {{ __('transfers.budget_limited_hint') }}
+                                                                        </div>
+                                                                    </template>
+                                                                    <div class="flex flex-col sm:flex-row gap-2">
+                                                                        <template x-if="player.availableBudget > 0">
+                                                                            <x-primary-button size="xs"
+                                                                                @click="$dispatch('open-negotiation', {
+                                                                                    playerName: player.name,
+                                                                                    negotiateUrl: negotiateRoute(player.id),
+                                                                                    mode: 'transfer_fee',
+                                                                                    phase: 'club_fee',
+                                                                                    chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_transfer_title')) }},
+                                                                                    playerInfo: { age: player.age, position: player.positionAbbr, positionBg: player.positionBg, positionText: player.positionText, marketValue: player.formattedMarketValue, contractYear: player.contractYear }
+                                                                                })">
+                                                                                {{ __('transfers.negotiate') }}
+                                                                            </x-primary-button>
+                                                                        </template>
+                                                                        <x-secondary-button size="xs"
+                                                                            @click="$dispatch('open-negotiation', {
+                                                                                playerName: player.name,
+                                                                                negotiateUrl: loanRoute(player.id),
+                                                                                mode: 'loan',
+                                                                                phase: 'club_fee',
+                                                                                chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_loan_title')) }},
+                                                                                playerInfo: { age: player.age, position: player.positionAbbr, positionBg: player.positionBg, positionText: player.positionText, marketValue: player.formattedMarketValue, contractYear: player.contractYear }
+                                                                            })">
+                                                                            {{ __('transfers.request_loan') }}
+                                                                        </x-secondary-button>
                                                                     </div>
-                                                                    <div class="text-xs text-text-muted">
-                                                                        {{ __('transfers.loan_cost_salary') }}: <span class="text-text-body font-medium" x-text="player.formattedWageDemand + '{{ __('squad.per_year') }}'"></span>
-                                                                    </div>
-                                                                    <x-secondary-button size="xs"
-                                                                        @click="$dispatch('open-negotiation', {
-                                                                            playerName: player.name,
-                                                                            negotiateUrl: loanRoute(player.id),
-                                                                            mode: 'loan',
-                                                                            phase: 'club_fee',
-                                                                            chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_loan_title')) }},
-                                                                            playerInfo: { age: player.age, position: player.positionAbbr, positionBg: player.positionBg, positionText: player.positionText, marketValue: player.formattedMarketValue, contractYear: player.contractYear }
-                                                                        })">
-                                                                        {{ __('transfers.request_loan') }}
-                                                                    </x-secondary-button>
-                                                                </div>
-                                                            </template>
-
-                                                            {{-- Action: Negotiate + Loan --}}
-                                                            <template x-if="!player.isFreeAgent && !player.hasExistingOffer && !player.onCooldown && !(player.isExpiring && isPreContractPeriod) && player.canAffordFee">
-                                                                <div class="flex flex-col sm:flex-row gap-2">
-                                                                    <x-primary-button size="xs"
-                                                                        @click="$dispatch('open-negotiation', {
-                                                                            playerName: player.name,
-                                                                            negotiateUrl: negotiateRoute(player.id),
-                                                                            mode: 'transfer_fee',
-                                                                            phase: 'club_fee',
-                                                                            chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_transfer_title')) }},
-                                                                            playerInfo: { age: player.age, position: player.positionAbbr, positionBg: player.positionBg, positionText: player.positionText, marketValue: player.formattedMarketValue, contractYear: player.contractYear }
-                                                                        })">
-                                                                        {{ __('transfers.negotiate') }}
-                                                                    </x-primary-button>
-                                                                    <x-secondary-button size="xs"
-                                                                        @click="$dispatch('open-negotiation', {
-                                                                            playerName: player.name,
-                                                                            negotiateUrl: loanRoute(player.id),
-                                                                            mode: 'loan',
-                                                                            phase: 'club_fee',
-                                                                            chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_loan_title')) }},
-                                                                            playerInfo: { age: player.age, position: player.positionAbbr, positionBg: player.positionBg, positionText: player.positionText, marketValue: player.formattedMarketValue, contractYear: player.contractYear }
-                                                                        })">
-                                                                        {{ __('transfers.request_loan') }}
-                                                                    </x-secondary-button>
                                                                 </div>
                                                             </template>
                                                         </div>

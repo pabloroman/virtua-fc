@@ -137,6 +137,10 @@ return [
     'loan_cost_salary' => 'Coste cesión (salario)',
     'asking_price' => 'Precio pedido',
     'request_loan' => 'Solicitar Cesión',
+    'budget_cap_warning' => 'Tu oferta está limitada por tu presupuesto de fichajes disponible.',
+    'budget_available' => 'Presupuesto disponible',
+    'request_budget_loan' => 'Solicitar préstamo presupuestario',
+    'budget_limited_hint' => 'Tu presupuesto está por debajo del precio de venta. Aún puedes negociar o solicitar un préstamo presupuestario.',
 
     // Bid evaluation responses
     'bid_accepted' => ':team ha aceptado tu oferta.',

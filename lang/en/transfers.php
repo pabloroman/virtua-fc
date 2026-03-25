@@ -136,6 +136,10 @@ return [
     'loan_cost_salary' => 'Loan cost (salary)',
     'asking_price' => 'Asking price',
     'request_loan' => 'Request Loan',
+    'budget_cap_warning' => 'Your bid is limited by your available transfer budget.',
+    'budget_available' => 'Available budget',
+    'request_budget_loan' => 'Request a budget loan',
+    'budget_limited_hint' => 'Your budget is below the asking price. You can still negotiate or request a budget loan.',
 
     // Bid evaluation responses
     'bid_accepted' => ':team has accepted your bid.',

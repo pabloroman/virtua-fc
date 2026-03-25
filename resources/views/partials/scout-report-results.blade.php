@@ -49,6 +49,7 @@
                     $formattedWageDemand = $detail['formatted_wage_demand'] ?? '-';
                     $canAffordFee = $detail['can_afford_fee'] ?? false;
                     $canAffordLoan = $detail['can_afford_loan'] ?? false;
+                    $availableBudget = (int) (($detail['available_budget'] ?? 0) / 100);
                     $onCooldown = $detail['on_cooldown'] ?? false;
                     $techRange = $detail['tech_range'] ?? [0, 0];
                     $physRange = $detail['phys_range'] ?? [0, 0];
@@ -217,7 +218,7 @@
                                                 })">
                                                 {{ __('transfers.negotiate_pre_contract') }}
                                             </x-primary-button>
-                                        @elseif(!$canAffordFee && !$canAffordLoan)
+                                        @elseif($availableBudget <= 0 && !$canAffordLoan)
                                             <div>
                                                 <div class="text-xs text-accent-red font-medium">
                                                     {{ __('transfers.loan_fee_exceeds_budget') }}
@@ -225,37 +226,6 @@
                                                 <div class="text-xs text-text-muted mt-1">
                                                     {{ __('transfers.loan_cost_salary') }}: <span class="text-text-body font-medium">{{ $formattedWageDemand }}{{ __('squad.per_year') }}</span>
                                                 </div>
-                                            </div>
-                                        @elseif(!$canAffordFee && $canAffordLoan)
-                                            @php
-                                                $posDisp = $player->position_display;
-                                                $scoutPlayerInfo = \Illuminate\Support\Js::from([
-                                                    'age' => $player->age($game->current_date),
-                                                    'position' => $posDisp['abbreviation'],
-                                                    'positionBg' => $posDisp['bg'],
-                                                    'positionText' => $posDisp['text'],
-                                                    'marketValue' => $player->formatted_market_value,
-                                                    'contractYear' => $player->contract_expiry_year,
-                                                ]);
-                                            @endphp
-                                            <div class="flex flex-col gap-2">
-                                                <div class="text-xs text-accent-gold font-medium">
-                                                    {{ __('transfers.transfer_fee_exceeds_budget_loan_available') }}
-                                                </div>
-                                                <div class="text-xs text-text-muted">
-                                                    {{ __('transfers.loan_cost_salary') }}: <span class="text-text-body font-medium">{{ $formattedWageDemand }}{{ __('squad.per_year') }}</span>
-                                                </div>
-                                                <x-secondary-button size="xs"
-                                                    @click="$dispatch('open-negotiation', {
-                                                        playerName: {{ \Illuminate\Support\Js::from($player->name) }},
-                                                        negotiateUrl: {{ \Illuminate\Support\Js::from(route('game.negotiate.loan', [$game->id, $player->id])) }},
-                                                        mode: 'loan',
-                                                        phase: 'club_fee',
-                                                        chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_loan_title')) }},
-                                                        playerInfo: {{ $scoutPlayerInfo }}
-                                                    })">
-                                                    {{ __('transfers.request_loan') }}
-                                                </x-secondary-button>
                                             </div>
                                         @else
                                             @php
@@ -269,31 +239,40 @@
                                                     'contractYear' => $player->contract_expiry_year,
                                                 ]);
                                             @endphp
-                                            <div class="flex flex-col sm:flex-row gap-2">
-                                                {{-- Transfer Negotiate --}}
-                                                <x-primary-button size="xs"
-                                                    @click="$dispatch('open-negotiation', {
-                                                        playerName: {{ \Illuminate\Support\Js::from($player->name) }},
-                                                        negotiateUrl: {{ \Illuminate\Support\Js::from(route('game.negotiate.transfer', [$game->id, $player->id])) }},
-                                                        mode: 'transfer_fee',
-                                                        phase: 'club_fee',
-                                                        chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_transfer_title')) }},
-                                                        playerInfo: {{ $scoutPlayerInfo }}
-                                                    })">
-                                                    {{ __('transfers.negotiate') }}
-                                                </x-primary-button>
-                                                {{-- Loan Request --}}
-                                                <x-secondary-button size="xs"
-                                                    @click="$dispatch('open-negotiation', {
-                                                        playerName: {{ \Illuminate\Support\Js::from($player->name) }},
-                                                        negotiateUrl: {{ \Illuminate\Support\Js::from(route('game.negotiate.loan', [$game->id, $player->id])) }},
-                                                        mode: 'loan',
-                                                        phase: 'club_fee',
-                                                        chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_loan_title')) }},
-                                                        playerInfo: {{ $scoutPlayerInfo }}
-                                                    })">
-                                                    {{ __('transfers.request_loan') }}
-                                                </x-secondary-button>
+                                            <div class="flex flex-col gap-2">
+                                                @if(!$canAffordFee)
+                                                    <div class="text-xs text-accent-gold font-medium">
+                                                        {{ __('transfers.budget_limited_hint') }}
+                                                    </div>
+                                                @endif
+                                                <div class="flex flex-col sm:flex-row gap-2">
+                                                    @if($availableBudget > 0)
+                                                        {{-- Transfer Negotiate --}}
+                                                        <x-primary-button size="xs"
+                                                            @click="$dispatch('open-negotiation', {
+                                                                playerName: {{ \Illuminate\Support\Js::from($player->name) }},
+                                                                negotiateUrl: {{ \Illuminate\Support\Js::from(route('game.negotiate.transfer', [$game->id, $player->id])) }},
+                                                                mode: 'transfer_fee',
+                                                                phase: 'club_fee',
+                                                                chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_transfer_title')) }},
+                                                                playerInfo: {{ $scoutPlayerInfo }}
+                                                            })">
+                                                            {{ __('transfers.negotiate') }}
+                                                        </x-primary-button>
+                                                    @endif
+                                                    {{-- Loan Request --}}
+                                                    <x-secondary-button size="xs"
+                                                        @click="$dispatch('open-negotiation', {
+                                                            playerName: {{ \Illuminate\Support\Js::from($player->name) }},
+                                                            negotiateUrl: {{ \Illuminate\Support\Js::from(route('game.negotiate.loan', [$game->id, $player->id])) }},
+                                                            mode: 'loan',
+                                                            phase: 'club_fee',
+                                                            chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_loan_title')) }},
+                                                            playerInfo: {{ $scoutPlayerInfo }}
+                                                        })">
+                                                        {{ __('transfers.request_loan') }}
+                                                    </x-secondary-button>
+                                                </div>
                                             </div>
                                         @endif
                                     </div>

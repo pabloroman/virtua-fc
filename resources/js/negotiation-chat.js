@@ -25,6 +25,11 @@ export default function negotiationChat() {
         offerWage: 0,
         offerYears: 3,
 
+        // Budget cap state (transfer fee mode)
+        availableBudget: 0,
+        budgetLoanAvailable: false,
+        budgetLoanUrl: '',
+
         // Stepper hold state
         _holdTimer: null,
         _holdInterval: null,
@@ -44,6 +49,10 @@ export default function negotiationChat() {
             return !this.loading && !this.isTerminal && this.offerWage > 0;
         },
 
+        get isBudgetConstrained() {
+            return this.mode === 'transfer_fee' && this.availableBudget > 0 && this.offerWage >= this.availableBudget;
+        },
+
         get wageStep() {
             if (this.mode === 'transfer_fee' || this.phase === 'counter_offer') {
                 return this.offerWage >= 10000000 ? 1000000 : 100000;
@@ -56,7 +65,12 @@ export default function negotiationChat() {
         },
 
         incrementWage() {
-            this.offerWage += this.wageStep;
+            const newValue = this.offerWage + this.wageStep;
+            if (this.mode === 'transfer_fee' && this.availableBudget > 0 && newValue > this.availableBudget) {
+                this.offerWage = this.availableBudget;
+                return;
+            }
+            this.offerWage = newValue;
         },
 
         decrementWage() {
@@ -87,6 +101,9 @@ export default function negotiationChat() {
             this.negotiationStatus = null;
             this.offerWage = 0;
             this.offerYears = 3;
+            this.availableBudget = 0;
+            this.budgetLoanAvailable = false;
+            this.budgetLoanUrl = '';
             this.round = 0;
             this.open = true;
 
@@ -95,6 +112,9 @@ export default function negotiationChat() {
                 this.negotiationStatus = data.negotiation_status;
                 this.round = data.round || 0;
                 this.maxRounds = data.max_rounds || 3;
+                if (data.available_budget !== undefined) this.availableBudget = data.available_budget;
+                if (data.budget_loan_available !== undefined) this.budgetLoanAvailable = data.budget_loan_available;
+                if (data.budget_loan_url) this.budgetLoanUrl = data.budget_loan_url;
                 this.appendMessages(data.messages);
 
                 // Fee already agreed from a previous session — go straight to personal terms
@@ -146,6 +166,7 @@ export default function negotiationChat() {
                 if (data) {
                     this.negotiationStatus = data.negotiation_status;
                     this.round = data.round || this.round;
+                    if (data.available_budget !== undefined) this.availableBudget = data.available_budget;
                     this.appendMessages(data.messages);
 
                     // Handle fee agreed → transition to personal terms (transfers only)
@@ -389,7 +410,13 @@ export default function negotiationChat() {
         prefillFromOptions() {
             const lastMsg = this.messages[this.messages.length - 1];
             if (lastMsg?.options?.suggestedWage) this.offerWage = lastMsg.options.suggestedWage;
-            if (lastMsg?.options?.suggestedFee) this.offerWage = lastMsg.options.suggestedFee;
+            if (lastMsg?.options?.suggestedFee) {
+                let fee = lastMsg.options.suggestedFee;
+                if (this.mode === 'transfer_fee' && this.availableBudget > 0 && fee > this.availableBudget) {
+                    fee = this.availableBudget;
+                }
+                this.offerWage = fee;
+            }
             if (lastMsg?.options?.preferredYears) this.offerYears = lastMsg.options.preferredYears;
         },
 

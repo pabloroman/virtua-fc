@@ -5,6 +5,7 @@ namespace App\Http\Actions;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\TransferOffer;
+use App\Modules\Finance\Services\BudgetLoanService;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\ScoutingService;
@@ -23,6 +24,7 @@ class NegotiateTransfer
         private readonly ContractService $contractService,
         private readonly ScoutingService $scoutingService,
         private readonly NotificationService $notificationService,
+        private readonly BudgetLoanService $budgetLoanService,
     ) {}
 
     public function __invoke(Request $request, string $gameId, string $playerId): JsonResponse
@@ -74,6 +76,9 @@ class NegotiateTransfer
                 'negotiation_status' => 'open',
                 'round' => $existing->negotiation_round,
                 'max_rounds' => self::MAX_ROUNDS,
+                'available_budget' => (int) (($this->transferService->availableBudget($game) + $existing->transfer_fee) / 100),
+                'budget_loan_available' => $this->budgetLoanService->canRequestLoan($game),
+                'budget_loan_url' => route('game.finances', $game->id),
                 'messages' => [
                     $this->agentMessage('counter', [
                         'text' => __('transfers.chat_club_counter_resume', [
@@ -153,6 +158,9 @@ class NegotiateTransfer
             'negotiation_status' => 'open',
             'round' => 0,
             'max_rounds' => self::MAX_ROUNDS,
+            'available_budget' => (int) ($this->transferService->availableBudget($game) / 100),
+            'budget_loan_available' => $this->budgetLoanService->canRequestLoan($game),
+            'budget_loan_url' => route('game.finances', $game->id),
             'messages' => [
                 $this->agentMessage('demand', [
                     'text' => __('transfers.chat_club_demand', [
@@ -212,6 +220,7 @@ class NegotiateTransfer
                 'negotiation_status' => 'open',
                 'round' => $offer->negotiation_round,
                 'max_rounds' => self::MAX_ROUNDS,
+                'available_budget' => (int) (($this->transferService->availableBudget($game) + $offer->transfer_fee) / 100),
                 'messages' => [
                     $this->agentMessage('counter', [
                         'text' => __('transfers.chat_club_counter', [

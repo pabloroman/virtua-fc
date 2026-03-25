@@ -984,6 +984,7 @@ class ScoutingService
             'importance' => $importance,
             'can_afford_fee' => $canAffordFee,
             'can_afford_loan' => $canAffordLoan,
+            'available_budget' => $availableBudget,
             'transfer_budget' => $investment->transfer_budget ?? 0,
             'formatted_transfer_budget' => $investment ? $investment->formatted_transfer_budget : '€ 0',
             'tech_range' => [max(1, $techAbility - $fuzz), min(99, $techAbility + $fuzz)],
