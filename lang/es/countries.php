@@ -115,4 +115,12 @@ return [
     'Venezuela' => 'Venezuela',
     'Vietnam' => 'Vietnam',
     'Wales' => 'Gales',
+
+    // WC2026 placeholder teams
+    'Winner UEFA Playoff A' => 'Playoff UEFA A',
+    'Winner UEFA Playoff B' => 'Playoff UEFA B',
+    'Winner UEFA Playoff C' => 'Playoff UEFA C',
+    'Winner UEFA Playoff D' => 'Playoff UEFA D',
+    'Winner FIFA Playoff 1' => 'Playoff FIFA 1',
+    'Winner FIFA Playoff 2' => 'Playoff FIFA 2',
 ];

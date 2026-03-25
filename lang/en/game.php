@@ -343,7 +343,7 @@ return [
     // Game modes
     'mode_career' => 'Career Mode',
     'mode_career_desc' => 'Manage a club through multiple seasons',
-    'mode_tournament' => 'World Cup',
+    'mode_tournament' => 'National team',
     'mode_tournament_desc' => 'Manage a national team in the World Cup',
     'mode_tournament_badge' => 'World Cup',
     'wc2026_name' => 'World Cup 2026',

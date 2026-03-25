@@ -343,7 +343,7 @@ return [
     // Game modes
     'mode_career' => 'Modo Carrera',
     'mode_career_desc' => 'Dirige un club a través de múltiples temporadas',
-    'mode_tournament' => 'Copa del Mundo',
+    'mode_tournament' => 'Selección nacional',
     'mode_tournament_desc' => 'Dirige una selección en el Mundial',
     'mode_tournament_badge' => 'Copa del Mundo',
     'wc2026_name' => 'Copa del Mundo 2026',
