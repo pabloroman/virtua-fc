@@ -13,13 +13,13 @@ class InjuryService
     /**
      * Base injury chance per player per match (percentage).
      */
-    private const BASE_INJURY_CHANCE = 0.8;
+    private const BASE_INJURY_CHANCE = 1.0;
 
     /**
      * Base training injury chance per player per matchday (percentage).
      * Applies to all squad members (playing and non-playing).
      */
-    private const TRAINING_INJURY_CHANCE = 0.6;
+    private const TRAINING_INJURY_CHANCE = 1.05;
 
     /**
      * Medical tier multipliers for injury prevention.
@@ -143,8 +143,8 @@ class InjuryService
      * Durability multipliers based on player's hidden durability attribute (1-100).
      */
     private const DURABILITY_THRESHOLDS = [
-        ['max' => 20, 'multiplier' => 1.6],   // Very injury prone
-        ['max' => 40, 'multiplier' => 1.3],   // Injury prone
+        ['max' => 20, 'multiplier' => 1.8],   // Very injury prone
+        ['max' => 40, 'multiplier' => 1.4],   // Injury prone
         ['max' => 60, 'multiplier' => 1.0],   // Average
         ['max' => 80, 'multiplier' => 0.7],   // Resilient
         ['max' => 100, 'multiplier' => 0.4],  // Ironman
@@ -154,19 +154,19 @@ class InjuryService
      * Age multipliers for injury risk.
      */
     private const AGE_THRESHOLDS = [
-        ['max' => 20, 'multiplier' => 1.1],   // Young, still developing
+        ['max' => 20, 'multiplier' => 1.2],   // Young, still developing
         ['max' => 29, 'multiplier' => 1.0],   // Prime years
-        ['max' => 32, 'multiplier' => 1.1],   // Early decline
-        ['max' => 99, 'multiplier' => 1.3],   // Veteran
+        ['max' => 32, 'multiplier' => 1.15],  // Early decline
+        ['max' => 99, 'multiplier' => 1.4],   // Veteran
     ];
 
     /**
      * Fitness multipliers for injury risk.
      */
     private const FITNESS_THRESHOLDS = [
-        ['max' => 30, 'multiplier' => 2.0],   // Exhausted
-        ['max' => 50, 'multiplier' => 1.5],   // Very tired
-        ['max' => 70, 'multiplier' => 1.2],   // Tired
+        ['max' => 30, 'multiplier' => 2.25],  // Exhausted
+        ['max' => 50, 'multiplier' => 1.75],  // Very tired
+        ['max' => 70, 'multiplier' => 1.35],  // Tired
         ['max' => 85, 'multiplier' => 1.0],   // Normal
         ['max' => 100, 'multiplier' => 0.8],  // Fresh
     ];
@@ -339,11 +339,11 @@ class InjuryService
         $daysSinceLastMatch = $lastMatchDate->diffInDays($currentMatchDate);
 
         if ($daysSinceLastMatch <= 2) {
-            return 1.6; // Back-to-back games
+            return 1.8; // Back-to-back games
         } elseif ($daysSinceLastMatch <= 3) {
-            return 1.3; // Very congested
+            return 1.4; // Very congested
         } elseif ($daysSinceLastMatch <= 4) {
-            return 1.1; // Slightly congested
+            return 1.15; // Slightly congested
         }
 
         return 1.0; // Normal rest
