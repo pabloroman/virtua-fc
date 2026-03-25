@@ -36,13 +36,6 @@
                     </div>
                 </x-summary-card>
             @endif
-            @if($maxCallups > 0)
-                <x-summary-card :label="__('squad.academy_callups')">
-                    <div class="flex items-center gap-2 mt-1">
-                        <span class="font-heading text-xl font-bold {{ $calledUpCount >= $maxCallups ? 'text-accent-gold' : 'text-text-primary' }}">{{ $calledUpCount }}/{{ $maxCallups }}</span>
-                    </div>
-                </x-summary-card>
-            @endif
         </div>
 
         {{-- How it works (collapsible) --}}
@@ -69,10 +62,6 @@
                                 <span class="text-text-secondary">{{ __('squad.academy_help_promote') }}</span>
                             </li>
                             <li class="flex gap-2">
-                                <span class="text-accent-blue shrink-0">⇄</span>
-                                <span class="text-text-secondary">{{ __('squad.academy_help_callup') }}</span>
-                            </li>
-                            <li class="flex gap-2">
                                 <span class="text-indigo-400 shrink-0">⇄</span>
                                 <span class="text-text-secondary">{{ __('squad.academy_help_loan') }}</span>
                             </li>
@@ -93,7 +82,7 @@
             </div>
         </div>
 
-        @if($academyCount === 0 && $loanedPlayers->isEmpty() && $calledUpPlayers->isEmpty())
+        @if($academyCount === 0 && $loanedPlayers->isEmpty())
             <div class="text-center py-16">
                 <div class="inline-flex items-center justify-center w-16 h-16 bg-surface-700 rounded-full mb-4">
                     <svg class="w-8 h-8 fill-surface-600" stroke="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M48 195.8l209.2 86.1c9.8 4 20.2 6.1 30.8 6.1s21-2.1 30.8-6.1l242.4-99.8c9-3.7 14.8-12.4 14.8-22.1s-5.8-18.4-14.8-22.1L318.8 38.1C309 34.1 298.6 32 288 32s-21 2.1-30.8 6.1L14.8 137.9C5.8 141.6 0 150.3 0 160L0 456c0 13.3 10.7 24 24 24s24-10.7 24-24l0-260.2zm48 71.7L96 384c0 53 86 96 192 96s192-43 192-96l0-116.6-142.9 58.9c-15.6 6.4-32.2 9.7-49.1 9.7s-33.5-3.3-49.1-9.7L96 267.4z"/></svg>
@@ -148,14 +137,8 @@
                                         </div>
                                         <x-rating-badge :value="$prospect->overall" class="shrink-0" />
                                     </div>
-                                    {{-- Mobile action buttons --}}
+                                    {{-- Mobile action button --}}
                                     <div class="flex gap-1.5 mt-2">
-                                        @if($canCallUp)
-                                            <form method="POST" action="{{ route('game.academy.callup', [$game->id, $prospect->id]) }}" class="flex-1">
-                                                @csrf
-                                                <x-pill-button size="sm" class="w-full min-h-[44px] bg-surface-700 text-accent-blue">{{ __('squad.academy_callup') }}</x-pill-button>
-                                            </form>
-                                        @endif
                                         <form method="POST" action="{{ route('game.academy.promote', [$game->id, $prospect->id]) }}" class="flex-1">
                                             @csrf
                                             <x-pill-button size="sm" class="w-full min-h-[44px] bg-surface-700 text-accent-green">{{ __('squad.academy_promote') }}</x-pill-button>
@@ -195,12 +178,6 @@
                                     </div>
                                     {{-- Actions --}}
                                     <div class="flex justify-center gap-1">
-                                        @if($canCallUp)
-                                            <form method="POST" action="{{ route('game.academy.callup', [$game->id, $prospect->id]) }}">
-                                                @csrf
-                                                <button type="submit" class="text-[10px] font-semibold px-2 py-1 rounded bg-accent-blue/10 text-accent-blue hover:bg-accent-blue/20 transition-colors" title="{{ __('squad.academy_callup') }}">{{ __('squad.academy_callup') }}</button>
-                                            </form>
-                                        @endif
                                         <form method="POST" action="{{ route('game.academy.promote', [$game->id, $prospect->id]) }}">
                                             @csrf
                                             <button type="submit" class="text-[10px] font-semibold px-2 py-1 rounded bg-accent-green/10 text-accent-green hover:bg-accent-green/20 transition-colors" title="{{ __('squad.academy_promote') }}">{{ __('squad.academy_promote') }}</button>
@@ -210,37 +187,6 @@
                             @endforeach
                         @endif
                     @endforeach
-                </div>
-            @endif
-
-            {{-- Called-up players section --}}
-            @if($calledUpPlayers->isNotEmpty())
-                <div x-data class="mt-6">
-                    <x-section-card :title="__('squad.academy_called_up') . ' (' . $calledUpPlayers->count() . '/' . $maxCallups . ')'">
-                        <div class="divide-y divide-border-default">
-                            @foreach($calledUpPlayers as $prospect)
-                                <div class="flex items-center gap-3 px-4 py-3 hover:bg-surface-700/30 transition-colors">
-                                    <x-player-avatar :name="$prospect->name" :position-group="\App\Support\PositionMapper::getPositionGroup($prospect->position)" :position-abbrev="\App\Support\PositionMapper::toAbbreviation($prospect->position)" size="sm" />
-                                    <div class="flex-1 min-w-0 cursor-pointer" @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')">
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-sm font-medium text-text-primary truncate">{{ $prospect->name }}</span>
-                                            <span class="text-[10px] font-semibold bg-accent-blue/10 text-accent-blue px-1.5 py-0.5 rounded-full">{{ __('squad.academy_called_up') }}</span>
-                                        </div>
-                                        <div class="text-xs text-text-secondary mt-0.5">{{ $prospect->position_display['name'] ?? $prospect->position }}</div>
-                                    </div>
-                                    @if($prospect->nationality_flag)
-                                        <img src="{{ Storage::disk('assets')->url('flags/' . $prospect->nationality_flag['code'] . '.svg') }}" class="w-5 h-4 rounded-sm shadow-xs shrink-0 hidden md:block" title="{{ $prospect->nationality_flag['name'] }}">
-                                    @endif
-                                    <span class="text-xs text-text-secondary hidden md:block">{{ $prospect->age }}</span>
-                                    <x-rating-badge :value="$prospect->overall" size="sm" class="shrink-0" />
-                                    <form method="POST" action="{{ route('game.academy.recall', [$game->id, $prospect->id]) }}">
-                                        @csrf
-                                        <button type="submit" class="text-[10px] font-semibold px-2 py-1 rounded bg-accent-gold/10 text-accent-gold hover:bg-accent-gold/20 transition-colors">{{ __('squad.academy_recall') }}</button>
-                                    </form>
-                                </div>
-                            @endforeach
-                        </div>
-                    </x-section-card>
                 </div>
             @endif
 

@@ -45,8 +45,6 @@
 
             @if($academyPlayer->is_on_loan)
                 <span class="inline-block mt-2 text-[10px] font-semibold bg-violet-500/10 text-violet-400 px-2 py-0.5 rounded-full">{{ __('squad.academy_on_loan') }}</span>
-            @elseif($academyPlayer->is_called_up)
-                <span class="inline-block mt-2 text-[10px] font-semibold bg-accent-blue/10 text-accent-blue px-2 py-0.5 rounded-full">{{ __('squad.academy_called_up') }}</span>
             @endif
         </div>
 
@@ -100,27 +98,8 @@
 </div>
 
 {{-- Actions --}}
-@if($academyPlayer->is_called_up)
+@unless($academyPlayer->is_on_loan)
     <div class="px-5 py-4 border-t border-border-default flex flex-wrap gap-2">
-        <form method="POST" action="{{ route('game.academy.recall', [$game->id, $academyPlayer->id]) }}">
-            @csrf
-            <x-action-button color="amber">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
-                {{ __('squad.academy_recall') }}
-            </x-action-button>
-        </form>
-    </div>
-@elseif(!$academyPlayer->is_on_loan)
-    <div class="px-5 py-4 border-t border-border-default flex flex-wrap gap-2">
-        @if($canCallUp ?? false)
-            <form method="POST" action="{{ route('game.academy.callup', [$game->id, $academyPlayer->id]) }}">
-                @csrf
-                <x-action-button color="blue">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg>
-                    {{ __('squad.academy_callup') }}
-                </x-action-button>
-            </form>
-        @endif
         <form method="POST" action="{{ route('game.academy.promote', [$game->id, $academyPlayer->id]) }}">
             @csrf
             <x-action-button color="blue">
@@ -143,4 +122,4 @@
             </x-action-button>
         </form>
     </div>
-@endif
+@endunless

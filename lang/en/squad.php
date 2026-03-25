@@ -202,10 +202,6 @@ return [
     'academy_promote' => 'Promote',
     'academy_promote_desc' => 'Player joins the first team with a professional contract.',
     'academy_on_loan' => 'On Loan',
-    'academy_called_up' => 'Called Up',
-    'academy_callup' => 'Call Up',
-    'academy_callups' => 'Call-Ups',
-    'academy_recall' => 'Recall',
     'academy_actions' => 'Actions',
     'academy_seasons' => ':count season|:count seasons',
     'send_to_academy' => 'Send to Academy',
@@ -213,9 +209,8 @@ return [
 
     // Academy help text
     'academy_help_toggle' => 'How does the academy work?',
-    'academy_help_development' => 'The academy functions as your B team, producing players calibrated to your squad level. Academy players develop throughout the season and can be called up to participate in first-team matches.',
+    'academy_help_development' => 'The academy functions as your B team, producing players calibrated to your squad level. Academy players develop throughout the season and can be promoted to the first team when ready.',
     'academy_help_actions_title' => 'Available actions',
-    'academy_help_callup' => 'Call Up - temporarily adds the player to the first-team squad for matches',
     'academy_help_promote' => 'Promote - permanently joins the first team with a professional contract',
     'academy_help_loan' => 'Loan - develops faster on loan and returns at end of season',
     'academy_help_dismiss' => 'Dismiss - leaves the club permanently',

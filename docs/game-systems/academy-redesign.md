@@ -1,13 +1,13 @@
 # Youth Academy: "La Cantera" (B Team)
 
-The youth academy functions as a B team, producing homegrown talent calibrated to your squad's quality level. Academy players are generated 1-2 tiers below your first team and can be called up for matches, promoted permanently, loaned out, or dismissed.
+The youth academy functions as a B team, producing homegrown talent calibrated to your squad's quality level. Academy players are generated 1-2 tiers below your first team and can be promoted permanently, loaned out, or dismissed. Young first-team players (age 20 or under) can also be sent back to the academy.
 
 ## Season Rhythm
 
 ```
 Season start → New batch arrives (all stats visible)
 Throughout    → Players develop each matchday
-Any time      → Call up / recall / loan / send back from first team
+Any time      → Promote / loan / send back from first team
 Season end    → Mandatory evaluation: keep / promote / loan / dismiss
 ```
 
@@ -25,14 +25,14 @@ Higher academy tiers produce players closer to first-team quality with higher po
 
 ## Tiers
 
-Academy tier (from budget allocation) determines capacity, batch size, and call-up slots:
+Academy tier (from budget allocation) determines capacity and batch size:
 
-| Tier | Capacity | Arrivals | Max Call-Ups |
-|------|----------|----------|--------------|
-| 1 — Basic | 4 | 2-3 | 1 |
-| 2 — Good | 6 | 3-5 | 1 |
-| 3 — Elite | 7 | 4-6 | 2 |
-| 4 — World-Class | 8 | 4-6 | 3 |
+| Tier | Capacity | Arrivals |
+|------|----------|----------|
+| 1 — Basic | 4 | 2-3 |
+| 2 — Good | 6 | 3-5 |
+| 3 — Elite | 7 | 4-6 |
+| 4 — World-Class | 8 | 4-6 |
 
 Capacity pressure is the core tension — new arrivals can exceed remaining seats, especially if you kept players from previous seasons.
 
@@ -44,18 +44,6 @@ Academy players grow toward their potential every matchday. Growth rates:
 
 - **Academy** — 0.45 per matchday (fast enough to see meaningful progress within a season)
 - **On loan** — 0.50 per matchday (accelerated, but player is unavailable)
-
-Called-up players do not develop through the academy system — they develop through first-team match participation instead.
-
-## Call-Up System
-
-Academy players can be temporarily promoted to the first-team matchday squad:
-
-- Creates a real `GamePlayer` record (works seamlessly with lineup selection and match engine)
-- `AcademyPlayer` stays linked via `called_up_game_player_id`
-- Call-up slots are limited by academy tier
-- Recalled players sync abilities back to their academy record
-- All call-ups are automatically recalled at season end before evaluation
 
 ## Send to Academy
 
@@ -78,9 +66,7 @@ Players naturally leave the academy when they age past the academy age limit.
 
 | File | Purpose |
 |------|---------|
-| `app/Modules/Academy/Services/YouthAcademyService.php` | Batch generation, development, call-up/recall, send-back, capacity, all actions |
-| `app/Modules/Season/Processors/YouthAcademyClosingProcessor.php` | Season-end: auto-recall call-ups, loan development, returns |
+| `app/Modules/Academy/Services/YouthAcademyService.php` | Batch generation, development, send-back, capacity, all actions |
+| `app/Modules/Season/Processors/YouthAcademyClosingProcessor.php` | Season-end: loan development, returns |
 | `app/Modules/Season/Processors/YouthAcademySetupProcessor.php` | Season-setup: evaluation trigger |
-| `app/Http/Actions/CallUpAcademyPlayer.php` | Call up academy player to first team |
-| `app/Http/Actions/RecallAcademyPlayer.php` | Recall called-up player back to academy |
 | `app/Http/Actions/SendToAcademy.php` | Send first-team player back to academy |

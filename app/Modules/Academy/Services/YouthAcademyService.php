@@ -3,9 +3,7 @@
 namespace App\Modules\Academy\Services;
 
 use App\Modules\Player\PlayerAge;
-use App\Modules\Player\Services\PlayerTierService;
 use App\Modules\Squad\DTOs\GeneratedPlayerData;
-use App\Modules\Transfer\Services\ContractService;
 use App\Models\AcademyPlayer;
 use App\Models\Game;
 use App\Models\GamePlayer;
@@ -17,14 +15,14 @@ use App\Modules\Squad\Services\PlayerGeneratorService;
 class YouthAcademyService
 {
     /**
-     * Tier configuration: [capacity, min_arrivals, max_arrivals, max_callups]
+     * Tier configuration: [capacity, min_arrivals, max_arrivals]
      */
     private const TIER_CONFIG = [
-        0 => [0, 0, 0, 0],
-        1 => [4, 2, 3, 1],
-        2 => [6, 3, 5, 1],
-        3 => [7, 4, 6, 2],
-        4 => [8, 4, 6, 3],
+        0 => [0, 0, 0],
+        1 => [4, 2, 3],
+        2 => [6, 3, 5],
+        3 => [7, 4, 6],
+        4 => [8, 4, 6],
     ];
 
     /**
@@ -120,14 +118,13 @@ class YouthAcademyService
     /**
      * Develop all academy players' abilities for one matchday.
      * Growth is applied each matchday as a small increment toward potential.
-     * Only non-loaned, non-called-up players develop (loaned develop at season end, called-up via first-team system).
+     * Only non-loaned players develop (loaned develop at season end).
      */
     public function developPlayers(Game $game): void
     {
         $players = AcademyPlayer::where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->where('is_on_loan', false)
-            ->whereNull('called_up_game_player_id')
             ->get();
 
         if ($players->isEmpty()) {
@@ -241,26 +238,6 @@ class YouthAcademyService
     }
 
     /**
-     * Recall all called-up players back to the academy at season end.
-     * Syncs abilities from the GamePlayer back to AcademyPlayer before deleting.
-     *
-     * @return Collection<int, AcademyPlayer> The recalled players
-     */
-    public function recallAllCallups(Game $game): Collection
-    {
-        $calledUpPlayers = AcademyPlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->whereNotNull('called_up_game_player_id')
-            ->get();
-
-        foreach ($calledUpPlayers as $academyPlayer) {
-            $this->recallFromFirstTeam($academyPlayer);
-        }
-
-        return $calledUpPlayers;
-    }
-
-    /**
      * Get the academy capacity (max seats) for a given tier.
      */
     public static function getCapacity(int $tier): int
@@ -269,44 +246,24 @@ class YouthAcademyService
     }
 
     /**
-     * Get the number of currently occupied seats (non-loaned, non-called-up players).
+     * Get the number of currently occupied seats (non-loaned players).
      */
     public static function getOccupiedSeats(Game $game): int
     {
         return AcademyPlayer::where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->where('is_on_loan', false)
-            ->whereNull('called_up_game_player_id')
             ->count();
     }
 
     /**
-     * Get the total number of academy players (including loaned and called-up).
+     * Get the total number of academy players (including loaned).
      */
     public static function getTotalPlayers(Game $game): int
     {
         return AcademyPlayer::where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->count();
-    }
-
-    /**
-     * Get the number of currently called-up players.
-     */
-    public static function getCalledUpCount(Game $game): int
-    {
-        return AcademyPlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->whereNotNull('called_up_game_player_id')
-            ->count();
-    }
-
-    /**
-     * Get the maximum call-ups allowed for a given tier.
-     */
-    public static function getMaxCallups(int $tier): int
-    {
-        return self::TIER_CONFIG[$tier][3] ?? 0;
     }
 
     /**
@@ -355,72 +312,6 @@ class YouthAcademyService
     }
 
     /**
-     * Call up an academy player to the first team temporarily.
-     * Creates a GamePlayer linked to the AcademyPlayer so the player can participate in matches.
-     */
-    public function callUpToFirstTeam(AcademyPlayer $academy, Game $game): GamePlayer
-    {
-        $gamePlayer = $this->playerGenerator->create($game, new GeneratedPlayerData(
-            teamId: $academy->team_id,
-            position: $academy->position,
-            technical: $academy->technical_ability,
-            physical: $academy->physical_ability,
-            dateOfBirth: $academy->date_of_birth,
-            contractYears: 1,
-            name: $academy->name,
-            nationality: $academy->nationality,
-            potential: $academy->potential,
-            potentialLow: $academy->potential_low,
-            potentialHigh: $academy->potential_high,
-            fitnessMin: 85,
-            fitnessMax: 100,
-            moraleMin: 70,
-            moraleMax: 90,
-        ));
-
-        $gamePlayer->update(['is_academy_callup' => true]);
-        $academy->update(['called_up_game_player_id' => $gamePlayer->id]);
-
-        return $gamePlayer;
-    }
-
-    /**
-     * Recall a called-up player back to the academy.
-     * Syncs abilities from the GamePlayer back to AcademyPlayer before deleting.
-     */
-    public function recallFromFirstTeam(AcademyPlayer $academy): void
-    {
-        $gamePlayer = $academy->calledUpGamePlayer;
-
-        if (! $gamePlayer) {
-            $academy->update(['called_up_game_player_id' => null]);
-
-            return;
-        }
-
-        // Sync abilities back from GamePlayer (may have developed through matches)
-        $academy->update([
-            'technical_ability' => $gamePlayer->game_technical_ability,
-            'physical_ability' => $gamePlayer->game_physical_ability,
-            'called_up_game_player_id' => null,
-        ]);
-
-        $gamePlayer->delete();
-    }
-
-    /**
-     * Check if a call-up is allowed for this academy tier.
-     */
-    public function canCallUp(Game $game): bool
-    {
-        $tier = $game->currentInvestment->youth_academy_tier ?? 0;
-        $maxCallups = self::getMaxCallups($tier);
-        $currentCallups = self::getCalledUpCount($game);
-
-        return $currentCallups < $maxCallups && ! ContractService::isSquadFull($game);
-    }
-
-    /**
      * Send a first-team player back to the academy.
      * Creates a new AcademyPlayer from the GamePlayer's current abilities.
      */
@@ -462,10 +353,6 @@ class YouthAcademyService
         $age = (int) $player->date_of_birth->diffInYears($game->current_date);
 
         if ($age > PlayerAge::ACADEMY_END) {
-            return false;
-        }
-
-        if ($gamePlayer->is_academy_callup) {
             return false;
         }
 
@@ -597,7 +484,6 @@ class YouthAcademyService
     {
         $tiers = GamePlayer::where('game_id', $game->id)
             ->where('team_id', $game->team_id)
-            ->where('is_academy_callup', false)
             ->pluck('tier')
             ->sort()
             ->values();

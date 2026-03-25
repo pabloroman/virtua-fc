@@ -202,10 +202,6 @@ return [
     'academy_promote' => 'Subir',
     'academy_promote_desc' => 'El jugador se incorpora al primer equipo con contrato profesional.',
     'academy_on_loan' => 'Cedido',
-    'academy_called_up' => 'Convocado',
-    'academy_callup' => 'Convocar',
-    'academy_callups' => 'Convocatorias',
-    'academy_recall' => 'Devolver',
     'academy_actions' => 'Acciones',
     'academy_seasons' => ':count temporada|:count temporadas',
     'send_to_academy' => 'Enviar a la Cantera',
@@ -213,9 +209,8 @@ return [
 
     // Academy help text
     'academy_help_toggle' => '¿Cómo funciona la cantera?',
-    'academy_help_development' => 'La cantera funciona como tu equipo B, generando jugadores calibrados al nivel de tu plantilla. Los canteranos se desarrollan a lo largo de la temporada y pueden ser convocados para participar en partidos del primer equipo.',
+    'academy_help_development' => 'La cantera funciona como tu equipo B, generando jugadores calibrados al nivel de tu plantilla. Los canteranos se desarrollan a lo largo de la temporada y pueden ser subidos al primer equipo cuando estén listos.',
     'academy_help_actions_title' => 'Acciones disponibles',
-    'academy_help_callup' => 'Convocar — añade temporalmente al jugador a la plantilla del primer equipo para partidos',
     'academy_help_promote' => 'Subir — se incorpora permanentemente al primer equipo con contrato profesional',
     'academy_help_loan' => 'Ceder — se desarrolla más rápido cedido y regresa al final de temporada',
     'academy_help_dismiss' => 'Despedir — abandona el club de forma permanente',
