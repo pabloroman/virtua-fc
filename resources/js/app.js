@@ -6,6 +6,7 @@ import liveMatch from './live-match';
 import lineupManager from './lineup';
 import negotiationChat from './negotiation-chat';
 import squadSelection from './squad-selection';
+import tournamentSummary from './tournament-summary';
 import * as canvasImage from './modules/canvas-image';
 
 Alpine.plugin(Tooltip);
@@ -14,6 +15,7 @@ Alpine.data('liveMatch', liveMatch);
 Alpine.data('lineupManager', lineupManager);
 Alpine.data('negotiationChat', negotiationChat);
 Alpine.data('squadSelection', squadSelection);
+Alpine.data('tournamentSummary', tournamentSummary);
 
 window.canvasImage = canvasImage;
 window.Alpine = Alpine;

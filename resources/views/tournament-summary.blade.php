@@ -22,9 +22,38 @@
 $isChampion = $championTeamId === $playerTeamId;
 $championTeam = $championTeamId ? ($teams[$championTeamId] ?? null) : null;
 $finalistTeam = $finalistTeamId ? ($teams[$finalistTeamId] ?? null) : null;
+$playerTeam = $teams[$playerTeamId] ?? null;
 
 $yourGoalScorers = collect($yourSquadStats)->where('goals', '>', 0)->sortByDesc('goals');
 $yourAppearances = collect($yourSquadStats)->where('appearances', '>', 0)->sortByDesc('appearances');
+
+// Group squad by position for image download
+$positionGroupMap = fn ($pos) => match ($pos) {
+    'Goalkeeper' => 'Goalkeeper',
+    'Centre-Back', 'Left-Back', 'Right-Back' => 'Defender',
+    'Defensive Midfield', 'Central Midfield', 'Attacking Midfield',
+    'Left Midfield', 'Right Midfield' => 'Midfielder',
+    'Left Winger', 'Right Winger', 'Centre-Forward', 'Second Striker' => 'Forward',
+    default => 'Midfielder',
+};
+$positionGroupLabels = [
+    'Goalkeeper' => __('squad.goalkeepers'),
+    'Defender' => __('squad.defenders'),
+    'Midfielder' => __('squad.midfielders'),
+    'Forward' => __('squad.forwards'),
+];
+$squadByGroup = [];
+foreach (['Goalkeeper', 'Defender', 'Midfielder', 'Forward'] as $group) {
+    $players = $yourAppearances->filter(fn($p) => $positionGroupMap($p['position']) === $group);
+    if ($players->isNotEmpty()) {
+        $squadByGroup[$group] = $players->map(fn($p) => [
+            'name' => $p['player_name'],
+            'appearances' => $p['appearances'],
+            'goals' => $p['goals'],
+            'assists' => $p['assists'],
+        ])->values()->toArray();
+    }
+}
 
 // Result badge colors
 $resultBadgeClass = match($resultLabel) {
@@ -76,7 +105,27 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
 @endphp
 
 <x-app-layout :hide-footer="true">
-    <div class="min-h-screen bg-surface-900">
+    <div class="min-h-screen bg-surface-900" x-data="tournamentSummary({
+        teamName: @js($playerTeam->name ?? ''),
+        teamCrestUrl: @js($playerTeam->image ?? ''),
+        resultLabel: @js(__('season.result_' . $resultLabel)),
+        isChampion: @js($isChampion),
+        record: @js($yourRecord),
+        squadByGroup: @js($squadByGroup),
+        groupLabels: @js($positionGroupLabels),
+        statLabels: @js([
+            'played' => __('season.played_abbr'),
+            'won' => __('season.won'),
+            'drawn' => __('season.drawn'),
+            'lost' => __('season.lost'),
+            'gf' => __('season.goals_for'),
+            'ga' => __('season.goals_against'),
+            'gd' => __('season.goal_diff_abbr'),
+            'apps' => __('squad.appearances'),
+            'goals' => __('squad.goals'),
+            'assists' => __('squad.assists'),
+        ]),
+    })">
 
         {{-- ============================================ --}}
         {{-- SECTION 1: Hero Header + Final Scoreboard    --}}
@@ -361,7 +410,6 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                         <div class="p-5 md:p-6 space-y-6">
 
                             {{-- Badge + Team --}}
-                            @php $playerTeam = $teams[$playerTeamId] ?? null; @endphp
                             @if($playerTeam)
                             <div class="flex items-center gap-3">
                                 <x-team-crest :team="$playerTeam" class="w-12 h-12 md:w-14 md:h-14 shrink-0" />
@@ -674,7 +722,15 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
             {{-- ============================================ --}}
             {{-- SECTION 4: Bottom CTAs                       --}}
             {{-- ============================================ --}}
-            <div class="mt-10 mb-10 text-center">
+            <div class="mt-10 mb-10 flex flex-col sm:flex-row items-center justify-center gap-3">
+                <x-secondary-button
+                    type="button"
+                    @click="downloadTournamentImage()"
+                    class="px-6 py-4 text-base"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+                    <span class="ml-1.5">{{ __('squad.download_squad') }}</span>
+                </x-secondary-button>
                 <x-primary-button-link href="{{ route('select-team') }}" color="green" class="px-8 py-4 text-lg font-bold">
                     {{ __('season.play_again') }}
                 </x-primary-button-link>
