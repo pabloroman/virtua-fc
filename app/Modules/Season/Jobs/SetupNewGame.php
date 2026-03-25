@@ -378,6 +378,9 @@ class SetupNewGame implements ShouldQueue
 
         DB::table('game_player_templates')
             ->where('season', $this->season)
+            ->whereNotIn('team_id', function ($query) {
+                $query->select('id')->from('teams')->where('type', 'national');
+            })
             ->orderBy('player_id')
             ->chunk(500, function ($templates) use ($gameId, &$seenPlayerIds) {
                 $rows = [];

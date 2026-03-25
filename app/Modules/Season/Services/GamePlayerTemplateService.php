@@ -92,6 +92,7 @@ class GamePlayerTemplateService
             foreach ($data['players'] as $playerData) {
                 $row = $this->prepareTemplateRow($season, $team->id, $playerData, 0, $allPlayers);
                 if ($row && !isset($processedPlayerIds[$row['player_id']])) {
+                    $row['number'] = null; // WC templates must not store squad numbers
                     $rows[] = $row;
                     $processedPlayerIds[$row['player_id']] = true;
                 }
