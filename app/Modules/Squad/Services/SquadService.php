@@ -31,7 +31,9 @@ class SquadService
             ->get();
 
         $seasonEndDate = $game->getSeasonEndDate();
-        $nextMatchday = $game->current_matchday + 1;
+        $nextMatch = $game->next_match;
+        $matchDate = $nextMatch?->scheduled_date ?? $game->current_date;
+        $competitionId = $nextMatch?->competition_id;
 
         // Pre-compute matches missed for injured players
         $matchesMissedMap = InjuryService::getMatchesMissedMap($gameId, $game->team_id, $game->current_date, $allPlayers);
@@ -41,12 +43,12 @@ class SquadService
         $primeCount = 0;
         $veteranCount = 0;
 
-        $allPlayers->each(function (GamePlayer $player) use ($game, $seasonEndDate, $nextMatchday, $matchesMissedMap, &$youngCount, &$primeCount, &$veteranCount) {
+        $allPlayers->each(function (GamePlayer $player) use ($game, $seasonEndDate, $matchDate, $competitionId, $matchesMissedMap, &$youngCount, &$primeCount, &$veteranCount) {
             // Availability
             $matchData = $matchesMissedMap[$player->id] ?? null;
-            $player->setAttribute('is_unavailable', !$player->isAvailable($game->current_date, $nextMatchday));
+            $player->setAttribute('is_unavailable', !$player->isAvailable($matchDate, $competitionId));
             $player->setAttribute('unavailability_reason', $player->getUnavailabilityReason(
-                $game->current_date, $nextMatchday, $matchData['count'] ?? null, $matchData['approx'] ?? false,
+                $matchDate, $competitionId, $matchData['count'] ?? null, $matchData['approx'] ?? false,
             ));
 
             // Development projection
