@@ -121,6 +121,20 @@ return [
     'career_mode_requires_invite' => '¡El modo carrera requiere una invitación. Juega el Mundial gratis!',
     'tournament_mode_requires_access' => 'El modo torneo requiere acceso. Contacta con un administrador para empezar.',
 
+    // Pre-match confirmation
+    'pre_match_title' => 'Previa del Partido',
+    'pre_match_no_lineup' => 'No se ha configurado alineación. Tu equipo será seleccionado automáticamente.',
+    'pre_match_incomplete' => 'Tu alineación tiene menos de 11 jugadores. Las posiciones faltantes se completarán automáticamente.',
+    'pre_match_unavailable' => ':name está :reason y será reemplazado automáticamente.',
+    'pre_match_warning_title' => 'Tu alineación necesita atención',
+    'pre_match_play' => 'Jugar Partido',
+    'pre_match_play_anyway' => 'Jugar Partido Igualmente',
+    'pre_match_edit_lineup' => 'Editar Alineación',
+    'pre_match_reason_injured' => 'lesionado',
+    'pre_match_reason_suspended' => 'sancionado',
+    'pre_match_starting_xi' => 'Once Titular',
+    'pre_match_no_lineup_set' => 'Alineación no configurada',
+
     // Budget loan messages
     'budget_loan_approved' => 'Préstamo de :amount aprobado y añadido a tu presupuesto de fichajes.',
     'loan_not_available' => 'Un préstamo presupuestario no está disponible ahora mismo.',

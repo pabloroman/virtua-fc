@@ -71,6 +71,7 @@ use App\Http\Actions\DeleteScoutSearch;
 use App\Http\Actions\SkipPreSeason;
 use App\Http\Actions\UnlistPlayerFromTransfer;
 use App\Http\Views\ShowLineup;
+use App\Http\Views\ShowPreMatchData;
 use App\Http\Controllers\ProfileController;
 use App\Http\Views\Dashboard;
 use App\Http\Views\SelectTeam;
@@ -160,6 +161,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/game/{gameId}/results/{competition}/{matchday}', ShowMatchResults::class)->name('game.results');
         Route::get('/game/{gameId}/live/{matchId}', ShowLiveMatch::class)->name('game.live-match');
         Route::get('/game/{gameId}/lineup', ShowLineup::class)->name('game.lineup');
+        Route::get('/game/{gameId}/pre-match-data', ShowPreMatchData::class)->name('game.pre-match-data');
 
         // Game Actions
         Route::post('/game/{gameId}/advance', AdvanceMatchday::class)->name('game.advance');

@@ -121,6 +121,20 @@ return [
     'career_mode_requires_invite' => 'Career mode requires an invitation. Play the World Cup for free!',
     'tournament_mode_requires_access' => 'Tournament mode requires access. Contact an admin to get started.',
 
+    // Pre-match confirmation
+    'pre_match_title' => 'Pre-Match',
+    'pre_match_no_lineup' => 'No lineup has been set. Your team will be auto-selected.',
+    'pre_match_incomplete' => 'Your lineup has fewer than 11 players. Missing positions will be auto-filled.',
+    'pre_match_unavailable' => ':name is :reason and will be replaced automatically.',
+    'pre_match_warning_title' => 'Your lineup needs attention',
+    'pre_match_play' => 'Play Match',
+    'pre_match_play_anyway' => 'Play Match Anyway',
+    'pre_match_edit_lineup' => 'Edit Lineup',
+    'pre_match_reason_injured' => 'injured',
+    'pre_match_reason_suspended' => 'suspended',
+    'pre_match_starting_xi' => 'Starting XI',
+    'pre_match_no_lineup_set' => 'No lineup configured',
+
     // Budget loan messages
     'budget_loan_approved' => 'Loan of :amount approved and added to your transfer budget.',
     'loan_not_available' => 'A budget loan is not available right now.',

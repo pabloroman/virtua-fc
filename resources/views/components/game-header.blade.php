@@ -95,10 +95,9 @@
                         @elseif($continueToHome)
                             <x-primary-button-link :href="route('show-game', $game->id)">{{ __('app.continue') }}</x-primary-button-link>
                         @else
-                            <form method="post" action="{{ route('game.advance', $game->id) }}" x-data="{ loading: false }" @submit="loading = true">
-                                @csrf
-                                <x-primary-button-spin>{{ __('app.continue') }}</x-primary-button-spin>
-                            </form>
+                            <x-primary-button type="button" @click="$dispatch('show-pre-match', @js(route('game.pre-match-data', $game->id)))">
+                                {{ __('app.continue') }}
+                            </x-primary-button>
                         @endif
                     @else
                         <div class="flex items-center gap-3">
@@ -212,4 +211,36 @@
             @endif
         </div>
     </div>
+
+    {{-- Pre-Match Confirmation Modal --}}
+    @if($nextMatch && !$game->hasPendingActions() && !$continueToHome)
+    <div x-data="{
+        loading: false,
+        content: '',
+        loadPreMatch(url) {
+            this.content = '';
+            this.loading = true;
+            this.$dispatch('open-modal', 'pre-match');
+            fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(r => r.text())
+                .then(html => { this.content = html; this.loading = false; })
+                .catch(() => { this.loading = false; });
+        }
+    }" @show-pre-match.window="loadPreMatch($event.detail)">
+        <x-modal name="pre-match" maxWidth="lg">
+            <x-modal-header modalName="pre-match">{{ __('messages.pre_match_title') }}</x-modal-header>
+            <div class="p-4 md:p-6">
+                {{-- Loading spinner --}}
+                <div x-show="loading" class="flex items-center justify-center py-12">
+                    <svg class="animate-spin h-8 w-8 text-text-secondary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
+                {{-- Server-rendered content --}}
+                <div x-show="!loading" x-html="content"></div>
+            </div>
+        </x-modal>
+    </div>
+    @endif
 </div>
