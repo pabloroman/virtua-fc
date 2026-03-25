@@ -209,6 +209,8 @@ return [
     'loan_max_available' => 'Max available',
     'tooltip_loan_max' => 'You can borrow up to 10% of your projected total revenue for the season.',
     'tooltip_loan_activity' => 'Loan added to transfer budget. Repaid with 15% interest at the end of the season.',
+    'loan_repayment_deduction' => 'Loan Repayment',
+    'tooltip_loan_repayment_deduction' => 'Repayment of last season\'s budget loan (principal + 15% interest). Automatically deducted from this season\'s available surplus.',
     'loan_request_button' => 'Request Loan',
     'loan_amount_label' => 'Amount (€)',
     'loan_interest_rate' => 'Interest rate',

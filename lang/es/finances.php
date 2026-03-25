@@ -209,6 +209,8 @@ return [
     'loan_max_available' => 'Máximo disponible',
     'tooltip_loan_max' => 'Puedes pedir prestado hasta el 10% de tus ingresos totales proyectados para la temporada.',
     'tooltip_loan_activity' => 'Préstamo añadido al presupuesto de fichajes. Se devuelve con un 15% de interés al final de la temporada.',
+    'loan_repayment_deduction' => 'Devolución de Préstamo',
+    'tooltip_loan_repayment_deduction' => 'Devolución del préstamo presupuestario de la temporada anterior (capital + 15% de interés). Se descuenta automáticamente del superávit disponible de esta temporada.',
     'loan_request_button' => 'Solicitar Préstamo',
     'loan_amount_label' => 'Importe (€)',
     'loan_interest_rate' => 'Tipo de interés',
