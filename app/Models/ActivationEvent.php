@@ -37,7 +37,6 @@ class ActivationEvent extends Model
         self::EVENT_GAME_CREATED,
         self::EVENT_SETUP_COMPLETED,
         self::EVENT_FIRST_MATCH_PLAYED,
-        self::EVENT_5_MATCHES_PLAYED,
         self::EVENT_TOURNAMENT_COMPLETED,
     ];
 

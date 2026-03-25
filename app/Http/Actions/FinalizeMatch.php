@@ -52,7 +52,9 @@ class FinalizeMatch
             ->exists();
 
         if (! $hasRemainingMatches) {
-            event(new SeasonCompleted($game));
+            if (! $game->isTournamentMode()) {
+                event(new SeasonCompleted($game));
+            }
 
             // Tournament complete: snapshot + delete + redirect to summary
             if ($game->isTournamentMode()) {
