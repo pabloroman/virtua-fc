@@ -207,6 +207,7 @@ return [
     'loan_repayment_hint' => 'Repaid automatically at the end of the season. The repayment reduces next season\'s available surplus.',
     'loan_description' => 'Borrow against projected revenue to boost your transfer budget. Repaid with interest at end of season.',
     'loan_max_available' => 'Max available',
+    'tooltip_loan_max' => 'You can borrow up to 10% of your projected total revenue for the season.',
     'loan_request_button' => 'Request Loan',
     'loan_amount_label' => 'Amount (€)',
     'loan_interest_rate' => 'Interest rate',
