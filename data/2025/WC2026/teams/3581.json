@@ -51,7 +51,7 @@
       "foot": "left",
       "height": "1,88m",
       "id": "353032",
-      "marketValue": "€12.00m",
+      "marketValue": "€15.00m",
       "name": "Omar Alderete",
       "number": "3",
       "position": "Centre-Back"
@@ -73,7 +73,7 @@
       "foot": "left",
       "height": "1,85m",
       "id": "273000",
-      "marketValue": "€3.00m",
+      "marketValue": "€2.00m",
       "name": "Júnior Alonso",
       "position": "Centre-Back"
     },
@@ -202,7 +202,7 @@
       "foot": "right",
       "height": "1,81m",
       "id": "861852",
-      "marketValue": "€4.00m",
+      "marketValue": "€5.00m",
       "name": "Damián Bobadilla",
       "number": "16",
       "position": "Central Midfield"
@@ -277,21 +277,10 @@
       "foot": "right",
       "height": "1,79m",
       "id": "745191",
-      "marketValue": "€11.00m",
+      "marketValue": "€10.00m",
       "name": "Ramón Sosa",
       "number": "7",
       "position": "Second Striker"
-    },
-    {
-      "contract": "Jun 8, 2024",
-      "dateOfBirth": "Jun 16, 1995",
-      "foot": "right",
-      "height": "1,87m",
-      "id": "970518",
-      "marketValue": "€4.00m",
-      "name": "Álex Arce",
-      "number": "18",
-      "position": "Centre-Forward"
     },
     {
       "contract": "Sep 5, 2025",
@@ -305,12 +294,23 @@
       "position": "Centre-Forward"
     },
     {
+      "contract": "Jun 8, 2024",
+      "dateOfBirth": "Jun 16, 1995",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "970518",
+      "marketValue": "€3.00m",
+      "name": "Álex Arce",
+      "number": "18",
+      "position": "Centre-Forward"
+    },
+    {
       "contract": "Aug 14, 2013",
       "dateOfBirth": "Mar 4, 1996",
       "foot": "right",
       "height": "1,80m",
       "id": "234523",
-      "marketValue": "€2.50m",
+      "marketValue": "€2.00m",
       "name": "Antonio Sanabria",
       "number": "9",
       "position": "Centre-Forward"

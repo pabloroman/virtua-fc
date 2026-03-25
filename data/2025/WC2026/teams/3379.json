@@ -34,6 +34,24 @@
       "position": "Goalkeeper"
     },
     {
+      "dateOfBirth": "Aug 1, 1995",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "215094",
+      "marketValue": "€3.50m",
+      "name": "Nick Olij",
+      "position": "Goalkeeper"
+    },
+    {
+      "dateOfBirth": "Jan 17, 2003",
+      "foot": "left",
+      "height": "1,93m",
+      "id": "646991",
+      "marketValue": "€1.50m",
+      "name": "Robin Roefs",
+      "position": "Goalkeeper"
+    },
+    {
       "contract": "Oct 13, 2023",
       "dateOfBirth": "Apr 19, 2001",
       "foot": "left",
@@ -52,7 +70,6 @@
       "id": "326031",
       "marketValue": "€45.00m",
       "name": "Matthijs de Ligt",
-      "number": "6",
       "position": "Centre-Back"
     },
     {
@@ -155,7 +172,6 @@
       "id": "420243",
       "marketValue": "€45.00m",
       "name": "Jurriën Timber",
-      "number": "3",
       "position": "Right-Back"
     },
     {
@@ -219,7 +235,6 @@
       "id": "460939",
       "marketValue": "€50.00m",
       "name": "Tijjani Reijnders",
-      "number": "14",
       "position": "Central Midfield"
     },
     {
@@ -230,7 +245,6 @@
       "id": "326330",
       "marketValue": "€45.00m",
       "name": "Frenkie de Jong",
-      "number": "21",
       "position": "Central Midfield"
     },
     {
@@ -252,6 +266,17 @@
       "id": "470394",
       "marketValue": "€16.00m",
       "name": "Kenneth Taylor",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Nov 17, 2025",
+      "dateOfBirth": "Oct 4, 2003",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "601495",
+      "marketValue": "€1.50m",
+      "name": "Luciano Valente",
+      "number": "22",
       "position": "Central Midfield"
     },
     {
@@ -318,6 +343,17 @@
       "position": "Left Winger"
     },
     {
+      "contract": "Oct 15, 2013",
+      "dateOfBirth": "Feb 13, 1994",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "167850",
+      "marketValue": "€10.00m",
+      "name": "Memphis Depay",
+      "number": "10",
+      "position": "Second Striker"
+    },
+    {
       "contract": "Oct 16, 2023",
       "dateOfBirth": "Feb 1, 2002",
       "foot": "right",
@@ -346,18 +382,6 @@
       "id": "559328",
       "marketValue": "€15.00m",
       "name": "Emmanuel Emegha",
-      "number": "9",
-      "position": "Centre-Forward"
-    },
-    {
-      "contract": "Oct 15, 2013",
-      "dateOfBirth": "Feb 13, 1994",
-      "foot": "right",
-      "height": "1,78m",
-      "id": "167850",
-      "marketValue": "€10.00m",
-      "name": "Memphis Depay",
-      "number": "10",
       "position": "Centre-Forward"
     },
     {

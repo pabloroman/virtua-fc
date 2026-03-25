@@ -10,7 +10,16 @@
       "id": "357153",
       "marketValue": "€40.00m",
       "name": "Diogo Costa",
-      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Nov 16, 2023",
+      "dateOfBirth": "Jan 17, 1993",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "249994",
+      "marketValue": "€8.00m",
+      "name": "José Sá",
       "position": "Goalkeeper"
     },
     {
@@ -19,7 +28,7 @@
       "foot": "left",
       "height": "1,91m",
       "id": "234811",
-      "marketValue": "€7.00m",
+      "marketValue": "€5.00m",
       "name": "Rui Silva",
       "number": "22",
       "position": "Goalkeeper"
@@ -29,7 +38,6 @@
       "foot": "right",
       "height": "1,89m",
       "id": "929868",
-      "marketValue": "€1.50m",
       "name": "João Carvalho",
       "position": "Goalkeeper"
     },
@@ -39,9 +47,8 @@
       "foot": "right",
       "height": "1,87m",
       "id": "258004",
-      "marketValue": "€60.00m",
+      "marketValue": "€75.00m",
       "name": "Rúben Dias",
-      "number": "3",
       "position": "Centre-Back"
     },
     {
@@ -61,7 +68,7 @@
       "foot": "right",
       "height": "1,87m",
       "id": "650568",
-      "marketValue": "€30.00m",
+      "marketValue": "€38.00m",
       "name": "António Silva",
       "number": "4",
       "position": "Centre-Back"
@@ -72,21 +79,30 @@
       "foot": "left",
       "height": "1,90m",
       "id": "805714",
-      "marketValue": "€25.00m",
+      "marketValue": "€10.00m",
       "name": "Renato Veiga",
       "number": "13",
       "position": "Centre-Back"
     },
     {
-      "contract": "Oct 9, 2021",
-      "dateOfBirth": "Aug 27, 1998",
-      "foot": "right",
+      "contract": "Mar 24, 2021",
+      "dateOfBirth": "Jun 19, 2002",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "616341",
+      "marketValue": "€55.00m",
+      "name": "Nuno Mendes",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Nov 15, 2024",
+      "dateOfBirth": "Jan 26, 2000",
+      "foot": "left",
       "height": "1,83m",
-      "id": "601883",
-      "marketValue": "€38.00m",
-      "name": "Matheus Nunes",
-      "number": "15",
-      "position": "Right-Back"
+      "id": "535955",
+      "marketValue": "€25.00m",
+      "name": "Nuno Tavares",
+      "position": "Left-Back"
     },
     {
       "contract": "Jun 23, 2021",
@@ -94,9 +110,30 @@
       "foot": "right",
       "height": "1,83m",
       "id": "357147",
-      "marketValue": "€28.00m",
+      "marketValue": "€40.00m",
       "name": "Diogo Dalot",
       "number": "5",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Oct 9, 2021",
+      "dateOfBirth": "Aug 27, 1998",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "601883",
+      "marketValue": "€40.00m",
+      "name": "Matheus Nunes",
+      "number": "15",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Sep 1, 2016",
+      "dateOfBirth": "May 27, 1994",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "182712",
+      "marketValue": "€18.00m",
+      "name": "João Cancelo",
       "position": "Right-Back"
     },
     {
@@ -105,9 +142,8 @@
       "foot": "right",
       "height": "1,77m",
       "id": "231572",
-      "marketValue": "€7.00m",
+      "marketValue": "€10.00m",
       "name": "Nélson Semedo",
-      "number": "2",
       "position": "Right-Back"
     },
     {
@@ -116,7 +152,7 @@
       "foot": "right",
       "height": "1,72m",
       "id": "487469",
-      "marketValue": "€110.00m",
+      "marketValue": "€55.00m",
       "name": "Vitinha",
       "number": "23",
       "position": "Defensive Midfield"
@@ -127,9 +163,8 @@
       "foot": "right",
       "height": "1,90m",
       "id": "257455",
-      "marketValue": "€25.00m",
+      "marketValue": "€40.00m",
       "name": "João Palhinha",
-      "number": "6",
       "position": "Defensive Midfield"
     },
     {
@@ -138,7 +173,7 @@
       "foot": "right",
       "height": "1,80m",
       "id": "225161",
-      "marketValue": "€25.00m",
+      "marketValue": "€28.00m",
       "name": "Rúben Neves",
       "number": "21",
       "position": "Defensive Midfield"
@@ -149,10 +184,20 @@
       "foot": "right",
       "height": "1,74m",
       "id": "670681",
-      "marketValue": "€110.00m",
+      "marketValue": "€60.00m",
       "name": "João Neves",
       "number": "15",
       "position": "Central Midfield"
+    },
+    {
+      "contract": "Mar 31, 2015",
+      "dateOfBirth": "Aug 10, 1994",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "241641",
+      "marketValue": "€60.00m",
+      "name": "Bernardo Silva",
+      "position": "Attacking Midfield"
     },
     {
       "contract": "Nov 10, 2017",
@@ -160,7 +205,7 @@
       "foot": "right",
       "height": "1,79m",
       "id": "240306",
-      "marketValue": "€40.00m",
+      "marketValue": "€55.00m",
       "name": "Bruno Fernandes",
       "number": "8",
       "position": "Attacking Midfield"
@@ -171,20 +216,18 @@
       "foot": "left",
       "height": "1,84m",
       "id": "412669",
-      "marketValue": "€35.00m",
+      "marketValue": "€27.00m",
       "name": "Francisco Trincão",
       "number": "16",
       "position": "Attacking Midfield"
     },
     {
-      "contract": "Mar 31, 2015",
-      "dateOfBirth": "Aug 10, 1994",
-      "foot": "left",
-      "height": "1,73m",
-      "id": "241641",
-      "marketValue": "€27.00m",
-      "name": "Bernardo Silva",
-      "number": "10",
+      "dateOfBirth": "May 5, 2007",
+      "foot": "right",
+      "height": "1,68m",
+      "id": "957653",
+      "marketValue": "€10.00m",
+      "name": "Rodrigo Mora",
       "position": "Attacking Midfield"
     },
     {
@@ -193,9 +236,28 @@
       "foot": "right",
       "height": "1,88m",
       "id": "357164",
-      "marketValue": "€70.00m",
+      "marketValue": "€75.00m",
       "name": "Rafael Leão",
-      "number": "17",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Nov 14, 2019",
+      "dateOfBirth": "Dec 4, 1996",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "340950",
+      "marketValue": "€50.00m",
+      "name": "Diogo Jota",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 4, 2021",
+      "dateOfBirth": "Jun 28, 1998",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "426620",
+      "marketValue": "€32.00m",
+      "name": "Pedro Gonçalves",
       "position": "Left Winger"
     },
     {
@@ -204,9 +266,19 @@
       "foot": "left",
       "height": "1,69m",
       "id": "742451",
-      "marketValue": "€15.00m",
+      "marketValue": "€8.00m",
       "name": "Carlos Forbs",
       "position": "Left Winger"
+    },
+    {
+      "contract": "Nov 11, 2020",
+      "dateOfBirth": "Mar 9, 2000",
+      "foot": "left",
+      "height": "1,74m",
+      "id": "487465",
+      "marketValue": "€55.00m",
+      "name": "Pedro Neto",
+      "position": "Right Winger"
     },
     {
       "contract": "Mar 26, 2024",
@@ -214,9 +286,18 @@
       "foot": "left",
       "height": "1,70m",
       "id": "487474",
-      "marketValue": "€30.00m",
+      "marketValue": "€36.00m",
       "name": "Francisco Conceição",
       "number": "20",
+      "position": "Right Winger"
+    },
+    {
+      "dateOfBirth": "Apr 30, 2007",
+      "foot": "left",
+      "height": "1,72m",
+      "id": "1138758",
+      "marketValue": "€30.00m",
+      "name": "Geovany Quenda",
       "position": "Right Winger"
     },
     {
@@ -225,7 +306,7 @@
       "foot": "right",
       "height": "1,81m",
       "id": "462250",
-      "marketValue": "€25.00m",
+      "marketValue": "€30.00m",
       "name": "João Félix",
       "number": "11",
       "position": "Second Striker"
@@ -236,7 +317,7 @@
       "foot": "right",
       "height": "1,85m",
       "id": "550550",
-      "marketValue": "€35.00m",
+      "marketValue": "€50.00m",
       "name": "Gonçalo Ramos",
       "number": "9",
       "position": "Centre-Forward"
@@ -249,7 +330,6 @@
       "id": "8198",
       "marketValue": "€12.00m",
       "name": "Cristiano Ronaldo",
-      "number": "7",
       "position": "Centre-Forward"
     }
   ],
