@@ -628,14 +628,17 @@ class MatchResimulationService
             ->values()
             ->all();
 
-        // Pair assists with their goals
+        // Pair assists with their goals (keyed by minute:team_id to avoid cross-team misattribution)
         $assists = $events
             ->filter(fn ($e) => $e->event_type === 'assist')
-            ->keyBy('minute');
+            ->keyBy(fn ($e) => $e->minute.':'.$e->team_id);
 
         return array_map(function ($event) use ($assists) {
-            if (in_array($event['type'], ['goal', 'own_goal']) && isset($assists[$event['minute']])) {
-                $event['assistPlayerName'] = $assists[$event['minute']]->gamePlayer->player->name ?? null;
+            if ($event['type'] === 'goal') {
+                $key = $event['minute'].':'.$event['teamId'];
+                if (isset($assists[$key])) {
+                    $event['assistPlayerName'] = $assists[$key]->gamePlayer->player->name ?? null;
+                }
             }
 
             return $event;
