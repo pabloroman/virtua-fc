@@ -218,15 +218,32 @@
         loading: false,
         content: '',
         loadPreMatch(url) {
+            if (localStorage.getItem('autoLineup') === '1') {
+                this.$refs.autoAdvanceForm.submit();
+                return;
+            }
             this.content = '';
             this.loading = true;
             this.$dispatch('open-modal', 'pre-match');
             fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-                .then(r => r.text())
-                .then(html => { this.content = html; this.loading = false; })
+                .then(r => {
+                    const contentType = r.headers.get('content-type') || '';
+                    if (contentType.includes('application/json')) {
+                        return r.json().then(data => {
+                            if (data.lineupReady) {
+                                this.$dispatch('close-modal', 'pre-match');
+                                this.$refs.autoAdvanceForm.submit();
+                            }
+                        });
+                    }
+                    return r.text().then(html => { this.content = html; this.loading = false; });
+                })
                 .catch(() => { this.loading = false; });
         }
     }" x-on:show-pre-match.window="loadPreMatch($event.detail)">
+        <form x-ref="autoAdvanceForm" method="POST" action="{{ route('game.advance', $game->id) }}" class="hidden">
+            @csrf
+        </form>
         <x-modal name="pre-match" maxWidth="lg">
             <x-modal-header modalName="pre-match">{{ __('messages.pre_match_title') }}</x-modal-header>
             <div class="p-4 md:p-6">

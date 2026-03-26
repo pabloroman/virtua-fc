@@ -123,17 +123,22 @@ return [
 
     // Pre-match confirmation
     'pre_match_title' => 'Pre-Match',
-    'pre_match_no_lineup' => 'No lineup has been set. Your team will be auto-selected.',
-    'pre_match_incomplete' => 'Your lineup has fewer than 11 players. Missing positions will be auto-filled.',
-    'pre_match_unavailable' => ':name is :reason and will be replaced automatically.',
+    'pre_match_no_lineup' => 'You don\'t have a lineup configured.',
+    'pre_match_incomplete' => 'Your lineup has fewer than 11 players.',
+    'pre_match_unavailable_injured' => 'You have an injured player in your lineup.',
+    'pre_match_unavailable_suspended' => 'You have a suspended player in your lineup.',
+    'pre_match_unavailable_multiple' => 'You have unavailable players in your lineup.',
+    'pre_match_auto_explanation' => 'If you don\'t change it, your coaching staff will pick the best lineup from available players.',
     'pre_match_warning_title' => 'Your lineup needs attention',
     'pre_match_play' => 'Play Match',
-    'pre_match_play_anyway' => 'Play Match Anyway',
+    'pre_match_continue' => 'Continue',
     'pre_match_edit_lineup' => 'Edit Lineup',
     'pre_match_reason_injured' => 'injured',
     'pre_match_reason_suspended' => 'suspended',
     'pre_match_starting_xi' => 'Starting XI',
     'pre_match_no_lineup_set' => 'No lineup configured',
+    'pre_match_auto_lineup' => 'Let the coaching staff automatically adjust the lineup when there are unavailable players.',
+    'pre_match_auto_select_done' => 'The best lineup has been automatically selected from available players.',
 
     // Matchday advance
     'advance_failed' => 'Something went wrong advancing the matchday. Please try again.',

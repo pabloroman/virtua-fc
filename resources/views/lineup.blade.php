@@ -114,7 +114,7 @@
                             <x-ghost-button color="slate" @click="clearSelection()">
                                 {{ __('app.clear') }}
                             </x-ghost-button>
-                            <x-secondary-button type="button" @click="quickSelect()">
+                            <x-secondary-button type="button" @click="quickSelect(); $dispatch('open-modal', 'auto-lineup')">
                                 {{ __('squad.auto_select') }}
                             </x-secondary-button>
                             <x-primary-button x-bind:disabled="selectedCount !== 11">
@@ -552,4 +552,22 @@
 
     @include('partials.tactical-guide-modal')
     <x-player-detail-modal />
+
+    {{-- Auto-lineup preference modal --}}
+    <x-modal name="auto-lineup" maxWidth="sm">
+        <div class="p-4 md:p-6" x-data="{ autoLineup: localStorage.getItem('autoLineup') === '1' }">
+            <p class="text-sm text-text-body">{{ __('messages.pre_match_auto_select_done') }}</p>
+            <label class="mt-4 flex items-start gap-2 cursor-pointer group">
+                <input type="checkbox" x-model="autoLineup"
+                       @change="localStorage.setItem('autoLineup', autoLineup ? '1' : '0')"
+                       class="mt-0.5 rounded border-border-strong bg-surface-700 text-accent-blue focus:ring-accent-blue">
+                <span class="text-xs text-text-secondary group-hover:text-text-body transition-colors">{{ __('messages.pre_match_auto_lineup') }}</span>
+            </label>
+            <div class="mt-5 flex justify-end">
+                <x-primary-button type="button" @click="$dispatch('close-modal', 'auto-lineup')">
+                    {{ __('app.confirm') }}
+                </x-primary-button>
+            </div>
+        </div>
+    </x-modal>
 </x-app-layout>

@@ -1,6 +1,12 @@
 {{-- Match Info --}}
 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-4">
-    <x-competition-pill :competition="$match->competition" :round-name="$match->round_name" :round-number="$match->round_number" :short="true" />
+    @if($game->isTournamentMode())
+        <span class="text-xs font-medium text-text-secondary">
+            {{ __($match->round_name ?? '') }}
+        </span>
+    @else
+        <x-competition-pill :competition="$match->competition" :round-name="$match->round_name" :round-number="$match->round_number" :short="true" />
+    @endif
     <span class="text-xs text-text-muted">
         {{ $match->homeTeam->stadium_name ?? '' }} &middot; {{ $match->scheduled_date->locale(app()->getLocale())->translatedFormat('d M Y') }}
     </span>
@@ -19,80 +25,37 @@
     </div>
 </div>
 
-{{-- Warning Banner --}}
-@if($hasIssues)
+{{-- Issue Explanation --}}
 <div class="mt-4 p-3 rounded-lg bg-accent-gold/10 border border-accent-gold/20">
     <div class="flex items-start gap-2">
         <svg class="w-5 h-5 text-accent-gold shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
         </svg>
         <div>
-            <p class="text-sm font-semibold text-accent-gold">{{ __('messages.pre_match_warning_title') }}</p>
-            <ul class="mt-1 space-y-0.5">
-                @foreach($issues as $issue)
-                <li class="text-xs text-accent-gold/80">{{ $issue['message'] }}</li>
-                @endforeach
-            </ul>
+            <p class="text-sm font-semibold text-accent-gold">{{ $issueMessage }}</p>
+            <p class="text-xs text-accent-gold/80 mt-1">{{ __('messages.pre_match_auto_explanation') }}</p>
         </div>
     </div>
 </div>
-@endif
 
-{{-- Tactics Summary --}}
-<div class="mt-4 flex flex-wrap items-center gap-2">
-    <span class="px-2 py-1 rounded-md bg-surface-700 text-xs font-medium text-text-body">{{ $formationLabel }}</span>
-    <span class="px-2 py-1 rounded-md bg-surface-700 text-xs font-medium text-text-body">{{ $mentalityLabel }}</span>
-    <span class="px-2 py-1 rounded-md bg-surface-700 text-xs font-medium text-text-body">{{ $playingStyleLabel }}</span>
-    <span class="px-2 py-1 rounded-md bg-surface-700 text-xs font-medium text-text-body">{{ $pressingLabel }}</span>
-    <span class="px-2 py-1 rounded-md bg-surface-700 text-xs font-medium text-text-body">{{ $defensiveLineLabel }}</span>
-</div>
-
-{{-- Starting XI --}}
-<div class="mt-4">
-    <h4 class="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">{{ __('messages.pre_match_starting_xi') }}</h4>
-
-    @if($lineupPlayers->isEmpty())
-    <div class="py-6 text-center">
-        <p class="text-sm text-text-muted">{{ __('messages.pre_match_no_lineup_set') }}</p>
-    </div>
-    @else
-    <div class="divide-y divide-border-default">
-        @foreach($lineupPlayers as $player)
-        @php $isUnavailable = in_array($player->id, $unavailablePlayerIds); @endphp
-        <div class="flex items-center gap-2 py-2 px-1 {{ $isUnavailable ? 'bg-accent-red/10 rounded-md' : '' }}">
-            <x-position-badge :position="$player->position" size="sm" />
-            <span class="text-sm text-text-body flex-1 truncate {{ $isUnavailable ? 'line-through opacity-60' : '' }}">
-                {{ $player->name }}
-            </span>
-            @if($isUnavailable)
-            <svg class="w-4 h-4 text-accent-red shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
-            </svg>
-            @endif
-            <span class="text-xs font-semibold {{ $player->overall_score >= 75 ? 'text-accent-green' : ($player->overall_score >= 65 ? 'text-text-body' : 'text-accent-gold') }}">
-                {{ $player->overall_score }}
-            </span>
-            {{-- Fitness bar --}}
-            <div class="w-12 h-1.5 rounded-full bg-surface-600 overflow-hidden shrink-0">
-                <div class="h-full rounded-full {{ $player->fitness >= 80 ? 'bg-accent-green' : ($player->fitness >= 60 ? 'bg-accent-gold' : 'bg-accent-red') }}"
-                     style="width: {{ $player->fitness }}%"></div>
-            </div>
-        </div>
-        @endforeach
-    </div>
-    @endif
-</div>
+{{-- Auto-lineup checkbox --}}
+<label class="mt-4 flex items-start gap-2 cursor-pointer group">
+    <input type="checkbox"
+           class="mt-0.5 rounded border-border-strong bg-surface-700 text-accent-blue focus:ring-accent-blue"
+           onchange="localStorage.setItem('autoLineup', this.checked ? '1' : '0')">
+    <span class="text-xs text-text-secondary group-hover:text-text-body transition-colors">{{ __('messages.pre_match_auto_lineup') }}</span>
+</label>
 
 {{-- Action Buttons --}}
-<div class="mt-6 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2">
+<div class="mt-6 flex flex-row items-stretch md:items-center md:justify-end gap-2">
     <a href="{{ route('game.lineup', $game->id) }}"
-       class="inline-flex items-center justify-center px-4 py-2 min-h-[44px] text-sm rounded-lg border border-border-strong font-semibold text-text-body uppercase tracking-wider hover:bg-surface-700 transition ease-in-out duration-150">
+       class="flex-1 md:flex-none inline-flex items-center justify-center px-4 py-2 min-h-[44px] text-sm rounded-lg border border-border-strong font-semibold text-text-body uppercase tracking-wider hover:bg-surface-700 transition ease-in-out duration-150">
         {{ __('messages.pre_match_edit_lineup') }}
     </a>
-    <form method="post" action="{{ route('game.advance', $game->id) }}" x-data="{ loading: false }" @submit="loading = true">
+    <form method="post" action="{{ route('game.advance', $game->id) }}" x-data="{ loading: false }" @submit="loading = true" class="flex-1 md:flex-none">
         @csrf
-        <x-primary-button-spin color="{{ $hasIssues ? 'amber' : 'blue' }}">
-            {{ $hasIssues ? __('messages.pre_match_play_anyway') : __('messages.pre_match_play') }}
+        <x-primary-button-spin color="blue" class="w-full md:w-auto">
+            {{ __('messages.pre_match_continue') }}
         </x-primary-button-spin>
     </form>
 </div>
