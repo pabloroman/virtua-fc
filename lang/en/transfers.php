@@ -350,6 +350,7 @@ return [
     'chat_club_counter_resume' => ':team is still asking :fee.',
     'chat_club_accepted' => ':team has accepted :fee for :player!',
     'chat_club_rejected' => ':team has rejected the offer. Negotiations have broken down.',
+    'chat_club_rejected_reputation' => ':team has rejected the offer. The player is not interested in joining your club.',
     'chat_your_bid' => 'Your bid',
     'mood_willing_sell' => 'Willing to sell',
     'mood_open_sell' => 'Open to offers',

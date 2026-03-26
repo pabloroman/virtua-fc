@@ -531,20 +531,22 @@ class ScoutingService
      */
     public function evaluateBid(GamePlayer $player, int $bidAmount, ?Game $game = null, ?int $previousCounter = null): array
     {
-        // Reputation gate: player may refuse to join a lower-reputation club
-        if ($game) {
+        $askingPrice = $this->calculateAskingPrice($player);
+
+        // Reputation gate: player may refuse to join a lower-reputation club.
+        // Skip when bid meets or exceeds asking price — the club has named their price.
+        if ($game && $bidAmount < $askingPrice) {
             $reputationModifier = $this->calculateReputationModifier($game->team, $player);
             if ($reputationModifier < 1.0 && rand(1, 100) > (int) ($reputationModifier * 100)) {
                 return [
                     'result' => 'rejected',
                     'counter_amount' => null,
-                    'asking_price' => $this->calculateAskingPrice($player),
+                    'asking_price' => $askingPrice,
+                    'reason' => 'reputation',
                     'message' => __('transfers.bid_rejected_not_interested', ['team' => $player->team?->name]),
                 ];
             }
         }
-
-        $askingPrice = $this->calculateAskingPrice($player);
 
         // Use the previous counter as ceiling so the club never raises their demand
         $ceiling = ($previousCounter !== null && $previousCounter < $askingPrice)
@@ -592,6 +594,7 @@ class ScoutingService
             'result' => 'rejected',
             'counter_amount' => null,
             'asking_price' => $askingPrice,
+            'reason' => 'price',
             'message' => __('transfers.bid_rejected_too_low', ['team' => $player->team?->name]),
         ];
     }

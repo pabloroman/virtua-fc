@@ -355,6 +355,7 @@ return [
     'chat_club_counter_resume' => ':team sigue pidiendo :fee.',
     'chat_club_accepted' => '¡:team ha aceptado :fee por :player!',
     'chat_club_rejected' => ':team ha rechazado la oferta. Las negociaciones se han roto.',
+    'chat_club_rejected_reputation' => ':team ha rechazado la oferta. El jugador no está interesado en fichar por tu club.',
     'chat_your_bid' => 'Tu oferta',
     'mood_willing_sell' => 'Dispuesto a vender',
     'mood_open_sell' => 'Abierto a ofertas',

@@ -244,9 +244,9 @@ class NegotiateTransfer
                 'max_rounds' => self::MAX_ROUNDS,
                 'messages' => [
                     $this->agentMessage('rejected', [
-                        'text' => __('transfers.chat_club_rejected', [
-                            'team' => $teamName,
-                        ]),
+                        'text' => ($result['reason'] ?? null) === 'reputation'
+                            ? __('transfers.chat_club_rejected_reputation', ['team' => $teamName])
+                            : __('transfers.chat_club_rejected', ['team' => $teamName]),
                     ]),
                 ],
             ]),
