@@ -410,6 +410,39 @@
                                 </div>
                             @endif
 
+                            {{-- Inline xG Preview (reactive) --}}
+                            <template x-if="xgPreview">
+                                <div class="mt-3 bg-surface-700/50 border border-border-strong rounded-lg p-3">
+                                    <div class="text-[10px] font-semibold text-text-secondary uppercase tracking-wide mb-2 text-center">{{ __('game.xg_preview') }}</div>
+                                    <div class="flex items-center justify-between gap-3">
+                                        <div class="flex-1 text-center">
+                                            <div class="text-2xl font-bold tabular-nums"
+                                                 :class="xgPreview.userXG > xgPreview.opponentXG ? 'text-accent-green' : (xgPreview.userXG < xgPreview.opponentXG ? 'text-accent-red' : 'text-text-primary')"
+                                                 x-text="xgPreview.userXG.toFixed(2)"></div>
+                                            <div class="text-[10px] text-text-muted mt-0.5">{{ __('game.xg_your_team') }}</div>
+                                        </div>
+                                        <div class="text-text-secondary text-xs font-medium shrink-0">xG</div>
+                                        <div class="flex-1 text-center">
+                                            <div class="text-2xl font-bold tabular-nums"
+                                                 :class="xgPreview.opponentXG > xgPreview.userXG ? 'text-accent-red' : (xgPreview.opponentXG < xgPreview.userXG ? 'text-accent-green' : 'text-text-primary')"
+                                                 x-text="xgPreview.opponentXG.toFixed(2)"></div>
+                                            <div class="text-[10px] text-text-muted mt-0.5">{{ __('game.xg_opponent') }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2">
+                                        <div class="flex h-1.5 rounded-full overflow-hidden gap-0.5">
+                                            <div class="h-full rounded-l-full transition-all duration-300"
+                                                 :class="xgPreview.userXG >= xgPreview.opponentXG ? 'bg-accent-green' : 'bg-accent-red'"
+                                                 :style="'width: ' + ((xgPreview.userXG + xgPreview.opponentXG) > 0 ? (xgPreview.userXG / (xgPreview.userXG + xgPreview.opponentXG) * 100) : 50) + '%'"></div>
+                                            <div class="h-full rounded-r-full transition-all duration-300"
+                                                 :class="xgPreview.opponentXG >= xgPreview.userXG ? 'bg-accent-red' : 'bg-accent-green'"
+                                                 :style="'width: ' + ((xgPreview.userXG + xgPreview.opponentXG) > 0 ? (xgPreview.opponentXG / (xgPreview.userXG + xgPreview.opponentXG) * 100) : 50) + '%'"></div>
+                                        </div>
+                                    </div>
+                                    <p class="text-[10px] text-text-secondary mt-2 text-center leading-relaxed">{{ __('game.xg_explanation') }}</p>
+                                </div>
+                            </template>
+
                             <x-ghost-button type="button" @click="$dispatch('open-modal', 'coach-assistant')" size="xs" class="w-full mt-3">
                                 {{ __('squad.coach_full_report') }} &rarr;
                             </x-ghost-button>

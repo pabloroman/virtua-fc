@@ -10,7 +10,6 @@ use App\Modules\Lineup\Enums\PlayingStyle;
 use App\Modules\Lineup\Enums\PressingIntensity;
 use App\Modules\Lineup\Services\LineupService;
 use App\Modules\Player\Services\InjuryService;
-use App\Models\TeamReputation;
 use App\Models\Game;
 use App\Support\PitchGrid;
 use App\Support\PositionSlotMapper;
@@ -125,7 +124,7 @@ class ShowLineup
         $userTeamAverage = $userBestXI['average'];
 
         // Get opponent scouting data (including predicted formation, mentality, and instructions)
-        $opponentData = $this->getOpponentData($gameId, $opponent->id, $matchDate, $competitionId, !$isHome, $userTeamAverage);
+        $opponentData = $this->lineupService->predictOpponentTactics($gameId, $opponent->id, $matchDate, $competitionId, !$isHome, $userTeamAverage);
 
         // Radar chart data for coach assistant
         $userRadar = $this->calculateRadarValues($userBestXI['players']);
@@ -315,56 +314,6 @@ class ShowLineup
                 'pitch_positions' => $p->pitch_positions,
             ])->values(),
         ]);
-    }
-
-    /**
-     * Get opponent scouting data, including predicted formation and mentality.
-     *
-     * @param bool $opponentIsHome Whether the opponent is the home team
-     * @param int $userTeamAverage The user's best XI average for relative strength comparison
-     */
-    private function getOpponentData(string $gameId, string $opponentTeamId, $matchDate, string $competitionId, bool $opponentIsHome, int $userTeamAverage): array
-    {
-        // Get opponent's available players and best XI
-        $availablePlayers = $this->lineupService->getAvailablePlayers($gameId, $opponentTeamId, $matchDate, $competitionId);
-
-        // Predict their formation based on squad composition
-        $predictedFormation = $this->lineupService->selectAIFormation($availablePlayers);
-
-        // Calculate their best XI average using the predicted formation
-        $bestXI = $this->lineupService->selectBestXI($availablePlayers, $predictedFormation);
-        $teamAverage = $this->lineupService->calculateTeamAverage($bestXI);
-
-        // Predict their mentality based on reputation and context
-        $opponentReputation = TeamReputation::resolveLevel($gameId, $opponentTeamId);
-        $predictedMentality = $this->lineupService->selectAIMentality(
-            $opponentReputation,
-            $opponentIsHome,
-            (float) $teamAverage,
-            (float) $userTeamAverage
-        );
-
-        // Predict their tactical instructions
-        [$predictedStyle, $predictedPressing, $predictedDefLine] = $this->lineupService->selectAIInstructions(
-            $opponentReputation,
-            $opponentIsHome,
-            (float) $teamAverage,
-            (float) $userTeamAverage
-        );
-
-        // Get recent form (last 5 matches) via CalendarService
-        $form = $this->calendarService->getTeamForm($gameId, $opponentTeamId);
-
-        return [
-            'teamAverage' => $teamAverage,
-            'form' => $form,
-            'formation' => $predictedFormation->value,
-            'mentality' => $predictedMentality->value,
-            'playingStyle' => $predictedStyle->value,
-            'pressing' => $predictedPressing->value,
-            'defensiveLine' => $predictedDefLine->value,
-            'bestXIPlayers' => $bestXI,
-        ];
     }
 
     /**
