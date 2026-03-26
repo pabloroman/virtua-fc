@@ -36,7 +36,6 @@ class LeaderboardService
         $query = ManagerStats::query()
             ->join('users', 'users.id', '=', 'manager_stats.user_id')
             ->leftJoin('teams', 'teams.id', '=', 'manager_stats.team_id')
-            ->where('users.is_profile_public', true)
             ->where('manager_stats.matches_played', '>=', self::MIN_MATCHES)
             ->select('manager_stats.*', 'users.name', 'users.username', 'users.avatar', 'users.country', 'users.province', 'teams.name as team_name', 'teams.image as team_image');
 
@@ -60,7 +59,6 @@ class LeaderboardService
     {
         return ManagerStats::query()
             ->join('users', 'users.id', '=', 'manager_stats.user_id')
-            ->where('users.is_profile_public', true)
             ->where('users.country', $country)
             ->whereNotNull('users.province')
             ->where('users.province', '!=', '')
@@ -79,7 +77,6 @@ class LeaderboardService
 
         $countryCodes = ManagerStats::query()
             ->join('users', 'users.id', '=', 'manager_stats.user_id')
-            ->where('users.is_profile_public', true)
             ->where('manager_stats.matches_played', '>=', self::MIN_MATCHES)
             ->whereNotNull('users.country')
             ->where('users.country', '!=', '')
@@ -99,13 +96,9 @@ class LeaderboardService
     public function getAggregateStats(): array
     {
         $totalManagers = ManagerStats::where('matches_played', '>=', self::MIN_MATCHES)
-            ->join('users', 'users.id', '=', 'manager_stats.user_id')
-            ->where('users.is_profile_public', true)
             ->count();
 
-        $totalMatches = ManagerStats::join('users', 'users.id', '=', 'manager_stats.user_id')
-            ->where('users.is_profile_public', true)
-            ->sum('matches_played');
+        $totalMatches = ManagerStats::sum('matches_played');
 
         return [
             'totalManagers' => $totalManagers,
@@ -120,8 +113,6 @@ class LeaderboardService
     {
         return Team::query()
             ->join('manager_stats', 'teams.id', '=', 'manager_stats.team_id')
-            ->join('users', 'users.id', '=', 'manager_stats.user_id')
-            ->where('users.is_profile_public', true)
             ->where('manager_stats.matches_played', '>=', self::MIN_MATCHES)
             ->where('teams.type', 'club')
             ->where('teams.is_placeholder', false)
@@ -140,7 +131,6 @@ class LeaderboardService
         return ManagerStats::query()
             ->join('users', 'users.id', '=', 'manager_stats.user_id')
             ->leftJoin('teams', 'teams.id', '=', 'manager_stats.team_id')
-            ->where('users.is_profile_public', true)
             ->where('manager_stats.matches_played', '>=', self::MIN_MATCHES)
             ->where('manager_stats.team_id', $teamId)
             ->select('manager_stats.*', 'users.name', 'users.username', 'users.avatar', 'users.country', 'users.province', 'teams.name as team_name', 'teams.image as team_image')
@@ -155,8 +145,6 @@ class LeaderboardService
     public function getTeamAggregateStats(string $teamId): array
     {
         $query = ManagerStats::query()
-            ->join('users', 'users.id', '=', 'manager_stats.user_id')
-            ->where('users.is_profile_public', true)
             ->where('manager_stats.team_id', $teamId);
 
         $totalManagers = (clone $query)

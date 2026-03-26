@@ -73,7 +73,7 @@ class LeaderboardTest extends TestCase
         $response->assertDontSee('newbie');
     }
 
-    public function test_leaderboard_hides_private_profiles(): void
+    public function test_leaderboard_shows_private_profiles(): void
     {
         $user = User::factory()->create([
             'username' => 'hiddenmanager',
@@ -92,7 +92,7 @@ class LeaderboardTest extends TestCase
         $response = $this->get('/leaderboard');
 
         $response->assertOk();
-        $response->assertDontSee('hiddenmanager');
+        $response->assertSee('hiddenmanager');
     }
 
     public function test_leaderboard_filters_by_country(): void
