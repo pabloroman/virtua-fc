@@ -470,6 +470,7 @@ return [
 
     // xG Preview
     'xg_preview' => 'Previsualización xG',
+    'match_preview' => 'Previa del partido',
     'xg_your_team' => 'Tu xG',
     'xg_opponent' => 'xG Rival',
     'xg_explanation' => 'Goles esperados según tu alineación y configuración táctica. Cambia al ajustar las tácticas.',

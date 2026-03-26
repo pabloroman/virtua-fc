@@ -102,4 +102,100 @@ return [
     'opponent_hot_v1' => ':opponent arrive in fine form — :wins wins from their last :total.',
     'opponent_hot_v2' => 'Watch out: :opponent are on a hot streak with :wins wins in :total.',
 
+    // ── Tournament: Group Stage ─────────────────────────────────────
+
+    'wc_group_opener_v1' => 'Opening match of the World Cup. A chance to set the tone early.',
+    'wc_group_opener_v2' => 'First game of the tournament. Three points here would be a strong start.',
+    'wc_group_opener_v3' => 'CURTAIN RAISER. The World Cup campaign starts here.',
+
+    'wc_group_must_win_v1' => 'Final group match. Nothing less than a win will do.',
+    'wc_group_must_win_v2' => 'A must-win to keep qualification hopes alive.',
+    'wc_group_must_win_v3' => 'DO OR DIE. Win or book a flight home.',
+
+    'wc_group_top_v1' => 'Top of Group :group. Qualification is in your hands.',
+    'wc_group_top_v2' => 'Leading Group :group heading into the next match.',
+    'wc_group_top_v3' => 'TOP OF THE CLASS. Sitting pretty in Group :group.',
+
+    'wc_group_qualified_v1' => 'Already through to the knockout stage. A chance to finish top of the group.',
+    'wc_group_qualified_v2' => 'Qualification secured. This match is about building rhythm for the knockouts.',
+    'wc_group_qualified_v3' => 'TICKET BOOKED. Through to the knockouts, now go top the group.',
+
+    'wc_group_on_brink_v1' => 'Qualification is within reach. A positive result could be enough.',
+    'wc_group_on_brink_v2' => 'Close to the knockout stage. A point today might seal it.',
+    'wc_group_on_brink_v3' => 'ALMOST THERE. A draw could be enough to go through.',
+
+    'wc_group_eliminated_v1' => 'Qualification is no longer possible. One last match to play.',
+    'wc_group_eliminated_v2' => 'Out of contention, but there\'s still a game to finish the group.',
+    'wc_group_eliminated_v3' => 'END OF THE ROAD. One last dance before heading home.',
+
+    'wc_group_gd_v1' => 'Goal difference could be decisive. Margins are tight in this group.',
+    'wc_group_gd_v2' => 'A tight group. Goal difference may end up separating the teams.',
+    'wc_group_gd_v3' => 'GET THE CALCULATOR OUT. Goal difference could settle this group.',
+
+    // ── Tournament: Knockout Rounds ─────────────────────────────────
+
+    'wc_knockout_r32_v1' => 'Round of 32. Knockout football — no margin for error.',
+    'wc_knockout_r32_v2' => 'The knockout phase begins. A defeat here ends the tournament.',
+    'wc_knockout_r32_v3' => 'WIN OR BUST. The knockout stage is here.',
+
+    'wc_knockout_r16_v1' => 'Round of 16. Sixteen nations remain in the competition.',
+    'wc_knockout_r16_v2' => 'Into the last 16. The level of opposition rises from here.',
+    'wc_knockout_r16_v3' => 'SWEET SIXTEEN. The World Cup is heating up.',
+
+    'wc_knockout_qf_v1' => 'Quarter-finals. Four matches stand between you and the trophy.',
+    'wc_knockout_qf_v2' => 'Among the last eight. A semi-final place is at stake.',
+    'wc_knockout_qf_v3' => 'ELITE COMPANY. Eight teams remain. Four go home.',
+
+    'wc_knockout_sf_v1' => 'Semi-final. A win puts you in the World Cup Final.',
+    'wc_knockout_sf_v2' => 'One match away from the final. The biggest game of the tournament so far.',
+    'wc_knockout_sf_v3' => 'KNOCKING ON THE DOOR. Ninety minutes from the final.',
+
+    'wc_knockout_third_v1' => 'Third-place match. A medal is still up for grabs.',
+    'wc_knockout_third_v2' => 'The bronze medal match. A chance to end on a positive note.',
+    'wc_knockout_third_v3' => 'CONSOLATION PRIZE? A medal is still a medal.',
+
+    'wc_knockout_final_v1' => 'The World Cup Final. The last match of the tournament.',
+    'wc_knockout_final_v2' => 'The final. One game to decide the champions.',
+    'wc_knockout_final_v3' => 'THE BIG ONE. The World Cup Final.',
+
+    // ── Tournament: Opponent Context ────────────────────────────────
+
+    'wc_opponent_group_leader_v1' => ':opponent lead the group. A tough test on paper.',
+    'wc_opponent_group_leader_v2' => ':opponent are top of the group. A good benchmark.',
+    'wc_opponent_group_leader_v3' => 'TOP DOG. :opponent sit first in the group.',
+
+    'wc_opponent_group_bottom_v1' => ':opponent are bottom of the group. Still, no game at this level is straightforward.',
+    'wc_opponent_group_bottom_v2' => ':opponent are last in the group on paper, but form can be unpredictable in a tournament.',
+    'wc_opponent_group_bottom_v3' => 'UNDERDOGS. :opponent have nothing to lose.',
+
+    'wc_opponent_tournament_streak_v1' => ':opponent have won all their tournament matches so far.',
+    'wc_opponent_tournament_streak_v2' => ':opponent are unbeaten in the competition. A tough draw.',
+    'wc_opponent_tournament_streak_v3' => 'ON FIRE. :opponent have a perfect record so far.',
+
+    'wc_opponent_winless_v1' => ':opponent are still without a win in this tournament.',
+    'wc_opponent_winless_v2' => ':opponent have had a difficult tournament so far. They\'ll want to change that.',
+    'wc_opponent_winless_v3' => 'WOUNDED ANIMAL. :opponent are still searching for a first win.',
+
+    // ── Tournament: Atmosphere & Color ──────────────────────────────
+
+    'wc_weather_v1' => 'High temperatures expected. The heat could be a factor.',
+    'wc_weather_v2' => 'Warm conditions in North America. Fitness and hydration will matter.',
+    'wc_weather_v3' => 'Humid conditions forecast. Managing energy will be important.',
+
+    'wc_fans_v1' => 'A full stadium expected. Good atmosphere anticipated.',
+    'wc_fans_v2' => 'Millions watching worldwide. A big occasion for both sides.',
+    'wc_fans_v3' => 'Colourful scenes expected in the stands. The World Cup draws a unique crowd.',
+
+    'wc_media_v1' => 'Plenty of media attention on this one. A high-profile fixture.',
+    'wc_media_v2' => 'International press covering the match. The spotlight is on.',
+
+    'wc_group_color_v1' => 'Group stage is underway. Results here shape the path ahead.',
+    'wc_group_color_v2' => 'Every group match counts. The knockout bracket depends on it.',
+
+    'wc_knockout_color_v1' => 'Single-elimination format. There is no room for an off day.',
+    'wc_knockout_color_v2' => 'Knockout football. The margins between advancing and going home are slim.',
+
+    'wc_late_tournament_v1' => 'The latter stages of the tournament. The remaining teams have earned their place.',
+    'wc_late_tournament_v2' => 'Deep into the World Cup. Only a handful of teams are left.',
+
 ];

@@ -470,6 +470,7 @@ return [
 
     // xG Preview
     'xg_preview' => 'xG Preview',
+    'match_preview' => 'Match Preview',
     'xg_your_team' => 'Your xG',
     'xg_opponent' => 'Opponent xG',
     'xg_explanation' => 'Expected goals based on your lineup and tactical setup. Changes as you adjust tactics.',

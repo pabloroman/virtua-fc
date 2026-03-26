@@ -142,8 +142,8 @@ class ShowGame
             'leagueStandings' => $leagueStandings,
         ];
 
-        // Generate pre-match narrative snippets
-        if ($nextMatch) {
+        // Generate pre-match narrative snippets (tournament mode only for now)
+        if ($nextMatch && $game->isTournamentMode()) {
             $isHome = $nextMatch->home_team_id === $game->team_id;
             $viewData['narratives'] = $this->narrativeService->generate(
                 $game,
