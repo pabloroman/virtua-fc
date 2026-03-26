@@ -98,8 +98,6 @@ return [
     'game_stats_title' => 'Game Stats',
     'game_stats_description' => 'Explore how players use the game',
     'team_popularity' => 'Team Popularity',
-    'formation_preferences' => 'Formation Preferences',
-    'mentality_distribution' => 'Mentality Distribution',
     'season_progress' => 'Season Progress',
     'no_data' => 'No data yet',
 
