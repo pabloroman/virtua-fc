@@ -95,4 +95,15 @@
         </div>
     </div>
 
+    {{-- Pre-Match Narrative --}}
+    @if(!empty($narratives))
+        <div class="px-4 pb-4 md:px-6 md:pb-5">
+            <div class="border-t border-border-default pt-3 space-y-1.5">
+                @foreach($narratives as $narrative)
+                    <p class="text-xs text-text-secondary leading-relaxed">{{ $narrative->text }}</p>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
 </div>

@@ -4,6 +4,7 @@ namespace App\Http\Views;
 
 use App\Modules\Competition\Services\CalendarService;
 use App\Modules\Match\DTOs\MatchdayAdvanceResult;
+use App\Modules\Match\Services\MatchNarrativeService;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Season\Jobs\ProcessSeasonTransition;
 use App\Models\CupTie;
@@ -15,6 +16,7 @@ class ShowGame
 {
     public function __construct(
         private readonly CalendarService $calendarService,
+        private readonly MatchNarrativeService $narrativeService,
         private readonly NotificationService $notificationService,
     ) {}
 
@@ -139,6 +141,19 @@ class ShowGame
             'unreadNotificationCount' => $this->notificationService->getUnreadCount($game->id),
             'leagueStandings' => $leagueStandings,
         ];
+
+        // Generate pre-match narrative snippets
+        if ($nextMatch) {
+            $isHome = $nextMatch->home_team_id === $game->team_id;
+            $viewData['narratives'] = $this->narrativeService->generate(
+                $game,
+                $nextMatch,
+                $isHome ? $viewData['homeStanding'] : $viewData['awayStanding'],
+                $isHome ? $viewData['awayStanding'] : $viewData['homeStanding'],
+                $viewData['playerForm'],
+                $viewData['opponentForm'],
+            );
+        }
 
         // Add knockout progress for tournament mode
         if ($game->isTournamentMode()) {
