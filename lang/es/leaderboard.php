@@ -29,4 +29,12 @@ return [
     'losses' => 'D',
     'matches_suffix' => 'partidos',
     'team' => 'Equipo',
+    'browse_by_team' => 'Ver por equipo',
+    'teams_title' => 'Clasificación por equipo',
+    'teams_subtitle' => 'Selecciona un equipo para ver sus mejores mánagers',
+    'team_subtitle' => 'Mejores mánagers de este equipo',
+    'back_to_leaderboard' => 'Volver a la clasificación',
+    'back_to_teams' => 'Todos los equipos',
+    'no_teams' => 'No hay equipos con mánagers clasificados.',
+    'managers_count' => '{1} :count mánager|[2,*] :count mánagers',
 ];

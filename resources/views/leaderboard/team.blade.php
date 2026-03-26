@@ -7,21 +7,27 @@
 
     <div class="py-6 md:py-12">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-            {{-- Page Title --}}
-            <div class="text-center space-y-1">
+            {{-- Team Header --}}
+            <div class="text-center space-y-3">
+                <div class="flex justify-center">
+                    <div class="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center">
+                        <x-team-crest :team="$team" class="max-w-full max-h-full object-contain" />
+                    </div>
+                </div>
                 <h1 class="font-heading text-2xl md:text-3xl font-bold uppercase tracking-wide text-text-primary">
-                    {{ __('leaderboard.title') }}
+                    {{ $team->name }}
                 </h1>
-                <p class="text-sm text-text-muted">{{ __('leaderboard.subtitle') }}</p>
+                <p class="text-sm text-text-muted">{{ __('leaderboard.team_subtitle') }}</p>
             </div>
 
-            {{-- Browse by Team --}}
-            <div class="text-center">
-                <a href="{{ route('leaderboard.teams') }}" class="inline-flex items-center gap-1.5 text-sm text-accent-blue hover:underline">
-                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
-                    </svg>
-                    {{ __('leaderboard.browse_by_team') }}
+            {{-- Navigation --}}
+            <div class="flex justify-center gap-4">
+                <a href="{{ route('leaderboard.teams') }}" class="text-sm text-accent-blue hover:underline">
+                    &larr; {{ __('leaderboard.back_to_teams') }}
+                </a>
+                <span class="text-text-faint">|</span>
+                <a href="{{ route('leaderboard') }}" class="text-sm text-accent-blue hover:underline">
+                    {{ __('leaderboard.title') }}
                 </a>
             </div>
 
@@ -37,56 +43,18 @@
                 </div>
             </div>
 
-            {{-- Filters --}}
+            {{-- Sort Filter --}}
             <x-section-card>
                 <div class="p-4" x-data="{
-                    country: @js($selectedCountry ?? ''),
-                    province: @js($selectedProvince ?? ''),
                     sort: @js($currentSort),
-                    provinces: @js($provinces),
                     apply() {
                         const params = new URLSearchParams();
-                        if (this.country) params.set('country', this.country);
-                        if (this.province) params.set('province', this.province);
                         if (this.sort !== 'win_percentage') params.set('sort', this.sort);
-                        window.location.href = '{{ route('leaderboard') }}' + (params.toString() ? '?' + params.toString() : '');
-                    },
-                    async updateProvinces() {
-                        this.province = '';
-                        if (!this.country) {
-                            this.provinces = [];
-                        }
-                        this.apply();
+                        window.location.href = '{{ route('leaderboard.team', $team->slug) }}' + (params.toString() ? '?' + params.toString() : '');
                     }
                 }">
-                    <div class="flex flex-col md:flex-row gap-3">
-                        {{-- Country filter --}}
-                        <div class="flex-1">
-                            <label class="text-[10px] text-text-muted uppercase tracking-wider block mb-1">{{ __('leaderboard.filter_country') }}</label>
-                            <select x-model="country" @change="updateProvinces()"
-                                class="w-full bg-surface-700 border border-border-default rounded-lg text-sm text-text-primary px-3 py-2 min-h-[44px]">
-                                <option value="">{{ __('leaderboard.all_countries') }}</option>
-                                @foreach($countries as $code => $name)
-                                    <option value="{{ $code }}">{{ $name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        {{-- Province filter --}}
-                        <div class="flex-1">
-                            <label class="text-[10px] text-text-muted uppercase tracking-wider block mb-1">{{ __('leaderboard.filter_province') }}</label>
-                            <select x-model="province" @change="apply()"
-                                class="w-full bg-surface-700 border border-border-default rounded-lg text-sm text-text-primary px-3 py-2 min-h-[44px]"
-                                :disabled="!country || provinces.length === 0">
-                                <option value="">{{ __('leaderboard.all_provinces') }}</option>
-                                <template x-for="p in provinces" :key="p">
-                                    <option :value="p" x-text="p" :selected="p === province"></option>
-                                </template>
-                            </select>
-                        </div>
-
-                        {{-- Sort --}}
-                        <div class="flex-1">
+                    <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
+                        <div class="flex-1 w-full sm:w-auto">
                             <label class="text-[10px] text-text-muted uppercase tracking-wider block mb-1">{{ __('leaderboard.sort_by') }}</label>
                             <select x-model="sort" @change="apply()"
                                 class="w-full bg-surface-700 border border-border-default rounded-lg text-sm text-text-primary px-3 py-2 min-h-[44px]">
@@ -109,13 +77,11 @@
                     </div>
                 @else
                     @php
-                        $sortUrl = function (string $column) use ($selectedCountry, $selectedProvince) {
+                        $sortUrl = function (string $column) use ($team) {
                             $params = array_filter([
-                                'country' => $selectedCountry,
-                                'province' => $selectedProvince,
                                 'sort' => $column === 'win_percentage' ? null : $column,
                             ]);
-                            return route('leaderboard', $params);
+                            return route('leaderboard.team', ['slug' => $team->slug] + $params);
                         };
                         $sortIcon = '<svg class="size-3 inline-block ml-0.5 -mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>';
                     @endphp
@@ -167,14 +133,7 @@
                                                 <span class="text-sm font-medium text-text-primary truncate">{{ $manager->name }}</span>
                                             @endif
                                         </div>
-                                        @if($manager->team_name)
-                                            <div class="flex items-center gap-1 mt-0.5">
-                                                <img src="{{ $manager->team_image }}" alt="{{ $manager->team_name }}" class="size-3.5 shrink-0">
-                                                <span class="text-xs text-text-muted truncate">{{ $manager->team_name }}</span>
-                                            </div>
-                                        @else
-                                            <span class="text-xs text-text-muted">{{ $manager->matches_played }} {{ __('leaderboard.matches_suffix') }}</span>
-                                        @endif
+                                        <span class="text-xs text-text-muted">{{ $manager->matches_played }} {{ __('leaderboard.matches_suffix') }}</span>
                                     </div>
 
                                     <div class="text-right shrink-0">
@@ -203,12 +162,6 @@
                                             </a>
                                         @else
                                             <span class="text-sm font-medium text-text-primary truncate block">{{ $manager->name }}</span>
-                                        @endif
-                                        @if($manager->team_name)
-                                            <div class="flex items-center gap-1 mt-0.5">
-                                                <img src="{{ $manager->team_image }}" alt="{{ $manager->team_name }}" class="size-3.5 shrink-0">
-                                                <span class="text-xs text-text-muted truncate">{{ $manager->team_name }}</span>
-                                            </div>
                                         @endif
                                     </div>
                                 </div>

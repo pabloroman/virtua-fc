@@ -12,10 +12,13 @@ class TeamFactory extends Factory
 
     public function definition(): array
     {
+        $name = $this->faker->city() . ' FC';
+
         return [
             'id' => Str::uuid()->toString(),
             'transfermarkt_id' => $this->faker->unique()->numberBetween(1000, 99999),
-            'name' => $this->faker->city() . ' FC',
+            'name' => $name,
+            'slug' => Str::slug($name),
             'country' => 'ES',
             'image' => null,
             'stadium_name' => $this->faker->city() . ' Stadium',

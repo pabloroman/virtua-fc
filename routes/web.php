@@ -104,6 +104,8 @@ use App\Http\Views\ShowTransferActivity;
 use App\Http\Views\ShowOutgoingTransfers;
 use App\Http\Views\ShowLeaderboard;
 use App\Http\Views\ShowManagerProfile;
+use App\Http\Views\ShowTeamLeaderboard;
+use App\Http\Views\ShowTeamLeaderboardIndex;
 use App\Http\Views\ShowTournamentSummary;
 use App\Http\Actions\ProcessTacticalActions;
 use App\Http\Actions\PromoteAcademyPlayer;
@@ -116,6 +118,8 @@ Route::get('/', function () {
 
 Route::get('/legal', fn () => view('legal'))->name('legal');
 Route::get('/leaderboard', ShowLeaderboard::class)->name('leaderboard');
+Route::get('/leaderboard/teams', ShowTeamLeaderboardIndex::class)->name('leaderboard.teams');
+Route::get('/leaderboard/team/{slug}', ShowTeamLeaderboard::class)->name('leaderboard.team');
 Route::get('/manager/{username}', ShowManagerProfile::class)->name('manager.profile');
 Route::get('/design-system', fn () => view('design-system.index', [
     'allTeams' => \App\Support\TeamColors::all(),

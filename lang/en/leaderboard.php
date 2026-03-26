@@ -29,4 +29,12 @@ return [
     'losses' => 'L',
     'matches_suffix' => 'matches',
     'team' => 'Team',
+    'browse_by_team' => 'Browse by team',
+    'teams_title' => 'Leaderboard by Team',
+    'teams_subtitle' => 'Select a team to see its top managers',
+    'team_subtitle' => 'Top managers for this team',
+    'back_to_leaderboard' => 'Back to leaderboard',
+    'back_to_teams' => 'All teams',
+    'no_teams' => 'No teams with qualifying managers yet.',
+    'managers_count' => '{1} :count manager|[2,*] :count managers',
 ];

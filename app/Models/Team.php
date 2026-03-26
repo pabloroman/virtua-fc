@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string|null $fifa_code
  * @property bool $is_placeholder
  * @property string $name
+ * @property string|null $slug
  * @property string $country
  * @property string|null $image
  * @property string|null $stadium_name
@@ -52,6 +53,7 @@ class Team extends Model
         'fifa_code',
         'is_placeholder',
         'name',
+        'slug',
         'country',
         'parent_team_id',
         'image',
