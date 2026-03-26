@@ -17,6 +17,8 @@ export default function squadSelection(config) {
         groupLabels: config.groupLabels,
         teamName: config.teamName,
         teamCrestUrl: config.teamCrestUrl,
+        fifaCode: config.fifaCode,
+        gameId: config.gameId,
 
         togglePlayer(id) {
             const idx = this.selectedIds.indexOf(id);
@@ -85,7 +87,7 @@ export default function squadSelection(config) {
             }
 
             y = drawBrandFooter(ctx, width, y);
-            trimAndDownload(canvas, y, this.teamName.replace(/[^a-zA-Z0-9]/g, '_') + '_squad.png');
+            trimAndDownload(canvas, y, `virtuafc_${this.fifaCode}_${this.gameId}.png`);
         },
     };
 }

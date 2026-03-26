@@ -238,7 +238,7 @@ return [
     // Squad selection (tournament onboarding)
     'squad_selection_title' => 'Selecciona tu convocatoria',
     'squad_selection_subtitle' => 'Elige 26 jugadores para el torneo',
-    'confirm_squad' => 'Confirmar convocatoria',
+    'confirm_squad' => 'Confirmar',
     'squad_confirmed' => '¡Convocatoria confirmada!',
     'invalid_selection' => 'Selección inválida. Verifica los jugadores seleccionados.',
     'download_squad' => 'Descargar convocatoria',

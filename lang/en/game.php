@@ -199,8 +199,10 @@ return [
     'welcome_start_journey' => 'Get Started',
 
     // Tournament welcome
-    'tournament_welcome_title' => 'World Cup 2026',
-    'tournament_welcome_subtitle' => 'Lead :team to glory',
+    'tournament_welcome_title' => 'Lead :team to glory',
+    'tournament_welcome_subtitle' => 'The world\'s greatest tournament awaits',
+    'tournament_welcome_step_squad' => 'Select your squad',
+    'tournament_welcome_step_squad_desc' => 'Choose the 26 players that will help you lift the trophy. Pick wisely — once the tournament starts, there are no changes.',
     'tournament_welcome_step_format' => 'Tournament format',
     'tournament_welcome_step_format_desc' => '48 teams compete in 12 groups. The top 2 from each group and the best 3rd-place teams advance to the knockout rounds.',
     'tournament_welcome_step_lineup' => 'Pick your lineup',

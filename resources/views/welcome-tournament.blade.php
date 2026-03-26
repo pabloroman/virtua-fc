@@ -10,8 +10,8 @@
             {{-- Welcome Header --}}
             <div class="text-center mb-10">
                 <x-team-crest :team="$game->team" class="w-24 h-24 md:w-32 md:h-32 mx-auto mb-6 drop-shadow-lg" />
-                <h1 class="font-heading text-3xl md:text-4xl font-bold uppercase tracking-wide text-text-primary mb-2">{{ __('game.tournament_welcome_title') }}</h1>
-                <p class="text-lg text-text-secondary">{{ __('game.tournament_welcome_subtitle', ['team' => $game->team->name]) }}</p>
+                <h1 class="font-heading text-3xl md:text-4xl font-bold uppercase tracking-wide text-text-primary mb-2">{{ __('game.tournament_welcome_title', ['team' => $game->team->name]) }}</h1>
+                <p class="text-lg text-text-secondary">{{ __('game.tournament_welcome_subtitle') }}</p>
             </div>
 
             {{-- How it works --}}
@@ -20,6 +20,19 @@
             </div>
 
             <div class="space-y-4 mb-10">
+                {{-- Squad selection --}}
+                <div class="bg-surface-800 border border-border-default rounded-xl p-5 flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-lg bg-accent-green/20 flex items-center justify-center shrink-0 mt-0.5">
+                        <svg class="w-5 h-5 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-text-primary">{{ __('game.tournament_welcome_step_squad') }}</h3>
+                        <p class="text-sm text-text-secondary mt-1">{{ __('game.tournament_welcome_step_squad_desc') }}</p>
+                    </div>
+                </div>
+
                 {{-- Tournament format --}}
                 <div class="bg-surface-800 border border-border-default rounded-xl p-5 flex items-start gap-4">
                     <div class="w-10 h-10 rounded-lg bg-accent-gold/20 flex items-center justify-center shrink-0 mt-0.5">

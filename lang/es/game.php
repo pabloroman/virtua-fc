@@ -199,8 +199,10 @@ return [
     'welcome_start_journey' => 'Comenzar',
 
     // Tournament welcome
-    'tournament_welcome_title' => 'Copa del Mundo 2026',
-    'tournament_welcome_subtitle' => 'Lleva a :team a la gloria',
+    'tournament_welcome_title' => 'Lleva a :team a la gloria',
+    'tournament_welcome_subtitle' => 'El mayor torneo del mundo te espera',
+    'tournament_welcome_step_squad' => 'Selecciona tu plantilla',
+    'tournament_welcome_step_squad_desc' => 'Elige a los 26 jugadores que te ayudarán a levantar el trofeo. Elige bien: una vez comience el torneo, no hay cambios.',
     'tournament_welcome_step_format' => 'Formato del torneo',
     'tournament_welcome_step_format_desc' => '48 selecciones compiten en 12 grupos. Los 2 primeros de cada grupo y los mejores terceros avanzan a la fase eliminatoria.',
     'tournament_welcome_step_lineup' => 'Elige tu alineación',
