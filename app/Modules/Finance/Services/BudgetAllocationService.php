@@ -4,9 +4,66 @@ namespace App\Modules\Finance\Services;
 
 use App\Models\Game;
 use App\Models\GameInvestment;
+use App\Models\TeamReputation;
 
 class BudgetAllocationService
 {
+    public function __construct(
+        private readonly BudgetProjectionService $projectionService,
+    ) {}
+
+    /**
+     * Prepare budget allocation data for display (finances, tiers, minimums).
+     *
+     * @return array{finances: \App\Models\GameFinances, investment: ?GameInvestment, availableSurplus: int, tiers: array, minTiers: array, reputationLevel: string}
+     */
+    public function prepareBudgetData(Game $game): array
+    {
+        $finances = $game->currentFinances;
+        if (!$finances) {
+            $finances = $this->projectionService->generateProjections($game);
+        }
+
+        $investment = $game->currentInvestment;
+        $availableSurplus = $finances->available_surplus ?? 0;
+        $reputationLevel = TeamReputation::resolveLevel($game->id, $game->team_id);
+        $previousInvestment = $game->previousSeasonInvestment();
+
+        if ($investment) {
+            $tiers = [
+                'youth_academy' => $investment->youth_academy_tier,
+                'medical' => $investment->medical_tier,
+                'scouting' => $investment->scouting_tier,
+                'facilities' => $investment->facilities_tier,
+            ];
+        } elseif ($previousInvestment) {
+            $tiers = [
+                'youth_academy' => $previousInvestment->youth_academy_tier,
+                'medical' => $previousInvestment->medical_tier,
+                'scouting' => $previousInvestment->scouting_tier,
+                'facilities' => $previousInvestment->facilities_tier,
+            ];
+        } else {
+            $tiers = GameInvestment::defaultTiersForReputation($reputationLevel, $availableSurplus);
+        }
+
+        $minTiers = $previousInvestment ? [
+            'youth_academy' => $previousInvestment->youth_academy_tier,
+            'medical' => $previousInvestment->medical_tier,
+            'scouting' => $previousInvestment->scouting_tier,
+            'facilities' => $previousInvestment->facilities_tier,
+        ] : ['youth_academy' => 1, 'medical' => 1, 'scouting' => 1, 'facilities' => 1];
+
+        return [
+            'finances' => $finances,
+            'investment' => $investment,
+            'availableSurplus' => $availableSurplus,
+            'tiers' => $tiers,
+            'minTiers' => $minTiers,
+            'reputationLevel' => $reputationLevel,
+        ];
+    }
+
     /**
      * Allocate budget from validated euro amounts.
      *
@@ -38,6 +95,18 @@ class BudgetAllocationService
 
         if ($youthTier < 1 || $medicalTier < 1 || $scoutingTier < 1 || $facilitiesTier < 1) {
             throw new \InvalidArgumentException('messages.budget_minimum_tier');
+        }
+
+        // Infrastructure tiers are permanent — cannot drop below previous season's levels
+        $previousInvestment = $game->previousSeasonInvestment();
+        if ($previousInvestment) {
+            if ($youthTier < $previousInvestment->youth_academy_tier
+                || $medicalTier < $previousInvestment->medical_tier
+                || $scoutingTier < $previousInvestment->scouting_tier
+                || $facilitiesTier < $previousInvestment->facilities_tier
+            ) {
+                throw new \InvalidArgumentException('messages.budget_tier_below_previous');
+            }
         }
 
         return GameInvestment::updateOrCreate(

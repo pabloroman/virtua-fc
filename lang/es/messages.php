@@ -66,6 +66,7 @@ return [
     // Season messages
     'budget_exceeds_surplus' => 'La asignación total supera el superávit disponible.',
     'budget_minimum_tier' => 'Todas las áreas de infraestructura deben ser al menos Nivel 1.',
+    'budget_tier_below_previous' => 'Los niveles de infraestructura no pueden reducirse por debajo de los de la temporada anterior.',
 
     // Infrastructure upgrades
     'infrastructure_upgraded' => ':area mejorada a Nivel :tier.',

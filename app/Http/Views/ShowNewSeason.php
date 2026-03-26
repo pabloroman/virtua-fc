@@ -2,20 +2,19 @@
 
 namespace App\Http\Views;
 
-use App\Modules\Finance\Services\BudgetProjectionService;
+use App\Modules\Finance\Services\BudgetAllocationService;
 use App\Modules\Season\Services\SeasonGoalService;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GameInvestment;
 use App\Models\GamePlayer;
 use App\Models\SeasonArchive;
-use App\Models\TeamReputation;
 use App\Support\PositionMapper;
 
 class ShowNewSeason
 {
     public function __construct(
-        private readonly BudgetProjectionService $projectionService,
+        private readonly BudgetAllocationService $budgetService,
         private readonly SeasonGoalService $seasonGoalService,
     ) {}
 
@@ -48,26 +47,8 @@ class ShowNewSeason
             return redirect()->route('game.squad-selection', $gameId);
         }
 
-        // Ensure we have financial projections
-        $finances = $game->currentFinances;
-        if (!$finances) {
-            $finances = $this->projectionService->generateProjections($game);
-        }
-
-        $investment = $game->currentInvestment;
-        $availableSurplus = $finances->available_surplus ?? 0;
-
-        // Get current tiers (0-4 for each area), default based on club reputation
-        $reputationLevel = TeamReputation::resolveLevel($game->id, $game->team_id);
-        $tiers = $investment ? [
-            'youth_academy' => $investment->youth_academy_tier,
-            'medical' => $investment->medical_tier,
-            'scouting' => $investment->scouting_tier,
-            'facilities' => $investment->facilities_tier,
-        ] : GameInvestment::defaultTiersForReputation(
-            $reputationLevel,
-            $availableSurplus,
-        );
+        $budgetData = $this->budgetService->prepareBudgetData($game);
+        $reputationLevel = $budgetData['reputationLevel'];
 
         // Get season goal data
         $competition = Competition::find($game->competition_id);
@@ -90,16 +71,12 @@ class ShowNewSeason
         }
 
         return view('new-season', [
+            ...$budgetData,
             'game' => $game,
-            'finances' => $finances,
-            'investment' => $investment,
-            'availableSurplus' => $availableSurplus,
-            'tiers' => $tiers,
             'tierThresholds' => GameInvestment::TIER_THRESHOLDS,
             'seasonGoal' => $seasonGoal,
             'seasonGoalLabel' => $seasonGoalLabel,
             'seasonGoalTarget' => $seasonGoalTarget,
-            'reputationLevel' => $reputationLevel,
             'squadSnapshot' => $squadSnapshot,
             'offseasonRecap' => $offseasonRecap,
         ]);

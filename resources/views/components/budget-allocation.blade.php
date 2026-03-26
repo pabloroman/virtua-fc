@@ -2,6 +2,7 @@
     'availableSurplus',
     'tiers',
     'tierThresholds',
+    'minTiers' => ['youth_academy' => 1, 'medical' => 1, 'scouting' => 1, 'facilities' => 1],
     'isLocked' => false,
     'formAction',
     'submitLabel' => null,
@@ -15,6 +16,7 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
 <div x-data="{
     availableSurplus: {{ $availableSurplus }},
     thresholds: {{ json_encode($tierThresholds) }},
+    minTiers: @js($minTiers),
     youth_academy_tier: {{ $tiers['youth_academy'] }},
     medical_tier: {{ $tiers['medical'] }},
     scouting_tier: {{ $tiers['scouting'] }},
@@ -43,7 +45,10 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
     },
 
     get meetsMinimumRequirements() {
-        return this.youth_academy_tier >= 1 && this.medical_tier >= 1 && this.scouting_tier >= 1 && this.facilities_tier >= 1;
+        return this.youth_academy_tier >= this.minTiers.youth_academy
+            && this.medical_tier >= this.minTiers.medical
+            && this.scouting_tier >= this.minTiers.scouting
+            && this.facilities_tier >= this.minTiers.facilities;
     },
 
     formatMoney(cents) {
@@ -108,7 +113,7 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
                 <div class="tier-range">
                     <div class="track"></div>
                     <div class="track-fill" :style="'width:' + (youth_academy_tier / 4 * 100) + '%'"></div>
-                    <input type="range" x-model="youth_academy_tier" min="0" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
+                    <input type="range" x-model="youth_academy_tier" :min="minTiers.youth_academy" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
                 </div>
                 <div class="flex justify-between text-[10px] text-text-faint mt-1">
                     <span>T0</span><span>T1</span><span>T2</span><span>T3</span><span>T4</span>
@@ -133,7 +138,7 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
                 <div class="tier-range">
                     <div class="track"></div>
                     <div class="track-fill" :style="'width:' + (medical_tier / 4 * 100) + '%'"></div>
-                    <input type="range" x-model="medical_tier" min="0" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
+                    <input type="range" x-model="medical_tier" :min="minTiers.medical" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
                 </div>
                 <div class="flex justify-between text-[10px] text-text-faint mt-1">
                     <span>T0</span><span>T1</span><span>T2</span><span>T3</span><span>T4</span>
@@ -158,7 +163,7 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
                 <div class="tier-range">
                     <div class="track"></div>
                     <div class="track-fill" :style="'width:' + (scouting_tier / 4 * 100) + '%'"></div>
-                    <input type="range" x-model="scouting_tier" min="0" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
+                    <input type="range" x-model="scouting_tier" :min="minTiers.scouting" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
                 </div>
                 <div class="flex justify-between text-[10px] text-text-faint mt-1">
                     <span>T0</span><span>T1</span><span>T2</span><span>T3</span><span>T4</span>
@@ -183,7 +188,7 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
                 <div class="tier-range">
                     <div class="track"></div>
                     <div class="track-fill" :style="'width:' + (facilities_tier / 4 * 100) + '%'"></div>
-                    <input type="range" x-model="facilities_tier" min="0" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
+                    <input type="range" x-model="facilities_tier" :min="minTiers.facilities" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
                 </div>
                 <div class="flex justify-between text-[10px] text-text-faint mt-1">
                     <span>T0</span><span>T1</span><span>T2</span><span>T3</span><span>T4</span>

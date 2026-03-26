@@ -66,6 +66,7 @@ return [
     // Season messages
     'budget_exceeds_surplus' => 'Total allocation exceeds available surplus.',
     'budget_minimum_tier' => 'All infrastructure areas must be at least Tier 1.',
+    'budget_tier_below_previous' => 'Infrastructure tiers cannot be reduced below the previous season\'s levels.',
 
     // Infrastructure upgrades
     'infrastructure_upgraded' => ':area upgraded to Tier :tier.',

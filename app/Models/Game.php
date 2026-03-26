@@ -404,6 +404,22 @@ class Game extends Model
         return $this->hasOne(GameInvestment::class)->where('season', $this->season);
     }
 
+    /**
+     * Get the investment record from the previous season, if any.
+     */
+    public function previousSeasonInvestment(): ?GameInvestment
+    {
+        $previousSeason = (int) $this->season - 1;
+
+        if ($previousSeason < 1) {
+            return null;
+        }
+
+        return GameInvestment::where('game_id', $this->id)
+            ->where('season', $previousSeason)
+            ->first();
+    }
+
     public function loans(): HasMany
     {
         return $this->hasMany(Loan::class);

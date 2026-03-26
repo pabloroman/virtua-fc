@@ -48,6 +48,7 @@
             <x-budget-allocation
                 :available-surplus="$availableSurplus"
                 :tiers="$tiers"
+                :min-tiers="$minTiers"
                 :tier-thresholds="$tierThresholds"
                 :is-locked="$isLocked"
                 :form-action="route('game.budget.save', $game->id)"
