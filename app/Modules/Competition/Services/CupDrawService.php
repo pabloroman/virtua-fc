@@ -9,6 +9,7 @@ use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\Modules\Competition\Services\LeagueFixtureGenerator;
 
@@ -43,6 +44,14 @@ class CupDrawService
             return collect();
         }
 
+        // For domestic cups, lower-category teams get home advantage
+        $applyHomeAdvantageRule = $competition->scope === Competition::SCOPE_DOMESTIC
+            && $competition->role === Competition::ROLE_DOMESTIC_CUP;
+
+        $teamTierMap = $applyHomeAdvantageRule
+            ? $this->getTeamTierMap($gameId, $shuffledTeams)
+            : [];
+
         // Phase 1: Pre-generate all UUIDs and build row arrays
         $tieRows = [];
         $firstLegRows = [];
@@ -51,6 +60,16 @@ class CupDrawService
         for ($i = 0; $i < $pairCount; $i++) {
             $homeTeamId = $shuffledTeams[$i * 2];
             $awayTeamId = $shuffledTeams[$i * 2 + 1];
+
+            // Lower-category team (higher tier number) gets home advantage
+            if ($applyHomeAdvantageRule) {
+                $homeTier = $teamTierMap[$homeTeamId] ?? 99;
+                $awayTier = $teamTierMap[$awayTeamId] ?? 99;
+
+                if ($homeTier < $awayTier) {
+                    [$homeTeamId, $awayTeamId] = [$awayTeamId, $homeTeamId];
+                }
+            }
 
             $tieId = Str::uuid()->toString();
             $firstLegId = Str::uuid()->toString();
@@ -234,6 +253,28 @@ class CupDrawService
         }
 
         return null;
+    }
+
+    /**
+     * Build a map of team ID => league tier for home advantage determination.
+     *
+     * @param Collection<string> $teamIds
+     * @return array<string, int>
+     */
+    private function getTeamTierMap(string $gameId, Collection $teamIds): array
+    {
+        return DB::table('competition_entries')
+            ->join('competitions', 'competition_entries.competition_id', '=', 'competitions.id')
+            ->where('competition_entries.game_id', $gameId)
+            ->where('competitions.role', Competition::ROLE_LEAGUE)
+            ->where('competitions.tier', '>=', 1)
+            ->whereIn('competition_entries.team_id', $teamIds)
+            ->groupBy('competition_entries.team_id')
+            ->select('competition_entries.team_id', DB::raw('MIN(competitions.tier) as tier'))
+            ->get()
+            ->pluck('tier', 'team_id')
+            ->map(fn ($tier) => (int) $tier)
+            ->all();
     }
 
     /**
