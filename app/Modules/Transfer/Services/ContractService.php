@@ -1070,6 +1070,30 @@ class ContractService
     }
 
     /**
+     * Check if a player is willing to negotiate personal terms.
+     * Rejects the offer if the player refuses based on club reputation gap.
+     *
+     * @return array{willing: bool, offer: TransferOffer}
+     */
+    public function checkPlayerWillingness(TransferOffer $offer, Game $buyingClubGame, ScoutingService $scoutingService): array
+    {
+        $player = $offer->gamePlayer;
+        $reputationModifier = $scoutingService->calculateReputationModifier($buyingClubGame->team, $player);
+
+        if ($reputationModifier < 1.0 && rand(1, 100) > (int) ($reputationModifier * 100)) {
+            $offer->update([
+                'terms_status' => 'rejected',
+                'status' => TransferOffer::STATUS_REJECTED,
+                'resolved_at' => $buyingClubGame->current_date,
+            ]);
+
+            return ['willing' => false, 'offer' => $offer->fresh()];
+        }
+
+        return ['willing' => true, 'offer' => $offer];
+    }
+
+    /**
      * Synchronous personal terms negotiation for transfers.
      * Initiates or continues negotiation, evaluates immediately.
      *

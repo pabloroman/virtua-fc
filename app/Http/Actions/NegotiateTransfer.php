@@ -345,14 +345,8 @@ class NegotiateTransfer
         }
 
         // Reputation gate: player may refuse to negotiate with a lower-reputation club
-        $reputationModifier = $this->scoutingService->calculateReputationModifier($game->team, $player);
-        if ($reputationModifier < 1.0 && rand(1, 100) > (int) ($reputationModifier * 100)) {
-            $offer->update([
-                'terms_status' => 'rejected',
-                'status' => TransferOffer::STATUS_REJECTED,
-                'resolved_at' => $game->current_date,
-            ]);
-
+        $willingness = $this->contractService->checkPlayerWillingness($offer, $game, $this->scoutingService);
+        if (! $willingness['willing']) {
             return response()->json([
                 'status' => 'ok',
                 'negotiation_status' => 'rejected',
