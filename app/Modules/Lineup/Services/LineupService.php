@@ -547,10 +547,10 @@ class LineupService
      * AI teams get squad-fitted formations, reputation-driven mentality, and fitness rotation.
      *
      * @param Collection|null $allPlayersGrouped Pre-loaded players grouped by team_id (optional, for N+1 optimization)
-     * @param array $suspendedPlayerIds Array of player IDs who are suspended (optional, for N+1 optimization)
+     * @param array $suspendedByCompetition Map of competition_id => [player_ids] who are suspended (optional, for N+1 optimization)
      * @param Collection|null $clubProfiles Pre-loaded ClubProfiles keyed by team_id (optional, for AI mentality)
      */
-    public function ensureLineupsForMatches($matches, Game $game, $allPlayersGrouped = null, array $suspendedPlayerIds = [], $clubProfiles = null): void
+    public function ensureLineupsForMatches($matches, Game $game, $allPlayersGrouped = null, array $suspendedByCompetition = [], $clubProfiles = null): void
     {
         $tactics = $game->tactics;
         $playerFormation = $tactics?->default_formation
@@ -565,6 +565,7 @@ class LineupService
         foreach ($matches as $match) {
             $matchDate = $match->scheduled_date;
             $competitionId = $match->competition_id;
+            $suspendedPlayerIds = $suspendedByCompetition[$competitionId] ?? [];
 
             $this->ensureTeamLineup(
                 $match,

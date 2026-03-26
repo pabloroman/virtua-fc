@@ -78,7 +78,7 @@ class MatchResultProcessor
                 $preLoadedPlayerIds = array_values(array_diff($preLoadedPlayerIds, $deferredPlayerIds));
             }
         }
-        $this->batchServeSuspensions($matches, $matchResults, $preLoadedPlayerIds);
+        $this->batchServeSuspensions($matches, $matchResults, $preLoadedPlayerIds, $allPlayers);
 
         // 4. Bulk insert all match events across all matches
         $this->bulkInsertMatchEvents($gameId, $matchResults);
@@ -174,13 +174,14 @@ class MatchResultProcessor
 
     /**
      * Serve suspensions for all matches in the batch.
-     * Decrements matches_remaining for suspended players on teams that played.
+     * Decrements matches_remaining for suspended players whose team actually
+     * played a match in the competition the suspension belongs to.
      *
      * @param  array  $preLoadedPlayerIds  Eligible player IDs (deferred match teams already excluded by caller)
+     * @param  \Illuminate\Support\Collection|null  $allPlayers  Players grouped by team_id (for team lookup)
      */
-    private function batchServeSuspensions($matches, array $matchResults, array $preLoadedPlayerIds): void
+    private function batchServeSuspensions($matches, array $matchResults, array $preLoadedPlayerIds, $allPlayers = null): void
     {
-        // Group matches by competition
         $competitionIds = [];
         foreach ($matchResults as $result) {
             $competitionIds[$result['competitionId']] = true;
@@ -190,12 +191,58 @@ class MatchResultProcessor
             return;
         }
 
-        // Use direct whereIn on pre-loaded player IDs instead of whereHas subquery
-        $suspensionIds = PlayerSuspension::whereIn('competition_id', array_keys($competitionIds))
+        // Build a map of which competitions each team played in this batch.
+        // Uses match result data (homeTeamId/awayTeamId) when available,
+        // falls back to the GameMatch models for backward compatibility.
+        $teamCompetitions = []; // [team_id => [competition_id => true]]
+        foreach ($matchResults as $result) {
+            $homeTeamId = $result['homeTeamId'] ?? null;
+            $awayTeamId = $result['awayTeamId'] ?? null;
+
+            if (! $homeTeamId || ! $awayTeamId) {
+                $match = $matches->get($result['matchId']);
+                $homeTeamId = $homeTeamId ?? $match?->home_team_id;
+                $awayTeamId = $awayTeamId ?? $match?->away_team_id;
+            }
+
+            if ($homeTeamId) {
+                $teamCompetitions[$homeTeamId][$result['competitionId']] = true;
+            }
+            if ($awayTeamId) {
+                $teamCompetitions[$awayTeamId][$result['competitionId']] = true;
+            }
+        }
+
+        // Build player → team mapping from pre-loaded data
+        $playerTeamMap = []; // [player_id => team_id]
+        if ($allPlayers) {
+            foreach ($allPlayers as $teamId => $teamPlayers) {
+                foreach ($teamPlayers as $player) {
+                    if (in_array($player->id, $preLoadedPlayerIds)) {
+                        $playerTeamMap[$player->id] = $teamId;
+                    }
+                }
+            }
+        }
+
+        // Load suspensions with player and competition info for filtering
+        $suspensions = PlayerSuspension::whereIn('competition_id', array_keys($competitionIds))
             ->where('matches_remaining', '>', 0)
             ->whereIn('game_player_id', $preLoadedPlayerIds)
-            ->pluck('id')
-            ->all();
+            ->get(['id', 'game_player_id', 'competition_id']);
+
+        // Filter: only serve if the player's team played in this specific competition.
+        // When team mapping is unavailable, fall back to serving (preserving old behavior).
+        $suspensionIds = [];
+        foreach ($suspensions as $suspension) {
+            $teamId = $playerTeamMap[$suspension->game_player_id] ?? null;
+            if (! $teamId || empty($teamCompetitions)) {
+                // Fallback: no team data available, serve as before
+                $suspensionIds[] = $suspension->id;
+            } elseif (isset($teamCompetitions[$teamId][$suspension->competition_id])) {
+                $suspensionIds[] = $suspension->id;
+            }
+        }
 
         if (! empty($suspensionIds)) {
             PlayerSuspension::whereIn('id', $suspensionIds)->decrement('matches_remaining');

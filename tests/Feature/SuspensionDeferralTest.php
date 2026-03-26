@@ -414,6 +414,137 @@ class SuspensionDeferralTest extends TestCase
         );
     }
 
+    public function test_cross_competition_suspension_not_served_when_team_plays_different_competition(): void
+    {
+        // Setup: two competitions on the same date
+        $copa = Competition::factory()->knockoutCup()->create([
+            'id' => 'ESPCUP',
+            'name' => 'Copa del Rey',
+        ]);
+
+        $this->createSquad($this->playerTeam);
+        $this->createSquad($this->opponentTeam);
+
+        $aiTeamA = Team::factory()->create(['name' => 'AI Team A']);
+        $aiTeamB = Team::factory()->create(['name' => 'AI Team B']);
+        $this->createSquad($aiTeamA);
+        $this->createSquad($aiTeamB);
+
+        // AI Team A has a Copa suspension
+        $suspendedPlayer = GamePlayer::where('game_id', $this->game->id)
+            ->where('team_id', $aiTeamA->id)
+            ->where('position', 'Centre-Forward')
+            ->first();
+
+        PlayerSuspension::create([
+            'game_player_id' => $suspendedPlayer->id,
+            'competition_id' => $copa->id,
+            'matches_remaining' => 1,
+            'yellow_cards' => 3,
+        ]);
+
+        // La Liga match: player's team vs AI Team A
+        GameMatch::factory()->create([
+            'game_id' => $this->game->id,
+            'competition_id' => $this->competition->id,
+            'round_number' => 1,
+            'home_team_id' => $this->playerTeam->id,
+            'away_team_id' => $aiTeamA->id,
+            'scheduled_date' => Carbon::parse('2024-08-16'),
+        ]);
+
+        // Copa match on the same date: AI Team B vs opponent (AI Team A NOT playing Copa)
+        $aiTeamB->competitions()->attach($copa->id, ['season' => '2024']);
+        $this->opponentTeam->competitions()->attach($copa->id, ['season' => '2024']);
+
+        GameMatch::factory()->create([
+            'game_id' => $this->game->id,
+            'competition_id' => $copa->id,
+            'round_number' => 1,
+            'home_team_id' => $aiTeamB->id,
+            'away_team_id' => $this->opponentTeam->id,
+            'scheduled_date' => Carbon::parse('2024-08-16'),
+        ]);
+
+        $this->createStandings();
+
+        // Advance matchday
+        $action = app(AdvanceMatchday::class);
+        $action($this->game->id);
+
+        // Finalize
+        $this->game->refresh();
+        if ($this->game->pending_finalization_match_id) {
+            $match = GameMatch::find($this->game->pending_finalization_match_id);
+            app(MatchFinalizationService::class)->finalize($match, $this->game);
+        }
+
+        // AI Team A's Copa suspension should NOT have been served
+        // (they played La Liga, not Copa)
+        $suspension = PlayerSuspension::where('game_player_id', $suspendedPlayer->id)
+            ->where('competition_id', $copa->id)
+            ->first();
+
+        $this->assertNotNull($suspension);
+        $this->assertEquals(
+            1,
+            $suspension->matches_remaining,
+            'Copa suspension should NOT be served when the team only played a La Liga match'
+        );
+    }
+
+    public function test_same_competition_suspension_is_served(): void
+    {
+        $this->createSquad($this->playerTeam);
+        $this->createSquad($this->opponentTeam);
+
+        // Player team has a La Liga suspension
+        $suspendedPlayer = GamePlayer::factory()
+            ->forGame($this->game)
+            ->forTeam($this->opponentTeam)
+            ->create(['position' => 'Right Winger']);
+
+        PlayerSuspension::create([
+            'game_player_id' => $suspendedPlayer->id,
+            'competition_id' => $this->competition->id,
+            'matches_remaining' => 1,
+            'yellow_cards' => 5,
+        ]);
+
+        // La Liga match
+        GameMatch::factory()->create([
+            'game_id' => $this->game->id,
+            'competition_id' => $this->competition->id,
+            'round_number' => 1,
+            'home_team_id' => $this->playerTeam->id,
+            'away_team_id' => $this->opponentTeam->id,
+            'scheduled_date' => Carbon::parse('2024-08-16'),
+        ]);
+
+        $this->createStandings();
+
+        // Advance matchday
+        $action = app(AdvanceMatchday::class);
+        $action($this->game->id);
+
+        // Finalize
+        $this->game->refresh();
+        $match = GameMatch::find($this->game->pending_finalization_match_id);
+        app(MatchFinalizationService::class)->finalize($match, $this->game);
+
+        // La Liga suspension SHOULD be served (team played La Liga)
+        $suspension = PlayerSuspension::where('game_player_id', $suspendedPlayer->id)
+            ->where('competition_id', $this->competition->id)
+            ->first();
+
+        $this->assertNotNull($suspension);
+        $this->assertEquals(
+            0,
+            $suspension->matches_remaining,
+            'La Liga suspension should be served when team played a La Liga match'
+        );
+    }
+
     private function createStandings(): void
     {
         foreach ([$this->playerTeam, $this->opponentTeam] as $team) {

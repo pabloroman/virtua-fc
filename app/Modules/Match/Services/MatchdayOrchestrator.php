@@ -181,16 +181,18 @@ class MatchdayOrchestrator
         $allPlayers = $allPlayers->groupBy('team_id');
 
         $competitionIds = $matches->pluck('competition_id')->unique()->toArray();
-        $suspendedPlayerIds = PlayerSuspension::whereIn('competition_id', $competitionIds)
+        $suspendedByCompetition = PlayerSuspension::whereIn('competition_id', $competitionIds)
             ->where('matches_remaining', '>', 0)
-            ->pluck('game_player_id')
+            ->get(['game_player_id', 'competition_id'])
+            ->groupBy('competition_id')
+            ->map(fn ($group) => $group->pluck('game_player_id')->toArray())
             ->toArray();
 
         $clubProfiles = TeamReputation::where('game_id', $game->id)
             ->whereIn('team_id', $teamIds)->get()->keyBy('team_id');
 
         // --- Ensure lineups ---
-        $this->lineupService->ensureLineupsForMatches($matches, $game, $allPlayers, $suspendedPlayerIds, $clubProfiles);
+        $this->lineupService->ensureLineupsForMatches($matches, $game, $allPlayers, $suspendedByCompetition, $clubProfiles);
 
         // --- Check for forfeit (user's team has < 7 available players) ---
         // $playerMatch was already resolved above (line 158) — reuse it after filtering
