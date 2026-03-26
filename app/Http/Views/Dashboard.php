@@ -35,7 +35,6 @@ class Dashboard
             'gameCount' => $games->count(),
             'maxGames' => $maxGames,
             'tournamentHistory' => $tournamentHistory,
-            'showCareerWaitlist' => ! $request->user()->canPlayCareerMode(),
         ]);
     }
 }

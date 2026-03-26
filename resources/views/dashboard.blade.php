@@ -103,12 +103,6 @@
             @endforeach
         </ul>
 
-        {{-- Career Mode Waitlist CTA --}}
-        @if($showCareerWaitlist)
-            <div class="mt-8">
-                <x-career-waitlist-cta />
-            </div>
-        @endif
 
         {{-- Tournament History --}}
         @if($tournamentHistory->isNotEmpty())
