@@ -1579,7 +1579,7 @@ class TransferService
             'asking_price' => $evaluation['asking_price'],
             'resolved_at' => $game->current_date,
         ]);
-        return ['result' => 'rejected', 'offer' => $offer->fresh(), 'reason' => $evaluation['reason'] ?? 'price'];
+        return ['result' => 'rejected', 'offer' => $offer->fresh()];
     }
 
     /**

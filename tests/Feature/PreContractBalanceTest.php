@@ -258,10 +258,10 @@ class PreContractBalanceTest extends TestCase
     }
 
     // =========================================
-    // BID REPUTATION GATE TESTS
+    // BID EVALUATION TESTS (PRICE ONLY — REPUTATION GATE MOVED TO PERSONAL TERMS)
     // =========================================
 
-    public function test_evaluate_bid_with_large_reputation_gap_mostly_rejects_below_asking(): void
+    public function test_evaluate_bid_with_large_reputation_gap_evaluates_on_price(): void
     {
         [$game, $player] = $this->createGameAndPlayer(
             offeringReputation: ClubProfile::REPUTATION_LOCAL,
@@ -269,23 +269,16 @@ class PreContractBalanceTest extends TestCase
             marketValueCents: 5_000_000_000,
         );
 
-        // Offer below asking price — reputation gate should apply
+        // Low bid — should be rejected on price, not reputation
         $askingPrice = $this->scoutingService->calculateAskingPrice($player);
         $bidAmount = (int) ($askingPrice * 0.5);
 
-        $rejectedNotInterested = 0;
-        for ($i = 0; $i < 100; $i++) {
-            $result = $this->scoutingService->evaluateBid($player, $bidAmount, $game);
-            if ($result['result'] === 'rejected' && ($result['reason'] ?? null) === 'reputation') {
-                $rejectedNotInterested++;
-            }
-        }
-
-        // Gap of 4 → modifier 0.08 → ~92% should be rejected by reputation gate
-        $this->assertGreaterThan(75, $rejectedNotInterested, "Expected mostly reputation rejections for gap 4, got {$rejectedNotInterested}/100");
+        $result = $this->scoutingService->evaluateBid($player, $bidAmount, $game);
+        $this->assertEquals('rejected', $result['result']);
+        $this->assertArrayNotHasKey('reason', $result, 'Club bid evaluation should not have a reputation reason');
     }
 
-    public function test_evaluate_bid_above_asking_price_bypasses_reputation_gate(): void
+    public function test_evaluate_bid_above_asking_price_always_accepts(): void
     {
         [$game, $player] = $this->createGameAndPlayer(
             offeringReputation: ClubProfile::REPUTATION_LOCAL,

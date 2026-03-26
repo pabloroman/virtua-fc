@@ -244,9 +244,9 @@ class NegotiateTransfer
                 'max_rounds' => self::MAX_ROUNDS,
                 'messages' => [
                     $this->agentMessage('rejected', [
-                        'text' => ($result['reason'] ?? null) === 'reputation'
-                            ? __('transfers.chat_club_rejected_reputation', ['team' => $teamName])
-                            : __('transfers.chat_club_rejected', ['team' => $teamName]),
+                        'text' => __('transfers.chat_club_rejected', [
+                            'team' => $teamName,
+                        ]),
                     ]),
                 ],
             ]),
@@ -339,6 +339,30 @@ class NegotiateTransfer
                         'canAccept' => true,
                         'suggestedWage' => $this->calculateMidpointInEuros($offer->offered_wage, $offer->wage_counter_offer),
                         'preferredYears' => $offer->preferred_years,
+                    ]),
+                ],
+            ]);
+        }
+
+        // Reputation gate: player may refuse to negotiate with a lower-reputation club
+        $reputationModifier = $this->scoutingService->calculateReputationModifier($game->team, $player);
+        if ($reputationModifier < 1.0 && rand(1, 100) > (int) ($reputationModifier * 100)) {
+            $offer->update([
+                'terms_status' => 'rejected',
+                'status' => TransferOffer::STATUS_REJECTED,
+                'resolved_at' => $game->current_date,
+            ]);
+
+            return response()->json([
+                'status' => 'ok',
+                'negotiation_status' => 'rejected',
+                'round' => 0,
+                'max_rounds' => self::MAX_ROUNDS,
+                'messages' => [
+                    $this->agentMessage('rejected', [
+                        'text' => __('transfers.chat_player_not_interested', [
+                            'player' => $player->name,
+                        ]),
                     ]),
                 ],
             ]);
