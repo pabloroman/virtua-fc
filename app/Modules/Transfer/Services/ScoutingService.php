@@ -3,10 +3,8 @@
 namespace App\Modules\Transfer\Services;
 
 use App\Models\ClubProfile;
-use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GamePlayer;
-use App\Models\Loan;
 use App\Models\ScoutReport;
 use App\Models\ShortlistedPlayer;
 use App\Models\Team;
@@ -229,122 +227,14 @@ class ScoutingService
         $filters = $report->filters;
         $positions = PositionMapper::getPositionsForFilter($filters['position']) ?? [];
 
-        $query = GamePlayer::with(['player', 'team'])
-            ->where('game_id', $game->id)
-            ->whereNotNull('team_id')
-            ->where('team_id', '!=', $game->team_id)
-            ->whereIn('position', $positions);
-
-        // Scope filter (domestic / international) — enforce tier restriction
-        $scope = $filters['scope'] ?? ['domestic', 'international'];
+        // Enforce international search tier restriction
         if (!$this->canSearchInternationally($game)) {
-            $scope = ['domestic'];
-        }
-        if (count($scope) === 1) {
-            $teamCountry = $game->country;
-            $scopeCompetitionIds = Competition::where('country', in_array('domestic', $scope) ? '=' : '!=', $teamCountry)
-                ->pluck('id');
-            $scopeTeamIds = Team::whereHas('competitions', function ($q) use ($scopeCompetitionIds) {
-                $q->whereIn('competitions.id', $scopeCompetitionIds);
-            })->pluck('id');
-            $query->whereIn('team_id', $scopeTeamIds);
+            $filters['scope'] = ['domestic'];
         }
 
-        // Age filter (age is computed from players.date_of_birth, not a column)
-        if (! empty($filters['age_min']) || ! empty($filters['age_max'])) {
-            /** @var \Illuminate\Database\Connection $connection */
-            $connection = $query->getQuery()->getConnection();
-            $driver = $connection->getDriverName();
-            $dobSubquery = '(SELECT date_of_birth FROM players WHERE players.id = game_players.player_id)';
-            $gameDate = $game->current_date->toDateString();
-
-            if ($driver === 'pgsql') {
-                $ageExpr = "EXTRACT(YEAR FROM AGE(?::date, $dobSubquery))";
-            } else {
-                $ageExpr = "(strftime('%Y', ?) - strftime('%Y', $dobSubquery))";
-            }
-
-            if (! empty($filters['age_min'])) {
-                $query->whereRaw("($ageExpr) >= ?", [$gameDate, (int) $filters['age_min']]);
-            }
-            if (! empty($filters['age_max'])) {
-                $query->whereRaw("($ageExpr) <= ?", [$gameDate, (int) $filters['age_max']]);
-            }
-        }
-
-        // Ability filter
-        if (! empty($filters['ability_min']) || ! empty($filters['ability_max'])) {
-            $query->where(function ($q) use ($filters) {
-                $abilityExpr = '(COALESCE(game_players.game_technical_ability, (SELECT technical_ability FROM players WHERE players.id = game_players.player_id)) + COALESCE(game_players.game_physical_ability, (SELECT physical_ability FROM players WHERE players.id = game_players.player_id))) / 2';
-                if (! empty($filters['ability_min'])) {
-                    $q->whereRaw("($abilityExpr) >= ?", [(int) $filters['ability_min']]);
-                }
-                if (! empty($filters['ability_max'])) {
-                    $q->whereRaw("($abilityExpr) <= ?", [(int) $filters['ability_max']]);
-                }
-            });
-        }
-
-        // Market value range filter
-        if (! empty($filters['value_min'])) {
-            $query->where('market_value_cents', '>=', $filters['value_min'] * 100);
-        }
-        if (! empty($filters['value_max'])) {
-            $query->where('market_value_cents', '<=', $filters['value_max'] * 100);
-        }
-
-        // Expiring contract filter (last year of contract)
-        $seasonEnd = $game->getSeasonEndDate();
-        if (! empty($filters['expiring_contract'])) {
-            $query->whereNotNull('contract_until')
-                ->where('contract_until', '<=', $seasonEnd);
-        } else {
-            $query->where(function ($q) use ($seasonEnd) {
-                $q->whereNull('contract_until')
-                    ->orWhere('contract_until', '>', $seasonEnd);
-            });
-        }
-
-        // Exclude players already on loan
-        $loanedPlayerIds = Loan::where('game_id', $game->id)
-            ->where('status', Loan::STATUS_ACTIVE)
-            ->pluck('game_player_id');
-
-        $query->whereNotIn('id', $loanedPlayerIds);
-
-        // Exclude players with agreed transfers
-        $agreedPlayerIds = TransferOffer::where('game_id', $game->id)
-            ->where('status', TransferOffer::STATUS_AGREED)
-            ->pluck('game_player_id');
-
-        $query->whereNotIn('id', $agreedPlayerIds);
-
-        $candidates = $query->get();
-
-        // Also include free agents matching the position filter
-        $freeAgentQuery = GamePlayer::with(['player'])
-            ->where('game_id', $game->id)
-            ->whereNull('team_id')
-            ->whereIn('position', $positions);
-
-        if (! empty($filters['age_min']) || ! empty($filters['age_max'])) {
-            /** @var \Illuminate\Database\Connection $connection */
-            $connection = $freeAgentQuery->getQuery()->getConnection();
-            $driver = $connection->getDriverName();
-            $dobSubquery = '(SELECT date_of_birth FROM players WHERE players.id = game_players.player_id)';
-            $gameDate = $game->current_date->toDateString();
-            $ageExpr = $driver === 'pgsql'
-                ? "EXTRACT(YEAR FROM AGE(?::date, $dobSubquery))"
-                : "(strftime('%Y', ?) - strftime('%Y', $dobSubquery))";
-            if (! empty($filters['age_min'])) {
-                $freeAgentQuery->whereRaw("($ageExpr) >= ?", [$gameDate, (int) $filters['age_min']]);
-            }
-            if (! empty($filters['age_max'])) {
-                $freeAgentQuery->whereRaw("($ageExpr) <= ?", [$gameDate, (int) $filters['age_max']]);
-            }
-        }
-
-        $freeAgents = $freeAgentQuery->get();
+        $queryBuilder = app(ScoutSearchQueryBuilder::class);
+        $candidates = $queryBuilder->buildCandidateQuery($game, $filters, $positions)->get();
+        $freeAgents = $queryBuilder->buildFreeAgentQuery($game, $filters, $positions)->get();
         $candidates = $candidates->merge($freeAgents);
 
         if ($candidates->isEmpty()) {
