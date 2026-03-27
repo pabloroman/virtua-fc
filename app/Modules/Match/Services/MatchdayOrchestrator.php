@@ -618,6 +618,7 @@ class MatchdayOrchestrator
                     $injury['player'],
                     $injury['type'],
                     $injury['weeks'],
+                    duringMatch: false,
                 );
             }
         }

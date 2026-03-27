@@ -19,11 +19,16 @@ return [
     'injury_acl_tear' => 'ACL tear',
     'injury_achilles_rupture' => 'Achilles tendon rupture',
 
-    // Player injuries
+    // Player injuries — during match
     'player_injured_title' => ':player injured',
-    'player_injured_message' => ':player has :injury.',
-    'player_injured_message_matches' => ':player has :injury and will miss :matches match.|:player has :injury and will miss :matches matches.',
-    'player_injured_message_matches_approx' => ':player has :injury and will miss :matches+ match.|:player has :injury and will miss :matches+ matches.',
+    'player_injured_match_message' => ':player has suffered :injury during the match.',
+    'player_injured_match_message_matches' => ':player has suffered :injury during the match and will miss :matches match.|:player has suffered :injury during the match and will miss :matches matches.',
+    'player_injured_match_message_matches_approx' => ':player has suffered :injury during the match and will miss :matches+ match.|:player has suffered :injury during the match and will miss :matches+ matches.',
+
+    // Player injuries — during training
+    'player_injured_training_message' => ':player has suffered :injury during training.',
+    'player_injured_training_message_matches' => ':player has suffered :injury during training and will miss :matches match.|:player has suffered :injury during training and will miss :matches matches.',
+    'player_injured_training_message_matches_approx' => ':player has suffered :injury during training and will miss :matches+ match.|:player has suffered :injury during training and will miss :matches+ matches.',
 
     // Player suspensions
     'player_suspended_title' => ':player suspended',
