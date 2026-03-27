@@ -358,7 +358,7 @@ class AITransferMarketService
                 $assignedNumber = $this->allocateSquadNumber($takenNumbers, $buyerTeamId);
 
                 // Prepare domestic transfer
-                $this->prepareDomesticTransfer($game, $player, $sellerTeamId, $buyerTeamId, $teams, $window, $assignedNumber, $playerUpdates, $transferInserts);
+                $this->prepareTransfer($game, $player, $sellerTeamId, $buyerTeamId, $teams->get($buyerTeamId), $window, $assignedNumber, $playerUpdates, $transferInserts);
                 $count++;
                 $transferredPlayerIds[$player->id] = true;
 
@@ -378,7 +378,7 @@ class AITransferMarketService
                     $foreignIndex++;
                     $assignedNumber = $this->allocateSquadNumber($takenNumbers, $foreignTeam->id);
 
-                    $this->prepareForeignTransfer($game, $player, $sellerTeamId, $foreignTeam, $window, $assignedNumber, $playerUpdates, $transferInserts);
+                    $this->prepareTransfer($game, $player, $sellerTeamId, $foreignTeam->id, $foreignTeam, $window, $assignedNumber, $playerUpdates, $transferInserts, maxContractYears: 4);
                     $count++;
                     $transferredPlayerIds[$player->id] = true;
                     $this->incrementBudget($teamBudgets, $sellerTeamId, 'sells');
@@ -774,26 +774,30 @@ class AITransferMarketService
     }
 
     /**
-     * Prepare a domestic transfer between two AI teams (batched, no DB queries).
+     * Prepare a transfer between AI teams (batched, no DB queries).
+     *
+     * @param  int  $minContractYears  Minimum contract years (domestic: 2, foreign: 2)
+     * @param  int  $maxContractYears  Maximum contract years (domestic: 3, foreign: 4)
      */
-    private function prepareDomesticTransfer(
+    private function prepareTransfer(
         Game $game,
         GamePlayer $player,
         string $fromTeamId,
         string $toTeamId,
-        Collection $teams,
+        ?Team $toTeam,
         string $window,
         int $assignedNumber,
         array &$playerUpdates,
         array &$transferInserts,
+        int $minContractYears = 2,
+        int $maxContractYears = 3,
     ): void {
         $fee = $player->market_value_cents;
         $seasonYear = (int) $game->season;
-        $contractYears = mt_rand(2, 3);
+        $contractYears = mt_rand($minContractYears, $maxContractYears);
         $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
 
-        $team = $teams->get($toTeamId);
-        $minimumWage = $team ? $this->contractService->getMinimumWageForTeam($team) : 0;
+        $minimumWage = $toTeam ? $this->contractService->getMinimumWageForTeam($toTeam) : 0;
         $newWage = $this->contractService->calculateAnnualWage(
             $player->market_value_cents,
             $minimumWage,
@@ -817,56 +821,6 @@ class AITransferMarketService
             'game_player_id' => $player->id,
             'from_team_id' => $fromTeamId,
             'to_team_id' => $toTeamId,
-            'transfer_fee' => $fee,
-            'type' => GameTransfer::TYPE_TRANSFER,
-            'season' => $game->season,
-            'window' => $window,
-        ];
-    }
-
-    /**
-     * Prepare a foreign transfer (batched, no DB queries).
-     */
-    private function prepareForeignTransfer(
-        Game $game,
-        GamePlayer $player,
-        string $fromTeamId,
-        Team $foreignTeam,
-        string $window,
-        int $assignedNumber,
-        array &$playerUpdates,
-        array &$transferInserts,
-    ): void {
-        $fee = $player->market_value_cents;
-
-        $seasonYear = (int) $game->season;
-        $contractYears = mt_rand(2, 4);
-        $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
-
-        $minimumWage = $this->contractService->getMinimumWageForTeam($foreignTeam);
-        $newWage = $this->contractService->calculateAnnualWage(
-            $player->market_value_cents,
-            $minimumWage,
-            $player->age($game->current_date),
-        );
-
-        $playerUpdates[] = [
-            'id' => $player->id,
-            'game_id' => $player->game_id,
-            'player_id' => $player->player_id,
-            'team_id' => $foreignTeam->id,
-            'number' => $assignedNumber,
-            'position' => $player->position,
-            'contract_until' => $newContractEnd->toDateString(),
-            'annual_wage' => $newWage,
-        ];
-
-        $transferInserts[] = [
-            'id' => Str::uuid()->toString(),
-            'game_id' => $game->id,
-            'game_player_id' => $player->id,
-            'from_team_id' => $fromTeamId,
-            'to_team_id' => $foreignTeam->id,
             'transfer_fee' => $fee,
             'type' => GameTransfer::TYPE_TRANSFER,
             'season' => $game->season,
