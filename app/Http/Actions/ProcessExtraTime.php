@@ -6,9 +6,9 @@ use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Modules\Match\Services\ExtraTimeAndPenaltyService;
+use App\Modules\Match\Services\MatchResimulationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 
 class ProcessExtraTime
 {
@@ -41,43 +41,12 @@ class ProcessExtraTime
 
         return response()->json([
             'needed' => true,
-            'extraTimeEvents' => $this->buildFrontendEvents($result->storedEvents),
+            'extraTimeEvents' => MatchResimulationService::formatMatchEvents($result->storedEvents),
             'homeScoreET' => $result->homeScoreET,
             'awayScoreET' => $result->awayScoreET,
             'needsPenalties' => $result->needsPenalties,
             'homePossession' => $result->homePossession,
             'awayPossession' => $result->awayPossession,
         ]);
-    }
-
-    private function buildFrontendEvents(Collection $events): array
-    {
-        $formattedEvents = $events
-            ->filter(fn ($e) => $e->event_type !== 'assist')
-            ->map(fn ($e) => [
-                'minute' => $e->minute,
-                'type' => $e->event_type,
-                'playerName' => $e->gamePlayer->player->name ?? '',
-                'teamId' => $e->team_id,
-                'gamePlayerId' => $e->game_player_id,
-                'metadata' => $e->metadata,
-            ])
-            ->values()
-            ->all();
-
-        $assists = $events
-            ->filter(fn ($e) => $e->event_type === 'assist')
-            ->keyBy(fn ($e) => $e->minute.':'.$e->team_id);
-
-        return array_map(function ($event) use ($assists) {
-            if ($event['type'] === 'goal') {
-                $key = $event['minute'].':'.$event['teamId'];
-                if (isset($assists[$key])) {
-                    $event['assistPlayerName'] = $assists[$key]->gamePlayer->player->name ?? null;
-                }
-            }
-
-            return $event;
-        }, $formattedEvents);
     }
 }
