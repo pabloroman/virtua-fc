@@ -19,16 +19,13 @@ return [
     'injury_acl_tear' => 'rotura de ligamento cruzado',
     'injury_achilles_rupture' => 'rotura del tendón de Aquiles',
 
-    // Player injuries — durante partido
+    // Player injuries
     'player_injured_title' => ':player lesionado',
-    'player_injured_match_message' => ':player ha sufrido :injury durante el partido.',
-    'player_injured_match_message_matches' => ':player ha sufrido :injury durante el partido y se perderá :matches partido.|:player ha sufrido :injury durante el partido y se perderá :matches partidos.',
-    'player_injured_match_message_matches_approx' => ':player ha sufrido :injury durante el partido y se perderá :matches+ partido.|:player ha sufrido :injury durante el partido y se perderá :matches+ partidos.',
-
-    // Player injuries — durante entrenamiento
-    'player_injured_training_message' => ':player ha sufrido :injury durante el entrenamiento.',
-    'player_injured_training_message_matches' => ':player ha sufrido :injury durante el entrenamiento y se perderá :matches partido.|:player ha sufrido :injury durante el entrenamiento y se perderá :matches partidos.',
-    'player_injured_training_message_matches_approx' => ':player ha sufrido :injury durante el entrenamiento y se perderá :matches+ partido.|:player ha sufrido :injury durante el entrenamiento y se perderá :matches+ partidos.',
+    'player_injured_message' => ':player ha sufrido :injury :location.',
+    'player_injured_message_matches' => ':player ha sufrido :injury :location y se perderá :matches partido.|:player ha sufrido :injury :location y se perderá :matches partidos.',
+    'player_injured_message_matches_approx' => ':player ha sufrido :injury :location y se perderá :matches+ partido.|:player ha sufrido :injury :location y se perderá :matches+ partidos.',
+    'injury_location_match' => 'durante el partido',
+    'injury_location_training' => 'durante el entrenamiento',
 
     // Player suspensions
     'player_suspended_title' => ':player sancionado',
