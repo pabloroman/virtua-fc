@@ -67,7 +67,8 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'has_tournament_access' => true,
+            'has_career_access' => $invite->grants_career,
+            'has_tournament_access' => $invite->grants_tournament,
         ]);
 
         $invite->consume();

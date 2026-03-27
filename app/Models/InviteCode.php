@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool $invite_sent
  * @property \Illuminate\Support\Carbon|null $invite_sent_at
  * @property \Illuminate\Support\Carbon|null $reminder_sent_at
+ * @property bool $grants_career
+ * @property bool $grants_tournament
  * @property \Illuminate\Support\Carbon|null $expires_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -42,6 +44,8 @@ class InviteCode extends Model
         'invite_sent_at',
         'reminder_sent_at',
         'expires_at',
+        'grants_career',
+        'grants_tournament',
     ];
 
     protected function casts(): array
@@ -51,6 +55,8 @@ class InviteCode extends Model
             'invite_sent_at' => 'datetime',
             'reminder_sent_at' => 'datetime',
             'expires_at' => 'datetime',
+            'grants_career' => 'boolean',
+            'grants_tournament' => 'boolean',
             'max_uses' => 'integer',
             'times_used' => 'integer',
         ];

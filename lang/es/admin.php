@@ -91,6 +91,9 @@ return [
     'waitlist_bulk_invite_started' => 'Enviando :count invitaciones en segundo plano...',
     'waitlist_bulk_invite_confirm' => 'Se enviarán hasta 50 invitaciones. ¿Continuar?',
     'waitlist_no_pending' => 'No hay entradas pendientes en la lista de espera.',
+    'waitlist_mode' => 'Modo',
+    'waitlist_mode_career' => 'Carrera',
+    'waitlist_mode_tournament' => 'Torneo',
     'search_waitlist_placeholder' => 'Buscar por nombre o email...',
 
     // Game stats

@@ -60,6 +60,7 @@
                 <tr>
                     <th class="px-4 py-3 text-left text-[10px] text-text-muted uppercase tracking-wider">{{ __('admin.user') }}</th>
                     <th class="px-4 py-3 text-left text-[10px] text-text-muted uppercase tracking-wider hidden md:table-cell">{{ __('admin.email') }}</th>
+                    <th class="px-4 py-3 text-left text-[10px] text-text-muted uppercase tracking-wider hidden md:table-cell">{{ __('admin.waitlist_mode') }}</th>
                     <th class="px-4 py-3 text-left text-[10px] text-text-muted uppercase tracking-wider">{{ __('admin.waitlist_status') }}</th>
                     <th class="px-4 py-3 text-left text-[10px] text-text-muted uppercase tracking-wider hidden md:table-cell">{{ __('admin.waitlist_signed_up') }}</th>
                     <th class="px-4 py-3 text-right text-[10px] text-text-muted uppercase tracking-wider">{{ __('admin.actions') }}</th>
@@ -73,6 +74,20 @@
                             <div class="text-xs text-text-muted md:hidden">{{ $entry->email }}</div>
                         </td>
                         <td class="px-4 py-3 text-sm text-text-muted hidden md:table-cell">{{ $entry->email }}</td>
+                        <td class="px-4 py-3 text-sm hidden md:table-cell">
+                            <div class="flex gap-1">
+                                @if($entry->wants_career)
+                                    <span class="inline-flex items-center rounded-full bg-accent-blue/10 px-2 py-0.5 text-[10px] font-medium text-accent-blue ring-1 ring-inset ring-accent-blue/20">
+                                        {{ __('admin.waitlist_mode_career') }}
+                                    </span>
+                                @endif
+                                @if($entry->wants_tournament)
+                                    <span class="inline-flex items-center rounded-full bg-accent-green/10 px-2 py-0.5 text-[10px] font-medium text-accent-green ring-1 ring-inset ring-accent-green/20">
+                                        {{ __('admin.waitlist_mode_tournament') }}
+                                    </span>
+                                @endif
+                            </div>
+                        </td>
                         <td class="px-4 py-3 text-sm">
                             @if(! $entry->inviteCode)
                                 <span class="inline-flex items-center rounded-full bg-accent-gold/10 px-2 py-0.5 text-xs font-medium text-accent-gold ring-1 ring-inset ring-accent-gold/20">
@@ -104,7 +119,7 @@
 
                 @if($entries->isEmpty())
                     <tr>
-                        <td colspan="5" class="px-4 py-8 text-center text-sm text-text-muted">
+                        <td colspan="6" class="px-4 py-8 text-center text-sm text-text-muted">
                             {{ __('admin.no_results') }}
                         </td>
                     </tr>

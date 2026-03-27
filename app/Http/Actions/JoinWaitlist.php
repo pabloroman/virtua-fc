@@ -14,6 +14,8 @@ class JoinWaitlist
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email:rfc,dns|max:255',
+            'wants_career' => 'sometimes|boolean',
+            'wants_tournament' => 'sometimes|boolean',
         ]);
 
         if ($validator->fails()) {
@@ -24,10 +26,17 @@ class JoinWaitlist
 
         $validated = $validator->validated();
         $validated['email'] = strtolower($validated['email']);
+        $validated['wants_career'] = $validated['wants_career'] ?? true;
+        $validated['wants_tournament'] = $validated['wants_tournament'] ?? true;
 
         $existing = WaitlistEntry::where('email', $validated['email'])->first();
 
         if ($existing) {
+            $existing->update([
+                'wants_career' => $validated['wants_career'],
+                'wants_tournament' => $validated['wants_tournament'],
+            ]);
+
             return response()->json([
                 'message' => __('waitlist.already_registered'),
             ], 200);

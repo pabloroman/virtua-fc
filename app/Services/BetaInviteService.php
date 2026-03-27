@@ -10,13 +10,19 @@ use Illuminate\Support\Str;
 
 class BetaInviteService
 {
-    public function invite(WaitlistEntry $entry, ?string $expiresAt = null): InviteCode
-    {
+    public function invite(
+        WaitlistEntry $entry,
+        ?string $expiresAt = null,
+        bool $grantsCareer = false,
+        bool $grantsTournament = true,
+    ): InviteCode {
         $invite = InviteCode::create([
             'code' => $this->generateCode(),
             'email' => strtolower($entry->email),
             'max_uses' => 1,
             'expires_at' => $expiresAt,
+            'grants_career' => $grantsCareer,
+            'grants_tournament' => $grantsTournament,
         ]);
 
         Mail::to($entry->email)->send(new BetaInvite($invite));

@@ -4,6 +4,7 @@ namespace Tests\Feature\Auth;
 
 use App\Models\InviteCode;
 use App\Models\User;
+use App\Models\WaitlistEntry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
@@ -139,6 +140,98 @@ class RegistrationTest extends TestCase
         $this->assertDatabaseHas('invite_codes', [
             'code' => 'EMAIL-LOCKED',
             'times_used' => 0,
+        ]);
+    }
+
+    // --- Invite code grant flags ---
+
+    public function test_invite_granting_both_modes_gives_full_access(): void
+    {
+        Notification::fake();
+        config()->set('beta.enabled', true);
+
+        InviteCode::create([
+            'code' => 'BOTH-MODES',
+            'email' => 'both@example.com',
+            'max_uses' => 1,
+            'times_used' => 0,
+            'grants_career' => true,
+            'grants_tournament' => true,
+        ]);
+
+        $response = $this->post(route('register.career-mode', ['invite' => 'BOTH-MODES']), [
+            'name' => 'Both Modes',
+            'email' => 'both@example.com',
+            'password' => 'my-new-password',
+            'password_confirmation' => 'my-new-password',
+            'invite_code' => 'BOTH-MODES',
+        ]);
+
+        $this->assertAuthenticated();
+        $this->assertDatabaseHas('users', [
+            'email' => 'both@example.com',
+            'has_career_access' => true,
+            'has_tournament_access' => true,
+        ]);
+    }
+
+    public function test_invite_granting_career_only_gives_career_access(): void
+    {
+        Notification::fake();
+        config()->set('beta.enabled', true);
+
+        InviteCode::create([
+            'code' => 'CAREER-ONLY',
+            'email' => 'career@example.com',
+            'max_uses' => 1,
+            'times_used' => 0,
+            'grants_career' => true,
+            'grants_tournament' => false,
+        ]);
+
+        $this->post(route('register.career-mode', ['invite' => 'CAREER-ONLY']), [
+            'name' => 'Career Only',
+            'email' => 'career@example.com',
+            'password' => 'my-new-password',
+            'password_confirmation' => 'my-new-password',
+            'invite_code' => 'CAREER-ONLY',
+        ]);
+
+        $this->assertAuthenticated();
+        $this->assertDatabaseHas('users', [
+            'email' => 'career@example.com',
+            'has_career_access' => true,
+            'has_tournament_access' => false,
+        ]);
+    }
+
+    public function test_invite_granting_tournament_only_gives_tournament_access(): void
+    {
+        Notification::fake();
+        config()->set('beta.enabled', true);
+
+        InviteCode::create([
+            'code' => 'TOURN-ONLY',
+            'email' => 'tourn@example.com',
+            'max_uses' => 1,
+            'times_used' => 0,
+            'grants_career' => false,
+            'grants_tournament' => true,
+        ]);
+
+        $this->post(route('register.career-mode', ['invite' => 'TOURN-ONLY']), [
+            'name' => 'Tournament Only',
+            'email' => 'tourn@example.com',
+            'password' => 'my-new-password',
+            'password_confirmation' => 'my-new-password',
+            'invite_code' => 'TOURN-ONLY',
+        ]);
+
+        $this->assertAuthenticated();
+        $this->assertDatabaseHas('users', [
+            'email' => 'tourn@example.com',
+            'has_career_access' => false,
+            'has_tournament_access' => true,
         ]);
     }
 
