@@ -929,6 +929,24 @@ class ContractService
         return ['result' => 'rejected', 'offer' => $offer->fresh()];
     }
 
+    /**
+     * Accept a player's counter-offer on personal terms.
+     */
+    private function acceptTermsCounter(TransferOffer $offer, array $extraUpdates = []): TransferOffer
+    {
+        if ($offer->terms_status !== 'countered') {
+            throw new \InvalidArgumentException(__('messages.transfer_failed'));
+        }
+
+        $offer->update(array_merge([
+            'offered_wage' => $offer->wage_counter_offer,
+            'offered_years' => $offer->preferred_years,
+            'terms_status' => 'accepted',
+        ], $extraUpdates));
+
+        return $offer->fresh();
+    }
+
     // =========================================
     // TRANSFER PERSONAL TERMS NEGOTIATION
     // =========================================
@@ -1072,17 +1090,7 @@ class ContractService
      */
     public function acceptTransferTermsCounter(TransferOffer $offer): TransferOffer
     {
-        if ($offer->terms_status !== 'countered') {
-            throw new \InvalidArgumentException(__('messages.transfer_failed'));
-        }
-
-        $offer->update([
-            'offered_wage' => $offer->wage_counter_offer,
-            'offered_years' => $offer->preferred_years,
-            'terms_status' => 'accepted',
-        ]);
-
-        return $offer->fresh();
+        return $this->acceptTermsCounter($offer);
     }
 
     // =========================================
@@ -1199,19 +1207,10 @@ class ContractService
      */
     public function acceptPreContractTermsCounter(TransferOffer $offer): TransferOffer
     {
-        if ($offer->terms_status !== 'countered') {
-            throw new \InvalidArgumentException(__('messages.transfer_failed'));
-        }
-
-        $offer->update([
-            'offered_wage' => $offer->wage_counter_offer,
-            'offered_years' => $offer->preferred_years,
-            'terms_status' => 'accepted',
+        return $this->acceptTermsCounter($offer, [
             'status' => TransferOffer::STATUS_AGREED,
             'resolved_at' => $offer->game->current_date,
         ]);
-
-        return $offer->fresh();
     }
 
     // ── Free Agent Negotiation ──
@@ -1285,18 +1284,9 @@ class ContractService
      */
     public function acceptFreeAgentTermsCounter(TransferOffer $offer): TransferOffer
     {
-        if ($offer->terms_status !== 'countered') {
-            throw new \InvalidArgumentException(__('messages.transfer_failed'));
-        }
-
-        $offer->update([
-            'offered_wage' => $offer->wage_counter_offer,
-            'offered_years' => $offer->preferred_years,
-            'terms_status' => 'accepted',
+        return $this->acceptTermsCounter($offer, [
             'status' => TransferOffer::STATUS_COMPLETED,
             'resolved_at' => $offer->game->current_date,
         ]);
-
-        return $offer->fresh();
     }
 }
