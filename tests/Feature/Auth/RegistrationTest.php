@@ -106,8 +106,8 @@ class RegistrationTest extends TestCase
         ]);
         $this->assertDatabaseHas('users', [
             'email' => 'beta@example.com',
-            'has_career_access' => true,
-            'has_tournament_access' => false,
+            'has_career_access' => false,
+            'has_tournament_access' => true,
         ]);
     }
 
@@ -163,7 +163,7 @@ class RegistrationTest extends TestCase
         ]);
     }
 
-    public function test_registration_with_valid_invite_grants_career_access(): void
+    public function test_registration_with_valid_invite_grants_tournament_access(): void
     {
         Notification::fake();
         config()->set('beta.enabled', false);
@@ -187,8 +187,8 @@ class RegistrationTest extends TestCase
         $response->assertRedirect(route('dashboard'));
         $this->assertDatabaseHas('users', [
             'email' => 'beta@example.com',
-            'has_career_access' => true,
-            'has_tournament_access' => false,
+            'has_career_access' => false,
+            'has_tournament_access' => true,
         ]);
         $this->assertDatabaseHas('invite_codes', [
             'code' => 'CAREER-INVITE',

@@ -178,7 +178,7 @@ class ActivationTest extends TestCase
 
         $user = User::where('email', 'invited@example.com')->first();
         $this->assertNotNull($user->email_verified_at);
-        $this->assertTrue($user->has_career_access);
+        $this->assertTrue($user->has_tournament_access);
     }
 
     // --- Forgot password sends correct notification per state ---
