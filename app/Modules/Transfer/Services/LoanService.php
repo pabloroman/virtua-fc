@@ -4,9 +4,12 @@ namespace App\Modules\Transfer\Services;
 
 use App\Models\ClubProfile;
 use App\Models\Competition;
+use App\Models\FinancialTransaction;
 use App\Models\Game;
 use App\Models\GamePlayer;
+use App\Models\GameTransfer;
 use App\Models\Loan;
+use App\Models\ShortlistedPlayer;
 use App\Models\Team;
 use App\Models\TeamReputation;
 use App\Models\TransferOffer;
@@ -438,5 +441,214 @@ class LoanService
             'in' => $loansIn,
             'out' => $loansOut,
         ];
+    }
+
+    /**
+     * Resolve pending incoming loan requests after the next matchday.
+     * Called each matchday; evaluates user loan requests that haven't been resolved yet.
+     */
+    public function resolveIncomingLoanRequests(Game $game, ScoutingService $scoutingService): Collection
+    {
+        $pendingLoans = TransferOffer::with(['gamePlayer.player', 'gamePlayer.team'])
+            ->where('game_id', $game->id)
+            ->where('direction', TransferOffer::DIRECTION_INCOMING)
+            ->where('offer_type', TransferOffer::TYPE_LOAN_IN)
+            ->where('status', TransferOffer::STATUS_PENDING)
+            ->whereNull('resolved_at')
+            ->get();
+
+        $resolvedOffers = collect();
+
+        foreach ($pendingLoans as $offer) {
+            $evaluation = $scoutingService->evaluateLoanRequest($offer->gamePlayer, $game);
+
+            if ($evaluation['result'] === 'accepted') {
+                if ($game->isTransferWindowOpen()) {
+                    $this->completeLoanIn($offer, $game);
+                    $resolvedOffers->push([
+                        'offer' => $offer->fresh(),
+                        'result' => 'accepted',
+                        'completed' => true,
+                    ]);
+                } else {
+                    $offer->update([
+                        'status' => TransferOffer::STATUS_AGREED,
+                        'resolved_at' => $game->current_date,
+                    ]);
+                    $resolvedOffers->push([
+                        'offer' => $offer->fresh(),
+                        'result' => 'accepted',
+                        'completed' => false,
+                    ]);
+                }
+            } else {
+                $offer->update([
+                    'status' => TransferOffer::STATUS_REJECTED,
+                    'resolved_at' => $game->current_date,
+                ]);
+
+                $resolvedOffers->push([
+                    'offer' => $offer->fresh(),
+                    'result' => 'rejected',
+                    'completed' => false,
+                ]);
+            }
+        }
+
+        return $resolvedOffers;
+    }
+
+    /**
+     * Complete a loan-in (player joins user's team on loan).
+     */
+    public function completeLoanIn(TransferOffer $offer, Game $game): void
+    {
+        // Safety net: reject if squad is full
+        if (ContractService::isSquadFull($game)) {
+            $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
+            return;
+        }
+
+        $player = $offer->gamePlayer;
+        $parentTeamId = $offer->selling_team_id ?? $player->team_id;
+
+        if ($parentTeamId === null) {
+            $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
+            return;
+        }
+
+        $returnDate = $game->getSeasonEndDate();
+
+        Loan::create([
+            'game_id' => $game->id,
+            'game_player_id' => $player->id,
+            'parent_team_id' => $parentTeamId,
+            'loan_team_id' => $game->team_id,
+            'started_at' => $game->current_date,
+            'return_at' => $returnDate,
+            'status' => Loan::STATUS_ACTIVE,
+        ]);
+
+        $player->update([
+            'team_id' => $game->team_id,
+            'number' => GamePlayer::nextAvailableNumber($game->id, $game->team_id),
+        ]);
+
+        GameTransfer::record(
+            gameId: $game->id,
+            gamePlayerId: $player->id,
+            fromTeamId: $parentTeamId,
+            toTeamId: $game->team_id,
+            transferFee: 0,
+            type: GameTransfer::TYPE_LOAN,
+            season: $game->season,
+            window: $this->getCurrentWindow($game),
+        );
+
+        $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
+
+        // Record the loan salary as a financial transaction
+        $parentTeam = Team::find($parentTeamId);
+        FinancialTransaction::recordExpense(
+            gameId: $game->id,
+            category: FinancialTransaction::CATEGORY_LOAN,
+            amount: $player->annual_wage,
+            description: __('finances.tx_loan_in', [
+                'player' => $player->player->name ?? $player->id,
+                'team' => $parentTeam->name ?? '',
+            ]),
+            transactionDate: $game->current_date,
+            relatedPlayerId: $player->id,
+        );
+
+        // Remove from shortlist to free up scouting slot
+        ShortlistedPlayer::removeForPlayer($game->id, $player->id);
+    }
+
+    /**
+     * Complete a loan-out (user's player goes to AI team).
+     */
+    public function completeLoanOut(TransferOffer $offer, Game $game): void
+    {
+        $player = $offer->gamePlayer;
+        $destinationTeamId = $offer->offering_team_id;
+        $returnDate = $game->getSeasonEndDate();
+
+        Loan::create([
+            'game_id' => $game->id,
+            'game_player_id' => $player->id,
+            'parent_team_id' => $game->team_id,
+            'loan_team_id' => $destinationTeamId,
+            'started_at' => $game->current_date,
+            'return_at' => $returnDate,
+            'status' => Loan::STATUS_ACTIVE,
+        ]);
+
+        $player->update([
+            'team_id' => $destinationTeamId,
+            'number' => GamePlayer::nextAvailableNumber($game->id, $destinationTeamId),
+            'transfer_status' => null,
+            'transfer_listed_at' => null,
+        ]);
+
+        GameTransfer::record(
+            gameId: $game->id,
+            gamePlayerId: $player->id,
+            fromTeamId: $game->team_id,
+            toTeamId: $destinationTeamId,
+            transferFee: 0,
+            type: GameTransfer::TYPE_LOAN,
+            season: $game->season,
+            window: $this->getCurrentWindow($game),
+        );
+
+        $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
+
+        ContractService::clearSquadTrimIfResolved($game);
+    }
+
+    /**
+     * Complete a sync-negotiated loan. Calls completeLoanIn if window open,
+     * otherwise marks as agreed.
+     *
+     * @return array{result: string, offer: TransferOffer}
+     */
+    public function completeSyncLoan(TransferOffer $offer, Game $game): array
+    {
+        if ($game->isTransferWindowOpen()) {
+            $this->completeLoanIn($offer, $game);
+            return ['result' => 'accepted', 'offer' => $offer->fresh()];
+        }
+
+        $offer->update([
+            'status' => TransferOffer::STATUS_AGREED,
+            'resolved_at' => $game->current_date,
+        ]);
+        return ['result' => 'accepted', 'offer' => $offer->fresh()];
+    }
+
+    /**
+     * Get mood indicator for loan disposition.
+     *
+     * @return array{label: string, color: string}
+     */
+    public function getLoanMoodIndicator(float $disposition): array
+    {
+        if ($disposition >= 0.65) {
+            return ['label' => __('transfers.mood_willing_loan'), 'color' => 'green'];
+        }
+        if ($disposition >= 0.40) {
+            return ['label' => __('transfers.mood_open_loan'), 'color' => 'amber'];
+        }
+
+        return ['label' => __('transfers.mood_reluctant_loan'), 'color' => 'red'];
+    }
+
+    /**
+     * Determine the current transfer window type.
+     */
+    private function getCurrentWindow(Game $game): string
+    {
+        return $game->isWinterWindowOpen() ? 'winter' : 'summer';
     }
 }

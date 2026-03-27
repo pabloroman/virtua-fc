@@ -60,7 +60,7 @@ class CareerActionProcessor
         }
 
         // Resolve pending incoming loan requests (deferred from user submission)
-        $resolvedLoans = $this->transferService->resolveIncomingLoanRequests($game, $this->scoutingService);
+        $resolvedLoans = $this->loanService->resolveIncomingLoanRequests($game, $this->scoutingService);
         foreach ($resolvedLoans as $result) {
             $this->notificationService->notifyLoanRequestResult($game, $result['offer'], $result['result']);
         }

@@ -7,8 +7,8 @@ use App\Models\GamePlayer;
 use App\Models\TransferOffer;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Transfer\Services\ContractService;
+use App\Modules\Transfer\Services\LoanService;
 use App\Modules\Transfer\Services\ScoutingService;
-use App\Modules\Transfer\Services\TransferService;
 use App\Support\Money;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,7 +17,7 @@ use Illuminate\Validation\Rule;
 class NegotiateLoan
 {
     public function __construct(
-        private readonly TransferService $transferService,
+        private readonly LoanService $loanService,
         private readonly ScoutingService $scoutingService,
         private readonly NotificationService $notificationService,
     ) {}
@@ -103,7 +103,7 @@ class NegotiateLoan
 
         // Both club and player accept — show salary and await confirmation
         $disposition = $evaluation['disposition'];
-        $mood = $this->transferService->getLoanMoodIndicator($disposition);
+        $mood = $this->loanService->getLoanMoodIndicator($disposition);
         $salary = Money::format($player->annual_wage);
 
         return response()->json([
@@ -187,7 +187,7 @@ class NegotiateLoan
             'disposition' => $evaluation['disposition'],
         ]);
 
-        $result = $this->transferService->completeSyncLoan($offer, $game);
+        $result = $this->loanService->completeSyncLoan($offer, $game);
         $offer = $result['offer'];
 
         $this->notificationService->notifyLoanRequestResult($game, $offer, 'accepted');
