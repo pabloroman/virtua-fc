@@ -1069,6 +1069,7 @@ namespace App\Models{
  * @property string|null $remember_token
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $feedback_requested_at
  * @property bool $is_admin
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Game> $games
  * @property-read int|null $games_count

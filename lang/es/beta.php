@@ -26,4 +26,12 @@ return [
     'reminder_email_body' => 'Te envíe una invitación a la beta de VirtuaFC hace unos días. Tu plaza sigue reservada: haz clic en el enlace de abajo para crear tu cuenta y empezar a dirigir tu equipo.',
     'reminder_email_code_label' => 'Tu código de invitación:',
     'reminder_email_thanks' => 'Un saludo',
+
+    // Feedback Request Email (sent 24h after first game)
+    'feedback_email_subject' => 'VirtuaFC — ¿Qué te está pareciendo?',
+    'feedback_email_greeting' => '¡Hola :name!',
+    'feedback_email_body' => 'Ya llevas un día jugando a VirtuaFC y tu opinión es muy importante para mí.',
+    'feedback_email_questions' => '¿Qué funciona bien? ¿Qué mejorarías? ¿Has encontrado algún bug? Todo feedback es bienvenido, por pequeño que sea.',
+    'feedback_email_reply_hint' => 'También puedes simplemente responder a este email con tus comentarios.',
+    'feedback_email_thanks' => 'Gracias por ayudar a mejorar el juego',
 ];
