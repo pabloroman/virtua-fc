@@ -207,4 +207,9 @@
         </div>
         @endif
     </div>
+
+    {{-- Mobile Notification FAB --}}
+    @if($nextMatch)
+    <x-mobile-notification-fab :game="$game" :notifications="$groupedNotifications->flatten()" :unread-count="$unreadNotificationCount" />
+    @endif
 </x-app-layout>
