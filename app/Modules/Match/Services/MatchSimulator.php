@@ -408,6 +408,27 @@ class MatchSimulator
     }
 
     /**
+     * Calculate opponent xG multiplier based on goalkeeper quality.
+     *
+     * Returns a multiplier >= 1.0 applied to the OPPONENT's expected goals.
+     * A natural goalkeeper returns 1.0 (no change). A team with no natural
+     * goalkeeper (e.g. a centre-back in goal) returns a penalty multiplier
+     * that increases the opponent's scoring chances.
+     */
+    private function calculateGoalkeeperModifier(Collection $lineup): float
+    {
+        $hasNaturalGK = $lineup->contains(fn ($player) => $player->position === 'Goalkeeper');
+
+        if ($hasNaturalGK) {
+            return 1.0;
+        }
+
+        $penalty = config('match_simulation.goalkeeper.missing_gk_xg_penalty', 0.25);
+
+        return 1.0 + $penalty;
+    }
+
+    /**
      * Get the highest physical ability among forward players in a lineup.
      * Used to check if opponent forwards can nullify a high defensive line.
      */
@@ -808,6 +829,10 @@ class MatchSimulator
         $homeExpectedGoals += $this->calculateStrikerBonus($homePlayers) * $matchFraction;
         $awayExpectedGoals += $this->calculateStrikerBonus($awayPlayers) * $matchFraction;
 
+        // Goalkeeper quality: missing/out-of-position GK increases opponent xG
+        $awayExpectedGoals *= $this->calculateGoalkeeperModifier($homePlayers);
+        $homeExpectedGoals *= $this->calculateGoalkeeperModifier($awayPlayers);
+
         $homeScore = $this->poissonRandom($homeExpectedGoals);
         $awayScore = $this->poissonRandom($awayExpectedGoals);
 
@@ -895,6 +920,9 @@ class MatchSimulator
 
                 $homeExpectedGoals += $this->calculateStrikerBonus($homePlayers) * $matchFraction;
                 $awayExpectedGoals += $this->calculateStrikerBonus($awayPlayers) * $matchFraction;
+
+                $awayExpectedGoals *= $this->calculateGoalkeeperModifier($homePlayers);
+                $homeExpectedGoals *= $this->calculateGoalkeeperModifier($awayPlayers);
 
                 $homeScore = $this->poissonRandom($homeExpectedGoals);
                 $awayScore = $this->poissonRandom($awayExpectedGoals);
@@ -1033,6 +1061,9 @@ class MatchSimulator
         $homeXG1 += $this->calculateStrikerBonus($homePlayers) * $fraction1;
         $awayXG1 += $this->calculateStrikerBonus($awayPlayers) * $fraction1;
 
+        $awayXG1 *= $this->calculateGoalkeeperModifier($homePlayers);
+        $homeXG1 *= $this->calculateGoalkeeperModifier($awayPlayers);
+
         $homeScore1 = $this->poissonRandom($homeXG1);
         $awayScore1 = $this->poissonRandom($awayXG1);
 
@@ -1091,6 +1122,9 @@ class MatchSimulator
 
         $homeXG2 += $this->calculateStrikerBonus($homePlayers2) * $fraction2;
         $awayXG2 += $this->calculateStrikerBonus($awayPlayers2) * $fraction2;
+
+        $awayXG2 *= $this->calculateGoalkeeperModifier($homePlayers2);
+        $homeXG2 *= $this->calculateGoalkeeperModifier($awayPlayers2);
 
         $homeScore2 = $this->poissonRandom($homeXG2);
         $awayScore2 = $this->poissonRandom($awayXG2);
@@ -1475,6 +1509,10 @@ class MatchSimulator
             $etEffectiveMinute,
             $homePlayers, $awayPlayers,
         );
+
+        // Goalkeeper quality
+        $awayExpectedGoals *= $this->calculateGoalkeeperModifier($homePlayers);
+        $homeExpectedGoals *= $this->calculateGoalkeeperModifier($awayPlayers);
 
         $homeScore = $this->poissonRandom($homeExpectedGoals);
         $awayScore = $this->poissonRandom($awayExpectedGoals);

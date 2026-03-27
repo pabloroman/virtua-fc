@@ -332,4 +332,18 @@ return [
         'defense_modifier' => 1.15,     // 15% boost in opponent xG when facing 10 men
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Goalkeeper Quality
+    |--------------------------------------------------------------------------
+    |
+    | When a team has no natural goalkeeper in their lineup (e.g. an outfield
+    | player in the GK slot), the opponent's xG is increased. This reflects
+    | the massive defensive disadvantage of playing without a proper keeper.
+    |
+    */
+    'goalkeeper' => [
+        'missing_gk_xg_penalty' => 0.25,   // opponent xG multiplied by (1 + this) when no natural GK
+    ],
+
 ];
