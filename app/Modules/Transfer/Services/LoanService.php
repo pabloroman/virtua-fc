@@ -125,7 +125,7 @@ class LoanService
     /**
      * Find the best destination team using scoring algorithm.
      */
-    public function findBestDestination(Game $game, GamePlayer $player): ?Team
+    private function findBestDestination(Game $game, GamePlayer $player): ?Team
     {
         $teams = Team::with(['clubProfile', 'competitions'])
             ->whereHas('competitions', function ($q) {
@@ -326,36 +326,9 @@ class LoanService
     }
 
     /**
-     * Process a loan-in: player joins user's team on loan.
-     */
-    public function processLoanIn(Game $game, GamePlayer $player): Loan
-    {
-        $parentTeamId = $player->team_id;
-        $returnDate = $game->getSeasonEndDate();
-
-        $loan = Loan::create([
-            'game_id' => $game->id,
-            'game_player_id' => $player->id,
-            'parent_team_id' => $parentTeamId,
-            'loan_team_id' => $game->team_id,
-            'started_at' => $game->current_date,
-            'return_at' => $returnDate,
-            'status' => Loan::STATUS_ACTIVE,
-        ]);
-
-        // Move player to user's team
-        $player->update([
-            'team_id' => $game->team_id,
-            'number' => GamePlayer::nextAvailableNumber($game->id, $game->team_id),
-        ]);
-
-        return $loan;
-    }
-
-    /**
      * Process a loan-out: user's player goes to AI team.
      */
-    public function processLoanOut(Game $game, GamePlayer $player, Team $destinationTeam): Loan
+    private function processLoanOut(Game $game, GamePlayer $player, Team $destinationTeam): Loan
     {
         $returnDate = $game->getSeasonEndDate();
 

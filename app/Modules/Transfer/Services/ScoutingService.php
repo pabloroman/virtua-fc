@@ -171,7 +171,7 @@ class ScoutingService
      * Calculate how many weeks a search takes.
      * Higher scouting tier = faster searches.
      */
-    public function calculateSearchWeeks(array $filters, ?Game $game = null): int
+    private function calculateSearchWeeks(array $filters, ?Game $game = null): int
     {
         $position = $filters['position'] ?? '';
         $scope = $filters['scope'] ?? ['domestic', 'international'];
@@ -224,7 +224,7 @@ class ScoutingService
     /**
      * Generate scout results for a completed search.
      */
-    public function generateResults(Game $game, ScoutReport $report): void
+    private function generateResults(Game $game, ScoutReport $report): void
     {
         $filters = $report->filters;
         $positions = PositionMapper::getPositionsForFilter($filters['position']) ?? [];

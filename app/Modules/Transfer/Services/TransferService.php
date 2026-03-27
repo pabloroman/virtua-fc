@@ -123,7 +123,7 @@ class TransferService
      * Returns 'summer' if the summer window is open (or as default for season-end pre-contracts),
      * 'winter' if the winter window is open.
      */
-    public function getCurrentWindow(Game $game): string
+    private function getCurrentWindow(Game $game): string
     {
         if ($game->isWinterWindowOpen()) {
             return self::WINDOW_WINTER;
@@ -149,34 +149,6 @@ class TransferService
                 'status' => TransferOffer::STATUS_EXPIRED,
                 'resolved_at' => $player->game->current_date,
             ]);
-    }
-
-    /**
-     * Generate offers for a newly listed player.
-     */
-    public function generateOffersForListedPlayer(GamePlayer $player): Collection
-    {
-        $offers = collect();
-        $numOffers = rand(1, 3);
-        ['buyers' => $buyers, 'squadValues' => $squadValues] = $this->getEligibleBuyersWithSquadValues($player);
-
-        if ($buyers->isEmpty()) {
-            return $offers;
-        }
-
-        // Select buyers weighted by player trajectory and team strength
-        $selectedBuyers = $this->selectWeightedBuyers($buyers, $player, $squadValues, $numOffers);
-
-        foreach ($selectedBuyers as $buyer) {
-            $offer = $this->createOffer(
-                player: $player,
-                offeringTeam: $buyer,
-                offerType: TransferOffer::TYPE_LISTED,
-            );
-            $offers->push($offer);
-        }
-
-        return $offers;
     }
 
     /**
@@ -837,7 +809,7 @@ class TransferService
     /**
      * Calculate offer price based on player and offer type.
      */
-    public function calculateOfferPrice(GamePlayer $player, string $offerType): int
+    private function calculateOfferPrice(GamePlayer $player, string $offerType): int
     {
         $baseValue = $player->market_value_cents;
 
@@ -868,7 +840,7 @@ class TransferService
     /**
      * Get eligible AI teams to make offers for a player.
      */
-    public function getEligibleBuyers(GamePlayer $player): Collection
+    private function getEligibleBuyers(GamePlayer $player): Collection
     {
         return $this->getEligibleBuyersWithSquadValues($player)['buyers'];
     }
@@ -1085,19 +1057,6 @@ class TransferService
         }
 
         return $items->last();
-    }
-
-    /**
-     * Get all pending offers for a game.
-     */
-    public function getPendingOffers(Game $game): Collection
-    {
-        return TransferOffer::with(['gamePlayer.player', 'offeringTeam'])
-            ->where('game_id', $game->id)
-            ->where('status', TransferOffer::STATUS_PENDING)
-            ->where('expires_at', '>=', $game->current_date)
-            ->orderByDesc('transfer_fee')
-            ->get();
     }
 
     /**

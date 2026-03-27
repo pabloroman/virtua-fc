@@ -192,76 +192,6 @@ class ContractService
             ->sum('annual_wage');
     }
 
-    /**
-     * Calculate monthly wage bill for a game's squad.
-     *
-     * @param Game $game
-     * @return int Monthly wages in cents
-     */
-    public function calculateMonthlyWageBill(Game $game): int
-    {
-        return (int) ($this->calculateAnnualWageBill($game) / 12);
-    }
-
-    /**
-     * Get highest paid players in a squad.
-     *
-     * @param Game $game
-     * @param int $limit
-     * @return Collection<GamePlayer>
-     */
-    public function getHighestEarners(Game $game, int $limit = 5): Collection
-    {
-        return GamePlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->orderByDesc('annual_wage')
-            ->limit($limit)
-            ->get();
-    }
-
-    /**
-     * Get players with contracts expiring in a given year.
-     *
-     * @param Game $game
-     * @param int $year
-     * @return Collection<GamePlayer>
-     */
-    public function getExpiringContracts(Game $game, int $year): Collection
-    {
-        return GamePlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->whereYear('contract_until', $year)
-            ->orderBy('annual_wage', 'desc')
-            ->get();
-    }
-
-    /**
-     * Get contracts expiring at end of current season.
-     *
-     * @param Game $game
-     * @return Collection<GamePlayer>
-     */
-    public function getContractsExpiringThisSeason(Game $game): Collection
-    {
-        // Assume season ends in June of the season year
-        $seasonYear = (int) $game->season;
-
-        return $this->getExpiringContracts($game, $seasonYear);
-    }
-
-    /**
-     * Group squad contracts by expiry year.
-     */
-    public function getContractsByExpiryYear(Game $game): Collection
-    {
-        return GamePlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->whereNotNull('contract_until')
-            ->orderBy('contract_until')
-            ->get()
-            ->groupBy(fn ($player) => $player->contract_until->year);
-    }
-
     // =========================================
     // CONTRACT RENEWAL
     // =========================================
@@ -784,18 +714,6 @@ class ContractService
             'result' => $result,
             'negotiation' => $negotiation,
         ];
-    }
-
-    /**
-     * Get players currently in negotiation (for display in expiring contracts).
-     */
-    public function getPlayersInNegotiation(Game $game): Collection
-    {
-        return GamePlayer::with(['player', 'game', 'transferOffers', 'activeRenewalNegotiation'])
-            ->where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->whereHas('activeRenewalNegotiation')
-            ->get();
     }
 
     /**
