@@ -4,8 +4,8 @@ namespace App\Modules\Lineup\Enums;
 
 enum Formation: string
 {
-    case F_4_4_2 = '4-4-2';
     case F_4_3_3 = '4-3-3';
+    case F_4_4_2 = '4-4-2';
     case F_4_2_3_1 = '4-2-3-1';
     case F_3_4_3 = '3-4-3';
     case F_3_5_2 = '3-5-2';

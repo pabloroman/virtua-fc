@@ -782,8 +782,8 @@ class MatchSimulator
     ): MatchSimulationOutput {
         $this->matchPerformance = [];
 
-        $homeFormation = $homeFormation ?? Formation::F_4_4_2;
-        $awayFormation = $awayFormation ?? Formation::F_4_4_2;
+        $homeFormation = $homeFormation ?? Formation::F_4_3_3;
+        $awayFormation = $awayFormation ?? Formation::F_4_3_3;
         $homeMentality = $homeMentality ?? Mentality::BALANCED;
         $awayMentality = $awayMentality ?? Mentality::BALANCED;
         $homePlayingStyle = $homePlayingStyle ?? PlayingStyle::BALANCED;
@@ -1465,8 +1465,8 @@ class MatchSimulator
     ): MatchResult {
         $events = collect();
 
-        $homeFormation = $homeFormation ?? Formation::F_4_4_2;
-        $awayFormation = $awayFormation ?? Formation::F_4_4_2;
+        $homeFormation = $homeFormation ?? Formation::F_4_3_3;
+        $awayFormation = $awayFormation ?? Formation::F_4_3_3;
         $homeMentality = $homeMentality ?? Mentality::BALANCED;
         $awayMentality = $awayMentality ?? Mentality::BALANCED;
         $homePlayingStyle = $homePlayingStyle ?? PlayingStyle::BALANCED;

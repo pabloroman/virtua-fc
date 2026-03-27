@@ -47,7 +47,7 @@ class ShowLineup
         $currentLineup = $this->lineupService->getLineup($match, $game->team_id);
 
         // Get formation
-        $defaultFormation = $game->tactics?->default_formation ?? '4-4-2';
+        $defaultFormation = $game->tactics?->default_formation ?? Formation::F_4_3_3->value;
         $currentFormation = $this->lineupService->getFormation($match, $game->team_id);
 
         // If no lineup set, try to prefill from previous match
@@ -64,7 +64,7 @@ class ShowLineup
         }
 
         $currentFormation = $currentFormation ?? $defaultFormation;
-        $formationEnum = Formation::tryFrom($currentFormation) ?? Formation::F_4_4_2;
+        $formationEnum = Formation::tryFrom($currentFormation) ?? Formation::F_4_3_3;
 
         // Get mentality
         $defaultMentality = $game->tactics?->default_mentality ?? 'balanced';

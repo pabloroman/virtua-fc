@@ -199,11 +199,11 @@ class ShowLiveMatch
 
         // User's current tactical setup
         $userFormation = $isUserHome
-            ? ($playerMatch->home_formation ?? '4-4-2')
-            : ($playerMatch->away_formation ?? '4-4-2');
+            ? ($playerMatch->home_formation ?? Formation::F_4_3_3->value)
+            : ($playerMatch->away_formation ?? Formation::F_4_3_3->value);
         $userMentality = $isUserHome
-            ? ($playerMatch->home_mentality ?? 'balanced')
-            : ($playerMatch->away_mentality ?? 'balanced');
+            ? ($playerMatch->home_mentality ?? Mentality::BALANCED->value)
+            : ($playerMatch->away_mentality ?? Mentality::BALANCED->value);
 
         $availableFormations = array_map(fn ($f) => [
             'value' => $f->value,
@@ -302,8 +302,8 @@ class ShowLiveMatch
             'mvpPlayerTeamId' => $playerMatch->mvpPlayer?->team_id,
             'homeLineupDisplay' => $homeLineupDisplay,
             'awayLineupDisplay' => $awayLineupDisplay,
-            'homeFormation' => $playerMatch->home_formation ?? '4-4-2',
-            'awayFormation' => $playerMatch->away_formation ?? '4-4-2',
+            'homeFormation' => $playerMatch->home_formation ?? Formation::F_4_3_3->value,
+            'awayFormation' => $playerMatch->away_formation ?? Formation::F_4_3_3->value,
             'formationSlots' => $formationSlots,
             'teamColors' => $teamColorsHex,
             'slotCompatibility' => $slotCompatibility,

@@ -3,6 +3,7 @@
 namespace App\Modules\Season\Services;
 
 use App\Modules\Competition\Services\CountryConfig;
+use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Season\Jobs\SetupNewGame;
 use App\Models\Competition;
 use App\Models\CompetitionTeam;
@@ -55,7 +56,7 @@ class GameCreationService
         ]);
 
         // Create default tactical settings
-        GameTactics::create(['game_id' => $gameId]);
+        GameTactics::create(['game_id' => $gameId, 'default_formation' => Formation::F_4_3_3->value]);
 
         // Dispatch heavy initialization to a queued job
         SetupNewGame::dispatch(

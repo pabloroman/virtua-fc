@@ -386,8 +386,8 @@ class MatchdayOrchestrator
         $homeBenchPlayers = $isUserHome ? null : $this->getBenchPlayers($match, $allPlayers, 'home', $game);
         $awayBenchPlayers = ($isUserMatch && ! $isUserHome) ? null : $this->getBenchPlayers($match, $allPlayers, 'away', $game);
 
-        $homeFormation = Formation::tryFrom($match->home_formation) ?? Formation::F_4_4_2;
-        $awayFormation = Formation::tryFrom($match->away_formation) ?? Formation::F_4_4_2;
+        $homeFormation = Formation::tryFrom($match->home_formation) ?? Formation::F_4_3_3;
+        $awayFormation = Formation::tryFrom($match->away_formation) ?? Formation::F_4_3_3;
         $homeMentality = Mentality::tryFrom($match->home_mentality ?? '') ?? Mentality::BALANCED;
         $awayMentality = Mentality::tryFrom($match->away_mentality ?? '') ?? Mentality::BALANCED;
 

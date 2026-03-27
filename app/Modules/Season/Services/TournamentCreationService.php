@@ -2,6 +2,7 @@
 
 namespace App\Modules\Season\Services;
 
+use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Season\Jobs\SetupTournamentGame;
 use App\Models\Game;
 use App\Models\GameTactics;
@@ -32,7 +33,7 @@ class TournamentCreationService
         ]);
 
         // Create default tactical settings
-        GameTactics::create(['game_id' => $gameId]);
+        GameTactics::create(['game_id' => $gameId, 'default_formation' => Formation::F_4_3_3->value]);
 
         SetupTournamentGame::dispatch(
             gameId: $gameId,

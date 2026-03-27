@@ -206,7 +206,7 @@ class FormationRecommender
             'overall_score' => $p->overall_score,
         ])->values()->all();
 
-        $bestFormation = Formation::F_4_4_2;
+        $bestFormation = Formation::F_4_3_3;
         $bestScore = -1;
 
         foreach (Formation::cases() as $formation) {

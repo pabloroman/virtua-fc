@@ -21,9 +21,9 @@ class GetAutoLineup
 
         abort_unless($match, 404);
 
-        // Get formation from request, default to 4-4-2
-        $formationValue = $request->input('formation', '4-4-2');
-        $formation = Formation::tryFrom($formationValue) ?? Formation::F_4_4_2;
+        // Get formation from request, default to 4-3-3
+        $formationValue = $request->input('formation', '4-3-3');
+        $formation = Formation::tryFrom($formationValue) ?? Formation::F_4_3_3;
 
         // Get match details for availability checks
         $matchDate = $match->scheduled_date;

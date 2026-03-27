@@ -77,7 +77,7 @@ class SimulateMatch extends Command
         }
 
         // Parse options
-        $formation = Formation::tryFrom($this->option('formation')) ?? Formation::F_4_4_2;
+        $formation = Formation::tryFrom($this->option('formation')) ?? Formation::F_4_3_3;
         $homeMentality = Mentality::tryFrom($this->option('home-mentality')) ?? Mentality::BALANCED;
         $awayMentality = Mentality::tryFrom($this->option('away-mentality')) ?? Mentality::BALANCED;
 

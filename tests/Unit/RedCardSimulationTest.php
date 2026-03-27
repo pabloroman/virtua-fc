@@ -89,7 +89,7 @@ class RedCardSimulationTest extends TestCase
             $this->simulator,
             $homeTeam, $awayTeam,
             $homePlayers, $awayPlayers,
-            Formation::F_4_4_2, Formation::F_4_4_2,
+            Formation::F_4_3_3, Formation::F_4_3_3,
             Mentality::BALANCED, Mentality::BALANCED,
             PlayingStyle::BALANCED, PlayingStyle::BALANCED,
             PressingIntensity::STANDARD, PressingIntensity::STANDARD,
@@ -151,7 +151,7 @@ class RedCardSimulationTest extends TestCase
                 $this->simulator,
                 $homeTeam, $awayTeam,
                 $homePlayers, $awayPlayers,
-                Formation::F_4_4_2, Formation::F_4_4_2,
+                Formation::F_4_3_3, Formation::F_4_3_3,
                 Mentality::BALANCED, Mentality::BALANCED,
                 PlayingStyle::BALANCED, PlayingStyle::BALANCED,
                 PressingIntensity::STANDARD, PressingIntensity::STANDARD,
@@ -171,7 +171,7 @@ class RedCardSimulationTest extends TestCase
             $output = $this->simulator->simulate(
                 $homeTeam, $awayTeam,
                 $homePlayers, $awayPlayers,
-                Formation::F_4_4_2, Formation::F_4_4_2,
+                Formation::F_4_3_3, Formation::F_4_3_3,
                 Mentality::BALANCED, Mentality::BALANCED,
                 $game,
             );
@@ -208,7 +208,7 @@ class RedCardSimulationTest extends TestCase
             $output = $this->simulator->simulate(
                 $homeTeam, $awayTeam,
                 $homePlayers, $awayPlayers,
-                Formation::F_4_4_2, Formation::F_4_4_2,
+                Formation::F_4_3_3, Formation::F_4_3_3,
                 Mentality::BALANCED, Mentality::BALANCED,
                 $game,
             );

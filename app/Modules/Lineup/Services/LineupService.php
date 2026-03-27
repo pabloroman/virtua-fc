@@ -107,7 +107,7 @@ class LineupService
         ?Formation $formation = null,
         ?array $slotAssignments = null
     ): array {
-        $formation = $formation ?? Formation::F_4_4_2;
+        $formation = $formation ?? Formation::F_4_3_3;
         $errors = [];
 
         if (count($playerIds) !== 11) {
@@ -202,7 +202,7 @@ class LineupService
      */
     public function selectBestXI(Collection $availablePlayers, ?Formation $formation = null, bool $applyFitnessRotation = false): Collection
     {
-        $formation = $formation ?? Formation::F_4_4_2;
+        $formation = $formation ?? Formation::F_4_3_3;
         $requirements = $formation->requirements();
 
         // Sort key: effective score accounts for fitness when rotation is enabled
@@ -268,7 +268,7 @@ class LineupService
     public function selectAIFormation(Collection $availablePlayers): Formation
     {
         if ($availablePlayers->count() < 11) {
-            return Formation::F_4_4_2;
+            return Formation::F_4_3_3;
         }
 
         return $this->formationRecommender->getBestFormation($availablePlayers);
@@ -768,7 +768,7 @@ class LineupService
         array $preferredLineup,
         array $availableIds
     ): array {
-        $formation = $formation ?? Formation::F_4_4_2;
+        $formation = $formation ?? Formation::F_4_3_3;
         $requirements = $formation->requirements();
 
         // Separate preferred players into available and unavailable

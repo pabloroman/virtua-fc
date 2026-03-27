@@ -55,7 +55,7 @@ export function calculateXgPreview({
     // Resolve tactical selections with defaults
     const userFm = userFormation;
     const userMent = userMentality;
-    const oppFm = opponentFormation || '4-4-2';
+    const oppFm = opponentFormation || '4-3-3';
     const oppMent = opponentMentality || 'balanced';
     const oppStyle = opponentStyle || 'balanced';
     const oppPress = opponentPressing || 'standard';

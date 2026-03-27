@@ -77,7 +77,7 @@ export default function liveMatch(config) {
         _possessionDisplay: config.homePossession || 50,
 
         // Tactical config
-        activeFormation: config.activeFormation || '4-4-2',
+        activeFormation: config.activeFormation || '4-3-3',
         activeMentality: config.activeMentality || 'balanced',
         activePlayingStyle: config.activePlayingStyle || 'balanced',
         activePressing: config.activePressing || 'standard',
@@ -119,7 +119,7 @@ export default function liveMatch(config) {
         dragPosition: null,
         positioningSlotId: null,
         livePitchPositions: config.pitchPositions || {},
-        _pitchPositionsFormation: config.activeFormation || '4-4-2',
+        _pitchPositionsFormation: config.activeFormation || '4-3-3',
         manualAssignments: config.manualAssignments || {},
         _savedPitchPositions: config.pitchPositions ? { ...config.pitchPositions } : {},
         _positionJustApplied: false,
