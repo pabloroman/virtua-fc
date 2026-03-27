@@ -899,6 +899,7 @@ class MatchdayOrchestrator
         // Score each player
         $bestPlayerId = null;
         $bestScore = -INF;
+        $bestIsWinner = false;
 
         foreach ($performances as $playerId => $performance) {
             $group = $positionGroups[$playerId] ?? 'Midfielder';
@@ -941,13 +942,16 @@ class MatchdayOrchestrator
             }
 
             // Winning team edge
-            if ($winningTeamId !== null && $teamId === $winningTeamId) {
+            $isWinner = $winningTeamId !== null && $teamId === $winningTeamId;
+            if ($isWinner) {
                 $score += 0.08;
             }
 
-            if ($score > $bestScore) {
+            // Tiebreak: prefer the player from the winning team
+            if ($score > $bestScore || ($score === $bestScore && $isWinner && ! $bestIsWinner)) {
                 $bestScore = $score;
                 $bestPlayerId = $playerId;
+                $bestIsWinner = $isWinner;
             }
         }
 
