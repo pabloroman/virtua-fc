@@ -12,7 +12,7 @@ class TeamFactory extends Factory
 
     public function definition(): array
     {
-        $name = $this->faker->city() . ' FC';
+        $name = $this->faker->unique()->city() . ' FC';
 
         return [
             'id' => Str::uuid()->toString(),
