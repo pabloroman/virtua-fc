@@ -19,7 +19,6 @@ use Illuminate\Support\Facades\Storage;
  * @property string|null $remember_token
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $feedback_requested_at
  * @property bool $is_admin
  * @property bool $has_career_access
  * @property bool $has_tournament_access
@@ -42,7 +41,6 @@ use Illuminate\Support\Facades\Storage;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereEmail($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereEmailVerifiedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereFeedbackRequestedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereIsAdmin($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereName($value)
@@ -70,7 +68,6 @@ class User extends Authenticatable
         'has_career_access',
         'has_tournament_access',
         'can_edit_database',
-        'feedback_requested_at',
         'locale',
         'username',
         'bio',
@@ -120,7 +117,6 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'feedback_requested_at' => 'datetime',
             'is_admin' => 'boolean',
             'has_career_access' => 'boolean',
             'has_tournament_access' => 'boolean',
