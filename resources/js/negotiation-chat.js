@@ -56,9 +56,13 @@ export default function negotiationChat() {
 
         get wageStep() {
             if (this.mode === 'transfer_fee' || this.phase === 'counter_offer') {
-                return this.offerWage >= 10000000 ? 1000000 : 100000;
+                if (this.offerWage >= 10000000) return 1000000;  // >= €10M: €1M steps
+                if (this.offerWage >= 1000000) return 100000;    // >= €1M: €100K steps
+                return 50000;                                     // < €1M: €50K steps
             }
-            return this.offerWage >= 1000000 ? 100000 : 10000;
+            if (this.offerWage >= 1000000) return 100000;
+            if (this.offerWage >= 100000) return 10000;
+            return 5000;
         },
 
         get wageDisplay() {

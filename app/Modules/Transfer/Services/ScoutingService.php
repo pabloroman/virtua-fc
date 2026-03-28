@@ -320,8 +320,7 @@ class ScoutingService
         $totalMultiplier = min($importanceMultiplier * $contractModifier * $ageModifier, 1.5);
         $askingPrice = $base * $totalMultiplier;
 
-        // Round to nearest €100K (in cents)
-        return (int) (round($askingPrice / 10_000_000) * 10_000_000);
+        return Money::roundPrice((int) $askingPrice);
     }
 
     /**
@@ -445,7 +444,7 @@ class ScoutingService
 
         if ($ratio >= $counterThreshold) {
             $counterAmount = (int) (($bidAmount + $ceiling) / 2);
-            $counterAmount = (int) (round($counterAmount / 10_000_000) * 10_000_000);
+            $counterAmount = Money::roundPrice($counterAmount);
 
             // If rounding makes counter equal to bid, just accept the bid
             if ($counterAmount <= $bidAmount) {
@@ -507,9 +506,9 @@ class ScoutingService
         }
 
         if ($userAskingPrice <= (int) ($maxWillingness * 1.15)) {
-            // Counter with midpoint of user's ask and AI's current bid, rounded to nearest €100K
+            // Counter with midpoint of user's ask and AI's current bid
             $counterAmount = (int) (($userAskingPrice + $offer->transfer_fee) / 2);
-            $counterAmount = (int) (round($counterAmount / 10_000_000) * 10_000_000);
+            $counterAmount = Money::roundPrice($counterAmount);
 
             // If rounding makes counter equal to or below the current bid, just accept
             if ($counterAmount <= $offer->transfer_fee) {
@@ -669,8 +668,7 @@ class ScoutingService
             deterministic: true,
         );
 
-        // Round to nearest 100K (cents)
-        return (int) (round($wage / 10_000_000) * 10_000_000);
+        return Money::roundPrice($wage);
     }
 
     /**
@@ -682,8 +680,7 @@ class ScoutingService
         $baseWage = $this->calculateWageDemand($player);
         $premium = $this->getFreeAgentWagePremium($player->market_value_cents);
 
-        // Round to nearest 100K (cents)
-        return (int) (round(($baseWage * $premium) / 10_000_000) * 10_000_000);
+        return Money::roundPrice((int) ($baseWage * $premium));
     }
 
     /**

@@ -6,6 +6,7 @@ use App\Modules\Player\PlayerAge;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\LoanService;
 use App\Modules\Transfer\Services\ScoutingService;
+use App\Support\Money;
 use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\Game;
@@ -678,8 +679,7 @@ class TransferService
 
         $finalPrice = (int) ($baseValue * $typeModifier * $ageModifier);
 
-        // Round to nearest 100K (cents)
-        return (int) (round($finalPrice / 10_000_000) * 10_000_000);
+        return Money::roundPrice($finalPrice);
     }
 
     /**
