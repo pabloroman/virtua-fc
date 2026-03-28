@@ -33,61 +33,62 @@ class PromotionRelegationProcessor implements SeasonProcessor
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
-        $allPromoted = [];
-        $allRelegated = [];
-        $affectedCompetitionIds = [];
+        return DB::transaction(function () use ($game, $data) {
+            $allPromoted = [];
+            $allRelegated = [];
+            $affectedCompetitionIds = [];
 
-        // Process all configured promotion/relegation rules
-        foreach ($this->ruleFactory->all() as $rule) {
-            $promoted = $rule->getPromotedTeams($game);
-            $relegated = $rule->getRelegatedTeams($game);
+            // Process all configured promotion/relegation rules
+            foreach ($this->ruleFactory->all() as $rule) {
+                $promoted = $rule->getPromotedTeams($game);
+                $relegated = $rule->getRelegatedTeams($game);
 
-            // Skip if no teams to move (e.g., playoffs not complete)
-            if (empty($promoted) && empty($relegated)) {
-                continue;
-            }
+                // Skip if no teams to move (e.g., playoffs not complete)
+                if (empty($promoted) && empty($relegated)) {
+                    continue;
+                }
 
-            // Validate balance: promoted count must equal relegated count
-            if (count($promoted) !== count($relegated)) {
-                throw new \RuntimeException(
-                    "Promotion/relegation imbalance between {$rule->getTopDivision()} and {$rule->getBottomDivision()}: " .
-                    count($promoted) . ' promoted vs ' . count($relegated) . ' relegated. ' .
-                    'Cannot proceed with unbalanced swap.'
+                // Validate balance: promoted count must equal relegated count
+                if (count($promoted) !== count($relegated)) {
+                    throw new \RuntimeException(
+                        "Promotion/relegation imbalance between {$rule->getTopDivision()} and {$rule->getBottomDivision()}: " .
+                        count($promoted) . ' promoted vs ' . count($relegated) . ' relegated. ' .
+                        'Cannot proceed with unbalanced swap.'
+                    );
+                }
+
+                $this->swapTeams(
+                    promoted: $promoted,
+                    relegated: $relegated,
+                    topDivision: $rule->getTopDivision(),
+                    bottomDivision: $rule->getBottomDivision(),
+                    gameId: $game->id,
                 );
+
+                $affectedCompetitionIds[] = $rule->getTopDivision();
+                $affectedCompetitionIds[] = $rule->getBottomDivision();
+
+                $allPromoted = array_merge($allPromoted, $promoted);
+                $allRelegated = array_merge($allRelegated, $relegated);
             }
 
-            $this->swapTeams(
-                promoted: $promoted,
-                relegated: $relegated,
-                topDivision: $rule->getTopDivision(),
-                bottomDivision: $rule->getBottomDivision(),
-                gameId: $game->id,
-                newSeason: $data->newSeason,
-            );
+            // Update competition in transition data if the player's team moved
+            $game->refresh();
+            if ($game->competition_id !== $data->competitionId) {
+                $data->competitionId = $game->competition_id;
+            }
 
-            $affectedCompetitionIds[] = $rule->getTopDivision();
-            $affectedCompetitionIds[] = $rule->getBottomDivision();
+            // Re-simulate only the leagues that had roster changes from promotion/relegation
+            if (!empty($affectedCompetitionIds)) {
+                $this->resimulateAffectedLeagues($game, array_unique($affectedCompetitionIds));
+            }
 
-            $allPromoted = array_merge($allPromoted, $promoted);
-            $allRelegated = array_merge($allRelegated, $relegated);
-        }
+            // Store in metadata for display on season end screen
+            $data->setMetadata('promotedTeams', $allPromoted);
+            $data->setMetadata('relegatedTeams', $allRelegated);
 
-        // Update competition in transition data if the player's team moved
-        $game->refresh();
-        if ($game->competition_id !== $data->competitionId) {
-            $data->competitionId = $game->competition_id;
-        }
-
-        // Re-simulate only the leagues that had roster changes from promotion/relegation
-        if (!empty($affectedCompetitionIds)) {
-            $this->resimulateAffectedLeagues($game, array_unique($affectedCompetitionIds));
-        }
-
-        // Store in metadata for display on season end screen
-        $data->setMetadata('promotedTeams', $allPromoted);
-        $data->setMetadata('relegatedTeams', $allRelegated);
-
-        return $data;
+            return $data;
+        });
     }
 
     /**
@@ -99,7 +100,6 @@ class PromotionRelegationProcessor implements SeasonProcessor
         string $topDivision,
         string $bottomDivision,
         string $gameId,
-        string $newSeason,
     ): void {
         $promotedIds = array_column($promoted, 'teamId');
         $relegatedIds = array_column($relegated, 'teamId');
@@ -107,12 +107,12 @@ class PromotionRelegationProcessor implements SeasonProcessor
 
         // Move relegated teams: top → bottom
         foreach ($relegatedIds as $teamId) {
-            $this->moveTeam($teamId, $topDivision, $bottomDivision, $gameId, $newSeason, $playerTeamId);
+            $this->moveTeam($teamId, $topDivision, $bottomDivision, $gameId, $playerTeamId);
         }
 
         // Move promoted teams: bottom → top
         foreach ($promotedIds as $teamId) {
-            $this->moveTeam($teamId, $bottomDivision, $topDivision, $gameId, $newSeason, $playerTeamId);
+            $this->moveTeam($teamId, $bottomDivision, $topDivision, $gameId, $playerTeamId);
         }
 
         // Re-sort positions in both divisions
@@ -128,7 +128,6 @@ class PromotionRelegationProcessor implements SeasonProcessor
         string $fromDivision,
         string $toDivision,
         string $gameId,
-        string $newSeason,
         string $playerTeamId,
     ): void {
         // Update competition_entries
@@ -209,18 +208,11 @@ class PromotionRelegationProcessor implements SeasonProcessor
             return;
         }
 
-        $cases = [];
         foreach ($standings->values() as $index => $standing) {
-            $position = $index + 1;
-            $cases[] = "WHEN id = '{$standing->id}' THEN {$position}";
+            $newPosition = $index + 1;
+            if ($standing->position !== $newPosition) {
+                $standing->update(['position' => $newPosition]);
+            }
         }
-
-        $ids = $standings->pluck('id')->map(fn ($id) => "'{$id}'")->implode(',');
-
-        DB::statement(
-            'UPDATE game_standings SET position = CASE '
-            . implode(' ', $cases)
-            . " ELSE position END WHERE id IN ({$ids})"
-        );
     }
 }

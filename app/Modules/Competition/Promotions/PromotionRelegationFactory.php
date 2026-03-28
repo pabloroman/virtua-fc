@@ -4,6 +4,7 @@ namespace App\Modules\Competition\Promotions;
 
 use App\Modules\Competition\Contracts\PromotionRelegationRule;
 use App\Modules\Competition\Services\CountryConfig;
+use App\Modules\Competition\Services\ReserveTeamFilter;
 
 class PromotionRelegationFactory
 {
@@ -11,6 +12,7 @@ class PromotionRelegationFactory
 
     public function __construct(
         private CountryConfig $countryConfig,
+        private ReserveTeamFilter $reserveTeamFilter,
     ) {}
 
     /**
@@ -89,6 +91,7 @@ class PromotionRelegationFactory
                     relegatedPositions: $promotion['relegated_positions'],
                     directPromotionPositions: $promotion['direct_promotion_positions'],
                     playoffGenerator: $playoffGenerator,
+                    reserveTeamFilter: $this->reserveTeamFilter,
                 );
             }
         }

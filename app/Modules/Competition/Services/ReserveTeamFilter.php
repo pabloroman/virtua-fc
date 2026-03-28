@@ -38,13 +38,38 @@ class ReserveTeamFilter
     }
 
     /**
+     * Batch-load parent_team_id for a set of teams.
+     *
+     * @param  array  $teamIds  Team UUIDs to load
+     * @return Collection<string, string|null> Keyed by team_id => parent_team_id
+     */
+    public function loadParentTeamIds(array $teamIds): Collection
+    {
+        if (empty($teamIds)) {
+            return collect();
+        }
+
+        return Team::whereIn('id', $teamIds)
+            ->whereNotNull('parent_team_id')
+            ->pluck('parent_team_id', 'id');
+    }
+
+    /**
      * Check if a team is a reserve team whose parent is in the top division.
      *
-     * @param string $teamId The team UUID to check
-     * @param Collection<int, string> $topDivisionTeamIds Team UUIDs in the top division
+     * @param  string  $teamId  The team UUID to check
+     * @param  Collection<int, string>  $topDivisionTeamIds  Team UUIDs in the top division
+     * @param  Collection<string, string|null>|null  $parentMap  Pre-loaded parent map from loadParentTeamIds()
      */
-    public function isBlockedReserveTeam(string $teamId, Collection $topDivisionTeamIds): bool
+    public function isBlockedReserveTeam(string $teamId, Collection $topDivisionTeamIds, ?Collection $parentMap = null): bool
     {
+        if ($parentMap !== null) {
+            $parentTeamId = $parentMap->get($teamId);
+
+            return $parentTeamId !== null && $topDivisionTeamIds->contains($parentTeamId);
+        }
+
+        // Fallback for callers that don't pre-load (e.g. ESP2PlayoffGenerator)
         $team = Team::find($teamId);
 
         if (!$team || !$team->parent_team_id) {

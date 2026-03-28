@@ -128,8 +128,12 @@ class SeasonSummaryService
             return null;
         }
 
-        $promoted = $rule->getPromotedTeams($game);
-        $relegated = $rule->getRelegatedTeams($game);
+        try {
+            $promoted = $rule->getPromotedTeams($game);
+            $relegated = $rule->getRelegatedTeams($game);
+        } catch (\RuntimeException) {
+            return null;
+        }
 
         if (empty($promoted) && empty($relegated)) {
             return null;
