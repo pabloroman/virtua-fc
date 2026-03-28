@@ -317,6 +317,10 @@ class GamePlayer extends Model
      */
     public function isOnLoan(): bool
     {
+        if ($this->relationLoaded('activeLoan')) {
+            return $this->activeLoan !== null;
+        }
+
         return $this->activeLoan()->exists();
     }
 

@@ -331,7 +331,7 @@ class ContractService
     {
         $seasonEndDate = $game->getSeasonEndDate();
 
-        return GamePlayer::with(['player', 'team', 'game', 'transferOffers', 'latestRenewalNegotiation', 'activeRenewalNegotiation'])
+        return GamePlayer::with(['player', 'team', 'game', 'transferOffers', 'latestRenewalNegotiation', 'activeRenewalNegotiation', 'activeLoan'])
             ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->get()
