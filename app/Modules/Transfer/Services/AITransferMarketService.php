@@ -297,8 +297,8 @@ class AITransferMarketService
         $teamSizeDeltas = $teamRosters->map(fn () => 0);
 
         // Foreign teams for cross-border transfers
-        $foreignTeams = Team::where('country', '!=', $game->country)
-            ->where('type', 'club')
+        $foreignTeams = Team::transferMarketEligible()
+            ->where('country', '!=', $game->country)
             ->whereNotIn('id', $teamRosters->keys())
             ->inRandomOrder()
             ->limit(40)

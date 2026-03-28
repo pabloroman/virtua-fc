@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Competition;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Support\Facades\Storage;
@@ -71,6 +72,17 @@ class Team extends Model
     public function scopeWorldCupEligible(Builder $query): Builder
     {
         return $query->where('type', 'national')->whereNotNull('fifa_code');
+    }
+
+    /**
+     * Exclude national teams and cup-only teams (e.g. Primera RFEF filler)
+     * from transfer market queries.
+     */
+    public function scopeTransferMarketEligible(Builder $query): Builder
+    {
+        return $query
+            ->where('type', '!=', 'national')
+            ->whereHas('competitions', fn (Builder $q) => $q->where('role', '!=', Competition::ROLE_DOMESTIC_CUP));
     }
 
     public function competitions(): BelongsToMany

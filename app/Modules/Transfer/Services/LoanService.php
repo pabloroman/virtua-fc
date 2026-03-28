@@ -130,7 +130,8 @@ class LoanService
      */
     private function findBestDestination(Game $game, GamePlayer $player): ?Team
     {
-        $teams = Team::with(['clubProfile', 'competitions'])
+        $teams = Team::transferMarketEligible()
+            ->with(['clubProfile', 'competitions'])
             ->whereHas('competitions', function ($q) {
                 $q->where('scope', Competition::SCOPE_DOMESTIC)
                     ->where('type', 'league');

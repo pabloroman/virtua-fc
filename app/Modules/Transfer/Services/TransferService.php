@@ -698,10 +698,11 @@ class TransferService
      */
     public function loadBuyerPool(Game $game): array
     {
-        $leagueTeamIds = Team::whereHas('competitions', function ($query) {
-            $query->where('scope', Competition::SCOPE_DOMESTIC)
-                ->where('type', 'league');
-        })->where('id', '!=', $game->team_id)->pluck('id')->toArray();
+        $leagueTeamIds = Team::transferMarketEligible()
+            ->whereHas('competitions', function ($query) {
+                $query->where('scope', Competition::SCOPE_DOMESTIC)
+                    ->where('type', 'league');
+            })->where('id', '!=', $game->team_id)->pluck('id')->toArray();
 
         $squadValues = $this->getSquadValues($game, $leagueTeamIds);
         $leagueTeams = Team::whereIn('id', $leagueTeamIds)->get()->keyBy('id');
@@ -750,10 +751,11 @@ class TransferService
         $game = $player->game;
 
         // Get all teams in domestic leagues (both playable and foreign), excluding player's team
-        $leagueTeamIds = Team::whereHas('competitions', function ($query) {
-            $query->where('scope', Competition::SCOPE_DOMESTIC)
-                ->where('type', 'league');
-        })->where('id', '!=', $playerTeamId)->pluck('id')->toArray();
+        $leagueTeamIds = Team::transferMarketEligible()
+            ->whereHas('competitions', function ($query) {
+                $query->where('scope', Competition::SCOPE_DOMESTIC)
+                    ->where('type', 'league');
+            })->where('id', '!=', $playerTeamId)->pluck('id')->toArray();
 
         $squadValues = $this->getSquadValues($game, $leagueTeamIds);
 

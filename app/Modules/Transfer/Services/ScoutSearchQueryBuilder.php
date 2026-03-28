@@ -66,9 +66,10 @@ class ScoutSearchQueryBuilder
         $teamCountry = $game->country;
         $scopeCompetitionIds = Competition::where('country', in_array('domestic', $scope) ? '=' : '!=', $teamCountry)
             ->pluck('id');
-        $scopeTeamIds = Team::whereHas('competitions', function ($q) use ($scopeCompetitionIds) {
-            $q->whereIn('competitions.id', $scopeCompetitionIds);
-        })->pluck('id');
+        $scopeTeamIds = Team::transferMarketEligible()
+            ->whereHas('competitions', function ($q) use ($scopeCompetitionIds) {
+                $q->whereIn('competitions.id', $scopeCompetitionIds);
+            })->pluck('id');
         $query->whereIn('team_id', $scopeTeamIds);
     }
 
