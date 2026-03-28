@@ -323,4 +323,36 @@ return [
         'missing_gk_xg_penalty' => 0.25,   // opponent xG multiplied by (1 + this) when no natural GK
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | AI Substitutions
+    |--------------------------------------------------------------------------
+    |
+    | Controls when and how AI teams make substitutions during a match.
+    |
+    | Substitution timing uses a Poisson distribution: minute = min_minute + Poisson(λ).
+    | With λ=10 and min_minute=60, most subs cluster around minute 70 (range 60-85).
+    |
+    | The AI decides WHO to sub based on energy levels, yellow card risk, and
+    | bench quality. Match situation (score) biases replacements toward
+    | attackers (when losing) or defenders (when protecting a lead).
+    |
+    | Halftime substitutions happen independently with a fixed probability,
+    | representing tactical half-time adjustments.
+    |
+    */
+    'ai_substitutions' => [
+        'enabled' => true,
+        'min_subs' => 3,                    // minimum subs per match (target, not guaranteed)
+        'max_subs' => 5,                    // hard limit (matches SubstitutionService::MAX_SUBSTITUTIONS)
+        'poisson_lambda' => 10,             // Poisson λ for timing offset (peak at min_minute + λ)
+        'min_minute' => 60,                 // earliest normal sub minute
+        'max_minute' => 85,                 // latest sub minute
+        'halftime_sub_chance' => 25,        // % chance of making a sub at halftime (minute 46)
+        'window_grouping_minutes' => 3,     // subs within this many minutes = same window
+        'energy_threshold' => 40,           // energy below this = strong sub candidate
+        'yellow_card_weight' => 0.30,       // extra urgency score for yellowed players
+        'losing_attack_bias' => 0.70,       // probability of preferring attackers when losing
+    ],
+
 ];
