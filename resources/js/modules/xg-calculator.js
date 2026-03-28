@@ -75,7 +75,7 @@ export function calculateXgPreview({
 
     // --- Base xG from strength ratio ---
     const strengthRatio = awayStrength > 0 ? homeStrength / awayStrength : 1.0;
-    const ratioExp = cfg.skill_dominance;
+    const skillDominance = cfg.skill_dominance;
     const baseGoals = cfg.base_goals;
     const homeAdv = cfg.home_advantage_goals;
 
@@ -86,13 +86,13 @@ export function calculateXgPreview({
     const homeMentMods = cfg.mentalities[homeMent] || { own_goals: 1.0, opponent_goals: 1.0 };
     const awayMentMods = cfg.mentalities[awayMent] || { own_goals: 1.0, opponent_goals: 1.0 };
 
-    let homeXG = (Math.pow(strengthRatio, ratioExp) * baseGoals + homeAdv)
+    let homeXG = (Math.pow(strengthRatio, skillDominance) * baseGoals + homeAdv)
         * homeFmMods.attack
         * awayFmMods.defense
         * homeMentMods.own_goals
         * awayMentMods.opponent_goals;
 
-    let awayXG = (Math.pow(1 / strengthRatio, ratioExp) * baseGoals)
+    let awayXG = (Math.pow(1 / strengthRatio, skillDominance) * baseGoals)
         * awayFmMods.attack
         * homeFmMods.defense
         * awayMentMods.own_goals

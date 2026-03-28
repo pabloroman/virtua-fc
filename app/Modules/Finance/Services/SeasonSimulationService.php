@@ -17,8 +17,7 @@ class SeasonSimulationService
 
     /**
      * Simulate a league season for a non-played competition.
-     * Runs a full match-by-match simulation using Poisson-distributed goals
-     * and the same ratio-based xG formula as MatchSimulator.
+     * Uses independent Poisson for speed (sufficient for financial projections).
      */
     public function simulateLeague(Game $game, Competition $competition): SimulatedSeason
     {

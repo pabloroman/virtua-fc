@@ -22,6 +22,11 @@ use App\Modules\Match\Services\EnergyCalculator;
 
 class MatchSimulator
 {
+    /** Upper bound for Dixon-Coles probability table (above config max_goals_cap for tail coverage). */
+    private const DIXON_COLES_MAX_GOALS = 8;
+
+    private const FACTORIALS = [1, 1, 2, 6, 24, 120, 720, 5040, 40320]; // 0! through 8!
+
     public function __construct(
         private readonly InjuryService $injuryService = new InjuryService,
     ) {}
@@ -476,15 +481,13 @@ class MatchSimulator
     private function dixonColesRandom(float $homeXG, float $awayXG): array
     {
         $rho = config('match_simulation.dixon_coles_rho', -0.13);
-        $maxGoals = 8;
 
-        // Build joint probability table with Dixon-Coles tau correction
         $probabilities = [];
         $cumulative = 0.0;
 
-        for ($i = 0; $i <= $maxGoals; $i++) {
+        for ($i = 0; $i <= self::DIXON_COLES_MAX_GOALS; $i++) {
             $pHome = $this->poissonPmf($i, $homeXG);
-            for ($j = 0; $j <= $maxGoals; $j++) {
+            for ($j = 0; $j <= self::DIXON_COLES_MAX_GOALS; $j++) {
                 $pAway = $this->poissonPmf($j, $awayXG);
                 $tau = $this->dixonColesTau($i, $j, $homeXG, $awayXG, $rho);
                 $prob = $pHome * $pAway * $tau;
@@ -493,7 +496,6 @@ class MatchSimulator
             }
         }
 
-        // Normalize and sample from the joint distribution
         $rand = (mt_rand() / mt_getrandmax()) * $cumulative;
 
         foreach ($probabilities as [$home, $away, $cum]) {
@@ -502,7 +504,6 @@ class MatchSimulator
             }
         }
 
-        // Fallback (should never reach here)
         return [$this->poissonRandom($homeXG), $this->poissonRandom($awayXG)];
     }
 
@@ -515,7 +516,7 @@ class MatchSimulator
             return $k === 0 ? 1.0 : 0.0;
         }
 
-        return exp(-$lambda) * pow($lambda, $k) / $this->factorial($k);
+        return exp(-$lambda) * pow($lambda, $k) / self::FACTORIALS[$k];
     }
 
     /**
@@ -540,16 +541,6 @@ class MatchSimulator
         }
 
         return 1.0;
-    }
-
-    private function factorial(int $n): float
-    {
-        $result = 1.0;
-        for ($i = 2; $i <= $n; $i++) {
-            $result *= $i;
-        }
-
-        return $result;
     }
 
     /**
@@ -1012,8 +1003,7 @@ class MatchSimulator
                 $awayExpectedGoals *= $this->calculateGoalkeeperModifier($homePlayers);
                 $homeExpectedGoals *= $this->calculateGoalkeeperModifier($awayPlayers);
 
-                $homeScore = $this->poissonRandom($homeExpectedGoals);
-                $awayScore = $this->poissonRandom($awayExpectedGoals);
+                [$homeScore, $awayScore] = $this->dixonColesRandom($homeExpectedGoals, $awayExpectedGoals);
             }
 
             // Check for red cards — if found, split goal generation into two periods
@@ -1602,8 +1592,7 @@ class MatchSimulator
         $awayExpectedGoals *= $this->calculateGoalkeeperModifier($homePlayers);
         $homeExpectedGoals *= $this->calculateGoalkeeperModifier($awayPlayers);
 
-        $homeScore = $this->poissonRandom($homeExpectedGoals);
-        $awayScore = $this->poissonRandom($awayExpectedGoals);
+        [$homeScore, $awayScore] = $this->dixonColesRandom($homeExpectedGoals, $awayExpectedGoals);
 
         // A team with no players cannot score — force their goals to 0.
         if ($homePlayers->isEmpty()) {
