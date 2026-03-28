@@ -63,6 +63,17 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
         const t = parseInt(tier);
         const colors = { 0: 'text-accent-red', 1: 'text-accent-gold', 2: 'text-accent-green', 3: 'text-accent-blue', 4: 'text-purple-400' };
         return colors[t] || 'text-text-secondary';
+    },
+
+    init() {
+        ['youth_academy', 'medical', 'scouting', 'facilities'].forEach(area => {
+            this.$watch(area + '_tier', (value) => {
+                const min = this.minTiers[area] || 0;
+                if (parseInt(value) < min) {
+                    this[area + '_tier'] = min;
+                }
+            });
+        });
     }
 }">
 
@@ -113,7 +124,7 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
                 <div class="tier-range">
                     <div class="track"></div>
                     <div class="track-fill" :style="'width:' + (youth_academy_tier / 4 * 100) + '%'"></div>
-                    <input type="range" x-model="youth_academy_tier" :min="minTiers.youth_academy" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
+                    <input type="range" x-model="youth_academy_tier" min="0" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
                 </div>
                 <div class="flex justify-between text-[10px] text-text-faint mt-1">
                     <span>T0</span><span>T1</span><span>T2</span><span>T3</span><span>T4</span>
@@ -138,7 +149,7 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
                 <div class="tier-range">
                     <div class="track"></div>
                     <div class="track-fill" :style="'width:' + (medical_tier / 4 * 100) + '%'"></div>
-                    <input type="range" x-model="medical_tier" :min="minTiers.medical" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
+                    <input type="range" x-model="medical_tier" min="0" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
                 </div>
                 <div class="flex justify-between text-[10px] text-text-faint mt-1">
                     <span>T0</span><span>T1</span><span>T2</span><span>T3</span><span>T4</span>
@@ -163,7 +174,7 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
                 <div class="tier-range">
                     <div class="track"></div>
                     <div class="track-fill" :style="'width:' + (scouting_tier / 4 * 100) + '%'"></div>
-                    <input type="range" x-model="scouting_tier" :min="minTiers.scouting" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
+                    <input type="range" x-model="scouting_tier" min="0" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
                 </div>
                 <div class="flex justify-between text-[10px] text-text-faint mt-1">
                     <span>T0</span><span>T1</span><span>T2</span><span>T3</span><span>T4</span>
@@ -188,7 +199,7 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
                 <div class="tier-range">
                     <div class="track"></div>
                     <div class="track-fill" :style="'width:' + (facilities_tier / 4 * 100) + '%'"></div>
-                    <input type="range" x-model="facilities_tier" :min="minTiers.facilities" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
+                    <input type="range" x-model="facilities_tier" min="0" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
                 </div>
                 <div class="flex justify-between text-[10px] text-text-faint mt-1">
                     <span>T0</span><span>T1</span><span>T2</span><span>T3</span><span>T4</span>
