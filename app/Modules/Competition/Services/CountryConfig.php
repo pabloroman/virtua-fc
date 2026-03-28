@@ -3,6 +3,7 @@
 namespace App\Modules\Competition\Services;
 
 use App\Modules\Competition\Contracts\CompetitionConfig;
+use App\Modules\Competition\Contracts\CupDrawPairingStrategy;
 
 class CountryConfig
 {
@@ -195,6 +196,24 @@ class CountryConfig
             foreach ($config['continental_competitions'] ?? [] as $continentalId => $continentalConfig) {
                 if ($continentalId === $competitionId && isset($continentalConfig['config_class'])) {
                     return $continentalConfig['config_class'];
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the CupDrawPairingStrategy class for a competition ID.
+     *
+     * @return class-string<CupDrawPairingStrategy>|null
+     */
+    public function drawPairingClassForCompetition(string $competitionId): ?string
+    {
+        foreach ($this->allCountries() as $config) {
+            foreach ($config['domestic_cups'] ?? [] as $cupId => $cupConfig) {
+                if ($cupId === $competitionId && isset($cupConfig['draw_pairing'])) {
+                    return $cupConfig['draw_pairing'];
                 }
             }
         }

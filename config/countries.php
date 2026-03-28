@@ -38,6 +38,7 @@ return [
             'ESPCUP' => [
                 'handler' => 'knockout_cup',
                 'config_class' => \App\Modules\Competition\Configs\KnockoutCupConfig::class,
+                'draw_pairing' => \App\Modules\Competition\Services\Draw\CrossCategoryPairing::class,
             ],
             'ESPSUP' => [
                 'handler' => 'knockout_cup',
