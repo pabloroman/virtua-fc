@@ -157,15 +157,16 @@ class AISubstitutionSimulationTest extends TestCase
             $this->assertLessThanOrEqual(15, $output->result->homeScore, 'Score should be realistic');
             $this->assertLessThanOrEqual(15, $output->result->awayScore, 'Score should be realistic');
 
-            // Goal events should match the score
-            $homeGoals = $output->result->goals()->filter(fn ($e) => $e->teamId === $homeTeam->id)->count();
-            $homeOwnGoals = $output->result->ownGoals()->filter(fn ($e) => $e->teamId === $homeTeam->id)->count();
+            // Goal events should match the score.
+            // homeScore = goals scored by home team + own goals by away team's players
+            // (own goal events carry the conceding team's ID but count for the scoring team)
+            $homeRegularGoals = $output->result->goals()->filter(fn ($e) => $e->teamId === $homeTeam->id)->count();
             $awayOwnGoals = $output->result->ownGoals()->filter(fn ($e) => $e->teamId === $awayTeam->id)->count();
 
             $this->assertEquals(
                 $output->result->homeScore,
-                $homeGoals + $awayOwnGoals - $homeOwnGoals,
-                'Home score should match goal events'
+                $homeRegularGoals + $awayOwnGoals,
+                'Home score should match goal + own goal events'
             );
         }
     }
