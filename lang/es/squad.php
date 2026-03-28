@@ -45,6 +45,7 @@ return [
     'release_years_remaining' => ':years año(s)',
     'release_confirm_button' => 'Confirmar Liberación',
     'loan_searching' => 'Buscando destino de cesión',
+    'contract_expiring' => 'Contrato por expirar',
 
     // Summary
     'wage_bill' => 'Masa Salarial',

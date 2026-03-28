@@ -455,7 +455,7 @@ class NotificationService
                 'player' => $player->name,
                 'months' => $monthsLeft,
             ]),
-            priority: GameNotification::PRIORITY_WARNING,
+            priority: $monthsLeft <= 3 ? GameNotification::PRIORITY_CRITICAL : GameNotification::PRIORITY_WARNING,
             metadata: [
                 'player_id' => $player->id,
                 'months_left' => $monthsLeft,

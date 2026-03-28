@@ -290,9 +290,9 @@ class GameNotification extends Model
                 'dot' => 'bg-teal-500',
             ],
             self::TYPE_CONTRACT_EXPIRING => [
-                'icon_bg' => 'bg-zinc-500/10',
-                'icon_text' => 'text-zinc-400',
-                'dot' => 'bg-zinc-400',
+                'icon_bg' => 'bg-amber-500/10',
+                'icon_text' => 'text-amber-500',
+                'dot' => 'bg-amber-500',
             ],
             self::TYPE_LOAN_RETURN => [
                 'icon_bg' => 'bg-violet-500/10',

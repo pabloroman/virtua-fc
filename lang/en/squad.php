@@ -45,6 +45,7 @@ return [
     'release_years_remaining' => ':years year(s)',
     'release_confirm_button' => 'Confirm Release',
     'loan_searching' => 'Searching for loan destination',
+    'contract_expiring' => 'Contract expiring',
 
     // Summary
     'wage_bill' => 'Wage Bill',
