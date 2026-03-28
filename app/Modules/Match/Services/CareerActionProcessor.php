@@ -5,6 +5,7 @@ namespace App\Modules\Match\Services;
 use App\Models\Game;
 use App\Models\GameNotification;
 use App\Models\GamePlayer;
+use App\Models\RenewalNegotiation;
 use App\Models\TransferOffer;
 use App\Modules\Academy\Services\YouthAcademyService;
 use App\Modules\Notification\Services\NotificationService;
@@ -152,6 +153,13 @@ class CareerActionProcessor
             ->whereNull('pending_annual_wage') // not already renewed
             ->where('contract_until', '<=', $sixMonthsOut)
             ->where('contract_until', '>', $currentDate)
+            ->whereDoesntHave('transferOffers', function ($q) {
+                $q->where('status', TransferOffer::STATUS_AGREED)
+                    ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT);
+            })
+            ->whereDoesntHave('latestRenewalNegotiation', function ($q) {
+                $q->where('status', RenewalNegotiation::STATUS_CLUB_DECLINED);
+            })
             ->get();
 
         if ($expiringPlayers->isEmpty()) {
