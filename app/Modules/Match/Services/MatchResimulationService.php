@@ -191,6 +191,7 @@ class MatchResimulationService
                 awayWindowsUsed: $awayWindowsUsed,
                 scoreHomeAtMinute: $scoreAtMinute['home'],
                 scoreAwayAtMinute: $scoreAtMinute['away'],
+                userTeamId: $game->team_id,
             );
         } else {
             $remainderOutput = $this->matchSimulator->simulateRemainder(

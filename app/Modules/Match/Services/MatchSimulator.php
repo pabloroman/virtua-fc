@@ -504,6 +504,7 @@ class MatchSimulator
         int $scoreHomeAtMinute = 0,
         int $scoreAwayAtMinute = 0,
         string $matchSeed = '',
+        ?string $userTeamId = null,
     ): MatchSimulationOutput {
         $homeFormation = $homeFormation ?? Formation::F_4_3_3;
         $awayFormation = $awayFormation ?? Formation::F_4_3_3;
@@ -522,11 +523,14 @@ class MatchSimulator
         $maxSubs = SubstitutionService::MAX_SUBSTITUTIONS;
         $maxWindows = SubstitutionService::MAX_WINDOWS;
 
-        // Determine how many MORE subs each AI team will make
-        $homeTotalSubs = ($homeBenchPlayers !== null && $homeExistingSubstitutions < $maxSubs && $homeWindowsUsed < $maxWindows)
+        // Only generate AI tactical subs for AI-controlled teams (not the user's team)
+        $homeIsAI = $userTeamId !== $homeTeam->id;
+        $awayIsAI = $userTeamId !== $awayTeam->id;
+
+        $homeTotalSubs = ($homeIsAI && $homeBenchPlayers !== null && $homeExistingSubstitutions < $maxSubs && $homeWindowsUsed < $maxWindows)
             ? $this->aiSubstitutionService->decideTotalSubs($homeBenchPlayers->count(), $homeExistingSubstitutions)
             : 0;
-        $awayTotalSubs = ($awayBenchPlayers !== null && $awayExistingSubstitutions < $maxSubs && $awayWindowsUsed < $maxWindows)
+        $awayTotalSubs = ($awayIsAI && $awayBenchPlayers !== null && $awayExistingSubstitutions < $maxSubs && $awayWindowsUsed < $maxWindows)
             ? $this->aiSubstitutionService->decideTotalSubs($awayBenchPlayers->count(), $awayExistingSubstitutions)
             : 0;
 
