@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Models\Player;
 use App\Models\Team;
 use App\Modules\Player\Services\PlayerConditionService;
 use Carbon\Carbon;
@@ -35,15 +36,21 @@ class PlayerConditionServiceTest extends TestCase
     /**
      * Create a GamePlayer with specific attributes for testing.
      */
-    private function createPlayer(array $overrides = []): GamePlayer
+    private function createPlayer(array $overrides = [], array $playerOverrides = []): GamePlayer
     {
         $game = Game::factory()->create(['current_date' => '2025-10-01']);
         $team = Team::factory()->create();
+
+        $playerFactory = Player::factory();
+        if (! empty($playerOverrides)) {
+            $playerFactory = $playerFactory->state($playerOverrides);
+        }
 
         return GamePlayer::factory()
             ->forGame($game)
             ->forTeam($team)
             ->create(array_merge([
+                'player_id' => $playerFactory,
                 'position' => 'Central Midfield',
                 'fitness' => 100,
                 'morale' => 80,
@@ -313,10 +320,13 @@ class PlayerConditionServiceTest extends TestCase
 
     public function test_congested_schedule_drops_fitness_significantly(): void
     {
+        // Pin age to 27 (prime bracket) to eliminate age-modifier variance
         $player = $this->createPlayer([
             'position' => 'Central Midfield',
             'fitness' => 90,
             'game_physical_ability' => 70,
+        ], [
+            'date_of_birth' => Carbon::parse('2025-10-01')->subYears(27)->subMonths(6),
         ]);
 
         // Simulate 5 matches: Sat(7d) → Tue(3d) → Sat(4d) → Tue(3d) → Sat(4d)
