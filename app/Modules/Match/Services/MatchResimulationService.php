@@ -365,8 +365,8 @@ class MatchResimulationService
             GamePlayer::whereIn('id', $subbedInPlayerIds)
                 ->where('appearances', '>', 0)
                 ->update([
-                    'appearances' => DB::raw('GREATEST(appearances - 1, 0)'),
-                    'season_appearances' => DB::raw('GREATEST(season_appearances - 1, 0)'),
+                    'appearances' => DB::raw('MAX(appearances - 1, 0)'),
+                    'season_appearances' => DB::raw('MAX(season_appearances - 1, 0)'),
                 ]);
         }
 

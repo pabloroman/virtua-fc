@@ -1099,10 +1099,11 @@ export default function liveMatch(config) {
             const total = this.totalMinutes;
             return this.revealedEvents
                 .filter(e => e.type !== 'assist')
-                .map(e => ({
+                .map((e, index) => ({
                     position: Math.min((e.minute / total) * 100, 100),
                     type: e.type,
                     minute: e.minute,
+                    index,
                 }));
         },
 
