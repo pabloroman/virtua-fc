@@ -124,10 +124,19 @@ class MatchSimulator
         string $matchSeed = '',
         bool $neutralVenue = false,
     ): MatchSimulationOutput {
-        $hasAIBench = ($homeBenchPlayers !== null && $homeBenchPlayers->isNotEmpty())
-            || ($awayBenchPlayers !== null && $awayBenchPlayers->isNotEmpty());
+        $homeBenchAvailable = $homeBenchPlayers !== null && $homeBenchPlayers->isNotEmpty();
+        $awayBenchAvailable = $awayBenchPlayers !== null && $awayBenchPlayers->isNotEmpty();
+        $hasAIBench = $homeBenchAvailable || $awayBenchAvailable;
+        $isUserMatch = ($homeBenchAvailable xor $awayBenchAvailable);
 
-        if ($hasAIBench && config('match_simulation.ai_substitutions.enabled', true)) {
+        $aiSubMode = config('match_simulation.ai_substitutions.mode', 'all');
+        $aiSubsActive = $hasAIBench && match ($aiSubMode) {
+            'all' => true,
+            'ai_only' => ! $isUserMatch,
+            default => false,
+        };
+
+        if ($aiSubsActive) {
             return $this->simulateWithAISubstitutions(
                 $homeTeam, $awayTeam,
                 $homePlayers, $awayPlayers,

@@ -330,6 +330,11 @@ return [
     |
     | Controls when and how AI teams make substitutions during a match.
     |
+    | mode: Controls which matches get AI substitutions:
+    |   - "all"      — AI subs in all matches (AI-vs-AI and user-vs-AI)
+    |   - "ai_only"  — AI subs only in AI-vs-AI matches (not in user's live match)
+    |   - "off"      — AI subs disabled entirely
+    |
     | Substitution timing uses a Poisson distribution: minute = min_minute + Poisson(λ).
     | With λ=10 and min_minute=60, most subs cluster around minute 70 (range 60-85).
     |
@@ -342,7 +347,7 @@ return [
     |
     */
     'ai_substitutions' => [
-        'enabled' => true,
+        'mode' => 'all',                     // 'all', 'ai_only', or 'off'
         'min_subs' => 3,                    // minimum subs per match (target, not guaranteed)
         'max_subs' => 5,                    // hard limit (matches SubstitutionService::MAX_SUBSTITUTIONS)
         'poisson_lambda' => 10,             // Poisson λ for timing offset (peak at min_minute + λ)

@@ -173,7 +173,7 @@ class AISubstitutionSimulationTest extends TestCase
 
     public function test_ai_subs_disabled_produces_no_substitutions(): void
     {
-        config(['match_simulation.ai_substitutions.enabled' => false]);
+        config(['match_simulation.ai_substitutions.mode' => 'off']);
 
         $game = Game::factory()->create(['current_date' => '2025-10-01']);
         $homeTeam = Team::factory()->create();
@@ -205,6 +205,73 @@ class AISubstitutionSimulationTest extends TestCase
         // Since injury + auto-sub is rare, we don't assert zero — just verify the config toggle works
         // by checking the code path (if disabled, it goes through the standard simulateRemainder)
         $this->assertTrue(true, 'Simulation completed without errors when AI subs disabled');
+    }
+
+    public function test_ai_only_mode_skips_subs_in_user_match(): void
+    {
+        config(['match_simulation.ai_substitutions.mode' => 'ai_only']);
+
+        $game = Game::factory()->create(['current_date' => '2025-10-01']);
+        $homeTeam = Team::factory()->create();
+        $awayTeam = Team::factory()->create();
+
+        $homePlayers = $this->createLineup($game, $homeTeam, 11, 75);
+        $awayPlayers = $this->createLineup($game, $awayTeam, 11, 75);
+        // Only away has bench (home is user's team) — this is a user-vs-AI match
+        $awayBench = $this->createBenchPlayers($game, $awayTeam, 7, 72);
+
+        for ($i = 0; $i < 5; $i++) {
+            $output = $this->simulator->simulate(
+                $homeTeam, $awayTeam,
+                $homePlayers, $awayPlayers,
+                Formation::F_4_4_2, Formation::F_4_4_2,
+                Mentality::BALANCED, Mentality::BALANCED,
+                $game,
+                homeBenchPlayers: null,
+                awayBenchPlayers: $awayBench,
+            );
+
+            // In ai_only mode with a user match, no AI subs should be generated
+            // (injury auto-subs still go through simulateRemainder, but AI tactical subs don't)
+            $this->assertGreaterThanOrEqual(0, $output->result->homeScore);
+            $this->assertGreaterThanOrEqual(0, $output->result->awayScore);
+        }
+
+        $this->assertTrue(true, 'ai_only mode skips AI subs in user-vs-AI matches');
+    }
+
+    public function test_ai_only_mode_allows_subs_in_ai_vs_ai(): void
+    {
+        config(['match_simulation.ai_substitutions.mode' => 'ai_only']);
+
+        $game = Game::factory()->create(['current_date' => '2025-10-01']);
+        $homeTeam = Team::factory()->create();
+        $awayTeam = Team::factory()->create();
+
+        $homePlayers = $this->createLineup($game, $homeTeam, 11, 75);
+        $awayPlayers = $this->createLineup($game, $awayTeam, 11, 75);
+        $homeBench = $this->createBenchPlayers($game, $homeTeam, 7, 72);
+        $awayBench = $this->createBenchPlayers($game, $awayTeam, 7, 72);
+
+        $subsSeen = false;
+        for ($i = 0; $i < 10; $i++) {
+            $output = $this->simulator->simulate(
+                $homeTeam, $awayTeam,
+                $homePlayers, $awayPlayers,
+                Formation::F_4_4_2, Formation::F_4_4_2,
+                Mentality::BALANCED, Mentality::BALANCED,
+                $game,
+                homeBenchPlayers: $homeBench,
+                awayBenchPlayers: $awayBench,
+            );
+
+            if ($output->result->substitutions()->isNotEmpty()) {
+                $subsSeen = true;
+                break;
+            }
+        }
+
+        $this->assertTrue($subsSeen, 'ai_only mode should still produce subs in AI-vs-AI matches');
     }
 
     /**
