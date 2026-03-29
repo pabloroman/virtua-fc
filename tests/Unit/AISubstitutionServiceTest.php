@@ -109,11 +109,11 @@ class AISubstitutionServiceTest extends TestCase
         $team = Team::factory()->create();
 
         $lineup = $this->createLineup($game, $team, 11, 70);
-        $bench = $this->createBench($game, $team, 5, 75);
+        $bench = $this->createBenchPlayers($game, $team, 5, 75);
 
         for ($i = 0; $i < 20; $i++) {
             $subs = $this->service->chooseSubstitutions(
-                $lineup, $bench, 70, 3, 0, [], 1.0,
+                $lineup, $bench, 70, 3, 0, [], 1.0, $game->current_date,
             );
 
             foreach ($subs as $sub) {
@@ -131,10 +131,10 @@ class AISubstitutionServiceTest extends TestCase
         $team = Team::factory()->create();
 
         $lineup = $this->createLineup($game, $team, 11, 70);
-        $bench = $this->createBench($game, $team, 5, 75);
+        $bench = $this->createBenchPlayers($game, $team, 5, 75);
 
         $subs = $this->service->chooseSubstitutions(
-            $lineup, $bench, 70, 2, 0, [], 1.0,
+            $lineup, $bench, 70, 2, 0, [], 1.0, $game->current_date,
         );
 
         $this->assertCount(2, $subs);
@@ -158,7 +158,7 @@ class AISubstitutionServiceTest extends TestCase
         $bench = collect([$benchPlayer]);
 
         $subs = $this->service->chooseSubstitutions(
-            $lineup, $bench, 70, 3, 0, [], 1.0,
+            $lineup, $bench, 70, 3, 0, [], 1.0, $game->current_date,
         );
 
         $this->assertCount(1, $subs, 'Cannot make more subs than bench players available');
@@ -202,14 +202,14 @@ class AISubstitutionServiceTest extends TestCase
         $tiredPlayer->setRelation('game', $game);
         $lineup->push($tiredPlayer);
 
-        $bench = $this->createBench($game, $team, 3, 75);
+        $bench = $this->createBenchPlayers($game, $team, 3, 75);
 
         $tiredSubbedOut = 0;
         $iterations = 30;
 
         for ($i = 0; $i < $iterations; $i++) {
             $subs = $this->service->chooseSubstitutions(
-                $lineup, $bench, 80, 1, 0, [], 1.0,
+                $lineup, $bench, 80, 1, 0, [], 1.0, $game->current_date,
             );
 
             if ($subs[0]['player_out']->id === $tiredPlayer->id) {
@@ -231,10 +231,10 @@ class AISubstitutionServiceTest extends TestCase
         $team = Team::factory()->create();
 
         $lineup = $this->createLineup($game, $team, 11, 70);
-        $bench = $this->createBench($game, $team, 5, 75);
+        $bench = $this->createBenchPlayers($game, $team, 5, 75);
 
         $subs = $this->service->chooseSubstitutions(
-            $lineup, $bench, 70, 3, 0, [], 1.0,
+            $lineup, $bench, 70, 3, 0, [], 1.0, $game->current_date,
         );
 
         $outIds = array_map(fn ($s) => $s['player_out']->id, $subs);
@@ -242,31 +242,5 @@ class AISubstitutionServiceTest extends TestCase
 
         $this->assertCount(count($outIds), array_unique($outIds), 'Each player should only be subbed out once');
         $this->assertCount(count($inIds), array_unique($inIds), 'Each bench player should only be brought on once');
-    }
-
-    /**
-     * Create bench players for a team (different positions from lineup).
-     */
-    private function createBench(Game $game, Team $team, int $count = 5, int $ability = 70): \Illuminate\Support\Collection
-    {
-        $positions = ['Goalkeeper', 'Centre-Back', 'Central Midfield', 'Left Winger', 'Centre-Forward', 'Right-Back', 'Attacking Midfield'];
-        $players = collect();
-
-        for ($i = 0; $i < $count; $i++) {
-            $player = GamePlayer::factory()
-                ->forGame($game)
-                ->forTeam($team)
-                ->create([
-                    'position' => $positions[$i % count($positions)],
-                    'game_technical_ability' => $ability,
-                    'game_physical_ability' => $ability,
-                    'fitness' => 95,
-                    'morale' => 80,
-                ]);
-            $player->setRelation('game', $game);
-            $players->push($player);
-        }
-
-        return $players;
     }
 }

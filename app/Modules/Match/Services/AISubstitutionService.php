@@ -5,10 +5,17 @@ namespace App\Modules\Match\Services;
 use App\Models\GamePlayer;
 use App\Modules\Lineup\Services\SubstitutionService;
 use App\Support\PositionMapper;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 class AISubstitutionService
 {
+    private array $config;
+
+    public function __construct()
+    {
+        $this->config = config('match_simulation.ai_substitutions');
+    }
     /**
      * Generate substitution timing windows for an AI team.
      *
@@ -20,12 +27,11 @@ class AISubstitutionService
      */
     public function generateSubstitutionWindows(int $totalSubs, int $fromMinute = 0): array
     {
-        $config = config('match_simulation.ai_substitutions');
-        $lambda = $config['poisson_lambda'];
-        $minMinute = $config['min_minute'];
-        $maxMinute = $config['max_minute'];
-        $halftimeChance = $config['halftime_sub_chance'];
-        $groupingMinutes = $config['window_grouping_minutes'];
+        $lambda = $this->config['poisson_lambda'];
+        $minMinute = $this->config['min_minute'];
+        $maxMinute = $this->config['max_minute'];
+        $halftimeChance = $this->config['halftime_sub_chance'];
+        $groupingMinutes = $this->config['window_grouping_minutes'];
 
         $minutes = [];
 
@@ -90,9 +96,8 @@ class AISubstitutionService
      */
     public function decideTotalSubs(int $benchSize, int $subsAlreadyUsed = 0): int
     {
-        $config = config('match_simulation.ai_substitutions');
-        $minTarget = $config['min_subs'];
-        $maxTarget = $config['max_subs'];
+        $minTarget = $this->config['min_subs'];
+        $maxTarget = $this->config['max_subs'];
 
         $remaining = $maxTarget - $subsAlreadyUsed;
         if ($remaining <= 0) {
@@ -118,6 +123,7 @@ class AISubstitutionService
      * @param  int  $goalDifference  Positive = winning, negative = losing
      * @param  array<string>  $yellowCardPlayerIds  Players on a yellow card
      * @param  float  $tacticalDrainMultiplier  Energy drain multiplier from tactics
+     * @param  Carbon  $currentDate  Game's current date (for age calculations)
      * @return array<array{player_out: GamePlayer, player_in: GamePlayer}>
      */
     public function chooseSubstitutions(
@@ -128,14 +134,14 @@ class AISubstitutionService
         int $goalDifference,
         array $yellowCardPlayerIds,
         float $tacticalDrainMultiplier,
+        Carbon $currentDate,
     ): array {
         if ($bench->isEmpty() || $subsInWindow <= 0) {
             return [];
         }
 
-        $config = config('match_simulation.ai_substitutions');
-        $energyThreshold = $config['energy_threshold'];
-        $yellowCardWeight = $config['yellow_card_weight'];
+        $energyThreshold = $this->config['energy_threshold'];
+        $yellowCardWeight = $this->config['yellow_card_weight'];
 
         $substitutions = [];
         $availableBench = $bench->values();
@@ -150,6 +156,7 @@ class AISubstitutionService
             $candidates = $this->scoreSubstitutionUrgency(
                 $currentLineup, $windowMinute, $yellowCardPlayerIds,
                 $energyThreshold, $yellowCardWeight, $tacticalDrainMultiplier,
+                $currentDate,
             );
 
             if ($candidates->isEmpty()) {
@@ -197,16 +204,15 @@ class AISubstitutionService
         float $energyThreshold,
         float $yellowCardWeight,
         float $tacticalDrainMultiplier,
+        Carbon $currentDate,
     ): Collection {
         return $lineup
             ->filter(fn (GamePlayer $p) => $p->position !== 'Goalkeeper')
-            ->map(function (GamePlayer $player) use ($minute, $yellowCardPlayerIds, $energyThreshold, $yellowCardWeight, $tacticalDrainMultiplier) {
-                $currentDate = $player->game->current_date;
-                $isGK = false; // Already filtered out GKs
+            ->map(function (GamePlayer $player) use ($minute, $yellowCardPlayerIds, $energyThreshold, $yellowCardWeight, $tacticalDrainMultiplier, $currentDate) {
                 $energy = EnergyCalculator::energyAtMinute(
                     $player->physical_ability,
                     $player->age($currentDate),
-                    $isGK,
+                    false,
                     $minute,
                     0, // started from minute 0
                     $tacticalDrainMultiplier,
@@ -248,7 +254,6 @@ class AISubstitutionService
             return null;
         }
 
-        $config = config('match_simulation.ai_substitutions');
         $outPosition = $playerOut->position;
         $outGroup = PositionMapper::getPositionGroup($outPosition);
 
@@ -271,7 +276,7 @@ class AISubstitutionService
         }
 
         // When losing, prefer attackers; when winning big, prefer defenders
-        if ($goalDifference < 0 && rand(1, 100) <= $config['losing_attack_bias'] * 100) {
+        if ($goalDifference < 0 && rand(1, 100) <= $this->config['losing_attack_bias'] * 100) {
             $attackers = $candidates->filter(fn ($p) => in_array(
                 PositionMapper::getPositionGroup($p->position),
                 ['Forward', 'Midfielder']
@@ -336,9 +341,9 @@ class AISubstitutionService
 
         do {
             $k++;
-            $p *= lcg_value();
+            $p *= mt_rand() / mt_getrandmax();
         } while ($p > $L);
 
-        return $k - 1;
+        return max(0, $k - 1);
     }
 }

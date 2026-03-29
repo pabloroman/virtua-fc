@@ -270,6 +270,7 @@ class MatchSimulator
         $homeWindowsUsed = 0;
         $awayWindowsUsed = 0;
         $maxWindows = SubstitutionService::MAX_WINDOWS;
+        $currentDate = $game?->current_date ?? now();
 
         foreach ($splitMinutes as $splitMinute) {
             // Simulate period [currentMinute, splitMinute]
@@ -312,89 +313,40 @@ class MatchSimulator
                 if ($event->type === 'yellow_card') {
                     $existingYellowPlayerIds[] = $event->gamePlayerId;
                 }
-                // Track injury auto-subs: they consume a sub AND a window
                 if ($event->type === 'substitution') {
                     if ($event->teamId === $homeTeam->id) {
-                        $homeSubsUsed++;
-                        $homeWindowsUsed++;
-                        $homePlayers = $homePlayers->reject(fn ($p) => $p->id === $event->gamePlayerId);
-                        if ($homeBenchPlayers !== null) {
-                            $subIn = $homeBenchPlayers->firstWhere('id', $event->metadata['player_in_id']);
-                            if ($subIn) {
-                                $homePlayers->push($subIn);
-                                $homeBenchPlayers = $homeBenchPlayers->reject(fn ($p) => $p->id === $subIn->id)->values();
-                                $homeEntryMinutes[$subIn->id] = $event->minute;
-                            }
-                        }
-                        $homePlayers = $homePlayers->values();
+                        $this->trackInjuryAutoSub(
+                            $event, $homePlayers, $homeBenchPlayers,
+                            $homeEntryMinutes, $homeSubsUsed, $homeWindowsUsed,
+                        );
                     } else {
-                        $awaySubsUsed++;
-                        $awayWindowsUsed++;
-                        $awayPlayers = $awayPlayers->reject(fn ($p) => $p->id === $event->gamePlayerId);
-                        if ($awayBenchPlayers !== null) {
-                            $subIn = $awayBenchPlayers->firstWhere('id', $event->metadata['player_in_id']);
-                            if ($subIn) {
-                                $awayPlayers->push($subIn);
-                                $awayBenchPlayers = $awayBenchPlayers->reject(fn ($p) => $p->id === $subIn->id)->values();
-                                $awayEntryMinutes[$subIn->id] = $event->minute;
-                            }
-                        }
-                        $awayPlayers = $awayPlayers->values();
+                        $this->trackInjuryAutoSub(
+                            $event, $awayPlayers, $awayBenchPlayers,
+                            $awayEntryMinutes, $awaySubsUsed, $awayWindowsUsed,
+                        );
                     }
                 }
             }
 
-            // Now apply AI substitutions at this split minute
+            // Apply AI substitutions at this split minute
             $goalDifference = $totalHomeScore - $totalAwayScore;
             $maxSubs = SubstitutionService::MAX_SUBSTITUTIONS;
 
-            // Home team AI subs — check both sub count and window limits
-            if (isset($homeWindows[$splitMinute]) && $homeBenchPlayers !== null
-                && $homeSubsUsed < $maxSubs && $homeWindowsUsed < $maxWindows) {
-                $subsInWindow = min(count($homeWindows[$splitMinute]), $maxSubs - $homeSubsUsed);
-                $homeSubs = $this->aiSubstitutionService->chooseSubstitutions(
-                    $homePlayers, $homeBenchPlayers,
-                    $splitMinute, $subsInWindow, $goalDifference,
-                    $existingYellowPlayerIds, $homeTacticalDrain,
-                );
-                if (count($homeSubs) > 0) {
-                    $homeWindowsUsed++;
-                }
-                foreach ($homeSubs as $sub) {
-                    $allEvents->push(MatchEventData::substitution(
-                        $homeTeam->id, $sub['player_out']->id, $sub['player_in']->id, $splitMinute,
-                    ));
-                    $homePlayers = $homePlayers->reject(fn ($p) => $p->id === $sub['player_out']->id)
-                        ->push($sub['player_in'])->values();
-                    $homeBenchPlayers = $homeBenchPlayers->reject(fn ($p) => $p->id === $sub['player_in']->id)->values();
-                    $homeEntryMinutes[$sub['player_in']->id] = $splitMinute;
-                    $homeSubsUsed++;
-                }
-            }
+            $this->applyTeamAISubs(
+                $homeWindows, $splitMinute, $homeTeam->id,
+                $homePlayers, $homeBenchPlayers, $homeEntryMinutes,
+                $homeSubsUsed, $homeWindowsUsed, $maxSubs, $maxWindows,
+                $goalDifference, $existingYellowPlayerIds, $homeTacticalDrain,
+                $currentDate, $allEvents,
+            );
 
-            // Away team AI subs — check both sub count and window limits
-            if (isset($awayWindows[$splitMinute]) && $awayBenchPlayers !== null
-                && $awaySubsUsed < $maxSubs && $awayWindowsUsed < $maxWindows) {
-                $subsInWindow = min(count($awayWindows[$splitMinute]), $maxSubs - $awaySubsUsed);
-                $awaySubs = $this->aiSubstitutionService->chooseSubstitutions(
-                    $awayPlayers, $awayBenchPlayers,
-                    $splitMinute, $subsInWindow, -$goalDifference,
-                    $existingYellowPlayerIds, $awayTacticalDrain,
-                );
-                if (count($awaySubs) > 0) {
-                    $awayWindowsUsed++;
-                }
-                foreach ($awaySubs as $sub) {
-                    $allEvents->push(MatchEventData::substitution(
-                        $awayTeam->id, $sub['player_out']->id, $sub['player_in']->id, $splitMinute,
-                    ));
-                    $awayPlayers = $awayPlayers->reject(fn ($p) => $p->id === $sub['player_out']->id)
-                        ->push($sub['player_in'])->values();
-                    $awayBenchPlayers = $awayBenchPlayers->reject(fn ($p) => $p->id === $sub['player_in']->id)->values();
-                    $awayEntryMinutes[$sub['player_in']->id] = $splitMinute;
-                    $awaySubsUsed++;
-                }
-            }
+            $this->applyTeamAISubs(
+                $awayWindows, $splitMinute, $awayTeam->id,
+                $awayPlayers, $awayBenchPlayers, $awayEntryMinutes,
+                $awaySubsUsed, $awayWindowsUsed, $maxSubs, $maxWindows,
+                -$goalDifference, $existingYellowPlayerIds, $awayTacticalDrain,
+                $currentDate, $allEvents,
+            );
 
             $currentMinute = $splitMinute;
         }
@@ -440,6 +392,79 @@ class MatchSimulator
             new MatchResult($totalHomeScore, $totalAwayScore, $allEvents, $finalResult->homePossession, $finalResult->awayPossession),
             $allPerformances,
         );
+    }
+
+    /**
+     * Track an injury auto-sub event by updating team state (players, bench, counters).
+     */
+    private function trackInjuryAutoSub(
+        MatchEventData $event,
+        Collection &$players,
+        ?Collection &$benchPlayers,
+        array &$entryMinutes,
+        int &$subsUsed,
+        int &$windowsUsed,
+    ): void {
+        $subsUsed++;
+        $windowsUsed++;
+        $players = $players->reject(fn ($p) => $p->id === $event->gamePlayerId);
+        if ($benchPlayers !== null) {
+            $subIn = $benchPlayers->firstWhere('id', $event->metadata['player_in_id']);
+            if ($subIn) {
+                $players->push($subIn);
+                $benchPlayers = $benchPlayers->reject(fn ($p) => $p->id === $subIn->id)->values();
+                $entryMinutes[$subIn->id] = $event->minute;
+            }
+        }
+        $players = $players->values();
+    }
+
+    /**
+     * Apply AI substitutions for one team at a given split minute.
+     */
+    private function applyTeamAISubs(
+        array $windows,
+        int $splitMinute,
+        string $teamId,
+        Collection &$players,
+        ?Collection &$benchPlayers,
+        array &$entryMinutes,
+        int &$subsUsed,
+        int &$windowsUsed,
+        int $maxSubs,
+        int $maxWindows,
+        int $goalDifference,
+        array $yellowCardPlayerIds,
+        float $tacticalDrain,
+        Carbon $currentDate,
+        Collection $allEvents,
+    ): void {
+        if (! isset($windows[$splitMinute]) || $benchPlayers === null
+            || $subsUsed >= $maxSubs || $windowsUsed >= $maxWindows) {
+            return;
+        }
+
+        $subsInWindow = min(count($windows[$splitMinute]), $maxSubs - $subsUsed);
+        $subs = $this->aiSubstitutionService->chooseSubstitutions(
+            $players, $benchPlayers,
+            $splitMinute, $subsInWindow, $goalDifference,
+            $yellowCardPlayerIds, $tacticalDrain, $currentDate,
+        );
+
+        if (count($subs) > 0) {
+            $windowsUsed++;
+        }
+
+        foreach ($subs as $sub) {
+            $allEvents->push(MatchEventData::substitution(
+                $teamId, $sub['player_out']->id, $sub['player_in']->id, $splitMinute,
+            ));
+            $players = $players->reject(fn ($p) => $p->id === $sub['player_out']->id)
+                ->push($sub['player_in'])->values();
+            $benchPlayers = $benchPlayers->reject(fn ($p) => $p->id === $sub['player_in']->id)->values();
+            $entryMinutes[$sub['player_in']->id] = $splitMinute;
+            $subsUsed++;
+        }
     }
 
     /**
