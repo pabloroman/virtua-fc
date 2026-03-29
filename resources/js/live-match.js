@@ -250,6 +250,16 @@ export default function liveMatch(config) {
                 this._needsPenalties = this.preloadedExtraTimeData.needsPenalties || false;
             }
 
+            // Pause simulation when the browser tab loses focus so the
+            // clock and event list stay in sync (requestAnimationFrame stops
+            // firing while the tab is hidden, causing a large time jump on return).
+            this._onVisibilityChange = () => {
+                if (document.hidden && !this.userPaused && this.phase !== 'full_time' && this.phase !== 'pre_match') {
+                    this.userPaused = true;
+                }
+            };
+            document.addEventListener('visibilitychange', this._onVisibilityChange);
+
             // Start the match simulation (synthesize goals + kickoff delay)
             this.startSimulation();
         },
@@ -1142,6 +1152,9 @@ export default function liveMatch(config) {
             this._destroyPenaltyTimers();
             clearInterval(this._processingPollTimer);
             document.body.classList.remove('overflow-y-hidden');
+            if (this._onVisibilityChange) {
+                document.removeEventListener('visibilitychange', this._onVisibilityChange);
+            }
         },
     };
 
