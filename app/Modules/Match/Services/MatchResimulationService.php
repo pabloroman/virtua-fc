@@ -353,6 +353,23 @@ class MatchResimulationService
             }
         }
 
+        // Decrement appearances for players who were subbed in via events being reverted
+        $subbedInPlayerIds = $eventsToRevert
+            ->filter(fn ($e) => $e->event_type === 'substitution' && isset($e->metadata['player_in_id']))
+            ->pluck('metadata.player_in_id')
+            ->unique()
+            ->values()
+            ->all();
+
+        if (! empty($subbedInPlayerIds)) {
+            GamePlayer::whereIn('id', $subbedInPlayerIds)
+                ->where('appearances', '>', 0)
+                ->update([
+                    'appearances' => DB::raw('GREATEST(appearances - 1, 0)'),
+                    'season_appearances' => DB::raw('GREATEST(season_appearances - 1, 0)'),
+                ]);
+        }
+
         // Delete the events
         MatchEvent::where('game_match_id', $match->id)
             ->where('minute', '>', $minute)

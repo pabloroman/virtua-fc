@@ -185,15 +185,7 @@ export default function liveMatch(config) {
         selectedPlayerOut: null,
         selectedPlayerIn: null,
         pendingSubs: [],        // Queued subs for the current window [{playerOut, playerIn}]
-        substitutionsMade: config.existingSubstitutions
-            ? config.existingSubstitutions.map(s => ({
-                playerOutId: s.player_out_id,
-                playerInId: s.player_in_id,
-                minute: s.minute,
-                playerOutName: '',
-                playerInName: '',
-            }))
-            : [],
+        substitutionsMade: [],
 
         // Ticker state for other matches
         otherMatchScores: [],

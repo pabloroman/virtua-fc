@@ -102,21 +102,29 @@ class TacticalChangeService
             $result = $this->resimulationService->resimulate($match, $game, $minute, $homePlayers, $awayPlayers, $allSubs, $homeBench, $awayBench);
         }
 
-        // Record substitutions if any
+        // Rebuild substitutions JSON: keep opponent entries, replace user entries with allSubs.
+        // This cleans up stale entries from previous simulations that were reverted.
+        $opponentSubs = collect($match->substitutions ?? [])
+            ->filter(fn ($s) => ($s['team_id'] ?? null) !== $game->team_id)
+            ->values()
+            ->all();
+
+        $userSubs = array_map(fn ($s) => [
+            'team_id' => $game->team_id,
+            'player_out_id' => $s['playerOutId'],
+            'player_in_id' => $s['playerInId'],
+            'minute' => $s['minute'],
+        ], $allSubs);
+
+        $match->update(['substitutions' => array_merge($opponentSubs, $userSubs)]);
+
+        // Record new substitution events and appearances
         $substitutionDetails = [];
         if (! empty($newSubstitutions)) {
-            $substitutions = $match->substitutions ?? [];
             $playerIds = [];
             $eventRows = [];
 
             foreach ($newSubstitutions as $sub) {
-                $substitutions[] = [
-                    'team_id' => $game->team_id,
-                    'player_out_id' => $sub['playerOutId'],
-                    'player_in_id' => $sub['playerInId'],
-                    'minute' => $minute,
-                ];
-
                 $eventRows[] = [
                     'id' => Str::uuid()->toString(),
                     'game_id' => $game->id,
@@ -132,14 +140,13 @@ class TacticalChangeService
                 $playerIds[] = $sub['playerInId'];
             }
 
-            // Batch: increment appearances, insert events, update match
+            // Batch: increment appearances, insert events
             $playerInIds = array_column($newSubstitutions, 'playerInId');
             GamePlayer::whereIn('id', $playerInIds)->update([
                 'appearances' => DB::raw('appearances + 1'),
                 'season_appearances' => DB::raw('season_appearances + 1'),
             ]);
             MatchEvent::insert($eventRows);
-            $match->update(['substitutions' => $substitutions]);
 
             // Load player names for response
             $players = GamePlayer::with('player')->whereIn('id', $playerIds)->get()->keyBy('id');

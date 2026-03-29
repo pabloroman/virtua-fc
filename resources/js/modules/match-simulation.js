@@ -13,6 +13,31 @@
 export function createMatchSimulation(ctx) {
     let _lastTick = null;
     let _animFrame = null;
+
+    /**
+     * Track user-team substitution events as they are revealed during animation.
+     * Populates substitutionsMade progressively so the lineup display stays in
+     * sync with the animation clock instead of showing all subs from minute 0.
+     */
+    function trackSubstitutionIfNeeded(event) {
+        const state = ctx();
+        if (event.type === 'substitution' && event.teamId === state.userTeamId) {
+            state.substitutionsMade.push({
+                playerOutId: event.gamePlayerId,
+                playerInId: event.metadata?.player_in_id ?? '',
+                minute: event.minute,
+                playerOutName: event.playerName ?? '',
+                playerInName: event.playerInName ?? '',
+            });
+            const playerInId = event.metadata?.player_in_id;
+            if (playerInId) {
+                const benchPlayer = state.benchPlayers.find(p => p.id === playerInId);
+                if (benchPlayer) {
+                    benchPlayer.minuteEntered = event.minute;
+                }
+            }
+        }
+    }
     let _kickoffTimeout = null;
     let _startETTimeout = null;
 
@@ -177,6 +202,7 @@ export function createMatchSimulation(ctx) {
         state.lastRevealedIndex = index;
         state.revealedEvents.unshift(event);
         state.latestEvent = event;
+        trackSubstitutionIfNeeded(event);
 
         if (event.type === 'goal' || event.type === 'own_goal') {
             updateScore(event);
@@ -201,6 +227,7 @@ export function createMatchSimulation(ctx) {
         state.lastRevealedETIndex = index;
         state.revealedEvents.unshift(event);
         state.latestEvent = event;
+        trackSubstitutionIfNeeded(event);
 
         if (event.type === 'goal' || event.type === 'own_goal') {
             updateScore(event);
@@ -281,6 +308,7 @@ export function createMatchSimulation(ctx) {
             const event = state.events[i];
             state.lastRevealedIndex = i;
             state.revealedEvents.unshift(event);
+            trackSubstitutionIfNeeded(event);
             if (event.type === 'goal' || event.type === 'own_goal') {
                 updateScore(event);
             }
@@ -326,6 +354,7 @@ export function createMatchSimulation(ctx) {
             const event = state.extraTimeEvents[i];
             state.lastRevealedETIndex = i;
             state.revealedEvents.unshift(event);
+            trackSubstitutionIfNeeded(event);
             if (event.type === 'goal' || event.type === 'own_goal') {
                 updateScore(event);
             }
@@ -355,7 +384,9 @@ export function createMatchSimulation(ctx) {
             state.homeScore = state.finalHomeScore;
             state.awayScore = state.finalAwayScore;
             for (let i = state.lastRevealedIndex + 1; i < state.events.length; i++) {
-                state.revealedEvents.unshift(state.events[i]);
+                const event = state.events[i];
+                state.revealedEvents.unshift(event);
+                trackSubstitutionIfNeeded(event);
             }
             state.lastRevealedIndex = state.events.length - 1;
         } else {
@@ -453,6 +484,7 @@ export function createMatchSimulation(ctx) {
             const event = state.extraTimeEvents[i];
             state.lastRevealedETIndex = i;
             state.revealedEvents.unshift(event);
+            trackSubstitutionIfNeeded(event);
             if (event.type === 'goal' || event.type === 'own_goal') {
                 updateScore(event);
             }

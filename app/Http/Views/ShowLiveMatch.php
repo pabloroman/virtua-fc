@@ -109,18 +109,6 @@ class ShowLiveMatch
             ? ($playerMatch->home_lineup ?? [])
             : ($playerMatch->away_lineup ?? []);
 
-        // Existing substitutions already made on this match (for page reload scenario)
-        // Filter to user's team only — opponent auto-subs should not affect the user's count or display.
-        $existingSubstitutions = collect($playerMatch->substitutions ?? [])
-            ->filter(fn ($s) => ($s['team_id'] ?? null) === $game->team_id)
-            ->values()
-            ->all();
-
-        // Build entry minutes map from existing substitutions
-        $entryMinutes = collect($existingSubstitutions)
-            ->pluck('minute', 'player_in_id')
-            ->all();
-
         // Starting lineup players (for the "sub out" picker)
         $currentDate = $game->current_date;
         $lineupPlayers = GamePlayer::with('player')
@@ -139,7 +127,7 @@ class ShowLiveMatch
                 'overallScore' => $p->overall_score,
                 'fitness' => $p->fitness,
                 'morale' => $p->morale,
-                'minuteEntered' => $entryMinutes[$p->id] ?? 0,
+                'minuteEntered' => 0,
             ])
             ->sortBy('positionSort')
             ->values()
@@ -274,7 +262,6 @@ class ShowLiveMatch
             'resultsUrl' => $resultsUrl,
             'lineupPlayers' => $lineupPlayers,
             'benchPlayers' => $benchPlayers,
-            'existingSubstitutions' => $existingSubstitutions,
             'tacticalActionsUrl' => route('game.match.tactical-actions', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
             'extraTimeUrl' => route('game.match.extra-time', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
             'penaltiesUrl' => route('game.match.penalties', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
