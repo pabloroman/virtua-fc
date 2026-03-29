@@ -468,6 +468,234 @@ class MatchSimulator
     }
 
     /**
+     * Simulate the remainder of a match with AI substitutions for the opponent.
+     *
+     * Used by MatchResimulationService when the user makes tactical changes during
+     * a live match. Generates AI opponent subs for the period [fromMinute, 93],
+     * respecting subs/windows already used before fromMinute.
+     */
+    public function simulateRemainderWithAISubs(
+        Team $homeTeam,
+        Team $awayTeam,
+        Collection $homePlayers,
+        Collection $awayPlayers,
+        ?Formation $homeFormation,
+        ?Formation $awayFormation,
+        ?Mentality $homeMentality,
+        ?Mentality $awayMentality,
+        int $fromMinute,
+        ?Game $game,
+        array $existingInjuryTeamIds = [],
+        array $existingYellowPlayerIds = [],
+        array $homeEntryMinutes = [],
+        array $awayEntryMinutes = [],
+        ?PlayingStyle $homePlayingStyle = null,
+        ?PlayingStyle $awayPlayingStyle = null,
+        ?PressingIntensity $homePressing = null,
+        ?PressingIntensity $awayPressing = null,
+        ?DefensiveLineHeight $homeDefLine = null,
+        ?DefensiveLineHeight $awayDefLine = null,
+        ?Collection $homeBenchPlayers = null,
+        ?Collection $awayBenchPlayers = null,
+        int $homeExistingSubstitutions = 0,
+        int $awayExistingSubstitutions = 0,
+        int $homeWindowsUsed = 0,
+        int $awayWindowsUsed = 0,
+        int $scoreHomeAtMinute = 0,
+        int $scoreAwayAtMinute = 0,
+        string $matchSeed = '',
+    ): MatchSimulationOutput {
+        $homeFormation = $homeFormation ?? Formation::F_4_3_3;
+        $awayFormation = $awayFormation ?? Formation::F_4_3_3;
+        $homeMentality = $homeMentality ?? Mentality::BALANCED;
+        $awayMentality = $awayMentality ?? Mentality::BALANCED;
+        $homePlayingStyle = $homePlayingStyle ?? PlayingStyle::BALANCED;
+        $awayPlayingStyle = $awayPlayingStyle ?? PlayingStyle::BALANCED;
+        $homePressing = $homePressing ?? PressingIntensity::STANDARD;
+        $awayPressing = $awayPressing ?? PressingIntensity::STANDARD;
+        $homeDefLine = $homeDefLine ?? DefensiveLineHeight::NORMAL;
+        $awayDefLine = $awayDefLine ?? DefensiveLineHeight::NORMAL;
+
+        $homeTacticalDrain = $homePlayingStyle->energyDrainMultiplier() * $homePressing->energyDrainMultiplier();
+        $awayTacticalDrain = $awayPlayingStyle->energyDrainMultiplier() * $awayPressing->energyDrainMultiplier();
+
+        $maxSubs = SubstitutionService::MAX_SUBSTITUTIONS;
+        $maxWindows = SubstitutionService::MAX_WINDOWS;
+
+        // Determine how many MORE subs each AI team will make
+        $homeTotalSubs = ($homeBenchPlayers !== null && $homeExistingSubstitutions < $maxSubs && $homeWindowsUsed < $maxWindows)
+            ? $this->aiSubstitutionService->decideTotalSubs($homeBenchPlayers->count(), $homeExistingSubstitutions)
+            : 0;
+        $awayTotalSubs = ($awayBenchPlayers !== null && $awayExistingSubstitutions < $maxSubs && $awayWindowsUsed < $maxWindows)
+            ? $this->aiSubstitutionService->decideTotalSubs($awayBenchPlayers->count(), $awayExistingSubstitutions)
+            : 0;
+
+        // Generate sub windows from the current minute onward
+        $homeWindows = $homeTotalSubs > 0
+            ? $this->aiSubstitutionService->generateSubstitutionWindows($homeTotalSubs, $fromMinute)
+            : [];
+        $awayWindows = $awayTotalSubs > 0
+            ? $this->aiSubstitutionService->generateSubstitutionWindows($awayTotalSubs, $fromMinute)
+            : [];
+
+        $splitMinutes = array_unique(array_merge(array_keys($homeWindows), array_keys($awayWindows)));
+        sort($splitMinutes);
+
+        // No AI sub windows — fall back to standard simulation
+        if (empty($splitMinutes)) {
+            return $this->simulateRemainder(
+                $homeTeam, $awayTeam,
+                $homePlayers, $awayPlayers,
+                $homeFormation, $awayFormation,
+                $homeMentality, $awayMentality,
+                fromMinute: $fromMinute,
+                game: $game,
+                existingInjuryTeamIds: $existingInjuryTeamIds,
+                existingYellowPlayerIds: $existingYellowPlayerIds,
+                homeEntryMinutes: $homeEntryMinutes,
+                awayEntryMinutes: $awayEntryMinutes,
+                homePlayingStyle: $homePlayingStyle,
+                awayPlayingStyle: $awayPlayingStyle,
+                homePressing: $homePressing,
+                awayPressing: $awayPressing,
+                homeDefLine: $homeDefLine,
+                awayDefLine: $awayDefLine,
+                homeBenchPlayers: $homeBenchPlayers,
+                awayBenchPlayers: $awayBenchPlayers,
+                matchSeed: $matchSeed,
+                homeExistingSubstitutions: $homeExistingSubstitutions,
+                awayExistingSubstitutions: $awayExistingSubstitutions,
+            );
+        }
+
+        // Reset performance cache for the resimulation
+        $this->matchPerformance = [];
+
+        $allEvents = collect();
+        $totalHomeScore = 0;
+        $totalAwayScore = 0;
+        $currentMinute = $fromMinute;
+        $homeSubsUsed = $homeExistingSubstitutions;
+        $awaySubsUsed = $awayExistingSubstitutions;
+        $currentDate = $game?->current_date ?? now();
+
+        foreach ($splitMinutes as $splitMinute) {
+            $periodOutput = $this->simulateRemainder(
+                $homeTeam, $awayTeam,
+                $homePlayers, $awayPlayers,
+                $homeFormation, $awayFormation,
+                $homeMentality, $awayMentality,
+                fromMinute: $currentMinute,
+                game: $game,
+                existingInjuryTeamIds: $existingInjuryTeamIds,
+                existingYellowPlayerIds: $existingYellowPlayerIds,
+                homeEntryMinutes: $homeEntryMinutes,
+                awayEntryMinutes: $awayEntryMinutes,
+                homePlayingStyle: $homePlayingStyle,
+                awayPlayingStyle: $awayPlayingStyle,
+                homePressing: $homePressing,
+                awayPressing: $awayPressing,
+                homeDefLine: $homeDefLine,
+                awayDefLine: $awayDefLine,
+                homeBenchPlayers: $homeBenchPlayers,
+                awayBenchPlayers: $awayBenchPlayers,
+                matchSeed: $matchSeed . ':' . $splitMinute,
+                homeExistingSubstitutions: $homeSubsUsed,
+                awayExistingSubstitutions: $awaySubsUsed,
+                preservePerformance: true,
+                toMinute: $splitMinute,
+            );
+
+            $periodResult = $periodOutput->result;
+            $allEvents = $allEvents->merge($periodResult->events);
+            $totalHomeScore += $periodResult->homeScore;
+            $totalAwayScore += $periodResult->awayScore;
+
+            // Track injuries, yellows, and injury auto-subs from this period
+            foreach ($periodResult->events as $event) {
+                if ($event->type === 'injury') {
+                    $existingInjuryTeamIds[] = $event->teamId;
+                }
+                if ($event->type === 'yellow_card') {
+                    $existingYellowPlayerIds[] = $event->gamePlayerId;
+                }
+                if ($event->type === 'substitution') {
+                    if ($event->teamId === $homeTeam->id) {
+                        $this->trackInjuryAutoSub(
+                            $event, $homePlayers, $homeBenchPlayers,
+                            $homeEntryMinutes, $homeSubsUsed, $homeWindowsUsed,
+                        );
+                    } else {
+                        $this->trackInjuryAutoSub(
+                            $event, $awayPlayers, $awayBenchPlayers,
+                            $awayEntryMinutes, $awaySubsUsed, $awayWindowsUsed,
+                        );
+                    }
+                }
+            }
+
+            // Apply AI substitutions at this window
+            $goalDifference = ($scoreHomeAtMinute + $totalHomeScore) - ($scoreAwayAtMinute + $totalAwayScore);
+
+            $this->applyTeamAISubs(
+                $homeWindows, $splitMinute, $homeTeam->id,
+                $homePlayers, $homeBenchPlayers, $homeEntryMinutes,
+                $homeSubsUsed, $homeWindowsUsed, $maxSubs, $maxWindows,
+                $goalDifference, $existingYellowPlayerIds, $homeTacticalDrain,
+                $currentDate, $allEvents,
+            );
+
+            $this->applyTeamAISubs(
+                $awayWindows, $splitMinute, $awayTeam->id,
+                $awayPlayers, $awayBenchPlayers, $awayEntryMinutes,
+                $awaySubsUsed, $awayWindowsUsed, $maxSubs, $maxWindows,
+                -$goalDifference, $existingYellowPlayerIds, $awayTacticalDrain,
+                $currentDate, $allEvents,
+            );
+
+            $currentMinute = $splitMinute;
+        }
+
+        // Simulate final period
+        $finalOutput = $this->simulateRemainder(
+            $homeTeam, $awayTeam,
+            $homePlayers, $awayPlayers,
+            $homeFormation, $awayFormation,
+            $homeMentality, $awayMentality,
+            fromMinute: $currentMinute,
+            game: $game,
+            existingInjuryTeamIds: $existingInjuryTeamIds,
+            existingYellowPlayerIds: $existingYellowPlayerIds,
+            homeEntryMinutes: $homeEntryMinutes,
+            awayEntryMinutes: $awayEntryMinutes,
+            homePlayingStyle: $homePlayingStyle,
+            awayPlayingStyle: $awayPlayingStyle,
+            homePressing: $homePressing,
+            awayPressing: $awayPressing,
+            homeDefLine: $homeDefLine,
+            awayDefLine: $awayDefLine,
+            homeBenchPlayers: $homeBenchPlayers,
+            awayBenchPlayers: $awayBenchPlayers,
+            matchSeed: $matchSeed . ':final',
+            homeExistingSubstitutions: $homeSubsUsed,
+            awayExistingSubstitutions: $awaySubsUsed,
+            preservePerformance: true,
+        );
+
+        $finalResult = $finalOutput->result;
+        $allEvents = $allEvents->merge($finalResult->events);
+        $totalHomeScore += $finalResult->homeScore;
+        $totalAwayScore += $finalResult->awayScore;
+
+        $allEvents = $allEvents->sortBy('minute')->values();
+
+        return new MatchSimulationOutput(
+            new MatchResult($totalHomeScore, $totalAwayScore, $allEvents, $finalResult->homePossession, $finalResult->awayPossession),
+            $finalOutput->performances,
+        );
+    }
+
+    /**
      * Reassign goal/assist events from players who were removed from the match
      * (via injury or red card) to available teammates.
      *

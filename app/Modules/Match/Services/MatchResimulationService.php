@@ -113,6 +113,7 @@ class MatchResimulationService
         $isUserHome = $match->isHomeTeam($game->team_id);
         $homeEntryMinutes = [];
         $awayEntryMinutes = [];
+        // User's substitutions
         foreach ($allSubstitutions as $sub) {
             if ($isUserHome) {
                 $homeEntryMinutes[$sub['playerInId']] = $sub['minute'];
@@ -120,43 +121,106 @@ class MatchResimulationService
                 $awayEntryMinutes[$sub['playerInId']] = $sub['minute'];
             }
         }
+        // Opponent's substitutions that happened before the resimulation minute
+        foreach ($match->substitutions ?? [] as $sub) {
+            if ($sub['team_id'] !== $game->team_id && $sub['minute'] <= $minute) {
+                if ($isUserHome) {
+                    $awayEntryMinutes[$sub['player_in_id']] = $sub['minute'];
+                } else {
+                    $homeEntryMinutes[$sub['player_in_id']] = $sub['minute'];
+                }
+            }
+        }
 
-        // 8. Count existing substitutions per team to enforce the limit
+        // 8. Count existing substitutions and windows per team to enforce limits
         $userSubCount = count($allSubstitutions);
-        $opponentSubCount = collect($match->substitutions ?? [])
-            ->filter(fn ($s) => $s['team_id'] !== $game->team_id)
-            ->count();
+        $opponentSubs = collect($match->substitutions ?? [])
+            ->filter(fn ($s) => $s['team_id'] !== $game->team_id);
+        $opponentSubCount = $opponentSubs->count();
         $homeExistingSubs = $isUserHome ? $userSubCount : $opponentSubCount;
         $awayExistingSubs = $isUserHome ? $opponentSubCount : $userSubCount;
 
-        // 9. Re-simulate the remainder
-        $remainderOutput = $this->matchSimulator->simulateRemainder(
-            $match->homeTeam,
-            $match->awayTeam,
-            $homePlayers,
-            $awayPlayers,
-            $homeFormation,
-            $awayFormation,
-            $homeMentality,
-            $awayMentality,
-            $minute,
-            $game,
-            $existingInjuryTeamIds,
-            $existingYellowPlayerIds,
-            $homeEntryMinutes,
-            $awayEntryMinutes,
-            $homePlayingStyle,
-            $awayPlayingStyle,
-            $homePressing,
-            $awayPressing,
-            $homeDefLine,
-            $awayDefLine,
-            $homeBenchPlayers,
-            $awayBenchPlayers,
-            homeExistingSubstitutions: $homeExistingSubs,
-            awayExistingSubstitutions: $awayExistingSubs,
-            neutralVenue: $match->competition_id === 'WC2026',
-        );
+        // Count opponent windows used before the resimulation minute
+        $opponentWindowsUsed = $opponentSubs
+            ->filter(fn ($s) => $s['minute'] <= $minute)
+            ->pluck('minute')
+            ->unique()
+            ->count();
+        $homeWindowsUsed = $isUserHome ? 0 : $opponentWindowsUsed;
+        $awayWindowsUsed = $isUserHome ? $opponentWindowsUsed : 0;
+
+        // 9. Re-simulate the remainder with AI substitutions for the opponent
+        $hasOpponentBench = $isUserHome
+            ? ($awayBenchPlayers !== null && $awayBenchPlayers->isNotEmpty())
+            : ($homeBenchPlayers !== null && $homeBenchPlayers->isNotEmpty());
+
+        $aiSubMode = config('match_simulation.ai_substitutions.mode', 'all');
+        $aiSubsActive = $hasOpponentBench && match ($aiSubMode) {
+            'all' => true,
+            'ai_only' => false, // user is in the match, so skip in ai_only mode
+            default => false,
+        };
+
+        if ($aiSubsActive) {
+            $remainderOutput = $this->matchSimulator->simulateRemainderWithAISubs(
+                $match->homeTeam,
+                $match->awayTeam,
+                $homePlayers,
+                $awayPlayers,
+                $homeFormation,
+                $awayFormation,
+                $homeMentality,
+                $awayMentality,
+                $minute,
+                $game,
+                $existingInjuryTeamIds,
+                $existingYellowPlayerIds,
+                $homeEntryMinutes,
+                $awayEntryMinutes,
+                $homePlayingStyle,
+                $awayPlayingStyle,
+                $homePressing,
+                $awayPressing,
+                $homeDefLine,
+                $awayDefLine,
+                $homeBenchPlayers,
+                $awayBenchPlayers,
+                homeExistingSubstitutions: $homeExistingSubs,
+                awayExistingSubstitutions: $awayExistingSubs,
+                homeWindowsUsed: $homeWindowsUsed,
+                awayWindowsUsed: $awayWindowsUsed,
+                scoreHomeAtMinute: $scoreAtMinute['home'],
+                scoreAwayAtMinute: $scoreAtMinute['away'],
+            );
+        } else {
+            $remainderOutput = $this->matchSimulator->simulateRemainder(
+                $match->homeTeam,
+                $match->awayTeam,
+                $homePlayers,
+                $awayPlayers,
+                $homeFormation,
+                $awayFormation,
+                $homeMentality,
+                $awayMentality,
+                $minute,
+                $game,
+                $existingInjuryTeamIds,
+                $existingYellowPlayerIds,
+                $homeEntryMinutes,
+                $awayEntryMinutes,
+                $homePlayingStyle,
+                $awayPlayingStyle,
+                $homePressing,
+                $awayPressing,
+                $homeDefLine,
+                $awayDefLine,
+                $homeBenchPlayers,
+                $awayBenchPlayers,
+                homeExistingSubstitutions: $homeExistingSubs,
+                awayExistingSubstitutions: $awayExistingSubs,
+                neutralVenue: $match->competition_id === 'WC2026',
+            );
+        }
 
         // 10. Calculate new final score
         $remainderResult = $remainderOutput->result;
