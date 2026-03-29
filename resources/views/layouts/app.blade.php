@@ -78,16 +78,38 @@
                             {{-- Navigation links --}}
                             <nav class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-text-muted">
                                 @if(auth()->user())
-                                <a href="{{ route('profile.edit') }}" class="hover:text-text-secondary transition-colors">{{ __('app.edit_profile') }}</a>
                                 <a href="{{ route('select-team') }}" class="hover:text-text-secondary transition-colors">{{ __('app.new_game') }}</a>
                                 <a href="{{ route('dashboard') }}" class="hover:text-text-secondary transition-colors">{{ __('app.load_game') }}</a>
-                                <form method="POST" action="{{ route('logout') }}" class="inline">
-                                    @csrf
-                                    <button type="submit" class="text-text-muted hover:text-text-secondary transition-colors cursor-pointer">{{ __('app.log_out') }}</button>
-                                </form>
-                                @if(auth()->user()?->is_admin)
-                                    <a href="{{ route('admin.dashboard') }}" class="hover:text-text-secondary transition-colors">Admin</a>
-                                @endif
+                                <a href="{{ route('leaderboard') }}" class="hover:text-text-secondary transition-colors">{{ __('leaderboard.title') }}</a>
+
+                                {{-- Account dropdown --}}
+                                <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+                                    <button @click="open = !open" class="flex items-center gap-1 hover:text-text-secondary transition-colors cursor-pointer">
+                                        {{ __('app.account') }}
+                                        <svg class="w-3 h-3 transition-transform" :class="open && 'rotate-180'" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                                    </button>
+                                    <div x-show="open"
+                                        x-transition:enter="transition ease-out duration-200"
+                                        x-transition:enter-start="opacity-0 scale-95"
+                                        x-transition:enter-end="opacity-100 scale-100"
+                                        x-transition:leave="transition ease-in duration-75"
+                                        x-transition:leave-start="opacity-100 scale-100"
+                                        x-transition:leave-end="opacity-0 scale-95"
+                                        class="absolute bottom-full mb-2 right-0 w-40 rounded-lg shadow-xl origin-bottom-right z-50"
+                                        style="display: none;"
+                                        @click="open = false">
+                                        <div class="rounded-lg py-1 bg-surface-800 border border-border-strong">
+                                            <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-xs text-text-muted hover:text-text-secondary hover:bg-surface-700 transition-colors">{{ __('app.edit_profile') }}</a>
+                                            @if(auth()->user()?->is_admin)
+                                                <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-xs text-text-muted hover:text-text-secondary hover:bg-surface-700 transition-colors">Admin</a>
+                                            @endif
+                                            <form method="POST" action="{{ route('logout') }}">
+                                                @csrf
+                                                <button type="submit" class="w-full text-left px-4 py-2 text-xs text-text-muted hover:text-text-secondary hover:bg-surface-700 transition-colors cursor-pointer">{{ __('app.log_out') }}</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
                                 @endif
                                 <x-theme-toggle />
                             </nav>
