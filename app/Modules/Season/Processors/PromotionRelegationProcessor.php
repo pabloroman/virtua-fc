@@ -191,7 +191,7 @@ class PromotionRelegationProcessor implements SeasonProcessor
      */
     private function resimulateAffectedLeagues(Game $game, array $competitionIds): void
     {
-        $this->simulationProcessor->simulateNonPlayedLeagues($game, $competitionIds);
+        $this->simulationProcessor->simulateNonPlayedLeagues($game, $competitionIds, forceResimulate: true);
     }
 
     /**

@@ -9,6 +9,7 @@ use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GameStanding;
+use App\Models\SimulatedSeason;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -41,9 +42,15 @@ class SeasonSimulationProcessor implements SeasonProcessor
      * Simulate league competitions the game has entries for,
      * except the player's own league and Swiss-format competitions.
      *
+     * When $forceResimulate is false (default), leagues that already have
+     * simulated data are skipped to preserve results shown to the player
+     * (e.g. on the season-end screen). When true, existing simulated data
+     * is overwritten — used after promotion/relegation swaps change rosters.
+     *
      * @param  string[]|null  $competitionIds  If provided, only simulate these competition IDs
+     * @param  bool  $forceResimulate  If true, overwrite existing simulated data
      */
-    public function simulateNonPlayedLeagues(Game $game, ?array $competitionIds = null): void
+    public function simulateNonPlayedLeagues(Game $game, ?array $competitionIds = null, bool $forceResimulate = false): void
     {
         $query = CompetitionEntry::where('game_id', $game->id);
 
@@ -60,22 +67,37 @@ class SeasonSimulationProcessor implements SeasonProcessor
             ->get();
 
         foreach ($leagues as $league) {
-            // Only simulate if no real standings exist for this competition
+            // Skip if real standings exist for this competition
             $hasRealStandings = GameStanding::where('game_id', $game->id)
                 ->where('competition_id', $league->id)
                 ->where('played', '>', 0)
                 ->exists();
 
-            if (!$hasRealStandings) {
-                $simulated = $this->simulationService->simulateLeague($game, $league);
-
-                Log::info('Simulated league season', [
-                    'game_id' => $game->id,
-                    'season' => $game->season,
-                    'competition_id' => $league->id,
-                    'result_count' => count($simulated->results ?? []),
-                ]);
+            if ($hasRealStandings) {
+                continue;
             }
+
+            // Skip if simulated data already exists (unless forced re-simulation
+            // after roster changes like promotion/relegation swaps)
+            if (!$forceResimulate) {
+                $alreadySimulated = SimulatedSeason::where('game_id', $game->id)
+                    ->where('season', $game->season)
+                    ->where('competition_id', $league->id)
+                    ->exists();
+
+                if ($alreadySimulated) {
+                    continue;
+                }
+            }
+
+            $simulated = $this->simulationService->simulateLeague($game, $league);
+
+            Log::info('Simulated league season', [
+                'game_id' => $game->id,
+                'season' => $game->season,
+                'competition_id' => $league->id,
+                'result_count' => count($simulated->results ?? []),
+            ]);
         }
     }
 }

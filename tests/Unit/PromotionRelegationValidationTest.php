@@ -13,6 +13,7 @@ use App\Modules\Competition\Promotions\ConfigDrivenPromotionRule;
 use App\Modules\Competition\Promotions\PromotionRelegationFactory;
 use App\Modules\Competition\Services\ReserveTeamFilter;
 use App\Modules\Report\Services\SeasonSummaryService;
+use App\Modules\Season\Processors\SeasonSimulationProcessor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -340,5 +341,82 @@ class PromotionRelegationValidationTest extends TestCase
         $this->assertCount(2, $promoted);
         $promotedIds = array_column($promoted, 'teamId');
         $this->assertNotContains($reserveTeam->id, $promotedIds);
+    }
+
+    // ──────────────────────────────────────────────────
+    // Double simulation prevention
+    // ──────────────────────────────────────────────────
+
+    public function test_simulation_processor_does_not_overwrite_existing_simulated_data(): void
+    {
+        // Create teams and competition entries for ESP2
+        $teamIds = [];
+        for ($i = 0; $i < 22; $i++) {
+            $team = Team::factory()->create();
+            $teamIds[] = $team->id;
+            CompetitionEntry::create([
+                'game_id' => $this->game->id,
+                'competition_id' => 'ESP2',
+                'team_id' => $team->id,
+            ]);
+        }
+
+        // Pre-existing simulated data (as created by SimulateOtherLeagues listener)
+        $originalResults = $teamIds;
+        SimulatedSeason::create([
+            'game_id' => $this->game->id,
+            'season' => '2025',
+            'competition_id' => 'ESP2',
+            'results' => $originalResults,
+        ]);
+
+        // Run the simulation processor (as happens during closing pipeline)
+        $processor = app(SeasonSimulationProcessor::class);
+        $processor->simulateNonPlayedLeagues($this->game);
+
+        // Verify the original results were NOT overwritten
+        $simulated = SimulatedSeason::where('game_id', $this->game->id)
+            ->where('season', '2025')
+            ->where('competition_id', 'ESP2')
+            ->first();
+
+        $this->assertEquals($originalResults, $simulated->results);
+    }
+
+    public function test_simulation_processor_overwrites_when_force_resimulate_is_true(): void
+    {
+        // Create teams and competition entries for ESP2
+        $teamIds = [];
+        for ($i = 0; $i < 22; $i++) {
+            $team = Team::factory()->create();
+            $teamIds[] = $team->id;
+            CompetitionEntry::create([
+                'game_id' => $this->game->id,
+                'competition_id' => 'ESP2',
+                'team_id' => $team->id,
+            ]);
+        }
+
+        // Pre-existing simulated data
+        SimulatedSeason::create([
+            'game_id' => $this->game->id,
+            'season' => '2025',
+            'competition_id' => 'ESP2',
+            'results' => $teamIds,
+        ]);
+
+        // Force re-simulation (as happens after promotion/relegation swaps)
+        $processor = app(SeasonSimulationProcessor::class);
+        $processor->simulateNonPlayedLeagues($this->game, ['ESP2'], forceResimulate: true);
+
+        // The simulated data should have been re-generated (results will differ
+        // because the simulation uses random Poisson-distributed goals)
+        $simulated = SimulatedSeason::where('game_id', $this->game->id)
+            ->where('season', '2025')
+            ->where('competition_id', 'ESP2')
+            ->first();
+
+        $this->assertNotNull($simulated);
+        $this->assertCount(22, $simulated->results);
     }
 }
