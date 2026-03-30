@@ -18,6 +18,7 @@ use App\Modules\Match\Handlers\LeagueWithPlayoffHandler;
 use App\Modules\Match\Handlers\SwissFormatHandler;
 use App\Modules\Match\Listeners\AwardCupPrizeMoney;
 use App\Modules\Match\Listeners\ConductNextCupRoundDraw;
+use App\Modules\Notification\Listeners\NotifyTransferWindowClosing;
 use App\Modules\Notification\Listeners\SendCupTieNotifications;
 use App\Modules\Notification\Listeners\SendCompetitionProgressNotifications;
 use App\Modules\Notification\Listeners\SendMatchNotifications;
@@ -26,6 +27,7 @@ use App\Modules\Match\Listeners\UpdateLeagueStandings;
 use App\Modules\Match\Listeners\UpdateManagerStats;
 use App\Modules\Season\Listeners\GrantCareerAccessToChampion;
 use App\Modules\Squad\Listeners\CheckRecoveredPlayers;
+use App\Modules\Transfer\Listeners\ProcessTransferWindowClose;
 use App\Modules\Season\Listeners\RecordSeasonCompleted;
 use App\Modules\Season\Listeners\SimulateOtherLeagues;
 use App\Modules\Competition\Services\CompetitionHandlerResolver;
@@ -95,5 +97,7 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(TournamentCompleted::class, GrantCareerAccessToChampion::class);
 
         Event::listen(GameDateAdvanced::class, CheckRecoveredPlayers::class);
+        Event::listen(GameDateAdvanced::class, NotifyTransferWindowClosing::class);
+        Event::listen(GameDateAdvanced::class, ProcessTransferWindowClose::class);
     }
 }

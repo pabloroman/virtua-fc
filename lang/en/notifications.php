@@ -104,6 +104,10 @@ return [
     'transfer_window_open_title' => ':window Transfer Window Open',
     'transfer_window_open_message' => 'The transfer window is now open. Agreed transfers will join your squad immediately.',
 
+    // Transfer window closing
+    'transfer_window_closing_title' => ':window Transfer Window Closing',
+    'transfer_window_closing_message' => 'This is your last chance to sign a player. The transfer window closes after this matchday.',
+
     // AI transfer market
     'ai_transfer_title' => ':window Transfer Window Summary',
     'ai_transfer_message' => ':count transfers completed across the league.',

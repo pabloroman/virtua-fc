@@ -70,6 +70,7 @@ class GameNotification extends Model
     public const TYPE_EMERGENCY_SIGNING = 'emergency_signing';
     public const TYPE_MATCH_FORFEIT = 'match_forfeit';
     public const TYPE_BUDGET_LOAN = 'budget_loan';
+    public const TYPE_TRANSFER_WINDOW_CLOSING = 'transfer_window_closing';
 
     // Priorities
     public const PRIORITY_MILESTONE = 'milestone';
@@ -104,6 +105,7 @@ class GameNotification extends Model
         self::TYPE_EMERGENCY_SIGNING => 'squad',
         self::TYPE_MATCH_FORFEIT => 'squad',
         self::TYPE_BUDGET_LOAN => 'finances',
+        self::TYPE_TRANSFER_WINDOW_CLOSING => 'transfers',
     ];
 
     protected $fillable = [

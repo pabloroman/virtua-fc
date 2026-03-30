@@ -634,6 +634,25 @@ class NotificationService
         );
     }
 
+    /**
+     * Notify the user that the transfer window is about to close.
+     */
+    public function notifyTransferWindowClosing(Game $game, string $window): GameNotification
+    {
+        $windowLabel = __("notifications.ai_transfer_window_{$window}");
+
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_TRANSFER_WINDOW_CLOSING,
+            title: __('notifications.transfer_window_closing_title', ['window' => $windowLabel]),
+            message: __('notifications.transfer_window_closing_message'),
+            priority: GameNotification::PRIORITY_WARNING,
+            metadata: [
+                'window' => $window,
+            ],
+        );
+    }
+
     // ==========================================
     // Tournament Notifications
     // ==========================================
@@ -775,6 +794,7 @@ class NotificationService
             GameNotification::TYPE_EMERGENCY_SIGNING => 'transfer_complete',
             GameNotification::TYPE_MATCH_FORFEIT => 'eliminated',
             GameNotification::TYPE_BUDGET_LOAN => 'transfer',
+            GameNotification::TYPE_TRANSFER_WINDOW_CLOSING => 'clock',
             default => 'bell',
         };
     }

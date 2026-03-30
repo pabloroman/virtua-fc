@@ -104,6 +104,10 @@ return [
     'transfer_window_open_title' => 'Ventana de :window Abierta',
     'transfer_window_open_message' => 'La ventana de fichajes está abierta. Los fichajes acordados se incorporarán a tu plantilla de inmediato.',
 
+    // Transfer window closing
+    'transfer_window_closing_title' => 'Cierre de Ventana de :window',
+    'transfer_window_closing_message' => 'Esta es tu última oportunidad para fichar. La ventana de fichajes cierra tras esta jornada.',
+
     // AI transfer market
     'ai_transfer_title' => 'Resumen Ventana de :window',
     'ai_transfer_message' => ':count traspasos completados en la liga.',
