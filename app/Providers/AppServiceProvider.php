@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Events\SeasonCompleted;
 use App\Events\SeasonStarted;
 use App\Events\TournamentCompleted;
+use App\Models\User;
 use App\Modules\Academy\Listeners\GenerateInitialAcademyBatch;
 use App\Modules\Match\Events\CupTieResolved;
 use App\Modules\Match\Events\MatchFinalized;
@@ -29,6 +30,7 @@ use App\Modules\Competition\Services\CompetitionHandlerResolver;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
@@ -43,6 +45,10 @@ class AppServiceProvider extends ServiceProvider
             $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
             $this->app->register(TelescopeServiceProvider::class);
         }
+
+        Gate::define('viewPulse', function ($user) {
+            return $user->is_admin;
+        });
 
         // Register competition handler resolver as singleton
         $this->app->singleton(CompetitionHandlerResolver::class, function ($app) {

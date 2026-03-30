@@ -28,4 +28,6 @@ yarn-error.log
 frankenphp
 frankenphp-worker.php
 .DS_Store
+/database/*.sqlite
+/database/*.sqlite-*
 /videos

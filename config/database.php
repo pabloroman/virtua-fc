@@ -42,6 +42,28 @@ return [
             'synchronous' => null,
         ],
 
+        'pulse_sqlite' => [
+            'driver' => 'sqlite',
+            'database' => database_path('pulse.sqlite'),
+            'prefix' => '',
+            'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
+        ],
+
+        'pulse_pgsql' => [
+            'driver' => 'pgsql',
+            'url' => env('PULSE_DB_URL'),
+            'host' => env('PULSE_DB_HOST', '127.0.0.1'),
+            'port' => env('PULSE_DB_PORT', '5432'),
+            'database' => env('PULSE_DB_DATABASE', 'pulse'),
+            'username' => env('PULSE_DB_USERNAME', 'root'),
+            'password' => env('PULSE_DB_PASSWORD', ''),
+            'charset' => env('DB_CHARSET', 'utf8'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'search_path' => 'public',
+            'sslmode' => env('DB_SSLMODE', 'require'),
+        ],
+
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DB_URL'),
