@@ -3,7 +3,6 @@
 namespace App\Modules\Notification\Listeners;
 
 use App\Modules\Match\Events\MatchFinalized;
-use App\Modules\Squad\Services\EligibilityService;
 use App\Modules\Notification\Services\NotificationService;
 use App\Models\GamePlayer;
 use App\Models\MatchEvent;
@@ -13,7 +12,6 @@ class SendMatchNotifications
 {
     public function __construct(
         private readonly NotificationService $notificationService,
-        private readonly EligibilityService $eligibilityService,
     ) {}
 
     public function handle(MatchFinalized $event): void
@@ -57,13 +55,17 @@ class SendMatchNotifications
 
     private function notifyRedCard(MatchFinalized $event, GamePlayer $player, MatchEvent $matchEvent): void
     {
-        $isSecondYellow = $matchEvent->metadata['second_yellow'] ?? false;
-        $suspensionMatches = $isSecondYellow ? 1 : 1;
+        $competitionId = $event->competition->id ?? $event->match->competition_id;
+        $suspension = PlayerSuspension::forPlayerInCompetition($player->id, $competitionId);
+
+        if (! $suspension || $suspension->matches_remaining <= 0) {
+            return;
+        }
 
         $this->notificationService->notifySuspension(
             $event->game,
             $player,
-            $suspensionMatches,
+            $suspension->matches_remaining,
             __('notifications.reason_red_card'),
             $event->competition->name,
         );
@@ -80,18 +82,18 @@ class SendMatchNotifications
     private function notifyYellowCardAccumulation(MatchFinalized $event, GamePlayer $player): void
     {
         $competitionId = $event->competition->id ?? $event->match->competition_id;
-        $handlerType = $event->competition->handler_type ?? 'league';
-        $competitionYellows = PlayerSuspension::getYellowCards($player->id, $competitionId);
-        $suspension = $this->eligibilityService->checkYellowCardAccumulation($competitionYellows, $handlerType);
+        $suspension = PlayerSuspension::forPlayerInCompetition($player->id, $competitionId);
 
-        if ($suspension) {
-            $this->notificationService->notifySuspension(
-                $event->game,
-                $player,
-                $suspension,
-                __('notifications.reason_yellow_accumulation'),
-                $event->competition->name,
-            );
+        if (! $suspension || $suspension->matches_remaining <= 0) {
+            return;
         }
+
+        $this->notificationService->notifySuspension(
+            $event->game,
+            $player,
+            $suspension->matches_remaining,
+            __('notifications.reason_yellow_accumulation'),
+            $event->competition->name,
+        );
     }
 }
