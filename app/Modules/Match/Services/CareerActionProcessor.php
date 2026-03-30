@@ -191,7 +191,7 @@ class CareerActionProcessor
     {
         // Summer window notification is handled at season start
         // (SetupNewGame + NewSeasonResetProcessor). Only detect winter here.
-        if (TransferWindowType::fromDate($game->current_date) !== TransferWindowType::Winter) {
+        if (TransferWindowType::fromDate($game->current_date) !== TransferWindowType::WINTER) {
             return;
         }
 
@@ -204,7 +204,7 @@ class CareerActionProcessor
             return;
         }
 
-        $this->notificationService->notifyTransferWindowOpen($game, TransferWindowType::Winter->value);
+        $this->notificationService->notifyTransferWindowOpen($game, TransferWindowType::WINTER->value);
     }
 
     private function processAITransferBatch(Game $game): void

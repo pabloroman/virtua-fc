@@ -19,7 +19,7 @@ class NotifyTransferWindowOpen
         $newWindow = TransferWindowType::fromDate($event->newDate);
         $previousWindow = TransferWindowType::fromDate($event->previousDate);
 
-        if ($newWindow !== TransferWindowType::Winter || $previousWindow === TransferWindowType::Winter) {
+        if ($newWindow !== TransferWindowType::WINTER || $previousWindow === TransferWindowType::WINTER) {
             return;
         }
 
@@ -34,7 +34,7 @@ class NotifyTransferWindowOpen
             return;
         }
 
-        $notification = $this->notificationService->notifyTransferWindowOpen($game, TransferWindowType::Winter->value);
+        $notification = $this->notificationService->notifyTransferWindowOpen($game, TransferWindowType::WINTER->value);
 
         // Backdate to the actual window start (Jan 1) rather than the matchday
         // the system detected it, since the date may have jumped past the start.

@@ -6,8 +6,8 @@ use Carbon\Carbon;
 
 enum TransferWindowType: string
 {
-    case Summer = 'summer';
-    case Winter = 'winter';
+    case SUMMER = 'summer';
+    case WINTER = 'winter';
 
     /**
      * @return int[]
@@ -15,8 +15,8 @@ enum TransferWindowType: string
     public function months(): array
     {
         return match ($this) {
-            self::Summer => [7, 8],
-            self::Winter => [1],
+            self::SUMMER => [7, 8],
+            self::WINTER => [1],
         };
     }
 
@@ -26,8 +26,8 @@ enum TransferWindowType: string
     public function closeMonth(): int
     {
         return match ($this) {
-            self::Summer => 9,
-            self::Winter => 2,
+            self::SUMMER => 9,
+            self::WINTER => 2,
         };
     }
 
@@ -39,16 +39,16 @@ enum TransferWindowType: string
     public function label(): string
     {
         return match ($this) {
-            self::Summer => __('app.summer_window'),
-            self::Winter => __('app.winter_window'),
+            self::SUMMER => __('app.summer_window'),
+            self::WINTER => __('app.winter_window'),
         };
     }
 
     public static function fromMonth(int $month): ?self
     {
         return match (true) {
-            in_array($month, self::Summer->months()) => self::Summer,
-            in_array($month, self::Winter->months()) => self::Winter,
+            in_array($month, self::SUMMER->months()) => self::SUMMER,
+            in_array($month, self::WINTER->months()) => self::WINTER,
             default => null,
         };
     }

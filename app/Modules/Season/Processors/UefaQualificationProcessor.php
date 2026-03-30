@@ -43,6 +43,8 @@ class UefaQualificationProcessor implements SeasonProcessor
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
+        $this->clearSwissFormatEntries($game);
+
         foreach ($this->countryConfig->allCountryCodes() as $countryCode) {
             $this->processCountry($game, $countryCode);
         }
@@ -51,6 +53,25 @@ class UefaQualificationProcessor implements SeasonProcessor
         $this->fillRemainingContinentalSlots($game);
 
         return $data;
+    }
+
+    /**
+     * Clear all Swiss format competition entries before rebuilding qualifications.
+     *
+     * Without this, filler teams from the previous season persist across seasons
+     * because writeQualifications() only removes teams from configured countries.
+     */
+    private function clearSwissFormatEntries(Game $game): void
+    {
+        $swissCompetitionIds = Competition::where('handler_type', 'swiss_format')
+            ->pluck('id')
+            ->toArray();
+
+        if (!empty($swissCompetitionIds)) {
+            CompetitionEntry::where('game_id', $game->id)
+                ->whereIn('competition_id', $swissCompetitionIds)
+                ->delete();
+        }
     }
 
     private function processCountry(Game $game, string $countryCode): void

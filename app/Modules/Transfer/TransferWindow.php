@@ -23,12 +23,12 @@ final readonly class TransferWindow
 
     public function isSummer(): bool
     {
-        return $this->type() === TransferWindowType::Summer;
+        return $this->type() === TransferWindowType::SUMMER;
     }
 
     public function isWinter(): bool
     {
-        return $this->type() === TransferWindowType::Winter;
+        return $this->type() === TransferWindowType::WINTER;
     }
 
     /**
@@ -59,8 +59,8 @@ final readonly class TransferWindow
         $month = $this->date->month;
 
         return ($month >= 1 && $month <= 6)
-            ? TransferWindowType::Summer
-            : TransferWindowType::Winter;
+            ? TransferWindowType::SUMMER
+            : TransferWindowType::WINTER;
     }
 
     public function nextWindowDisplayName(): string
@@ -82,7 +82,7 @@ final readonly class TransferWindow
         $closeMonth = $type->closeMonth();
 
         // Winter window in December would close in Feb of next year
-        if ($type === TransferWindowType::Winter && $this->date->month === 12) {
+        if ($type === TransferWindowType::WINTER && $this->date->month === 12) {
             $year++;
         }
 
