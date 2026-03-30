@@ -328,6 +328,15 @@ class MatchSimulator
                 }
             }
 
+            // Check for red cards and apply reactive substitutions
+            $this->applyRedCardReactiveSubs(
+                $periodResult->events, $homeTeam->id, $awayTeam->id,
+                $homePlayers, $awayPlayers, $homeBenchPlayers, $awayBenchPlayers,
+                $homeEntryMinutes, $awayEntryMinutes,
+                $homeSubsUsed, $awaySubsUsed, $homeWindowsUsed, $awayWindowsUsed,
+                $homeTacticalDrain, $awayTacticalDrain, $currentDate, $allEvents,
+            );
+
             // Apply AI substitutions at this split minute
             $goalDifference = $totalHomeScore - $totalAwayScore;
             $maxSubs = SubstitutionService::MAX_SUBSTITUTIONS;
@@ -465,6 +474,175 @@ class MatchSimulator
             $entryMinutes[$sub['player_in']->id] = $splitMinute;
             $subsUsed++;
         }
+    }
+
+    /**
+     * Apply reactive substitutions in response to a red card in the given events.
+     *
+     * The team that received the red card reshapes (forward off, same-group player on).
+     * The opponent may bring on an attacker to exploit the numerical advantage.
+     */
+    private function applyRedCardReactiveSubs(
+        Collection $periodEvents,
+        string $homeTeamId,
+        string $awayTeamId,
+        Collection &$homePlayers,
+        Collection &$awayPlayers,
+        ?Collection &$homeBench,
+        ?Collection &$awayBench,
+        array &$homeEntryMinutes,
+        array &$awayEntryMinutes,
+        int &$homeSubsUsed,
+        int &$awaySubsUsed,
+        int &$homeWindowsUsed,
+        int &$awayWindowsUsed,
+        float $homeTacticalDrain,
+        float $awayTacticalDrain,
+        Carbon $currentDate,
+        Collection $allEvents,
+    ): void {
+        $redCards = $periodEvents->filter(fn (MatchEventData $e) => $e->type === 'red_card');
+        if ($redCards->isEmpty()) {
+            return;
+        }
+
+        $maxSubs = SubstitutionService::MAX_SUBSTITUTIONS;
+        $maxWindows = SubstitutionService::MAX_WINDOWS;
+        $reactiveChance = config('match_simulation.ai_substitutions.red_card_reactive_chance', 70);
+        $opponentChance = config('match_simulation.ai_substitutions.red_card_opponent_attack_chance', 50);
+        $reactiveMaxMinute = config('match_simulation.ai_substitutions.red_card_reactive_max_minute', 80);
+        $opponentMaxMinute = config('match_simulation.ai_substitutions.red_card_opponent_reactive_max_minute', 75);
+
+        foreach ($redCards as $redCard) {
+            $subMinute = $redCard->minute + 2;
+
+            if ($redCard->teamId === $homeTeamId) {
+                // Home team got the red card
+                $this->applyRedCardTeamReactiveSub(
+                    $redCard, $subMinute, $reactiveMaxMinute, $reactiveChance, $maxSubs, $maxWindows,
+                    $homeTeamId, $homePlayers, $homeBench, $homeEntryMinutes,
+                    $homeSubsUsed, $homeWindowsUsed, $allEvents,
+                );
+                $this->applyRedCardOpponentReactiveSub(
+                    $redCard, $subMinute, $opponentMaxMinute, $opponentChance, $maxSubs, $maxWindows,
+                    $awayTeamId, $awayPlayers, $awayBench, $awayEntryMinutes,
+                    $awaySubsUsed, $awayWindowsUsed, $awayTacticalDrain, $currentDate, $allEvents,
+                );
+            } else {
+                // Away team got the red card
+                $this->applyRedCardTeamReactiveSub(
+                    $redCard, $subMinute, $reactiveMaxMinute, $reactiveChance, $maxSubs, $maxWindows,
+                    $awayTeamId, $awayPlayers, $awayBench, $awayEntryMinutes,
+                    $awaySubsUsed, $awayWindowsUsed, $allEvents,
+                );
+                $this->applyRedCardOpponentReactiveSub(
+                    $redCard, $subMinute, $opponentMaxMinute, $opponentChance, $maxSubs, $maxWindows,
+                    $homeTeamId, $homePlayers, $homeBench, $homeEntryMinutes,
+                    $homeSubsUsed, $homeWindowsUsed, $homeTacticalDrain, $currentDate, $allEvents,
+                );
+            }
+        }
+    }
+
+    /**
+     * Apply a reactive substitution for the team that received a red card.
+     */
+    private function applyRedCardTeamReactiveSub(
+        MatchEventData $redCard,
+        int $subMinute,
+        int $maxMinute,
+        int $chance,
+        int $maxSubs,
+        int $maxWindows,
+        string $teamId,
+        Collection &$players,
+        ?Collection &$bench,
+        array &$entryMinutes,
+        int &$subsUsed,
+        int &$windowsUsed,
+        Collection $allEvents,
+    ): void {
+        if ($redCard->minute > $maxMinute
+            || $subsUsed >= $maxSubs || $windowsUsed >= $maxWindows
+            || $bench === null || $bench->isEmpty()
+            || rand(1, 100) > $chance
+        ) {
+            return;
+        }
+
+        // Find the sent-off player's position
+        $sentOffPlayer = $players->firstWhere('id', $redCard->gamePlayerId);
+        $sentOffPosition = $sentOffPlayer?->position;
+
+        if (! $sentOffPosition) {
+            $playerModel = GamePlayer::find($redCard->gamePlayerId);
+            $sentOffPosition = $playerModel?->position ?? 'Central Midfield';
+        }
+
+        $reactiveSub = $this->aiSubstitutionService->chooseRedCardReactiveSubstitution(
+            $players, $bench, $sentOffPosition,
+        );
+
+        if (! $reactiveSub) {
+            return;
+        }
+
+        $allEvents->push(MatchEventData::substitution(
+            $teamId, $reactiveSub['player_out']->id, $reactiveSub['player_in']->id, $subMinute,
+        ));
+        $players = $players->reject(fn ($p) => $p->id === $reactiveSub['player_out']->id)
+            ->push($reactiveSub['player_in'])->values();
+        $bench = $bench->reject(fn ($p) => $p->id === $reactiveSub['player_in']->id)->values();
+        $entryMinutes[$reactiveSub['player_in']->id] = $subMinute;
+        $subsUsed++;
+        $windowsUsed++;
+    }
+
+    /**
+     * Apply a reactive substitution for the opponent to exploit a red card.
+     */
+    private function applyRedCardOpponentReactiveSub(
+        MatchEventData $redCard,
+        int $subMinute,
+        int $maxMinute,
+        int $chance,
+        int $maxSubs,
+        int $maxWindows,
+        string $teamId,
+        Collection &$players,
+        ?Collection &$bench,
+        array &$entryMinutes,
+        int &$subsUsed,
+        int &$windowsUsed,
+        float $tacticalDrain,
+        Carbon $currentDate,
+        Collection $allEvents,
+    ): void {
+        if ($redCard->minute > $maxMinute
+            || $subsUsed >= $maxSubs || $windowsUsed >= $maxWindows
+            || $bench === null || $bench->isEmpty()
+            || rand(1, 100) > $chance
+        ) {
+            return;
+        }
+
+        $oppSub = $this->aiSubstitutionService->chooseRedCardOpponentReactiveSubstitution(
+            $players, $bench, $subMinute, $tacticalDrain, $currentDate,
+        );
+
+        if (! $oppSub) {
+            return;
+        }
+
+        $allEvents->push(MatchEventData::substitution(
+            $teamId, $oppSub['player_out']->id, $oppSub['player_in']->id, $subMinute,
+        ));
+        $players = $players->reject(fn ($p) => $p->id === $oppSub['player_out']->id)
+            ->push($oppSub['player_in'])->values();
+        $bench = $bench->reject(fn ($p) => $p->id === $oppSub['player_in']->id)->values();
+        $entryMinutes[$oppSub['player_in']->id] = $subMinute;
+        $subsUsed++;
+        $windowsUsed++;
     }
 
     /**
@@ -1762,17 +1940,22 @@ class MatchSimulator
             $homePlayers2, $awayPlayers2,
         );
 
-        // Apply man-down xG modifiers from config
-        $attackModifier = config('match_simulation.red_card_impact.attack_modifier', 0.80);
-        $defenseModifier = config('match_simulation.red_card_impact.defense_modifier', 1.15);
+        // Apply man-down xG modifiers from config (position-aware)
+        $baseAttack = config('match_simulation.red_card_impact.base_attack_modifier', 0.85);
+        $baseDefense = config('match_simulation.red_card_impact.base_defense_modifier', 1.10);
+        $positionModifiers = config('match_simulation.red_card_impact.position_modifiers', []);
 
-        if ($homePlayers2->count() < $homePlayers->count()) {
-            $homeXG2 *= $attackModifier;
-            $awayXG2 *= $defenseModifier;
+        if ($homePlayers2->count() < $homePlayers->count() && $homeRedCard) {
+            $posGroup = $this->getRedCardPositionGroup($homeRedCard, $homePlayers);
+            $posMod = $positionModifiers[$posGroup] ?? ['attack' => 1.0, 'defense' => 1.0];
+            $homeXG2 *= $baseAttack * $posMod['attack'];
+            $awayXG2 *= $baseDefense * $posMod['defense'];
         }
-        if ($awayPlayers2->count() < $awayPlayers->count()) {
-            $awayXG2 *= $attackModifier;
-            $homeXG2 *= $defenseModifier;
+        if ($awayPlayers2->count() < $awayPlayers->count() && $awayRedCard) {
+            $posGroup = $this->getRedCardPositionGroup($awayRedCard, $awayPlayers);
+            $posMod = $positionModifiers[$posGroup] ?? ['attack' => 1.0, 'defense' => 1.0];
+            $awayXG2 *= $baseAttack * $posMod['attack'];
+            $homeXG2 *= $baseDefense * $posMod['defense'];
         }
 
         $homeXG2 += $this->calculateStrikerBonus($homePlayers2) * $fraction2;
@@ -1799,6 +1982,16 @@ class MatchSimulator
         }
 
         return [$homeScore, $awayScore, $goalEvents];
+    }
+
+    /**
+     * Resolve the position group of a red-carded player from the original lineup.
+     */
+    private function getRedCardPositionGroup(MatchEventData $redCard, Collection $originalPlayers): string
+    {
+        $player = $originalPlayers->firstWhere('id', $redCard->gamePlayerId);
+
+        return $player ? PositionMapper::getPositionGroup($player->position) : 'Midfielder';
     }
 
     /**

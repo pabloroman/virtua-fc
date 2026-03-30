@@ -294,19 +294,30 @@ return [
     |
     | When a red card occurs during simulation, the match is split into two
     | periods at the red card minute. The second period recalculates team
-    | strength with the reduced lineup, then applies these modifiers on top:
+    | strength with the reduced lineup, then applies these modifiers on top.
     |
-    | attack_modifier: xG multiplier for the 10-man team's own attack
-    | defense_modifier: xG multiplier for the opponent facing 10 men
+    | Base modifiers represent the general disadvantage of playing with 10 men.
+    | Position modifiers stack on top based on the sent-off player's position
+    | group, reflecting that losing a GK or defender is far more damaging
+    | than losing a forward.
     |
-    | These represent the structural disadvantage of fewer players on the
-    | pitch (less coverage, more space). They stack with the natural strength
-    | reduction from recalculating with 10 players instead of 11.
+    | Example: GK sent off → attack = 0.85 * 0.90 = 0.765,
+    |                         defense = 1.10 * 1.35 = 1.485
+    |          FW sent off → attack = 0.85 * 1.00 = 0.85,
+    |                         defense = 1.10 * 1.00 = 1.10
     |
     */
     'red_card_impact' => [
-        'attack_modifier' => 0.80,      // 20% reduction in xG for the 10-man team
-        'defense_modifier' => 1.15,     // 15% boost in opponent xG when facing 10 men
+        'base_attack_modifier' => 0.85,     // base xG multiplier for the 10-man team's attack
+        'base_defense_modifier' => 1.10,    // base xG multiplier for the opponent facing 10 men
+
+        // Additional multipliers by position group of the sent-off player
+        'position_modifiers' => [
+            'Goalkeeper'  => ['attack' => 0.90, 'defense' => 1.35],  // Catastrophic — outfield player in goal
+            'Defender'    => ['attack' => 0.90, 'defense' => 1.20],  // Severe — defensive structure broken
+            'Midfielder'  => ['attack' => 0.95, 'defense' => 1.05],  // Moderate — balanced impact
+            'Forward'     => ['attack' => 1.00, 'defense' => 1.00],  // Minimal extra — least structural damage
+        ],
     ],
 
     /*
@@ -358,6 +369,12 @@ return [
         'energy_threshold' => 40,           // energy below this = strong sub candidate
         'yellow_card_weight' => 0.30,       // extra urgency score for yellowed players
         'losing_attack_bias' => 0.70,       // probability of preferring attackers when losing
+
+        // Reactive substitutions after red cards
+        'red_card_reactive_chance' => 70,              // % chance the 10-man team makes a tactical sub
+        'red_card_opponent_attack_chance' => 50,       // % chance the opponent brings on an attacker
+        'red_card_reactive_max_minute' => 80,          // no reactive subs for the 10-man team after this
+        'red_card_opponent_reactive_max_minute' => 75, // no reactive subs for the opponent after this
     ],
 
 ];
