@@ -71,6 +71,7 @@ class GameNotification extends Model
     public const TYPE_MATCH_FORFEIT = 'match_forfeit';
     public const TYPE_BUDGET_LOAN = 'budget_loan';
     public const TYPE_TRANSFER_WINDOW_CLOSING = 'transfer_window_closing';
+    public const TYPE_TRANSFER_WINDOW_CLOSED = 'transfer_window_closed';
 
     // Priorities
     public const PRIORITY_MILESTONE = 'milestone';

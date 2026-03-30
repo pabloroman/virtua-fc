@@ -108,6 +108,10 @@ return [
     'transfer_window_closing_title' => 'Cierre de Ventana de :window',
     'transfer_window_closing_message' => 'Esta es tu última oportunidad para fichar. La ventana de fichajes cierra tras esta jornada.',
 
+    // Transfer window closed
+    'transfer_window_closed_title' => 'Ventana de :window Cerrada',
+    'transfer_window_closed_message' => 'La ventana de fichajes está cerrada. Los fichajes acordados se completarán cuando se abra la próxima ventana.',
+
     // AI transfer market
     'ai_transfer_title' => 'Resumen Ventana de :window',
     'ai_transfer_message' => ':count traspasos completados en la liga.',

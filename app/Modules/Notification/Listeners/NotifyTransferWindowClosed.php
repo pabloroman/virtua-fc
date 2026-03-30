@@ -1,23 +1,22 @@
 <?php
 
-namespace App\Modules\Transfer\Listeners;
+namespace App\Modules\Notification\Listeners;
 
 use App\Models\GameNotification;
 use App\Modules\Match\Events\GameDateAdvanced;
+use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Transfer\Enums\TransferWindowType;
-use App\Modules\Transfer\Services\AITransferMarketService;
 
-class ProcessTransferWindowClose
+class NotifyTransferWindowClosed
 {
     public function __construct(
-        private readonly AITransferMarketService $aiTransferMarketService,
+        private readonly NotificationService $notificationService,
     ) {}
 
     public function handle(GameDateAdvanced $event): void
     {
-        // Detect boundary crossing: previousDate was inside a window, newDate is outside.
-        // This fires on the same matchday as NotifyTransferWindowClosed, ~1 week after
-        // the "window closing" warning.
+        // Detect if the date jumped out of a window: previousDate was inside,
+        // newDate is outside. This means the window closed between the two matchdays.
         $previousWindow = TransferWindowType::fromDate($event->previousDate);
         $newWindow = TransferWindowType::fromDate($event->newDate);
 
@@ -27,16 +26,16 @@ class ProcessTransferWindowClose
 
         $game = $event->game;
 
-        $alreadyProcessed = GameNotification::where('game_id', $game->id)
-            ->where('type', GameNotification::TYPE_AI_TRANSFER_ACTIVITY)
+        $alreadyNotified = GameNotification::where('game_id', $game->id)
+            ->where('type', GameNotification::TYPE_TRANSFER_WINDOW_CLOSED)
             ->whereJsonContains('metadata->window', $previousWindow->value)
             ->where('game_date', '>=', $event->previousDate->copy()->startOfMonth())
             ->exists();
 
-        if ($alreadyProcessed) {
+        if ($alreadyNotified) {
             return;
         }
 
-        $this->aiTransferMarketService->processWindowClose($game, $previousWindow->value);
+        $this->notificationService->notifyTransferWindowClosed($game, $previousWindow->value);
     }
 }

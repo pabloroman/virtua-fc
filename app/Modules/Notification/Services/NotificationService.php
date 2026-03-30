@@ -655,6 +655,25 @@ class NotificationService
         );
     }
 
+    /**
+     * Notify the user that the transfer window has closed.
+     */
+    public function notifyTransferWindowClosed(Game $game, string $window): GameNotification
+    {
+        $windowLabel = __("notifications.ai_transfer_window_{$window}");
+
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_TRANSFER_WINDOW_CLOSED,
+            title: __('notifications.transfer_window_closed_title', ['window' => $windowLabel]),
+            message: __('notifications.transfer_window_closed_message'),
+            priority: GameNotification::PRIORITY_INFO,
+            metadata: [
+                'window' => $window,
+            ],
+        );
+    }
+
     // ==========================================
     // Tournament Notifications
     // ==========================================
