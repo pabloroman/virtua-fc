@@ -109,18 +109,6 @@ class ShowLiveMatch
             ? ($playerMatch->home_lineup ?? [])
             : ($playerMatch->away_lineup ?? []);
 
-        // Existing substitutions already made on this match (for page reload scenario)
-        // Filter to user's team only — opponent auto-subs should not affect the user's count or display.
-        $existingSubstitutions = collect($playerMatch->substitutions ?? [])
-            ->filter(fn ($s) => ($s['team_id'] ?? null) === $game->team_id)
-            ->values()
-            ->all();
-
-        // Build entry minutes map from existing substitutions
-        $entryMinutes = collect($existingSubstitutions)
-            ->pluck('minute', 'player_in_id')
-            ->all();
-
         // Starting lineup players (for the "sub out" picker)
         $currentDate = $game->current_date;
         $lineupPlayers = GamePlayer::with('player')
@@ -139,17 +127,14 @@ class ShowLiveMatch
                 'overallScore' => $p->overall_score,
                 'fitness' => $p->fitness,
                 'morale' => $p->morale,
-                'minuteEntered' => $entryMinutes[$p->id] ?? 0,
+                'minuteEntered' => 0,
             ])
             ->sortBy('positionSort')
             ->values()
             ->all();
 
         // Batch load suspended player IDs for this competition
-        $suspendedPlayerIds = PlayerSuspension::where('competition_id', $playerMatch->competition_id)
-            ->where('matches_remaining', '>', 0)
-            ->pluck('game_player_id')
-            ->toArray();
+        $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($playerMatch->competition_id);
 
         // Bench players (all squad players NOT in the starting lineup, not suspended, not injured)
         $matchDate = $playerMatch->scheduled_date;
@@ -202,11 +187,11 @@ class ShowLiveMatch
 
         // User's current tactical setup
         $userFormation = $isUserHome
-            ? ($playerMatch->home_formation ?? '4-4-2')
-            : ($playerMatch->away_formation ?? '4-4-2');
+            ? ($playerMatch->home_formation ?? Formation::F_4_3_3->value)
+            : ($playerMatch->away_formation ?? Formation::F_4_3_3->value);
         $userMentality = $isUserHome
-            ? ($playerMatch->home_mentality ?? 'balanced')
-            : ($playerMatch->away_mentality ?? 'balanced');
+            ? ($playerMatch->home_mentality ?? Mentality::BALANCED->value)
+            : ($playerMatch->away_mentality ?? Mentality::BALANCED->value);
 
         $availableFormations = array_map(fn ($f) => [
             'value' => $f->value,
@@ -219,8 +204,9 @@ class ShowLiveMatch
             'tooltip' => $m->tooltip(),
         ], Mentality::cases());
 
-        // Tournament knockout context for dramatic result display
-        $isTournamentKnockout = $game->isTournamentMode() && $playerMatch->cup_tie_id !== null;
+        // Tournament context
+        $isTournamentMode = $game->isTournamentMode();
+        $isTournamentKnockout = $isTournamentMode && $playerMatch->cup_tie_id !== null;
         $knockoutRoundNumber = null;
         $knockoutRoundName = null;
 
@@ -258,7 +244,7 @@ class ShowLiveMatch
         $formationSlots = [];
         foreach (Formation::cases() as $formation) {
             $formationSlots[$formation->value] = array_map(function ($slot) {
-                $slot['displayLabel'] = PositionMapper::slotToDisplayAbbreviation($slot['label']);
+                $slot['displayLabel'] = PositionSlotMapper::slotToDisplayAbbreviation($slot['label']);
 
                 return $slot;
             }, $formation->pitchSlots());
@@ -276,7 +262,6 @@ class ShowLiveMatch
             'resultsUrl' => $resultsUrl,
             'lineupPlayers' => $lineupPlayers,
             'benchPlayers' => $benchPlayers,
-            'existingSubstitutions' => $existingSubstitutions,
             'tacticalActionsUrl' => route('game.match.tactical-actions', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
             'extraTimeUrl' => route('game.match.extra-time', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
             'penaltiesUrl' => route('game.match.penalties', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
@@ -293,6 +278,7 @@ class ShowLiveMatch
             'isKnockout' => $isKnockout,
             'extraTimeData' => $extraTimeData,
             'twoLeggedInfo' => $twoLeggedInfo,
+            'isTournamentMode' => $isTournamentMode,
             'isTournamentKnockout' => $isTournamentKnockout,
             'knockoutRoundNumber' => $knockoutRoundNumber,
             'knockoutRoundName' => $knockoutRoundName,
@@ -305,14 +291,16 @@ class ShowLiveMatch
             'mvpPlayerTeamId' => $playerMatch->mvpPlayer?->team_id,
             'homeLineupDisplay' => $homeLineupDisplay,
             'awayLineupDisplay' => $awayLineupDisplay,
-            'homeFormation' => $playerMatch->home_formation ?? '4-4-2',
-            'awayFormation' => $playerMatch->away_formation ?? '4-4-2',
+            'homeFormation' => $playerMatch->home_formation ?? Formation::F_4_3_3->value,
+            'awayFormation' => $playerMatch->away_formation ?? Formation::F_4_3_3->value,
             'formationSlots' => $formationSlots,
             'teamColors' => $teamColorsHex,
             'slotCompatibility' => $slotCompatibility,
             'gridConfig' => $gridConfig,
-            'pitchPositions' => $game->tactics?->default_pitch_positions ?? [],
-            'slotAssignments' => $game->tactics?->default_slot_assignments ?? [],
+            'pitchPositions' => $playerMatch->{"{$prefix}_pitch_positions"}
+                ?? $game->tactics?->default_pitch_positions ?? [],
+            'slotAssignments' => $playerMatch->{"{$prefix}_slot_assignments"}
+                ?? $game->tactics?->default_slot_assignments ?? [],
         ]);
     }
 

@@ -95,6 +95,26 @@ class StandingsCalculator
         if (! empty($setClauses)) {
             DB::statement('UPDATE game_standings SET ' . implode(', ', $setClauses) . " WHERE id IN ({$idList})");
         }
+
+        // Append form characters (W/D/L) for each team
+        $standings = GameStanding::where('game_id', $gameId)
+            ->where('competition_id', $competitionId)
+            ->whereIn('team_id', $teamIds)
+            ->get()
+            ->keyBy('team_id');
+
+        foreach ($matchResults as $result) {
+            $homeChar = $result['homeScore'] > $result['awayScore'] ? 'W' : ($result['homeScore'] < $result['awayScore'] ? 'L' : 'D');
+            $awayChar = $result['awayScore'] > $result['homeScore'] ? 'W' : ($result['awayScore'] < $result['homeScore'] ? 'L' : 'D');
+
+            foreach ([[$result['homeTeamId'], $homeChar], [$result['awayTeamId'], $awayChar]] as [$teamId, $char]) {
+                $standing = $standings[$teamId] ?? null;
+                if ($standing) {
+                    $standing->form = substr(($standing->form ?? '') . $char, -5);
+                    $standing->save();
+                }
+            }
+        }
     }
 
     /**
@@ -167,6 +187,7 @@ class StandingsCalculator
         $standing->goals_for -= $goalsFor;
         $standing->goals_against -= $goalsAgainst;
         $standing->points -= $won ? 3 : ($drawn ? 1 : 0);
+        $standing->form = $standing->form ? substr($standing->form, 0, -1) : null;
         $standing->save();
     }
 

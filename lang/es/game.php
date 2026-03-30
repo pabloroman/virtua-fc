@@ -39,7 +39,9 @@ return [
     'cup.quarter_finals' => 'Cuartos de final',
     'cup.semi_finals' => 'Semifinales',
     'cup.final' => 'Final',
+    'cup.third_place' => 'Tercer puesto',
     'third_place_match' => 'Tercer puesto',
+    'tbd' => 'Por determinar',
 
     // Standings
     'pts' => 'pts',
@@ -76,6 +78,8 @@ return [
     'formation_tip_4141' => 'Defensiva. :attack ataque, :defense goles en contra.',
     'formation_tip_532' => 'Muy defensiva. :attack ataque, :defense goles en contra.',
     'formation_tip_541' => 'Ultra defensiva. :attack ataque, :defense goles en contra.',
+    'formation_tip_4123' => 'Ofensiva con ancla defensiva. :attack ataque, :defense goles en contra.',
+    'formation_tip_4321' => 'Creativa, ataque estrecho. :attack ataque, :defense goles en contra.',
 
     // Mentality tooltips
     'mentality_tip_defensive' => 'Tus goles :own, goles rival :opponent. Cierra el partido.',
@@ -159,7 +163,9 @@ return [
     'formation_profile_4231' => 'Sólido y creativo',
     'formation_profile_343' => 'Muy atacante, expuesto',
     'formation_profile_352' => 'Control del mediocampo',
+    'formation_profile_4123' => 'Ataque amplio y creativo',
     'formation_profile_4141' => 'Escudo en mediocampo',
+    'formation_profile_4321' => 'Ataque estrecho y escalonado',
     'formation_profile_532' => 'Defensivo, difícil de superar',
     'formation_profile_541' => 'Autobús aparcado',
 
@@ -196,6 +202,19 @@ return [
     'welcome_step_autosave_desc' => 'Cada acción se guarda al instante. Puedes cerrar el navegador y volver en cualquier momento — tu partida estará justo donde la dejaste.',
     'welcome_start_journey' => 'Comenzar',
 
+    // Tournament welcome
+    'tournament_welcome_title' => 'Lleva a :team a la gloria',
+    'tournament_welcome_subtitle' => 'El mayor torneo del mundo te espera',
+    'tournament_welcome_step_squad' => 'Selecciona tu plantilla',
+    'tournament_welcome_step_squad_desc' => 'Elige a los 26 jugadores que te ayudarán a levantar el trofeo. Elige bien: una vez comience el torneo, no hay cambios.',
+    'tournament_welcome_step_format' => 'Formato del torneo',
+    'tournament_welcome_step_format_desc' => '48 selecciones compiten en 12 grupos. Los 2 primeros de cada grupo y los mejores terceros avanzan a la fase eliminatoria.',
+    'tournament_welcome_step_lineup' => 'Elige tu alineación',
+    'tournament_welcome_step_lineup_desc' => 'Elige tu formación, once titular y enfoque táctico antes de cada partido. Haz sustituciones durante el juego para cambiar el rumbo.',
+    'tournament_welcome_step_glory' => 'Una sola oportunidad',
+    'tournament_welcome_step_glory_desc' => 'Sin fichajes, sin segundas oportunidades. Gana cada partido o vuelve a casa. Tu progreso se guarda automáticamente.',
+    'tournament_welcome_start' => 'Comenzar Torneo',
+
     // Onboarding
     'welcome_to_team' => 'Bienvenido :team_a',
     'season_preview' => 'Previa de Temporada',
@@ -213,6 +232,8 @@ return [
     // Setup loading
     'preparing_season' => 'Preparando tu temporada...',
     'setup_loading_message' => 'Estamos configurando los equipos, jugadores y competiciones. Esto solo tomará unos segundos.',
+    'preparing_tournament' => 'Preparando el torneo...',
+    'setup_tournament_loading_message' => 'Cargando selecciones y jugadores. Esto solo tomará unos segundos.',
     'processing_actions' => 'Procesando...',
     'processing_career_actions' => 'Procesando acciones del juego...',
     'processing_career_actions_message' => 'Transferencias, contratos y otras acciones se están procesando.',
@@ -338,10 +359,12 @@ return [
     'start_game' => 'Iniciar Partida',
     'start_tournament' => 'Iniciar Torneo',
 
+    'tournament_history' => 'Historial de Torneos',
+
     // Game modes
     'mode_career' => 'Modo Carrera',
     'mode_career_desc' => 'Dirige un club a través de múltiples temporadas',
-    'mode_tournament' => 'Copa del Mundo',
+    'mode_tournament' => 'Selección nacional',
     'mode_tournament_desc' => 'Dirige una selección en el Mundial',
     'mode_tournament_badge' => 'Copa del Mundo',
     'wc2026_name' => 'Copa del Mundo 2026',
@@ -448,4 +471,11 @@ return [
     // MVP
     'mvp' => 'MVP',
     'mvp_of_the_match' => 'MVP del partido',
+
+    // xG Preview
+    'xg_preview' => 'Previsualización xG',
+    'match_preview' => 'Previa del partido',
+    'xg_your_team' => 'Tu xG',
+    'xg_opponent' => 'xG Rival',
+    'xg_explanation' => 'Goles esperados según tu alineación y configuración táctica. Cambia al ajustar las tácticas.',
 ];

@@ -22,7 +22,7 @@
                     @endphp
                     <div x-data="{ helpOpen: false }">
                         <x-section-nav :items="[
-                            ['href' => route('game.transfers', $game->id), 'label' => __('transfers.incoming'), 'active' => false, 'badge' => $counterOfferCount > 0 ? $counterOfferCount : null],
+                            ['href' => route('game.transfers', $game->id), 'label' => __('transfers.incoming'), 'active' => false],
                             ['href' => route('game.transfers.outgoing', $game->id), 'label' => __('transfers.outgoing'), 'active' => true, 'badge' => $salidaBadge > 0 ? $salidaBadge : null],
                             ['href' => route('game.scouting', $game->id), 'label' => __('transfers.scouting_tab'), 'active' => false],
                             ['href' => route('game.explore', $game->id), 'label' => __('transfers.explore_tab'), 'active' => false],
@@ -106,7 +106,7 @@
 
                             {{-- UNSOLICITED OFFERS — red accent --}}
                             @if($unsolicitedOffers->isNotEmpty())
-                            <div class="border-l-4 border-l-accent-red pl-5">
+                            <div x-data class="border-l-4 border-l-accent-red pl-5">
                                 <h4 class="font-semibold text-lg text-text-primary mb-1">{{ __('transfers.unsolicited_offers') }}</h4>
                                 <p class="text-sm text-text-muted mb-3">{{ __('transfers.unsolicited_offers_help') }}</p>
                                 <div class="space-y-3">
@@ -130,27 +130,30 @@
                                                     <div class="text-xl font-bold text-accent-green">{{ $offer->formatted_transfer_fee }}</div>
                                                     <div class="text-xs text-text-muted">{{ __('transfers.expires_in_days', ['days' => $offer->days_until_expiry]) }}</div>
                                                 </div>
-                                                <div class="flex gap-2">
-                                                    <form method="post" action="{{ route('game.transfers.accept', [$game->id, $offer->id]) }}">
-                                                        @csrf
-                                                        <x-primary-button color="green">{{ __('app.accept') }}</x-primary-button>
-                                                    </form>
-                                                    @php $offeredPlayer = $renewalEligiblePlayers->firstWhere('id', $offer->game_player_id); @endphp
-                                                    @if($offeredPlayer)
-                                                        <x-action-button color="green" type="button"
-                                                            @click="$dispatch('open-negotiation', {
-                                                                playerName: @js($offeredPlayer->name),
-                                                                negotiateUrl: @js(route('game.negotiate.renewal', [$game->id, $offeredPlayer->id]))
-                                                            })">
-                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                                                            {{ __('squad.renew') }}
-                                                        </x-action-button>
-                                                    @else
-                                                    <form method="post" action="{{ route('game.transfers.reject', [$game->id, $offer->id]) }}">
-                                                        @csrf
-                                                        <x-secondary-button type="submit">{{ __('app.reject') }}</x-secondary-button>
-                                                    </form>
-                                                    @endif
+                                                <div class="flex flex-wrap gap-2">
+                                                    @php
+                                                        $gp = $offer->gamePlayer;
+                                                        $posDisp = $gp->position_display;
+                                                        $counterOfferDetail = \Illuminate\Support\Js::from([
+                                                            'playerName' => $gp->player->name,
+                                                            'negotiateUrl' => route('game.negotiate.counter-offer', [$game->id, $offer->id]),
+                                                            'mode' => 'transfer_fee',
+                                                            'phase' => 'counter_offer',
+                                                            'chatTitle' => __('transfers.counter_offer_title'),
+                                                            'playerInfo' => [
+                                                                'age' => $gp->age($game->current_date),
+                                                                'wage' => $gp->formatted_wage,
+                                                                'tec' => $gp->technical_ability,
+                                                                'fis' => $gp->physical_ability,
+                                                                'position' => $posDisp['abbreviation'],
+                                                                'positionBg' => $posDisp['bg'],
+                                                                'positionText' => $posDisp['text'],
+                                                            ],
+                                                        ]);
+                                                    @endphp
+                                                    <x-primary-button type="button" x-on:click="$dispatch('open-negotiation', {{ $counterOfferDetail }})">
+                                                        {{ __('transfers.negotiate') }}
+                                                    </x-primary-button>
                                                 </div>
                                             </div>
                                         </div>
@@ -162,7 +165,7 @@
 
                             {{-- PRE-CONTRACT OFFERS — red accent --}}
                             @if($preContractOffers->isNotEmpty())
-                            <div class="border-l-4 border-l-accent-red pl-5">
+                            <div x-data class="border-l-4 border-l-accent-red pl-5">
                                 <h4 class="font-semibold text-lg text-text-primary mb-1">{{ __('transfers.pre_contract_offers_received') }}</h4>
                                 <p class="text-sm text-text-muted mb-3">{{ __('transfers.pre_contract_offers_help') }}</p>
                                 <div class="space-y-3">
@@ -190,11 +193,23 @@
                                                     </form>
                                                     @php $offeredPlayer = $renewalEligiblePlayers->firstWhere('id', $offer->game_player_id); @endphp
                                                     @if($offeredPlayer)
-                                                        <x-action-button color="green" type="button"
-                                                            @click="$dispatch('open-negotiation', {
-                                                                playerName: @js($offeredPlayer->name),
-                                                                negotiateUrl: @js(route('game.negotiate.renewal', [$game->id, $offeredPlayer->id]))
-                                                            })">
+                                                        @php
+                                                            $posDisp = $offeredPlayer->position_display;
+                                                            $renewalDetail = \Illuminate\Support\Js::from([
+                                                                'playerName' => $offeredPlayer->name,
+                                                                'negotiateUrl' => route('game.negotiate.renewal', [$game->id, $offeredPlayer->id]),
+                                                                'playerInfo' => [
+                                                                    'age' => $offeredPlayer->age($game->current_date),
+                                                                    'wage' => $offeredPlayer->formatted_wage,
+                                                                    'tec' => $offeredPlayer->technical_ability,
+                                                                    'fis' => $offeredPlayer->physical_ability,
+                                                                    'position' => $posDisp['abbreviation'],
+                                                                    'positionBg' => $posDisp['bg'],
+                                                                    'positionText' => $posDisp['text'],
+                                                                ],
+                                                            ]);
+                                                        @endphp
+                                                        <x-action-button color="green" type="button" x-on:click="$dispatch('open-negotiation', {{ $renewalDetail }})">
                                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                                                             {{ __('squad.renew') }}
                                                         </x-action-button>
@@ -215,7 +230,7 @@
 
                             {{-- OFFERS FOR LISTED PLAYERS — gold accent --}}
                             @if($listedOffers->isNotEmpty())
-                            <div class="border-l-4 border-l-accent-gold pl-5">
+                            <div x-data class="border-l-4 border-l-accent-gold pl-5">
                                 <h4 class="font-semibold text-lg text-text-primary mb-1">{{ __('transfers.offers_received') }}</h4>
                                 <p class="text-sm text-text-muted mb-3">{{ __('transfers.offers_received_help') }}</p>
                                 <div class="space-y-3">
@@ -239,15 +254,30 @@
                                                     <div class="text-xl font-bold text-accent-green">{{ $offer->formatted_transfer_fee }}</div>
                                                     <div class="text-xs text-text-muted">{{ __('transfers.expires_in_days', ['days' => $offer->days_until_expiry]) }}</div>
                                                 </div>
-                                                <div class="flex gap-2">
-                                                    <form method="post" action="{{ route('game.transfers.accept', [$game->id, $offer->id]) }}">
-                                                        @csrf
-                                                        <x-primary-button color="green">{{ __('app.accept') }}</x-primary-button>
-                                                    </form>
-                                                    <form method="post" action="{{ route('game.transfers.reject', [$game->id, $offer->id]) }}">
-                                                        @csrf
-                                                        <x-secondary-button type="submit">{{ __('app.reject') }}</x-secondary-button>
-                                                    </form>
+                                                <div class="flex flex-wrap gap-2">
+                                                    @php
+                                                        $gp = $offer->gamePlayer;
+                                                        $posDisp = $gp->position_display;
+                                                        $counterOfferDetail = \Illuminate\Support\Js::from([
+                                                            'playerName' => $gp->player->name,
+                                                            'negotiateUrl' => route('game.negotiate.counter-offer', [$game->id, $offer->id]),
+                                                            'mode' => 'transfer_fee',
+                                                            'phase' => 'counter_offer',
+                                                            'chatTitle' => __('transfers.counter_offer_title'),
+                                                            'playerInfo' => [
+                                                                'age' => $gp->age($game->current_date),
+                                                                'wage' => $gp->formatted_wage,
+                                                                'tec' => $gp->technical_ability,
+                                                                'fis' => $gp->physical_ability,
+                                                                'position' => $posDisp['abbreviation'],
+                                                                'positionBg' => $posDisp['bg'],
+                                                                'positionText' => $posDisp['text'],
+                                                            ],
+                                                        ]);
+                                                    @endphp
+                                                    <x-primary-button type="button" x-on:click="$dispatch('open-negotiation', {{ $counterOfferDetail }})">
+                                                        {{ __('transfers.negotiate') }}
+                                                    </x-primary-button>
                                                 </div>
                                             </div>
                                         </div>
@@ -448,11 +478,24 @@
                                         @php
                                             $hasPendingOffer = $preContractOffers->where('game_player_id', $player->id)->isNotEmpty();
                                         @endphp
+                                        @php
+                                            $posDisp = $player->position_display;
+                                            $renewalPayload = \Illuminate\Support\Js::from([
+                                                'playerName' => $player->name,
+                                                'negotiateUrl' => route('game.negotiate.renewal', [$game->id, $player->id]),
+                                                'playerInfo' => [
+                                                    'age' => $player->age($game->current_date),
+                                                    'wage' => $player->formatted_wage,
+                                                    'tec' => $player->technical_ability,
+                                                    'fis' => $player->physical_ability,
+                                                    'position' => $posDisp['abbreviation'],
+                                                    'positionBg' => $posDisp['bg'],
+                                                    'positionText' => $posDisp['text'],
+                                                ],
+                                            ]);
+                                        @endphp
                                         <tr x-data class="border-t border-border-default transition-colors cursor-pointer {{ $hasPendingOffer ? 'bg-accent-red/10' : 'hover:bg-[rgba(59,130,246,0.05)]' }}"
-                                            @click="$dispatch('open-negotiation', {
-                                                playerName: @js($player->name),
-                                                negotiateUrl: @js(route('game.negotiate.renewal', [$game->id, $player->id]))
-                                            })">
+                                            x-on:click="$dispatch('open-negotiation', {{ $renewalPayload }})">
                                             <td class="py-2.5 pl-4 text-center">
                                                 <x-position-badge :position="$player->position" size="sm" />
                                             </td>
@@ -561,4 +604,5 @@
     </div>
 
     <x-player-detail-modal />
+    <x-negotiation-chat-modal />
 </x-app-layout>

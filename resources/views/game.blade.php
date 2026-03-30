@@ -68,7 +68,7 @@
                     </x-primary-button-link>
                 </div>
 
-                {{-- Remaining Upcoming Fixtures --}}
+                {{-- Remaining Upcoming Fixtures / Next Round Preview --}}
                 @if($upcomingFixtures->skip(1)->isNotEmpty())
                 <x-section-card :title="__('game.upcoming_fixtures')">
                     <x-slot name="badge">
@@ -80,6 +80,28 @@
                         @foreach($upcomingFixtures->skip(1)->take(4) as $fixture)
                             <x-fixture-row :match="$fixture" :game="$game" :show-score="false" :highlight-next="false" />
                         @endforeach
+                    </div>
+                </x-section-card>
+                @elseif(isset($nextRoundPreview))
+                <x-section-card :title="__('game.upcoming_fixtures')">
+                    <div class="flex items-center gap-3 px-4 py-2.5">
+                        <div class="w-10 shrink-0 text-center">
+                            <span class="text-[9px] text-text-faint uppercase">TBD</span>
+                        </div>
+                        <div class="flex-1 flex items-center gap-2 min-w-0">
+                            @if($nextRoundPreview['opponent'])
+                                <x-team-crest :team="$nextRoundPreview['opponent']" class="w-5 h-5 shrink-0" />
+                                <span class="text-xs text-text-body">{{ $nextRoundPreview['opponent']->name }}</span>
+                            @else
+                                <div class="flex items-center gap-1.5">
+                                    <x-team-crest :team="$nextRoundPreview['tie']->homeTeam" class="w-5 h-5 shrink-0" />
+                                    <span class="text-xs text-text-secondary truncate">{{ $nextRoundPreview['tie']->homeTeam->name }}</span>
+                                    <span class="text-xs text-text-muted">/</span>
+                                    <x-team-crest :team="$nextRoundPreview['tie']->awayTeam" class="w-5 h-5 shrink-0" />
+                                    <span class="text-xs text-text-secondary truncate">{{ $nextRoundPreview['tie']->awayTeam->name }}</span>
+                                </div>
+                            @endif
+                        </div>
                     </div>
                 </x-section-card>
                 @endif
@@ -185,4 +207,9 @@
         </div>
         @endif
     </div>
+
+    {{-- Mobile Notification FAB --}}
+    @if($nextMatch)
+    <x-mobile-notification-fab :game="$game" :notifications="$groupedNotifications->flatten()" :unread-count="$unreadNotificationCount" />
+    @endif
 </x-app-layout>

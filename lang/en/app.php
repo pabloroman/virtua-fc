@@ -23,6 +23,7 @@ return [
     'view_details' => 'View details',
 
     // Authentication
+    'account' => 'Account',
     'log_out' => 'Log Out',
     'edit_profile' => 'Edit profile',
     'new_game' => 'New game',

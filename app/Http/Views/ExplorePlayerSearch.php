@@ -18,6 +18,7 @@ class ExplorePlayerSearch
         abort_if($game->isTournamentMode(), 404);
 
         $query = trim($request->query('query', ''));
+
         if (mb_strlen($query) < 2) {
             return view('partials.explore-search-results', [
                 'players' => collect(),

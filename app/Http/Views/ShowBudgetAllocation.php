@@ -2,15 +2,14 @@
 
 namespace App\Http\Views;
 
-use App\Modules\Finance\Services\BudgetProjectionService;
 use App\Models\Game;
 use App\Models\GameInvestment;
-use App\Models\TeamReputation;
+use App\Modules\Finance\Services\BudgetAllocationService;
 
 class ShowBudgetAllocation
 {
     public function __construct(
-        private readonly BudgetProjectionService $projectionService,
+        private readonly BudgetAllocationService $budgetService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -18,34 +17,11 @@ class ShowBudgetAllocation
         $game = Game::with('team')->findOrFail($gameId);
         abort_if($game->isTournamentMode(), 404);
 
-        // Access relationships after model is loaded (lazy loading works correctly)
-        $finances = $game->currentFinances;
-        if (!$finances) {
-            $finances = $this->projectionService->generateProjections($game);
-        }
-
-        $investment = $game->currentInvestment;
-
-        // Calculate available surplus
-        $availableSurplus = $finances->available_surplus ?? 0;
-
-        // Get current tiers (0-4 for each area), default based on club reputation
-        $tiers = $investment ? [
-            'youth_academy' => $investment->youth_academy_tier,
-            'medical' => $investment->medical_tier,
-            'scouting' => $investment->scouting_tier,
-            'facilities' => $investment->facilities_tier,
-        ] : GameInvestment::defaultTiersForReputation(
-            TeamReputation::resolveLevel($game->id, $game->team_id),
-            $availableSurplus,
-        );
+        $budgetData = $this->budgetService->prepareBudgetData($game);
 
         return view('budget-allocation', [
+            ...$budgetData,
             'game' => $game,
-            'finances' => $finances,
-            'investment' => $investment,
-            'availableSurplus' => $availableSurplus,
-            'tiers' => $tiers,
             'tierThresholds' => GameInvestment::TIER_THRESHOLDS,
             'isLocked' => false,
         ]);

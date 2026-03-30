@@ -2,12 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\Mail\BetaInvite;
-use App\Models\InviteCode;
+use App\Jobs\ProcessBulkWaitlistInvites;
 use App\Models\WaitlistEntry;
+use App\Services\BetaInviteService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
 
 class InviteFromWaitlist extends Command
 {
@@ -18,6 +16,12 @@ class InviteFromWaitlist extends Command
                             {--expires= : Expiration date for invite codes (Y-m-d)}';
 
     protected $description = 'Generate and send invite codes to waitlisted emails (by email or batch count)';
+
+    public function __construct(
+        private readonly BetaInviteService $inviteService,
+    ) {
+        parent::__construct();
+    }
 
     public function handle(): int
     {
@@ -53,13 +57,13 @@ class InviteFromWaitlist extends Command
             return self::FAILURE;
         }
 
-        if ($entry->inviteCode()->exists()) {
+        if ($this->inviteService->hasAlreadyBeenInvited($email)) {
             $this->error("Email {$email} has already been invited.");
 
             return self::FAILURE;
         }
 
-        $this->sendInvite($entry);
+        $this->inviteService->invite($entry, $this->option('expires'));
         $this->info("Invited: {$entry->name} <{$email}>");
 
         return self::SUCCESS;
@@ -73,67 +77,36 @@ class InviteFromWaitlist extends Command
             return self::FAILURE;
         }
 
-        $entries = WaitlistEntry::whereDoesntHave('inviteCode')
-            ->inRandomOrder()
-            ->limit($count)
-            ->get();
+        $pending = WaitlistEntry::whereDoesntHave('inviteCode')->earlyAdopter()->count();
 
-        if ($entries->isEmpty()) {
+        if ($pending === 0) {
             $this->info('No pending waitlist entries to invite.');
 
             return self::SUCCESS;
         }
 
-        $dryRun = $this->option('dry-run');
-        $sent = 0;
+        $count = min($count, $pending);
 
-        foreach ($entries as $entry) {
-            if ($dryRun) {
+        if ($this->option('dry-run')) {
+            $entries = WaitlistEntry::whereDoesntHave('inviteCode')
+                ->earlyAdopter()
+                ->inRandomOrder()
+                ->limit($count)
+                ->get();
+
+            foreach ($entries as $entry) {
                 $this->line("  [dry-run] Would invite: {$entry->name} <{$entry->email}>");
-                $sent++;
-
-                continue;
             }
 
-            $this->sendInvite($entry);
-            $this->info("  Invited: {$entry->name} <{$entry->email}>");
-            $sent++;
+            $this->newLine();
+            $this->info("Would invite: {$entries->count()} of {$pending} waitlist entries.");
 
-            if ($sent < $entries->count()) {
-                sleep(1);
-            }
+            return self::SUCCESS;
         }
 
-        $this->newLine();
-        $action = $dryRun ? 'Would invite' : 'Invited';
-        $this->info("{$action}: {$sent} of {$entries->count()} waitlist entries.");
+        ProcessBulkWaitlistInvites::dispatch($count);
+        $this->info("Dispatched job to invite {$count} waitlist entries.");
 
         return self::SUCCESS;
-    }
-
-    private function sendInvite(WaitlistEntry $entry): void
-    {
-        $invite = InviteCode::create([
-            'code' => $this->generateCode(),
-            'email' => strtolower($entry->email),
-            'max_uses' => 1,
-            'expires_at' => $this->option('expires'),
-        ]);
-
-        Mail::to($entry->email)->send(new BetaInvite($invite));
-
-        $invite->update([
-            'invite_sent' => true,
-            'invite_sent_at' => now(),
-        ]);
-    }
-
-    private function generateCode(): string
-    {
-        do {
-            $code = strtoupper(Str::random(8));
-        } while (InviteCode::where('code', $code)->exists());
-
-        return $code;
     }
 }

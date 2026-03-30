@@ -11,41 +11,14 @@ $tabs = [
 @endphp
 
 <x-app-layout :hide-footer="true">
-    <div x-data="{
-        selectedIds: [],
-        activeTab: 'goalkeepers',
+    <div x-data="squadSelection({
         players: @js($candidatesByGroup),
-        maxPlayers: 26,
-
-        togglePlayer(id) {
-            const idx = this.selectedIds.indexOf(id);
-            if (idx > -1) {
-                this.selectedIds.splice(idx, 1);
-            } else if (this.selectedIds.length < this.maxPlayers) {
-                this.selectedIds.push(id);
-            }
-        },
-
-        isSelected(id) {
-            return this.selectedIds.includes(id);
-        },
-
-        get totalSelected() {
-            return this.selectedIds.length;
-        },
-
-        countByGroup(group) {
-            return this.players[group].filter(p => this.selectedIds.includes(p.transfermarkt_id)).length;
-        },
-
-        get canConfirm() {
-            return this.totalSelected === this.maxPlayers;
-        },
-
-        get isMaxed() {
-            return this.totalSelected >= this.maxPlayers;
-        },
-    }" class="min-h-screen pb-32 md:pb-8">
+        groupLabels: @js($tabs),
+        teamName: @js($game->team->name),
+        teamCrestUrl: @js($game->team->image),
+        fifaCode: @js(strtolower($game->team->fifa_code ?? 'team')),
+        gameId: @js($game->id),
+    })" class="min-h-screen pb-32 md:pb-8">
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
 
             {{-- Welcome Header --}}
@@ -182,6 +155,17 @@ $tabs = [
                               x-text="totalSelected"></span>
                         <span class="text-text-secondary">/ 26</span>
                     </div>
+
+                    {{-- Download --}}
+                    <x-secondary-button
+                        type="button"
+                        x-bind:disabled="!canConfirm"
+                        @click="downloadSquadImage()"
+                        class="shrink-0"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+                        <span class="hidden md:inline ml-1.5">{{ __('squad.download_squad') }}</span>
+                    </x-secondary-button>
 
                     {{-- Submit --}}
                     <form method="POST" action="{{ route('game.squad-selection.save', $game->id) }}" class="flex-1 md:flex-none">

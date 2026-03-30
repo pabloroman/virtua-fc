@@ -103,15 +103,15 @@
         <div class="max-w-7xl mx-auto px-4 pb-8">
 
             {{-- Sub-navigation --}}
-            @php
-                $squadNavItems = [
-                    ['href' => route('game.squad', $game->id), 'label' => $isCareerMode ? __('squad.first_team') : __('squad.squad'), 'active' => true],
-                ];
-                if ($isCareerMode) {
-                    $squadNavItems[] = ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => false];
-                }
-            @endphp
-            <x-section-nav :items="$squadNavItems" />
+            @if($isCareerMode)
+                @php
+                    $squadNavItems = [
+                        ['href' => route('game.squad', $game->id), 'label' => __('squad.first_team'), 'active' => true],
+                        ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => false],
+                    ];
+                @endphp
+                <x-section-nav :items="$squadNavItems" />
+            @endif
 
             {{-- Flash Messages --}}
             <x-flash-message type="success" :message="session('success')" class="mt-4" />
@@ -279,7 +279,7 @@
                                     <span class="text-center" x-data x-tooltip.raw="{{ __('squad.legend_assists') }}">{{ __('squad.assists') }}</span>
                                 </template>
                                 <template x-if="viewMode === 'stats'">
-                                    <span class="text-center text-accent-yellow" x-data x-tooltip.raw="{{ __('squad.legend_mvp') }}">{{ __('squad.mvp') }}</span>
+                                    <span class="text-center text-accent-gold" x-data x-tooltip.raw="{{ __('squad.legend_mvp') }}">{{ __('squad.mvp') }}</span>
                                 </template>
                                 <template x-if="viewMode === 'stats'">
                                     <span class="text-center" x-data x-tooltip.raw="{{ __('squad.clean_sheets_full') }}">{{ __('squad.clean_sheets') }}</span>
@@ -343,7 +343,7 @@
                                                 <div class="flex items-center gap-2">
                                                     <span class="text-sm font-medium text-text-primary truncate">{{ $gp->player->name }}</span>
                                                     <span class="text-[10px] text-text-faint">{{ $gp->age($game->current_date) }}</span>
-                                                    @include('partials.squad.player-status-icon', ['gp' => $gp, 'game' => $game])
+                                                    @include('partials.squad.player-status-icon', ['gp' => $gp, 'game' => $game, 'seasonEndDate' => $seasonEndDate])
                                                 </div>
                                                 <div class="flex items-center gap-3 mt-1">
                                                     @if($unavailReason)
@@ -403,7 +403,7 @@
                                             <div class="min-w-0">
                                                 <div class="flex items-center gap-2">
                                                     <span class="text-sm font-medium text-text-primary truncate">{{ $gp->player->name }}</span>
-                                                    @include('partials.squad.player-status-icon', ['gp' => $gp, 'game' => $game])
+                                                    @include('partials.squad.player-status-icon', ['gp' => $gp, 'game' => $game, 'seasonEndDate' => $seasonEndDate])
                                                 </div>
                                                 @if($gp->nationality_flag)
                                                 <div class="flex items-center gap-1 mt-0.5">
@@ -514,7 +514,7 @@
                                         </template>
                                         <template x-if="viewMode === 'stats'">
                                             @php $mvpCount = $mvpCounts[$gp->id] ?? 0; @endphp
-                                            <span class="text-xs text-center tabular-nums {{ $mvpCount > 0 ? 'font-medium text-accent-yellow' : 'text-text-muted' }}">{{ $mvpCount }}</span>
+                                            <span class="text-xs text-center tabular-nums {{ $mvpCount > 0 ? 'font-medium text-accent-gold' : 'text-text-muted' }}">{{ $mvpCount }}</span>
                                         </template>
                                         <template x-if="viewMode === 'stats'">
                                             <span class="text-xs text-text-secondary text-center tabular-nums">{{ $gp->clean_sheets }}</span>
@@ -612,4 +612,5 @@
     </div>
 
     <x-player-detail-modal />
+    <x-negotiation-chat-modal />
 </x-app-layout>

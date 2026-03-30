@@ -13,7 +13,13 @@
     {{-- Competition & Match Info --}}
     <div class="px-4 pt-4 md:px-6 md:pt-5">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-            <x-competition-pill :competition="$comp" :round-name="$nextMatch->round_name" :round-number="$nextMatch->round_number" />
+            @if($game->isTournamentMode())
+                <span class="text-xs font-medium text-text-secondary">
+                    {{ __($nextMatch->round_name ?? '') }}
+                </span>
+            @else
+                <x-competition-pill :competition="$comp" :round-name="$nextMatch->round_name" :round-number="$nextMatch->round_number" />
+            @endif
             <span class="text-xs text-text-muted truncate">
                 {{ $nextMatch->homeTeam->stadium_name ?? '' }} &middot; {{ $nextMatch->scheduled_date->locale(app()->getLocale())->translatedFormat('d M Y') }}
             </span>
@@ -35,7 +41,7 @@
                 <x-team-crest :team="$nextMatch->homeTeam" class="w-14 h-14 md:w-20 md:h-20 mb-2" />
                 <h4 class="text-sm md:text-xl font-bold text-text-primary truncate max-w-full">{{ $nextMatch->homeTeam->name }}</h4>
                 @if(!$isPreseason)
-                    @if($homeStanding)
+                    @if($homeStanding && !$cupTie)
                     <div class="text-xs text-text-muted mt-1.5">
                         {{ $homeStanding->position }}{{ $homeStanding->position == 1 ? 'st' : ($homeStanding->position == 2 ? 'nd' : ($homeStanding->position == 3 ? 'rd' : 'th')) }} &middot; {{ $homeStanding->points }} {{ __('game.pts') }}
                     </div>
@@ -66,7 +72,7 @@
                 <x-team-crest :team="$nextMatch->awayTeam" class="w-14 h-14 md:w-20 md:h-20 mb-2" />
                 <h4 class="text-sm md:text-xl font-bold text-text-primary truncate max-w-full">{{ $nextMatch->awayTeam->name }}</h4>
                 @if(!$isPreseason)
-                    @if($awayStanding)
+                    @if($awayStanding && !$cupTie)
                     <div class="text-xs text-text-muted mt-1.5">
                         {{ $awayStanding->position }}{{ $awayStanding->position == 1 ? 'st' : ($awayStanding->position == 2 ? 'nd' : ($awayStanding->position == 3 ? 'rd' : 'th')) }} &middot; {{ $awayStanding->points }} {{ __('game.pts') }}
                     </div>
@@ -88,5 +94,24 @@
             </div>
         </div>
     </div>
+
+    {{-- Pre-Match Narrative --}}
+    @if(!empty($narratives))
+        <div class="px-4 pb-4 md:px-6 md:pb-5">
+            <div class="border-t border-border-default pt-3">
+                <div class="flex items-center gap-1.5 mb-2">
+                    <svg class="w-3.5 h-3.5 text-text-muted shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                    </svg>
+                    <span class="text-[10px] font-semibold text-text-muted uppercase tracking-wide">{{ __('game.match_preview') }}</span>
+                </div>
+                <div class="space-y-1.5">
+                    @foreach($narratives as $narrative)
+                        <p class="text-xs text-text-secondary leading-relaxed">{{ $narrative->text }}</p>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    @endif
 
 </div>

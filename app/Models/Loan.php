@@ -15,8 +15,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon $started_at
  * @property \Illuminate\Support\Carbon $return_at
  * @property string $status
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Game $game
  * @property-read \App\Models\GamePlayer $gamePlayer
  * @property-read \App\Models\Team $loanTeam
@@ -25,7 +23,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Loan newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Loan newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Loan query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Loan whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Loan whereGameId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Loan whereGamePlayerId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Loan whereId($value)
@@ -34,12 +31,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Loan whereReturnAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Loan whereStartedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Loan whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Loan whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 class Loan extends Model
 {
     use HasUuids;
+
+    public $timestamps = false;
 
     protected $fillable = [
         'game_id',

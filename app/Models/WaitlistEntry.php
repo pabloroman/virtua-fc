@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $id
  * @property string $name
  * @property string $email
+ * @property bool $wants_career
+ * @property bool $wants_tournament
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\InviteCode|null $inviteCode
@@ -26,11 +28,30 @@ class WaitlistEntry extends Model
 {
     protected $table = 'waitlist';
 
-    protected $fillable = ['name', 'email'];
+    protected $fillable = ['name', 'email', 'wants_career', 'wants_tournament'];
+
+    protected function casts(): array
+    {
+        return [
+            'wants_career' => 'boolean',
+            'wants_tournament' => 'boolean',
+        ];
+    }
 
     public function setEmailAttribute(string $value): void
     {
         $this->attributes['email'] = strtolower(trim($value));
+    }
+
+    public function scopeEarlyAdopter($query)
+    {
+        $cutoff = config('beta.early_adopter_cutoff');
+
+        if ($cutoff) {
+            $query->where('created_at', '<=', $cutoff);
+        }
+
+        return $query;
     }
 
     public function inviteCode(): HasOne

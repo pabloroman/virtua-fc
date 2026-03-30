@@ -58,7 +58,8 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
         const t = parseInt(tier);
         const colors = { 0: 'text-accent-red', 1: 'text-accent-gold', 2: 'text-accent-green', 3: 'text-accent-blue', 4: 'text-purple-400' };
         return colors[t] || 'text-text-secondary';
-    }
+    },
+
 }">
 
     {{-- Allocation Summary --}}

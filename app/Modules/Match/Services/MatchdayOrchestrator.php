@@ -13,6 +13,7 @@ use App\Modules\Match\DTOs\MatchdayAdvanceResult;
 use App\Modules\Match\DTOs\MatchEventData;
 use App\Modules\Match\DTOs\MatchResult;
 use App\Modules\Match\Jobs\ProcessCareerActions;
+use App\Modules\Match\Jobs\ProcessRemainingBatches;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Squad\Services\EligibilityService;
 use App\Modules\Player\Services\InjuryService;
@@ -71,11 +72,16 @@ class MatchdayOrchestrator
 
             // Process batches until one involves the player's team or the season ends
             while ($batch = $this->matchdayService->getNextMatchBatch($game)) {
-                $result = $this->processBatch($game, $batch);
+                // Check if this batch contains the player's match
+                $batchHasPlayerMatch = $batch['matches']->contains(
+                    fn ($m) => $m->involvesTeam($game->team_id)
+                );
+
+                // When the player's match is in the batch, only simulate their match
+                // — sibling AI matches are deferred to background processing
+                $result = $this->processBatch($game, $batch, $batchHasPlayerMatch);
 
                 if ($result['playerMatch']) {
-                    $this->autoSimulateRemainingBatches($game);
-
                     return MatchdayAdvanceResult::liveMatch($result['playerMatch']->id);
                 }
 
@@ -112,19 +118,13 @@ class MatchdayOrchestrator
             return MatchdayAdvanceResult::seasonComplete();
         });
 
-        // Dispatch career actions to background after transaction commits
-        if ($this->careerActionTicks > 0) {
-            $updated = Game::where('id', $game->id)
-                ->whereNull('career_actions_processing_at')
-                ->update(['career_actions_processing_at' => now()]);
-
-            if ($updated) {
-                try {
-                    ProcessCareerActions::dispatch($game->id, $this->careerActionTicks);
-                } catch (\Throwable $e) {
-                    Game::where('id', $game->id)->update(['career_actions_processing_at' => null]);
-                }
-            }
+        // Dispatch post-transaction work now that all DB changes are committed
+        if ($result->type === 'live_match') {
+            // Defer remaining batches to background — user sees live match immediately.
+            // Career actions are dispatched by processRemainingBatches() after all batches complete.
+            $this->deferRemainingBatches($game);
+        } elseif ($this->careerActionTicks > 0) {
+            $this->dispatchCareerActions($game->id, $this->careerActionTicks);
         }
 
         return $result;
@@ -135,12 +135,20 @@ class MatchdayOrchestrator
      *
      * @return array{playerMatch: ?GameMatch}
      */
-    private function processBatch(Game $game, array $batch): array
+    private function processBatch(Game $game, array $batch, bool $playerMatchOnly = false): array
     {
         $matches = $batch['matches'];
         $handlers = $batch['handlers'];
         $matchday = $batch['matchday'];
         $currentDate = $batch['currentDate'];
+
+        // When playerMatchOnly is true, filter batch to only the player's match
+        // (sibling AI matches in the same batch are deferred to background processing)
+        $playerMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
+        if ($playerMatchOnly && $playerMatch) {
+            $matches = collect([$playerMatch]);
+            $handlers = array_intersect_key($handlers, [$playerMatch->competition_id => true]);
+        }
 
         // --- Load players ---
         $teamIds = $matches->pluck('home_team_id')
@@ -149,7 +157,17 @@ class MatchdayOrchestrator
             ->unique()
             ->values();
 
-        $allPlayers = GamePlayer::with(['player', 'transferOffers', 'activeLoan', 'activeRenewalNegotiation'])
+        $allPlayers = GamePlayer::select([
+                'id', 'game_id', 'player_id', 'team_id', 'position',
+                'fitness', 'morale', 'durability',
+                'game_technical_ability', 'game_physical_ability',
+                'injury_until', 'injury_type',
+                'appearances', 'goals', 'own_goals', 'assists',
+                'yellow_cards', 'red_cards',
+                'goals_conceded', 'clean_sheets',
+                'season_appearances',
+            ])
+            ->with(['player:id,name,date_of_birth,technical_ability,physical_ability'])
             ->where('game_id', $game->id)
             ->whereIn('team_id', $teamIds)
             ->get();
@@ -163,19 +181,21 @@ class MatchdayOrchestrator
         $allPlayers = $allPlayers->groupBy('team_id');
 
         $competitionIds = $matches->pluck('competition_id')->unique()->toArray();
-        $suspendedPlayerIds = PlayerSuspension::whereIn('competition_id', $competitionIds)
+        $suspendedByCompetition = PlayerSuspension::whereIn('competition_id', $competitionIds)
             ->where('matches_remaining', '>', 0)
-            ->pluck('game_player_id')
+            ->get(['game_player_id', 'competition_id'])
+            ->groupBy('competition_id')
+            ->map(fn ($group) => $group->pluck('game_player_id')->toArray())
             ->toArray();
 
         $clubProfiles = TeamReputation::where('game_id', $game->id)
             ->whereIn('team_id', $teamIds)->get()->keyBy('team_id');
 
         // --- Ensure lineups ---
-        $this->lineupService->ensureLineupsForMatches($matches, $game, $allPlayers, $suspendedPlayerIds, $clubProfiles);
+        $this->lineupService->ensureLineupsForMatches($matches, $game, $allPlayers, $suspendedByCompetition, $clubProfiles);
 
         // --- Check for forfeit (user's team has < 7 available players) ---
-        $playerMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
+        // $playerMatch was already resolved above (line 158) — reuse it after filtering
         $forfeitResult = null;
 
         if ($playerMatch) {
@@ -276,6 +296,71 @@ class MatchdayOrchestrator
         }
     }
 
+    /**
+     * Atomically set a processing flag and dispatch a career actions job.
+     */
+    private function dispatchCareerActions(string $gameId, int $ticks): void
+    {
+        if ($ticks <= 0) {
+            return;
+        }
+
+        $updated = Game::where('id', $gameId)
+            ->whereNull('career_actions_processing_at')
+            ->update(['career_actions_processing_at' => now()]);
+
+        if ($updated) {
+            try {
+                ProcessCareerActions::dispatch($gameId, $ticks);
+            } catch (\Throwable $e) {
+                Game::where('id', $gameId)->update(['career_actions_processing_at' => null]);
+            }
+        }
+    }
+
+    /**
+     * Set flag and dispatch background job to process remaining batches.
+     * Called after the transaction commits in advance().
+     */
+    private function deferRemainingBatches(Game $game): void
+    {
+        $updated = Game::where('id', $game->id)
+            ->whereNull('remaining_batches_processing_at')
+            ->update(['remaining_batches_processing_at' => now()]);
+
+        if ($updated) {
+            try {
+                ProcessRemainingBatches::dispatch($game->id, $this->careerActionTicks);
+            } catch (\Throwable $e) {
+                Game::where('id', $game->id)->update(['remaining_batches_processing_at' => null]);
+            }
+        }
+    }
+
+    /**
+     * Process remaining batches in the background (called by ProcessRemainingBatches job).
+     * Simulates all unplayed batches and dispatches career actions when done.
+     */
+    public function processRemainingBatches(Game $game, int $priorCareerActionTicks): void
+    {
+        $this->careerActionTicks = 0;
+
+        DB::transaction(function () use ($game) {
+            $game = Game::where('id', $game->id)->lockForUpdate()->first();
+
+            $this->autoSimulateRemainingBatches($game);
+        });
+
+        // Total career action ticks = prior (from advance's synchronous batches) + new (from background batches)
+        $totalTicks = $priorCareerActionTicks + $this->careerActionTicks;
+
+        // Clear the remaining batches flag
+        Game::where('id', $game->id)->update(['remaining_batches_processing_at' => null]);
+
+        // Dispatch career actions if any ticks accumulated
+        $this->dispatchCareerActions($game->id, $totalTicks);
+    }
+
     private function simulateMatches($matches, Game $game, $allPlayers): array
     {
         $results = [];
@@ -301,8 +386,8 @@ class MatchdayOrchestrator
         $homeBenchPlayers = $isUserHome ? null : $this->getBenchPlayers($match, $allPlayers, 'home', $game);
         $awayBenchPlayers = ($isUserMatch && ! $isUserHome) ? null : $this->getBenchPlayers($match, $allPlayers, 'away', $game);
 
-        $homeFormation = Formation::tryFrom($match->home_formation) ?? Formation::F_4_4_2;
-        $awayFormation = Formation::tryFrom($match->away_formation) ?? Formation::F_4_4_2;
+        $homeFormation = Formation::tryFrom($match->home_formation) ?? Formation::F_4_3_3;
+        $awayFormation = Formation::tryFrom($match->away_formation) ?? Formation::F_4_3_3;
         $homeMentality = Mentality::tryFrom($match->home_mentality ?? '') ?? Mentality::BALANCED;
         $awayMentality = Mentality::tryFrom($match->away_mentality ?? '') ?? Mentality::BALANCED;
 
@@ -313,7 +398,7 @@ class MatchdayOrchestrator
         $homeDefLine = DefensiveLineHeight::tryFrom($match->home_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
         $awayDefLine = DefensiveLineHeight::tryFrom($match->away_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
 
-        $result = $this->matchSimulator->simulate(
+        $output = $this->matchSimulator->simulate(
             $match->homeTeam,
             $match->awayTeam,
             $homePlayers,
@@ -332,10 +417,11 @@ class MatchdayOrchestrator
             $homeBenchPlayers,
             $awayBenchPlayers,
             matchSeed: $match->id,
+            neutralVenue: $match->competition_id === 'WC2026',
         );
 
-        // Capture performance data before next simulation overwrites it
-        $performances = $this->matchSimulator->getMatchPerformances();
+        $result = $output->result;
+        $performances = $output->performances;
         $mvpPlayerId = $this->calculateMvp(
             $result,
             $performances,
@@ -416,11 +502,20 @@ class MatchdayOrchestrator
         // Roll for training injuries (non-playing squad members)
         $this->processTrainingInjuries($game, $matches, $allPlayers);
 
+        // Batch-load recent recovery + low-fitness notifications to avoid per-player queries
+        $recentNotificationPlayerIds = GameNotification::where('game_id', $game->id)
+            ->whereIn('type', [GameNotification::TYPE_PLAYER_RECOVERED, GameNotification::TYPE_LOW_FITNESS])
+            ->where('game_date', '>', $game->current_date->copy()->subDays(7))
+            ->pluck('metadata')
+            ->map(fn ($m) => $m['player_id'] ?? null)
+            ->filter()
+            ->toArray();
+
         // Check for recovered players
-        $this->checkRecoveredPlayers($game, $allPlayers);
+        $this->checkRecoveredPlayers($game, $allPlayers, $recentNotificationPlayerIds);
 
         // Check for low fitness players
-        $this->checkLowFitnessPlayers($game, $allPlayers);
+        $this->checkLowFitnessPlayers($game, $allPlayers, $recentNotificationPlayerIds);
 
         // Clean up old read notifications
         $this->notificationService->cleanupOldNotifications($game);
@@ -446,7 +541,7 @@ class MatchdayOrchestrator
     /**
      * Check for players who have recovered from injuries.
      */
-    private function checkRecoveredPlayers(Game $game, $allPlayers): void
+    private function checkRecoveredPlayers(Game $game, $allPlayers, array $recentNotificationPlayerIds): void
     {
         $userTeamPlayers = $allPlayers->get($game->team_id, collect());
 
@@ -456,14 +551,7 @@ class MatchdayOrchestrator
                 // Clear the injury fields so this doesn't trigger again on future matchdays
                 $this->eligibilityService->clearInjury($player);
 
-                // Check if we haven't already notified about this recovery
-                if (! $this->notificationService->hasRecentNotification(
-                    $game->id,
-                    GameNotification::TYPE_PLAYER_RECOVERED,
-                    ['player_id' => $player->id],
-                    7,
-                    $game->current_date,
-                )) {
+                if (! in_array($player->id, $recentNotificationPlayerIds)) {
                     $this->notificationService->notifyRecovery($game, $player);
                 }
             }
@@ -473,7 +561,7 @@ class MatchdayOrchestrator
     /**
      * Check for players with low fitness and notify.
      */
-    private function checkLowFitnessPlayers(Game $game, $allPlayers): void
+    private function checkLowFitnessPlayers(Game $game, $allPlayers, array $recentNotificationPlayerIds): void
     {
         $userTeamPlayers = $allPlayers->get($game->team_id, collect());
 
@@ -485,14 +573,7 @@ class MatchdayOrchestrator
 
             // Check if player has low fitness (below 60%)
             if ($player->fitness < 60) {
-                // Only notify once per week per player
-                if (! $this->notificationService->hasRecentNotification(
-                    $game->id,
-                    GameNotification::TYPE_LOW_FITNESS,
-                    ['player_id' => $player->id],
-                    7,
-                    $game->current_date,
-                )) {
+                if (! in_array($player->id, $recentNotificationPlayerIds)) {
                     $this->notificationService->notifyLowFitness($game, $player);
                 }
             }
@@ -538,6 +619,7 @@ class MatchdayOrchestrator
                     $injury['player'],
                     $injury['type'],
                     $injury['weeks'],
+                    duringMatch: false,
                 );
             }
         }
@@ -797,8 +879,8 @@ class MatchdayOrchestrator
         };
 
         // Position-scaled event bonuses (rarer contributions score higher)
-        $goalBonuses = ['Goalkeeper' => 0.50, 'Defender' => 0.35, 'Midfielder' => 0.25, 'Forward' => 0.15];
-        $assistBonuses = ['Goalkeeper' => 0.25, 'Defender' => 0.15, 'Midfielder' => 0.10, 'Forward' => 0.10];
+        $goalBonuses = ['Goalkeeper' => 0.50, 'Defender' => 0.35, 'Midfielder' => 0.25, 'Forward' => 0.20];
+        $assistBonuses = ['Goalkeeper' => 0.25, 'Defender' => 0.15, 'Midfielder' => 0.15, 'Forward' => 0.15];
 
         // Count events per player
         $goals = [];
@@ -819,6 +901,7 @@ class MatchdayOrchestrator
         // Score each player
         $bestPlayerId = null;
         $bestScore = -INF;
+        $bestIsWinner = false;
 
         foreach ($performances as $playerId => $performance) {
             $group = $positionGroups[$playerId] ?? 'Midfielder';
@@ -839,13 +922,13 @@ class MatchdayOrchestrator
             // Clean sheet bonus for goalkeepers and defenders
             if ($teamConceded === 0) {
                 $score += match ($group) {
-                    'Goalkeeper' => 0.30,
+                    'Goalkeeper' => 0.20,
                     'Defender' => 0.15,
                     default => 0.0,
                 };
             } elseif ($teamConceded === 1) {
                 $score += match ($group) {
-                    'Goalkeeper' => 0.10,
+                    'Goalkeeper' => 0.05,
                     'Defender' => 0.05,
                     default => 0.0,
                 };
@@ -861,13 +944,16 @@ class MatchdayOrchestrator
             }
 
             // Winning team edge
-            if ($winningTeamId !== null && $teamId === $winningTeamId) {
+            $isWinner = $winningTeamId !== null && $teamId === $winningTeamId;
+            if ($isWinner) {
                 $score += 0.08;
             }
 
-            if ($score > $bestScore) {
+            // Tiebreak: prefer the player from the winning team
+            if ($score > $bestScore || ($score === $bestScore && $isWinner && ! $bestIsWinner)) {
                 $bestScore = $score;
                 $bestPlayerId = $playerId;
+                $bestIsWinner = $isWinner;
             }
         }
 

@@ -400,6 +400,7 @@ class SeedReferenceData extends Command
                     'id' => $teamId,
                     'transfermarkt_id' => $transfermarktId,
                     'name' => $data['name'] ?? "Unknown ({$transfermarktId})",
+                    'slug' => Str::slug($data['name'] ?? "unknown-{$transfermarktId}"),
                     'country' => $teamCountry,
                     'image' => $data['image'] ?? null,
                     'stadium_name' => $data['stadiumName'] ?? null,
@@ -552,6 +553,7 @@ class SeedReferenceData extends Command
                     'id' => $teamId,
                     'transfermarkt_id' => $transfermarktId,
                     'name' => $club['name'],
+                    'slug' => Str::slug($club['name']),
                     'country' => $country,
                     'image' => $club['image'] ?? null,
                     'stadium_name' => $club['stadiumName'] ?? null,
@@ -699,6 +701,7 @@ class SeedReferenceData extends Command
                     'id' => $teamId,
                     'transfermarkt_id' => (int) $cupTeamId,
                     'name' => $club['name'],
+                    'slug' => Str::slug($club['name']),
                     'country' => $country,
                     'image' => "https://tmssl.akamaized.net/images/wappen/big/{$cupTeamId}.png",
                 ]);

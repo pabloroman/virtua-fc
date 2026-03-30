@@ -2,6 +2,7 @@
 
 namespace App\Modules\Finance\Services;
 
+use App\Models\BudgetLoan;
 use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\CompetitionEntry;
@@ -71,12 +72,15 @@ class BudgetProjectionService
         // Calculate projected surplus
         $projectedSurplus = $projectedTotalRevenue - $projectedWages - $projectedOperatingExpenses;
 
-        // Get carried debt and surplus from previous season
+        // Get carried debt, surplus, and loan repayment from previous season
         $carriedDebt = $this->getCarriedDebt($game);
         $carriedSurplus = $this->getCarriedSurplus($game);
+        $previousLoanRepayment = $this->getPreviousSeasonLoanRepayment($game);
 
         // Calculate public subsidy if needed to guarantee minimum viable budget
-        $projectedSubsidyRevenue = $this->calculateSubsidy($projectedSurplus, $carriedDebt, $carriedSurplus);
+        $projectedSubsidyRevenue = $this->calculateSubsidy(
+            $projectedSurplus, $carriedDebt, $carriedSurplus, $previousLoanRepayment
+        );
         if ($projectedSubsidyRevenue > 0) {
             $projectedTotalRevenue += $projectedSubsidyRevenue;
             $projectedSurplus += $projectedSubsidyRevenue;
@@ -101,6 +105,7 @@ class BudgetProjectionService
                 'projected_surplus' => $projectedSurplus,
                 'carried_debt' => $carriedDebt,
                 'carried_surplus' => $carriedSurplus,
+                'previous_loan_repayment' => $previousLoanRepayment,
             ]
         );
 
@@ -240,6 +245,9 @@ class BudgetProjectionService
     {
         return GamePlayer::where('game_id', $game->id)
             ->where('team_id', $game->team_id)
+            ->whereDoesntHave('activeLoan', function ($q) use ($game) {
+                $q->where('loan_team_id', $game->team_id);
+            })
             ->sum('annual_wage');
     }
 
@@ -318,6 +326,20 @@ class BudgetProjectionService
     }
 
     /**
+     * Get the previous season's budget loan repayment amount.
+     * Shown as a separate deduction in the budget flow.
+     */
+    public function getPreviousSeasonLoanRepayment(Game $game): int
+    {
+        $previousSeason = (int) $game->season - 1;
+
+        return (int) BudgetLoan::where('game_id', $game->id)
+            ->where('season', $previousSeason)
+            ->where('status', BudgetLoan::STATUS_REPAID)
+            ->sum('repayment_amount');
+    }
+
+    /**
      * Get base commercial revenue for budget projections.
      * Season 2+: uses previous season's actual commercial revenue.
      * Season 1: calculates from stadium_seats × config rate.
@@ -352,10 +374,10 @@ class BudgetProjectionService
      * Calculate public subsidy (Subvenciones Públicas) to guarantee a minimum viable budget.
      * Ensures every team can cover mandatory infrastructure + a minimum transfer budget.
      */
-    private function calculateSubsidy(int $projectedSurplus, int $carriedDebt, int $carriedSurplus): int
+    private function calculateSubsidy(int $projectedSurplus, int $carriedDebt, int $carriedSurplus, int $loanRepayment = 0): int
     {
         $minimumAvailable = GameInvestment::MINIMUM_TOTAL_INVESTMENT + self::MINIMUM_TRANSFER_BUDGET;
-        $rawAvailable = $projectedSurplus + $carriedSurplus - $carriedDebt;
+        $rawAvailable = $projectedSurplus + $carriedSurplus - $carriedDebt - $loanRepayment;
 
         if ($rawAvailable >= $minimumAvailable) {
             return 0;

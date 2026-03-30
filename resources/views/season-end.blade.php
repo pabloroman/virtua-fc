@@ -39,7 +39,64 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
 @endphp
 
 <x-app-layout :hide-footer="true">
-<div class="min-h-screen py-6 md:py-8">
+@php
+    $seasonHighlights = collect([
+        $teamTopScorer && $teamTopScorer->goals > 0 ? ['label' => __('season.goals'), 'playerName' => $teamTopScorer->player->name, 'value' => $teamTopScorer->goals] : null,
+        $teamTopAssister && $teamTopAssister->assists > 0 ? ['label' => __('season.assists'), 'playerName' => $teamTopAssister->player->name, 'value' => $teamTopAssister->assists] : null,
+        $teamMostAppearances && $teamMostAppearances->appearances > 0 ? ['label' => __('season.appearances'), 'playerName' => $teamMostAppearances->player->name, 'value' => $teamMostAppearances->appearances] : null,
+        $teamMvpLeader ? ['label' => __('season.mvp_awards'), 'playerName' => $teamMvpLeader->gamePlayer->player->name, 'value' => $teamMvpLeader->count] : null,
+    ])->filter()->values()->toArray();
+
+    $otherComps = collect($otherCompetitionResults)->map(function ($result) {
+        $comp = $result['competition'];
+        if ($result['wonCompetition']) {
+            $resultText = __('season.champion_label');
+        } elseif ($result['roundName']) {
+            $resultText = __($result['roundName']);
+        } else {
+            $resultText = '';
+        }
+        return ['name' => __($comp->name), 'result' => $resultText, 'isChampion' => $result['wonCompetition']];
+    })->toArray();
+
+    $positionLabel = $playerStanding
+        ? $playerStanding->position . 'º'
+        : '';
+    $seasonSubtitle = $game->formatted_season . ' · ' . $positionLabel;
+@endphp
+<div class="min-h-screen py-6 md:py-8" x-data="seasonSummary({
+    teamName: @js($game->team->name),
+    teamCrestUrl: @js($game->team->image),
+    subtitle: @js($seasonSubtitle),
+    subtitleColor: @js($isChampion ? '#f59e0b' : '#94a3b8'),
+    record: @js([
+        'played' => $playerStanding?->played ?? 0,
+        'won' => $playerStanding?->won ?? 0,
+        'drawn' => $playerStanding?->drawn ?? 0,
+        'lost' => $playerStanding?->lost ?? 0,
+        'gf' => $playerStanding?->goals_for ?? 0,
+        'ga' => $playerStanding?->goals_against ?? 0,
+        'pts' => $playerStanding?->points ?? 0,
+    ]),
+    highlights: @js($seasonHighlights),
+    homeRecord: @js($homeRecord),
+    awayRecord: @js($awayRecord),
+    otherCompetitions: @js($otherComps),
+    labels: @js([
+        'played' => __('season.played_abbr'),
+        'won' => __('season.won'),
+        'drawn' => __('season.drawn'),
+        'lost' => __('season.lost'),
+        'gf' => __('season.goals_for'),
+        'ga' => __('season.goals_against'),
+        'gd' => __('season.goal_diff_abbr'),
+        'pts' => __('season.pts_abbr'),
+        'teamHighlights' => __('season.team_in_numbers'),
+        'homeRecord' => __('season.home_record'),
+        'awayRecord' => __('season.away_record'),
+        'otherCompetitions' => __('season.your_other_competitions'),
+    ]),
+})">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {{-- ============================================================ --}}
@@ -260,8 +317,8 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
 
                         {{-- Most MVPs --}}
                         <div class="border border-border-default rounded-lg overflow-hidden">
-                            <div class="px-4 py-2.5 bg-accent-yellow/10 border-b border-accent-yellow/20">
-                                <div class="text-xs font-semibold text-accent-yellow uppercase tracking-wide flex items-center gap-1.5">
+                            <div class="px-4 py-2.5 bg-accent-gold/10 border-b border-accent-gold/20">
+                                <div class="text-xs font-semibold text-accent-gold uppercase tracking-wide flex items-center gap-1.5">
                                     <span>&#9733;</span>
                                     {{ __('season.most_mvps') }}
                                 </div>
@@ -272,7 +329,7 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
                                     @foreach($topMvps as $index => $mvp)
                                         @php $isPlayerTeam = $mvp->gamePlayer->team_id === $game->team_id; @endphp
                                         <div class="flex items-center gap-2 text-sm @if($isPlayerTeam) bg-accent-blue/10 -mx-1 px-1 py-0.5 rounded-sm @endif">
-                                            <span class="w-5 text-center text-xs font-bold {{ $index === 0 ? 'text-accent-yellow' : 'text-text-secondary' }}">{{ $index + 1 }}</span>
+                                            <span class="w-5 text-center text-xs font-bold {{ $index === 0 ? 'text-accent-gold' : 'text-text-secondary' }}">{{ $index + 1 }}</span>
                                             <x-team-crest :team="$mvp->gamePlayer->team" class="w-4 h-4 shrink-0" />
                                             <span class="flex-1 truncate @if($isPlayerTeam) font-medium @endif">{{ $mvp->gamePlayer->player->name }}</span>
                                             <span class="font-heading font-bold tabular-nums text-text-primary">{{ $mvp->count }}</span>
@@ -445,14 +502,14 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
                     @endif
 
                     @if($teamMvpLeader)
-                    <div class="bg-accent-yellow/10 border border-accent-yellow/20 rounded-lg p-3">
-                        <div class="text-[10px] text-accent-yellow uppercase tracking-widest font-semibold mb-1.5">{{ __('season.your_team_mvp') }}</div>
+                    <div class="bg-accent-gold/10 border border-accent-gold/20 rounded-lg p-3">
+                        <div class="text-[10px] text-accent-gold uppercase tracking-widest font-semibold mb-1.5">{{ __('season.your_team_mvp') }}</div>
                         <div class="flex items-center gap-1.5 mb-1">
                             <x-team-crest :team="$teamMvpLeader->gamePlayer->team" class="w-4 h-4 shrink-0" />
                             <span class="text-sm font-medium text-text-primary truncate">{{ $teamMvpLeader->gamePlayer->player->name }}</span>
                         </div>
                         <div class="font-heading text-xl font-bold text-text-primary tabular-nums">{{ $teamMvpLeader->count }}</div>
-                        <div class="text-[10px] text-accent-yellow/80">{{ __('season.mvp_awards') }}</div>
+                        <div class="text-[10px] text-accent-gold/80">{{ __('season.mvp_awards') }}</div>
                     </div>
                     @endif
                 </div>
@@ -595,17 +652,21 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
         {{-- CTA: Start New Season                                         --}}
         {{-- ============================================================ --}}
 
-        <div class="text-center py-6 md:py-10">
-            @if(config('beta.allow_new_season'))
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 py-6 md:py-10">
+            <x-secondary-button
+                type="button"
+                @click="downloadSeasonImage()"
+                class="px-6 py-4 text-base"
+            >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+                <span class="ml-1.5">{{ __('season.download_season') }}</span>
+            </x-secondary-button>
             <form method="post" action="{{ route('game.start-new-season', $game->id) }}" x-data="{ loading: false }" @submit="loading = true">
                 @csrf
                 <x-primary-button-spin color="red" class="px-8 py-4 text-lg font-bold">
                     {{ __('season.start_new_season', ['season' => \App\Models\Game::formatSeason((string)((int)$game->season + 1))]) }}
                 </x-primary-button-spin>
             </form>
-            @else
-            <p class="text-text-secondary text-lg">{{ __('season.new_season_coming_soon') }}</p>
-            @endif
         </div>
 
     </div>

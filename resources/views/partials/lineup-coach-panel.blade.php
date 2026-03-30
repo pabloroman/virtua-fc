@@ -33,7 +33,7 @@
 
     {{-- Opponent Expected Tactics --}}
     @if(!empty($opponentData['formation']))
-        <div class="flex items-center justify-end gap-1.5 mb-2">
+        <div class="flex items-center justify-end gap-1.5 flex-wrap mb-2">
             <span class="text-[10px] text-text-secondary uppercase tracking-wide">{{ __('squad.coach_opponent_expected_label') }}</span>
             <span class="text-xs font-semibold text-text-body bg-surface-700 px-1.5 py-0.5 rounded-sm">{{ $opponentData['formation'] }}</span>
             <span class="text-text-body">&middot;</span>

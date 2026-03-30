@@ -29,15 +29,9 @@ return [
     'loans_out_section' => 'Active Loans (Out)',
     'loan_searches_section' => 'Searching for Loan Destination',
     'loan_searches_help' => 'Players looking for a club to go on loan',
-    'counter_offers_received' => 'Counter Offer(s) Received',
-    'counter_offers_help' => 'Clubs have responded with a different price than you offered',
-
     // Legacy keys kept for compatibility
     'loans' => 'Loans',
 
-    // Pending bids
-    'your_pending_bids' => 'Your Pending Bids',
-    'pending_bids_help' => 'Bids sent that are awaiting a response from the selling club',
     'loan_request' => 'Loan Request',
     'loan_no_fee' => 'Loan (no fee)',
     'free_transfer' => 'Free (no contract)',
@@ -46,11 +40,17 @@ return [
     'sign' => 'Sign',
     'window_closed_for_signing' => 'Transfer window closed — signing unavailable.',
     'wage_exceeds_budget' => 'Wage demand exceeds your wage budget.',
-    'response_next_matchday' => 'Response on the next matchday',
-
     // Rejected bids
     'rejected_bids' => 'Rejected Bids',
     'bid_rejected' => 'Bid rejected',
+
+    // Active negotiations
+    'active_negotiations' => 'Active negotiations',
+    'active_negotiations_description' => 'Ongoing offers for players you are signing.',
+    'withdraw_offer' => 'Withdraw',
+    'offer_withdrawn' => 'Offer withdrawn for :player.',
+    'resume_negotiation' => 'Negotiate',
+    'confirm_withdraw' => 'Are you sure you want to withdraw this offer?',
 
     // Incoming transfers
     'incoming_transfers' => 'Incoming Transfers',
@@ -122,23 +122,29 @@ return [
     'bid_awaiting_response' => 'Awaiting Response',
     'counter_offer_received' => 'Counter Offer Received',
     'transfer_agreed' => 'Transfer Agreed',
-    'accept_counter' => 'Accept Counter Offer',
-    'reject_counter' => 'Reject',
     'already_bidding' => 'You already have a bid for this player',
+    'negotiation_cooldown' => 'Negotiations with this player broke down recently. Wait until the next matchday to try again.',
+    'negotiation_cooldown_short' => 'Wait until next matchday',
     'scouting_assessment' => 'Scouting Assessment',
     'financial_details' => 'Financial Details',
     'estimated_asking_price' => 'Estimated Asking Price',
     'wage_demand' => 'Wage Demand',
     'your_transfer_budget' => 'Your Transfer Budget',
     'transfer_fee_exceeds_budget' => 'The transfer fee exceeds your budget. You cannot bid for this player.',
+    'transfer_fee_exceeds_budget_loan_available' => 'The transfer fee exceeds your budget, but you can request a loan.',
+    'loan_fee_exceeds_budget' => 'Both the transfer and loan fees exceed your budget.',
+    'loan_cost_salary' => 'Loan cost (salary)',
     'asking_price' => 'Asking price',
     'request_loan' => 'Request Loan',
+    'budget_cap_warning' => 'Your bid is limited by your available transfer budget.',
+    'budget_available' => 'Available budget',
+    'request_budget_loan' => 'Request a budget loan',
+    'budget_limited_hint' => 'Your budget is below the asking price. You can still negotiate or request a budget loan.',
 
     // Bid evaluation responses
     'bid_accepted' => ':team has accepted your bid.',
     'counter_offer_made' => ':team has made a counter offer of :amount.',
     'bid_rejected_too_low' => ':team has rejected your bid. It was well below their valuation.',
-    'bid_rejected_not_interested' => 'The player is not interested in joining your club.',
     'loan_rejected_key_player' => ':team rejected the loan request. :player is a key player for them.',
     'loan_accepted' => ':team has agreed to loan :player to your club.',
     'loan_rejected_keep' => ':team has decided to keep :player for now.',
@@ -180,10 +186,6 @@ return [
 
     // Scout search button
     'new_scout_search' => 'New Search',
-
-    // Counter-offer detail
-    'your_bid_amount' => 'Your bid: :amount',
-    'they_ask' => 'They ask: :amount',
 
     // Transfers help text
     'transfers_help_toggle' => 'How do transfers work?',
@@ -247,6 +249,9 @@ return [
     'mood_willing' => 'Willing to renew',
     'mood_open' => 'Open to negotiate',
     'mood_reluctant' => 'Reluctant',
+    'mood_willing_sign' => 'Willing to sign',
+    'mood_open_sign' => 'Open to negotiate',
+    'mood_reluctant_sign' => 'Reluctant',
     'contract_duration' => 'Contract duration',
 
     // Explorer
@@ -258,7 +263,7 @@ return [
     'explore_teams_count' => ':count teams',
     'explore_squad_title' => 'Squad',
     'explore_no_teams' => 'No teams available.',
-    'explore_scouting_nudge' => 'Want more info? Start a scout search.',
+    'explore_scouting_nudge' => 'Want more info? Start a scout search from the Scouting tab.',
     'explore_on_loan' => 'On loan from :club',
     'explore_loaned_out' => 'Loaned to :club',
     'explore_contract_year' => 'Contract',
@@ -284,6 +289,16 @@ return [
     'explore_europe' => 'Europe',
     'explore_europe_hint' => 'Browse European teams outside the top 5 leagues.',
     'explore_window_closed_hint' => 'Transfer window closed',
+    'explore_make_offer' => 'Make offer',
+    'explore_negotiate' => 'Negotiate',
+    'explore_offer_hint' => 'Make offers directly or shortlist players for scouting. Without a scout report, you\'ll negotiate blind.',
+
+    // Free agent negotiation chat
+    'chat_free_agent_title' => 'Free Agent Negotiation',
+    'chat_free_agent_demand' => ':player\'s agent wants :wage/year for :years years.',
+    'chat_free_agent_counter' => ':player\'s agent insists on :wage/year for :years years.',
+    'chat_free_agent_accepted' => ':player has signed! Welcome to the team.',
+    'chat_free_agent_rejected' => ':player\'s agent has walked away. No deal.',
 
     // Tracking
     'tracking_slots' => ':used/:max tracking slots',
@@ -291,6 +306,8 @@ return [
     'stop_tracking' => 'Stop',
     'track_to_unlock' => 'Track to unlock intel',
     'track_to_unlock_desc' => 'Assign your scout to track this player. Intel unlocks over matchdays.',
+    'tracking_in_progress_title' => 'Scout tracking active',
+    'tracking_in_progress_desc' => 'Your scout is tracking this player. Intel will unlock on the next matchday.',
     'tracking_in_progress' => 'Tracking...',
     'no_tracking_slots' => 'No tracking slots available',
     'willingness' => 'Willingness',
@@ -312,12 +329,78 @@ return [
     'chat_agent_accepted' => ':player has agreed to :wage/year for :years years. Deal done!',
     'chat_agent_rejected' => ':player\'s agent has left the table. Negotiations have broken down.',
     'chat_accept' => 'Accept',
+    'chat_reject' => 'Reject',
     'chat_user_accepts' => 'Deal!',
+    'chat_user_rejects' => 'Not for sale',
     'chat_deal_agreed' => 'Contract agreed',
+    'chat_club_agreement' => 'Club agreement reached',
+    'chat_renewal_agreed' => 'Renewal agreed',
     'chat_deal_failed' => 'Negotiation failed',
     'chat_continue' => 'Continue',
     'chat_round' => 'Round :current/:max',
     'year_singular' => 'year',
     'year_plural' => 'years',
     'chat_send_offer' => 'Send',
+
+    // Transfer negotiation chat
+    'chat_transfer_title' => 'Transfer Negotiation',
+    'chat_club_demand' => ':team wants :fee for :player.',
+    'chat_club_counter' => ':team insists on :fee.',
+    'chat_club_counter_resume' => ':team is still asking :fee.',
+    'chat_club_accepted' => ':team has accepted :fee for :player!',
+    'chat_club_rejected' => ':team has rejected the offer. Negotiations have broken down.',
+    'chat_player_not_interested' => ':player is not interested in joining your club.',
+    'chat_your_bid' => 'Your bid',
+    'mood_willing_sell' => 'Willing to sell',
+    'mood_open_sell' => 'Open to offers',
+    'mood_reluctant_sell' => 'Reluctant to sell',
+    'negotiate' => 'Negotiate',
+    'chat_terms_transition' => 'Fee agreed! Now negotiate personal terms with the player.',
+    'chat_player_demand_transfer' => ':player\'s agent wants :wage/year for :years years.',
+    'chat_player_counter_transfer' => ':player\'s agent insists on :wage/year for :years years.',
+    'chat_transfer_complete' => ':player has signed! Welcome to the team.',
+    'chat_transfer_complete_pending' => ':player has signed! The player will join the team in the next transfer window.',
+    'chat_terms_rejected' => ':player\'s agent has walked away. The deal is off.',
+
+    // Counter-offer negotiation (user selling)
+    'counter_offer_title' => 'Counter-offer',
+    'counter_must_be_higher' => 'Your asking price must be higher than the current offer.',
+    'chat_buyer_opening' => ':team has offered :fee for :player. What is your asking price?',
+    'chat_buyer_counter' => ':team raises their offer to :fee.',
+    'chat_buyer_counter_resume' => ':team\'s latest offer is :fee.',
+    'chat_buyer_accepted' => ':team accepts your price of :fee for :player!',
+    'chat_buyer_rejected' => ':team has withdrawn their interest. The deal is off.',
+    'chat_buyer_deal_complete' => 'Sale agreed! :player will join :team for :fee.',
+    'chat_offer_rejected' => 'You have rejected the offer for :player. The player is not for sale.',
+
+    // Pre-contract negotiation chat
+    'chat_pre_contract_title' => 'Pre-Contract Negotiation',
+    'chat_pre_contract_demand' => ':player\'s agent wants :wage/year for :years years to sign a pre-contract.',
+    'chat_pre_contract_counter' => ':player\'s agent insists on :wage/year for :years years.',
+    'chat_pre_contract_accepted' => ':player has agreed to a pre-contract! He will join your club in the summer.',
+    'chat_pre_contract_rejected' => ':player\'s agent has walked away. No pre-contract agreement.',
+    'chat_pre_contract_deal' => 'Pre-contract agreed',
+    'negotiate_pre_contract' => 'Pre-Contract',
+
+    // Loan negotiation chat
+    'chat_loan_title' => 'Loan Negotiation',
+    'chat_loan_accepted' => ':team accepts the loan of :player. Cost: :salary/yr.',
+    'chat_loan_completed' => ':player has joined on loan until the end of the season!',
+    'chat_loan_agreed' => ':player\'s loan has been agreed. The move will complete when the transfer window opens.',
+    'chat_loan_rejected' => ':team has rejected the loan request. Negotiations have broken down.',
+    'chat_loan_rejected_key_player' => ':team has rejected the request. :player is a key player for them.',
+    'chat_loan_rejected_reputation' => ':player is not interested in joining your club on loan.',
+    'chat_loan_rejected_player' => ':player is not interested in joining your club on loan.',
+    'chat_loan_confirm' => 'Confirm loan',
+    'chat_loan_deal' => 'Loan agreed',
+
+    // Chat player info strip
+    'chat_player_age' => 'Age',
+    'chat_player_salary' => 'Salary',
+    'chat_player_value' => 'Value',
+    'chat_player_contract' => 'Contract',
+
+    'mood_willing_loan' => 'Willing to loan',
+    'mood_open_loan' => 'Open to loan',
+    'mood_reluctant_loan' => 'Reluctant to loan',
 ];

@@ -3,7 +3,7 @@
 return [
     // Badge & Banner
     'badge' => 'Beta Cerrada',
-    'banner_warning' => 'Este juego está en desarrollo activo. Tu progreso puede ser reiniciado en cualquier momento.',
+    'banner_warning' => 'Este juego está en desarrollo activo. Es posible que encuentres algún error.',
     'send_feedback' => 'Enviar feedback',
 
     // Login & Registration

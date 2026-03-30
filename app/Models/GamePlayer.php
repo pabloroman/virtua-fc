@@ -317,6 +317,10 @@ class GamePlayer extends Model
      */
     public function isOnLoan(): bool
     {
+        if ($this->relationLoaded('activeLoan')) {
+            return $this->activeLoan !== null;
+        }
+
         return $this->activeLoan()->exists();
     }
 
@@ -488,6 +492,11 @@ class GamePlayer extends Model
     public function canBeOfferedRenewal(?Carbon $seasonEndDate = null): bool
     {
         if (!$this->isContractExpiring($seasonEndDate)) {
+            return false;
+        }
+
+        // Loaned-in players belong to another club — we can't renew them
+        if ($this->isOnLoan()) {
             return false;
         }
 

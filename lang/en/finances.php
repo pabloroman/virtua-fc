@@ -178,8 +178,11 @@ return [
     'category_performance_bonus' => 'Performance Bonus',
     'category_signing_bonus' => 'Signing Bonus',
 
+    'category_loan' => 'Loan',
     'category_severance' => 'Severance',
     'category_infrastructure' => 'Infrastructure',
+    'category_budget_loan' => 'Budget Loan',
+    'category_loan_repayment' => 'Loan Repayment',
 
     // Infrastructure upgrades
     'upgrade' => 'Upgrade',
@@ -191,7 +194,31 @@ return [
     'tx_free_transfer_out' => ':player left on free transfer to :team',
     'tx_player_sold' => ':player sold to :team',
     'tx_player_signed' => ':player signed from :team',
+    'tx_loan_in' => ':player loaned from :team (salary)',
     'tx_player_released' => ':player released (severance)',
     'tx_cup_advancement' => ':competition - Round :round advancement',
     'tx_infrastructure_upgrade' => ':area upgraded from Tier :from to Tier :to',
+    'tx_budget_loan_received' => 'Budget loan received: :amount',
+
+    // Budget loan
+    'budget_loan' => 'Budget Loan',
+    'loan_active' => 'Active',
+    'loan_principal' => 'Loan received',
+    'loan_interest' => 'Interest (15%)',
+    'loan_repayment' => 'End-of-season repayment',
+    'loan_repayment_hint' => 'Repaid automatically at the end of the season. The repayment reduces next season\'s available surplus.',
+    'loan_description' => 'Borrow against projected revenue to boost your transfer budget. Repaid with interest at end of season.',
+    'loan_max_available' => 'Max available',
+    'tooltip_loan_max' => 'You can borrow up to 10% of your projected total revenue for the season.',
+    'tooltip_loan_activity' => 'Loan added to transfer budget. Repaid with 15% interest at the end of the season.',
+    'loan_repayment_deduction' => 'Loan Repayment',
+    'tooltip_loan_repayment_deduction' => 'Repayment of last season\'s budget loan (principal + 15% interest). Automatically deducted from this season\'s available surplus.',
+    'loan_request_button' => 'Request Loan',
+    'loan_amount_label' => 'Amount (€)',
+    'loan_interest_rate' => 'Interest rate',
+    'loan_total_repayment' => 'Total repayment',
+    'loan_warning' => 'The full repayment will be deducted from next season\'s surplus.',
+    'loan_confirm' => 'Confirm Loan',
+    'loan_cancel' => 'Cancel',
+    'loan_not_available_desc' => 'Loans can be requested during transfer windows when no other loan is active.',
 ];

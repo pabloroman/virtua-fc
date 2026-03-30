@@ -48,7 +48,9 @@
                     $wageDemand = $detail['wage_demand'] ?? 0;
                     $formattedWageDemand = $detail['formatted_wage_demand'] ?? '-';
                     $canAffordFee = $detail['can_afford_fee'] ?? false;
-                    $canAffordWage = $detail['can_afford_wage'] ?? false;
+                    $canAffordLoan = $detail['can_afford_loan'] ?? false;
+                    $availableBudget = (int) (($detail['available_budget'] ?? 0) / 100);
+                    $onCooldown = $detail['on_cooldown'] ?? false;
                     $techRange = $detail['tech_range'] ?? [0, 0];
                     $physRange = $detail['phys_range'] ?? [0, 0];
                     $isExpiring = !$isFreeAgent && $player->contract_until && $player->contract_until <= $game->getSeasonEndDate();
@@ -91,10 +93,10 @@
                             </div>
                             {{-- Shortlist toggle --}}
                             <x-icon-button
-                                @click.stop="if(toggling) return; toggling = true; fetch('{{ route('game.scouting.shortlist.toggle', [$game->id, $player->id]) }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } }).then(r => r.json()).then(data => { if(data.success === false) { alert(data.message); toggling = false; return; } shortlisted = !shortlisted; toggling = false; window.dispatchEvent(new CustomEvent('shortlist-toggled', { detail: { action: data.action, playerId: data.playerId, player: data.player || null } })); }).catch(() => { toggling = false; })"
+                                @click.stop="if(toggling) return; toggling = true; fetch('{{ route('game.scouting.shortlist.toggle', [$game->id, $player->id]) }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify({ source: 'scout_report' }) }).then(r => r.json()).then(data => { if(data.success === false) { alert(data.message); toggling = false; return; } shortlisted = !shortlisted; toggling = false; window.dispatchEvent(new CustomEvent('shortlist-toggled', { detail: { action: data.action, playerId: data.playerId, player: data.player || null } })); }).catch(() => { toggling = false; })"
                                 class="sm:min-h-0"
                                 x-bind:class="shortlisted ? 'text-accent-gold hover:text-amber-400' : 'text-text-body hover:text-accent-gold'"
-                                x-bind:title="shortlisted ? @js(__('transfers.remove_from_shortlist')) : @js(__('transfers.add_to_shortlist'))"
+                                x-bind:title="shortlisted ? {{ \Illuminate\Support\Js::from(__('transfers.remove_from_shortlist')) }} : {{ \Illuminate\Support\Js::from(__('transfers.add_to_shortlist')) }}"
                             >
                                 <svg class="w-5 h-5" x-bind:fill="shortlisted ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
@@ -123,24 +125,12 @@
                                         {{-- Technical --}}
                                         <div class="flex items-center justify-between gap-3">
                                             <span class="text-xs text-text-muted w-16 shrink-0">{{ __('transfers.technical') }}</span>
-                                            <div class="flex items-center gap-2 flex-1 justify-end">
-                                                <div class="w-20 h-1.5 bg-bar-track rounded-full overflow-hidden">
-                                                    @php $midTech = ($techRange[0] + $techRange[1]) / 2; @endphp
-                                                    <div class="h-1.5 rounded-full {{ $midTech >= 80 ? 'bg-accent-green' : ($midTech >= 70 ? 'bg-lime-500' : ($midTech >= 60 ? 'bg-accent-gold' : 'bg-surface-600')) }}" style="width: {{ $midTech / 99 * 100 }}%"></div>
-                                                </div>
-                                                <span class="text-xs font-semibold tabular-nums text-text-body">{{ $techRange[0] }}-{{ $techRange[1] }}</span>
-                                            </div>
+                                            <x-ability-bar :range="$techRange" size="sm" class="text-xs font-semibold tabular-nums text-text-body" />
                                         </div>
                                         {{-- Physical --}}
                                         <div class="flex items-center justify-between gap-3">
                                             <span class="text-xs text-text-muted w-16 shrink-0">{{ __('transfers.physical') }}</span>
-                                            <div class="flex items-center gap-2 flex-1 justify-end">
-                                                <div class="w-20 h-1.5 bg-bar-track rounded-full overflow-hidden">
-                                                    @php $midPhys = ($physRange[0] + $physRange[1]) / 2; @endphp
-                                                    <div class="h-1.5 rounded-full {{ $midPhys >= 80 ? 'bg-accent-green' : ($midPhys >= 70 ? 'bg-lime-500' : ($midPhys >= 60 ? 'bg-accent-gold' : 'bg-surface-600')) }}" style="width: {{ $midPhys / 99 * 100 }}%"></div>
-                                                </div>
-                                                <span class="text-xs font-semibold tabular-nums text-text-body">{{ $physRange[0] }}-{{ $physRange[1] }}</span>
-                                            </div>
+                                            <x-ability-bar :range="$physRange" size="sm" class="text-xs font-semibold tabular-nums text-text-body" />
                                         </div>
                                         {{-- Market Value --}}
                                         <div class="flex items-center justify-between pt-1">
@@ -167,7 +157,7 @@
                                         </div>
                                         <div class="flex items-center justify-between">
                                             <span class="text-xs text-text-muted">{{ __('transfers.wage_demand') }}</span>
-                                            <span class="text-xs font-semibold {{ $canAffordWage ? 'text-text-primary' : 'text-accent-gold' }}">{{ $formattedWageDemand }}{{ __('squad.per_year') }}</span>
+                                            <span class="text-xs font-semibold text-text-body">{{ $formattedWageDemand }}{{ __('squad.per_year') }}</span>
                                         </div>
                                         <div class="flex items-center justify-between pt-1 border-t border-border-strong">
                                             <span class="text-xs text-text-muted">{{ __('transfers.your_transfer_budget') }}</span>
@@ -178,18 +168,12 @@
                                     {{-- Action Buttons --}}
                                     <div class="mt-4 space-y-2">
                                         @if($isFreeAgent)
-                                            @if($canAffordWage)
                                                 <form method="POST" action="{{ route('game.scouting.sign-free-agent', [$game->id, $player->id]) }}">
                                                     @csrf
                                                     <x-primary-button color="green" size="xs">
                                                         {{ __('transfers.sign_free_agent') }}
                                                     </x-primary-button>
                                                 </form>
-                                            @else
-                                                <div class="text-xs text-accent-gold font-medium">
-                                                    {{ __('transfers.wage_exceeds_budget') }}
-                                                </div>
-                                            @endif
                                         @elseif($hasOffer && $offerStatus === 'pending' && !$offerIsCounter)
                                             <div class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-accent-gold/10 text-accent-gold border border-accent-gold/20">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -205,40 +189,90 @@
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                                                 {{ __('transfers.transfer_agreed') }}
                                             </div>
+                                        @elseif($onCooldown)
+                                            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-surface-700 text-text-muted border border-border-default">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                {{ __('transfers.negotiation_cooldown_short') }}
+                                            </div>
                                         @elseif($isExpiring && $isPreContractPeriod)
-                                            {{-- Pre-contract offer form --}}
-                                            @php $preContractWage = $detail['pre_contract_wage_demand'] ?? $wageDemand; @endphp
-                                            <form method="POST" action="{{ route('game.scouting.pre-contract', [$game->id, $player->id]) }}" class="space-y-2">
-                                                @csrf
-                                                <label class="block text-xs font-medium text-text-secondary">{{ __('transfers.offered_wage_euros') }}</label>
-                                                <div class="flex items-center gap-2">
-                                                    <x-money-input name="offered_wage" :value="(int)($preContractWage / 100)" :min="0" size="sm" />
-                                                    <x-primary-button color="green" size="xs">
-                                                        {{ __('transfers.submit_pre_contract') }}
-                                                    </x-primary-button>
+                                            {{-- Pre-contract negotiation --}}
+                                            @php
+                                                $posDisp = $player->position_display;
+                                                $scoutPlayerInfo = \Illuminate\Support\Js::from([
+                                                    'age' => $player->age($game->current_date),
+                                                    'position' => $posDisp['abbreviation'],
+                                                    'positionBg' => $posDisp['bg'],
+                                                    'positionText' => $posDisp['text'],
+                                                    'marketValue' => $player->formatted_market_value,
+                                                    'contractYear' => $player->contract_expiry_year,
+                                                ]);
+                                            @endphp
+                                            <x-primary-button size="xs" color="green"
+                                                @click="$dispatch('open-negotiation', {
+                                                    playerName: {{ \Illuminate\Support\Js::from($player->name) }},
+                                                    negotiateUrl: {{ \Illuminate\Support\Js::from(route('game.negotiate.pre-contract', [$game->id, $player->id])) }},
+                                                    mode: 'pre_contract',
+                                                    phase: 'personal_terms',
+                                                    chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_pre_contract_title')) }},
+                                                    playerInfo: {{ $scoutPlayerInfo }}
+                                                })">
+                                                {{ __('transfers.negotiate_pre_contract') }}
+                                            </x-primary-button>
+                                        @elseif($availableBudget <= 0 && !$canAffordLoan)
+                                            <div>
+                                                <div class="text-xs text-accent-red font-medium">
+                                                    {{ __('transfers.loan_fee_exceeds_budget') }}
                                                 </div>
-                                            </form>
-                                        @elseif(!$canAffordFee)
-                                            <div class="text-xs text-accent-red font-medium">
-                                                {{ __('transfers.transfer_fee_exceeds_budget') }}
+                                                <div class="text-xs text-text-muted mt-1">
+                                                    {{ __('transfers.loan_cost_salary') }}: <span class="text-text-body font-medium">{{ $formattedWageDemand }}{{ __('squad.per_year') }}</span>
+                                                </div>
                                             </div>
                                         @else
-                                            <div class="flex flex-col sm:flex-row gap-2">
-                                                {{-- Transfer Bid --}}
-                                                <form method="POST" action="{{ route('game.scouting.bid', [$game->id, $player->id]) }}" class="flex items-center gap-2 flex-1">
-                                                    @csrf
-                                                    <x-money-input name="bid_amount" :value="(int)($askingPrice / 100)" :min="0" size="sm" />
-                                                    <x-primary-button size="xs">
-                                                        {{ __('transfers.submit_bid') }}
-                                                    </x-primary-button>
-                                                </form>
-                                                {{-- Loan Request --}}
-                                                <form method="POST" action="{{ route('game.scouting.loan', [$game->id, $player->id]) }}">
-                                                    @csrf
-                                                    <x-secondary-button type="submit" size="xs">
+                                            @php
+                                                $posDisp = $player->position_display;
+                                                $scoutPlayerInfo = \Illuminate\Support\Js::from([
+                                                    'age' => $player->age($game->current_date),
+                                                    'position' => $posDisp['abbreviation'],
+                                                    'positionBg' => $posDisp['bg'],
+                                                    'positionText' => $posDisp['text'],
+                                                    'marketValue' => $player->formatted_market_value,
+                                                    'contractYear' => $player->contract_expiry_year,
+                                                ]);
+                                            @endphp
+                                            <div class="flex flex-col gap-2">
+                                                @if(!$canAffordFee)
+                                                    <div class="text-xs text-accent-gold font-medium">
+                                                        {{ __('transfers.budget_limited_hint') }}
+                                                    </div>
+                                                @endif
+                                                <div class="flex flex-col sm:flex-row gap-2">
+                                                    @if($availableBudget > 0)
+                                                        {{-- Transfer Negotiate --}}
+                                                        <x-primary-button size="xs"
+                                                            @click="$dispatch('open-negotiation', {
+                                                                playerName: {{ \Illuminate\Support\Js::from($player->name) }},
+                                                                negotiateUrl: {{ \Illuminate\Support\Js::from(route('game.negotiate.transfer', [$game->id, $player->id])) }},
+                                                                mode: 'transfer_fee',
+                                                                phase: 'club_fee',
+                                                                chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_transfer_title')) }},
+                                                                playerInfo: {{ $scoutPlayerInfo }}
+                                                            })">
+                                                            {{ __('transfers.negotiate') }}
+                                                        </x-primary-button>
+                                                    @endif
+                                                    {{-- Loan Request --}}
+                                                    <x-secondary-button size="xs"
+                                                        @click="$dispatch('open-negotiation', {
+                                                            playerName: {{ \Illuminate\Support\Js::from($player->name) }},
+                                                            negotiateUrl: {{ \Illuminate\Support\Js::from(route('game.negotiate.loan', [$game->id, $player->id])) }},
+                                                            mode: 'loan',
+                                                            phase: 'club_fee',
+                                                            chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_loan_title')) }},
+                                                            playerInfo: {{ $scoutPlayerInfo }}
+                                                        })">
                                                         {{ __('transfers.request_loan') }}
                                                     </x-secondary-button>
-                                                </form>
+                                                </div>
                                             </div>
                                         @endif
                                     </div>

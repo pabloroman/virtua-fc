@@ -1,7 +1,10 @@
-@props(['name' => '', 'value' => 0, 'min' => 0, 'size' => 'md', 'presets' => null])
+@props(['name' => '', 'value' => 0, 'min' => 0, 'max' => null, 'size' => 'md', 'presets' => null])
 
 @php
     $euros = max((int) $value, (int) $min);
+    if ($max !== null) {
+        $euros = min($euros, (int) $max);
+    }
 
     $componentClasses = match($size) {
         'sm' => 'h-[36px]',
@@ -22,6 +25,7 @@
 <div x-data="{
     euros: {{ $euros }},
     min: {{ (int) $min }},
+    max: {{ $max !== null ? (int) $max : 'null' }},
     holdTimer: null,
     holdInterval: null,
     presets: @js($presetValues),
@@ -34,13 +38,17 @@
     get atMin() {
         return this.euros <= this.min;
     },
+    get atMax() {
+        return this.max !== null && this.euros >= this.max;
+    },
     formatPreset(v) {
         if (v >= 1_000_000) return (v / 1_000_000) + 'M';
         if (v >= 1_000) return (v / 1_000) + 'K';
         return v.toString();
     },
     increment() {
-        this.euros += this.step;
+        const next = this.euros + this.step;
+        this.euros = this.max !== null ? Math.min(next, this.max) : next;
     },
     decrement() {
         const next = this.euros - this.step;
@@ -85,7 +93,9 @@
 
         {{-- Plus button --}}
         <button type="button"
-            class="{{ $btnClasses }} flex items-center justify-center bg-surface-700 hover:bg-surface-600 active:bg-surface-700 text-text-body font-bold select-none transition-colors"
+            :disabled="atMax"
+            :class="atMax ? 'opacity-40 cursor-not-allowed' : 'hover:bg-surface-600 active:bg-surface-700'"
+            class="{{ $btnClasses }} flex items-center justify-center bg-surface-700 text-text-body font-bold select-none transition-colors"
             @mousedown.prevent="startHold(() => increment())"
             @mouseup="stopHold()"
             @mouseleave="stopHold()"
@@ -99,7 +109,7 @@
         <div class="flex flex-wrap gap-1">
             <template x-for="p in presets" :key="p">
                 <button type="button"
-                    @click="euros = p"
+                    @click="euros = Math.max(min, max !== null ? Math.min(p, max) : p)"
                     :class="euros === p ? 'bg-accent-blue/20 text-accent-blue border-accent-blue/30' : 'bg-surface-700/50 text-text-muted border-border-default hover:bg-surface-700 hover:text-text-secondary'"
                     class="px-2 py-0.5 text-[11px] font-medium rounded border transition-colors"
                     x-text="formatPreset(p)"

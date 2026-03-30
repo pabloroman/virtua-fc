@@ -50,16 +50,9 @@
                         <x-select-input name="position" id="position" required class="w-full">
                             <option value="">{{ __('transfers.select_position') }}</option>
                             <optgroup label="{{ __('transfers.specific_positions') }}">
-                                <option value="GK">{{ __('positions.goalkeeper_label') }}</option>
-                                <option value="CB">{{ __('positions.centre_back_label') }}</option>
-                                <option value="LB">{{ __('positions.left_back_label') }}</option>
-                                <option value="RB">{{ __('positions.right_back_label') }}</option>
-                                <option value="DM">{{ __('positions.defensive_midfield_label') }}</option>
-                                <option value="CM">{{ __('positions.central_midfield_label') }}</option>
-                                <option value="AM">{{ __('positions.attacking_midfield_label') }}</option>
-                                <option value="LW">{{ __('positions.left_winger_label') }}</option>
-                                <option value="RW">{{ __('positions.right_winger_label') }}</option>
-                                <option value="CF">{{ __('positions.centre_forward_label') }}</option>
+                                @foreach(\App\Support\PositionMapper::getFilterOptions() as $code => $key)
+                                    <option value="{{ $code }}">{{ __("positions.{$key}_label") }}</option>
+                                @endforeach
                             </optgroup>
                             <optgroup label="{{ __('transfers.position_groups') }}">
                                 <option value="any_defender">{{ __('positions.any_defender') }}</option>

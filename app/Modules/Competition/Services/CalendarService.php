@@ -2,8 +2,10 @@
 
 namespace App\Modules\Competition\Services;
 
+use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GameMatch;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 class CalendarService
@@ -173,6 +175,54 @@ class CalendarService
                 'goalsAgainst' => $away['goalsAgainst'],
             ],
         ];
+    }
+
+    /**
+     * Get placeholder entries for knockout rounds not yet drawn (WC2026 tournament mode).
+     *
+     * Returns a collection of stdClass objects with scheduled_date, round_name, and is_placeholder=true,
+     * for any knockout round that doesn't have fixtures yet.
+     */
+    public function getKnockoutPlaceholders(Game $game, string $competitionId): Collection
+    {
+        $schedulePath = base_path("data/2025/{$competitionId}/schedule.json");
+
+        if (!file_exists($schedulePath)) {
+            return collect();
+        }
+
+        $schedule = json_decode(file_get_contents($schedulePath), true);
+        $knockoutRounds = $schedule['knockout'] ?? [];
+
+        // Find which rounds already have fixtures for this team
+        $existingRoundNames = GameMatch::where('game_id', $game->id)
+            ->where('competition_id', $competitionId)
+            ->where(function ($query) use ($game) {
+                $query->where('home_team_id', $game->team_id)
+                    ->orWhere('away_team_id', $game->team_id);
+            })
+            ->whereNotNull('round_name')
+            ->pluck('round_name')
+            ->unique()
+            ->toArray();
+
+        $placeholders = collect();
+
+        foreach ($knockoutRounds as $round) {
+            $roundName = $round['name'];
+
+            if (in_array($roundName, $existingRoundNames)) {
+                continue;
+            }
+
+            $placeholders->push((object) [
+                'scheduled_date' => Carbon::parse($round['date']),
+                'round_name' => $roundName,
+                'is_placeholder' => true,
+            ]);
+        }
+
+        return $placeholders;
     }
 
     /**

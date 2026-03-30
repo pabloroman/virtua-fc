@@ -39,7 +39,9 @@ return [
     'cup.quarter_finals' => 'Quarter-Finals',
     'cup.semi_finals' => 'Semi-Finals',
     'cup.final' => 'Final',
+    'cup.third_place' => 'Third Place',
     'third_place_match' => 'Third-place match',
+    'tbd' => 'To be determined',
 
     // Standings
     'pts' => 'pts',
@@ -76,6 +78,8 @@ return [
     'formation_tip_4141' => 'Defensive. :attack attack, :defense goals conceded.',
     'formation_tip_532' => 'Very defensive. :attack attack, :defense goals conceded.',
     'formation_tip_541' => 'Ultra defensive. :attack attack, :defense goals conceded.',
+    'formation_tip_4123' => 'Attacking with DM anchor. :attack attack, :defense goals conceded.',
+    'formation_tip_4321' => 'Creative, narrow attack. :attack attack, :defense goals conceded.',
 
     // Mentality tooltips
     'mentality_tip_defensive' => 'Your goals :own, opponent goals :opponent. Shut the game down.',
@@ -159,7 +163,9 @@ return [
     'formation_profile_4231' => 'Solid and creative',
     'formation_profile_343' => 'Very attacking, exposed',
     'formation_profile_352' => 'Midfield control',
+    'formation_profile_4123' => 'Wide attacking, creative',
     'formation_profile_4141' => 'Defensive midfield shield',
+    'formation_profile_4321' => 'Narrow, layered attack',
     'formation_profile_532' => 'Defensive, hard to break',
     'formation_profile_541' => 'Park the bus',
 
@@ -196,6 +202,19 @@ return [
     'welcome_step_autosave_desc' => 'Every action is saved instantly. You can close the browser and come back anytime — your game will be right where you left it.',
     'welcome_start_journey' => 'Get Started',
 
+    // Tournament welcome
+    'tournament_welcome_title' => 'Lead :team to glory',
+    'tournament_welcome_subtitle' => 'The world\'s greatest tournament awaits',
+    'tournament_welcome_step_squad' => 'Select your squad',
+    'tournament_welcome_step_squad_desc' => 'Choose the 26 players that will help you lift the trophy. Pick wisely — once the tournament starts, there are no changes.',
+    'tournament_welcome_step_format' => 'Tournament format',
+    'tournament_welcome_step_format_desc' => '48 teams compete in 12 groups. The top 2 from each group and the best 3rd-place teams advance to the knockout rounds.',
+    'tournament_welcome_step_lineup' => 'Pick your lineup',
+    'tournament_welcome_step_lineup_desc' => 'Choose your formation, starting XI, and tactical approach before each match. Make substitutions during the game to turn things around.',
+    'tournament_welcome_step_glory' => 'One shot at glory',
+    'tournament_welcome_step_glory_desc' => 'No transfers, no second chances. Win every match or go home. Your progress is saved automatically.',
+    'tournament_welcome_start' => 'Start Tournament',
+
     // Onboarding
     'welcome_to_team' => 'Welcome :team_a',
     'season_preview' => 'Season Preview',
@@ -213,6 +232,8 @@ return [
     // Setup loading
     'preparing_season' => 'Preparing your season...',
     'setup_loading_message' => 'We are setting up teams, players and competitions. This will only take a few seconds.',
+    'preparing_tournament' => 'Preparing the tournament...',
+    'setup_tournament_loading_message' => 'Loading national teams and players. This will only take a few seconds.',
     'processing_actions' => 'Processing...',
     'processing_career_actions' => 'Processing game actions...',
     'processing_career_actions_message' => 'Transfers, contracts, and other actions are being processed.',
@@ -338,10 +359,12 @@ return [
     'start_game' => 'Start Game',
     'start_tournament' => 'Start Tournament',
 
+    'tournament_history' => 'Tournament History',
+
     // Game modes
     'mode_career' => 'Career Mode',
     'mode_career_desc' => 'Manage a club through multiple seasons',
-    'mode_tournament' => 'World Cup',
+    'mode_tournament' => 'National team',
     'mode_tournament_desc' => 'Manage a national team in the World Cup',
     'mode_tournament_badge' => 'World Cup',
     'wc2026_name' => 'World Cup 2026',
@@ -448,4 +471,11 @@ return [
     // MVP
     'mvp' => 'MVP',
     'mvp_of_the_match' => 'MVP of the Match',
+
+    // xG Preview
+    'xg_preview' => 'xG Preview',
+    'match_preview' => 'Match Preview',
+    'xg_your_team' => 'Your xG',
+    'xg_opponent' => 'Opponent xG',
+    'xg_explanation' => 'Expected goals based on your lineup and tactical setup. Changes as you adjust tactics.',
 ];

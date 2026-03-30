@@ -21,7 +21,9 @@ class ShowWelcome
 
         $competition = Competition::find($game->competition_id);
 
-        return view('welcome-tutorial', [
+        $view = $game->isTournamentMode() ? 'welcome-tournament' : 'welcome-tutorial';
+
+        return view($view, [
             'game' => $game,
             'competition' => $competition,
         ]);

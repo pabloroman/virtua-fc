@@ -34,6 +34,10 @@ class ContractService
 
     private array $minimumWageCache = [];
 
+    public function __construct(
+        private readonly WageNegotiationEvaluator $wageNegotiationEvaluator,
+    ) {}
+
     /**
      * Wage percentage tiers based on market value.
      * Higher value players command a larger percentage of their value as wages.
@@ -57,13 +61,12 @@ class ContractService
      * Veteran: Legacy contracts from peak years - overpaid relative to current value.
      */
     private const AGE_WAGE_MODIFIERS = [
-        'academy' => 0.60,
-        'young' => 0.85,
+        'academy' => 0.25,
+        'young' => 0.65,
         'prime' => 1.0,
         'veteran' => 5.0,
     ];
 
-    private const FLEXIBILITY_RATIO = 0.18;
     private const AMBITION_PENALTY_PER_TIER_GAP = 0.12;
 
     /**
@@ -80,7 +83,7 @@ class ContractService
      * @param int|null $age Player's age (null defaults to prime-age calculation)
      * @return int Annual wage in cents
      */
-    public function calculateAnnualWage(int $marketValueCents, int $minimumWageCents, ?int $age = null): int
+    public function calculateAnnualWage(int $marketValueCents, int $minimumWageCents, ?int $age = null, bool $deterministic = false): int
     {
         // Get wage percentage based on market value tier
         $percentage = $this->getWagePercentage($marketValueCents);
@@ -92,12 +95,14 @@ class ContractService
         $ageModifier = $this->getAgeWageModifier($age);
         $baseWage = (int) ($baseWage * $ageModifier);
 
-        // Apply ±10% variance for squad diversity
-        $variance = 0.90 + (mt_rand(0, 2000) / 10000); // 0.90 to 1.10
-        $wage = (int) ($baseWage * $variance);
+        if (!$deterministic) {
+            // Apply ±10% variance for squad diversity
+            $variance = 0.90 + (mt_rand(0, 2000) / 10000); // 0.90 to 1.10
+            $baseWage = (int) ($baseWage * $variance);
+        }
 
         // Round to nearest €10k (1_000_000 cents)
-        $wage = (int) (round($wage / 1_000_000) * 1_000_000);
+        $wage = (int) (round($baseWage / 1_000_000) * 1_000_000);
 
         // Enforce minimum wage
         return max($wage, $minimumWageCents);
@@ -106,7 +111,7 @@ class ContractService
     /**
      * Get age-based wage modifier using PlayerAge tiers.
      *
-     * @return float Multiplier (0.60 for academy to 5.0 for veterans)
+     * @return float Multiplier (0.25 for academy to 5.0 for veterans)
      */
     private function getAgeWageModifier(?int $age): float
     {
@@ -190,76 +195,6 @@ class ContractService
             ->sum('annual_wage');
     }
 
-    /**
-     * Calculate monthly wage bill for a game's squad.
-     *
-     * @param Game $game
-     * @return int Monthly wages in cents
-     */
-    public function calculateMonthlyWageBill(Game $game): int
-    {
-        return (int) ($this->calculateAnnualWageBill($game) / 12);
-    }
-
-    /**
-     * Get highest paid players in a squad.
-     *
-     * @param Game $game
-     * @param int $limit
-     * @return Collection<GamePlayer>
-     */
-    public function getHighestEarners(Game $game, int $limit = 5): Collection
-    {
-        return GamePlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->orderByDesc('annual_wage')
-            ->limit($limit)
-            ->get();
-    }
-
-    /**
-     * Get players with contracts expiring in a given year.
-     *
-     * @param Game $game
-     * @param int $year
-     * @return Collection<GamePlayer>
-     */
-    public function getExpiringContracts(Game $game, int $year): Collection
-    {
-        return GamePlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->whereYear('contract_until', $year)
-            ->orderBy('annual_wage', 'desc')
-            ->get();
-    }
-
-    /**
-     * Get contracts expiring at end of current season.
-     *
-     * @param Game $game
-     * @return Collection<GamePlayer>
-     */
-    public function getContractsExpiringThisSeason(Game $game): Collection
-    {
-        // Assume season ends in June of the season year
-        $seasonYear = (int) $game->season;
-
-        return $this->getExpiringContracts($game, $seasonYear);
-    }
-
-    /**
-     * Group squad contracts by expiry year.
-     */
-    public function getContractsByExpiryYear(Game $game): Collection
-    {
-        return GamePlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->whereNotNull('contract_until')
-            ->orderBy('contract_until')
-            ->get()
-            ->groupBy(fn ($player) => $player->contract_until->year);
-    }
-
     // =========================================
     // CONTRACT RENEWAL
     // =========================================
@@ -296,8 +231,13 @@ class ContractService
         $currentWageWithPremium = (int) ($player->annual_wage * self::RENEWAL_PREMIUM);
         $demandedWage = max($currentWageWithPremium, $marketWage);
 
-        // Round to nearest 100K (cents)
-        $demandedWage = (int) (round($demandedWage / 10_000_000) * 10_000_000);
+        $demandedWage = $this->roundWage($demandedWage);
+
+        // Ensure the demand is at least above the current wage
+        if ($demandedWage <= $player->annual_wage) {
+            $unit = $demandedWage < 100_000_000 ? 1_000_000 : 10_000_000;
+            $demandedWage = $player->annual_wage + $unit;
+        }
 
         // Contract length based on age
         $contractYears = $this->calculateRenewalYears($player->age($player->game->current_date));
@@ -391,7 +331,7 @@ class ContractService
     {
         $seasonEndDate = $game->getSeasonEndDate();
 
-        return GamePlayer::with(['player', 'team', 'game', 'transferOffers', 'latestRenewalNegotiation', 'activeRenewalNegotiation'])
+        return GamePlayer::with(['player', 'team', 'game', 'transferOffers', 'latestRenewalNegotiation', 'activeRenewalNegotiation', 'activeLoan'])
             ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->get()
@@ -451,11 +391,11 @@ class ContractService
 
         // Age factor
         $age = $player->age($player->game->current_date);
-        if ($age >= 32) {
+        if ($age >= PlayerAge::PRIME_END) {
             $disposition += 0.12;
-        } elseif ($age >= 29) {
+        } elseif ($age >= PlayerAge::primePhaseAge(0.5)) {
             $disposition += 0.05;
-        } elseif ($age <= 23) {
+        } elseif ($age <= PlayerAge::YOUNG_END) {
             $disposition -= 0.08;
         }
 
@@ -508,8 +448,19 @@ class ContractService
      *
      * @return array{label: string, color: string}
      */
-    public function getMoodIndicator(float $disposition): array
+    public function getMoodIndicator(float $disposition, string $context = 'renewal'): array
     {
+        if ($context === 'transfer') {
+            if ($disposition >= 0.65) {
+                return ['label' => __('transfers.mood_willing_sign'), 'color' => 'green'];
+            }
+            if ($disposition >= 0.40) {
+                return ['label' => __('transfers.mood_open_sign'), 'color' => 'amber'];
+            }
+
+            return ['label' => __('transfers.mood_reluctant_sign'), 'color' => 'red'];
+        }
+
         if ($disposition >= 0.65) {
             return ['label' => __('transfers.mood_willing'), 'color' => 'green'];
         }
@@ -521,20 +472,13 @@ class ContractService
     }
 
     /**
-     * Calculate the years modifier based on offered vs preferred years.
+     * Adaptive wage rounding: €10K for wages under €1M, €100K otherwise.
      */
-    private function calculateYearsModifier(int $offeredYears, int $preferredYears): float
+    private function roundWage(int $wageCents): int
     {
-        $diff = $offeredYears - $preferredYears;
+        $unit = $wageCents < 100_000_000 ? 1_000_000 : 10_000_000;
 
-        return match ($diff) {
-            0 => 1.00,
-            1 => 1.08,
-            2 => 1.15,
-            -1 => 0.90,
-            -2 => 0.80,
-            default => $diff > 0 ? 1.15 : 0.80,
-        };
+        return (int) (round($wageCents / $unit) * $unit);
     }
 
     /**
@@ -579,24 +523,28 @@ class ContractService
         $player = $negotiation->gamePlayer;
         $disposition = $this->calculateDisposition($player, $negotiation->round);
 
-        // Calculate minimum acceptable wage
-        $flexibility = $disposition * self::FLEXIBILITY_RATIO;
-        $minimumAcceptable = (int) ($negotiation->player_demand * (1.0 - $flexibility));
-
-        // Salary floor: players don't take pay cuts
-        // Exception: veterans (33+) with high morale value stability over money
+        // Salary floor: players don't take pay cuts (exception: content veterans)
         $age = $player->age($player->game->current_date);
-        if (!($age >= 33 && $player->morale >= 70)) {
-            $minimumAcceptable = max($minimumAcceptable, $player->annual_wage);
-        }
+        $salaryFloor = ($age >= PlayerAge::PRIME_END && $player->morale >= 70)
+            ? null
+            : $player->annual_wage;
 
-        // Apply years modifier to effective offer
-        $yearsModifier = $this->calculateYearsModifier($negotiation->offered_years, $negotiation->preferred_years);
-        $effectiveOffer = (int) ($negotiation->user_offer * $yearsModifier);
+        $evaluation = $this->wageNegotiationEvaluator->evaluate(
+            offerWage: $negotiation->user_offer,
+            offeredYears: $negotiation->offered_years,
+            playerDemand: $negotiation->player_demand,
+            preferredYears: $negotiation->preferred_years,
+            disposition: $disposition,
+            round: $negotiation->round,
+            maxRounds: self::MAX_NEGOTIATION_ROUNDS,
+            salaryFloor: $salaryFloor,
+            previousCounter: $negotiation->counter_offer,
+            flexibilityRatio: 0.18,
+        );
 
         $updateData = ['disposition' => $disposition];
 
-        if ($effectiveOffer >= $minimumAcceptable) {
+        if ($evaluation['result'] === 'accepted') {
             $contractYears = $negotiation->offered_years;
             $updateData['status'] = RenewalNegotiation::STATUS_ACCEPTED;
             $updateData['contract_years'] = $contractYears;
@@ -607,15 +555,9 @@ class ContractService
             return 'accepted';
         }
 
-        // Check if close enough for a counter (>= 85% of minimum)
-        $counterThreshold = (int) ($minimumAcceptable * 0.85);
-
-        if ($effectiveOffer >= $counterThreshold && $negotiation->round < self::MAX_NEGOTIATION_ROUNDS) {
-            $counterWage = (int) (($minimumAcceptable + $negotiation->player_demand) / 2);
-            $counterWage = (int) (round($counterWage / 10_000_000) * 10_000_000);
-
+        if ($evaluation['result'] === 'countered') {
             $updateData['status'] = RenewalNegotiation::STATUS_PLAYER_COUNTERED;
-            $updateData['counter_offer'] = $counterWage;
+            $updateData['counter_offer'] = $evaluation['counterWage'];
 
             $negotiation->fill($updateData)->save();
 
@@ -736,18 +678,6 @@ class ContractService
             'result' => $result,
             'negotiation' => $negotiation,
         ];
-    }
-
-    /**
-     * Get players currently in negotiation (for display in expiring contracts).
-     */
-    public function getPlayersInNegotiation(Game $game): Collection
-    {
-        return GamePlayer::with(['player', 'game', 'transferOffers', 'activeRenewalNegotiation'])
-            ->where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->whereHas('activeRenewalNegotiation')
-            ->get();
     }
 
     /**
@@ -951,5 +881,412 @@ class ContractService
         $remainingYears = max(0, $game->current_date->floatDiffInYears($player->contract_until));
 
         return (int) ($player->annual_wage * $remainingYears * self::SEVERANCE_RATE);
+    }
+
+    // =========================================
+    // SHARED TERMS NEGOTIATION HELPERS
+    // =========================================
+
+    /**
+     * Apply a wage evaluation result to a TransferOffer's terms fields.
+     *
+     * @param  array  $evaluation  Result from WageNegotiationEvaluator::evaluate()
+     * @param  array  $extraStatusUpdates  Context-specific status updates keyed by result ('accepted'/'rejected')
+     * @return array{result: string, offer: TransferOffer}
+     */
+    private function applyTermsEvaluation(TransferOffer $offer, array $evaluation, array $extraStatusUpdates = []): array
+    {
+        if ($evaluation['result'] === 'accepted') {
+            $updates = ['terms_status' => 'accepted'];
+            if (isset($extraStatusUpdates['accepted'])) {
+                $updates = array_merge($updates, $extraStatusUpdates['accepted']);
+            }
+            $offer->update($updates);
+
+            return ['result' => 'accepted', 'offer' => $offer->fresh()];
+        }
+
+        if ($evaluation['result'] === 'countered') {
+            $offer->update([
+                'terms_status' => 'countered',
+                'wage_counter_offer' => $evaluation['counterWage'],
+            ]);
+
+            return ['result' => 'countered', 'offer' => $offer->fresh()];
+        }
+
+        // Rejected
+        $updates = [
+            'terms_status' => 'rejected',
+            'status' => TransferOffer::STATUS_REJECTED,
+            'resolved_at' => $offer->game->current_date,
+        ];
+        if (isset($extraStatusUpdates['rejected'])) {
+            $updates = array_merge($updates, $extraStatusUpdates['rejected']);
+        }
+        $offer->update($updates);
+
+        return ['result' => 'rejected', 'offer' => $offer->fresh()];
+    }
+
+    /**
+     * Accept a player's counter-offer on personal terms.
+     */
+    private function acceptTermsCounter(TransferOffer $offer, array $extraUpdates = []): TransferOffer
+    {
+        if ($offer->terms_status !== 'countered') {
+            throw new \InvalidArgumentException(__('messages.transfer_failed'));
+        }
+
+        $offer->update(array_merge([
+            'offered_wage' => $offer->wage_counter_offer,
+            'offered_years' => $offer->preferred_years,
+            'terms_status' => 'accepted',
+        ], $extraUpdates));
+
+        return $offer->fresh();
+    }
+
+    // =========================================
+    // TRANSFER PERSONAL TERMS NEGOTIATION
+    // =========================================
+
+    /**
+     * Calculate a player's disposition for a transfer (willingness to join).
+     * Different from renewal — considers team attractiveness, not appearances.
+     */
+    public function calculateTransferDisposition(GamePlayer $player, Game $buyingClubGame, int $round = 1): float
+    {
+        $disposition = 0.50;
+
+        // Morale (content player = open to moves)
+        $morale = $player->morale;
+        if ($morale >= 70) {
+            $disposition += 0.10;
+        } elseif ($morale < 40) {
+            $disposition -= 0.05;
+        }
+
+        // Age (older = wants a good final contract)
+        $age = $player->age($player->game->current_date);
+        if ($age >= PlayerAge::PRIME_END) {
+            $disposition += 0.10;
+        } elseif ($age <= PlayerAge::YOUNG_END) {
+            $disposition -= 0.05;
+        }
+
+        // Team reputation comparison
+        $buyingRep = $buyingClubGame->team?->reputation ?? 50;
+        $currentRep = $player->team?->reputation ?? 50;
+        if ($buyingRep > $currentRep + 10) {
+            $disposition += 0.15;
+        } elseif ($buyingRep >= $currentRep - 10) {
+            $disposition += 0.05;
+        } else {
+            $disposition -= 0.10;
+        }
+
+        // Round penalty
+        if ($round === 2) {
+            $disposition -= 0.05;
+        } elseif ($round >= 3) {
+            $disposition -= 0.10;
+        }
+
+        return max(0.10, min(0.95, $disposition));
+    }
+
+    /**
+     * Calculate the wage demand for a transfer (what player wants to join).
+     *
+     * @return array{wage: int, contractYears: int, formattedWage: string}
+     */
+    public function calculateTransferWageDemand(GamePlayer $player, ScoutingService $scoutingService): array
+    {
+        $wage = $scoutingService->calculateWageDemand($player);
+        $age = $player->age($player->game->current_date);
+
+        $contractYears = $age >= PlayerAge::PRIME_END ? 1 : ($age >= PlayerAge::primePhaseAge(0.6) ? 2 : 3);
+
+        return [
+            'wage' => $wage,
+            'contractYears' => $contractYears,
+            'formattedWage' => Money::format($wage),
+        ];
+    }
+
+    /**
+     * Check if a player is willing to negotiate personal terms.
+     * Rejects the offer if the player refuses based on club reputation gap.
+     *
+     * @return array{willing: bool, offer: TransferOffer}
+     */
+    public function checkPlayerWillingness(TransferOffer $offer, Game $buyingClubGame, ScoutingService $scoutingService): array
+    {
+        $player = $offer->gamePlayer;
+        $reputationModifier = $scoutingService->calculateReputationModifier($buyingClubGame->team, $player);
+
+        if ($reputationModifier < 1.0 && rand(1, 100) > (int) ($reputationModifier * 100)) {
+            $offer->update([
+                'terms_status' => 'rejected',
+                'status' => TransferOffer::STATUS_REJECTED,
+                'resolved_at' => $buyingClubGame->current_date,
+            ]);
+
+            return ['willing' => false, 'offer' => $offer->fresh()];
+        }
+
+        return ['willing' => true, 'offer' => $offer];
+    }
+
+    /**
+     * Synchronous personal terms negotiation for transfers.
+     * Initiates or continues negotiation, evaluates immediately.
+     *
+     * @return array{result: string, offer: TransferOffer}
+     */
+    public function negotiateTransferTermsSync(TransferOffer $offer, int $offerWageCents, int $offeredYears, Game $buyingClubGame, ScoutingService $scoutingService): array
+    {
+        $player = $offer->gamePlayer;
+
+        if ($offer->terms_status === 'countered') {
+            $offer->update([
+                'terms_round' => min(($offer->terms_round ?? 1) + 1, self::MAX_NEGOTIATION_ROUNDS),
+                'offered_wage' => $offerWageCents,
+                'offered_years' => $offeredYears,
+                'wage_counter_offer' => null,
+            ]);
+        } else {
+            $demand = $this->calculateTransferWageDemand($player, $scoutingService);
+            $offer->update([
+                'terms_status' => 'pending',
+                'terms_round' => 1,
+                'player_demand' => $demand['wage'],
+                'preferred_years' => $demand['contractYears'],
+                'offered_wage' => $offerWageCents,
+                'offered_years' => $offeredYears,
+            ]);
+        }
+
+        $disposition = $this->calculateTransferDisposition($player, $buyingClubGame, $offer->terms_round);
+        $offer->update(['terms_disposition' => $disposition]);
+
+        $evaluation = $this->wageNegotiationEvaluator->evaluate(
+            offerWage: $offer->offered_wage,
+            offeredYears: $offer->offered_years,
+            playerDemand: $offer->player_demand,
+            preferredYears: $offer->preferred_years,
+            disposition: $disposition,
+            round: $offer->terms_round,
+            maxRounds: self::MAX_NEGOTIATION_ROUNDS,
+            previousCounter: $offer->wage_counter_offer,
+        );
+
+        return $this->applyTermsEvaluation($offer, $evaluation);
+    }
+
+    /**
+     * Accept the player's counter-offer on personal terms.
+     */
+    public function acceptTransferTermsCounter(TransferOffer $offer): TransferOffer
+    {
+        return $this->acceptTermsCounter($offer);
+    }
+
+    // =========================================
+    // PRE-CONTRACT PERSONAL TERMS NEGOTIATION
+    // =========================================
+
+    /**
+     * Calculate a player's disposition for a pre-contract (willingness to sign).
+     * Higher base than transfer — player is running out of contract, more motivated.
+     */
+    public function calculatePreContractDisposition(GamePlayer $player, Game $buyingClubGame, int $round = 1, ?ScoutingService $scoutingService = null): float
+    {
+        $disposition = 0.60;
+
+        // Morale
+        $morale = $player->morale;
+        if ($morale >= 70) {
+            $disposition += 0.10;
+        } elseif ($morale < 40) {
+            $disposition -= 0.05;
+        }
+
+        // Age (older = wants security)
+        $age = $player->age($player->game->current_date);
+        if ($age >= 32) {
+            $disposition += 0.12;
+        } elseif ($age <= 23) {
+            $disposition -= 0.05;
+        }
+
+        // Round penalty
+        if ($round === 2) {
+            $disposition -= 0.05;
+        } elseif ($round >= 3) {
+            $disposition -= 0.10;
+        }
+
+        // Apply reputation gap modifier (same scale the scout willingness uses)
+        if ($scoutingService && $buyingClubGame->team) {
+            $reputationModifier = $scoutingService->calculateReputationModifier($buyingClubGame->team, $player);
+            $disposition *= $reputationModifier;
+        }
+
+        return max(0.10, min(0.95, $disposition));
+    }
+
+    /**
+     * Calculate the wage demand for a pre-contract signing.
+     *
+     * @return array{wage: int, contractYears: int, formattedWage: string}
+     */
+    public function calculatePreContractWageDemand(GamePlayer $player, ScoutingService $scoutingService): array
+    {
+        $wage = $scoutingService->calculatePreContractWageDemand($player);
+        $age = $player->age($player->game->current_date);
+
+        $contractYears = $age >= 33 ? 1 : ($age >= 30 ? 2 : 3);
+
+        return [
+            'wage' => $wage,
+            'contractYears' => $contractYears,
+            'formattedWage' => Money::format($wage),
+        ];
+    }
+
+    /**
+     * Synchronous personal terms negotiation for pre-contracts.
+     *
+     * @return array{result: string, offer: TransferOffer}
+     */
+    public function negotiatePreContractTermsSync(TransferOffer $offer, int $offerWageCents, int $offeredYears, Game $buyingClubGame, ScoutingService $scoutingService): array
+    {
+        $player = $offer->gamePlayer;
+
+        if ($offer->terms_status === 'countered') {
+            $offer->update([
+                'terms_round' => min(($offer->terms_round ?? 1) + 1, self::MAX_NEGOTIATION_ROUNDS),
+                'offered_wage' => $offerWageCents,
+                'offered_years' => $offeredYears,
+                'wage_counter_offer' => null,
+            ]);
+        } else {
+            $demand = $this->calculatePreContractWageDemand($player, $scoutingService);
+            $offer->update([
+                'terms_status' => 'pending',
+                'terms_round' => 1,
+                'player_demand' => $demand['wage'],
+                'preferred_years' => $demand['contractYears'],
+                'offered_wage' => $offerWageCents,
+                'offered_years' => $offeredYears,
+            ]);
+        }
+
+        $disposition = $this->calculatePreContractDisposition($player, $buyingClubGame, $offer->terms_round, $scoutingService);
+        $offer->update(['terms_disposition' => $disposition]);
+
+        $evaluation = $this->wageNegotiationEvaluator->evaluate(
+            offerWage: $offer->offered_wage,
+            offeredYears: $offer->offered_years,
+            playerDemand: $offer->player_demand,
+            preferredYears: $offer->preferred_years,
+            disposition: $disposition,
+            round: $offer->terms_round,
+            maxRounds: self::MAX_NEGOTIATION_ROUNDS,
+        );
+
+        return $this->applyTermsEvaluation($offer, $evaluation, [
+            'accepted' => ['status' => TransferOffer::STATUS_AGREED, 'resolved_at' => $offer->game->current_date],
+        ]);
+    }
+
+    /**
+     * Accept the player's counter-offer on pre-contract personal terms.
+     */
+    public function acceptPreContractTermsCounter(TransferOffer $offer): TransferOffer
+    {
+        return $this->acceptTermsCounter($offer, [
+            'status' => TransferOffer::STATUS_AGREED,
+            'resolved_at' => $offer->game->current_date,
+        ]);
+    }
+
+    // ── Free Agent Negotiation ──
+
+    /**
+     * Calculate a free agent's wage demand and preferred contract years.
+     */
+    public function calculateFreeAgentWageDemand(GamePlayer $player, ScoutingService $scoutingService): array
+    {
+        $wage = $scoutingService->calculateWageDemand($player);
+        $age = $player->age($player->game->current_date);
+        $contractYears = $age >= 32 ? 1 : 3;
+
+        return [
+            'wage' => $wage,
+            'formattedWage' => Money::format($wage),
+            'contractYears' => $contractYears,
+        ];
+    }
+
+    /**
+     * Negotiate personal terms with a free agent (synchronous, round-by-round).
+     *
+     * @return array{result: 'accepted'|'countered'|'rejected', offer: TransferOffer}
+     */
+    public function negotiateFreeAgentTermsSync(TransferOffer $offer, int $offerWageCents, int $offeredYears, Game $game, ScoutingService $scoutingService): array
+    {
+        $player = $offer->gamePlayer;
+
+        if ($offer->terms_status === 'countered') {
+            $offer->update([
+                'terms_round' => min(($offer->terms_round ?? 1) + 1, self::MAX_NEGOTIATION_ROUNDS),
+                'offered_wage' => $offerWageCents,
+                'offered_years' => $offeredYears,
+                'wage_counter_offer' => null,
+            ]);
+        } else {
+            $demand = $this->calculateFreeAgentWageDemand($player, $scoutingService);
+            $offer->update([
+                'terms_status' => 'pending',
+                'terms_round' => 1,
+                'player_demand' => $demand['wage'],
+                'preferred_years' => $demand['contractYears'],
+                'offered_wage' => $offerWageCents,
+                'offered_years' => $offeredYears,
+            ]);
+        }
+
+        // Evaluate using willingness as disposition
+        $willingness = $scoutingService->calculateWillingness($player, $game);
+        $disposition = $willingness['score'] / 100.0;
+        $offer->update(['terms_disposition' => $disposition]);
+
+        $evaluation = $this->wageNegotiationEvaluator->evaluate(
+            offerWage: $offerWageCents,
+            offeredYears: $offeredYears,
+            playerDemand: $offer->player_demand,
+            preferredYears: $offer->preferred_years,
+            disposition: $disposition,
+            round: $offer->terms_round,
+            maxRounds: self::MAX_NEGOTIATION_ROUNDS,
+        );
+
+        return $this->applyTermsEvaluation($offer, $evaluation, [
+            'accepted' => ['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date],
+        ]);
+    }
+
+    /**
+     * Accept the free agent's counter-offer on personal terms.
+     */
+    public function acceptFreeAgentTermsCounter(TransferOffer $offer): TransferOffer
+    {
+        return $this->acceptTermsCounter($offer, [
+            'status' => TransferOffer::STATUS_COMPLETED,
+            'resolved_at' => $offer->game->current_date,
+        ]);
     }
 }

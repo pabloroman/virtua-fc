@@ -126,6 +126,19 @@ class PlayerSuspension extends Model
     }
 
     /**
+     * Get all suspended player IDs for a competition (single query, for batch filtering).
+     *
+     * @return array<string>
+     */
+    public static function suspendedPlayerIdsForCompetition(string $competitionId): array
+    {
+        return self::where('competition_id', $competitionId)
+            ->where('matches_remaining', '>', 0)
+            ->pluck('game_player_id')
+            ->all();
+    }
+
+    /**
      * Check if a player is suspended in a specific competition.
      */
     public static function isSuspended(string $gamePlayerId, string $competitionId): bool

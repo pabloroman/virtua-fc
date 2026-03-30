@@ -18,6 +18,7 @@
         "vite": "7.1.11"
     },
     "dependencies": {
+        "@alpinejs/collapse": "^3.15.8",
         "@ryangjchandler/alpine-tooltip": "^2.0.1"
     }
 }

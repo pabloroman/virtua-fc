@@ -21,9 +21,11 @@ return [
 
     // Player injuries
     'player_injured_title' => ':player injured',
-    'player_injured_message' => ':player has :injury.',
-    'player_injured_message_matches' => ':player has :injury and will miss :matches match.|:player has :injury and will miss :matches matches.',
-    'player_injured_message_matches_approx' => ':player has :injury and will miss :matches+ match.|:player has :injury and will miss :matches+ matches.',
+    'player_injured_message' => ':player has suffered :injury :location.',
+    'player_injured_message_matches' => ':player has suffered :injury :location and will miss :matches match.|:player has suffered :injury :location and will miss :matches matches.',
+    'player_injured_message_matches_approx' => ':player has suffered :injury :location and will miss :matches+ match.|:player has suffered :injury :location and will miss :matches+ matches.',
+    'injury_location_match' => 'during the match',
+    'injury_location_training' => 'during training',
 
     // Player suspensions
     'player_suspended_title' => ':player suspended',
@@ -84,17 +86,6 @@ return [
     // Academy
     'academy_batch_title' => 'New academy prospects',
     'academy_batch_message' => ':count new players have arrived at the academy.',
-    'academy_evaluation_title' => 'Academy evaluation',
-    'academy_evaluation_message' => 'It\'s time to evaluate your academy players.',
-
-    // Transfer bid results
-    'bid_accepted_title' => 'Bid for :player accepted',
-    'bid_accepted' => ':team have accepted your bid for :player — transfer agreed for :fee.',
-    'bid_counter_offer_title' => 'Counter offer for :player',
-    'bid_counter_offer' => ':team want :asking for :player (you offered :offered).',
-    'bid_rejected_title' => 'Bid for :player rejected',
-    'bid_rejected' => ':team have rejected your bid for :player.',
-
     // Loan request results
     'loan_accepted_title' => 'Loan request for :player accepted',
     'loan_accepted' => ':team have accepted your loan request for :player.',
@@ -141,4 +132,11 @@ return [
     'reputation_change_title' => 'Club reputation changed',
     'reputation_improved' => 'Your club\'s reputation has grown to :tier. Sponsors, players and fans are taking notice.',
     'reputation_declined' => 'Your club\'s reputation has dropped to :tier. Time to rebuild and return to former glory.',
+
+    // Budget loan
+    'budget_loan_taken_title' => 'Budget loan secured',
+    'budget_loan_taken_message' => 'The club has secured a loan of :amount. Repayment of :repayment will be deducted from next season\'s budget.',
+    'budget_loan_repaid_title' => 'Budget loan repaid',
+    'budget_loan_repaid_message' => 'The budget loan has been repaid (:repayment with interest).',
+    'budget_loan_repaid_with_debt' => 'The budget loan repayment of :repayment exceeded available surplus. The shortfall has been carried as debt.',
 ];

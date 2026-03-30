@@ -47,8 +47,8 @@ class SeedWorldCupData extends Command
         $this->seedCompetition();
         $teamMapping = $this->seedTeams();
         $playerCount = $this->seedPlayers();
+        $this->generatePlayerTemplates();
 
-        $this->generateTeamMapping($teamMapping);
         $this->generateGroupsJson($teamMapping);
         $this->generateScheduleJson();
         $this->generateBracketJson();
@@ -218,22 +218,25 @@ class SeedWorldCupData extends Command
 
             if ($existing) {
                 $teamId = $existing->id;
-                $updateData = [];
+                $updateData = [
+                    'fifa_code' => $team['fifa_code'],
+                    'is_placeholder' => $team['is_placeholder'],
+                ];
                 if ($transfermarktId && !$existing->transfermarkt_id) {
                     $updateData['transfermarkt_id'] = $transfermarktId;
                 }
                 if (!$existing->colors) {
                     $updateData['colors'] = json_encode(TeamColors::get($team['team_name']));
                 }
-                if (!empty($updateData)) {
-                    DB::table('teams')->where('id', $teamId)->update($updateData);
-                }
+                DB::table('teams')->where('id', $teamId)->update($updateData);
             } else {
                 $teamId = Str::uuid()->toString();
                 DB::table('teams')->insert([
                     'id' => $teamId,
                     'transfermarkt_id' => $transfermarktId,
                     'type' => 'national',
+                    'fifa_code' => $team['fifa_code'],
+                    'is_placeholder' => $team['is_placeholder'],
                     'name' => $team['team_name'],
                     'country' => $countryCode ?? 'TBD',
                     'image' => null,
@@ -347,13 +350,13 @@ class SeedWorldCupData extends Command
     }
 
     /**
-     * Generate team_mapping.json (FIFA code → UUID bridge).
+     * Pre-compute game_player_templates for WC national team rosters.
      */
-    private function generateTeamMapping(array $teamMapping): void
+    private function generatePlayerTemplates(): void
     {
-        $path = base_path('data/2025/WC2026/team_mapping.json');
-        file_put_contents($path, json_encode($teamMapping, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-        $this->info("Generated: data/2025/WC2026/team_mapping.json (" . count($teamMapping) . " teams)");
+        $service = app(\App\Modules\Season\Services\GamePlayerTemplateService::class);
+        $count = $service->generateForWorldCup(self::SEASON);
+        $this->info("Generated {$count} player templates for World Cup rosters");
     }
 
     /**

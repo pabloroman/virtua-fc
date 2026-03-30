@@ -2,6 +2,8 @@
 
 namespace App\Modules\Player;
 
+use Carbon\Carbon;
+
 /**
  * Single source of truth for player age category boundaries.
  *
@@ -12,7 +14,7 @@ namespace App\Modules\Player;
 final class PlayerAge
 {
     // Career boundaries
-    public const ACADEMY_END = 20;        // 21+ must leave academy
+    public const ACADEMY_END = 21;        // 21+ must leave academy
 
     // Development categories
     public const YOUNG_END = 23;          // Growing phase ends
@@ -23,6 +25,26 @@ final class PlayerAge
     public const MIN_RETIREMENT_GK = 35;
     public const MAX_CAREER_OUTFIELD = 40;
     public const MAX_CAREER_GK = 42;
+
+    /**
+     * Convert an age threshold to a date-of-birth cutoff for database queries.
+     *
+     * Players born on or before the returned date are at least $age years old.
+     */
+    public static function dateOfBirthCutoff(int $age, Carbon $referenceDate): Carbon
+    {
+        return $referenceDate->copy()->subYears($age);
+    }
+
+    /**
+     * Linearly interpolate between YOUNG_END and PRIME_END.
+     *
+     * primePhaseAge(0.0) = YOUNG_END, primePhaseAge(1.0) = PRIME_END.
+     */
+    public static function primePhaseAge(float $t): int
+    {
+        return (int) round(self::YOUNG_END + $t * (self::PRIME_END - self::YOUNG_END));
+    }
 
     /**
      * Is the player in the growing phase?

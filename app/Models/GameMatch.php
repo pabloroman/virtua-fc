@@ -35,6 +35,10 @@ use Illuminate\Support\Facades\DB;
  * @property string|null $home_mentality
  * @property string|null $away_mentality
  * @property string|null $mvp_player_id
+ * @property array<array-key, mixed>|null $home_pitch_positions
+ * @property array<array-key, mixed>|null $away_pitch_positions
+ * @property array<array-key, mixed>|null $home_slot_assignments
+ * @property array<array-key, mixed>|null $away_slot_assignments
  * @property array<array-key, mixed>|null $substitutions
  * @property-read \App\Models\Team $awayTeam
  * @property-read \App\Models\GamePlayer|null $mvpPlayer
@@ -107,6 +111,10 @@ class GameMatch extends Model
         'away_pressing',
         'home_defensive_line',
         'away_defensive_line',
+        'home_pitch_positions',
+        'away_pitch_positions',
+        'home_slot_assignments',
+        'away_slot_assignments',
         'cup_tie_id',
         'is_extra_time',
         'home_score_et',
@@ -136,6 +144,10 @@ class GameMatch extends Model
         'away_pressing' => 'string',
         'home_defensive_line' => 'string',
         'away_defensive_line' => 'string',
+        'home_pitch_positions' => 'array',
+        'away_pitch_positions' => 'array',
+        'home_slot_assignments' => 'array',
+        'away_slot_assignments' => 'array',
         'played' => 'boolean',
         'is_extra_time' => 'boolean',
         'home_score_et' => 'integer',

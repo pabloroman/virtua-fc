@@ -7,6 +7,7 @@ use App\Models\Competition;
 use App\Models\Game;
 use App\Models\Team;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 final class SelectTeam
 {
@@ -16,29 +17,33 @@ final class SelectTeam
             return redirect()->route('dashboard')->withErrors(['limit' => __('messages.game_limit_reached')]);
         }
 
-        // Build country → tier → competition structure for career mode
-        $countries = [];
+        // Build country → tier → competition structure for career mode (cached — static reference data)
+        $countries = Cache::remember('career_mode_countries', 3600, function () use ($countryConfig) {
+            $countries = [];
 
-        foreach ($countryConfig->playableCountryCodes() as $code) {
-            $config = $countryConfig->get($code);
-            $tiers = [];
+            foreach ($countryConfig->playableCountryCodes() as $code) {
+                $config = $countryConfig->get($code);
+                $tiers = [];
 
-            foreach ($config['tiers'] as $tier => $tierConfig) {
-                $competition = Competition::with('teams')
-                    ->find($tierConfig['competition']);
+                foreach ($config['tiers'] as $tier => $tierConfig) {
+                    $competition = Competition::with('teams')
+                        ->find($tierConfig['competition']);
 
-                if ($competition) {
-                    $tiers[$tier] = $competition;
+                    if ($competition) {
+                        $tiers[$tier] = $competition;
+                    }
+                }
+
+                if (!empty($tiers)) {
+                    $countries[$code] = [
+                        'name' => $config['name'],
+                        'tiers' => $tiers,
+                    ];
                 }
             }
 
-            if (!empty($tiers)) {
-                $countries[$code] = [
-                    'name' => $config['name'],
-                    'tiers' => $tiers,
-                ];
-            }
-        }
+            return $countries;
+        });
 
         // Load World Cup teams for tournament mode
         $wcTeams = collect();
@@ -46,28 +51,19 @@ final class SelectTeam
         $hasTournamentMode = $request->user()->canPlayTournamentMode() && Competition::where('id', 'WC2026')->exists();
 
         if ($hasTournamentMode) {
-            $mappingPath = base_path('data/2025/WC2026/team_mapping.json');
+            $locale = app()->getLocale();
+            $allWcTeams = Cache::remember("wc2026_selectable_teams:{$locale}", 600, function () {
+                return Team::worldCupEligible()
+                    ->where('is_placeholder', false)
+                    ->get()
+                    ->sortBy('name') // PHP sort: name accessor applies i18n translation
+                    ->values();
+            });
 
-            if (file_exists($mappingPath)) {
-                $teamMapping = json_decode(file_get_contents($mappingPath), true);
-
-                $uuids = collect($teamMapping)
-                    ->reject(fn ($entry) => $entry['is_placeholder'] ?? false)
-                    ->pluck('uuid')
-                    ->all();
-
-                $allWcTeams = Team::whereIn('id', $uuids)->get()->sortBy('name')->values();
-
-                // Featured national teams shown as larger cards
-                $featuredCodes = ['ESP', 'ARG', 'BRA', 'ENG', 'FRA', 'GER', 'POR', 'NED', 'ITA'];
-                $featuredUuids = collect($teamMapping)
-                    ->only($featuredCodes)
-                    ->pluck('uuid')
-                    ->all();
-
-                $wcFeaturedTeams = $allWcTeams->filter(fn ($t) => in_array($t->id, $featuredUuids))->values();
-                $wcTeams = $allWcTeams->reject(fn ($t) => in_array($t->id, $featuredUuids))->values();
-            }
+            // Featured national teams shown as larger cards
+            $featuredCodes = ['ESP', 'ARG', 'BRA', 'ENG', 'FRA', 'GER', 'POR', 'NED'];
+            $wcFeaturedTeams = $allWcTeams->filter(fn ($t) => in_array($t->fifa_code, $featuredCodes))->values();
+            $wcTeams = $allWcTeams->reject(fn ($t) => in_array($t->fifa_code, $featuredCodes))->values();
         }
 
         return view('select-team', [

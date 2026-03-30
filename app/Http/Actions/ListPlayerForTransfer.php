@@ -22,6 +22,10 @@ class ListPlayerForTransfer
             ->where('team_id', $game->team_id)
             ->firstOrFail();
 
+        if ($player->isLoanedIn($game->team_id)) {
+            abort(403, 'Cannot list a loaned player for transfer.');
+        }
+
         // List the player
         $this->transferService->listPlayer($player);
 

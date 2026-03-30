@@ -124,10 +124,13 @@ class Game extends Model
         'pending_actions',
         'setup_completed_at',
         'season_transitioning_at',
+        'season_transition_step',
+        'season_transition_data',
         'career_actions_processing_at',
         'pending_finalization_match_id',
         'matchday_advancing_at',
         'matchday_advance_result',
+        'remaining_batches_processing_at',
         'deleting_at',
     ];
 
@@ -141,9 +144,12 @@ class Game extends Model
         'pending_actions' => 'array',
         'setup_completed_at' => 'datetime',
         'season_transitioning_at' => 'datetime',
+        'season_transition_step' => 'integer',
+        'season_transition_data' => 'json',
         'career_actions_processing_at' => 'datetime',
         'matchday_advancing_at' => 'datetime',
         'matchday_advance_result' => 'array',
+        'remaining_batches_processing_at' => 'datetime',
         'deleting_at' => 'datetime',
     ];
 
@@ -164,6 +170,27 @@ class Game extends Model
     public function isSetupComplete(): bool
     {
         return $this->setup_completed_at !== null;
+    }
+
+    /**
+     * Re-dispatch the appropriate setup job for this game's mode.
+     */
+    public function redispatchSetupJob(): void
+    {
+        if ($this->isTournamentMode()) {
+            \App\Modules\Season\Jobs\SetupTournamentGame::dispatch(
+                gameId: $this->id,
+                teamId: $this->team_id,
+            );
+        } else {
+            \App\Modules\Season\Jobs\SetupNewGame::dispatch(
+                gameId: $this->id,
+                teamId: $this->team_id,
+                competitionId: $this->competition_id,
+                season: $this->season,
+                gameMode: $this->game_mode ?? self::MODE_CAREER,
+            );
+        }
     }
 
     public function isTransitioningSeason(): bool
@@ -188,41 +215,50 @@ class Game extends Model
 
     /**
      * Clear a stuck matchday advance flag (> 2 minutes old).
-     * Returns true if the flag was cleared.
      */
     public function clearStuckMatchdayAdvance(): bool
     {
-        if (! $this->isAdvancingMatchday()) {
-            return false;
-        }
+        return $this->clearStuckFlag('matchday_advancing_at', ['matchday_advance_result']);
+    }
 
-        if (! $this->matchday_advancing_at->lt(now()->subMinutes(2))) {
-            return false;
-        }
+    public function isProcessingRemainingBatches(): bool
+    {
+        return $this->remaining_batches_processing_at !== null;
+    }
 
-        $this->update([
-            'matchday_advancing_at' => null,
-            'matchday_advance_result' => null,
-        ]);
-
-        return true;
+    /**
+     * Clear a stuck remaining batches flag (> 2 minutes old).
+     */
+    public function clearStuckRemainingBatches(): bool
+    {
+        return $this->clearStuckFlag('remaining_batches_processing_at');
     }
 
     /**
      * Clear a stuck career actions flag (> 2 minutes old).
-     * Returns true if the flag was cleared.
      */
     public function clearStuckCareerActions(): bool
     {
-        if (! $this->isProcessingCareerActions()) {
+        return $this->clearStuckFlag('career_actions_processing_at');
+    }
+
+    /**
+     * Clear a stuck processing flag if it's older than 2 minutes.
+     */
+    private function clearStuckFlag(string $column, array $extraColumns = []): bool
+    {
+        if ($this->$column === null) {
             return false;
         }
 
-        if (! $this->career_actions_processing_at->lt(now()->subMinutes(2))) {
+        if (! $this->$column->lt(now()->subMinutes(2))) {
             return false;
         }
 
-        $this->update(['career_actions_processing_at' => null]);
+        $this->update(array_merge(
+            [$column => null],
+            array_fill_keys($extraColumns, null),
+        ));
 
         return true;
     }
@@ -368,6 +404,22 @@ class Game extends Model
         return $this->hasOne(GameInvestment::class)->where('season', $this->season);
     }
 
+    /**
+     * Get the investment record from the previous season, if any.
+     */
+    public function previousSeasonInvestment(): ?GameInvestment
+    {
+        $previousSeason = (int) $this->season - 1;
+
+        if ($previousSeason < 1) {
+            return null;
+        }
+
+        return GameInvestment::where('game_id', $this->id)
+            ->where('season', $previousSeason)
+            ->first();
+    }
+
     public function loans(): HasMany
     {
         return $this->hasMany(Loan::class);
@@ -376,6 +428,16 @@ class Game extends Model
     public function activeLoans(): HasMany
     {
         return $this->hasMany(Loan::class)->where('status', Loan::STATUS_ACTIVE);
+    }
+
+    public function budgetLoans(): HasMany
+    {
+        return $this->hasMany(BudgetLoan::class);
+    }
+
+    public function activeBudgetLoan(): HasOne
+    {
+        return $this->hasOne(BudgetLoan::class)->where('status', BudgetLoan::STATUS_ACTIVE);
     }
 
     public function scoutReports(): HasMany
@@ -762,11 +824,11 @@ class Game extends Model
     // ==========================================
 
     /**
-     * Check if the game needs the welcome tutorial (career mode only).
+     * Check if the game needs the welcome tutorial.
      */
     public function needsWelcome(): bool
     {
-        return $this->isCareerMode() && ($this->needs_welcome ?? false);
+        return $this->needs_welcome ?? false;
     }
 
     /**

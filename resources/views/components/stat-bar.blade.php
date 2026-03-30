@@ -7,14 +7,14 @@
         $value >= 80 => 'bg-accent-green',
         $value >= 70 => 'bg-lime-500',
         $value >= 60 => 'bg-accent-gold',
-        default => 'bg-surface-600',
+        default => 'bg-accent-orange',
     };
 
     $textColor = match(true) {
         $value >= 80 => 'text-accent-green',
         $value >= 70 => 'text-lime-500',
         $value >= 60 => 'text-accent-gold',
-        default => 'text-text-secondary',
+        default => 'text-accent-orange',
     };
 @endphp
 

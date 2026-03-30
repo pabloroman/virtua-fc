@@ -16,19 +16,34 @@ return [
     |
     | The xG formula uses strength RATIOS rather than shares:
     |
-    |   homeXG = (strengthRatio ^ ratioExponent) × baseGoals + homeAdvantage
-    |   awayXG = (1/strengthRatio ^ ratioExponent) × baseGoals
+    |   homeXG = (strengthRatio ^ skill_dominance) × baseGoals + homeAdvantage
+    |   awayXG = (1/strengthRatio ^ skill_dominance) × baseGoals
     |
     | When teams are equal (ratio=1.0), both get base_goals (1.3 xG).
-    | When elite faces bottom (ratio ~1.30), elite gets ~2.20 xG vs ~0.77.
     | The stronger team is ALWAYS favored regardless of venue.
     |
     | Real-world La Liga average: ~2.5 goals per match
     |
+    | skill_dominance: Controls how much team quality determines match outcomes.
+    | Higher values widen the xG gap between strong and weak teams, meaning
+    | the better team wins more often. Lower values compress the gap, leading
+    | to more upsets and tighter leagues.
+    |
+    |   1.0 = linear, minimal skill advantage → frequent upsets (~60/40 skill/luck)
+    |   1.5 = moderate, noticeable quality gap → some upsets (~70/30)
+    |   2.3 = default, strong quality gap → realistic La Liga feel (~80/20)
+    |   3.0 = high, dominant teams rarely lose (~90/10)
+    |   4.0 = extreme, top teams almost never drop points (~95/5)
+    |
+    | Example with elite (str 0.72) vs bottom (str 0.55), ratio ≈ 1.31:
+    |   skill_dominance 1.0 → xG: 1.70 vs 0.99 (upset ~25% of the time)
+    |   skill_dominance 2.3 → xG: 2.36 vs 0.72 (upset ~10% of the time)
+    |   skill_dominance 4.0 → xG: 3.53 vs 0.48 (upset ~2% of the time)
+    |
     */
-    'base_goals' => 1.3,                // avg xG per team when evenly matched (~2.6 total)
-    'ratio_exponent' => 2.0,            // amplifies strength ratio into xG gap
-    'home_advantage_goals' => 0.15,     // fixed home xG bonus
+    'base_goals' => 1.2,                // avg xG per team when evenly matched (~2.6 total)
+    'skill_dominance' => 2.3,           // how much team quality widens the xG gap (see above)
+    'home_advantage_goals' => 0.20,     // fixed home xG bonus
 
     /*
     |--------------------------------------------------------------------------
@@ -54,16 +69,30 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Goal Distribution
+    | Goal Distribution (Dixon-Coles Model)
     |--------------------------------------------------------------------------
     |
-    | Controls the Poisson distribution for goal scoring.
+    | Goals are generated using the Dixon-Coles model, an improvement over
+    | independent Poisson that correlates home and away goals. This produces
+    | more realistic scoreline distributions, especially for low-scoring games.
+    |
+    | dixon_coles_rho: Correlation between home and away goals (-0.25 to 0.00)
+    |   -0.00 = no correction (equivalent to independent Poisson)
+    |   -0.10 = mild correction, slightly more draws
+    |   -0.13 = default, matches real football data (recommended)
+    |   -0.20 = strong correction, noticeably more 0-0 and 1-1 draws
+    |   -0.25 = extreme, very draw-heavy results
+    |
+    |   Negative rho increases 0-0 and 1-1 probabilities while slightly
+    |   decreasing 1-0 and 0-1 results. This matches the real-world pattern
+    |   where teams "cancel each other out" more often than Poisson predicts.
     |
     | max_goals_cap: Maximum goals a team can score (prevents 10-0 results)
     |   - 0 = no cap
     |   - 7 = realistic cap (historical max in La Liga is 9-0)
     |
     */
+    'dixon_coles_rho' => -0.13,         // goal correlation: 0 = independent Poisson, -0.13 = realistic
     'max_goals_cap' => 6,
 
     /*
@@ -78,8 +107,8 @@ return [
     'assist_chance' => 60.0,            // % chance a goal has an assist
     'yellow_cards_per_team' => 1.4,     // Average yellow cards per team per match
     'direct_red_chance' => 0.5,         // % chance of direct red card per team
-    'injury_chance' => 1.2,             // % chance of injury per player per match
-    'training_injury_chance' => 1.5,    // % chance of training injury per player per matchday (all squad members)
+    'injury_chance' => 1.0,             // % chance of injury per player per match
+    'training_injury_chance' => 1.05,   // % chance of training injury per player per matchday (all squad members)
 
     /*
     |--------------------------------------------------------------------------
@@ -125,8 +154,10 @@ return [
         '3-4-3'   => ['attack' => 1.12, 'defense' => 1.08],   // Very attacking, exposed
         '3-5-2'   => ['attack' => 1.00, 'defense' => 0.96],   // Midfield control
         '4-1-4-1' => ['attack' => 0.95, 'defense' => 0.92],   // Defensive midfield shield
-        '5-3-2'   => ['attack' => 0.88, 'defense' => 0.86],   // Defensive, hard to break
-        '5-4-1'   => ['attack' => 0.80, 'defense' => 0.82],   // Park the bus
+        '5-3-2'   => ['attack' => 0.88, 'defense' => 0.88],   // Defensive, hard to break
+        '5-4-1'   => ['attack' => 0.80, 'defense' => 0.86],   // Park the bus
+        '4-1-2-3' => ['attack' => 1.10, 'defense' => 1.02],   // Attacking with DM anchor
+        '4-3-2-1' => ['attack' => 1.05, 'defense' => 0.98],   // Creative, narrow attack
     ],
 
     /*
@@ -140,7 +171,7 @@ return [
     |
     */
     'mentalities' => [
-        'defensive' => ['own_goals' => 0.80, 'opponent_goals' => 0.70],
+        'defensive' => ['own_goals' => 0.80, 'opponent_goals' => 0.78],
         'balanced'  => ['own_goals' => 1.00, 'opponent_goals' => 1.00],
         'attacking' => ['own_goals' => 1.15, 'opponent_goals' => 1.10],
     ],
@@ -213,58 +244,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Between-Match Fatigue
-    |--------------------------------------------------------------------------
-    |
-    | Controls how fitness changes between matches. Uses nonlinear recovery:
-    | recovery is slow near fitness 100 and faster at lower fitness levels.
-    | This creates natural equilibria based on match frequency:
-    |
-    |   recoveryRate = base × physicalMod × (1 + scaling × (100 − fitness) / 100)
-    |
-    | Players who play every week stabilize around 88-93 fitness (depending
-    | on age and physical ability). Congested periods (2+ matches/week)
-    | push fitness into the 70s-80s, forcing squad rotation.
-    |
-    | Age modifies fitness loss per match (veterans tire more).
-    | Physical ability modifies recovery rate (fitter players recover faster).
-    |
-    */
-    'fatigue' => [
-        'base_recovery_per_day' => 1.5,         // recovery rate per day at fitness 100
-        'recovery_scaling' => 2.5,              // how much faster recovery is at low fitness
-        'max_recovery_days' => 5,               // cap recovery calculation at this many days
-
-        'fitness_loss' => [                     // [min, max] fitness loss per match by position
-            'Goalkeeper' => [3, 6],             // GKs barely tire
-            'Defender' => [9, 13],              // moderate
-            'Midfielder' => [10, 15],           // highest — midfielders run the most
-            'Forward' => [9, 13],               // moderate
-        ],
-
-        'age_loss_modifier' => [                // multiplier on fitness loss by age bracket
-            'young_threshold' => 24,
-            'peak_threshold' => 29,
-            'veteran_threshold' => 32,
-            'young' => 0.92,                    // < 24: less fatigue per match
-            'peak' => 1.0,                      // 24-28: baseline
-            'experienced' => 1.05,              // 29-31: slightly more
-            'veteran' => 1.12,                  // 32+: noticeably more
-        ],
-
-        'physical_recovery_modifier' => [       // multiplier on base recovery rate
-            'high_threshold' => 80,
-            'low_threshold' => 60,
-            'high' => 1.10,                     // physical >= 80: faster recovery
-            'medium' => 1.0,                    // 60-79: baseline
-            'low' => 0.90,                      // < 60: slower recovery
-        ],
-
-        'ai_rotation_threshold' => 80,          // AI benches players below this fitness
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
     | Possession Calculation (Cosmetic)
     |--------------------------------------------------------------------------
     |
@@ -328,6 +307,57 @@ return [
     'red_card_impact' => [
         'attack_modifier' => 0.80,      // 20% reduction in xG for the 10-man team
         'defense_modifier' => 1.15,     // 15% boost in opponent xG when facing 10 men
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Goalkeeper Quality
+    |--------------------------------------------------------------------------
+    |
+    | When a team has no natural goalkeeper in their lineup (e.g. an outfield
+    | player in the GK slot), the opponent's xG is increased. This reflects
+    | the massive defensive disadvantage of playing without a proper keeper.
+    |
+    */
+    'goalkeeper' => [
+        'missing_gk_xg_penalty' => 0.25,   // opponent xG multiplied by (1 + this) when no natural GK
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | AI Substitutions
+    |--------------------------------------------------------------------------
+    |
+    | Controls when and how AI teams make substitutions during a match.
+    |
+    | mode: Controls which matches get AI substitutions:
+    |   - "all"      — AI subs in all matches (AI-vs-AI and user-vs-AI)
+    |   - "ai_only"  — AI subs only in AI-vs-AI matches (not in user's live match)
+    |   - "off"      — AI subs disabled entirely
+    |
+    | Substitution timing uses a Poisson distribution: minute = min_minute + Poisson(λ).
+    | With λ=10 and min_minute=60, most subs cluster around minute 70 (range 60-85).
+    |
+    | The AI decides WHO to sub based on energy levels, yellow card risk, and
+    | bench quality. Match situation (score) biases replacements toward
+    | attackers (when losing) or defenders (when protecting a lead).
+    |
+    | Halftime substitutions happen independently with a fixed probability,
+    | representing tactical half-time adjustments.
+    |
+    */
+    'ai_substitutions' => [
+        'mode' => 'all',                     // 'all', 'ai_only', or 'off'
+        'min_subs' => 3,                    // minimum subs per match (target, not guaranteed)
+        'max_subs' => 5,                    // hard limit (matches SubstitutionService::MAX_SUBSTITUTIONS)
+        'poisson_lambda' => 10,             // Poisson λ for timing offset (peak at min_minute + λ)
+        'min_minute' => 60,                 // earliest normal sub minute
+        'max_minute' => 85,                 // latest sub minute
+        'halftime_sub_chance' => 25,        // % chance of making a sub at halftime (minute 46)
+        'window_grouping_minutes' => 3,     // subs within this many minutes = same window
+        'energy_threshold' => 40,           // energy below this = strong sub candidate
+        'yellow_card_weight' => 0.30,       // extra urgency score for yellowed players
+        'losing_attack_bias' => 0.70,       // probability of preferring attackers when losing
     ],
 
 ];

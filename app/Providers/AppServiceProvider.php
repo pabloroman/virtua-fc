@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Events\SeasonCompleted;
 use App\Events\SeasonStarted;
+use App\Events\TournamentCompleted;
 use App\Modules\Academy\Listeners\GenerateInitialAcademyBatch;
 use App\Modules\Match\Events\CupTieResolved;
 use App\Modules\Match\Events\MatchFinalized;
@@ -21,10 +22,14 @@ use App\Modules\Notification\Listeners\SendMatchNotifications;
 use App\Modules\Match\Listeners\UpdateGoalkeeperStats;
 use App\Modules\Match\Listeners\UpdateLeagueStandings;
 use App\Modules\Match\Listeners\UpdateManagerStats;
+use App\Modules\Season\Listeners\GrantCareerAccessToChampion;
 use App\Modules\Season\Listeners\RecordSeasonCompleted;
 use App\Modules\Season\Listeners\SimulateOtherLeagues;
 use App\Modules\Competition\Services\CompetitionHandlerResolver;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -60,6 +65,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        RateLimiter::for('game-creation', fn (Request $request) => Limit::perMinute(5)->by($request->user()?->id ?: $request->ip()));
+        RateLimiter::for('tournament-simulation', fn (Request $request) => Limit::perMinute(3)->by($request->user()?->id ?: $request->ip()));
+
         // Order matters: standings must be updated before competition progress notifications
         Event::listen(MatchFinalized::class, UpdateLeagueStandings::class);
         Event::listen(MatchFinalized::class, UpdateGoalkeeperStats::class);
@@ -75,5 +83,7 @@ class AppServiceProvider extends ServiceProvider
 
         Event::listen(SeasonCompleted::class, SimulateOtherLeagues::class);
         Event::listen(SeasonCompleted::class, RecordSeasonCompleted::class);
+
+        Event::listen(TournamentCompleted::class, GrantCareerAccessToChampion::class);
     }
 }

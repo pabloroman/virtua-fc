@@ -32,12 +32,9 @@ class ActivationEvent extends Model
     ];
 
     public const FUNNEL_ORDER_TOURNAMENT = [
-        self::EVENT_REGISTERED,
-        self::EVENT_EMAIL_VERIFIED,
         self::EVENT_GAME_CREATED,
         self::EVENT_SETUP_COMPLETED,
         self::EVENT_FIRST_MATCH_PLAYED,
-        self::EVENT_5_MATCHES_PLAYED,
         self::EVENT_TOURNAMENT_COMPLETED,
     ];
 

@@ -10,7 +10,6 @@
     $isHome = $match->home_team_id === $game->team_id;
     $opponent = $isHome ? $match->awayTeam : $match->homeTeam;
     $isNextMatch = $highlightNext && !$match->played && $nextMatchId !== null && $nextMatchId === $match->id;
-    $compColors = \App\Support\CompetitionColors::badge($match->competition);
     $compDot = \App\Support\CompetitionColors::dot($match->competition);
 
     // Calculate result styling
@@ -32,19 +31,31 @@
     <div class="w-10 shrink-0 text-center">
         <div class="text-[11px] font-medium text-text-body leading-tight">{{ $match->scheduled_date->locale(app()->getLocale())->translatedFormat('d') }}</div>
         <div class="text-[9px] text-text-faint uppercase">{{ $match->scheduled_date->locale(app()->getLocale())->translatedFormat('M') }}</div>
-        <div class="w-3 h-0.5 rounded-full {{ $compDot }} mx-auto mt-1"></div>
+        @unless($game->isTournamentMode())
+            <div class="w-3 h-0.5 rounded-full {{ $compDot }} mx-auto mt-1"></div>
+        @endunless
     </div>
 
-    {{-- Home/Away indicator --}}
-    <span class="inline-flex px-2 py-0.5 text-[9px] font-semibold rounded-full shrink-0 uppercase tracking-wider {{ $isHome ? 'bg-accent-green/10 text-accent-green' : 'bg-surface-600 text-text-secondary' }}">
-        {{ $isHome ? __('game.home_abbr') : __('game.away_abbr') }}
-    </span>
+    {{-- Home/Away indicator (hidden for neutral-venue competitions like World Cup) --}}
+    @if($match->competition_id !== 'WC2026')
+        <span class="inline-flex px-2 py-0.5 text-[9px] font-semibold rounded-full shrink-0 uppercase tracking-wider {{ $isHome ? 'bg-accent-green/10 text-accent-green' : 'bg-surface-600 text-text-secondary' }}">
+            {{ $isHome ? __('game.home_abbr') : __('game.away_abbr') }}
+        </span>
+    @endif
 
     {{-- Opponent --}}
     <div class="flex-1 flex items-center gap-2 min-w-0">
         <x-team-crest :team="$opponent" class="w-5 h-5 shrink-0" />
         <span class="text-xs truncate {{ $isNextMatch ? 'text-text-primary font-medium' : 'text-text-body' }}">{{ $opponent->name }}</span>
     </div>
+
+    {{-- Competition pill: short name on mobile, full on desktop (hidden in tournament mode) --}}
+    @unless($game->isTournamentMode())
+        <div class="shrink-0">
+            <span class="md:hidden"><x-competition-pill :competition="$match->competition" :short="true" class="scale-90 origin-right" /></span>
+            <span class="hidden md:inline"><x-competition-pill :competition="$match->competition" class="scale-90 origin-right" /></span>
+        </div>
+    @endunless
 
     {{-- Result / Status --}}
     <div class="shrink-0 text-right">
@@ -55,8 +66,6 @@
             </div>
         @elseif($isNextMatch)
             <span class="px-1.5 py-0.5 rounded-full bg-accent-blue/10 text-[9px] font-semibold text-accent-blue uppercase tracking-wider">{{ __('game.next') }}</span>
-        @else
-            <span class="text-[11px] text-text-faint">-</span>
         @endif
     </div>
 </div>

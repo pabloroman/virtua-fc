@@ -4,6 +4,7 @@ namespace App\Http\Views;
 
 use App\Modules\Competition\Services\CalendarService;
 use App\Modules\Match\DTOs\MatchdayAdvanceResult;
+use App\Modules\Match\Services\MatchNarrativeService;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Season\Jobs\ProcessSeasonTransition;
 use App\Models\CupTie;
@@ -15,6 +16,7 @@ class ShowGame
 {
     public function __construct(
         private readonly CalendarService $calendarService,
+        private readonly MatchNarrativeService $narrativeService,
         private readonly NotificationService $notificationService,
     ) {}
 
@@ -37,11 +39,24 @@ class ShowGame
             // Re-dispatch if stuck for > 2 minutes
             if ($game->season_transitioning_at->lt(now()->subMinutes(2))) {
                 ProcessSeasonTransition::dispatch($game->id);
+                $game->update(['season_transitioning_at' => now()]);
             }
+            $isTournament = $game->isTournamentMode();
             return view('game-loading', [
                 'game' => $game,
-                'title' => __('game.preparing_season'),
-                'message' => __('game.setup_loading_message'),
+                'title' => $isTournament ? __('game.preparing_tournament') : __('game.preparing_season'),
+                'message' => $isTournament ? __('game.setup_tournament_loading_message') : __('game.setup_loading_message'),
+                'showCrest' => true,
+            ]);
+        }
+
+        // Show loading screen while remaining batches are processing in background
+        $game->clearStuckRemainingBatches();
+        if ($game->isProcessingRemainingBatches()) {
+            return view('game-loading', [
+                'game' => $game,
+                'title' => __('game.simulating_matches'),
+                'message' => __('game.simulating_matches_message'),
                 'showCrest' => true,
             ]);
         }
@@ -128,9 +143,26 @@ class ShowGame
             'leagueStandings' => $leagueStandings,
         ];
 
+        // Generate pre-match narrative snippets (tournament mode only for now)
+        if ($nextMatch && $game->isTournamentMode()) {
+            $isHome = $nextMatch->home_team_id === $game->team_id;
+            $viewData['narratives'] = $this->narrativeService->generate(
+                $game,
+                $nextMatch,
+                $isHome ? $viewData['homeStanding'] : $viewData['awayStanding'],
+                $isHome ? $viewData['awayStanding'] : $viewData['homeStanding'],
+                $viewData['playerForm'],
+                $viewData['opponentForm'],
+            );
+        }
+
         // Add knockout progress for tournament mode
         if ($game->isTournamentMode()) {
             $viewData['tournamentTie'] = $this->getPlayerTournamentTie($game);
+
+            if ($nextMatch?->cup_tie_id) {
+                $viewData['nextRoundPreview'] = $this->getNextRoundPreview($nextMatch->cupTie);
+            }
         }
 
         // Add pre-season data
@@ -240,5 +272,46 @@ class ShowGame
                 ->orWhere('away_team_id', $game->team_id))
             ->orderByDesc('round_number')
             ->first();
+    }
+
+    /**
+     * Find the opposite tie in the bracket that determines the next-round opponent.
+     *
+     * Ties within a round are paired by bracket_position order: indices 0↔1, 2↔3, etc.
+     * Returns an array with the opposite tie and, if resolved, the actual opponent team.
+     *
+     * @return array{tie: CupTie, opponent: ?Team}|null
+     */
+    private function getNextRoundPreview(CupTie $currentTie): ?array
+    {
+        $tiesInRound = CupTie::with(['homeTeam', 'awayTeam', 'winner'])
+            ->where('game_id', $currentTie->game_id)
+            ->where('competition_id', $currentTie->competition_id)
+            ->where('round_number', $currentTie->round_number)
+            ->orderBy('bracket_position')
+            ->orderBy('id')
+            ->get();
+
+        if ($tiesInRound->count() < 2) {
+            return null; // Final — no next round
+        }
+
+        $index = $tiesInRound->search(fn ($t) => $t->id === $currentTie->id);
+
+        if ($index === false) {
+            return null;
+        }
+
+        $oppositeIndex = ($index % 2 === 0) ? $index + 1 : $index - 1;
+        $oppositeTie = $tiesInRound->get($oppositeIndex);
+
+        if (! $oppositeTie) {
+            return null;
+        }
+
+        return [
+            'tie' => $oppositeTie,
+            'opponent' => $oppositeTie->completed ? $oppositeTie->winner : null,
+        ];
     }
 }

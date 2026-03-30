@@ -43,7 +43,6 @@
       "id": "495666",
       "marketValue": "€80.00m",
       "name": "William Saliba",
-      "number": "17",
       "position": "Centre-Back"
     },
     {
@@ -86,6 +85,7 @@
       "id": "585949",
       "marketValue": "€26.00m",
       "name": "Pierre Kalulu",
+      "number": "5",
       "position": "Centre-Back"
     },
     {
@@ -149,7 +149,6 @@
       "id": "411975",
       "marketValue": "€60.00m",
       "name": "Jules Koundé",
-      "number": "5",
       "position": "Right-Back"
     },
     {
@@ -164,6 +163,16 @@
       "position": "Right-Back"
     },
     {
+      "contract": "Mar 25, 2022",
+      "dateOfBirth": "Sep 25, 1992",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "175639",
+      "marketValue": "€6.00m",
+      "name": "Jonathan Clauss",
+      "position": "Right-Back"
+    },
+    {
       "contract": "Sep 1, 2021",
       "dateOfBirth": "Jan 27, 2000",
       "foot": "right",
@@ -171,6 +180,18 @@
       "id": "413112",
       "marketValue": "€80.00m",
       "name": "Aurélien Tchouaméni",
+      "number": "8",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Mar 25, 2016",
+      "dateOfBirth": "Mar 29, 1991",
+      "foot": "right",
+      "height": "1,68m",
+      "id": "225083",
+      "marketValue": "€7.00m",
+      "name": "N'Golo Kanté",
+      "number": "13",
       "position": "Defensive Midfield"
     },
     {
@@ -181,6 +202,7 @@
       "id": "640428",
       "marketValue": "€80.00m",
       "name": "Eduardo Camavinga",
+      "number": "6",
       "position": "Central Midfield"
     },
     {
@@ -222,7 +244,6 @@
       "id": "624690",
       "marketValue": "€26.00m",
       "name": "Manu Koné",
-      "number": "8",
       "position": "Central Midfield"
     },
     {
@@ -233,6 +254,7 @@
       "id": "182913",
       "marketValue": "€25.00m",
       "name": "Adrien Rabiot",
+      "number": "14",
       "position": "Central Midfield"
     },
     {
@@ -243,6 +265,7 @@
       "id": "607223",
       "marketValue": "€30.00m",
       "name": "Rayan Cherki",
+      "number": "24",
       "position": "Attacking Midfield"
     },
     {
@@ -253,7 +276,6 @@
       "id": "708265",
       "marketValue": "€65.00m",
       "name": "Bradley Barcola",
-      "number": "20",
       "position": "Left Winger"
     },
     {
@@ -285,6 +307,7 @@
       "id": "914562",
       "marketValue": "€40.00m",
       "name": "Désiré Doué",
+      "number": "20",
       "position": "Right Winger"
     },
     {
@@ -295,7 +318,17 @@
       "id": "745200",
       "marketValue": "€40.00m",
       "name": "Maghnes Akliouche",
-      "number": "12",
+      "number": "25",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 2, 2017",
+      "dateOfBirth": "Jan 26, 1993",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "184892",
+      "marketValue": "€5.00m",
+      "name": "Florian Thauvin",
       "position": "Right Winger"
     },
     {
@@ -317,6 +350,7 @@
       "id": "318528",
       "marketValue": "€75.00m",
       "name": "Marcus Thuram",
+      "number": "9",
       "position": "Centre-Forward"
     },
     {
@@ -327,6 +361,7 @@
       "id": "288230",
       "marketValue": "€55.00m",
       "name": "Ousmane Dembélé",
+      "number": "7",
       "position": "Centre-Forward"
     },
     {
@@ -337,7 +372,6 @@
       "id": "344381",
       "marketValue": "€50.00m",
       "name": "Christopher Nkunku",
-      "number": "18",
       "position": "Centre-Forward"
     },
     {
@@ -348,7 +382,7 @@
       "id": "709726",
       "marketValue": "€40.00m",
       "name": "Hugo Ekitiké",
-      "number": "9",
+      "number": "22",
       "position": "Centre-Forward"
     },
     {
@@ -359,6 +393,7 @@
       "id": "487969",
       "marketValue": "€30.00m",
       "name": "Randal Kolo Muani",
+      "number": "12",
       "position": "Centre-Forward"
     },
     {
@@ -369,7 +404,6 @@
       "id": "420002",
       "marketValue": "€20.00m",
       "name": "Jean-Philippe Mateta",
-      "number": "13",
       "position": "Centre-Forward"
     }
   ],

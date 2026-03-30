@@ -19,15 +19,8 @@ return [
     'wage_budget_exceeded' => 'Fichar a este jugador superaría tu presupuesto salarial.',
 
     // Bid/loan submission confirmations
-    'bid_submitted' => 'Tu oferta por :player ha sido enviada. Recibirás respuesta próximamente.',
     'bid_already_exists' => 'Ya tienes una oferta pendiente por este jugador.',
     'loan_request_submitted' => 'Tu solicitud de cesión por :player ha sido enviada. Recibirás respuesta próximamente.',
-
-    // Counter offer
-    'counter_offer_accepted' => '¡Contraoferta aceptada! :player se unirá cuando abra la ventana de :window.',
-    'counter_offer_accepted_immediate' => '¡Fichaje completado! :player se ha unido a tu plantilla.',
-    'counter_offer_rejected' => 'Has rechazado la contraoferta por :player.',
-    'counter_offer_expired' => 'Esta oferta ya no está disponible.',
 
     // Loan messages
     'loan_agreed' => ':message La cesión comenzará cuando abra la ventana de :window.',
@@ -89,11 +82,8 @@ return [
 
     // Academy
     'academy_player_promoted' => ':player ha sido subido al primer equipo.',
-    'academy_evaluation_required' => 'Debes evaluar a los canteranos antes de continuar.',
-    'academy_evaluation_complete' => 'Evaluación de cantera completada.',
     'academy_player_dismissed' => ':player ha sido despedido de la cantera.',
     'academy_player_loaned' => ':player ha sido cedido.',
-    'academy_over_capacity' => 'La cantera supera la capacidad. Debes liberar :excess plaza(s).',
     'academy_must_decide_21' => 'Los jugadores de 21+ años deben ser subidos o despedidos.',
 
     // Player release messages
@@ -130,4 +120,10 @@ return [
     'game_limit_reached' => 'Has alcanzado el límite máximo de 3 partidas. Elimina una para crear otra nueva.',
     'career_mode_requires_invite' => '¡El modo carrera requiere una invitación. Juega el Mundial gratis!',
     'tournament_mode_requires_access' => 'El modo torneo requiere acceso. Contacta con un administrador para empezar.',
+
+    // Budget loan messages
+    'budget_loan_approved' => 'Préstamo de :amount aprobado y añadido a tu presupuesto de fichajes.',
+    'loan_not_available' => 'Un préstamo presupuestario no está disponible ahora mismo.',
+    'loan_below_minimum' => 'El importe del préstamo está por debajo del mínimo.',
+    'loan_exceeds_maximum' => 'El importe del préstamo supera el máximo permitido.',
 ];

@@ -45,6 +45,9 @@ class WorldCupKnockoutGenerator
     private ?array $bracket = null;
     private ?array $thirdPlaceTable = null;
 
+    /** @var array<string, \Illuminate\Support\Collection<int, CupTie>>  gameId:competitionId → ties */
+    private array $completedTiesCache = [];
+
     /**
      * Get the first knockout round based on how many teams qualified.
      */
@@ -319,14 +322,24 @@ class WorldCupKnockoutGenerator
 
     /**
      * Find a completed CupTie by its bracket_position (FIFA match number).
+     *
+     * Uses a per-game+competition cache to avoid N+1 queries when resolving
+     * multiple bracket references in the same round.
      */
     private function findTieByBracketPosition(string $gameId, string $competitionId, int $matchNumber): ?CupTie
     {
-        return CupTie::where('game_id', $gameId)
-            ->where('competition_id', $competitionId)
-            ->where('bracket_position', $matchNumber)
-            ->where('completed', true)
-            ->first();
+        $cacheKey = $gameId . ':' . $competitionId;
+
+        if (! isset($this->completedTiesCache[$cacheKey])) {
+            $this->completedTiesCache[$cacheKey] = CupTie::where('game_id', $gameId)
+                ->where('competition_id', $competitionId)
+                ->where('completed', true)
+                ->whereNotNull('bracket_position')
+                ->get()
+                ->keyBy('bracket_position');
+        }
+
+        return $this->completedTiesCache[$cacheKey]->get($matchNumber);
     }
 
     /**

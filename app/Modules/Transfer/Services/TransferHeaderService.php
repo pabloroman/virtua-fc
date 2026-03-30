@@ -17,7 +17,6 @@ class TransferHeaderService
      *     windowCountdown: array|null,
      *     totalWageBill: int,
      *     salidaBadgeCount: int,
-     *     counterOfferCount: int,
      * }
      */
     public function getHeaderData(Game $game): array
@@ -28,7 +27,6 @@ class TransferHeaderService
             'windowCountdown' => $game->getWindowCountdown(),
             'totalWageBill' => $this->getTotalWageBill($game),
             'salidaBadgeCount' => $this->getSalidaBadgeCount($game),
-            'counterOfferCount' => $this->getCounterOfferCount($game),
         ];
     }
 
@@ -55,13 +53,4 @@ class TransferHeaderService
             ->count();
     }
 
-    private function getCounterOfferCount(Game $game): int
-    {
-        return TransferOffer::where('game_id', $game->id)
-            ->where('status', TransferOffer::STATUS_PENDING)
-            ->where('direction', TransferOffer::DIRECTION_INCOMING)
-            ->whereNotNull('asking_price')
-            ->whereColumn('asking_price', '>', 'transfer_fee')
-            ->count();
-    }
 }

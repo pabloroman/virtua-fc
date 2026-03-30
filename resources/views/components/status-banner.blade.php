@@ -15,19 +15,19 @@
     $colors = $colorMap[$color] ?? $colorMap['blue'];
 @endphp
 
-<div {{ $attributes->merge(['class' => "p-4 border rounded-xl flex flex-col md:flex-row md:items-center md:justify-between gap-3 {$colors['banner']}"]) }}>
-    <div class="flex items-start gap-3">
+<div {{ $attributes->merge(['class' => "p-3 md:p-4 border rounded-xl flex items-center justify-between gap-2 md:gap-3 {$colors['banner']}"]) }}>
+    <div class="flex items-center gap-2 md:gap-3 min-w-0">
         @if($icon)
-        <div class="w-10 h-10 rounded-full {{ $colors['icon-bg'] }} flex items-center justify-center shrink-0">
+        <div class="w-8 h-8 md:w-10 md:h-10 rounded-full {{ $colors['icon-bg'] }} flex items-center justify-center shrink-0 [&>svg]:w-4 [&>svg]:h-4 md:[&>svg]:w-5 md:[&>svg]:h-5">
             {{ $icon }}
         </div>
         @endif
         <div class="flex flex-col justify-center">
             @if($title)
-            <h4 class="font-semibold text-sm">{{ $title }}</h4>
+            <h4 class="font-semibold text-xs md:text-sm">{{ $title }}</h4>
             @endif
             @if($description)
-            <p class="text-sm mt-0.5 opacity-80">{{ $description }}</p>
+            <p class="text-xs md:text-sm mt-0.5 opacity-80">{{ $description }}</p>
             @endif
         </div>
     </div>

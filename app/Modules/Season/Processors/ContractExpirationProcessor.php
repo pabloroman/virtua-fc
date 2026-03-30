@@ -7,6 +7,7 @@ use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Transfer\Services\ContractService;
 use App\Models\Game;
 use App\Models\GamePlayer;
+use App\Models\TransferOffer;
 use Carbon\Carbon;
 
 /**
@@ -26,7 +27,7 @@ class ContractExpirationProcessor implements SeasonProcessor
 
     public function priority(): int
     {
-        return 5; // Before ContractRenewalProcessor (6)
+        return 4; // Before PreContractTransferProcessor (5) and ContractRenewalProcessor (6)
     }
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
@@ -65,8 +66,24 @@ class ContractExpirationProcessor implements SeasonProcessor
         $autoRenewedIds = [];
         $newContractEnd = Carbon::createFromDate($seasonYear + 3, 6, 30);
 
-        // Process user's team first (always release)
+        // Players with agreed outgoing pre-contracts will be handled by
+        // PreContractTransferProcessor — do not delete them here.
+        $preContractPlayerIds = TransferOffer::where('game_id', $game->id)
+            ->where('status', TransferOffer::STATUS_AGREED)
+            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
+            ->where(function ($query) {
+                $query->whereNull('direction')
+                    ->orWhere('direction', '!=', TransferOffer::DIRECTION_INCOMING);
+            })
+            ->pluck('game_player_id')
+            ->all();
+
+        // Process user's team first (always release, except pre-contract departures)
         foreach ($expiredPlayers->where('team_id', $game->team_id) as $player) {
+            if (in_array($player->id, $preContractPlayerIds)) {
+                continue;
+            }
+
             $releasedPlayers[] = [
                 'playerId' => $player->id,
                 'playerName' => $player->name,

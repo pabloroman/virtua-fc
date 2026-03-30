@@ -17,6 +17,7 @@
     </x-slot>
 
     <div class="max-w-7xl mx-auto px-4 pb-8" x-data="{ tab: '{{ $groupStageComplete && $knockoutTies->isNotEmpty() ? 'knockout' : 'groups' }}' }">
+        @unless($game->isTournamentMode())
         <div class="mt-6 mb-6">
             <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
                 <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">{{ __($competition->name) }}</h2>
@@ -33,6 +34,7 @@
                 @endif
             </div>
         </div>
+        @endunless
 
         {{-- Tab Navigation --}}
         <div class="flex gap-1 border-b border-border-strong mb-6 overflow-x-auto scrollbar-hide">
@@ -77,14 +79,12 @@
         <div x-show="tab === 'knockout'" x-cloak>
             @if(!$groupStageComplete)
                 <div class="text-center py-12">
-                    <div class="text-4xl mb-3">&#9917;</div>
-                    <p class="text-text-muted text-sm">{{ __('game.knockout_not_started') }}</p>
-                    <p class="text-text-secondary text-xs mt-1">{{ __('game.knockout_not_started_desc') }}</p>
+                    <p class="text-text-secondary text-sm">{{ __('game.knockout_not_started') }}</p>
+                    <p class="text-text-muted text-xs mt-1">{{ __('game.knockout_not_started_desc') }}</p>
                 </div>
             @elseif($knockoutTies->isEmpty())
                 <div class="text-center py-12">
-                    <div class="text-4xl mb-3">&#127942;</div>
-                    <p class="text-text-muted text-sm">{{ __('game.knockout_generating') }}</p>
+                    <p class="text-text-secondary text-sm">{{ __('game.knockout_generating') }}</p>
                 </div>
             @else
                 {{-- Player's Current Tie Highlight --}}

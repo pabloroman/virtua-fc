@@ -3,17 +3,17 @@
 namespace App\Modules\Transfer\Services;
 
 use App\Models\ClubProfile;
-use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GamePlayer;
-use App\Models\Loan;
 use App\Models\ScoutReport;
 use App\Models\ShortlistedPlayer;
 use App\Models\Team;
 use App\Models\TeamReputation;
 use App\Models\TransferOffer;
 use App\Support\Money;
+use App\Support\PositionMapper;
 use Illuminate\Support\Collection;
+use App\Modules\Player\PlayerAge;
 use App\Modules\Player\Services\PlayerTierService;
 use App\Modules\Transfer\Services\ContractService;
 
@@ -113,27 +113,6 @@ class ScoutingService
     // SCOUT SEARCH
     // =========================================
 
-    /**
-     * Map filter position values to actual position strings.
-     */
-    private const POSITION_MAP = [
-        'GK' => ['Goalkeeper'],
-        'CB' => ['Centre-Back'],
-        'LB' => ['Left-Back'],
-        'RB' => ['Right-Back'],
-        'DM' => ['Defensive Midfield'],
-        'CM' => ['Central Midfield'],
-        'AM' => ['Attacking Midfield'],
-        'LW' => ['Left Winger'],
-        'RW' => ['Right Winger'],
-        'CF' => ['Centre-Forward'],
-        'SS' => ['Second Striker'],
-        'LM' => ['Left Midfield'],
-        'RM' => ['Right Midfield'],
-        'any_defender' => ['Centre-Back', 'Left-Back', 'Right-Back'],
-        'any_midfielder' => ['Defensive Midfield', 'Central Midfield', 'Attacking Midfield', 'Left Midfield', 'Right Midfield'],
-        'any_forward' => ['Left Winger', 'Right Winger', 'Centre-Forward', 'Second Striker'],
-    ];
 
     /**
      * Get the currently searching scout report for a game.
@@ -190,7 +169,7 @@ class ScoutingService
      * Calculate how many weeks a search takes.
      * Higher scouting tier = faster searches.
      */
-    public function calculateSearchWeeks(array $filters, ?Game $game = null): int
+    private function calculateSearchWeeks(array $filters, ?Game $game = null): int
     {
         $position = $filters['position'] ?? '';
         $scope = $filters['scope'] ?? ['domestic', 'international'];
@@ -243,122 +222,19 @@ class ScoutingService
     /**
      * Generate scout results for a completed search.
      */
-    public function generateResults(Game $game, ScoutReport $report): void
+    private function generateResults(Game $game, ScoutReport $report): void
     {
         $filters = $report->filters;
-        $positions = self::POSITION_MAP[$filters['position']] ?? [];
+        $positions = PositionMapper::getPositionsForFilter($filters['position']) ?? [];
 
-        $query = GamePlayer::with(['player', 'team'])
-            ->where('game_id', $game->id)
-            ->whereNotNull('team_id')
-            ->where('team_id', '!=', $game->team_id)
-            ->whereIn('position', $positions);
-
-        // Scope filter (domestic / international) — enforce tier restriction
-        $scope = $filters['scope'] ?? ['domestic', 'international'];
+        // Enforce international search tier restriction
         if (!$this->canSearchInternationally($game)) {
-            $scope = ['domestic'];
-        }
-        if (count($scope) === 1) {
-            $teamCountry = $game->country;
-            $scopeCompetitionIds = Competition::where('country', in_array('domestic', $scope) ? '=' : '!=', $teamCountry)
-                ->pluck('id');
-            $scopeTeamIds = Team::whereHas('competitions', function ($q) use ($scopeCompetitionIds) {
-                $q->whereIn('competitions.id', $scopeCompetitionIds);
-            })->pluck('id');
-            $query->whereIn('team_id', $scopeTeamIds);
+            $filters['scope'] = ['domestic'];
         }
 
-        // Age filter (age is computed from players.date_of_birth, not a column)
-        if (! empty($filters['age_min']) || ! empty($filters['age_max'])) {
-            /** @var \Illuminate\Database\Connection $connection */
-            $connection = $query->getQuery()->getConnection();
-            $driver = $connection->getDriverName();
-            $dobSubquery = '(SELECT date_of_birth FROM players WHERE players.id = game_players.player_id)';
-            $gameDate = $game->current_date->toDateString();
-
-            if ($driver === 'pgsql') {
-                $ageExpr = "EXTRACT(YEAR FROM AGE(?::date, $dobSubquery))";
-            } else {
-                $ageExpr = "(strftime('%Y', ?) - strftime('%Y', $dobSubquery))";
-            }
-
-            if (! empty($filters['age_min'])) {
-                $query->whereRaw("($ageExpr) >= ?", [$gameDate, (int) $filters['age_min']]);
-            }
-            if (! empty($filters['age_max'])) {
-                $query->whereRaw("($ageExpr) <= ?", [$gameDate, (int) $filters['age_max']]);
-            }
-        }
-
-        // Ability filter
-        if (! empty($filters['ability_min']) || ! empty($filters['ability_max'])) {
-            $query->where(function ($q) use ($filters) {
-                $abilityExpr = '(COALESCE(game_players.game_technical_ability, (SELECT technical_ability FROM players WHERE players.id = game_players.player_id)) + COALESCE(game_players.game_physical_ability, (SELECT physical_ability FROM players WHERE players.id = game_players.player_id))) / 2';
-                if (! empty($filters['ability_min'])) {
-                    $q->whereRaw("($abilityExpr) >= ?", [(int) $filters['ability_min']]);
-                }
-                if (! empty($filters['ability_max'])) {
-                    $q->whereRaw("($abilityExpr) <= ?", [(int) $filters['ability_max']]);
-                }
-            });
-        }
-
-        // Market value range filter
-        if (! empty($filters['value_min'])) {
-            $query->where('market_value_cents', '>=', $filters['value_min'] * 100);
-        }
-        if (! empty($filters['value_max'])) {
-            $query->where('market_value_cents', '<=', $filters['value_max'] * 100);
-        }
-
-        // Expiring contract filter (last year of contract)
-        if (! empty($filters['expiring_contract'])) {
-            $seasonEnd = $game->getSeasonEndDate();
-            $query->whereNotNull('contract_until')
-                ->where('contract_until', '<=', $seasonEnd);
-        }
-
-        // Exclude players already on loan
-        $loanedPlayerIds = Loan::where('game_id', $game->id)
-            ->where('status', Loan::STATUS_ACTIVE)
-            ->pluck('game_player_id');
-
-        $query->whereNotIn('id', $loanedPlayerIds);
-
-        // Exclude players with agreed transfers
-        $agreedPlayerIds = TransferOffer::where('game_id', $game->id)
-            ->where('status', TransferOffer::STATUS_AGREED)
-            ->pluck('game_player_id');
-
-        $query->whereNotIn('id', $agreedPlayerIds);
-
-        $candidates = $query->get();
-
-        // Also include free agents matching the position filter
-        $freeAgentQuery = GamePlayer::with(['player'])
-            ->where('game_id', $game->id)
-            ->whereNull('team_id')
-            ->whereIn('position', $positions);
-
-        if (! empty($filters['age_min']) || ! empty($filters['age_max'])) {
-            /** @var \Illuminate\Database\Connection $connection */
-            $connection = $freeAgentQuery->getQuery()->getConnection();
-            $driver = $connection->getDriverName();
-            $dobSubquery = '(SELECT date_of_birth FROM players WHERE players.id = game_players.player_id)';
-            $gameDate = $game->current_date->toDateString();
-            $ageExpr = $driver === 'pgsql'
-                ? "EXTRACT(YEAR FROM AGE(?::date, $dobSubquery))"
-                : "(strftime('%Y', ?) - strftime('%Y', $dobSubquery))";
-            if (! empty($filters['age_min'])) {
-                $freeAgentQuery->whereRaw("($ageExpr) >= ?", [$gameDate, (int) $filters['age_min']]);
-            }
-            if (! empty($filters['age_max'])) {
-                $freeAgentQuery->whereRaw("($ageExpr) <= ?", [$gameDate, (int) $filters['age_max']]);
-            }
-        }
-
-        $freeAgents = $freeAgentQuery->get();
+        $queryBuilder = app(ScoutSearchQueryBuilder::class);
+        $candidates = $queryBuilder->buildCandidateQuery($game, $filters, $positions)->get();
+        $freeAgents = $queryBuilder->buildFreeAgentQuery($game, $filters, $positions)->get();
         $candidates = $candidates->merge($freeAgents);
 
         if ($candidates->isEmpty()) {
@@ -432,8 +308,8 @@ class ScoutingService
         $base = $player->market_value_cents;
         $importance = $this->calculatePlayerImportance($player);
 
-        // Importance multiplier: 1.0x for worst, 2.0x for best
-        $importanceMultiplier = 1.0 + ($importance * 1.0);
+        // Importance multiplier: 1.0x for worst, 1.5x for best
+        $importanceMultiplier = 1.0 + ($importance * 0.5);
 
         // Contract modifier
         $contractModifier = $this->getContractModifier($player);
@@ -441,10 +317,10 @@ class ScoutingService
         // Age modifier
         $ageModifier = $this->getAgeModifier($player->age($player->game->current_date));
 
-        $askingPrice = $base * $importanceMultiplier * $contractModifier * $ageModifier;
+        $totalMultiplier = min($importanceMultiplier * $contractModifier * $ageModifier, 1.5);
+        $askingPrice = $base * $totalMultiplier;
 
-        // Round to nearest €100K (in cents)
-        return (int) (round($askingPrice / 10_000_000) * 10_000_000);
+        return Money::roundPrice((int) $askingPrice);
     }
 
     /**
@@ -497,7 +373,7 @@ class ScoutingService
         }
 
         $game = $player->game;
-        $yearsLeft = $player->contract_until->diffInYears($game->current_date);
+        $yearsLeft = $game->current_date->diffInYears($player->contract_until);
 
         if ($yearsLeft >= 4) {
             return 1.2;
@@ -520,14 +396,14 @@ class ScoutingService
      */
     private function getAgeModifier(int $age): float
     {
-        if ($age < 23) {
+        if ($age < PlayerAge::YOUNG_END) {
             return 1.15;
         }
-        if ($age <= 31) {
+        if ($age <= PlayerAge::PRIME_END) {
             return 1.0;
         }
 
-        return max(0.5, 1.0 - ($age - 31) * 0.05);
+        return max(0.5, 1.0 - ($age - PlayerAge::PRIME_END) * 0.05);
     }
 
     // =========================================
@@ -542,23 +418,16 @@ class ScoutingService
     /**
      * @return array{result: string, counter_amount: int|null, asking_price: int, message: string}
      */
-    public function evaluateBid(GamePlayer $player, int $bidAmount, ?Game $game = null): array
+    public function evaluateBid(GamePlayer $player, int $bidAmount, ?Game $game = null, ?int $previousCounter = null): array
     {
-        // Reputation gate: player may refuse to join a lower-reputation club
-        if ($game) {
-            $reputationModifier = $this->calculateReputationModifier($game->team, $player);
-            if ($reputationModifier < 1.0 && rand(1, 100) > (int) ($reputationModifier * 100)) {
-                return [
-                    'result' => 'rejected',
-                    'counter_amount' => null,
-                    'asking_price' => $this->calculateAskingPrice($player),
-                    'message' => __('transfers.bid_rejected_not_interested', ['team' => $player->team?->name]),
-                ];
-            }
-        }
-
         $askingPrice = $this->calculateAskingPrice($player);
-        $ratio = $bidAmount / max($askingPrice, 1);
+
+        // Use the previous counter as ceiling so the club never raises their demand
+        $ceiling = ($previousCounter !== null && $previousCounter < $askingPrice)
+            ? $previousCounter
+            : $askingPrice;
+
+        $ratio = $bidAmount / max($ceiling, 1);
         $isKeyPlayer = $this->isKeyPlayer($player);
 
         $acceptThreshold = $isKeyPlayer ? 1.05 : 0.95;
@@ -574,8 +443,8 @@ class ScoutingService
         }
 
         if ($ratio >= $counterThreshold) {
-            $counterAmount = (int) (($bidAmount + $askingPrice) / 2);
-            $counterAmount = (int) (round($counterAmount / 10_000_000) * 10_000_000);
+            $counterAmount = (int) (($bidAmount + $ceiling) / 2);
+            $counterAmount = Money::roundPrice($counterAmount);
 
             // If rounding makes counter equal to bid, just accept the bid
             if ($counterAmount <= $bidAmount) {
@@ -600,6 +469,64 @@ class ScoutingService
             'counter_amount' => null,
             'asking_price' => $askingPrice,
             'message' => __('transfers.bid_rejected_too_low', ['team' => $player->team?->name]),
+        ];
+    }
+
+    /**
+     * Evaluate the user's counter-offer from the AI buyer's perspective.
+     *
+     * Called when the user counters an unsolicited or listed offer with a higher asking price.
+     * The AI club evaluates whether to accept, counter, or walk away.
+     *
+     * @return array{result: string, counter_amount: int|null}
+     */
+    public function evaluateCounterOffer(TransferOffer $offer, int $userAskingPrice, Game $game): array
+    {
+        $player = $offer->gamePlayer;
+        $marketValue = $player->market_value_cents;
+
+        // Calculate AI club's squad value to determine budget ceiling
+        $offeringTeamSquadValue = GamePlayer::where('game_id', $game->id)
+            ->where('team_id', $offer->offering_team_id)
+            ->sum('market_value_cents');
+
+        // AI club's max willingness: min of squad-value ceiling and market-value ceiling
+        $squadValueCeiling = (int) ($offeringTeamSquadValue * 0.25);
+        $marketValueCeiling = (int) ($marketValue * 1.30);
+        $maxWillingness = min($squadValueCeiling, $marketValueCeiling);
+
+        // Ensure max willingness is at least the current offer
+        $maxWillingness = max($maxWillingness, $offer->transfer_fee);
+
+        if ($userAskingPrice <= (int) ($maxWillingness * 0.95)) {
+            return [
+                'result' => 'accepted',
+                'counter_amount' => null,
+            ];
+        }
+
+        if ($userAskingPrice <= (int) ($maxWillingness * 1.15)) {
+            // Counter with midpoint of user's ask and AI's current bid
+            $counterAmount = (int) (($userAskingPrice + $offer->transfer_fee) / 2);
+            $counterAmount = Money::roundPrice($counterAmount);
+
+            // If rounding makes counter equal to or below the current bid, just accept
+            if ($counterAmount <= $offer->transfer_fee) {
+                return [
+                    'result' => 'accepted',
+                    'counter_amount' => null,
+                ];
+            }
+
+            return [
+                'result' => 'countered',
+                'counter_amount' => $counterAmount,
+            ];
+        }
+
+        return [
+            'result' => 'rejected',
+            'counter_amount' => null,
         ];
     }
 
@@ -666,6 +593,62 @@ class ScoutingService
     }
 
     // =========================================
+    // SYNCHRONOUS LOAN EVALUATION
+    // =========================================
+
+    /**
+     * Deterministic loan request evaluation for sync negotiation.
+     * Returns result, asking loan fee, mood, and rejection reason.
+     *
+     * @return array{result: string, loan_fee: int, disposition: float, rejection_reason: ?string}
+     */
+    public function evaluateLoanRequestSync(GamePlayer $player, Game $game): array
+    {
+        // Gate 1: Reputation — club won't negotiate with low-rep teams
+        $reputationModifier = $this->calculateReputationModifier($game->team, $player);
+        if ($reputationModifier < 0.50) {
+            return [
+                'result' => 'rejected',
+                'disposition' => 0.10,
+                'rejection_reason' => 'reputation',
+            ];
+        }
+
+        $importance = $this->calculatePlayerImportance($player);
+
+        // Gate 1: Key player — club refuses to loan
+        if ($importance > 0.70) {
+            return [
+                'result' => 'rejected',
+                'disposition' => 0.15,
+                'rejection_reason' => 'key_player',
+            ];
+        }
+
+        // Calculate disposition for mood indicator
+        $disposition = 0.50;
+        $disposition += (1.0 - $importance) * 0.30;
+        $disposition += ($reputationModifier - 0.50) * 0.20;
+        $disposition = max(0.10, min(0.95, $disposition));
+
+        // Gate 2: Player willingness — player may not want to join
+        $willingness = $this->calculateWillingness($player, $game, $importance);
+        if (in_array($willingness['label'], ['not_interested', 'reluctant'])) {
+            return [
+                'result' => 'rejected',
+                'disposition' => $disposition,
+                'rejection_reason' => 'player_refused',
+            ];
+        }
+
+        return [
+            'result' => 'accepted',
+            'disposition' => $disposition,
+            'rejection_reason' => null,
+        ];
+    }
+
+    // =========================================
     // WAGE DEMAND
     // =========================================
 
@@ -682,10 +665,10 @@ class ScoutingService
             $player->market_value_cents,
             $minimumWage,
             $player->age($player->game->current_date),
+            deterministic: true,
         );
 
-        // Round to nearest 100K (cents)
-        return (int) (round($wage / 10_000_000) * 10_000_000);
+        return Money::roundPrice($wage);
     }
 
     /**
@@ -697,8 +680,7 @@ class ScoutingService
         $baseWage = $this->calculateWageDemand($player);
         $premium = $this->getFreeAgentWagePremium($player->market_value_cents);
 
-        // Round to nearest 100K (cents)
-        return (int) (round(($baseWage * $premium) / 10_000_000) * 10_000_000);
+        return Money::roundPrice((int) ($baseWage * $premium));
     }
 
     /**
@@ -852,16 +834,10 @@ class ScoutingService
         $preContractWageDemand = $isExpiring ? $this->calculatePreContractWageDemand($player) : null;
 
         $investment = $game->currentInvestment;
-        $finances = $game->currentFinances;
         $committedBudget = TransferOffer::committedBudget($game->id);
         $availableBudget = ($investment->transfer_budget ?? 0) - $committedBudget;
         $canAffordFee = $askingPrice <= $availableBudget;
-        $currentWageBill = GamePlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->sum('annual_wage');
-        // Allow up to 10% over projected wages for flexibility
-        $maxWages = $finances ? (int) ($finances->projected_wages * 1.10) : 0;
-        $canAffordWage = ($currentWageBill + $wageDemand) <= $maxWages;
+        $canAffordLoan = $isFreeAgent || $wageDemand <= $availableBudget;
 
         // Fuzzy ability range - higher scouting tier = more accurate
         $techAbility = $player->current_technical_ability;
@@ -882,7 +858,8 @@ class ScoutingService
             'pre_contract_wage_demand' => $preContractWageDemand,
             'importance' => $importance,
             'can_afford_fee' => $canAffordFee,
-            'can_afford_wage' => $canAffordWage,
+            'can_afford_loan' => $canAffordLoan,
+            'available_budget' => $availableBudget,
             'transfer_budget' => $investment->transfer_budget ?? 0,
             'formatted_transfer_budget' => $investment ? $investment->formatted_transfer_budget : '€ 0',
             'tech_range' => [max(1, $techAbility - $fuzz), min(99, $techAbility + $fuzz)],
@@ -1012,7 +989,7 @@ class ScoutingService
 
         // Contract length factor: fewer years left = more willing
         if ($player->contract_until) {
-            $yearsLeft = max(0, $player->contract_until->diffInYears($game->current_date));
+            $yearsLeft = max(0, $game->current_date->diffInYears($player->contract_until));
             if ($yearsLeft <= 1) {
                 $score += 30;
             } elseif ($yearsLeft <= 2) {
@@ -1024,19 +1001,32 @@ class ScoutingService
 
         // Age factor: older players at lower-rep clubs more open
         $age = $player->age($game->current_date);
-        if ($age >= 30) {
+        if ($age >= PlayerAge::PRIME_END) {
             $score += 10;
-        } elseif ($age <= 22) {
+        } elseif ($age < PlayerAge::YOUNG_END) {
             $score += 5; // Young players seeking opportunities
         }
 
-        // Reputation gap penalty: players are reluctant to move to lower-rep clubs
+        // Reputation gap: penalize moving down, reward moving up
         $reputationModifier = $this->calculateReputationModifier($game->team, $player);
         if ($reputationModifier < 1.0) {
-            // Scale the score down proportionally to the reputation gap
-            // e.g. modifier 0.75 (1 tier gap) → score * 0.75
-            // e.g. modifier 0.20 (3 tier gap) → score * 0.20
+            // Moving down: scale the score down proportionally to the reputation gap
             $score = (int) ($score * $reputationModifier);
+        } elseif ($player->team_id) {
+            // Moving up: bonus based on how many tiers above the buying club is
+            $sourceReputation = TeamReputation::resolveLevel($player->game_id, $player->team_id);
+            $offeringReputation = TeamReputation::resolveLevel($player->game_id, $game->team_id);
+            $sourceIndex = ClubProfile::getReputationTierIndex($sourceReputation);
+            $offeringIndex = ClubProfile::getReputationTierIndex($offeringReputation);
+            $upwardGap = $offeringIndex - $sourceIndex;
+
+            if ($upwardGap >= 3) {
+                $score += 30; // Dream move (e.g. local → elite)
+            } elseif ($upwardGap === 2) {
+                $score += 20; // Big step up
+            } elseif ($upwardGap === 1) {
+                $score += 10; // Step up
+            }
         }
 
         $score = min(100, max(0, $score + rand(-5, 5)));

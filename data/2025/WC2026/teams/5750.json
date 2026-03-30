@@ -10,7 +10,6 @@
       "id": "450233",
       "marketValue": "€1.20m",
       "name": "Moisés Ramírez",
-      "number": "12",
       "position": "Goalkeeper"
     },
     {
@@ -29,7 +28,16 @@
       "id": "1074501",
       "marketValue": "€500k",
       "name": "Cristhian Loor",
-      "number": "22",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 23, 2021",
+      "dateOfBirth": "Mar 30, 1987",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "77127",
+      "marketValue": "€350k",
+      "name": "Hernán Galíndez",
       "position": "Goalkeeper"
     },
     {
@@ -43,17 +51,6 @@
       "position": "Goalkeeper"
     },
     {
-      "contract": "Jun 23, 2021",
-      "dateOfBirth": "Mar 30, 1987",
-      "foot": "right",
-      "height": "1,89m",
-      "id": "77127",
-      "marketValue": "€350k",
-      "name": "Hernán Galíndez",
-      "number": "1",
-      "position": "Goalkeeper"
-    },
-    {
       "contract": "Jun 14, 2021",
       "dateOfBirth": "Jan 9, 2002",
       "foot": "left",
@@ -61,7 +58,6 @@
       "id": "659813",
       "marketValue": "€40.00m",
       "name": "Piero Hincapié",
-      "number": "3",
       "position": "Centre-Back"
     },
     {
@@ -72,7 +68,6 @@
       "id": "661171",
       "marketValue": "€40.00m",
       "name": "Willian Pacho",
-      "number": "6",
       "position": "Centre-Back"
     },
     {
@@ -83,7 +78,6 @@
       "id": "893661",
       "marketValue": "€18.00m",
       "name": "Joel Ordóñez",
-      "number": "4",
       "position": "Centre-Back"
     },
     {
@@ -94,7 +88,6 @@
       "id": "468174",
       "marketValue": "€4.00m",
       "name": "Félix Torres",
-      "number": "2",
       "position": "Centre-Back"
     },
     {
@@ -114,7 +107,6 @@
       "id": "656409",
       "marketValue": "€1.00m",
       "name": "Léo Realpe",
-      "number": "26",
       "position": "Centre-Back"
     },
     {
@@ -145,7 +137,6 @@
       "id": "893659",
       "marketValue": "€3.50m",
       "name": "Yaimar Medina",
-      "number": "24",
       "position": "Left-Back"
     },
     {
@@ -156,7 +147,6 @@
       "id": "189485",
       "marketValue": "€3.00m",
       "name": "Cristian Ramírez",
-      "number": "5",
       "position": "Left-Back"
     },
     {
@@ -167,7 +157,6 @@
       "id": "450241",
       "marketValue": "€4.50m",
       "name": "Angelo Preciado",
-      "number": "17",
       "position": "Right-Back"
     },
     {
@@ -178,7 +167,6 @@
       "id": "687626",
       "marketValue": "€80.00m",
       "name": "Moisés Caicedo",
-      "number": "23",
       "position": "Defensive Midfield"
     },
     {
@@ -198,7 +186,6 @@
       "id": "598145",
       "marketValue": "€1.00m",
       "name": "Jordy Alcívar",
-      "number": "8",
       "position": "Defensive Midfield"
     },
     {
@@ -209,7 +196,6 @@
       "id": "400960",
       "marketValue": "€3.50m",
       "name": "Alan Franco",
-      "number": "21",
       "position": "Central Midfield"
     },
     {
@@ -220,7 +206,14 @@
       "id": "941418",
       "marketValue": "€2.50m",
       "name": "Denil Castillo",
-      "number": "13",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Mar 26, 2025",
+      "dateOfBirth": "Nov 6, 2007",
+      "height": "1,74m",
+      "id": "1295763",
+      "name": "Darwin Guagua",
       "position": "Central Midfield"
     },
     {
@@ -231,7 +224,6 @@
       "id": "1052439",
       "marketValue": "€12.00m",
       "name": "Kendry Páez",
-      "number": "10",
       "position": "Attacking Midfield"
     },
     {
@@ -242,18 +234,6 @@
       "id": "659806",
       "marketValue": "€3.00m",
       "name": "Pedro Vite",
-      "number": "15",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Mar 22, 2024",
-      "dateOfBirth": "Jun 23, 2000",
-      "foot": "left",
-      "height": "1,70m",
-      "id": "439914",
-      "marketValue": "€2.50m",
-      "name": "John Yeboah",
-      "number": "9",
       "position": "Attacking Midfield"
     },
     {
@@ -264,7 +244,6 @@
       "id": "981674",
       "marketValue": "€750k",
       "name": "Patrik Mercado",
-      "number": "25",
       "position": "Attacking Midfield"
     },
     {
@@ -275,7 +254,6 @@
       "id": "659804",
       "marketValue": "€2.50m",
       "name": "John Mercado",
-      "number": "18",
       "position": "Left Winger"
     },
     {
@@ -286,19 +264,7 @@
       "id": "903611",
       "marketValue": "€1.50m",
       "name": "Nilson Angulo",
-      "number": "20",
       "position": "Left Winger"
-    },
-    {
-      "contract": "Mar 22, 2024",
-      "dateOfBirth": "May 14, 2003",
-      "foot": "right",
-      "height": "1,71m",
-      "id": "897051",
-      "marketValue": "€6.00m",
-      "name": "Alan Minda",
-      "number": "14",
-      "position": "Right Winger"
     },
     {
       "contract": "Sep 6, 2019",
@@ -308,7 +274,16 @@
       "id": "592735",
       "marketValue": "€6.00m",
       "name": "Gonzalo Plata",
-      "number": "19",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Mar 22, 2024",
+      "dateOfBirth": "May 14, 2003",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "897051",
+      "marketValue": "€6.00m",
+      "name": "Alan Minda",
       "position": "Right Winger"
     },
     {
@@ -341,6 +316,16 @@
       "position": "Right Winger"
     },
     {
+      "contract": "Mar 22, 2024",
+      "dateOfBirth": "Jun 23, 2000",
+      "foot": "left",
+      "height": "1,70m",
+      "id": "439914",
+      "marketValue": "€2.50m",
+      "name": "John Yeboah",
+      "position": "Second Striker"
+    },
+    {
       "contract": "Mar 22, 2019",
       "dateOfBirth": "Jul 24, 2000",
       "foot": "left",
@@ -348,7 +333,6 @@
       "id": "606872",
       "marketValue": "€3.50m",
       "name": "Leonardo Campana",
-      "number": "16",
       "position": "Centre-Forward"
     },
     {
@@ -359,7 +343,6 @@
       "id": "684159",
       "marketValue": "€2.50m",
       "name": "Kevin Rodríguez",
-      "number": "11",
       "position": "Centre-Forward"
     },
     {
@@ -370,7 +353,16 @@
       "id": "139503",
       "marketValue": "€2.00m",
       "name": "Enner Valencia",
-      "number": "13",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Nov 14, 2025",
+      "dateOfBirth": "Mar 19, 2005",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "971663",
+      "marketValue": "€200k",
+      "name": "Jeremy Arévalo",
       "position": "Centre-Forward"
     }
   ],

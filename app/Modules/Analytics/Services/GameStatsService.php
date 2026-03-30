@@ -18,40 +18,6 @@ class GameStatsService
             ->get();
     }
 
-    public function getFormationPreferences(): Collection
-    {
-        $caseExpr = "CASE
-                    WHEN games.team_id = game_matches.home_team_id THEN game_matches.home_formation
-                    WHEN games.team_id = game_matches.away_team_id THEN game_matches.away_formation
-                END";
-
-        return DB::table('game_matches')
-            ->join('games', 'game_matches.game_id', '=', 'games.id')
-            ->where('game_matches.played', true)
-            ->selectRaw("{$caseExpr} as formation, COUNT(*) as usage_count")
-            ->groupByRaw($caseExpr)
-            ->havingRaw("{$caseExpr} IS NOT NULL")
-            ->orderByDesc('usage_count')
-            ->get();
-    }
-
-    public function getMentalityDistribution(): Collection
-    {
-        $caseExpr = "CASE
-                    WHEN games.team_id = game_matches.home_team_id THEN game_matches.home_mentality
-                    WHEN games.team_id = game_matches.away_team_id THEN game_matches.away_mentality
-                END";
-
-        return DB::table('game_matches')
-            ->join('games', 'game_matches.game_id', '=', 'games.id')
-            ->where('game_matches.played', true)
-            ->selectRaw("{$caseExpr} as mentality, COUNT(*) as usage_count")
-            ->groupByRaw($caseExpr)
-            ->havingRaw("{$caseExpr} IS NOT NULL")
-            ->orderByDesc('usage_count')
-            ->get();
-    }
-
     public function getSeasonProgress(): Collection
     {
         return Game::selectRaw('season, COUNT(*) as count')

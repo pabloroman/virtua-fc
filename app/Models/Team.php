@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Competition;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,7 +14,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 /**
  * @property string $id
  * @property int|null $transfermarkt_id
+ * @property string|null $fifa_code
+ * @property bool $is_placeholder
  * @property string $name
+ * @property string|null $slug
  * @property string $country
  * @property string|null $image
  * @property string|null $stadium_name
@@ -46,7 +51,10 @@ class Team extends Model
     protected $fillable = [
         'transfermarkt_id',
         'type',
+        'fifa_code',
+        'is_placeholder',
         'name',
+        'slug',
         'country',
         'parent_team_id',
         'image',
@@ -57,8 +65,25 @@ class Team extends Model
 
     protected $casts = [
         'stadium_seats' => 'integer',
+        'is_placeholder' => 'boolean',
         'colors' => 'array',
     ];
+
+    public function scopeWorldCupEligible(Builder $query): Builder
+    {
+        return $query->where('type', 'national')->whereNotNull('fifa_code');
+    }
+
+    /**
+     * Exclude national teams and cup-only teams (e.g. Primera RFEF filler)
+     * from transfer market queries.
+     */
+    public function scopeTransferMarketEligible(Builder $query): Builder
+    {
+        return $query
+            ->where('type', '!=', 'national')
+            ->whereHas('competitions', fn (Builder $q) => $q->where('role', '!=', Competition::ROLE_DOMESTIC_CUP));
+    }
 
     public function competitions(): BelongsToMany
     {

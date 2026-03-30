@@ -2,9 +2,9 @@
 
 namespace App\Modules\Notification\Listeners;
 
+use App\Modules\Competition\ProgressResolvers\CompetitionProgressResolverFactory;
 use App\Modules\Match\Events\MatchFinalized;
 use App\Modules\Notification\Services\NotificationService;
-use App\Models\Competition;
 use App\Models\GameMatch;
 use App\Models\GameStanding;
 
@@ -18,6 +18,7 @@ class SendCompetitionProgressNotifications
 {
     public function __construct(
         private readonly NotificationService $notificationService,
+        private readonly CompetitionProgressResolverFactory $progressResolverFactory,
     ) {}
 
     public function handle(MatchFinalized $event): void
@@ -54,60 +55,27 @@ class SendCompetitionProgressNotifications
             return;
         }
 
-        match ($competition->handler_type) {
-            'swiss_format' => $this->notifySwissCompletion($event, $competition, $standing),
-            'league_with_playoff' => $this->notifyLeaguePlayoffCompletion($event, $competition, $standing),
-            'group_stage_cup' => $this->notifyGroupStageCompletion($event, $competition, $standing),
-            default => null,
-        };
-    }
+        $resolver = $this->progressResolverFactory->forHandlerType($competition->handler_type);
 
-    private function notifySwissCompletion(MatchFinalized $event, Competition $competition, GameStanding $standing): void
-    {
-        if ($standing->position <= 8) {
-            $this->notificationService->notifyCompetitionAdvancement(
-                $event->game, $competition->id, $competition->name,
-                __('cup.swiss_direct_r16'),
-            );
-        } elseif ($standing->position <= 24) {
-            $this->notificationService->notifyCompetitionAdvancement(
-                $event->game, $competition->id, $competition->name,
-                __('cup.swiss_knockout_playoff'),
+        if (! $resolver) {
+            return;
+        }
+
+        $outcome = $resolver->resolve($event->game->id, $competition->id, $standing);
+
+        if (! $outcome) {
+            return;
+        }
+
+        $message = __($outcome->translationKey, $outcome->translationParams);
+
+        if ($outcome->isElimination()) {
+            $this->notificationService->notifyCompetitionElimination(
+                $event->game, $competition->id, $competition->name, $message,
             );
         } else {
-            $this->notificationService->notifyCompetitionElimination(
-                $event->game, $competition->id, $competition->name,
-                __('cup.swiss_eliminated'),
-            );
-        }
-    }
-
-    private function notifyLeaguePlayoffCompletion(MatchFinalized $event, Competition $competition, GameStanding $standing): void
-    {
-        if ($standing->position <= 2) {
             $this->notificationService->notifyCompetitionAdvancement(
-                $event->game, $competition->id, $competition->name,
-                __('cup.direct_promotion'),
-            );
-        } elseif ($standing->position <= 6) {
-            $this->notificationService->notifyCompetitionAdvancement(
-                $event->game, $competition->id, $competition->name,
-                __('cup.promotion_playoff'),
-            );
-        }
-    }
-
-    private function notifyGroupStageCompletion(MatchFinalized $event, Competition $competition, GameStanding $standing): void
-    {
-        if ($standing->position <= 2) {
-            $this->notificationService->notifyCompetitionAdvancement(
-                $event->game, $competition->id, $competition->name,
-                __('cup.group_stage_qualified', ['group' => $standing->group_label]),
-            );
-        } else {
-            $this->notificationService->notifyCompetitionElimination(
-                $event->game, $competition->id, $competition->name,
-                __('cup.group_stage_eliminated', ['group' => $standing->group_label]),
+                $event->game, $competition->id, $competition->name, $message,
             );
         }
     }

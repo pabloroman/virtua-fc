@@ -3,6 +3,8 @@
 namespace App\Modules\Player\Services;
 
 use App\Models\GamePlayer;
+use App\Modules\Player\PlayerAge;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class PlayerConditionService
@@ -37,9 +39,9 @@ class PlayerConditionService
      * @param  \Illuminate\Support\Collection  $matches  All matches in this matchday batch
      * @param  array  $matchResults  Match result data including events
      * @param  \Illuminate\Support\Collection  $allPlayersByTeam  Pre-loaded players grouped by team_id
-     * @param  int  $daysSinceLastMatchday  Calendar days since the previous matchday
+     * @param  array<string, int>  $recoveryDaysByTeam  team_id => calendar days since that team's last match
      */
-    public function batchUpdateAfterMatchday($matches, array $matchResults, $allPlayersByTeam, int $daysSinceLastMatchday): void
+    public function batchUpdateAfterMatchday($matches, array $matchResults, $allPlayersByTeam, array $recoveryDaysByTeam, Carbon $currentDate): void
     {
         $updates = [];
 
@@ -69,8 +71,9 @@ class PlayerConditionService
 
                 $isInLineup = in_array($player->id, $lineupIds);
                 $isHome = $player->team_id === $match->home_team_id;
+                $teamRecoveryDays = $recoveryDaysByTeam[$player->team_id] ?? 7;
 
-                $fitnessChange = $this->calculateFitnessChange($player, $isInLineup, $daysSinceLastMatchday);
+                $fitnessChange = $this->calculateFitnessChange($player, $isInLineup, $teamRecoveryDays, $currentDate);
                 $moraleChange = $this->calculateMoraleChange(
                     $player,
                     $isInLineup,
@@ -126,9 +129,9 @@ class PlayerConditionService
      *
      * Formula: recoveryRate = base × physicalMod × (1 + scaling × (100 − fitness) / 100)
      */
-    private function calculateFitnessChange(GamePlayer $player, bool $playedMatch, int $daysSinceLastMatch): int
+    private function calculateFitnessChange(GamePlayer $player, bool $playedMatch, int $daysSinceLastMatch, Carbon $currentDate): int
     {
-        $config = config('match_simulation.fatigue');
+        $config = config('player.condition');
         $currentFitness = $player->fitness;
 
         // Nonlinear recovery: faster when far below 100, slow near the top
@@ -147,7 +150,7 @@ class PlayerConditionService
             // Position-based match loss with age modifier
             $positionGroup = $player->position_group;
             $lossRange = $config['fitness_loss'][$positionGroup] ?? [9, 13];
-            $ageModifier = $this->getAgeLossModifier($player, $config);
+            $ageModifier = $this->getAgeLossModifier($player, $config, $currentDate);
             $loss = (int) round(rand($lossRange[0], $lossRange[1]) * $ageModifier);
 
             return $recovery - $loss;
@@ -159,15 +162,14 @@ class PlayerConditionService
     /**
      * Get age-based modifier for fitness loss (veterans lose more per match).
      */
-    private function getAgeLossModifier(GamePlayer $player, array $config): float
+    private function getAgeLossModifier(GamePlayer $player, array $config, Carbon $currentDate): float
     {
-        $age = $player->age($player->game->current_date);
+        $age = $player->age($currentDate);
         $ageMod = $config['age_loss_modifier'];
 
         return match (true) {
-            $age < $ageMod['young_threshold'] => $ageMod['young'],
-            $age < $ageMod['peak_threshold'] => $ageMod['peak'],
-            $age < $ageMod['veteran_threshold'] => $ageMod['experienced'],
+            $age <= PlayerAge::YOUNG_END => $ageMod['young'],
+            $age < PlayerAge::MIN_RETIREMENT_OUTFIELD => $ageMod['prime'],
             default => $ageMod['veteran'],
         };
     }

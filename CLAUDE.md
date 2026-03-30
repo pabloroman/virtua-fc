@@ -87,6 +87,10 @@ These are non-obvious rules that prevent bugs. Read carefully.
 - **No wall-clock timestamps on game models.** Time follows the game-universe calendar (`current_date` on `Game`). Models should set `public $timestamps = false` and omit `$table->timestamps()` from migrations (except `users`).
 - **`currentFinances` and `currentInvestment`** relationships use `$this->season` internally. Always use lazy loading — never eager load with `with()`.
 
+### Player Age Boundaries
+
+**Never hardcode age values in queries or business logic.** Use constants from `App\Modules\Player\PlayerAge` (e.g., `PlayerAge::MIN_RETIREMENT_OUTFIELD`, `PlayerAge::PRIME_END`). To convert an age constant to a date-of-birth cutoff for database queries, use `PlayerAge::dateOfBirthCutoff($age, $referenceDate)` instead of `$date->subYears($age)`. This keeps age boundaries in a single source of truth.
+
 ### Internationalization
 
 **Both `lang/es/` and `lang/en/` must be updated** for every new translation key. All user-facing strings use `__()` in Blade and PHP.

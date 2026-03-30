@@ -14,13 +14,21 @@ class InjuryService
     /**
      * Base injury chance per player per match (percentage).
      */
-    private const BASE_INJURY_CHANCE = 1.2;
+    private const BASE_INJURY_CHANCE = 1.0;
 
     /**
      * Base training injury chance per player per matchday (percentage).
      * Applies to all squad members (playing and non-playing).
      */
-    private const TRAINING_INJURY_CHANCE = 1.5;
+    private const TRAINING_INJURY_CHANCE = 1.05;
+
+    /**
+     * Goalkeepers face far fewer physical duels and run significantly less
+     * than outfield players, so their injury risk is much lower.
+     */
+    private const GK_MATCH_INJURY_MULTIPLIER = 0.3;
+
+    private const GK_TRAINING_INJURY_MULTIPLIER = 0.5;
 
     /**
      * Medical tier multipliers for injury prevention.
@@ -73,12 +81,12 @@ class InjuryService
         // Minor (1-2 weeks) - Very common
         'Muscle fatigue' => [
             'weeks' => [1, 1],
-            'positions' => ['MF', 'FW', 'DF'],
+            'positions' => ['MF', 'FW', 'DF', 'GK'],
             'weight' => 30,
         ],
         'Muscle strain' => [
             'weeks' => [1, 2],
-            'positions' => ['MF', 'FW', 'DF'],
+            'positions' => ['MF', 'FW', 'DF', 'GK'],
             'weight' => 25,
         ],
         // Medium (2-4 weeks) - Common
@@ -89,7 +97,7 @@ class InjuryService
         ],
         'Ankle sprain' => [
             'weeks' => [2, 4],
-            'positions' => ['MF', 'DF', 'FW'],
+            'positions' => ['MF', 'DF', 'FW', 'GK'],
             'weight' => 16,
         ],
         'Groin strain' => [
@@ -144,25 +152,20 @@ class InjuryService
      * Durability multipliers based on player's hidden durability attribute (1-100).
      */
     private const DURABILITY_THRESHOLDS = [
-        ['max' => 20, 'multiplier' => 2.0],   // Very injury prone
-        ['max' => 40, 'multiplier' => 1.5],   // Injury prone
+        ['max' => 20, 'multiplier' => 1.8],   // Very injury prone
+        ['max' => 40, 'multiplier' => 1.4],   // Injury prone
         ['max' => 60, 'multiplier' => 1.0],   // Average
         ['max' => 80, 'multiplier' => 0.7],   // Resilient
         ['max' => 100, 'multiplier' => 0.4],  // Ironman
     ];
 
     /**
-     * Age multipliers for injury risk, derived from PlayerAge boundaries.
-     * Young (still developing) and veteran players are more injury-prone.
-     */
-
-    /**
      * Fitness multipliers for injury risk.
      */
     private const FITNESS_THRESHOLDS = [
-        ['max' => 30, 'multiplier' => 2.5],   // Exhausted
-        ['max' => 50, 'multiplier' => 2.0],   // Very tired
-        ['max' => 70, 'multiplier' => 1.5],   // Tired
+        ['max' => 30, 'multiplier' => 2.25],  // Exhausted
+        ['max' => 50, 'multiplier' => 1.75],  // Very tired
+        ['max' => 70, 'multiplier' => 1.35],  // Tired
         ['max' => 85, 'multiplier' => 1.0],   // Normal
         ['max' => 100, 'multiplier' => 0.8],  // Fresh
     ];
@@ -185,13 +188,19 @@ class InjuryService
         $congestionMultiplier = $this->getCongestionMultiplier($lastMatchDate, $currentMatchDate);
         $medicalMultiplier = $this->getMedicalInjuryMultiplier($game);
 
+        // Goalkeepers face much lower injury risk
+        $positionMultiplier = $this->getPositionGroup($player->position) === 'GK'
+            ? self::GK_MATCH_INJURY_MULTIPLIER
+            : 1.0;
+
         // Calculate final probability
         $finalProbability = $baseProbability
             * $durabilityMultiplier
             * $ageMultiplier
             * $fitnessMultiplier
             * $congestionMultiplier
-            * $medicalMultiplier;
+            * $medicalMultiplier
+            * $positionMultiplier;
 
         // Cap at reasonable maximum
         return min($finalProbability, 35.0);
@@ -230,6 +239,7 @@ class InjuryService
 
     /**
      * Select an injury type based on player's position.
+     * Only injury types that include the player's position group are eligible.
      */
     private function selectInjuryType(GamePlayer $player): string
     {
@@ -237,14 +247,9 @@ class InjuryService
         $weightedTypes = [];
 
         foreach (self::INJURY_TYPES as $type => $config) {
-            $weight = $config['weight'];
-
-            // Increase weight if this injury is common for the player's position
             if (in_array($positionGroup, $config['positions'])) {
-                $weight *= 2;
+                $weightedTypes[$type] = $config['weight'];
             }
-
-            $weightedTypes[$type] = $weight;
         }
 
         return $this->weightedRandomSelect($weightedTypes);
@@ -301,9 +306,9 @@ class InjuryService
     private function getAgeMultiplier(int $age): float
     {
         return match (true) {
-            $age <= PlayerAge::ACADEMY_END => 1.3,  // Young, still developing
+            $age <= PlayerAge::ACADEMY_END => 1.2,  // Young, still developing
             $age <= PlayerAge::PRIME_END => 1.0,    // Prime years
-            default => 1.5,                          // Veteran
+            default => 1.4,                          // Veteran
         };
     }
 
@@ -333,11 +338,11 @@ class InjuryService
         $daysSinceLastMatch = $lastMatchDate->diffInDays($currentMatchDate);
 
         if ($daysSinceLastMatch <= 2) {
-            return 2.0; // Back-to-back games
+            return 1.8; // Back-to-back games
         } elseif ($daysSinceLastMatch <= 3) {
-            return 1.5; // Very congested
+            return 1.4; // Very congested
         } elseif ($daysSinceLastMatch <= 4) {
-            return 1.2; // Slightly congested
+            return 1.15; // Slightly congested
         }
 
         return 1.0; // Normal rest
@@ -489,11 +494,16 @@ class InjuryService
         $fitnessMultiplier = $this->getFitnessMultiplier($player->fitness);
         $medicalMultiplier = $this->getMedicalInjuryMultiplier($game);
 
+        $positionMultiplier = $this->getPositionGroup($player->position) === 'GK'
+            ? self::GK_TRAINING_INJURY_MULTIPLIER
+            : 1.0;
+
         $finalProbability = $baseProbability
             * $durabilityMultiplier
             * $ageMultiplier
             * $fitnessMultiplier
-            * $medicalMultiplier;
+            * $medicalMultiplier
+            * $positionMultiplier;
 
         return min($finalProbability, 25.0);
     }
@@ -516,7 +526,10 @@ class InjuryService
      */
     private function generateTrainingInjury(GamePlayer $player, ?Game $game = null): array
     {
-        $injuryType = $this->weightedRandomSelect(self::TRAINING_INJURY_WEIGHTS);
+        $weights = $this->getTrainingInjuryWeightsForPosition(
+            $this->getPositionGroup($player->position)
+        );
+        $injuryType = $this->weightedRandomSelect($weights);
         $weeksOut = $this->calculateInjuryDuration($injuryType, $player, $game);
 
         return [
@@ -524,6 +537,23 @@ class InjuryService
             'type' => $injuryType,
             'weeks' => $weeksOut,
         ];
+    }
+
+    /**
+     * Filter training injury weights to only include types matching the player's position.
+     */
+    private function getTrainingInjuryWeightsForPosition(string $positionGroup): array
+    {
+        $filtered = [];
+
+        foreach (self::TRAINING_INJURY_WEIGHTS as $type => $weight) {
+            if (isset(self::INJURY_TYPES[$type]) && in_array($positionGroup, self::INJURY_TYPES[$type]['positions'])) {
+                $filtered[$type] = $weight;
+            }
+        }
+
+        // Fallback to all training weights if nothing matches (shouldn't happen)
+        return $filtered ?: self::TRAINING_INJURY_WEIGHTS;
     }
 
     /**

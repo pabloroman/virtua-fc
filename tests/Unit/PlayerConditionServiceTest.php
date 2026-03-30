@@ -5,8 +5,10 @@ namespace Tests\Unit;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Models\Player;
 use App\Models\Team;
 use App\Modules\Player\Services\PlayerConditionService;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use ReflectionMethod;
 use Tests\TestCase;
@@ -19,10 +21,13 @@ class PlayerConditionServiceTest extends TestCase
 
     private ReflectionMethod $calculateFitnessChange;
 
+    private Carbon $currentDate;
+
     protected function setUp(): void
     {
         parent::setUp();
         $this->service = new PlayerConditionService();
+        $this->currentDate = Carbon::parse('2025-10-01');
 
         // Access private method for unit testing core math
         $this->calculateFitnessChange = new ReflectionMethod(PlayerConditionService::class, 'calculateFitnessChange');
@@ -31,15 +36,21 @@ class PlayerConditionServiceTest extends TestCase
     /**
      * Create a GamePlayer with specific attributes for testing.
      */
-    private function createPlayer(array $overrides = []): GamePlayer
+    private function createPlayer(array $overrides = [], array $playerOverrides = []): GamePlayer
     {
         $game = Game::factory()->create(['current_date' => '2025-10-01']);
         $team = Team::factory()->create();
+
+        $playerFactory = Player::factory();
+        if (! empty($playerOverrides)) {
+            $playerFactory = $playerFactory->state($playerOverrides);
+        }
 
         return GamePlayer::factory()
             ->forGame($game)
             ->forTeam($team)
             ->create(array_merge([
+                'player_id' => $playerFactory,
                 'position' => 'Central Midfield',
                 'fitness' => 100,
                 'morale' => 80,
@@ -65,7 +76,7 @@ class PlayerConditionServiceTest extends TestCase
         $iterations = 200;
 
         for ($i = 0; $i < $iterations; $i++) {
-            $change = $this->calculateFitnessChange->invoke($this->service, $player, true, 7);
+            $change = $this->calculateFitnessChange->invoke($this->service, $player, true, 7, $this->currentDate);
             $totalChange += $change;
         }
 
@@ -88,7 +99,7 @@ class PlayerConditionServiceTest extends TestCase
         $iterations = 200;
 
         for ($i = 0; $i < $iterations; $i++) {
-            $change = $this->calculateFitnessChange->invoke($this->service, $player, true, 3);
+            $change = $this->calculateFitnessChange->invoke($this->service, $player, true, 3, $this->currentDate);
             $totalChange += $change;
         }
 
@@ -105,7 +116,7 @@ class PlayerConditionServiceTest extends TestCase
             'game_physical_ability' => 70,
         ]);
 
-        $change = $this->calculateFitnessChange->invoke($this->service, $player, false, 7);
+        $change = $this->calculateFitnessChange->invoke($this->service, $player, false, 7, $this->currentDate);
 
         // Resting at fitness 75 for 7 days should give substantial recovery
         $this->assertGreaterThan(5, $change, 'Resting should provide meaningful recovery');
@@ -121,8 +132,8 @@ class PlayerConditionServiceTest extends TestCase
         $playerLow = $this->createPlayer(array_merge($attrs, ['fitness' => 60]));
         $playerHigh = $this->createPlayer(array_merge($attrs, ['fitness' => 95]));
 
-        $recoveryLow = $this->calculateFitnessChange->invoke($this->service, $playerLow, false, 5);
-        $recoveryHigh = $this->calculateFitnessChange->invoke($this->service, $playerHigh, false, 5);
+        $recoveryLow = $this->calculateFitnessChange->invoke($this->service, $playerLow, false, 5, $this->currentDate);
+        $recoveryHigh = $this->calculateFitnessChange->invoke($this->service, $playerHigh, false, 5, $this->currentDate);
 
         $this->assertGreaterThan($recoveryHigh, $recoveryLow, 'Low-fitness player should recover faster');
     }
@@ -134,7 +145,7 @@ class PlayerConditionServiceTest extends TestCase
             'game_physical_ability' => 70,
         ]);
 
-        $recovery = $this->calculateFitnessChange->invoke($this->service, $player, false, 5);
+        $recovery = $this->calculateFitnessChange->invoke($this->service, $player, false, 5, $this->currentDate);
 
         // At fitness 100, recovery scaling factor is 1.0 (base only)
         // base 2.0 * 1.0 * 5 days = 10
@@ -165,7 +176,7 @@ class PlayerConditionServiceTest extends TestCase
 
         // Use reflection to test the age modifier directly
         $getAgeLossModifier = new ReflectionMethod(PlayerConditionService::class, 'getAgeLossModifier');
-        $config = config('match_simulation.fatigue');
+        $config = config('player.condition');
 
         // Mock young player age by checking the config thresholds
         $youngMod = $config['age_loss_modifier']['young'];
@@ -185,8 +196,8 @@ class PlayerConditionServiceTest extends TestCase
         $highPhys = $this->createPlayer(['fitness' => 80, 'game_physical_ability' => 85]);
         $lowPhys = $this->createPlayer(['fitness' => 80, 'game_physical_ability' => 50]);
 
-        $recoveryHigh = $this->calculateFitnessChange->invoke($this->service, $highPhys, false, 5);
-        $recoveryLow = $this->calculateFitnessChange->invoke($this->service, $lowPhys, false, 5);
+        $recoveryHigh = $this->calculateFitnessChange->invoke($this->service, $highPhys, false, 5, $this->currentDate);
+        $recoveryLow = $this->calculateFitnessChange->invoke($this->service, $lowPhys, false, 5, $this->currentDate);
 
         $this->assertGreaterThan($recoveryLow, $recoveryHigh, 'High physical player should recover faster');
     }
@@ -214,8 +225,8 @@ class PlayerConditionServiceTest extends TestCase
         $iterations = 200;
 
         for ($i = 0; $i < $iterations; $i++) {
-            $totalGk += $this->calculateFitnessChange->invoke($this->service, $gk, true, 7);
-            $totalMid += $this->calculateFitnessChange->invoke($this->service, $mid, true, 7);
+            $totalGk += $this->calculateFitnessChange->invoke($this->service, $gk, true, 7, $this->currentDate);
+            $totalMid += $this->calculateFitnessChange->invoke($this->service, $mid, true, 7, $this->currentDate);
         }
 
         $this->assertGreaterThan($totalMid / $iterations, $totalGk / $iterations,
@@ -258,7 +269,8 @@ class PlayerConditionServiceTest extends TestCase
             collect([$match]),
             [['matchId' => $match->id, 'events' => []]],
             $allPlayersByTeam,
-            14 // 14 days rest
+            [$homeTeam->id => 14, $awayTeam->id => 14],
+            $this->currentDate,
         );
 
         $player->refresh();
@@ -289,11 +301,13 @@ class PlayerConditionServiceTest extends TestCase
 
         $allPlayersByTeam = collect([$team->id => collect([$player])]);
 
+        $awayTeamId = $match->away_team_id;
         $this->service->batchUpdateAfterMatchday(
             collect([$match]),
             [['matchId' => $match->id, 'events' => []]],
             $allPlayersByTeam,
-            1 // only 1 day since last match
+            [$team->id => 1, $awayTeamId => 1],
+            $this->currentDate,
         );
 
         $player->refresh();
@@ -306,10 +320,13 @@ class PlayerConditionServiceTest extends TestCase
 
     public function test_congested_schedule_drops_fitness_significantly(): void
     {
+        // Pin age to 27 (prime bracket) to eliminate age-modifier variance
         $player = $this->createPlayer([
             'position' => 'Central Midfield',
             'fitness' => 90,
             'game_physical_ability' => 70,
+        ], [
+            'date_of_birth' => Carbon::parse('2025-10-01')->subYears(27)->subMonths(6),
         ]);
 
         // Simulate 5 matches: Sat(7d) → Tue(3d) → Sat(4d) → Tue(3d) → Sat(4d)
@@ -323,7 +340,7 @@ class PlayerConditionServiceTest extends TestCase
 
             foreach ($gaps as $gap) {
                 $player->fitness = $fitness;
-                $change = $this->calculateFitnessChange->invoke($this->service, $player, true, $gap);
+                $change = $this->calculateFitnessChange->invoke($this->service, $player, true, $gap, $this->currentDate);
                 $fitness = max(40, min(100, $fitness + $change));
             }
 

@@ -32,7 +32,6 @@
                 awayTeamImage: '{{ $match->awayTeam->image }}',
                 lineupPlayers: {{ Js::from($lineupPlayers) }},
                 benchPlayers: {{ Js::from($benchPlayers) }},
-                existingSubstitutions: {{ Js::from($existingSubstitutions) }},
                 userTeamId: '{{ $game->team_id }}',
                 tacticalActionsUrl: '{{ $tacticalActionsUrl }}',
                 csrfToken: '{{ csrf_token() }}',
@@ -111,12 +110,16 @@
                 <div class="relative flex items-center justify-between px-4 py-2.5">
                     {{-- Left: Competition indicator --}}
                     {{-- Mobile: colored dot only. Desktop: full pill with name --}}
+                    @if(!$isTournamentMode)
                     <div class="shrink-0 z-10">
                         <div class="sm:hidden w-2.5 h-2.5 rounded-full {{ $compBadge['bg'] }}" x-tooltip.raw="{{ __($match->competition->name) }}"></div>
                         <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-md {{ $compBadge['bg'] }} {{ $compBadge['text'] }} text-[9px] font-semibold uppercase tracking-wider">
                             {{ __($match->competition->name) }}
                         </span>
                     </div>
+                    @else
+                    <div class="shrink-0 z-10 w-8"></div>
+                    @endif
 
                     {{-- Center: Round + Stadium (absolutely centered) --}}
                     <div class="absolute inset-x-0 flex justify-center pointer-events-none">
@@ -250,7 +253,7 @@
                         </template>
 
                         {{-- Event markers --}}
-                        <template x-for="marker in getTimelineMarkers()" :key="marker.minute + '-' + marker.type">
+                        <template x-for="marker in getTimelineMarkers()" :key="marker.minute + '-' + marker.type + '-' + marker.index">
                             <div class="absolute w-2.5 h-2.5 rounded-full top-1/2 -translate-y-1/2 -translate-x-1/2 transition-all duration-300"
                                  :style="'left: ' + marker.position + '%'"
                                  :class="{
@@ -425,8 +428,8 @@
 
                             {{-- ET Second half events --}}
                             <template x-for="(event, idx) in etSecondHalfEvents" :key="'etsh-' + idx">
-                                <div class="flex items-center gap-3 py-2.5 px-3 rounded-lg transition-all duration-300"
-                                     :class="isGoalEvent(event) ? 'bg-goal-highlight border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent'"
+                                <div class="flex gap-3 py-2.5 px-3 rounded-lg transition-all duration-300"
+                                     :class="[isGoalEvent(event) ? 'bg-goal-highlight border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent', event.type === 'substitution_group' ? 'items-start' : 'items-center']"
                                      x-transition:enter="transition ease-out duration-300"
                                      x-transition:enter-start="opacity-0 -translate-y-2"
                                      x-transition:enter-end="opacity-100 translate-y-0"
@@ -446,8 +449,8 @@
 
                             {{-- ET First half events --}}
                             <template x-for="(event, idx) in etFirstHalfEvents" :key="'etfh-' + idx">
-                                <div class="flex items-center gap-3 py-2.5 px-3 rounded-lg transition-all duration-300"
-                                     :class="isGoalEvent(event) ? 'bg-goal-highlight border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent'"
+                                <div class="flex gap-3 py-2.5 px-3 rounded-lg transition-all duration-300"
+                                     :class="[isGoalEvent(event) ? 'bg-goal-highlight border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent', event.type === 'substitution_group' ? 'items-start' : 'items-center']"
                                      x-transition:enter="transition ease-out duration-300"
                                      x-transition:enter-start="opacity-0 -translate-y-2"
                                      x-transition:enter-end="opacity-100 translate-y-0"
@@ -467,8 +470,8 @@
 
                             {{-- Second half events (newest first) --}}
                             <template x-for="(event, idx) in secondHalfEvents" :key="'sh-' + idx">
-                                <div class="flex items-center gap-3 py-2.5 px-3 rounded-lg transition-all duration-300"
-                                     :class="isGoalEvent(event) ? 'bg-goal-highlight border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent'"
+                                <div class="flex gap-3 py-2.5 px-3 rounded-lg transition-all duration-300"
+                                     :class="[isGoalEvent(event) ? 'bg-goal-highlight border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent', event.type === 'substitution_group' ? 'items-start' : 'items-center']"
                                      x-transition:enter="transition ease-out duration-300"
                                      x-transition:enter-start="opacity-0 -translate-y-2"
                                      x-transition:enter-end="opacity-100 translate-y-0"
@@ -488,8 +491,8 @@
 
                             {{-- First half events (newest first) --}}
                             <template x-for="(event, idx) in firstHalfEvents" :key="'fh-' + idx">
-                                <div class="flex items-center gap-3 py-2.5 px-3 rounded-lg transition-all duration-300"
-                                     :class="isGoalEvent(event) ? 'bg-goal-highlight border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent'"
+                                <div class="flex gap-3 py-2.5 px-3 rounded-lg transition-all duration-300"
+                                     :class="[isGoalEvent(event) ? 'bg-goal-highlight border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent', event.type === 'substitution_group' ? 'items-start' : 'items-center']"
                                      x-transition:enter="transition ease-out duration-300"
                                      x-transition:enter-start="opacity-0 -translate-y-2"
                                      x-transition:enter-end="opacity-100 translate-y-0"
@@ -809,8 +812,8 @@
 
                         {{-- MVP of the match --}}
                         <template x-if="mvpPlayerName">
-                            <div class="flex items-center justify-center gap-2 text-sm mb-3 py-2 px-3 rounded-lg bg-accent-yellow/10">
-                                <span class="text-accent-yellow text-base">&#9733;</span>
+                            <div class="flex items-center justify-center gap-2 text-sm mb-3 py-2 px-3 rounded-lg bg-accent-gold/10">
+                                <span class="text-accent-gold text-base">&#9733;</span>
                                 <span class="text-text-secondary" x-text="translations.mvpOfTheMatch"></span>
                                 <span class="font-semibold text-text-primary" x-text="mvpPlayerName"></span>
                                 <span class="text-xs px-1.5 py-0.5 rounded bg-surface-700 text-text-muted"

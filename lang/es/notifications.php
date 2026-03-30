@@ -21,9 +21,11 @@ return [
 
     // Player injuries
     'player_injured_title' => ':player lesionado',
-    'player_injured_message' => ':player tiene :injury.',
-    'player_injured_message_matches' => ':player tiene :injury y se perderá :matches partido.|:player tiene :injury y se perderá :matches partidos.',
-    'player_injured_message_matches_approx' => ':player tiene :injury y se perderá :matches+ partido.|:player tiene :injury y se perderá :matches+ partidos.',
+    'player_injured_message' => ':player ha sufrido :injury :location.',
+    'player_injured_message_matches' => ':player ha sufrido :injury :location y se perderá :matches partido.|:player ha sufrido :injury :location y se perderá :matches partidos.',
+    'player_injured_message_matches_approx' => ':player ha sufrido :injury :location y se perderá :matches+ partido.|:player ha sufrido :injury :location y se perderá :matches+ partidos.',
+    'injury_location_match' => 'durante el partido',
+    'injury_location_training' => 'durante el entrenamiento',
 
     // Player suspensions
     'player_suspended_title' => ':player sancionado',
@@ -84,17 +86,6 @@ return [
     // Academy
     'academy_batch_title' => 'Nuevos canteranos',
     'academy_batch_message' => ':count nuevos jugadores han llegado a la cantera.',
-    'academy_evaluation_title' => 'Evaluación de cantera',
-    'academy_evaluation_message' => 'Es momento de evaluar a tus canteranos.',
-
-    // Transfer bid results
-    'bid_accepted_title' => 'Oferta por :player aceptada',
-    'bid_accepted' => ':team ha aceptado tu oferta por :player — fichaje acordado por :fee.',
-    'bid_counter_offer_title' => 'Contraoferta por :player',
-    'bid_counter_offer' => ':team pide :asking por :player (ofreciste :offered).',
-    'bid_rejected_title' => 'Oferta por :player rechazada',
-    'bid_rejected' => ':team ha rechazado tu oferta por :player.',
-
     // Loan request results
     'loan_accepted_title' => 'Cesión de :player aceptada',
     'loan_accepted' => ':team ha aceptado tu solicitud de cesión por :player.',
@@ -141,4 +132,11 @@ return [
     'reputation_change_title' => 'Reputación del club modificada',
     'reputation_improved' => 'La reputación de tu club ha ascendido a :tier. Patrocinadores, jugadores y aficionados lo notan.',
     'reputation_declined' => 'La reputación de tu club ha descendido a :tier. Es hora de reconstruir y recuperar la gloria pasada.',
+
+    // Budget loan
+    'budget_loan_taken_title' => 'Préstamo presupuestario concedido',
+    'budget_loan_taken_message' => 'El club ha obtenido un préstamo de :amount. La devolución de :repayment se descontará del presupuesto de la próxima temporada.',
+    'budget_loan_repaid_title' => 'Préstamo presupuestario devuelto',
+    'budget_loan_repaid_message' => 'El préstamo presupuestario ha sido devuelto (:repayment con intereses).',
+    'budget_loan_repaid_with_debt' => 'La devolución del préstamo de :repayment superó el superávit disponible. El déficit se arrastra como deuda.',
 ];

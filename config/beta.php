@@ -40,14 +40,25 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Allow New Season
+    | Early Adopter Cutoff
     |--------------------------------------------------------------------------
     |
-    | When disabled, the "Start New Season" button is hidden on the season-end
-    | screen. Useful for gating multi-season play during beta.
+    | Waitlist entries created after this UTC timestamp are excluded from
+    | bulk invitations. Individual invites can still bypass this cutoff.
     |
     */
 
-    'allow_new_season' => (bool) env('ALLOW_NEW_SEASON', false),
+    'early_adopter_cutoff' => env('BETA_EARLY_ADOPTER_CUTOFF', '2026-03-27 21:00:00'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Payment Webhook Secret
+    |--------------------------------------------------------------------------
+    |
+    | Secret token used to verify incoming payment webhook requests.
+    |
+    */
+
+    'webhook_secret' => env('KO_FI_VERIFICATION_TOKEN'),
 
 ];

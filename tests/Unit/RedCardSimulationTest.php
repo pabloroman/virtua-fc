@@ -89,7 +89,7 @@ class RedCardSimulationTest extends TestCase
             $this->simulator,
             $homeTeam, $awayTeam,
             $homePlayers, $awayPlayers,
-            Formation::F_4_4_2, Formation::F_4_4_2,
+            Formation::F_4_3_3, Formation::F_4_3_3,
             Mentality::BALANCED, Mentality::BALANCED,
             PlayingStyle::BALANCED, PlayingStyle::BALANCED,
             PressingIntensity::STANDARD, PressingIntensity::STANDARD,
@@ -151,7 +151,7 @@ class RedCardSimulationTest extends TestCase
                 $this->simulator,
                 $homeTeam, $awayTeam,
                 $homePlayers, $awayPlayers,
-                Formation::F_4_4_2, Formation::F_4_4_2,
+                Formation::F_4_3_3, Formation::F_4_3_3,
                 Mentality::BALANCED, Mentality::BALANCED,
                 PlayingStyle::BALANCED, PlayingStyle::BALANCED,
                 PressingIntensity::STANDARD, PressingIntensity::STANDARD,
@@ -168,15 +168,15 @@ class RedCardSimulationTest extends TestCase
             $splitAwayGoals += $a;
 
             // Full-team simulation for comparison
-            $result = $this->simulator->simulate(
+            $output = $this->simulator->simulate(
                 $homeTeam, $awayTeam,
                 $homePlayers, $awayPlayers,
-                Formation::F_4_4_2, Formation::F_4_4_2,
+                Formation::F_4_3_3, Formation::F_4_3_3,
                 Mentality::BALANCED, Mentality::BALANCED,
                 $game,
             );
-            $normalHomeGoals += $result->homeScore;
-            $normalAwayGoals += $result->awayScore;
+            $normalHomeGoals += $output->result->homeScore;
+            $normalAwayGoals += $output->result->awayScore;
         }
 
         $splitAvgHome = $splitHomeGoals / $iterations;
@@ -205,18 +205,18 @@ class RedCardSimulationTest extends TestCase
         // Run enough simulations that we're likely to see at least one red card
         $redCardSeen = false;
         for ($i = 0; $i < 200; $i++) {
-            $result = $this->simulator->simulate(
+            $output = $this->simulator->simulate(
                 $homeTeam, $awayTeam,
                 $homePlayers, $awayPlayers,
-                Formation::F_4_4_2, Formation::F_4_4_2,
+                Formation::F_4_3_3, Formation::F_4_3_3,
                 Mentality::BALANCED, Mentality::BALANCED,
                 $game,
             );
 
-            if ($result->redCards()->isNotEmpty()) {
+            if ($output->result->redCards()->isNotEmpty()) {
                 $redCardSeen = true;
 
-                foreach ($result->redCards() as $event) {
+                foreach ($output->result->redCards() as $event) {
                     $this->assertEquals('red_card', $event->type);
                     $this->assertGreaterThanOrEqual(1, $event->minute);
                     $this->assertLessThanOrEqual(93, $event->minute);

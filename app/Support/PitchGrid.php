@@ -26,8 +26,6 @@ class PitchGrid
         'CB' => [2, 6, 2, 4],
         'LB' => [0, 2, 2, 5],
         'RB' => [6, 8, 2, 5],
-        'LWB' => [0, 2, 3, 6],
-        'RWB' => [6, 8, 3, 6],
         'DM' => [2, 6, 4, 6],
         'CM' => [2, 6, 5, 8],
         'AM' => [2, 6, 7, 9],
@@ -40,17 +38,24 @@ class PitchGrid
 
     /**
      * Check if a cell is valid for a slot.
-     * GK stays locked to its zone; outfield players can go anywhere on rows 1-13.
+     * GK can be at its own zone or any outfield cell (for swap scenarios).
+     * Outfield players can go anywhere on rows 1-13 or the GK cell (4,0).
      */
     public static function isValidCell(string $slotLabel, int $col, int $row): bool
     {
-        if ($slotLabel === 'GK') {
-            $zone = self::SLOT_ZONES['GK'];
-
-            return $col >= $zone[0] && $col <= $zone[1] && $row >= $zone[2] && $row <= $zone[3];
+        if ($col < 0 || $col >= self::GRID_COLS || $row < 0 || $row >= self::GRID_ROWS) {
+            return false;
         }
 
-        return $col >= 0 && $col < self::GRID_COLS && $row >= 1 && $row < self::GRID_ROWS;
+        if ($slotLabel === 'GK') {
+            $zone = self::SLOT_ZONES['GK'];
+            $inOwnZone = $col >= $zone[0] && $col <= $zone[1] && $row >= $zone[2] && $row <= $zone[3];
+
+            return $inOwnZone || $row >= 1;
+        }
+
+        // Outfield: rows 1-13 OR the GK cell (4,0) for swap scenarios
+        return $row >= 1 || ($col === 4 && $row === 0);
     }
 
     /**

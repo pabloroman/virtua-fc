@@ -2,10 +2,10 @@
 
 namespace App\Modules\Match\Services;
 
-use App\Models\AcademyPlayer;
 use App\Models\Game;
 use App\Models\GameNotification;
 use App\Models\GamePlayer;
+use App\Models\RenewalNegotiation;
 use App\Models\TransferOffer;
 use App\Modules\Academy\Services\YouthAcademyService;
 use App\Modules\Notification\Services\NotificationService;
@@ -60,14 +60,8 @@ class CareerActionProcessor
             $this->notificationService->notifyPreContractResult($game, $result['offer']);
         }
 
-        // Resolve pending incoming bids (deferred from user submission)
-        $resolvedBids = $this->transferService->resolveIncomingBids($game, $this->scoutingService);
-        foreach ($resolvedBids as $result) {
-            $this->notificationService->notifyBidResult($game, $result['offer'], $result['result']);
-        }
-
         // Resolve pending incoming loan requests (deferred from user submission)
-        $resolvedLoans = $this->transferService->resolveIncomingLoanRequests($game, $this->scoutingService);
+        $resolvedLoans = $this->loanService->resolveIncomingLoanRequests($game, $this->scoutingService);
         foreach ($resolvedLoans as $result) {
             $this->notificationService->notifyLoanRequestResult($game, $result['offer'], $result['result']);
         }
@@ -106,20 +100,6 @@ class CareerActionProcessor
 
         // Develop academy players each matchday
         $this->youthAcademyService->developPlayers($game);
-
-        // Add pending action if any players still need evaluation (from season-end)
-        $needsEval = AcademyPlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->where('is_on_loan', false)
-            ->where('evaluation_needed', true)
-            ->exists();
-
-        if ($needsEval) {
-            if (! $game->hasPendingAction('academy_evaluation')) {
-                $game->addPendingAction('academy_evaluation', 'game.squad.academy.evaluate');
-                $this->notificationService->notifyAcademyEvaluation($game);
-            }
-        }
 
         // Notify user when a transfer window opens
         $this->processTransferWindowOpen($game);
@@ -173,6 +153,13 @@ class CareerActionProcessor
             ->whereNull('pending_annual_wage') // not already renewed
             ->where('contract_until', '<=', $sixMonthsOut)
             ->where('contract_until', '>', $currentDate)
+            ->whereDoesntHave('transferOffers', function ($q) {
+                $q->where('status', TransferOffer::STATUS_AGREED)
+                    ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT);
+            })
+            ->whereDoesntHave('latestRenewalNegotiation', function ($q) {
+                $q->where('status', RenewalNegotiation::STATUS_CLUB_DECLINED);
+            })
             ->get();
 
         if ($expiringPlayers->isEmpty()) {

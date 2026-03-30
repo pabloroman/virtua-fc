@@ -469,7 +469,7 @@
                     <div class="ml-auto flex items-center gap-2">
                         {{-- Add another sub button (only when a complete selection is ready and more subs available) --}}
                         <x-secondary-button
-                            x-show="!showingConfirmation && selectedPlayerOut && selectedPlayerIn && canAddMoreToPending && subsRemaining > 1"
+                            x-show="!showingConfirmation && selectedPlayerOut && selectedPlayerIn && canAddMoreToPending"
                             @click="addPendingSub()"
                             class="gap-1.5 !bg-teal-600 !border-teal-500 !text-white hover:!bg-teal-500"
                         >

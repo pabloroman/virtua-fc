@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Http\Actions\AdvanceMatchday;
+use App\Modules\Match\Jobs\ProcessRemainingBatches;
+use App\Modules\Match\Services\MatchdayOrchestrator;
 use App\Modules\Match\Services\MatchFinalizationService;
 use App\Models\Competition;
 use App\Models\CupTie;
@@ -13,6 +15,7 @@ use App\Models\Team;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class AdvanceMatchdayTest extends TestCase
@@ -334,6 +337,76 @@ class AdvanceMatchdayTest extends TestCase
         }
     }
 
+    public function test_remaining_batches_flag_set_when_player_match_found(): void
+    {
+        Queue::fake([ProcessRemainingBatches::class]);
+
+        [$team3] = $this->createMatchdayWithAiSibling();
+
+        $orchestrator = app(MatchdayOrchestrator::class);
+        $result = $orchestrator->advance($this->game);
+
+        $this->assertEquals('live_match', $result->type);
+
+        // Player's match should be played, AI match should NOT (deferred to background)
+        $this->assertDatabaseHas('game_matches', [
+            'game_id' => $this->game->id,
+            'home_team_id' => $this->playerTeam->id,
+            'played' => true,
+        ]);
+        $this->assertDatabaseHas('game_matches', [
+            'game_id' => $this->game->id,
+            'home_team_id' => $team3->id,
+            'played' => false,
+        ]);
+
+        // remaining_batches_processing_at flag should be set
+        $this->game->refresh();
+        $this->assertTrue($this->game->isProcessingRemainingBatches());
+
+        // The job should have been dispatched
+        Queue::assertPushed(ProcessRemainingBatches::class, function ($job) {
+            return $job->gameId === $this->game->id;
+        });
+    }
+
+    public function test_process_remaining_batches_simulates_all_and_clears_flag(): void
+    {
+        [$team3] = $this->createMatchdayWithAiSibling();
+
+        // Fake the queue to prevent ProcessRemainingBatches from auto-running
+        Queue::fake([ProcessRemainingBatches::class]);
+
+        $orchestrator = app(MatchdayOrchestrator::class);
+        $result = $orchestrator->advance($this->game);
+
+        $this->assertEquals('live_match', $result->type);
+
+        // AI match not yet played
+        $this->assertDatabaseHas('game_matches', [
+            'game_id' => $this->game->id,
+            'home_team_id' => $team3->id,
+            'played' => false,
+        ]);
+
+        // Now manually call processRemainingBatches (simulating the job running)
+        Queue::fake([]); // Stop faking so career actions can dispatch if needed
+        $this->game->refresh();
+        $orchestrator = app(MatchdayOrchestrator::class);
+        $orchestrator->processRemainingBatches($this->game, 0);
+
+        // AI match should now be played
+        $this->assertDatabaseHas('game_matches', [
+            'game_id' => $this->game->id,
+            'home_team_id' => $team3->id,
+            'played' => true,
+        ]);
+
+        // Flag should be cleared
+        $this->game->refresh();
+        $this->assertFalse($this->game->isProcessingRemainingBatches());
+    }
+
     public function test_returns_season_complete_when_no_matches(): void
     {
         // No matches created - should return season complete message
@@ -344,5 +417,46 @@ class AdvanceMatchdayTest extends TestCase
         // Redirects to /game/{id}
         $this->assertStringContainsString('/game/', $response->getTargetUrl());
         $this->assertStringContainsString($this->game->id, $response->getTargetUrl());
+    }
+
+    /**
+     * Create a matchday with the player's match and an AI-only sibling match.
+     *
+     * @return array{Team, Team} The two AI teams
+     */
+    private function createMatchdayWithAiSibling(): array
+    {
+        $team3 = Team::factory()->create(['name' => 'Team 3']);
+        $team4 = Team::factory()->create(['name' => 'Team 4']);
+
+        GameMatch::factory()->create([
+            'game_id' => $this->game->id,
+            'competition_id' => $this->leagueCompetition->id,
+            'round_number' => 1,
+            'home_team_id' => $this->playerTeam->id,
+            'away_team_id' => $this->opponentTeam->id,
+            'scheduled_date' => Carbon::parse('2024-08-16'),
+        ]);
+
+        GameMatch::factory()->create([
+            'game_id' => $this->game->id,
+            'competition_id' => $this->leagueCompetition->id,
+            'round_number' => 1,
+            'home_team_id' => $team3->id,
+            'away_team_id' => $team4->id,
+            'scheduled_date' => Carbon::parse('2024-08-17'),
+        ]);
+
+        foreach ([$this->playerTeam, $this->opponentTeam, $team3, $team4] as $team) {
+            GameStanding::create([
+                'game_id' => $this->game->id,
+                'competition_id' => $this->leagueCompetition->id,
+                'team_id' => $team->id,
+                'position' => 0, 'played' => 0, 'won' => 0, 'drawn' => 0,
+                'lost' => 0, 'goals_for' => 0, 'goals_against' => 0, 'points' => 0,
+            ]);
+        }
+
+        return [$team3, $team4];
     }
 }

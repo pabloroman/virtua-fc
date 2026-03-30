@@ -3,7 +3,9 @@
 namespace App\Modules\Manager\Services;
 
 use App\Models\ManagerStats;
+use App\Models\Team;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Locale;
 
 class LeaderboardService
@@ -34,7 +36,6 @@ class LeaderboardService
         $query = ManagerStats::query()
             ->join('users', 'users.id', '=', 'manager_stats.user_id')
             ->leftJoin('teams', 'teams.id', '=', 'manager_stats.team_id')
-            ->where('users.is_profile_public', true)
             ->where('manager_stats.matches_played', '>=', self::MIN_MATCHES)
             ->select('manager_stats.*', 'users.name', 'users.username', 'users.avatar', 'users.country', 'users.province', 'teams.name as team_name', 'teams.image as team_image');
 
@@ -58,7 +59,6 @@ class LeaderboardService
     {
         return ManagerStats::query()
             ->join('users', 'users.id', '=', 'manager_stats.user_id')
-            ->where('users.is_profile_public', true)
             ->where('users.country', $country)
             ->whereNotNull('users.province')
             ->where('users.province', '!=', '')
@@ -77,7 +77,6 @@ class LeaderboardService
 
         $countryCodes = ManagerStats::query()
             ->join('users', 'users.id', '=', 'manager_stats.user_id')
-            ->where('users.is_profile_public', true)
             ->where('manager_stats.matches_played', '>=', self::MIN_MATCHES)
             ->whereNotNull('users.country')
             ->where('users.country', '!=', '')
@@ -97,17 +96,66 @@ class LeaderboardService
     public function getAggregateStats(): array
     {
         $totalManagers = ManagerStats::where('matches_played', '>=', self::MIN_MATCHES)
-            ->join('users', 'users.id', '=', 'manager_stats.user_id')
-            ->where('users.is_profile_public', true)
             ->count();
 
-        $totalMatches = ManagerStats::join('users', 'users.id', '=', 'manager_stats.user_id')
-            ->where('users.is_profile_public', true)
-            ->sum('matches_played');
+        $totalMatches = ManagerStats::sum('matches_played');
 
         return [
             'totalManagers' => $totalManagers,
             'totalMatches' => (int) $totalMatches,
+        ];
+    }
+
+    /**
+     * Get all club teams that have at least one qualifying manager, with manager counts.
+     */
+    public function getTeamsWithManagers(): Collection
+    {
+        return Team::query()
+            ->join('manager_stats', 'teams.id', '=', 'manager_stats.team_id')
+            ->where('manager_stats.matches_played', '>=', self::MIN_MATCHES)
+            ->where('teams.type', 'club')
+            ->where('teams.is_placeholder', false)
+            ->whereNull('teams.parent_team_id')
+            ->groupBy('teams.id', 'teams.name', 'teams.slug', 'teams.image', 'teams.transfermarkt_id', 'teams.type', 'teams.country')
+            ->selectRaw('teams.id, teams.name, teams.slug, teams.image, teams.transfermarkt_id, teams.type, teams.country, count(distinct manager_stats.user_id) as managers_count')
+            ->orderBy('teams.name')
+            ->get();
+    }
+
+    /**
+     * Get paginated leaderboard rankings filtered by team.
+     */
+    public function getRankingsForTeam(string $teamId, string $sort): LengthAwarePaginator
+    {
+        return ManagerStats::query()
+            ->join('users', 'users.id', '=', 'manager_stats.user_id')
+            ->leftJoin('teams', 'teams.id', '=', 'manager_stats.team_id')
+            ->where('manager_stats.matches_played', '>=', self::MIN_MATCHES)
+            ->where('manager_stats.team_id', $teamId)
+            ->select('manager_stats.*', 'users.name', 'users.username', 'users.avatar', 'users.country', 'users.province', 'teams.name as team_name', 'teams.image as team_image')
+            ->orderByDesc("manager_stats.{$sort}")
+            ->orderByDesc('manager_stats.matches_played')
+            ->paginate(self::PER_PAGE);
+    }
+
+    /**
+     * Get aggregate stats for a specific team.
+     */
+    public function getTeamAggregateStats(string $teamId): array
+    {
+        $query = ManagerStats::query()
+            ->where('manager_stats.team_id', $teamId);
+
+        $totalManagers = (clone $query)
+            ->where('manager_stats.matches_played', '>=', self::MIN_MATCHES)
+            ->count();
+
+        $totalMatches = (int) $query->sum('matches_played');
+
+        return [
+            'totalManagers' => $totalManagers,
+            'totalMatches' => $totalMatches,
         ];
     }
 }

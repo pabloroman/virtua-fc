@@ -23,7 +23,6 @@ class ExploreFreeAgents
         return view('partials.explore-free-agents', [
             'players' => $players,
             'game' => $game,
-            'isTransferWindow' => $game->isTransferWindowOpen(),
         ]);
     }
 }

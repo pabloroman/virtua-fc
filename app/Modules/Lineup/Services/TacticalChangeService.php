@@ -35,6 +35,7 @@ class TacticalChangeService
         ?string $pressing = null,
         ?string $defensiveLine = null,
         bool $isExtraTime = false,
+        ?array $pitchPositions = null,
     ): array {
         $isUserHome = $match->isHomeTeam($game->team_id);
         $prefix = $isUserHome ? 'home' : 'away';
@@ -44,6 +45,14 @@ class TacticalChangeService
 
         if ($formation !== null) {
             $matchUpdates["{$prefix}_formation"] = $formation;
+
+            // When the formation changes, clear stale slot assignments — slot IDs
+            // map to different positions per formation.
+            if ($formation !== $match->{"{$prefix}_formation"}) {
+                $matchUpdates["{$prefix}_pitch_positions"] = $pitchPositions;
+                $matchUpdates["{$prefix}_slot_assignments"] = null;
+                $pitchPositions = null; // already queued
+            }
         }
         if ($mentality !== null) {
             $matchUpdates["{$prefix}_mentality"] = $mentality;
@@ -56,6 +65,11 @@ class TacticalChangeService
         }
         if ($defensiveLine !== null) {
             $matchUpdates["{$prefix}_defensive_line"] = $defensiveLine;
+        }
+
+        // Persist pitch positions on the match (if not already queued during formation change)
+        if ($pitchPositions !== null) {
+            $matchUpdates["{$prefix}_pitch_positions"] = $pitchPositions;
         }
 
         if (! empty($matchUpdates)) {
@@ -88,21 +102,29 @@ class TacticalChangeService
             $result = $this->resimulationService->resimulate($match, $game, $minute, $homePlayers, $awayPlayers, $allSubs, $homeBench, $awayBench);
         }
 
-        // Record substitutions if any
+        // Rebuild substitutions JSON: keep opponent entries, replace user entries with allSubs.
+        // This cleans up stale entries from previous simulations that were reverted.
+        $opponentSubs = collect($match->substitutions ?? [])
+            ->filter(fn ($s) => ($s['team_id'] ?? null) !== $game->team_id)
+            ->values()
+            ->all();
+
+        $userSubs = array_map(fn ($s) => [
+            'team_id' => $game->team_id,
+            'player_out_id' => $s['playerOutId'],
+            'player_in_id' => $s['playerInId'],
+            'minute' => $s['minute'],
+        ], $allSubs);
+
+        $match->update(['substitutions' => array_merge($opponentSubs, $userSubs)]);
+
+        // Record new substitution events and appearances
         $substitutionDetails = [];
         if (! empty($newSubstitutions)) {
-            $substitutions = $match->substitutions ?? [];
             $playerIds = [];
             $eventRows = [];
 
             foreach ($newSubstitutions as $sub) {
-                $substitutions[] = [
-                    'team_id' => $game->team_id,
-                    'player_out_id' => $sub['playerOutId'],
-                    'player_in_id' => $sub['playerInId'],
-                    'minute' => $minute,
-                ];
-
                 $eventRows[] = [
                     'id' => Str::uuid()->toString(),
                     'game_id' => $game->id,
@@ -118,14 +140,13 @@ class TacticalChangeService
                 $playerIds[] = $sub['playerInId'];
             }
 
-            // Batch: increment appearances, insert events, update match
+            // Batch: increment appearances, insert events
             $playerInIds = array_column($newSubstitutions, 'playerInId');
             GamePlayer::whereIn('id', $playerInIds)->update([
                 'appearances' => DB::raw('appearances + 1'),
                 'season_appearances' => DB::raw('season_appearances + 1'),
             ]);
             MatchEvent::insert($eventRows);
-            $match->update(['substitutions' => $substitutions]);
 
             // Load player names for response
             $players = GamePlayer::with('player')->whereIn('id', $playerIds)->get()->keyBy('id');

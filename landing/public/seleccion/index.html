@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtua FC — Un nuevo mánager de fútbol. Como los de antes.</title>
+    <meta name="description" content="Un manager de fútbol gratuito y sin instalación. Gestiona equipos reales de 5 ligas europeas, ficha jugadores, desarrolla canteranos y compite en Europa. Inspirado en los clásicos. Hecho para jugar en cualquier momento.">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate" hreflang="es" href="/index.html">
+    <link rel="alternate" hreflang="en" href="/index-en.html">
+    <link rel="alternate" hreflang="x-default" href="/index.html">
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=barlow-semi-condensed:400,600,800|inter:400,500,600" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                fontSize: {
+                    xs: '0.8rem',
+                    sm: '1rem',
+                    base: '1.25rem',
+                    xl: '1.563rem',
+                    '2xl': '1.953rem',
+                    '3xl': '2.441rem',
+                    '4xl': '3.052rem',
+                },
+                extend: {
+                    fontFamily: {
+                        heading: ['"Barlow Semi Condensed"', 'sans-serif'],
+                        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        surface: {
+                            900: '#0B1120',
+                            800: '#0F172A',
+                            700: '#1E293B',
+                            600: '#334155',
+                        },
+                        accent: {
+                            blue: '#3B82F6',
+                            gold: '#F59E0B',
+                            green: '#22C55E',
+                            red: '#EF4444',
+                            orange: '#F97316',
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+
+        /* ── Hero background layers ── */
+        .hero-section {
+            position: relative;
+            overflow: hidden;
+            background:
+                    radial-gradient(ellipse 600px 400px at 50% 20%, rgba(59,130,246,0.10) 0%, transparent 70%),
+                    radial-gradient(ellipse 400px 300px at 70% 60%, rgba(245,158,11,0.04) 0%, transparent 70%),
+                    #0B1120;
+        }
+
+        /* Scanline overlay — retro CRT feel */
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 0, 0, 0.04) 2px,
+                    rgba(0, 0, 0, 0.04) 4px
+            );
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* Grid pattern — broadcast/scoreboard aesthetic */
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                    linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+            background-size: 64px 64px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .gold-glow {
+            text-shadow: 0 0 12px rgba(245,158,11,0.2), 0 0 24px rgba(245,158,11,0.06);
+        }
+
+        /* ── CTA shimmer ── */
+        #submit-btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+        #submit-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+            transform: translateX(-100%);
+            animation: shimmer 3s infinite;
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            40%, 100% { transform: translateX(100%); }
+        }
+
+        /* ── Reduced motion ── */
+        /* ── Hero reveal on load ── */
+        @keyframes hero-reveal {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-reveal {
+            opacity: 0;
+            animation: hero-reveal 0.8s ease forwards;
+        }
+        .hero-reveal-1 { animation-delay: 0.1s; }
+        .hero-reveal-2 { animation-delay: 0.3s; }
+        .hero-reveal-3 { animation-delay: 0.55s; }
+        .hero-reveal-4 { animation-delay: 0.75s; }
+        .hero-reveal-5 { animation-delay: 0.95s; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .cta-btn::after { animation: none; }
+            .glow-number { animation: none; }
+            .hero-reveal {
+                opacity: 1;
+                animation: none;
+            }
+            .reveal {
+                opacity: 1;
+                transform: none;
+                transition: none;
+            }
+            html { scroll-behavior: auto; }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-surface-900 font-sans text-white antialiased flex flex-col">
+
+    <!-- Hero + Form (above the fold) -->
+    <section class="hero-section relative max-w-7xl mx-auto px-6 py-12 sm:pt-20 sm:pb-24 overflow-hidden flex-1">
+
+        <div class="relative z-10 text-center pt-20 max-w-4xl mx-auto">
+        <!-- Title -->
+        <h1 class="hero-reveal hero-reveal-1 font-heading font-extrabold text-4xl sm:text-7xl lg:text-[6.5rem] tracking-tight leading-[0.9] mb-3">
+            VirtuaFC
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="hero-reveal hero-reveal-2 font-heading font-bold text-4xl sm:text-3xl lg:text-4xl uppercase tracking-[0.18em] leading-none text-accent-gold gold-glow mb-10 sm:mb-14">
+            Selección Nacional
+        </p>
+
+            <p class="hero-reveal hero-reveal-3 mt-6 text-base sm:text-xl text-slate-300 leading-relaxed">
+                Llevas años dirigiendo a tu selección desde el sofá. Ahora hazlo oficial.
+            </p>
+
+            <!-- Inline waitlist -->
+            <form id="waitlist-form" class="hero-reveal hero-reveal-4 mt-8 flex flex-col sm:flex-row gap-3 max-w-xl mx-auto">
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    required
+                    placeholder="Tu nombre"
+                    class="sm:w-40 px-4 py-3 rounded-md bg-white/10 border border-white/20 text-white placeholder-slate-500 focus:outline-hidden focus:ring-2 focus:ring-accent-blue focus:border-transparent transition text-sm"
+                >
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    required
+                    placeholder="tu@email.com"
+                    class="flex-1 px-4 py-3 rounded-md bg-white/10 border border-white/20 text-white placeholder-slate-500 focus:outline-hidden focus:ring-2 focus:ring-accent-blue focus:border-transparent transition text-sm"
+                >
+                <button
+                    type="submit"
+                    id="submit-btn"
+                    class="bg-accent-blue hover:bg-accent-blue/80 active:bg-accent-blue-700 text-white px-6 py-3 rounded-md font-semibold uppercase tracking-wide text-xs whitespace-nowrap transition ease-in-out duration-150"
+                >
+                    Juega gratis
+                </button>
+            </form>
+            <div id="form-message" class="hidden text-xs mt-3"></div>
+            <p id="waitlist" class="hero-reveal hero-reveal-5 mt-5 text-xs text-slate-500">
+                Sin descargas, sin instalación, sin requisitos. Abre el navegador y empieza a jugar. En tu portátil, tablet o móvil.
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto w-full px-6 py-12 border-t border-white/10">
+        <div class="flex space-x-4 justify-center">
+            <div>
+                <a href="https://virtuafc.com">
+                <div class="-skew-x-12 bg-surface-600 px-3 sm:px-4 py-1">
+                    <span class="skew-x-12 inline-block font-heading text-base font-bold text-slate-400 tracking-tight whitespace-nowrap">Virtua FC</span>
+                </div>
+                </a>
+            </div>
+            <div class="text-xs sm:text-[0.65rem] text-slate-500">
+                © 2026 Pablo Román
+                <br>
+                <a href="https://app.virtuafc.com/legal" class="text-accent-blue border-b border-accent-blue">Aviso Legal</a> ·
+                <a href="https://github.com/pabloroman/virtua-fc" target="_blank" class="text-accent-blue border-b border-accent-blue">GitHub</a> ·
+                <a href="https://app.virtuafc.com/login" class="text-accent-blue border-b border-accent-blue">Iniciar sesión</a>
+            </div>
+
+        </div>
+    </footer>
+
+    <script>
+        const form = document.getElementById('waitlist-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const formMessage = document.getElementById('form-message');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = form.name.value.trim();
+            const email = form.email.value.trim();
+
+            if (!name || !email) return;
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Enviando...';
+            formMessage.classList.add('hidden');
+
+            try {
+                const res = await fetch('https://app.virtuafc.com/api/waitlist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, wants_career: false, wants_tournament: true }),
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    formMessage.textContent = '¡Estás en la lista! Te avisaremos pronto.';
+                    formMessage.className = 'text-xs mt-3 text-green-400';
+                    formMessage.classList.remove('hidden');
+                    form.reset();
+                } else {
+                    formMessage.textContent = data.error || 'Algo salió mal. Inténtalo de nuevo.';
+                    formMessage.className = 'text-xs mt-3 text-red-400';
+                    formMessage.classList.remove('hidden');
+                }
+            } catch (err) {
+                formMessage.textContent = 'Error de conexión. Inténtalo de nuevo.';
+                formMessage.className = 'text-xs mt-3 text-red-400';
+                formMessage.classList.remove('hidden');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Acceso Anticipado';
+            }
+        });
+    </script>
+
+    <script>
+        const video = document.getElementById('promo-video');
+        const playBtn = document.getElementById('video-play-btn');
+
+        playBtn.addEventListener('click', () => {
+            video.play();
+            playBtn.style.display = 'none';
+            video.setAttribute('controls', '');
+        });
+
+        video.addEventListener('ended', () => {
+            playBtn.style.display = '';
+            video.removeAttribute('controls');
+        });
+    </script>
+
+</body>
+</html>

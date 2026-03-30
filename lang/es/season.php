@@ -158,6 +158,9 @@ return [
     'share_result' => 'Compartir resultado',
     'share_text' => '¡Llegué a :result en :competition con :team! Juega en VirtuaFC',
     'play_again' => 'Jugar de nuevo',
+    'try_different_team' => 'Prueba con otra selección y reescribe la historia',
     'copied_to_clipboard' => '¡Copiado!',
     'your_squad_stats' => 'Estadísticas de tu plantilla',
+    'download_season' => 'Descargar temporada',
+    'download_summary' => 'Descargar resumen',
 ];

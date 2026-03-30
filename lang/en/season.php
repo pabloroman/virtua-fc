@@ -158,6 +158,9 @@ return [
     'share_result' => 'Share Result',
     'share_text' => 'I reached :result at the :competition with :team! Play VirtuaFC',
     'play_again' => 'Play Again',
+    'try_different_team' => 'Try a different team and rewrite history',
     'copied_to_clipboard' => 'Copied!',
     'your_squad_stats' => 'Your Squad Stats',
+    'download_season' => 'Download season',
+    'download_summary' => 'Download summary',
 ];

@@ -46,6 +46,29 @@ class Money
     }
 
     /**
+     * Round a price in cents to the nearest "nice" increment.
+     *
+     * Uses tiered granularity so small values don't round down to zero:
+     *   >= €1M   → round to nearest €100K
+     *   >= €100K → round to nearest €50K
+     *   otherwise → round to nearest €10K
+     *
+     * @param int $cents Amount in cents
+     * @return int Rounded amount in cents
+     */
+    public static function roundPrice(int $cents): int
+    {
+        if ($cents >= 100_000_000) {      // >= €1M
+            return (int) (round($cents / 10_000_000) * 10_000_000);
+        }
+        if ($cents >= 10_000_000) {       // >= €100K
+            return (int) (round($cents / 5_000_000) * 5_000_000);
+        }
+
+        return (int) (round($cents / 1_000_000) * 1_000_000); // round to €10K
+    }
+
+    /**
      * Parse a market value string like "€10M" or "500k" into cents.
      *
      * @param string|null $value e.g., "€10M", "€500K", "250000"

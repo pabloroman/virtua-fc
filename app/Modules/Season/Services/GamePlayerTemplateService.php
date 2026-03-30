@@ -41,6 +41,87 @@ class GamePlayerTemplateService
     }
 
     /**
+     * Delete templates for national teams (World Cup rosters).
+     */
+    public function clearTemplatesForNationalTeams(string $season): void
+    {
+        DB::table('game_player_templates')
+            ->where('season', $season)
+            ->whereIn('team_id', function ($query) {
+                $query->select('id')->from('teams')->where('type', 'national');
+            })
+            ->delete();
+    }
+
+    /**
+     * Generate pre-computed templates for World Cup national team rosters.
+     *
+     * @return int Number of template rows generated
+     */
+    public function generateForWorldCup(string $season = '2025'): int
+    {
+        $this->clearTemplatesForNationalTeams($season);
+
+        $basePath = base_path('data/2025/WC2026/teams');
+
+        // Load national teams with roster files
+        $nationalTeams = DB::table('teams')
+            ->where('type', 'national')
+            ->whereNotNull('transfermarkt_id')
+            ->get(['id', 'transfermarkt_id']);
+
+        // Load roster data per team and collect needed transfermarkt IDs
+        $teamRosters = [];
+        $neededTmIds = [];
+
+        foreach ($nationalTeams as $team) {
+            $filePath = "{$basePath}/{$team->transfermarkt_id}.json";
+            if (!file_exists($filePath)) {
+                continue;
+            }
+
+            $data = json_decode(file_get_contents($filePath), true);
+            if (!$data || empty($data['players'])) {
+                continue;
+            }
+
+            $teamRosters[] = ['team_id' => $team->id, 'players' => $data['players']];
+            foreach ($data['players'] as $playerData) {
+                if (!empty($playerData['id'])) {
+                    $neededTmIds[] = $playerData['id'];
+                }
+            }
+        }
+
+        // Only load players that appear in roster files
+        $allPlayers = DB::table('players')
+            ->select('id', 'transfermarkt_id', 'date_of_birth', 'technical_ability', 'physical_ability')
+            ->whereIn('transfermarkt_id', array_unique($neededTmIds))
+            ->get()
+            ->keyBy('transfermarkt_id');
+
+        $processedPlayerIds = [];
+        $rows = [];
+
+        foreach ($teamRosters as $roster) {
+            foreach ($roster['players'] as $playerData) {
+                $row = $this->prepareTemplateRow($season, $roster['team_id'], $playerData, 0, $allPlayers);
+                if ($row && !isset($processedPlayerIds[$row['player_id']])) {
+                    $row['number'] = null; // WC templates must not store squad numbers
+                    $rows[] = $row;
+                    $processedPlayerIds[$row['player_id']] = true;
+                }
+            }
+        }
+
+        foreach (array_chunk($rows, 500) as $chunk) {
+            DB::table('game_player_templates')->insert($chunk);
+        }
+
+        return count($rows);
+    }
+
+    /**
      * Generate pre-computed game_player_templates for a season and country.
      * Additive — call clearTemplates() first if a fresh start is needed.
      *

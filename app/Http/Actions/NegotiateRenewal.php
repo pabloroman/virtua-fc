@@ -91,7 +91,6 @@ class NegotiateRenewal
         $demand = $this->contractService->calculateRenewalDemand($player);
         $disposition = $this->contractService->calculateDisposition($player);
         $mood = $this->contractService->getMoodIndicator($disposition);
-        $midpoint = $this->calculateMidpointInEuros($player->annual_wage, $demand['wage']);
 
         return response()->json([
             'status' => 'ok',
@@ -110,7 +109,7 @@ class NegotiateRenewal
                     'mood' => $mood,
                 ], [
                     'canAccept' => false,
-                    'suggestedWage' => $midpoint,
+                    'suggestedWage' => (int) ($demand['wage'] / 100),
                     'preferredYears' => $demand['contractYears'],
                 ]),
             ],

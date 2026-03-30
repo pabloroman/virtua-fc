@@ -41,4 +41,35 @@ trait CreatesLineups
 
         return $players;
     }
+
+    /**
+     * Create bench players for a team.
+     */
+    private function createBenchPlayers(Game $game, Team $team, int $count = 7, int $ability = 70): Collection
+    {
+        $positions = [
+            'Goalkeeper', 'Centre-Back', 'Left-Back',
+            'Central Midfield', 'Defensive Midfield',
+            'Right Winger', 'Centre-Forward',
+        ];
+
+        $players = collect();
+        for ($i = 0; $i < $count; $i++) {
+            $player = GamePlayer::factory()
+                ->forGame($game)
+                ->forTeam($team)
+                ->create([
+                    'position' => $positions[$i % count($positions)],
+                    'game_technical_ability' => $ability,
+                    'game_physical_ability' => $ability,
+                    'fitness' => 95,
+                    'morale' => 80,
+                ]);
+
+            $player->setRelation('game', $game);
+            $players->push($player);
+        }
+
+        return $players;
+    }
 }

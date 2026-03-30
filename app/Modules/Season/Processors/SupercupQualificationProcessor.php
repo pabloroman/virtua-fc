@@ -9,6 +9,7 @@ use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\CompetitionEntry;
 use App\Models\GameStanding;
+use App\Models\SimulatedSeason;
 
 /**
  * Determines supercup qualifiers for the next season,
@@ -99,12 +100,30 @@ class SupercupQualificationProcessor implements SeasonProcessor
      */
     private function getLeagueTopTeams(string $gameId, string $leagueId, int $count): array
     {
-        return GameStanding::where('game_id', $gameId)
+        // Try real standings first (player's league)
+        $teams = GameStanding::where('game_id', $gameId)
             ->where('competition_id', $leagueId)
             ->orderBy('position')
             ->limit($count)
             ->pluck('team_id')
             ->toArray();
+
+        if (!empty($teams)) {
+            return $teams;
+        }
+
+        // Fall back to simulated season results (non-player leagues)
+        $game = Game::find($gameId);
+        $simulated = SimulatedSeason::where('game_id', $gameId)
+            ->where('competition_id', $leagueId)
+            ->where('season', $game->season)
+            ->first();
+
+        if ($simulated && !empty($simulated->results)) {
+            return array_slice($simulated->results, 0, $count);
+        }
+
+        return [];
     }
 
     /**

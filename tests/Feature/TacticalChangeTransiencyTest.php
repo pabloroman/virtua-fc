@@ -48,10 +48,10 @@ class TacticalChangeTransiencyTest extends TestCase
 
     public function test_previous_match_formation_does_not_leak_into_lineup_page(): void
     {
-        // Set the user's default tactics to 4-4-2 balanced
+        // Set the user's default tactics to 4-3-3 balanced
         GameTactics::create([
             'game_id' => $this->game->id,
-            'default_formation' => '4-4-2',
+            'default_formation' => '4-3-3',
             'default_mentality' => 'balanced',
             'default_playing_style' => 'balanced',
             'default_pressing' => 'standard',
@@ -107,7 +107,7 @@ class TacticalChangeTransiencyTest extends TestCase
     {
         $tactics = GameTactics::create([
             'game_id' => $this->game->id,
-            'default_formation' => '4-4-2',
+            'default_formation' => '4-3-3',
             'default_mentality' => 'balanced',
             'default_playing_style' => 'balanced',
             'default_pressing' => 'standard',
@@ -123,7 +123,7 @@ class TacticalChangeTransiencyTest extends TestCase
             'away_team_id' => $this->opponentTeam->id,
             'scheduled_date' => Carbon::parse('2024-08-25'),
             'played' => false,
-            'home_formation' => '4-4-2',
+            'home_formation' => '4-3-3',
             'home_mentality' => 'balanced',
             'home_playing_style' => 'balanced',
             'home_pressing' => 'standard',
@@ -141,7 +141,7 @@ class TacticalChangeTransiencyTest extends TestCase
 
         // GameTactics defaults must remain unchanged
         $tactics->refresh();
-        $this->assertEquals('4-4-2', $tactics->default_formation);
+        $this->assertEquals('4-3-3', $tactics->default_formation);
         $this->assertEquals('balanced', $tactics->default_mentality);
         $this->assertEquals('balanced', $tactics->default_playing_style);
         $this->assertEquals('standard', $tactics->default_pressing);
@@ -152,7 +152,7 @@ class TacticalChangeTransiencyTest extends TestCase
     {
         GameTactics::create([
             'game_id' => $this->game->id,
-            'default_formation' => '4-4-2',
+            'default_formation' => '4-3-3',
             'default_mentality' => 'balanced',
             'default_playing_style' => 'balanced',
             'default_pressing' => 'standard',
@@ -192,7 +192,7 @@ class TacticalChangeTransiencyTest extends TestCase
         $nextMatch->refresh();
 
         // Formation and mentality should come from GameTactics, not the previous match
-        $this->assertEquals('4-4-2', $nextMatch->home_formation);
+        $this->assertEquals('4-3-3', $nextMatch->home_formation);
         $this->assertEquals('balanced', $nextMatch->home_mentality);
         $this->assertEquals('balanced', $nextMatch->home_playing_style);
         $this->assertEquals('standard', $nextMatch->home_pressing);

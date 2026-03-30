@@ -226,17 +226,17 @@ return [
     'environments' => [
         'production' => [
             'supervisor-gameplay' => [
-                'maxProcesses' => 15,
+                'maxProcesses' => (int) env('HORIZON_MAX_GAMEPLAY', 15),
                 'balanceMaxShift' => 3,
                 'balanceCooldown' => 3,
             ],
             'supervisor-setup' => [
-                'maxProcesses' => 5,
+                'maxProcesses' => (int) env('HORIZON_MAX_SETUP', 5),
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
             ],
             'supervisor-mail' => [
-                'maxProcesses' => 2,
+                'maxProcesses' => (int) env('HORIZON_MAX_MAIL', 2),
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
             ],

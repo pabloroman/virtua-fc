@@ -4,9 +4,58 @@ namespace App\Modules\Finance\Services;
 
 use App\Models\Game;
 use App\Models\GameInvestment;
+use App\Models\TeamReputation;
 
 class BudgetAllocationService
 {
+    public function __construct(
+        private readonly BudgetProjectionService $projectionService,
+    ) {}
+
+    /**
+     * Prepare budget allocation data for display (finances, tiers, minimums).
+     *
+     * @return array{finances: \App\Models\GameFinances, investment: ?GameInvestment, availableSurplus: int, tiers: array, reputationLevel: string}
+     */
+    public function prepareBudgetData(Game $game): array
+    {
+        $finances = $game->currentFinances;
+        if (!$finances) {
+            $finances = $this->projectionService->generateProjections($game);
+        }
+
+        $investment = $game->currentInvestment;
+        $availableSurplus = $finances->available_surplus ?? 0;
+        $reputationLevel = TeamReputation::resolveLevel($game->id, $game->team_id);
+        $previousInvestment = $game->previousSeasonInvestment();
+
+        if ($investment) {
+            $tiers = [
+                'youth_academy' => $investment->youth_academy_tier,
+                'medical' => $investment->medical_tier,
+                'scouting' => $investment->scouting_tier,
+                'facilities' => $investment->facilities_tier,
+            ];
+        } elseif ($previousInvestment) {
+            $tiers = [
+                'youth_academy' => $previousInvestment->youth_academy_tier,
+                'medical' => $previousInvestment->medical_tier,
+                'scouting' => $previousInvestment->scouting_tier,
+                'facilities' => $previousInvestment->facilities_tier,
+            ];
+        } else {
+            $tiers = GameInvestment::defaultTiersForReputation($reputationLevel, $availableSurplus);
+        }
+
+        return [
+            'finances' => $finances,
+            'investment' => $investment,
+            'availableSurplus' => $availableSurplus,
+            'tiers' => $tiers,
+            'reputationLevel' => $reputationLevel,
+        ];
+    }
+
     /**
      * Allocate budget from validated euro amounts.
      *

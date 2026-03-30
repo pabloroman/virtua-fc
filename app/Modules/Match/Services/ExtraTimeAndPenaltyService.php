@@ -42,8 +42,8 @@ class ExtraTimeAndPenaltyService
         }
 
         // Read formation/mentality from match record
-        $homeFormation = Formation::tryFrom($match->home_formation) ?? Formation::F_4_4_2;
-        $awayFormation = Formation::tryFrom($match->away_formation) ?? Formation::F_4_4_2;
+        $homeFormation = Formation::tryFrom($match->home_formation) ?? Formation::F_4_3_3;
+        $awayFormation = Formation::tryFrom($match->away_formation) ?? Formation::F_4_3_3;
         $homeMentality = Mentality::tryFrom($match->home_mentality ?? '') ?? Mentality::BALANCED;
         $awayMentality = Mentality::tryFrom($match->away_mentality ?? '') ?? Mentality::BALANCED;
 
@@ -58,6 +58,7 @@ class ExtraTimeAndPenaltyService
             awayFormation: $awayFormation,
             homeMentality: $homeMentality,
             awayMentality: $awayMentality,
+            neutralVenue: $match->competition_id === 'WC2026',
         );
 
         $match->update([
@@ -111,7 +112,8 @@ class ExtraTimeAndPenaltyService
     }
 
     /**
-     * Load the players currently on the pitch, accounting for substitutions.
+     * Load the players currently on the pitch, accounting for substitutions
+     * and red cards.
      *
      * @return array{0: Collection, 1: Collection} [homePlayers, awayPlayers]
      */
@@ -131,6 +133,15 @@ class ExtraTimeAndPenaltyService
                 $awayIds[] = $sub['player_in_id'];
             }
         }
+
+        // Exclude red-carded players (from regular time and extra time)
+        $redCardedIds = MatchEvent::where('game_match_id', $match->id)
+            ->where('event_type', MatchEvent::TYPE_RED_CARD)
+            ->pluck('game_player_id')
+            ->all();
+
+        $homeIds = array_values(array_filter($homeIds, fn ($id) => ! in_array($id, $redCardedIds)));
+        $awayIds = array_values(array_filter($awayIds, fn ($id) => ! in_array($id, $redCardedIds)));
 
         $allIds = array_merge($homeIds, $awayIds);
         $players = GamePlayer::with('player')->whereIn('id', $allIds)->get()->keyBy('id');

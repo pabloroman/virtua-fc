@@ -28,12 +28,10 @@
         {{-- Summary cards --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <div class="bg-surface-800 border border-border-default rounded-xl p-4">
-                <div class="text-xs text-text-muted uppercase tracking-wider mb-1">{{ __('admin.invites_sent') }}</div>
-                <div class="text-2xl font-bold text-text-primary">{{ number_format($totalInvites) }}</div>
-            </div>
-            <div class="bg-surface-800 border border-border-default rounded-xl p-4">
-                <div class="text-xs text-text-muted uppercase tracking-wider mb-1">{{ __('admin.users_registered') }}</div>
-                <div class="text-2xl font-bold text-text-primary">{{ number_format($totalRegistered) }}</div>
+                <div class="text-xs text-text-muted uppercase tracking-wider mb-1">
+                    {{ $mode === \App\Models\Game::MODE_TOURNAMENT ? __('admin.funnel_access_granted') : __('admin.invites_sent') }}
+                </div>
+                <div class="text-2xl font-bold text-text-primary">{{ number_format($mode === \App\Models\Game::MODE_TOURNAMENT ? $totalRegistered : $totalInvites) }}</div>
             </div>
             <div class="bg-surface-800 border border-border-default rounded-xl p-4">
                 <div class="text-xs text-text-muted uppercase tracking-wider mb-1">{{ __('admin.conversion_to_first_match') }}</div>

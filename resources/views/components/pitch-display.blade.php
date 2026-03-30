@@ -67,6 +67,7 @@
                                         'bg-blue-500/25': state === 'valid-def',
                                         'bg-emerald-500/25': state === 'valid-mid',
                                         'bg-red-500/25': state === 'valid-fwd',
+                                        'bg-amber-500/25': state === 'valid-gk',
                                         [getZoneColorClass('Goalkeeper')]: state === 'valid',
                                         'bg-surface-800/5': state === 'occupied',
                                         'bg-black/15': state === 'invalid',
@@ -168,6 +169,20 @@
                         >
                             <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
+                        @endif
+
+                        @if($isLive)
+                        {{-- Card indicator (live mode) --}}
+                        <span
+                            x-show="redCardedPlayerIds.includes(slot.player?.id)"
+                            x-cloak
+                            class="absolute -top-1.5 -left-1.5 w-3 h-4 rounded-[2px] bg-accent-red shadow-sm border border-black/20 z-10"
+                        ></span>
+                        <span
+                            x-show="isPlayerYellowCarded(slot.player?.id) && !redCardedPlayerIds.includes(slot.player?.id)"
+                            x-cloak
+                            class="absolute -top-1.5 -left-1.5 w-3 h-4 rounded-[2px] bg-accent-gold shadow-sm border border-black/20 z-10"
+                        ></span>
                         @endif
 
                         @if($isLive)

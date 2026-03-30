@@ -36,8 +36,6 @@ class ShowAcademy
 
         $tier = $game->currentInvestment->youth_academy_tier ?? 0;
         $tierDescription = YouthAcademyService::getTierDescription($tier);
-        $capacity = YouthAcademyService::getCapacity($tier);
-        $revealPhase = YouthAcademyService::getRevealPhase($game);
 
         return view('squad-academy', [
             'game' => $game,
@@ -50,8 +48,6 @@ class ShowAcademy
             'expiringContractsCount' => $expiringContractsCount,
             'tier' => $tier,
             'tierDescription' => $tierDescription,
-            'capacity' => $capacity,
-            'revealPhase' => $revealPhase,
         ]);
     }
 

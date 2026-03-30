@@ -32,20 +32,23 @@ class MatchResultProcessor
      */
     public function processAll(string $gameId, int $matchday, string $currentDate, array $matchResults, ?string $deferMatchId = null, $allPlayers = null): void
     {
-        // Capture previous date BEFORE updating game state (used for recovery calculation)
-        $previousDate = Game::where('id', $gameId)->value('current_date');
-        $previousDate = $previousDate ? Carbon::parse($previousDate) : null;
+        // Load game once for previous date capture and date guard
+        $game = Game::find($gameId);
 
         // 1. Update game state (replaces onMatchdayAdvanced projector)
-        Game::where('id', $gameId)->update([
-            'current_matchday' => $matchday,
-            'current_date' => Carbon::parse($currentDate)->toDateString(),
-        ]);
+        // Only advance current_date forward — background batch processing must not
+        // regress the date that was already set by the player's batch.
+        $newDate = Carbon::parse($currentDate);
+        $updateData = ['current_matchday' => $matchday];
+        if (! $game->current_date || $newDate->gte($game->current_date)) {
+            $updateData['current_date'] = $newDate->toDateString();
+        }
+        Game::where('id', $gameId)->update($updateData);
 
         // 2. Bulk update match records (scores + played)
         $this->bulkUpdateMatchScores($matchResults);
 
-        // Load shared context once
+        // Reload game with post-update state for the rest of the method
         $game = Game::find($gameId);
         $matchIds = array_column($matchResults, 'matchId');
         $matches = GameMatch::whereIn('id', $matchIds)->get()->keyBy('id');
@@ -72,13 +75,13 @@ class MatchResultProcessor
                 $preLoadedPlayerIds = array_values(array_diff($preLoadedPlayerIds, $deferredPlayerIds));
             }
         }
-        $this->batchServeSuspensions($matches, $matchResults, $preLoadedPlayerIds);
+        $this->batchServeSuspensions($matches, $matchResults, $preLoadedPlayerIds, $allPlayers);
 
         // 4. Bulk insert all match events across all matches
         $this->bulkInsertMatchEvents($gameId, $matchResults);
 
         // 5. Batch process player stats across all matches
-        $this->batchProcessPlayerStats($game, $matchResults, $matches, $competitions, $deferMatchId);
+        $this->batchProcessPlayerStats($game, $matchResults, $matches, $competitions, $deferMatchId, $allPlayers);
 
         // 6. Bulk update appearances across all matches (including auto-subbed-in players)
         $this->bulkUpdateAppearances($matches, $matchResults);
@@ -86,8 +89,12 @@ class MatchResultProcessor
         // 6b. Record auto-substitutions in match substitutions JSON
         $this->recordAutoSubstitutions($matches, $matchResults);
 
-        // 7. Batch update conditions for all matches
-        $this->batchUpdateConditions($matches, $matchResults, $allPlayers ?? collect(), $previousDate);
+        // 7. Batch update conditions (exclude deferred match — finalization handles it)
+        $conditionMatches = $deferMatchId ? $matches->except($deferMatchId) : $matches;
+        $conditionResults = $deferMatchId
+            ? array_filter($matchResults, fn ($r) => $r['matchId'] !== $deferMatchId)
+            : $matchResults;
+        $this->batchUpdateConditions($conditionMatches, $conditionResults, $allPlayers ?? collect());
 
         // 8. Batch update goalkeeper stats (skip deferred match)
         $gkResults = $deferMatchId
@@ -96,7 +103,7 @@ class MatchResultProcessor
         $gkMatches = $deferMatchId
             ? $matches->except($deferMatchId)->keyBy('id')
             : $matches;
-        $this->batchUpdateGoalkeeperStats($gkMatches, $gkResults);
+        $this->batchUpdateGoalkeeperStats($gkMatches, $gkResults, $allPlayers);
 
         // 9. Update standings per league in bulk (skip deferred match)
         $leagueResultsByCompetition = [];
@@ -117,6 +124,7 @@ class MatchResultProcessor
         foreach ($leagueResultsByCompetition as $competitionId => $results) {
             $this->standingsCalculator->bulkUpdateAfterMatches($gameId, $competitionId, $results);
         }
+
     }
 
     /**
@@ -167,13 +175,14 @@ class MatchResultProcessor
 
     /**
      * Serve suspensions for all matches in the batch.
-     * Decrements matches_remaining for suspended players on teams that played.
+     * Decrements matches_remaining for suspended players whose team actually
+     * played a match in the competition the suspension belongs to.
      *
      * @param  array  $preLoadedPlayerIds  Eligible player IDs (deferred match teams already excluded by caller)
+     * @param  \Illuminate\Support\Collection|null  $allPlayers  Players grouped by team_id (for team lookup)
      */
-    private function batchServeSuspensions($matches, array $matchResults, array $preLoadedPlayerIds): void
+    private function batchServeSuspensions($matches, array $matchResults, array $preLoadedPlayerIds, $allPlayers = null): void
     {
-        // Group matches by competition
         $competitionIds = [];
         foreach ($matchResults as $result) {
             $competitionIds[$result['competitionId']] = true;
@@ -183,12 +192,58 @@ class MatchResultProcessor
             return;
         }
 
-        // Use direct whereIn on pre-loaded player IDs instead of whereHas subquery
-        $suspensionIds = PlayerSuspension::whereIn('competition_id', array_keys($competitionIds))
+        // Build a map of which competitions each team played in this batch.
+        // Uses match result data (homeTeamId/awayTeamId) when available,
+        // falls back to the GameMatch models for backward compatibility.
+        $teamCompetitions = []; // [team_id => [competition_id => true]]
+        foreach ($matchResults as $result) {
+            $homeTeamId = $result['homeTeamId'] ?? null;
+            $awayTeamId = $result['awayTeamId'] ?? null;
+
+            if (! $homeTeamId || ! $awayTeamId) {
+                $match = $matches->get($result['matchId']);
+                $homeTeamId = $homeTeamId ?? $match?->home_team_id;
+                $awayTeamId = $awayTeamId ?? $match?->away_team_id;
+            }
+
+            if ($homeTeamId) {
+                $teamCompetitions[$homeTeamId][$result['competitionId']] = true;
+            }
+            if ($awayTeamId) {
+                $teamCompetitions[$awayTeamId][$result['competitionId']] = true;
+            }
+        }
+
+        // Build player → team mapping from pre-loaded data
+        $playerTeamMap = []; // [player_id => team_id]
+        if ($allPlayers) {
+            foreach ($allPlayers as $teamId => $teamPlayers) {
+                foreach ($teamPlayers as $player) {
+                    if (in_array($player->id, $preLoadedPlayerIds)) {
+                        $playerTeamMap[$player->id] = $teamId;
+                    }
+                }
+            }
+        }
+
+        // Load suspensions with player and competition info for filtering
+        $suspensions = PlayerSuspension::whereIn('competition_id', array_keys($competitionIds))
             ->where('matches_remaining', '>', 0)
             ->whereIn('game_player_id', $preLoadedPlayerIds)
-            ->pluck('id')
-            ->all();
+            ->get(['id', 'game_player_id', 'competition_id']);
+
+        // Filter: only serve if the player's team played in this specific competition.
+        // When team mapping is unavailable, fall back to serving (preserving old behavior).
+        $suspensionIds = [];
+        foreach ($suspensions as $suspension) {
+            $teamId = $playerTeamMap[$suspension->game_player_id] ?? null;
+            if (! $teamId || empty($teamCompetitions)) {
+                // Fallback: no team data available, serve as before
+                $suspensionIds[] = $suspension->id;
+            } elseif (isset($teamCompetitions[$teamId][$suspension->competition_id])) {
+                $suspensionIds[] = $suspension->id;
+            }
+        }
 
         if (! empty($suspensionIds)) {
             PlayerSuspension::whereIn('id', $suspensionIds)->decrement('matches_remaining');
@@ -234,7 +289,7 @@ class MatchResultProcessor
     /**
      * @param  string|null  $deferMatchId  Match ID to skip notifications for (deferred to finalization)
      */
-    private function batchProcessPlayerStats(Game $game, array $matchResults, $matches, $competitions, ?string $deferMatchId = null): void
+    private function batchProcessPlayerStats(Game $game, array $matchResults, $matches, $competitions, ?string $deferMatchId = null, $allPlayers = null): void
     {
         // Aggregate stat increments across ALL matches
         $statIncrements = []; // [player_id => [goals => N, assists => N, ...]]
@@ -306,7 +361,9 @@ class MatchResultProcessor
             return;
         }
 
-        $players = GamePlayer::whereIn('id', $allPlayerIds)->get()->keyBy('id');
+        $players = $allPlayers
+            ? $allPlayers->flatten()->keyBy('id')->only($allPlayerIds)
+            : GamePlayer::whereIn('id', $allPlayerIds)->get()->keyBy('id');
 
         // Apply stat increments in memory (for special events processing below)
         foreach ($statIncrements as $playerId => $increments) {
@@ -474,6 +531,8 @@ class MatchResultProcessor
      */
     private function recordAutoSubstitutions($matches, array $matchResults): void
     {
+        $updates = []; // [matchId => merged substitutions array]
+
         foreach ($matchResults as $result) {
             $autoSubs = [];
             foreach ($result['events'] as $eventData) {
@@ -492,48 +551,121 @@ class MatchResultProcessor
                 $match = $matches->get($result['matchId']);
                 if ($match) {
                     $existing = $match->substitutions ?? [];
-                    $match->update(['substitutions' => array_merge($existing, $autoSubs)]);
+                    $updates[$result['matchId']] = json_encode(array_merge($existing, $autoSubs));
                 }
             }
+        }
+
+        if (empty($updates)) {
+            return;
+        }
+
+        // Build a single CASE WHEN query for all matches
+        $cases = [];
+        $ids = [];
+        foreach ($updates as $matchId => $subsJson) {
+            $escaped = str_replace("'", "''", $subsJson);
+            $cases[] = "WHEN id = '{$matchId}' THEN '{$escaped}'::json";
+            $ids[] = $matchId;
+        }
+
+        $idList = "'" . implode("','", $ids) . "'";
+
+        // Branch on driver for SQLite compatibility in tests
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement(
+                'UPDATE game_matches SET substitutions = CASE ' . implode(' ', $cases) . ' ELSE substitutions END WHERE id IN (' . $idList . ')'
+            );
+        } else {
+            // SQLite: use json() instead of ::jsonb cast
+            $sqliteCases = [];
+            foreach ($updates as $matchId => $subsJson) {
+                $escaped = str_replace("'", "''", $subsJson);
+                $sqliteCases[] = "WHEN id = '{$matchId}' THEN json('{$escaped}')";
+            }
+            DB::statement(
+                'UPDATE game_matches SET substitutions = CASE ' . implode(' ', $sqliteCases) . ' ELSE substitutions END WHERE id IN (' . $idList . ')'
+            );
         }
     }
 
     /**
      * Batch update fitness and morale for all matches in a single query.
      *
-     * Uses the game's previous current_date (before this matchday's update) to compute
-     * recovery days uniformly for all teams, instead of per-team lookups.
+     * Computes per-team recovery days based on each team's last played match,
+     * not the global matchday gap (which is wrong for tournaments with staggered schedules).
      */
-    private function batchUpdateConditions($matches, array $matchResults, $allPlayers, ?Carbon $previousDate): void
+    private function batchUpdateConditions($matches, array $matchResults, $allPlayers): void
     {
         if ($matches->isEmpty()) {
             return;
         }
 
-        $daysSinceLastMatchday = 7; // default: full recovery for first matchday
-        if ($previousDate) {
-            $daysSinceLastMatchday = (int) $previousDate->diffInDays($matches->first()->scheduled_date);
+        $currentMatchDate = $matches->first()->scheduled_date;
+        $gameId = $matches->first()->game_id;
+
+        // Collect all team IDs from this batch
+        $teamIds = $matches->flatMap(fn ($m) => [$m->home_team_id, $m->away_team_id])->unique()->values();
+
+        // Query each team's most recent played match BEFORE this batch's date
+        $lastMatchDates = DB::table('game_matches')
+            ->where('game_id', $gameId)
+            ->where('played', true)
+            ->where('scheduled_date', '<', $currentMatchDate->toDateString())
+            ->where(fn ($q) => $q
+                ->whereIn('home_team_id', $teamIds)
+                ->orWhereIn('away_team_id', $teamIds))
+            ->get(['home_team_id', 'away_team_id', 'scheduled_date']);
+
+        // Build per-team last-match lookup
+        $lastPlayedByTeam = [];
+        foreach ($lastMatchDates as $row) {
+            $date = Carbon::parse($row->scheduled_date);
+            foreach ([$row->home_team_id, $row->away_team_id] as $tid) {
+                if ($teamIds->contains($tid)) {
+                    if (! isset($lastPlayedByTeam[$tid]) || $date->gt($lastPlayedByTeam[$tid])) {
+                        $lastPlayedByTeam[$tid] = $date;
+                    }
+                }
+            }
         }
 
-        $this->conditionService->batchUpdateAfterMatchday($matches, $matchResults, $allPlayers, $daysSinceLastMatchday);
+        // Compute recovery days per team
+        $recoveryDaysByTeam = [];
+        foreach ($teamIds as $tid) {
+            if (isset($lastPlayedByTeam[$tid])) {
+                $recoveryDaysByTeam[$tid] = (int) $lastPlayedByTeam[$tid]->diffInDays($currentMatchDate);
+            } else {
+                $recoveryDaysByTeam[$tid] = 7; // first match of the season: full recovery
+            }
+        }
+
+        $this->conditionService->batchUpdateAfterMatchday($matches, $matchResults, $allPlayers, $recoveryDaysByTeam, $currentMatchDate);
     }
 
     /**
      * Batch update goalkeeper stats (goals conceded, clean sheets).
      */
-    private function batchUpdateGoalkeeperStats($matches, array $matchResults): void
+    private function batchUpdateGoalkeeperStats($matches, array $matchResults, $allPlayers = null): void
     {
         // Collect all lineup IDs across all matches
         $allLineupIds = [];
         foreach ($matches as $match) {
             $allLineupIds = array_merge($allLineupIds, $match->home_lineup ?? [], $match->away_lineup ?? []);
         }
+        $allLineupIds = array_unique($allLineupIds);
 
-        // Load all goalkeepers in one query
-        $goalkeepers = GamePlayer::whereIn('id', array_unique($allLineupIds))
-            ->where('position', 'Goalkeeper')
-            ->get()
-            ->keyBy('id');
+        // Filter goalkeepers from pre-loaded players if available, otherwise query
+        if ($allPlayers) {
+            $goalkeepers = $allPlayers->flatten()
+                ->filter(fn ($p) => in_array($p->id, $allLineupIds) && $p->position === 'Goalkeeper')
+                ->keyBy('id');
+        } else {
+            $goalkeepers = GamePlayer::whereIn('id', $allLineupIds)
+                ->where('position', 'Goalkeeper')
+                ->get()
+                ->keyBy('id');
+        }
 
         if ($goalkeepers->isEmpty()) {
             return;

@@ -114,7 +114,11 @@ class SetupNewGame implements ShouldQueue
             }
 
             // Mark setup as complete
-            Game::where('id', $this->gameId)->update(['setup_completed_at' => now()]);
+            Game::where('id', $this->gameId)->update([
+                'setup_completed_at' => now(),
+                'season_transition_step' => null,
+                'season_transition_data' => null,
+            ]);
 
             // Record activation event
             app(\App\Modules\Season\Services\ActivationTracker::class)
@@ -135,6 +139,9 @@ class SetupNewGame implements ShouldQueue
         }
 
         $rows = CompetitionTeam::where('season', $this->season)
+            ->whereNotIn('team_id', function ($query) {
+                $query->select('id')->from('teams')->where('type', 'national');
+            })
             ->get()
             ->map(fn ($ct) => [
                 'game_id' => $this->gameId,
@@ -374,6 +381,9 @@ class SetupNewGame implements ShouldQueue
 
         DB::table('game_player_templates')
             ->where('season', $this->season)
+            ->whereNotIn('team_id', function ($query) {
+                $query->select('id')->from('teams')->where('type', 'national');
+            })
             ->orderBy('player_id')
             ->chunk(500, function ($templates) use ($gameId, &$seenPlayerIds) {
                 $rows = [];

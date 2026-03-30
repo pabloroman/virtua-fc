@@ -4,6 +4,8 @@ namespace App\Modules\Season\Processors;
 
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
+use App\Modules\Finance\Services\BudgetLoanService;
+use App\Models\BudgetLoan;
 use App\Models\FinancialTransaction;
 use App\Models\TeamReputation;
 use App\Models\Game;
@@ -64,7 +66,7 @@ class SeasonSettlementProcessor implements SeasonProcessor
             + $actualCupBonusRevenue
             + $actualTransferIncome;
 
-        // Calculate actual wages (pro-rated for all players)
+        // Calculate actual wages (pro-rated for owned players + loan salary transactions)
         $actualWages = $this->calculateActualWages($game);
 
         // Operating expenses are fixed costs — same as projected
@@ -92,6 +94,17 @@ class SeasonSettlementProcessor implements SeasonProcessor
             'variance' => $variance,
         ]);
 
+        // Repay any active budget loan
+        $loanRepayment = 0;
+        $activeLoan = BudgetLoan::where('game_id', $game->id)
+            ->where('status', BudgetLoan::STATUS_ACTIVE)
+            ->first();
+
+        if ($activeLoan) {
+            $loanService = app(BudgetLoanService::class);
+            $loanRepayment = $loanService->repayLoan($activeLoan);
+        }
+
         // Store in metadata for season-end display
         $data->setMetadata('finances', [
             'projected_position' => $finances->projected_position,
@@ -102,6 +115,7 @@ class SeasonSettlementProcessor implements SeasonProcessor
             'actual_surplus' => $actualSurplus,
             'variance' => $variance,
             'has_debt' => $variance < 0,
+            'loan_repayment' => $loanRepayment,
         ]);
 
         return $data;
@@ -174,9 +188,15 @@ class SeasonSettlementProcessor implements SeasonProcessor
 
     private function calculateActualWages(Game $game): int
     {
-        // Get all players currently on the squad
+        // Get all players currently on the squad, excluding loaned-in players
+        // (their salary is tracked via CATEGORY_LOAN transactions instead)
+        $loanedInPlayerIds = Loan::where('game_id', $game->id)
+            ->where('loan_team_id', $game->team_id)
+            ->pluck('game_player_id');
+
         $players = GamePlayer::where('game_id', $game->id)
             ->where('team_id', $game->team_id)
+            ->whereNotIn('id', $loanedInPlayerIds)
             ->get();
 
         // Season runs from July 1 to June 30 (12 months)
@@ -185,7 +205,7 @@ class SeasonSettlementProcessor implements SeasonProcessor
         $seasonEnd = Carbon::createFromDate($seasonYear + 1, 6, 30);
         $totalMonths = 12;
 
-        // Batch-load mid-season join dates from transfers and loans
+        // Batch-load mid-season join dates from transfers
         $playerIds = $players->pluck('id');
 
         $transferDates = TransferOffer::where('game_id', $game->id)
@@ -195,16 +215,10 @@ class SeasonSettlementProcessor implements SeasonProcessor
             ->whereBetween('resolved_at', [$seasonStart, $seasonEnd])
             ->pluck('resolved_at', 'game_player_id');
 
-        $loanDates = Loan::where('game_id', $game->id)
-            ->whereIn('game_player_id', $playerIds)
-            ->where('loan_team_id', $game->team_id)
-            ->whereBetween('started_at', [$seasonStart, $seasonEnd])
-            ->pluck('started_at', 'game_player_id');
-
         $totalWages = 0;
 
         foreach ($players as $player) {
-            $joinDate = $transferDates[$player->id] ?? $loanDates[$player->id] ?? null;
+            $joinDate = $transferDates[$player->id] ?? null;
 
             // No join date found = player was here all season (initial squad, youth academy, pre-contract)
             if (!$joinDate || Carbon::parse($joinDate)->lte($seasonStart)) {
@@ -221,6 +235,12 @@ class SeasonSettlementProcessor implements SeasonProcessor
             }
         }
 
-        return $totalWages;
+        // Add loan salary expenses (recorded as transactions when loans completed)
+        $loanExpenses = FinancialTransaction::where('game_id', $game->id)
+            ->where('category', FinancialTransaction::CATEGORY_LOAN)
+            ->where('type', FinancialTransaction::TYPE_EXPENSE)
+            ->sum('amount');
+
+        return $totalWages + $loanExpenses;
     }
 }

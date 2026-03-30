@@ -19,7 +19,7 @@
                     {{-- Tab Navigation + How it works --}}
                     <div x-data="{ helpOpen: false }">
                         <x-section-nav :items="[
-                            ['href' => route('game.transfers', $game->id), 'label' => __('transfers.incoming'), 'active' => false, 'badge' => $counterOfferCount > 0 ? $counterOfferCount : null],
+                            ['href' => route('game.transfers', $game->id), 'label' => __('transfers.incoming'), 'active' => false],
                             ['href' => route('game.transfers.outgoing', $game->id), 'label' => __('transfers.outgoing'), 'active' => false, 'badge' => $salidaBadgeCount > 0 ? $salidaBadgeCount : null],
                             ['href' => route('game.scouting', $game->id), 'label' => __('transfers.scouting_tab'), 'active' => true],
                             ['href' => route('game.explore', $game->id), 'label' => __('transfers.explore_tab'), 'active' => false],
@@ -177,9 +177,9 @@
                                     this.expandedId = this.expandedId === player.id ? null : player.id;
                                     this.confirmRemoveId = null;
                                 },
-                                bidRoute(id) { return '{{ route('game.scouting.bid', [$game->id, '__ID__']) }}'.replace('__ID__', id); },
-                                loanRoute(id) { return '{{ route('game.scouting.loan', [$game->id, '__ID__']) }}'.replace('__ID__', id); },
-                                preContractRoute(id) { return '{{ route('game.scouting.pre-contract', [$game->id, '__ID__']) }}'.replace('__ID__', id); },
+                                negotiateRoute(id) { return '{{ route('game.negotiate.transfer', [$game->id, '__ID__']) }}'.replace('__ID__', id); },
+                                loanRoute(id) { return '{{ route('game.negotiate.loan', [$game->id, '__ID__']) }}'.replace('__ID__', id); },
+                                preContractRoute(id) { return '{{ route('game.negotiate.pre-contract', [$game->id, '__ID__']) }}'.replace('__ID__', id); },
                                 signFreeAgentRoute(id) { return '{{ route('game.scouting.sign-free-agent', [$game->id, '__ID__']) }}'.replace('__ID__', id); },
                             }" @shortlist-toggled.window="handleToggle($event.detail)">
 
@@ -236,9 +236,6 @@
                                                         <div class="flex items-center gap-2 flex-wrap">
                                                             <span class="font-semibold text-text-primary truncate" x-text="player.name"></span>
                                                             <span class="text-xs text-text-secondary" x-text="player.age + ' {{ __('app.years') }}'"></span>
-                                                            <template x-if="player.isFreeAgent">
-                                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-medium bg-accent-green/10 text-accent-green">{{ __('transfers.free_agent') }}</span>
-                                                            </template>
                                                             <template x-if="!player.isFreeAgent && player.isExpiring">
                                                                 <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-medium bg-accent-gold/10 text-accent-gold">{{ __('transfers.expiring_contract') }}</span>
                                                             </template>
@@ -251,33 +248,46 @@
                                                             </template>
                                                         </div>
                                                         <div class="flex items-center gap-2 text-xs text-text-muted mt-0.5">
-                                                            <template x-if="player.teamImage">
-                                                                <img :src="player.teamImage" class="w-4 h-4 shrink-0">
+                                                            <template x-if="player.isFreeAgent">
+                                                                <span>{{ __('transfers.free_agent') }}</span>
                                                             </template>
-                                                            <span class="truncate" x-text="player.teamName"></span>
+                                                            <template x-if="!player.isFreeAgent">
+                                                                <div class="flex items-center gap-2">
+                                                                    <template x-if="player.teamImage">
+                                                                        <img :src="player.teamImage" class="w-4 h-4 shrink-0">
+                                                                    </template>
+                                                                    <span class="truncate" x-text="player.teamName"></span>
+                                                                </div>
+                                                            </template>
                                                         </div>
                                                     </div>
                                                     {{-- Ability range (locked if level 0) --}}
                                                     <div class="text-right hidden sm:block shrink-0">
-                                                        <div class="text-xs text-text-secondary">{{ __('transfers.ability') }}</div>
                                                         <template x-if="player.techRange">
-                                                            <div class="text-sm font-semibold text-text-body tabular-nums" x-text="player.techRange[0] + '-' + player.techRange[1]"></div>
+                                                            <div>
+                                                                <div class="text-xs text-text-secondary">{{ __('transfers.ability') }}</div>
+                                                                <div class="text-sm font-semibold text-text-body tabular-nums" x-text="player.techRange[0] + '-' + player.techRange[1]"></div>
+                                                            </div>
                                                         </template>
                                                         <template x-if="!player.techRange">
-                                                            <div class="flex items-center justify-end gap-1 text-text-body">
-                                                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+                                                            <div class="flex items-center gap-1 text-text-secondary text-xs">
+                                                                <span>{{ __('transfers.ability') }}</span>
+                                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
                                                             </div>
                                                         </template>
                                                     </div>
-                                                    {{-- Asking price (locked if level 0) --}}
-                                                    <div class="text-right shrink-0">
-                                                        <div class="text-xs text-text-secondary">{{ __('transfers.asking_price') }}</div>
+                                                    {{-- Asking price (locked if level 0, hidden for free agents) --}}
+                                                    <div class="text-right shrink-0" x-show="!player.isFreeAgent">
                                                         <template x-if="player.formattedAskingPrice">
-                                                            <div class="text-sm font-semibold" :class="player.canAffordFee ? 'text-text-primary' : 'text-accent-red'" x-text="player.formattedAskingPrice"></div>
+                                                            <div>
+                                                                <div class="text-xs text-text-secondary">{{ __('transfers.asking_price') }}</div>
+                                                                <div class="text-sm font-semibold" :class="player.canAffordFee ? 'text-text-primary' : 'text-accent-red'" x-text="player.formattedAskingPrice"></div>
+                                                            </div>
                                                         </template>
                                                         <template x-if="!player.formattedAskingPrice">
-                                                            <div class="flex items-center justify-end gap-1 text-text-body">
-                                                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+                                                            <div class="flex items-center gap-1 text-text-secondary text-xs">
+                                                                <span>{{ __('transfers.asking_price') }}</span>
+                                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
                                                             </div>
                                                         </template>
                                                     </div>
@@ -289,7 +299,7 @@
                                                                 x-bind:disabled="trackingAvailable <= 0"
                                                                 x-bind:class="trackingAvailable > 0 ? 'text-teal-400 hover:text-teal-300 hover:bg-teal-500/10' : 'text-text-body cursor-not-allowed'"
                                                                 class="min-h-[44px] sm:min-h-0"
-                                                                x-bind:title="trackingAvailable > 0 ? @js(__('transfers.start_tracking')) : @js(__('transfers.no_tracking_slots'))">
+                                                                x-bind:title="trackingAvailable > 0 ? {{ \Illuminate\Support\Js::from(__('transfers.start_tracking')) }} : {{ \Illuminate\Support\Js::from(__('transfers.no_tracking_slots')) }}">
                                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                                             </x-icon-button>
                                                         </template>
@@ -335,11 +345,21 @@
                                                                 <div class="w-10 h-10 rounded-full bg-teal-500/10 flex items-center justify-center mb-3">
                                                                     <svg class="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                                                 </div>
-                                                                <p class="text-sm font-semibold text-text-body mb-1">{{ __('transfers.track_to_unlock') }}</p>
-                                                                <p class="text-xs text-text-muted mb-3 max-w-xs">{{ __('transfers.track_to_unlock_desc') }}</p>
+                                                                <template x-if="!player.isTracking">
+                                                                    <div>
+                                                                        <p class="text-sm font-semibold text-text-body mb-1">{{ __('transfers.track_to_unlock') }}</p>
+                                                                        <p class="text-xs text-text-muted mb-3 max-w-xs">{{ __('transfers.track_to_unlock_desc') }}</p>
+                                                                    </div>
+                                                                </template>
+                                                                <template x-if="player.isTracking">
+                                                                    <div>
+                                                                        <p class="text-sm font-semibold text-text-body mb-1">{{ __('transfers.tracking_in_progress_title') }}</p>
+                                                                        <p class="text-xs text-text-muted mb-3 max-w-xs">{{ __('transfers.tracking_in_progress_desc') }}</p>
+                                                                    </div>
+                                                                </template>
                                                                 <div class="flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-text-muted mb-3">
                                                                     <span>{{ __('transfers.market_value') }}: <span class="font-semibold text-text-body" x-text="player.formattedMarketValue"></span></span>
-                                                                    <template x-if="player.contractYear">
+                                                                    <template x-if="!player.isFreeAgent && player.contractYear">
                                                                         <span>{{ __('transfers.contract_until') }}: <span class="font-semibold text-text-body" x-text="player.contractYear"></span></span>
                                                                     </template>
                                                                 </div>
@@ -403,23 +423,22 @@
                                                                 </div>
                                                             </template>
 
-                                                            {{-- Action: Free agent signing --}}
-                                                            <template x-if="player.isFreeAgent && !player.hasExistingOffer">
-                                                                <div>
-                                                                    <template x-if="player.canAffordWage">
-                                                                        <form :action="signFreeAgentRoute(player.id)" method="POST">
-                                                                            <input type="hidden" name="_token" :value="csrfToken">
-                                                                            <x-primary-button color="green" size="xs">
-                                                                                {{ __('transfers.sign_free_agent') }}
-                                                                            </x-primary-button>
-                                                                        </form>
-                                                                    </template>
-                                                                    <template x-if="!player.canAffordWage">
-                                                                        <div class="text-xs text-accent-gold font-medium">
-                                                                            {{ __('transfers.wage_exceeds_budget') }}
-                                                                        </div>
-                                                                    </template>
+                                                            {{-- Action: Negotiation cooldown --}}
+                                                            <template x-if="player.onCooldown && !player.hasExistingOffer">
+                                                                <div class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-surface-700 text-text-muted border border-border-default">
+                                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                                    {{ __('transfers.negotiation_cooldown_short') }}
                                                                 </div>
+                                                            </template>
+
+                                                            {{-- Action: Free agent signing --}}
+                                                            <template x-if="player.isFreeAgent && !player.hasExistingOffer && !player.onCooldown">
+                                                                <form :action="signFreeAgentRoute(player.id)" method="POST">
+                                                                    <input type="hidden" name="_token" :value="csrfToken">
+                                                                    <x-primary-button color="green" size="xs">
+                                                                        {{ __('transfers.sign_free_agent') }}
+                                                                    </x-primary-button>
+                                                                </form>
                                                             </template>
 
                                                             {{-- Action: Offer awaiting response (pending, no counter) --}}
@@ -447,70 +466,66 @@
                                                             </template>
 
                                                             {{-- Action: Pre-contract --}}
-                                                            <template x-if="!player.isFreeAgent && !player.hasExistingOffer && player.isExpiring && isPreContractPeriod">
-                                                                <form :action="preContractRoute(player.id)" method="POST" class="space-y-2">
-                                                                    <input type="hidden" name="_token" :value="csrfToken">
-                                                                    <label class="block text-xs font-medium text-text-secondary">{{ __('transfers.offered_wage_euros') }}</label>
-                                                                    <div class="flex items-center gap-2" x-data="{
-                                                                        holdTimer: null, holdInterval: null,
-                                                                        get step() { return player.wageEuros >= 1000000 ? 100000 : 10000 },
-                                                                        get display() { return '€ ' + new Intl.NumberFormat('es-ES').format(player.wageEuros) },
-                                                                        get atMin() { return player.wageEuros <= 0 },
-                                                                        increment() { player.wageEuros += this.step },
-                                                                        decrement() { player.wageEuros = Math.max(player.wageEuros - this.step, 0) },
-                                                                        startHold(fn) { fn(); this.holdTimer = setTimeout(() => { this.holdInterval = setInterval(() => fn(), 80) }, 400) },
-                                                                        stopHold() { clearTimeout(this.holdTimer); clearInterval(this.holdInterval) }
-                                                                    }">
-                                                                        <div class="inline-flex items-stretch border border-border-strong rounded-lg overflow-hidden h-[36px]">
-                                                                            <input type="hidden" name="offered_wage" :value="player.wageEuros">
-                                                                            <button type="button" :disabled="atMin" :class="atMin ? 'opacity-40 cursor-not-allowed' : 'hover:bg-surface-700 active:bg-surface-600'" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-surface-700/50 text-text-body font-bold select-none transition-colors" @mousedown.prevent="startHold(() => decrement())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => decrement())" @touchend="stopHold()">&minus;</button>
-                                                                            <input type="text" readonly :value="display" class="min-h-[32px] sm:min-h-0 w-28 text-xs text-center font-semibold text-text-primary bg-surface-800 border-x border-y-0 border-border-strong outline-hidden cursor-default focus:outline-hidden focus:ring-0 focus:border-border-strong">
-                                                                            <button type="button" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-surface-700/50 hover:bg-surface-700 active:bg-surface-600 text-text-body font-bold select-none transition-colors" @mousedown.prevent="startHold(() => increment())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => increment())" @touchend="stopHold()">+</button>
-                                                                        </div>
-                                                                        <x-primary-button color="green" size="xs">
-                                                                            {{ __('transfers.submit_pre_contract') }}
-                                                                        </x-primary-button>
-                                                                    </div>
-                                                                </form>
+                                                            <template x-if="!player.isFreeAgent && !player.hasExistingOffer && !player.onCooldown && player.isExpiring && isPreContractPeriod">
+                                                                <x-primary-button size="xs" color="green"
+                                                                    @click="$dispatch('open-negotiation', {
+                                                                        playerName: player.name,
+                                                                        negotiateUrl: preContractRoute(player.id),
+                                                                        mode: 'pre_contract',
+                                                                        phase: 'personal_terms',
+                                                                        chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_pre_contract_title')) }},
+                                                                        playerInfo: { age: player.age, position: player.positionAbbr, positionBg: player.positionBg, positionText: player.positionText, marketValue: player.formattedMarketValue, contractYear: player.contractYear }
+                                                                    })">
+                                                                    {{ __('transfers.negotiate_pre_contract') }}
+                                                                </x-primary-button>
                                                             </template>
 
-                                                            {{-- Action: Can't afford --}}
-                                                            <template x-if="!player.isFreeAgent && !player.hasExistingOffer && !(player.isExpiring && isPreContractPeriod) && !player.canAffordFee">
-                                                                <div class="text-xs text-accent-red font-medium">
-                                                                    {{ __('transfers.transfer_fee_exceeds_budget') }}
+                                                            {{-- Action: Budget is zero and can't afford loan — fully blocked --}}
+                                                            <template x-if="!player.isFreeAgent && !player.hasExistingOffer && !player.onCooldown && !(player.isExpiring && isPreContractPeriod) && player.availableBudget <= 0 && !player.canAffordLoan">
+                                                                <div>
+                                                                    <div class="text-xs text-accent-red font-medium">
+                                                                        {{ __('transfers.loan_fee_exceeds_budget') }}
+                                                                    </div>
+                                                                    <div class="text-xs text-text-muted mt-1">
+                                                                        {{ __('transfers.loan_cost_salary') }}: <span class="text-text-body font-medium" x-text="player.formattedWageDemand + '{{ __('squad.per_year') }}'"></span>
+                                                                    </div>
                                                                 </div>
                                                             </template>
 
-                                                            {{-- Action: Bid + Loan --}}
-                                                            <template x-if="!player.isFreeAgent && !player.hasExistingOffer && !(player.isExpiring && isPreContractPeriod) && player.canAffordFee">
-                                                                <div class="flex flex-col sm:flex-row gap-2" x-data="{
-                                                                    holdTimer: null, holdInterval: null,
-                                                                    get step() { return player.bidEuros >= 1000000 ? 100000 : 10000 },
-                                                                    get display() { return '€ ' + new Intl.NumberFormat('es-ES').format(player.bidEuros) },
-                                                                    get atMin() { return player.bidEuros <= 0 },
-                                                                    increment() { player.bidEuros += this.step },
-                                                                    decrement() { player.bidEuros = Math.max(player.bidEuros - this.step, 0) },
-                                                                    startHold(fn) { fn(); this.holdTimer = setTimeout(() => { this.holdInterval = setInterval(() => fn(), 80) }, 400) },
-                                                                    stopHold() { clearTimeout(this.holdTimer); clearInterval(this.holdInterval) }
-                                                                }">
-                                                                    <form :action="bidRoute(player.id)" method="POST" class="flex items-center gap-2 flex-1">
-                                                                        <input type="hidden" name="_token" :value="csrfToken">
-                                                                        <div class="inline-flex items-stretch border border-border-strong rounded-lg overflow-hidden h-[36px]">
-                                                                            <input type="hidden" name="bid_amount" :value="player.bidEuros">
-                                                                            <button type="button" :disabled="atMin" :class="atMin ? 'opacity-40 cursor-not-allowed' : 'hover:bg-surface-700 active:bg-surface-600'" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-surface-700/50 text-text-body font-bold select-none transition-colors" @mousedown.prevent="startHold(() => decrement())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => decrement())" @touchend="stopHold()">&minus;</button>
-                                                                            <input type="text" readonly :value="display" class="min-h-[32px] sm:min-h-0 w-28 text-xs text-center font-semibold text-text-primary bg-surface-800 border-x border-y-0 border-border-strong outline-hidden cursor-default focus:outline-hidden focus:ring-0 focus:border-border-strong">
-                                                                            <button type="button" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-surface-700/50 hover:bg-surface-700 active:bg-surface-600 text-text-body font-bold select-none transition-colors" @mousedown.prevent="startHold(() => increment())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => increment())" @touchend="stopHold()">+</button>
+                                                            {{-- Action: Negotiate + Loan (soft block: always show when budget > 0 or can afford loan) --}}
+                                                            <template x-if="!player.isFreeAgent && !player.hasExistingOffer && !player.onCooldown && !(player.isExpiring && isPreContractPeriod) && (player.availableBudget > 0 || player.canAffordLoan)">
+                                                                <div class="flex flex-col gap-2">
+                                                                    <template x-if="!player.canAffordFee">
+                                                                        <div class="text-xs text-accent-gold font-medium">
+                                                                            {{ __('transfers.budget_limited_hint') }}
                                                                         </div>
-                                                                        <x-primary-button size="xs">
-                                                                            {{ __('transfers.submit_bid') }}
-                                                                        </x-primary-button>
-                                                                    </form>
-                                                                    <form :action="loanRoute(player.id)" method="POST">
-                                                                        <input type="hidden" name="_token" :value="csrfToken">
-                                                                        <x-secondary-button type="submit" size="xs">
+                                                                    </template>
+                                                                    <div class="flex flex-col sm:flex-row gap-2">
+                                                                        <template x-if="player.availableBudget > 0">
+                                                                            <x-primary-button size="xs"
+                                                                                @click="$dispatch('open-negotiation', {
+                                                                                    playerName: player.name,
+                                                                                    negotiateUrl: negotiateRoute(player.id),
+                                                                                    mode: 'transfer_fee',
+                                                                                    phase: 'club_fee',
+                                                                                    chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_transfer_title')) }},
+                                                                                    playerInfo: { age: player.age, position: player.positionAbbr, positionBg: player.positionBg, positionText: player.positionText, marketValue: player.formattedMarketValue, contractYear: player.contractYear }
+                                                                                })">
+                                                                                {{ __('transfers.negotiate') }}
+                                                                            </x-primary-button>
+                                                                        </template>
+                                                                        <x-secondary-button size="xs"
+                                                                            @click="$dispatch('open-negotiation', {
+                                                                                playerName: player.name,
+                                                                                negotiateUrl: loanRoute(player.id),
+                                                                                mode: 'loan',
+                                                                                phase: 'club_fee',
+                                                                                chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_loan_title')) }},
+                                                                                playerInfo: { age: player.age, position: player.positionAbbr, positionBg: player.positionBg, positionText: player.positionText, marketValue: player.formattedMarketValue, contractYear: player.contractYear }
+                                                                            })">
                                                                             {{ __('transfers.request_loan') }}
                                                                         </x-secondary-button>
-                                                                    </form>
+                                                                    </div>
                                                                 </div>
                                                             </template>
                                                         </div>
@@ -668,5 +683,6 @@
 
     <x-scout-search-modal :game="$game" :can-search-internationally="$canSearchInternationally" />
     <x-scout-results-modal />
+    <x-negotiation-chat-modal />
 
 </x-app-layout>

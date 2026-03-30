@@ -11,6 +11,9 @@ use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\PlayerSuspension;
+use App\Models\TeamReputation;
+use App\Modules\Competition\Services\CalendarService;
+use App\Support\PositionMapper;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
@@ -18,6 +21,7 @@ class LineupService
 {
     public function __construct(
         private readonly FormationRecommender $formationRecommender,
+        private readonly CalendarService $calendarService,
     ) {}
 
     /**
@@ -32,11 +36,7 @@ class LineupService
             ->get();
 
         // Batch load suspended player IDs for this competition (single query)
-        $suspendedPlayerIds = PlayerSuspension::where('competition_id', $competitionId)
-            ->where('matches_remaining', '>', 0)
-            ->whereIn('game_player_id', $players->pluck('id'))
-            ->pluck('game_player_id')
-            ->toArray();
+        $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($competitionId);
 
         // Filter in memory using pre-loaded suspension data
         return $players->filter(function (GamePlayer $player) use ($matchDate, $suspendedPlayerIds) {
@@ -90,22 +90,7 @@ class LineupService
      */
     public static function positionSortOrder(string $position): int
     {
-        return match ($position) {
-            'Goalkeeper' => 1,
-            'Centre-Back' => 10,
-            'Left-Back' => 11,
-            'Right-Back' => 12,
-            'Defensive Midfield' => 20,
-            'Central Midfield' => 21,
-            'Left Midfield' => 22,
-            'Right Midfield' => 23,
-            'Attacking Midfield' => 24,
-            'Left Winger' => 30,
-            'Right Winger' => 31,
-            'Second Striker' => 32,
-            'Centre-Forward' => 33,
-            default => 99,
-        };
+        return PositionMapper::positionSortOrder($position);
     }
 
     /**
@@ -122,7 +107,7 @@ class LineupService
         ?Formation $formation = null,
         ?array $slotAssignments = null
     ): array {
-        $formation = $formation ?? Formation::F_4_4_2;
+        $formation = $formation ?? Formation::F_4_3_3;
         $errors = [];
 
         if (count($playerIds) !== 11) {
@@ -217,7 +202,7 @@ class LineupService
      */
     public function selectBestXI(Collection $availablePlayers, ?Formation $formation = null, bool $applyFitnessRotation = false): Collection
     {
-        $formation = $formation ?? Formation::F_4_4_2;
+        $formation = $formation ?? Formation::F_4_3_3;
         $requirements = $formation->requirements();
 
         // Sort key: effective score accounts for fitness when rotation is enabled
@@ -264,7 +249,7 @@ class LineupService
      */
     private function effectiveScore(GamePlayer $player): float
     {
-        $threshold = (int) config('match_simulation.fatigue.ai_rotation_threshold', 80);
+        $threshold = (int) config('player.condition.ai_rotation_threshold', 80);
 
         if ($player->fitness >= $threshold) {
             return (float) $player->overall_score;
@@ -283,7 +268,7 @@ class LineupService
     public function selectAIFormation(Collection $availablePlayers): Formation
     {
         if ($availablePlayers->count() < 11) {
-            return Formation::F_4_4_2;
+            return Formation::F_4_3_3;
         }
 
         return $this->formationRecommender->getBestFormation($availablePlayers);
@@ -353,7 +338,7 @@ class LineupService
         if ($isStronger && $isHome) {
             $style = $tier === 'cautious' ? PlayingStyle::BALANCED : PlayingStyle::POSSESSION;
         } elseif ($isWeaker && ! $isHome) {
-            $style = $tier === 'bold' ? PlayingStyle::COUNTER_ATTACK : PlayingStyle::COUNTER_ATTACK;
+            $style = PlayingStyle::COUNTER_ATTACK;
         } elseif ($isWeaker) {
             $style = PlayingStyle::COUNTER_ATTACK;
         } else {
@@ -562,10 +547,10 @@ class LineupService
      * AI teams get squad-fitted formations, reputation-driven mentality, and fitness rotation.
      *
      * @param Collection|null $allPlayersGrouped Pre-loaded players grouped by team_id (optional, for N+1 optimization)
-     * @param array $suspendedPlayerIds Array of player IDs who are suspended (optional, for N+1 optimization)
+     * @param array $suspendedByCompetition Map of competition_id => [player_ids] who are suspended (optional, for N+1 optimization)
      * @param Collection|null $clubProfiles Pre-loaded ClubProfiles keyed by team_id (optional, for AI mentality)
      */
-    public function ensureLineupsForMatches($matches, Game $game, $allPlayersGrouped = null, array $suspendedPlayerIds = [], $clubProfiles = null): void
+    public function ensureLineupsForMatches($matches, Game $game, $allPlayersGrouped = null, array $suspendedByCompetition = [], $clubProfiles = null): void
     {
         $tactics = $game->tactics;
         $playerFormation = $tactics?->default_formation
@@ -580,6 +565,7 @@ class LineupService
         foreach ($matches as $match) {
             $matchDate = $match->scheduled_date;
             $competitionId = $match->competition_id;
+            $suspendedPlayerIds = $suspendedByCompetition[$competitionId] ?? [];
 
             $this->ensureTeamLineup(
                 $match,
@@ -782,7 +768,7 @@ class LineupService
         array $preferredLineup,
         array $availableIds
     ): array {
-        $formation = $formation ?? Formation::F_4_4_2;
+        $formation = $formation ?? Formation::F_4_3_3;
         $requirements = $formation->requirements();
 
         // Separate preferred players into available and unavailable
@@ -847,5 +833,56 @@ class LineupService
         }
 
         return $lineup;
+    }
+
+    /**
+     * Predict opponent tactics for a match (formation, mentality, instructions).
+     *
+     * Used by both the lineup page and the dashboard next-match card.
+     *
+     * @return array{teamAverage: int, form: array, formation: string, mentality: string, playingStyle: string, pressing: string, defensiveLine: string, bestXIPlayers: Collection}
+     */
+    public function predictOpponentTactics(
+        string $gameId,
+        string $opponentTeamId,
+        Carbon $matchDate,
+        string $competitionId,
+        bool $opponentIsHome,
+        int $userTeamAverage,
+    ): array {
+        $availablePlayers = $this->getAvailablePlayers($gameId, $opponentTeamId, $matchDate, $competitionId);
+
+        $predictedFormation = $this->selectAIFormation($availablePlayers);
+
+        $bestXI = $this->selectBestXI($availablePlayers, $predictedFormation);
+        $teamAverage = $this->calculateTeamAverage($bestXI);
+
+        $opponentReputation = TeamReputation::resolveLevel($gameId, $opponentTeamId);
+        $predictedMentality = $this->selectAIMentality(
+            $opponentReputation,
+            $opponentIsHome,
+            $teamAverage,
+            $userTeamAverage
+        );
+
+        [$predictedStyle, $predictedPressing, $predictedDefLine] = $this->selectAIInstructions(
+            $opponentReputation,
+            $opponentIsHome,
+            $teamAverage,
+            $userTeamAverage
+        );
+
+        $form = $this->calendarService->getTeamForm($gameId, $opponentTeamId);
+
+        return [
+            'teamAverage' => $teamAverage,
+            'form' => $form,
+            'formation' => $predictedFormation->value,
+            'mentality' => $predictedMentality->value,
+            'playingStyle' => $predictedStyle->value,
+            'pressing' => $predictedPressing->value,
+            'defensiveLine' => $predictedDefLine->value,
+            'bestXIPlayers' => $bestXI,
+        ];
     }
 }

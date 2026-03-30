@@ -8,15 +8,14 @@
 <div class="md:col-span-2 space-y-6">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         @foreach($groupedStandings as $groupLabel => $groupStandings)
-            <div class="space-y-2">
-                <h4 class="font-heading font-semibold text-sm uppercase tracking-wide text-text-primary">{{ __('game.group') }} {{ $groupLabel }}</h4>
+            <div>
                 <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="min-w-full table-fixed text-right">
                             <thead>
                             <tr class="border-b border-border-default">
                                 <th class="text-[10px] text-text-muted uppercase tracking-wider text-left w-6 px-3 py-2.5"></th>
-                                <th class="text-[10px] text-text-muted uppercase tracking-wider text-left px-2 py-2.5"></th>
+                                <th class="text-[10px] text-text-muted uppercase tracking-wider text-left px-2 py-2.5">{{ __('game.group') }} {{ $groupLabel }}</th>
                                 <th class="text-[10px] text-text-muted uppercase tracking-wider w-6 px-2 py-2.5">{{ __('game.played_abbr') }}</th>
                                 <th class="text-[10px] text-text-muted uppercase tracking-wider w-6 px-2 py-2.5 hidden md:table-cell">{{ __('game.won_abbr') }}</th>
                                 <th class="text-[10px] text-text-muted uppercase tracking-wider w-6 px-2 py-2.5 hidden md:table-cell">{{ __('game.drawn_abbr') }}</th>

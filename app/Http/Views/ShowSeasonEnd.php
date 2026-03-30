@@ -22,7 +22,6 @@ class ShowSeasonEnd
 
         $unplayedMatches = $game->matches()
             ->where('played', false)
-            ->where(fn ($q) => $q->where('home_team_id', $game->team_id)->orWhere('away_team_id', $game->team_id))
             ->count();
         if ($unplayedMatches > 0) {
             return redirect()->route('show-game', $gameId)

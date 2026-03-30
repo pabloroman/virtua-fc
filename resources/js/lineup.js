@@ -5,11 +5,30 @@ import {
     getShirtStyle as _getShirtStyle,
     getNumberStyle as _getNumberStyle,
     getEventCoords as _getEventCoords,
-    getDragPosition,
-    getCellFromClientCoords,
-    isValidGridCell as _isValidGridCell,
     getZoneColorClass as _getZoneColorClass,
+    isValidGridCell as _isValidGridCell,
 } from './modules/pitch-renderer.js';
+import { createPitchGrid } from './modules/pitch-grid.js';
+import { calculateXgPreview } from './modules/xg-calculator.js';
+import { generateCoachTips } from './modules/coach-tips.js';
+import { assignPlayersToSlots } from './modules/slot-assignment.js';
+
+/**
+ * Copy all own properties from source to target. Regular properties are
+ * assigned normally (compatible with Alpine's reactive proxy), while
+ * getter/setter descriptors are defined via Object.defineProperty so
+ * they remain live computed properties instead of being evaluated once.
+ */
+function mixinModule(target, source) {
+    for (const key of Object.keys(source)) {
+        const desc = Object.getOwnPropertyDescriptor(source, key);
+        if (desc.get || desc.set) {
+            Object.defineProperty(target, key, desc);
+        } else {
+            target[key] = desc.value;
+        }
+    }
+}
 
 export default function lineupManager(config) {
     return {
@@ -76,18 +95,34 @@ export default function lineupManager(config) {
         opponentAverage: config.opponentAverage || 0,
         opponentFormation: config.opponentFormation || null,
         opponentMentality: config.opponentMentality || null,
+        opponentPlayingStyle: config.opponentPlayingStyle || 'balanced',
+        opponentPressing: config.opponentPressing || 'standard',
+        opponentDefLine: config.opponentDefLine || 'normal',
+        xgConfig: config.xgConfig || null,
         userTeamAverage: config.userTeamAverage || 0,
         isHome: config.isHome || false,
 
         init() {
-            // Snapshot the initial state for dirty detection
-            this._initialPlayers = [...(config.currentLineup || [])].sort();
+            // Filter out players no longer in the squad (e.g. sold after lineup was saved)
+            this.selectedPlayers = this.selectedPlayers.filter(id => this.playersData[id]);
+            if (Object.keys(this.manualAssignments).length > 0) {
+                const clean = {};
+                for (const [slotId, playerId] of Object.entries(this.manualAssignments)) {
+                    if (this.playersData[playerId]) {
+                        clean[slotId] = playerId;
+                    }
+                }
+                this.manualAssignments = clean;
+            }
+
+            // Snapshot the initial state for dirty detection (after filtering)
+            this._initialPlayers = [...this.selectedPlayers].sort();
             this._initialFormation = config.currentFormation;
             this._initialMentality = config.currentMentality;
             this._initialPlayingStyle = config.currentPlayingStyle || 'balanced';
             this._initialPressing = config.currentPressing || 'standard';
             this._initialDefLine = config.currentDefLine || 'normal';
-            this._initialAssignments = JSON.stringify(config.currentSlotAssignments || {});
+            this._initialAssignments = JSON.stringify(this.manualAssignments);
             this._initialPitchPositions = JSON.stringify(config.currentPitchPositions || {});
 
             // Warn on navigation away with unsaved changes
@@ -98,9 +133,39 @@ export default function lineupManager(config) {
                 }
             });
 
-            // Bound drag handlers (created once, registered lazily during drag)
-            this._boundDragMove = (e) => this._onDragMove(e);
-            this._boundDragEnd = (e) => this._onDragEnd(e);
+            // Integrate shared pitch grid module (positioning + drag-and-drop)
+            const grid = createPitchGrid(() => this, {
+                allowGkDrag: true,
+                allowGkReposition: true,
+                allowGkSwap: true,
+                dragThreshold: 0,
+                onTapFallback: null,
+                onPositionChanged: null,
+                onSwap: (draggedSlot, occupyingSlot) => {
+                    // Swap player assignments: each player takes the other's slot.
+                    // When the target slot is empty, the dragged player simply
+                    // moves there and the source slot becomes empty.
+                    // Snapshot current assignments first so auto-assigned players
+                    // don't reshuffle when we update manualAssignments.
+                    this._preserveCurrentAssignments(null);
+                    const newAssignments = { ...this.manualAssignments };
+                    const draggedPlayer = draggedSlot.player?.id;
+                    const occupyingPlayer = occupyingSlot.player?.id;
+                    if (draggedPlayer) newAssignments[occupyingSlot.id] = draggedPlayer;
+                    if (occupyingPlayer) {
+                        newAssignments[draggedSlot.id] = occupyingPlayer;
+                    } else {
+                        // Target was empty — clear the source slot
+                        delete newAssignments[draggedSlot.id];
+                    }
+                    this.manualAssignments = newAssignments;
+                },
+                pitchElementId: 'pitch-field',
+                getPositions: () => this.pitchPositions,
+                setPositions: (p) => { this.pitchPositions = p },
+                getFormationGuard: null,
+            });
+            mixinModule(this, grid);
 
             // Bound list-to-pitch drag handlers
             this._boundListDragMove = (e) => this._onListDragMove(e);
@@ -171,175 +236,62 @@ export default function lineupManager(config) {
         },
 
         get coachTips() {
-            const tips = [];
-            const t = this.translations;
-            const oppAvg = this.opponentAverage;
-            const userAvg = this.teamAverage || this.userTeamAverage;
-            const diff = userAvg - oppAvg;
-            const isWeaker = oppAvg > 0 && diff <= -5;
-            const isStronger = oppAvg > 0 && diff >= 5;
-            const fmMods = this.formationModifiers[this.selectedFormation];
-            const oppFm = this.opponentFormation;
-            const oppMent = this.opponentMentality;
-            const oppMentLabel = oppMent ? (t['mentality_' + oppMent] || oppMent) : '';
-
-            // Opponent tactical tips (using predicted formation/mentality)
-            if (oppMent === 'defensive' && oppFm) {
-                tips.push({ id: 'opp_defensive', priority: 1, type: 'info', message: t.coach_opponent_defensive_setup.replace(':formation', oppFm).replace(':mentality', oppMentLabel) });
-            } else if (oppMent === 'attacking' && oppFm) {
-                tips.push({ id: 'opp_attacking', priority: 1, type: 'info', message: t.coach_opponent_attacking_setup.replace(':formation', oppFm).replace(':mentality', oppMentLabel) });
-            } else if (isWeaker && this.selectedMentality !== 'defensive') {
-                tips.push({ id: 'defensive_recommended', priority: 1, type: 'warning', message: t.coach_defensive_recommended });
-            }
-            if (isStronger && this.selectedMentality !== 'attacking' && oppMent !== 'attacking') {
-                tips.push({ id: 'attacking_vs_weaker', priority: 4, type: 'info', message: t.coach_attacking_recommended });
-            }
-            if (isWeaker && fmMods && fmMods.attack > 1.0) {
-                tips.push({ id: 'risky_formation', priority: 2, type: 'warning', message: t.coach_risky_formation });
-            }
-            // Opponent playing 5-at-the-back
-            if (oppFm && (oppFm.startsWith('5-') || oppFm === '5-3-2' || oppFm === '5-4-1')) {
-                tips.push({ id: 'opp_deep_block', priority: 3, type: 'info', message: t.coach_opponent_deep_block });
-            }
-
-            // Fitness tips (only if lineup has players)
-            if (this.selectedPlayers.length > 0) {
-                const criticalNames = [];
-                let lowFitnessCount = 0;
-                this.selectedPlayers.forEach(id => {
-                    const p = this.playersData[id];
-                    if (!p) return;
-                    if (p.fitness < 50) criticalNames.push(p.name);
-                    else if (p.fitness < 70) lowFitnessCount++;
-                });
-                if (criticalNames.length > 0) {
-                    tips.push({ id: 'critical_fitness', priority: 0, type: 'warning', message: t.coach_critical_fitness.replace(':names', criticalNames.join(', ')) });
-                }
-                if (lowFitnessCount > 0) {
-                    tips.push({ id: 'low_fitness', priority: 1, type: 'warning', message: t.coach_low_fitness.replace(':count', lowFitnessCount) });
-                }
-
-                // Morale tips
-                let lowMoraleCount = 0;
-                this.selectedPlayers.forEach(id => {
-                    const p = this.playersData[id];
-                    if (p && p.morale < 60) lowMoraleCount++;
-                });
-                if (lowMoraleCount > 0) {
-                    tips.push({ id: 'low_morale', priority: 2, type: 'warning', message: t.coach_low_morale.replace(':count', lowMoraleCount) });
-                }
-            }
-
-            // Bench frustration: quality non-selected players losing morale
-            const selectedSet = new Set(this.selectedPlayers);
-            let benchFrustrationCount = 0;
-            Object.values(this.playersData).forEach(p => {
-                if (!selectedSet.has(p.id) && p.isAvailable && p.overallScore >= 70 && p.morale < 65) {
-                    benchFrustrationCount++;
-                }
+            return generateCoachTips({
+                selectedPlayers: this.selectedPlayers,
+                playersData: this.playersData,
+                translations: this.translations,
+                opponentAverage: this.opponentAverage,
+                teamAverage: this.teamAverage,
+                userTeamAverage: this.userTeamAverage,
+                opponentFormation: this.opponentFormation,
+                opponentMentality: this.opponentMentality,
+                selectedFormation: this.selectedFormation,
+                selectedMentality: this.selectedMentality,
+                formationModifiers: this.formationModifiers,
+                isHome: this.isHome,
             });
-            if (benchFrustrationCount >= 2) {
-                tips.push({ id: 'bench_frustration', priority: 4, type: 'info', message: t.coach_bench_frustration.replace(':count', benchFrustrationCount) });
-            }
+        },
 
-            // Home advantage (low priority filler)
-            if (this.isHome) {
-                tips.push({ id: 'home_advantage', priority: 5, type: 'info', message: t.coach_home_advantage });
-            }
+        /**
+         * Pre-match xG preview based on current lineup and tactical selections.
+         * Delegates to the pure xg-calculator module.
+         */
+        get xgPreview() {
+            if (!this.xgConfig || this.selectedPlayers.length === 0 || !this.opponentAverage) return null;
+            if (!this.teamAverage) return null;
 
-            // Sort by priority (lower = more important), limit to 4
-            tips.sort((a, b) => a.priority - b.priority);
+            const bestFwdPhysical = this.selectedPlayers
+                .map(id => this.playersData[id])
+                .filter(p => p && p.positionGroup === 'Forward')
+                .reduce((max, p) => Math.max(max, p.physicalAbility), 0);
 
-            // If we have 4+ tips, drop home_advantage to make room for more important ones
-            const filtered = tips.length > 4 ? tips.filter(t => t.id !== 'home_advantage') : tips;
-            return filtered.slice(0, 4);
+            return calculateXgPreview({
+                userAvg: this.teamAverage,
+                opponentAvg: this.opponentAverage,
+                isHome: this.isHome,
+                userFormation: this.selectedFormation,
+                userMentality: this.selectedMentality,
+                userStyle: this.selectedPlayingStyle,
+                userPressing: this.selectedPressing,
+                userDefLine: this.selectedDefLine,
+                opponentFormation: this.opponentFormation,
+                opponentMentality: this.opponentMentality,
+                opponentStyle: this.opponentPlayingStyle,
+                opponentPressing: this.opponentPressing,
+                opponentDefLine: this.opponentDefLine,
+                formationModifiers: this.formationModifiers,
+                xgConfig: this.xgConfig,
+                userForwardPhysical: bestFwdPhysical,
+            });
         },
 
         get slotAssignments() {
             const slots = this.currentSlots.map(slot => ({ ...slot, player: null, compatibility: 0, isManual: false }));
-            const assigned = new Set();
-
-            // Get all selected players
             const selectedPlayerData = this.selectedPlayers
                 .map(id => this.playersData[id])
                 .filter(p => p);
 
-            // First: honor manual assignments
-            for (const [slotId, playerId] of Object.entries(this.manualAssignments)) {
-                const slot = slots.find(s => s.id === parseInt(slotId));
-                const player = selectedPlayerData.find(p => p.id === playerId);
-                if (slot && player && !assigned.has(player.id)) {
-                    const compatibility = this.getSlotCompatibility(player.position, slot.label);
-                    slot.player = { ...player, compatibility };
-                    slot.compatibility = compatibility;
-                    slot.isManual = true;
-                    assigned.add(player.id);
-                }
-            }
-
-            // Auto-assign remaining players to remaining slots
-            const emptySlots = slots.filter(s => !s.player);
-            const unassignedPlayers = selectedPlayerData.filter(p => !assigned.has(p.id));
-
-            if (emptySlots.length > 0 && unassignedPlayers.length > 0) {
-                this._autoAssignToSlots(emptySlots, unassignedPlayers, assigned, slots);
-            }
-
-            return slots;
-        },
-
-        // Auto-assign players to empty slots (cross-group flexible)
-        _autoAssignToSlots(emptySlots, unassignedPlayers, assigned, allSlots) {
-            const rolePriority = { 'Goalkeeper': 0, 'Forward': 1, 'Defender': 2, 'Midfielder': 3 };
-            const sortedEmpty = [...emptySlots].sort((a, b) => {
-                const aPriority = rolePriority[a.role] ?? 99;
-                const bPriority = rolePriority[b.role] ?? 99;
-                if (aPriority !== bPriority) return aPriority - bPriority;
-                const aCompat = Object.keys(this.slotCompatibility[a.label] || {}).length;
-                const bCompat = Object.keys(this.slotCompatibility[b.label] || {}).length;
-                return aCompat - bCompat;
-            });
-
-            // First pass: assign players with acceptable compatibility (>= 40)
-            sortedEmpty.forEach(slot => {
-                let bestPlayer = null;
-                let bestScore = -1;
-
-                unassignedPlayers.forEach(player => {
-                    if (assigned.has(player.id)) return;
-
-                    const compatibility = this.getSlotCompatibility(player.position, slot.label);
-                    if (compatibility < 40) return;
-
-                    // Weighted score: 70% player rating, 30% compatibility
-                    const weightedScore = (player.overallScore * 0.7) + (compatibility * 0.3);
-
-                    if (weightedScore > bestScore) {
-                        bestScore = weightedScore;
-                        bestPlayer = { ...player, compatibility };
-                    }
-                });
-
-                const originalSlot = allSlots.find(s => s.id === slot.id);
-                if (originalSlot && bestPlayer) {
-                    originalSlot.player = bestPlayer;
-                    originalSlot.compatibility = bestPlayer.compatibility;
-                    assigned.add(bestPlayer.id);
-                }
-            });
-
-            // Second pass: fill remaining empty slots with leftover players
-            const stillEmpty = allSlots.filter(s => !s.player);
-            const stillUnassigned = unassignedPlayers.filter(p => !assigned.has(p.id));
-
-            stillEmpty.forEach((slot, index) => {
-                if (stillUnassigned[index]) {
-                    const player = stillUnassigned[index];
-                    const compatibility = this.getSlotCompatibility(player.position, slot.label);
-                    slot.player = { ...player, compatibility };
-                    slot.compatibility = compatibility;
-                }
-            });
+            return assignPlayersToSlots(slots, selectedPlayerData, this.slotCompatibility, this.manualAssignments);
         },
 
         // Methods
@@ -372,8 +324,15 @@ export default function lineupManager(config) {
             // If an empty slot is waiting for assignment, assign this player to it
             if (this.assigningSlotId !== null && !this.isSelected(id)) {
                 if (this.selectedCount < 11) {
-                    this.selectedPlayers.push(id);
+                    // Freeze existing auto-assignments so adding the new player
+                    // doesn't reshuffle everyone else into "better" slots.
+                    // Set manualAssignments BEFORE pushing to selectedPlayers —
+                    // the push triggers a reactive recompute of slotAssignments,
+                    // and the manual assignment must already be in place so the
+                    // player lands in the user-chosen slot, not a "better fit".
+                    this._preserveCurrentAssignments(null);
                     this.manualAssignments = { ...this.manualAssignments, [this.assigningSlotId]: id };
+                    this.selectedPlayers.push(id);
                 }
                 this.assigningSlotId = null;
                 return;
@@ -505,7 +464,10 @@ export default function lineupManager(config) {
         },
 
         // =====================================================================
-        // Grid Positioning System
+        // Grid Positioning — provided by pitch-grid module via Object.assign in init()
+        // Methods: getSlotCell, isCellOccupied, selectForRepositioning,
+        //          setSlotGridPosition, handleGridCellClick, getGridCellState,
+        //          startDrag, _findSlotAtCell, _getPitchElement
         // =====================================================================
 
         /**
@@ -528,96 +490,10 @@ export default function lineupManager(config) {
         },
 
         /**
-         * Get the grid cell for a slot (custom or default).
-         */
-        getSlotCell(slotId) {
-            const customPos = this.pitchPositions[String(slotId)];
-            if (customPos) return { col: customPos[0], row: customPos[1] };
-
-            // Use formation default cell
-            const gc = this.gridConfig;
-            if (!gc) return null;
-            const defaultCells = gc.defaultCells[this.selectedFormation];
-            return defaultCells ? defaultCells[slotId] : null;
-        },
-
-        /**
-         * Check if a grid cell is valid for a slot.
-         * GK stays locked to its zone; outfield players can go anywhere on the outfield (rows 1-13).
+         * Check if a grid cell is valid for a slot (delegation for Blade templates).
          */
         isValidGridCell(slotLabel, col, row) {
             return _isValidGridCell(slotLabel, col, row, this.gridConfig);
-        },
-
-        /**
-         * Check if a cell is occupied by another slot.
-         */
-        isCellOccupied(col, row, excludeSlotId) {
-            return this._findSlotAtCell(col, row, excludeSlotId) !== null;
-        },
-
-        /**
-         * Find the slot occupying a cell (excluding a given slot).
-         * Returns the slot object or null.
-         */
-        _findSlotAtCell(col, row, excludeSlotId) {
-            const assignments = this.slotAssignments;
-            for (const slot of assignments) {
-                if (slot.id === excludeSlotId || !slot.player) continue;
-                const cell = this.getSlotCell(slot.id);
-                if (cell && cell.col === col && cell.row === row) return slot;
-            }
-            return null;
-        },
-
-        /**
-         * Select a slot for grid repositioning (click-to-place mode).
-         */
-        selectForRepositioning(slotId) {
-            const slot = this.currentSlots.find(s => s.id === slotId);
-            if (slot && slot.role === 'Goalkeeper') return;
-            this.assigningSlotId = null;
-            if (this.positioningSlotId === slotId) {
-                this.positioningSlotId = null;
-            } else {
-                this.positioningSlotId = slotId;
-            }
-        },
-
-        /**
-         * Place a slot at a specific grid cell. If occupied, swap positions.
-         */
-        setSlotGridPosition(slotId, col, row) {
-            const slot = this.currentSlots.find(s => s.id === slotId);
-            if (!slot) return;
-
-            if (!this.isValidGridCell(slot.label, col, row)) return;
-
-            const occupying = this._findSlotAtCell(col, row, slotId);
-            const newPositions = { ...this.pitchPositions };
-
-            if (occupying) {
-                // Don't swap with GK
-                if (occupying.role === 'Goalkeeper') return;
-
-                // Move occupying slot to dragged slot's old cell
-                const draggedCell = this.getSlotCell(slotId);
-                if (draggedCell) {
-                    newPositions[String(occupying.id)] = [draggedCell.col, draggedCell.row];
-                }
-            }
-
-            newPositions[String(slotId)] = [col, row];
-            this.pitchPositions = newPositions;
-            this.positioningSlotId = null;
-        },
-
-        /**
-         * Handle clicking a grid cell (in grid mode, when a slot is selected for repositioning).
-         */
-        handleGridCellClick(col, row) {
-            if (this.positioningSlotId === null) return;
-            this.setSlotGridPosition(this.positioningSlotId, col, row);
         },
 
         /**
@@ -625,92 +501,6 @@ export default function lineupManager(config) {
          */
         getZoneColorClass(role) {
             return _getZoneColorClass(role);
-        },
-
-        /**
-         * Get the cell state for a grid cell relative to the currently positioning slot.
-         * Returns: 'valid-def', 'valid-mid', 'valid-fwd', 'valid' (GK), 'occupied', 'invalid', or 'neutral'
-         */
-        getGridCellState(col, row) {
-            if (this.positioningSlotId === null && this.draggingSlotId === null) return 'neutral';
-
-            const activeSlotId = this.positioningSlotId ?? this.draggingSlotId;
-            const slot = this.currentSlots.find(s => s.id === activeSlotId);
-            if (!slot) return 'neutral';
-
-            if (!this.isValidGridCell(slot.label, col, row)) return 'invalid';
-
-            // Occupied by GK = blocked; occupied by outfield = swappable (treat as valid)
-            const occupying = this._findSlotAtCell(col, row, activeSlotId);
-            if (occupying && occupying.role === 'Goalkeeper') return 'occupied';
-
-            // GK stays simple
-            if (slot.role === 'Goalkeeper') return 'valid';
-
-            // Color outfield cells by zone for visual guidance
-            if (row <= 4) return 'valid-def';
-            if (row <= 9) return 'valid-mid';
-            return 'valid-fwd';
-        },
-
-        // ----- Drag-and-drop -----
-
-        /**
-         * Begin dragging a player badge in grid mode.
-         */
-        startDrag(slotId, event) {
-            const slot = this.currentSlots.find(s => s.id === slotId);
-            if (slot && slot.role === 'Goalkeeper') return;
-
-            // Prevent default to avoid text selection and scroll on touch
-            event.preventDefault();
-
-            this.draggingSlotId = slotId;
-            this.positioningSlotId = null;
-
-            // Register drag listeners lazily to avoid permanent non-passive touchmove
-            document.addEventListener('mousemove', this._boundDragMove);
-            document.addEventListener('mouseup', this._boundDragEnd);
-            document.addEventListener('touchmove', this._boundDragMove, { passive: false });
-            document.addEventListener('touchend', this._boundDragEnd);
-
-            const coords = _getEventCoords(event);
-            this.dragPosition = getDragPosition(coords.clientX, coords.clientY, this._getPitchElement());
-        },
-
-        _onDragMove(event) {
-            if (this.draggingSlotId === null) return;
-            event.preventDefault();
-
-            const coords = _getEventCoords(event);
-            this.dragPosition = getDragPosition(coords.clientX, coords.clientY, this._getPitchElement());
-        },
-
-        _onDragEnd(event) {
-            if (this.draggingSlotId === null) return;
-
-            const coords = _getEventCoords(event);
-            const cell = getCellFromClientCoords(coords.clientX, coords.clientY, this._getPitchElement(), this.gridConfig);
-
-            if (cell) {
-                this.setSlotGridPosition(this.draggingSlotId, cell.col, cell.row);
-            }
-
-            this.draggingSlotId = null;
-            this.dragPosition = null;
-
-            // Clean up drag listeners
-            document.removeEventListener('mousemove', this._boundDragMove);
-            document.removeEventListener('mouseup', this._boundDragEnd);
-            document.removeEventListener('touchmove', this._boundDragMove);
-            document.removeEventListener('touchend', this._boundDragEnd);
-        },
-
-        _getPitchElement() {
-            if (!this._pitchEl) {
-                this._pitchEl = document.getElementById('pitch-field');
-            }
-            return this._pitchEl;
         },
 
         // =====================================================================
@@ -740,15 +530,14 @@ export default function lineupManager(config) {
 
             event.preventDefault();
 
-            // Enter pending state — not yet dragging until 5px threshold
+            // Enter pending state — not yet dragging until 5px threshold.
+            // Don't clear assigningSlotId here — it fires on mousedown before
+            // the click handler (toggle), which needs assigningSlotId intact.
+            // Interaction modes are cleared when the drag actually activates.
             const coords = _getEventCoords(event);
             this._listDragPendingId = playerId;
             this._listDragStartCoords = { x: coords.clientX, y: coords.clientY };
             this._listDragMoved = false;
-
-            // Clear other interaction modes
-            this.assigningSlotId = null;
-            this.positioningSlotId = null;
 
             document.addEventListener('mousemove', this._boundListDragMove);
             document.addEventListener('mouseup', this._boundListDragEnd);
@@ -768,7 +557,9 @@ export default function lineupManager(config) {
                 const dy = coords.clientY - this._listDragStartCoords.y;
                 if (Math.sqrt(dx * dx + dy * dy) < 5) return;
 
-                // Activate drag
+                // Activate drag — clear other interaction modes now (not on mousedown)
+                this.assigningSlotId = null;
+                this.positioningSlotId = null;
                 this.listDragPlayerId = this._listDragPendingId;
                 this._listDragPendingId = null;
                 this._listDragMoved = true;

@@ -23,6 +23,7 @@ return [
     'view_details' => 'Ver detalles',
 
     // Authentication
+    'account' => 'Cuenta',
     'log_out' => 'Cerrar Sesión',
     'edit_profile' => 'Editar perfil',
     'new_game' => 'Nueva partida',

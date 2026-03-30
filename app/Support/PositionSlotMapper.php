@@ -38,18 +38,6 @@ class PositionSlotMapper
             'Centre-Back' => 40,
             'Left-Back' => 30,
         ],
-        'LWB' => [
-            'Left-Back' => 100,
-            'Left Midfield' => 80,
-            'Left Winger' => 60,
-            'Right-Back' => 20,
-        ],
-        'RWB' => [
-            'Right-Back' => 100,
-            'Right Midfield' => 80,
-            'Right Winger' => 60,
-            'Left-Back' => 20,
-        ],
         'DM' => [
             'Defensive Midfield' => 100,
             'Central Midfield' => 70,
@@ -149,28 +137,40 @@ class PositionSlotMapper
     }
 
     /**
+     * Map slot codes to translation key prefixes.
+     */
+    private static array $slotToKey = [
+        'GK' => 'goalkeeper',
+        'CB' => 'centre_back',
+        'LB' => 'left_back',
+        'RB' => 'right_back',
+        'DM' => 'defensive_midfield',
+        'CM' => 'central_midfield',
+        'AM' => 'attacking_midfield',
+        'LM' => 'left_midfield',
+        'RM' => 'right_midfield',
+        'LW' => 'left_winger',
+        'RW' => 'right_winger',
+        'CF' => 'centre_forward',
+        'SS' => 'second_striker',
+    ];
+
+    /**
+     * Get localized abbreviation for a slot code (GK, CB, LB, etc.).
+     */
+    public static function slotToDisplayAbbreviation(string $slotCode): string
+    {
+        $key = self::$slotToKey[$slotCode] ?? null;
+
+        return $key ? __("positions.{$key}_abbr") : $slotCode;
+    }
+
+    /**
      * Get slot code display name.
      */
     public static function getSlotDisplayName(string $slotCode): string
     {
-        $slotToKey = [
-            'GK' => 'goalkeeper',
-            'CB' => 'centre_back',
-            'LB' => 'left_back',
-            'RB' => 'right_back',
-            'LWB' => 'left_wing_back',
-            'RWB' => 'right_wing_back',
-            'DM' => 'defensive_midfield',
-            'CM' => 'central_midfield',
-            'AM' => 'attacking_midfield',
-            'LM' => 'left_midfield',
-            'RM' => 'right_midfield',
-            'LW' => 'left_winger',
-            'RW' => 'right_winger',
-            'CF' => 'centre_forward',
-        ];
-
-        $key = $slotToKey[$slotCode] ?? null;
+        $key = self::$slotToKey[$slotCode] ?? null;
 
         return $key ? __("positions.{$key}") : $slotCode;
     }
@@ -183,10 +183,55 @@ class PositionSlotMapper
     {
         return match ($slotCode) {
             'GK' => 'Goalkeeper',
-            'CB', 'LB', 'RB', 'LWB', 'RWB' => 'Defender',
+            'CB', 'LB', 'RB' => 'Defender',
             'DM', 'CM', 'AM', 'LM', 'RM' => 'Midfielder',
             'LW', 'RW', 'CF' => 'Forward',
             default => 'Midfielder',
         };
+    }
+
+    /**
+     * Get all slot codes (12 slots, excluding SS which shares CF).
+     *
+     * @return string[]
+     */
+    public static function getAllSlots(): array
+    {
+        return array_keys(self::SLOT_COMPATIBILITY);
+    }
+
+    /**
+     * Get the primary (natural) slot for a canonical position.
+     *
+     * Returns the slot where the position has a compatibility score of 100.
+     * Second Striker maps to CF (both have score 100 in CF).
+     */
+    public static function getPositionPrimarySlot(string $position): ?string
+    {
+        foreach (self::SLOT_COMPATIBILITY as $slot => $positions) {
+            if (($positions[$position] ?? 0) === 100) {
+                return $slot;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the full position-to-primary-slot mapping for all 13 canonical positions.
+     *
+     * @return array<string, string>  [position_name => slot_code]
+     */
+    public static function getPositionToSlotMap(): array
+    {
+        $map = [];
+        foreach (PositionMapper::getAllPositions() as $position) {
+            $slot = self::getPositionPrimarySlot($position);
+            if ($slot !== null) {
+                $map[$position] = $slot;
+            }
+        }
+
+        return $map;
     }
 }

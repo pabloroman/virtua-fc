@@ -20,7 +20,6 @@
       "id": "195778",
       "marketValue": "€12.00m",
       "name": "Alexander Nübel",
-      "number": "12",
       "position": "Goalkeeper"
     },
     {
@@ -33,6 +32,25 @@
       "position": "Goalkeeper"
     },
     {
+      "contract": "Oct 14, 2024",
+      "dateOfBirth": "Jun 2, 1990",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "55089",
+      "marketValue": "€3.00m",
+      "name": "Oliver Baumann",
+      "position": "Goalkeeper"
+    },
+    {
+      "dateOfBirth": "Mar 27, 1998",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "251299",
+      "marketValue": "€2.50m",
+      "name": "Finn Dahmen",
+      "position": "Goalkeeper"
+    },
+    {
       "contract": "Mar 26, 2022",
       "dateOfBirth": "Dec 1, 1999",
       "foot": "left",
@@ -40,17 +58,6 @@
       "id": "388198",
       "marketValue": "€40.00m",
       "name": "Nico Schlotterbeck",
-      "number": "15",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Mar 23, 2025",
-      "dateOfBirth": "Nov 29, 2000",
-      "foot": "right",
-      "height": "1,96m",
-      "id": "441986",
-      "marketValue": "€30.00m",
-      "name": "Yann Bisseck",
       "position": "Centre-Back"
     },
     {
@@ -61,7 +68,16 @@
       "id": "196357",
       "marketValue": "€30.00m",
       "name": "Jonathan Tah",
-      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Mar 23, 2025",
+      "dateOfBirth": "Nov 29, 2000",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "441986",
+      "marketValue": "€30.00m",
+      "name": "Yann Bisseck",
       "position": "Centre-Back"
     },
     {
@@ -82,7 +98,6 @@
       "id": "193004",
       "marketValue": "€24.00m",
       "name": "Waldemar Anton",
-      "number": "3",
       "position": "Centre-Back"
     },
     {
@@ -93,7 +108,6 @@
       "id": "521964",
       "marketValue": "€20.00m",
       "name": "Malick Thiaw",
-      "number": "2",
       "position": "Centre-Back"
     },
     {
@@ -117,6 +131,16 @@
       "position": "Centre-Back"
     },
     {
+      "contract": "Sep 4, 2025",
+      "dateOfBirth": "Jan 10, 2004",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "684315",
+      "marketValue": "€4.00m",
+      "name": "Nnamdi Collins",
+      "position": "Centre-Back"
+    },
+    {
       "contract": "Sep 5, 2021",
       "dateOfBirth": "Apr 22, 1998",
       "foot": "left",
@@ -124,7 +148,6 @@
       "id": "318204",
       "marketValue": "€25.00m",
       "name": "David Raum",
-      "number": "22",
       "position": "Left-Back"
     },
     {
@@ -138,6 +161,16 @@
       "position": "Left-Back"
     },
     {
+      "contract": "Sep 3, 2020",
+      "dateOfBirth": "Jul 5, 1994",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "273132",
+      "marketValue": "€8.00m",
+      "name": "Robin Gosens",
+      "position": "Left-Back"
+    },
+    {
       "contract": "Oct 10, 2025",
       "dateOfBirth": "Jun 16, 2003",
       "foot": "left",
@@ -145,19 +178,17 @@
       "id": "691892",
       "marketValue": "€8.00m",
       "name": "Nathaniel Brown",
-      "number": "18",
       "position": "Left-Back"
     },
     {
-      "contract": "Jun 3, 2024",
-      "dateOfBirth": "May 3, 2004",
-      "foot": "both",
-      "height": "1,88m",
-      "id": "792380",
-      "marketValue": "€50.00m",
-      "name": "Aleksandar Pavlovic",
-      "number": "5",
-      "position": "Defensive Midfield"
+      "contract": "Nov 11, 2020",
+      "dateOfBirth": "Apr 8, 1998",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "327251",
+      "marketValue": "€7.00m",
+      "name": "Ridle Baku",
+      "position": "Right-Back"
     },
     {
       "contract": "May 29, 2016",
@@ -167,7 +198,16 @@
       "id": "161056",
       "marketValue": "€50.00m",
       "name": "Joshua Kimmich",
-      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 3, 2024",
+      "dateOfBirth": "May 3, 2004",
+      "foot": "both",
+      "height": "1,88m",
+      "id": "792380",
+      "marketValue": "€50.00m",
+      "name": "Aleksandar Pavlovic",
       "position": "Defensive Midfield"
     },
     {
@@ -198,7 +238,6 @@
       "id": "406640",
       "marketValue": "€28.00m",
       "name": "Felix Nmecha",
-      "number": "13",
       "position": "Central Midfield"
     },
     {
@@ -209,7 +248,6 @@
       "id": "153084",
       "marketValue": "€22.00m",
       "name": "Leon Goretzka",
-      "number": "8",
       "position": "Central Midfield"
     },
     {
@@ -240,7 +278,16 @@
       "id": "897424",
       "marketValue": "€10.00m",
       "name": "Assan Ouédraogo",
-      "number": "9",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Sep 9, 2023",
+      "dateOfBirth": "Jun 15, 1991",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "82873",
+      "marketValue": "€7.00m",
+      "name": "Pascal Groß",
       "position": "Central Midfield"
     },
     {
@@ -261,7 +308,15 @@
       "id": "598577",
       "marketValue": "€140.00m",
       "name": "Florian Wirtz",
-      "number": "17",
+      "position": "Attacking Midfield"
+    },
+    {
+      "dateOfBirth": "Oct 10, 2002",
+      "foot": "both",
+      "height": "1,69m",
+      "id": "503160",
+      "marketValue": "€7.00m",
+      "name": "Paul Nebel",
       "position": "Attacking Midfield"
     },
     {
@@ -272,7 +327,15 @@
       "id": "473050",
       "marketValue": "€22.00m",
       "name": "Kevin Schade",
-      "number": "16",
+      "position": "Left Winger"
+    },
+    {
+      "dateOfBirth": "Aug 26, 2006",
+      "foot": "both",
+      "height": "1,87m",
+      "id": "1168219",
+      "marketValue": "€1.00m",
+      "name": "Said El Mala",
       "position": "Left Winger"
     },
     {
@@ -283,7 +346,6 @@
       "id": "192565",
       "marketValue": "€45.00m",
       "name": "Leroy Sané",
-      "number": "19",
       "position": "Right Winger"
     },
     {
@@ -294,7 +356,6 @@
       "id": "496094",
       "marketValue": "€35.00m",
       "name": "Karim Adeyemi",
-      "number": "14",
       "position": "Right Winger"
     },
     {
@@ -305,7 +366,6 @@
       "id": "518505",
       "marketValue": "€20.00m",
       "name": "Jamie Leweling",
-      "number": "7",
       "position": "Right Winger"
     },
     {
@@ -316,7 +376,6 @@
       "id": "159471",
       "marketValue": "€35.00m",
       "name": "Serge Gnabry",
-      "number": "20",
       "position": "Second Striker"
     },
     {
@@ -347,7 +406,6 @@
       "id": "333647",
       "marketValue": "€25.00m",
       "name": "Jonathan Burkardt",
-      "number": "10",
       "position": "Centre-Forward"
     },
     {
@@ -368,6 +426,16 @@
       "id": "193033",
       "marketValue": "€12.00m",
       "name": "Tim Kleindienst",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 4, 2025",
+      "dateOfBirth": "Feb 14, 2002",
+      "foot": "right",
+      "height": "1,98m",
+      "id": "455661",
+      "marketValue": "€7.50m",
+      "name": "Nick Woltemade",
       "position": "Centre-Forward"
     }
   ],

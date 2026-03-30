@@ -15,6 +15,22 @@
                 <p class="text-sm text-text-muted">{{ __('leaderboard.subtitle') }}</p>
             </div>
 
+            {{-- Navigation Links --}}
+            <div class="flex justify-center gap-6">
+                <a href="{{ route('leaderboard.teams') }}" class="inline-flex items-center gap-1.5 text-sm text-accent-blue hover:underline">
+                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+                    </svg>
+                    {{ __('leaderboard.browse_by_team') }}
+                </a>
+                <a href="{{ route('leaderboard.tournament') }}" class="inline-flex items-center gap-1.5 text-sm text-accent-blue hover:underline">
+                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-4.5A3.375 3.375 0 0 0 13.125 10.875h-2.25A3.375 3.375 0 0 0 7.5 14.25v4.5m9-13.5a2.25 2.25 0 0 0-2.25-2.25h-2.5A2.25 2.25 0 0 0 9.5 5.25v1.5a2.25 2.25 0 0 0 2.25 2.25h2.5A2.25 2.25 0 0 0 16.5 6.75v-1.5Z" />
+                    </svg>
+                    {{ __('leaderboard.browse_tournament') }}
+                </a>
+            </div>
+
             {{-- Summary Cards --}}
             <div class="grid grid-cols-2 gap-3">
                 <div class="bg-surface-800 border border-border-default rounded-xl px-4 py-3 text-center">
