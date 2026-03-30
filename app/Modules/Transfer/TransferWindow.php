@@ -78,15 +78,7 @@ final readonly class TransferWindow
             return null;
         }
 
-        $year = $this->date->year;
-        $closeMonth = $type->closeMonth();
-
-        // Winter window in December would close in Feb of next year
-        if ($type === TransferWindowType::WINTER && $this->date->month === 12) {
-            $year++;
-        }
-
-        return Carbon::createFromDate($year, $closeMonth, 1);
+        return Carbon::createFromDate($this->date->year, $type->closeMonth(), 1);
     }
 
     /**

@@ -972,7 +972,7 @@ class TransferService
             transferFee: 0,
             type: GameTransfer::TYPE_FREE_AGENT,
             season: $game->season,
-            window: TransferWindowType::fromDate($game->current_date)?->value ?? 'summer',
+            window: TransferWindowType::currentValue($game->current_date),
         );
 
         ShortlistedPlayer::removeForPlayer($game->id, $player->id);

@@ -530,21 +530,6 @@ class Game extends Model
         return $this->current_date && $this->transferWindow()->isOpen();
     }
 
-    public function isStartOfSummerWindow(): bool
-    {
-        return $this->current_date && $this->transferWindow()->isSummer() && $this->current_date->day <= 7;
-    }
-
-    public function isStartOfWinterWindow(): bool
-    {
-        return $this->current_date && $this->transferWindow()->isWinter() && $this->current_date->day <= 7;
-    }
-
-    public function isTransferWindowStart(): bool
-    {
-        return $this->current_date && $this->transferWindow()->isWindowStart();
-    }
-
     public function getCurrentWindowName(): ?string
     {
         return $this->current_date ? $this->transferWindow()->displayName() : null;

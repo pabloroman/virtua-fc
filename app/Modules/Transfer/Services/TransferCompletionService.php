@@ -61,7 +61,7 @@ class TransferCompletionService
             transferFee: $offer->transfer_fee,
             type: $isLoan ? GameTransfer::TYPE_LOAN : GameTransfer::TYPE_TRANSFER,
             season: $game->season,
-            window: TransferWindowType::fromDate($game->current_date)?->value ?? 'summer',
+            window: TransferWindowType::currentValue($game->current_date),
         );
 
         // Update transfer budget and record the transaction
@@ -121,7 +121,7 @@ class TransferCompletionService
             transferFee: 0,
             type: GameTransfer::TYPE_FREE_AGENT,
             season: $game->season,
-            window: TransferWindowType::fromDate($game->current_date)?->value ?? 'summer',
+            window: TransferWindowType::currentValue($game->current_date),
         );
 
         // Record the transaction (free transfer, but still useful to track)
@@ -190,7 +190,7 @@ class TransferCompletionService
             transferFee: $offer->transfer_fee,
             type: GameTransfer::TYPE_TRANSFER,
             season: $game->season,
-            window: TransferWindowType::fromDate($game->current_date)?->value ?? 'summer',
+            window: TransferWindowType::currentValue($game->current_date),
         );
 
         // Deduct from transfer budget and record the transaction
@@ -248,7 +248,7 @@ class TransferCompletionService
             transferFee: 0,
             type: GameTransfer::TYPE_FREE_AGENT,
             season: $game->season,
-            window: TransferWindowType::fromDate($game->current_date)?->value ?? 'summer',
+            window: TransferWindowType::currentValue($game->current_date),
         );
 
         ShortlistedPlayer::removeForPlayer($game->id, $player->id);

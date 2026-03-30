@@ -107,6 +107,7 @@ class GameNotification extends Model
         self::TYPE_MATCH_FORFEIT => 'squad',
         self::TYPE_BUDGET_LOAN => 'finances',
         self::TYPE_TRANSFER_WINDOW_CLOSING => 'transfers',
+        self::TYPE_TRANSFER_WINDOW_CLOSED => 'transfers',
     ];
 
     protected $fillable = [

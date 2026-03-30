@@ -544,7 +544,7 @@ class LoanService
             transferFee: 0,
             type: GameTransfer::TYPE_LOAN,
             season: $game->season,
-            window: TransferWindowType::fromDate($game->current_date)?->value ?? 'summer',
+            window: TransferWindowType::currentValue($game->current_date),
         );
 
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
@@ -601,7 +601,7 @@ class LoanService
             transferFee: 0,
             type: GameTransfer::TYPE_LOAN,
             season: $game->season,
-            window: TransferWindowType::fromDate($game->current_date)?->value ?? 'summer',
+            window: TransferWindowType::currentValue($game->current_date),
         );
 
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);

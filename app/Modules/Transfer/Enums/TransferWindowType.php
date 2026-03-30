@@ -57,4 +57,12 @@ enum TransferWindowType: string
     {
         return self::fromMonth($date->month);
     }
+
+    /**
+     * Resolve the current window value string, defaulting to 'summer'.
+     */
+    public static function currentValue(Carbon $date): string
+    {
+        return self::fromDate($date)?->value ?? self::SUMMER->value;
+    }
 }

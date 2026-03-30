@@ -502,17 +502,14 @@ class MatchdayOrchestrator
         // Roll for training injuries (non-playing squad members)
         $this->processTrainingInjuries($game, $matches, $allPlayers);
 
-        // Batch-load recent recovery + low-fitness notifications to avoid per-player queries
+        // Batch-load recent low-fitness notifications to avoid per-player queries
         $recentNotificationPlayerIds = GameNotification::where('game_id', $game->id)
-            ->whereIn('type', [GameNotification::TYPE_PLAYER_RECOVERED, GameNotification::TYPE_LOW_FITNESS])
+            ->where('type', GameNotification::TYPE_LOW_FITNESS)
             ->where('game_date', '>', $game->current_date->copy()->subDays(7))
             ->pluck('metadata')
             ->map(fn ($m) => $m['player_id'] ?? null)
             ->filter()
             ->toArray();
-
-        // Check for recovered players
-        $this->checkRecoveredPlayers($game, $allPlayers, $recentNotificationPlayerIds);
 
         // Check for low fitness players
         $this->checkLowFitnessPlayers($game, $allPlayers, $recentNotificationPlayerIds);
@@ -536,26 +533,6 @@ class MatchdayOrchestrator
             ? $matches->reject(fn ($m) => $m->id === $deferMatchId)
             : $matches;
         $this->checkCompetitionProgress($game, $matchesForProgress, $handlers);
-    }
-
-    /**
-     * Check for players who have recovered from injuries.
-     */
-    private function checkRecoveredPlayers(Game $game, $allPlayers, array $recentNotificationPlayerIds): void
-    {
-        $userTeamPlayers = $allPlayers->get($game->team_id, collect());
-
-        foreach ($userTeamPlayers as $player) {
-            // Check if player was injured but is now recovered
-            if ($player->injury_until && $player->injury_until->lt($game->current_date)) {
-                // Clear the injury fields so this doesn't trigger again on future matchdays
-                $this->eligibilityService->clearInjury($player);
-
-                if (! in_array($player->id, $recentNotificationPlayerIds)) {
-                    $this->notificationService->notifyRecovery($game, $player);
-                }
-            }
-        }
     }
 
     /**
