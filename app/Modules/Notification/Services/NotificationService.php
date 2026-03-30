@@ -133,7 +133,9 @@ class NotificationService
         $matchesMissed = 0;
 
         if ($player->injury_until) {
-            $data = InjuryService::getMatchesMissed($game->id, $player->team_id, $game->current_date, $player->injury_until);
+            // Use the day after current_date so the match where the injury occurred
+            // is excluded from the "missed" count (the player already played that match).
+            $data = InjuryService::getMatchesMissed($game->id, $player->team_id, $game->current_date->copy()->addDay(), $player->injury_until);
             $matchesMissed = $data['count'];
 
             if ($matchesMissed > 0) {

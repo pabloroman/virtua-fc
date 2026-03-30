@@ -45,7 +45,7 @@ class LineupService
                 return false;
             }
             // Check injury
-            if ($player->injury_until && $player->injury_until->gt($matchDate)) {
+            if ($player->injury_until && $player->injury_until->gte($matchDate)) {
                 return false;
             }
             return true;
@@ -646,7 +646,7 @@ class LineupService
                     ->filter(fn ($p) => in_array($p->id, $existingLineup))
                     ->contains(function ($player) use ($matchDate, $suspendedPlayerIds) {
                         return in_array($player->id, $suspendedPlayerIds)
-                            || ($player->injury_until && $player->injury_until->gt($matchDate));
+                            || ($player->injury_until && $player->injury_until->gte($matchDate));
                     });
             } else {
                 $availableIds = $this->getAvailablePlayers($game->id, $teamId, $matchDate, $competitionId)
@@ -678,7 +678,7 @@ class LineupService
                     return false;
                 }
                 // Check injury
-                if ($player->injury_until && $player->injury_until->gt($matchDate)) {
+                if ($player->injury_until && $player->injury_until->gte($matchDate)) {
                     return false;
                 }
                 return true;

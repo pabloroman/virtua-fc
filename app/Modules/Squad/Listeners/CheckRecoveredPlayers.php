@@ -22,7 +22,7 @@ class CheckRecoveredPlayers
         $recoveredPlayers = GamePlayer::where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->whereNotNull('injury_until')
-            ->where('injury_until', '<=', $event->newDate->toDateString())
+            ->where('injury_until', '<', $event->newDate->toDateString())
             ->get();
 
         if ($recoveredPlayers->isEmpty()) {

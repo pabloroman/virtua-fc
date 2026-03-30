@@ -553,7 +553,7 @@ class GamePlayer extends Model
             return false;
         }
 
-        if ($this->injury_until && $gameDate && $this->injury_until->gt($gameDate)) {
+        if ($this->injury_until && $gameDate && $this->injury_until->gte($gameDate)) {
             return false;
         }
 
@@ -603,7 +603,7 @@ class GamePlayer extends Model
         }
 
         $checkDate = $date ?? $this->game->current_date;
-        return $this->injury_until->gt($checkDate);
+        return $this->injury_until->gte($checkDate);
     }
 
     /**

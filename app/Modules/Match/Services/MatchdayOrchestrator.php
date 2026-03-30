@@ -547,7 +547,7 @@ class MatchdayOrchestrator
 
         foreach ($userTeamPlayers as $player) {
             // Check if player was injured but is now recovered
-            if ($player->injury_until && $player->injury_until->lte($game->current_date)) {
+            if ($player->injury_until && $player->injury_until->lt($game->current_date)) {
                 // Clear the injury fields so this doesn't trigger again on future matchdays
                 $this->eligibilityService->clearInjury($player);
 
@@ -567,7 +567,7 @@ class MatchdayOrchestrator
 
         foreach ($userTeamPlayers as $player) {
             // Skip injured players
-            if ($player->injury_until && $player->injury_until->gt($game->current_date)) {
+            if ($player->injury_until && $player->injury_until->gte($game->current_date)) {
                 continue;
             }
 
@@ -589,7 +589,7 @@ class MatchdayOrchestrator
         foreach ($allPlayers as $teamId => $teamPlayers) {
             // Filter to non-injured squad members (playing and non-playing)
             $eligible = $teamPlayers->filter(function ($player) use ($game) {
-                if ($player->injury_until && $player->injury_until->gt($game->current_date)) {
+                if ($player->injury_until && $player->injury_until->gte($game->current_date)) {
                     return false;
                 }
 

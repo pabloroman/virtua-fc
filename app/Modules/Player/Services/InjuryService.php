@@ -570,7 +570,7 @@ class InjuryService
         foreach ($players as $player) {
             if ($player->isInjured($referenceDate) && $player->injury_until) {
                 $map[$player->id] = [
-                    'count' => $upcomingMatchDates->filter(fn ($d) => $d->lt($player->injury_until))->count(),
+                    'count' => $upcomingMatchDates->filter(fn ($d) => $d->lte($player->injury_until))->count(),
                     'approx' => $lastScheduledDate && $player->injury_until->gt($lastScheduledDate),
                 ];
             }
@@ -590,7 +590,7 @@ class InjuryService
         $lastScheduledDate = $upcomingMatchDates->last();
 
         return [
-            'count' => $upcomingMatchDates->filter(fn ($d) => $d->lt($injuryUntil))->count(),
+            'count' => $upcomingMatchDates->filter(fn ($d) => $d->lte($injuryUntil))->count(),
             'approx' => $lastScheduledDate && $injuryUntil->gt($lastScheduledDate),
         ];
     }
