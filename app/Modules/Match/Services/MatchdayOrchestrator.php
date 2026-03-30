@@ -606,6 +606,13 @@ class MatchdayOrchestrator
                 continue;
             }
 
+            // Skip injuries that wouldn't cause the player to miss any games
+            $projectedUntil = Carbon::parse($game->current_date)->addWeeks($injury['weeks']);
+            $missedData = InjuryService::getMatchesMissed($game->id, $teamId, $game->current_date, $projectedUntil);
+            if ($missedData['count'] === 0) {
+                continue;
+            }
+
             $this->eligibilityService->applyInjury(
                 $injury['player'],
                 $injury['type'],

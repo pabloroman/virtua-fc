@@ -15,6 +15,7 @@ use App\Modules\Competition\Services\StandingsCalculator;
 use App\Modules\Squad\Services\EligibilityService;
 use App\Modules\Player\Services\PlayerConditionService;
 use App\Modules\Notification\Services\NotificationService;
+use App\Modules\Player\Services\InjuryService;
 
 class MatchResultProcessor
 {
@@ -437,11 +438,20 @@ class MatchResultProcessor
 
             $injuryType = $eventData['metadata']['injury_type'] ?? 'Unknown injury';
             $weeksOut = $eventData['metadata']['weeks_out'] ?? 2;
+            $matchDate = Carbon::parse($eventData['matchDate']);
+
+            // Skip injuries that wouldn't cause the player to miss any games
+            $projectedUntil = $matchDate->copy()->addWeeks($weeksOut);
+            $missedData = InjuryService::getMatchesMissed($game->id, $player->team_id, $matchDate->copy()->addDay(), $projectedUntil);
+            if ($missedData['count'] === 0) {
+                continue;
+            }
+
             $this->eligibilityService->applyInjury(
                 $player,
                 $injuryType,
                 $weeksOut,
-                Carbon::parse($eventData['matchDate'])
+                $matchDate
             );
 
             $isUserTeamPlayer = $player->team_id === $game->team_id;
