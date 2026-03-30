@@ -241,7 +241,7 @@ class MatchdayOrchestrator
         $deferMatchId = $playerMatch?->id;
 
         // --- Process results ---
-        $this->matchResultProcessor->processAll($game->id, $matchday, $currentDate, $matchResults, $deferMatchId, $allPlayers);
+        $this->matchResultProcessor->processAll($game->id, $currentDate, $matchResults, $deferMatchId, $allPlayers);
 
         // --- Recalculate positions ---
         $this->recalculateLeaguePositions($game->id, $matches);

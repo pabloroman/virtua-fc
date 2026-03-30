@@ -44,7 +44,6 @@ class PreSeasonTest extends TestCase
             'competition_id' => $this->leagueCompetition->id,
             'season' => '2025',
             'current_date' => '2025-07-01',
-            'current_matchday' => 0,
             'pre_season' => true,
             'setup_completed_at' => now(),
             'needs_new_season_setup' => false,

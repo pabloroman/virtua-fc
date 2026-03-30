@@ -55,7 +55,6 @@ class PreseasonSuspensionTest extends TestCase
             'competition_id' => $league->id,
             'season' => '2024',
             'current_date' => '2024-07-15',
-            'current_matchday' => 0,
         ]);
     }
 

@@ -42,7 +42,6 @@ class TacticalChangeTransiencyTest extends TestCase
             'competition_id' => $this->competition->id,
             'season' => '2024',
             'current_date' => '2024-09-01',
-            'current_matchday' => 1,
         ]);
     }
 

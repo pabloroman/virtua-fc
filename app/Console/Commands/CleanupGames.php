@@ -11,9 +11,9 @@ class CleanupGames extends Command
     protected $signature = 'app:cleanup-games
                             {--dry-run : Preview what would be deleted without actually deleting}
                             {--days=2 : Number of days of inactivity after which a game is considered stale}
-                            {--all : Include all inactive games, not just unplayed ones (matchday 0)}';
+                            {--all : Include all inactive games, not just unstarted ones}';
 
-    protected $description = 'Delete stale games based on inactivity. By default only unplayed games (matchday 0); use --all to include any inactive game.';
+    protected $description = 'Delete stale games based on inactivity. By default only unstarted games (setup not completed); use --all to include any inactive game.';
 
     public function handle(GameDeletionService $service): int
     {
@@ -24,8 +24,7 @@ class CleanupGames extends Command
         $query = Game::where('updated_at', '<', now()->subDays($days));
 
         if (! $all) {
-            $query->where('current_matchday', 0)
-                ->where('season', '2025');
+            $query->whereNull('setup_completed_at');
         }
 
         $staleGames = $query->get();
@@ -39,14 +38,11 @@ class CleanupGames extends Command
         $this->info(($dryRun ? '[DRY RUN] ' : '')."Found {$staleGames->count()} stale game(s).");
 
         foreach ($staleGames as $game) {
-            $this->line("  - Game {$game->id} (user: {$game->user_id}, team: {$game->team_id}, matchday: {$game->current_matchday}, last active: {$game->updated_at})");
-
+            $this->line("  - {$game->id} ({$game->team?->name ?? 'unknown'})");
             if (! $dryRun) {
                 $service->delete($game);
             }
         }
-
-        $this->info(($dryRun ? '[DRY RUN] Would delete' : 'Deleted')." {$staleGames->count()} stale game(s).");
 
         return Command::SUCCESS;
     }

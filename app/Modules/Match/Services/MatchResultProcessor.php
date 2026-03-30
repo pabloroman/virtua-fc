@@ -30,20 +30,18 @@ class MatchResultProcessor
      *
      * @param  string|null  $deferMatchId  Match ID to skip standings and GK stats for (deferred to finalization)
      */
-    public function processAll(string $gameId, int $matchday, string $currentDate, array $matchResults, ?string $deferMatchId = null, $allPlayers = null): void
+    public function processAll(string $gameId, string $currentDate, array $matchResults, ?string $deferMatchId = null, $allPlayers = null): void
     {
         // Load game once for previous date capture and date guard
         $game = Game::find($gameId);
 
-        // 1. Update game state (replaces onMatchdayAdvanced projector)
-        // Only advance current_date forward — background batch processing must not
-        // regress the date that was already set by the player's batch.
+        // 1. Update game state — only advance current_date forward.
+        // Background batch processing must not regress the date that was
+        // already set by the player's batch.
         $newDate = Carbon::parse($currentDate);
-        $updateData = ['current_matchday' => $matchday];
         if (! $game->current_date || $newDate->gte($game->current_date)) {
-            $updateData['current_date'] = $newDate->toDateString();
+            Game::where('id', $gameId)->update(['current_date' => $newDate->toDateString()]);
         }
-        Game::where('id', $gameId)->update($updateData);
 
         // 2. Bulk update match records (scores + played)
         $this->bulkUpdateMatchScores($matchResults);

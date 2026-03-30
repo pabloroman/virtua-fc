@@ -18,7 +18,6 @@ use Illuminate\Database\Eloquent\Builder;
  * @property string $team_id
  * @property string $season
  * @property \Illuminate\Support\Carbon|null $current_date
- * @property int $current_matchday
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property bool $needs_new_season_setup
@@ -72,7 +71,6 @@ use Illuminate\Database\Eloquent\Builder;
  * @method static Builder<static>|Game whereCountry($value)
  * @method static Builder<static>|Game whereCreatedAt($value)
  * @method static Builder<static>|Game whereCurrentDate($value)
- * @method static Builder<static>|Game whereCurrentMatchday($value)
  * @method static Builder<static>|Game whereDefaultFormation($value)
  * @method static Builder<static>|Game whereDefaultLineup($value)
  * @method static Builder<static>|Game whereDefaultMentality($value)
@@ -116,7 +114,6 @@ class Game extends Model
         'competition_id',
         'season',
         'current_date',
-        'current_matchday',
         'season_goal',
         'needs_new_season_setup',
         'needs_welcome',
@@ -136,7 +133,6 @@ class Game extends Model
 
     protected $casts = [
         'current_date' => 'date',
-        'current_matchday' => 'integer',
         'season_goal' => 'string',
         'needs_new_season_setup' => 'boolean',
         'needs_welcome' => 'boolean',
@@ -498,6 +494,15 @@ class Game extends Model
             })
             ->orderBy('scheduled_date')
             ->first();
+    }
+
+    public function getNextLeagueMatchdayAttribute(): ?int
+    {
+        return $this->matches()
+            ->where('played', false)
+            ->whereNull('cup_tie_id')
+            ->orderBy('scheduled_date')
+            ->value('round_number');
     }
 
     // ==========================================

@@ -26,7 +26,6 @@ class TournamentCreationService
             'competition_id' => 'WC2026',
             'season' => '2025',
             'current_date' => '2026-06-11',
-            'current_matchday' => 0,
             'needs_welcome' => true,
             'needs_new_season_setup' => true,
             'setup_completed_at' => null,

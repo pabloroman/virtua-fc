@@ -37,7 +37,7 @@ class MatchNarrativeService
             ];
         }
 
-        return $this->selectTop($candidates, $game->current_matchday ?? 1);
+        return $this->selectTop($candidates, $nextMatch->round_number ?? 1);
     }
 
     // ═══════════════════════════════════════════════════════════════════
@@ -328,7 +328,7 @@ class MatchNarrativeService
             return $candidates;
         }
 
-        $matchday = $game->current_matchday ?? 0;
+        $matchday = $match->round_number ?? 0;
         $position = $playerStanding->position;
         $points = $playerStanding->points;
 

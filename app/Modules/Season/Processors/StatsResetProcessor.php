@@ -50,11 +50,6 @@ class StatsResetProcessor implements SeasonProcessor
             ->unread()
             ->update(['read_at' => now()]);
 
-        // Reset matchday counter (season is advanced later, after the closing pipeline)
-        $game->update([
-            'current_matchday' => 0,
-        ]);
-
         return $data;
     }
 }

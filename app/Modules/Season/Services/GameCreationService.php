@@ -50,7 +50,6 @@ class GameCreationService
             'competition_id' => $competitionId,
             'season' => $season,
             'current_date' => null,
-            'current_matchday' => 0,
             'season_goal' => null,
             'setup_completed_at' => null,
         ]);

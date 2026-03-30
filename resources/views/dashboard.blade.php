@@ -56,7 +56,7 @@
                             @if($game->current_date)
                                 <dd class="mt-2 mb-2">
                                     <span class="inline-flex items-center rounded-full bg-accent-green/10 px-2 py-1 text-xs font-medium text-accent-green ring-1 ring-inset ring-green-600/20">
-                                        {{ __('game.matchday_n', ['number' => $game->current_matchday + 1]) }} - {{ $game->current_date->format('d/m/Y') }}
+                                        {{ $game->nextLeagueMatchday ? __('game.matchday_n', ['number' => $game->nextLeagueMatchday]) . ' - ' : '' }}{{ $game->current_date->format('d/m/Y') }}
                                     </span>
                                 </dd>
                             @endif

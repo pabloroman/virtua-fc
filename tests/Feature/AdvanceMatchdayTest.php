@@ -59,7 +59,6 @@ class AdvanceMatchdayTest extends TestCase
             'competition_id' => $this->leagueCompetition->id,
             'season' => '2024',
             'current_date' => '2024-08-15',
-            'current_matchday' => 0,
         ]);
     }
 

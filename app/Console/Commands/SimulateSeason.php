@@ -26,13 +26,15 @@ class SimulateSeason extends Command
 
         $targetMatchday = (int) $this->argument('matchday');
 
-        if ($game->current_matchday >= $targetMatchday) {
-            $this->info("Already at matchday {$game->current_matchday}.");
+        $lastPlayed = $this->lastPlayedMatchday($game);
+
+        if ($lastPlayed >= $targetMatchday) {
+            $this->info("Already at matchday {$lastPlayed}.");
 
             return 0;
         }
 
-        $this->info("Simulating from matchday {$game->current_matchday} to {$targetMatchday}...");
+        $this->info("Simulating from matchday {$lastPlayed} to {$targetMatchday}...");
 
         // Disable query logging — it accumulates every SQL string in memory
         // across hundreds of iterations.
@@ -44,7 +46,7 @@ class SimulateSeason extends Command
         while ($advances < 500) {
             $game->refresh();
 
-            if ($game->current_matchday >= $targetMatchday) {
+            if ($this->lastPlayedMatchday($game) >= $targetMatchday) {
                 break;
             }
 
@@ -69,13 +71,23 @@ class SimulateSeason extends Command
             gc_collect_cycles();
 
             $game->refresh();
+            $lastPlayed = $this->lastPlayedMatchday($game);
             $mem = round(memory_get_usage() / 1024 / 1024, 1);
-            $this->line("  Batch #{$advances} — matchday {$game->current_matchday} — {$game->current_date->toDateString()} — {$mem}MB");
+            $this->line("  Batch #{$advances} — matchday {$lastPlayed} — {$game->current_date->toDateString()} — {$mem}MB");
         }
 
         $peak = round(memory_get_peak_usage() / 1024 / 1024, 1);
-        $this->info("Done. Played {$advances} batches. Current matchday: {$game->current_matchday}. Peak memory: {$peak}MB");
+        $lastPlayed = $this->lastPlayedMatchday($game);
+        $this->info("Done. Played {$advances} batches. Current matchday: {$lastPlayed}. Peak memory: {$peak}MB");
 
         return 0;
+    }
+
+    private function lastPlayedMatchday(Game $game): int
+    {
+        return (int) GameMatch::where('game_id', $game->id)
+            ->where('played', true)
+            ->whereNull('cup_tie_id')
+            ->max('round_number');
     }
 }

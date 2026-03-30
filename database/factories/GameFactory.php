@@ -21,7 +21,6 @@ class GameFactory extends Factory
             'season' => '2025',
             'player_name' => $this->faker->name(),
             'current_date' => '2024-08-15',
-            'current_matchday' => 1,
         ];
     }
 
@@ -36,13 +35,6 @@ class GameFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'competition_id' => $competitionId,
-        ]);
-    }
-
-    public function atMatchday(int $matchday): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'current_matchday' => $matchday,
         ]);
     }
 

@@ -86,6 +86,7 @@ These are non-obvious rules that prevent bugs. Read carefully.
 - **UUID primary keys** throughout.
 - **No wall-clock timestamps on game models.** Time follows the game-universe calendar (`current_date` on `Game`). Models should set `public $timestamps = false` and omit `$table->timestamps()` from migrations (except `users`).
 - **`current_date` is forward-looking.** It is updated during match finalization to the `scheduled_date` of the next unplayed match. This means `current_date` always represents the date of the upcoming match the user is about to play, **not** the date of the match just played. The `GameDateAdvanced` event carries `previousDate` (old `current_date` / the match just finalized) and `newDate` (the next match to be played). Listeners that need to act "before the user plays match X" should key on `newDate`, not `previousDate`.
+- **No `current_matchday` on Game.** The league matchday number is derived from match data (e.g., `round_number` on `GameMatch`). Use `$game->nextLeagueMatchday` accessor to get the next unplayed league round number.
 - **`currentFinances` and `currentInvestment`** relationships use `$this->season` internally. Always use lazy loading — never eager load with `with()`.
 
 ### Player Age Boundaries
