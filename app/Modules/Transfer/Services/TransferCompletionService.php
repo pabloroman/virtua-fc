@@ -10,6 +10,7 @@ use App\Models\Loan;
 use App\Models\ShortlistedPlayer;
 use App\Models\TransferOffer;
 use App\Modules\Player\PlayerAge;
+use App\Modules\Transfer\Enums\TransferWindowType;
 use Carbon\Carbon;
 
 /**
@@ -60,7 +61,7 @@ class TransferCompletionService
             transferFee: $offer->transfer_fee,
             type: $isLoan ? GameTransfer::TYPE_LOAN : GameTransfer::TYPE_TRANSFER,
             season: $game->season,
-            window: $this->getCurrentWindow($game),
+            window: TransferWindowType::fromDate($game->current_date)?->value ?? 'summer',
         );
 
         // Update transfer budget and record the transaction
@@ -120,7 +121,7 @@ class TransferCompletionService
             transferFee: 0,
             type: GameTransfer::TYPE_FREE_AGENT,
             season: $game->season,
-            window: $this->getCurrentWindow($game),
+            window: TransferWindowType::fromDate($game->current_date)?->value ?? 'summer',
         );
 
         // Record the transaction (free transfer, but still useful to track)
@@ -189,7 +190,7 @@ class TransferCompletionService
             transferFee: $offer->transfer_fee,
             type: GameTransfer::TYPE_TRANSFER,
             season: $game->season,
-            window: $this->getCurrentWindow($game),
+            window: TransferWindowType::fromDate($game->current_date)?->value ?? 'summer',
         );
 
         // Deduct from transfer budget and record the transaction
@@ -247,17 +248,10 @@ class TransferCompletionService
             transferFee: 0,
             type: GameTransfer::TYPE_FREE_AGENT,
             season: $game->season,
-            window: $this->getCurrentWindow($game),
+            window: TransferWindowType::fromDate($game->current_date)?->value ?? 'summer',
         );
 
         ShortlistedPlayer::removeForPlayer($game->id, $player->id);
     }
 
-    /**
-     * Determine the current transfer window type.
-     */
-    private function getCurrentWindow(Game $game): string
-    {
-        return $game->isWinterWindowOpen() ? 'winter' : 'summer';
-    }
 }

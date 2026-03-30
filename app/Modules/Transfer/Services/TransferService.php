@@ -3,6 +3,7 @@
 namespace App\Modules\Transfer\Services;
 
 use App\Modules\Player\PlayerAge;
+use App\Modules\Transfer\Enums\TransferWindowType;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\LoanService;
 use App\Modules\Transfer\Services\ScoutingService;
@@ -103,12 +104,6 @@ class TransferService
     ];
 
     /**
-     * Transfer windows configuration.
-     */
-    public const WINDOW_SUMMER = 'summer';
-    public const WINDOW_WINTER = 'winter';
-
-    /**
      * List a player for transfer.
      */
     public function listPlayer(GamePlayer $player): void
@@ -121,20 +116,6 @@ class TransferService
             'transfer_status' => GamePlayer::TRANSFER_STATUS_LISTED,
             'transfer_listed_at' => $player->game->current_date,
         ]);
-    }
-
-    /**
-     * Determine the current transfer window for a game.
-     * Returns 'summer' if the summer window is open (or as default for season-end pre-contracts),
-     * 'winter' if the winter window is open.
-     */
-    private function getCurrentWindow(Game $game): string
-    {
-        if ($game->isWinterWindowOpen()) {
-            return self::WINDOW_WINTER;
-        }
-
-        return self::WINDOW_SUMMER;
     }
 
     /**
@@ -991,7 +972,7 @@ class TransferService
             transferFee: 0,
             type: GameTransfer::TYPE_FREE_AGENT,
             season: $game->season,
-            window: $this->getCurrentWindow($game),
+            window: TransferWindowType::fromDate($game->current_date)?->value ?? 'summer',
         );
 
         ShortlistedPlayer::removeForPlayer($game->id, $player->id);

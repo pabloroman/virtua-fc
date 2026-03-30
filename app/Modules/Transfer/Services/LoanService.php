@@ -13,6 +13,7 @@ use App\Models\ShortlistedPlayer;
 use App\Models\Team;
 use App\Models\TeamReputation;
 use App\Models\TransferOffer;
+use App\Modules\Transfer\Enums\TransferWindowType;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
@@ -543,7 +544,7 @@ class LoanService
             transferFee: 0,
             type: GameTransfer::TYPE_LOAN,
             season: $game->season,
-            window: $this->getCurrentWindow($game),
+            window: TransferWindowType::fromDate($game->current_date)?->value ?? 'summer',
         );
 
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
@@ -600,7 +601,7 @@ class LoanService
             transferFee: 0,
             type: GameTransfer::TYPE_LOAN,
             season: $game->season,
-            window: $this->getCurrentWindow($game),
+            window: TransferWindowType::fromDate($game->current_date)?->value ?? 'summer',
         );
 
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
@@ -645,11 +646,4 @@ class LoanService
         return ['label' => __('transfers.mood_reluctant_loan'), 'color' => 'red'];
     }
 
-    /**
-     * Determine the current transfer window type.
-     */
-    private function getCurrentWindow(Game $game): string
-    {
-        return $game->isWinterWindowOpen() ? 'winter' : 'summer';
-    }
 }

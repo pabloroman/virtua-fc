@@ -9,6 +9,7 @@ use App\Models\RenewalNegotiation;
 use App\Models\TransferOffer;
 use App\Modules\Academy\Services\YouthAcademyService;
 use App\Modules\Notification\Services\NotificationService;
+use App\Modules\Transfer\Enums\TransferWindowType;
 use App\Modules\Transfer\Services\AITransferMarketService;
 use App\Modules\Transfer\Services\LoanService;
 use App\Modules\Transfer\Services\ScoutingService;
@@ -188,49 +189,44 @@ class CareerActionProcessor
 
     private function processTransferWindowOpen(Game $game): void
     {
-        $month = (int) $game->current_date->format('n');
-
         // Summer window notification is handled at season start
         // (SetupNewGame + NewSeasonResetProcessor). Only detect winter here.
-        if ($month !== 1) {
+        if (TransferWindowType::fromDate($game->current_date) !== TransferWindowType::Winter) {
             return;
         }
 
-        $startOfWindow = $game->current_date->copy()->startOfMonth();
-
         $alreadyNotified = GameNotification::where('game_id', $game->id)
             ->where('type', GameNotification::TYPE_TRANSFER_WINDOW_OPEN)
-            ->where('game_date', '>=', $startOfWindow)
+            ->where('game_date', '>=', $game->current_date->copy()->startOfMonth())
             ->exists();
 
         if ($alreadyNotified) {
             return;
         }
 
-        $this->notificationService->notifyTransferWindowOpen($game, 'winter');
+        $this->notificationService->notifyTransferWindowOpen($game, TransferWindowType::Winter->value);
     }
 
     private function processAITransferBatch(Game $game): void
     {
-        if (! $game->isTransferWindowOpen()) {
+        $windowType = TransferWindowType::fromDate($game->current_date);
+
+        if (! $windowType) {
             return;
         }
 
-        $window = $game->isSummerWindowOpen() ? 'summer' : 'winter';
-        $this->aiTransferMarketService->processTransferBatch($game, $window);
+        $this->aiTransferMarketService->processTransferBatch($game, $windowType->value);
     }
 
     private function processTransferWindowClose(Game $game): void
     {
-        $month = (int) $game->current_date->format('n');
+        $month = $game->current_date->month;
 
-        $window = match ($month) {
-            9 => 'summer',
-            2 => 'winter',
-            default => null,
-        };
+        // Find the window type whose close month matches the current month
+        $closingWindow = collect(TransferWindowType::cases())
+            ->first(fn (TransferWindowType $type) => $type->closeMonth() === $month);
 
-        if (! $window) {
+        if (! $closingWindow) {
             return;
         }
 
@@ -245,6 +241,6 @@ class CareerActionProcessor
             return;
         }
 
-        $this->aiTransferMarketService->processWindowClose($game, $window);
+        $this->aiTransferMarketService->processWindowClose($game, $closingWindow->value);
     }
 }

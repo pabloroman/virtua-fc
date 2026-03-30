@@ -2,9 +2,11 @@
 
 namespace App\Modules\Notification\Listeners;
 
+use App\Models\GameMatch;
 use App\Models\GameNotification;
 use App\Modules\Match\Events\GameDateAdvanced;
 use App\Modules\Notification\Services\NotificationService;
+use App\Modules\Transfer\Enums\TransferWindowType;
 
 class NotifyTransferWindowClosing
 {
@@ -14,27 +16,18 @@ class NotifyTransferWindowClosing
 
     public function handle(GameDateAdvanced $event): void
     {
-        $previousMonth = $event->previousDate->month;
-        $newMonth = $event->newDate->month;
+        // current_date is forward-looking: newDate is the upcoming match.
+        $windowType = TransferWindowType::fromDate($event->newDate);
 
-        // Check if the new date (the upcoming match) is inside a transfer window.
-        // current_date is always the date of the next match to be played, so
-        // newDate is the upcoming match the user is about to play.
-        $window = match (true) {
-            in_array($newMonth, [7, 8]) => 'summer',
-            $newMonth === 1 => 'winter',
-            default => null,
-        };
-
-        if (! $window) {
+        if (! $windowType) {
             return;
         }
 
         $game = $event->game;
 
-        // Check if the next unplayed match after newDate falls outside the window.
-        // If so, newDate's match is the last one before the window closes.
-        $nextMatch = \App\Models\GameMatch::where('game_id', $game->id)
+        // If the match after the upcoming one is outside the window,
+        // then the upcoming match is the last one before the window closes.
+        $nextMatch = GameMatch::where('game_id', $game->id)
             ->where('played', false)
             ->where('scheduled_date', '>', $event->newDate->toDateString())
             ->orderBy('scheduled_date')
@@ -44,25 +37,20 @@ class NotifyTransferWindowClosing
             return;
         }
 
-        $nextMonth = $nextMatch->scheduled_date->month;
-        $isLastMatchday = $window === 'summer'
-            ? ! in_array($nextMonth, [7, 8])
-            : $nextMonth !== 1;
-
-        if (! $isLastMatchday) {
+        if ($windowType->containsMonth($nextMatch->scheduled_date->month)) {
             return;
         }
 
         $alreadyNotified = GameNotification::where('game_id', $game->id)
             ->where('type', GameNotification::TYPE_TRANSFER_WINDOW_CLOSING)
-            ->whereJsonContains('metadata->window', $window)
-            ->where('game_date', '>=', $event->previousDate->copy()->startOfMonth())
+            ->whereJsonContains('metadata->window', $windowType->value)
+            ->where('game_date', '>=', $event->newDate->copy()->startOfMonth())
             ->exists();
 
         if ($alreadyNotified) {
             return;
         }
 
-        $this->notificationService->notifyTransferWindowClosing($game, $window);
+        $this->notificationService->notifyTransferWindowClosing($game, $windowType->value);
     }
 }

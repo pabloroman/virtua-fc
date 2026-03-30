@@ -5,6 +5,7 @@ namespace App\Modules\Notification\Listeners;
 use App\Models\GameNotification;
 use App\Modules\Match\Events\GameDateAdvanced;
 use App\Modules\Notification\Services\NotificationService;
+use App\Modules\Transfer\Enums\TransferWindowType;
 
 class NotifyTransferWindowOpen
 {
@@ -14,14 +15,11 @@ class NotifyTransferWindowOpen
 
     public function handle(GameDateAdvanced $event): void
     {
-        $previousMonth = $event->previousDate->month;
-        $newMonth = $event->newDate->month;
-
-        // Detect if the date jumped into a window that wasn't open before.
         // Summer window open is handled at season start — only detect winter here.
-        $winterOpened = $previousMonth !== 1 && $newMonth === 1;
+        $newWindow = TransferWindowType::fromDate($event->newDate);
+        $previousWindow = TransferWindowType::fromDate($event->previousDate);
 
-        if (! $winterOpened) {
+        if ($newWindow !== TransferWindowType::Winter || $previousWindow === TransferWindowType::Winter) {
             return;
         }
 
@@ -36,7 +34,7 @@ class NotifyTransferWindowOpen
             return;
         }
 
-        $notification = $this->notificationService->notifyTransferWindowOpen($game, 'winter');
+        $notification = $this->notificationService->notifyTransferWindowOpen($game, TransferWindowType::Winter->value);
 
         // Backdate to the actual window start (Jan 1) rather than the matchday
         // the system detected it, since the date may have jumped past the start.
