@@ -108,17 +108,31 @@ class ShowOutgoingTransfers
         $renewalEligiblePlayers = $this->contractService->getPlayersEligibleForRenewal($game);
         $pendingRenewals = $this->contractService->getPlayersWithPendingRenewals($game);
 
-        // Declined renewals
+        // Declined renewals (club-declined only — player rejections use cooldown)
         $seasonEndDate = $game->getSeasonEndDate();
         $declinedRenewals = GamePlayer::with(['player', 'latestRenewalNegotiation'])
             ->where('game_id', $gameId)
             ->where('team_id', $game->team_id)
-            ->whereHas('latestRenewalNegotiation', fn ($q) => $q->whereIn('status', [
-                RenewalNegotiation::STATUS_PLAYER_REJECTED,
-                RenewalNegotiation::STATUS_CLUB_DECLINED,
-            ]))
+            ->whereHas('latestRenewalNegotiation', fn ($q) => $q->where('status', RenewalNegotiation::STATUS_CLUB_DECLINED))
             ->get()
             ->filter(fn (GamePlayer $p) => $p->isContractExpiring($seasonEndDate) && $p->hasDeclinedRenewal());
+
+        // Players on renewal cooldown (player rejected, waiting for next matchday)
+        $cooldownPlayerIds = RenewalNegotiation::where('game_id', $gameId)
+            ->where('status', RenewalNegotiation::STATUS_PLAYER_REJECTED)
+            ->where('rejected_at', '>=', $game->current_date)
+            ->pluck('game_player_id')
+            ->toArray();
+
+        $cooldownRenewals = collect();
+        if (!empty($cooldownPlayerIds)) {
+            $cooldownRenewals = GamePlayer::with(['player'])
+                ->where('game_id', $gameId)
+                ->where('team_id', $game->team_id)
+                ->whereIn('id', $cooldownPlayerIds)
+                ->get()
+                ->filter(fn (GamePlayer $p) => $p->isContractExpiring($seasonEndDate));
+        }
 
         return view('outgoing-transfers', [
             'game' => $game,
@@ -134,6 +148,7 @@ class ShowOutgoingTransfers
             'renewalEligiblePlayers' => $renewalEligiblePlayers,
             'pendingRenewals' => $pendingRenewals,
             'declinedRenewals' => $declinedRenewals,
+            'cooldownRenewals' => $cooldownRenewals,
             ...$this->headerService->getHeaderData($game),
         ]);
     }

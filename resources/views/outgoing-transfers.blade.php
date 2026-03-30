@@ -458,10 +458,10 @@
                         <div class="space-y-6">
 
                             {{-- EXPIRING CONTRACTS --}}
-                            @if($renewalEligiblePlayers->isNotEmpty())
+                            @if($renewalEligiblePlayers->isNotEmpty() || $cooldownRenewals->isNotEmpty())
                             <x-section-card :title="__('transfers.expiring_contracts_section')">
                                 <x-slot name="badge">
-                                    <span class="text-xs text-text-secondary">({{ $renewalEligiblePlayers->count() }})</span>
+                                    <span class="text-xs text-text-secondary">({{ $renewalEligiblePlayers->count() + $cooldownRenewals->count() }})</span>
                                 </x-slot>
                                 <div class="overflow-x-auto">
                                     <table class="w-full text-sm">
@@ -505,6 +505,24 @@
                                                     @if($hasPendingOffer)
                                                         <div class="text-xs text-accent-gold">{{ __('squad.has_pre_contract_offers') }}</div>
                                                     @endif
+                                                </div>
+                                            </td>
+                                            <td class="py-2.5 text-center text-text-secondary tabular-nums hidden md:table-cell">{{ $player->age($game->current_date) }}</td>
+                                            <td class="py-2.5 text-center text-text-secondary tabular-nums hidden md:table-cell pr-4">{{ $player->formatted_wage }}</td>
+                                        </tr>
+                                        @endforeach
+                                        @foreach($cooldownRenewals as $player)
+                                        <tr class="border-t border-border-default opacity-60">
+                                            <td class="py-2.5 pl-4 text-center">
+                                                <x-position-badge :position="$player->position" size="sm" />
+                                            </td>
+                                            <td class="py-2.5 pl-2 pr-3">
+                                                <div>
+                                                    <span class="font-medium text-text-primary truncate">{{ $player->player->name }}</span>
+                                                    <div class="inline-flex items-center gap-1 text-xs text-text-muted">
+                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                        {{ __('transfers.renewal_cooldown_short') }}
+                                                    </div>
                                                 </div>
                                             </td>
                                             <td class="py-2.5 text-center text-text-secondary tabular-nums hidden md:table-cell">{{ $player->age($game->current_date) }}</td>

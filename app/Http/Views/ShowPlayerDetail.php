@@ -22,13 +22,18 @@ class ShowPlayerDetail
             ->where('team_id', $game->team_id)
             ->findOrFail($playerId);
 
-        $canRenew = $gamePlayer->canBeOfferedRenewal();
+        $canRenew = $gamePlayer->canBeOfferedRenewal(currentDate: $game->current_date);
         $renewalNegotiation = null;
+        $renewalCooldown = false;
 
         if ($game->isCareerMode() && $gamePlayer->isContractExpiring()) {
             $renewalNegotiation = RenewalNegotiation::where('game_player_id', $gamePlayer->id)
                 ->where('status', RenewalNegotiation::STATUS_PLAYER_COUNTERED)
                 ->first();
+
+            if (!$canRenew && !$renewalNegotiation) {
+                $renewalCooldown = RenewalNegotiation::hasRenewalCooldown($gamePlayer->id, $game->current_date);
+            }
         }
 
         // Release data
@@ -49,6 +54,7 @@ class ShowPlayerDetail
             'gamePlayer' => $gamePlayer,
             'canRenew' => $canRenew,
             'renewalNegotiation' => $renewalNegotiation,
+            'renewalCooldown' => $renewalCooldown,
             'canRelease' => $canRelease,
             'severance' => $severance,
         ]);

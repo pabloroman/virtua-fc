@@ -335,7 +335,7 @@ class ContractService
             ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->get()
-            ->filter(fn ($player) => $player->canBeOfferedRenewal($seasonEndDate))
+            ->filter(fn ($player) => $player->canBeOfferedRenewal($seasonEndDate, $game->current_date))
             ->sortBy('contract_until');
     }
 
@@ -565,6 +565,7 @@ class ContractService
         }
 
         $updateData['status'] = RenewalNegotiation::STATUS_PLAYER_REJECTED;
+        $updateData['rejected_at'] = $player->game->current_date;
         $negotiation->fill($updateData)->save();
 
         return 'rejected';

@@ -278,11 +278,11 @@ class GamePlayer extends Model
     }
 
     /**
-     * Get the latest renewal negotiation (by creation date).
+     * Get the latest renewal negotiation.
      */
     public function latestRenewalNegotiation(): HasOne
     {
-        return $this->hasOne(RenewalNegotiation::class)->latest();
+        return $this->hasOne(RenewalNegotiation::class)->latest('id');
     }
 
     /**
@@ -310,6 +310,14 @@ class GamePlayer extends Model
         /** @var RenewalNegotiation|null $latest */
         $latest = $this->latestRenewalNegotiation()->first();
         return $latest !== null && $latest->isBlocking();
+    }
+
+    /**
+     * Check if player has a renewal negotiation cooldown active.
+     */
+    public function hasRenewalCooldown($currentDate): bool
+    {
+        return RenewalNegotiation::hasRenewalCooldown($this->id, $currentDate);
     }
 
     /**
@@ -489,7 +497,7 @@ class GamePlayer extends Model
      *
      * @param Carbon|null $seasonEndDate The season end date. If null, calculated from game.
      */
-    public function canBeOfferedRenewal(?Carbon $seasonEndDate = null): bool
+    public function canBeOfferedRenewal(?Carbon $seasonEndDate = null, ?Carbon $currentDate = null): bool
     {
         if (!$this->isContractExpiring($seasonEndDate)) {
             return false;
@@ -515,8 +523,13 @@ class GamePlayer extends Model
             return false;
         }
 
-        // Renewal explicitly declined or rejected
+        // Renewal explicitly declined by club
         if ($this->hasDeclinedRenewal()) {
+            return false;
+        }
+
+        // Cooldown after player rejection (wait one matchday)
+        if ($currentDate && $this->hasRenewalCooldown($currentDate)) {
             return false;
         }
 

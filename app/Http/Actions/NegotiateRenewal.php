@@ -80,8 +80,16 @@ class NegotiateRenewal
             ]);
         }
 
+        // Cooldown: must wait at least one matchday after a rejected negotiation
+        if (RenewalNegotiation::hasRenewalCooldown($player->id, $game->current_date)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => __('transfers.renewal_cooldown'),
+            ], 422);
+        }
+
         // New negotiation — show player demand
-        if (!$player->canBeOfferedRenewal()) {
+        if (!$player->canBeOfferedRenewal(currentDate: $game->current_date)) {
             return response()->json([
                 'status' => 'error',
                 'message' => __('messages.cannot_renew'),

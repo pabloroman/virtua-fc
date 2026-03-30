@@ -126,6 +126,8 @@ return [
     'already_bidding' => 'Ya tienes una oferta por este jugador',
     'negotiation_cooldown' => 'Las negociaciones con este jugador se rompieron recientemente. Espera a la siguiente jornada para intentarlo de nuevo.',
     'negotiation_cooldown_short' => 'Espera a la próxima jornada',
+    'renewal_cooldown' => 'Este jugador rechazó tu oferta de renovación recientemente. Espera a la siguiente jornada para intentarlo de nuevo.',
+    'renewal_cooldown_short' => 'Espera a la próxima jornada',
     'scouting_assessment' => 'Evaluación del Ojeador',
     'financial_details' => 'Detalles Financieros',
     'estimated_asking_price' => 'Precio de Venta Estimado',

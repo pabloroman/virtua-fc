@@ -20,8 +20,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $counter_offer
  * @property int|null $contract_years
  * @property float|null $disposition
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Game $game
  * @property-read \App\Models\GamePlayer $gamePlayer
  * @property-read string $formatted_counter_offer
@@ -32,7 +30,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation whereContractYears($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation whereCounterOffer($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation whereDisposition($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation whereGameId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation whereGamePlayerId($value)
@@ -42,13 +39,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation wherePreferredYears($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation whereRound($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation whereUserOffer($value)
  * @mixin \Eloquent
  */
 class RenewalNegotiation extends Model
 {
     use HasUuids;
+
+    public $timestamps = false;
 
     public const STATUS_OFFER_PENDING = 'offer_pending';
     public const STATUS_PLAYER_COUNTERED = 'player_countered';
@@ -70,6 +68,7 @@ class RenewalNegotiation extends Model
         'counter_offer',
         'contract_years',
         'disposition',
+        'rejected_at',
     ];
 
     protected $casts = [
@@ -81,6 +80,7 @@ class RenewalNegotiation extends Model
         'counter_offer' => 'integer',
         'contract_years' => 'integer',
         'disposition' => 'float',
+        'rejected_at' => 'date',
     ];
 
     public function game(): BelongsTo
@@ -120,7 +120,19 @@ class RenewalNegotiation extends Model
 
     public function isBlocking(): bool
     {
-        return in_array($this->status, [self::STATUS_PLAYER_REJECTED, self::STATUS_CLUB_DECLINED]);
+        return $this->status === self::STATUS_CLUB_DECLINED;
+    }
+
+    /**
+     * Check if a renewal negotiation cooldown is active for a player.
+     * After a rejected negotiation, the user must wait at least one matchday before retrying.
+     */
+    public static function hasRenewalCooldown(string $gamePlayerId, $currentDate): bool
+    {
+        return static::where('game_player_id', $gamePlayerId)
+            ->where('status', self::STATUS_PLAYER_REJECTED)
+            ->where('rejected_at', '>=', $currentDate)
+            ->exists();
     }
 
     public function isTerminal(): bool
