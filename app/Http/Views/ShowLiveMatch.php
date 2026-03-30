@@ -145,7 +145,7 @@ class ShowLiveMatch
             ->whereNotIn('id', $suspendedPlayerIds)
             ->where(function ($q) use ($matchDate) {
                 $q->whereNull('injury_until')
-                    ->orWhere('injury_until', '<=', $matchDate);
+                    ->orWhere('injury_until', '<', $matchDate);
             })
             ->get()
             ->map(fn ($p) => [
