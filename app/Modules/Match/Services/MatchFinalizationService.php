@@ -4,6 +4,7 @@ namespace App\Modules\Match\Services;
 
 use App\Modules\Competition\Services\CompetitionHandlerResolver;
 use App\Modules\Match\Events\CupTieResolved;
+use App\Modules\Match\Events\GameDateAdvanced;
 use App\Modules\Match\Events\MatchFinalized;
 use App\Modules\Player\Services\PlayerConditionService;
 use App\Models\Competition;
@@ -33,6 +34,7 @@ class MatchFinalizationService
      */
     public function finalize(GameMatch $match, Game $game): void
     {
+        $previousDate = $game->current_date->copy();
         $competition = Competition::find($match->competition_id);
 
         // 1. Apply fitness/morale changes for the user's match (deferred from batch processing)
@@ -62,6 +64,11 @@ class MatchFinalizationService
 
         if ($nextMatch) {
             $game->update(['current_date' => $nextMatch->scheduled_date->toDateString()]);
+            $game->refresh();
+
+            if ($nextMatch->scheduled_date->gt($previousDate)) {
+                GameDateAdvanced::dispatch($game, $previousDate, $nextMatch->scheduled_date);
+            }
         }
 
         // 7. Generate any pending knockout/playoff fixtures now that standings are final.
