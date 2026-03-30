@@ -28,6 +28,13 @@ class SendMatchNotifications
         $playerIds = $events->pluck('game_player_id')->unique()->all();
         $players = GamePlayer::whereIn('id', $playerIds)->get()->keyBy('id');
 
+        // Track players who received a red card so we skip yellow accumulation for them
+        $redCardPlayerIds = $events
+            ->where('event_type', 'red_card')
+            ->pluck('game_player_id')
+            ->unique()
+            ->all();
+
         $yellowCardNotified = [];
 
         foreach ($events as $matchEvent) {
@@ -44,7 +51,8 @@ class SendMatchNotifications
                     $this->notifyInjury($event, $player, $matchEvent);
                     break;
                 case 'yellow_card':
-                    if (! in_array($player->id, $yellowCardNotified)) {
+                    // Skip yellow accumulation check if the player was also sent off with a red card
+                    if (! in_array($player->id, $yellowCardNotified) && ! in_array($player->id, $redCardPlayerIds)) {
                         $this->notifyYellowCardAccumulation($event, $player);
                         $yellowCardNotified[] = $player->id;
                     }

@@ -254,6 +254,24 @@ class EligibilityService
             PlayerSuspension::batchApplySuspensions($suspensionsByRecordId);
         }
 
+        // 9. Deduplicate: if a player has both yellow_accumulation and red_card
+        // in the same batch (second yellow triggers both), keep only the red_card.
+        $redCardPlayers = [];
+        foreach ($suspensionResults as $suspension) {
+            if ($suspension['reason'] === 'red_card') {
+                $redCardPlayers[$suspension['game_player_id'] . '|' . $suspension['competition_id']] = true;
+            }
+        }
+        $suspensionResults = array_values(array_filter($suspensionResults, function ($suspension) use ($redCardPlayers) {
+            if ($suspension['reason'] === 'yellow_accumulation') {
+                $key = $suspension['game_player_id'] . '|' . $suspension['competition_id'];
+
+                return ! isset($redCardPlayers[$key]);
+            }
+
+            return true;
+        }));
+
         return ['suspensions' => $suspensionResults];
     }
 
