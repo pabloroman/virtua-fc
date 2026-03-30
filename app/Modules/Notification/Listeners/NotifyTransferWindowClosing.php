@@ -29,7 +29,7 @@ class NotifyTransferWindowClosing
         // then the upcoming match is the last one before the window closes.
         $nextMatch = GameMatch::where('game_id', $game->id)
             ->where('played', false)
-            ->where('scheduled_date', '>', $event->newDate->toDateString())
+            ->where('scheduled_date', '>', $event->newDate)
             ->orderBy('scheduled_date')
             ->first();
 
