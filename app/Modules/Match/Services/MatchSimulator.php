@@ -713,6 +713,8 @@ class MatchSimulator
         Collection $events,
         Collection $homePlayers,
         Collection $awayPlayers,
+        string $homeTeamId,
+        string $awayTeamId,
     ): Collection {
         // Build map of player_id => minute they were removed
         $removedAt = [];
@@ -732,7 +734,7 @@ class MatchSimulator
             return $events;
         }
 
-        return $events->map(function (MatchEventData $event) use ($removedAt, $enteredAt, $homePlayers, $awayPlayers) {
+        return $events->map(function (MatchEventData $event) use ($removedAt, $enteredAt, $homePlayers, $awayPlayers, $homeTeamId, $awayTeamId) {
             if (! in_array($event->type, ['goal', 'assist'])) {
                 return $event;
             }
@@ -753,8 +755,11 @@ class MatchSimulator
                 return $event;
             }
 
-            // Find the team's players and exclude anyone not on the pitch at this minute
-            $teamPlayers = $homePlayers->contains('id', $event->gamePlayerId)
+            // Find the team's players and exclude anyone not on the pitch at this minute.
+            // Use event teamId rather than collection membership — the original player
+            // may have been removed from the collection by processInjurySubstitution,
+            // which would cause the lookup to fall through to the wrong team.
+            $teamPlayers = ($event->teamId === $homeTeamId)
                 ? $homePlayers
                 : $awayPlayers;
 
@@ -1615,7 +1620,7 @@ class MatchSimulator
             $events = $events->sortBy('minute')->values();
 
             $events = $this->reassignEventsFromUnavailablePlayers(
-                $events, $homePlayers, $awayPlayers
+                $events, $homePlayers, $awayPlayers, $homeTeam->id, $awayTeam->id
             );
         } elseif ($homePlayers->isNotEmpty() || $awayPlayers->isNotEmpty()) {
             // One team has no players (e.g. lower-division cup opponent).
@@ -2195,7 +2200,7 @@ class MatchSimulator
             $events = $events->sortBy('minute')->values();
 
             $events = $this->reassignEventsFromUnavailablePlayers(
-                $events, $homePlayers, $awayPlayers
+                $events, $homePlayers, $awayPlayers, $homeTeam->id, $awayTeam->id
             );
         } elseif ($homePlayers->isNotEmpty() || $awayPlayers->isNotEmpty()) {
             // One team has no players — generate events only for the team with players.

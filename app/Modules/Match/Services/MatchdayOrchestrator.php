@@ -472,7 +472,7 @@ class MatchdayOrchestrator
         $teamPlayers = $allPlayers->get($match->$teamIdField, collect());
 
         if (empty($lineupIds)) {
-            return $teamPlayers;
+            return collect();
         }
 
         return $teamPlayers->filter(fn ($p) => in_array($p->id, $lineupIds));
