@@ -27,6 +27,12 @@ if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "" ]; then
     php artisan key:generate --force
 fi
 
+# Ensure FrankenPHP worker script exists (gitignored, must be generated)
+if [ ! -f public/frankenphp-worker.php ]; then
+    echo "Publishing Octane FrankenPHP worker..."
+    php artisan octane:install --server=frankenphp --no-interaction 2>/dev/null || true
+fi
+
 # Run migrations
 echo "Running migrations..."
 php artisan migrate --force
