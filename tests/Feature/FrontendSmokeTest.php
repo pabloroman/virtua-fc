@@ -617,12 +617,12 @@ class FrontendSmokeTest extends TestCase
             'id' => 'WC2026',
             'name' => 'World Cup 2026',
             'season' => '2025',
-            'country' => 'INT',
+            'country' => 'IN',
         ]);
 
         $tournamentTeam = Team::factory()->create([
             'name' => 'Spain',
-            'transfermarkt_id' => 'spain',
+            'transfermarkt_id' => 12345,
         ]);
 
         $tournamentGame = Game::factory()->create([

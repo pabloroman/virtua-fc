@@ -256,7 +256,7 @@ class SquadReplenishmentTest extends TestCase
 
         $newPlayers = GamePlayer::where('game_id', $this->game->id)
             ->where('team_id', $this->aiTeam->id)
-            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
             ->take(4)
             ->get();
 
@@ -293,13 +293,13 @@ class SquadReplenishmentTest extends TestCase
         // Get newly generated players for each team
         $strongNewPlayers = GamePlayer::where('game_id', $this->game->id)
             ->where('team_id', $strongTeam->id)
-            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
             ->take(4)
             ->get();
 
         $weakNewPlayers = GamePlayer::where('game_id', $this->game->id)
             ->where('team_id', $weakTeam->id)
-            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
             ->take(4)
             ->get();
 

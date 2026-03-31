@@ -154,7 +154,7 @@ class MatchResultProcessor
             $mvpId = $result['mvpPlayerId'] ?? null;
             $mvpCases[] = $mvpId
                 ? "WHEN id = '{$id}' THEN '{$mvpId}'::uuid"
-                : "WHEN id = '{$id}' THEN NULL";
+                : "WHEN id = '{$id}' THEN NULL::uuid";
         }
 
         $idList = "'" . implode("','", $ids) . "'";

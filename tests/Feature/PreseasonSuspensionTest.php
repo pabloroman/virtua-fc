@@ -68,9 +68,11 @@ class PreseasonSuspensionTest extends TestCase
             ->where('position', 'Centre-Forward')
             ->first();
 
+        $matchId = fake()->uuid();
+
         // Simulate what MatchResultProcessor does with a preseason match result
         $matchResult = [
-            'matchId' => 'test-match-1',
+            'matchId' => $matchId,
             'competitionId' => 'PRESEASON',
             'homeScore' => 1,
             'awayScore' => 0,
@@ -88,7 +90,7 @@ class PreseasonSuspensionTest extends TestCase
         ];
 
         $match = GameMatch::factory()->create([
-            'id' => 'test-match-1',
+            'id' => $matchId,
             'game_id' => $this->game->id,
             'competition_id' => 'PRESEASON',
             'round_number' => 1,
@@ -192,8 +194,10 @@ class PreseasonSuspensionTest extends TestCase
             ->where('position', 'Centre-Forward')
             ->first();
 
+        $matchId = fake()->uuid();
+
         $match = GameMatch::factory()->create([
-            'id' => 'test-match-1',
+            'id' => $matchId,
             'game_id' => $this->game->id,
             'competition_id' => 'PRESEASON',
             'round_number' => 1,
@@ -204,7 +208,7 @@ class PreseasonSuspensionTest extends TestCase
 
         // Simulate 5 yellow cards across matches (threshold for suspension in most competitions)
         $matchResult = [
-            'matchId' => 'test-match-1',
+            'matchId' => $matchId,
             'competitionId' => 'PRESEASON',
             'homeScore' => 1,
             'awayScore' => 0,
