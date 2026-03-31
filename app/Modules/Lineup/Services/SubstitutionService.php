@@ -162,6 +162,7 @@ class SubstitutionService
         Game $game,
         \Illuminate\Support\Collection $userLineup,
         array $substitutions,
+        int $minute,
     ): array {
         $isUserHome = $match->isHomeTeam($game->team_id);
 
@@ -176,8 +177,9 @@ class SubstitutionService
 
         // Apply opponent substitutions from match record (auto-subs from initial simulation)
         // so that injured/subbed-out players are excluded and their replacements are included.
+        // Only apply substitutions that have already happened by the resimulation minute.
         foreach ($match->substitutions ?? [] as $sub) {
-            if ($sub['team_id'] === $opponentTeamId) {
+            if ($sub['team_id'] === $opponentTeamId && ($sub['minute'] ?? 0) <= $minute) {
                 $opponentLineupIds = array_values(array_filter(
                     $opponentLineupIds,
                     fn ($id) => $id !== $sub['player_out_id']

@@ -113,7 +113,7 @@ class AISubstitutionServiceTest extends TestCase
 
         for ($i = 0; $i < 20; $i++) {
             $subs = $this->service->chooseSubstitutions(
-                $lineup, $bench, 70, 3, 0, [], 1.0, $game->current_date,
+                $lineup, $bench, 70, 3, 0, [], [], 1.0, $game->current_date,
             );
 
             foreach ($subs as $sub) {
@@ -134,7 +134,7 @@ class AISubstitutionServiceTest extends TestCase
         $bench = $this->createBenchPlayers($game, $team, 5, 75);
 
         $subs = $this->service->chooseSubstitutions(
-            $lineup, $bench, 70, 2, 0, [], 1.0, $game->current_date,
+            $lineup, $bench, 70, 2, 0, [], [], 1.0, $game->current_date,
         );
 
         $this->assertCount(2, $subs);
@@ -158,7 +158,7 @@ class AISubstitutionServiceTest extends TestCase
         $bench = collect([$benchPlayer]);
 
         $subs = $this->service->chooseSubstitutions(
-            $lineup, $bench, 70, 3, 0, [], 1.0, $game->current_date,
+            $lineup, $bench, 70, 3, 0, [], [], 1.0, $game->current_date,
         );
 
         $this->assertCount(1, $subs, 'Cannot make more subs than bench players available');
@@ -209,7 +209,7 @@ class AISubstitutionServiceTest extends TestCase
 
         for ($i = 0; $i < $iterations; $i++) {
             $subs = $this->service->chooseSubstitutions(
-                $lineup, $bench, 80, 1, 0, [], 1.0, $game->current_date,
+                $lineup, $bench, 80, 1, 0, [], [], 1.0, $game->current_date,
             );
 
             if ($subs[0]['player_out']->id === $tiredPlayer->id) {
@@ -234,7 +234,7 @@ class AISubstitutionServiceTest extends TestCase
         $bench = $this->createBenchPlayers($game, $team, 5, 75);
 
         $subs = $this->service->chooseSubstitutions(
-            $lineup, $bench, 70, 3, 0, [], 1.0, $game->current_date,
+            $lineup, $bench, 70, 3, 0, [], [], 1.0, $game->current_date,
         );
 
         $outIds = array_map(fn ($s) => $s['player_out']->id, $subs);
@@ -242,5 +242,155 @@ class AISubstitutionServiceTest extends TestCase
 
         $this->assertCount(count($outIds), array_unique($outIds), 'Each player should only be subbed out once');
         $this->assertCount(count($inIds), array_unique($inIds), 'Each bench player should only be brought on once');
+    }
+
+    public function test_choose_substitutions_discourages_hooking_recent_substitute(): void
+    {
+        $game = Game::factory()->create(['current_date' => '2025-10-01']);
+        $team = Team::factory()->create();
+
+        $lineup = collect();
+        $lineup->push(GamePlayer::factory()->forGame($game)->forTeam($team)->create([
+            'position' => 'Goalkeeper',
+            'game_technical_ability' => 70,
+            'game_physical_ability' => 70,
+            'fitness' => 95,
+            'morale' => 80,
+        ])->setRelation('game', $game));
+
+        for ($i = 0; $i < 8; $i++) {
+            $positions = ['Centre-Back', 'Centre-Back', 'Left-Back', 'Right-Back', 'Central Midfield', 'Central Midfield', 'Defensive Midfield', 'Right Winger'];
+            $lineup->push(GamePlayer::factory()->forGame($game)->forTeam($team)->create([
+                'position' => $positions[$i],
+                'game_technical_ability' => 70,
+                'game_physical_ability' => 90,
+                'fitness' => 95,
+                'morale' => 80,
+            ])->setRelation('game', $game));
+        }
+
+        $starter = GamePlayer::factory()->forGame($game)->forTeam($team)->create([
+            'position' => 'Left Winger',
+            'game_technical_ability' => 70,
+            'game_physical_ability' => 30,
+            'fitness' => 95,
+            'morale' => 80,
+        ]);
+        $starter->setRelation('game', $game);
+        $lineup->push($starter);
+
+        $recentSub = GamePlayer::factory()->forGame($game)->forTeam($team)->create([
+            'position' => 'Centre-Forward',
+            'game_technical_ability' => 70,
+            'game_physical_ability' => 30,
+            'fitness' => 95,
+            'morale' => 80,
+        ]);
+        $recentSub->setRelation('game', $game);
+        $lineup->push($recentSub);
+
+        $bench = collect([
+            GamePlayer::factory()->forGame($game)->forTeam($team)->create([
+                'position' => 'Centre-Forward',
+                'game_technical_ability' => 75,
+                'game_physical_ability' => 75,
+                'fitness' => 95,
+                'morale' => 80,
+            ])->setRelation('game', $game),
+        ]);
+
+        $recentSubbedOut = 0;
+        $starterSubbedOut = 0;
+
+        for ($i = 0; $i < 20; $i++) {
+            $subs = $this->service->chooseSubstitutions(
+                $lineup,
+                $bench,
+                75,
+                1,
+                0,
+                [],
+                [$recentSub->id => 70],
+                1.0,
+                $game->current_date,
+            );
+
+            if ($subs[0]['player_out']->id === $recentSub->id) {
+                $recentSubbedOut++;
+            }
+            if ($subs[0]['player_out']->id === $starter->id) {
+                $starterSubbedOut++;
+            }
+        }
+
+        $this->assertSame(0, $recentSubbedOut, 'Recently-entered players should not be the preferred sub-out option immediately');
+        $this->assertSame(20, $starterSubbedOut, 'A genuinely tired starter should be preferred over a recent substitute');
+    }
+
+    public function test_choose_substitutions_does_not_hook_player_added_earlier_in_same_window(): void
+    {
+        $game = Game::factory()->create(['current_date' => '2025-10-01']);
+        $team = Team::factory()->create();
+
+        $lineup = collect([
+            GamePlayer::factory()->forGame($game)->forTeam($team)->create([
+                'position' => 'Goalkeeper',
+                'game_technical_ability' => 70,
+                'game_physical_ability' => 70,
+                'fitness' => 95,
+                'morale' => 80,
+            ])->setRelation('game', $game),
+        ]);
+
+        foreach ([
+            'Centre-Back', 'Centre-Back', 'Left-Back', 'Right-Back',
+            'Central Midfield', 'Central Midfield', 'Defensive Midfield',
+            'Left Winger', 'Right Winger', 'Centre-Forward',
+        ] as $position) {
+            $lineup->push(GamePlayer::factory()->forGame($game)->forTeam($team)->create([
+                'position' => $position,
+                'game_technical_ability' => 70,
+                'game_physical_ability' => 30,
+                'fitness' => 95,
+                'morale' => 80,
+            ])->setRelation('game', $game));
+        }
+
+        $bench = collect([
+            GamePlayer::factory()->forGame($game)->forTeam($team)->create([
+                'position' => 'Defensive Midfield',
+                'game_technical_ability' => 75,
+                'game_physical_ability' => 75,
+                'fitness' => 95,
+                'morale' => 80,
+            ])->setRelation('game', $game),
+            GamePlayer::factory()->forGame($game)->forTeam($team)->create([
+                'position' => 'Central Midfield',
+                'game_technical_ability' => 74,
+                'game_physical_ability' => 74,
+                'fitness' => 95,
+                'morale' => 80,
+            ])->setRelation('game', $game),
+        ]);
+
+        $subs = $this->service->chooseSubstitutions(
+            $lineup,
+            $bench,
+            69,
+            2,
+            0,
+            [],
+            [],
+            1.0,
+            $game->current_date,
+        );
+
+        $this->assertCount(2, $subs);
+        $subbedInIds = array_map(fn ($sub) => $sub['player_in']->id, $subs);
+        $subbedOutIds = array_map(fn ($sub) => $sub['player_out']->id, $subs);
+
+        foreach ($subbedInIds as $subbedInId) {
+            $this->assertNotContains($subbedInId, $subbedOutIds, 'A player brought on in this window should not be hooked in the same window');
+        }
     }
 }
