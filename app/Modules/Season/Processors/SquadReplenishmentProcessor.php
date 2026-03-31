@@ -28,7 +28,7 @@ use Illuminate\Support\Collection;
  * 3. Youth intake — each AI team receives 2-3 young players (17-20) per season,
  *    simulating AI youth academies and maintaining healthy age balance.
  *
- * Priority: 8
+ * Priority: 9
  */
 class SquadReplenishmentProcessor implements SeasonProcessor
 {
@@ -109,7 +109,7 @@ class SquadReplenishmentProcessor implements SeasonProcessor
 
     public function priority(): int
     {
-        return 8;
+        return 9;
     }
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData

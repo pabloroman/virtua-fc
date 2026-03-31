@@ -16,6 +16,7 @@ use App\Modules\Season\Processors\ReputationUpdateProcessor;
 use App\Modules\Season\Processors\SeasonArchiveProcessor;
 use App\Modules\Season\Processors\SeasonSettlementProcessor;
 use App\Modules\Season\Processors\SeasonSimulationProcessor;
+use App\Modules\Season\Processors\AIFreeAgentSigningProcessor;
 use App\Modules\Season\Processors\SquadReplenishmentProcessor;
 use App\Modules\Season\Processors\StatsResetProcessor;
 use App\Modules\Season\Processors\SupercupQualificationProcessor;
@@ -44,6 +45,7 @@ class SeasonClosingPipeline
         ContractExpirationProcessor $contractExpiration,
         ContractRenewalProcessor $contractRenewal,
         PlayerRetirementProcessor $playerRetirement,
+        AIFreeAgentSigningProcessor $aiFreeAgentSigning,
         SquadReplenishmentProcessor $squadReplenishment,
         PlayerDevelopmentProcessor $playerDevelopment,
         SeasonSettlementProcessor $seasonSettlement,
@@ -65,6 +67,7 @@ class SeasonClosingPipeline
             $contractExpiration,
             $contractRenewal,
             $playerRetirement,
+            $aiFreeAgentSigning,
             $squadReplenishment,
             $playerDevelopment,
             $seasonSettlement,

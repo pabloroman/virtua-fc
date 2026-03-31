@@ -39,11 +39,11 @@ class SquadReplenishmentTest extends TestCase
         ]);
     }
 
-    public function test_processor_has_priority_8(): void
+    public function test_processor_has_priority_9(): void
     {
         $processor = app(SquadReplenishmentProcessor::class);
 
-        $this->assertEquals(8, $processor->priority());
+        $this->assertEquals(9, $processor->priority());
     }
 
     public function test_ai_team_below_minimum_gets_replenished(): void
