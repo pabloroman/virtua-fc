@@ -233,13 +233,19 @@ class SeedReferenceData extends Command
 
     private function createDefaultUser(): void
     {
-        User::firstOrCreate(
+        $user = User::firstOrCreate(
             ['email' => 'test@test.com'],
             [
                 'name' => 'Test User',
                 'password' => Hash::make('password'),
             ]
         );
+
+        $user->forceFill([
+            'email_verified_at' => $user->email_verified_at ?? now(),
+            'has_career_access' => true,
+            'has_tournament_access' => true,
+        ])->save();
 
         $this->line("Default user: test@test.com / password");
     }
