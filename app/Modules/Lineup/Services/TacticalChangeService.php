@@ -88,7 +88,7 @@ class TacticalChangeService
 
         // Build active lineup and load teams for resimulation
         $userLineup = $this->substitutionService->buildActiveLineup($match, $game->team_id, $allSubs);
-        $teams = $this->substitutionService->loadTeamsForResimulation($match, $game, $userLineup, $allSubs);
+        $teams = $this->substitutionService->loadTeamsForResimulation($match, $game, $userLineup, $allSubs, $minute);
         ['homePlayers' => $homePlayers, 'awayPlayers' => $awayPlayers, 'homeBench' => $homeBench, 'awayBench' => $awayBench] = $teams;
 
         // Capture effective tactical values before re-simulation

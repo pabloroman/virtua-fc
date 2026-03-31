@@ -358,6 +358,8 @@ return [
         'energy_threshold' => 40,           // energy below this = strong sub candidate
         'yellow_card_weight' => 0.30,       // extra urgency score for yellowed players
         'losing_attack_bias' => 0.70,       // probability of preferring attackers when losing
+        'recent_sub_protection_minutes' => 12, // newly-entered players get a strong temporary penalty
+        'recent_sub_max_penalty' => 0.35,   // max urgency penalty applied right after entering
     ],
 
 ];

@@ -136,6 +136,15 @@ class ShowLiveMatch
         // Batch load suspended player IDs for this competition
         $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($playerMatch->competition_id);
 
+        $mapLineupPlayer = fn (GamePlayer $p) => [
+            'id' => $p->id,
+            'name' => $p->player->name ?? '',
+            'positionAbbr' => PositionMapper::toAbbreviation($p->position),
+            'positionGroup' => $p->position_group,
+            'positionSort' => LineupService::positionSortOrder($p->position),
+            'overallScore' => $p->overall_score,
+        ];
+
         // Bench players (all squad players NOT in the starting lineup, not suspended, not injured)
         $matchDate = $playerMatch->scheduled_date;
         $benchPlayers = GamePlayer::with('player')
@@ -171,19 +180,30 @@ class ShowLiveMatch
         $mapLineup = fn (array $ids) => GamePlayer::with('player')
             ->whereIn('id', $ids)
             ->get()
-            ->map(fn ($p) => [
-                'name' => $p->player->name ?? '',
-                'positionAbbr' => PositionMapper::toAbbreviation($p->position),
-                'positionGroup' => $p->position_group,
-                'positionSort' => LineupService::positionSortOrder($p->position),
-                'overallScore' => $p->overall_score,
-            ])
+            ->map($mapLineupPlayer)
+            ->sortBy('positionSort')
+            ->values()
+            ->all();
+
+        $buildBench = fn (string $teamId, array $lineupIds) => GamePlayer::with('player')
+            ->where('game_id', $gameId)
+            ->where('team_id', $teamId)
+            ->whereNotIn('id', $lineupIds)
+            ->whereNotIn('id', $suspendedPlayerIds)
+            ->where(function ($q) use ($matchDate) {
+                $q->whereNull('injury_until')
+                    ->orWhere('injury_until', '<', $matchDate);
+            })
+            ->get()
+            ->map($mapLineupPlayer)
             ->sortBy('positionSort')
             ->values()
             ->all();
 
         $homeLineupDisplay = $mapLineup($playerMatch->home_lineup ?? []);
         $awayLineupDisplay = $mapLineup($playerMatch->away_lineup ?? []);
+        $homeBenchDisplay = $buildBench($playerMatch->home_team_id, $playerMatch->home_lineup ?? []);
+        $awayBenchDisplay = $buildBench($playerMatch->away_team_id, $playerMatch->away_lineup ?? []);
 
         // User's current tactical setup
         $userFormation = $isUserHome
@@ -291,6 +311,8 @@ class ShowLiveMatch
             'mvpPlayerTeamId' => $playerMatch->mvpPlayer?->team_id,
             'homeLineupDisplay' => $homeLineupDisplay,
             'awayLineupDisplay' => $awayLineupDisplay,
+            'homeBenchDisplay' => $homeBenchDisplay,
+            'awayBenchDisplay' => $awayBenchDisplay,
             'homeFormation' => $playerMatch->home_formation ?? Formation::F_4_3_3->value,
             'awayFormation' => $playerMatch->away_formation ?? Formation::F_4_3_3->value,
             'formationSlots' => $formationSlots,
