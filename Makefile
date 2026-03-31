@@ -1,7 +1,7 @@
 DC_DEV = docker compose -f docker-compose.yml -f docker-compose.dev.yml
 DC_PROD = docker compose -f docker-compose.yml -f docker-compose.prod.yml
 
-.PHONY: dev dev-build dev-down prod prod-build prod-down logs setup artisan composer npm
+.PHONY: dev dev-build dev-down prod prod-build prod-down logs setup artisan composer npm key
 
 # Development
 dev:
@@ -37,6 +37,9 @@ npm:
 # Utilities
 logs:
 	$(DC_DEV) logs -f
+
+key:
+	$(DC_DEV) exec app php artisan key:generate
 
 setup:
 	cp -n .env.docker .env 2>/dev/null || true
