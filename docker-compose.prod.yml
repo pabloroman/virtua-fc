@@ -1,0 +1,54 @@
+services:
+  app:
+    build:
+      context: .
+      target: production
+    ports:
+      - "8000:8000"
+    env_file: .env
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: virtua_fc
+      DB_USERNAME: virtua_fc
+      DB_PASSWORD: password
+      DB_SSLMODE: disable
+      REDIS_HOST: redis
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - storage:/app/storage
+    restart: unless-stopped
+
+  horizon:
+    build:
+      context: .
+      target: production
+    command: ["php", "artisan", "horizon"]
+    env_file: .env
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: virtua_fc
+      DB_USERNAME: virtua_fc
+      DB_PASSWORD: password
+      DB_SSLMODE: disable
+      REDIS_HOST: redis
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - storage:/app/storage
+    restart: unless-stopped
+
+volumes:
+  storage:

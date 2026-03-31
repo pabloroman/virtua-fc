@@ -3,6 +3,7 @@
 .gitignore
 .env
 .env.backup
+.env.docker
 
 vendor
 node_modules
@@ -20,7 +21,10 @@ tests
 phpunit.xml
 
 docker-compose.yml
+docker-compose.dev.yml
+docker-compose.prod.yml
 Dockerfile
+Makefile
 
 .idea
 .vscode

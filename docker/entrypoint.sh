@@ -13,6 +13,14 @@ until php -r "try { \$r = new Redis(); \$r->connect(getenv('REDIS_HOST') ?: '127
 done
 echo "Redis is ready."
 
+# In development, install dependencies (vendor is an anonymous volume)
+if [ "$APP_ENV" != "production" ] && [ -f composer.json ] && command -v composer >/dev/null 2>&1; then
+    if [ ! -f vendor/autoload.php ]; then
+        echo "Installing Composer dependencies..."
+        composer install --no-interaction
+    fi
+fi
+
 # Generate app key if not set
 if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "" ]; then
     echo "Generating application key..."

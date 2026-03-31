@@ -1,49 +1,4 @@
 services:
-  app:
-    build: .
-    ports:
-      - "8000:8000"
-    env_file: .env
-    environment:
-      DB_CONNECTION: pgsql
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_DATABASE: virtua_fc
-      DB_USERNAME: virtua_fc
-      DB_PASSWORD: password
-      DB_SSLMODE: disable
-      REDIS_HOST: redis
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    volumes:
-      - storage:/app/storage
-    restart: unless-stopped
-
-  horizon:
-    build: .
-    command: ["php", "artisan", "horizon"]
-    env_file: .env
-    environment:
-      DB_CONNECTION: pgsql
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_DATABASE: virtua_fc
-      DB_USERNAME: virtua_fc
-      DB_PASSWORD: password
-      DB_SSLMODE: disable
-      REDIS_HOST: redis
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    volumes:
-      - storage:/app/storage
-    restart: unless-stopped
-
   postgres:
     image: postgres:18-alpine
     environment:
@@ -77,4 +32,3 @@ services:
 volumes:
   pgdata:
   redisdata:
-  storage:
