@@ -20,6 +20,7 @@ use Illuminate\Support\Collection;
 class LoanService
 {
     private const SEARCH_EXPIRY_DAYS = 21;
+
     private const MATCH_PROBABILITY = 50; // % chance per matchday
 
     /**
@@ -108,6 +109,7 @@ class LoanService
                         'destination' => $destination,
                         'windowOpen' => $game->isTransferWindowOpen(),
                     ];
+
                     continue;
                 }
             }
@@ -158,10 +160,10 @@ class LoanService
                 'score' => $this->scoreLoanDestination($game, $player, $team, $positionCounts, $teamReputations),
             ];
         })
-        ->filter(fn ($item) => $item['score'] >= 20)
-        ->sortByDesc('score')
-        ->take(5)
-        ->values();
+            ->filter(fn ($item) => $item['score'] >= 20)
+            ->sortByDesc('score')
+            ->take(5)
+            ->values();
 
         if ($scored->isEmpty()) {
             return null;
@@ -272,7 +274,7 @@ class LoanService
     /**
      * Pre-load position group counts for multiple teams in a single query.
      *
-     * @return array<string, array<string, int>>  [teamId => [positionGroup => count]]
+     * @return array<string, array<string, int>> [teamId => [positionGroup => count]]
      */
     private function getPositionCountsByTeam(Game $game, array $teamIds): array
     {
@@ -323,7 +325,7 @@ class LoanService
      */
     private function isSearchExpired(GamePlayer $player, Carbon $currentDate): bool
     {
-        if (!$player->transfer_listed_at) {
+        if (! $player->transfer_listed_at) {
             return true;
         }
 
@@ -408,6 +410,10 @@ class LoanService
      */
     public function requestLoanIn(Game $game, GamePlayer $player): TransferOffer
     {
+        if ($player->game_id !== $game->id) {
+            throw new \InvalidArgumentException('Player does not belong to this game.');
+        }
+
         if ($player->team_id === null) {
             throw new \InvalidArgumentException('Cannot loan a free agent — no parent team.');
         }
@@ -508,6 +514,7 @@ class LoanService
         // Safety net: reject if squad is full
         if (ContractService::isSquadFull($game)) {
             $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
+
             return;
         }
 
@@ -516,6 +523,7 @@ class LoanService
 
         if ($parentTeamId === null) {
             $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
+
             return;
         }
 
@@ -619,6 +627,7 @@ class LoanService
     {
         if ($game->isTransferWindowOpen()) {
             $this->completeLoanIn($offer, $game);
+
             return ['result' => 'accepted', 'offer' => $offer->fresh()];
         }
 
@@ -626,6 +635,7 @@ class LoanService
             'status' => TransferOffer::STATUS_AGREED,
             'resolved_at' => $game->current_date,
         ]);
+
         return ['result' => 'accepted', 'offer' => $offer->fresh()];
     }
 
@@ -645,5 +655,4 @@ class LoanService
 
         return ['label' => __('transfers.mood_reluctant_loan'), 'color' => 'red'];
     }
-
 }

@@ -21,7 +21,9 @@ class SignFreeAgent
     public function __invoke(Request $request, string $gameId, string $playerId)
     {
         $game = Game::findOrFail($gameId);
-        $player = GamePlayer::with('player')->findOrFail($playerId);
+        $player = GamePlayer::with('player')
+            ->where('game_id', $gameId)
+            ->findOrFail($playerId);
 
         // Must be a free agent
         if ($player->team_id !== null) {

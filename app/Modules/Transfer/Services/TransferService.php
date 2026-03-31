@@ -2,12 +2,6 @@
 
 namespace App\Modules\Transfer\Services;
 
-use App\Modules\Player\PlayerAge;
-use App\Modules\Transfer\Enums\TransferWindowType;
-use App\Modules\Transfer\Services\ContractService;
-use App\Modules\Transfer\Services\LoanService;
-use App\Modules\Transfer\Services\ScoutingService;
-use App\Support\Money;
 use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\Game;
@@ -17,6 +11,9 @@ use App\Models\ShortlistedPlayer;
 use App\Models\Team;
 use App\Models\TeamReputation;
 use App\Models\TransferOffer;
+use App\Modules\Player\PlayerAge;
+use App\Modules\Transfer\Enums\TransferWindowType;
+use App\Support\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -32,24 +29,28 @@ class TransferService
      * Discount range for listed players (buyer has leverage).
      */
     private const LISTED_PRICE_MIN = 0.85;
+
     private const LISTED_PRICE_MAX = 0.95;
 
     /**
      * Premium range for unsolicited offers (tempting the seller).
      */
     private const UNSOLICITED_PRICE_MIN = 1.00;
+
     private const UNSOLICITED_PRICE_MAX = 1.20;
 
     /**
      * Age adjustments for transfer pricing.
      */
     private const AGE_PREMIUM_YOUNG = 1.10;  // Young talent premium
+
     private const AGE_DECLINE_PENALTY_PER_YEAR = 0.05;  // 5% per year
 
     /**
      * Offer expiry in days.
      */
     private const LISTED_OFFER_EXPIRY_DAYS = 14;
+
     private const UNSOLICITED_OFFER_EXPIRY_DAYS = 14;
 
     /**
@@ -79,11 +80,11 @@ class TransferService
      * [min_market_value_cents => chance]
      */
     private const PRE_CONTRACT_OFFER_CHANCE_BY_VALUE = [
-        5_000_000_000  => 0.35, // €50M+ → 35%
-        2_000_000_000  => 0.25, // €20M+ → 25%
-        1_000_000_000  => 0.20, // €10M+ → 20%
-        500_000_000    => 0.15, // €5M+  → 15%
-        0              => 0.10, // < €5M → 10%
+        5_000_000_000 => 0.35, // €50M+ → 35%
+        2_000_000_000 => 0.25, // €20M+ → 25%
+        1_000_000_000 => 0.20, // €10M+ → 20%
+        500_000_000 => 0.15, // €5M+  → 15%
+        0 => 0.10, // < €5M → 10%
     ];
 
     /**
@@ -96,11 +97,11 @@ class TransferService
      * to be interested, keyed by reputation tier.
      */
     private const MIN_TIER_BY_REPUTATION = [
-        ClubProfile::REPUTATION_LOCAL        => 1,
-        ClubProfile::REPUTATION_MODEST       => 1,
-        ClubProfile::REPUTATION_ESTABLISHED  => 2,
-        ClubProfile::REPUTATION_CONTINENTAL  => 3,
-        ClubProfile::REPUTATION_ELITE        => 4,
+        ClubProfile::REPUTATION_LOCAL => 1,
+        ClubProfile::REPUTATION_MODEST => 1,
+        ClubProfile::REPUTATION_ESTABLISHED => 2,
+        ClubProfile::REPUTATION_CONTINENTAL => 3,
+        ClubProfile::REPUTATION_ELITE => 4,
     ];
 
     /**
@@ -141,7 +142,7 @@ class TransferService
      * Generate offers for all listed players.
      * Called on each matchday advance.
      *
-     * @param Collection|null $allPlayersGrouped Pre-loaded players grouped by team_id (optional, for N+1 optimization)
+     * @param  Collection|null  $allPlayersGrouped  Pre-loaded players grouped by team_id (optional, for N+1 optimization)
      */
     public function generateOffersForListedPlayers(Game $game, $allPlayersGrouped = null, ?array $buyerPool = null): Collection
     {
@@ -152,7 +153,7 @@ class TransferService
             $teamPlayers = $allPlayersGrouped->get($game->team_id, collect());
             $listedPlayers = $teamPlayers->filter(
                 fn ($p) => $p->transfer_status === GamePlayer::TRANSFER_STATUS_LISTED
-                    && !$p->isLoanedIn($game->team_id)
+                    && ! $p->isLoanedIn($game->team_id)
             );
         } else {
             $listedPlayers = GamePlayer::with('transferOffers')
@@ -199,7 +200,7 @@ class TransferService
                     ->toArray();
 
                 $availableBuyers = $buyers->filter(
-                    fn ($team) => !in_array($team->id, $existingOfferTeamIds)
+                    fn ($team) => ! in_array($team->id, $existingOfferTeamIds)
                 );
 
                 if ($availableBuyers->isNotEmpty()) {
@@ -221,7 +222,7 @@ class TransferService
      * Generate unsolicited offers for star players.
      * Called on each matchday advance.
      *
-     * @param Collection|null $allPlayersGrouped Pre-loaded players grouped by team_id (optional, for N+1 optimization)
+     * @param  Collection|null  $allPlayersGrouped  Pre-loaded players grouped by team_id (optional, for N+1 optimization)
      * @param  array{leagueTeams: Collection, squadValues: Collection}|null  $buyerPool  Pre-loaded pool from loadBuyerPool()
      */
     public function generateUnsolicitedOffers(Game $game, $allPlayersGrouped = null, ?array $buyerPool = null): Collection
@@ -233,7 +234,7 @@ class TransferService
             $teamPlayers = $allPlayersGrouped->get($game->team_id, collect());
             $starPlayers = $teamPlayers
                 ->filter(fn ($p) => $p->transfer_status === null
-                    && !$p->isLoanedIn($game->team_id))
+                    && ! $p->isLoanedIn($game->team_id))
                 ->sortByDesc('market_value_cents')
                 ->take(self::STAR_PLAYER_COUNT);
         } else {
@@ -301,7 +302,7 @@ class TransferService
      * Generate pre-contract offers for players with expiring contracts.
      * Called on each matchday advance (typically from January onwards).
      *
-     * @param Collection|null $allPlayersGrouped Pre-loaded players grouped by team_id (optional, for N+1 optimization)
+     * @param  Collection|null  $allPlayersGrouped  Pre-loaded players grouped by team_id (optional, for N+1 optimization)
      * @param  array{leagueTeams: Collection, squadValues: Collection}|null  $buyerPool  Pre-loaded pool from loadBuyerPool()
      */
     public function generatePreContractOffers(Game $game, $allPlayersGrouped = null, ?array $buyerPool = null): Collection
@@ -310,7 +311,7 @@ class TransferService
 
         // Only generate pre-contract offers from January through May
         // Players can sign pre-contracts 6 months before their contract expires (June 30)
-        if (!$game->current_date) {
+        if (! $game->current_date) {
             return $offers;
         }
 
@@ -327,7 +328,7 @@ class TransferService
             // Filter to players with expiring contracts who can receive offers
             $expiringPlayers = $teamPlayers->filter(function ($player) use ($seasonEndDate, $game) {
                 // Check if contract is expiring
-                if (!$player->contract_until || !$player->contract_until->lte($seasonEndDate)) {
+                if (! $player->contract_until || ! $player->contract_until->lte($seasonEndDate)) {
                     return false;
                 }
                 // Skip loaned-in players — they belong to their parent club
@@ -543,17 +544,20 @@ class TransferService
         // current contract is still valid until June regardless of window status.
         if ($offer->isPreContract()) {
             $offer->update(['status' => TransferOffer::STATUS_AGREED, 'resolved_at' => $game->current_date]);
+
             return false;
         }
 
         // If transfer window is open, complete immediately
         if ($game->isTransferWindowOpen()) {
             $this->completeTransfer($offer, $game);
+
             return true;
         }
 
         // Otherwise, mark as agreed (waiting for next transfer window)
         $offer->update(['status' => TransferOffer::STATUS_AGREED, 'resolved_at' => $game->current_date]);
+
         return false;
     }
 
@@ -868,8 +872,8 @@ class TransferService
     /**
      * Pick a random item from a collection using weighted probabilities.
      *
-     * @param Collection $items Collection of items (must have 'id' property)
-     * @param array<string, float> $weights Item ID => weight
+     * @param  Collection  $items  Collection of items (must have 'id' property)
+     * @param  array<string, float>  $weights  Item ID => weight
      */
     private function weightedRandom(Collection $items, array $weights): mixed
     {
@@ -938,6 +942,10 @@ class TransferService
      */
     public function signFreeAgent(Game $game, GamePlayer $player, int $wageDemand): TransferOffer
     {
+        if ($player->game_id !== $game->id) {
+            throw new \InvalidArgumentException('Player does not belong to this game.');
+        }
+
         $seasonYear = (int) $game->season;
         $contractYears = $player->age($game->current_date) >= 32 ? 1 : mt_rand(2, 3);
         $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
@@ -996,6 +1004,7 @@ class TransferService
         if ($game->isTransferWindowOpen()) {
             if ($offer->offer_type === TransferOffer::TYPE_LOAN_IN) {
                 $this->loanService->completeLoanIn($offer, $game);
+
                 return true;
             }
 
@@ -1004,6 +1013,7 @@ class TransferService
 
         // Otherwise, mark as agreed (waiting for next transfer window)
         $offer->update(['status' => TransferOffer::STATUS_AGREED, 'resolved_at' => $game->current_date]);
+
         return false;
     }
 
@@ -1036,12 +1046,16 @@ class TransferService
      */
     public function submitPreContractOffer(Game $game, GamePlayer $player, int $offeredWageCents): TransferOffer
     {
-        if (!$game->isPreContractPeriod()) {
+        if ($player->game_id !== $game->id) {
+            throw new \InvalidArgumentException('Player does not belong to this game.');
+        }
+
+        if (! $game->isPreContractPeriod()) {
             throw new \InvalidArgumentException(__('messages.pre_contract_not_available'));
         }
 
         $seasonEnd = $game->getSeasonEndDate();
-        if (!$player->contract_until || !$player->contract_until->lte($seasonEnd)) {
+        if (! $player->contract_until || ! $player->contract_until->lte($seasonEnd)) {
             throw new \InvalidArgumentException(__('messages.player_not_expiring'));
         }
 
@@ -1148,6 +1162,7 @@ class TransferService
                 'asking_price' => $evaluation['asking_price'],
                 'resolved_at' => $game->current_date,
             ]);
+
             return ['result' => 'accepted', 'offer' => $offer->fresh()];
         }
 
@@ -1155,6 +1170,7 @@ class TransferService
             $offer->update([
                 'asking_price' => $evaluation['counter_amount'],
             ]);
+
             return ['result' => 'countered', 'offer' => $offer->fresh()];
         }
 
@@ -1164,6 +1180,7 @@ class TransferService
             'asking_price' => $evaluation['asking_price'],
             'resolved_at' => $game->current_date,
         ]);
+
         return ['result' => 'rejected', 'offer' => $offer->fresh()];
     }
 
@@ -1172,7 +1189,7 @@ class TransferService
      */
     public function acceptTransferFeeCounter(Game $game, TransferOffer $offer): TransferOffer
     {
-        if (!$offer->isPending() || !$offer->isSyncNegotiated() || !$offer->asking_price || $offer->asking_price <= $offer->transfer_fee) {
+        if (! $offer->isPending() || ! $offer->isSyncNegotiated() || ! $offer->asking_price || $offer->asking_price <= $offer->transfer_fee) {
             throw new \InvalidArgumentException(__('messages.transfer_failed'));
         }
 
@@ -1218,6 +1235,7 @@ class TransferService
             $offer->update([
                 'transfer_fee' => $userAskingCents,
             ]);
+
             return ['result' => 'accepted', 'offer' => $offer->fresh()];
         }
 
@@ -1225,6 +1243,7 @@ class TransferService
             $offer->update([
                 'transfer_fee' => $evaluation['counter_amount'],
             ]);
+
             return ['result' => 'countered', 'offer' => $offer->fresh()];
         }
 
@@ -1233,6 +1252,7 @@ class TransferService
             'status' => TransferOffer::STATUS_REJECTED,
             'resolved_at' => $game->current_date,
         ]);
+
         return ['result' => 'rejected', 'offer' => $offer->fresh()];
     }
 
