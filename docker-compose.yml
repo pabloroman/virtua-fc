@@ -4,44 +4,58 @@ services:
     ports:
       - "8000:8000"
     env_file: .env
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: virtua_fc
+      DB_USERNAME: virtua_fc
+      DB_PASSWORD: password
+      DB_SSLMODE: disable
+      REDIS_HOST: redis
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
     volumes:
-      - .:/app
-      - /app/vendor
-      - /app/node_modules
+      - storage:/app/storage
     restart: unless-stopped
 
   horizon:
     build: .
     command: ["php", "artisan", "horizon"]
     env_file: .env
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: virtua_fc
+      DB_USERNAME: virtua_fc
+      DB_PASSWORD: password
+      DB_SSLMODE: disable
+      REDIS_HOST: redis
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
     volumes:
-      - .:/app
-      - /app/vendor
-      - /app/node_modules
+      - storage:/app/storage
     restart: unless-stopped
 
   postgres:
-    image: postgres:17-alpine
+    image: postgres:18-alpine
     environment:
       POSTGRES_DB: virtua_fc
-      POSTGRES_USER: virtua
+      POSTGRES_USER: virtua_fc
       POSTGRES_PASSWORD: password
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U virtua -d virtua_fc"]
+      test: ["CMD-SHELL", "pg_isready -U virtua_fc -d virtua_fc"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -63,3 +77,4 @@ services:
 volumes:
   pgdata:
   redisdata:
+  storage:

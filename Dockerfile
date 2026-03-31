@@ -18,24 +18,13 @@ FROM composer:2 AS composer-builder
 WORKDIR /app
 
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
+RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --ignore-platform-reqs
 
 COPY . .
 RUN composer dump-autoload --optimize
 
 # Stage 3: Final image
-FROM dunglas/frankenphp:latest-php8.4-alpine
-
-# Install system dependencies
-RUN apk add --no-cache \
-    postgresql-dev \
-    icu-dev \
-    libzip-dev \
-    freetype-dev \
-    libjpeg-turbo-dev \
-    libpng-dev \
-    linux-headers \
-    oniguruma-dev
+FROM dunglas/frankenphp:php8.4-alpine
 
 # Install PHP extensions
 RUN install-php-extensions \
@@ -48,7 +37,8 @@ RUN install-php-extensions \
     gd \
     pcntl \
     opcache \
-    mbstring
+    mbstring \
+    && rm -rf /tmp/* /var/cache/apk/*
 
 WORKDIR /app
 
@@ -61,6 +51,10 @@ COPY --from=node-builder /app/public/build public/build
 # Copy entrypoint script
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Clear stale package cache from dev and re-discover for production
+RUN rm -f bootstrap/cache/packages.php bootstrap/cache/services.php \
+    && php artisan package:discover --ansi
 
 # Set permissions
 RUN chown -R www-data:www-data storage bootstrap/cache \
