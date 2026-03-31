@@ -37,7 +37,9 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 EXPOSE 5173
 
-CMD ["php", "artisan", "octane:frankenphp", "--host=0.0.0.0", "--port=8000", "--watch"]
+# Use artisan serve in dev — no worker file needed, fresh PHP on each request.
+# Vite handles frontend hot reload. Octane is a production optimization.
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
 
 # =============================================================================
 # Production build stages
