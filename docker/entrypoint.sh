@@ -21,6 +21,17 @@ if [ "$APP_ENV" != "production" ] && [ -f composer.json ] && command -v composer
     fi
 fi
 
+# Ensure .env exists — prefer .env.docker (Docker-aware defaults) over .env.example
+if [ ! -f .env ]; then
+    if [ -f .env.docker ]; then
+        echo "Creating .env from .env.docker..."
+        cp .env.docker .env
+    elif [ -f .env.example ]; then
+        echo "Creating .env from .env.example..."
+        cp .env.example .env
+    fi
+fi
+
 # Generate app key if not set
 if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "" ]; then
     echo "Generating application key..."
