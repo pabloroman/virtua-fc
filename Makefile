@@ -1,30 +1,44 @@
-.PHONY: dev dev-build dev-down prod prod-build prod-down logs setup
+DC_DEV = docker compose -f docker-compose.yml -f docker-compose.dev.yml
+DC_PROD = docker compose -f docker-compose.yml -f docker-compose.prod.yml
+
+.PHONY: dev dev-build dev-down prod prod-build prod-down logs setup artisan composer npm
 
 # Development
 dev:
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+	$(DC_DEV) up
 
 dev-build:
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+	$(DC_DEV) up --build
 
 dev-down:
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml down
+	$(DC_DEV) down
 
 # Production
 prod:
-	docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+	$(DC_PROD) up -d
 
 prod-build:
-	docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+	$(DC_PROD) up -d --build
 
 prod-down:
-	docker compose -f docker-compose.yml -f docker-compose.prod.yml down
+	$(DC_PROD) down
+
+# Wrappers — pass any arguments after the target
+# Usage: make artisan cmd="migrate:fresh --seed"
+artisan:
+	$(DC_DEV) exec app php artisan $(cmd)
+
+composer:
+	$(DC_DEV) exec app composer $(cmd)
+
+npm:
+	$(DC_DEV) exec vite npm $(cmd)
 
 # Utilities
 logs:
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml logs -f
+	$(DC_DEV) logs -f
 
 setup:
 	cp -n .env.docker .env 2>/dev/null || true
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml run --rm app composer install
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml run --rm app php artisan key:generate
+	$(DC_DEV) run --rm app composer install
+	$(DC_DEV) run --rm app php artisan key:generate
