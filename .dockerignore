@@ -22,9 +22,6 @@ phpunit.xml
 docker-compose.yml
 Dockerfile
 
-*.sqlite
-*.sqlite-journal
-
 .idea
 .vscode
 .DS_Store

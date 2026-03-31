@@ -79,15 +79,10 @@ class ScoutSearchQueryBuilder
             return;
         }
 
-        /** @var \Illuminate\Database\Connection $connection */
-        $connection = $query->getQuery()->getConnection();
-        $driver = $connection->getDriverName();
         $dobSubquery = '(SELECT date_of_birth FROM players WHERE players.id = game_players.player_id)';
         $gameDate = $game->current_date->toDateString();
 
-        $ageExpr = $driver === 'pgsql'
-            ? "EXTRACT(YEAR FROM AGE(?::date, $dobSubquery))"
-            : "(strftime('%Y', ?) - strftime('%Y', $dobSubquery))";
+        $ageExpr = "EXTRACT(YEAR FROM AGE(?::date, $dobSubquery))";
 
         if (! empty($filters['age_min'])) {
             $query->whereRaw("($ageExpr) >= ?", [$gameDate, (int) $filters['age_min']]);

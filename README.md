@@ -63,7 +63,7 @@ A football manager simulation game built with Laravel 12, Tailwind CSS, and Alpi
 - PHP 8.4 or higher
 - Composer
 - Node.js and npm
-- SQLite (development) or PostgreSQL (production)
+- Docker (PostgreSQL and Redis are provided via Docker Compose)
 
 ## Installation
 
@@ -93,11 +93,10 @@ A football manager simulation game built with Laravel 12, Tailwind CSS, and Alpi
    php artisan key:generate
    ```
 
-5. **Create the database**
+5. **Start Docker services**
 
-   For SQLite (default):
    ```bash
-   touch database/database.sqlite
+   docker compose up -d
    ```
 
 6. **Run migrations**

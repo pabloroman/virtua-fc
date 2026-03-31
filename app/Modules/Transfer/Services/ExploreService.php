@@ -192,12 +192,7 @@ class ExploreService
     {
         $players = GamePlayer::where('game_id', $game->id)
             ->whereHas('player', function ($q) use ($query) {
-                $driver = $q->getQuery()->getConnection()->getDriverName();
-                if ($driver === 'pgsql') {
-                    $q->whereRaw('LOWER(name) LIKE ?', ['%' . mb_strtolower($query) . '%']);
-                } else {
-                    $q->where('name', 'LIKE', '%' . $query . '%');
-                }
+                $q->whereRaw('LOWER(name) LIKE ?', ['%' . mb_strtolower($query) . '%']);
             })
             ->with(['player', 'team'])
             ->limit(30)

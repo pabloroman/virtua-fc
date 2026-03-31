@@ -80,7 +80,7 @@ class NationalTeamStatsService
     /**
      * Get player selection frequency for a team across all tournaments.
      *
-     * Iterates summaries in PHP to avoid SQLite/PostgreSQL JSON dialect differences.
+     * Iterates summaries in PHP for simplicity.
      * Groups by player_id when available (new snapshots), falls back to player_name (legacy).
      */
     public function getPlayerFrequency(string $teamId): Collection

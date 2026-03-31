@@ -141,7 +141,6 @@ class MatchResultProcessor
         $homePossCases = [];
         $awayPossCases = [];
         $mvpCases = [];
-        $isPostgres = DB::getDriverName() === 'pgsql';
 
         foreach ($matchResults as $result) {
             $id = $result['matchId'];
@@ -154,7 +153,7 @@ class MatchResultProcessor
             $awayPossCases[] = "WHEN id = '{$id}' THEN {$awayPoss}";
             $mvpId = $result['mvpPlayerId'] ?? null;
             $mvpCases[] = $mvpId
-                ? "WHEN id = '{$id}' THEN " . ($isPostgres ? "'{$mvpId}'::uuid" : "'{$mvpId}'")
+                ? "WHEN id = '{$id}' THEN '{$mvpId}'::uuid"
                 : "WHEN id = '{$id}' THEN NULL";
         }
 
@@ -579,22 +578,9 @@ class MatchResultProcessor
 
         $idList = "'" . implode("','", $ids) . "'";
 
-        // Branch on driver for SQLite compatibility in tests
-        if (DB::getDriverName() === 'pgsql') {
-            DB::statement(
-                'UPDATE game_matches SET substitutions = CASE ' . implode(' ', $cases) . ' ELSE substitutions END WHERE id IN (' . $idList . ')'
-            );
-        } else {
-            // SQLite: use json() instead of ::jsonb cast
-            $sqliteCases = [];
-            foreach ($updates as $matchId => $subsJson) {
-                $escaped = str_replace("'", "''", $subsJson);
-                $sqliteCases[] = "WHEN id = '{$matchId}' THEN json('{$escaped}')";
-            }
-            DB::statement(
-                'UPDATE game_matches SET substitutions = CASE ' . implode(' ', $sqliteCases) . ' ELSE substitutions END WHERE id IN (' . $idList . ')'
-            );
-        }
+        DB::statement(
+            'UPDATE game_matches SET substitutions = CASE ' . implode(' ', $cases) . ' ELSE substitutions END WHERE id IN (' . $idList . ')'
+        );
     }
 
     /**

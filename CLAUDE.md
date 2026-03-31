@@ -82,7 +82,7 @@ These are non-obvious rules that prevent bugs. Read carefully.
 
 ### Database
 
-- **PostgreSQL in production**, SQLite in dev. **All raw SQL must be PostgreSQL-compatible.** Prefer Eloquent query builder. When raw SQL is unavoidable, branch on `getConnection()->getDriverName()` for `pgsql` vs `sqlite`.
+- **PostgreSQL everywhere** (dev and production via Docker). All raw SQL is PostgreSQL. Prefer Eloquent query builder; no driver branching needed.
 - **UUID primary keys** throughout.
 - **No wall-clock timestamps on game models.** Time follows the game-universe calendar (`current_date` on `Game`). Models should set `public $timestamps = false` and omit `$table->timestamps()` from migrations (except `users`).
 - **`current_date` is forward-looking.** It is updated during match finalization to the `scheduled_date` of the next unplayed match. This means `current_date` always represents the date of the upcoming match the user is about to play, **not** the date of the match just played. The `GameDateAdvanced` event carries `previousDate` (old `current_date` / the match just finalized) and `newDate` (the next match to be played). Listeners that need to act "before the user plays match X" should key on `newDate`, not `previousDate`.

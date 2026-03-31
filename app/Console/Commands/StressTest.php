@@ -256,8 +256,6 @@ class StressTest extends Command
 
     private function reportDbStats(string $label): void
     {
-        $driver = DB::getDriverName();
-
         $stats = [
             'game_players' => GamePlayer::count(),
             'game_matches' => GameMatch::count(),
@@ -266,20 +264,12 @@ class StressTest extends Command
             'games' => Game::count(),
         ];
 
-        // DB size (driver-specific)
         $dbSize = 'N/A';
-        if ($driver === 'sqlite') {
-            $dbPath = config('database.connections.sqlite.database');
-            if ($dbPath && file_exists($dbPath)) {
-                $dbSize = round(filesize($dbPath) / 1024 / 1024, 2) . ' MB';
-            }
-        } elseif ($driver === 'pgsql') {
-            try {
-                $result = DB::selectOne("SELECT pg_size_pretty(pg_database_size(current_database())) as size");
-                $dbSize = $result->size;
-            } catch (\Throwable) {
-                // ignore
-            }
+        try {
+            $result = DB::selectOne("SELECT pg_size_pretty(pg_database_size(current_database())) as size");
+            $dbSize = $result->size;
+        } catch (\Throwable) {
+            // ignore
         }
 
         $this->newLine();

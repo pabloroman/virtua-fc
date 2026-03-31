@@ -37,12 +37,7 @@ class PlayerTemplateAdminService
         $teamsQuery = Team::whereIn('id', $teamIds->keys());
 
         if ($search) {
-            $driver = DB::getDriverName();
-            if ($driver === 'pgsql') {
-                $teamsQuery->whereRaw('LOWER(name) LIKE ?', ['%' . mb_strtolower($search) . '%']);
-            } else {
-                $teamsQuery->where('name', 'LIKE', '%' . $search . '%');
-            }
+            $teamsQuery->whereRaw('LOWER(name) LIKE ?', ['%' . mb_strtolower($search) . '%']);
         }
 
         return $teamsQuery->orderBy('name')
@@ -203,13 +198,7 @@ class PlayerTemplateAdminService
     public function searchPlayers(string $query, int $limit = 20): Collection
     {
         $builder = Player::query();
-        $driver = DB::getDriverName();
-
-        if ($driver === 'pgsql') {
-            $builder->whereRaw('LOWER(name) LIKE ?', ['%' . mb_strtolower($query) . '%']);
-        } else {
-            $builder->where('name', 'LIKE', '%' . $query . '%');
-        }
+        $builder->whereRaw('LOWER(name) LIKE ?', ['%' . mb_strtolower($query) . '%']);
 
         return $builder->limit($limit)->get(['id', 'name', 'date_of_birth']);
     }
@@ -217,13 +206,7 @@ class PlayerTemplateAdminService
     public function searchTeams(string $query, int $limit = 20): Collection
     {
         $builder = Team::query();
-        $driver = DB::getDriverName();
-
-        if ($driver === 'pgsql') {
-            $builder->whereRaw('LOWER(name) LIKE ?', ['%' . mb_strtolower($query) . '%']);
-        } else {
-            $builder->where('name', 'LIKE', '%' . $query . '%');
-        }
+        $builder->whereRaw('LOWER(name) LIKE ?', ['%' . mb_strtolower($query) . '%']);
 
         return $builder->limit($limit)->get(['id', 'name']);
     }
