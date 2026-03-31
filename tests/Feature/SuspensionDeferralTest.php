@@ -402,7 +402,7 @@ class SuspensionDeferralTest extends TestCase
         $userLineup = GamePlayer::with('player')->whereIn('id', $lineup)->get();
 
         $service = app(SubstitutionService::class);
-        $result = $service->loadTeamsForResimulation($match, $this->game, $userLineup, []);
+        $result = $service->loadTeamsForResimulation($match, $this->game, $userLineup, [], 60);
 
         // Suspended player should NOT be in the user's bench
         $homeBenchIds = $result['homeBench']->pluck('id')->toArray();
@@ -490,6 +490,62 @@ class SuspensionDeferralTest extends TestCase
             $suspension->matches_remaining,
             'Copa suspension should NOT be served when the team only played a La Liga match'
         );
+    }
+
+    public function test_resimulation_excludes_future_opponent_auto_substitutions(): void
+    {
+        $this->createSquad($this->playerTeam);
+        $this->createSquad($this->opponentTeam);
+
+        $userLineup = GamePlayer::where('game_id', $this->game->id)
+            ->where('team_id', $this->playerTeam->id)
+            ->limit(11)
+            ->get();
+
+        $opponentLineup = GamePlayer::where('game_id', $this->game->id)
+            ->where('team_id', $this->opponentTeam->id)
+            ->limit(11)
+            ->get();
+
+        $starterToRemove = $opponentLineup->first();
+        $futureSub = GamePlayer::factory()
+            ->forGame($this->game)
+            ->forTeam($this->opponentTeam)
+            ->create(['position' => 'Centre-Forward']);
+
+        $match = GameMatch::factory()->create([
+            'game_id' => $this->game->id,
+            'competition_id' => $this->competition->id,
+            'round_number' => 1,
+            'home_team_id' => $this->playerTeam->id,
+            'away_team_id' => $this->opponentTeam->id,
+            'scheduled_date' => Carbon::parse('2024-08-16'),
+            'played' => true,
+            'home_lineup' => $userLineup->pluck('id')->toArray(),
+            'away_lineup' => $opponentLineup->pluck('id')->toArray(),
+            'substitutions' => [[
+                'team_id' => $this->opponentTeam->id,
+                'player_out_id' => $starterToRemove->id,
+                'player_in_id' => $futureSub->id,
+                'minute' => 76,
+                'auto' => true,
+            ]],
+        ]);
+
+        $result = app(SubstitutionService::class)->loadTeamsForResimulation(
+            $match,
+            $this->game,
+            $userLineup,
+            [],
+            60,
+        );
+
+        $awayPlayerIds = $result['awayPlayers']->pluck('id')->toArray();
+        $awayBenchIds = $result['awayBench']->pluck('id')->toArray();
+
+        $this->assertContains($starterToRemove->id, $awayPlayerIds);
+        $this->assertNotContains($futureSub->id, $awayPlayerIds);
+        $this->assertContains($futureSub->id, $awayBenchIds);
     }
 
     public function test_same_competition_suspension_is_served(): void
