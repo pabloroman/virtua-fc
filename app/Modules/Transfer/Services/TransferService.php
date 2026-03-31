@@ -49,8 +49,8 @@ class TransferService
     /**
      * Offer expiry in days.
      */
-    private const LISTED_OFFER_EXPIRY_DAYS = 7;
-    private const UNSOLICITED_OFFER_EXPIRY_DAYS = 5;
+    private const LISTED_OFFER_EXPIRY_DAYS = 14;
+    private const UNSOLICITED_OFFER_EXPIRY_DAYS = 14;
 
     /**
      * Chance of unsolicited offer per star player per matchday.

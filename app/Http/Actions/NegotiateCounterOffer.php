@@ -58,8 +58,8 @@ class NegotiateCounterOffer
         $buyerName = $offer->offeringTeam->name;
 
         // Extend expiry to prevent mid-negotiation timeout
-        if ($offer->expires_at && $offer->expires_at->diffInDays($game->current_date) < 5) {
-            $offer->update(['expires_at' => $game->current_date->addDays(5)]);
+        if ($offer->expires_at && $offer->expires_at->diffInDays($game->current_date) < 14) {
+            $offer->update(['expires_at' => $game->current_date->addDays(14)]);
         }
 
         // Check for existing negotiation to resume

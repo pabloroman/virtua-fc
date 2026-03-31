@@ -74,7 +74,7 @@ class CounterOfferTest extends TestCase
             'direction' => TransferOffer::DIRECTION_OUTGOING,
             'transfer_fee' => 11_000_000_00, // €11M
             'status' => TransferOffer::STATUS_PENDING,
-            'expires_at' => '2025-08-06',
+            'expires_at' => '2025-08-15',
             'game_date' => '2025-08-01',
         ]);
     }
@@ -275,8 +275,8 @@ class CounterOfferTest extends TestCase
         );
 
         $this->offer->refresh();
-        // Should be extended to 5 days from current_date
-        $this->assertEquals('2025-08-06', $this->offer->expires_at->format('Y-m-d'));
+        // Should be extended to 14 days from current_date
+        $this->assertEquals('2025-08-15', $this->offer->expires_at->format('Y-m-d'));
     }
 
     public function test_cannot_counter_other_users_player(): void

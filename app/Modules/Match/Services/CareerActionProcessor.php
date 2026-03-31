@@ -114,7 +114,7 @@ class CareerActionProcessor
             ->where('status', TransferOffer::STATUS_PENDING)
             ->whereHas('gamePlayer', fn ($q) => $q->where('team_id', $game->team_id))
             ->where('expires_at', '>', $currentDate)
-            ->where('expires_at', '<=', $currentDate->copy()->addDays(2))
+            ->where('expires_at', '<=', $currentDate->copy()->addDays(7))
             ->get();
 
         if ($expiringOffers->isEmpty()) {
