@@ -2293,6 +2293,10 @@ class MatchSimulator
             ];
             $homeIdx++;
 
+            if ($this->hasPenaltyShootoutWinner($homeScore, $awayScore, $i + 1, $i, $maxRounds)) {
+                break;
+            }
+
             $awayKicker = $awayKickers[$awayIdx % count($awayKickers)];
             $awayScored = $this->penaltyScored($awayKicker, $homeGk);
             if ($awayScored) {
@@ -2307,12 +2311,7 @@ class MatchSimulator
             ];
             $awayIdx++;
 
-            // Check if one team has mathematically won
-            $remainingRounds = $maxRounds - $round;
-            if ($homeScore > $awayScore + $remainingRounds) {
-                break;
-            }
-            if ($awayScore > $homeScore + $remainingRounds) {
+            if ($this->hasPenaltyShootoutWinner($homeScore, $awayScore, $i + 1, $i + 1, $maxRounds)) {
                 break;
             }
 
@@ -2369,6 +2368,23 @@ class MatchSimulator
             'awayScore' => $awayScore,
             'kicks' => $kicks,
         ];
+    }
+
+    /**
+     * Check whether a penalty shootout is already decided after the latest kick.
+     */
+    private function hasPenaltyShootoutWinner(
+        int $homeScore,
+        int $awayScore,
+        int $homeTaken,
+        int $awayTaken,
+        int $maxRounds = 5,
+    ): bool {
+        $homeRemaining = max(0, $maxRounds - $homeTaken);
+        $awayRemaining = max(0, $maxRounds - $awayTaken);
+
+        return $homeScore > $awayScore + $awayRemaining
+            || $awayScore > $homeScore + $homeRemaining;
     }
 
     /**
