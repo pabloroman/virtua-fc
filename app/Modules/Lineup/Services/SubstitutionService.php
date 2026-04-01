@@ -42,8 +42,8 @@ class SubstitutionService
         }
 
         // Check substitution window limit
-        $previousWindows = count(array_unique(array_column($previousSubstitutions, 'minute')));
-        if ($previousWindows >= $maxWindows) {
+        $previousWindowMinutes = array_unique(array_column($previousSubstitutions, 'minute'));
+        if (count($previousWindowMinutes) >= $maxWindows && ! in_array($minute, $previousWindowMinutes)) {
             throw new \InvalidArgumentException('game.sub_error_windows_reached');
         }
 
@@ -64,15 +64,16 @@ class SubstitutionService
 
         // Pre-load red-carded player IDs up to this minute (single query instead of N)
         $playerOutIds = array_column($newSubstitutions, 'playerOutId');
+        $playerInIds = array_column($newSubstitutions, 'playerInId');
+        $redCardCheckIds = array_values(array_unique(array_merge($playerOutIds, $playerInIds)));
         $redCardedPlayerIds = MatchEvent::where('game_match_id', $match->id)
-            ->whereIn('game_player_id', $playerOutIds)
+            ->whereIn('game_player_id', $redCardCheckIds)
             ->where('event_type', 'red_card')
             ->where('minute', '<=', $minute)
             ->pluck('game_player_id')
             ->all();
 
         // Pre-load all player-in candidates for the batch (single query instead of N)
-        $playerInIds = array_column($newSubstitutions, 'playerInId');
         $playerInRecords = GamePlayer::where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->whereIn('id', $playerInIds)
@@ -113,6 +114,10 @@ class SubstitutionService
 
             if (in_array($playerInId, $effectiveLineup)) {
                 throw new \InvalidArgumentException('game.sub_error_already_on_pitch');
+            }
+
+            if (in_array($playerInId, $redCardedPlayerIds)) {
+                throw new \InvalidArgumentException('game.sub_error_player_sent_off');
             }
 
             if (in_array($playerInId, $previousSubbedOutIds) || in_array($playerInId, $batchOutIds)) {
@@ -206,6 +211,13 @@ class SubstitutionService
             ->pluck('game_player_id')
             ->all();
 
+        $userRedCardedIds = MatchEvent::where('game_match_id', $match->id)
+            ->where('team_id', $game->team_id)
+            ->where('event_type', 'red_card')
+            ->where('minute', '<=', $minute)
+            ->pluck('game_player_id')
+            ->all();
+
         // Pre-load suspended player IDs for this competition (single query)
         $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($match->competition_id);
 
@@ -228,6 +240,7 @@ class SubstitutionService
         $userBench = $userSquad
             ->reject(fn ($p) => in_array($p->id, $activeLineupIds))
             ->reject(fn ($p) => in_array($p->id, $subbedOutIds))
+            ->reject(fn ($p) => in_array($p->id, $userRedCardedIds))
             ->reject(fn ($p) => $p->isInjured($match->scheduled_date))
             ->reject(fn ($p) => in_array($p->id, $suspendedPlayerIds))
             ->values();
