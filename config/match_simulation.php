@@ -289,39 +289,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Red Card Impact
-    |--------------------------------------------------------------------------
-    |
-    | When a red card occurs during simulation, the match is split into two
-    | periods at the red card minute. The second period recalculates team
-    | strength with the reduced lineup, then applies these modifiers on top.
-    |
-    | Base modifiers represent the general disadvantage of playing with 10 men.
-    | Position modifiers stack on top based on the sent-off player's position
-    | group, reflecting that losing a GK or defender is far more damaging
-    | than losing a forward.
-    |
-    | Example: GK sent off → attack = 0.85 * 0.90 = 0.765,
-    |                         defense = 1.10 * 1.35 = 1.485
-    |          FW sent off → attack = 0.85 * 1.00 = 0.85,
-    |                         defense = 1.10 * 1.00 = 1.10
-    |
-    */
-    'red_card_impact' => [
-        'base_attack_modifier' => 0.85,     // base xG multiplier for the 10-man team's attack
-        'base_defense_modifier' => 1.10,    // base xG multiplier for the opponent facing 10 men
-
-        // Additional multipliers by position group of the sent-off player
-        'position_modifiers' => [
-            'Goalkeeper'  => ['attack' => 0.90, 'defense' => 1.35],  // Catastrophic — outfield player in goal
-            'Defender'    => ['attack' => 0.90, 'defense' => 1.20],  // Severe — defensive structure broken
-            'Midfielder'  => ['attack' => 0.95, 'defense' => 1.05],  // Moderate — balanced impact
-            'Forward'     => ['attack' => 1.00, 'defense' => 1.00],  // Minimal extra — least structural damage
-        ],
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
     | Goalkeeper Quality
     |--------------------------------------------------------------------------
     |

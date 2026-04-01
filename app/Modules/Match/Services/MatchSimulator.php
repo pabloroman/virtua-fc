@@ -1114,8 +1114,10 @@ class MatchSimulator
             $totalStrength += $playerStrength;
         }
 
-        // Average across all players, normalized to 0-1 range
-        return ($totalStrength / $lineup->count()) / 100;
+        // Divide by full squad size (11) so that having fewer players
+        // naturally reduces team strength — a red card's impact emerges
+        // from the missing player's contribution to the sum.
+        return ($totalStrength / 11) / 100;
     }
 
     /**
@@ -1940,24 +1942,6 @@ class MatchSimulator
             $homePlayers2, $awayPlayers2,
         );
 
-        // Apply man-down xG modifiers from config (position-aware)
-        $baseAttack = config('match_simulation.red_card_impact.base_attack_modifier', 0.85);
-        $baseDefense = config('match_simulation.red_card_impact.base_defense_modifier', 1.10);
-        $positionModifiers = config('match_simulation.red_card_impact.position_modifiers', []);
-
-        if ($homePlayers2->count() < $homePlayers->count() && $homeRedCard) {
-            $posGroup = $this->getRedCardPositionGroup($homeRedCard, $homePlayers);
-            $posMod = $positionModifiers[$posGroup] ?? ['attack' => 1.0, 'defense' => 1.0];
-            $homeXG2 *= $baseAttack * $posMod['attack'];
-            $awayXG2 *= $baseDefense * $posMod['defense'];
-        }
-        if ($awayPlayers2->count() < $awayPlayers->count() && $awayRedCard) {
-            $posGroup = $this->getRedCardPositionGroup($awayRedCard, $awayPlayers);
-            $posMod = $positionModifiers[$posGroup] ?? ['attack' => 1.0, 'defense' => 1.0];
-            $awayXG2 *= $baseAttack * $posMod['attack'];
-            $homeXG2 *= $baseDefense * $posMod['defense'];
-        }
-
         $homeXG2 += $this->calculateStrikerBonus($homePlayers2) * $fraction2;
         $awayXG2 += $this->calculateStrikerBonus($awayPlayers2) * $fraction2;
 
@@ -1982,16 +1966,6 @@ class MatchSimulator
         }
 
         return [$homeScore, $awayScore, $goalEvents];
-    }
-
-    /**
-     * Resolve the position group of a red-carded player from the original lineup.
-     */
-    private function getRedCardPositionGroup(MatchEventData $redCard, Collection $originalPlayers): string
-    {
-        $player = $originalPlayers->firstWhere('id', $redCard->gamePlayerId);
-
-        return $player ? PositionMapper::getPositionGroup($player->position) : 'Midfielder';
     }
 
     /**

@@ -52,9 +52,13 @@ class RedCardSimulationTest extends TestCase
         // 10-player strength should NOT be the 0.30 amateur fallback
         $this->assertGreaterThan(0.30, $reducedStrength, 'A 10-player lineup should not use the amateur fallback');
 
-        // With identical player abilities, per-player average should be similar
-        $this->assertEqualsWithDelta($fullStrength, $reducedStrength, 0.05,
-            'A 10-player lineup of identical players should have similar per-player strength');
+        // With fixed divisor of 11, losing a player should reduce strength by ~1/11
+        $this->assertLessThan($fullStrength, $reducedStrength,
+            'A 10-player lineup should have lower strength than a full 11');
+        $expectedRatio = 10 / 11;
+        $actualRatio = $reducedStrength / $fullStrength;
+        $this->assertEqualsWithDelta($expectedRatio, $actualRatio, 0.02,
+            "Strength ratio should be close to 10/11 ({$actualRatio} vs {$expectedRatio})");
     }
 
     public function test_severely_depleted_lineup_uses_fallback(): void
@@ -296,25 +300,32 @@ class RedCardSimulationTest extends TestCase
             "Away team should score more vs GK red card ({$gkAvg}) than vs FW red card ({$fwAvg})");
     }
 
-    public function test_defender_red_card_has_larger_impact_than_forward_red_card(): void
+    public function test_losing_higher_rated_player_has_larger_impact(): void
     {
         $game = Game::factory()->create(['current_date' => '2025-10-01']);
         $homeTeam = Team::factory()->create();
         $awayTeam = Team::factory()->create();
 
+        // Create lineup where the CB is 90-rated and the FW is 55-rated
+        // Losing the stronger CB should hurt more than losing the weaker FW
         $homePlayers = $this->createLineup($game, $homeTeam, 11, 75);
         $awayPlayers = $this->createLineup($game, $awayTeam, 11, 75);
+
+        $cbPlayer = $homePlayers->firstWhere('position', 'Centre-Back');
+        $cbPlayer->update(['game_technical_ability' => 90, 'game_physical_ability' => 90]);
+        $cbPlayer->refresh()->setRelation('game', $game);
+
+        $fwPlayer = $homePlayers->firstWhere('position', 'Centre-Forward');
+        $fwPlayer->update(['game_technical_ability' => 55, 'game_physical_ability' => 55]);
+        $fwPlayer->refresh()->setRelation('game', $game);
 
         $homeStrength = $this->calculateTeamStrength->invoke($this->simulator, $homePlayers);
         $awayStrength = $this->calculateTeamStrength->invoke($this->simulator, $awayPlayers);
 
-        $cbPlayer = $homePlayers->firstWhere('position', 'Centre-Back');
-        $fwPlayer = $homePlayers->firstWhere('position', 'Centre-Forward');
-
         $cbRedCard = MatchEventData::redCard($homeTeam->id, $cbPlayer->id, 10, false);
         $fwRedCard = MatchEventData::redCard($homeTeam->id, $fwPlayer->id, 10, false);
 
-        $iterations = 500;
+        $iterations = 800;
         $cbAwayGoals = 0;
         $fwAwayGoals = 0;
 
@@ -355,8 +366,9 @@ class RedCardSimulationTest extends TestCase
         $cbAvg = $cbAwayGoals / $iterations;
         $fwAvg = $fwAwayGoals / $iterations;
 
+        // Losing the 90-rated CB hurts the team average more than losing the 55-rated FW
         $this->assertGreaterThan($fwAvg, $cbAvg,
-            "Away team should score more vs CB red card ({$cbAvg}) than vs FW red card ({$fwAvg})");
+            "Away team should score more vs high-rated CB red card ({$cbAvg}) than vs low-rated FW red card ({$fwAvg})");
     }
 
     public function test_reactive_substitution_after_defender_red_card(): void
