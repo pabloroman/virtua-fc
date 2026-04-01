@@ -122,6 +122,7 @@ class AISubstitutionService
      * @param  int  $subsInWindow  How many subs to make in this window
      * @param  int  $goalDifference  Positive = winning, negative = losing
      * @param  array<string>  $yellowCardPlayerIds  Players on a yellow card
+     * @param  array<string, int>  $entryMinutes  Minute each player entered the pitch
      * @param  float  $tacticalDrainMultiplier  Energy drain multiplier from tactics
      * @param  Carbon  $currentDate  Game's current date (for age calculations)
      * @return array<array{player_out: GamePlayer, player_in: GamePlayer}>
@@ -133,6 +134,7 @@ class AISubstitutionService
         int $subsInWindow,
         int $goalDifference,
         array $yellowCardPlayerIds,
+        array $entryMinutes,
         float $tacticalDrainMultiplier,
         Carbon $currentDate,
     ): array {
@@ -146,6 +148,7 @@ class AISubstitutionService
         $substitutions = [];
         $availableBench = $bench->values();
         $currentLineup = $lineup->values();
+        $currentEntryMinutes = $entryMinutes;
 
         for ($i = 0; $i < $subsInWindow; $i++) {
             if ($availableBench->isEmpty()) {
@@ -154,7 +157,7 @@ class AISubstitutionService
 
             // Score each lineup player for substitution urgency
             $candidates = $this->scoreSubstitutionUrgency(
-                $currentLineup, $windowMinute, $yellowCardPlayerIds,
+                $currentLineup, $windowMinute, $yellowCardPlayerIds, $currentEntryMinutes,
                 $energyThreshold, $yellowCardWeight, $tacticalDrainMultiplier,
                 $currentDate,
             );
@@ -181,6 +184,8 @@ class AISubstitutionService
             $currentLineup = $currentLineup->reject(fn ($p) => $p->id === $playerOut->id)
                 ->push($playerIn)->values();
             $availableBench = $availableBench->reject(fn ($p) => $p->id === $playerIn->id)->values();
+            unset($currentEntryMinutes[$playerOut->id]);
+            $currentEntryMinutes[$playerIn->id] = $windowMinute;
 
             // Remove subbed-out player from yellow card list (no longer on pitch)
             $yellowCardPlayerIds = array_values(array_filter(
@@ -201,6 +206,7 @@ class AISubstitutionService
         Collection $lineup,
         int $minute,
         array $yellowCardPlayerIds,
+        array $entryMinutes,
         float $energyThreshold,
         float $yellowCardWeight,
         float $tacticalDrainMultiplier,
@@ -208,13 +214,14 @@ class AISubstitutionService
     ): Collection {
         return $lineup
             ->filter(fn (GamePlayer $p) => $p->position !== 'Goalkeeper')
-            ->map(function (GamePlayer $player) use ($minute, $yellowCardPlayerIds, $energyThreshold, $yellowCardWeight, $tacticalDrainMultiplier, $currentDate) {
+            ->map(function (GamePlayer $player) use ($minute, $yellowCardPlayerIds, $entryMinutes, $energyThreshold, $yellowCardWeight, $tacticalDrainMultiplier, $currentDate) {
+                $minuteEntered = $entryMinutes[$player->id] ?? 0;
                 $energy = EnergyCalculator::energyAtMinute(
                     $player->physical_ability,
                     $player->age($currentDate),
                     false,
                     $minute,
-                    0, // started from minute 0
+                    $minuteEntered,
                     $tacticalDrainMultiplier,
                 );
 
@@ -224,6 +231,17 @@ class AISubstitutionService
                 // Bonus urgency when below energy threshold
                 if ($energy < $energyThreshold) {
                     $urgency += 0.2;
+                }
+
+                // Recently-entered players should be very unlikely to be hooked
+                // again straight away, but not completely forbidden.
+                $recentSubWindow = (int) ($this->config['recent_sub_protection_minutes'] ?? 12);
+                $recentSubPenalty = (float) ($this->config['recent_sub_max_penalty'] ?? 0.35);
+                if ($minuteEntered > 0 && $recentSubWindow > 0) {
+                    $minutesSinceEntry = max(0, $minute - $minuteEntered);
+                    if ($minutesSinceEntry < $recentSubWindow) {
+                        $urgency -= $recentSubPenalty * (($recentSubWindow - $minutesSinceEntry) / $recentSubWindow);
+                    }
                 }
 
                 // Yellow card risk

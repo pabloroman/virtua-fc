@@ -456,9 +456,11 @@ class MatchdayOrchestrator
 
         $lineupIds = $match->$lineupField ?? [];
         $teamPlayers = $allPlayers->get($match->$teamIdField, collect());
+        $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($match->competition_id);
 
         return $teamPlayers
             ->reject(fn ($player) => in_array($player->id, $lineupIds))
+            ->reject(fn ($player) => in_array($player->id, $suspendedPlayerIds))
             ->reject(fn ($player) => $player->isInjured($game->current_date))
             ->values();
     }

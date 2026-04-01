@@ -267,8 +267,8 @@ class MatchSimulator
         $existingYellowPlayerIds = [];
         $homeSubsUsed = 0;
         $awaySubsUsed = 0;
-        $homeWindowsUsed = 0;
-        $awayWindowsUsed = 0;
+        $homeWindowMinutes = [];
+        $awayWindowMinutes = [];
         $maxWindows = SubstitutionService::MAX_WINDOWS;
         $currentDate = $game?->current_date ?? now();
 
@@ -296,6 +296,8 @@ class MatchSimulator
                 matchSeed: $matchSeed . ':' . $splitMinute,
                 homeExistingSubstitutions: $homeSubsUsed,
                 awayExistingSubstitutions: $awaySubsUsed,
+                homeExistingWindowsUsed: count($homeWindowMinutes),
+                awayExistingWindowsUsed: count($awayWindowMinutes),
                 preservePerformance: true,
                 toMinute: $splitMinute,
             );
@@ -317,12 +319,12 @@ class MatchSimulator
                     if ($event->teamId === $homeTeam->id) {
                         $this->trackInjuryAutoSub(
                             $event, $homePlayers, $homeBenchPlayers,
-                            $homeEntryMinutes, $homeSubsUsed, $homeWindowsUsed,
+                            $homeEntryMinutes, $homeSubsUsed, $homeWindowMinutes,
                         );
                     } else {
                         $this->trackInjuryAutoSub(
                             $event, $awayPlayers, $awayBenchPlayers,
-                            $awayEntryMinutes, $awaySubsUsed, $awayWindowsUsed,
+                            $awayEntryMinutes, $awaySubsUsed, $awayWindowMinutes,
                         );
                     }
                 }
@@ -344,7 +346,7 @@ class MatchSimulator
             $this->applyTeamAISubs(
                 $homeWindows, $splitMinute, $homeTeam->id,
                 $homePlayers, $homeBenchPlayers, $homeEntryMinutes,
-                $homeSubsUsed, $homeWindowsUsed, $maxSubs, $maxWindows,
+                $homeSubsUsed, $homeWindowMinutes, $maxSubs, $maxWindows,
                 $goalDifference, $existingYellowPlayerIds, $homeTacticalDrain,
                 $currentDate, $allEvents,
             );
@@ -352,7 +354,7 @@ class MatchSimulator
             $this->applyTeamAISubs(
                 $awayWindows, $splitMinute, $awayTeam->id,
                 $awayPlayers, $awayBenchPlayers, $awayEntryMinutes,
-                $awaySubsUsed, $awayWindowsUsed, $maxSubs, $maxWindows,
+                $awaySubsUsed, $awayWindowMinutes, $maxSubs, $maxWindows,
                 -$goalDifference, $existingYellowPlayerIds, $awayTacticalDrain,
                 $currentDate, $allEvents,
             );
@@ -383,6 +385,8 @@ class MatchSimulator
             matchSeed: $matchSeed . ':final',
             homeExistingSubstitutions: $homeSubsUsed,
             awayExistingSubstitutions: $awaySubsUsed,
+            homeExistingWindowsUsed: count($homeWindowMinutes),
+            awayExistingWindowsUsed: count($awayWindowMinutes),
             preservePerformance: true,
         );
 
@@ -412,10 +416,10 @@ class MatchSimulator
         ?Collection &$benchPlayers,
         array &$entryMinutes,
         int &$subsUsed,
-        int &$windowsUsed,
+        array &$windowMinutes,
     ): void {
         $subsUsed++;
-        $windowsUsed++;
+        $this->registerSubstitutionWindow($windowMinutes, $event->minute);
         $players = $players->reject(fn ($p) => $p->id === $event->gamePlayerId);
         if ($benchPlayers !== null) {
             $subIn = $benchPlayers->firstWhere('id', $event->metadata['player_in_id']);
@@ -439,7 +443,7 @@ class MatchSimulator
         ?Collection &$benchPlayers,
         array &$entryMinutes,
         int &$subsUsed,
-        int &$windowsUsed,
+        array &$windowMinutes,
         int $maxSubs,
         int $maxWindows,
         int $goalDifference,
@@ -449,7 +453,7 @@ class MatchSimulator
         Collection $allEvents,
     ): void {
         if (! isset($windows[$splitMinute]) || $benchPlayers === null
-            || $subsUsed >= $maxSubs || $windowsUsed >= $maxWindows) {
+            || $subsUsed >= $maxSubs || count($windowMinutes) >= $maxWindows) {
             return;
         }
 
@@ -457,11 +461,11 @@ class MatchSimulator
         $subs = $this->aiSubstitutionService->chooseSubstitutions(
             $players, $benchPlayers,
             $splitMinute, $subsInWindow, $goalDifference,
-            $yellowCardPlayerIds, $tacticalDrain, $currentDate,
+            $yellowCardPlayerIds, $entryMinutes, $tacticalDrain, $currentDate,
         );
 
         if (count($subs) > 0) {
-            $windowsUsed++;
+            $this->registerSubstitutionWindow($windowMinutes, $splitMinute);
         }
 
         foreach ($subs as $sub) {
@@ -677,6 +681,8 @@ class MatchSimulator
                 matchSeed: $matchSeed,
                 homeExistingSubstitutions: $homeExistingSubstitutions,
                 awayExistingSubstitutions: $awayExistingSubstitutions,
+                homeExistingWindowsUsed: $homeWindowsUsed,
+                awayExistingWindowsUsed: $awayWindowsUsed,
             );
         }
 
@@ -689,6 +695,8 @@ class MatchSimulator
         $currentMinute = $fromMinute;
         $homeSubsUsed = $homeExistingSubstitutions;
         $awaySubsUsed = $awayExistingSubstitutions;
+        $homeWindowMinutes = $this->seedWindowMinutes($homeWindowsUsed);
+        $awayWindowMinutes = $this->seedWindowMinutes($awayWindowsUsed);
         $currentDate = $game?->current_date ?? now();
 
         foreach ($splitMinutes as $splitMinute) {
@@ -714,6 +722,8 @@ class MatchSimulator
                 matchSeed: $matchSeed . ':' . $splitMinute,
                 homeExistingSubstitutions: $homeSubsUsed,
                 awayExistingSubstitutions: $awaySubsUsed,
+                homeExistingWindowsUsed: count($homeWindowMinutes),
+                awayExistingWindowsUsed: count($awayWindowMinutes),
                 preservePerformance: true,
                 toMinute: $splitMinute,
             );
@@ -735,12 +745,12 @@ class MatchSimulator
                     if ($event->teamId === $homeTeam->id) {
                         $this->trackInjuryAutoSub(
                             $event, $homePlayers, $homeBenchPlayers,
-                            $homeEntryMinutes, $homeSubsUsed, $homeWindowsUsed,
+                            $homeEntryMinutes, $homeSubsUsed, $homeWindowMinutes,
                         );
                     } else {
                         $this->trackInjuryAutoSub(
                             $event, $awayPlayers, $awayBenchPlayers,
-                            $awayEntryMinutes, $awaySubsUsed, $awayWindowsUsed,
+                            $awayEntryMinutes, $awaySubsUsed, $awayWindowMinutes,
                         );
                     }
                 }
@@ -752,7 +762,7 @@ class MatchSimulator
             $this->applyTeamAISubs(
                 $homeWindows, $splitMinute, $homeTeam->id,
                 $homePlayers, $homeBenchPlayers, $homeEntryMinutes,
-                $homeSubsUsed, $homeWindowsUsed, $maxSubs, $maxWindows,
+                $homeSubsUsed, $homeWindowMinutes, $maxSubs, $maxWindows,
                 $goalDifference, $existingYellowPlayerIds, $homeTacticalDrain,
                 $currentDate, $allEvents,
             );
@@ -760,7 +770,7 @@ class MatchSimulator
             $this->applyTeamAISubs(
                 $awayWindows, $splitMinute, $awayTeam->id,
                 $awayPlayers, $awayBenchPlayers, $awayEntryMinutes,
-                $awaySubsUsed, $awayWindowsUsed, $maxSubs, $maxWindows,
+                $awaySubsUsed, $awayWindowMinutes, $maxSubs, $maxWindows,
                 -$goalDifference, $existingYellowPlayerIds, $awayTacticalDrain,
                 $currentDate, $allEvents,
             );
@@ -791,6 +801,8 @@ class MatchSimulator
             matchSeed: $matchSeed . ':final',
             homeExistingSubstitutions: $homeSubsUsed,
             awayExistingSubstitutions: $awaySubsUsed,
+            homeExistingWindowsUsed: count($homeWindowMinutes),
+            awayExistingWindowsUsed: count($awayWindowMinutes),
             preservePerformance: true,
         );
 
@@ -1533,6 +1545,8 @@ class MatchSimulator
         string $matchSeed = '',
         int $homeExistingSubstitutions = 0,
         int $awayExistingSubstitutions = 0,
+        int $homeExistingWindowsUsed = 0,
+        int $awayExistingWindowsUsed = 0,
         bool $neutralVenue = false,
         bool $preservePerformance = false,
         int $toMinute = 93,
@@ -1627,13 +1641,22 @@ class MatchSimulator
             $maxSubs = $fromMinute > 90
                 ? SubstitutionService::MAX_ET_SUBSTITUTIONS
                 : SubstitutionService::MAX_SUBSTITUTIONS;
+            $maxWindows = $fromMinute > 90
+                ? SubstitutionService::MAX_ET_WINDOWS
+                : SubstitutionService::MAX_WINDOWS;
 
             if (! in_array($homeTeam->id, $existingInjuryTeamIds) && $fromMinute + 1 <= $injuryMaxMinute) {
                 $homeInjuryEvents = $this->generateInjuryEventsInRange($homeTeam->id, $homePlayersForInjury, $fromMinute + 1, $injuryMaxMinute, $game);
                 $events = $events->merge($homeInjuryEvents);
-                if ($homeInjuryEvents->isNotEmpty() && $homeBenchPlayers !== null && $homeBenchPlayers->isNotEmpty() && $homeExistingSubstitutions < $maxSubs) {
+                if (
+                    $homeInjuryEvents->isNotEmpty()
+                    && $homeBenchPlayers !== null
+                    && $homeBenchPlayers->isNotEmpty()
+                    && $homeExistingSubstitutions < $maxSubs
+                    && $homeExistingWindowsUsed < $maxWindows
+                ) {
                     [$subEvents, $homePlayers, $homeBenchPlayers] = $this->processInjurySubstitution(
-                        $homeTeam->id, $homeInjuryEvents, $homePlayers, $homeBenchPlayers
+                        $homeTeam->id, $homeInjuryEvents, $homePlayers, $homeBenchPlayers, $homeEntryMinutes, $toMinute
                     );
                     $events = $events->merge($subEvents);
                     if ($subEvents->isNotEmpty()) {
@@ -1644,9 +1667,15 @@ class MatchSimulator
             if (! in_array($awayTeam->id, $existingInjuryTeamIds) && $fromMinute + 1 <= $injuryMaxMinute) {
                 $awayInjuryEvents = $this->generateInjuryEventsInRange($awayTeam->id, $awayPlayersForInjury, $fromMinute + 1, $injuryMaxMinute, $game);
                 $events = $events->merge($awayInjuryEvents);
-                if ($awayInjuryEvents->isNotEmpty() && $awayBenchPlayers !== null && $awayBenchPlayers->isNotEmpty() && $awayExistingSubstitutions < $maxSubs) {
+                if (
+                    $awayInjuryEvents->isNotEmpty()
+                    && $awayBenchPlayers !== null
+                    && $awayBenchPlayers->isNotEmpty()
+                    && $awayExistingSubstitutions < $maxSubs
+                    && $awayExistingWindowsUsed < $maxWindows
+                ) {
                     [$subEvents, $awayPlayers, $awayBenchPlayers] = $this->processInjurySubstitution(
-                        $awayTeam->id, $awayInjuryEvents, $awayPlayers, $awayBenchPlayers
+                        $awayTeam->id, $awayInjuryEvents, $awayPlayers, $awayBenchPlayers, $awayEntryMinutes, $toMinute
                     );
                     $events = $events->merge($subEvents);
                     if ($subEvents->isNotEmpty()) {
@@ -1908,6 +1937,8 @@ class MatchSimulator
         Collection $injuryEvents,
         Collection $lineup,
         Collection $bench,
+        array &$entryMinutes,
+        int $periodEndMinute = 93,
     ): array {
         $subEvents = collect();
 
@@ -1927,8 +1958,9 @@ class MatchSimulator
             return [$subEvents, $lineup, $bench];
         }
 
-        // Create substitution event at injury minute + 1
-        $subMinute = min($injury->minute + 1, 93);
+        // Clamp the replacement to the current simulation window so segmented
+        // simulations do not apply a future substitution too early.
+        $subMinute = min($injury->minute + 1, $periodEndMinute);
         $subEvents->push(MatchEventData::substitution($teamId, $injuredPlayer->id, $replacement->id, $subMinute));
 
         // Update lineup: remove injured, add replacement
@@ -1936,8 +1968,39 @@ class MatchSimulator
 
         // Update bench: remove replacement
         $bench = $bench->reject(fn ($p) => $p->id === $replacement->id)->values();
+        unset($entryMinutes[$injuredPlayer->id]);
+        $entryMinutes[$replacement->id] = $subMinute;
 
         return [$subEvents, $lineup, $bench];
+    }
+
+    /**
+     * Seed already-used windows so future substitutions still respect the limit.
+     *
+     * @return array<int>
+     */
+    private function seedWindowMinutes(int $usedWindows): array
+    {
+        if ($usedWindows <= 0) {
+            return [];
+        }
+
+        return array_map(
+            fn (int $index) => -$index,
+            range(1, $usedWindows),
+        );
+    }
+
+    /**
+     * Register a substitution window minute only once.
+     *
+     * @param  array<int>  $windowMinutes
+     */
+    private function registerSubstitutionWindow(array &$windowMinutes, int $minute): void
+    {
+        if (! in_array($minute, $windowMinutes, true)) {
+            $windowMinutes[] = $minute;
+        }
     }
 
     /**
