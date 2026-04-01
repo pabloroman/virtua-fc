@@ -24,7 +24,7 @@ class AIFreeAgentSigningProcessor implements SeasonProcessor
 
     public function priority(): int
     {
-        return 8;
+        return 45;
     }
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData

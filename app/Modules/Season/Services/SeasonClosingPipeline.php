@@ -2,8 +2,10 @@
 
 namespace App\Modules\Season\Services;
 
+use App\Modules\Manager\Processors\TrophyRecordingProcessor;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
+use App\Modules\Season\Processors\AIFreeAgentSigningProcessor;
 use App\Modules\Season\Processors\ContractExpirationProcessor;
 use App\Modules\Season\Processors\ContractRenewalProcessor;
 use App\Modules\Season\Processors\LeaderboardStatsProcessor;
@@ -16,12 +18,10 @@ use App\Modules\Season\Processors\ReputationUpdateProcessor;
 use App\Modules\Season\Processors\SeasonArchiveProcessor;
 use App\Modules\Season\Processors\SeasonSettlementProcessor;
 use App\Modules\Season\Processors\SeasonSimulationProcessor;
-use App\Modules\Season\Processors\AIFreeAgentSigningProcessor;
 use App\Modules\Season\Processors\SquadReplenishmentProcessor;
 use App\Modules\Season\Processors\StatsResetProcessor;
 use App\Modules\Season\Processors\SupercupQualificationProcessor;
 use App\Modules\Season\Processors\TransferMarketResetProcessor;
-use App\Modules\Manager\Processors\TrophyRecordingProcessor;
 use App\Modules\Season\Processors\UefaQualificationProcessor;
 use App\Modules\Season\Processors\YouthAcademyClosingProcessor;
 use App\Models\Game;
@@ -38,11 +38,12 @@ class SeasonClosingPipeline
     private array $processors = [];
 
     public function __construct(
-        SeasonArchiveProcessor $seasonArchive,
-        LeaderboardStatsProcessor $leaderboardStats,
         LoanReturnProcessor $loanReturn,
-        PreContractTransferProcessor $preContractTransfer,
+        TrophyRecordingProcessor $trophyRecording,
+        LeaderboardStatsProcessor $leaderboardStats,
         ContractExpirationProcessor $contractExpiration,
+        SeasonArchiveProcessor $seasonArchive,
+        PreContractTransferProcessor $preContractTransfer,
         ContractRenewalProcessor $contractRenewal,
         PlayerRetirementProcessor $playerRetirement,
         AIFreeAgentSigningProcessor $aiFreeAgentSigning,
@@ -52,19 +53,19 @@ class SeasonClosingPipeline
         StatsResetProcessor $statsReset,
         TransferMarketResetProcessor $transferMarketReset,
         SeasonSimulationProcessor $seasonSimulation,
-        TrophyRecordingProcessor $trophyRecording,
         SupercupQualificationProcessor $supercupQualification,
         PromotionRelegationProcessor $promotionRelegation,
         ReputationUpdateProcessor $reputationUpdate,
-        UefaQualificationProcessor $uefaQualification,
         YouthAcademyClosingProcessor $youthAcademyClosing,
+        UefaQualificationProcessor $uefaQualification,
     ) {
         $this->processors = [
-            $seasonArchive,
-            $leaderboardStats,
             $loanReturn,
-            $preContractTransfer,
+            $trophyRecording,
+            $leaderboardStats,
             $contractExpiration,
+            $seasonArchive,
+            $preContractTransfer,
             $contractRenewal,
             $playerRetirement,
             $aiFreeAgentSigning,
@@ -74,12 +75,11 @@ class SeasonClosingPipeline
             $statsReset,
             $transferMarketReset,
             $seasonSimulation,
-            $trophyRecording,
             $supercupQualification,
             $promotionRelegation,
             $reputationUpdate,
-            $uefaQualification,
             $youthAcademyClosing,
+            $uefaQualification,
         ];
 
         usort($this->processors, fn ($a, $b) => $a->priority() <=> $b->priority());
@@ -107,6 +107,10 @@ class SeasonClosingPipeline
                 continue;
             }
 
+            $processorName = class_basename($processor);
+            $start = microtime(true);
+            Log::info("[SeasonClosing] Starting {$processorName} (priority {$processor->priority()})");
+
             try {
                 $data = DB::transaction(fn () => $processor->process($game, $data));
             } catch (\Throwable $e) {
@@ -118,6 +122,9 @@ class SeasonClosingPipeline
                 ]);
                 throw $e;
             }
+
+            $elapsed = round((microtime(true) - $start) * 1000);
+            Log::info("[SeasonClosing] Finished {$processorName} in {$elapsed}ms");
 
             // Checkpoint: persist completed step and DTO for crash recovery
             $game->updateQuietly([

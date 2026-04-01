@@ -20,7 +20,7 @@ class PreContractTransferProcessor implements SeasonProcessor
 
     public function priority(): int
     {
-        return 5;
+        return 30;
     }
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData

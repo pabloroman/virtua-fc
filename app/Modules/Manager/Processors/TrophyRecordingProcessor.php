@@ -19,7 +19,7 @@ class TrophyRecordingProcessor implements SeasonProcessor
 {
     public function priority(): int
     {
-        return 4;
+        return 10;
     }
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData

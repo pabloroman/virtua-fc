@@ -15,7 +15,7 @@ class LeaderboardStatsProcessor implements SeasonProcessor
 {
     public function priority(): int
     {
-        return 4;
+        return 15;
     }
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData

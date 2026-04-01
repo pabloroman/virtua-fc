@@ -20,7 +20,7 @@ class YouthAcademyClosingProcessor implements SeasonProcessor
 
     public function priority(): int
     {
-        return 55;
+        return 95;
     }
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData

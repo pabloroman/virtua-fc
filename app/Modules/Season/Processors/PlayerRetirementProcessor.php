@@ -29,7 +29,7 @@ class PlayerRetirementProcessor implements SeasonProcessor
 
     public function priority(): int
     {
-        return 7;
+        return 40;
     }
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData

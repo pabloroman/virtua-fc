@@ -24,7 +24,7 @@ class PlayerDevelopmentProcessor implements SeasonProcessor
 
     public function priority(): int
     {
-        return 10;
+        return 55;
     }
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
