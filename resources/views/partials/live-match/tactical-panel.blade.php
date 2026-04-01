@@ -252,9 +252,6 @@
                                                               :class="getPositionBadgeColor(player.positionGroup)">
                                                             <span class="skew-x-12" x-text="player.positionAbbr"></span>
                                                         </span>
-                                                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-semibold shrink-0"
-                                                              :class="getOvrBadgeClasses(player.overallScore)"
-                                                              x-text="player.overallScore"></span>
                                                         <span class="flex-1 truncate font-medium" x-text="player.name"></span>
                                                         {{-- Yellow card indicator --}}
                                                         <span x-show="isPlayerYellowCarded(player.id)"
@@ -295,10 +292,6 @@
                                                         </span>
                                                         <span class="flex-1 truncate font-medium" x-text="player.name"></span>
                                                         {{-- OVR badge with fitness/morale tooltip --}}
-                                                        <span class="ml-auto inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-semibold shrink-0"
-                                                              :class="getOvrBadgeClasses(player.overallScore)"
-                                                              :x-tooltip="'{{ __('game.ovr_fitness') }}: ' + player.fitness + ' · {{ __('game.ovr_morale') }}: ' + player.morale"
-                                                              x-text="player.overallScore"></span>
                                                     </button>
                                                 </template>
                                             </div>

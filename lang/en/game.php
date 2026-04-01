@@ -274,6 +274,8 @@ return [
     'live_stat_injuries' => 'Injuries',
     'live_stat_subs' => 'Substitutions',
     'live_lineup_starters' => 'Starting XI',
+    'live_lineup_bench' => 'Bench',
+    'live_lineup_no_bench' => 'No bench available',
     'live_injury_alert' => 'has been injured. Make a substitution.',
     'player_booked' => 'Booked',
     'ovr_fitness' => 'Fitness',

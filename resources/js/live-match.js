@@ -63,6 +63,10 @@ export default function liveMatch(config) {
         // Substitution config
         lineupPlayers: config.lineupPlayers || [],
         benchPlayers: config.benchPlayers || [],
+        homeLineup: config.homeLineup || [],
+        awayLineup: config.awayLineup || [],
+        homeBench: config.homeBench || [],
+        awayBench: config.awayBench || [],
         tacticalActionsUrl: config.tacticalActionsUrl || '',
         csrfToken: config.csrfToken || '',
         maxSubstitutions: config.maxSubstitutions || 5,
@@ -1010,6 +1014,174 @@ export default function liveMatch(config) {
             if (value >= 60) return 'rating-average';
             if (value >= 50) return 'rating-below';
             return 'rating-poor';
+        },
+
+        getLineupPositionClass(group) {
+            switch (group) {
+                case 'GK':
+                case 'Goalkeeper':
+                    return 'bg-amber-600';
+                case 'DEF':
+                case 'Defender':
+                    return 'bg-blue-600';
+                case 'MID':
+                case 'Midfielder':
+                    return 'bg-green-600';
+                case 'FWD':
+                case 'Forward':
+                    return 'bg-red-600';
+                default:
+                    return 'bg-surface-600';
+            }
+        },
+
+        createLineupSummaryPlayer(player) {
+            return {
+                ...player,
+                summaryKey: player.id ?? `${player.name}:${player.positionAbbr ?? ''}`,
+                goals: 0,
+                ownGoals: 0,
+                yellowCards: 0,
+                directRed: false,
+                secondYellow: false,
+                injuryMinute: null,
+                entryMinute: null,
+                offMinute: null,
+            };
+        },
+
+        findLineupSummaryPlayer(playersById, playersByName, playerId, playerName) {
+            if (playerId !== null && playerId !== undefined) {
+                const playerById = playersById.get(String(playerId));
+                if (playerById) {
+                    return playerById;
+                }
+            }
+
+            if (!playerName) {
+                return null;
+            }
+
+            return playersByName.get(playerName) ?? null;
+        },
+
+        getTeamLineupSummary(side) {
+            const starters = (side === 'home' ? this.homeLineup : this.awayLineup)
+                .map(player => this.createLineupSummaryPlayer(player));
+            const bench = (side === 'home' ? this.homeBench : this.awayBench)
+                .map(player => this.createLineupSummaryPlayer(player));
+
+            const playersById = new Map();
+            const playersByName = new Map();
+            for (const player of [...starters, ...bench]) {
+                if (player.id !== null && player.id !== undefined) {
+                    playersById.set(String(player.id), player);
+                }
+                if (player.name && !playersByName.has(player.name)) {
+                    playersByName.set(player.name, player);
+                }
+            }
+
+            for (const event of this.revealedEvents) {
+                if (!event) continue;
+
+                if (event.type === 'substitution') {
+                    const playerOut = this.findLineupSummaryPlayer(
+                        playersById,
+                        playersByName,
+                        event.gamePlayerId,
+                        event.playerName,
+                    );
+                    if (playerOut && playerOut.offMinute === null) {
+                        playerOut.offMinute = event.minute;
+                    }
+
+                    const playerInId = event.metadata?.player_in_id;
+                    const playerIn = this.findLineupSummaryPlayer(
+                        playersById,
+                        playersByName,
+                        playerInId,
+                        event.playerInName,
+                    );
+                    if (playerIn && playerIn.entryMinute === null) {
+                        playerIn.entryMinute = event.minute;
+                    }
+
+                    continue;
+                }
+
+                const player = this.findLineupSummaryPlayer(
+                    playersById,
+                    playersByName,
+                    event.gamePlayerId,
+                    event.playerName,
+                );
+                if (!player) continue;
+
+                switch (event.type) {
+                    case 'goal':
+                        player.goals += 1;
+                        break;
+                    case 'own_goal':
+                        player.ownGoals += 1;
+                        break;
+                    case 'yellow_card':
+                        player.yellowCards += 1;
+                        break;
+                    case 'red_card':
+                        if (event.metadata?.second_yellow) {
+                            player.secondYellow = true;
+                            player.yellowCards = Math.max(player.yellowCards, 2);
+                        } else {
+                            player.directRed = true;
+                        }
+                        break;
+                    case 'injury':
+                        if (player.injuryMinute === null) {
+                            player.injuryMinute = event.minute;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            const sortByBenchState = (a, b) => {
+                if (a.entryMinute !== b.entryMinute) {
+                    return (a.entryMinute ?? Number.MAX_SAFE_INTEGER) - (b.entryMinute ?? Number.MAX_SAFE_INTEGER);
+                }
+                if (a.positionSort !== b.positionSort) {
+                    return a.positionSort - b.positionSort;
+                }
+                return a.name.localeCompare(b.name);
+            };
+
+            return {
+                starters,
+                usedBench: bench
+                    .filter(player => player.entryMinute !== null)
+                    .sort(sortByBenchState),
+                unusedBench: bench
+                    .filter(player => player.entryMinute === null)
+                    .sort((a, b) => {
+                        if (a.positionSort !== b.positionSort) {
+                            return a.positionSort - b.positionSort;
+                        }
+                        return a.name.localeCompare(b.name);
+                    }),
+            };
+        },
+
+        getTeamLineupRows(side) {
+            return this.getTeamLineupSummary(side).starters;
+        },
+
+        getTeamUsedBenchRows(side) {
+            return this.getTeamLineupSummary(side).usedBench;
+        },
+
+        getTeamUnusedBenchRows(side) {
+            return this.getTeamLineupSummary(side).unusedBench;
         },
 
         // =====================================================================
