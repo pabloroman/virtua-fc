@@ -7,6 +7,7 @@ use App\Modules\Competition\DTOs\PlayoffRoundConfig;
 use App\Models\CupTie;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Models\MatchEvent;
 use App\Models\Team;
 use Illuminate\Support\Collection;
 use App\Modules\Match\Services\MatchSimulator;
@@ -58,14 +59,13 @@ class CupTieResolver
             return $winnerId;
         }
 
+        [$homePlayers, $awayPlayers, $homeEntryMinutes, $awayEntryMinutes] = $this->loadCurrentMatchState($match, $allPlayers);
+
         // Check if ET was already simulated during the live match
         if ($match->is_extra_time) {
             $homeScoreEt = $match->home_score_et ?? 0;
             $awayScoreEt = $match->away_score_et ?? 0;
         } else {
-            // Draw - need extra time. Use eager-loaded relations or fall back to query.
-            $homePlayers = $allPlayers->get($match->home_team_id, collect());
-            $awayPlayers = $allPlayers->get($match->away_team_id, collect());
             $homeTeam = $match->relationLoaded('homeTeam') ? $match->homeTeam : Team::find($match->home_team_id);
             $awayTeam = $match->relationLoaded('awayTeam') ? $match->awayTeam : Team::find($match->away_team_id);
 
@@ -74,6 +74,8 @@ class CupTieResolver
                 $awayTeam,
                 $homePlayers,
                 $awayPlayers,
+                $homeEntryMinutes,
+                $awayEntryMinutes,
                 neutralVenue: $match->competition_id === 'WC2026',
             );
 
@@ -106,9 +108,6 @@ class CupTieResolver
             $homePens = $match->home_score_penalties;
             $awayPens = $match->away_score_penalties;
         } else {
-            $homePlayers = $homePlayers ?? $allPlayers->get($match->home_team_id, collect());
-            $awayPlayers = $awayPlayers ?? $allPlayers->get($match->away_team_id, collect());
-
             [$homePens, $awayPens] = $this->matchSimulator->simulatePenalties($homePlayers, $awayPlayers);
 
             $match->update([
@@ -153,14 +152,14 @@ class CupTieResolver
             return $winnerId;
         }
 
+        [$homePlayers, $awayPlayers, $homeEntryMinutes, $awayEntryMinutes] = $this->loadCurrentMatchState($secondLeg, $allPlayers);
+
         // Tied on aggregate - extra time in second leg
         // Check if ET was already simulated during the live match
         if ($secondLeg->is_extra_time) {
             $homeScoreEt = $secondLeg->home_score_et ?? 0;
             $awayScoreEt = $secondLeg->away_score_et ?? 0;
         } else {
-            $homePlayers = $allPlayers->get($secondLeg->home_team_id, collect());
-            $awayPlayers = $allPlayers->get($secondLeg->away_team_id, collect());
             $homeTeam = $secondLeg->relationLoaded('homeTeam') ? $secondLeg->homeTeam : Team::find($secondLeg->home_team_id);
             $awayTeam = $secondLeg->relationLoaded('awayTeam') ? $secondLeg->awayTeam : Team::find($secondLeg->away_team_id);
 
@@ -169,6 +168,8 @@ class CupTieResolver
                 $awayTeam,
                 $homePlayers,
                 $awayPlayers,
+                $homeEntryMinutes,
+                $awayEntryMinutes,
                 neutralVenue: $secondLeg->competition_id === 'WC2026',
             );
 
@@ -203,9 +204,6 @@ class CupTieResolver
             $homePens = $secondLeg->home_score_penalties;
             $awayPens = $secondLeg->away_score_penalties;
         } else {
-            $homePlayers = $homePlayers ?? $allPlayers->get($secondLeg->home_team_id, collect());
-            $awayPlayers = $awayPlayers ?? $allPlayers->get($secondLeg->away_team_id, collect());
-
             [$homePens, $awayPens] = $this->matchSimulator->simulatePenalties($homePlayers, $awayPlayers);
 
             $secondLeg->update([
@@ -237,5 +235,47 @@ class CupTieResolver
             'completed' => true,
             'resolution' => $resolution,
         ]);
+    }
+
+    /**
+     * Rebuild the current on-pitch players and their entry minutes from match state.
+     *
+     * @return array{0: Collection, 1: Collection, 2: array<string,int>, 3: array<string,int>}
+     */
+    private function loadCurrentMatchState(GameMatch $match, Collection $allPlayers): array
+    {
+        $homeIds = $match->home_lineup ?? [];
+        $awayIds = $match->away_lineup ?? [];
+        $homeEntryMinutes = [];
+        $awayEntryMinutes = [];
+
+        foreach ($match->substitutions ?? [] as $sub) {
+            if (($sub['team_id'] ?? null) === $match->home_team_id) {
+                $homeIds = array_values(array_filter($homeIds, fn ($id) => $id !== $sub['player_out_id']));
+                $homeIds[] = $sub['player_in_id'];
+                $homeEntryMinutes[$sub['player_in_id']] = $sub['minute'];
+            } else {
+                $awayIds = array_values(array_filter($awayIds, fn ($id) => $id !== $sub['player_out_id']));
+                $awayIds[] = $sub['player_in_id'];
+                $awayEntryMinutes[$sub['player_in_id']] = $sub['minute'];
+            }
+        }
+
+        $redCardedIds = MatchEvent::where('game_match_id', $match->id)
+            ->where('event_type', MatchEvent::TYPE_RED_CARD)
+            ->pluck('game_player_id')
+            ->all();
+
+        $homeIds = array_values(array_filter($homeIds, fn ($id) => ! in_array($id, $redCardedIds)));
+        $awayIds = array_values(array_filter($awayIds, fn ($id) => ! in_array($id, $redCardedIds)));
+
+        $homePlayers = $allPlayers->get($match->home_team_id, collect())
+            ->filter(fn ($player) => in_array($player->id, $homeIds))
+            ->values();
+        $awayPlayers = $allPlayers->get($match->away_team_id, collect())
+            ->filter(fn ($player) => in_array($player->id, $awayIds))
+            ->values();
+
+        return [$homePlayers, $awayPlayers, $homeEntryMinutes, $awayEntryMinutes];
     }
 }
