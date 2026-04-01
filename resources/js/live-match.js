@@ -913,6 +913,28 @@ export default function liveMatch(config) {
                 }
             }
 
+            // Post-process: ensure a non-red-carded Goalkeeper occupies the GK slot.
+            // When a GK is sent off and a reserve GK is subbed in, the algorithm places
+            // the sent-off GK in the GK slot (natural fit) and the reserve GK in the
+            // outfield slot. Swap them so the active GK is shown in goal.
+            const redCarded = this.redCardedPlayerIds;
+            const gkSlot = assignments.find(s => s.role === 'Goalkeeper');
+            if (gkSlot?.player && redCarded.includes(gkSlot.player.id)) {
+                const reserveGkSlot = assignments.find(s =>
+                    s !== gkSlot &&
+                    s.player &&
+                    s.player.position === 'Goalkeeper' &&
+                    !redCarded.includes(s.player.id)
+                );
+                if (reserveGkSlot) {
+                    const temp = gkSlot.player;
+                    gkSlot.player = reserveGkSlot.player;
+                    reserveGkSlot.player = temp;
+                    gkSlot.compatibility = this.slotCompatibility[gkSlot.label]?.[gkSlot.player.position] ?? 0;
+                    reserveGkSlot.compatibility = this.slotCompatibility[reserveGkSlot.label]?.[reserveGkSlot.player.position] ?? 0;
+                }
+            }
+
             return assignments;
         },
 
