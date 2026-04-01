@@ -109,7 +109,7 @@ class SquadReplenishmentProcessor implements SeasonProcessor
 
     public function priority(): int
     {
-        return 50;
+        return 42;
     }
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
