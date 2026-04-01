@@ -742,10 +742,10 @@ class ContractService
      * Minimum players per position group — mirrors SquadReplenishmentProcessor.
      */
     private const POSITION_GROUP_MINIMUMS = [
-        'Goalkeeper' => 2,
-        'Defender' => 5,
-        'Midfielder' => 5,
-        'Forward' => 3,
+        'Goalkeeper' => 3,
+        'Defender' => 6,
+        'Midfielder' => 6,
+        'Forward' => 4,
     ];
 
     /**

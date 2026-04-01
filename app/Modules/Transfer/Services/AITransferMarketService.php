@@ -48,10 +48,10 @@ class AITransferMarketService
 
     /** Minimum group counts — never sell below this */
     private const MIN_GROUP_COUNTS = [
-        'Goalkeeper' => 2,
-        'Defender' => 5,
-        'Midfielder' => 5,
-        'Forward' => 3,
+        'Goalkeeper' => 3,
+        'Defender' => 6,
+        'Midfielder' => 6,
+        'Forward' => 4,
     ];
 
     /** Minimum squad size below which a team will not sell */

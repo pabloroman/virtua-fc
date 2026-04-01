@@ -75,10 +75,10 @@ class SquadReplenishmentProcessor implements SeasonProcessor
      * If a group is below its minimum, those positions are filled first.
      */
     private const GROUP_MINIMUMS = [
-        'Goalkeeper' => 2,
-        'Defender' => 5,
-        'Midfielder' => 5,
-        'Forward' => 3,
+        'Goalkeeper' => 3,
+        'Defender' => 6,
+        'Midfielder' => 6,
+        'Forward' => 4,
     ];
 
     /**
@@ -86,7 +86,7 @@ class SquadReplenishmentProcessor implements SeasonProcessor
      * position within a depleted group should receive the new player.
      */
     private const POSITION_TARGETS = [
-        'Goalkeeper' => 2,
+        'Goalkeeper' => 3,
         'Centre-Back' => 3,
         'Left-Back' => 1,
         'Right-Back' => 1,
