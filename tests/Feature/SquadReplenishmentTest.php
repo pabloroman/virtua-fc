@@ -39,11 +39,11 @@ class SquadReplenishmentTest extends TestCase
         ]);
     }
 
-    public function test_processor_has_priority_9(): void
+    public function test_processor_has_priority_42(): void
     {
         $processor = app(SquadReplenishmentProcessor::class);
 
-        $this->assertEquals(9, $processor->priority());
+        $this->assertEquals(42, $processor->priority());
     }
 
     public function test_ai_team_below_minimum_gets_replenished(): void
@@ -113,9 +113,9 @@ class SquadReplenishmentTest extends TestCase
         $finalCount = GamePlayer::where('game_id', $this->game->id)
             ->where('team_id', $this->aiTeam->id)
             ->count();
-        // 25 + 2-3 youth = 27-28
+        // 25 + 1 GK replenishment + 2-3 youth (may release 1 if over cap) = 27-29
         $this->assertGreaterThanOrEqual(27, $finalCount);
-        $this->assertLessThanOrEqual(28, $finalCount);
+        $this->assertLessThanOrEqual(29, $finalCount);
     }
 
     public function test_ai_team_above_minimum_but_missing_goalkeepers_gets_them(): void
@@ -153,12 +153,12 @@ class SquadReplenishmentTest extends TestCase
 
         $processor->process($this->game, $data);
 
-        // Should have generated at least 2 goalkeepers (group minimum)
+        // Should have generated at least 3 goalkeepers (group minimum)
         $gkAfter = GamePlayer::where('game_id', $this->game->id)
             ->where('team_id', $this->aiTeam->id)
             ->where('position', 'Goalkeeper')
             ->count();
-        $this->assertGreaterThanOrEqual(2, $gkAfter);
+        $this->assertGreaterThanOrEqual(3, $gkAfter);
     }
 
     public function test_user_team_is_replenished_when_below_minimum(): void

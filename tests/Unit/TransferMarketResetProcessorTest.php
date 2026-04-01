@@ -215,8 +215,8 @@ class TransferMarketResetProcessorTest extends TestCase
         $this->assertNotNull($otherGameListed->transfer_listed_at);
     }
 
-    public function test_has_priority_20(): void
+    public function test_has_priority_70(): void
     {
-        $this->assertSame(20, $this->processor->priority());
+        $this->assertSame(70, $this->processor->priority());
     }
 }
