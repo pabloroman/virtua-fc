@@ -1,0 +1,279 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/3445.png",
+  "name": "Czechia",
+  "players": [
+    {
+      "contract": "Mar 31, 2026",
+      "dateOfBirth": "Jul 13, 2002",
+      "foot": "right",
+      "height": "1,98m",
+      "id": "629773",
+      "marketValue": "€15.00m",
+      "name": "Lukas Hornicek",
+      "number": "16",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Mar 26, 2024",
+      "dateOfBirth": "May 17, 2000",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "550829",
+      "marketValue": "€7.00m",
+      "name": "Matej Kovar",
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Nov 13, 2025",
+      "dateOfBirth": "Jan 24, 1998",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "293357",
+      "marketValue": "€2.50m",
+      "name": "Martin Jedlicka",
+      "number": "23",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Mar 24, 2022",
+      "dateOfBirth": "Apr 20, 1999",
+      "foot": "left",
+      "height": "1,91m",
+      "id": "345911",
+      "marketValue": "€22.00m",
+      "name": "Ladislav Krejčí",
+      "number": "7",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Mar 26, 2024",
+      "dateOfBirth": "Jan 29, 2000",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "620217",
+      "marketValue": "€10.00m",
+      "name": "Robin Hranac",
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Nov 20, 2023",
+      "dateOfBirth": "Jan 21, 2003",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "652054",
+      "marketValue": "€10.00m",
+      "name": "Martin Vitík",
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Nov 17, 2025",
+      "dateOfBirth": "Mar 8, 2003",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "944827",
+      "marketValue": "€8.00m",
+      "name": "Stepan Chaloupek",
+      "number": "2",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Sep 7, 2020",
+      "dateOfBirth": "Mar 31, 1993",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "216278",
+      "marketValue": "€1.20m",
+      "name": "Tomas Holes",
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Sep 7, 2020",
+      "dateOfBirth": "Aug 20, 1992",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "142219",
+      "marketValue": "€700k",
+      "name": "Jaroslav Zelený",
+      "number": "20",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Mar 24, 2023",
+      "dateOfBirth": "Aug 7, 2000",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "500054",
+      "marketValue": "€5.00m",
+      "name": "David Jurásek",
+      "number": "17",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Nov 11, 2017",
+      "dateOfBirth": "Aug 22, 1992",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "157672",
+      "marketValue": "€2.70m",
+      "name": "Vladimír Coufal",
+      "number": "5",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Nov 15, 2016",
+      "dateOfBirth": "Feb 27, 1995",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "283628",
+      "marketValue": "€12.00m",
+      "name": "Tomáš Souček",
+      "number": "22",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 4, 2021",
+      "dateOfBirth": "May 31, 1999",
+      "foot": "left",
+      "height": "1,69m",
+      "id": "321204",
+      "marketValue": "€8.00m",
+      "name": "Michal Sadílek",
+      "number": "18",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 7, 2024",
+      "dateOfBirth": "Apr 10, 2001",
+      "height": "1,82m",
+      "id": "611049",
+      "marketValue": "€6.00m",
+      "name": "Lukas Cerv",
+      "number": "12",
+      "position": "Central Midfield"
+    },
+    {
+      "dateOfBirth": "Mar 11, 1998",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "563033",
+      "marketValue": "€4.00m",
+      "name": "Pavel Bucha",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "May 26, 2012",
+      "dateOfBirth": "Aug 8, 1990",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "179643",
+      "marketValue": "€400k",
+      "name": "Vladimír Darida",
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Mar 22, 2024",
+      "dateOfBirth": "Dec 29, 2000",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "500053",
+      "marketValue": "€20.00m",
+      "name": "Pavel Sulc",
+      "number": "15",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Sep 8, 2025",
+      "dateOfBirth": "Jul 2, 2003",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "652061",
+      "marketValue": "€8.00m",
+      "name": "Adam Karabec",
+      "number": "9",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Sep 4, 2020",
+      "dateOfBirth": "Oct 23, 1996",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "292779",
+      "marketValue": "€8.00m",
+      "name": "Lukas Provod",
+      "number": "14",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Mar 31, 2026",
+      "dateOfBirth": "Mar 21, 2003",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "652060",
+      "marketValue": "€1.80m",
+      "name": "Denis Visinsky",
+      "number": "21",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Nov 13, 2025",
+      "dateOfBirth": "Apr 24, 1997",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "334803",
+      "marketValue": "€1.00m",
+      "name": "Tomas Ladra",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "May 27, 2016",
+      "dateOfBirth": "Jan 24, 1996",
+      "foot": "left",
+      "height": "1,91m",
+      "id": "242086",
+      "marketValue": "€20.00m",
+      "name": "Patrik Schick",
+      "number": "10",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Nov 16, 2022",
+      "dateOfBirth": "Apr 29, 1999",
+      "height": "1,87m",
+      "id": "405855",
+      "marketValue": "€4.00m",
+      "name": "Mojmír Chytil",
+      "number": "13",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Nov 20, 2023",
+      "dateOfBirth": "Jan 26, 1995",
+      "foot": "right",
+      "height": "1,99m",
+      "id": "198614",
+      "marketValue": "€3.00m",
+      "name": "Tomas Chory",
+      "number": "19",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Sep 1, 2017",
+      "dateOfBirth": "Sep 1, 1993",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "218299",
+      "marketValue": "€500k",
+      "name": "Jan Kliment",
+      "number": "11",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": null,
+  "stadiumSeats": null,
+  "transfermarktId": "3445"
+}

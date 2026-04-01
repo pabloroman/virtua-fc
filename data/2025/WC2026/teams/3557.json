@@ -1,0 +1,293 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/3557.png",
+  "name": "Sweden",
+  "players": [
+    {
+      "contract": "Mar 26, 2026",
+      "dateOfBirth": "May 22, 2003",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "605426",
+      "marketValue": "€3.00m",
+      "name": "Melker Ellborg",
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Mar 26, 2026",
+      "dateOfBirth": "Feb 1, 2002",
+      "foot": "left",
+      "height": "1,95m",
+      "id": "730531",
+      "marketValue": "€2.00m",
+      "name": "Noel Törnqvist",
+      "number": "12",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jan 22, 2011",
+      "dateOfBirth": "Jun 23, 1989",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "75890",
+      "marketValue": "€175k",
+      "name": "Kristoffer Nordfeldt",
+      "number": "23",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Sep 24, 2022",
+      "dateOfBirth": "Jan 13, 1999",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "503075",
+      "marketValue": "€22.00m",
+      "name": "Isak Hien",
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Mar 24, 2016",
+      "dateOfBirth": "Jul 17, 1994",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "184573",
+      "marketValue": "€6.00m",
+      "name": "Victor Lindelöf",
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jan 12, 2023",
+      "dateOfBirth": "Apr 10, 2000",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "485395",
+      "marketValue": "€5.00m",
+      "name": "Gustaf Lagerbielke",
+      "number": "2",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Oct 8, 2020",
+      "dateOfBirth": "Jun 1, 1995",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "258987",
+      "marketValue": "€5.00m",
+      "name": "Carl Starfelt",
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Mar 26, 2026",
+      "dateOfBirth": "Jan 8, 1997",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "292534",
+      "marketValue": "€5.00m",
+      "name": "Eric Smith",
+      "number": "14",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Oct 14, 2024",
+      "dateOfBirth": "Feb 12, 2002",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "579287",
+      "marketValue": "€22.00m",
+      "name": "Daniel Svensson",
+      "number": "8",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 9, 2022",
+      "dateOfBirth": "Apr 29, 1999",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "362108",
+      "marketValue": "€20.00m",
+      "name": "Gabriel Gudmundsson",
+      "number": "5",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jan 11, 2018",
+      "dateOfBirth": "Jun 21, 1995",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "222855",
+      "marketValue": "€4.00m",
+      "name": "Jesper Karlström",
+      "number": "16",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jan 12, 2024",
+      "dateOfBirth": "Feb 2, 2006",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "866246",
+      "marketValue": "€40.00m",
+      "name": "Lucas Bergvall",
+      "number": "7",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jan 9, 2023",
+      "dateOfBirth": "Jun 27, 2004",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "931838",
+      "marketValue": "€32.00m",
+      "name": "Hugo Larsson",
+      "number": "20",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jan 9, 2023",
+      "dateOfBirth": "Oct 6, 2003",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "667287",
+      "marketValue": "€30.00m",
+      "name": "Yasin Ayari",
+      "number": "18",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Nov 18, 2019",
+      "dateOfBirth": "Jan 5, 1999",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "342405",
+      "marketValue": "€9.00m",
+      "name": "Mattias Svanberg",
+      "number": "15",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Mar 22, 2025",
+      "dateOfBirth": "Nov 21, 2002",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "715653",
+      "marketValue": "€4.50m",
+      "name": "Besfort Zeneli",
+      "number": "21",
+      "position": "Central Midfield"
+    },
+    {
+      "dateOfBirth": "Oct 16, 1997",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "744853",
+      "marketValue": "€1.80m",
+      "name": "Herman Johansson",
+      "number": "26",
+      "position": "Right Midfield"
+    },
+    {
+      "dateOfBirth": "Jun 22, 2002",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "687622",
+      "marketValue": "€3.00m",
+      "name": "Elliot Stroud",
+      "number": "25",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "Jun 8, 2024",
+      "dateOfBirth": "Feb 1, 2004",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "764859",
+      "marketValue": "€15.00m",
+      "name": "Williot Swedberg",
+      "number": "22",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jan 12, 2024",
+      "dateOfBirth": "Jul 1, 1998",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "731771",
+      "marketValue": "€1.20m",
+      "name": "Taha Ali",
+      "number": "24",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Mar 24, 2022",
+      "dateOfBirth": "Apr 27, 2002",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "583189",
+      "marketValue": "€40.00m",
+      "name": "Anthony Elanga",
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Oct 10, 2025",
+      "dateOfBirth": "Nov 15, 2005",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "792331",
+      "marketValue": "€15.00m",
+      "name": "Roony Bardghji",
+      "number": "19",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Mar 22, 2025",
+      "dateOfBirth": "Jul 8, 2001",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "475949",
+      "marketValue": "€10.00m",
+      "name": "Benjamin Nygren",
+      "number": "10",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Nov 18, 2025",
+      "dateOfBirth": "Apr 18, 1995",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "987325",
+      "marketValue": "€1.30m",
+      "name": "Gustav Lundgren",
+      "number": "13",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jan 8, 2019",
+      "dateOfBirth": "Jun 4, 1998",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "325443",
+      "marketValue": "€65.00m",
+      "name": "Viktor Gyökeres",
+      "number": "17",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jan 7, 2018",
+      "dateOfBirth": "May 23, 1997",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "320440",
+      "marketValue": "€2.00m",
+      "name": "Gustaf Nilsson",
+      "number": "9",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": null,
+  "stadiumSeats": null,
+  "transfermarktId": "3557"
+}

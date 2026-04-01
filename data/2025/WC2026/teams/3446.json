@@ -1,0 +1,272 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/3446.png",
+  "name": "Bosnia-Herzegovina",
+  "players": [
+    {
+      "contract": "Mar 27, 2021",
+      "dateOfBirth": "Dec 2, 1995",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "248454",
+      "marketValue": "€4.50m",
+      "name": "Nikola Vasilj",
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Nov 19, 2024",
+      "dateOfBirth": "Aug 16, 1998",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "495320",
+      "marketValue": "€2.00m",
+      "name": "Martin Zlomislic",
+      "number": "22",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Mar 31, 2026",
+      "dateOfBirth": "Mar 12, 1996",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "188881",
+      "marketValue": "€400k",
+      "name": "Osman Hadzikic",
+      "number": "12",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 3, 2024",
+      "dateOfBirth": "Feb 28, 2003",
+      "foot": "left",
+      "height": "1,92m",
+      "id": "679423",
+      "marketValue": "€20.00m",
+      "name": "Tarik Muharemović",
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Nov 19, 2013",
+      "dateOfBirth": "Jun 20, 1993",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "94005",
+      "marketValue": "€6.00m",
+      "name": "Sead Kolasinac",
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Mar 31, 2026",
+      "dateOfBirth": "Jul 17, 2006",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "819566",
+      "marketValue": "€4.00m",
+      "name": "Nidal Celik",
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 3, 2024",
+      "dateOfBirth": "Sep 5, 1997",
+      "foot": "left",
+      "height": "2,01m",
+      "id": "384568",
+      "marketValue": "€2.80m",
+      "name": "Stjepan Radeljic",
+      "number": "21",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 3, 2024",
+      "dateOfBirth": "Oct 10, 1996",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "422051",
+      "marketValue": "€1.80m",
+      "name": "Nikola Katic",
+      "number": "18",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Nov 16, 2023",
+      "dateOfBirth": "Apr 15, 1998",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "380919",
+      "marketValue": "€1.20m",
+      "name": "Nihad Mujakic",
+      "number": "2",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Mar 29, 2022",
+      "dateOfBirth": "Aug 18, 2002",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "519184",
+      "marketValue": "€15.00m",
+      "name": "Amar Dedić",
+      "number": "7",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Sep 4, 2020",
+      "dateOfBirth": "Mar 8, 1997",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "293213",
+      "marketValue": "€4.20m",
+      "name": "Amir Hadziahmetovic",
+      "number": "16",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Nov 16, 2024",
+      "dateOfBirth": "Oct 9, 1996",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "226097",
+      "marketValue": "€1.80m",
+      "name": "Ivan Sunjic",
+      "number": "14",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 3, 2024",
+      "dateOfBirth": "May 22, 1998",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "251295",
+      "marketValue": "€1.20m",
+      "name": "Dzenis Burnic",
+      "number": "17",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Mar 23, 2023",
+      "dateOfBirth": "Mar 3, 2003",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "787907",
+      "marketValue": "€4.50m",
+      "name": "Benjamin Tahirović",
+      "number": "6",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 3, 2024",
+      "dateOfBirth": "Apr 6, 2002",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "651269",
+      "marketValue": "€2.50m",
+      "name": "Armin Gigovic",
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Nov 19, 2023",
+      "dateOfBirth": "Apr 30, 2002",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "620560",
+      "marketValue": "€1.20m",
+      "name": "Ivan Basic",
+      "number": "13",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Mar 21, 2025",
+      "dateOfBirth": "Jan 20, 2001",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "638990",
+      "marketValue": "€4.50m",
+      "name": "Amar Memić",
+      "number": "15",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Sep 6, 2025",
+      "dateOfBirth": "Sep 21, 2007",
+      "foot": "both",
+      "height": "1,86m",
+      "id": "929994",
+      "marketValue": "€15.00m",
+      "name": "Kerim Alajbegovic",
+      "number": "19",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Sep 7, 2024",
+      "dateOfBirth": "Mar 10, 2005",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "925862",
+      "marketValue": "€5.00m",
+      "name": "Esmir Bajraktarevic",
+      "number": "20",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Mar 24, 2021",
+      "dateOfBirth": "Mar 25, 1998",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "335457",
+      "marketValue": "€22.00m",
+      "name": "Ermedin Demirovic",
+      "number": "10",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Nov 16, 2023",
+      "dateOfBirth": "Jun 20, 1994",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "203123",
+      "marketValue": "€3.00m",
+      "name": "Haris Tabakovic",
+      "number": "23",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 19, 2021",
+      "dateOfBirth": "Nov 28, 1998",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "457738",
+      "marketValue": "€1.50m",
+      "name": "Jovo Lukić",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Nov 16, 2024",
+      "dateOfBirth": "Jan 31, 2004",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "710969",
+      "marketValue": "€1.50m",
+      "name": "Samed Bazdar",
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 2, 2007",
+      "dateOfBirth": "Mar 17, 1986",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "28396",
+      "marketValue": "€1.50m",
+      "name": "Edin Dzeko",
+      "number": "11",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": null,
+  "stadiumSeats": null,
+  "transfermarktId": "3446"
+}
