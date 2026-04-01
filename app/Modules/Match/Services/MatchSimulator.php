@@ -458,6 +458,7 @@ class MatchSimulator
             $players, $benchPlayers,
             $splitMinute, $subsInWindow, $goalDifference,
             $yellowCardPlayerIds, $tacticalDrain, $currentDate,
+            array_keys($entryMinutes),
         );
 
         if (count($subs) > 0) {

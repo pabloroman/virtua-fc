@@ -242,5 +242,44 @@ class AISubstitutionServiceTest extends TestCase
 
         $this->assertCount(count($outIds), array_unique($outIds), 'Each player should only be subbed out once');
         $this->assertCount(count($inIds), array_unique($inIds), 'Each bench player should only be brought on once');
+        $this->assertEmpty(array_intersect($outIds, $inIds), 'A player subbed in should never be subbed back out');
+    }
+
+    public function test_previously_subbed_in_players_cannot_be_subbed_out(): void
+    {
+        $game = Game::factory()->create(['current_date' => '2025-10-01']);
+        $team = Team::factory()->create();
+
+        $lineup = $this->createLineup($game, $team, 11, 70);
+        $bench = $this->createBenchPlayers($game, $team, 5, 75);
+
+        // Simulate first window: sub in a bench player
+        $firstWindowSubs = $this->service->chooseSubstitutions(
+            $lineup, $bench, 60, 1, 0, [], 1.0, $game->current_date,
+        );
+
+        $this->assertNotEmpty($firstWindowSubs, 'First window should produce a substitution');
+
+        $playerIn = $firstWindowSubs[0]['player_in'];
+        $playerOut = $firstWindowSubs[0]['player_out'];
+
+        // Update lineup and bench as MatchSimulator would
+        $updatedLineup = $lineup->reject(fn ($p) => $p->id === $playerOut->id)
+            ->push($playerIn)->values();
+        $updatedBench = $bench->reject(fn ($p) => $p->id === $playerIn->id)->values();
+
+        // Second window: pass the subbed-in player's ID as previously subbed in
+        $secondWindowSubs = $this->service->chooseSubstitutions(
+            $updatedLineup, $updatedBench, 75, 2, 0, [], 1.0, $game->current_date,
+            previouslySubbedInIds: [$playerIn->id],
+        );
+
+        $secondOutIds = array_map(fn ($s) => $s['player_out']->id, $secondWindowSubs);
+
+        $this->assertNotContains(
+            $playerIn->id,
+            $secondOutIds,
+            'A player subbed in during a previous window should not be subbed out later'
+        );
     }
 }

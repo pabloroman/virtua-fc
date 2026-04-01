@@ -135,6 +135,7 @@ class AISubstitutionService
         array $yellowCardPlayerIds,
         float $tacticalDrainMultiplier,
         Carbon $currentDate,
+        array $previouslySubbedInIds = [],
     ): array {
         if ($bench->isEmpty() || $subsInWindow <= 0) {
             return [];
@@ -146,6 +147,7 @@ class AISubstitutionService
         $substitutions = [];
         $availableBench = $bench->values();
         $currentLineup = $lineup->values();
+        $protectedIds = $previouslySubbedInIds;
 
         for ($i = 0; $i < $subsInWindow; $i++) {
             if ($availableBench->isEmpty()) {
@@ -153,8 +155,10 @@ class AISubstitutionService
             }
 
             // Score each lineup player for substitution urgency
+            // Exclude players subbed in during this match (current or previous windows)
             $candidates = $this->scoreSubstitutionUrgency(
-                $currentLineup, $windowMinute, $yellowCardPlayerIds,
+                $currentLineup->reject(fn ($p) => in_array($p->id, $protectedIds)),
+                $windowMinute, $yellowCardPlayerIds,
                 $energyThreshold, $yellowCardWeight, $tacticalDrainMultiplier,
                 $currentDate,
             );
@@ -178,6 +182,7 @@ class AISubstitutionService
             ];
 
             // Update state for next sub in this window
+            $protectedIds[] = $playerIn->id;
             $currentLineup = $currentLineup->reject(fn ($p) => $p->id === $playerOut->id)
                 ->push($playerIn)->values();
             $availableBench = $availableBench->reject(fn ($p) => $p->id === $playerIn->id)->values();
