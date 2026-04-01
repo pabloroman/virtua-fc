@@ -114,8 +114,7 @@ return [
     // Unavailability reasons
     'suspended_matches' => 'Suspended (:count match)|Suspended (:count matches)',
     'injured_generic' => 'Injured',
-    'injury_matches' => ':count match|:count matches',
-    'injury_matches_approx' => ':count+ match|:count+ matches',
+    'injury_return_date' => 'out until :date',
 
     // Injury types
     'injury_muscle_fatigue' => 'Muscle fatigue',

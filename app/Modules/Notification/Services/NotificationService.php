@@ -5,7 +5,7 @@ namespace App\Modules\Notification\Services;
 use App\Models\Game;
 use App\Models\GameNotification;
 use App\Models\GamePlayer;
-use App\Modules\Player\Services\InjuryService;
+
 use App\Models\ScoutReport;
 use App\Models\ShortlistedPlayer;
 use App\Models\Team;
@@ -128,32 +128,19 @@ class NotificationService
         $translatedInjury = $this->translateInjuryType($injuryType);
         $translatedLocation = __('notifications.injury_location_'.($duringMatch ? 'match' : 'training'));
 
-        // Compute matches missed if injury_until is set
-        $messageKey = 'notifications.player_injured_message';
-        $matchesMissed = 0;
-
-        if ($player->injury_until) {
-            // Use the day after current_date so the match where the injury occurred
-            // is excluded from the "missed" count (the player already played that match).
-            $data = InjuryService::getMatchesMissed($game->id, $player->team_id, $game->current_date->copy()->addDay(), $player->injury_until);
-            $matchesMissed = $data['count'];
-
-            if ($matchesMissed > 0) {
-                $messageKey = $data['approx']
-                    ? 'notifications.player_injured_message_matches_approx'
-                    : 'notifications.player_injured_message_matches';
-            }
-        }
+        $messageKey = $player->injury_until
+            ? 'notifications.player_injured_message_with_date'
+            : 'notifications.player_injured_message';
 
         return $this->create(
             game: $game,
             type: GameNotification::TYPE_PLAYER_INJURED,
             title: __('notifications.player_injured_title', ['player' => $player->name]),
-            message: trans_choice($messageKey, $matchesMissed, [
+            message: __($messageKey, [
                 'player' => $player->name,
                 'injury' => $translatedInjury,
                 'location' => $translatedLocation,
-                'matches' => $matchesMissed,
+                'date' => $player->injury_until?->translatedFormat('j M Y'),
             ]),
             priority: GameNotification::PRIORITY_CRITICAL,
             metadata: [

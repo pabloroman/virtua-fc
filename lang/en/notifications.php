@@ -22,8 +22,7 @@ return [
     // Player injuries
     'player_injured_title' => ':player injured',
     'player_injured_message' => ':player has suffered :injury :location.',
-    'player_injured_message_matches' => ':player has suffered :injury :location and will miss :matches match.|:player has suffered :injury :location and will miss :matches matches.',
-    'player_injured_message_matches_approx' => ':player has suffered :injury :location and will miss :matches+ match.|:player has suffered :injury :location and will miss :matches+ matches.',
+    'player_injured_message_with_date' => ':player has suffered :injury :location. Out until :date.',
     'injury_location_match' => 'during the match',
     'injury_location_training' => 'during training',
 

@@ -7,7 +7,7 @@ use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Modules\Player\PlayerAge;
-use App\Modules\Player\Services\InjuryService;
+
 use App\Modules\Player\Services\PlayerDevelopmentService;
 use App\Modules\Transfer\Services\ContractService;
 use App\Support\PositionSlotMapper;
@@ -35,21 +35,15 @@ class SquadService
         $matchDate = $nextMatch?->scheduled_date ?? $game->current_date;
         $competitionId = $nextMatch?->competition_id;
 
-        // Pre-compute matches missed for injured players
-        $matchesMissedMap = InjuryService::getMatchesMissedMap($gameId, $game->team_id, $game->current_date, $allPlayers);
-
         // Enrich each player with computed data and count age distribution in a single pass
         $youngCount = 0;
         $primeCount = 0;
         $veteranCount = 0;
 
-        $allPlayers->each(function (GamePlayer $player) use ($game, $seasonEndDate, $matchDate, $competitionId, $matchesMissedMap, &$youngCount, &$primeCount, &$veteranCount) {
+        $allPlayers->each(function (GamePlayer $player) use ($game, $seasonEndDate, $matchDate, $competitionId, &$youngCount, &$primeCount, &$veteranCount) {
             // Availability
-            $matchData = $matchesMissedMap[$player->id] ?? null;
             $player->setAttribute('is_unavailable', !$player->isAvailable($matchDate, $competitionId));
-            $player->setAttribute('unavailability_reason', $player->getUnavailabilityReason(
-                $matchDate, $competitionId, $matchData['count'] ?? null, $matchData['approx'] ?? false,
-            ));
+            $player->setAttribute('unavailability_reason', $player->getUnavailabilityReason($matchDate, $competitionId));
 
             // Development projection
             $age = $player->age($game->current_date);
