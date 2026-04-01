@@ -82,6 +82,7 @@ class SubstitutionService
         // Validate each sub in the batch
         $batchOutIds = [];
         $batchInIds = [];
+        $previousSubbedOutIds = array_column($previousSubstitutions, 'playerOutId');
 
         foreach ($newSubstitutions as $sub) {
             $playerOutId = $sub['playerOutId'];
@@ -111,6 +112,10 @@ class SubstitutionService
             }
 
             if (in_array($playerInId, $effectiveLineup)) {
+                throw new \InvalidArgumentException('game.sub_error_already_on_pitch');
+            }
+
+            if (in_array($playerInId, $previousSubbedOutIds) || in_array($playerInId, $batchOutIds)) {
                 throw new \InvalidArgumentException('game.sub_error_already_on_pitch');
             }
 
