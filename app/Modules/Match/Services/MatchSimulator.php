@@ -1166,20 +1166,32 @@ class MatchSimulator
     private function dixonColesRandom(float $homeXG, float $awayXG): array
     {
         $rho = config('match_simulation.dixon_coles_rho', -0.13);
+        $concentration = config('match_simulation.score_concentration', 1.0);
 
         $probabilities = [];
-        $cumulative = 0.0;
 
         for ($i = 0; $i <= self::DIXON_COLES_MAX_GOALS; $i++) {
             $pHome = $this->poissonPmf($i, $homeXG);
             for ($j = 0; $j <= self::DIXON_COLES_MAX_GOALS; $j++) {
                 $pAway = $this->poissonPmf($j, $awayXG);
                 $tau = $this->dixonColesTau($i, $j, $homeXG, $awayXG, $rho);
-                $prob = $pHome * $pAway * $tau;
-                $cumulative += $prob;
-                $probabilities[] = [$i, $j, $cumulative];
+                $probabilities[] = [$i, $j, $pHome * $pAway * $tau];
             }
         }
+
+        if ($concentration !== 1.0) {
+            foreach ($probabilities as &$entry) {
+                $entry[2] = $entry[2] ** $concentration;
+            }
+            unset($entry);
+        }
+
+        $cumulative = 0.0;
+        foreach ($probabilities as &$entry) {
+            $cumulative += $entry[2];
+            $entry[2] = $cumulative;
+        }
+        unset($entry);
 
         $rand = (mt_rand() / mt_getrandmax()) * $cumulative;
 

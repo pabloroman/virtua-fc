@@ -91,9 +91,23 @@ return [
     |   - 0 = no cap
     |   - 7 = realistic cap (historical max in La Liga is 9-0)
     |
+    | score_concentration: How tightly results cluster around the most likely
+    |   scoreline. Raises each probability to this power, then renormalizes.
+    |   This is an inverse-temperature transform on the Dixon-Coles distribution.
+    |
+    |   1.0 = standard Dixon-Coles (default)
+    |   1.5 = moderately sharper, fewer blowouts and freak results
+    |   2.0 = noticeably sharper, results strongly favor the mode
+    |   3.0 = very sharp, almost always the 1-2 most likely scorelines
+    |   <1.0 = flatter distribution, more random (not recommended)
+    |
+    |   This does NOT change xG — it only changes how the final scoreline
+    |   is sampled from the probability distribution.
+    |
     */
     'dixon_coles_rho' => -0.13,         // goal correlation: 0 = independent Poisson, -0.13 = realistic
     'max_goals_cap' => 6,
+    'score_concentration' => 1.0,       // 1.0 = standard, >1 = results cluster closer to xG mode
 
     /*
     |--------------------------------------------------------------------------
