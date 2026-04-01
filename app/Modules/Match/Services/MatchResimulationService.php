@@ -230,6 +230,7 @@ class MatchResimulationService
 
         // 11. Apply the new remainder events
         $this->applyNewEvents($match, $game, $remainderResult, $competitionId);
+        $this->syncMatchSubstitutions($match, $game->team_id, $allSubstitutions);
 
         // 12. Update match score and possession
         // Note: Score-dependent side effects (standings, cup ties, GK stats, prize money)
@@ -348,6 +349,7 @@ class MatchResimulationService
 
             // 9. Apply the new remainder events
             $this->applyNewEvents($match, $game, $remainderResult, $competitionId);
+            $this->syncMatchSubstitutions($match, $game->team_id, $allSubstitutions);
 
             // 10. Update ET scores and possession (not regular-time scores)
             $match->update([
@@ -362,6 +364,42 @@ class MatchResimulationService
                 $remainderResult->homePossession, $remainderResult->awayPossession,
             );
         });
+    }
+
+    /**
+     * Keep substitutions JSON aligned with the current resimulated state.
+     */
+    private function syncMatchSubstitutions(GameMatch $match, string $userTeamId, array $allSubstitutions): void
+    {
+        $opponentSubs = MatchEvent::where('game_match_id', $match->id)
+            ->where('event_type', MatchEvent::TYPE_SUBSTITUTION)
+            ->where('team_id', '!=', $userTeamId)
+            ->orderBy('minute')
+            ->get()
+            ->map(fn ($event) => [
+                'team_id' => $event->team_id,
+                'player_out_id' => $event->game_player_id,
+                'player_in_id' => $event->metadata['player_in_id'] ?? null,
+                'minute' => $event->minute,
+                'auto' => true,
+            ])
+            ->filter(fn ($sub) => ! empty($sub['player_in_id']))
+            ->values()
+            ->all();
+
+        $userSubs = array_map(fn ($sub) => [
+            'team_id' => $userTeamId,
+            'player_out_id' => $sub['playerOutId'],
+            'player_in_id' => $sub['playerInId'],
+            'minute' => $sub['minute'],
+        ], $allSubstitutions);
+
+        $match->update([
+            'substitutions' => collect(array_merge($opponentSubs, $userSubs))
+                ->sortBy('minute')
+                ->values()
+                ->all(),
+        ]);
     }
 
     /**
