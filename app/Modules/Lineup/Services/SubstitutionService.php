@@ -194,6 +194,13 @@ class SubstitutionService
             ->unique()
             ->all();
 
+        $opponentRedCardedIds = MatchEvent::where('game_match_id', $match->id)
+            ->where('team_id', $opponentTeamId)
+            ->where('event_type', 'red_card')
+            ->where('minute', '<=', $minute)
+            ->pluck('game_player_id')
+            ->all();
+
         // Pre-load suspended player IDs for this competition (single query)
         $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($match->competition_id);
 
@@ -201,6 +208,7 @@ class SubstitutionService
         $opponentBench = $opponentSquad
             ->reject(fn ($p) => in_array($p->id, $opponentLineupIds))
             ->reject(fn ($p) => in_array($p->id, $opponentSubbedOutIds))
+            ->reject(fn ($p) => in_array($p->id, $opponentRedCardedIds))
             ->reject(fn ($p) => $p->isInjured($match->scheduled_date))
             ->reject(fn ($p) => in_array($p->id, $suspendedPlayerIds))
             ->values();
