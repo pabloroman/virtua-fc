@@ -27,11 +27,16 @@ class ActivationFunnelService
 
     private function buildCareerFunnel(string $period, ?object $since): array
     {
-        $inviteSentCount = $this->getInviteSentCount($since);
+        $inviteSentCount = $this->getInviteSentCount($since, Game::MODE_CAREER);
+
+        $careerUserIds = User::where('has_career_access', true)
+            ->orWhere('is_admin', true)
+            ->pluck('id');
 
         $cohortSubquery = ActivationEvent::query()
             ->select('user_id')
             ->where('event', ActivationEvent::EVENT_REGISTERED)
+            ->whereIn('user_id', $careerUserIds)
             ->when($since, fn ($q) => $q->where('occurred_at', '>=', $since));
 
         $eventCounts = ActivationEvent::query()
@@ -103,9 +108,15 @@ class ActivationFunnelService
         ];
     }
 
-    private function getInviteSentCount(?object $since): int
+    private function getInviteSentCount(?object $since, ?string $mode = null): int
     {
         $query = InviteCode::where('invite_sent', true);
+
+        if ($mode === Game::MODE_CAREER) {
+            $query->where('grants_career', true);
+        } elseif ($mode === Game::MODE_TOURNAMENT) {
+            $query->where('grants_tournament', true);
+        }
 
         if ($since) {
             $query->where('invite_sent_at', '>=', $since);
