@@ -339,9 +339,7 @@ return [
 
         // Reactive substitutions after red cards
         'red_card_reactive_chance' => 70,              // % chance the 10-man team makes a tactical sub
-        'red_card_opponent_attack_chance' => 50,       // % chance the opponent brings on an attacker
-        'red_card_reactive_max_minute' => 80,          // no reactive subs for the 10-man team after this
-        'red_card_opponent_reactive_max_minute' => 75, // no reactive subs for the opponent after this
+        'red_card_reactive_max_minute' => 80,          // no reactive subs after this minute
     ],
 
 ];

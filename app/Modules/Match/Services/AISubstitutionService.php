@@ -243,9 +243,8 @@ class AISubstitutionService
     /**
      * Choose a reactive substitution for the team that received a red card.
      *
-     * The team reshapes by subbing off a forward to bring on a player from
-     * the same position group as the sent-off player (e.g., CB sent off →
-     * forward out, defender in). For GK red cards, tries to bring on a backup GK.
+     * Tries to bring on a backup goalkeeper or defender when a player in
+     * those positions is sent off, sacrificing a random attacker or midfielder.
      *
      * @return array{player_out: GamePlayer, player_in: GamePlayer}|null
      */
@@ -260,111 +259,37 @@ class AISubstitutionService
 
         $sentOffGroup = PositionMapper::getPositionGroup($sentOffPosition);
 
-        // GK red card: try to bring on backup GK
+        // Only react to GK or Defender red cards
         if ($sentOffGroup === 'Goalkeeper') {
-            $backupGK = $bench->firstWhere('position', 'Goalkeeper');
-            if ($backupGK) {
-                // Sub off the lowest-rated forward (or midfielder if no forwards)
-                $playerOut = $this->findLowestRatedOutfieldToSacrifice($lineup);
-
-                return $playerOut ? ['player_out' => $playerOut, 'player_in' => $backupGK] : null;
-            }
-
-            // No backup GK on bench — no reactive sub (outfield player stays in goal)
+            $replacement = $bench->firstWhere('position', 'Goalkeeper');
+        } elseif ($sentOffGroup === 'Defender') {
+            $replacement = $bench->filter(fn ($p) => PositionMapper::getPositionGroup($p->position) === 'Defender')
+                ->sortByDesc(fn ($p) => $p->overall_score)
+                ->first();
+        } else {
             return null;
         }
-
-        // Forward red card: no need to reshape — team naturally adjusts
-        if ($sentOffGroup === 'Forward') {
-            return null;
-        }
-
-        // Defender or Midfielder red card: sub off a forward to bring on same group
-        $replacement = $bench->filter(fn ($p) => PositionMapper::getPositionGroup($p->position) === $sentOffGroup)
-            ->sortByDesc(fn ($p) => $p->overall_score)
-            ->first();
 
         if (! $replacement) {
             return null;
         }
 
-        $playerOut = $this->findLowestRatedOutfieldToSacrifice($lineup);
+        $playerOut = $this->findOutfieldPlayerToSacrifice($lineup);
 
         return $playerOut ? ['player_out' => $playerOut, 'player_in' => $replacement] : null;
     }
 
     /**
-     * Choose an attacking substitution for the opponent to exploit the red card.
-     *
-     * Brings on the best available forward/attacking midfielder for the most
-     * tired or lowest-rated non-attacking player.
-     *
-     * @return array{player_out: GamePlayer, player_in: GamePlayer}|null
+     * Pick a random forward or midfielder to sacrifice for a tactical sub.
      */
-    public function chooseRedCardOpponentReactiveSubstitution(
-        Collection $lineup,
-        Collection $bench,
-        int $minute,
-        float $tacticalDrainMultiplier,
-        Carbon $currentDate,
-    ): ?array {
-        if ($bench->isEmpty()) {
-            return null;
-        }
-
-        // Find the best attacking player on the bench
-        $attacker = $bench
-            ->filter(fn ($p) => in_array(
-                PositionMapper::getPositionGroup($p->position),
-                ['Forward', 'Midfielder']
-            ))
-            ->sortByDesc(fn ($p) => $p->overall_score)
-            ->first();
-
-        if (! $attacker) {
-            return null;
-        }
-
-        // Sub off the most tired non-GK outfield player who isn't already an attacker
-        $candidates = $lineup->filter(fn ($p) => $p->position !== 'Goalkeeper'
-            && PositionMapper::getPositionGroup($p->position) !== 'Forward');
-
-        if ($candidates->isEmpty()) {
-            return null;
-        }
-
-        $playerOut = $candidates->sortBy(function (GamePlayer $p) use ($minute, $tacticalDrainMultiplier, $currentDate) {
-            return EnergyCalculator::energyAtMinute(
-                $p->physical_ability,
-                $p->age($currentDate),
-                false,
-                $minute,
-                0,
-                $tacticalDrainMultiplier,
-            );
-        })->first();
-
-        return ['player_out' => $playerOut, 'player_in' => $attacker];
-    }
-
-    /**
-     * Find the lowest-rated forward to sacrifice for a tactical sub.
-     * Falls back to the lowest-rated attacking midfielder if no forwards available.
-     */
-    private function findLowestRatedOutfieldToSacrifice(Collection $lineup): ?GamePlayer
+    private function findOutfieldPlayerToSacrifice(Collection $lineup): ?GamePlayer
     {
-        $forwards = $lineup->filter(fn ($p) => PositionMapper::getPositionGroup($p->position) === 'Forward');
-        if ($forwards->isNotEmpty()) {
-            return $forwards->sortBy(fn ($p) => $p->overall_score)->first();
-        }
+        $candidates = $lineup->filter(fn ($p) => in_array(
+            PositionMapper::getPositionGroup($p->position),
+            ['Forward', 'Midfielder']
+        ));
 
-        // No forwards — try attacking midfielders
-        $attackMids = $lineup->filter(fn ($p) => $p->position === 'Attacking Midfield');
-        if ($attackMids->isNotEmpty()) {
-            return $attackMids->sortBy(fn ($p) => $p->overall_score)->first();
-        }
-
-        return null;
+        return $candidates->isNotEmpty() ? $candidates->random() : null;
     }
 
     /**

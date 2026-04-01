@@ -384,7 +384,6 @@ class RedCardSimulationTest extends TestCase
 
         // Force red card reactive chance to 100% for deterministic testing
         config(['match_simulation.ai_substitutions.red_card_reactive_chance' => 100]);
-        config(['match_simulation.ai_substitutions.red_card_opponent_attack_chance' => 100]);
         // Increase direct red card chance so we get one reliably
         config(['match_simulation.direct_red_chance' => 50]);
 
@@ -444,10 +443,10 @@ class RedCardSimulationTest extends TestCase
             $reducedLineup, $bench, 'Centre-Back',
         );
 
-        // Should find a sub: a forward goes out, a defender comes in
+        // Should find a sub: a forward or midfielder goes out, a defender comes in
         $this->assertNotNull($sub, 'Should find a reactive sub for a CB red card');
-        $this->assertEquals('Forward', \App\Support\PositionMapper::getPositionGroup($sub['player_out']->position),
-            'Player subbed out should be a forward');
+        $this->assertContains(\App\Support\PositionMapper::getPositionGroup($sub['player_out']->position),
+            ['Forward', 'Midfielder'], 'Player subbed out should be a forward or midfielder');
         $this->assertEquals('Defender', \App\Support\PositionMapper::getPositionGroup($sub['player_in']->position),
             'Player subbed in should be a defender');
     }
