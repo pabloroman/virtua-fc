@@ -542,19 +542,21 @@ class MatchSimulator
         int &$windowsUsed,
         Collection $allEvents,
     ): void {
-        if ($subsUsed >= $maxSubs || $windowsUsed >= $maxWindows
-            || $bench === null || $bench->isEmpty()
-        ) {
-            return;
-        }
-
-        // Find the sent-off player's position
+        // Remove the red-carded player from the lineup — they're off the pitch
         $sentOffPlayer = $players->firstWhere('id', $redCard->gamePlayerId);
         $sentOffPosition = $sentOffPlayer?->position;
 
         if (! $sentOffPosition) {
             $playerModel = GamePlayer::find($redCard->gamePlayerId);
             $sentOffPosition = $playerModel?->position ?? 'Central Midfield';
+        }
+
+        $players = $players->reject(fn ($p) => $p->id === $redCard->gamePlayerId)->values();
+
+        if ($subsUsed >= $maxSubs || $windowsUsed >= $maxWindows
+            || $bench === null || $bench->isEmpty()
+        ) {
+            return;
         }
 
         $reactiveSub = $this->aiSubstitutionService->chooseRedCardReactiveSubstitution(
@@ -746,6 +748,15 @@ class MatchSimulator
                     }
                 }
             }
+
+            // Check for red cards and apply reactive substitutions
+            $this->applyRedCardReactiveSubs(
+                $periodResult->events, $homeTeam->id, $awayTeam->id,
+                $homePlayers, $awayPlayers, $homeBenchPlayers, $awayBenchPlayers,
+                $homeEntryMinutes, $awayEntryMinutes,
+                $homeSubsUsed, $awaySubsUsed, $homeWindowsUsed, $awayWindowsUsed,
+                $allEvents,
+            );
 
             // Apply AI substitutions at this window
             $goalDifference = ($scoreHomeAtMinute + $totalHomeScore) - ($scoreAwayAtMinute + $totalAwayScore);
