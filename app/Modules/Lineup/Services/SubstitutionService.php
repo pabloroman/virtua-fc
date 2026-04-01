@@ -188,12 +188,19 @@ class SubstitutionService
             }
         }
 
+        $opponentSubbedOutIds = collect($match->substitutions ?? [])
+            ->filter(fn ($sub) => $sub['team_id'] === $opponentTeamId && ($sub['minute'] ?? 0) <= $minute)
+            ->pluck('player_out_id')
+            ->unique()
+            ->all();
+
         // Pre-load suspended player IDs for this competition (single query)
         $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($match->competition_id);
 
         $opponentPlayers = $opponentSquad->filter(fn ($p) => in_array($p->id, $opponentLineupIds));
         $opponentBench = $opponentSquad
             ->reject(fn ($p) => in_array($p->id, $opponentLineupIds))
+            ->reject(fn ($p) => in_array($p->id, $opponentSubbedOutIds))
             ->reject(fn ($p) => $p->isInjured($match->scheduled_date))
             ->reject(fn ($p) => in_array($p->id, $suspendedPlayerIds))
             ->values();
