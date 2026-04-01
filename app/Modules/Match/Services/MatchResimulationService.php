@@ -310,6 +310,15 @@ class MatchResimulationService
                     $awayEntryMinutes[$sub['playerInId']] = $sub['minute'];
                 }
             }
+            foreach ($match->substitutions ?? [] as $sub) {
+                if (($sub['team_id'] ?? null) !== $game->team_id && ($sub['minute'] ?? 0) <= $minute) {
+                    if ($isUserHome) {
+                        $awayEntryMinutes[$sub['player_in_id']] = $sub['minute'];
+                    } else {
+                        $homeEntryMinutes[$sub['player_in_id']] = $sub['minute'];
+                    }
+                }
+            }
 
             // 7. Re-simulate extra time remainder
             $remainderResult = $this->matchSimulator->simulateExtraTime(
