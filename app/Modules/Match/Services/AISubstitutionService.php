@@ -4,7 +4,6 @@ namespace App\Modules\Match\Services;
 
 use App\Models\GamePlayer;
 use App\Modules\Lineup\Services\SubstitutionService;
-use App\Modules\Match\Services\EnergyCalculator;
 use App\Support\PositionMapper;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;

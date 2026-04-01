@@ -382,8 +382,6 @@ class RedCardSimulationTest extends TestCase
         $homeBench = $this->createBenchPlayers($game, $homeTeam, 7, 70);
         $awayBench = $this->createBenchPlayers($game, $awayTeam, 7, 70);
 
-        // Force red card reactive chance to 100% for deterministic testing
-        config(['match_simulation.ai_substitutions.red_card_reactive_chance' => 100]);
         // Increase direct red card chance so we get one reliably
         config(['match_simulation.direct_red_chance' => 50]);
 

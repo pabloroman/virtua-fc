@@ -336,10 +336,6 @@ return [
         'energy_threshold' => 40,           // energy below this = strong sub candidate
         'yellow_card_weight' => 0.30,       // extra urgency score for yellowed players
         'losing_attack_bias' => 0.70,       // probability of preferring attackers when losing
-
-        // Reactive substitutions after red cards
-        'red_card_reactive_chance' => 70,              // % chance the 10-man team makes a tactical sub
-        'red_card_reactive_max_minute' => 80,          // no reactive subs after this minute
     ],
 
 ];

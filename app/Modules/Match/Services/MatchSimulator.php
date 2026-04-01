@@ -505,21 +505,19 @@ class MatchSimulator
 
         $maxSubs = SubstitutionService::MAX_SUBSTITUTIONS;
         $maxWindows = SubstitutionService::MAX_WINDOWS;
-        $reactiveChance = config('match_simulation.ai_substitutions.red_card_reactive_chance', 70);
-        $reactiveMaxMinute = config('match_simulation.ai_substitutions.red_card_reactive_max_minute', 80);
 
         foreach ($redCards as $redCard) {
             $subMinute = $redCard->minute + 2;
 
             if ($redCard->teamId === $homeTeamId) {
                 $this->applyRedCardTeamReactiveSub(
-                    $redCard, $subMinute, $reactiveMaxMinute, $reactiveChance, $maxSubs, $maxWindows,
+                    $redCard, $subMinute, $maxSubs, $maxWindows,
                     $homeTeamId, $homePlayers, $homeBench, $homeEntryMinutes,
                     $homeSubsUsed, $homeWindowsUsed, $allEvents,
                 );
             } else {
                 $this->applyRedCardTeamReactiveSub(
-                    $redCard, $subMinute, $reactiveMaxMinute, $reactiveChance, $maxSubs, $maxWindows,
+                    $redCard, $subMinute, $maxSubs, $maxWindows,
                     $awayTeamId, $awayPlayers, $awayBench, $awayEntryMinutes,
                     $awaySubsUsed, $awayWindowsUsed, $allEvents,
                 );
@@ -533,8 +531,6 @@ class MatchSimulator
     private function applyRedCardTeamReactiveSub(
         MatchEventData $redCard,
         int $subMinute,
-        int $maxMinute,
-        int $chance,
         int $maxSubs,
         int $maxWindows,
         string $teamId,
@@ -545,10 +541,8 @@ class MatchSimulator
         int &$windowsUsed,
         Collection $allEvents,
     ): void {
-        if ($redCard->minute > $maxMinute
-            || $subsUsed >= $maxSubs || $windowsUsed >= $maxWindows
+        if ($subsUsed >= $maxSubs || $windowsUsed >= $maxWindows
             || $bench === null || $bench->isEmpty()
-            || rand(1, 100) > $chance
         ) {
             return;
         }
