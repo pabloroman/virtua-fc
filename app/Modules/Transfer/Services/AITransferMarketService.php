@@ -12,6 +12,7 @@ use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Player\PlayerAge;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 /**
@@ -61,6 +62,15 @@ class AITransferMarketService
 
     /** Minimum free agents to preserve — AI stops signing when pool drops to this */
     private const MIN_FREE_AGENT_POOL = 15;
+
+    /** Minimum player tier a team will sign, keyed by reputation level */
+    private const MIN_TIER_BY_REPUTATION = [
+        ClubProfile::REPUTATION_LOCAL        => 1,
+        ClubProfile::REPUTATION_MODEST       => 1,
+        ClubProfile::REPUTATION_ESTABLISHED  => 2,
+        ClubProfile::REPUTATION_CONTINENTAL  => 3,
+        ClubProfile::REPUTATION_ELITE        => 4,
+    ];
 
     public function __construct(
         private readonly ContractService $contractService,
@@ -183,10 +193,13 @@ class AITransferMarketService
         $teamAverages = $teamRosters->map(fn ($players) => $this->calculateTeamAverage($players));
         $teams = Team::whereIn('id', $teamRosters->keys())->get()->keyBy('id');
         $takenNumbers = $this->preloadSquadNumbers($game->id);
+        $reputationLevels = TeamReputation::resolveLevels($game->id, $teamRosters->keys()->all());
+
+        Log::info('[AIFreeAgentSigning] AI teams loaded: ' . $teamRosters->count());
 
         $freeAgents = GamePlayer::with(['player:id,date_of_birth'])
             ->select([
-                'id', 'game_id', 'player_id', 'team_id', 'position',
+                'id', 'game_id', 'player_id', 'team_id', 'position', 'tier',
                 'market_value_cents', 'game_technical_ability', 'game_physical_ability',
                 'retiring_at_season', 'number', 'contract_until', 'annual_wage',
             ])
@@ -194,6 +207,8 @@ class AITransferMarketService
             ->whereNull('team_id')
             ->get()
             ->keyBy('id');
+
+        Log::info('[AIFreeAgentSigning] Free agents found: ' . $freeAgents->count() . ', maxSignings: ' . max(0, $freeAgents->count() - self::MIN_FREE_AGENT_POOL));
 
         if ($freeAgents->isEmpty()) {
             return ['count' => 0, 'signings' => []];
@@ -241,6 +256,8 @@ class AITransferMarketService
         // Sort by priority descending (critical needs first)
         usort($teamNeeds, fn ($a, $b) => $b['priority'] <=> $a['priority']);
 
+        Log::info('[AIFreeAgentSigning] Team needs entries: ' . count($teamNeeds) . ', teams at max squad: ' . $teamRosters->filter(fn ($p) => $p->count() >= self::MAX_SQUAD_SIZE)->count());
+
         $playerUpdates = [];
         $transferInserts = [];
         $signings = [];
@@ -257,12 +274,15 @@ class AITransferMarketService
                 $game, $need['teamId'], $need['group'], $freeAgents, $teamRosters,
                 $teamAverages, $teams, $takenNumbers, $seasonYear,
                 $playerUpdates, $transferInserts, $signings, $newSeason,
+                reputationLevels: $reputationLevels,
             );
 
             if ($signed) {
                 $count++;
             }
         }
+
+        Log::info("[AIFreeAgentSigning] Phase 1+2 signed: {$count}, remaining free agents: " . $freeAgents->count());
 
         // Phase 3: General absorption — place remaining free agents with teams that have room
         // Iterate free agents by ability descending so better players find homes first
@@ -273,7 +293,7 @@ class AITransferMarketService
                 break;
             }
 
-            $bestTeamId = $this->findBestTeamForSeasonSigning($fa, $teamRosters, $teamAverages);
+            $bestTeamId = $this->findBestTeamForSeasonSigning($fa, $teamRosters, $teamAverages, $reputationLevels);
             if (! $bestTeamId) {
                 continue;
             }
@@ -282,13 +302,16 @@ class AITransferMarketService
                 $game, $bestTeamId, null, $freeAgents, $teamRosters,
                 $teamAverages, $teams, $takenNumbers, $seasonYear,
                 $playerUpdates, $transferInserts, $signings, $newSeason,
-                $fa,
+                specificAgent: $fa,
+                reputationLevels: $reputationLevels,
             );
 
             if ($signed) {
                 $count++;
             }
         }
+
+        Log::info("[AIFreeAgentSigning] Total signed: {$count}, remaining free agents: " . $freeAgents->count());
 
         // Flush to database
         $this->flushBatchedOperations($playerUpdates, $transferInserts);
@@ -1026,6 +1049,7 @@ class AITransferMarketService
         array &$signings,
         string $newSeason,
         ?GamePlayer $specificAgent = null,
+        ?Collection $reputationLevels = null,
     ): bool {
         $currentRosterSize = $teamRosters->has($teamId) ? $teamRosters[$teamId]->count() : 0;
         if ($currentRosterSize >= self::MAX_SQUAD_SIZE) {
@@ -1033,11 +1057,16 @@ class AITransferMarketService
         }
 
         $teamAvg = $teamAverages[$teamId] ?? 55;
+        $reputation = $reputationLevels?->get($teamId) ?? ClubProfile::REPUTATION_LOCAL;
+        $minTier = self::MIN_TIER_BY_REPUTATION[$reputation] ?? 1;
 
         if ($specificAgent) {
             $bestAgent = $specificAgent;
-            // Verify it's still in the pool
+            // Verify it's still in the pool and meets tier requirements
             if (! $freeAgents->has($bestAgent->id)) {
+                return false;
+            }
+            if (($bestAgent->tier ?? 1) < $minTier) {
                 return false;
             }
         } else {
@@ -1047,6 +1076,10 @@ class AITransferMarketService
 
             foreach ($freeAgents as $fa) {
                 if ($this->getPositionGroup($fa->position) !== $positionGroup) {
+                    continue;
+                }
+
+                if (($fa->tier ?? 1) < $minTier) {
                     continue;
                 }
 
@@ -1112,6 +1145,15 @@ class AITransferMarketService
             'teamName' => $team?->name ?? 'Unknown',
         ];
 
+        Log::info('[AIFreeAgentSigning] Signed', [
+            'player' => $bestAgent->player?->name,
+            'tier' => $bestAgent->tier,
+            'position' => $bestAgent->position,
+            'team' => $team?->name,
+            'reputation' => $reputation ?? 'unknown',
+            'minTier' => $minTier ?? 'unknown',
+        ]);
+
         if (! $teamRosters->has($teamId)) {
             $teamRosters[$teamId] = collect();
         }
@@ -1128,15 +1170,22 @@ class AITransferMarketService
      * strongly preferred. Unlike findBestTeamForFreeAgent (used at window close),
      * this method doesn't require specific position group needs.
      */
-    private function findBestTeamForSeasonSigning(GamePlayer $freeAgent, Collection $teamRosters, Collection $teamAverages): ?string
+    private function findBestTeamForSeasonSigning(GamePlayer $freeAgent, Collection $teamRosters, Collection $teamAverages, Collection $reputationLevels): ?string
     {
         $playerAbility = $this->getPlayerAbility($freeAgent);
+        $playerTier = $freeAgent->tier ?? 1;
         $bestScore = -1;
         $bestTeamId = null;
 
         foreach ($teamRosters as $teamId => $players) {
             $squadSize = $players->count();
             if ($squadSize >= self::MAX_SQUAD_SIZE) {
+                continue;
+            }
+
+            $reputation = $reputationLevels->get($teamId) ?? ClubProfile::REPUTATION_LOCAL;
+            $minTier = self::MIN_TIER_BY_REPUTATION[$reputation] ?? 1;
+            if ($playerTier < $minTier) {
                 continue;
             }
 
