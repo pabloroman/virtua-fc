@@ -127,7 +127,7 @@ class ActivationFunnelService
 
     private function computePercentages(array &$steps): void
     {
-        $maxCount = max(1, $steps[0]['count']);
+        $maxCount = max(1, ...array_column($steps, 'count'));
 
         foreach ($steps as $i => &$step) {
             $step['percentage'] = $maxCount > 0 ? round(($step['count'] / $maxCount) * 100, 1) : 0;
