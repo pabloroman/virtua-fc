@@ -614,9 +614,10 @@ class ContractService
     public const MIN_SQUAD_SIZE = 20;
 
     /**
-     * Maximum squad size — cannot add players above this.
+     * Maximum total squad size — a soft cap to prevent excessive hoarding.
+     * Registration (25 numbered slots) controls competitive eligibility separately.
      */
-    public const MAX_SQUAD_SIZE = 30;
+    public const MAX_SQUAD_SIZE = 40;
 
     /**
      * Count first-team players in the user's squad.
@@ -637,13 +638,11 @@ class ContractService
     }
 
     /**
-     * Clear the squad_trim pending action if the squad is now within the cap.
+     * @deprecated Squad registration replaces the old squad_trim mechanism.
      */
     public static function clearSquadTrimIfResolved(Game $game): void
     {
-        if ($game->hasPendingAction('squad_trim') && self::squadCount($game) <= self::MAX_SQUAD_SIZE) {
-            $game->removePendingAction('squad_trim');
-        }
+        // No-op: registration system handles competitive eligibility.
     }
 
     /**

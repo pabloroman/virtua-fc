@@ -148,4 +148,15 @@ return [
     'loan_not_available' => 'A budget loan is not available right now.',
     'loan_below_minimum' => 'The loan amount is below the minimum.',
     'loan_exceeds_maximum' => 'The loan amount exceeds the maximum allowed.',
+
+    // Squad Registration
+    'squad_registration_required' => 'You must register your squad before the first competitive match of the season.',
+    'registration_saved' => 'Squad registration confirmed successfully.',
+    'registration_invalid_player' => 'One or more players do not belong to your team.',
+    'registration_invalid_number' => 'Squad numbers must be between 1 and 99.',
+    'registration_duplicate_number' => 'Number :number is assigned to more than one player.',
+    'registration_too_many' => 'You cannot register more than :max players in standard slots (1–25).',
+    'registration_too_few' => 'You must register at least :min players.',
+    'registration_academy_age' => ':name is :age years old and cannot be registered in an academy slot (26+). Use a standard slot instead.',
+    'registration_min_position' => 'You need at least :min :position registered.',
 ];

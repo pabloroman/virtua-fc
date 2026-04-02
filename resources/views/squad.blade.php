@@ -107,6 +107,7 @@
                 @php
                     $squadNavItems = [
                         ['href' => route('game.squad', $game->id), 'label' => __('squad.first_team'), 'active' => true],
+                        ['href' => route('game.squad.registration', $game->id), 'label' => __('squad.registration'), 'active' => false],
                         ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => false],
                     ];
                 @endphp
@@ -117,20 +118,18 @@
             <x-flash-message type="success" :message="session('success')" class="mt-4" />
             <x-flash-message type="error" :message="session('error')" class="mt-4" />
 
-            {{-- Squad trim warning --}}
-            @if($squadSize > \App\Modules\Transfer\Services\ContractService::MAX_SQUAD_SIZE)
-            <div class="mt-4 p-4 bg-accent-gold/10 border border-accent-gold/20 rounded-lg flex items-center gap-3">
-                <svg class="w-5 h-5 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                </svg>
-                <p class="text-sm text-accent-gold font-medium">
-                    {{ __('messages.squad_trim_required', [
-                        'count' => $squadSize,
-                        'excess' => $squadSize - \App\Modules\Transfer\Services\ContractService::MAX_SQUAD_SIZE,
-                        'max' => \App\Modules\Transfer\Services\ContractService::MAX_SQUAD_SIZE,
-                    ]) }}
-                </p>
-            </div>
+            {{-- Squad registration status --}}
+            @if($isCareerMode && $game->hasPendingAction('squad_registration'))
+            <x-status-banner color="gold" :title="__('messages.action_required')" :description="__('messages.squad_registration_required')" class="mt-4">
+                <x-slot name="icon">
+                    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/>
+                    </svg>
+                </x-slot>
+                <x-primary-button-link color="amber" :href="route('game.squad.registration', $game->id)" class="shrink-0">
+                    {{ __('squad.register_squad') }}
+                </x-primary-button-link>
+            </x-status-banner>
             @endif
 
             {{-- ===== Squad Header ===== --}}
@@ -139,8 +138,14 @@
             </div>
 
             {{-- ===== Summary Cards ===== --}}
+            @php
+                $registeredCount = $allPlayers->filter(fn($p) => $p->isRegistered())->count();
+            @endphp
             <div class="flex gap-2.5 overflow-x-auto scrollbar-hide mt-4 pb-1">
                 <x-summary-card :label="__('squad.squad_size')" :value="$squadSize" />
+                @if($isCareerMode)
+                <x-summary-card :label="__('squad.registered')" :value="$registeredCount . '/' . \App\Models\GamePlayer::MAX_REGISTERED_STANDARD" :value-class="$registeredCount >= 18 ? 'text-accent-green' : 'text-accent-gold'" />
+                @endif
                 <x-summary-card :label="__('squad.avg_age')" :value="$avgAge" />
                 <x-summary-card :label="__('squad.fitness_full')" :value="$avgFitness . '%'" x-data x-tooltip.raw="{{ __('squad.tooltip_fitness') }}" :value-class="$avgFitness >= 85 ? 'text-accent-green' : ($avgFitness >= 70 ? 'text-text-primary' : 'text-amber-500')" />
                 <x-summary-card :label="__('squad.morale_full')" :value="$avgMorale" x-data x-tooltip.raw="{{ __('squad.tooltip_morale') }}" :value-class="$avgMorale >= 80 ? 'text-accent-green' : ($avgMorale >= 65 ? 'text-text-primary' : 'text-amber-500')" />

@@ -351,15 +351,13 @@ class LoanService
             'status' => Loan::STATUS_ACTIVE,
         ]);
 
-        // Move player to AI team
+        // Move player to AI team (frees their registration slot)
         $player->update([
             'team_id' => $destinationTeam->id,
             'number' => GamePlayer::nextAvailableNumber($game->id, $destinationTeam->id),
             'transfer_status' => null,
             'transfer_listed_at' => null,
         ]);
-
-        ContractService::clearSquadTrimIfResolved($game);
 
         return $loan;
     }
@@ -537,7 +535,7 @@ class LoanService
 
         $player->update([
             'team_id' => $game->team_id,
-            'number' => GamePlayer::nextAvailableNumber($game->id, $game->team_id),
+            'number' => GamePlayer::nextAvailableStandardNumber($game->id, $game->team_id),
         ]);
 
         GameTransfer::record(

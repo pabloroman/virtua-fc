@@ -349,4 +349,21 @@ return [
 
     // Dorsales
     'number' => 'Dorsal',
+
+    // Inscripción de plantilla
+    'registration' => 'Inscripción',
+    'registration_title' => 'Inscripción de Plantilla',
+    'registration_subtitle' => 'Selecciona hasta :max jugadores para tu plantilla competitiva. Los no inscritos pueden entrenar y jugar amistosos.',
+    'registration_info_title' => 'Cómo funciona la inscripción',
+    'registration_info_description' => 'Asigna dorsales del 1 al :max a tu plantilla competitiva. Los jugadores del filial menores de :academy_age se inscriben automáticamente con dorsales a partir del 26.',
+    'registered' => 'Inscritos',
+    'unregistered' => 'No inscrito',
+    'not_registered' => 'No inscrito para competición',
+    'academy_short' => 'filial',
+    'academy_eligible' => 'Elegible filial',
+    'register_squad' => 'Inscribir Plantilla',
+    'auto_assign' => 'Auto-asignar',
+    'clear_all' => 'Limpiar todo',
+    'confirm_registration' => 'Confirmar Inscripción',
+    'registered_label' => 'inscritos',
 ];

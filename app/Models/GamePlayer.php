@@ -201,6 +201,11 @@ class GamePlayer extends Model
     public const TRANSFER_STATUS_LISTED = 'listed';
     public const TRANSFER_STATUS_LOAN_SEARCH = 'loan_search';
 
+    // Squad registration constants
+    public const MAX_REGISTERED_STANDARD = 25;
+    public const ACADEMY_NUMBER_START = 26;
+    public const MAX_ACADEMY_AGE = 22; // Under 23: players aged 22 or younger qualify
+
     /**
      * Find the next available squad number for a team.
      * Scans 2–99 and returns the first unused number.
@@ -220,6 +225,85 @@ class GamePlayer extends Model
         }
 
         return 99;
+    }
+
+    /**
+     * Find the next available standard registration number (1–25).
+     * Returns null if all standard slots are taken.
+     */
+    public static function nextAvailableStandardNumber(string $gameId, string $teamId): ?int
+    {
+        $taken = static::where('game_id', $gameId)
+            ->where('team_id', $teamId)
+            ->whereNotNull('number')
+            ->whereBetween('number', [1, self::MAX_REGISTERED_STANDARD])
+            ->pluck('number')
+            ->all();
+
+        for ($n = 1; $n <= self::MAX_REGISTERED_STANDARD; $n++) {
+            if (!in_array($n, $taken)) {
+                return $n;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Find the next available academy number (26+).
+     */
+    public static function nextAvailableAcademyNumber(string $gameId, string $teamId): int
+    {
+        $taken = static::where('game_id', $gameId)
+            ->where('team_id', $teamId)
+            ->whereNotNull('number')
+            ->where('number', '>=', self::ACADEMY_NUMBER_START)
+            ->pluck('number')
+            ->all();
+
+        for ($n = self::ACADEMY_NUMBER_START; $n <= 99; $n++) {
+            if (!in_array($n, $taken)) {
+                return $n;
+            }
+        }
+
+        return 99;
+    }
+
+    /**
+     * Count how many standard registration slots (1–25) are used for a team.
+     */
+    public static function standardRegisteredCount(string $gameId, string $teamId): int
+    {
+        return static::where('game_id', $gameId)
+            ->where('team_id', $teamId)
+            ->whereNotNull('number')
+            ->whereBetween('number', [1, self::MAX_REGISTERED_STANDARD])
+            ->count();
+    }
+
+    /**
+     * Check if this player is registered for competitive matches (has a squad number).
+     */
+    public function isRegistered(): bool
+    {
+        return $this->number !== null;
+    }
+
+    /**
+     * Check if this player has an academy registration (number 26+).
+     */
+    public function isAcademyRegistered(): bool
+    {
+        return $this->number !== null && $this->number >= self::ACADEMY_NUMBER_START;
+    }
+
+    /**
+     * Check if this player has a standard registration (number 1–25).
+     */
+    public function isStandardRegistered(): bool
+    {
+        return $this->number !== null && $this->number <= self::MAX_REGISTERED_STANDARD;
     }
 
     /**
@@ -628,7 +712,13 @@ class GamePlayer extends Model
     public function getUnavailabilityReason(
         ?Carbon $gameDate = null,
         ?string $competitionId = null,
+        bool $isFriendly = false,
     ): ?string {
+        // Registration check (competitive matches only)
+        if (!$isFriendly && !$this->isRegistered()) {
+            return __('squad.not_registered');
+        }
+
         if ($competitionId !== null && $this->isSuspendedInCompetition($competitionId)) {
             $remaining = $this->getSuspensionMatchesRemaining($competitionId);
             return trans_choice('squad.suspended_matches', $remaining, ['count' => $remaining]);

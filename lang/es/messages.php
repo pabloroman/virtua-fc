@@ -148,4 +148,15 @@ return [
     'loan_not_available' => 'Un préstamo presupuestario no está disponible ahora mismo.',
     'loan_below_minimum' => 'El importe del préstamo está por debajo del mínimo.',
     'loan_exceeds_maximum' => 'El importe del préstamo supera el máximo permitido.',
+
+    // Inscripción de plantilla
+    'squad_registration_required' => 'Debes inscribir tu plantilla antes del primer partido competitivo de la temporada.',
+    'registration_saved' => 'Inscripción de plantilla confirmada correctamente.',
+    'registration_invalid_player' => 'Uno o más jugadores no pertenecen a tu equipo.',
+    'registration_invalid_number' => 'Los dorsales deben estar entre 1 y 99.',
+    'registration_duplicate_number' => 'El dorsal :number está asignado a más de un jugador.',
+    'registration_too_many' => 'No puedes inscribir más de :max jugadores en plazas estándar (1–25).',
+    'registration_too_few' => 'Debes inscribir al menos :min jugadores.',
+    'registration_academy_age' => ':name tiene :age años y no puede inscribirse en plaza de filial (26+). Usa una plaza estándar.',
+    'registration_min_position' => 'Necesitas al menos :min :position inscritos.',
 ];

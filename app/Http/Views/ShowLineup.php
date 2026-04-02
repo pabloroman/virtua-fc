@@ -81,8 +81,13 @@ class ShowLineup
 
         // Prepare player data for JavaScript (flat array with all needed info)
         // Suspensions are eager-loaded via getAllPlayers, so no extra queries needed
-        $playersData = $allPlayers->map(function ($p) use ($matchDate, $competitionId) {
+        $isFriendly = $competitionId === 'PRESEASON';
+        $playersData = $allPlayers->map(function ($p) use ($matchDate, $competitionId, $isFriendly) {
             $isAvailable = $p->isAvailable($matchDate, $competitionId);
+            // For competitive matches, unregistered players are not available
+            if (!$isFriendly && !$p->isRegistered()) {
+                $isAvailable = false;
+            }
 
             return [
                 'id' => $p->id,
@@ -97,6 +102,7 @@ class ShowLineup
                 'fitness' => $p->fitness,
                 'morale' => $p->morale,
                 'isAvailable' => $isAvailable,
+                'isRegistered' => $p->isRegistered(),
             ];
         })->keyBy('id')->toArray();
 

@@ -40,10 +40,13 @@ class SquadService
         $primeCount = 0;
         $veteranCount = 0;
 
-        $allPlayers->each(function (GamePlayer $player) use ($game, $seasonEndDate, $matchDate, $competitionId, &$youngCount, &$primeCount, &$veteranCount) {
-            // Availability
-            $player->setAttribute('is_unavailable', !$player->isAvailable($matchDate, $competitionId));
-            $player->setAttribute('unavailability_reason', $player->getUnavailabilityReason($matchDate, $competitionId));
+        $isFriendly = $competitionId === 'PRESEASON';
+
+        $allPlayers->each(function (GamePlayer $player) use ($game, $seasonEndDate, $matchDate, $competitionId, $isFriendly, &$youngCount, &$primeCount, &$veteranCount) {
+            // Availability (includes registration check for competitive matches)
+            $isUnavailable = !$player->isAvailable($matchDate, $competitionId) || (!$isFriendly && !$player->isRegistered());
+            $player->setAttribute('is_unavailable', $isUnavailable);
+            $player->setAttribute('unavailability_reason', $player->getUnavailabilityReason($matchDate, $competitionId, $isFriendly));
 
             // Development projection
             $age = $player->age($game->current_date);

@@ -276,6 +276,7 @@ class YouthAcademyService
     /**
      * Promote an academy player to the first team.
      * Creates Player + GamePlayer records and deletes the AcademyPlayer.
+     * Academy-promoted players under 23 get a number 26+ (don't count against the 25-slot registration).
      */
     public function promoteToFirstTeam(AcademyPlayer $academy, Game $game): GamePlayer
     {
@@ -296,6 +297,19 @@ class YouthAcademyService
             moraleMin: 70,
             moraleMax: 90,
         ));
+
+        // Reassign academy number (26+) for user's team youth players
+        if ($academy->team_id === $game->team_id) {
+            $age = $gamePlayer->age($game->current_date);
+            if ($age <= GamePlayer::MAX_ACADEMY_AGE) {
+                $academyNumber = GamePlayer::nextAvailableAcademyNumber($game->id, $game->team_id);
+                $gamePlayer->update(['number' => $academyNumber]);
+            } else {
+                // Over academy age limit — try to register in a standard slot
+                $standardNumber = GamePlayer::nextAvailableStandardNumber($game->id, $game->team_id);
+                $gamePlayer->update(['number' => $standardNumber]);
+            }
+        }
 
         $academy->delete();
 

@@ -38,8 +38,15 @@ class LineupService
         // Batch load suspended player IDs for this competition (single query)
         $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($competitionId);
 
+        // Skip registration check for friendlies (pre-season matches)
+        $isFriendly = $competitionId === 'PRESEASON';
+
         // Filter in memory using pre-loaded suspension data
-        return $players->filter(function (GamePlayer $player) use ($matchDate, $suspendedPlayerIds) {
+        return $players->filter(function (GamePlayer $player) use ($matchDate, $suspendedPlayerIds, $isFriendly) {
+            // Registration check (competitive matches only)
+            if (!$isFriendly && !$player->isRegistered()) {
+                return false;
+            }
             // Check if suspended (using pre-loaded IDs)
             if (in_array($player->id, $suspendedPlayerIds)) {
                 return false;

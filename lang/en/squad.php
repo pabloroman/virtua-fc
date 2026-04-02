@@ -349,4 +349,21 @@ return [
 
     // Number
     'number' => 'Number',
+
+    // Squad Registration
+    'registration' => 'Registration',
+    'registration_title' => 'Squad Registration',
+    'registration_subtitle' => 'Select up to :max players for your competitive squad. Unregistered players can still train and play friendlies.',
+    'registration_info_title' => 'How registration works',
+    'registration_info_description' => 'Assign numbers 1–:max to your competitive squad. Academy-promoted players under :academy_age are automatically registered with numbers 26+.',
+    'registered' => 'Registered',
+    'unregistered' => 'Unregistered',
+    'not_registered' => 'Not registered for competition',
+    'academy_short' => 'academy',
+    'academy_eligible' => 'Academy eligible',
+    'register_squad' => 'Register Squad',
+    'auto_assign' => 'Auto-assign',
+    'clear_all' => 'Clear all',
+    'confirm_registration' => 'Confirm Registration',
+    'registered_label' => 'registered',
 ];
