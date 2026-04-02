@@ -5,6 +5,7 @@ namespace App\Modules\Season\Services;
 use App\Modules\Manager\Processors\TrophyRecordingProcessor;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
+use App\Modules\Season\Processors\AgreedTransferCompletionProcessor;
 use App\Modules\Season\Processors\AIFreeAgentSigningProcessor;
 use App\Modules\Season\Processors\ContractExpirationProcessor;
 use App\Modules\Season\Processors\ContractRenewalProcessor;
@@ -44,6 +45,7 @@ class SeasonClosingPipeline
         ContractExpirationProcessor $contractExpiration,
         SeasonArchiveProcessor $seasonArchive,
         PreContractTransferProcessor $preContractTransfer,
+        AgreedTransferCompletionProcessor $agreedTransferCompletion,
         ContractRenewalProcessor $contractRenewal,
         PlayerRetirementProcessor $playerRetirement,
         SquadReplenishmentProcessor $squadReplenishment,
@@ -66,6 +68,7 @@ class SeasonClosingPipeline
             $contractExpiration,
             $seasonArchive,
             $preContractTransfer,
+            $agreedTransferCompletion,
             $contractRenewal,
             $playerRetirement,
             $squadReplenishment,
