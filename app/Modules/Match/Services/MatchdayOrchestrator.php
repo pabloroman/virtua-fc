@@ -193,7 +193,9 @@ class MatchdayOrchestrator
             ->whereIn('team_id', $teamIds)->get()->keyBy('team_id');
 
         // --- Ensure lineups ---
+        $memAfterLoad = memory_get_usage(true);
         $this->lineupService->ensureLineupsForMatches($matches, $game, $allPlayers, $suspendedByCompetition, $clubProfiles);
+        $memAfterLineups = memory_get_usage(true);
 
         // --- Check for forfeit (user's team has < 7 available players) ---
         // $playerMatch was already resolved above (line 158) — reuse it after filtering
@@ -231,6 +233,7 @@ class MatchdayOrchestrator
             ? $matches->reject(fn ($m) => $m->id === $forfeitedMatchId)
             : $matches;
         $matchResults = $this->simulateMatches($matchesToSimulate, $game, $allPlayers);
+        $memAfterSim = memory_get_usage(true);
 
         if ($forfeitResult) {
             $matchResults[] = $forfeitResult;
@@ -243,6 +246,7 @@ class MatchdayOrchestrator
 
         // --- Process results ---
         $this->matchResultProcessor->processAll($game->id, $currentDate, $matchResults, $deferMatchId, $allPlayers);
+        $memAfterResults = memory_get_usage(true);
 
         // --- Recalculate positions ---
         $this->recalculateLeaguePositions($game->id, $matches);
@@ -272,6 +276,17 @@ class MatchdayOrchestrator
         // --- Post-match actions ---
         $game->refresh()->setRelations([]);
         $this->processPostMatchActions($game, $matches, $handlers, $allPlayers, $deferMatchId);
+
+        Log::info('[ProcessRemainingBatches] Batch breakdown', [
+            'game_id' => $game->id,
+            'matches' => $matches->count(),
+            'players_loaded' => $allPlayers->flatten()->count(),
+            'load_mb' => round($memAfterLoad / 1024 / 1024, 2),
+            'lineups_mb' => round($memAfterLineups / 1024 / 1024, 2),
+            'simulate_mb' => round($memAfterSim / 1024 / 1024, 2),
+            'results_mb' => round($memAfterResults / 1024 / 1024, 2),
+            'final_mb' => round(memory_get_usage(true) / 1024 / 1024, 2),
+        ]);
 
         return ['playerMatch' => $playerMatch];
     }
