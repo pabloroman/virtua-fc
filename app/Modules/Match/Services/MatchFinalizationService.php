@@ -63,17 +63,6 @@ class MatchFinalizationService
             ->first();
 
         if ($nextMatch) {
-            $prevWindow = \App\Modules\Transfer\Enums\TransferWindowType::fromDate($previousDate);
-            $nextWindow = \App\Modules\Transfer\Enums\TransferWindowType::fromDate($nextMatch->scheduled_date);
-
-            if ($prevWindow && ! $nextWindow) {
-                \Illuminate\Support\Facades\Log::warning('[TransferBug] Date advance crosses window boundary!', [
-                    'previous_date' => $previousDate->toDateString(),
-                    'new_date' => $nextMatch->scheduled_date->toDateString(),
-                    'window_closing' => $prevWindow->value,
-                ]);
-            }
-
             $game->update(['current_date' => $nextMatch->scheduled_date->toDateString()]);
             $game->refresh();
 
