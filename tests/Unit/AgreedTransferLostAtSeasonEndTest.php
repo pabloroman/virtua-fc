@@ -6,11 +6,10 @@ use App\Models\Game;
 use App\Models\GameFinances;
 use App\Models\GameInvestment;
 use App\Models\GamePlayer;
+use App\Models\GameStanding;
 use App\Models\Team;
 use App\Models\TransferOffer;
-use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Services\SeasonClosingPipeline;
-use App\Modules\Transfer\Services\TransferService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -47,6 +46,20 @@ class AgreedTransferLostAtSeasonEndTest extends TestCase
             'season' => '2024',
             'projected_revenue' => 100_000_000_00,
             'projected_wages' => 50_000_000_00,
+            'projected_position' => 10,
+        ]);
+        GameStanding::create([
+            'game_id' => $game->id,
+            'competition_id' => $game->competition_id,
+            'team_id' => $game->team_id,
+            'position' => 10,
+            'played' => 38,
+            'won' => 10,
+            'drawn' => 8,
+            'lost' => 20,
+            'goals_for' => 40,
+            'goals_against' => 60,
+            'points' => 38,
         ]);
 
         // Player on user's team, sold to AI club outside transfer window
@@ -70,11 +83,6 @@ class AgreedTransferLostAtSeasonEndTest extends TestCase
 
         // Run the season closing pipeline
         $pipeline = app(SeasonClosingPipeline::class);
-        $data = new SeasonTransitionData(
-            oldSeason: '2024',
-            newSeason: '2025',
-            competitionId: $game->competition_id,
-        );
         $pipeline->run($game);
 
         $player->refresh();
@@ -109,6 +117,20 @@ class AgreedTransferLostAtSeasonEndTest extends TestCase
             'season' => '2024',
             'projected_revenue' => 100_000_000_00,
             'projected_wages' => 50_000_000_00,
+            'projected_position' => 10,
+        ]);
+        GameStanding::create([
+            'game_id' => $game->id,
+            'competition_id' => $game->competition_id,
+            'team_id' => $game->team_id,
+            'position' => 10,
+            'played' => 38,
+            'won' => 10,
+            'drawn' => 8,
+            'lost' => 20,
+            'goals_for' => 40,
+            'goals_against' => 60,
+            'points' => 38,
         ]);
 
         // Player on AI team, bought by user outside transfer window
@@ -133,11 +155,6 @@ class AgreedTransferLostAtSeasonEndTest extends TestCase
 
         // Run the season closing pipeline
         $pipeline = app(SeasonClosingPipeline::class);
-        $data = new SeasonTransitionData(
-            oldSeason: '2024',
-            newSeason: '2025',
-            competitionId: $game->competition_id,
-        );
         $pipeline->run($game);
 
         $player->refresh();
@@ -172,6 +189,20 @@ class AgreedTransferLostAtSeasonEndTest extends TestCase
             'season' => '2024',
             'projected_revenue' => 100_000_000_00,
             'projected_wages' => 50_000_000_00,
+            'projected_position' => 10,
+        ]);
+        GameStanding::create([
+            'game_id' => $game->id,
+            'competition_id' => $game->competition_id,
+            'team_id' => $game->team_id,
+            'position' => 10,
+            'played' => 38,
+            'won' => 10,
+            'drawn' => 8,
+            'lost' => 20,
+            'goals_for' => 40,
+            'goals_against' => 60,
+            'points' => 38,
         ]);
 
         $player = GamePlayer::factory()->forGame($game)->forTeam($userTeam)->create([
