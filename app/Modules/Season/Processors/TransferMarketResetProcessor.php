@@ -31,19 +31,6 @@ class TransferMarketResetProcessor implements SeasonProcessor
             'matchdays_tracked' => 0,
         ]);
 
-        $agreedOffers = TransferOffer::where('game_id', $game->id)
-            ->where('status', TransferOffer::STATUS_AGREED)
-            ->where('offer_type', '!=', TransferOffer::TYPE_PRE_CONTRACT)
-            ->get(['id', 'game_player_id', 'offering_team_id', 'selling_team_id', 'direction', 'transfer_fee', 'offer_type']);
-
-        if ($agreedOffers->isNotEmpty()) {
-            \Illuminate\Support\Facades\Log::warning('[TransferBug] DELETING agreed non-pre-contract offers without completing them!', [
-                'game_id' => $game->id,
-                'count' => $agreedOffers->count(),
-                'offers' => $agreedOffers->toArray(),
-            ]);
-        }
-
         TransferOffer::where('game_id', $game->id)->delete();
 
         GamePlayer::where('game_id', $game->id)

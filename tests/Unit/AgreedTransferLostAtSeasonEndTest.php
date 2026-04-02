@@ -15,28 +15,19 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
- * Proves that transfers agreed outside the transfer window are lost
- * at season end. The root cause is two-fold:
- *
- * 1. CareerActionProcessor only completes agreed transfers when
- *    isTransferWindowOpen() is true. With the forward-looking
- *    current_date, the last January match jumps to a February date,
- *    so winter-window agreed transfers never execute.
- *
- * 2. TransferMarketResetProcessor deletes ALL TransferOffer records
- *    during season close, but no preceding processor completes
- *    non-pre-contract agreed transfers first.
+ * Verifies that transfers agreed outside the transfer window are completed
+ * at season end by AgreedTransferCompletionProcessor, which runs before
+ * TransferMarketResetProcessor cleans up all offers.
  */
 class AgreedTransferLostAtSeasonEndTest extends TestCase
 {
     use RefreshDatabase;
 
     /**
-     * Scenario: user sells a player during the winter window, but the
-     * last January match advances current_date to February. The agreed
-     * outgoing transfer is never completed and is deleted at season end.
+     * Scenario: user sells a player outside the transfer window. The agreed
+     * outgoing transfer is completed at season end by AgreedTransferCompletionProcessor.
      */
-    public function test_agreed_outgoing_transfer_is_lost_at_season_end(): void
+    public function test_agreed_outgoing_transfer_completes_at_season_end(): void
     {
         $game = Game::factory()->create([
             'current_date' => '2025-06-10',
@@ -86,21 +77,19 @@ class AgreedTransferLostAtSeasonEndTest extends TestCase
         );
         $pipeline->run($game);
 
-        // BUG: player should have moved to the buyer team, but they didn't
         $player->refresh();
         $this->assertSame(
             $buyerTeam->id,
             $player->team_id,
-            'Agreed outgoing transfer should complete at season end, but player is still on the user team'
+            'Agreed outgoing transfer should complete at season end'
         );
     }
 
     /**
-     * Scenario: user buys a player outside the transfer window. The
-     * agreed incoming transfer is never completed and is deleted at
-     * season end.
+     * Scenario: user buys a player outside the transfer window. The agreed
+     * incoming transfer is completed at season end by AgreedTransferCompletionProcessor.
      */
-    public function test_agreed_incoming_transfer_is_lost_at_season_end(): void
+    public function test_agreed_incoming_transfer_completes_at_season_end(): void
     {
         $game = Game::factory()->create([
             'current_date' => '2025-06-10',
@@ -151,20 +140,19 @@ class AgreedTransferLostAtSeasonEndTest extends TestCase
         );
         $pipeline->run($game);
 
-        // BUG: player should have moved to the user's team, but they didn't
         $player->refresh();
         $this->assertSame(
             $userTeam->id,
             $player->team_id,
-            'Agreed incoming transfer should complete at season end, but player is still on the seller team'
+            'Agreed incoming transfer should complete at season end'
         );
     }
 
     /**
-     * Proves that TransferMarketResetProcessor deletes agreed offers
-     * without completing them.
+     * Verifies that agreed offers are completed before TransferMarketResetProcessor
+     * cleans up all offers.
      */
-    public function test_agreed_offers_are_deleted_without_completion(): void
+    public function test_agreed_offers_are_completed_before_cleanup(): void
     {
         $game = Game::factory()->create([
             'current_date' => '2025-06-10',
@@ -211,14 +199,14 @@ class AgreedTransferLostAtSeasonEndTest extends TestCase
         $pipeline = app(SeasonClosingPipeline::class);
         $pipeline->run($game);
 
-        // After season close: the offer has been deleted entirely
+        // After season close: offers are cleaned up
         $this->assertSame(0, TransferOffer::where('game_id', $game->id)->count(),
-            'TransferMarketResetProcessor deletes all offers including agreed ones');
+            'TransferMarketResetProcessor deletes all offers after completion');
 
-        // And the player never moved
+        // Player moved to the buyer team
         $player->refresh();
-        $this->assertSame($userTeam->id, $player->team_id,
-            'Player stayed on original team because the agreed offer was deleted without being completed');
+        $this->assertSame($buyerTeam->id, $player->team_id,
+            'Player moved to buyer team because agreed offer was completed before cleanup');
     }
 
     /**

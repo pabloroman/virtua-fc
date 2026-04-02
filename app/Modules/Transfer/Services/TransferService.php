@@ -553,13 +553,6 @@ class TransferService
         }
 
         // Otherwise, mark as agreed (waiting for next transfer window)
-        \Illuminate\Support\Facades\Log::info('[TransferBug] Outgoing offer agreed outside window — deferred', [
-            'offer_id' => $offer->id,
-            'player' => $offer->gamePlayer->player->name ?? $offer->game_player_id,
-            'current_date' => $game->current_date->toDateString(),
-            'type' => $offer->offer_type,
-            'fee' => $offer->transfer_fee,
-        ]);
         $offer->update(['status' => TransferOffer::STATUS_AGREED, 'resolved_at' => $game->current_date]);
         return false;
     }
@@ -898,7 +891,7 @@ class TransferService
      * Complete all agreed incoming transfers (user buying/loaning players).
      * Called when transfer window opens.
      */
-    public function completeIncomingTransfers(Game $game): Collection
+    public function completeIncomingTransfers(Game $game, bool $skipSquadCheck = false): Collection
     {
         $agreedIncoming = TransferOffer::with(['gamePlayer.player', 'sellingTeam'])
             ->where('game_id', $game->id)
@@ -920,7 +913,7 @@ class TransferService
             if ($offer->offer_type === TransferOffer::TYPE_LOAN_IN) {
                 $this->loanService->completeLoanIn($offer, $game);
             } else {
-                $this->completeIncomingTransfer($offer, $game);
+                $this->completeIncomingTransfer($offer, $game, $skipSquadCheck);
             }
             $completedTransfers->push($offer);
         }
@@ -1010,13 +1003,6 @@ class TransferService
         }
 
         // Otherwise, mark as agreed (waiting for next transfer window)
-        \Illuminate\Support\Facades\Log::info('[TransferBug] Incoming offer agreed outside window — deferred', [
-            'offer_id' => $offer->id,
-            'player' => $offer->gamePlayer->player->name ?? $offer->game_player_id,
-            'current_date' => $game->current_date->toDateString(),
-            'type' => $offer->offer_type,
-            'fee' => $offer->transfer_fee,
-        ]);
         $offer->update(['status' => TransferOffer::STATUS_AGREED, 'resolved_at' => $game->current_date]);
         return false;
     }
