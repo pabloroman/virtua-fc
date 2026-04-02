@@ -1219,7 +1219,16 @@ class AITransferMarketService
         $teamRosters = $this->loadAIRosters($game);
         $teamAverages = $teamRosters->map(fn ($players) => $this->calculateTeamAverage($players));
         $teams = Team::whereIn('id', $teamRosters->keys())->get()->keyBy('id');
-        $takenNumbers = $this->preloadSquadNumbers($game->id);
+
+        // Derive squad numbers from already-loaded rosters (avoids a redundant full-table query).
+        // Supplement with the user's team numbers since loadAIRosters excludes them.
+        $takenNumbers = $teamRosters->map(fn ($players) => $players->pluck('number')->filter()->values()->all());
+        $userTeamNumbers = GamePlayer::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->whereNotNull('number')
+            ->pluck('number')
+            ->all();
+        $takenNumbers->put($game->team_id, $userTeamNumbers);
 
         $seasonTransfers = GameTransfer::where('game_id', $game->id)
             ->where('season', $game->season)

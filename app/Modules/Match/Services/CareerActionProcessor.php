@@ -28,11 +28,18 @@ class CareerActionProcessor
 
     public function process(Game $game): void
     {
-        // Pre-load buyer pool once for all offer generation (avoids repeated team/squad queries)
-        $buyerPool = $this->transferService->loadBuyerPool($game);
+        // Only load buyer pool when needed (transfer window open or pre-contract eligible months).
+        // This avoids ~3MB of team/squad queries on ticks where none of this runs.
+        $buyerPool = null;
+        $windowOpen = $game->isTransferWindowOpen();
+        $preContractSeason = $game->current_date && $game->current_date->month >= 1 && $game->current_date->month <= 5;
+
+        if ($windowOpen || $preContractSeason) {
+            $buyerPool = $this->transferService->loadBuyerPool($game);
+        }
 
         // Process transfers when window is open
-        if ($game->isTransferWindowOpen()) {
+        if ($windowOpen) {
             $completedOutgoing = $this->transferService->completeAgreedTransfers($game);
             $completedIncoming = $this->transferService->completeIncomingTransfers($game);
             foreach ($completedOutgoing->merge($completedIncoming) as $offer) {
@@ -41,7 +48,7 @@ class CareerActionProcessor
         }
 
         // Generate transfer offers (can happen anytime, but more during windows)
-        if ($game->isTransferWindowOpen()) {
+        if ($windowOpen) {
             $listedOffers = $this->transferService->generateOffersForListedPlayers($game, buyerPool: $buyerPool);
             $unsolicitedOffers = $this->transferService->generateUnsolicitedOffers($game, buyerPool: $buyerPool);
             foreach ($listedOffers->merge($unsolicitedOffers) as $offer) {
