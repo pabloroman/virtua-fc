@@ -79,7 +79,6 @@ class DeleteGameJob implements ShouldQueue
         DB::table('season_archives')->where('game_id', $this->gameId)->delete();
         DB::table('simulated_seasons')->where('game_id', $this->gameId)->delete();
         DB::table('budget_loans')->where('game_id', $this->gameId)->delete();
-        DB::table('manager_trophies')->where('game_id', $this->gameId)->delete();
 
         // Root: game row itself (nothing left to cascade)
         $game->delete();
