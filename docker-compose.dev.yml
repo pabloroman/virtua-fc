@@ -9,7 +9,6 @@ services:
     environment:
       APP_ENV: local
       APP_DEBUG: "true"
-      APP_KEY: base64:bYw6gXU85Ramv6U/DPR3+esA5P0D3rK+zVixQVENh0k=
       DB_HOST: postgres
       DB_PORT: 5432
       DB_DATABASE: virtua_fc
@@ -51,7 +50,6 @@ services:
     environment:
       APP_ENV: local
       APP_DEBUG: "true"
-      APP_KEY: base64:bYw6gXU85Ramv6U/DPR3+esA5P0D3rK+zVixQVENh0k=
       DB_HOST: postgres
       DB_PORT: 5432
       DB_DATABASE: virtua_fc
