@@ -239,8 +239,9 @@ class TournamentSnapshotService
     public static function computeResultPoints(string $resultLabel): int
     {
         return match ($resultLabel) {
-            'champion' => 6,
-            'runner_up' => 5,
+            'champion' => 7,
+            'runner_up' => 6,
+            'third_place' => 5,
             'semi_finalist' => 4,
             'quarter_finalist' => 3,
             'round_of_16' => 2,
@@ -251,8 +252,9 @@ class TournamentSnapshotService
     public static function resultLabelFromPoints(int $points): string
     {
         return match ($points) {
-            6 => 'champion',
-            5 => 'runner_up',
+            7 => 'champion',
+            6 => 'runner_up',
+            5 => 'third_place',
             4 => 'semi_finalist',
             3 => 'quarter_finalist',
             2 => 'round_of_16',
