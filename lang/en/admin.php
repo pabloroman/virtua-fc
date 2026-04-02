@@ -100,7 +100,8 @@ return [
     'nav_game_stats' => 'Game Stats',
     'game_stats_title' => 'Game Stats',
     'game_stats_description' => 'Explore how players use the game',
-    'team_popularity' => 'Team Popularity',
+    'club_popularity' => 'Club Popularity',
+    'national_team_popularity' => 'National Team Popularity',
     'season_progress' => 'Season Progress',
     'no_data' => 'No data yet',
 

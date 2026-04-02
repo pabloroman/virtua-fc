@@ -100,7 +100,8 @@ return [
     'nav_game_stats' => 'Estadísticas',
     'game_stats_title' => 'Estadísticas del Juego',
     'game_stats_description' => 'Descubre cómo juegan los usuarios',
-    'team_popularity' => 'Popularidad de Equipos',
+    'club_popularity' => 'Popularidad de Clubes',
+    'national_team_popularity' => 'Popularidad de Selecciones',
     'season_progress' => 'Progreso de Temporadas',
     'no_data' => 'Sin datos aún',
 
