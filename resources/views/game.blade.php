@@ -6,6 +6,18 @@
     </x-slot>
 
     <div class="max-w-7xl mx-auto px-4 pb-8">
+        @if(app()->isLocal())
+        <div class="mt-4 p-3 bg-yellow-900/50 border border-yellow-600 rounded-lg flex items-center gap-3">
+            <span class="text-yellow-400 text-sm font-mono">DEBUG</span>
+            <form action="{{ route('game.debug-season-transition', $game->id) }}" method="POST">
+                @csrf
+                <button type="submit" class="px-3 py-1 bg-yellow-600 hover:bg-yellow-700 text-white text-sm font-semibold rounded">
+                    Force Season Transition
+                </button>
+            </form>
+        </div>
+        @endif
+
         {{-- Pending action alert --}}
         @if($game->hasPendingActions())
             @php $pendingAction = $game->getFirstPendingAction(); @endphp

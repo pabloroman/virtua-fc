@@ -113,6 +113,7 @@ use App\Http\Views\ShowTournamentLeaderboard;
 use App\Http\Views\ShowTournamentSummary;
 use App\Http\Actions\ProcessTacticalActions;
 use App\Http\Actions\PromoteAcademyPlayer;
+use App\Http\Actions\DebugSeasonTransition;
 use App\Http\Actions\StartNewSeason;
 use Illuminate\Support\Facades\Route;
 
@@ -224,6 +225,7 @@ Route::middleware('auth')->group(function () {
         // Season End
         Route::get('/game/{gameId}/season-end', ShowSeasonEnd::class)->name('game.season-end');
         Route::post('/game/{gameId}/start-new-season', StartNewSeason::class)->name('game.start-new-season');
+        Route::post('/game/{gameId}/debug-season-transition', DebugSeasonTransition::class)->name('game.debug-season-transition');
 
         // Tournament End
         Route::get('/game/{gameId}/tournament-end', ShowTournamentEnd::class)->name('game.tournament-end');
