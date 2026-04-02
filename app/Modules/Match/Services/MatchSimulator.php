@@ -1753,6 +1753,12 @@ class MatchSimulator
 
             $events = $events->sortBy('minute')->values();
 
+            $events = $this->applyPenaltyEvents(
+                $events, $homePlayers, $awayPlayers,
+                $homeTeam->id, $awayTeam->id, $matchFraction,
+                $fromMinute + 1, $toMinute,
+            );
+
             $events = $this->reassignEventsFromUnavailablePlayers(
                 $events, $homePlayers, $awayPlayers, $homeTeam->id, $awayTeam->id
             );
@@ -2103,6 +2109,93 @@ class MatchSimulator
     }
 
     /**
+     * Post-process events to tag some goals as penalties and add missed penalty events.
+     *
+     * Penalties are purely cosmetic — they do not change goal counts.
+     * Scored penalties tag an existing goal with is_penalty metadata.
+     * Missed penalties add a penalty_missed event.
+     */
+    private function applyPenaltyEvents(
+        Collection $events,
+        Collection $homePlayers,
+        Collection $awayPlayers,
+        string $homeTeamId,
+        string $awayTeamId,
+        float $matchFraction,
+        int $minMinute,
+        int $maxMinute,
+    ): Collection {
+        $penaltiesPerGame = config('match_simulation.penalties_per_game', 0.25);
+        $penaltyScoredChance = config('match_simulation.penalty_scored_chance', 85.0);
+
+        $penaltyCount = $this->poissonRandom($penaltiesPerGame * $matchFraction);
+        if ($penaltyCount === 0) {
+            return $events;
+        }
+
+        $penaltyTakerWeights = [
+            'Centre-Forward' => 30,
+            'Second Striker' => 25,
+            'Attacking Midfield' => 15,
+            'Left Winger' => 10,
+            'Right Winger' => 10,
+            'Central Midfield' => 5,
+            'Defensive Midfield' => 3,
+            'Left-Back' => 1,
+            'Right-Back' => 1,
+            'Centre-Back' => 1,
+            'Goalkeeper' => 0,
+        ];
+
+        $usedMinutes = $events->pluck('minute')->all();
+
+        for ($i = 0; $i < $penaltyCount; $i++) {
+            $isHome = random_int(0, 1) === 0;
+            $teamId = $isHome ? $homeTeamId : $awayTeamId;
+            $players = $isHome ? $homePlayers : $awayPlayers;
+
+            if ($players->isEmpty()) {
+                continue;
+            }
+
+            if ($this->percentChance($penaltyScoredChance)) {
+                // Scored penalty: tag an existing goal for this team
+                $teamGoals = $events->filter(
+                    fn (MatchEventData $e) => $e->type === 'goal' && $e->teamId === $teamId && ($e->metadata['is_penalty'] ?? false) === false
+                );
+
+                if ($teamGoals->isEmpty()) {
+                    continue;
+                }
+
+                $goalKey = $teamGoals->keys()->random();
+                $goal = $events[$goalKey];
+
+                $events[$goalKey] = new MatchEventData(
+                    $goal->teamId,
+                    $goal->gamePlayerId,
+                    $goal->minute,
+                    $goal->type,
+                    array_merge($goal->metadata ?? [], ['is_penalty' => true]),
+                );
+            } else {
+                // Missed penalty
+                $taker = $this->pickPlayerByPosition($players, $penaltyTakerWeights);
+                if (! $taker) {
+                    continue;
+                }
+
+                $minute = $this->generateUniqueMinuteInRange($usedMinutes, $minMinute, $maxMinute);
+                $usedMinutes[] = $minute;
+
+                $events->push(MatchEventData::penaltyMissed($teamId, $taker->id, $minute));
+            }
+        }
+
+        return $events->sortBy('minute')->values();
+    }
+
+    /**
      * Generate card events with minutes constrained to a range.
      */
     private function generateCardEventsInRange(
@@ -2319,6 +2412,12 @@ class MatchSimulator
 
             $events = $events->merge($homeGoalEvents)->merge($awayGoalEvents);
             $events = $events->sortBy('minute')->values();
+
+            $events = $this->applyPenaltyEvents(
+                $events, $homePlayers, $awayPlayers,
+                $homeTeam->id, $awayTeam->id, $etFraction,
+                $minMinute, $maxMinute,
+            );
 
             $events = $this->reassignEventsFromUnavailablePlayers(
                 $events, $homePlayers, $awayPlayers, $homeTeam->id, $awayTeam->id

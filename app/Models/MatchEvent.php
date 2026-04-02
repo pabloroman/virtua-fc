@@ -65,6 +65,7 @@ class MatchEvent extends Model
     public const TYPE_YELLOW_CARD = 'yellow_card';
     public const TYPE_RED_CARD = 'red_card';
     public const TYPE_INJURY = 'injury';
+    public const TYPE_PENALTY_MISSED = 'penalty_missed';
     public const TYPE_SUBSTITUTION = 'substitution';
 
     public function game(): BelongsTo
@@ -126,6 +127,7 @@ class MatchEvent extends Model
             self::TYPE_YELLOW_CARD => "{$minute} Yellow Card - {$player}",
             self::TYPE_RED_CARD => "{$minute} Red Card - {$player}",
             self::TYPE_INJURY => "{$minute} Injury - {$player}",
+            self::TYPE_PENALTY_MISSED => "{$minute} Penalty Missed - {$player}",
             default => "{$minute} {$this->event_type} - {$player}",
         };
     }

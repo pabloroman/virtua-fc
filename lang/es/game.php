@@ -248,6 +248,8 @@ return [
     'live_kick_off' => 'Comienza el partido',
     'live_about_to_start' => 'El partido está a punto de comenzar...',
     'live_goal' => 'Gol',
+    'live_penalty_goal' => 'Penalti',
+    'live_penalty_missed' => 'Penalti fallado',
     'live_yellow_card' => 'Tarjeta amarilla',
     'live_red_card' => 'Tarjeta roja',
     'live_second_yellow' => 'Doble amarilla',

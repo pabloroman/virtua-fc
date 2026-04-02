@@ -248,6 +248,8 @@ return [
     'live_kick_off' => 'Kick off',
     'live_about_to_start' => 'The match is about to begin...',
     'live_goal' => 'Goal',
+    'live_penalty_goal' => 'Penalty',
+    'live_penalty_missed' => 'Penalty missed',
     'live_yellow_card' => 'Yellow card',
     'live_red_card' => 'Red card',
     'live_second_yellow' => 'Second yellow',

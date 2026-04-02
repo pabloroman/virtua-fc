@@ -123,6 +123,8 @@ return [
     'direct_red_chance' => 0.5,         // % chance of direct red card per team
     'injury_chance' => 1.0,             // % chance of injury per player per match
     'training_injury_chance' => 1.05,   // % chance of training injury per player per matchday (all squad members)
+    'penalties_per_game' => 0.25,       // Average penalties awarded per game (both teams combined)
+    'penalty_scored_chance' => 85.0,    // % chance a penalty is scored
 
     /*
     |--------------------------------------------------------------------------

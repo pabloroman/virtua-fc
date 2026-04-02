@@ -81,6 +81,14 @@ readonly class MatchResult
     }
 
     /**
+     * Get all penalty missed events.
+     */
+    public function penaltiesMissed(): Collection
+    {
+        return $this->events->filter(fn (MatchEventData $e) => $e->type === 'penalty_missed');
+    }
+
+    /**
      * Get events for a specific team.
      */
     public function eventsForTeam(string $teamId): Collection
