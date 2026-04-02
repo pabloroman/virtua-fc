@@ -115,6 +115,16 @@ export default function lineupManager(config) {
         isHome: config.isHome || false,
 
         init() {
+            // If we just saved/overwrote a preset, load it so it appears active
+            // in the UI. Run before dirty snapshotting so it counts as the
+            // initial state and doesn't trigger the unsaved-changes warning.
+            if (config.activePresetIdOnLoad) {
+                const saved = this.presets.find(p => p.id === config.activePresetIdOnLoad);
+                if (saved) {
+                    this.loadPreset(saved);
+                }
+            }
+
             // Filter out players no longer in the squad (e.g. sold after lineup was saved)
             this.selectedPlayers = this.selectedPlayers.filter(id => this.playersData[id]);
             if (Object.keys(this.slotMap).length > 0) {

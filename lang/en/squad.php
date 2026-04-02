@@ -348,6 +348,8 @@ return [
     'preset_apply_now' => 'Use this tactic for the next match',
     'save_and_confirm' => 'Save & confirm',
     'preset_delete_confirm' => 'Delete this saved tactic?',
+    'preset_overwrite_toggle' => 'Overwrite tactic',
+    'preset_replace_required_hint' => 'You already have three saved tactics. Choose one to replace with your current board.',
 
     // Number
     'number' => 'Number',

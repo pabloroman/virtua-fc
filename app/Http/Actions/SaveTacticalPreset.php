@@ -64,7 +64,8 @@ class SaveTacticalPreset
             }
 
             return redirect()->route('game.lineup', $gameId)
-                ->with('success', __('messages.preset_updated'));
+                ->with('success', __('messages.preset_updated'))
+                ->with('active_preset_id', $preset->id);
         }
 
         // Enforce max 3 presets
@@ -77,7 +78,7 @@ class SaveTacticalPreset
         // Assign next sort order
         $maxSort = GameTacticalPreset::where('game_id', $gameId)->max('sort_order') ?? 0;
 
-        GameTacticalPreset::create([
+        $created = GameTacticalPreset::create([
             'game_id' => $gameId,
             'name' => $validated['name'],
             'sort_order' => $maxSort + 1,
@@ -96,7 +97,8 @@ class SaveTacticalPreset
         }
 
         return redirect()->route('game.lineup', $gameId)
-            ->with('success', __('messages.preset_saved'));
+            ->with('success', __('messages.preset_saved'))
+            ->with('active_preset_id', $created->id);
     }
 
     private function applyToMatch(Game $game, array $validated, ?array $slotAssignments, ?array $pitchPositions)
