@@ -2,6 +2,7 @@
 
 namespace App\Modules\Season\Processors;
 
+use App\Modules\Player\PlayerAge;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Transfer\Services\ContractService;
@@ -16,15 +17,13 @@ use Carbon\Carbon;
  *
  * Players with contract_until <= June 30 of the ending season:
  * - User's team: released (removed from squad)
- * - AI teams: most auto-renewed for 2 years, but some become free agents
- *   (team_id = null) based on age/ability criteria. Free agents may be signed
- *   by AI teams when the transfer window closes (AITransferMarketService).
+ * - AI teams: veterans (35+) have a 50% chance of non-renewal and become
+ *   free agents (team_id = null). All others are auto-renewed.
+ *   Free agents may be signed by AI teams when the new season starts
+ *   (AITransferMarketService).
  */
 class ContractExpirationProcessor implements SeasonProcessor
 {
-    /** Max AI players per team that can become free agents per season */
-    private const MAX_FREE_AGENTS_PER_TEAM = 2;
-
     public function priority(): int
     {
         return 20;
@@ -53,9 +52,6 @@ class ContractExpirationProcessor implements SeasonProcessor
             ->where('contract_until', '<=', $expirationDate)
             ->whereNull('pending_annual_wage') // Exclude players who renewed
             ->get();
-
-        // Pre-calculate team averages for AI non-renewal decisions
-        $aiTeamAverages = $this->calculateAITeamAverages($game);
 
         $releasedPlayers = [];
         $autoRenewedPlayers = [];
@@ -93,45 +89,32 @@ class ContractExpirationProcessor implements SeasonProcessor
             $releasedIds[] = $player->id;
         }
 
-        // Process AI teams: decide renewals vs free agents per team
-        $aiExpiredByTeam = $expiredPlayers
-            ->filter(fn ($p) => $p->team_id !== $game->team_id)
-            ->groupBy('team_id');
+        // Process AI teams: veterans have 50% chance of non-renewal
+        $aiExpiredPlayers = $expiredPlayers
+            ->filter(fn ($p) => $p->team_id !== $game->team_id);
 
-        foreach ($aiExpiredByTeam as $teamId => $teamExpiredPlayers) {
-            $teamAvg = $aiTeamAverages[$teamId] ?? 55;
-            $freeAgentCount = 0;
+        foreach ($aiExpiredPlayers as $player) {
+            $age = $player->age($game->current_date);
+            $shouldRelease = PlayerAge::isVeteran($age) && mt_rand(1, 100) <= 50;
 
-            // Sort by non-renewal likelihood (most likely to leave first)
-            $sorted = $teamExpiredPlayers->sortByDesc(
-                fn ($p) => $this->nonRenewalScore($p, $teamAvg)
-            );
-
-            foreach ($sorted as $player) {
-                $shouldRelease = $freeAgentCount < self::MAX_FREE_AGENTS_PER_TEAM
-                    && $this->shouldNotRenew($player, $teamAvg);
-
-                if ($shouldRelease) {
-                    // Become a free agent (team_id = null)
-                    $freeAgentCount++;
-                    $newFreeAgents[] = [
-                        'playerId' => $player->id,
-                        'playerName' => $player->name,
-                        'position' => $player->position,
-                        'teamId' => $player->team_id,
-                        'teamName' => $player->team->name,
-                        'age' => $player->age($game->current_date),
-                    ];
-                    $freeAgentIds[] = $player->id;
-                } else {
-                    $autoRenewedPlayers[] = [
-                        'playerId' => $player->id,
-                        'playerName' => $player->name,
-                        'teamId' => $player->team_id,
-                        'teamName' => $player->team->name,
-                    ];
-                    $autoRenewedIds[] = $player->id;
-                }
+            if ($shouldRelease) {
+                $newFreeAgents[] = [
+                    'playerId' => $player->id,
+                    'playerName' => $player->name,
+                    'position' => $player->position,
+                    'teamId' => $player->team_id,
+                    'teamName' => $player->team->name,
+                    'age' => $age,
+                ];
+                $freeAgentIds[] = $player->id;
+            } else {
+                $autoRenewedPlayers[] = [
+                    'playerId' => $player->id,
+                    'playerName' => $player->name,
+                    'teamId' => $player->team_id,
+                    'teamName' => $player->team->name,
+                ];
+                $autoRenewedIds[] = $player->id;
             }
         }
 
@@ -149,65 +132,5 @@ class ContractExpirationProcessor implements SeasonProcessor
         return $data->setMetadata('expiredContracts', $releasedPlayers)
             ->setMetadata('autoRenewedContracts', $autoRenewedPlayers)
             ->setMetadata('aiContractDepartures', $newFreeAgents);
-    }
-
-    /**
-     * Determine if an AI player should NOT be renewed (become free agent).
-     */
-    private function shouldNotRenew(GamePlayer $player, int $teamAvg): bool
-    {
-        $ability = $this->getPlayerAbility($player);
-        $age = $player->age($player->game->current_date);
-
-        // Age 33+ and below team average → 70% chance
-        if ($age >= 33 && $ability < $teamAvg) {
-            return mt_rand(1, 100) <= 70;
-        }
-
-        // Age 30-32 and significantly below average → 30% chance
-        if ($age >= 30 && $ability < $teamAvg - 10) {
-            return mt_rand(1, 100) <= 30;
-        }
-
-        // Baseline random chance → 5%
-        return mt_rand(1, 100) <= 5;
-    }
-
-    /**
-     * Score how likely a player is to not be renewed (higher = more likely).
-     */
-    private function nonRenewalScore(GamePlayer $player, int $teamAvg): int
-    {
-        $ability = $this->getPlayerAbility($player);
-        $age = $player->age($player->game->current_date);
-        $score = max(0, $age - 28) + max(0, $teamAvg - $ability);
-
-        if ($age >= 33 && $ability < $teamAvg) {
-            $score += 10;
-        } elseif ($age >= 30 && $ability < $teamAvg - 10) {
-            $score += 5;
-        }
-
-        return $score;
-    }
-
-    /**
-     * Pre-calculate average ability for all AI teams in the game.
-     */
-    private function calculateAITeamAverages(Game $game): array
-    {
-        return GamePlayer::where('game_id', $game->id)
-            ->whereNotNull('team_id')
-            ->where('team_id', '!=', $game->team_id)
-            ->selectRaw('team_id, ROUND(AVG((COALESCE(game_technical_ability, 50) + COALESCE(game_physical_ability, 50)) / 2.0)) as avg_ability')
-            ->groupBy('team_id')
-            ->pluck('avg_ability', 'team_id')
-            ->map(fn ($v) => (int) $v)
-            ->toArray();
-    }
-
-    private function getPlayerAbility(GamePlayer $player): int
-    {
-        return (int) round((($player->game_technical_ability ?? 50) + ($player->game_physical_ability ?? 50)) / 2);
     }
 }

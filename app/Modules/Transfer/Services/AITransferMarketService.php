@@ -214,8 +214,9 @@ class AITransferMarketService
             return ['count' => 0, 'signings' => []];
         }
 
-        // Preserve a minimum pool of free agents for the user
+        // Preserve a minimum pool of free agents for the user, and cap at 50% of the pool
         $maxSignings = max(0, $freeAgents->count() - self::MIN_FREE_AGENT_POOL);
+        $maxSignings = min($maxSignings, (int) ceil($freeAgents->count() / 2));
         if ($maxSignings === 0) {
             return ['count' => 0, 'signings' => []];
         }
