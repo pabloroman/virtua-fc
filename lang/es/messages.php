@@ -84,7 +84,7 @@ return [
     'academy_player_promoted' => ':player ha sido subido al primer equipo.',
     'academy_player_dismissed' => ':player ha sido despedido de la cantera.',
     'academy_player_loaned' => ':player ha sido cedido.',
-    'academy_must_decide_21' => 'Los jugadores de 21+ años deben ser subidos o despedidos.',
+    'academy_must_decide_21' => 'Los jugadores de 21+ años serán promocionados automáticamente al primer equipo.',
 
     // Player release messages
     'player_released' => ':player ha sido liberado. Indemnización pagada: :severance.',

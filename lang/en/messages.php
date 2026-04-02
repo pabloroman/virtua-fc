@@ -84,7 +84,7 @@ return [
     'academy_player_promoted' => ':player has been promoted to the first team.',
     'academy_player_dismissed' => ':player has been dismissed from the academy.',
     'academy_player_loaned' => ':player has been loaned out.',
-    'academy_must_decide_21' => 'Players aged 21+ must be promoted or dismissed.',
+    'academy_must_decide_21' => 'Players aged 21+ will be automatically promoted to the first team.',
 
     // Player release messages
     'player_released' => ':player has been released. Severance paid: :severance.',

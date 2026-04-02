@@ -211,7 +211,7 @@ return [
     'academy_help_promote' => 'Promote - permanently joins the first team with a professional contract',
     'academy_help_loan' => 'Loan - develops faster on loan and returns at end of season',
     'academy_help_dismiss' => 'Dismiss - leaves the club permanently',
-    'academy_help_age_rule' => 'Players aged 21 or older cannot stay in the academy: they must be promoted or dismissed.',
+    'academy_help_age_rule' => 'Players who turn 21 will be automatically promoted to the first team at the start of the season.',
 
     'academy_tier_0' => 'No Academy',
     'academy_tier_1' => 'Basic Academy',
