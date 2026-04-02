@@ -63,6 +63,9 @@ class AITransferMarketService
     /** Minimum free agents to preserve — AI stops signing when pool drops to this */
     private const MIN_FREE_AGENT_POOL = 15;
 
+    /** Minimum free agents to reserve per tier — ensures tier diversity in the pool */
+    private const MIN_FREE_AGENTS_PER_TIER = 2;
+
     /** Minimum player tier a team will sign, keyed by reputation level */
     private const MIN_TIER_BY_REPUTATION = [
         ClubProfile::REPUTATION_LOCAL        => 1,
@@ -213,6 +216,21 @@ class AITransferMarketService
         if ($freeAgents->isEmpty()) {
             return ['count' => 0, 'signings' => []];
         }
+
+        // Reserve best players per tier to ensure tier diversity in the free agent pool
+        $reserved = 0;
+        foreach ($freeAgents->groupBy('tier') as $tier => $tierPlayers) {
+            $toReserve = $tierPlayers
+                ->sortByDesc(fn ($p) => $this->getPlayerAbility($p))
+                ->take(self::MIN_FREE_AGENTS_PER_TIER);
+
+            foreach ($toReserve as $player) {
+                $freeAgents->forget($player->id);
+                $reserved++;
+            }
+        }
+
+        Log::info("[AIFreeAgentSigning] Reserved {$reserved} players across tiers for pool diversity");
 
         // Preserve a minimum pool of free agents for the user, and cap at 50% of the pool
         $maxSignings = max(0, $freeAgents->count() - self::MIN_FREE_AGENT_POOL);
