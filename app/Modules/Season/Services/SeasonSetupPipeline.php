@@ -63,7 +63,6 @@ class SeasonSetupPipeline
 
             $processorName = class_basename($processor);
             $start = microtime(true);
-            Log::info("[SeasonSetup] Starting {$processorName} (priority {$processor->priority()})");
 
             try {
                 $data = DB::transaction(fn () => $processor->process($game, $data));
@@ -78,7 +77,7 @@ class SeasonSetupPipeline
             }
 
             $elapsed = round((microtime(true) - $start) * 1000);
-            Log::info("[SeasonSetup] Finished {$processorName} in {$elapsed}ms");
+            Log::info("[SeasonSetup] {$processorName} (priority {$processor->priority()}) completed in {$elapsed}ms");
 
             // Checkpoint: persist completed step and DTO for crash recovery
             $game->updateQuietly([
