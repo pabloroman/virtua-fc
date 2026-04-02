@@ -27,7 +27,6 @@ use App\Models\GameStanding;
 use App\Models\PlayerSuspension;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class MatchdayOrchestrator
 {
@@ -193,9 +192,7 @@ class MatchdayOrchestrator
             ->whereIn('team_id', $teamIds)->get()->keyBy('team_id');
 
         // --- Ensure lineups ---
-        $memAfterLoad = memory_get_usage(true);
         $this->lineupService->ensureLineupsForMatches($matches, $game, $allPlayers, $suspendedByCompetition, $clubProfiles);
-        $memAfterLineups = memory_get_usage(true);
 
         // --- Check for forfeit (user's team has < 7 available players) ---
         // $playerMatch was already resolved above (line 158) — reuse it after filtering
@@ -233,7 +230,6 @@ class MatchdayOrchestrator
             ? $matches->reject(fn ($m) => $m->id === $forfeitedMatchId)
             : $matches;
         $matchResults = $this->simulateMatches($matchesToSimulate, $game, $allPlayers);
-        $memAfterSim = memory_get_usage(true);
 
         if ($forfeitResult) {
             $matchResults[] = $forfeitResult;
@@ -246,7 +242,6 @@ class MatchdayOrchestrator
 
         // --- Process results ---
         $this->matchResultProcessor->processAll($game->id, $currentDate, $matchResults, $deferMatchId, $allPlayers);
-        $memAfterResults = memory_get_usage(true);
 
         // --- Recalculate positions ---
         $this->recalculateLeaguePositions($game->id, $matches);
@@ -277,17 +272,6 @@ class MatchdayOrchestrator
         $game->refresh()->setRelations([]);
         $this->processPostMatchActions($game, $matches, $handlers, $allPlayers, $deferMatchId);
 
-        Log::info('[ProcessRemainingBatches] Batch breakdown', [
-            'game_id' => $game->id,
-            'matches' => $matches->count(),
-            'players_loaded' => $allPlayers->flatten()->count(),
-            'load_mb' => round($memAfterLoad / 1024 / 1024, 2),
-            'lineups_mb' => round($memAfterLineups / 1024 / 1024, 2),
-            'simulate_mb' => round($memAfterSim / 1024 / 1024, 2),
-            'results_mb' => round($memAfterResults / 1024 / 1024, 2),
-            'final_mb' => round(memory_get_usage(true) / 1024 / 1024, 2),
-        ]);
-
         return ['playerMatch' => $playerMatch];
     }
 
@@ -297,9 +281,6 @@ class MatchdayOrchestrator
      */
     private function autoSimulateRemainingBatches(Game $game): void
     {
-        $batchCount = 0;
-        $loopStartMemory = memory_get_usage(true);
-
         while ($nextBatch = $this->matchdayService->getNextMatchBatch($game)) {
             // Stop if this batch involves the player — they need to play it
             $involvesPlayer = $nextBatch['matches']->contains(
@@ -313,32 +294,8 @@ class MatchdayOrchestrator
             $this->processBatch($game, $nextBatch);
             $game->refresh()->setRelations([]);
 
-            // Reclaim memory from Eloquent circular references.
-            // Hypotheses for memory growth across batches:
-            // 1. Circular refs: $player->setRelation('game', $game) in processBatch() creates
-            //    cycles that PHP refcount GC cannot free — only gc_collect_cycles() reclaims them.
-            //    ~440 GamePlayer models per batch accumulate without this.
-            // 2. $allPlayers + $matchResults are local to processBatch() but won't be freed
-            //    until circular refs are broken.
-            // 3. Match event arrays (~10 matches × ~30 events) are retained by the same mechanism.
+            // Reclaim Eloquent circular references (player→game) that refcount GC cannot free
             gc_collect_cycles();
-
-            $batchCount++;
-            Log::info('[ProcessRemainingBatches] Batch processed', [
-                'game_id' => $game->id,
-                'batch' => $batchCount,
-                'memory_mb' => round(memory_get_usage(true) / 1024 / 1024, 2),
-                'delta_mb' => round((memory_get_usage(true) - $loopStartMemory) / 1024 / 1024, 2),
-            ]);
-        }
-
-        if ($batchCount > 0) {
-            Log::info('[ProcessRemainingBatches] All batches complete', [
-                'game_id' => $game->id,
-                'total_batches' => $batchCount,
-                'memory_mb' => round(memory_get_usage(true) / 1024 / 1024, 2),
-                'peak_mb' => round(memory_get_peak_usage(true) / 1024 / 1024, 2),
-            ]);
         }
     }
 

@@ -35,15 +35,8 @@ class ProcessRemainingBatches implements ShouldQueue, ShouldBeUnique
 
     public function handle(MatchdayOrchestrator $orchestrator): void
     {
-        // Prevent query log from accumulating SQL strings across batch iterations
         DB::disableQueryLog();
         DB::flushQueryLog();
-
-        $startMemory = memory_get_usage(true);
-        Log::info('[ProcessRemainingBatches] Starting', [
-            'game_id' => $this->gameId,
-            'memory_mb' => round($startMemory / 1024 / 1024, 2),
-        ]);
 
         $game = Game::find($this->gameId);
 
@@ -52,13 +45,6 @@ class ProcessRemainingBatches implements ShouldQueue, ShouldBeUnique
         }
 
         $orchestrator->processRemainingBatches($game, $this->careerActionTicks);
-
-        Log::info('[ProcessRemainingBatches] Completed', [
-            'game_id' => $this->gameId,
-            'memory_mb' => round(memory_get_usage(true) / 1024 / 1024, 2),
-            'peak_mb' => round(memory_get_peak_usage(true) / 1024 / 1024, 2),
-            'delta_mb' => round((memory_get_usage(true) - $startMemory) / 1024 / 1024, 2),
-        ]);
     }
 
     public function failed(?\Throwable $exception): void
