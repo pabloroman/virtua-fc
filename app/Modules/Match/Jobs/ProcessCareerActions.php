@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ProcessCareerActions implements ShouldQueue, ShouldBeUnique
@@ -34,6 +35,16 @@ class ProcessCareerActions implements ShouldQueue, ShouldBeUnique
 
     public function handle(CareerActionProcessor $processor): void
     {
+        DB::disableQueryLog();
+        DB::flushQueryLog();
+
+        $startMemory = memory_get_usage(true);
+        Log::info('[ProcessCareerActions] Starting', [
+            'game_id' => $this->gameId,
+            'ticks' => $this->ticks,
+            'memory_mb' => round($startMemory / 1024 / 1024, 2),
+        ]);
+
         $game = Game::find($this->gameId);
 
         if (! $game || ! $game->isProcessingCareerActions()) {
@@ -45,9 +56,29 @@ class ProcessCareerActions implements ShouldQueue, ShouldBeUnique
                 $game->refresh();
             }
             $processor->process($game);
+
+            // Reclaim Eloquent circular references from models loaded during this tick
+            // (loadTransferContext loads 1000+ players with eager-loaded relations per tick)
+            gc_collect_cycles();
+
+            Log::info('[ProcessCareerActions] Tick complete', [
+                'game_id' => $this->gameId,
+                'tick' => $i + 1,
+                'of' => $this->ticks,
+                'memory_mb' => round(memory_get_usage(true) / 1024 / 1024, 2),
+                'delta_mb' => round((memory_get_usage(true) - $startMemory) / 1024 / 1024, 2),
+            ]);
         }
 
         $game->update(['career_actions_processing_at' => null]);
+
+        Log::info('[ProcessCareerActions] Completed', [
+            'game_id' => $this->gameId,
+            'ticks' => $this->ticks,
+            'memory_mb' => round(memory_get_usage(true) / 1024 / 1024, 2),
+            'peak_mb' => round(memory_get_peak_usage(true) / 1024 / 1024, 2),
+            'delta_mb' => round((memory_get_usage(true) - $startMemory) / 1024 / 1024, 2),
+        ]);
     }
 
     public function failed(?\Throwable $exception): void
