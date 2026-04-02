@@ -10,10 +10,11 @@ use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\TransferOffer;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Handles players whose contracts have expired.
- * Priority: 5 (runs early, before contract renewals are applied)
+ * Priority: 20 (runs early, before contract renewals are applied)
  *
  * Players with contract_until <= June 30 of the ending season:
  * - User's team: released (removed from squad)
@@ -40,30 +41,26 @@ class ContractExpirationProcessor implements SeasonProcessor
             ->delete();
 
         // Season ends on June 30 of the season year
-        // e.g., season "2024" ends June 30, 2025; season "2025" ends June 30, 2026
         $seasonYear = (int) $data->oldSeason;
         $expirationDate = Carbon::createFromDate($seasonYear + 1, 6, 30)->endOfDay();
+        $veteranCutoff = PlayerAge::dateOfBirthCutoff(PlayerAge::PRIME_END + 1, $game->current_date);
 
-        // Find all players in this game whose contracts have expired
-        $expiredPlayers = GamePlayer::with(['player', 'team', 'game'])
-            ->where('game_id', $game->id)
-            ->whereNotNull('team_id')
-            ->whereNotNull('contract_until')
-            ->where('contract_until', '<=', $expirationDate)
-            ->whereNull('pending_annual_wage') // Exclude players who renewed
+        // Find all players with expired contracts — join players table for age calculation
+        $expiredPlayers = GamePlayer::join('players', 'game_players.player_id', '=', 'players.id')
+            ->where('game_players.game_id', $game->id)
+            ->whereNotNull('game_players.team_id')
+            ->whereNotNull('game_players.contract_until')
+            ->where('game_players.contract_until', '<=', $expirationDate)
+            ->whereNull('game_players.pending_annual_wage')
+            ->select([
+                'game_players.id',
+                'game_players.team_id',
+                'game_players.position',
+                'players.date_of_birth',
+            ])
             ->get();
 
-        $releasedPlayers = [];
-        $autoRenewedPlayers = [];
-        $newFreeAgents = [];
-
-        $releasedIds = [];
-        $freeAgentIds = [];
-        $autoRenewedIds = [];
-        $newContractEnd = Carbon::createFromDate($seasonYear + 3, 6, 30);
-
-        // Players with agreed outgoing pre-contracts will be handled by
-        // PreContractTransferProcessor — do not delete them here.
+        // Players with agreed outgoing pre-contracts — use keyed array for O(1) lookup
         $preContractPlayerIds = TransferOffer::where('game_id', $game->id)
             ->where('status', TransferOffer::STATUS_AGREED)
             ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
@@ -72,53 +69,32 @@ class ContractExpirationProcessor implements SeasonProcessor
                     ->orWhere('direction', '!=', TransferOffer::DIRECTION_INCOMING);
             })
             ->pluck('game_player_id')
+            ->flip()
             ->all();
 
-        // Process user's team first (always release, except pre-contract departures)
-        foreach ($expiredPlayers->where('team_id', $game->team_id) as $player) {
-            if (in_array($player->id, $preContractPlayerIds)) {
-                continue;
-            }
+        $releasedIds = [];
+        $freeAgentIds = [];
+        $autoRenewedIds = [];
+        $newContractEnd = Carbon::createFromDate($seasonYear + 3, 6, 30);
 
-            $releasedPlayers[] = [
-                'playerId' => $player->id,
-                'playerName' => $player->name,
-                'teamId' => $player->team_id,
-                'teamName' => $player->team->name,
-            ];
-            $releasedIds[] = $player->id;
-        }
-
-        // Process AI teams: veterans have 50% chance of non-renewal
-        $aiExpiredPlayers = $expiredPlayers
-            ->filter(fn ($p) => $p->team_id !== $game->team_id);
-
-        foreach ($aiExpiredPlayers as $player) {
-            $age = $player->age($game->current_date);
-            $shouldRelease = PlayerAge::isVeteran($age) && mt_rand(1, 100) <= 50;
-
-            if ($shouldRelease) {
-                $newFreeAgents[] = [
-                    'playerId' => $player->id,
-                    'playerName' => $player->name,
-                    'position' => $player->position,
-                    'teamId' => $player->team_id,
-                    'teamName' => $player->team->name,
-                    'age' => $age,
-                ];
-                $freeAgentIds[] = $player->id;
+        foreach ($expiredPlayers as $player) {
+            if ($player->team_id === $game->team_id) {
+                // User's team: release (except pre-contract departures)
+                if (!isset($preContractPlayerIds[$player->id])) {
+                    $releasedIds[] = $player->id;
+                }
             } else {
-                $autoRenewedPlayers[] = [
-                    'playerId' => $player->id,
-                    'playerName' => $player->name,
-                    'teamId' => $player->team_id,
-                    'teamName' => $player->team->name,
-                ];
-                $autoRenewedIds[] = $player->id;
+                // AI teams: veterans (35+) have 50% chance of becoming free agents
+                $isVeteran = $player->date_of_birth && Carbon::parse($player->date_of_birth)->lte($veteranCutoff);
+                if ($isVeteran && mt_rand(1, 100) <= 50) {
+                    $freeAgentIds[] = $player->id;
+                } else {
+                    $autoRenewedIds[] = $player->id;
+                }
             }
         }
 
-        // Batch operations instead of per-player queries
+        // Batch operations
         if (!empty($releasedIds)) {
             GamePlayer::whereIn('id', $releasedIds)->delete();
         }
@@ -129,8 +105,8 @@ class ContractExpirationProcessor implements SeasonProcessor
             GamePlayer::whereIn('id', $autoRenewedIds)->update(['contract_until' => $newContractEnd]);
         }
 
-        return $data->setMetadata('expiredContracts', $releasedPlayers)
-            ->setMetadata('autoRenewedContracts', $autoRenewedPlayers)
-            ->setMetadata('aiContractDepartures', $newFreeAgents);
+        Log::info('[ContractExpiration] Free agents created: ' . count($freeAgentIds) . ', released: ' . count($releasedIds) . ', auto-renewed: ' . count($autoRenewedIds));
+
+        return $data;
     }
 }

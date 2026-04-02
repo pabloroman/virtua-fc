@@ -9,6 +9,7 @@ use App\Modules\Player\Services\PlayerTierService;
 use App\Modules\Player\Services\PlayerValuationService;
 use App\Models\Game;
 use App\Models\GamePlayer;
+use Carbon\Carbon;
 
 /**
  * Applies player development changes at the end of the season.
@@ -29,29 +30,38 @@ class PlayerDevelopmentProcessor implements SeasonProcessor
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
-        $allChanges = [];
         $upsertRows = [];
+        $currentDate = $game->current_date;
 
-        // Process development in chunks to bound memory usage
-        GamePlayer::with(['player', 'game'])
-            ->where('game_id', $game->id)
-            ->chunk(200, function ($chunk) use (&$allChanges, &$upsertRows, $game) {
+        // Join players table for date_of_birth (age calculation) and ability fallbacks
+        GamePlayer::join('players', 'game_players.player_id', '=', 'players.id')
+            ->where('game_players.game_id', $game->id)
+            ->select([
+                'game_players.id',
+                'game_players.game_id',
+                'game_players.player_id',
+                'game_players.team_id',
+                'game_players.position',
+                'game_players.game_technical_ability',
+                'game_players.game_physical_ability',
+                'game_players.market_value_cents',
+                'game_players.season_appearances',
+                'game_players.potential',
+                'players.technical_ability',
+                'players.physical_ability',
+                'players.date_of_birth',
+            ])
+            ->chunk(500, function ($chunk) use (&$upsertRows, $currentDate) {
                 foreach ($chunk as $player) {
-                    $change = $this->developmentService->calculateDevelopment($player);
+                    $age = (int) Carbon::parse($player->date_of_birth)->diffInYears($currentDate);
+                    $change = $this->developmentService->calculateDevelopment($player, $age);
 
                     $previousAbility = (int) round(($change['techBefore'] + $change['physBefore']) / 2);
-                    $previousMarketValue = $player->market_value_cents ?? 0;
-
-                    // Recalculate market value for ALL players (even if ability didn't change,
-                    // age increased by 1 which affects value)
                     $newAbility = (int) round(($change['techAfter'] + $change['physAfter']) / 2);
                     $newMarketValue = $this->valuationService->abilityToMarketValue(
-                        $newAbility,
-                        $player->age($game->current_date),
-                        $previousAbility
+                        $newAbility, $age, $previousAbility
                     );
 
-                    // Collect row for batch upsert (includes abilities + market value in one operation)
                     $upsertRows[] = [
                         'id' => $player->id,
                         'game_id' => $player->game_id,
@@ -62,27 +72,9 @@ class PlayerDevelopmentProcessor implements SeasonProcessor
                         'game_physical_ability' => $change['physAfter'],
                         'market_value_cents' => $newMarketValue,
                     ];
-
-                    if ($change['techChange'] !== 0 || $change['physChange'] !== 0 || $newMarketValue !== $previousMarketValue) {
-                        $allChanges[] = [
-                            'playerId' => $player->id,
-                            'playerName' => $player->name,
-                            'teamId' => $player->team_id,
-                            'age' => $player->age($game->current_date),
-                            'techBefore' => $change['techBefore'],
-                            'techAfter' => $change['techAfter'],
-                            'physBefore' => $change['physBefore'],
-                            'physAfter' => $change['physAfter'],
-                            'overallBefore' => $previousAbility,
-                            'overallAfter' => $newAbility,
-                            'marketValueBefore' => $previousMarketValue,
-                            'marketValueAfter' => $newMarketValue,
-                        ];
-                    }
                 }
             });
 
-        // Batch upsert all development changes + market values in one query
         if (!empty($upsertRows)) {
             foreach (array_chunk($upsertRows, 500) as $chunk) {
                 GamePlayer::upsert($chunk, ['id'], [
@@ -92,10 +84,9 @@ class PlayerDevelopmentProcessor implements SeasonProcessor
                 ]);
             }
 
-            // Recompute tiers after market values changed
             $this->tierService->recomputeAllTiersForGame($game->id);
         }
 
-        return $data->addPlayerChanges($allChanges);
+        return $data;
     }
 }

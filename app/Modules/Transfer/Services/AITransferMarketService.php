@@ -12,7 +12,6 @@ use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Player\PlayerAge;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 /**
@@ -198,8 +197,6 @@ class AITransferMarketService
         $takenNumbers = $this->preloadSquadNumbers($game->id);
         $reputationLevels = TeamReputation::resolveLevels($game->id, $teamRosters->keys()->all());
 
-        Log::info('[AIFreeAgentSigning] AI teams loaded: ' . $teamRosters->count());
-
         $freeAgents = GamePlayer::with(['player:id,date_of_birth'])
             ->select([
                 'id', 'game_id', 'player_id', 'team_id', 'position', 'tier',
@@ -210,8 +207,6 @@ class AITransferMarketService
             ->whereNull('team_id')
             ->get()
             ->keyBy('id');
-
-        Log::info('[AIFreeAgentSigning] Free agents found: ' . $freeAgents->count() . ', maxSignings: ' . max(0, $freeAgents->count() - self::MIN_FREE_AGENT_POOL));
 
         if ($freeAgents->isEmpty()) {
             return ['count' => 0, 'signings' => []];
@@ -229,8 +224,6 @@ class AITransferMarketService
                 $reserved++;
             }
         }
-
-        Log::info("[AIFreeAgentSigning] Reserved {$reserved} players across tiers for pool diversity");
 
         // Preserve a minimum pool of free agents for the user, and cap at 50% of the pool
         $maxSignings = max(0, $freeAgents->count() - self::MIN_FREE_AGENT_POOL);
@@ -275,8 +268,6 @@ class AITransferMarketService
         // Sort by priority descending (critical needs first)
         usort($teamNeeds, fn ($a, $b) => $b['priority'] <=> $a['priority']);
 
-        Log::info('[AIFreeAgentSigning] Team needs entries: ' . count($teamNeeds) . ', teams at max squad: ' . $teamRosters->filter(fn ($p) => $p->count() >= self::MAX_SQUAD_SIZE)->count());
-
         $playerUpdates = [];
         $transferInserts = [];
         $signings = [];
@@ -300,8 +291,6 @@ class AITransferMarketService
                 $count++;
             }
         }
-
-        Log::info("[AIFreeAgentSigning] Phase 1+2 signed: {$count}, remaining free agents: " . $freeAgents->count());
 
         // Phase 3: General absorption — place remaining free agents with teams that have room
         // Iterate free agents by ability descending so better players find homes first
@@ -329,8 +318,6 @@ class AITransferMarketService
                 $count++;
             }
         }
-
-        Log::info("[AIFreeAgentSigning] Total signed: {$count}, remaining free agents: " . $freeAgents->count());
 
         // Flush to database
         $this->flushBatchedOperations($playerUpdates, $transferInserts);
@@ -1163,15 +1150,6 @@ class AITransferMarketService
             'teamId' => $teamId,
             'teamName' => $team?->name ?? 'Unknown',
         ];
-
-        Log::info('[AIFreeAgentSigning] Signed', [
-            'player' => $bestAgent->player?->name,
-            'tier' => $bestAgent->tier,
-            'position' => $bestAgent->position,
-            'team' => $team?->name,
-            'reputation' => $reputation ?? 'unknown',
-            'minTier' => $minTier ?? 'unknown',
-        ]);
 
         if (! $teamRosters->has($teamId)) {
             $teamRosters[$teamId] = collect();
