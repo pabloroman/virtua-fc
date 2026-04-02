@@ -553,6 +553,13 @@ class TransferService
         }
 
         // Otherwise, mark as agreed (waiting for next transfer window)
+        \Illuminate\Support\Facades\Log::info('[TransferBug] Outgoing offer agreed outside window — deferred', [
+            'offer_id' => $offer->id,
+            'player' => $offer->gamePlayer->player->name ?? $offer->game_player_id,
+            'current_date' => $game->current_date->toDateString(),
+            'type' => $offer->offer_type,
+            'fee' => $offer->transfer_fee,
+        ]);
         $offer->update(['status' => TransferOffer::STATUS_AGREED, 'resolved_at' => $game->current_date]);
         return false;
     }
@@ -1003,6 +1010,13 @@ class TransferService
         }
 
         // Otherwise, mark as agreed (waiting for next transfer window)
+        \Illuminate\Support\Facades\Log::info('[TransferBug] Incoming offer agreed outside window — deferred', [
+            'offer_id' => $offer->id,
+            'player' => $offer->gamePlayer->player->name ?? $offer->game_player_id,
+            'current_date' => $game->current_date->toDateString(),
+            'type' => $offer->offer_type,
+            'fee' => $offer->transfer_fee,
+        ]);
         $offer->update(['status' => TransferOffer::STATUS_AGREED, 'resolved_at' => $game->current_date]);
         return false;
     }

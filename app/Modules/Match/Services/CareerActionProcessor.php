@@ -32,9 +32,33 @@ class CareerActionProcessor
         $buyerPool = $this->transferService->loadBuyerPool($game);
 
         // Process transfers when window is open
+        $agreedCount = \App\Models\TransferOffer::where('game_id', $game->id)
+            ->where('status', \App\Models\TransferOffer::STATUS_AGREED)
+            ->where('offer_type', '!=', \App\Models\TransferOffer::TYPE_PRE_CONTRACT)
+            ->count();
+
+        \Illuminate\Support\Facades\Log::debug('[TransferBug] CareerActionProcessor check', [
+            'current_date' => $game->current_date->toDateString(),
+            'isTransferWindowOpen' => $game->isTransferWindowOpen(),
+            'agreed_non_precontract_offers' => $agreedCount,
+        ]);
+
+        if ($agreedCount > 0 && ! $game->isTransferWindowOpen()) {
+            \Illuminate\Support\Facades\Log::warning('[TransferBug] SKIPPING agreed transfer completion — window closed but agreed offers exist!', [
+                'current_date' => $game->current_date->toDateString(),
+                'agreed_offers' => $agreedCount,
+            ]);
+        }
+
         if ($game->isTransferWindowOpen()) {
             $completedOutgoing = $this->transferService->completeAgreedTransfers($game);
             $completedIncoming = $this->transferService->completeIncomingTransfers($game);
+
+            \Illuminate\Support\Facades\Log::debug('[TransferBug] Completed agreed transfers during open window', [
+                'outgoing' => $completedOutgoing->count(),
+                'incoming' => $completedIncoming->count(),
+            ]);
+
             foreach ($completedOutgoing->merge($completedIncoming) as $offer) {
                 $this->notificationService->notifyTransferComplete($game, $offer);
             }
