@@ -6,14 +6,12 @@ use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Academy\Services\YouthAcademyService;
 use App\Modules\Notification\Services\NotificationService;
-use App\Modules\Squad\DTOs\GeneratedPlayerData;
 use App\Modules\Squad\Services\PlayerGeneratorService;
 use App\Modules\Transfer\Services\ContractService;
 use App\Models\Game;
 use App\Models\GameNotification;
 use App\Models\GamePlayer;
 use App\Support\PositionMapper;
-use Carbon\Carbon;
 
 /**
  * Ensures the user's squad meets minimum size at season start.
@@ -102,12 +100,12 @@ class YouthAcademyPromotionProcessor implements SeasonProcessor
             ->where('team_id', $game->team_id)
             ->get();
 
-        $teamAvgAbility = $this->calculateTeamAverageAbility($players);
+        $teamAvgAbility = $this->playerGenerator->calculateTeamAverageAbility($players);
         $positions = $this->selectPositionsToFill($players, $count);
 
         $emergencyNames = [];
         foreach ($positions as $position) {
-            $playerData = $this->buildPlayerData($game, $position, $teamAvgAbility);
+            $playerData = $this->playerGenerator->buildReplenishmentPlayerData($game, $game->team_id, $position, $teamAvgAbility);
             $gamePlayer = $this->playerGenerator->create($game, $playerData);
             $emergencyNames[] = $gamePlayer->player->name;
         }
@@ -137,7 +135,6 @@ class YouthAcademyPromotionProcessor implements SeasonProcessor
         $positions = [];
 
         for ($i = 0; $i < $count; $i++) {
-            // Find group with largest deficit relative to target
             $worstGroup = null;
             $worstDeficit = PHP_INT_MIN;
             foreach ($groupTargets as $group => $target) {
@@ -153,38 +150,5 @@ class YouthAcademyPromotionProcessor implements SeasonProcessor
         }
 
         return $positions;
-    }
-
-    private function buildPlayerData(Game $game, string $position, int $teamAvgAbility): GeneratedPlayerData
-    {
-        $variance = mt_rand(-10, 10);
-        $baseAbility = max(35, min(90, $teamAvgAbility + $variance));
-
-        $techBias = mt_rand(-5, 5);
-        $technical = max(30, min(95, $baseAbility + $techBias));
-        $physical = max(30, min(95, $baseAbility - $techBias));
-
-        $age = mt_rand(22, 29);
-        $dateOfBirth = $game->current_date->copy()->subYears($age)->subDays(mt_rand(0, 364));
-
-        return new GeneratedPlayerData(
-            teamId: $game->team_id,
-            position: $position,
-            technical: $technical,
-            physical: $physical,
-            dateOfBirth: $dateOfBirth,
-            contractYears: mt_rand(2, 4),
-        );
-    }
-
-    private function calculateTeamAverageAbility($players): int
-    {
-        if ($players->isEmpty()) {
-            return 55;
-        }
-
-        $total = $players->sum(fn ($p) => (int) round(($p->game_technical_ability + $p->game_physical_ability) / 2));
-
-        return (int) round($total / $players->count());
     }
 }

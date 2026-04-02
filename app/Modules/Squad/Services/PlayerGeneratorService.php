@@ -280,6 +280,58 @@ class PlayerGeneratorService
     ];
 
     /**
+     * Build a GeneratedPlayerData for a replenishment player (mid-career, team-average ability).
+     */
+    public function buildReplenishmentPlayerData(
+        Game $game,
+        string $teamId,
+        string $position,
+        int $teamAvgAbility,
+    ): GeneratedPlayerData {
+        $variance = mt_rand(-10, 10);
+        $baseAbility = max(35, min(90, $teamAvgAbility + $variance));
+
+        $techBias = mt_rand(-5, 5);
+        $technical = max(30, min(95, $baseAbility + $techBias));
+        $physical = max(30, min(95, $baseAbility - $techBias));
+
+        $ageRoll = mt_rand(1, 100);
+        $age = match (true) {
+            $ageRoll <= 10 => mt_rand(19, 20),
+            $ageRoll <= 40 => mt_rand(21, 23),
+            $ageRoll <= 75 => mt_rand(24, 27),
+            default => mt_rand(28, 31),
+        };
+
+        $dateOfBirth = $game->current_date->copy()->subYears($age)->subDays(mt_rand(0, 364));
+
+        return new GeneratedPlayerData(
+            teamId: $teamId,
+            position: $position,
+            technical: $technical,
+            physical: $physical,
+            dateOfBirth: $dateOfBirth,
+            contractYears: mt_rand(2, 4),
+        );
+    }
+
+    /**
+     * Calculate the average ability across a collection of players.
+     *
+     * Accepts any collection with `game_technical_ability` and `game_physical_ability` attributes.
+     */
+    public function calculateTeamAverageAbility($players): int
+    {
+        if ($players->isEmpty()) {
+            return 55;
+        }
+
+        $total = $players->sum(fn ($p) => (int) round(($p->game_technical_ability + $p->game_physical_ability) / 2));
+
+        return (int) round($total / $players->count());
+    }
+
+    /**
      * Pick a random identity (name + nationality + height + foot) from the pool.
      *
      * @param  string|null  $nationality    Exact nationality filter (100% match, e.g. for Athletic Bilbao)
