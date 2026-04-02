@@ -27,6 +27,7 @@ use App\Models\GameStanding;
 use App\Models\PlayerSuspension;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MatchdayOrchestrator
 {
@@ -281,6 +282,9 @@ class MatchdayOrchestrator
      */
     private function autoSimulateRemainingBatches(Game $game): void
     {
+        $batchCount = 0;
+        $loopStartMemory = memory_get_usage(true);
+
         while ($nextBatch = $this->matchdayService->getNextMatchBatch($game)) {
             // Stop if this batch involves the player — they need to play it
             $involvesPlayer = $nextBatch['matches']->contains(
@@ -293,6 +297,33 @@ class MatchdayOrchestrator
 
             $this->processBatch($game, $nextBatch);
             $game->refresh()->setRelations([]);
+
+            // Reclaim memory from Eloquent circular references.
+            // Hypotheses for memory growth across batches:
+            // 1. Circular refs: $player->setRelation('game', $game) in processBatch() creates
+            //    cycles that PHP refcount GC cannot free — only gc_collect_cycles() reclaims them.
+            //    ~440 GamePlayer models per batch accumulate without this.
+            // 2. $allPlayers + $matchResults are local to processBatch() but won't be freed
+            //    until circular refs are broken.
+            // 3. Match event arrays (~10 matches × ~30 events) are retained by the same mechanism.
+            gc_collect_cycles();
+
+            $batchCount++;
+            Log::info('[ProcessRemainingBatches] Batch processed', [
+                'game_id' => $game->id,
+                'batch' => $batchCount,
+                'memory_mb' => round(memory_get_usage(true) / 1024 / 1024, 2),
+                'delta_mb' => round((memory_get_usage(true) - $loopStartMemory) / 1024 / 1024, 2),
+            ]);
+        }
+
+        if ($batchCount > 0) {
+            Log::info('[ProcessRemainingBatches] All batches complete', [
+                'game_id' => $game->id,
+                'total_batches' => $batchCount,
+                'memory_mb' => round(memory_get_usage(true) / 1024 / 1024, 2),
+                'peak_mb' => round(memory_get_peak_usage(true) / 1024 / 1024, 2),
+            ]);
         }
     }
 
