@@ -366,4 +366,10 @@ return [
     'clear_all' => 'Limpiar todo',
     'confirm_registration' => 'Confirmar Inscripción',
     'registered_label' => 'inscritos',
+    'registered_squad' => 'Plantilla Inscrita',
+    'available_players' => 'Jugadores Disponibles',
+    'drag_to_register' => 'Haz clic en un jugador o usa auto-asignar para inscribir',
+    'all_registered' => 'Todos los jugadores están inscritos',
+    'number_conflict' => 'Uno o más dorsales están duplicados — corrígelos antes de confirmar',
+    'all' => 'Todos',
 ];

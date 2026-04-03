@@ -366,4 +366,10 @@ return [
     'clear_all' => 'Clear all',
     'confirm_registration' => 'Confirm Registration',
     'registered_label' => 'registered',
+    'registered_squad' => 'Registered Squad',
+    'available_players' => 'Available Players',
+    'drag_to_register' => 'Click a player or use auto-assign to register',
+    'all_registered' => 'All players are registered',
+    'number_conflict' => 'One or more numbers conflict — fix duplicates before confirming',
+    'all' => 'All',
 ];
