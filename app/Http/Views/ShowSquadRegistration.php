@@ -16,6 +16,11 @@ class ShowSquadRegistration
             return redirect()->route('game.squad', $gameId);
         }
 
+        // Only accessible during transfer windows or when a pending action requires it
+        if (! $game->isTransferWindowOpen() && ! $game->hasPendingAction('squad_registration')) {
+            return redirect()->route('game.squad', $gameId);
+        }
+
         $gamePlayers = GamePlayer::where('game_id', $gameId)
             ->where('team_id', $game->team_id)
             ->with('player')

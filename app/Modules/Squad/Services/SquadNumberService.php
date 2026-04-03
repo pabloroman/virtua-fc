@@ -5,6 +5,7 @@ namespace App\Modules\Squad\Services;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Modules\Player\PlayerAge;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class SquadNumberService
@@ -12,10 +13,33 @@ class SquadNumberService
     private const FIRST_TEAM_MAX = 25;
 
     /**
+     * Traditional football numbering conventions (Spanish/La Liga style).
+     *
+     * Each position maps to an ordered list of preferred numbers.
+     * The first available number in the list is assigned.
+     */
+    private const POSITION_NUMBERS = [
+        'Goalkeeper'         => [1, 13, 25],
+        'Right-Back'         => [2, 12, 22],
+        'Left-Back'          => [3, 18, 24],
+        'Centre-Back'        => [4, 5, 15, 16, 23],
+        'Defensive Midfield' => [6, 14, 20],
+        'Central Midfield'   => [8, 6, 14, 22],
+        'Attacking Midfield' => [10, 8, 21],
+        'Right Midfield'     => [7, 14, 22],
+        'Left Midfield'      => [11, 17, 24],
+        'Right Winger'       => [7, 11, 17],
+        'Left Winger'        => [11, 7, 17],
+        'Centre-Forward'     => [9, 19, 21],
+        'Second Striker'     => [10, 9, 19, 21],
+    ];
+
+    /**
      * Assign a smart squad number for a player joining the user's team.
      *
-     * Over-23 players get slots 2-25 (bumping the youngest under-23 if needed).
-     * Under-23 players get slots 2-25 if available, otherwise 26-99.
+     * Uses traditional football numbering conventions by position.
+     * Over-23 players get slots 1-25 (bumping the youngest under-23 if needed).
+     * Under-23 players get slots 1-25 if available, otherwise 26-99.
      * Returns null only when there are already 25+ over-23 players (unresolvable).
      */
     public function assignNumberForNewPlayer(Game $game, GamePlayer $player): ?int
@@ -33,14 +57,15 @@ class SquadNumberService
         $takenNumbers = $teamPlayers->pluck('number')->flip();
 
         if ($isYoung) {
-            // Under-23: try 2-25 first, then 26-99
-            $number = $this->firstAvailable(2, self::FIRST_TEAM_MAX, $takenNumbers);
-
-            return $number ?? $this->firstAvailable(self::FIRST_TEAM_MAX + 1, 99, $takenNumbers);
+            // Under-23: try preferred numbers in 1-25, then any 1-25, then 26-99
+            return $this->preferredNumber($player->position, $takenNumbers, 1, self::FIRST_TEAM_MAX)
+                ?? $this->firstAvailable(2, self::FIRST_TEAM_MAX, $takenNumbers)
+                ?? $this->firstAvailable(self::FIRST_TEAM_MAX + 1, 99, $takenNumbers);
         }
 
-        // Over-23: must be in 2-25
-        $number = $this->firstAvailable(2, self::FIRST_TEAM_MAX, $takenNumbers);
+        // Over-23: try preferred numbers, then any free 1-25
+        $number = $this->preferredNumber($player->position, $takenNumbers, 1, self::FIRST_TEAM_MAX)
+            ?? $this->firstAvailable(2, self::FIRST_TEAM_MAX, $takenNumbers);
 
         if ($number !== null) {
             return $number;
@@ -54,7 +79,6 @@ class SquadNumberService
             ->first();
 
         if (! $bumpCandidate) {
-            // All 25 slots occupied by over-23 players — unresolvable
             return null;
         }
 
@@ -75,6 +99,7 @@ class SquadNumberService
      * - Unregistered under-23 → assigned 26+ slots
      * - Unregistered over-23 → assigned 1-25 if possible
      *
+     * Uses traditional football numbering conventions when assigning new numbers.
      * Returns the count of over-23 players left without a number (unresolvable).
      */
     public function reassignNumbers(Game $game): int
@@ -91,11 +116,11 @@ class SquadNumberService
         $currentDate = $game->current_date;
 
         // Categorize players by age and current number position
-        $over23InFirstTeam = collect();   // valid, keep
-        $under23InFirstTeam = collect();  // valid, but bumpable
-        $over23NeedSlot = collect();      // in 26+ or null, need 1-25
-        $under23NeedSlot = collect();     // in 26+ already (valid) or null (need any slot)
-        $under23InAcademy = collect();    // in 26+, valid, keep
+        $over23InFirstTeam = collect();
+        $under23InFirstTeam = collect();
+        $over23NeedSlot = collect();
+        $under23NeedSlot = collect();
+        $under23InAcademy = collect();
 
         foreach ($players as $player) {
             $age = $player->age($currentDate);
@@ -113,7 +138,6 @@ class SquadNumberService
             } elseif ($inAcademy) {
                 $under23InAcademy->push($player);
             } else {
-                // under-23 with null number
                 $under23NeedSlot->push($player);
             }
         }
@@ -121,7 +145,6 @@ class SquadNumberService
         $over23NeedingCount = $over23NeedSlot->count();
 
         if ($over23NeedingCount === 0 && $under23NeedSlot->isEmpty()) {
-            // Everyone is already in a valid position
             return 0;
         }
 
@@ -131,7 +154,6 @@ class SquadNumberService
         // How many under-23 need to be bumped to make room for over-23?
         $bumpCount = max(0, $over23NeedingCount - $freeFirstTeamSlots);
 
-        // Can we resolve all over-23? Check if total over-23 exceeds 25
         $totalOver23 = $over23InFirstTeam->count() + $over23NeedingCount;
         $unresolvable = max(0, $totalOver23 - self::FIRST_TEAM_MAX);
 
@@ -147,12 +169,6 @@ class SquadNumberService
             ->merge($under23InAcademy->pluck('number'))
             ->flip();
 
-        // Collect freed first-team slots (from bumped under-23 + already-free slots)
-        $allFirstTeamNumbers = collect(range(2, self::FIRST_TEAM_MAX));
-        $freeFirstTeam = $allFirstTeamNumbers
-            ->reject(fn ($n) => $stableNumbers->has($n))
-            ->values();
-
         // Collect free academy slots
         $allAcademyNumbers = collect(range(self::FIRST_TEAM_MAX + 1, 99));
         $freeAcademy = $allAcademyNumbers
@@ -160,14 +176,20 @@ class SquadNumberService
             ->values();
 
         $updates = [];
-        $firstTeamIdx = 0;
         $academyIdx = 0;
 
-        // Assign over-23 to first-team slots (up to 25)
+        // Track which first-team numbers are taken (stable + newly assigned)
+        $usedFirstTeam = $stableNumbers->filter(fn ($v, $n) => $n >= 1 && $n <= self::FIRST_TEAM_MAX);
+
+        // Assign over-23 to first-team slots using position preferences
         $resolvableOver23 = $over23NeedSlot->take($over23NeedingCount - $unresolvable);
         foreach ($resolvableOver23 as $player) {
-            if ($firstTeamIdx < $freeFirstTeam->count()) {
-                $updates[$player->id] = $freeFirstTeam[$firstTeamIdx++];
+            $number = $this->preferredNumber($player->position, $usedFirstTeam, 1, self::FIRST_TEAM_MAX)
+                ?? $this->firstAvailable(2, self::FIRST_TEAM_MAX, $usedFirstTeam);
+
+            if ($number !== null) {
+                $updates[$player->id] = $number;
+                $usedFirstTeam->put($number, true);
             }
         }
 
@@ -186,16 +208,19 @@ class SquadNumberService
             }
         }
 
-        // Unregistered under-23 get academy slots (or first-team if available)
+        // Unregistered under-23: try first-team with position prefs, then academy
         foreach ($under23NeedSlot as $player) {
-            if ($firstTeamIdx < $freeFirstTeam->count()) {
-                $updates[$player->id] = $freeFirstTeam[$firstTeamIdx++];
+            $number = $this->preferredNumber($player->position, $usedFirstTeam, 1, self::FIRST_TEAM_MAX)
+                ?? $this->firstAvailable(2, self::FIRST_TEAM_MAX, $usedFirstTeam);
+
+            if ($number !== null) {
+                $updates[$player->id] = $number;
+                $usedFirstTeam->put($number, true);
             } elseif ($academyIdx < $freeAcademy->count()) {
                 $updates[$player->id] = $freeAcademy[$academyIdx++];
             }
         }
 
-        // Apply updates in a transaction
         if (! empty($updates)) {
             DB::transaction(function () use ($updates, $game) {
                 foreach ($updates as $playerId => $number) {
@@ -230,7 +255,24 @@ class SquadNumberService
         return 99;
     }
 
-    private function firstAvailable(int $from, int $to, \Illuminate\Support\Collection $taken): ?int
+    /**
+     * Find the first preferred number for a position that is available.
+     * Only returns numbers within the given range.
+     */
+    private function preferredNumber(string $position, Collection $taken, int $min, int $max): ?int
+    {
+        $preferred = self::POSITION_NUMBERS[$position] ?? [];
+
+        foreach ($preferred as $number) {
+            if ($number >= $min && $number <= $max && ! $taken->has($number)) {
+                return $number;
+            }
+        }
+
+        return null;
+    }
+
+    private function firstAvailable(int $from, int $to, Collection $taken): ?int
     {
         for ($n = $from; $n <= $to; $n++) {
             if (! $taken->has($n)) {
