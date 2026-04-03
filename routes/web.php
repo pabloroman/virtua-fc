@@ -58,7 +58,9 @@ use App\Http\Actions\SaveLineup;
 use App\Http\Actions\SaveTacticalPreset;
 use App\Http\Actions\DeleteTacticalPreset;
 
+use App\Http\Actions\SaveSquadRegistration;
 use App\Http\Actions\SaveSquadSelection;
+use App\Http\Views\ShowSquadRegistration;
 use App\Http\Views\ShowSquadSelection;
 use App\Http\Actions\SubmitScoutSearch;
 use App\Http\Actions\SubmitPreContractOffer;
@@ -147,6 +149,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/game/{gameId}', ShowGame::class)->name('show-game');
         Route::get('/game/{gameId}/squad', ShowSquad::class)->name('game.squad');
         Route::get('/game/{gameId}/squad/academy', ShowAcademy::class)->name('game.squad.academy');
+        Route::get('/game/{gameId}/squad/registration', ShowSquadRegistration::class)->name('game.squad.registration');
+        Route::post('/game/{gameId}/squad/registration', SaveSquadRegistration::class)->name('game.squad.registration.save');
         Route::get('/game/{gameId}/player/{playerId}/detail', ShowPlayerDetail::class)->name('game.player.detail');
         Route::get('/game/{gameId}/academy/{playerId}/detail', ShowAcademyPlayerDetail::class)->name('game.academy.detail');
         Route::post('/game/{gameId}/academy/{playerId}/promote', PromoteAcademyPlayer::class)->name('game.academy.promote');

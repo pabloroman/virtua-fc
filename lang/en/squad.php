@@ -349,4 +349,21 @@ return [
 
     // Number
     'number' => 'Number',
+
+    // Squad registration
+    'registration' => 'Registration',
+    'registration_title' => 'Squad Registration',
+    'registration_subtitle' => 'Assign shirt numbers for the season',
+    'first_team_slots' => 'First Team (1-25)',
+    'academy_slots' => 'Academy (26-99)',
+    'unregistered_players' => 'Unregistered',
+    'empty_slot' => 'Empty',
+    'save_registration' => 'Save',
+    'registration_saved' => 'Squad registration saved',
+    'registered_count' => ':count registered',
+    'academy_age_limit' => 'Only players under 23 can be registered with academy numbers (26-99)',
+    'registration_rules_title' => 'Registration Rules',
+    'registration_rule_first_team' => 'First team players are assigned shirt numbers 1 to 25.',
+    'registration_rule_academy' => 'Academy numbers (26-99) are reserved for players under 23 years old.',
+    'registration_rule_unregistered' => 'Unregistered players cannot be selected for matchday squads.',
 ];

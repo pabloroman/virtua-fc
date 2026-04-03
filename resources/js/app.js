@@ -9,6 +9,7 @@ import negotiationChat from './negotiation-chat';
 import squadSelection from './squad-selection';
 import tournamentSummary from './tournament-summary';
 import seasonSummary from './season-summary';
+import squadRegistration from './squad-registration';
 
 Alpine.plugin(Collapse);
 Alpine.plugin(Tooltip);
@@ -17,6 +18,7 @@ Alpine.data('liveMatch', liveMatch);
 Alpine.data('lineupManager', lineupManager);
 Alpine.data('negotiationChat', negotiationChat);
 Alpine.data('squadSelection', squadSelection);
+Alpine.data('squadRegistration', squadRegistration);
 Alpine.data('tournamentSummary', tournamentSummary);
 Alpine.data('seasonSummary', seasonSummary);
 
