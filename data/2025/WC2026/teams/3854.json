@@ -1,0 +1,268 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/3854.png",
+  "name": "Democratic Republic of the Congo",
+  "players": [
+    {
+      "contract": "Dec 16, 2025",
+      "dateOfBirth": "Jan 15, 2005",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "680218",
+      "marketValue": "€5.00m",
+      "name": "Matthieu Epolo",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 8, 2025",
+      "dateOfBirth": "Jul 24, 1999",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "541420",
+      "marketValue": "€1.00m",
+      "name": "Timothy Fayulu",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Feb 1, 2022",
+      "dateOfBirth": "Aug 1, 1994",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "164915",
+      "marketValue": "€400k",
+      "name": "Lionel Mpasi-Nzau",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 6, 2024",
+      "dateOfBirth": "Nov 14, 1997",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "342046",
+      "marketValue": "€5.00m",
+      "name": "Axel Tuanzebe",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 15, 2012",
+      "dateOfBirth": "Aug 8, 1994",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "203348",
+      "marketValue": "€2.50m",
+      "name": "Chancel Mbemba",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 8, 2025",
+      "dateOfBirth": "Apr 30, 1998",
+      "foot": "left",
+      "height": "1,96m",
+      "id": "679709",
+      "marketValue": "€2.50m",
+      "name": "Steve Kapuadi",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Sep 12, 2023",
+      "dateOfBirth": "Nov 30, 1999",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "511802",
+      "marketValue": "€900k",
+      "name": "Rocky Bushiri",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 14, 2023",
+      "dateOfBirth": "Feb 15, 1996",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "289432",
+      "marketValue": "€700k",
+      "name": "Dylan Batubinsika",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Sep 12, 2023",
+      "dateOfBirth": "Aug 8, 1994",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "129586",
+      "marketValue": "€2.50m",
+      "name": "Joris Kayembe",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Oct 13, 2018",
+      "dateOfBirth": "Nov 7, 1993",
+      "foot": "left",
+      "height": "1,79m",
+      "id": "181380",
+      "marketValue": "€2.50m",
+      "name": "Arthur Masuaku",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Sep 5, 2025",
+      "dateOfBirth": "Nov 26, 1997",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "477758",
+      "marketValue": "€22.00m",
+      "name": "Aaron Wan-Bissaka",
+      "position": "Right-Back"
+    },
+    {
+      "dateOfBirth": "Sep 7, 2000",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "503795",
+      "marketValue": "€2.00m",
+      "name": "Jeremy Ngakia",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Nov 16, 2024",
+      "dateOfBirth": "Nov 3, 2004",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "1016015",
+      "marketValue": "€12.00m",
+      "name": "Ngal'ayel Mukau",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Sep 9, 2023",
+      "dateOfBirth": "May 15, 1997",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "243879",
+      "marketValue": "€2.50m",
+      "name": "Charles Pickel",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Sep 6, 2024",
+      "dateOfBirth": "Dec 17, 2004",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "727089",
+      "marketValue": "€30.00m",
+      "name": "Noah Sadiki",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Oct 10, 2019",
+      "dateOfBirth": "Jun 3, 1998",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "486477",
+      "marketValue": "€4.00m",
+      "name": "Edo Kayembe",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Oct 10, 2019",
+      "dateOfBirth": "Aug 12, 1996",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "353403",
+      "marketValue": "€1.20m",
+      "name": "Samuel Moutoussamy",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jan 10, 2016",
+      "dateOfBirth": "Aug 6, 1997",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "423678",
+      "marketValue": "€2.00m",
+      "name": "Meschack Elia",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Oct 15, 2024",
+      "dateOfBirth": "Mar 16, 2002",
+      "foot": "left",
+      "height": "1,70m",
+      "id": "557614",
+      "marketValue": "€2.00m",
+      "name": "Nathanaël Mbuku",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Oct 14, 2025",
+      "dateOfBirth": "Mar 11, 1998",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "700565",
+      "marketValue": "€2.00m",
+      "name": "Brian Cipenga",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Feb 1, 2022",
+      "dateOfBirth": "Nov 20, 1995",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "280701",
+      "marketValue": "€4.00m",
+      "name": "Théo Bongonda",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Oct 13, 2023",
+      "dateOfBirth": "Apr 19, 1998",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "342048",
+      "marketValue": "€2.50m",
+      "name": "Grady Diangana",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Oct 9, 2020",
+      "dateOfBirth": "Sep 3, 1996",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "388165",
+      "marketValue": "€30.00m",
+      "name": "Yoane Wissa",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Oct 13, 2023",
+      "dateOfBirth": "Aug 13, 1996",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "344869",
+      "marketValue": "€11.00m",
+      "name": "Simon Banza",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jan 17, 2021",
+      "dateOfBirth": "Jun 24, 1994",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "727157",
+      "marketValue": "€1.80m",
+      "name": "Fiston Mayele",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 9, 2015",
+      "dateOfBirth": "Apr 11, 1991",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "127048",
+      "marketValue": "€1.40m",
+      "name": "Cédric Bakambu",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": null,
+  "stadiumSeats": null,
+  "transfermarktId": "3854"
+}

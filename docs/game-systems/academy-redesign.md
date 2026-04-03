@@ -1,6 +1,6 @@
 # Youth Academy: "La Cantera" (B Team)
 
-The youth academy functions as a B team, producing homegrown talent calibrated to your squad's quality level. Academy players are generated 1-2 tiers below your first team and can be promoted permanently, loaned out, or dismissed. Promotion is a one-way, permanent move.
+The youth academy functions as a B team, producing homegrown talent calibrated to your squad's quality level. Academy players are generated with quality following a normal distribution, so most prospects cluster around the expected average for the academy tier with occasional gems and busts. Promotion is a one-way, permanent move.
 
 ## Season Rhythm
 
@@ -11,28 +11,30 @@ Any time      → Promote / loan / dismiss
 Season end    → Mandatory evaluation: keep / promote / loan / dismiss
 ```
 
-## Tier-Relative Generation
+## Quality Distribution (Normal / Gaussian)
 
-Academy prospect quality is derived from your first team's median player tier (via `PlayerTierService`):
+Academy prospect quality follows a **normal distribution** (bell curve):
 
-1. **First-team median tier** — computed from `GamePlayer.tier` column
-2. **Target ability tier** — `max(1, median - ACADEMY_TIER_OFFSET[academyTier])`
-3. **Potential ceiling tier** — `min(5, median + POTENTIAL_CEILING_OFFSET[academyTier])`
-4. **Ability** — random within `TIER_ABILITY_RANGES[targetTier]`
-5. **Potential** — random from top of target tier range to top of ceiling tier range
+1. **Ability mean** = `ACADEMY_BASE_QUALITY[academyTier] + TEAM_CONTEXT_BONUS[teamMedianTier]`
+2. **Technical & physical** — sampled independently from N(mean, σ=7), clamped to [35, 90]
+3. **Potential** — `max(technical, physical)` + normally distributed upside (mean per tier, σ=5)
+4. **Potential floor** — guaranteed minimum per academy tier (45/50/55/60)
+5. **Potential ceiling** — hard cap at 95
 
-Higher academy tiers produce players closer to first-team quality with higher potential ceilings.
+This produces realistic clustering: most prospects are average for their tier, with rare gems in the upper tail and occasional busts in the lower tail.
 
 ## Tiers
 
-Academy tier (from budget allocation) determines batch size and potential ceiling. The academy has no capacity limit.
+Academy tier (from budget allocation) determines batch size, base quality mean, and potential upside. The academy has no capacity limit.
 
-| Tier | Arrivals | Potential Ceiling Offset |
-|------|----------|------------------------|
-| 1 — Basic | 2-3 | +1 tier |
-| 2 — Good | 3-5 | +1 tier |
-| 3 — Elite | 4-6 | +2 tiers |
-| 4 — World-Class | 4-6 | +2 tiers |
+| Tier | Arrivals | Base Quality Mean | Potential Upside Mean |
+|------|----------|-------------------|----------------------|
+| 1 — Basic | 2-3 | 45 | +10 |
+| 2 — Good | 3-5 | 52 | +12 |
+| 3 — Elite | 4-6 | 62 | +12 |
+| 4 — World-Class | 4-6 | 70 | +10 |
+
+Team context adjusts the ability mean by -3 to +4 based on first-team median tier.
 
 "Cantera" teams (e.g., Athletic Bilbao) only generate Spanish nationality prospects.
 
@@ -54,7 +56,7 @@ Players can be managed individually at any time via the academy page:
 | **Loan** | Frees seat now, develops faster off-screen, returns next season end |
 | **Dismiss** | Permanently removed |
 
-Players naturally leave the academy when they age past the academy age limit.
+Players aged 21+ (`PlayerAge::ACADEMY_END`) are automatically promoted to the first team at the start of each new season via `YouthAcademyPromotionProcessor`. This applies even if the squad exceeds the 30-player cap. A notification informs the manager of the promoted players.
 
 ## Key Files
 
@@ -62,4 +64,4 @@ Players naturally leave the academy when they age past the academy age limit.
 |------|---------|
 | `app/Modules/Academy/Services/YouthAcademyService.php` | Batch generation, development, capacity, all actions |
 | `app/Modules/Season/Processors/YouthAcademyClosingProcessor.php` | Season-end: loan development, returns |
-| `app/Modules/Season/Processors/YouthAcademySetupProcessor.php` | Season-setup: evaluation trigger |
+| `app/Modules/Season/Processors/YouthAcademyPromotionProcessor.php` | Season-setup: auto-promote overage players |

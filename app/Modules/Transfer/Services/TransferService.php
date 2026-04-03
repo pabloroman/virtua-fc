@@ -185,7 +185,7 @@ class TransferService
      *
      * @param Collection|null $allPlayersGrouped Pre-loaded players grouped by team_id (optional, for N+1 optimization)
      */
-    public function generateOffersForListedPlayers(Game $game, $allPlayersGrouped = null, ?array $buyerPool = null): Collection
+    public function generateOffersForListedPlayers(Game $game, $allPlayersGrouped = null, ?array $buyerPool = null, int $offerChance = 40): Collection
     {
         $offers = collect();
 
@@ -228,8 +228,7 @@ class TransferService
                 continue;
             }
 
-            // 40% chance of receiving a new offer each matchday
-            if (rand(1, 100) <= 40) {
+            if (rand(1, 100) <= $offerChance) {
                 ['buyers' => $buyers, 'squadValues' => $squadValues] = $this->getEligibleBuyersWithSquadValues($player, $buyerPool);
 
                 // Exclude teams that already made offers
@@ -1095,7 +1094,7 @@ class TransferService
      * Complete all agreed incoming transfers (user buying/loaning players).
      * Called when transfer window opens.
      */
-    public function completeIncomingTransfers(Game $game): Collection
+    public function completeIncomingTransfers(Game $game, bool $skipSquadCheck = false): Collection
     {
         $agreedIncoming = TransferOffer::with(['gamePlayer.player', 'sellingTeam'])
             ->where('game_id', $game->id)
@@ -1117,7 +1116,7 @@ class TransferService
             if ($offer->offer_type === TransferOffer::TYPE_LOAN_IN) {
                 $this->completeLoanIn($offer, $game);
             } else {
-                $this->completeIncomingTransfer($offer, $game);
+                $this->completeIncomingTransfer($offer, $game, $skipSquadCheck);
             }
             $completedTransfers->push($offer);
         }

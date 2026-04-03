@@ -35,7 +35,7 @@ class ReputationUpdateProcessor implements SeasonProcessor
 
     public function priority(): int
     {
-        return 27;
+        return 90;
     }
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData

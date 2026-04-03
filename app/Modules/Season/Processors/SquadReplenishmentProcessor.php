@@ -2,7 +2,6 @@
 
 namespace App\Modules\Season\Processors;
 
-use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Squad\DTOs\GeneratedPlayerData;
@@ -17,18 +16,19 @@ use Illuminate\Support\Collection;
 /**
  * Centralised AI roster maintenance: ensures every AI team has a viable squad.
  *
- * Runs after contract expirations (5), retirements (7), and before player
- * development (10). Fills gaps caused by any source of attrition: retirements,
- * expired contracts, transfers, or any other mechanism that removes players.
+ * Runs after contract expirations, retirements, and before player development.
+ * Fills gaps caused by any source of attrition: retirements, expired contracts,
+ * transfers, or any other mechanism that removes players.
  *
- * Three rules are enforced:
- * 1. Position group minimums (2 GK, 5 DEF, 5 MID, 3 FWD) — always, even if
+ * Three rules are enforced for AI teams:
+ * 1. Position group minimums (3 GK, 6 DEF, 6 MID, 4 FWD) — always, even if
  *    total squad size is sufficient (e.g. user buys all AI team's goalkeepers).
  * 2. Minimum squad size of 22 — fill remaining gaps by position target priority.
  * 3. Youth intake — each AI team receives 2-3 young players (17-20) per season,
  *    simulating AI youth academies and maintaining healthy age balance.
  *
- * Priority: 8
+ * User team replenishment is handled separately in YouthAcademyPromotionProcessor
+ * (setup pipeline), which promotes academy players first before generating synthetic ones.
  */
 class SquadReplenishmentProcessor implements SeasonProcessor
 {
@@ -75,10 +75,10 @@ class SquadReplenishmentProcessor implements SeasonProcessor
      * If a group is below its minimum, those positions are filled first.
      */
     private const GROUP_MINIMUMS = [
-        'Goalkeeper' => 2,
-        'Defender' => 5,
-        'Midfielder' => 5,
-        'Forward' => 3,
+        'Goalkeeper' => 3,
+        'Defender' => 6,
+        'Midfielder' => 6,
+        'Forward' => 4,
     ];
 
     /**
@@ -86,7 +86,7 @@ class SquadReplenishmentProcessor implements SeasonProcessor
      * position within a depleted group should receive the new player.
      */
     private const POSITION_TARGETS = [
-        'Goalkeeper' => 2,
+        'Goalkeeper' => 3,
         'Centre-Back' => 3,
         'Left-Back' => 1,
         'Right-Back' => 1,
@@ -104,12 +104,11 @@ class SquadReplenishmentProcessor implements SeasonProcessor
 
     public function __construct(
         private readonly PlayerGeneratorService $playerGenerator,
-        private readonly NotificationService $notificationService,
     ) {}
 
     public function priority(): int
     {
-        return 8;
+        return 42;
     }
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
@@ -139,15 +138,15 @@ class SquadReplenishmentProcessor implements SeasonProcessor
 
         foreach ($aiTeamIds as $teamId) {
             $players = $playersByTeam->get($teamId, collect());
-            $teamAvgAbility = $this->calculateTeamAverageAbility($players);
+            $teamAvgAbility = $this->playerGenerator->calculateTeamAverageAbility($players);
             $positionCounts = $players->groupBy('position')->map->count();
 
             // Phase 1: Fill squad gaps (position minimums + squad size minimum)
             $positionsToFill = $this->determinePositionsToFill($positionCounts, $players->count());
 
             foreach ($positionsToFill as $position) {
-                $playerData = $this->buildPlayerData(
-                    $game, $teamId, $position, $teamAvgAbility, $data->newSeason,
+                $playerData = $this->playerGenerator->buildReplenishmentPlayerData(
+                    $game, $teamId, $position, $teamAvgAbility,
                 );
                 $bulkData[] = $playerData;
                 $bulkMeta[] = ['teamId' => $teamId, 'type' => 'replenishment'];
@@ -175,24 +174,6 @@ class SquadReplenishmentProcessor implements SeasonProcessor
             }
         }
 
-        // Emergency replenishment for user's team (safety net for expired contracts/retirements)
-        $userPlayers = $playersByTeam->get($game->team_id, collect());
-
-        $emergencyNames = [];
-        if ($userPlayers->count() < self::MIN_SQUAD_SIZE) {
-            $teamAvgAbility = $this->calculateTeamAverageAbility($userPlayers);
-            $positionCounts = $userPlayers->groupBy('position')->map->count();
-            $positionsToFill = $this->determinePositionsToFill($positionCounts, $userPlayers->count());
-
-            foreach ($positionsToFill as $position) {
-                $playerData = $this->buildPlayerData(
-                    $game, $game->team_id, $position, $teamAvgAbility, $data->newSeason,
-                );
-                $bulkData[] = $playerData;
-                $bulkMeta[] = ['teamId' => $game->team_id, 'type' => 'emergency_replenishment', 'isUserTeam' => true];
-            }
-        }
-
         // Batch release old/weak players
         if (!empty($releaseIds)) {
             GamePlayer::whereIn('id', $releaseIds)->update(['team_id' => null]);
@@ -217,56 +198,9 @@ class SquadReplenishmentProcessor implements SeasonProcessor
         foreach ($results as $i => $result) {
             $result['type'] = $bulkMeta[$i]['type'];
             $generatedPlayers[] = $result;
-
-            if (!empty($bulkMeta[$i]['isUserTeam'])) {
-                $emergencyNames[] = $result['playerName'];
-            }
-        }
-
-        if (!empty($emergencyNames)) {
-            $this->notificationService->notifyEmergencySignings($game, $emergencyNames);
         }
 
         return $data->setMetadata('squadReplenishment', $generatedPlayers);
-    }
-
-    /**
-     * Build a GeneratedPlayerData for a replenishment player (does not insert to DB).
-     */
-    private function buildPlayerData(
-        Game $game,
-        string $teamId,
-        string $position,
-        int $teamAvgAbility,
-        string $newSeason,
-    ): GeneratedPlayerData {
-        $variance = mt_rand(-10, 10);
-        $baseAbility = max(35, min(90, $teamAvgAbility + $variance));
-
-        $techBias = mt_rand(-5, 5);
-        $technical = max(30, min(95, $baseAbility + $techBias));
-        $physical = max(30, min(95, $baseAbility - $techBias));
-
-        $seasonYear = (int) $newSeason;
-
-        $ageRoll = mt_rand(1, 100);
-        $age = match (true) {
-            $ageRoll <= 10 => mt_rand(19, 20),
-            $ageRoll <= 40 => mt_rand(21, 23),
-            $ageRoll <= 75 => mt_rand(24, 27),
-            default => mt_rand(28, 31),
-        };
-
-        $dateOfBirth = Carbon::createFromDate($seasonYear - $age, mt_rand(1, 12), mt_rand(1, 28));
-
-        return new GeneratedPlayerData(
-            teamId: $teamId,
-            position: $position,
-            technical: $technical,
-            physical: $physical,
-            dateOfBirth: $dateOfBirth,
-            contractYears: mt_rand(2, 4),
-        );
     }
 
     /**
@@ -431,22 +365,6 @@ class SquadReplenishmentProcessor implements SeasonProcessor
             $total += $positionCounts->get($position, 0);
         }
         return $total;
-    }
-
-    /**
-     * Calculate the average ability across a team's roster.
-     */
-    private function calculateTeamAverageAbility($players): int
-    {
-        if ($players->isEmpty()) {
-            return 55;
-        }
-
-        $totalAbility = $players->sum(function ($player) {
-            return (int) round(($player->game_technical_ability + $player->game_physical_ability) / 2);
-        });
-
-        return (int) round($totalAbility / $players->count());
     }
 
     /**

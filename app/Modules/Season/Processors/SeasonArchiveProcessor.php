@@ -27,7 +27,7 @@ class SeasonArchiveProcessor implements SeasonProcessor
 
     public function priority(): int
     {
-        return 5;
+        return 25;
     }
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData

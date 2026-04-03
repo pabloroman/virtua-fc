@@ -10,7 +10,8 @@ class AdminGameStats
     public function __invoke(Request $request, GameStatsService $stats)
     {
         return view('admin.game-stats', [
-            'teamPopularity' => $stats->getTeamPopularity(),
+            'clubPopularity' => $stats->getClubPopularity(),
+            'nationalTeamPopularity' => $stats->getNationalTeamPopularity(),
             'seasonProgress' => $stats->getSeasonProgress(),
         ]);
     }

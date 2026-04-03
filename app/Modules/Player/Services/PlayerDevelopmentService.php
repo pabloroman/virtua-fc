@@ -40,9 +40,9 @@ class PlayerDevelopmentService
      *     physChange: int
      * }
      */
-    public function calculateDevelopment(GamePlayer $player): array
+    public function calculateDevelopment(GamePlayer $player, ?int $precomputedAge = null): array
     {
-        $age = $player->age($player->game->current_date);
+        $age = $precomputedAge ?? $player->age($player->game->current_date);
         $multipliers = DevelopmentCurve::getMultipliers($age);
         $hasBonus = DevelopmentCurve::qualifiesForBonus($player->season_appearances);
 

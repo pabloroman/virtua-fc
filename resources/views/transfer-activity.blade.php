@@ -56,7 +56,11 @@
                                 {{-- OUT transfers --}}
                                 @foreach($activity['out'] as $transfer)
                                     <div class="flex items-center gap-1.5 md:gap-2 text-sm min-h-[28px]">
-                                        <span class="text-accent-red font-bold w-4 shrink-0 text-center" title="{{ __('transfers.transfer_activity_out') }}">&#x2197;</span>
+                                        <span class="text-accent-red w-4 shrink-0 flex items-center justify-center" title="{{ __('transfers.transfer_activity_out') }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
+                                                <path fill-rule="evenodd" d="M4.22 11.78a.75.75 0 0 1 0-1.06L9.44 5.5H5.75a.75.75 0 0 1 0-1.5h5.5a.75.75 0 0 1 .75.75v5.5a.75.75 0 0 1-1.5 0V6.56l-5.22 5.22a.75.75 0 0 1-1.06 0Z" clip-rule="evenodd" />
+                                            </svg>
+                                        </span>
                                         <x-position-badge :position="$transfer['position']" size="sm" />
                                         <span class="text-text-primary truncate min-w-0">{{ $transfer['playerName'] }}</span>
                                         <span class="text-text-secondary shrink-0">&rarr;</span>
@@ -73,7 +77,11 @@
                                 {{-- IN transfers --}}
                                 @foreach($activity['in'] as $transfer)
                                     <div class="flex items-center gap-1.5 md:gap-2 text-sm min-h-[28px]">
-                                        <span class="text-accent-green font-bold w-4 shrink-0 text-center" title="{{ __('transfers.transfer_activity_in') }}">&#x2199;</span>
+                                        <span class="text-accent-green w-4 shrink-0 flex items-center justify-center" title="{{ __('transfers.transfer_activity_in') }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
+                                                <path fill-rule="evenodd" d="M11.78 4.22a.75.75 0 0 1 0 1.06L6.56 10.5h3.69a.75.75 0 0 1 0 1.5h-5.5a.75.75 0 0 1-.75-.75v-5.5a.75.75 0 0 1 1.5 0v3.69l5.22-5.22a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
+                                            </svg>
+                                        </span>
                                         <x-position-badge :position="$transfer['position']" size="sm" />
                                         <span class="text-text-primary truncate min-w-0">{{ $transfer['playerName'] }}</span>
                                         @if($transfer['fromTeamId'])
@@ -120,7 +128,11 @@
                                 {{-- OUT transfers --}}
                                 @foreach($activity['out'] as $transfer)
                                     <div class="flex items-center gap-1.5 md:gap-2 text-sm min-h-[28px]">
-                                        <span class="text-accent-red font-bold w-4 shrink-0 text-center" title="{{ __('transfers.transfer_activity_out') }}">&#x2197;</span>
+                                        <span class="text-accent-red w-4 shrink-0 flex items-center justify-center" title="{{ __('transfers.transfer_activity_out') }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
+                                                <path fill-rule="evenodd" d="M4.22 11.78a.75.75 0 0 1 0-1.06L9.44 5.5H5.75a.75.75 0 0 1 0-1.5h5.5a.75.75 0 0 1 .75.75v5.5a.75.75 0 0 1-1.5 0V6.56l-5.22 5.22a.75.75 0 0 1-1.06 0Z" clip-rule="evenodd" />
+                                            </svg>
+                                        </span>
                                         <x-position-badge :position="$transfer['position']" size="sm" />
                                         <span class="text-text-primary truncate min-w-0">{{ $transfer['playerName'] }}</span>
                                         <span class="text-text-secondary shrink-0">&rarr;</span>
@@ -137,7 +149,11 @@
                                 {{-- IN transfers --}}
                                 @foreach($activity['in'] as $transfer)
                                     <div class="flex items-center gap-1.5 md:gap-2 text-sm min-h-[28px]">
-                                        <span class="text-accent-green font-bold w-4 shrink-0 text-center" title="{{ __('transfers.transfer_activity_in') }}">&#x2199;</span>
+                                        <span class="text-accent-green w-4 shrink-0 flex items-center justify-center" title="{{ __('transfers.transfer_activity_in') }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
+                                                <path fill-rule="evenodd" d="M11.78 4.22a.75.75 0 0 1 0 1.06L6.56 10.5h3.69a.75.75 0 0 1 0 1.5h-5.5a.75.75 0 0 1-.75-.75v-5.5a.75.75 0 0 1 1.5 0v3.69l5.22-5.22a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
+                                            </svg>
+                                        </span>
                                         <x-position-badge :position="$transfer['position']" size="sm" />
                                         <span class="text-text-primary truncate min-w-0">{{ $transfer['playerName'] }}</span>
                                         @if($transfer['fromTeamId'])

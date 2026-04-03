@@ -28,7 +28,7 @@ class PromotionRelegationProcessor implements SeasonProcessor
 
     public function priority(): int
     {
-        return 26;
+        return 85;
     }
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData

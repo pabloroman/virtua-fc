@@ -9,7 +9,7 @@ use App\Modules\Lineup\Enums\Mentality;
 use App\Modules\Lineup\Enums\PlayingStyle;
 use App\Modules\Lineup\Enums\PressingIntensity;
 use App\Modules\Lineup\Services\LineupService;
-use App\Modules\Player\Services\InjuryService;
+
 use App\Models\Game;
 use App\Support\PitchGrid;
 use App\Support\PositionSlotMapper;
@@ -249,9 +249,6 @@ class ShowLineup
         $gridConfig = PitchGrid::getGridConfig();
         $currentPitchPositions = $game->tactics?->default_pitch_positions;
 
-        // Pre-compute matches missed for injured players
-        $matchesMissedMap = InjuryService::getMatchesMissedMap($gameId, $game->team_id, $matchDate, $allPlayers);
-
         return view('lineup', [
             'game' => $game,
             'match' => $match,
@@ -299,7 +296,7 @@ class ShowLineup
             'currentPitchPositions' => $currentPitchPositions,
             'userRadar' => $userRadar,
             'opponentRadar' => $opponentRadar,
-            'matchesMissedMap' => $matchesMissedMap,
+
             'tacticalPresets' => $game->tacticalPresets,
             'presetsConfig' => $game->tacticalPresets->map(fn ($p) => [
                 'id' => $p->id,

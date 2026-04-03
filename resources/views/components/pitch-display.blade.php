@@ -116,7 +116,8 @@
                 {{-- Filled Slot --}}
                 <div
                     x-show="slot.player"
-                    class="relative cursor-pointer flex flex-col items-center"
+                    class="relative flex flex-col items-center"
+                    :class="@if($isLive) redCardedPlayerIds.includes(slot.player?.id) ? 'opacity-40 grayscale cursor-not-allowed' : 'cursor-pointer' @else 'cursor-pointer' @endif"
                     @if($isLineup)
                         @click="selectForRepositioning(slot.id)"
                         @mousedown="startDrag(slot.id, $event)"
@@ -124,8 +125,8 @@
                     @endif
                     @if($isLive)
                         @click="handlePitchPlayerClick(slot)"
-                        @mousedown="startDrag(slot.id, $event)"
-                        @touchstart="startDrag(slot.id, $event)"
+                        @mousedown="!redCardedPlayerIds.includes(slot.player?.id) && startDrag(slot.id, $event)"
+                        @touchstart="!redCardedPlayerIds.includes(slot.player?.id) && startDrag(slot.id, $event)"
                     @endif
                 >
                     {{-- Shirt badge --}}

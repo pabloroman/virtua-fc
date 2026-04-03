@@ -101,6 +101,10 @@ class WorldCupKnockoutGenerator
      */
     public function generateMatchups(Game $game, string $competitionId, int $round): array
     {
+        // Clear the completed ties cache so we pick up ties resolved in
+        // the current request (e.g. batch-resolved R16 ties before generating QF).
+        $this->completedTiesCache = [];
+
         if ($round === self::ROUND_OF_32) {
             return $this->generateRoundOf32($game, $competitionId);
         }

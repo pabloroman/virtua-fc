@@ -269,12 +269,9 @@
                                         @foreach($group['players'] as $player)
                                             @php
                                                 $isUnavailable = !$player->isAvailable($matchDate, $competitionId);
-                                                $matchData = $matchesMissedMap[$player->id] ?? null;
                                                 $unavailabilityReason = $player->getUnavailabilityReason(
                                                     $matchDate,
                                                     $competitionId,
-                                                    $matchData['count'] ?? null,
-                                                    $matchData['approx'] ?? false,
                                                 );
                                                 $posGroup = \App\Support\PositionMapper::getPositionGroup($player->position);
                                             @endphp

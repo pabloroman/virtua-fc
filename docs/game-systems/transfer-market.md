@@ -25,7 +25,7 @@ Transfers complete immediately if the window is open, otherwise they're marked "
 
 ## Selling
 
-- **Listed players** receive offers each matchday with a configurable probability (max 3 pending).
+- **Listed players** receive offers each matchday (max 3 pending). Offers arrive year-round: 40% chance per matchday during transfer windows, 15% outside windows. Offers accepted outside a window are deferred (`agreed`) and complete when the next window opens.
 - **Unsolicited offers** target the team's best players with a small daily chance.
 - Both offer types apply age-based adjustments and randomized pricing around market value.
 

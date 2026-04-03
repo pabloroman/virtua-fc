@@ -30,7 +30,7 @@ class SupercupQualificationProcessor implements SeasonProcessor
 
     public function priority(): int
     {
-        return 25;
+        return 80;
     }
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData

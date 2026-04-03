@@ -11,6 +11,7 @@ use App\Modules\Season\Processors\NewSeasonResetProcessor;
 use App\Modules\Season\Processors\PreSeasonFixtureProcessor;
 use App\Modules\Season\Processors\SquadCapEnforcementProcessor;
 use App\Modules\Season\Processors\StandingsResetProcessor;
+use App\Modules\Season\Processors\YouthAcademyPromotionProcessor;
 use App\Models\Game;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -25,6 +26,7 @@ class SeasonSetupPipeline
     private array $processors = [];
 
     public function __construct(
+        YouthAcademyPromotionProcessor $academyPromotion,
         LeagueFixtureProcessor $fixtureGeneration,
         StandingsResetProcessor $standingsReset,
         BudgetProjectionProcessor $budgetProjection,
@@ -34,6 +36,7 @@ class SeasonSetupPipeline
         NewSeasonResetProcessor $newSeasonReset,
     ) {
         $this->processors = [
+            $academyPromotion,
             $fixtureGeneration,
             $standingsReset,
             $budgetProjection,
@@ -61,6 +64,9 @@ class SeasonSetupPipeline
                 continue;
             }
 
+            $processorName = class_basename($processor);
+            $start = microtime(true);
+
             try {
                 $data = DB::transaction(fn () => $processor->process($game, $data));
             } catch (\Throwable $e) {
@@ -72,6 +78,9 @@ class SeasonSetupPipeline
                 ]);
                 throw $e;
             }
+
+            $elapsed = round((microtime(true) - $start) * 1000);
+            Log::info("[SeasonSetup] {$processorName} (priority {$processor->priority()}) completed in {$elapsed}ms");
 
             // Checkpoint: persist completed step and DTO for crash recovery
             $game->updateQuietly([

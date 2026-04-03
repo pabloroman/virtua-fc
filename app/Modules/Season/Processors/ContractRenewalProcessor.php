@@ -20,7 +20,7 @@ class ContractRenewalProcessor implements SeasonProcessor
 
     public function priority(): int
     {
-        return 6;
+        return 35;
     }
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData

@@ -1087,6 +1087,12 @@ class TeamColors
             'secondary' => 'black',
             'number' => 'white',
         ],
+        'Czechia' => [
+            'pattern' => 'solid',
+            'primary' => 'white',
+            'secondary' => 'red-600',
+            'number' => 'red-600',
+        ],
 
         // Group B
         'Canada' => [
@@ -1098,6 +1104,12 @@ class TeamColors
         'Qatar' => [
             'pattern' => 'solid',
             'primary' => 'red-900',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'Bosnia-Herzegovina' => [
+            'pattern' => 'solid',
+            'primary' => 'blue-700',
             'secondary' => 'white',
             'number' => 'white',
         ],
@@ -1153,6 +1165,12 @@ class TeamColors
             'secondary' => 'green-700',
             'number' => 'green-700',
         ],
+        'Türkiye' => [
+            'pattern' => 'bar',
+            'primary' => 'white',
+            'secondary' => 'red-600',
+            'number' => 'red-600',
+        ],
 
         // Group E
         'Germany' => [
@@ -1192,6 +1210,12 @@ class TeamColors
             'primary' => 'blue-800',
             'secondary' => 'white',
             'number' => 'white',
+        ],
+        'Sweden' => [
+            'pattern' => 'solid',
+            'primary' => 'yellow-400',
+            'secondary' => 'blue-800',
+            'number' => 'blue-800',
         ],
         'Tunisia' => [
             'pattern' => 'solid',
@@ -1265,6 +1289,12 @@ class TeamColors
             'secondary' => 'green-600',
             'number' => 'green-600',
         ],
+        'Iraq' => [
+            'pattern' => 'solid',
+            'primary' => 'green-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
         'Norway' => [
             'pattern' => 'solid',
             'primary' => 'red-600',
@@ -1303,6 +1333,12 @@ class TeamColors
             'pattern' => 'solid',
             'primary' => 'red-700',
             'secondary' => 'green-700',
+            'number' => 'yellow-400',
+        ],
+        'DR Congo' => [
+            'pattern' => 'solid',
+            'primary' => 'blue-600',
+            'secondary' => 'yellow-400',
             'number' => 'yellow-400',
         ],
         'Uzbekistan' => [

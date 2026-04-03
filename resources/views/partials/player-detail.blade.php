@@ -9,7 +9,6 @@
         && !$gamePlayer->isLoanedIn($game->team_id)
         && !$gamePlayer->isLoanedOut($game->team_id)
         && !$gamePlayer->hasPreContractAgreement()
-        && !$gamePlayer->hasRenewalAgreed()
         && !$gamePlayer->hasAgreedTransfer()
         && !$gamePlayer->hasActiveLoanSearch();
     $isTransferWindow = $isCareerMode && $game->isTransferWindowOpen();
@@ -200,7 +199,7 @@
 {{-- Actions --}}
 @if($showActions || $canRenew || $renewalNegotiation || $renewalCooldown)
     <div class="px-5 py-4 border-t border-border-default flex flex-wrap items-center gap-2">
-        @if(!$isListed && $canManage)
+        @if(!$isListed && $canManage && !$gamePlayer->hasRenewalAgreed())
             <form method="POST" action="{{ route('game.transfers.list', [$game->id, $gamePlayer->id]) }}">
                 @csrf
                 <x-action-button color="blue">

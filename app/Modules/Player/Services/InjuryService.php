@@ -557,29 +557,6 @@ class InjuryService
     }
 
     /**
-     * Build a map of matches missed for injured players in a collection.
-     *
-     * @return array<string, array{count: int, approx: bool}>  Keyed by player ID
-     */
-    public static function getMatchesMissedMap(string $gameId, string $teamId, Carbon $referenceDate, Collection $players): array
-    {
-        $upcomingMatchDates = self::getUpcomingMatchDates($gameId, $teamId, $referenceDate);
-        $lastScheduledDate = $upcomingMatchDates->last();
-
-        $map = [];
-        foreach ($players as $player) {
-            if ($player->isInjured($referenceDate) && $player->injury_until) {
-                $map[$player->id] = [
-                    'count' => $upcomingMatchDates->filter(fn ($d) => $d->lte($player->injury_until))->count(),
-                    'approx' => $lastScheduledDate && $player->injury_until->gt($lastScheduledDate),
-                ];
-            }
-        }
-
-        return $map;
-    }
-
-    /**
      * Get matches missed for a single injured player.
      *
      * @return array{count: int, approx: bool}

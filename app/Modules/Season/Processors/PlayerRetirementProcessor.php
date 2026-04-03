@@ -15,7 +15,8 @@ use App\Models\GamePlayer;
  * Two phases:
  * 1. Retire players who announced retirement last season (retiring_at_season == oldSeason)
  *    - All retiring players are removed from the game
- *    - SquadReplenishmentProcessor (priority 8) fills any resulting AI roster gaps
+ *    - AIFreeAgentSigningProcessor (priority 8) signs free agents to fill AI roster gaps
+ *    - SquadReplenishmentProcessor (priority 9) generates new players for remaining gaps
  * 2. Announce new retirements for the coming season based on probability algorithm
  *
  * Priority: 7 (after contract expiration/renewal, before squad replenishment)
@@ -28,7 +29,7 @@ class PlayerRetirementProcessor implements SeasonProcessor
 
     public function priority(): int
     {
-        return 7;
+        return 40;
     }
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData

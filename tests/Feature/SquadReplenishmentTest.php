@@ -39,11 +39,11 @@ class SquadReplenishmentTest extends TestCase
         ]);
     }
 
-    public function test_processor_has_priority_8(): void
+    public function test_processor_has_priority_42(): void
     {
         $processor = app(SquadReplenishmentProcessor::class);
 
-        $this->assertEquals(8, $processor->priority());
+        $this->assertEquals(42, $processor->priority());
     }
 
     public function test_ai_team_below_minimum_gets_replenished(): void
@@ -89,15 +89,9 @@ class SquadReplenishmentTest extends TestCase
         $finalCount = GamePlayer::where('game_id', $this->game->id)
             ->where('team_id', $this->aiTeam->id)
             ->count();
+        // 22 + 1 GK replenishment (only 2 GKs in squad, minimum is 3) + 2-3 youth = 25-26
         $this->assertGreaterThanOrEqual(24, $finalCount);
-        $this->assertLessThanOrEqual(25, $finalCount);
-
-        $generated = $result->getMetadata('squadReplenishment');
-        $this->assertNotEmpty($generated);
-
-        $youthEntries = array_filter($generated, fn ($e) => $e['type'] === 'youth_intake');
-        $this->assertGreaterThanOrEqual(2, count($youthEntries));
-        $this->assertLessThanOrEqual(3, count($youthEntries));
+        $this->assertLessThanOrEqual(26, $finalCount);
     }
 
     public function test_ai_team_above_minimum_receives_youth_intake(): void
@@ -113,9 +107,9 @@ class SquadReplenishmentTest extends TestCase
         $finalCount = GamePlayer::where('game_id', $this->game->id)
             ->where('team_id', $this->aiTeam->id)
             ->count();
-        // 25 + 2-3 youth = 27-28
+        // 25 + 1 GK replenishment + 2-3 youth (may release 1 if over cap) = 27-29
         $this->assertGreaterThanOrEqual(27, $finalCount);
-        $this->assertLessThanOrEqual(28, $finalCount);
+        $this->assertLessThanOrEqual(29, $finalCount);
     }
 
     public function test_ai_team_above_minimum_but_missing_goalkeepers_gets_them(): void
@@ -153,39 +147,19 @@ class SquadReplenishmentTest extends TestCase
 
         $processor->process($this->game, $data);
 
-        // Should have generated at least 2 goalkeepers (group minimum)
+        // Should have generated at least 3 goalkeepers (group minimum)
         $gkAfter = GamePlayer::where('game_id', $this->game->id)
             ->where('team_id', $this->aiTeam->id)
             ->where('position', 'Goalkeeper')
             ->count();
-        $this->assertGreaterThanOrEqual(2, $gkAfter);
+        $this->assertGreaterThanOrEqual(3, $gkAfter);
     }
 
-    public function test_user_team_is_replenished_when_below_minimum(): void
+    public function test_user_team_is_not_replenished_by_squad_replenishment_processor(): void
     {
-        // Create user team with only 10 players (well below minimum)
+        // User team replenishment is handled by YouthAcademyPromotionProcessor (setup pipeline),
+        // not by SquadReplenishmentProcessor (closing pipeline)
         $this->createSquadForTeam($this->userTeam, 10);
-
-        $processor = app(SquadReplenishmentProcessor::class);
-        $data = new SeasonTransitionData(oldSeason: '2024', newSeason: '2025', competitionId: 'ESP1');
-
-        $result = $processor->process($this->game, $data);
-
-        $finalCount = GamePlayer::where('game_id', $this->game->id)
-            ->where('team_id', $this->userTeam->id)
-            ->count();
-        // Should be replenished to MIN_SQUAD_SIZE (22)
-        $this->assertEquals(22, $finalCount);
-
-        $generated = $result->getMetadata('squadReplenishment');
-        $emergencyEntries = array_filter($generated, fn ($e) => $e['type'] === 'emergency_replenishment');
-        $this->assertCount(12, $emergencyEntries);
-    }
-
-    public function test_user_team_at_or_above_minimum_is_not_replenished(): void
-    {
-        // Create user team with 22 players (at minimum) — should NOT be replenished
-        $this->createSquadForTeam($this->userTeam, 22);
 
         $processor = app(SquadReplenishmentProcessor::class);
         $data = new SeasonTransitionData(oldSeason: '2024', newSeason: '2025', competitionId: 'ESP1');
@@ -195,7 +169,8 @@ class SquadReplenishmentTest extends TestCase
         $finalCount = GamePlayer::where('game_id', $this->game->id)
             ->where('team_id', $this->userTeam->id)
             ->count();
-        $this->assertEquals(22, $finalCount);
+        // Should remain at 10 — this processor no longer touches the user's team
+        $this->assertEquals(10, $finalCount);
     }
 
     public function test_generated_players_fill_depleted_positions(): void

@@ -3,23 +3,53 @@
         {{ __('admin.game_stats_title') }}
     </h1>
 
-    <div class="grid grid-cols-1 gap-4 mb-4">
-        {{-- Team Popularity --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        {{-- Club Popularity --}}
         <div class="bg-surface-800 border border-border-default rounded-xl p-5">
             <h2 class="font-heading text-sm font-bold uppercase tracking-wider text-text-primary mb-4">
-                {{ __('admin.team_popularity') }}
+                {{ __('admin.club_popularity') }}
             </h2>
 
-            @if($teamPopularity->isEmpty())
+            @if($clubPopularity->isEmpty())
                 <p class="text-sm text-text-muted">{{ __('admin.no_data') }}</p>
             @else
-                @php $maxPicks = $teamPopularity->max('picks'); @endphp
+                @php $maxPicks = $clubPopularity->max('picks'); @endphp
                 <div class="space-y-2">
-                    @foreach($teamPopularity as $index => $entry)
+                    @foreach($clubPopularity as $index => $entry)
                         <div class="flex items-center gap-3">
                             <span class="text-xs text-text-muted w-5 text-right shrink-0">{{ $index + 1 }}</span>
-                            @if($entry->team?->image)
-                                <img src="{{ $entry->team->image }}" alt="" class="w-5 h-5 shrink-0">
+                            @if($entry->team)
+                                <x-team-crest :team="$entry->team" class="w-5 h-5 shrink-0" />
+                            @else
+                                <div class="w-5 h-5 shrink-0 rounded bg-surface-700"></div>
+                            @endif
+                            <span class="text-sm text-text-primary truncate w-28 shrink-0">{{ $entry->team?->name ?? '—' }}</span>
+                            <div class="flex-1 h-5 bg-surface-700 rounded-sm overflow-hidden">
+                                <div class="h-full bg-accent-blue/60 rounded-sm" style="width: {{ ($entry->picks / $maxPicks) * 100 }}%"></div>
+                            </div>
+                            <span class="text-xs text-text-muted shrink-0 w-12 text-right">{{ $entry->picks }}</span>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </div>
+
+        {{-- National Team Popularity --}}
+        <div class="bg-surface-800 border border-border-default rounded-xl p-5">
+            <h2 class="font-heading text-sm font-bold uppercase tracking-wider text-text-primary mb-4">
+                {{ __('admin.national_team_popularity') }}
+            </h2>
+
+            @if($nationalTeamPopularity->isEmpty())
+                <p class="text-sm text-text-muted">{{ __('admin.no_data') }}</p>
+            @else
+                @php $maxPicks = $nationalTeamPopularity->max('picks'); @endphp
+                <div class="space-y-2">
+                    @foreach($nationalTeamPopularity as $index => $entry)
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs text-text-muted w-5 text-right shrink-0">{{ $index + 1 }}</span>
+                            @if($entry->team)
+                                <x-team-crest :team="$entry->team" class="w-5 h-5 shrink-0" />
                             @else
                                 <div class="w-5 h-5 shrink-0 rounded bg-surface-700"></div>
                             @endif

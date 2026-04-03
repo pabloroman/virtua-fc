@@ -181,7 +181,7 @@ class ExploreService
             );
 
             return $gp;
-        })->sort(fn ($a, $b) => $this->sortByPositionThenValue($a, $b));
+        })->sortByDesc('market_value_cents')->values();
     }
 
     /**

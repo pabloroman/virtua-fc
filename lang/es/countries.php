@@ -16,6 +16,7 @@ return [
     'Belgium' => 'Bélgica',
     'Bolivia' => 'Bolivia',
     'Bosnia and Herzegovina' => 'Bosnia y Herzegovina',
+    'Bosnia-Herzegovina' => 'Bosnia-Herzegovina',
     'Brazil' => 'Brasil',
     'Bulgaria' => 'Bulgaria',
     'Cabo Verde' => 'Cabo Verde',

@@ -628,8 +628,6 @@ class GamePlayer extends Model
     public function getUnavailabilityReason(
         ?Carbon $gameDate = null,
         ?string $competitionId = null,
-        ?int $matchesMissed = null,
-        bool $matchesMissedApproximate = false,
     ): ?string {
         if ($competitionId !== null && $this->isSuspendedInCompetition($competitionId)) {
             $remaining = $this->getSuspensionMatchesRemaining($competitionId);
@@ -640,12 +638,12 @@ class GamePlayer extends Model
             $translationKey = InjuryService::INJURY_TRANSLATION_MAP[$this->injury_type] ?? null;
             $injuryName = $translationKey ? __($translationKey) : __('squad.injured_generic');
 
-            if ($matchesMissed !== null && $matchesMissed > 0) {
-                $matchesStr = $matchesMissedApproximate
-                    ? trans_choice('squad.injury_matches_approx', $matchesMissed, ['count' => $matchesMissed])
-                    : trans_choice('squad.injury_matches', $matchesMissed, ['count' => $matchesMissed]);
+            if ($this->injury_until) {
+                $returnDate = __('squad.injury_return_date', [
+                    'date' => $this->injury_until->translatedFormat('j M Y'),
+                ]);
 
-                return "$injuryName ($matchesStr)";
+                return "$injuryName ($returnDate)";
             }
 
             return $injuryName;

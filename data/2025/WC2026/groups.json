@@ -4,7 +4,7 @@
             "MEX",
             "RSA",
             "KOR",
-            "UEPD"
+            "CZE"
         ],
         "matches": [
             {
@@ -16,12 +16,12 @@
             {
                 "round": 1,
                 "home": "KOR",
-                "away": "UEPD",
+                "away": "CZE",
                 "date": "2026-06-11"
             },
             {
                 "round": 2,
-                "home": "UEPD",
+                "home": "CZE",
                 "away": "RSA",
                 "date": "2026-06-18"
             },
@@ -33,7 +33,7 @@
             },
             {
                 "round": 3,
-                "home": "UEPD",
+                "home": "CZE",
                 "away": "MEX",
                 "date": "2026-06-24"
             },
@@ -48,7 +48,7 @@
     "B": {
         "teams": [
             "CAN",
-            "UEPA",
+            "BIH",
             "QAT",
             "SUI"
         ],
@@ -56,7 +56,7 @@
             {
                 "round": 1,
                 "home": "CAN",
-                "away": "UEPA",
+                "away": "BIH",
                 "date": "2026-06-12"
             },
             {
@@ -68,7 +68,7 @@
             {
                 "round": 2,
                 "home": "SUI",
-                "away": "UEPA",
+                "away": "BIH",
                 "date": "2026-06-18"
             },
             {
@@ -85,7 +85,7 @@
             },
             {
                 "round": 3,
-                "home": "UEPA",
+                "home": "BIH",
                 "away": "QAT",
                 "date": "2026-06-24"
             }
@@ -142,7 +142,7 @@
             "USA",
             "PAR",
             "AUS",
-            "UEPC"
+            "TUR"
         ],
         "matches": [
             {
@@ -154,7 +154,7 @@
             {
                 "round": 1,
                 "home": "AUS",
-                "away": "UEPC",
+                "away": "TUR",
                 "date": "2026-06-14"
             },
             {
@@ -165,13 +165,13 @@
             },
             {
                 "round": 2,
-                "home": "UEPC",
+                "home": "TUR",
                 "away": "PAR",
                 "date": "2026-06-20"
             },
             {
                 "round": 3,
-                "home": "UEPC",
+                "home": "TUR",
                 "away": "USA",
                 "date": "2026-06-25"
             },
@@ -233,7 +233,7 @@
         "teams": [
             "NED",
             "JPN",
-            "UEPB",
+            "SWE",
             "TUN"
         ],
         "matches": [
@@ -245,14 +245,14 @@
             },
             {
                 "round": 1,
-                "home": "UEPB",
+                "home": "SWE",
                 "away": "TUN",
                 "date": "2026-06-14"
             },
             {
                 "round": 2,
                 "home": "NED",
-                "away": "UEPB",
+                "away": "SWE",
                 "date": "2026-06-20"
             },
             {
@@ -264,7 +264,7 @@
             {
                 "round": 3,
                 "home": "JPN",
-                "away": "UEPB",
+                "away": "SWE",
                 "date": "2026-06-25"
             },
             {
@@ -371,7 +371,7 @@
         "teams": [
             "FRA",
             "SEN",
-            "FP02",
+            "IRQ",
             "NOR"
         ],
         "matches": [
@@ -383,14 +383,14 @@
             },
             {
                 "round": 1,
-                "home": "FP02",
+                "home": "IRQ",
                 "away": "NOR",
                 "date": "2026-06-16"
             },
             {
                 "round": 2,
                 "home": "FRA",
-                "away": "FP02",
+                "away": "IRQ",
                 "date": "2026-06-22"
             },
             {
@@ -408,7 +408,7 @@
             {
                 "round": 3,
                 "home": "SEN",
-                "away": "FP02",
+                "away": "IRQ",
                 "date": "2026-06-26"
             }
         ]
@@ -462,7 +462,7 @@
     "K": {
         "teams": [
             "POR",
-            "FP01",
+            "COD",
             "UZB",
             "COL"
         ],
@@ -470,7 +470,7 @@
             {
                 "round": 1,
                 "home": "POR",
-                "away": "FP01",
+                "away": "COD",
                 "date": "2026-06-17"
             },
             {
@@ -488,7 +488,7 @@
             {
                 "round": 2,
                 "home": "COL",
-                "away": "FP01",
+                "away": "COD",
                 "date": "2026-06-23"
             },
             {
@@ -499,7 +499,7 @@
             },
             {
                 "round": 3,
-                "home": "FP01",
+                "home": "COD",
                 "away": "UZB",
                 "date": "2026-06-27"
             }

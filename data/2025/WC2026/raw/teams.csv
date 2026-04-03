@@ -2,9 +2,9 @@ id,team_name,fifa_code,group_letter,is_placeholder
 1,Mexico,MEX,A,False
 2,South Africa,RSA,A,False
 3,South Korea,KOR,A,False
-4,Winner UEFA Playoff D,UEPD,A,True
+4,Czechia,CZE,A,False
 5,Canada,CAN,B,False
-6,Winner UEFA Playoff A,UEPA,B,True
+6,Bosnia-Herzegovina,BIH,B,False
 7,Qatar,QAT,B,False
 8,Switzerland,SUI,B,False
 9,Brazil,BRA,C,False
@@ -14,14 +14,14 @@ id,team_name,fifa_code,group_letter,is_placeholder
 13,United States,USA,D,False
 14,Paraguay,PAR,D,False
 15,Australia,AUS,D,False
-16,Winner UEFA Playoff C,UEPC,D,True
+16,Türkiye,TUR,D,False
 17,Germany,GER,E,False
 18,Curaçao,CUR,E,False
 19,Ivory Coast,CIV,E,False
 20,Ecuador,ECU,E,False
 21,Netherlands,NED,F,False
 22,Japan,JPN,F,False
-23,Winner UEFA Playoff B,UEPB,F,True
+23,Sweden,SWE,F,False
 24,Tunisia,TUN,F,False
 25,Belgium,BEL,G,False
 26,Egypt,EGY,G,False
@@ -33,14 +33,14 @@ id,team_name,fifa_code,group_letter,is_placeholder
 32,Uruguay,URU,H,False
 33,France,FRA,I,False
 34,Senegal,SEN,I,False
-35,Winner FIFA Playoff 2,FP02,I,True
+35,Iraq,IRQ,I,False
 36,Norway,NOR,I,False
 37,Argentina,ARG,J,False
 38,Algeria,ALG,J,False
 39,Austria,AUT,J,False
 40,Jordan,JOR,J,False
 41,Portugal,POR,K,False
-42,Winner FIFA Playoff 1,FP01,K,True
+42,DR Congo,COD,K,False
 43,Uzbekistan,UZB,K,False
 44,Colombia,COL,K,False
 45,England,ENG,L,False

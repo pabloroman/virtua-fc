@@ -11,6 +11,7 @@ use App\Models\GamePlayer;
 use App\Models\GameStanding;
 use App\Models\MatchEvent;
 use App\Models\Team;
+use App\Modules\Competition\Services\WorldCupKnockoutGenerator;
 use Illuminate\Support\Collection;
 
 class CompetitionSummaryService
@@ -116,9 +117,15 @@ class CompetitionSummaryService
             return 'group_stage';
         }
 
-        $maxRound = $allTies->max('round_number');
+        // Exclude the third-place match from progression calculations — it's a
+        // side-match between SF losers, not part of the main bracket path.
+        $progressionTies = $allTies->reject(fn ($tie) =>
+            $tie->round_number === WorldCupKnockoutGenerator::ROUND_THIRD_PLACE
+        );
 
-        $finalTie = $allTies->where('round_number', $maxRound)->first();
+        $maxRound = $progressionTies->max('round_number');
+
+        $finalTie = $progressionTies->where('round_number', $maxRound)->first();
         if ($finalTie && $finalTie->winner_id === $teamId) {
             return 'champion';
         }
@@ -127,7 +134,17 @@ class CompetitionSummaryService
             return 'runner_up';
         }
 
-        $teamTies = $allTies->filter(fn ($tie) =>
+        // Check if team played the third-place match
+        $thirdPlaceTie = $allTies->first(fn ($tie) =>
+            $tie->round_number === WorldCupKnockoutGenerator::ROUND_THIRD_PLACE
+            && ($tie->home_team_id === $teamId || $tie->away_team_id === $teamId)
+        );
+
+        if ($thirdPlaceTie) {
+            return $thirdPlaceTie->winner_id === $teamId ? 'third_place' : 'semi_finalist';
+        }
+
+        $teamTies = $progressionTies->filter(fn ($tie) =>
             $tie->home_team_id === $teamId || $tie->away_team_id === $teamId
         );
 
@@ -136,7 +153,12 @@ class CompetitionSummaryService
         }
 
         $highestRound = $teamTies->max('round_number');
-        $roundsFromFinal = $maxRound - $highestRound;
+
+        // Count distinct progression rounds above the team's highest round.
+        // This avoids raw round-number arithmetic which breaks when there's
+        // a gap (e.g. WC third-place match at round 5 between SF=4 and Final=6).
+        $progressionRounds = $progressionTies->pluck('round_number')->unique();
+        $roundsFromFinal = $progressionRounds->filter(fn ($r) => $r > $highestRound)->count();
 
         return match (true) {
             $roundsFromFinal === 0 => 'runner_up',

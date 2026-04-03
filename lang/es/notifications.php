@@ -22,8 +22,7 @@ return [
     // Player injuries
     'player_injured_title' => ':player lesionado',
     'player_injured_message' => ':player ha sufrido :injury :location.',
-    'player_injured_message_matches' => ':player ha sufrido :injury :location y se perderá :matches partido.|:player ha sufrido :injury :location y se perderá :matches partidos.',
-    'player_injured_message_matches_approx' => ':player ha sufrido :injury :location y se perderá :matches+ partido.|:player ha sufrido :injury :location y se perderá :matches+ partidos.',
+    'player_injured_message_with_date' => ':player ha sufrido :injury :location. Baja hasta el :date.',
     'injury_location_match' => 'durante el partido',
     'injury_location_training' => 'durante el entrenamiento',
 
@@ -86,6 +85,10 @@ return [
     // Academy
     'academy_batch_title' => 'Nuevos canteranos',
     'academy_batch_message' => ':count nuevos jugadores han llegado a la cantera.',
+    'academy_overage_promoted_title' => 'Graduados de la cantera',
+    'academy_overage_promoted_message' => ':count canteranos de 21+ años han sido promocionados al primer equipo.',
+    'academy_gap_promoted_title' => 'Canteranos promocionados',
+    'academy_gap_promoted_message' => ':count canteranos han sido promocionados para cubrir huecos en la plantilla.',
     // Loan request results
     'loan_accepted_title' => 'Cesión de :player aceptada',
     'loan_accepted' => ':team ha aceptado tu solicitud de cesión por :player.',

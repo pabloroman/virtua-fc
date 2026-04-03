@@ -34,7 +34,7 @@ class DeleteGameJob implements ShouldQueue
 
         Cache::forget("game_owner:{$this->gameId}");
 
-        // Collect generated player IDs before cascade removes game_players
+        // Collect generated player IDs before we delete game_players
         $generatedPlayerIds = DB::table('game_players')
             ->join('players', 'players.id', '=', 'game_players.player_id')
             ->where('game_players.game_id', $this->gameId)
@@ -42,12 +42,45 @@ class DeleteGameJob implements ShouldQueue
             ->pluck('game_players.player_id')
             ->all();
 
-        // Pre-delete the largest tables to avoid a single massive CASCADE transaction
-        DB::table('match_events')->where('game_id', $this->gameId)->delete();
-        DB::table('game_notifications')->where('game_id', $this->gameId)->delete();
-        DB::table('game_matches')->where('game_id', $this->gameId)->delete();
+        // Explicit bottom-up deletion: children before parents, each in its own
+        // transaction. This avoids a single massive CASCADE transaction, reducing
+        // lock contention and WAL pressure.
 
-        // CASCADE handles the remaining small tables (including game_players)
+        // Tier 3: deepest children (depend on game_matches / game_players)
+        DB::table('match_events')->where('game_id', $this->gameId)->delete();
+        DB::table('player_suspensions')
+            ->whereIn('game_player_id', function ($q) {
+                $q->select('id')->from('game_players')->where('game_id', $this->gameId);
+            })
+            ->delete();
+
+        // Tier 2: tables that reference game_players (must go before game_players)
+        DB::table('transfer_offers')->where('game_id', $this->gameId)->delete();
+        DB::table('renewal_negotiations')->where('game_id', $this->gameId)->delete();
+        DB::table('shortlisted_players')->where('game_id', $this->gameId)->delete();
+        DB::table('game_transfers')->where('game_id', $this->gameId)->delete();
+        DB::table('loans')->where('game_id', $this->gameId)->delete();
+        DB::table('financial_transactions')->where('game_id', $this->gameId)->delete();
+
+        // Tier 1: direct children of games
+        DB::table('game_matches')->where('game_id', $this->gameId)->delete();
+        DB::table('game_players')->where('game_id', $this->gameId)->delete();
+        DB::table('game_notifications')->where('game_id', $this->gameId)->delete();
+        DB::table('game_standings')->where('game_id', $this->gameId)->delete();
+        DB::table('game_finances')->where('game_id', $this->gameId)->delete();
+        DB::table('game_investments')->where('game_id', $this->gameId)->delete();
+        DB::table('game_tactics')->where('game_id', $this->gameId)->delete();
+        DB::table('game_tactical_presets')->where('game_id', $this->gameId)->delete();
+        DB::table('cup_ties')->where('game_id', $this->gameId)->delete();
+        DB::table('scout_reports')->where('game_id', $this->gameId)->delete();
+        DB::table('competition_entries')->where('game_id', $this->gameId)->delete();
+        DB::table('team_reputations')->where('game_id', $this->gameId)->delete();
+        DB::table('academy_players')->where('game_id', $this->gameId)->delete();
+        DB::table('season_archives')->where('game_id', $this->gameId)->delete();
+        DB::table('simulated_seasons')->where('game_id', $this->gameId)->delete();
+        DB::table('budget_loans')->where('game_id', $this->gameId)->delete();
+
+        // Root: game row itself (nothing left to cascade)
         $game->delete();
 
         // Clean up generated players that are now orphaned

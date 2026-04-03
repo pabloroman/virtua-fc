@@ -17,6 +17,10 @@ use App\Modules\Transfer\Services\TransferService;
 
 class CareerActionProcessor
 {
+    private const LISTED_OFFER_CHANCE_IN_WINDOW = 40;
+
+    private const LISTED_OFFER_CHANCE_OUTSIDE_WINDOW = 15;
+
     public function __construct(
         private readonly TransferService $transferService,
         private readonly ScoutingService $scoutingService,
@@ -35,16 +39,25 @@ class CareerActionProcessor
         if ($game->isTransferWindowOpen()) {
             $completedOutgoing = $this->transferService->completeAgreedTransfers($game);
             $completedIncoming = $this->transferService->completeIncomingTransfers($game);
+
             foreach ($completedOutgoing->merge($completedIncoming) as $offer) {
                 $this->notificationService->notifyTransferComplete($game, $offer);
             }
         }
 
-        // Generate transfer offers (can happen anytime, but more during windows)
+        // Generate offers for listed players (always, with reduced chance outside window)
+        $listedOfferChance = $game->isTransferWindowOpen()
+            ? self::LISTED_OFFER_CHANCE_IN_WINDOW
+            : self::LISTED_OFFER_CHANCE_OUTSIDE_WINDOW;
+        $listedOffers = $this->transferService->generateOffersForListedPlayers($game, buyerPool: $buyerPool, offerChance: $listedOfferChance);
+        foreach ($listedOffers as $offer) {
+            $this->notificationService->notifyTransferOffer($game, $offer);
+        }
+
+        // Unsolicited offers only during open windows
         if ($game->isTransferWindowOpen()) {
-            $listedOffers = $this->transferService->generateOffersForListedPlayers($game, buyerPool: $buyerPool);
             $unsolicitedOffers = $this->transferService->generateUnsolicitedOffers($game, buyerPool: $buyerPool);
-            foreach ($listedOffers->merge($unsolicitedOffers) as $offer) {
+            foreach ($unsolicitedOffers as $offer) {
                 $this->notificationService->notifyTransferOffer($game, $offer);
             }
         }

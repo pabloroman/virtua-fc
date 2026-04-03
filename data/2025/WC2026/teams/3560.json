@@ -1,0 +1,294 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/3560.png",
+  "name": "Iraq",
+  "players": [
+    {
+      "contract": "Jan 9, 2023",
+      "dateOfBirth": "Aug 19, 1996",
+      "foot": "both",
+      "height": "1,86m",
+      "id": "560952",
+      "marketValue": "€450k",
+      "name": "Ahmed Basil Fadhil",
+      "number": "22",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 1, 2017",
+      "dateOfBirth": "Oct 21, 1994",
+      "height": "1,93m",
+      "id": "377268",
+      "marketValue": "€400k",
+      "name": "Fahad Talib",
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Apr 1, 2026",
+      "dateOfBirth": "Aug 19, 2004",
+      "height": "1,93m",
+      "id": "716687",
+      "marketValue": "€250k",
+      "name": "Kumel Al-Rekabe",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Sep 26, 2022",
+      "dateOfBirth": "Jan 29, 2001",
+      "height": "1,87m",
+      "id": "931147",
+      "marketValue": "€600k",
+      "name": "Zaid Tahseen",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 11, 2024",
+      "dateOfBirth": "Aug 16, 1998",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "933541",
+      "marketValue": "€600k",
+      "name": "Akam Hashem",
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Mar 20, 2019",
+      "dateOfBirth": "Nov 10, 2000",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "543435",
+      "marketValue": "€400k",
+      "name": "Maytham Jabbar",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Aug 4, 2018",
+      "dateOfBirth": "Jul 14, 1993",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "166460",
+      "marketValue": "€350k",
+      "name": "Frans Putros",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Nov 30, 2021",
+      "dateOfBirth": "Nov 16, 1996",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "945266",
+      "marketValue": "€350k",
+      "name": "Manaf Younis",
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 11, 2015",
+      "dateOfBirth": "Apr 12, 1992",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "217073",
+      "marketValue": "€100k",
+      "name": "Rebin Sulaka",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Sep 23, 2022",
+      "dateOfBirth": "Dec 7, 1999",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "530527",
+      "marketValue": "€1.00m",
+      "name": "Merchas Doski",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 25, 2024",
+      "dateOfBirth": "Sep 24, 2001",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "881506",
+      "marketValue": "€400k",
+      "name": "Ahmed Hasan",
+      "number": "20",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Sep 7, 2023",
+      "dateOfBirth": "Mar 1, 2002",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "585325",
+      "marketValue": "€300k",
+      "name": "Hussein Ali",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Sep 2, 2021",
+      "dateOfBirth": "Jul 27, 1997",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "303766",
+      "marketValue": "€850k",
+      "name": "Amir Al-Ammari",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 3, 2025",
+      "dateOfBirth": "Jan 3, 2002",
+      "height": "1,85m",
+      "id": "1132850",
+      "marketValue": "€400k",
+      "name": "Zaid Ismail",
+      "number": "20",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jan 27, 2022",
+      "dateOfBirth": "Apr 27, 2003",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "686845",
+      "marketValue": "€1.50m",
+      "name": "Zidane Iqbal",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 10, 2025",
+      "dateOfBirth": "Dec 20, 2002",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "579294",
+      "marketValue": "€1.30m",
+      "name": "Aimar Sher",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 16, 2023",
+      "dateOfBirth": "Oct 10, 2000",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "413268",
+      "marketValue": "€600k",
+      "name": "Kevin Yakob",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "May 8, 2018",
+      "dateOfBirth": "May 1, 2000",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "560957",
+      "marketValue": "€900k",
+      "name": "Ibrahim Bayesh",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Mar 26, 2019",
+      "dateOfBirth": "Jan 16, 1998",
+      "height": "1,60m",
+      "id": "619087",
+      "marketValue": "€300k",
+      "name": "Karar Nabeel",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 22, 2024",
+      "dateOfBirth": "Mar 16, 2004",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "663153",
+      "marketValue": "€1.80m",
+      "name": "Marko Farji",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Nov 16, 2023",
+      "dateOfBirth": "Aug 21, 2003",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "684307",
+      "marketValue": "€600k",
+      "name": "Youssef Amyn",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Oct 13, 2023",
+      "dateOfBirth": "Jan 20, 2004",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "877672",
+      "marketValue": "€550k",
+      "name": "Ali Jasim",
+      "number": "17",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Nov 30, 2021",
+      "dateOfBirth": "Jan 1, 1999",
+      "foot": "left",
+      "height": "1,66m",
+      "id": "957634",
+      "marketValue": "€700k",
+      "name": "Hasan Abdulkareem",
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 22, 2024",
+      "dateOfBirth": "Sep 4, 2000",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "430824",
+      "marketValue": "€500k",
+      "name": "Peter Gwargis",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Nov 11, 2021",
+      "dateOfBirth": "Mar 1, 2002",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "610581",
+      "marketValue": "€2.00m",
+      "name": "Ali Al-Hamadi",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 23, 2017",
+      "dateOfBirth": "Jun 20, 2000",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "589646",
+      "marketValue": "€1.40m",
+      "name": "Mohanad Ali",
+      "number": "10",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Aug 26, 2015",
+      "dateOfBirth": "Mar 22, 1996",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "401054",
+      "marketValue": "€450k",
+      "name": "Aymen Hussein",
+      "number": "18",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 6, 2021",
+      "dateOfBirth": "Jan 19, 1996",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "576265",
+      "marketValue": "€125k",
+      "name": "Ali Yousif",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": null,
+  "stadiumSeats": null,
+  "transfermarktId": "3560"
+}

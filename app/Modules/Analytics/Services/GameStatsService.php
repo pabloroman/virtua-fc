@@ -8,12 +8,24 @@ use Illuminate\Support\Facades\DB;
 
 class GameStatsService
 {
-    public function getTeamPopularity(int $limit = 15): Collection
+    public function getClubPopularity(int $limit = 15): Collection
     {
         return Game::select('team_id', DB::raw('COUNT(*) as picks'))
+            ->whereHas('team', fn ($q) => $q->where('type', '!=', 'national'))
             ->groupBy('team_id')
             ->orderByDesc('picks')
-            ->with('team:id,name,image')
+            ->with('team:id,name,image,type,country')
+            ->limit($limit)
+            ->get();
+    }
+
+    public function getNationalTeamPopularity(int $limit = 15): Collection
+    {
+        return Game::select('team_id', DB::raw('COUNT(*) as picks'))
+            ->whereHas('team', fn ($q) => $q->where('type', 'national'))
+            ->groupBy('team_id')
+            ->orderByDesc('picks')
+            ->with('team:id,name,image,type,country')
             ->limit($limit)
             ->get();
     }

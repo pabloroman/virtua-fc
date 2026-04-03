@@ -22,8 +22,7 @@ return [
     // Player injuries
     'player_injured_title' => ':player injured',
     'player_injured_message' => ':player has suffered :injury :location.',
-    'player_injured_message_matches' => ':player has suffered :injury :location and will miss :matches match.|:player has suffered :injury :location and will miss :matches matches.',
-    'player_injured_message_matches_approx' => ':player has suffered :injury :location and will miss :matches+ match.|:player has suffered :injury :location and will miss :matches+ matches.',
+    'player_injured_message_with_date' => ':player has suffered :injury :location. Out until :date.',
     'injury_location_match' => 'during the match',
     'injury_location_training' => 'during training',
 
@@ -86,6 +85,10 @@ return [
     // Academy
     'academy_batch_title' => 'New academy prospects',
     'academy_batch_message' => ':count new players have arrived at the academy.',
+    'academy_overage_promoted_title' => 'Academy graduates',
+    'academy_overage_promoted_message' => ':count academy players aged 21+ have been promoted to the first team.',
+    'academy_gap_promoted_title' => 'Academy players promoted',
+    'academy_gap_promoted_message' => ':count academy players have been promoted to fill squad gaps.',
     // Loan request results
     'loan_accepted_title' => 'Loan request for :player accepted',
     'loan_accepted' => ':team have accepted your loan request for :player.',

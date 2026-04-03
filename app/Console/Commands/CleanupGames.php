@@ -27,7 +27,7 @@ class CleanupGames extends Command
             $query->whereNull('setup_completed_at');
         }
 
-        $staleGames = $query->get();
+        $staleGames = $query->with('team')->get();
 
         if ($staleGames->isEmpty()) {
             $this->info('No stale games found.');
@@ -38,7 +38,8 @@ class CleanupGames extends Command
         $this->info(($dryRun ? '[DRY RUN] ' : '')."Found {$staleGames->count()} stale game(s).");
 
         foreach ($staleGames as $game) {
-            $this->line("  - {$game->id} ({$game->team?->name ?? 'unknown'})");
+            $teamName = $game->team?->name ?? 'unknown';
+            $this->line("  - {$game->id} ({$teamName})");
             if (! $dryRun) {
                 $service->delete($game);
             }
