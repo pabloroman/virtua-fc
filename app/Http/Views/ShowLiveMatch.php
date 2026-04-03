@@ -147,6 +147,7 @@ class ShowLiveMatch
                 $q->whereNull('injury_until')
                     ->orWhere('injury_until', '<', $matchDate);
             })
+            ->when($game->requiresSquadEnrollment(), fn ($q) => $q->whereNotNull('number'))
             ->get()
             ->map(fn ($p) => [
                 'id' => $p->id,

@@ -40,7 +40,7 @@ class SquadService
         $primeCount = 0;
         $veteranCount = 0;
 
-        $requireEnrollment = $game->squad_registration_enabled && !$game->isInPreSeason();
+        $requireEnrollment = $game->requiresSquadEnrollment();
 
         $allPlayers->each(function (GamePlayer $player) use ($game, $seasonEndDate, $matchDate, $competitionId, $requireEnrollment, &$youngCount, &$primeCount, &$veteranCount) {
             // Availability

@@ -678,7 +678,7 @@ class LineupService
         }
 
         $isPlayerTeam = $teamId === $game->team_id;
-        $requireEnrollment = $isPlayerTeam && $game->squad_registration_enabled && !$game->isInPreSeason();
+        $requireEnrollment = $isPlayerTeam && $game->requiresSquadEnrollment();
 
         // Use pre-loaded players if available, otherwise load (backward compatibility)
         if ($allPlayersGrouped !== null) {

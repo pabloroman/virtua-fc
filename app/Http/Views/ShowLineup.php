@@ -45,7 +45,7 @@ class ShowLineup
 
         // Get current lineup if any
         $currentLineup = $this->lineupService->getLineup($match, $game->team_id);
-        $requireEnrollment = $game->squad_registration_enabled && !$game->isInPreSeason();
+        $requireEnrollment = $game->requiresSquadEnrollment();
 
         // Get formation
         $defaultFormation = $game->tactics?->default_formation ?? Formation::F_4_3_3->value;

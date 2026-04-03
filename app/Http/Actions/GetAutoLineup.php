@@ -30,7 +30,7 @@ class GetAutoLineup
         $competitionId = $match->competition_id;
 
         // Get auto-selected lineup for the formation
-        $requireEnrollment = $game->squad_registration_enabled && !$game->isInPreSeason();
+        $requireEnrollment = $game->requiresSquadEnrollment();
         $autoLineup = $this->lineupService->autoSelectLineup(
             $gameId,
             $game->team_id,

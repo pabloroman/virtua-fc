@@ -712,6 +712,11 @@ class Game extends Model
         return $this->pre_season ?? false;
     }
 
+    public function requiresSquadEnrollment(): bool
+    {
+        return $this->squad_registration_enabled && !$this->isInPreSeason();
+    }
+
     public function endPreSeason(): void
     {
         $this->update(['pre_season' => false]);

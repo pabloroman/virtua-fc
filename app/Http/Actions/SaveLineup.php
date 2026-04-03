@@ -54,7 +54,7 @@ class SaveLineup
         $competitionId = $match->competition_id;
 
         // Validate the lineup against the formation
-        $requireEnrollment = $game->squad_registration_enabled && !$game->isInPreSeason();
+        $requireEnrollment = $game->requiresSquadEnrollment();
         $errors = $this->lineupService->validateLineup(
             $playerIds,
             $gameId,

@@ -314,6 +314,7 @@ return [
     'sub_error_player_sent_off' => 'Cannot substitute a player who has been sent off',
     'sub_error_player_suspended' => 'Player is suspended in this competition',
     'sub_error_player_injured' => 'Player is injured',
+    'sub_error_player_not_registered' => 'Player is not registered in the squad',
 
     'match_not_in_progress' => 'This match is no longer in progress',
 
