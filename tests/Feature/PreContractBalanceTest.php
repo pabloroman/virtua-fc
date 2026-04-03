@@ -197,14 +197,14 @@ class PreContractBalanceTest extends TestCase
     public function test_evaluate_pre_contract_offer_with_large_reputation_gap_mostly_rejects(): void
     {
         [$game, $player] = $this->createGameAndPlayer(
-            offeringReputation: ClubProfile::REPUTATION_MODEST,
+            offeringReputation: ClubProfile::REPUTATION_LOCAL,
             sourceReputation: ClubProfile::REPUTATION_ELITE,
             marketValueCents: 5_000_000_000,
         );
 
         $premiumWage = $this->scoutingService->calculatePreContractWageDemand($player);
 
-        // Run 100 evaluations — with gap 4 (elite → modest), modifier is 0.08
+        // Run 100 evaluations — with gap 4 (elite → local), modifier is 0.08
         // 85% × 0.08 = 6.8% → should rarely accept
         $acceptedCount = 0;
         for ($i = 0; $i < 100; $i++) {
