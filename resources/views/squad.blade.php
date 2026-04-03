@@ -14,13 +14,6 @@
         ['key' => 'forwards', 'label' => __('squad.forwards'), 'group' => 'Forward', 'players' => $forwards],
     ];
 
-    $numberAssignmentsJson = $allPlayers->mapWithKeys(fn($gp) => [
-        $gp->id => [
-            'number' => $gp->number,
-            'name' => $gp->player->name,
-        ],
-    ])->toJson();
-
 @endphp
 
 <x-app-layout>
@@ -36,49 +29,6 @@
         sortCol: null,
         sortDir: 'desc',
         sidebarOpen: true,
-
-        numberAssignments: {{ Js::from(json_decode($numberAssignmentsJson, true)) }},
-        numberSaving: {},
-        numberErrors: {},
-        numberSaved: {},
-
-        async saveNumber(playerId, routeUrl, newValue) {
-            const val = newValue === '' ? null : parseInt(newValue, 10);
-            if (val === null) return;
-            if (val === this.numberAssignments[playerId]?.number) return;
-            this.numberSaving[playerId] = true;
-            this.numberErrors[playerId] = '';
-            this.numberSaved[playerId] = false;
-            try {
-                const response = await fetch(routeUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
-                        'Accept': 'application/json',
-                    },
-                    body: JSON.stringify({ number: val }),
-                });
-                const data = await response.json();
-                if (response.ok && data.success) {
-                    this.numberAssignments[playerId].number = data.number;
-                    this.numberSaved[playerId] = true;
-                    setTimeout(() => { this.numberSaved[playerId] = false; }, 2000);
-                } else {
-                    this.numberErrors[playerId] = data.message || data.errors?.number?.[0] || '{{ __('squad.number_invalid') }}';
-                }
-            } catch {
-                this.numberErrors[playerId] = '{{ __('squad.number_invalid') }}';
-            }
-            this.numberSaving[playerId] = false;
-        },
-
-        getNumberOwner(num) {
-            for (const [id, info] of Object.entries(this.numberAssignments)) {
-                if (info.number === num) return info;
-            }
-            return null;
-        },
 
         isVisible(group, available, status) {
             if (this.posFilter !== 'all' && group !== this.posFilter) return false;
@@ -169,9 +119,6 @@
                         <x-pill-button size="xs" @click="viewMode = 'stats'" x-bind:class="viewMode === 'stats' ? 'bg-surface-800 shadow-xs text-text-primary' : 'text-text-muted hover:text-text-body'" class="rounded-md">
                             {{ __('squad.stats') }}
                         </x-pill-button>
-                        <x-pill-button size="xs" @click="viewMode = 'numbers'" x-bind:class="viewMode === 'numbers' ? 'bg-surface-800 shadow-xs text-text-primary' : 'text-text-muted hover:text-text-body'" class="rounded-md">
-                            {{ __('squad.numbers') }}
-                        </x-pill-button>
                     </div>
 
                     {{-- Clear filters --}}
@@ -204,7 +151,6 @@
                                     @endif
                                     'grid-cols-[1fr_48px_32px_52px_88px_64px_64px_56px_80px] gap-1.5': viewMode === 'planning',
                                     'grid-cols-[1fr_48px_32px_52px_48px_48px_48px_40px_48px_48px_48px_64px] gap-1.5': viewMode === 'stats',
-                                    'grid-cols-[1fr_48px_32px_52px_100px] gap-1.5': viewMode === 'numbers',
                                  }">
                                 <span>{{ __('squad.player') }}</span>
                                 <span class="text-center">{{ __('squad.pos') }}</span>
@@ -278,10 +224,6 @@
                                     <span class="text-center">{{ __('squad.cards') }}</span>
                                 </template>
 
-                                {{-- Numbers header --}}
-                                <template x-if="viewMode === 'numbers'">
-                                    <span class="text-center">{{ __('squad.number') }}</span>
-                                </template>
                             </div>
                         </div>
 
@@ -348,23 +290,6 @@
                                             <x-rating-badge :value="$gp->overall_score" class="shrink-0" />
                                         </div>
 
-                                        {{-- Numbers mode input (mobile) --}}
-                                        <template x-if="viewMode === 'numbers'">
-                                            <div class="mt-2 flex items-center gap-2" x-data="{ localVal: numberAssignments['{{ $gp->id }}']?.number ?? '' }" @click.stop>
-                                                <span class="text-[10px] text-text-muted uppercase tracking-wider">#</span>
-                                                <input type="number" min="1" max="99"
-                                                    x-model="localVal"
-                                                    @blur="saveNumber('{{ $gp->id }}', '{{ route('game.squad.number', [$game->id, $gp->id]) }}', localVal)"
-                                                    @keydown.enter.prevent="$el.blur()"
-                                                    :disabled="numberSaving['{{ $gp->id }}']"
-                                                    class="w-14 h-8 text-sm font-medium text-center bg-surface-700 border rounded-sm tabular-nums focus:ring-2 focus:ring-accent-blue focus:border-accent-blue [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                                    :class="numberErrors['{{ $gp->id }}'] ? 'border-red-500 bg-accent-red/10' : 'border-border-strong'">
-                                                <div class="w-4 shrink-0 flex items-center justify-center">
-                                                    <svg x-show="numberSaved['{{ $gp->id }}']" x-transition.opacity class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                                                    <svg x-show="numberErrors['{{ $gp->id }}']" class="w-4 h-4 text-red-500 cursor-help" fill="none" stroke="currentColor" viewBox="0 0 24 24" :title="numberErrors['{{ $gp->id }}']"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                </div>
-                                            </div>
-                                        </template>
                                     </div>
 
                                     {{-- ===== DESKTOP ROW ===== --}}
@@ -378,7 +303,6 @@
                                             @endif
                                             'grid-cols-[1fr_48px_32px_52px_88px_64px_64px_56px_80px] gap-1.5': viewMode === 'planning',
                                             'grid-cols-[1fr_48px_32px_52px_48px_48px_48px_40px_48px_48px_48px_64px] gap-1.5': viewMode === 'stats',
-                                            'grid-cols-[1fr_48px_32px_52px_100px] gap-1.5': viewMode === 'numbers',
                                          }">
 
                                         {{-- Player name with avatar --}}
@@ -522,22 +446,6 @@
                                             </div>
                                         </template>
 
-                                        {{-- === Numbers column === --}}
-                                        <template x-if="viewMode === 'numbers'">
-                                            <div class="flex items-center gap-1.5 justify-center" x-data="{ localVal: numberAssignments['{{ $gp->id }}']?.number ?? '' }" @click.stop>
-                                                <div class="w-4 shrink-0 flex items-center justify-center">
-                                                    <svg x-show="numberSaved['{{ $gp->id }}']" x-transition.opacity class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                                                    <svg x-show="numberErrors['{{ $gp->id }}']" class="w-4 h-4 text-red-500 cursor-help" fill="none" stroke="currentColor" viewBox="0 0 24 24" :title="numberErrors['{{ $gp->id }}']"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                </div>
-                                                <input type="number" min="1" max="99"
-                                                    x-model="localVal"
-                                                    @blur="saveNumber('{{ $gp->id }}', '{{ route('game.squad.number', [$game->id, $gp->id]) }}', localVal)"
-                                                    @keydown.enter.prevent="$el.blur()"
-                                                    :disabled="numberSaving['{{ $gp->id }}']"
-                                                    class="w-14 h-8 text-sm font-medium text-center bg-surface-700 border rounded-sm tabular-nums focus:ring-2 focus:ring-accent-blue focus:border-accent-blue [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                                    :class="numberErrors['{{ $gp->id }}'] ? 'border-red-500 bg-accent-red/10' : 'border-border-strong'">
-                                            </div>
-                                        </template>
                                     </div>
                                 </div>
                                 @endforeach
