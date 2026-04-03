@@ -3,7 +3,6 @@
 namespace App\Http\Actions;
 
 use App\Modules\Academy\Services\YouthAcademyService;
-use App\Modules\Transfer\Services\ContractService;
 use App\Models\AcademyPlayer;
 use App\Models\Game;
 
@@ -23,12 +22,6 @@ class PromoteAcademyPlayer
             ->firstOrFail();
 
         $playerName = $academy->name;
-
-        // Squad size cap
-        if (ContractService::isSquadFull($game)) {
-            return redirect()->route('game.squad.academy', $gameId)
-                ->with('error', __('messages.squad_full', ['max' => ContractService::MAX_SQUAD_SIZE]));
-        }
 
         $this->youthAcademyService->promoteToFirstTeam($academy, $game);
 

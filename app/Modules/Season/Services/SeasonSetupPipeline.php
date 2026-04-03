@@ -9,7 +9,6 @@ use App\Modules\Season\Processors\ContinentalAndCupInitProcessor;
 use App\Modules\Season\Processors\LeagueFixtureProcessor;
 use App\Modules\Season\Processors\NewSeasonResetProcessor;
 use App\Modules\Season\Processors\PreSeasonFixtureProcessor;
-use App\Modules\Season\Processors\SquadCapEnforcementProcessor;
 use App\Modules\Season\Processors\StandingsResetProcessor;
 use App\Modules\Season\Processors\YouthAcademyPromotionProcessor;
 use App\Models\Game;
@@ -31,7 +30,6 @@ class SeasonSetupPipeline
         StandingsResetProcessor $standingsReset,
         BudgetProjectionProcessor $budgetProjection,
         ContinentalAndCupInitProcessor $competitionInitialization,
-        SquadCapEnforcementProcessor $squadCapEnforcement,
         PreSeasonFixtureProcessor $preSeasonFixture,
         NewSeasonResetProcessor $newSeasonReset,
     ) {
@@ -41,7 +39,6 @@ class SeasonSetupPipeline
             $standingsReset,
             $budgetProjection,
             $competitionInitialization,
-            $squadCapEnforcement,
             $preSeasonFixture,
             $newSeasonReset,
         ];

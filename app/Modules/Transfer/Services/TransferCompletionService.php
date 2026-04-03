@@ -89,7 +89,6 @@ class TransferCompletionService
         // Remove from shortlist to free up scouting slot
         ShortlistedPlayer::removeForPlayer($game->id, $player->id);
 
-        ContractService::clearSquadTrimIfResolved($game);
     }
 
     /**
@@ -137,25 +136,13 @@ class TransferCompletionService
         // Mark offer as completed
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
 
-        if ($fromTeamId === $game->team_id) {
-            ContractService::clearSquadTrimIfResolved($game);
-        }
     }
 
     /**
      * Complete an incoming transfer (user buys player from AI team).
-     *
-     * @param  bool  $skipSquadCheck  Skip squad-full check (used for season-close pre-contracts
-     *                                where SquadCapEnforcementProcessor handles trimming)
      */
-    public function completeIncomingTransfer(TransferOffer $offer, Game $game, bool $skipSquadCheck = false): bool
+    public function completeIncomingTransfer(TransferOffer $offer, Game $game): bool
     {
-        // Safety net: reject if squad is full (skipped for season-close pre-contracts)
-        if (!$skipSquadCheck && ContractService::isSquadFull($game)) {
-            $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
-            return false;
-        }
-
         // Safety net: reject if budget would go negative
         $investment = $game->currentInvestment;
         if ($offer->transfer_fee > 0 && $investment && $offer->transfer_fee > $investment->transfer_budget) {

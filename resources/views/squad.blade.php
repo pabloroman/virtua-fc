@@ -117,22 +117,6 @@
             <x-flash-message type="success" :message="session('success')" class="mt-4" />
             <x-flash-message type="error" :message="session('error')" class="mt-4" />
 
-            {{-- Squad trim warning --}}
-            @if($squadSize > \App\Modules\Transfer\Services\ContractService::MAX_SQUAD_SIZE)
-            <div class="mt-4 p-4 bg-accent-gold/10 border border-accent-gold/20 rounded-lg flex items-center gap-3">
-                <svg class="w-5 h-5 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                </svg>
-                <p class="text-sm text-accent-gold font-medium">
-                    {{ __('messages.squad_trim_required', [
-                        'count' => $squadSize,
-                        'excess' => $squadSize - \App\Modules\Transfer\Services\ContractService::MAX_SQUAD_SIZE,
-                        'max' => \App\Modules\Transfer\Services\ContractService::MAX_SQUAD_SIZE,
-                    ]) }}
-                </p>
-            </div>
-            @endif
-
             {{-- ===== Squad Header ===== --}}
             <div class="mt-6">
                 <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">{{ $isCareerMode ? __('squad.first_team') : __('squad.squad') }}</h2>

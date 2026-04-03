@@ -58,13 +58,6 @@ class NegotiateFreeAgent
             ], 422);
         }
 
-        if (ContractService::isSquadFull($game)) {
-            return response()->json([
-                'status' => 'error',
-                'message' => __('messages.squad_full', ['max' => ContractService::MAX_SQUAD_SIZE]),
-            ], 422);
-        }
-
         if (! $this->scoutingService->canSignFreeAgent($player, $game->id, $game->team_id)) {
             return response()->json([
                 'status' => 'error',

@@ -614,11 +614,6 @@ class ContractService
     public const MIN_SQUAD_SIZE = 20;
 
     /**
-     * Maximum squad size — cannot add players above this.
-     */
-    public const MAX_SQUAD_SIZE = 30;
-
-    /**
      * Count first-team players in the user's squad.
      */
     public static function squadCount(Game $game): int
@@ -626,24 +621,6 @@ class ContractService
         return GamePlayer::where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->count();
-    }
-
-    /**
-     * Check if the user's squad is at or above the maximum size.
-     */
-    public static function isSquadFull(Game $game): bool
-    {
-        return self::squadCount($game) >= self::MAX_SQUAD_SIZE;
-    }
-
-    /**
-     * Clear the squad_trim pending action if the squad is now within the cap.
-     */
-    public static function clearSquadTrimIfResolved(Game $game): void
-    {
-        if ($game->hasPendingAction('squad_trim') && self::squadCount($game) <= self::MAX_SQUAD_SIZE) {
-            $game->removePendingAction('squad_trim');
-        }
     }
 
     /**
@@ -701,8 +678,6 @@ class ContractService
         if ($activeNegotiation) {
             $activeNegotiation->update(['status' => RenewalNegotiation::STATUS_EXPIRED]);
         }
-
-        self::clearSquadTrimIfResolved($game);
 
         // Send notification
         app(NotificationService::class)->notifyPlayerReleased(

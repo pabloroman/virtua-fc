@@ -359,8 +359,6 @@ class LoanService
             'transfer_listed_at' => null,
         ]);
 
-        ContractService::clearSquadTrimIfResolved($game);
-
         return $loan;
     }
 
@@ -509,12 +507,6 @@ class LoanService
      */
     public function completeLoanIn(TransferOffer $offer, Game $game): void
     {
-        // Safety net: reject if squad is full
-        if (ContractService::isSquadFull($game)) {
-            $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
-            return;
-        }
-
         $player = $offer->gamePlayer;
         $parentTeamId = $offer->selling_team_id ?? $player->team_id;
 
@@ -609,8 +601,6 @@ class LoanService
         );
 
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
-
-        ContractService::clearSquadTrimIfResolved($game);
     }
 
     /**

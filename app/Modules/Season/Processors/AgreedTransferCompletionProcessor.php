@@ -27,7 +27,7 @@ class AgreedTransferCompletionProcessor implements SeasonProcessor
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
         $outgoing = $this->transferService->completeAgreedTransfers($game);
-        $incoming = $this->transferService->completeIncomingTransfers($game, skipSquadCheck: true);
+        $incoming = $this->transferService->completeIncomingTransfers($game);
 
         $outgoingData = $outgoing->map(fn ($offer) => [
             'playerId' => $offer->game_player_id,

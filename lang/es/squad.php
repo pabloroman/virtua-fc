@@ -254,9 +254,6 @@ return [
     'radar_tec' => 'Técnica',
     'radar_phy' => 'Físico',
 
-    // Squad cap
-    'squad_trim' => 'Reducción de Plantilla',
-
     // Grid positioning
     'drag_or_tap' => 'Toca una celda o arrastra al jugador',
     'select_player_for_slot' => 'Selecciona un jugador de la lista',
