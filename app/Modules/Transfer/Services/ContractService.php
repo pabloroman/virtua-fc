@@ -5,11 +5,9 @@ namespace App\Modules\Transfer\Services;
 use App\Models\Competition;
 use App\Modules\Player\PlayerAge;
 use App\Models\FinancialTransaction;
-use App\Models\ClubProfile;
 use App\Models\Game;
 use App\Models\GameNotification;
 use App\Models\GamePlayer;
-use App\Models\TeamReputation;
 use App\Models\RenewalNegotiation;
 use App\Models\Team;
 use App\Models\TransferOffer;
@@ -36,6 +34,7 @@ class ContractService
 
     public function __construct(
         private readonly WageNegotiationEvaluator $wageNegotiationEvaluator,
+        private readonly DispositionService $dispositionService,
     ) {}
 
     /**
@@ -66,8 +65,6 @@ class ContractService
         'prime' => 1.0,
         'veteran' => 5.0,
     ];
-
-    private const AMBITION_PENALTY_PER_TIER_GAP = 0.12;
 
     /**
      * Calculate annual wage for a player based on market value and age.
@@ -367,80 +364,7 @@ class ContractService
      */
     public function calculateDisposition(GamePlayer $player, int $round = 1): float
     {
-        $disposition = 0.50;
-
-        // Morale bonus
-        $morale = $player->morale;
-        if ($morale >= 80) {
-            $disposition += 0.15;
-        } elseif ($morale >= 60) {
-            $disposition += 0.08;
-        } elseif ($morale < 40) {
-            $disposition -= 0.10;
-        }
-
-        // Appearances bonus
-        $appearances = $player->season_appearances ?? $player->appearances ?? 0;
-        if ($appearances >= 25) {
-            $disposition += 0.10;
-        } elseif ($appearances >= 15) {
-            $disposition += 0.05;
-        } elseif ($appearances < 10) {
-            $disposition -= 0.10;
-        }
-
-        // Age factor
-        $age = $player->age($player->game->current_date);
-        if ($age >= PlayerAge::PRIME_END) {
-            $disposition += 0.12;
-        } elseif ($age >= PlayerAge::primePhaseAge(0.5)) {
-            $disposition += 0.05;
-        } elseif ($age <= PlayerAge::YOUNG_END) {
-            $disposition -= 0.08;
-        }
-
-        // Round penalty
-        if ($round === 2) {
-            $disposition -= 0.05;
-        } elseif ($round >= 3) {
-            $disposition -= 0.10;
-        }
-
-        // Pre-contract pressure (Jan-May)
-        $game = $player->game;
-        $month = $game->current_date->month;
-        if ($month >= 1 && $month <= 5) {
-            // Has a concrete pre-contract offer
-            if ($player->relationLoaded('transferOffers')) {
-                $hasPreContractOffer = $player->transferOffers->contains(function ($offer) {
-                    return $offer->offer_type === TransferOffer::TYPE_PRE_CONTRACT
-                        && $offer->status === TransferOffer::STATUS_PENDING;
-                });
-            } else {
-                $hasPreContractOffer = $player->transferOffers()
-                    ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-                    ->where('status', TransferOffer::STATUS_PENDING)
-                    ->exists();
-            }
-
-            if ($hasPreContractOffer) {
-                $disposition -= 0.15;
-            } else {
-                $disposition -= 0.08;
-            }
-        }
-
-        // Ambition: players too good for their team's reputation want to move up
-        $reputationLevel = TeamReputation::resolveLevel($player->game_id, $player->team_id);
-        $teamReputationIndex = ClubProfile::getReputationTierIndex($reputationLevel); // 0-4
-        $playerTierIndex = $player->tier - 1; // normalize to 0-4
-
-        $tierGap = $playerTierIndex - $teamReputationIndex;
-        if ($tierGap > 0) {
-            $disposition -= $tierGap * self::AMBITION_PENALTY_PER_TIER_GAP;
-        }
-
-        return max(0.10, min(0.95, $disposition));
+        return $this->dispositionService->renewalDisposition($player, $round);
     }
 
     /**
@@ -450,25 +374,9 @@ class ContractService
      */
     public function getMoodIndicator(float $disposition, string $context = 'renewal'): array
     {
-        if ($context === 'transfer') {
-            if ($disposition >= 0.65) {
-                return ['label' => __('transfers.mood_willing_sign'), 'color' => 'green'];
-            }
-            if ($disposition >= 0.40) {
-                return ['label' => __('transfers.mood_open_sign'), 'color' => 'amber'];
-            }
+        $mappedContext = $context === 'transfer' ? 'transfer_sign' : $context;
 
-            return ['label' => __('transfers.mood_reluctant_sign'), 'color' => 'red'];
-        }
-
-        if ($disposition >= 0.65) {
-            return ['label' => __('transfers.mood_willing'), 'color' => 'green'];
-        }
-        if ($disposition >= 0.40) {
-            return ['label' => __('transfers.mood_open'), 'color' => 'amber'];
-        }
-
-        return ['label' => __('transfers.mood_reluctant'), 'color' => 'red'];
+        return $this->dispositionService->moodIndicator($disposition, $mappedContext);
     }
 
     /**
@@ -958,43 +866,7 @@ class ContractService
      */
     public function calculateTransferDisposition(GamePlayer $player, Game $buyingClubGame, int $round = 1): float
     {
-        $disposition = 0.50;
-
-        // Morale (content player = open to moves)
-        $morale = $player->morale;
-        if ($morale >= 70) {
-            $disposition += 0.10;
-        } elseif ($morale < 40) {
-            $disposition -= 0.05;
-        }
-
-        // Age (older = wants a good final contract)
-        $age = $player->age($player->game->current_date);
-        if ($age >= PlayerAge::PRIME_END) {
-            $disposition += 0.10;
-        } elseif ($age <= PlayerAge::YOUNG_END) {
-            $disposition -= 0.05;
-        }
-
-        // Team reputation comparison
-        $buyingRep = $buyingClubGame->team?->reputation ?? 50;
-        $currentRep = $player->team?->reputation ?? 50;
-        if ($buyingRep > $currentRep + 10) {
-            $disposition += 0.15;
-        } elseif ($buyingRep >= $currentRep - 10) {
-            $disposition += 0.05;
-        } else {
-            $disposition -= 0.10;
-        }
-
-        // Round penalty
-        if ($round === 2) {
-            $disposition -= 0.05;
-        } elseif ($round >= 3) {
-            $disposition -= 0.10;
-        }
-
-        return max(0.10, min(0.95, $disposition));
+        return $this->dispositionService->transferSigningDisposition($player, $buyingClubGame, $round);
     }
 
     /**
@@ -1104,38 +976,7 @@ class ContractService
      */
     public function calculatePreContractDisposition(GamePlayer $player, Game $buyingClubGame, int $round = 1, ?ScoutingService $scoutingService = null): float
     {
-        $disposition = 0.60;
-
-        // Morale
-        $morale = $player->morale;
-        if ($morale >= 70) {
-            $disposition += 0.10;
-        } elseif ($morale < 40) {
-            $disposition -= 0.05;
-        }
-
-        // Age (older = wants security)
-        $age = $player->age($player->game->current_date);
-        if ($age >= 32) {
-            $disposition += 0.12;
-        } elseif ($age <= 23) {
-            $disposition -= 0.05;
-        }
-
-        // Round penalty
-        if ($round === 2) {
-            $disposition -= 0.05;
-        } elseif ($round >= 3) {
-            $disposition -= 0.10;
-        }
-
-        // Apply reputation gap modifier (same scale the scout willingness uses)
-        if ($scoutingService && $buyingClubGame->team) {
-            $reputationModifier = $scoutingService->calculateReputationModifier($buyingClubGame->team, $player);
-            $disposition *= $reputationModifier;
-        }
-
-        return max(0.10, min(0.95, $disposition));
+        return $this->dispositionService->preContractDisposition($player, $buyingClubGame, $round);
     }
 
     /**

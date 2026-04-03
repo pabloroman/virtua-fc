@@ -7,6 +7,7 @@ use App\Models\GamePlayer;
 use App\Models\TransferOffer;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Transfer\Services\ContractService;
+use App\Modules\Transfer\Services\DispositionService;
 use App\Modules\Transfer\Services\ScoutingService;
 use App\Modules\Transfer\Services\TransferService;
 use App\Support\Money;
@@ -23,6 +24,7 @@ class NegotiateFreeAgent
         private readonly ScoutingService $scoutingService,
         private readonly TransferService $transferService,
         private readonly NotificationService $notificationService,
+        private readonly DispositionService $dispositionService,
     ) {}
 
     public function __invoke(Request $request, string $gameId, string $playerId): JsonResponse
@@ -74,7 +76,7 @@ class NegotiateFreeAgent
         $existing = $this->findPendingFreeAgentOffer($game, $player, 'countered');
 
         if ($existing) {
-            $mood = $this->getWillingnessMood($player, $game);
+            $mood = $this->dispositionService->willingnessMoodIndicator($player, $game);
 
             return response()->json([
                 'status' => 'ok',
@@ -125,7 +127,7 @@ class NegotiateFreeAgent
         }
 
         $demand = $this->contractService->calculateFreeAgentWageDemand($player, $this->scoutingService);
-        $mood = $this->getWillingnessMood($player, $game);
+        $mood = $this->dispositionService->willingnessMoodIndicator($player, $game);
         $demandInEuros = (int) ($demand['wage'] / 100);
 
         return response()->json([
@@ -199,7 +201,7 @@ class NegotiateFreeAgent
                         ]),
                         'wage' => (int) ($offer->wage_counter_offer / 100),
                         'years' => $offer->preferred_years,
-                        'mood' => $this->getWillingnessMood($player, $game),
+                        'mood' => $this->dispositionService->willingnessMoodIndicator($player, $game),
                     ], [
                         'canAccept' => true,
                         'suggestedWage' => $this->calculateMidpointInEuros($offer->offered_wage, $offer->wage_counter_offer),
@@ -293,14 +295,4 @@ class NegotiateFreeAgent
         return (int) (ceil(($centsA + $centsB) / 2 / 100 / 10000) * 10000);
     }
 
-    private function getWillingnessMood(GamePlayer $player, Game $game): array
-    {
-        $willingness = $this->scoutingService->calculateWillingness($player, $game);
-
-        return match ($willingness['label']) {
-            'very_interested', 'open' => ['label' => __('transfers.mood_willing_sign'), 'color' => 'green'],
-            'undecided' => ['label' => __('transfers.mood_open_sign'), 'color' => 'amber'],
-            default => ['label' => __('transfers.mood_reluctant_sign'), 'color' => 'red'],
-        };
-    }
 }

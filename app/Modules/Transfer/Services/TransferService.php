@@ -26,6 +26,7 @@ class TransferService
     public function __construct(
         private readonly LoanService $loanService,
         private readonly TransferCompletionService $completionService,
+        private readonly DispositionService $dispositionService,
     ) {}
 
     /**
@@ -1250,44 +1251,7 @@ class TransferService
      */
     public function calculateClubDisposition(GamePlayer $player, ScoutingService $scoutingService): float
     {
-        $disposition = 0.50;
-
-        // Player importance (key players are harder to buy)
-        $importance = $scoutingService->calculatePlayerImportance($player);
-        if ($importance >= 0.85) {
-            $disposition -= 0.20;
-        } elseif ($importance >= 0.60) {
-            $disposition -= 0.10;
-        } elseif ($importance <= 0.30) {
-            $disposition += 0.10;
-        }
-
-        // Contract length (longer = more reluctant)
-        if ($player->contract_until) {
-            $yearsLeft = $player->game->current_date->diffInYears($player->contract_until);
-            if ($yearsLeft >= 4) {
-                $disposition -= 0.10;
-            } elseif ($yearsLeft <= 1) {
-                $disposition += 0.15;
-            }
-        } else {
-            $disposition += 0.20; // No contract = very willing
-        }
-
-        // Transfer listed = very willing
-        if ($player->transfer_status === 'listed') {
-            $disposition += 0.20;
-        }
-
-        // Age (older = more willing to sell)
-        $age = $player->age($player->game->current_date);
-        if ($age >= PlayerAge::PRIME_END) {
-            $disposition += 0.10;
-        } elseif ($age < PlayerAge::YOUNG_END) {
-            $disposition -= 0.05;
-        }
-
-        return max(0.10, min(0.95, $disposition));
+        return $this->dispositionService->clubSellDisposition($player);
     }
 
     /**
@@ -1297,13 +1261,6 @@ class TransferService
      */
     public function getClubMoodIndicator(float $disposition): array
     {
-        if ($disposition >= 0.65) {
-            return ['label' => __('transfers.mood_willing_sell'), 'color' => 'green'];
-        }
-        if ($disposition >= 0.40) {
-            return ['label' => __('transfers.mood_open_sell'), 'color' => 'amber'];
-        }
-
-        return ['label' => __('transfers.mood_reluctant_sell'), 'color' => 'red'];
+        return $this->dispositionService->moodIndicator($disposition, 'transfer_sell');
     }
 }

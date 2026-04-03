@@ -22,6 +22,10 @@ class LoanService
     private const SEARCH_EXPIRY_DAYS = 21;
     private const MATCH_PROBABILITY = 50; // % chance per matchday
 
+    public function __construct(
+        private readonly DispositionService $dispositionService,
+    ) {}
+
     /**
      * Start a loan search for a player.
      */
@@ -636,14 +640,7 @@ class LoanService
      */
     public function getLoanMoodIndicator(float $disposition): array
     {
-        if ($disposition >= 0.65) {
-            return ['label' => __('transfers.mood_willing_loan'), 'color' => 'green'];
-        }
-        if ($disposition >= 0.40) {
-            return ['label' => __('transfers.mood_open_loan'), 'color' => 'amber'];
-        }
-
-        return ['label' => __('transfers.mood_reluctant_loan'), 'color' => 'red'];
+        return $this->dispositionService->moodIndicator($disposition, 'loan');
     }
 
 }
