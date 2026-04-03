@@ -29,6 +29,8 @@ class SaveSquadRegistration
             return back()->with('error', $e->getMessage());
         }
 
+        $game->removePendingAction('squad_registration');
+
         return back()->with('success', __('squad.registration_saved'));
     }
 }

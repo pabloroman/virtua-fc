@@ -254,6 +254,11 @@ return [
     'radar_tec' => 'Técnica',
     'radar_phy' => 'Físico',
 
+    // Registration
+    'not_registered' => 'No inscrito',
+    'too_many_first_team' => 'Máximo 25 inscripciones de primer equipo (dorsales 1-25).',
+    'drag_to_assign' => 'Arrastra un jugador aquí para asignarlo',
+
     // Grid positioning
     'drag_or_tap' => 'Toca una celda o arrastra al jugador',
     'select_player_for_slot' => 'Selecciona un jugador de la lista',

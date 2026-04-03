@@ -20,4 +20,9 @@ class RegistrationException extends RuntimeException
     {
         return new self(__('squad.academy_age_limit'));
     }
+
+    public static function tooManyFirstTeam(): self
+    {
+        return new self(__('squad.too_many_first_team'));
+    }
 }

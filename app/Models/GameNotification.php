@@ -72,6 +72,7 @@ class GameNotification extends Model
     public const TYPE_BUDGET_LOAN = 'budget_loan';
     public const TYPE_TRANSFER_WINDOW_CLOSING = 'transfer_window_closing';
     public const TYPE_TRANSFER_WINDOW_CLOSED = 'transfer_window_closed';
+    public const TYPE_SQUAD_REGISTRATION_REQUIRED = 'squad_registration_required';
 
     // Priorities
     public const PRIORITY_MILESTONE = 'milestone';
@@ -108,6 +109,7 @@ class GameNotification extends Model
         self::TYPE_BUDGET_LOAN => 'finances',
         self::TYPE_TRANSFER_WINDOW_CLOSING => 'transfers',
         self::TYPE_TRANSFER_WINDOW_CLOSED => 'transfers',
+        self::TYPE_SQUAD_REGISTRATION_REQUIRED => 'registration',
     ];
 
     protected $fillable = [
@@ -229,6 +231,7 @@ class GameNotification extends Model
             'academy' => 'game.squad.academy',
             'transfer-activity' => 'game.transfer-activity',
             'finances' => 'game.finances',
+            'registration' => 'game.squad.registration',
             default => 'game.squad.academy',
         };
     }
@@ -373,6 +376,11 @@ class GameNotification extends Model
                 'icon_bg' => 'bg-amber-500/10',
                 'icon_text' => 'text-amber-500',
                 'dot' => 'bg-amber-500',
+            ],
+            self::TYPE_SQUAD_REGISTRATION_REQUIRED => [
+                'icon_bg' => 'bg-red-500/10',
+                'icon_text' => 'text-red-500',
+                'dot' => 'bg-red-500',
             ],
             default => [
                 'icon_bg' => 'bg-slate-500/10',

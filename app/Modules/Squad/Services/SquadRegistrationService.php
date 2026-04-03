@@ -18,6 +18,7 @@ class SquadRegistrationService
     public function save(Game $game, Collection $assignments): void
     {
         $this->validateNoDuplicateNumbers($assignments);
+        $this->validateFirstTeamLimit($assignments);
         $this->validatePlayersExist($game, $assignments);
         $this->validateAcademyAgeLimit($game, $assignments);
 
@@ -33,6 +34,15 @@ class SquadRegistrationService
                     ->update(['number' => $assignment['number']]);
             }
         });
+    }
+
+    private function validateFirstTeamLimit(Collection $assignments): void
+    {
+        $firstTeamCount = $assignments->filter(fn ($a) => $a['number'] >= 1 && $a['number'] <= 25)->count();
+
+        if ($firstTeamCount > 25) {
+            throw RegistrationException::tooManyFirstTeam();
+        }
     }
 
     private function validateNoDuplicateNumbers(Collection $assignments): void

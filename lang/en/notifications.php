@@ -150,4 +150,8 @@ return [
     'budget_loan_repaid_title' => 'Budget loan repaid',
     'budget_loan_repaid_message' => 'The budget loan has been repaid (:repayment with interest).',
     'budget_loan_repaid_with_debt' => 'The budget loan repayment of :repayment exceeded available surplus. The shortfall has been carried as debt.',
+
+    // Squad registration
+    'squad_registration_required_title' => 'Squad registration required',
+    'squad_registration_required_message' => 'You have :count unenrolled players. Register your squad before the season begins — unenrolled players cannot be selected for matches.',
 ];

@@ -40,10 +40,21 @@ class SquadService
         $primeCount = 0;
         $veteranCount = 0;
 
-        $allPlayers->each(function (GamePlayer $player) use ($game, $seasonEndDate, $matchDate, $competitionId, &$youngCount, &$primeCount, &$veteranCount) {
+        $requireEnrollment = $game->squad_registration_enabled && !$game->isInPreSeason();
+
+        $allPlayers->each(function (GamePlayer $player) use ($game, $seasonEndDate, $matchDate, $competitionId, $requireEnrollment, &$youngCount, &$primeCount, &$veteranCount) {
             // Availability
-            $player->setAttribute('is_unavailable', !$player->isAvailable($matchDate, $competitionId));
-            $player->setAttribute('unavailability_reason', $player->getUnavailabilityReason($matchDate, $competitionId));
+            $isUnavailable = !$player->isAvailable($matchDate, $competitionId);
+            $reason = $player->getUnavailabilityReason($matchDate, $competitionId);
+
+            // Unenrolled players (no squad number) are unavailable when registration is enabled
+            if (!$isUnavailable && $player->number === null && $requireEnrollment) {
+                $isUnavailable = true;
+                $reason = __('squad.not_registered');
+            }
+
+            $player->setAttribute('is_unavailable', $isUnavailable);
+            $player->setAttribute('unavailability_reason', $reason);
 
             // Development projection
             $age = $player->age($game->current_date);

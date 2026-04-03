@@ -768,6 +768,17 @@ class NotificationService
         );
     }
 
+    public function notifySquadRegistrationRequired(Game $game, int $unenrolledCount): GameNotification
+    {
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_SQUAD_REGISTRATION_REQUIRED,
+            title: __('notifications.squad_registration_required_title'),
+            message: __('notifications.squad_registration_required_message', ['count' => $unenrolledCount]),
+            priority: GameNotification::PRIORITY_CRITICAL,
+        );
+    }
+
     // ==========================================
     // Helpers
     // ==========================================
@@ -803,6 +814,7 @@ class NotificationService
             GameNotification::TYPE_MATCH_FORFEIT => 'eliminated',
             GameNotification::TYPE_BUDGET_LOAN => 'transfer',
             GameNotification::TYPE_TRANSFER_WINDOW_CLOSING => 'clock',
+            GameNotification::TYPE_SQUAD_REGISTRATION_REQUIRED => 'squad',
             default => 'bell',
         };
     }

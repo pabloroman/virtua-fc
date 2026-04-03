@@ -254,6 +254,11 @@ return [
     'radar_tec' => 'Technical',
     'radar_phy' => 'Physical',
 
+    // Registration
+    'not_registered' => 'Not registered',
+    'too_many_first_team' => 'Maximum 25 first-team registrations (numbers 1-25) allowed.',
+    'drag_to_assign' => 'Drag a player here to assign them',
+
     // Grid positioning
     'drag_or_tap' => 'Tap a cell or drag the player',
     'select_player_for_slot' => 'Select a player from the list',

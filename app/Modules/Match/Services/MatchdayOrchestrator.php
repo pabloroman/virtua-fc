@@ -158,7 +158,7 @@ class MatchdayOrchestrator
             ->values();
 
         $allPlayers = GamePlayer::select([
-                'id', 'game_id', 'player_id', 'team_id', 'position',
+                'id', 'game_id', 'player_id', 'team_id', 'number', 'position',
                 'fitness', 'morale', 'durability',
                 'game_technical_ability', 'game_physical_ability',
                 'injury_until', 'injury_type',
@@ -265,6 +265,18 @@ class MatchdayOrchestrator
                 ->where('id', '!=', $playerMatch->id)
                 ->exists())) {
                 $game->endPreSeason();
+
+                // Notify if there are unenrolled players now that registration is enforced
+                if ($game->squad_registration_enabled) {
+                    $unenrolledCount = GamePlayer::where('game_id', $game->id)
+                        ->where('team_id', $game->team_id)
+                        ->whereNull('number')
+                        ->count();
+
+                    if ($unenrolledCount > 0) {
+                        $this->notificationService->notifySquadRegistrationRequired($game, $unenrolledCount);
+                    }
+                }
             }
         }
 
