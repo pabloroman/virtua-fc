@@ -56,6 +56,7 @@
                 knockoutRoundNumber: {{ $knockoutRoundNumber ?? 'null' }},
                 knockoutRoundName: '{{ $knockoutRoundName ?? '' }}',
                 processingStatusUrl: {!! $processingStatusUrl ? "'" . $processingStatusUrl . "'" : 'null' !!},
+                finalizeUrl: '{{ route('game.finalize-match', $game->id) }}',
                 homePossession: {{ $homePossession }},
                 awayPossession: {{ $awayPossession }},
                 formationSlots: {{ Js::from($formationSlots) }},

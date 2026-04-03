@@ -64,6 +64,7 @@ export default function liveMatch(config) {
         lineupPlayers: config.lineupPlayers || [],
         benchPlayers: config.benchPlayers || [],
         tacticalActionsUrl: config.tacticalActionsUrl || '',
+        finalizeUrl: config.finalizeUrl || '',
         csrfToken: config.csrfToken || '',
         maxSubstitutions: config.maxSubstitutions || 5,
         maxWindows: config.maxWindows || 3,
@@ -259,6 +260,22 @@ export default function liveMatch(config) {
                 }
             };
             document.addEventListener('visibilitychange', this._onVisibilityChange);
+
+            // Warn before leaving during an active match and auto-finalize on unload
+            this._onBeforeUnload = (e) => {
+                if (this.phase !== 'pre_match' && this.phase !== 'full_time') {
+                    e.preventDefault();
+                }
+            };
+            this._onPageHide = () => {
+                if (this.phase !== 'pre_match' && this.phase !== 'full_time' && this.finalizeUrl) {
+                    const data = new FormData();
+                    data.append('_token', this.csrfToken);
+                    navigator.sendBeacon(this.finalizeUrl, data);
+                }
+            };
+            window.addEventListener('beforeunload', this._onBeforeUnload);
+            window.addEventListener('pagehide', this._onPageHide);
 
             // Start the match simulation (synthesize goals + kickoff delay)
             this.startSimulation();
@@ -1179,6 +1196,12 @@ export default function liveMatch(config) {
             document.body.classList.remove('overflow-y-hidden');
             if (this._onVisibilityChange) {
                 document.removeEventListener('visibilitychange', this._onVisibilityChange);
+            }
+            if (this._onBeforeUnload) {
+                window.removeEventListener('beforeunload', this._onBeforeUnload);
+            }
+            if (this._onPageHide) {
+                window.removeEventListener('pagehide', this._onPageHide);
             }
         },
     };
