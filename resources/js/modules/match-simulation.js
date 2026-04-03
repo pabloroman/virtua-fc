@@ -451,6 +451,11 @@ export function createMatchSimulation(ctx) {
             state.etAwayScore = result.awayScoreET || 0;
             state._needsPenalties = result.needsPenalties || false;
 
+            // Generate client-side atmosphere for extra time
+            if (typeof state._injectETAtmosphere === 'function') {
+                state._injectETAtmosphere();
+            }
+
             if (result.homePossession !== undefined) {
                 state._basePossession = result.homePossession;
                 state._possessionDisplay = result.homePossession;

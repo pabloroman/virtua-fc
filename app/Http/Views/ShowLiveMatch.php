@@ -255,6 +255,15 @@ class ShowLiveMatch
         $slotCompatibility = PositionSlotMapper::SLOT_COMPATIBILITY;
         $gridConfig = PitchGrid::getGridConfig();
 
+        // Narrative templates for client-side atmosphere generation
+        $narrativeTemplates = [
+            'shotOnTarget' => __('game.atmosphere_shot_on_target'),
+            'shotOffTarget' => __('game.atmosphere_shot_off_target'),
+            'foul' => __('game.atmosphere_foul'),
+            'substitution' => __('game.atmosphere_substitution'),
+            'injury' => __('game.atmosphere_injury'),
+        ];
+
         return view('live-match', [
             'game' => $game,
             'match' => $playerMatch,
@@ -302,6 +311,7 @@ class ShowLiveMatch
                 ?? $game->tactics?->default_pitch_positions ?? [],
             'slotAssignments' => $playerMatch->{"{$prefix}_slot_assignments"}
                 ?? $game->tactics?->default_slot_assignments ?? [],
+            'narrativeTemplates' => $narrativeTemplates,
         ]);
     }
 

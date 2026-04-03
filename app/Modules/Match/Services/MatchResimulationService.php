@@ -730,4 +730,5 @@ class MatchResimulationService
             return $event;
         }, $formatted);
     }
+
 }
