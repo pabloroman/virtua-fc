@@ -29,7 +29,7 @@ class AcceptTransferOffer
             abort(403, 'You can only accept offers for your own players.');
         }
 
-        if ($offer->gamePlayer->isLoanedIn($game->team_id)) {
+        if ($offer->gamePlayer->isOnLoan()) {
             abort(403, 'Cannot accept offers for loaned players.');
         }
 

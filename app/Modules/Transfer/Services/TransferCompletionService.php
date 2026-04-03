@@ -32,6 +32,13 @@ class TransferCompletionService
     public function completeOutgoingTransfer(TransferOffer $offer, Game $game): void
     {
         $player = $offer->gamePlayer;
+
+        // Safety: never sell a player who is on an active loan
+        if ($player->isOnLoan() && $offer->offer_type !== TransferOffer::TYPE_LOAN_OUT) {
+            $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
+            return;
+        }
+
         $playerName = $player->player->name;
         $buyerName = $offer->offeringTeam->name;
         $isLoan = $offer->offer_type === TransferOffer::TYPE_LOAN_OUT;
