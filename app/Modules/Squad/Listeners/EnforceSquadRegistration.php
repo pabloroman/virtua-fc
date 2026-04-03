@@ -2,12 +2,16 @@
 
 namespace App\Modules\Squad\Listeners;
 
-use App\Models\GamePlayer;
 use App\Modules\Match\Events\GameDateAdvanced;
+use App\Modules\Squad\Services\SquadNumberService;
 use App\Modules\Transfer\Enums\TransferWindowType;
 
 class EnforceSquadRegistration
 {
+    public function __construct(
+        private readonly SquadNumberService $squadNumberService,
+    ) {}
+
     public function handle(GameDateAdvanced $event): void
     {
         // Only detect transfer window close boundary:
@@ -25,12 +29,10 @@ class EnforceSquadRegistration
             return;
         }
 
-        $hasUnregistered = GamePlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->whereNull('number')
-            ->exists();
+        // Auto-assign numbers smartly, only add pending action if truly unresolvable
+        $unresolvable = $this->squadNumberService->reassignNumbers($game);
 
-        if ($hasUnregistered) {
+        if ($unresolvable > 0) {
             $game->addPendingAction('squad_registration', 'game.squad.registration');
         }
     }

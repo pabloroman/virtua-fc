@@ -3,6 +3,7 @@
 namespace App\Modules\Transfer\Services;
 
 use App\Modules\Player\PlayerAge;
+use App\Modules\Squad\Services\SquadNumberService;
 use App\Modules\Transfer\Enums\TransferWindowType;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\LoanService;
@@ -27,6 +28,7 @@ class TransferService
         private readonly LoanService $loanService,
         private readonly TransferCompletionService $completionService,
         private readonly DispositionService $dispositionService,
+        private readonly SquadNumberService $squadNumberService,
     ) {}
 
     /**
@@ -944,7 +946,7 @@ class TransferService
 
         $player->update([
             'team_id' => $game->team_id,
-            'number' => GamePlayer::nextAvailableNumber($game->id, $game->team_id),
+            'number' => $this->squadNumberService->assignNumberForNewPlayer($game, $player),
             'contract_until' => $newContractEnd,
             'annual_wage' => $wageDemand,
         ]);

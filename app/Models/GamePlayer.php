@@ -202,48 +202,6 @@ class GamePlayer extends Model
     public const TRANSFER_STATUS_LOAN_SEARCH = 'loan_search';
 
     /**
-     * Find the next available first-team squad number (2–25).
-     * Returns null if all first-team slots are taken (player stays unregistered).
-     */
-    public static function nextAvailableNumber(string $gameId, string $teamId): ?int
-    {
-        $taken = static::where('game_id', $gameId)
-            ->where('team_id', $teamId)
-            ->whereNotNull('number')
-            ->pluck('number')
-            ->all();
-
-        for ($n = 2; $n <= 25; $n++) {
-            if (!in_array($n, $taken)) {
-                return $n;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Find the next available squad number for AI teams (2–99).
-     * Always returns a number — AI teams must never have unregistered players.
-     */
-    public static function nextAvailableNumberForAI(string $gameId, string $teamId): int
-    {
-        $taken = static::where('game_id', $gameId)
-            ->where('team_id', $teamId)
-            ->whereNotNull('number')
-            ->pluck('number')
-            ->all();
-
-        for ($n = 2; $n <= 99; $n++) {
-            if (!in_array($n, $taken)) {
-                return $n;
-            }
-        }
-
-        return 99;
-    }
-
-    /**
      * Check if player has announced retirement.
      */
     public function isRetiring(): bool

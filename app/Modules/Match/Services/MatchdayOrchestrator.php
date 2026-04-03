@@ -16,6 +16,7 @@ use App\Modules\Match\Jobs\ProcessCareerActions;
 use App\Modules\Match\Jobs\ProcessRemainingBatches;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Squad\Services\EligibilityService;
+use App\Modules\Player\PlayerAge;
 use App\Modules\Player\Services\InjuryService;
 use App\Models\Competition;
 use App\Models\TeamReputation;
@@ -271,6 +272,9 @@ class MatchdayOrchestrator
                     $unenrolledCount = GamePlayer::where('game_id', $game->id)
                         ->where('team_id', $game->team_id)
                         ->whereNull('number')
+                        ->whereHas('player', fn ($q) => $q->where(
+                            'date_of_birth', '<=', PlayerAge::dateOfBirthCutoff(PlayerAge::YOUNG_END, $game->current_date)
+                        ))
                         ->count();
 
                     if ($unenrolledCount > 0) {

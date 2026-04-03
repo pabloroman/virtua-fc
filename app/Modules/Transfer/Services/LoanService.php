@@ -13,6 +13,7 @@ use App\Models\ShortlistedPlayer;
 use App\Models\Team;
 use App\Models\TeamReputation;
 use App\Models\TransferOffer;
+use App\Modules\Squad\Services\SquadNumberService;
 use App\Modules\Transfer\Enums\TransferWindowType;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -24,6 +25,7 @@ class LoanService
 
     public function __construct(
         private readonly DispositionService $dispositionService,
+        private readonly SquadNumberService $squadNumberService,
     ) {}
 
     /**
@@ -354,7 +356,7 @@ class LoanService
         // Move player to AI team
         $player->update([
             'team_id' => $destinationTeam->id,
-            'number' => GamePlayer::nextAvailableNumberForAI($game->id, $destinationTeam->id),
+            'number' => $this->squadNumberService->nextAvailableNumberForAI($game->id, $destinationTeam->id),
             'transfer_status' => null,
             'transfer_listed_at' => null,
         ]);
@@ -397,8 +399,8 @@ class LoanService
         $gamePlayer = $loan->gamePlayer;
         $isUserTeam = $loan->parent_team_id === $gamePlayer->game->team_id;
         $number = $isUserTeam
-            ? GamePlayer::nextAvailableNumber($gamePlayer->game_id, $loan->parent_team_id)
-            : GamePlayer::nextAvailableNumberForAI($gamePlayer->game_id, $loan->parent_team_id);
+            ? $this->squadNumberService->assignNumberForNewPlayer($gamePlayer->game, $gamePlayer)
+            : $this->squadNumberService->nextAvailableNumberForAI($gamePlayer->game_id, $loan->parent_team_id);
         $gamePlayer->update([
             'team_id' => $loan->parent_team_id,
             'number' => $number,
@@ -533,7 +535,7 @@ class LoanService
 
         $player->update([
             'team_id' => $game->team_id,
-            'number' => GamePlayer::nextAvailableNumber($game->id, $game->team_id),
+            'number' => $this->squadNumberService->assignNumberForNewPlayer($game, $player),
         ]);
 
         GameTransfer::record(
@@ -588,7 +590,7 @@ class LoanService
 
         $player->update([
             'team_id' => $destinationTeamId,
-            'number' => GamePlayer::nextAvailableNumberForAI($game->id, $destinationTeamId),
+            'number' => $this->squadNumberService->nextAvailableNumberForAI($game->id, $destinationTeamId),
             'transfer_status' => null,
             'transfer_listed_at' => null,
         ]);

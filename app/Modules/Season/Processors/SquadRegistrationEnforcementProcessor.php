@@ -3,12 +3,16 @@
 namespace App\Modules\Season\Processors;
 
 use App\Models\Game;
-use App\Models\GamePlayer;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
+use App\Modules\Squad\Services\SquadNumberService;
 
 class SquadRegistrationEnforcementProcessor implements SeasonProcessor
 {
+    public function __construct(
+        private readonly SquadNumberService $squadNumberService,
+    ) {}
+
     public function priority(): int
     {
         return 109;
@@ -22,12 +26,10 @@ class SquadRegistrationEnforcementProcessor implements SeasonProcessor
             $game->update(['squad_registration_enabled' => true]);
         }
 
-        $hasUnregistered = GamePlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->whereNull('number')
-            ->exists();
+        // Auto-assign numbers after season transition (loan returns, contract expirations, etc.)
+        $unresolvable = $this->squadNumberService->reassignNumbers($game);
 
-        if ($hasUnregistered) {
+        if ($unresolvable > 0) {
             $game->addPendingAction('squad_registration', 'game.squad.registration');
         }
 

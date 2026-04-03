@@ -10,6 +10,7 @@ use App\Models\Loan;
 use App\Models\ShortlistedPlayer;
 use App\Models\TransferOffer;
 use App\Modules\Player\PlayerAge;
+use App\Modules\Squad\Services\SquadNumberService;
 use App\Modules\Transfer\Enums\TransferWindowType;
 use Carbon\Carbon;
 
@@ -22,6 +23,9 @@ use Carbon\Carbon;
  */
 class TransferCompletionService
 {
+    public function __construct(
+        private readonly SquadNumberService $squadNumberService,
+    ) {}
     /**
      * Complete an outgoing transfer (user's player sold to AI team).
      */
@@ -35,7 +39,7 @@ class TransferCompletionService
         // Transfer player to the buying team
         $player->update([
             'team_id' => $offer->offering_team_id,
-            'number' => GamePlayer::nextAvailableNumberForAI($game->id, $offer->offering_team_id),
+            'number' => $this->squadNumberService->nextAvailableNumberForAI($game->id, $offer->offering_team_id),
             'transfer_status' => null,
             'transfer_listed_at' => null,
         ]);
@@ -105,7 +109,7 @@ class TransferCompletionService
         // Transfer player to the buying team
         $player->update([
             'team_id' => $offer->offering_team_id,
-            'number' => GamePlayer::nextAvailableNumberForAI($game->id, $offer->offering_team_id),
+            'number' => $this->squadNumberService->nextAvailableNumberForAI($game->id, $offer->offering_team_id),
             'transfer_status' => null,
             'transfer_listed_at' => null,
             // Extend their contract with the new team
@@ -163,7 +167,7 @@ class TransferCompletionService
 
         $player->update([
             'team_id' => $game->team_id,
-            'number' => GamePlayer::nextAvailableNumber($game->id, $game->team_id),
+            'number' => $this->squadNumberService->assignNumberForNewPlayer($game, $player),
             'transfer_status' => null,
             'transfer_listed_at' => null,
             'contract_until' => $newContractEnd,
@@ -218,7 +222,7 @@ class TransferCompletionService
 
         $player->update([
             'team_id' => $game->team_id,
-            'number' => GamePlayer::nextAvailableNumber($game->id, $game->team_id),
+            'number' => $this->squadNumberService->assignNumberForNewPlayer($game, $player),
             'contract_until' => $newContractEnd,
             'annual_wage' => $offer->offered_wage,
         ]);
