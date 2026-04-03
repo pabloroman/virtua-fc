@@ -160,6 +160,11 @@ class Team extends Model
      */
     public function getArticleAttribute(): ?string
     {
+        // National teams never use an article: "de España", "a Francia"
+        if (($this->attributes['type'] ?? 'club') === 'national') {
+            return null;
+        }
+
         $name = $this->attributes['name'] ?? '';
 
         if ($name === 'CA Osasuna') {

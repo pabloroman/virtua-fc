@@ -43,7 +43,7 @@ function buildRemovedPlayers(events, atMinute) {
     const removed = new Set();
     for (const e of events) {
         if (e.minute > atMinute) continue;
-        if (e.type === 'red_card') {
+        if (e.type === 'red_card' || e.type === 'injury') {
             removed.add(e.gamePlayerId);
         }
         if (e.type === 'substitution') {
@@ -134,9 +134,14 @@ function pickWeightedPlayer(players, weights) {
  * @param {Object} replacements - {':placeholder': 'value'}
  * @returns {string}
  */
-function pickNarrative(templates, replacements) {
+function pickNarrative(templates, replacements, { excludeVenue = false } = {}) {
     if (!templates || !templates.length) return '';
-    let text = templates[Math.floor(Math.random() * templates.length)];
+    let pool = templates;
+    if (excludeVenue) {
+        pool = templates.filter(t => !t.includes(':venue'));
+        if (!pool.length) return '';
+    }
+    let text = pool[Math.floor(Math.random() * pool.length)];
     for (const [placeholder, value] of Object.entries(replacements)) {
         text = text.replaceAll(placeholder, value);
     }
@@ -383,7 +388,8 @@ function generateContextualNarratives(config) {
         venueName, narrativeTemplates, allEvents,
     } = config;
 
-    const venue = venueName || homeTeamName;
+    const venue = venueName || '';
+    const noVenue = !venueName;
     const homeForms = buildTeamForms(homeTeamName, homeArticle);
     const awayForms = buildTeamForms(awayTeamName, awayArticle);
     const events = [];
@@ -497,7 +503,8 @@ function generateContextualNarratives(config) {
         const templates = narrativeTemplates[templateKey];
         if (!templates || !templates.length) continue;
 
-        const narrative = pickNarrative(templates, extraReplacements);
+        const narrative = pickNarrative(templates, extraReplacements, { excludeVenue: noVenue });
+        if (!narrative) continue;
 
         events.push({
             minute: m,
@@ -536,5 +543,38 @@ export function generateExtraTimeAtmosphere(config) {
     const etSecond = generateAtmosphereForPeriod({ ...config, minMinute: 106, maxMinute: 120 });
     // Contextual narratives are only generated for regular time (checkpoints don't apply to ET)
     return [...etFirst, ...etSecond];
+}
+
+/**
+ * Add narrative commentary to goal events that come from the server.
+ * Mutates the events array in place.
+ */
+export function addGoalNarratives(events, config) {
+    const {
+        homeTeamId, homeTeamName, awayTeamName,
+        homeArticle, awayArticle, narrativeTemplates,
+    } = config;
+
+    const assistedTemplates = narrativeTemplates.goalAssisted || [];
+    const soloTemplates = narrativeTemplates.goalSolo || [];
+    if (!assistedTemplates.length && !soloTemplates.length) return;
+
+    const homeForms = buildTeamForms(homeTeamName, homeArticle);
+    const awayForms = buildTeamForms(awayTeamName, awayArticle);
+
+    for (const event of events) {
+        if (event.type !== 'goal' || event.narrative) continue;
+
+        const isHome = event.teamId === homeTeamId;
+        const teamForms = isHome ? homeForms : awayForms;
+        const templates = event.assistPlayerName ? assistedTemplates : soloTemplates;
+
+        event.narrative = pickNarrative(templates, {
+            ':del_team': teamForms.del,
+            ':el_team': teamForms.el,
+            ':player': event.playerName,
+            ':team': teamForms.name,
+        });
+    }
 }
 

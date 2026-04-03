@@ -68,7 +68,7 @@
                 mvpPlayerTeamId: {!! $mvpPlayerTeamId ? "'" . $mvpPlayerTeamId . "'" : 'null' !!},
                 homeLineupRoster: {{ Js::from($homeLineupDisplay) }},
                 awayLineupRoster: {{ Js::from($awayLineupDisplay) }},
-                venueName: {{ Js::from($match->homeTeam->stadium_name ?? $match->homeTeam->name) }},
+                venueName: {{ Js::from($match->homeTeam->stadium_name ?? '') }},
                 homeArticle: {{ Js::from($match->homeTeam->article) }},
                 awayArticle: {{ Js::from($match->awayTeam->article) }},
                 narrativeTemplates: {{ Js::from($narrativeTemplates) }},

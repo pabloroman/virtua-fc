@@ -18,7 +18,7 @@ import { assignPlayersToSlots } from './modules/slot-assignment.js';
 import { createPenaltyShootout } from './modules/penalty-shootout.js';
 import { createSubstitutionManager } from './modules/substitution-manager.js';
 import { createMatchSimulation } from './modules/match-simulation.js';
-import { generateRegularTimeAtmosphere, generateExtraTimeAtmosphere } from './modules/atmosphere-generator.js';
+import { generateRegularTimeAtmosphere, generateExtraTimeAtmosphere, addGoalNarratives } from './modules/atmosphere-generator.js';
 
 /**
  * Copy all own properties from source to target. Regular properties are
@@ -110,8 +110,8 @@ export default function liveMatch(config) {
         homeLineupRoster: config.homeLineupRoster || [],
         awayLineupRoster: config.awayLineupRoster || [],
         venueName: config.venueName || '',
-        homeArticle: config.homeArticle ?? 'el',
-        awayArticle: config.awayArticle ?? 'el',
+        homeArticle: config.homeArticle !== undefined ? config.homeArticle : 'el',
+        awayArticle: config.awayArticle !== undefined ? config.awayArticle : 'el',
         narrativeTemplates: config.narrativeTemplates || {},
 
         // Pitch visualization config
@@ -905,6 +905,7 @@ export default function liveMatch(config) {
          */
         _injectAtmosphere() {
             const cfg = this._atmosphereConfig();
+            addGoalNarratives(this.events, cfg);
             const atmosphere = generateRegularTimeAtmosphere({
                 ...cfg,
                 allEvents: this.events,
@@ -921,6 +922,7 @@ export default function liveMatch(config) {
          */
         _injectETAtmosphere() {
             const cfg = this._atmosphereConfig();
+            addGoalNarratives(this.extraTimeEvents, cfg);
             // Include regular-time events for player availability checks
             const allEvents = [...this.events, ...this.extraTimeEvents];
             const atmosphere = generateExtraTimeAtmosphere({

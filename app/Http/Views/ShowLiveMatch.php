@@ -173,6 +173,7 @@ class ShowLiveMatch
             ->whereIn('id', $ids)
             ->get()
             ->map(fn ($p) => [
+                'id' => $p->id,
                 'name' => $p->player->name ?? '',
                 'positionAbbr' => PositionMapper::toAbbreviation($p->position),
                 'positionGroup' => $p->position_group,
@@ -257,24 +258,26 @@ class ShowLiveMatch
 
         // Narrative templates for client-side atmosphere generation
         $narrativeTemplates = [
-            'shotOnTarget' => __('game.atmosphere_shot_on_target'),
-            'shotOffTarget' => __('game.atmosphere_shot_off_target'),
-            'foul' => __('game.atmosphere_foul'),
-            'contextualDrawOpen' => __('game.contextual_draw_open'),
-            'contextualDrawWithGoals' => __('game.contextual_draw_with_goals'),
-            'contextualHomeLeading' => __('game.contextual_home_leading'),
-            'contextualAwayLeading' => __('game.contextual_away_leading'),
-            'contextualHomeDominant' => __('game.contextual_home_dominant'),
-            'contextualAwayDominant' => __('game.contextual_away_dominant'),
-            'contextualTightGame' => __('game.contextual_tight_game'),
-            'contextualEndLosing' => __('game.contextual_end_losing'),
-            'contextualEndLosingByOne' => __('game.contextual_end_losing_by_one'),
-            'contextualEndWinning' => __('game.contextual_end_winning'),
-            'contextualEndDraw' => __('game.contextual_end_draw'),
-            'contextualSecondHalfStart' => __('game.contextual_second_half_start'),
-            'contextualAwayFans' => __('game.contextual_away_fans'),
-            'contextualHomeFans' => __('game.contextual_home_fans'),
-            'contextualHighFouls' => __('game.contextual_high_fouls'),
+            'shotOnTarget' => __('commentary.atmosphere_shot_on_target'),
+            'shotOffTarget' => __('commentary.atmosphere_shot_off_target'),
+            'foul' => __('commentary.atmosphere_foul'),
+            'contextualDrawOpen' => __('commentary.contextual_draw_open'),
+            'contextualDrawWithGoals' => __('commentary.contextual_draw_with_goals'),
+            'contextualHomeLeading' => __('commentary.contextual_home_leading'),
+            'contextualAwayLeading' => __('commentary.contextual_away_leading'),
+            'contextualHomeDominant' => __('commentary.contextual_home_dominant'),
+            'contextualAwayDominant' => __('commentary.contextual_away_dominant'),
+            'contextualTightGame' => __('commentary.contextual_tight_game'),
+            'contextualEndLosing' => __('commentary.contextual_end_losing'),
+            'contextualEndLosingByOne' => __('commentary.contextual_end_losing_by_one'),
+            'contextualEndWinning' => __('commentary.contextual_end_winning'),
+            'contextualEndDraw' => __('commentary.contextual_end_draw'),
+            'contextualSecondHalfStart' => __('commentary.contextual_second_half_start'),
+            'contextualAwayFans' => __('commentary.contextual_away_fans'),
+            'contextualHomeFans' => __('commentary.contextual_home_fans'),
+            'contextualHighFouls' => __('commentary.contextual_high_fouls'),
+            'goalAssisted' => __('commentary.goal_assisted'),
+            'goalSolo' => __('commentary.goal_solo'),
         ];
 
         return view('live-match', [
