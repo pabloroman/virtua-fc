@@ -170,6 +170,7 @@ class CareerActionProcessor
             ->whereDoesntHave('latestRenewalNegotiation', function ($q) {
                 $q->where('status', RenewalNegotiation::STATUS_CLUB_DECLINED);
             })
+            ->whereDoesntHave('activeLoan')
             ->get();
 
         if ($expiringPlayers->isEmpty()) {
