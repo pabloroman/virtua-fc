@@ -274,6 +274,8 @@ return [
     'live_stat_injuries' => 'Lesiones',
     'live_stat_subs' => 'Sustituciones',
     'live_lineup_starters' => 'Once titular',
+    'live_lineup_bench' => 'Banquillo',
+    'live_lineup_no_bench' => 'No hay banquillo disponible',
     'live_injury_alert' => 'se ha lesionado. Realiza una sustitución.',
     'player_booked' => 'Amonestado',
     'ovr_fitness' => 'Forma',

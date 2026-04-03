@@ -32,6 +32,10 @@
                 awayTeamImage: '{{ $match->awayTeam->image }}',
                 lineupPlayers: {{ Js::from($lineupPlayers) }},
                 benchPlayers: {{ Js::from($benchPlayers) }},
+                homeLineup: {{ Js::from($homeLineupDisplay ?? []) }},
+                awayLineup: {{ Js::from($awayLineupDisplay ?? []) }},
+                homeBench: {{ Js::from($homeBenchDisplay ?? []) }},
+                awayBench: {{ Js::from($awayBenchDisplay ?? []) }},
                 userTeamId: '{{ $game->team_id }}',
                 tacticalActionsUrl: '{{ $tacticalActionsUrl }}',
                 csrfToken: '{{ csrf_token() }}',
@@ -589,11 +593,11 @@
                         <div class="flex items-center justify-between pt-3 border-t border-border-default">
                             <div class="flex items-center gap-3">
                                 <div class="flex items-center gap-1">
-                                    <div class="w-3 h-4 rounded-[2px] bg-accent-gold"></div>
+                                    <div class="w-3 h-4 rounded-xs bg-accent-gold"></div>
                                     <span class="font-heading font-bold text-sm text-text-primary" x-text="getStatCount('yellow_card', 'home')"></span>
                                 </div>
                                 <div class="flex items-center gap-1">
-                                    <div class="w-3 h-4 rounded-[2px] bg-accent-red"></div>
+                                    <div class="w-3 h-4 rounded-xs bg-accent-red"></div>
                                     <span class="font-heading font-bold text-sm text-text-primary" x-text="getStatCount('red_card', 'home')"></span>
                                 </div>
                             </div>
@@ -601,11 +605,11 @@
                             <div class="flex items-center gap-3">
                                 <div class="flex items-center gap-1">
                                     <span class="font-heading font-bold text-sm text-text-primary" x-text="getStatCount('yellow_card', 'away')"></span>
-                                    <div class="w-3 h-4 rounded-[2px] bg-accent-gold"></div>
+                                    <div class="w-3 h-4 rounded-xs bg-accent-gold"></div>
                                 </div>
                                 <div class="flex items-center gap-1">
                                     <span class="font-heading font-bold text-sm text-text-primary" x-text="getStatCount('red_card', 'away')"></span>
-                                    <div class="w-3 h-4 rounded-[2px] bg-accent-red"></div>
+                                    <div class="w-3 h-4 rounded-xs bg-accent-red"></div>
                                 </div>
                             </div>
                         </div>
@@ -638,27 +642,171 @@
                             <div class="flex items-center gap-2 mb-3">
                                 <x-team-crest :team="$match->homeTeam" class="w-5 h-5 shrink-0" />
                                 <span class="font-heading font-bold text-sm uppercase tracking-wide text-text-primary">{{ $match->homeTeam->name }}</span>
-                                <span class="text-[10px] text-text-muted ml-auto">{{ $homeFormation }}</span>
+                                <span class="text-[10px] text-text-muted ml-auto"
+                                      x-text="userTeamId === homeTeamId ? activeFormation : '{{ $homeFormation }}'"></span>
                             </div>
-                            <div class="space-y-0.5">
-                                @forelse($homeLineupDisplay as $p)
-                                    <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-surface-800/50">
-                                        <span class="inline-flex items-center justify-center w-6 h-6 text-[10px] -skew-x-12 font-semibold text-white shrink-0
-                                            {{ match($p['positionGroup']) {
-                                                'GK' => 'bg-amber-600',
-                                                'DEF' => 'bg-blue-600',
-                                                'MID' => 'bg-green-600',
-                                                'FWD' => 'bg-red-600',
-                                                default => 'bg-surface-600',
-                                            } }}">
-                                            <span class="skew-x-12">{{ $p['positionAbbr'] }}</span>
-                                        </span>
-                                        <span class="text-xs text-text-body flex-1 truncate">{{ $p['name'] }}</span>
-                                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full text-[9px] font-semibold bg-surface-700 text-text-secondary shrink-0">{{ $p['overallScore'] }}</span>
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="text-[10px] text-text-muted uppercase tracking-widest mb-2">{{ __('game.live_lineup_starters') }}</div>
+                                    <div class="space-y-0.5">
+                                        <template x-for="player in getTeamLineupRows('home')" :key="'home-starter-' + player.summaryKey">
+                                            <div class="flex items-start gap-2.5 px-3 py-2 rounded-lg hover:bg-surface-800/50">
+                                                <span class="inline-flex items-center justify-center w-6 h-6 text-[10px] -skew-x-12 font-semibold text-white shrink-0"
+                                                      :class="getLineupPositionClass(player.positionGroup)">
+                                                    <span class="skew-x-12" x-text="player.positionAbbr"></span>
+                                                </span>
+                                                <div class="min-w-0 flex-1">
+                                                    <div class="flex items-center gap-2">
+                                                        <span class="text-xs text-text-body truncate" :class="player.offMinute ? 'line-through text-text-muted' : ''" x-text="player.name"></span>
+                                                        <div class="flex items-center gap-1 flex-wrap">
+                                                            <template x-if="player.goals > 0">
+                                                                <span class="inline-flex items-center gap-1 text-[9px] font-semibold text-accent-green">
+                                                                    <svg class="w-3.5 h-3.5 text-accent-green" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="8"/></svg>
+                                                                    <span x-text="player.goals"></span>
+                                                                </span>
+                                                            </template>
+                                                            <template x-if="player.ownGoals > 0">
+                                                                <span class="inline-flex items-center gap-1 text-[9px] font-semibold text-accent-red">
+                                                                    <svg class="w-3.5 h-3.5 text-accent-red" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="8"/></svg>
+                                                                    <span>OG</span>
+                                                                    <span x-show="player.ownGoals > 1" x-text="player.ownGoals"></span>
+                                                                </span>
+                                                            </template>
+                                                            <template x-if="player.yellowCards > 0">
+                                                                <span class="inline-flex items-center gap-1 text-[9px] font-semibold text-accent-gold">
+                                                                    <template x-if="player.secondYellow">
+                                                                        <span class="inline-flex items-center gap-1">
+                                                                            <div class="w-2.5 h-3.5 rounded-[2px] bg-accent-gold"></div>
+                                                                            <div class="w-2.5 h-3.5 rounded-[2px] bg-accent-red"></div>
+                                                                        </span>
+                                                                    </template>
+                                                                    <template x-if="!player.secondYellow">
+                                                                        <span class="inline-flex items-center gap-1">
+                                                                            <div class="w-2.5 h-3.5 rounded-[2px] bg-accent-gold"></div>
+                                                                            <span x-show="player.yellowCards > 1" x-text="player.yellowCards"></span>
+                                                                        </span>
+                                                                    </template>
+                                                                </span>
+                                                            </template>
+                                                            <template x-if="player.directRed">
+                                                                <span class="inline-flex items-center">
+                                                                    <div class="w-2.5 h-3.5 rounded-[2px] bg-accent-red"></div>
+                                                                </span>
+                                                            </template>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex items-center gap-2 flex-wrap mt-1 text-[10px] text-text-secondary">
+                                                        <template x-if="player.offMinute">
+                                                            <span class="inline-flex items-center gap-1 text-accent-red">
+                                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 5v14m0 0-4-4m4 4 4-4"/></svg>
+                                                                <span>{{ __('game.sub_player_out') }}</span>
+                                                                <span x-text="player.offMinute + '\''"></span>
+                                                            </span>
+                                                        </template>
+                                                        <template x-if="player.injuryMinute">
+                                                            <span class="inline-flex items-center gap-1 text-accent-orange">
+                                                                <span>{{ __('game.live_injury') }}</span>
+                                                                <span x-text="player.injuryMinute + '\''"></span>
+                                                            </span>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </template>
+                                        <template x-if="getTeamLineupRows('home').length === 0">
+                                            <p class="text-xs text-text-muted italic px-3 py-3">{{ __('game.lineup_unknown') }}</p>
+                                        </template>
                                     </div>
-                                @empty
-                                    <p class="text-xs text-text-muted italic px-3 py-3">{{ __('game.lineup_unknown') }}</p>
-                                @endforelse
+                                </div>
+
+                                <div>
+                                    <div class="text-[10px] text-text-muted uppercase tracking-widest mb-2">{{ __('game.live_lineup_bench') }}</div>
+                                    <div class="space-y-0.5">
+                                        <template x-for="player in getTeamUsedBenchRows('home')" :key="'home-used-' + player.summaryKey">
+                                            <div class="flex items-start gap-2.5 px-3 py-2 rounded-lg bg-surface-800/40">
+                                                <span class="inline-flex items-center justify-center w-6 h-6 text-[10px] -skew-x-12 font-semibold text-white shrink-0"
+                                                      :class="getLineupPositionClass(player.positionGroup)">
+                                                    <span class="skew-x-12" x-text="player.positionAbbr"></span>
+                                                </span>
+                                                <div class="min-w-0 flex-1">
+                                                    <div class="flex items-center gap-2">
+                                                        <span class="text-xs text-text-body truncate" x-text="player.name"></span>
+                                                        <div class="flex items-center gap-1 flex-wrap">
+                                                            <template x-if="player.goals > 0">
+                                                                <span class="inline-flex items-center gap-1 text-[9px] font-semibold text-accent-green">
+                                                                    <svg class="w-3.5 h-3.5 text-accent-green" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="8"/></svg>
+                                                                    <span x-text="player.goals"></span>
+                                                                </span>
+                                                            </template>
+                                                            <template x-if="player.ownGoals > 0">
+                                                                <span class="inline-flex items-center gap-1 text-[9px] font-semibold text-accent-red">
+                                                                    <svg class="w-3.5 h-3.5 text-accent-red" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="8"/></svg>
+                                                                    <span>OG</span>
+                                                                    <span x-show="player.ownGoals > 1" x-text="player.ownGoals"></span>
+                                                                </span>
+                                                            </template>
+                                                            <template x-if="player.yellowCards > 0">
+                                                                <span class="inline-flex items-center gap-1 text-[9px] font-semibold text-accent-gold">
+                                                                    <template x-if="player.secondYellow">
+                                                                        <span class="inline-flex items-center gap-1">
+                                                                            <div class="w-2.5 h-3.5 rounded-[2px] bg-accent-gold"></div>
+                                                                            <div class="w-2.5 h-3.5 rounded-[2px] bg-accent-red"></div>
+                                                                        </span>
+                                                                    </template>
+                                                                    <template x-if="!player.secondYellow">
+                                                                        <span class="inline-flex items-center gap-1">
+                                                                            <div class="w-2.5 h-3.5 rounded-[2px] bg-accent-gold"></div>
+                                                                            <span x-show="player.yellowCards > 1" x-text="player.yellowCards"></span>
+                                                                        </span>
+                                                                    </template>
+                                                                </span>
+                                                            </template>
+                                                            <template x-if="player.directRed">
+                                                                <span class="inline-flex items-center">
+                                                                    <div class="w-2.5 h-3.5 rounded-[2px] bg-accent-red"></div>
+                                                                </span>
+                                                            </template>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex items-center gap-2 flex-wrap mt-1 text-[10px] text-text-secondary">
+                                                        <template x-if="player.entryMinute">
+                                                            <span class="inline-flex items-center gap-1 text-accent-green">
+                                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 19V5m0 0-4 4m4-4 4 4"/></svg>
+                                                                <span>{{ __('game.sub_player_in') }}</span>
+                                                                <span x-text="player.entryMinute + '\''"></span>
+                                                            </span>
+                                                        </template>
+                                                        <template x-if="player.offMinute">
+                                                            <span class="inline-flex items-center gap-1 text-accent-red">
+                                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 5v14m0 0-4-4m4 4 4-4"/></svg>
+                                                                <span>{{ __('game.sub_player_out') }}</span>
+                                                                <span x-text="player.offMinute + '\''"></span>
+                                                            </span>
+                                                        </template>
+                                                        <template x-if="player.injuryMinute">
+                                                            <span class="inline-flex items-center gap-1 text-accent-orange">
+                                                                <span>{{ __('game.live_injury') }}</span>
+                                                                <span x-text="player.injuryMinute + '\''"></span>
+                                                            </span>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </template>
+                                        <template x-for="player in getTeamUnusedBenchRows('home')" :key="'home-bench-' + player.summaryKey">
+                                            <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg opacity-75">
+                                                <span class="inline-flex items-center justify-center w-6 h-6 text-[10px] -skew-x-12 font-semibold text-white shrink-0"
+                                                      :class="getLineupPositionClass(player.positionGroup)">
+                                                    <span class="skew-x-12" x-text="player.positionAbbr"></span>
+                                                </span>
+                                                <span class="text-xs text-text-body flex-1 truncate" x-text="player.name"></span>
+                                            </div>
+                                        </template>
+                                        <template x-if="getTeamUsedBenchRows('home').length === 0 && getTeamUnusedBenchRows('home').length === 0">
+                                            <p class="text-xs text-text-muted italic px-3 py-3">{{ __('game.live_lineup_no_bench') }}</p>
+                                        </template>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -667,27 +815,171 @@
                             <div class="flex items-center gap-2 mb-3">
                                 <x-team-crest :team="$match->awayTeam" class="w-5 h-5 shrink-0" />
                                 <span class="font-heading font-bold text-sm uppercase tracking-wide text-text-primary">{{ $match->awayTeam->name }}</span>
-                                <span class="text-[10px] text-text-muted ml-auto">{{ $awayFormation }}</span>
+                                <span class="text-[10px] text-text-muted ml-auto"
+                                      x-text="userTeamId === awayTeamId ? activeFormation : '{{ $awayFormation }}'"></span>
                             </div>
-                            <div class="space-y-0.5">
-                                @forelse($awayLineupDisplay as $p)
-                                    <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-surface-800/50">
-                                        <span class="inline-flex items-center justify-center w-6 h-6 text-[10px] -skew-x-12 font-semibold text-white shrink-0
-                                            {{ match($p['positionGroup']) {
-                                                'GK' => 'bg-amber-600',
-                                                'DEF' => 'bg-blue-600',
-                                                'MID' => 'bg-green-600',
-                                                'FWD' => 'bg-red-600',
-                                                default => 'bg-surface-600',
-                                            } }}">
-                                            <span class="skew-x-12">{{ $p['positionAbbr'] }}</span>
-                                        </span>
-                                        <span class="text-xs text-text-body flex-1 truncate">{{ $p['name'] }}</span>
-                                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full text-[9px] font-semibold bg-surface-700 text-text-secondary shrink-0">{{ $p['overallScore'] }}</span>
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="text-[10px] text-text-muted uppercase tracking-widest mb-2">{{ __('game.live_lineup_starters') }}</div>
+                                    <div class="space-y-0.5">
+                                        <template x-for="player in getTeamLineupRows('away')" :key="'away-starter-' + player.summaryKey">
+                                            <div class="flex items-start gap-2.5 px-3 py-2 rounded-lg hover:bg-surface-800/50">
+                                                <span class="inline-flex items-center justify-center w-6 h-6 text-[10px] -skew-x-12 font-semibold text-white shrink-0"
+                                                      :class="getLineupPositionClass(player.positionGroup)">
+                                                    <span class="skew-x-12" x-text="player.positionAbbr"></span>
+                                                </span>
+                                                <div class="min-w-0 flex-1">
+                                                    <div class="flex items-center gap-2">
+                                                        <span class="text-xs text-text-body truncate" :class="player.offMinute ? 'line-through text-text-muted' : ''" x-text="player.name"></span>
+                                                        <div class="flex items-center gap-1 flex-wrap">
+                                                            <template x-if="player.goals > 0">
+                                                                <span class="inline-flex items-center gap-1 text-[9px] font-semibold text-accent-green">
+                                                                    <svg class="w-3.5 h-3.5 text-accent-green" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="8"/></svg>
+                                                                    <span x-text="player.goals"></span>
+                                                                </span>
+                                                            </template>
+                                                            <template x-if="player.ownGoals > 0">
+                                                                <span class="inline-flex items-center gap-1 text-[9px] font-semibold text-accent-red">
+                                                                    <svg class="w-3.5 h-3.5 text-accent-red" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="8"/></svg>
+                                                                    <span>OG</span>
+                                                                    <span x-show="player.ownGoals > 1" x-text="player.ownGoals"></span>
+                                                                </span>
+                                                            </template>
+                                                            <template x-if="player.yellowCards > 0">
+                                                                <span class="inline-flex items-center gap-1 text-[9px] font-semibold text-accent-gold">
+                                                                    <template x-if="player.secondYellow">
+                                                                        <span class="inline-flex items-center gap-1">
+                                                                            <div class="w-2.5 h-3.5 rounded-[2px] bg-accent-gold"></div>
+                                                                            <div class="w-2.5 h-3.5 rounded-[2px] bg-accent-red"></div>
+                                                                        </span>
+                                                                    </template>
+                                                                    <template x-if="!player.secondYellow">
+                                                                        <span class="inline-flex items-center gap-1">
+                                                                            <div class="w-2.5 h-3.5 rounded-[2px] bg-accent-gold"></div>
+                                                                            <span x-show="player.yellowCards > 1" x-text="player.yellowCards"></span>
+                                                                        </span>
+                                                                    </template>
+                                                                </span>
+                                                            </template>
+                                                            <template x-if="player.directRed">
+                                                                <span class="inline-flex items-center">
+                                                                    <div class="w-2.5 h-3.5 rounded-[2px] bg-accent-red"></div>
+                                                                </span>
+                                                            </template>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex items-center gap-2 flex-wrap mt-1 text-[10px] text-text-secondary">
+                                                        <template x-if="player.offMinute">
+                                                            <span class="inline-flex items-center gap-1 text-accent-red">
+                                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 5v14m0 0-4-4m4 4 4-4"/></svg>
+                                                                <span>{{ __('game.sub_player_out') }}</span>
+                                                                <span x-text="player.offMinute + '\''"></span>
+                                                            </span>
+                                                        </template>
+                                                        <template x-if="player.injuryMinute">
+                                                            <span class="inline-flex items-center gap-1 text-accent-orange">
+                                                                <span>{{ __('game.live_injury') }}</span>
+                                                                <span x-text="player.injuryMinute + '\''"></span>
+                                                            </span>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </template>
+                                        <template x-if="getTeamLineupRows('away').length === 0">
+                                            <p class="text-xs text-text-muted italic px-3 py-3">{{ __('game.lineup_unknown') }}</p>
+                                        </template>
                                     </div>
-                                @empty
-                                    <p class="text-xs text-text-muted italic px-3 py-3">{{ __('game.lineup_unknown') }}</p>
-                                @endforelse
+                                </div>
+
+                                <div>
+                                    <div class="text-[10px] text-text-muted uppercase tracking-widest mb-2">{{ __('game.live_lineup_bench') }}</div>
+                                    <div class="space-y-0.5">
+                                        <template x-for="player in getTeamUsedBenchRows('away')" :key="'away-used-' + player.summaryKey">
+                                            <div class="flex items-start gap-2.5 px-3 py-2 rounded-lg bg-surface-800/40">
+                                                <span class="inline-flex items-center justify-center w-6 h-6 text-[10px] -skew-x-12 font-semibold text-white shrink-0"
+                                                      :class="getLineupPositionClass(player.positionGroup)">
+                                                    <span class="skew-x-12" x-text="player.positionAbbr"></span>
+                                                </span>
+                                                <div class="min-w-0 flex-1">
+                                                    <div class="flex items-center gap-2">
+                                                        <span class="text-xs text-text-body truncate" x-text="player.name"></span>
+                                                        <div class="flex items-center gap-1 flex-wrap">
+                                                            <template x-if="player.goals > 0">
+                                                                <span class="inline-flex items-center gap-1 text-[9px] font-semibold text-accent-green">
+                                                                    <svg class="w-3.5 h-3.5 text-accent-green" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="8"/></svg>
+                                                                    <span x-text="player.goals"></span>
+                                                                </span>
+                                                            </template>
+                                                            <template x-if="player.ownGoals > 0">
+                                                                <span class="inline-flex items-center gap-1 text-[9px] font-semibold text-accent-red">
+                                                                    <svg class="w-3.5 h-3.5 text-accent-red" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="8"/></svg>
+                                                                    <span>OG</span>
+                                                                    <span x-show="player.ownGoals > 1" x-text="player.ownGoals"></span>
+                                                                </span>
+                                                            </template>
+                                                            <template x-if="player.yellowCards > 0">
+                                                                <span class="inline-flex items-center gap-1 text-[9px] font-semibold text-accent-gold">
+                                                                    <template x-if="player.secondYellow">
+                                                                        <span class="inline-flex items-center gap-1">
+                                                                            <div class="w-2.5 h-3.5 rounded-[2px] bg-accent-gold"></div>
+                                                                            <div class="w-2.5 h-3.5 rounded-[2px] bg-accent-red"></div>
+                                                                        </span>
+                                                                    </template>
+                                                                    <template x-if="!player.secondYellow">
+                                                                        <span class="inline-flex items-center gap-1">
+                                                                            <div class="w-2.5 h-3.5 rounded-[2px] bg-accent-gold"></div>
+                                                                            <span x-show="player.yellowCards > 1" x-text="player.yellowCards"></span>
+                                                                        </span>
+                                                                    </template>
+                                                                </span>
+                                                            </template>
+                                                            <template x-if="player.directRed">
+                                                                <span class="inline-flex items-center">
+                                                                    <div class="w-2.5 h-3.5 rounded-[2px] bg-accent-red"></div>
+                                                                </span>
+                                                            </template>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex items-center gap-2 flex-wrap mt-1 text-[10px] text-text-secondary">
+                                                        <template x-if="player.entryMinute">
+                                                            <span class="inline-flex items-center gap-1 text-accent-green">
+                                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 19V5m0 0-4 4m4-4 4 4"/></svg>
+                                                                <span>{{ __('game.sub_player_in') }}</span>
+                                                                <span x-text="player.entryMinute + '\''"></span>
+                                                            </span>
+                                                        </template>
+                                                        <template x-if="player.offMinute">
+                                                            <span class="inline-flex items-center gap-1 text-accent-red">
+                                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 5v14m0 0-4-4m4 4 4-4"/></svg>
+                                                                <span>{{ __('game.sub_player_out') }}</span>
+                                                                <span x-text="player.offMinute + '\''"></span>
+                                                            </span>
+                                                        </template>
+                                                        <template x-if="player.injuryMinute">
+                                                            <span class="inline-flex items-center gap-1 text-accent-orange">
+                                                                <span>{{ __('game.live_injury') }}</span>
+                                                                <span x-text="player.injuryMinute + '\''"></span>
+                                                            </span>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </template>
+                                        <template x-for="player in getTeamUnusedBenchRows('away')" :key="'away-bench-' + player.summaryKey">
+                                            <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg opacity-75">
+                                                <span class="inline-flex items-center justify-center w-6 h-6 text-[10px] -skew-x-12 font-semibold text-white shrink-0"
+                                                      :class="getLineupPositionClass(player.positionGroup)">
+                                                    <span class="skew-x-12" x-text="player.positionAbbr"></span>
+                                                </span>
+                                                <span class="text-xs text-text-body flex-1 truncate" x-text="player.name"></span>
+                                            </div>
+                                        </template>
+                                        <template x-if="getTeamUsedBenchRows('away').length === 0 && getTeamUnusedBenchRows('away').length === 0">
+                                            <p class="text-xs text-text-muted italic px-3 py-3">{{ __('game.live_lineup_no_bench') }}</p>
+                                        </template>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

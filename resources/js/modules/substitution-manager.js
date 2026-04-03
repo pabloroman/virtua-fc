@@ -43,8 +43,14 @@ export function createSubstitutionManager(ctx) {
         return minutes.size;
     }
 
+    function isCurrentSubWindowOpen() {
+        const state = ctx();
+        const currentMinute = Math.floor(state.currentMinute);
+        return state.substitutionsMade.some(s => s.minute === currentMinute);
+    }
+
     function getHasWindowsLeft() {
-        return getWindowsUsed() < getEffectiveMaxWindows();
+        return isCurrentSubWindowOpen() || getWindowsUsed() < getEffectiveMaxWindows();
     }
 
     function getSubsRemaining() {
@@ -142,6 +148,7 @@ export function createSubstitutionManager(ctx) {
         get effectiveMaxSubstitutions() { return getEffectiveMaxSubstitutions(); },
         get effectiveMaxWindows() { return getEffectiveMaxWindows(); },
         get windowsUsed() { return getWindowsUsed(); },
+        get isCurrentSubWindowOpen() { return isCurrentSubWindowOpen(); },
         get hasWindowsLeft() { return getHasWindowsLeft(); },
         get subsRemaining() { return getSubsRemaining(); },
         get canSubstitute() { return getCanSubstitute(); },
