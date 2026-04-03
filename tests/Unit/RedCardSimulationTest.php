@@ -150,38 +150,37 @@ class RedCardSimulationTest extends TestCase
         $normalHomeGoals = 0;
         $normalAwayGoals = 0;
 
+        $baseGoals = config('match_simulation.base_goals', 1.3);
+        $splitArgs = [
+            $this->simulator,
+            $homeTeam, $awayTeam,
+            $homePlayers, $awayPlayers,
+            Formation::F_4_3_3, Formation::F_4_3_3,
+            Mentality::BALANCED, Mentality::BALANCED,
+            PlayingStyle::BALANCED, PlayingStyle::BALANCED,
+            PressingIntensity::STANDARD, PressingIntensity::STANDARD,
+            DefensiveLineHeight::NORMAL, DefensiveLineHeight::NORMAL,
+            $homeStrength, $awayStrength,
+            [], [],
+            1.0, 1.0,
+            0,
+            $baseGoals,
+        ];
+
         for ($i = 0; $i < $iterations; $i++) {
-            // With red card split
+            // With red card at minute 10
             [$h, $a] = $this->simulateGoalsWithRedCardSplit->invoke(
-                $this->simulator,
-                $homeTeam, $awayTeam,
-                $homePlayers, $awayPlayers,
-                Formation::F_4_3_3, Formation::F_4_3_3,
-                Mentality::BALANCED, Mentality::BALANCED,
-                PlayingStyle::BALANCED, PlayingStyle::BALANCED,
-                PressingIntensity::STANDARD, PressingIntensity::STANDARD,
-                DefensiveLineHeight::NORMAL, DefensiveLineHeight::NORMAL,
-                $homeStrength, $awayStrength,
-                [], [],
-                1.0, 1.0,
-                0,
-                config('match_simulation.base_goals', 1.3),
-                $homeRedCard,
-                null,
+                ...array_merge($splitArgs, [$homeRedCard, null]),
             );
             $splitHomeGoals += $h;
             $splitAwayGoals += $a;
 
-            // Full-team simulation for comparison
-            $output = $this->simulator->simulate(
-                $homeTeam, $awayTeam,
-                $homePlayers, $awayPlayers,
-                Formation::F_4_3_3, Formation::F_4_3_3,
-                Mentality::BALANCED, Mentality::BALANCED,
-                $game,
+            // Same method, no red card — apples-to-apples baseline
+            [$h, $a] = $this->simulateGoalsWithRedCardSplit->invoke(
+                ...array_merge($splitArgs, [null, null]),
             );
-            $normalHomeGoals += $output->result->homeScore;
-            $normalAwayGoals += $output->result->awayScore;
+            $normalHomeGoals += $h;
+            $normalAwayGoals += $a;
         }
 
         $splitAvgHome = $splitHomeGoals / $iterations;
