@@ -41,21 +41,6 @@ class ScoutSearchQueryBuilder
         return $query;
     }
 
-    /**
-     * Build the query for free agents matching scout filters.
-     */
-    public function buildFreeAgentQuery(Game $game, array $filters, array $positions): Builder
-    {
-        $query = GamePlayer::with(['player'])
-            ->where('game_id', $game->id)
-            ->whereNull('team_id')
-            ->whereIn('position', $positions);
-
-        $this->applyAgeFilter($query, $game, $filters);
-
-        return $query;
-    }
-
     private function applyScopeFilter(Builder $query, Game $game, array $filters): void
     {
         $scope = $filters['scope'] ?? ['domestic', 'international'];

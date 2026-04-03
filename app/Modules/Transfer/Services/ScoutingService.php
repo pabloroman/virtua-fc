@@ -234,8 +234,6 @@ class ScoutingService
 
         $queryBuilder = app(ScoutSearchQueryBuilder::class);
         $candidates = $queryBuilder->buildCandidateQuery($game, $filters, $positions)->get();
-        $freeAgents = $queryBuilder->buildFreeAgentQuery($game, $filters, $positions)->get();
-        $candidates = $candidates->merge($freeAgents);
 
         if ($candidates->isEmpty()) {
             $report->update([
