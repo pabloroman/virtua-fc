@@ -356,7 +356,7 @@ class LoanService
         // Move player to AI team
         $player->update([
             'team_id' => $destinationTeam->id,
-            'number' => $this->squadNumberService->nextAvailableNumberForAI($game->id, $destinationTeam->id),
+            'number' => null,
             'transfer_status' => null,
             'transfer_listed_at' => null,
         ]);
@@ -398,12 +398,11 @@ class LoanService
     {
         $gamePlayer = $loan->gamePlayer;
         $isUserTeam = $loan->parent_team_id === $gamePlayer->game->team_id;
-        $number = $isUserTeam
-            ? $this->squadNumberService->assignNumberForNewPlayer($gamePlayer->game, $gamePlayer)
-            : $this->squadNumberService->nextAvailableNumberForAI($gamePlayer->game_id, $loan->parent_team_id);
         $gamePlayer->update([
             'team_id' => $loan->parent_team_id,
-            'number' => $number,
+            'number' => $isUserTeam
+                ? $this->squadNumberService->assignNumberForNewPlayer($gamePlayer->game, $gamePlayer)
+                : null,
         ]);
 
         $loan->update([
@@ -590,7 +589,7 @@ class LoanService
 
         $player->update([
             'team_id' => $destinationTeamId,
-            'number' => $this->squadNumberService->nextAvailableNumberForAI($game->id, $destinationTeamId),
+            'number' => null,
             'transfer_status' => null,
             'transfer_listed_at' => null,
         ]);

@@ -185,7 +185,6 @@ class SquadReplenishmentProcessor implements SeasonProcessor
                 $game->id,
                 $teamId,
                 $players->pluck('player_name')->toArray(),
-                $players->pluck('number')->filter()->toArray(),
             );
         }
         unset($playersByTeam);

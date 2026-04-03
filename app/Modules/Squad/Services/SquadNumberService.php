@@ -235,27 +235,6 @@ class SquadNumberService
     }
 
     /**
-     * Find the next available squad number for AI teams (2-99).
-     * Always returns a number — AI teams must never have unregistered players.
-     */
-    public function nextAvailableNumberForAI(string $gameId, string $teamId): int
-    {
-        $taken = GamePlayer::where('game_id', $gameId)
-            ->where('team_id', $teamId)
-            ->whereNotNull('number')
-            ->pluck('number')
-            ->all();
-
-        for ($n = 2; $n <= 99; $n++) {
-            if (! in_array($n, $taken)) {
-                return $n;
-            }
-        }
-
-        return 99;
-    }
-
-    /**
      * Find the first preferred number for a position that is available.
      * Only returns numbers within the given range.
      */

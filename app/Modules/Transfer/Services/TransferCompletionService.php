@@ -39,7 +39,7 @@ class TransferCompletionService
         // Transfer player to the buying team
         $player->update([
             'team_id' => $offer->offering_team_id,
-            'number' => $this->squadNumberService->nextAvailableNumberForAI($game->id, $offer->offering_team_id),
+            'number' => null,
             'transfer_status' => null,
             'transfer_listed_at' => null,
         ]);
@@ -109,7 +109,7 @@ class TransferCompletionService
         // Transfer player to the buying team
         $player->update([
             'team_id' => $offer->offering_team_id,
-            'number' => $this->squadNumberService->nextAvailableNumberForAI($game->id, $offer->offering_team_id),
+            'number' => null,
             'transfer_status' => null,
             'transfer_listed_at' => null,
             // Extend their contract with the new team

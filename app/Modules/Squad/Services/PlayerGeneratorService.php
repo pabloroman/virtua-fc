@@ -29,8 +29,6 @@ class PlayerGeneratorService
     /** @var array<array{name: string, nationality: string}> Cached identity pool */
     private ?array $identityPool = null;
 
-    /** @var array<string, int[]> Cached taken squad numbers by "gameId:teamId" */
-    private array $takenNumbersCache = [];
 
     /** @var array<string, string[]> Cached team player names by "gameId:teamId" */
     private array $teamNamesCache = [];
@@ -45,19 +43,17 @@ class PlayerGeneratorService
     ) {}
 
     /**
-     * Seed name and number caches for a specific team from already-loaded data.
+     * Seed name cache for a specific team from already-loaded data.
      *
      * Allows callers that already have the data (e.g. from a bulk query) to
      * populate caches without triggering any additional database queries.
      *
      * @param  string[]  $playerNames
-     * @param  int[]  $takenNumbers
      */
-    public function seedCaches(string $gameId, string $teamId, array $playerNames, array $takenNumbers): void
+    public function seedCaches(string $gameId, string $teamId, array $playerNames): void
     {
         $key = "{$gameId}:{$teamId}";
         $this->teamNamesCache[$key] = $playerNames;
-        $this->takenNumbersCache[$key] = $takenNumbers;
     }
 
     /**
@@ -118,14 +114,11 @@ class PlayerGeneratorService
         $seasonYear = (int) $game->season;
         $contractUntil = Carbon::createFromDate($seasonYear + $data->contractYears, 6, 30);
 
-        $number = $this->findNextAvailableNumber($game->id, $data->teamId);
-
         $gamePlayer = GamePlayer::create([
             'id' => Str::uuid()->toString(),
             'game_id' => $game->id,
             'player_id' => $player->id,
             'team_id' => $data->teamId,
-            'number' => $number,
             'position' => $data->position,
             'market_value_cents' => $marketValue,
             'contract_until' => $contractUntil,
@@ -145,9 +138,8 @@ class PlayerGeneratorService
         // Set relation to avoid lazy-load when caller accesses $gamePlayer->player
         $gamePlayer->setRelation('player', $player);
 
-        // Update caches with the newly created player
+        // Update cache with the newly created player
         $teamKey = "{$game->id}:{$data->teamId}";
-        $this->takenNumbersCache[$teamKey][] = $number;
         $this->teamNamesCache[$teamKey][] = $name;
 
         return $gamePlayer;
@@ -218,14 +210,12 @@ class PlayerGeneratorService
 
             $annualWage = $this->contractService->calculateAnnualWage($marketValue, $minimumWage, $age);
             $contractUntil = Carbon::createFromDate($seasonYear + $data->contractYears, 6, 30);
-            $number = $this->findNextAvailableNumber($game->id, $data->teamId);
 
             $gamePlayerRows[] = [
                 'id' => $gamePlayerId,
                 'game_id' => $game->id,
                 'player_id' => $playerId,
                 'team_id' => $data->teamId,
-                'number' => $number,
                 'position' => $data->position,
                 'market_value_cents' => $marketValue,
                 'contract_until' => $contractUntil->format('Y-m-d'),
@@ -242,9 +232,8 @@ class PlayerGeneratorService
                 'tier' => PlayerTierService::tierFromMarketValue($marketValue),
             ];
 
-            // Update caches for subsequent iterations
+            // Update cache for subsequent iterations
             $teamKey = "{$game->id}:{$data->teamId}";
-            $this->takenNumbersCache[$teamKey][] = $number;
             $this->teamNamesCache[$teamKey][] = $name;
 
             $results[] = [
@@ -446,32 +435,6 @@ class PlayerGeneratorService
         }
 
         return $this->freeAgentNamesCache[$gameId];
-    }
-
-    /**
-     * Find next available squad number using cached taken numbers.
-     */
-    private function findNextAvailableNumber(string $gameId, string $teamId): int
-    {
-        $key = "{$gameId}:{$teamId}";
-
-        if (!isset($this->takenNumbersCache[$key])) {
-            $this->takenNumbersCache[$key] = GamePlayer::where('game_id', $gameId)
-                ->where('team_id', $teamId)
-                ->whereNotNull('number')
-                ->pluck('number')
-                ->all();
-        }
-
-        $takenSet = array_flip($this->takenNumbersCache[$key]);
-
-        for ($n = 2; $n <= 99; $n++) {
-            if (!isset($takenSet[$n])) {
-                return $n;
-            }
-        }
-
-        return 99;
     }
 
     /**
