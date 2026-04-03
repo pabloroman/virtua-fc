@@ -11,26 +11,24 @@
 
 // Position-group weights for shot attribution (forwards shoot more)
 const SHOT_WEIGHTS = {
-    FW: 25,
-    AM: 12,
-    MF: 6,
-    DF: 3,
-    GK: 0,
+    Forward: 25,
+    Midfielder: 10,
+    Defender: 5,
+    Goalkeeper: 0,
 };
 
 // Position-group weights for foul attribution (defenders foul more)
 const FOUL_WEIGHTS = {
-    DF: 20,
-    MF: 12,
-    AM: 6,
-    FW: 4,
-    GK: 0,
+    Defender: 20,
+    Midfielder: 12,
+    Forward: 4,
+    Goalkeeper: 0,
 };
 
 // Tuning constants (cosmetic only — no gameplay impact)
-const SHOTS_PER_XG = 4.0;
-const ON_TARGET_RATIO = 0.38;
-const FOULS_BASE_PER_TEAM = 3.0;
+const SHOTS_PER_XG = 3.0;
+const ON_TARGET_RATIO = 0.3;
+const FOULS_BASE_PER_TEAM = 2.0;
 const XG_BASELINE = 1.2; // added to score as xG proxy
 
 /**
@@ -71,7 +69,7 @@ function buildSubstitutesOn(events, atMinute, teamId) {
         if (e.type === 'substitution' && e.teamId === teamId && e.playerInName) {
             subs.push({
                 name: e.playerInName,
-                positionGroup: 'MF', // default — we don't know sub's position
+                positionGroup: 'Midfielder', // default — we don't know sub's position
                 id: e.metadata?.player_in_id || null,
             });
         }
@@ -115,7 +113,7 @@ function pickWeightedPlayer(players, weights) {
     let totalWeight = 0;
     const weighted = [];
     for (const p of players) {
-        const w = weights[p.positionGroup] || 1;
+        const w = weights[p.positionGroup] ?? 1;
         totalWeight += w;
         weighted.push({ player: p, cumulative: totalWeight });
     }
@@ -142,7 +140,7 @@ function pickNarrative(templates, replacements) {
     for (const [placeholder, value] of Object.entries(replacements)) {
         text = text.replaceAll(placeholder, value);
     }
-    return text;
+    return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
 /**
@@ -196,6 +194,7 @@ function uniqueMinute(usedMinutes, min, max) {
 export function generateAtmosphereForPeriod(config) {
     const {
         homeTeamId, awayTeamId, homeTeamName, awayTeamName,
+        homeArticle, awayArticle,
         homePlayers, awayPlayers,
         homeScore, awayScore,
         narrativeTemplates, allEvents,
@@ -214,13 +213,18 @@ export function generateAtmosphereForPeriod(config) {
         }
     }
 
+    const homeF = buildTeamForms(homeTeamName, homeArticle);
+    const awayF = buildTeamForms(awayTeamName, awayArticle);
+
     const teams = [
         {
-            id: homeTeamId, name: homeTeamName, opponentName: awayTeamName,
+            id: homeTeamId, name: homeTeamName, forms: homeF,
+            opponentName: awayTeamName, opponentForms: awayF,
             players: homePlayers, score: homeScore,
         },
         {
-            id: awayTeamId, name: awayTeamName, opponentName: homeTeamName,
+            id: awayTeamId, name: awayTeamName, forms: awayF,
+            opponentName: homeTeamName, opponentForms: homeF,
             players: awayPlayers, score: awayScore,
         },
     ];
@@ -234,7 +238,8 @@ export function generateAtmosphereForPeriod(config) {
 
         for (let i = 0; i < onTarget; i++) {
             const minute = uniqueMinute(usedMinutes, minMinute, maxMinute);
-            const available = getAvailablePlayers(team.players, allEvents, minute, team.id);
+            const available = getAvailablePlayers(team.players, allEvents, minute, team.id)
+                .filter(p => p.positionGroup !== 'Goalkeeper');
             const player = pickWeightedPlayer(available, SHOT_WEIGHTS);
             if (!player) continue;
 
@@ -246,6 +251,8 @@ export function generateAtmosphereForPeriod(config) {
                 gamePlayerId: player.id || null,
                 metadata: {
                     narrative: pickNarrative(narrativeTemplates.shotOnTarget || [], {
+                        ':del_opponent': team.opponentForms.del,
+                        ':el_team': team.forms.el,
                         ':player': player.name,
                         ':team': team.name,
                         ':opponent': team.opponentName,
@@ -256,7 +263,8 @@ export function generateAtmosphereForPeriod(config) {
 
         for (let i = 0; i < offTarget; i++) {
             const minute = uniqueMinute(usedMinutes, minMinute, maxMinute);
-            const available = getAvailablePlayers(team.players, allEvents, minute, team.id);
+            const available = getAvailablePlayers(team.players, allEvents, minute, team.id)
+                .filter(p => p.positionGroup !== 'Goalkeeper');
             const player = pickWeightedPlayer(available, SHOT_WEIGHTS);
             if (!player) continue;
 
@@ -268,6 +276,8 @@ export function generateAtmosphereForPeriod(config) {
                 gamePlayerId: player.id || null,
                 metadata: {
                     narrative: pickNarrative(narrativeTemplates.shotOffTarget || [], {
+                        ':del_opponent': team.opponentForms.del,
+                        ':el_team': team.forms.el,
                         ':player': player.name,
                         ':team': team.name,
                         ':opponent': team.opponentName,
@@ -284,7 +294,8 @@ export function generateAtmosphereForPeriod(config) {
 
         for (let i = 0; i < fouls; i++) {
             const minute = uniqueMinute(usedMinutes, minMinute, maxMinute);
-            const available = getAvailablePlayers(team.players, allEvents, minute, team.id);
+            const available = getAvailablePlayers(team.players, allEvents, minute, team.id)
+                .filter(p => p.positionGroup !== 'Goalkeeper');
             const player = pickWeightedPlayer(available, FOUL_WEIGHTS);
             if (!player) continue;
 
@@ -296,6 +307,8 @@ export function generateAtmosphereForPeriod(config) {
                 gamePlayerId: player.id || null,
                 metadata: {
                     narrative: pickNarrative(narrativeTemplates.foul || [], {
+                        ':del_opponent': team.opponentForms.del,
+                        ':el_team': team.forms.el,
                         ':player': player.name,
                         ':team': team.name,
                         ':opponent': team.opponentName,
@@ -303,6 +316,197 @@ export function generateAtmosphereForPeriod(config) {
                 },
             });
         }
+    }
+
+    return events;
+}
+
+/**
+ * Compute the score at a given minute by scanning goal/own_goal events.
+ */
+function scoreAtMinute(allEvents, homeTeamId, minute) {
+    let home = 0;
+    let away = 0;
+    for (const e of allEvents) {
+        if (e.minute > minute) continue;
+        if (e.type === 'goal') {
+            if (e.teamId === homeTeamId) home++; else away++;
+        } else if (e.type === 'own_goal') {
+            // Own goals count for the opposing team
+            if (e.teamId === homeTeamId) away++; else home++;
+        }
+    }
+    return { home, away };
+}
+
+/**
+ * Count events of given types for a team in a minute range.
+ */
+function countEventsInRange(allEvents, teamId, types, minMinute, maxMinute) {
+    let count = 0;
+    for (const e of allEvents) {
+        if (e.minute >= minMinute && e.minute <= maxMinute && e.teamId === teamId && types.includes(e.type)) {
+            count++;
+        }
+    }
+    return count;
+}
+
+/**
+ * Build article-aware name forms for a team.
+ * article can be 'el', 'la', or null (no article).
+ *
+ * Returns: { name, el, del, al }
+ *   el:  "el Real Madrid" / "la Real Sociedad" / "Osasuna"
+ *   del: "del Real Madrid" / "de la Real Sociedad" / "de Osasuna"
+ *   al:  "al Real Madrid" / "a la Real Sociedad" / "a Osasuna"
+ */
+function buildTeamForms(name, article) {
+    if (article === 'la') {
+        return { name, el: 'la ' + name, del: 'de la ' + name, al: 'a la ' + name };
+    }
+    if (!article) {
+        return { name, el: name, del: 'de ' + name, al: 'a ' + name };
+    }
+    // default: 'el'
+    return { name, el: 'el ' + name, del: 'del ' + name, al: 'al ' + name };
+}
+
+/**
+ * Generate contextual narrative events that react to the match state.
+ * Placed at ~15-minute intervals throughout regular time.
+ */
+function generateContextualNarratives(config) {
+    const {
+        homeTeamId, awayTeamId, homeTeamName, awayTeamName,
+        homeArticle, awayArticle,
+        venueName, narrativeTemplates, allEvents,
+    } = config;
+
+    const venue = venueName || homeTeamName;
+    const homeForms = buildTeamForms(homeTeamName, homeArticle);
+    const awayForms = buildTeamForms(awayTeamName, awayArticle);
+    const events = [];
+    const usedMinutes = new Set();
+    for (const e of allEvents) usedMinutes.add(e.minute);
+
+    // Replacements must be ordered longest-first so e.g. ':del_home' is matched
+    // before ':home'. pickNarrative uses replaceAll which handles this correctly
+    // as long as we list longer keys first in the object.
+    const replacements = {
+        ':del_home': homeForms.del,
+        ':del_away': awayForms.del,
+        ':al_home': homeForms.al,
+        ':al_away': awayForms.al,
+        ':el_home': homeForms.el,
+        ':el_away': awayForms.el,
+        ':home': homeForms.name,
+        ':away': awayForms.name,
+        ':venue': venue,
+    };
+
+    // Checkpoint minutes: ~15, ~30, ~46 (second half start), ~60, ~75, ~85
+    const checkpoints = [
+        { minute: 15, type: 'mid' },
+        { minute: 30, type: 'mid' },
+        { minute: 46, type: 'second_half_start' },
+        { minute: 60, type: 'mid' },
+        { minute: 75, type: 'mid' },
+        { minute: 85, type: 'end' },
+    ];
+
+    for (const cp of checkpoints) {
+        const m = uniqueMinute(usedMinutes, cp.minute, cp.minute + 3);
+        const score = scoreAtMinute(allEvents, homeTeamId, m);
+        const scoreStr = `${score.home}-${score.away}`;
+
+        // Count recent activity (last 15 minutes) for dominance detection
+        const lookback = 15;
+        const shotTypes = ['shot_on_target', 'shot_off_target', 'goal'];
+        const homeShots = countEventsInRange(allEvents, homeTeamId, shotTypes, m - lookback, m);
+        const awayShots = countEventsInRange(allEvents, awayTeamId, shotTypes, m - lookback, m);
+        const homeFouls = countEventsInRange(allEvents, homeTeamId, ['foul', 'yellow_card'], 1, m);
+        const awayFouls = countEventsInRange(allEvents, awayTeamId, ['foul', 'yellow_card'], 1, m);
+
+        let templateKey = null;
+        // Build replacements with longer keys first to avoid substring collisions
+        let extraReplacements = { ...replacements, ':score': scoreStr };
+
+        if (cp.type === 'second_half_start') {
+            templateKey = 'contextualSecondHalfStart';
+        } else if (cp.type === 'end') {
+            // Late-game narratives based on score
+            if (score.home > score.away) {
+                templateKey = 'contextualEndWinning';
+                extraReplacements = {
+                    ':del_leading': homeForms.del, ':del_trailing': awayForms.del,
+                    ':al_leading': homeForms.al, ':al_trailing': awayForms.al,
+                    ':el_leading': homeForms.el, ':el_trailing': awayForms.el,
+                    ':leading': homeForms.name, ':trailing': awayForms.name,
+                    ...extraReplacements,
+                };
+                // 50% chance to show the losing team's perspective instead
+                if (Math.random() < 0.5) {
+                    const deficit = score.home - score.away;
+                    templateKey = deficit === 1 ? 'contextualEndLosingByOne' : 'contextualEndLosing';
+                }
+            } else if (score.away > score.home) {
+                templateKey = 'contextualEndWinning';
+                extraReplacements = {
+                    ':del_leading': awayForms.del, ':del_trailing': homeForms.del,
+                    ':al_leading': awayForms.al, ':al_trailing': homeForms.al,
+                    ':el_leading': awayForms.el, ':el_trailing': homeForms.el,
+                    ':leading': awayForms.name, ':trailing': homeForms.name,
+                    ...extraReplacements,
+                };
+                // 50% chance to show the losing team's perspective instead
+                if (Math.random() < 0.5) {
+                    const deficit = score.away - score.home;
+                    templateKey = deficit === 1 ? 'contextualEndLosingByOne' : 'contextualEndLosing';
+                }
+            } else {
+                templateKey = 'contextualEndDraw';
+            }
+        } else {
+            // Mid-game: pick based on state
+            const dominant = homeShots >= awayShots + 3 ? 'home' : awayShots >= homeShots + 3 ? 'away' : null;
+            const totalFouls = homeFouls + awayFouls;
+
+            if (dominant === 'home') {
+                templateKey = 'contextualHomeDominant';
+            } else if (dominant === 'away') {
+                templateKey = 'contextualAwayDominant';
+            } else if (totalFouls >= 8) {
+                templateKey = 'contextualHighFouls';
+            } else if (score.home === score.away && score.home === 0) {
+                templateKey = 'contextualDrawOpen';
+            } else if (score.home === score.away) {
+                templateKey = 'contextualDrawWithGoals';
+            } else if (score.home > score.away) {
+                templateKey = 'contextualHomeLeading';
+            } else {
+                templateKey = 'contextualAwayLeading';
+            }
+
+            // Occasionally inject fan/crowd narrative instead (~25% chance)
+            if (Math.random() < 0.25) {
+                templateKey = Math.random() < 0.5 ? 'contextualHomeFans' : 'contextualAwayFans';
+            }
+        }
+
+        const templates = narrativeTemplates[templateKey];
+        if (!templates || !templates.length) continue;
+
+        const narrative = pickNarrative(templates, extraReplacements);
+
+        events.push({
+            minute: m,
+            type: 'contextual',
+            playerName: '',
+            teamId: null,
+            gamePlayerId: null,
+            metadata: { narrative },
+        });
     }
 
     return events;
@@ -317,7 +521,8 @@ export function generateAtmosphereForPeriod(config) {
 export function generateRegularTimeAtmosphere(config) {
     const firstHalf = generateAtmosphereForPeriod({ ...config, minMinute: 1, maxMinute: 45 });
     const secondHalf = generateAtmosphereForPeriod({ ...config, minMinute: 46, maxMinute: 90 });
-    return [...firstHalf, ...secondHalf];
+    const contextual = generateContextualNarratives(config);
+    return [...firstHalf, ...secondHalf, ...contextual];
 }
 
 /**
@@ -329,39 +534,7 @@ export function generateRegularTimeAtmosphere(config) {
 export function generateExtraTimeAtmosphere(config) {
     const etFirst = generateAtmosphereForPeriod({ ...config, minMinute: 91, maxMinute: 105 });
     const etSecond = generateAtmosphereForPeriod({ ...config, minMinute: 106, maxMinute: 120 });
+    // Contextual narratives are only generated for regular time (checkpoints don't apply to ET)
     return [...etFirst, ...etSecond];
 }
 
-/**
- * Add narrative text to substitution and injury events that come
- * from the server without narratives.
- *
- * @param {Array} events - Mutable array of event objects
- * @param {Object} config
- * @param {string} config.homeTeamId
- * @param {string} config.homeTeamName
- * @param {string} config.awayTeamName
- * @param {Object} config.narrativeTemplates - {substitution:[], injury:[]}
- */
-export function addNarrativesToEvents(events, config) {
-    const { homeTeamId, homeTeamName, awayTeamName, narrativeTemplates } = config;
-
-    for (const event of events) {
-        if (event.type === 'injury' && !event.narrative) {
-            const teamName = event.teamId === homeTeamId ? homeTeamName : awayTeamName;
-            event.narrative = pickNarrative(narrativeTemplates.injury || [], {
-                ':player': event.playerName,
-                ':team': teamName,
-            });
-        }
-
-        if (event.type === 'substitution' && !event.narrative) {
-            const teamName = event.teamId === homeTeamId ? homeTeamName : awayTeamName;
-            event.narrative = pickNarrative(narrativeTemplates.substitution || [], {
-                ':player_in': event.playerInName || '',
-                ':player_out': event.playerName || '',
-                ':team': teamName,
-            });
-        }
-    }
-}

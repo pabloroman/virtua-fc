@@ -18,7 +18,7 @@ import { assignPlayersToSlots } from './modules/slot-assignment.js';
 import { createPenaltyShootout } from './modules/penalty-shootout.js';
 import { createSubstitutionManager } from './modules/substitution-manager.js';
 import { createMatchSimulation } from './modules/match-simulation.js';
-import { generateRegularTimeAtmosphere, generateExtraTimeAtmosphere, addNarrativesToEvents } from './modules/atmosphere-generator.js';
+import { generateRegularTimeAtmosphere, generateExtraTimeAtmosphere } from './modules/atmosphere-generator.js';
 
 /**
  * Copy all own properties from source to target. Regular properties are
@@ -109,6 +109,9 @@ export default function liveMatch(config) {
         // Atmosphere generation (client-side commentary)
         homeLineupRoster: config.homeLineupRoster || [],
         awayLineupRoster: config.awayLineupRoster || [],
+        venueName: config.venueName || '',
+        homeArticle: config.homeArticle ?? 'el',
+        awayArticle: config.awayArticle ?? 'el',
         narrativeTemplates: config.narrativeTemplates || {},
 
         // Pitch visualization config
@@ -701,11 +704,13 @@ export default function liveMatch(config) {
                     this.activeDefLine = result.defensiveLine;
                 }
 
-                // Filter events up to current minute and add sub events to feed
+                // Filter server events up to current minute, but keep atmosphere events
+                // (they are pre-generated for the full match and should persist)
+                const isAtmosphere = (e) => e.type === 'shot_on_target' || e.type === 'shot_off_target' || e.type === 'foul' || e.type === 'contextual';
                 if (isET) {
-                    this.extraTimeEvents = this.extraTimeEvents.filter(e => e.minute <= minute);
+                    this.extraTimeEvents = this.extraTimeEvents.filter(e => e.minute <= minute || isAtmosphere(e));
                 } else {
-                    this.events = this.events.filter(e => e.minute <= minute);
+                    this.events = this.events.filter(e => e.minute <= minute || isAtmosphere(e));
                 }
                 this.revealedEvents = this.revealedEvents.filter(e => e.minute <= minute);
 
@@ -870,7 +875,7 @@ export default function liveMatch(config) {
         },
 
         isAtmosphereEvent(event) {
-            return event.type === 'shot_on_target' || event.type === 'shot_off_target' || event.type === 'foul';
+            return event.type === 'shot_on_target' || event.type === 'shot_off_target' || event.type === 'foul' || event.type === 'contextual';
         },
 
         /**
@@ -887,6 +892,9 @@ export default function liveMatch(config) {
                 awayPlayers: this.awayLineupRoster,
                 homeScore: this.finalHomeScore,
                 awayScore: this.finalAwayScore,
+                venueName: this.venueName,
+                homeArticle: this.homeArticle,
+                awayArticle: this.awayArticle,
                 narrativeTemplates: this.narrativeTemplates,
             };
         },
@@ -904,7 +912,6 @@ export default function liveMatch(config) {
             if (atmosphere.length) {
                 this.events = [...this.events, ...atmosphere].sort((a, b) => a.minute - b.minute);
             }
-            addNarrativesToEvents(this.events, cfg);
         },
 
         /**
@@ -923,7 +930,6 @@ export default function liveMatch(config) {
             if (atmosphere.length) {
                 this.extraTimeEvents = [...this.extraTimeEvents, ...atmosphere].sort((a, b) => a.minute - b.minute);
             }
-            addNarrativesToEvents(this.extraTimeEvents, cfg);
         },
 
         // =====================================================================

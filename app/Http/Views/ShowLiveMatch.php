@@ -260,8 +260,21 @@ class ShowLiveMatch
             'shotOnTarget' => __('game.atmosphere_shot_on_target'),
             'shotOffTarget' => __('game.atmosphere_shot_off_target'),
             'foul' => __('game.atmosphere_foul'),
-            'substitution' => __('game.atmosphere_substitution'),
-            'injury' => __('game.atmosphere_injury'),
+            'contextualDrawOpen' => __('game.contextual_draw_open'),
+            'contextualDrawWithGoals' => __('game.contextual_draw_with_goals'),
+            'contextualHomeLeading' => __('game.contextual_home_leading'),
+            'contextualAwayLeading' => __('game.contextual_away_leading'),
+            'contextualHomeDominant' => __('game.contextual_home_dominant'),
+            'contextualAwayDominant' => __('game.contextual_away_dominant'),
+            'contextualTightGame' => __('game.contextual_tight_game'),
+            'contextualEndLosing' => __('game.contextual_end_losing'),
+            'contextualEndLosingByOne' => __('game.contextual_end_losing_by_one'),
+            'contextualEndWinning' => __('game.contextual_end_winning'),
+            'contextualEndDraw' => __('game.contextual_end_draw'),
+            'contextualSecondHalfStart' => __('game.contextual_second_half_start'),
+            'contextualAwayFans' => __('game.contextual_away_fans'),
+            'contextualHomeFans' => __('game.contextual_home_fans'),
+            'contextualHighFouls' => __('game.contextual_high_fouls'),
         ];
 
         return view('live-match', [

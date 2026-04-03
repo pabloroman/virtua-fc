@@ -64,9 +64,6 @@
                     <template x-if="event.assistPlayerName">
                         <div class="text-[10px] text-text-secondary" x-text="'{{ __('game.live_assist') }} ' + event.assistPlayerName"></div>
                     </template>
-                    <template x-if="event.narrative && showCommentary">
-                        <div class="text-[10px] text-text-muted leading-tight mt-0.5" x-text="event.narrative"></div>
-                    </template>
                 </div>
             </template>
             <template x-if="event.type === 'substitution_group'">
