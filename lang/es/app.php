@@ -60,5 +60,6 @@ return [
 
     // Common actions
     'close' => 'Cerrar',
+    'more' => 'Más',
 
 ];

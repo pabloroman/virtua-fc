@@ -208,8 +208,45 @@
         @endif
     </div>
 
-    {{-- Mobile Notification FAB --}}
+    {{-- Mobile Notifications Modal (triggered by bottom tab bar) --}}
     @if($nextMatch)
-    <x-mobile-notification-fab :game="$game" :notifications="$groupedNotifications->flatten()" :unread-count="$unreadNotificationCount" />
+    <div class="lg:hidden" x-data>
+        <x-modal name="notifications-mobile" maxWidth="lg">
+            <x-modal-header modalName="notifications-mobile">{{ __('notifications.inbox') }}</x-modal-header>
+
+            @if($unreadNotificationCount > 0)
+            <div class="px-4 py-2.5 border-b border-border-default flex items-center justify-between">
+                <span class="px-1.5 py-0.5 rounded-full bg-accent-blue/10 text-[10px] font-semibold text-accent-blue">
+                    {{ $unreadNotificationCount }} {{ __('notifications.new') }}
+                </span>
+                <form action="{{ route('game.notifications.read-all', $game->id) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="text-[10px] text-accent-blue hover:text-blue-400 transition-colors">
+                        {{ __('notifications.mark_all_read') }}
+                    </button>
+                </form>
+            </div>
+            @endif
+
+            <div class="max-h-[70vh] overflow-y-auto">
+                @if($groupedNotifications->flatten()->isEmpty())
+                <div class="text-center py-8 px-4">
+                    <div class="text-text-faint mb-2">
+                        <svg class="w-8 h-8 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <p class="text-xs text-text-muted">{{ __('notifications.all_caught_up') }}</p>
+                </div>
+                @else
+                <div class="divide-y divide-border-default">
+                    @foreach($groupedNotifications->flatten() as $notification)
+                        <x-notification-row :notification="$notification" :game="$game" />
+                    @endforeach
+                </div>
+                @endif
+            </div>
+        </x-modal>
+    </div>
     @endif
 </x-app-layout>

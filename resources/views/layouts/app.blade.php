@@ -57,7 +57,7 @@
             @endisset
 
             <!-- Page Content -->
-            <main class="text-text-body flex-1">
+            <main class="text-text-body flex-1 pb-16 lg:pb-0">
                 {{ $slot }}
             </main>
             @unless($hideFooter ?? false)

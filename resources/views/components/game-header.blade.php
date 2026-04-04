@@ -9,24 +9,18 @@
     )->orderBy('tier')->get();
 @endphp
 
-<div x-data="{ mobileMenuOpen: false }">
+<div>
     {{-- Sticky Header --}}
     <header class="sticky top-0 z-50 bg-surface-900/95 backdrop-blur-md border-b border-border-default">
         <div class="max-w-7xl mx-auto">
             <div class="flex items-center justify-between pt-0 py-2">
                 {{-- Left: Team badge + name --}}
                 <div class="flex items-center gap-3">
-                    {{-- Hamburger (mobile) --}}
-                    <x-icon-button @click="mobileMenuOpen = true" class="lg:hidden" aria-label="Menu">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
-                        </svg>
-                    </x-icon-button>
                     {{-- Team badge + name --}}
                     <div class="flex items-center gap-2.5">
                         <x-team-crest :team="$game->team" class="w-8 h-8 shrink-0" />
-                        <div class="hidden sm:block">
-                            <h1 class="font-heading font-semibold text-base text-text-primary leading-none tracking-wide uppercase">{{ $game->team->name }}</h1>
+                        <div class="min-w-0">
+                            <h1 class="font-heading font-semibold text-base text-text-primary leading-none tracking-wide uppercase truncate">{{ $game->team->name }}</h1>
                             <p class="text-[10px] text-text-muted uppercase tracking-widest mt-0.5">
                                 @if($game->game_mode === \App\Models\Game::MODE_CAREER)
                                     {{ __('game.season') }} {{ $game->formatted_season }}
@@ -86,131 +80,59 @@
                         </div>
                         @if($game->hasPendingActions())
                             @php $pendingAction = $game->getFirstPendingAction(); @endphp
-                            <x-primary-button-link color="amber" :href="$pendingAction && $pendingAction['route'] ? route($pendingAction['route'], $game->id) : route('show-game', $game->id)" class="whitespace-nowrap gap-2 animate-pulse">
+                            {{-- Desktop: full button --}}
+                            <x-primary-button-link color="amber" :href="$pendingAction && $pendingAction['route'] ? route($pendingAction['route'], $game->id) : route('show-game', $game->id)" class="hidden lg:inline-flex whitespace-nowrap gap-2 animate-pulse">
                                 <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
                                 </svg>
-                                <span class="hidden sm:inline">{{ __('messages.action_required_short') }}</span>
+                                {{ __('messages.action_required_short') }}
                             </x-primary-button-link>
+                            {{-- Mobile: compact icon button --}}
+                            <a href="{{ $pendingAction && $pendingAction['route'] ? route($pendingAction['route'], $game->id) : route('show-game', $game->id) }}" class="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-500 text-white animate-pulse transition-colors hover:bg-amber-600">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                </svg>
+                            </a>
                         @elseif($continueToHome)
-                            <x-primary-button-link :href="route('show-game', $game->id)">{{ __('app.continue') }}</x-primary-button-link>
+                            {{-- Desktop: full button --}}
+                            <x-primary-button-link :href="route('show-game', $game->id)" class="hidden lg:inline-flex">{{ __('app.continue') }}</x-primary-button-link>
+                            {{-- Mobile: compact icon button --}}
+                            <a href="{{ route('show-game', $game->id) }}" class="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg bg-accent-blue text-white transition-colors hover:bg-blue-600">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </a>
                         @else
-                            <x-primary-button type="button" @click="$dispatch('show-pre-match', '{{ route('game.pre-match-data', $game->id) }}')">
+                            {{-- Desktop: full button --}}
+                            <x-primary-button type="button" @click="$dispatch('show-pre-match', '{{ route('game.pre-match-data', $game->id) }}')" class="hidden lg:inline-flex">
                                 {{ __('app.continue') }}
                             </x-primary-button>
+                            {{-- Mobile: compact icon button --}}
+                            <button type="button" @click="$dispatch('show-pre-match', '{{ route('game.pre-match-data', $game->id) }}')" class="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg bg-accent-blue text-white transition-colors hover:bg-blue-600">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </button>
                         @endif
                     @else
                         <div class="flex items-center gap-3">
-                            <span class="text-sm text-text-secondary">{{ __('game.season_complete') }}</span>
-                            <x-primary-button-link color="amber" :href="route('game.season-end', $game->id)">
+                            <span class="hidden sm:inline text-sm text-text-secondary">{{ __('game.season_complete') }}</span>
+                            {{-- Desktop: full button --}}
+                            <x-primary-button-link color="amber" :href="route('game.season-end', $game->id)" class="hidden lg:inline-flex">
                                 {{ __('game.view_season_summary') }}
                             </x-primary-button-link>
+                            {{-- Mobile: compact button --}}
+                            <a href="{{ route('game.season-end', $game->id) }}" class="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-500 text-white transition-colors hover:bg-amber-600">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M18.75 4.236c.982.143 1.954.317 2.916.52A6.003 6.003 0 0016.27 9.728M18.75 4.236V4.5c0 2.108-.966 3.99-2.48 5.228m0 0a6.003 6.003 0 01-5.54 0"/>
+                                </svg>
+                            </a>
                         </div>
                     @endif
                 </div>
             </div>
         </div>
     </header>
-
-    {{-- Mobile Slide-out Drawer --}}
-    <div x-show="mobileMenuOpen" x-cloak class="fixed inset-0 z-50 lg:hidden">
-        {{-- Backdrop --}}
-        <div x-show="mobileMenuOpen"
-             x-transition:enter="transition ease-out duration-200"
-             x-transition:enter-start="opacity-0"
-             x-transition:enter-end="opacity-100"
-             x-transition:leave="transition ease-in duration-150"
-             x-transition:leave-start="opacity-100"
-             x-transition:leave-end="opacity-0"
-             @click="mobileMenuOpen = false"
-             class="fixed inset-0 bg-black/60"></div>
-
-        {{-- Drawer Panel --}}
-        <div x-show="mobileMenuOpen"
-             x-transition:enter="transition ease-out duration-200"
-             x-transition:enter-start="-translate-x-full"
-             x-transition:enter-end="translate-x-0"
-             x-transition:leave="transition ease-in duration-150"
-             x-transition:leave-start="translate-x-0"
-             x-transition:leave-end="-translate-x-full"
-             class="fixed inset-y-0 left-0 w-72 bg-surface-800 border-r border-border-default shadow-xl overflow-y-auto">
-
-            {{-- Drawer Header --}}
-            <div class="flex items-center justify-between p-4 border-b border-border-strong">
-                <div class="flex items-center gap-3 min-w-0">
-                    <x-team-crest :team="$game->team" class="w-10 h-10 shrink-0" />
-                    <div class="min-w-0">
-                        <h3 class="font-heading font-semibold text-sm text-text-primary truncate uppercase tracking-wide">{{ $game->team->name }}</h3>
-                        <p class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('game.season') }} {{ $game->formatted_season }}</p>
-                    </div>
-                </div>
-                <x-icon-button @click="mobileMenuOpen = false">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </x-icon-button>
-            </div>
-
-            {{-- Next Match Info --}}
-            @if($nextMatch)
-            <div class="px-4 py-3 border-b border-border-default bg-surface-700/30">
-                <div class="text-[10px] text-text-muted uppercase tracking-wider mb-1">{{ __('game.next_match') }} - {{ $nextMatch->scheduled_date->format('d/m/Y') }}</div>
-                <div class="flex items-center gap-1 text-sm text-text-body">
-                    <x-team-crest :team="$nextMatch->homeTeam" class="w-4 h-4" />
-                    <span class="truncate">{{ $nextMatch->homeTeam->name }}</span>
-                    <span class="text-text-muted">vs</span>
-                    <span class="truncate">{{ $nextMatch->awayTeam->name }}</span>
-                    <x-team-crest :team="$nextMatch->awayTeam" class="w-4 h-4" />
-                </div>
-            </div>
-            @endif
-
-            {{-- Navigation Links --}}
-            <nav class="py-2">
-                <x-responsive-nav-link :href="route('show-game', $game->id)" :active="Route::currentRouteName() == 'show-game'">
-                    {{ __('app.dashboard') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('game.squad', $game->id)" :active="Str::startsWith(Route::currentRouteName(), 'game.squad')">
-                    {{ __('app.squad') }}
-                </x-responsive-nav-link>
-                @if($nextMatch)
-                <x-responsive-nav-link :href="route('game.lineup', $game->id)" :active="Route::currentRouteName() == 'game.lineup'">
-                    {{ __('app.starting_xi') }}
-                </x-responsive-nav-link>
-                @endif
-                @if($game->isCareerMode())
-                <x-responsive-nav-link :href="route('game.finances', $game->id)" :active="Route::currentRouteName() == 'game.finances'">
-                    {{ __('app.finances') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('game.transfers', $game->id)" :active="in_array(Route::currentRouteName(), ['game.transfers', 'game.transfers.outgoing', 'game.scouting', 'game.explore'])">
-                    {{ __('app.transfers') }}
-                </x-responsive-nav-link>
-                @endif
-                <x-responsive-nav-link :href="route('game.calendar', $game->id)" :active="Route::currentRouteName() == 'game.calendar'">
-                    {{ __('app.calendar') }}
-                </x-responsive-nav-link>
-                @if($game->isTournamentMode() && $teamCompetitions->isNotEmpty())
-                <x-responsive-nav-link :href="route('game.competition', [$game->id, $teamCompetitions[0]->id])" :active="Route::currentRouteName() == 'game.competition'">
-                    {{ __('game.standings') }}
-                </x-responsive-nav-link>
-                @endif
-            </nav>
-
-            {{-- Competitions (career mode only) --}}
-            @if($game->isCareerMode() && $teamCompetitions->isNotEmpty())
-            <div class="border-t border-border-default py-2">
-                <div class="px-4 py-2 text-[10px] font-semibold text-text-muted uppercase tracking-widest">
-                    {{ __('app.competitions') }}
-                </div>
-                @foreach($teamCompetitions as $competition)
-                <x-responsive-nav-link :href="route('game.competition', [$game->id, $competition->id])" :active="request()->route('competitionId') == $competition->id">
-                    {{ __($competition->name) }}
-                </x-responsive-nav-link>
-                @endforeach
-            </div>
-            @endif
-        </div>
-    </div>
 
     {{-- Pre-Match Confirmation Modal --}}
     @if($nextMatch && !$game->hasPendingActions() && !$continueToHome)
@@ -259,4 +181,7 @@
         </x-modal>
     </div>
     @endif
+
+    {{-- Mobile Bottom Tab Bar --}}
+    <x-bottom-tab-bar :game="$game" :next-match="$nextMatch" :team-competitions="$teamCompetitions" />
 </div>
