@@ -59,13 +59,13 @@ class SquadNumberService
         if ($isYoung) {
             // Under-23: try preferred numbers in 1-25, then any 1-25, then 26-99
             return $this->preferredNumber($player->position, $takenNumbers, 1, self::FIRST_TEAM_MAX)
-                ?? $this->firstAvailable(2, self::FIRST_TEAM_MAX, $takenNumbers)
+                ?? $this->firstAvailable(1, self::FIRST_TEAM_MAX, $takenNumbers)
                 ?? $this->firstAvailable(self::FIRST_TEAM_MAX + 1, 99, $takenNumbers);
         }
 
         // Over-23: try preferred numbers, then any free 1-25
         $number = $this->preferredNumber($player->position, $takenNumbers, 1, self::FIRST_TEAM_MAX)
-            ?? $this->firstAvailable(2, self::FIRST_TEAM_MAX, $takenNumbers);
+            ?? $this->firstAvailable(1, self::FIRST_TEAM_MAX, $takenNumbers);
 
         if ($number !== null) {
             return $number;
@@ -185,11 +185,13 @@ class SquadNumberService
         $resolvableOver23 = $over23NeedSlot->take($over23NeedingCount - $unresolvable);
         foreach ($resolvableOver23 as $player) {
             $number = $this->preferredNumber($player->position, $usedFirstTeam, 1, self::FIRST_TEAM_MAX)
-                ?? $this->firstAvailable(2, self::FIRST_TEAM_MAX, $usedFirstTeam);
+                ?? $this->firstAvailable(1, self::FIRST_TEAM_MAX, $usedFirstTeam);
 
             if ($number !== null) {
                 $updates[$player->id] = $number;
                 $usedFirstTeam->put($number, true);
+            } elseif ($player->number !== null) {
+                $updates[$player->id] = null;
             }
         }
 
@@ -211,7 +213,7 @@ class SquadNumberService
         // Unregistered under-23: try first-team with position prefs, then academy
         foreach ($under23NeedSlot as $player) {
             $number = $this->preferredNumber($player->position, $usedFirstTeam, 1, self::FIRST_TEAM_MAX)
-                ?? $this->firstAvailable(2, self::FIRST_TEAM_MAX, $usedFirstTeam);
+                ?? $this->firstAvailable(1, self::FIRST_TEAM_MAX, $usedFirstTeam);
 
             if ($number !== null) {
                 $updates[$player->id] = $number;
