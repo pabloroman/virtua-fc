@@ -13,7 +13,7 @@
     $recentNotifications = $game->notifications()->orderByDesc('game_date')->limit(20)->get();
 @endphp
 
-<div>
+<div x-data>
     {{-- Sticky Header --}}
     <header class="sticky top-0 z-50 bg-surface-900/95 backdrop-blur-md border-b border-border-default">
         <div class="max-w-7xl mx-auto">
