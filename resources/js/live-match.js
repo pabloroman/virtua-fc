@@ -711,6 +711,9 @@ export default function liveMatch(config) {
                     this.extraTimeEvents = this.extraTimeEvents.filter(e => e.minute <= minute || isAtmosphere(e));
                 } else {
                     this.events = this.events.filter(e => e.minute <= minute || isAtmosphere(e));
+                    // Remove contextual narratives — they'll be freshly regenerated
+                    // below to reflect the post-resimulation score.
+                    this.events = this.events.filter(e => e.type !== 'contextual');
                 }
                 this.revealedEvents = this.revealedEvents.filter(e => e.minute <= minute);
 
@@ -753,15 +756,6 @@ export default function liveMatch(config) {
                         this.events.sort((a, b) => a.minute - b.minute);
                     }
 
-                    this.lastRevealedIndex = -1;
-                    for (let i = 0; i < this.events.length; i++) {
-                        if (this.events[i].minute <= this.currentMinute) {
-                            this.lastRevealedIndex = i;
-                        } else {
-                            break;
-                        }
-                    }
-
                     this.finalHomeScore = result.newScore.home;
                     this.finalAwayScore = result.newScore.away;
 
@@ -775,6 +769,17 @@ export default function liveMatch(config) {
                     const freshContextual = generateContextualNarratives({ ...cfg, allEvents: this.events });
                     if (freshContextual.length) {
                         this.events = [...this.events, ...freshContextual].sort((a, b) => a.minute - b.minute);
+                    }
+
+                    // Recalculate after all event modifications (synthesize, narratives)
+                    // to avoid stale indices from array insertions and re-sorts.
+                    this.lastRevealedIndex = -1;
+                    for (let i = 0; i < this.events.length; i++) {
+                        if (this.events[i].minute <= this.currentMinute) {
+                            this.lastRevealedIndex = i;
+                        } else {
+                            break;
+                        }
                     }
                 }
 
