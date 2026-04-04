@@ -715,7 +715,7 @@ export default function liveMatch(config) {
                     // below to reflect the post-resimulation score.
                     this.events = this.events.filter(e => e.type !== 'contextual');
                 }
-                this.revealedEvents = this.revealedEvents.filter(e => e.minute <= minute);
+                this.revealedEvents = this.revealedEvents.filter(e => e.minute <= minute && e.type !== 'contextual');
 
                 if (result.substitutions) {
                     for (const sub of result.substitutions) {
