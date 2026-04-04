@@ -9,7 +9,7 @@
     $dashboardActive = $currentRoute === 'show-game';
     $squadActive = Str::startsWith($currentRoute, 'game.squad');
     $lineupActive = $currentRoute === 'game.lineup';
-    $transfersActive = in_array($currentRoute, ['game.transfers', 'game.transfers.outgoing', 'game.scouting', 'game.explore', 'game.transfer-activity']);
+    $transfersActive = in_array($currentRoute, ['game.transfers', 'game.transfers.outgoing', 'game.scouting', 'game.explore', 'game.transfer-activity', 'game.transfers.market']);
     $moreActive = in_array($currentRoute, ['game.finances', 'game.calendar', 'game.competition']);
 
 @endphp

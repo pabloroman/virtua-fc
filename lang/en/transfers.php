@@ -405,4 +405,11 @@ return [
     'mood_willing_loan' => 'Willing to loan',
     'mood_open_loan' => 'Open to loan',
     'mood_reluctant_loan' => 'Reluctant to loan',
+
+    // Transfer market
+    'market_tab' => 'Market',
+    'market_closed' => 'The transfer market opens during transfer windows.',
+    'market_empty' => 'No players currently listed on the market.',
+    'market_bid' => 'Bid',
+    'market_asking_price' => 'Asking Price',
 ];

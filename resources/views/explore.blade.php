@@ -21,6 +21,7 @@
                         ['href' => route('game.transfers.outgoing', $game->id), 'label' => __('transfers.outgoing'), 'active' => false, 'badge' => $salidaBadgeCount > 0 ? $salidaBadgeCount : null],
                         ['href' => route('game.scouting', $game->id), 'label' => __('transfers.scouting_tab'), 'active' => false],
                         ['href' => route('game.explore', $game->id), 'label' => __('transfers.explore_tab'), 'active' => true],
+                        ['href' => route('game.transfers.market', $game->id), 'label' => __('transfers.market_tab'), 'active' => false],
                     ]" />
 
                     {{-- Explorer Content --}}

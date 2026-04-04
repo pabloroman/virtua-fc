@@ -13,6 +13,7 @@ use App\Modules\Transfer\Enums\TransferWindowType;
 use App\Modules\Transfer\Services\AITransferMarketService;
 use App\Modules\Transfer\Services\LoanService;
 use App\Modules\Transfer\Services\ScoutingService;
+use App\Modules\Transfer\Services\TransferMarketService;
 use App\Modules\Transfer\Services\TransferService;
 
 class CareerActionProcessor
@@ -28,6 +29,7 @@ class CareerActionProcessor
         private readonly YouthAcademyService $youthAcademyService,
         private readonly NotificationService $notificationService,
         private readonly AITransferMarketService $aiTransferMarketService,
+        private readonly TransferMarketService $transferMarketService,
     ) {}
 
     public function process(Game $game): void
@@ -206,6 +208,8 @@ class CareerActionProcessor
         }
 
         $this->aiTransferMarketService->processTransferBatch($game, $windowType->value);
+
+        $this->transferMarketService->refreshListings($game);
     }
 
 }

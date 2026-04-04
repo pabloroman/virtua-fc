@@ -410,4 +410,11 @@ return [
     'mood_willing_loan' => 'Dispuesto a ceder',
     'mood_open_loan' => 'Abierto a cesión',
     'mood_reluctant_loan' => 'Reticente a ceder',
+
+    // Transfer market
+    'market_tab' => 'Mercado',
+    'market_closed' => 'El mercado de fichajes abre durante las ventanas de traspasos.',
+    'market_empty' => 'No hay jugadores en el mercado actualmente.',
+    'market_bid' => 'Pujar',
+    'market_asking_price' => 'Precio de Salida',
 ];
