@@ -8,8 +8,9 @@
             ->pluck('competition_id')
     )->orderBy('tier')->get();
 
-    // Unread notification count (for mobile bell icon)
+    // Notifications for mobile bell icon + modal
     $unreadCount = $game->notifications()->whereNull('read_at')->count();
+    $recentNotifications = $game->notifications()->orderByDesc('game_date')->limit(20)->get();
 @endphp
 
 <div>
@@ -172,6 +173,46 @@
         </x-modal>
     </div>
     @endif
+
+    {{-- Mobile Notifications Modal (triggered by header bell icon) --}}
+    <div class="lg:hidden" x-data>
+        <x-modal name="notifications-mobile" maxWidth="lg">
+            <x-modal-header modalName="notifications-mobile">{{ __('notifications.inbox') }}</x-modal-header>
+
+            @if($unreadCount > 0)
+            <div class="px-4 py-2.5 border-b border-border-default flex items-center justify-between">
+                <span class="px-1.5 py-0.5 rounded-full bg-accent-blue/10 text-[10px] font-semibold text-accent-blue">
+                    {{ $unreadCount }} {{ __('notifications.new') }}
+                </span>
+                <form action="{{ route('game.notifications.read-all', $game->id) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="text-[10px] text-accent-blue hover:text-blue-400 transition-colors">
+                        {{ __('notifications.mark_all_read') }}
+                    </button>
+                </form>
+            </div>
+            @endif
+
+            <div class="max-h-[70vh] overflow-y-auto">
+                @if($recentNotifications->isEmpty())
+                <div class="text-center py-8 px-4">
+                    <div class="text-text-faint mb-2">
+                        <svg class="w-8 h-8 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <p class="text-xs text-text-muted">{{ __('notifications.all_caught_up') }}</p>
+                </div>
+                @else
+                <div class="divide-y divide-border-default">
+                    @foreach($recentNotifications as $notification)
+                        <x-notification-row :notification="$notification" :game="$game" />
+                    @endforeach
+                </div>
+                @endif
+            </div>
+        </x-modal>
+    </div>
 
     {{-- Mobile Bottom Tab Bar --}}
     <x-bottom-tab-bar :game="$game" :next-match="$nextMatch" :team-competitions="$teamCompetitions" />
