@@ -33,7 +33,12 @@ class SaveSquadRegistration
             return back()->with('error', $e->getMessage());
         }
 
+        $hadPendingAction = $game->hasPendingAction('squad_registration');
         $game->removePendingAction('squad_registration');
+
+        if ($hadPendingAction) {
+            return redirect()->route('show-game', $gameId)->with('success', __('squad.registration_saved'));
+        }
 
         return back()->with('success', __('squad.registration_saved'));
     }
