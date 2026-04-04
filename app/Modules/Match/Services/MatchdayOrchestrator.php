@@ -414,6 +414,18 @@ class MatchdayOrchestrator
         $homeDefLine = DefensiveLineHeight::tryFrom($match->home_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
         $awayDefLine = DefensiveLineHeight::tryFrom($match->away_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
 
+        // Neutralize tactical instructions for AI-vs-AI matches — these only
+        // add meaningful complexity for user-involved matches. Formation and
+        // mentality still apply to differentiate AI teams.
+        if (! $isUserMatch) {
+            $homePlayingStyle = PlayingStyle::BALANCED;
+            $awayPlayingStyle = PlayingStyle::BALANCED;
+            $homePressing = PressingIntensity::STANDARD;
+            $awayPressing = PressingIntensity::STANDARD;
+            $homeDefLine = DefensiveLineHeight::NORMAL;
+            $awayDefLine = DefensiveLineHeight::NORMAL;
+        }
+
         $output = $this->matchSimulator->simulate(
             $match->homeTeam,
             $match->awayTeam,

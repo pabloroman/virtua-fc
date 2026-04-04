@@ -20,7 +20,6 @@
  * @param {string} params.opponentDefLine - Predicted opponent defensive line
  * @param {Object} params.formationModifiers - { formation: { attack, defense } }
  * @param {Object} params.xgConfig - Server-provided xG calculation config
- * @param {number} params.userForwardPhysical - Best forward physical ability (for high-line nullification)
  * @returns {{ userXG: number, opponentXG: number } | null}
  */
 export function calculateXgPreview({
@@ -39,7 +38,6 @@ export function calculateXgPreview({
     opponentDefLine,
     formationModifiers,
     xgConfig,
-    userForwardPhysical,
 }) {
     const cfg = xgConfig;
     if (!cfg || !userAvg || !opponentAvg) return null;
@@ -113,33 +111,13 @@ export function calculateXgPreview({
     awayXG *= homePressMods.opp_xg;
 
     // --- Defensive Line modifiers ---
-    const homeDefMods = cfg.defensive_line[homeDefLn] || { own_xg: 1.0, opp_xg: 1.0, physical_threshold: 0 };
-    const awayDefMods = cfg.defensive_line[awayDefLn] || { own_xg: 1.0, opp_xg: 1.0, physical_threshold: 0 };
+    const homeDefMods = cfg.defensive_line[homeDefLn] || { own_xg: 1.0, opp_xg: 1.0 };
+    const awayDefMods = cfg.defensive_line[awayDefLn] || { own_xg: 1.0, opp_xg: 1.0 };
 
-    let homeDefOwn = homeDefMods.own_xg;
-    let homeDefOpp = homeDefMods.opp_xg;
-    let awayDefOwn = awayDefMods.own_xg;
-    let awayDefOpp = awayDefMods.opp_xg;
-
-    // High line nullification: check user's forward physical ability
-    // (We don't have opponent individual player data in JS, so only check user's forwards)
-    if (homeDefMods.physical_threshold > 0 && !isHome) {
-        if (userForwardPhysical >= homeDefMods.physical_threshold) {
-            homeDefOwn = 1.0;
-            homeDefOpp = 1.0;
-        }
-    }
-    if (awayDefMods.physical_threshold > 0 && isHome) {
-        if (userForwardPhysical >= awayDefMods.physical_threshold) {
-            awayDefOwn = 1.0;
-            awayDefOpp = 1.0;
-        }
-    }
-
-    homeXG *= homeDefOwn;
-    awayXG *= homeDefOpp;
-    awayXG *= awayDefOwn;
-    homeXG *= awayDefOpp;
+    homeXG *= homeDefMods.own_xg;
+    awayXG *= homeDefMods.opp_xg;
+    awayXG *= awayDefMods.own_xg;
+    homeXG *= awayDefMods.opp_xg;
 
     // --- Tactical Interactions ---
     const interactions = cfg.tactical_interactions;

@@ -232,14 +232,12 @@ return [
     |
     | own_xg: multiplier on YOUR expected goals (high line compresses space)
     | opp_xg: multiplier on OPPONENT's expected goals against you
-    | physical_threshold: opponent forward physical ability above which
-    |                     the high line bonus is nullified (0 = never)
     |
     */
     'defensive_line' => [
-        'high_line' => ['own_xg' => 1.06, 'opp_xg' => 0.94, 'physical_threshold' => 75],
-        'normal'    => ['own_xg' => 1.00, 'opp_xg' => 1.00, 'physical_threshold' => 0],
-        'deep'      => ['own_xg' => 0.93, 'opp_xg' => 0.88, 'physical_threshold' => 0],
+        'high_line' => ['own_xg' => 1.06, 'opp_xg' => 0.94],
+        'normal'    => ['own_xg' => 1.00, 'opp_xg' => 1.00],
+        'deep'      => ['own_xg' => 0.93, 'opp_xg' => 0.88],
     ],
 
     /*

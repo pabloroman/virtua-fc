@@ -1119,24 +1119,6 @@ class MatchSimulator
     }
 
     /**
-     * Get the highest physical ability among forward players in a lineup.
-     * Used to check if opponent forwards can nullify a high defensive line.
-     */
-    private function getBestForwardPhysical(Collection $lineup): int
-    {
-        $forwardPositions = ['Centre-Forward', 'Second Striker', 'Left Winger', 'Right Winger'];
-        $best = 0;
-
-        foreach ($lineup as $player) {
-            if (in_array($player->position, $forwardPositions)) {
-                $best = max($best, $player->physical_ability);
-            }
-        }
-
-        return $best;
-    }
-
-    /**
      * Generate a Poisson-distributed random number.
      */
     private function poissonRandom(float $lambda): int
@@ -1493,8 +1475,6 @@ class MatchSimulator
         Mentality $homeMentality,
         Mentality $awayMentality,
         float $effectiveMinute,
-        Collection $homePlayers,
-        Collection $awayPlayers,
     ): array {
         // Playing Style: own xG modifier and opponent xG modifier
         $homeXG *= $homePlayingStyle->ownXGModifier();
@@ -1507,27 +1487,10 @@ class MatchSimulator
         $awayXG *= $homePressing->opponentXGModifier((int) $effectiveMinute);
 
         // Defensive Line: own xG and opponent xG modifiers
-        // Check if opponent's best forward nullifies the high line
-        $homeDefLineOwn = $homeDefLine->ownXGModifier();
-        $homeDefLineOpp = $homeDefLine->opponentXGModifier();
-        $awayDefLineOwn = $awayDefLine->ownXGModifier();
-        $awayDefLineOpp = $awayDefLine->opponentXGModifier();
-
-        $homePhysicalThreshold = $homeDefLine->physicalThreshold();
-        if ($homePhysicalThreshold > 0 && $this->getBestForwardPhysical($awayPlayers) >= $homePhysicalThreshold) {
-            $homeDefLineOwn = 1.0;
-            $homeDefLineOpp = 1.0;
-        }
-        $awayPhysicalThreshold = $awayDefLine->physicalThreshold();
-        if ($awayPhysicalThreshold > 0 && $this->getBestForwardPhysical($homePlayers) >= $awayPhysicalThreshold) {
-            $awayDefLineOwn = 1.0;
-            $awayDefLineOpp = 1.0;
-        }
-
-        $homeXG *= $homeDefLineOwn;
-        $awayXG *= $homeDefLineOpp;
-        $awayXG *= $awayDefLineOwn;
-        $homeXG *= $awayDefLineOpp;
+        $homeXG *= $homeDefLine->ownXGModifier();
+        $awayXG *= $homeDefLine->opponentXGModifier();
+        $awayXG *= $awayDefLine->ownXGModifier();
+        $homeXG *= $awayDefLine->opponentXGModifier();
 
         // Tactical Interactions
         $interactions = config('match_simulation.tactical_interactions', []);
@@ -1697,7 +1660,6 @@ class MatchSimulator
             $homeDefLine, $awayDefLine,
             $homeMentality, $awayMentality,
             $effectiveMinute,
-            $homePlayers, $awayPlayers,
         );
 
         $homeExpectedGoals += $this->calculateStrikerBonus($homePlayers) * $matchFraction;
@@ -2009,7 +1971,6 @@ class MatchSimulator
             $homeDefLine, $awayDefLine,
             $homeMentality, $awayMentality,
             $effectiveMinute2,
-            $homePlayers2, $awayPlayers2,
         );
 
         $homeXG2 += $this->calculateStrikerBonus($homePlayers2) * $fraction2;

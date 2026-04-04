@@ -198,7 +198,6 @@
                                 <th class="px-4 py-2.5 text-left font-semibold text-text-body">{{ __('game.tg_line') }}</th>
                                 <th class="px-4 py-2.5 text-center font-semibold text-text-body">{{ __('game.tg_your_goals') }}</th>
                                 <th class="px-4 py-2.5 text-center font-semibold text-text-body">{{ __('game.tg_goals_conceded') }}</th>
-                                <th class="px-4 py-2.5 text-left font-semibold text-text-body hidden md:table-cell">{{ __('game.tg_note') }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-border-default">
@@ -215,20 +214,10 @@
                                         {{ $d['opp_xg'] == 1.0 ? '-' : ($d['opp_xg'] > 1.0 ? '+' : '') . round(($d['opp_xg'] - 1) * 100) . '%' }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-2.5 hidden md:table-cell text-xs text-text-muted">
-                                    @if($d['threshold'] > 0)
-                                        {{ __('game.tg_high_line_note', ['threshold' => $d['threshold']]) }}
-                                    @else
-                                        -
-                                    @endif
-                                </td>
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
-                </div>
-                <div class="px-4 py-2 bg-accent-green/10 border-t border-accent-green/20 text-xs text-accent-green md:hidden">
-                    {{ __('game.tg_high_line_note', ['threshold' => 80]) }}
                 </div>
             </div>
         </section>
