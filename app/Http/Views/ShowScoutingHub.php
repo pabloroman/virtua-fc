@@ -94,6 +94,7 @@ class ShowScoutingHub
                 'onCooldown' => $existingOfferStatuses[$gp->id]['onCooldown'] ?? false,
                 // Locked by default — populated below if intel level warrants it
                 'techRange' => null,
+                'physRange' => null,
                 'formattedAskingPrice' => null,
                 'askingPrice' => null,
                 'canAffordFee' => false,
@@ -112,6 +113,7 @@ class ShowScoutingHub
             if ($entry->hasReportLevel()) {
                 $detail = $this->scoutingService->getPlayerScoutingDetail($gp, $game);
                 $playerData['techRange'] = $detail['tech_range'];
+                $playerData['physRange'] = $detail['phys_range'];
                 $playerData['formattedAskingPrice'] = $detail['formatted_asking_price'];
                 $playerData['askingPrice'] = $detail['asking_price'];
                 $playerData['canAffordFee'] = $detail['can_afford_fee'];
