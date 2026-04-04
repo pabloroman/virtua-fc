@@ -195,6 +195,14 @@ class SquadNumberService
             }
         }
 
+        // Safety net: any over-23 with an existing academy number who didn't get
+        // a first-team slot must have their old number cleared to prevent collisions
+        foreach ($resolvableOver23 as $player) {
+            if ($player->number !== null && ! array_key_exists($player->id, $updates)) {
+                $updates[$player->id] = null;
+            }
+        }
+
         // Unresolvable over-23 get null
         $unresolvableOver23 = $over23NeedSlot->skip($over23NeedingCount - $unresolvable);
         foreach ($unresolvableOver23 as $player) {
