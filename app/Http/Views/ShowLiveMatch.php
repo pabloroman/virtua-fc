@@ -8,6 +8,7 @@ use App\Modules\Lineup\Enums\Mentality;
 use App\Modules\Lineup\Enums\PlayingStyle;
 use App\Modules\Lineup\Enums\PressingIntensity;
 use App\Modules\Lineup\Services\LineupService;
+use Illuminate\Support\Facades\Cache;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -169,6 +170,8 @@ class ShowLiveMatch
             ->all();
 
         // Both teams' starting lineups for the Lineups tab
+        $playerPerformances = Cache::get("match_performances:{$playerMatch->id}", []);
+
         $mapLineup = fn (array $ids) => GamePlayer::with('player')
             ->whereIn('id', $ids)
             ->get()
@@ -179,6 +182,7 @@ class ShowLiveMatch
                 'positionGroup' => $p->position_group,
                 'positionSort' => LineupService::positionSortOrder($p->position),
                 'overallScore' => $p->overall_score,
+                'performance' => $playerPerformances[$p->id] ?? null,
             ])
             ->sortBy('positionSort')
             ->values()

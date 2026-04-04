@@ -487,6 +487,7 @@ return [
     // MVP
     'mvp' => 'MVP',
     'mvp_of_the_match' => 'MVP del partido',
+    'match_rating' => 'Valoración',
 
     // xG Preview
     'xg_preview' => 'Previsualización xG',

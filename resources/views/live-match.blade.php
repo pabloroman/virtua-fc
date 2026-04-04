@@ -679,24 +679,21 @@
                                 <span class="text-[10px] text-text-muted ml-auto">{{ $homeFormation }}</span>
                             </div>
                             <div class="space-y-0.5">
-                                @forelse($homeLineupDisplay as $p)
-                                    <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-surface-800/50">
-                                        <span class="inline-flex items-center justify-center w-6 h-6 text-[10px] -skew-x-12 font-semibold text-white shrink-0
-                                            {{ match($p['positionGroup']) {
-                                                'GK' => 'bg-amber-600',
-                                                'DEF' => 'bg-blue-600',
-                                                'MID' => 'bg-green-600',
-                                                'FWD' => 'bg-red-600',
-                                                default => 'bg-surface-600',
-                                            } }}">
-                                            <span class="skew-x-12">{{ $p['positionAbbr'] }}</span>
-                                        </span>
-                                        <span class="text-xs text-text-body flex-1 truncate">{{ $p['name'] }}</span>
-                                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full text-[9px] font-semibold bg-surface-700 text-text-secondary shrink-0">{{ $p['overallScore'] }}</span>
-                                    </div>
-                                @empty
+                                <template x-if="homeLineupRoster.length === 0">
                                     <p class="text-xs text-text-muted italic px-3 py-3">{{ __('game.lineup_unknown') }}</p>
-                                @endforelse
+                                </template>
+                                <template x-for="p in homeLineupRoster" :key="p.id">
+                                    <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-surface-800/50">
+                                        <span class="inline-flex items-center justify-center w-6 h-6 text-[10px] -skew-x-12 font-semibold text-white shrink-0"
+                                              :class="{ 'bg-amber-600': p.positionGroup === 'GK', 'bg-blue-600': p.positionGroup === 'DEF', 'bg-green-600': p.positionGroup === 'MID', 'bg-red-600': p.positionGroup === 'FWD', 'bg-surface-600': !['GK','DEF','MID','FWD'].includes(p.positionGroup) }">
+                                            <span class="skew-x-12" x-text="p.positionAbbr"></span>
+                                        </span>
+                                        <span class="text-xs text-text-body flex-1 truncate" x-text="p.name"></span>
+                                        <span class="inline-flex items-center justify-center min-w-[1.5rem] h-5 rounded-full px-1 text-[9px] font-semibold shrink-0"
+                                              :class="playerRatings[p.id] ? ratingColor(playerRatings[p.id]) : 'bg-surface-700 text-text-secondary'"
+                                              x-text="playerRatings[p.id] ? playerRatings[p.id].toFixed(1) : p.overallScore"></span>
+                                    </div>
+                                </template>
                             </div>
                         </div>
 
@@ -708,24 +705,21 @@
                                 <span class="text-[10px] text-text-muted ml-auto">{{ $awayFormation }}</span>
                             </div>
                             <div class="space-y-0.5">
-                                @forelse($awayLineupDisplay as $p)
-                                    <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-surface-800/50">
-                                        <span class="inline-flex items-center justify-center w-6 h-6 text-[10px] -skew-x-12 font-semibold text-white shrink-0
-                                            {{ match($p['positionGroup']) {
-                                                'GK' => 'bg-amber-600',
-                                                'DEF' => 'bg-blue-600',
-                                                'MID' => 'bg-green-600',
-                                                'FWD' => 'bg-red-600',
-                                                default => 'bg-surface-600',
-                                            } }}">
-                                            <span class="skew-x-12">{{ $p['positionAbbr'] }}</span>
-                                        </span>
-                                        <span class="text-xs text-text-body flex-1 truncate">{{ $p['name'] }}</span>
-                                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full text-[9px] font-semibold bg-surface-700 text-text-secondary shrink-0">{{ $p['overallScore'] }}</span>
-                                    </div>
-                                @empty
+                                <template x-if="awayLineupRoster.length === 0">
                                     <p class="text-xs text-text-muted italic px-3 py-3">{{ __('game.lineup_unknown') }}</p>
-                                @endforelse
+                                </template>
+                                <template x-for="p in awayLineupRoster" :key="p.id">
+                                    <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-surface-800/50">
+                                        <span class="inline-flex items-center justify-center w-6 h-6 text-[10px] -skew-x-12 font-semibold text-white shrink-0"
+                                              :class="{ 'bg-amber-600': p.positionGroup === 'GK', 'bg-blue-600': p.positionGroup === 'DEF', 'bg-green-600': p.positionGroup === 'MID', 'bg-red-600': p.positionGroup === 'FWD', 'bg-surface-600': !['GK','DEF','MID','FWD'].includes(p.positionGroup) }">
+                                            <span class="skew-x-12" x-text="p.positionAbbr"></span>
+                                        </span>
+                                        <span class="text-xs text-text-body flex-1 truncate" x-text="p.name"></span>
+                                        <span class="inline-flex items-center justify-center min-w-[1.5rem] h-5 rounded-full px-1 text-[9px] font-semibold shrink-0"
+                                              :class="playerRatings[p.id] ? ratingColor(playerRatings[p.id]) : 'bg-surface-700 text-text-secondary'"
+                                              x-text="playerRatings[p.id] ? playerRatings[p.id].toFixed(1) : p.overallScore"></span>
+                                    </div>
+                                </template>
                             </div>
                         </div>
                     </div>

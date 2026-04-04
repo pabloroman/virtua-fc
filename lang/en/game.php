@@ -487,6 +487,7 @@ return [
     // MVP
     'mvp' => 'MVP',
     'mvp_of_the_match' => 'MVP of the Match',
+    'match_rating' => 'Match Rating',
 
     // xG Preview
     'xg_preview' => 'xG Preview',

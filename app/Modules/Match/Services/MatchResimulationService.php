@@ -13,6 +13,7 @@ use App\Models\MatchEvent;
 use App\Models\PlayerSuspension;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use App\Modules\Squad\Services\EligibilityService;
 
@@ -214,10 +215,15 @@ class MatchResimulationService
         $newHomeScore = $scoreAtMinute['home'] + $remainderResult->homeScore;
         $newAwayScore = $scoreAtMinute['away'] + $remainderResult->awayScore;
 
-        // 11. Apply the new remainder events
+        // 11. Merge performances with cached values (preserves subbed-out players' data)
+        $cachedPerformances = Cache::get("match_performances:{$match->id}", []);
+        $mergedPerformances = array_merge($cachedPerformances, $remainderOutput->performances);
+        Cache::put("match_performances:{$match->id}", $mergedPerformances, now()->addHours(24));
+
+        // 12. Apply the new remainder events
         $this->applyNewEvents($match, $game, $remainderResult, $competitionId);
 
-        // 12. Update match score and possession
+        // 13. Update match score and possession
         // Note: Score-dependent side effects (standings, cup ties, GK stats, prize money)
         // are NOT handled here. They are deferred to FinalizeMatch, which applies them
         // once after the user finishes the live match. This eliminates the need for
@@ -232,6 +238,7 @@ class MatchResimulationService
         return new ResimulationResult(
             $newHomeScore, $newAwayScore, $oldHomeScore, $oldAwayScore,
             $remainderResult->homePossession, $remainderResult->awayPossession,
+            $mergedPerformances,
         );
     }
 
@@ -324,9 +331,13 @@ class MatchResimulationService
                 'away_possession' => $remainderResult->awayPossession,
             ]);
 
+            // Pass through cached performances (ET simulator doesn't produce new ones)
+            $cachedPerformances = Cache::get("match_performances:{$match->id}", []);
+
             return new ResimulationResult(
                 $newHomeScore, $newAwayScore, $oldHomeScore, $oldAwayScore,
                 $remainderResult->homePossession, $remainderResult->awayPossession,
+                $cachedPerformances,
             );
         });
     }

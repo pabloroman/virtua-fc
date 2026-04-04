@@ -19,6 +19,7 @@ import { createPenaltyShootout } from './modules/penalty-shootout.js';
 import { createSubstitutionManager } from './modules/substitution-manager.js';
 import { createMatchSimulation } from './modules/match-simulation.js';
 import { generateRegularTimeAtmosphere, generateExtraTimeAtmosphere, generateAtmosphereForPeriod, addGoalNarratives, generateContextualNarratives, generateTacticalNarratives } from './modules/atmosphere-generator.js';
+import { calculatePlayerRatings, ratingColor as _ratingColor, updateRosterPerformances } from './modules/player-ratings.js';
 
 /**
  * Copy all own properties from source to target. Regular properties are
@@ -109,6 +110,9 @@ export default function liveMatch(config) {
         // MVP
         mvpPlayerName: config.mvpPlayerName || null,
         mvpPlayerTeamId: config.mvpPlayerTeamId || null,
+
+        // Player match ratings (computed client-side from performance data)
+        playerRatings: {},
 
         // Atmosphere generation (client-side commentary)
         homeLineupRoster: config.homeLineupRoster || [],
@@ -254,6 +258,9 @@ export default function liveMatch(config) {
                 homeScore: 0,
                 awayScore: 0,
             }));
+
+            // Compute initial player ratings from cached performance data
+            this.recalculatePlayerRatings();
 
             // If ET data was preloaded (page refresh during ET), set it up
             if (this.preloadedExtraTimeData) {
@@ -836,6 +843,12 @@ export default function liveMatch(config) {
                     this.resetPossessionTarget();
                 }
 
+                // Update player performances and recalculate ratings
+                if (result.playerPerformances) {
+                    updateRosterPerformances(this.homeLineupRoster, this.awayLineupRoster, result.playerPerformances);
+                    this.recalculatePlayerRatings();
+                }
+
                 // Close the panel and resume
                 this.closeTacticalPanel();
             } catch (err) {
@@ -857,6 +870,26 @@ export default function liveMatch(config) {
 
 
         // recalculateScore — provided by match-simulation module
+
+        // =============================
+        // Player ratings
+        // =============================
+
+        recalculatePlayerRatings() {
+            this.playerRatings = calculatePlayerRatings(
+                this.homeLineupRoster,
+                this.awayLineupRoster,
+                this.events,
+                this.finalHomeScore,
+                this.finalAwayScore,
+                this.homeTeamId,
+                this.awayTeamId,
+            );
+        },
+
+        ratingColor(rating) {
+            return _ratingColor(rating);
+        },
 
         // =============================
         // Display helpers
