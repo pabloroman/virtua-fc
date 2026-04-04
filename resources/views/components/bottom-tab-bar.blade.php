@@ -12,8 +12,6 @@
     $calendarActive = $currentRoute === 'game.calendar';
     $moreActive = in_array($currentRoute, ['game.finances', 'game.transfers', 'game.transfers.outgoing', 'game.scouting', 'game.explore', 'game.competition', 'game.transfer-activity']);
 
-    // Unread notification count
-    $unreadCount = $game->notifications()->whereNull('read_at')->count();
 @endphp
 
 <div x-data="{ moreOpen: false }" class="lg:hidden">
@@ -36,7 +34,7 @@
                 <span class="text-[9px] font-medium uppercase tracking-wider leading-none">{{ __('app.squad') }}</span>
             </a>
 
-            {{-- Starting XI (conditional) or Notifications --}}
+            {{-- Starting XI (only when there's a next match) --}}
             @if($nextMatch)
             <a href="{{ route('game.lineup', $game->id) }}" class="flex flex-col items-center justify-center gap-0.5 min-w-[44px] min-h-[44px] transition-colors {{ $lineupActive ? 'text-accent-blue' : 'text-text-muted' }}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -44,21 +42,6 @@
                 </svg>
                 <span class="text-[9px] font-medium uppercase tracking-wider leading-none">{{ __('app.starting_xi') }}</span>
             </a>
-            @else
-            <button
-                @click="$dispatch('open-modal', 'notifications-mobile')"
-                class="relative flex flex-col items-center justify-center gap-0.5 min-w-[44px] min-h-[44px] transition-colors text-text-muted"
-            >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/>
-                </svg>
-                @if($unreadCount > 0)
-                <span class="absolute top-0.5 right-0.5 min-w-[16px] h-4 px-0.5 rounded-full bg-accent-red text-white text-[8px] font-bold flex items-center justify-center">
-                    {{ $unreadCount > 9 ? '9+' : $unreadCount }}
-                </span>
-                @endif
-                <span class="text-[9px] font-medium uppercase tracking-wider leading-none">{{ __('notifications.inbox') }}</span>
-            </button>
             @endif
 
             {{-- Calendar --}}
@@ -146,25 +129,6 @@
                 @endforeach
                 @endif
 
-                {{-- Notifications --}}
-                @if($nextMatch)
-                <button
-                    @click="moreOpen = false; $dispatch('open-modal', 'notifications-mobile')"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-text-body hover:bg-surface-700 w-full"
-                >
-                    <div class="relative">
-                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/>
-                        </svg>
-                        @if($unreadCount > 0)
-                        <span class="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-0.5 rounded-full bg-accent-red text-white text-[8px] font-bold flex items-center justify-center">
-                            {{ $unreadCount > 9 ? '9+' : $unreadCount }}
-                        </span>
-                        @endif
-                    </div>
-                    <span class="text-sm font-medium">{{ __('notifications.inbox') }}</span>
-                </button>
-                @endif
             </nav>
         </div>
     </div>

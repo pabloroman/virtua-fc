@@ -7,6 +7,9 @@
             ->where('team_id', $game->team_id)
             ->pluck('competition_id')
     )->orderBy('tier')->get();
+
+    // Unread notification count (for mobile bell icon)
+    $unreadCount = $game->notifications()->whereNull('read_at')->count();
 @endphp
 
 <div>
@@ -67,8 +70,24 @@
                     @endif
                 </nav>
 
-                {{-- Right: Next match + action button --}}
-                <div class="flex items-center gap-3">
+                {{-- Right: Notification bell + action button --}}
+                <div class="flex items-center gap-2">
+                    {{-- Mobile notification bell --}}
+                    <button
+                        @click="$dispatch('open-modal', 'notifications-mobile')"
+                        class="lg:hidden relative inline-flex items-center justify-center p-2 min-h-[44px] min-w-[44px] rounded-sm text-text-secondary hover:text-text-primary hover:bg-surface-700 transition-colors shrink-0"
+                        aria-label="{{ __('notifications.inbox') }}"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/>
+                        </svg>
+                        @if($unreadCount > 0)
+                        <span class="absolute top-1 right-1 min-w-[16px] h-4 px-0.5 rounded-full bg-accent-red text-white text-[8px] font-bold flex items-center justify-center">
+                            {{ $unreadCount > 9 ? '9+' : $unreadCount }}
+                        </span>
+                        @endif
+                    </button>
+
                     @if($nextMatch)
                         <div class="hidden sm:flex items-center gap-2 bg-surface-700/50 rounded-lg px-3 py-1.5">
                             <span class="text-[10px] text-text-muted uppercase tracking-wider">{{ __('game.next_match') }}</span>
@@ -80,53 +99,25 @@
                         </div>
                         @if($game->hasPendingActions())
                             @php $pendingAction = $game->getFirstPendingAction(); @endphp
-                            {{-- Desktop: full button --}}
-                            <x-primary-button-link color="amber" :href="$pendingAction && $pendingAction['route'] ? route($pendingAction['route'], $game->id) : route('show-game', $game->id)" class="hidden lg:inline-flex whitespace-nowrap gap-2 animate-pulse">
+                            <x-primary-button-link color="amber" :href="$pendingAction && $pendingAction['route'] ? route($pendingAction['route'], $game->id) : route('show-game', $game->id)" class="whitespace-nowrap gap-2 animate-pulse">
                                 <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
                                 </svg>
-                                {{ __('messages.action_required_short') }}
+                                <span class="hidden sm:inline">{{ __('messages.action_required_short') }}</span>
                             </x-primary-button-link>
-                            {{-- Mobile: compact icon button --}}
-                            <a href="{{ $pendingAction && $pendingAction['route'] ? route($pendingAction['route'], $game->id) : route('show-game', $game->id) }}" class="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-500 text-white animate-pulse transition-colors hover:bg-amber-600">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                                </svg>
-                            </a>
                         @elseif($continueToHome)
-                            {{-- Desktop: full button --}}
-                            <x-primary-button-link :href="route('show-game', $game->id)" class="hidden lg:inline-flex">{{ __('app.continue') }}</x-primary-button-link>
-                            {{-- Mobile: compact icon button --}}
-                            <a href="{{ route('show-game', $game->id) }}" class="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg bg-accent-blue text-white transition-colors hover:bg-blue-600">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M8 5v14l11-7z"/>
-                                </svg>
-                            </a>
+                            <x-primary-button-link :href="route('show-game', $game->id)">{{ __('app.continue') }}</x-primary-button-link>
                         @else
-                            {{-- Desktop: full button --}}
-                            <x-primary-button type="button" @click="$dispatch('show-pre-match', '{{ route('game.pre-match-data', $game->id) }}')" class="hidden lg:inline-flex">
+                            <x-primary-button type="button" @click="$dispatch('show-pre-match', '{{ route('game.pre-match-data', $game->id) }}')">
                                 {{ __('app.continue') }}
                             </x-primary-button>
-                            {{-- Mobile: compact icon button --}}
-                            <button type="button" @click="$dispatch('show-pre-match', '{{ route('game.pre-match-data', $game->id) }}')" class="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg bg-accent-blue text-white transition-colors hover:bg-blue-600">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M8 5v14l11-7z"/>
-                                </svg>
-                            </button>
                         @endif
                     @else
                         <div class="flex items-center gap-3">
                             <span class="hidden sm:inline text-sm text-text-secondary">{{ __('game.season_complete') }}</span>
-                            {{-- Desktop: full button --}}
-                            <x-primary-button-link color="amber" :href="route('game.season-end', $game->id)" class="hidden lg:inline-flex">
+                            <x-primary-button-link color="amber" :href="route('game.season-end', $game->id)">
                                 {{ __('game.view_season_summary') }}
                             </x-primary-button-link>
-                            {{-- Mobile: compact button --}}
-                            <a href="{{ route('game.season-end', $game->id) }}" class="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-500 text-white transition-colors hover:bg-amber-600">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M18.75 4.236c.982.143 1.954.317 2.916.52A6.003 6.003 0 0016.27 9.728M18.75 4.236V4.5c0 2.108-.966 3.99-2.48 5.228m0 0a6.003 6.003 0 01-5.54 0"/>
-                                </svg>
-                            </a>
                         </div>
                     @endif
                 </div>
