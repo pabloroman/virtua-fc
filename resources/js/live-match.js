@@ -18,7 +18,7 @@ import { assignPlayersToSlots } from './modules/slot-assignment.js';
 import { createPenaltyShootout } from './modules/penalty-shootout.js';
 import { createSubstitutionManager } from './modules/substitution-manager.js';
 import { createMatchSimulation } from './modules/match-simulation.js';
-import { generateRegularTimeAtmosphere, generateExtraTimeAtmosphere, addGoalNarratives } from './modules/atmosphere-generator.js';
+import { generateRegularTimeAtmosphere, generateExtraTimeAtmosphere, addGoalNarratives, generateContextualNarratives } from './modules/atmosphere-generator.js';
 
 /**
  * Copy all own properties from source to target. Regular properties are
@@ -704,9 +704,9 @@ export default function liveMatch(config) {
                     this.activeDefLine = result.defensiveLine;
                 }
 
-                // Filter server events up to current minute, but keep atmosphere events
-                // (they are pre-generated for the full match and should persist)
-                const isAtmosphere = (e) => e.type === 'shot_on_target' || e.type === 'shot_off_target' || e.type === 'foul' || e.type === 'contextual';
+                // Filter server events up to current minute, but keep decorative atmosphere
+                // (shots/fouls). Contextual narratives are removed and regenerated below.
+                const isAtmosphere = (e) => e.type === 'shot_on_target' || e.type === 'shot_off_target' || e.type === 'foul';
                 if (isET) {
                     this.extraTimeEvents = this.extraTimeEvents.filter(e => e.minute <= minute || isAtmosphere(e));
                 } else {
@@ -732,6 +732,8 @@ export default function liveMatch(config) {
                         this.extraTimeEvents.push(...result.newEvents);
                         this.extraTimeEvents.sort((a, b) => a.minute - b.minute);
                     }
+
+                    addGoalNarratives(this.extraTimeEvents, this._atmosphereConfig());
 
                     this.lastRevealedETIndex = -1;
                     for (let i = 0; i < this.extraTimeEvents.length; i++) {
@@ -764,6 +766,16 @@ export default function liveMatch(config) {
                     this.finalAwayScore = result.newScore.away;
 
                     this.events = this.synthesizeGoalsIfNeeded(this.events);
+
+                    // Regenerate narratives: goal text for new server goals + contextual
+                    // commentary for checkpoints after the tactical minute (old ones were
+                    // removed because they reflected the pre-resimulation score).
+                    const cfg = this._atmosphereConfig();
+                    addGoalNarratives(this.events, cfg);
+                    const freshContextual = generateContextualNarratives({ ...cfg, allEvents: this.events });
+                    if (freshContextual.length) {
+                        this.events = [...this.events, ...freshContextual].sort((a, b) => a.minute - b.minute);
+                    }
                 }
 
                 this.recalculateScore();

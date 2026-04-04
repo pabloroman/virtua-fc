@@ -381,7 +381,7 @@ function buildTeamForms(name, article) {
  * Generate contextual narrative events that react to the match state.
  * Placed at ~15-minute intervals throughout regular time.
  */
-function generateContextualNarratives(config) {
+export function generateContextualNarratives(config) {
     const {
         homeTeamId, awayTeamId, homeTeamName, awayTeamName,
         homeArticle, awayArticle,
