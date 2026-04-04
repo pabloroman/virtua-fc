@@ -161,4 +161,80 @@ return [
         'Turnover in midfield and :player wastes no time, firing across the keeper',
         ':player (:team) produces a moment of individual brilliance from the edge of the box',
     ],
+
+    // Tactical narratives — generated based on user/opponent tactical setups
+    'tactical_high_press_working' => [
+        ':user pressing with ferocious intensity, suffocating :opp\'s build-up play',
+        'The high press from :el_user is winning the ball back in dangerous areas',
+        ':user are pressing relentlessly — :opp can barely get out of their own half',
+    ],
+    'tactical_high_press_fading' => [
+        'The intensity of :el_user\'s pressing is starting to drop. Legs are getting heavy',
+        ':user can\'t sustain that early pressing intensity — :opp finding more space now',
+        'You can see the fatigue setting in. :user\'s press is losing its bite',
+    ],
+    'tactical_high_press_exhausted' => [
+        ':user look exhausted. The high press has taken its toll in the final stretch',
+        'The tank is running empty for :user — that aggressive pressing is catching up with them',
+        ':opp sensing the tiredness in :el_user\'s legs and pushing forward with confidence',
+    ],
+    'tactical_opp_press_fading' => [
+        ':opp\'s high press is losing steam — :user should find more room to play now',
+        'The pressing from :el_opp isn\'t what it was earlier. Spaces are opening up',
+    ],
+    'tactical_opp_exhausted' => [
+        ':opp look leggy after pressing so hard. :user can exploit the tired legs',
+        'The high press has drained :el_opp — you can see they\'re running on fumes',
+    ],
+    'tactical_low_block_wall' => [
+        ':user sitting compact and deep, making it very difficult for :opp to find space',
+        'A disciplined defensive wall from :el_user. :opp struggling to break through',
+        ':user defending in numbers, denying :opp any clear sight of goal',
+    ],
+    'tactical_low_block_fresh' => [
+        ':user\'s conservative approach is paying off — the players still look fresh and sharp',
+        'Energy levels still high for :user thanks to the disciplined defensive setup',
+    ],
+    'tactical_possession_control' => [
+        ':user controlling the tempo, patiently moving the ball and waiting for openings',
+        'Dominant possession from :el_user — :opp chasing shadows at this point',
+        ':user keeping the ball well, dictating the rhythm of the match',
+    ],
+    'tactical_possession_frustrated' => [
+        ':user dominating the ball but struggling to find a way past :el_opp\'s deep block',
+        'Lots of possession for :user but :opp\'s low block is frustrating every attack',
+    ],
+    'tactical_counter_waiting' => [
+        ':user sitting deep, waiting for the moment to spring on the counter',
+        ':user happy to concede territory — looking to strike on the break',
+        'Patient defending from :el_user, ready to pounce when the opportunity comes',
+    ],
+    'tactical_counter_exploiting' => [
+        ':user exploiting the space behind :el_opp\'s high line with devastating counter-attacks',
+        ':opp\'s aggressive approach is leaving gaps — :user hitting them on the break',
+    ],
+    'tactical_direct_play' => [
+        ':user bypassing the midfield with long balls forward, keeping :opp on the back foot',
+        'Direct approach from :el_user — no messing about, straight to the forwards',
+    ],
+    'tactical_direct_bypassing_press' => [
+        ':user\'s direct play is going right over :el_opp\'s high press — long balls finding their targets',
+        'The press from :el_opp is being bypassed by :el_user\'s direct long balls',
+    ],
+    // Tactical goal flavoring
+    'goal_counter_attack' => [
+        'Lightning counter-attack! :player finishes after a devastating break by :team',
+        'Clinical on the break! :player converts after :team spring forward at pace',
+        'Counter-attack goal! :team break with speed and :player is there to finish',
+    ],
+    'goal_possession' => [
+        ':team work the ball patiently before :player finds the opening. Textbook possession play',
+        'Patient build-up from :team and :player picks the perfect moment to strike',
+        'Beautiful passing move from :team — :player applies the finishing touch',
+    ],
+    'goal_direct' => [
+        'Long ball forward and :player is there to convert for :team!',
+        ':team go direct and it pays off — :player latches onto the ball and finishes',
+        'Route one football! The long ball finds :player who makes no mistake',
+    ],
 ];

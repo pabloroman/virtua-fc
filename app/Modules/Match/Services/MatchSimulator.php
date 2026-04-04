@@ -1400,6 +1400,42 @@ class MatchSimulator
     }
 
     /**
+     * Calculate an xG multiplier based on possession percentage.
+     * Teams with dominant possession get a small bonus; teams with low possession get a small penalty.
+     * Returns 1.0 (no effect) when possession is in the neutral band.
+     */
+    private function possessionXGModifier(int $possessionPct): float
+    {
+        $cfg = config('match_simulation.possession_xg_effect', []);
+
+        if (! ($cfg['enabled'] ?? false)) {
+            return 1.0;
+        }
+
+        $maxBonus = $cfg['max_bonus'] ?? 0.08;
+        $maxPenalty = $cfg['max_penalty'] ?? -0.05;
+        [$neutralLow, $neutralHigh] = $cfg['neutral_band'] ?? [47, 53];
+
+        if ($possessionPct >= $neutralLow && $possessionPct <= $neutralHigh) {
+            return 1.0;
+        }
+
+        if ($possessionPct > $neutralHigh) {
+            // Linear interpolation from neutral_high (0 bonus) to 65% (max bonus)
+            $range = 65 - $neutralHigh;
+            $excess = min($possessionPct - $neutralHigh, $range);
+
+            return 1.0 + ($maxBonus * $excess / max($range, 1));
+        }
+
+        // Below neutral band — penalty
+        $range = $neutralLow - 35;
+        $deficit = min($neutralLow - $possessionPct, $range);
+
+        return 1.0 + ($maxPenalty * $deficit / max($range, 1));
+    }
+
+    /**
      * Calculate base expected goals from strength ratio, formation, mentality, and match fraction.
      * Does not include tactical instruction modifiers, striker bonus, or max goals cap.
      *
@@ -1523,6 +1559,60 @@ class MatchSimulator
             $awayXG *= $directBonus;
         }
 
+        // High Press vs Deep line → press has nowhere to win ball, defensive benefit reduced
+        $highPressVsDeep = $interactions['high_press_vs_deep'] ?? 1.0;
+        if ($homePressing === PressingIntensity::HIGH_PRESS && $awayDefLine === DefensiveLineHeight::DEEP) {
+            $awayXG *= $highPressVsDeep; // presser's defensive benefit is reduced (opponent scores more)
+        }
+        if ($awayPressing === PressingIntensity::HIGH_PRESS && $homeDefLine === DefensiveLineHeight::DEEP) {
+            $homeXG *= $highPressVsDeep;
+        }
+
+        // Counter-Attack vs opponent Low Block → can't exploit space on the break
+        $counterVsLowBlock = $interactions['counter_vs_low_block'] ?? 1.0;
+        if ($homePlayingStyle === PlayingStyle::COUNTER_ATTACK && $awayPressing === PressingIntensity::LOW_BLOCK) {
+            $awayXG *= $counterVsLowBlock; // counter team becomes more vulnerable
+        }
+        if ($awayPlayingStyle === PlayingStyle::COUNTER_ATTACK && $homePressing === PressingIntensity::LOW_BLOCK) {
+            $homeXG *= $counterVsLowBlock;
+        }
+
+        // Possession vs opponent Deep + Low Block → can't break the wall
+        $possVsDeepLowBlock = $interactions['possession_vs_deep_low_block'] ?? 1.0;
+        if ($homePlayingStyle === PlayingStyle::POSSESSION && $awayDefLine === DefensiveLineHeight::DEEP && $awayPressing === PressingIntensity::LOW_BLOCK) {
+            $homeXG *= $possVsDeepLowBlock;
+        }
+        if ($awayPlayingStyle === PlayingStyle::POSSESSION && $homeDefLine === DefensiveLineHeight::DEEP && $homePressing === PressingIntensity::LOW_BLOCK) {
+            $awayXG *= $possVsDeepLowBlock;
+        }
+
+        // Direct vs opponent Deep line → long balls bypass deep block
+        $directVsDeep = $interactions['direct_vs_deep'] ?? 1.0;
+        if ($homePlayingStyle === PlayingStyle::DIRECT && $awayDefLine === DefensiveLineHeight::DEEP) {
+            $homeXG *= $directVsDeep;
+        }
+        if ($awayPlayingStyle === PlayingStyle::DIRECT && $homeDefLine === DefensiveLineHeight::DEEP) {
+            $awayXG *= $directVsDeep;
+        }
+
+        // High Line + High Press synergy → coordinated pressing bonus
+        $highLineHighPressSynergy = $interactions['high_line_high_press_synergy'] ?? 1.0;
+        if ($homeDefLine === DefensiveLineHeight::HIGH_LINE && $homePressing === PressingIntensity::HIGH_PRESS) {
+            $homeXG *= $highLineHighPressSynergy;
+        }
+        if ($awayDefLine === DefensiveLineHeight::HIGH_LINE && $awayPressing === PressingIntensity::HIGH_PRESS) {
+            $awayXG *= $highLineHighPressSynergy;
+        }
+
+        // Attacking mentality + High Line → general vulnerability to any opponent
+        $attackingHighLineVuln = $interactions['attacking_high_line_vulnerability'] ?? 1.0;
+        if ($homeMentality === Mentality::ATTACKING && $homeDefLine === DefensiveLineHeight::HIGH_LINE) {
+            $awayXG *= $attackingHighLineVuln; // opponent benefits
+        }
+        if ($awayMentality === Mentality::ATTACKING && $awayDefLine === DefensiveLineHeight::HIGH_LINE) {
+            $homeXG *= $attackingHighLineVuln;
+        }
+
         return [$homeXG, $awayXG];
     }
 
@@ -1617,6 +1707,18 @@ class MatchSimulator
         $awayExpectedGoals *= $this->calculateGoalkeeperModifier($homePlayers);
         $homeExpectedGoals *= $this->calculateGoalkeeperModifier($awayPlayers);
 
+        // Possession xG effect: dominant possession gives a small attacking bonus
+        $possession = $this->calculatePossession(
+            $homeStrength, $awayStrength,
+            $homeFormation, $awayFormation,
+            $homeMentality, $awayMentality,
+            $homePlayingStyle, $awayPlayingStyle,
+            $homePressing, $awayPressing,
+            $matchSeed,
+        );
+        $homeExpectedGoals *= $this->possessionXGModifier($possession['home']);
+        $awayExpectedGoals *= $this->possessionXGModifier($possession['away']);
+
         [$homeScore, $awayScore] = $this->dixonColesRandom($homeExpectedGoals, $awayExpectedGoals);
 
         // A team with no players cannot score — force their goals to 0.
@@ -1707,6 +1809,9 @@ class MatchSimulator
 
                 $awayExpectedGoals *= $this->calculateGoalkeeperModifier($homePlayers);
                 $homeExpectedGoals *= $this->calculateGoalkeeperModifier($awayPlayers);
+
+                $homeExpectedGoals *= $this->possessionXGModifier($possession['home']);
+                $awayExpectedGoals *= $this->possessionXGModifier($possession['away']);
 
                 [$homeScore, $awayScore] = $this->dixonColesRandom($homeExpectedGoals, $awayExpectedGoals);
             }
@@ -1852,6 +1957,17 @@ class MatchSimulator
         $awayXG1 *= $this->calculateGoalkeeperModifier($homePlayers);
         $homeXG1 *= $this->calculateGoalkeeperModifier($awayPlayers);
 
+        // Possession xG effect (calculated once for both periods — possession doesn't change mid-match)
+        $possession = $this->calculatePossession(
+            $homeStrength, $awayStrength,
+            $homeFormation, $awayFormation,
+            $homeMentality, $awayMentality,
+            $homePlayingStyle, $awayPlayingStyle,
+            $homePressing, $awayPressing,
+        );
+        $homeXG1 *= $this->possessionXGModifier($possession['home']);
+        $awayXG1 *= $this->possessionXGModifier($possession['away']);
+
         $homeScore1 = $this->poissonRandom($homeXG1);
         $awayScore1 = $this->poissonRandom($awayXG1);
 
@@ -1901,6 +2017,9 @@ class MatchSimulator
 
         $awayXG2 *= $this->calculateGoalkeeperModifier($homePlayers2);
         $homeXG2 *= $this->calculateGoalkeeperModifier($awayPlayers2);
+
+        $homeXG2 *= $this->possessionXGModifier($possession['home']);
+        $awayXG2 *= $this->possessionXGModifier($possession['away']);
 
         $homeScore2 = $this->poissonRandom($homeXG2);
         $awayScore2 = $this->poissonRandom($awayXG2);
@@ -2291,6 +2410,17 @@ class MatchSimulator
         // Goalkeeper quality
         $awayExpectedGoals *= $this->calculateGoalkeeperModifier($homePlayers);
         $homeExpectedGoals *= $this->calculateGoalkeeperModifier($awayPlayers);
+
+        // Possession xG effect
+        $etPossession = $this->calculatePossession(
+            $homeStrength, $awayStrength,
+            $homeFormation, $awayFormation,
+            $homeMentality, $awayMentality,
+            $homePlayingStyle, $awayPlayingStyle,
+            $homePressing, $awayPressing,
+        );
+        $homeExpectedGoals *= $this->possessionXGModifier($etPossession['home']);
+        $awayExpectedGoals *= $this->possessionXGModifier($etPossession['away']);
 
         [$homeScore, $awayScore] = $this->dixonColesRandom($homeExpectedGoals, $awayExpectedGoals);
 

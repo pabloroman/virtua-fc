@@ -63,11 +63,25 @@ class EnergyCalculator
 
     /**
      * Convert average energy (0–100) to an effectiveness modifier (min_effectiveness–1.0).
+     *
+     * Linear above 40% energy, with a steeper power-curve drop-off below 40%.
+     * This makes exhausted players (high press, late game) noticeably weaker,
+     * creating visible tactical consequences for aggressive energy-draining setups.
      */
     public static function effectivenessModifier(float $averageEnergy): float
     {
         $minEffectiveness = config('match_simulation.energy.min_effectiveness', 0.5);
+        $normalized = $averageEnergy / 100;
 
-        return $minEffectiveness + ($averageEnergy / 100) * (1 - $minEffectiveness);
+        // Below 40% energy: steeper drop-off via power curve
+        if ($normalized < 0.4) {
+            // At 40% energy the linear formula gives: min + 0.4 * (1 - min)
+            $breakpoint = $minEffectiveness + 0.4 * (1 - $minEffectiveness);
+            $dropoff = pow($normalized / 0.4, 1.5);
+
+            return $minEffectiveness + $dropoff * ($breakpoint - $minEffectiveness);
+        }
+
+        return $minEffectiveness + $normalized * (1 - $minEffectiveness);
     }
 }
