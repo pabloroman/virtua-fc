@@ -187,31 +187,28 @@ class CupDrawService
             return $pairs;
         }
 
-        // Later rounds: pair based on bracket_position from previous round
+        // Later rounds: combine previous-round winners with new entrants
         $previousTies = CupTie::where('game_id', $gameId)
             ->where('competition_id', $competitionId)
             ->where('round_number', $roundNumber - 1)
             ->where('completed', true)
             ->whereNotNull('winner_id')
-            ->orderBy('bracket_position')
-            ->orderBy('id')
             ->get();
+
+        $winners = $previousTies->pluck('winner_id');
+        $allTeams = $winners->merge($enteringTeams);
+
+        // Apply pairing strategy to the combined pool
+        $teamTierMap = $applyHomeAdvantageRule
+            ? $this->getTeamTierMap($gameId, $allTeams)
+            : [];
+
+        $orderedTeams = $strategy->pairTeams($allTeams, $teamTierMap);
 
         $pairs = collect();
 
-        // Pair consecutive previous-round winners: positions 0↔1, 2↔3, etc.
-        for ($i = 0; $i + 1 < $previousTies->count(); $i += 2) {
-            $pairs->push([$previousTies[$i]->winner_id, $previousTies[$i + 1]->winner_id]);
-        }
-
-        // If there are new entrants at this round, shuffle and pair them,
-        // then append to the bracket
-        if ($enteringTeams->isNotEmpty()) {
-            $shuffledEntrants = $enteringTeams->shuffle()->values();
-
-            for ($i = 0; $i + 1 < $shuffledEntrants->count(); $i += 2) {
-                $pairs->push([$shuffledEntrants[$i], $shuffledEntrants[$i + 1]]);
-            }
+        for ($i = 0; $i + 1 < $orderedTeams->count(); $i += 2) {
+            $pairs->push([$orderedTeams[$i], $orderedTeams[$i + 1]]);
         }
 
         return $pairs;
