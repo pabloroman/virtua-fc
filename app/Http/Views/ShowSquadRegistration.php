@@ -16,10 +16,8 @@ class ShowSquadRegistration
             return redirect()->route('game.squad', $gameId);
         }
 
-        // Only accessible during transfer windows or when a pending action requires it
-        if (! $game->isTransferWindowOpen() && ! $game->hasPendingAction('squad_registration')) {
-            return redirect()->route('game.squad', $gameId);
-        }
+        $blocking = $game->hasPendingAction('squad_registration');
+        $editable = $game->isTransferWindowOpen() || $blocking;
 
         $gamePlayers = GamePlayer::where('game_id', $gameId)
             ->where('team_id', $game->team_id)
@@ -59,6 +57,8 @@ class ShowSquadRegistration
             'slots' => $slots,
             'academyPlayers' => $academyPlayers,
             'unregistered' => $unregistered,
+            'blocking' => $blocking,
+            'editable' => $editable,
         ]);
     }
 }

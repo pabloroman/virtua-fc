@@ -367,4 +367,5 @@ return [
     'registration_rule_first_team' => 'First team players are assigned shirt numbers 1 to 25.',
     'registration_rule_academy' => 'Academy numbers (26-99) are reserved for players under 23 years old.',
     'registration_rule_unregistered' => 'Unregistered players cannot be selected for matchday squads.',
+    'registration_readonly' => 'You can register players and modify shirt numbers only during transfer windows.',
 ];

@@ -3,6 +3,7 @@ export default function squadRegistration(config) {
         players: config.players,
         slots: config.slots,
         academyPlayers: config.academyPlayers,
+        editable: config.editable ?? true,
 
         // Drag state
         dragPlayerId: null,
@@ -138,6 +139,7 @@ export default function squadRegistration(config) {
         // --- HTML5 Drag and Drop ---
 
         onDragStart(event, playerId, sourceSlot) {
+            if (!this.editable) { event.preventDefault(); return; }
             this.dragPlayerId = playerId;
             this.dragSourceSlot = sourceSlot;
             event.dataTransfer.effectAllowed = 'move';
@@ -232,10 +234,12 @@ export default function squadRegistration(config) {
         },
 
         removeFromSlot(slotNumber) {
+            if (!this.editable) return;
             this.slots[slotNumber] = null;
         },
 
         assignToNextSlot(playerId) {
+            if (!this.editable) return;
             for (let i = 1; i <= 25; i++) {
                 if (!this.slots[i]) {
                     this.slots[i] = playerId;
@@ -247,6 +251,7 @@ export default function squadRegistration(config) {
         // --- Touch support ---
 
         onTouchStart(event, playerId, sourceSlot) {
+            if (!this.editable) return;
             this.touchStartX = event.touches[0].clientX;
             this.touchStartY = event.touches[0].clientY;
 

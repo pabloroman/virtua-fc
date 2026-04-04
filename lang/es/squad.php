@@ -367,4 +367,5 @@ return [
     'registration_rule_first_team' => 'Los jugadores del primer equipo llevan dorsales del 1 al 25.',
     'registration_rule_academy' => 'Los dorsales de cantera (26-99) están reservados para jugadores menores de 23 años.',
     'registration_rule_unregistered' => 'Los jugadores no inscritos no pueden ser convocados para los partidos.',
+    'registration_readonly' => 'Puedes inscribir jugadores y modificar dorsales solo durante las ventanas de fichajes.',
 ];
