@@ -105,7 +105,7 @@ return [
     |   is sampled from the probability distribution.
     |
     */
-    'dixon_coles_rho' => -0.13,         // goal correlation: 0 = independent Poisson, -0.13 = realistic
+    'dixon_coles_rho' => -0.05,         // goal correlation: 0 = independent Poisson, -0.13 = realistic
     'max_goals_cap' => 6,
     'score_concentration' => 1.5,       // 1.0 = standard, >1 = results cluster closer to xG mode
 

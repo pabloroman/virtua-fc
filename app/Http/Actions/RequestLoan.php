@@ -2,7 +2,6 @@
 
 namespace App\Http\Actions;
 
-use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\LoanService;
 use App\Models\Game;
 use App\Models\GamePlayer;
@@ -35,12 +34,6 @@ class RequestLoan
         if ($player->team_id === null) {
             return redirect()->back()
                 ->with('error', __('messages.cannot_loan_free_agent'));
-        }
-
-        // Squad size cap
-        if (ContractService::isSquadFull($game)) {
-            return redirect()->back()
-                ->with('error', __('messages.squad_full', ['max' => ContractService::MAX_SQUAD_SIZE]));
         }
 
         $this->loanService->requestLoanIn($game, $player);

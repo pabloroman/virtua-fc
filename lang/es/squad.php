@@ -254,8 +254,10 @@ return [
     'radar_tec' => 'Técnica',
     'radar_phy' => 'Físico',
 
-    // Squad cap
-    'squad_trim' => 'Reducción de Plantilla',
+    // Registration
+    'not_registered' => 'No inscrito',
+    'too_many_first_team' => 'Máximo 25 inscripciones de primer equipo (dorsales 1-25).',
+    'drag_to_assign' => 'Arrastra un jugador aquí para asignarlo',
 
     // Grid positioning
     'drag_or_tap' => 'Toca una celda o arrastra al jugador',
@@ -289,7 +291,6 @@ return [
     'age_profile' => 'Perfil de Edad',
     'contract_watch' => 'Contratos',
     'expiring_this_season' => 'Expiran esta temporada',
-    'expiring_next_season' => 'Expiran la próxima temporada',
     'no_contract_issues' => 'Sin contratos pendientes',
     'highest_earners' => 'Mayores salarios',
 
@@ -349,4 +350,22 @@ return [
 
     // Dorsales
     'number' => 'Dorsal',
+
+    // Inscripción de plantilla
+    'registration' => 'Inscripción',
+    'registration_title' => 'Inscripción de Plantilla',
+    'registration_subtitle' => 'Asigna dorsales para la temporada',
+    'first_team_slots' => 'Primer Equipo (1-25)',
+    'academy_slots' => 'Cantera (26-99)',
+    'unregistered_players' => 'No inscritos',
+    'empty_slot' => 'Vacío',
+    'save_registration' => 'Guardar',
+    'registration_saved' => 'Inscripción guardada',
+    'registered_count' => ':count inscritos',
+    'academy_age_limit' => 'Solo jugadores menores de 23 años pueden inscribirse con dorsal de cantera (26-99)',
+    'registration_rules_title' => 'Reglas de Inscripción',
+    'registration_rule_first_team' => 'Los jugadores del primer equipo llevan dorsales del 1 al 25.',
+    'registration_rule_academy' => 'Los dorsales de cantera (26-99) están reservados para jugadores menores de 23 años.',
+    'registration_rule_unregistered' => 'Los jugadores no inscritos no pueden ser convocados para los partidos.',
+    'registration_readonly' => 'Puedes inscribir jugadores y modificar dorsales solo durante las ventanas de fichajes.',
 ];

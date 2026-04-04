@@ -66,6 +66,12 @@
                 manualAssignments: {{ Js::from($slotAssignments) }},
                 mvpPlayerName: {!! $mvpPlayerName ? Js::from($mvpPlayerName) : 'null' !!},
                 mvpPlayerTeamId: {!! $mvpPlayerTeamId ? "'" . $mvpPlayerTeamId . "'" : 'null' !!},
+                homeLineupRoster: {{ Js::from($homeLineupDisplay) }},
+                awayLineupRoster: {{ Js::from($awayLineupDisplay) }},
+                venueName: {{ Js::from($match->homeTeam->stadium_name ?? '') }},
+                homeArticle: {{ Js::from($match->homeTeam->article) }},
+                awayArticle: {{ Js::from($match->awayTeam->article) }},
+                narrativeTemplates: {{ Js::from($narrativeTemplates) }},
                 translations: {
                     unsavedTacticalChanges: {!! Js::from(__('game.tactical_unsaved_changes')) !!},
                     extraTime: {!! Js::from(__('game.live_extra_time')) !!},
@@ -339,8 +345,17 @@
 
                 {{-- Tab: Events --}}
                 <div x-show="activeTab === 'events'" class="px-4 sm:px-6 md:px-8 pb-4 sm:pb-6 md:pb-8">
+                    {{-- Commentary toggle --}}
+                    <div class="flex justify-end pt-2 pb-1">
+                        <label class="flex items-center gap-1.5 cursor-pointer select-none">
+                            <input type="checkbox" x-model="showCommentary"
+                                   @change="localStorage.setItem('liveMatchCommentary', showCommentary)"
+                                   class="w-3.5 h-3.5 rounded border-border-default bg-surface-700 text-accent-blue focus:ring-accent-blue/30 focus:ring-offset-0 cursor-pointer">
+                            <span class="text-[10px] text-text-muted uppercase tracking-wider">{{ __('game.live_commentary') }}</span>
+                        </label>
+                    </div>
                     {{-- Events Feed --}}
-                    <div class="pt-2">
+                    <div>
                         <div class="space-y-1 max-h-96 overflow-y-auto" id="events-feed">
 
                             {{-- Penalty kicks display --}}
@@ -428,11 +443,9 @@
 
                             {{-- ET Second half events --}}
                             <template x-for="(event, idx) in etSecondHalfEvents" :key="'etsh-' + idx">
-                                <div class="flex gap-3 py-2.5 px-3 rounded-lg transition-all duration-300"
-                                     :class="[isGoalEvent(event) ? 'bg-goal-highlight border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent', event.type === 'substitution_group' ? 'items-start' : 'items-center']"
-                                     x-transition:enter="transition ease-out duration-300"
-                                     x-transition:enter-start="opacity-0 -translate-y-2"
-                                     x-transition:enter-end="opacity-100 translate-y-0"
+                                <div class="px-3 rounded-lg "
+                                     x-show="!isAtmosphereEvent(event) || showCommentary"
+                                     :class="[isGoalEvent(event) ? 'bg-goal-highlight border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent', isAtmosphereEvent(event) ? 'py-1' : 'py-2.5']"
                                 >
                                     @include('partials.live-match.event-row')
                                 </div>
@@ -449,11 +462,9 @@
 
                             {{-- ET First half events --}}
                             <template x-for="(event, idx) in etFirstHalfEvents" :key="'etfh-' + idx">
-                                <div class="flex gap-3 py-2.5 px-3 rounded-lg transition-all duration-300"
-                                     :class="[isGoalEvent(event) ? 'bg-goal-highlight border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent', event.type === 'substitution_group' ? 'items-start' : 'items-center']"
-                                     x-transition:enter="transition ease-out duration-300"
-                                     x-transition:enter-start="opacity-0 -translate-y-2"
-                                     x-transition:enter-end="opacity-100 translate-y-0"
+                                <div class="px-3 rounded-lg "
+                                     x-show="!isAtmosphereEvent(event) || showCommentary"
+                                     :class="[isGoalEvent(event) ? 'bg-goal-highlight border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent', isAtmosphereEvent(event) ? 'py-1' : 'py-2.5']"
                                 >
                                     @include('partials.live-match.event-row')
                                 </div>
@@ -470,11 +481,9 @@
 
                             {{-- Second half events (newest first) --}}
                             <template x-for="(event, idx) in secondHalfEvents" :key="'sh-' + idx">
-                                <div class="flex gap-3 py-2.5 px-3 rounded-lg transition-all duration-300"
-                                     :class="[isGoalEvent(event) ? 'bg-goal-highlight border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent', event.type === 'substitution_group' ? 'items-start' : 'items-center']"
-                                     x-transition:enter="transition ease-out duration-300"
-                                     x-transition:enter-start="opacity-0 -translate-y-2"
-                                     x-transition:enter-end="opacity-100 translate-y-0"
+                                <div class="px-3 rounded-lg "
+                                     x-show="!isAtmosphereEvent(event) || showCommentary"
+                                     :class="[isGoalEvent(event) ? 'bg-goal-highlight border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent', isAtmosphereEvent(event) ? 'py-1' : 'py-2.5']"
                                 >
                                     @include('partials.live-match.event-row')
                                 </div>
@@ -491,11 +500,9 @@
 
                             {{-- First half events (newest first) --}}
                             <template x-for="(event, idx) in firstHalfEvents" :key="'fh-' + idx">
-                                <div class="flex gap-3 py-2.5 px-3 rounded-lg transition-all duration-300"
-                                     :class="[isGoalEvent(event) ? 'bg-goal-highlight border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent', event.type === 'substitution_group' ? 'items-start' : 'items-center']"
-                                     x-transition:enter="transition ease-out duration-300"
-                                     x-transition:enter-start="opacity-0 -translate-y-2"
-                                     x-transition:enter-end="opacity-100 translate-y-0"
+                                <div class="px-3 rounded-lg "
+                                     x-show="!isAtmosphereEvent(event) || showCommentary"
+                                     :class="[isGoalEvent(event) ? 'bg-goal-highlight border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent', isAtmosphereEvent(event) ? 'py-1' : 'py-2.5']"
                                 >
                                     @include('partials.live-match.event-row')
                                 </div>
@@ -582,6 +589,33 @@
                                 <span class="font-heading font-bold text-sm text-text-primary tabular-nums" x-text="homeScore"></span>
                                 <span class="text-[10px] text-text-muted uppercase tracking-wider">{{ __('game.live_stat_goals') }}</span>
                                 <span class="font-heading font-bold text-sm text-text-primary tabular-nums" x-text="awayScore"></span>
+                            </div>
+                        </div>
+
+                        {{-- Shots --}}
+                        <div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-baseline gap-1">
+                                    <span class="font-heading font-bold text-sm text-text-primary tabular-nums" x-text="getStatCount('shot_on_target', 'home') + getStatCount('shot_off_target', 'home')"></span>
+                                    <span class="text-[10px] text-text-muted tabular-nums" x-text="'(' + getStatCount('shot_on_target', 'home') + ')'"></span>
+                                </div>
+                                <div class="text-center">
+                                    <span class="text-[10px] text-text-muted uppercase tracking-wider">{{ __('game.live_stat_shots') }}</span>
+                                    <div class="text-[9px] text-text-muted">{{ __('game.live_stat_shots_on_target') }}</div>
+                                </div>
+                                <div class="flex items-baseline gap-1">
+                                    <span class="text-[10px] text-text-muted tabular-nums" x-text="'(' + getStatCount('shot_on_target', 'away') + ')'"></span>
+                                    <span class="font-heading font-bold text-sm text-text-primary tabular-nums" x-text="getStatCount('shot_on_target', 'away') + getStatCount('shot_off_target', 'away')"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Fouls --}}
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="font-heading font-bold text-sm text-text-primary tabular-nums" x-text="getStatCount('foul', 'home')"></span>
+                                <span class="text-[10px] text-text-muted uppercase tracking-wider">{{ __('game.live_stat_fouls') }}</span>
+                                <span class="font-heading font-bold text-sm text-text-primary tabular-nums" x-text="getStatCount('foul', 'away')"></span>
                             </div>
                         </div>
 

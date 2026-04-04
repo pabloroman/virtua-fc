@@ -150,4 +150,8 @@ return [
     'budget_loan_repaid_title' => 'Préstamo presupuestario devuelto',
     'budget_loan_repaid_message' => 'El préstamo presupuestario ha sido devuelto (:repayment con intereses).',
     'budget_loan_repaid_with_debt' => 'La devolución del préstamo de :repayment superó el superávit disponible. El déficit se arrastra como deuda.',
+
+    // Squad registration
+    'squad_registration_required_title' => 'Inscripción de plantilla requerida',
+    'squad_registration_required_message' => 'Tienes :count jugadores sin inscribir. Registra tu plantilla antes de que comience la temporada — los jugadores no inscritos no podrán ser convocados.',
 ];

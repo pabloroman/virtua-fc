@@ -57,11 +57,11 @@
             @endisset
 
             <!-- Page Content -->
-            <main class="text-text-body flex-1">
+            <main class="text-text-body flex-1 pb-16 lg:pb-0">
                 {{ $slot }}
             </main>
             @unless($hideFooter ?? false)
-            <footer class="mt-12 bg-surface-800/40">
+            <footer class="hidden lg:block mt-12 bg-surface-800/40">
                 <div class="border-t border-border-default/50">
                     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">

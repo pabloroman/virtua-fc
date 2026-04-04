@@ -91,55 +91,53 @@
         </div>
     </div>
 
-    {{-- Mobile Hamburger + Drawer --}}
+    {{-- Mobile Bottom Tab Bar --}}
     <div class="mb-12">
-        <h3 class="text-lg font-semibold text-text-primary mb-2">Mobile Hamburger + Drawer</h3>
-        <p class="text-sm text-text-secondary mb-4">On mobile (<code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">lg:hidden</code>), the desktop nav collapses into a hamburger button that opens a slide-out drawer from the left. The drawer is implemented in <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">game-header.blade.php</code> using Alpine.js.</p>
+        <h3 class="text-lg font-semibold text-text-primary mb-2">Mobile Bottom Tab Bar</h3>
+        <p class="text-sm text-text-secondary mb-4">On mobile (<code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">lg:hidden</code>), navigation uses a fixed bottom tab bar with 5 tabs: Dashboard, Squad, Starting XI, Calendar, and More. The "More" tab opens a slide-up panel with secondary items (Finances, Transfers, Competitions). Implemented in <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">bottom-tab-bar.blade.php</code>, included via <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">game-header.blade.php</code>.</p>
 
         <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
-            {{-- Simulated mobile header --}}
-            <div class="max-w-sm">
-                <div class="bg-surface-900/95 backdrop-blur-md border border-border-default rounded-lg px-4 py-3 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        {{-- Hamburger icon --}}
-                        <button class="text-text-secondary hover:text-text-primary min-h-[44px] min-w-[44px] flex items-center justify-center">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
-                            </svg>
-                        </button>
+            {{-- Simulated mobile layout --}}
+            <div class="max-w-sm mx-auto">
+                {{-- Simulated header --}}
+                <div class="bg-surface-900/95 backdrop-blur-md border border-border-default rounded-t-lg px-4 py-3 flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 bg-surface-600 rounded-lg shrink-0"></div>
                         <div>
                             <span class="font-heading font-semibold text-sm text-text-primary uppercase tracking-wide">Real Madrid</span>
                             <p class="text-[10px] text-text-muted uppercase tracking-widest">Season 2025/26</p>
                         </div>
                     </div>
-                    <button class="inline-flex items-center px-3 py-1.5 bg-accent-blue hover:bg-blue-600 rounded-lg font-semibold text-xs text-white uppercase tracking-wider transition-all">Continue</button>
+                    <button class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-accent-blue text-white">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </button>
                 </div>
-            </div>
 
-            {{-- Simulated drawer panel --}}
-            <div class="max-w-[288px] mt-4">
-                <div class="bg-surface-800 border border-border-default rounded-lg shadow-xl overflow-hidden">
-                    <div class="flex items-center justify-between p-4 border-b border-border-strong">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-surface-600 rounded-lg shrink-0"></div>
-                            <div>
-                                <h3 class="font-heading font-semibold text-sm text-text-primary uppercase tracking-wide">Real Madrid</h3>
-                                <p class="text-[10px] text-text-muted uppercase tracking-widest">Season 2025/26</p>
-                            </div>
-                        </div>
-                        <button class="p-2 text-text-muted hover:text-text-primary">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
+                {{-- Simulated content --}}
+                <div class="bg-surface-800 border-x border-border-default h-32 flex items-center justify-center text-text-muted text-xs">Page content</div>
+
+                {{-- Simulated bottom tab bar --}}
+                <div class="bg-surface-900/95 backdrop-blur-md border border-border-default rounded-b-lg px-2 py-2 flex items-center justify-around">
+                    <div class="flex flex-col items-center gap-0.5 text-accent-blue">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
+                        <span class="text-[9px] font-medium uppercase tracking-wider">Home</span>
                     </div>
-                    <nav class="py-2">
-                        <a href="#" class="block w-full ps-3 pe-4 py-2 border-l-4 border-accent-blue text-start text-base font-medium text-text-primary bg-accent-blue/10">Dashboard</a>
-                        <a href="#" class="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-medium text-text-secondary hover:text-text-primary hover:bg-surface-700">Squad</a>
-                        <a href="#" class="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-medium text-text-secondary hover:text-text-primary hover:bg-surface-700">Starting XI</a>
-                        <a href="#" class="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-medium text-text-secondary hover:text-text-primary hover:bg-surface-700">Finances</a>
-                        <a href="#" class="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-medium text-text-secondary hover:text-text-primary hover:bg-surface-700">Transfers</a>
-                    </nav>
+                    <div class="flex flex-col items-center gap-0.5 text-text-muted">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>
+                        <span class="text-[9px] font-medium uppercase tracking-wider">Squad</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-0.5 text-text-muted">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12"/></svg>
+                        <span class="text-[9px] font-medium uppercase tracking-wider">XI</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-0.5 text-text-muted">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
+                        <span class="text-[9px] font-medium uppercase tracking-wider">Cal</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-0.5 text-text-muted">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
+                        <span class="text-[9px] font-medium uppercase tracking-wider">More</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -150,15 +148,13 @@
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
-            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="code">&lt;!-- Hamburger button (visible on mobile only) --&gt;
-&lt;button @click="mobileMenuOpen = true" class="lg:hidden text-text-secondary hover:text-white min-h-[44px] min-w-[44px]"&gt;
-    &lt;!-- hamburger SVG --&gt;
-&lt;/button&gt;
+            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="code">&lt;!-- Bottom tab bar (mobile only, included via game-header) --&gt;
+&lt;x-bottom-tab-bar :game="$game" :next-match="$nextMatch" :team-competitions="$teamCompetitions" /&gt;
 
-&lt;!-- Drawer uses x-show="mobileMenuOpen" with translate-x transitions --&gt;
-&lt;!-- Panel: bg-surface-800 border-r border-border-default w-72 --&gt;
-&lt;!-- Active links use &lt;x-responsive-nav-link :active="true"&gt; --&gt;
-&lt;!-- See game-header.blade.php for the full implementation --&gt;</code></pre>
+&lt;!-- Fixed bottom, backdrop blur, 5 tabs with icons + labels --&gt;
+&lt;!-- Active tab: text-accent-blue, Inactive: text-text-muted --&gt;
+&lt;!-- "More" tab opens slide-up panel with secondary nav items --&gt;
+&lt;!-- See bottom-tab-bar.blade.php for the full implementation --&gt;</code></pre>
         </div>
     </div>
 

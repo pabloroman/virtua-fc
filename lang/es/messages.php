@@ -95,9 +95,6 @@ return [
     'release_squad_too_small' => 'No se puede liberar — tu plantilla debe tener al menos :min jugadores.',
     'release_position_minimum' => 'No se puede liberar — necesitas al menos :min :group.',
 
-    // Squad cap
-    'squad_full' => 'Tu plantilla ya tiene el máximo de :max jugadores. Libera o vende un jugador primero.',
-    'squad_trim_required' => 'Tu plantilla tiene :count jugadores. Debes liberar al menos :excess para cumplir el límite de :max jugadores.',
     'cannot_loan_free_agent' => 'No se puede ceder a un jugador libre. Fíchalo directamente.',
 
     // Pending actions

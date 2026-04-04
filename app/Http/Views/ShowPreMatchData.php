@@ -28,9 +28,11 @@ class ShowPreMatchData
         // Get the saved lineup for this match, falling back to previous match's lineup
         $lineup = $this->lineupService->getLineup($match, $game->team_id);
 
+        $requireEnrollment = $game->requiresSquadEnrollment();
+
         if (empty($lineup)) {
             $previous = $this->lineupService->getPreviousLineup(
-                $game->id, $game->team_id, $match->id, $matchDate, $competitionId
+                $game->id, $game->team_id, $match->id, $matchDate, $competitionId, $requireEnrollment,
             );
             $lineup = $previous['lineup'] ?? [];
         }

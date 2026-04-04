@@ -27,8 +27,11 @@ class LineupService
     /**
      * Get available players (not injured/suspended) for a team.
      * Batch loads suspensions to avoid N+1 queries.
+     *
+     * @param bool $requireEnrollment When true, excludes players without a squad number.
+     *                                 Should be true for user's team outside preseason, false otherwise.
      */
-    public function getAvailablePlayers(string $gameId, string $teamId, Carbon $matchDate, string $competitionId): Collection
+    public function getAvailablePlayers(string $gameId, string $teamId, Carbon $matchDate, string $competitionId, bool $requireEnrollment = false): Collection
     {
         $players = GamePlayer::with('player')
             ->where('game_id', $gameId)
@@ -39,7 +42,11 @@ class LineupService
         $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($competitionId);
 
         // Filter in memory using pre-loaded suspension data
-        return $players->filter(function (GamePlayer $player) use ($matchDate, $suspendedPlayerIds) {
+        return $players->filter(function (GamePlayer $player) use ($matchDate, $suspendedPlayerIds, $requireEnrollment) {
+            // Enrollment check: unenrolled players can't play in competitive matches
+            if ($requireEnrollment && $player->number === null) {
+                return false;
+            }
             // Check if suspended (using pre-loaded IDs)
             if (in_array($player->id, $suspendedPlayerIds)) {
                 return false;
@@ -105,7 +112,8 @@ class LineupService
         Carbon $matchDate,
         string $competitionId,
         ?Formation $formation = null,
-        ?array $slotAssignments = null
+        ?array $slotAssignments = null,
+        bool $requireEnrollment = false,
     ): array {
         $formation = $formation ?? Formation::F_4_3_3;
         $errors = [];
@@ -120,7 +128,7 @@ class LineupService
             return $errors;
         }
 
-        $availablePlayers = $this->getAvailablePlayers($gameId, $teamId, $matchDate, $competitionId);
+        $availablePlayers = $this->getAvailablePlayers($gameId, $teamId, $matchDate, $competitionId, $requireEnrollment);
         $availableIds = $availablePlayers->pluck('id')->toArray();
 
         foreach ($playerIds as $playerId) {
@@ -185,10 +193,11 @@ class LineupService
         string $teamId,
         Carbon $matchDate,
         string $competitionId,
-        ?Formation $formation = null
+        ?Formation $formation = null,
+        bool $requireEnrollment = false,
     ): array {
         return $this->selectBestXI(
-            $this->getAvailablePlayers($gameId, $teamId, $matchDate, $competitionId),
+            $this->getAvailablePlayers($gameId, $teamId, $matchDate, $competitionId, $requireEnrollment),
             $formation
         )->pluck('id')->toArray();
     }
@@ -391,9 +400,10 @@ class LineupService
         string $teamId,
         Carbon $matchDate,
         string $competitionId,
-        ?Formation $formation = null
+        ?Formation $formation = null,
+        bool $requireEnrollment = false,
     ): array {
-        $available = $this->getAvailablePlayers($gameId, $teamId, $matchDate, $competitionId);
+        $available = $this->getAvailablePlayers($gameId, $teamId, $matchDate, $competitionId, $requireEnrollment);
         $bestXI = $this->selectBestXI($available, $formation);
 
         return [
@@ -502,7 +512,8 @@ class LineupService
         string $teamId,
         string $currentMatchId,
         Carbon $matchDate,
-        string $competitionId
+        string $competitionId,
+        bool $requireEnrollment = false,
     ): array {
         // Find the most recent played match for this team
         $previousMatch = GameMatch::where('game_id', $gameId)
@@ -528,7 +539,7 @@ class LineupService
         }
 
         // Filter out players who are no longer available
-        $availablePlayers = $this->getAvailablePlayers($gameId, $teamId, $matchDate, $competitionId);
+        $availablePlayers = $this->getAvailablePlayers($gameId, $teamId, $matchDate, $competitionId, $requireEnrollment);
         $availableIds = $availablePlayers->pluck('id')->toArray();
 
         $filteredLineup = array_values(array_filter(
@@ -667,12 +678,17 @@ class LineupService
         }
 
         $isPlayerTeam = $teamId === $game->team_id;
+        $requireEnrollment = $isPlayerTeam && $game->requiresSquadEnrollment();
 
         // Use pre-loaded players if available, otherwise load (backward compatibility)
         if ($allPlayersGrouped !== null) {
             $teamPlayers = $allPlayersGrouped->get($teamId, collect());
             // Filter available players using pre-loaded suspension data
-            $availablePlayers = $teamPlayers->filter(function ($player) use ($matchDate, $suspendedPlayerIds) {
+            $availablePlayers = $teamPlayers->filter(function ($player) use ($matchDate, $suspendedPlayerIds, $requireEnrollment) {
+                // Enrollment check: unenrolled players can't play in competitive matches
+                if ($requireEnrollment && $player->number === null) {
+                    return false;
+                }
                 // Check if suspended (using pre-loaded IDs)
                 if (in_array($player->id, $suspendedPlayerIds)) {
                     return false;
@@ -685,7 +701,7 @@ class LineupService
             });
         } else {
             // Fallback to original method (triggers N+1 but maintains backward compatibility)
-            $availablePlayers = $this->getAvailablePlayers($game->id, $teamId, $matchDate, $competitionId);
+            $availablePlayers = $this->getAvailablePlayers($game->id, $teamId, $matchDate, $competitionId, $requireEnrollment);
         }
 
         if ($isPlayerTeam && !empty($playerPreferredLineup)) {

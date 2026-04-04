@@ -50,6 +50,7 @@ return [
     'winter_window' => 'Winter',
 
     // Theme
+    'theme' => 'Theme',
     'switch_light_mode' => 'Switch to light mode',
     'switch_dark_mode' => 'Switch to dark mode',
 
@@ -60,5 +61,6 @@ return [
 
     // Common actions
     'close' => 'Close',
+    'more' => 'More',
 
 ];

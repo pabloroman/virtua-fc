@@ -3,6 +3,7 @@
 namespace App\Modules\Transfer\Services;
 
 use App\Modules\Player\PlayerAge;
+use App\Modules\Squad\Services\SquadNumberService;
 use App\Modules\Transfer\Enums\TransferWindowType;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\LoanService;
@@ -26,6 +27,8 @@ class TransferService
     public function __construct(
         private readonly LoanService $loanService,
         private readonly TransferCompletionService $completionService,
+        private readonly DispositionService $dispositionService,
+        private readonly SquadNumberService $squadNumberService,
     ) {}
 
     /**
@@ -143,7 +146,7 @@ class TransferService
      *
      * @param Collection|null $allPlayersGrouped Pre-loaded players grouped by team_id (optional, for N+1 optimization)
      */
-    public function generateOffersForListedPlayers(Game $game, $allPlayersGrouped = null, ?array $buyerPool = null): Collection
+    public function generateOffersForListedPlayers(Game $game, $allPlayersGrouped = null, ?array $buyerPool = null, int $offerChance = 40): Collection
     {
         $offers = collect();
 
@@ -188,8 +191,7 @@ class TransferService
                 continue;
             }
 
-            // 40% chance of receiving a new offer each matchday
-            if (rand(1, 100) <= 40) {
+            if (rand(1, 100) <= $offerChance) {
                 ['buyers' => $buyers, 'squadValues' => $squadValues] = $this->getEligibleBuyersWithSquadValues($player, $buyerPool);
 
                 // Exclude teams that already made offers
@@ -470,7 +472,7 @@ class TransferService
         $completedTransfers = collect();
 
         foreach ($agreedIncoming as $offer) {
-            $this->completeIncomingTransfer($offer, $game, skipSquadCheck: true);
+            $this->completeIncomingTransfer($offer, $game);
             $completedTransfers->push($offer);
         }
 
@@ -891,7 +893,7 @@ class TransferService
      * Complete all agreed incoming transfers (user buying/loaning players).
      * Called when transfer window opens.
      */
-    public function completeIncomingTransfers(Game $game, bool $skipSquadCheck = false): Collection
+    public function completeIncomingTransfers(Game $game): Collection
     {
         $agreedIncoming = TransferOffer::with(['gamePlayer.player', 'sellingTeam'])
             ->where('game_id', $game->id)
@@ -913,7 +915,7 @@ class TransferService
             if ($offer->offer_type === TransferOffer::TYPE_LOAN_IN) {
                 $this->loanService->completeLoanIn($offer, $game);
             } else {
-                $this->completeIncomingTransfer($offer, $game, $skipSquadCheck);
+                $this->completeIncomingTransfer($offer, $game);
             }
             $completedTransfers->push($offer);
         }
@@ -944,7 +946,7 @@ class TransferService
 
         $player->update([
             'team_id' => $game->team_id,
-            'number' => GamePlayer::nextAvailableNumber($game->id, $game->team_id),
+            'number' => $this->squadNumberService->assignNumberForNewPlayer($game, $player),
             'contract_until' => $newContractEnd,
             'annual_wage' => $wageDemand,
         ]);
@@ -1009,13 +1011,10 @@ class TransferService
 
     /**
      * Complete a single incoming transfer (user buys player).
-     *
-     * @param  bool  $skipSquadCheck  Skip squad-full check (used for season-close pre-contracts
-     *                                where SquadCapEnforcementProcessor handles trimming)
      */
-    private function completeIncomingTransfer(TransferOffer $offer, Game $game, bool $skipSquadCheck = false): bool
+    private function completeIncomingTransfer(TransferOffer $offer, Game $game): bool
     {
-        return $this->completionService->completeIncomingTransfer($offer, $game, $skipSquadCheck);
+        return $this->completionService->completeIncomingTransfer($offer, $game);
     }
 
     /**
@@ -1251,44 +1250,7 @@ class TransferService
      */
     public function calculateClubDisposition(GamePlayer $player, ScoutingService $scoutingService): float
     {
-        $disposition = 0.50;
-
-        // Player importance (key players are harder to buy)
-        $importance = $scoutingService->calculatePlayerImportance($player);
-        if ($importance >= 0.85) {
-            $disposition -= 0.20;
-        } elseif ($importance >= 0.60) {
-            $disposition -= 0.10;
-        } elseif ($importance <= 0.30) {
-            $disposition += 0.10;
-        }
-
-        // Contract length (longer = more reluctant)
-        if ($player->contract_until) {
-            $yearsLeft = $player->game->current_date->diffInYears($player->contract_until);
-            if ($yearsLeft >= 4) {
-                $disposition -= 0.10;
-            } elseif ($yearsLeft <= 1) {
-                $disposition += 0.15;
-            }
-        } else {
-            $disposition += 0.20; // No contract = very willing
-        }
-
-        // Transfer listed = very willing
-        if ($player->transfer_status === 'listed') {
-            $disposition += 0.20;
-        }
-
-        // Age (older = more willing to sell)
-        $age = $player->age($player->game->current_date);
-        if ($age >= PlayerAge::PRIME_END) {
-            $disposition += 0.10;
-        } elseif ($age < PlayerAge::YOUNG_END) {
-            $disposition -= 0.05;
-        }
-
-        return max(0.10, min(0.95, $disposition));
+        return $this->dispositionService->clubSellDisposition($player);
     }
 
     /**
@@ -1298,13 +1260,6 @@ class TransferService
      */
     public function getClubMoodIndicator(float $disposition): array
     {
-        if ($disposition >= 0.65) {
-            return ['label' => __('transfers.mood_willing_sell'), 'color' => 'green'];
-        }
-        if ($disposition >= 0.40) {
-            return ['label' => __('transfers.mood_open_sell'), 'color' => 'amber'];
-        }
-
-        return ['label' => __('transfers.mood_reluctant_sell'), 'color' => 'red'];
+        return $this->dispositionService->moodIndicator($disposition, 'transfer_sell');
     }
 }

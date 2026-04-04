@@ -52,6 +52,7 @@ class GameCreationService
             'current_date' => null,
             'season_goal' => null,
             'setup_completed_at' => null,
+            'squad_registration_enabled' => true,
         ]);
 
         // Create default tactical settings

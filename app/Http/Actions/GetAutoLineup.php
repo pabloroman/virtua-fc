@@ -30,12 +30,14 @@ class GetAutoLineup
         $competitionId = $match->competition_id;
 
         // Get auto-selected lineup for the formation
+        $requireEnrollment = $game->requiresSquadEnrollment();
         $autoLineup = $this->lineupService->autoSelectLineup(
             $gameId,
             $game->team_id,
             $matchDate,
             $competitionId,
-            $formation
+            $formation,
+            $requireEnrollment,
         );
 
         return response()->json([

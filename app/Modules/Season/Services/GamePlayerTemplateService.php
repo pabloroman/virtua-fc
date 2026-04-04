@@ -318,7 +318,9 @@ class GamePlayerTemplateService
         $contractUntil = null;
         if (!empty($playerData['contract'])) {
             try {
-                $contractUntil = Carbon::parse($playerData['contract'])->toDateString();
+                $parsed = Carbon::parse($playerData['contract']);
+                $year = $parsed->month > 6 ? $parsed->year + 1 : $parsed->year;
+                $contractUntil = Carbon::createFromDate($year, 6, 30)->toDateString();
             } catch (\Exception $e) {
                 // Ignore invalid dates
             }

@@ -40,10 +40,21 @@ class SquadService
         $primeCount = 0;
         $veteranCount = 0;
 
-        $allPlayers->each(function (GamePlayer $player) use ($game, $seasonEndDate, $matchDate, $competitionId, &$youngCount, &$primeCount, &$veteranCount) {
+        $requireEnrollment = $game->requiresSquadEnrollment();
+
+        $allPlayers->each(function (GamePlayer $player) use ($game, $seasonEndDate, $matchDate, $competitionId, $requireEnrollment, &$youngCount, &$primeCount, &$veteranCount) {
             // Availability
-            $player->setAttribute('is_unavailable', !$player->isAvailable($matchDate, $competitionId));
-            $player->setAttribute('unavailability_reason', $player->getUnavailabilityReason($matchDate, $competitionId));
+            $isUnavailable = !$player->isAvailable($matchDate, $competitionId);
+            $reason = $player->getUnavailabilityReason($matchDate, $competitionId);
+
+            // Unenrolled players (no squad number) are unavailable when registration is enabled
+            if (!$isUnavailable && $player->number === null && $requireEnrollment) {
+                $isUnavailable = true;
+                $reason = __('squad.not_registered');
+            }
+
+            $player->setAttribute('is_unavailable', $isUnavailable);
+            $player->setAttribute('unavailability_reason', $reason);
 
             // Development projection
             $age = $player->age($game->current_date);
@@ -112,20 +123,12 @@ class SquadService
 
         // --- Contract Watchlist (career mode) ---
         $expiringThisSeason = collect();
-        $expiringNextSeason = collect();
         $highEarners = collect();
 
         if ($isCareerMode) {
             $expiringThisSeason = $allPlayers->filter(fn ($p) => $p->isContractExpiring($seasonEndDate))
                 ->sortByDesc('overall_score')
                 ->values();
-
-            $nextSeasonEnd = $seasonEndDate->copy()->addYear();
-            $expiringNextSeason = $allPlayers->filter(function ($p) use ($seasonEndDate, $nextSeasonEnd) {
-                return $p->contract_until
-                    && $p->contract_until->gt($seasonEndDate)
-                    && $p->contract_until->lte($nextSeasonEnd);
-            })->sortByDesc('overall_score')->values();
 
             // Top 3 highest wage-to-overall ratio players
             $highEarners = $allPlayers->filter(fn ($p) => $p->annual_wage > 0 && $p->overall_score > 0)
@@ -186,7 +189,6 @@ class SquadService
             // Sidebar data
             'depthChart' => $depthChart,
             'expiringThisSeason' => $expiringThisSeason,
-            'expiringNextSeason' => $expiringNextSeason,
             'highEarners' => $highEarners,
             'alerts' => $alerts,
             // Renewal data
@@ -215,6 +217,8 @@ class SquadService
                 $depth[$slot]['players'][] = $player->name;
             }
         }
+
+        unset($depth['LM'], $depth['RM']);
 
         return $depth;
     }

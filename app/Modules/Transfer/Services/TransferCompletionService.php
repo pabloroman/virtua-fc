@@ -10,6 +10,7 @@ use App\Models\Loan;
 use App\Models\ShortlistedPlayer;
 use App\Models\TransferOffer;
 use App\Modules\Player\PlayerAge;
+use App\Modules\Squad\Services\SquadNumberService;
 use App\Modules\Transfer\Enums\TransferWindowType;
 use Carbon\Carbon;
 
@@ -22,6 +23,9 @@ use Carbon\Carbon;
  */
 class TransferCompletionService
 {
+    public function __construct(
+        private readonly SquadNumberService $squadNumberService,
+    ) {}
     /**
      * Complete an outgoing transfer (user's player sold to AI team).
      */
@@ -35,7 +39,7 @@ class TransferCompletionService
         // Transfer player to the buying team
         $player->update([
             'team_id' => $offer->offering_team_id,
-            'number' => GamePlayer::nextAvailableNumber($game->id, $offer->offering_team_id),
+            'number' => null,
             'transfer_status' => null,
             'transfer_listed_at' => null,
         ]);
@@ -89,7 +93,6 @@ class TransferCompletionService
         // Remove from shortlist to free up scouting slot
         ShortlistedPlayer::removeForPlayer($game->id, $player->id);
 
-        ContractService::clearSquadTrimIfResolved($game);
     }
 
     /**
@@ -106,11 +109,11 @@ class TransferCompletionService
         // Transfer player to the buying team
         $player->update([
             'team_id' => $offer->offering_team_id,
-            'number' => GamePlayer::nextAvailableNumber($game->id, $offer->offering_team_id),
+            'number' => null,
             'transfer_status' => null,
             'transfer_listed_at' => null,
             // Extend their contract with the new team
-            'contract_until' => Carbon::parse($game->current_date)->addYears(rand(2, 4)),
+            'contract_until' => Carbon::createFromDate((int) $game->season + rand(2, 4) + 1, 6, 30),
         ]);
 
         GameTransfer::record(
@@ -137,25 +140,13 @@ class TransferCompletionService
         // Mark offer as completed
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
 
-        if ($fromTeamId === $game->team_id) {
-            ContractService::clearSquadTrimIfResolved($game);
-        }
     }
 
     /**
      * Complete an incoming transfer (user buys player from AI team).
-     *
-     * @param  bool  $skipSquadCheck  Skip squad-full check (used for season-close pre-contracts
-     *                                where SquadCapEnforcementProcessor handles trimming)
      */
-    public function completeIncomingTransfer(TransferOffer $offer, Game $game, bool $skipSquadCheck = false): bool
+    public function completeIncomingTransfer(TransferOffer $offer, Game $game): bool
     {
-        // Safety net: reject if squad is full (skipped for season-close pre-contracts)
-        if (!$skipSquadCheck && ContractService::isSquadFull($game)) {
-            $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
-            return false;
-        }
-
         // Safety net: reject if budget would go negative
         $investment = $game->currentInvestment;
         if ($offer->transfer_fee > 0 && $investment && $offer->transfer_fee > $investment->transfer_budget) {
@@ -171,11 +162,12 @@ class TransferCompletionService
         // Transfer player to user's team
         $age = $player->age($game->current_date);
         $contractYears = $offer->offered_years ?? ($age > PlayerAge::PRIME_END ? 2 : ($age >= PlayerAge::PRIME_END ? 3 : rand(3, 5)));
-        $newContractEnd = Carbon::parse($game->current_date)->addYears($contractYears);
+        $seasonYear = (int) $game->season;
+        $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
 
         $player->update([
             'team_id' => $game->team_id,
-            'number' => GamePlayer::nextAvailableNumber($game->id, $game->team_id),
+            'number' => $this->squadNumberService->assignNumberForNewPlayer($game, $player),
             'transfer_status' => null,
             'transfer_listed_at' => null,
             'contract_until' => $newContractEnd,
@@ -230,7 +222,7 @@ class TransferCompletionService
 
         $player->update([
             'team_id' => $game->team_id,
-            'number' => GamePlayer::nextAvailableNumber($game->id, $game->team_id),
+            'number' => $this->squadNumberService->assignNumberForNewPlayer($game, $player),
             'contract_until' => $newContractEnd,
             'annual_wage' => $offer->offered_wage,
         ]);

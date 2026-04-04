@@ -383,6 +383,46 @@
                                                     {{-- Level 1+: Full scouting detail --}}
                                                     <template x-if="player.intelLevel >= 1">
                                                         <div class="bg-surface-800 rounded-lg p-4">
+                                                            {{-- Scouting Assessment: Ability ranges --}}
+                                                            <div class="mb-3">
+                                                                <h5 class="text-[10px] font-semibold text-text-muted uppercase tracking-wide mb-2">{{ __('transfers.scouting_assessment') }}</h5>
+                                                                <div class="space-y-1.5">
+                                                                    <div class="flex items-center justify-between gap-3">
+                                                                        <span class="text-xs text-text-muted w-16 shrink-0">{{ __('transfers.technical') }}</span>
+                                                                        <div class="flex items-center gap-1.5">
+                                                                            <span class="text-xs font-semibold tabular-nums text-text-body" x-text="player.techRange[0] + '-' + player.techRange[1]"></span>
+                                                                            <div class="w-10 h-1.5 bg-surface-600 rounded-full overflow-hidden shrink-0">
+                                                                                <div class="h-1.5 rounded-full fitness-bar"
+                                                                                    :class="{
+                                                                                        'bg-accent-green': Math.round((player.techRange[0] + player.techRange[1]) / 2) >= 80,
+                                                                                        'bg-lime-500': Math.round((player.techRange[0] + player.techRange[1]) / 2) >= 70 && Math.round((player.techRange[0] + player.techRange[1]) / 2) < 80,
+                                                                                        'bg-accent-gold': Math.round((player.techRange[0] + player.techRange[1]) / 2) >= 60 && Math.round((player.techRange[0] + player.techRange[1]) / 2) < 70,
+                                                                                        'bg-accent-orange': Math.round((player.techRange[0] + player.techRange[1]) / 2) < 60,
+                                                                                    }"
+                                                                                    :style="'width: ' + Math.min(100, Math.round((player.techRange[0] + player.techRange[1]) / 2) / 99 * 100) + '%'">
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="flex items-center justify-between gap-3">
+                                                                        <span class="text-xs text-text-muted w-16 shrink-0">{{ __('transfers.physical') }}</span>
+                                                                        <div class="flex items-center gap-1.5">
+                                                                            <span class="text-xs font-semibold tabular-nums text-text-body" x-text="player.physRange[0] + '-' + player.physRange[1]"></span>
+                                                                            <div class="w-10 h-1.5 bg-surface-600 rounded-full overflow-hidden shrink-0">
+                                                                                <div class="h-1.5 rounded-full fitness-bar"
+                                                                                    :class="{
+                                                                                        'bg-accent-green': Math.round((player.physRange[0] + player.physRange[1]) / 2) >= 80,
+                                                                                        'bg-lime-500': Math.round((player.physRange[0] + player.physRange[1]) / 2) >= 70 && Math.round((player.physRange[0] + player.physRange[1]) / 2) < 80,
+                                                                                        'bg-accent-gold': Math.round((player.physRange[0] + player.physRange[1]) / 2) >= 60 && Math.round((player.physRange[0] + player.physRange[1]) / 2) < 70,
+                                                                                        'bg-accent-orange': Math.round((player.physRange[0] + player.physRange[1]) / 2) < 60,
+                                                                                    }"
+                                                                                    :style="'width: ' + Math.min(100, Math.round((player.physRange[0] + player.physRange[1]) / 2) / 99 * 100) + '%'">
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                             {{-- Financial summary --}}
                                                             <div class="flex flex-wrap gap-x-6 gap-y-1 text-xs mb-3">
                                                                 <div>

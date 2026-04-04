@@ -311,7 +311,7 @@ export function createMatchSimulation(ctx) {
         for (let i = state.lastRevealedIndex + 1; i < state.events.length; i++) {
             const event = state.events[i];
             state.lastRevealedIndex = i;
-            state.revealedEvents.unshift(event);
+                state.revealedEvents.unshift(event);
             trackSubstitutionIfNeeded(event);
             if (event.type === 'goal' || event.type === 'own_goal') {
                 updateScore(event);
@@ -357,7 +357,7 @@ export function createMatchSimulation(ctx) {
         for (let i = state.lastRevealedETIndex + 1; i < state.extraTimeEvents.length; i++) {
             const event = state.extraTimeEvents[i];
             state.lastRevealedETIndex = i;
-            state.revealedEvents.unshift(event);
+                state.revealedEvents.unshift(event);
             trackSubstitutionIfNeeded(event);
             if (event.type === 'goal' || event.type === 'own_goal') {
                 updateScore(event);
@@ -389,7 +389,7 @@ export function createMatchSimulation(ctx) {
             state.awayScore = state.finalAwayScore;
             for (let i = state.lastRevealedIndex + 1; i < state.events.length; i++) {
                 const event = state.events[i];
-                state.revealedEvents.unshift(event);
+                        state.revealedEvents.unshift(event);
                 trackSubstitutionIfNeeded(event);
             }
             state.lastRevealedIndex = state.events.length - 1;
@@ -451,6 +451,11 @@ export function createMatchSimulation(ctx) {
             state.etAwayScore = result.awayScoreET || 0;
             state._needsPenalties = result.needsPenalties || false;
 
+            // Generate client-side atmosphere for extra time
+            if (typeof state._injectETAtmosphere === 'function') {
+                state._injectETAtmosphere();
+            }
+
             if (result.homePossession !== undefined) {
                 state._basePossession = result.homePossession;
                 state._possessionDisplay = result.homePossession;
@@ -487,7 +492,7 @@ export function createMatchSimulation(ctx) {
         for (let i = state.lastRevealedETIndex + 1; i < state.extraTimeEvents.length; i++) {
             const event = state.extraTimeEvents[i];
             state.lastRevealedETIndex = i;
-            state.revealedEvents.unshift(event);
+                state.revealedEvents.unshift(event);
             trackSubstitutionIfNeeded(event);
             if (event.type === 'goal' || event.type === 'own_goal') {
                 updateScore(event);

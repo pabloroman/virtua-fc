@@ -2,7 +2,9 @@
 
 namespace App\Modules\Competition\Services;
 
+use App\Modules\Competition\Contracts\CupDrawPairingStrategy;
 use App\Modules\Competition\DTOs\PlayoffRoundConfig;
+use App\Modules\Competition\Services\Draw\RandomPairing;
 use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\CupTie;
@@ -15,6 +17,10 @@ use App\Modules\Competition\Services\LeagueFixtureGenerator;
 
 class CupDrawService
 {
+    public function __construct(
+        private readonly CountryConfig $countryConfig,
+    ) {}
+
     /**
      * Conduct a draw for a specific cup round.
      *
@@ -31,18 +37,21 @@ class CupDrawService
         $competition = Competition::find($competitionId);
         $season = $competition->season ?? '2025';
 
+        // For domestic cups, lower-category teams get home advantage
+        $applyHomeAdvantageRule = $competition->scope === Competition::SCOPE_DOMESTIC
+            && $competition->role === Competition::ROLE_DOMESTIC_CUP;
+
+        // Use competition-specific pairing strategy (or default random)
+        $strategy = $this->resolvePairingStrategy($competitionId);
+
         // Get all teams eligible for this round, paired by bracket structure
-        $pairedTeams = $this->getPairedTeamsForRound($gameId, $competitionId, $season, $roundNumber);
+        $pairedTeams = $this->getPairedTeamsForRound($gameId, $competitionId, $season, $roundNumber, $strategy, $applyHomeAdvantageRule);
 
         $pairCount = $pairedTeams->count();
 
         if ($pairCount === 0) {
             return collect();
         }
-
-        // For domestic cups, lower-category teams get home advantage
-        $applyHomeAdvantageRule = $competition->scope === Competition::SCOPE_DOMESTIC
-            && $competition->role === Competition::ROLE_DOMESTIC_CUP;
 
         $allTeamIds = $pairedTeams->flatten();
         $teamTierMap = $applyHomeAdvantageRule
@@ -148,8 +157,14 @@ class CupDrawService
      *
      * @return Collection<array{0: string, 1: string}>
      */
-    private function getPairedTeamsForRound(string $gameId, string $competitionId, string $season, int $roundNumber): Collection
-    {
+    private function getPairedTeamsForRound(
+        string $gameId,
+        string $competitionId,
+        string $season,
+        int $roundNumber,
+        CupDrawPairingStrategy $strategy,
+        bool $applyHomeAdvantageRule,
+    ): Collection {
         // Teams entering at this specific round
         $enteringTeams = CompetitionEntry::where('game_id', $gameId)
             ->where('competition_id', $competitionId)
@@ -157,42 +172,43 @@ class CupDrawService
             ->pluck('team_id');
 
         if ($roundNumber === 1 || $this->isFirstDrawnRound($gameId, $competitionId, $roundNumber)) {
-            // First drawn round: shuffle randomly and pair sequentially
-            $teams = $enteringTeams->shuffle();
+            // First drawn round: use pairing strategy (cross-category, random, etc.)
+            $teamTierMap = $applyHomeAdvantageRule
+                ? $this->getTeamTierMap($gameId, $enteringTeams)
+                : [];
+
+            $orderedTeams = $strategy->pairTeams($enteringTeams, $teamTierMap);
             $pairs = collect();
 
-            for ($i = 0; $i + 1 < $teams->count(); $i += 2) {
-                $pairs->push([$teams[$i], $teams[$i + 1]]);
+            for ($i = 0; $i + 1 < $orderedTeams->count(); $i += 2) {
+                $pairs->push([$orderedTeams[$i], $orderedTeams[$i + 1]]);
             }
 
             return $pairs;
         }
 
-        // Later rounds: pair based on bracket_position from previous round
+        // Later rounds: combine previous-round winners with new entrants
         $previousTies = CupTie::where('game_id', $gameId)
             ->where('competition_id', $competitionId)
             ->where('round_number', $roundNumber - 1)
             ->where('completed', true)
             ->whereNotNull('winner_id')
-            ->orderBy('bracket_position')
-            ->orderBy('id')
             ->get();
+
+        $winners = $previousTies->pluck('winner_id');
+        $allTeams = $winners->merge($enteringTeams);
+
+        // Apply pairing strategy to the combined pool
+        $teamTierMap = $applyHomeAdvantageRule
+            ? $this->getTeamTierMap($gameId, $allTeams)
+            : [];
+
+        $orderedTeams = $strategy->pairTeams($allTeams, $teamTierMap);
 
         $pairs = collect();
 
-        // Pair consecutive previous-round winners: positions 0↔1, 2↔3, etc.
-        for ($i = 0; $i + 1 < $previousTies->count(); $i += 2) {
-            $pairs->push([$previousTies[$i]->winner_id, $previousTies[$i + 1]->winner_id]);
-        }
-
-        // If there are new entrants at this round, shuffle and pair them,
-        // then append to the bracket
-        if ($enteringTeams->isNotEmpty()) {
-            $shuffledEntrants = $enteringTeams->shuffle()->values();
-
-            for ($i = 0; $i + 1 < $shuffledEntrants->count(); $i += 2) {
-                $pairs->push([$shuffledEntrants[$i], $shuffledEntrants[$i + 1]]);
-            }
+        for ($i = 0; $i + 1 < $orderedTeams->count(); $i += 2) {
+            $pairs->push([$orderedTeams[$i], $orderedTeams[$i + 1]]);
         }
 
         return $pairs;
@@ -327,6 +343,20 @@ class CupDrawService
         }
 
         return null;
+    }
+
+    /**
+     * Resolve the pairing strategy for a competition.
+     */
+    private function resolvePairingStrategy(string $competitionId): CupDrawPairingStrategy
+    {
+        $className = $this->countryConfig->drawPairingClassForCompetition($competitionId);
+
+        if ($className && class_exists($className)) {
+            return new $className();
+        }
+
+        return new RandomPairing();
     }
 
     /**

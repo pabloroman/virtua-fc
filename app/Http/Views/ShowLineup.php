@@ -45,6 +45,7 @@ class ShowLineup
 
         // Get current lineup if any
         $currentLineup = $this->lineupService->getLineup($match, $game->team_id);
+        $requireEnrollment = $game->requiresSquadEnrollment();
 
         // Get formation
         $defaultFormation = $game->tactics?->default_formation ?? Formation::F_4_3_3->value;
@@ -57,7 +58,8 @@ class ShowLineup
                 $game->team_id,
                 $match->id,
                 $matchDate,
-                $competitionId
+                $competitionId,
+                $requireEnrollment,
             );
             $currentLineup = $previous['lineup'];
             $currentSlotAssignments = $game->tactics?->default_slot_assignments;
@@ -72,7 +74,7 @@ class ShowLineup
         $currentMentality = $currentMentality ?? $defaultMentality;
 
         // Get auto-selected lineup for quick select (using current formation)
-        $autoLineup = $this->lineupService->autoSelectLineup($gameId, $game->team_id, $matchDate, $competitionId, $formationEnum);
+        $autoLineup = $this->lineupService->autoSelectLineup($gameId, $game->team_id, $matchDate, $competitionId, $formationEnum, $requireEnrollment);
 
         // If still no lineup (first match ever), use auto lineup
         if (empty($currentLineup)) {
@@ -81,8 +83,11 @@ class ShowLineup
 
         // Prepare player data for JavaScript (flat array with all needed info)
         // Suspensions are eager-loaded via getAllPlayers, so no extra queries needed
-        $playersData = $allPlayers->map(function ($p) use ($matchDate, $competitionId) {
+        $playersData = $allPlayers->map(function ($p) use ($matchDate, $competitionId, $requireEnrollment) {
             $isAvailable = $p->isAvailable($matchDate, $competitionId);
+            if ($isAvailable && $requireEnrollment && $p->number === null) {
+                $isAvailable = false;
+            }
 
             return [
                 'id' => $p->id,
@@ -120,7 +125,7 @@ class ShowLineup
         $slotCompatibility = PositionSlotMapper::SLOT_COMPATIBILITY;
 
         // User's best XI average for coach assistant comparison
-        $userBestXI = $this->lineupService->getBestXIWithAverage($gameId, $game->team_id, $matchDate, $competitionId);
+        $userBestXI = $this->lineupService->getBestXIWithAverage($gameId, $game->team_id, $matchDate, $competitionId, requireEnrollment: $requireEnrollment);
         $userTeamAverage = $userBestXI['average'];
 
         // Get opponent scouting data (including predicted formation, mentality, and instructions)

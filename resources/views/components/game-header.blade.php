@@ -7,26 +7,24 @@
             ->where('team_id', $game->team_id)
             ->pluck('competition_id')
     )->orderBy('tier')->get();
+
+    // Notifications for mobile bell icon + modal
+    $unreadCount = $game->notifications()->whereNull('read_at')->count();
+    $recentNotifications = $game->notifications()->orderByDesc('game_date')->limit(20)->get();
 @endphp
 
-<div x-data="{ mobileMenuOpen: false }">
+<div x-data>
     {{-- Sticky Header --}}
     <header class="sticky top-0 z-50 bg-surface-900/95 backdrop-blur-md border-b border-border-default">
         <div class="max-w-7xl mx-auto">
             <div class="flex items-center justify-between pt-0 py-2">
                 {{-- Left: Team badge + name --}}
                 <div class="flex items-center gap-3">
-                    {{-- Hamburger (mobile) --}}
-                    <x-icon-button @click="mobileMenuOpen = true" class="lg:hidden" aria-label="Menu">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
-                        </svg>
-                    </x-icon-button>
                     {{-- Team badge + name --}}
                     <div class="flex items-center gap-2.5">
                         <x-team-crest :team="$game->team" class="w-8 h-8 shrink-0" />
-                        <div class="hidden sm:block">
-                            <h1 class="font-heading font-semibold text-base text-text-primary leading-none tracking-wide uppercase">{{ $game->team->name }}</h1>
+                        <div class="min-w-0">
+                            <h1 class="font-heading font-semibold text-base text-text-primary leading-none tracking-wide uppercase truncate">{{ $game->team->name }}</h1>
                             <p class="text-[10px] text-text-muted uppercase tracking-widest mt-0.5">
                                 @if($game->game_mode === \App\Models\Game::MODE_CAREER)
                                     {{ __('game.season') }} {{ $game->formatted_season }}
@@ -73,8 +71,24 @@
                     @endif
                 </nav>
 
-                {{-- Right: Next match + action button --}}
-                <div class="flex items-center gap-3">
+                {{-- Right: Notification bell + action button --}}
+                <div class="flex items-center gap-2">
+                    {{-- Mobile notification bell --}}
+                    <button
+                        @click="$dispatch('open-modal', 'notifications-mobile')"
+                        class="lg:hidden relative inline-flex items-center justify-center p-2 min-h-[44px] min-w-[44px] rounded-sm text-text-secondary hover:text-text-primary hover:bg-surface-700 transition-colors shrink-0"
+                        aria-label="{{ __('notifications.inbox') }}"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/>
+                        </svg>
+                        @if($unreadCount > 0)
+                        <span class="absolute top-1 right-1 min-w-[16px] h-4 px-0.5 rounded-full bg-accent-red text-white text-[8px] font-bold flex items-center justify-center">
+                            {{ $unreadCount > 9 ? '9+' : $unreadCount }}
+                        </span>
+                        @endif
+                    </button>
+
                     @if($nextMatch)
                         <div class="hidden sm:flex items-center gap-2 bg-surface-700/50 rounded-lg px-3 py-1.5">
                             <span class="text-[10px] text-text-muted uppercase tracking-wider">{{ __('game.next_match') }}</span>
@@ -101,7 +115,7 @@
                         @endif
                     @else
                         <div class="flex items-center gap-3">
-                            <span class="text-sm text-text-secondary">{{ __('game.season_complete') }}</span>
+                            <span class="hidden sm:inline text-sm text-text-secondary">{{ __('game.season_complete') }}</span>
                             <x-primary-button-link color="amber" :href="route('game.season-end', $game->id)">
                                 {{ __('game.view_season_summary') }}
                             </x-primary-button-link>
@@ -111,106 +125,6 @@
             </div>
         </div>
     </header>
-
-    {{-- Mobile Slide-out Drawer --}}
-    <div x-show="mobileMenuOpen" x-cloak class="fixed inset-0 z-50 lg:hidden">
-        {{-- Backdrop --}}
-        <div x-show="mobileMenuOpen"
-             x-transition:enter="transition ease-out duration-200"
-             x-transition:enter-start="opacity-0"
-             x-transition:enter-end="opacity-100"
-             x-transition:leave="transition ease-in duration-150"
-             x-transition:leave-start="opacity-100"
-             x-transition:leave-end="opacity-0"
-             @click="mobileMenuOpen = false"
-             class="fixed inset-0 bg-black/60"></div>
-
-        {{-- Drawer Panel --}}
-        <div x-show="mobileMenuOpen"
-             x-transition:enter="transition ease-out duration-200"
-             x-transition:enter-start="-translate-x-full"
-             x-transition:enter-end="translate-x-0"
-             x-transition:leave="transition ease-in duration-150"
-             x-transition:leave-start="translate-x-0"
-             x-transition:leave-end="-translate-x-full"
-             class="fixed inset-y-0 left-0 w-72 bg-surface-800 border-r border-border-default shadow-xl overflow-y-auto">
-
-            {{-- Drawer Header --}}
-            <div class="flex items-center justify-between p-4 border-b border-border-strong">
-                <div class="flex items-center gap-3 min-w-0">
-                    <x-team-crest :team="$game->team" class="w-10 h-10 shrink-0" />
-                    <div class="min-w-0">
-                        <h3 class="font-heading font-semibold text-sm text-text-primary truncate uppercase tracking-wide">{{ $game->team->name }}</h3>
-                        <p class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('game.season') }} {{ $game->formatted_season }}</p>
-                    </div>
-                </div>
-                <x-icon-button @click="mobileMenuOpen = false">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </x-icon-button>
-            </div>
-
-            {{-- Next Match Info --}}
-            @if($nextMatch)
-            <div class="px-4 py-3 border-b border-border-default bg-surface-700/30">
-                <div class="text-[10px] text-text-muted uppercase tracking-wider mb-1">{{ __('game.next_match') }} - {{ $nextMatch->scheduled_date->format('d/m/Y') }}</div>
-                <div class="flex items-center gap-1 text-sm text-text-body">
-                    <x-team-crest :team="$nextMatch->homeTeam" class="w-4 h-4" />
-                    <span class="truncate">{{ $nextMatch->homeTeam->name }}</span>
-                    <span class="text-text-muted">vs</span>
-                    <span class="truncate">{{ $nextMatch->awayTeam->name }}</span>
-                    <x-team-crest :team="$nextMatch->awayTeam" class="w-4 h-4" />
-                </div>
-            </div>
-            @endif
-
-            {{-- Navigation Links --}}
-            <nav class="py-2">
-                <x-responsive-nav-link :href="route('show-game', $game->id)" :active="Route::currentRouteName() == 'show-game'">
-                    {{ __('app.dashboard') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('game.squad', $game->id)" :active="Str::startsWith(Route::currentRouteName(), 'game.squad')">
-                    {{ __('app.squad') }}
-                </x-responsive-nav-link>
-                @if($nextMatch)
-                <x-responsive-nav-link :href="route('game.lineup', $game->id)" :active="Route::currentRouteName() == 'game.lineup'">
-                    {{ __('app.starting_xi') }}
-                </x-responsive-nav-link>
-                @endif
-                @if($game->isCareerMode())
-                <x-responsive-nav-link :href="route('game.finances', $game->id)" :active="Route::currentRouteName() == 'game.finances'">
-                    {{ __('app.finances') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('game.transfers', $game->id)" :active="in_array(Route::currentRouteName(), ['game.transfers', 'game.transfers.outgoing', 'game.scouting', 'game.explore'])">
-                    {{ __('app.transfers') }}
-                </x-responsive-nav-link>
-                @endif
-                <x-responsive-nav-link :href="route('game.calendar', $game->id)" :active="Route::currentRouteName() == 'game.calendar'">
-                    {{ __('app.calendar') }}
-                </x-responsive-nav-link>
-                @if($game->isTournamentMode() && $teamCompetitions->isNotEmpty())
-                <x-responsive-nav-link :href="route('game.competition', [$game->id, $teamCompetitions[0]->id])" :active="Route::currentRouteName() == 'game.competition'">
-                    {{ __('game.standings') }}
-                </x-responsive-nav-link>
-                @endif
-            </nav>
-
-            {{-- Competitions (career mode only) --}}
-            @if($game->isCareerMode() && $teamCompetitions->isNotEmpty())
-            <div class="border-t border-border-default py-2">
-                <div class="px-4 py-2 text-[10px] font-semibold text-text-muted uppercase tracking-widest">
-                    {{ __('app.competitions') }}
-                </div>
-                @foreach($teamCompetitions as $competition)
-                <x-responsive-nav-link :href="route('game.competition', [$game->id, $competition->id])" :active="request()->route('competitionId') == $competition->id">
-                    {{ __($competition->name) }}
-                </x-responsive-nav-link>
-                @endforeach
-            </div>
-            @endif
-        </div>
-    </div>
 
     {{-- Pre-Match Confirmation Modal --}}
     @if($nextMatch && !$game->hasPendingActions() && !$continueToHome)
@@ -259,4 +173,47 @@
         </x-modal>
     </div>
     @endif
+
+    {{-- Mobile Notifications Modal (triggered by header bell icon) --}}
+    <div class="lg:hidden" x-data>
+        <x-modal name="notifications-mobile" maxWidth="lg">
+            <x-modal-header modalName="notifications-mobile">{{ __('notifications.inbox') }}</x-modal-header>
+
+            @if($unreadCount > 0)
+            <div class="px-4 py-2.5 border-b border-border-default flex items-center justify-between">
+                <span class="px-1.5 py-0.5 rounded-full bg-accent-blue/10 text-[10px] font-semibold text-accent-blue">
+                    {{ $unreadCount }} {{ __('notifications.new') }}
+                </span>
+                <form action="{{ route('game.notifications.read-all', $game->id) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="text-[10px] text-accent-blue hover:text-blue-400 transition-colors">
+                        {{ __('notifications.mark_all_read') }}
+                    </button>
+                </form>
+            </div>
+            @endif
+
+            <div class="max-h-[70vh] overflow-y-auto">
+                @if($recentNotifications->isEmpty())
+                <div class="text-center py-8 px-4">
+                    <div class="text-text-faint mb-2">
+                        <svg class="w-8 h-8 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <p class="text-xs text-text-muted">{{ __('notifications.all_caught_up') }}</p>
+                </div>
+                @else
+                <div class="divide-y divide-border-default">
+                    @foreach($recentNotifications as $notification)
+                        <x-notification-row :notification="$notification" :game="$game" />
+                    @endforeach
+                </div>
+                @endif
+            </div>
+        </x-modal>
+    </div>
+
+    {{-- Mobile Bottom Tab Bar --}}
+    <x-bottom-tab-bar :game="$game" :next-match="$nextMatch" :team-competitions="$teamCompetitions" />
 </div>

@@ -255,6 +255,10 @@ return [
     'live_second_yellow' => 'Second yellow',
     'live_injury' => 'Injury',
     'live_assist' => 'Ast.',
+    'live_shot_on_target' => 'Shot on target',
+    'live_shot_off_target' => 'Shot off target',
+    'live_foul' => 'Foul',
+    'live_commentary' => 'Commentary',
     'live_speed' => 'Speed',
     'live_skip' => 'Skip',
     'live_other_results' => 'Others',
@@ -272,6 +276,9 @@ return [
     'live_tab_results' => 'Results',
     'lineup_unknown' => 'No lineup known',
     'live_stat_goals' => 'Goals',
+    'live_stat_shots' => 'Shots',
+    'live_stat_shots_on_target' => 'On target',
+    'live_stat_fouls' => 'Fouls',
     'live_stat_cards' => 'Cards',
     'live_stat_injuries' => 'Injuries',
     'live_stat_subs' => 'Substitutions',
@@ -316,6 +323,7 @@ return [
     'sub_error_player_sent_off' => 'Cannot substitute a player who has been sent off',
     'sub_error_player_suspended' => 'Player is suspended in this competition',
     'sub_error_player_injured' => 'Player is injured',
+    'sub_error_player_not_registered' => 'Player is not registered in the squad',
 
     'match_not_in_progress' => 'This match is no longer in progress',
 

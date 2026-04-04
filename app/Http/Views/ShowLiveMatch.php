@@ -147,6 +147,7 @@ class ShowLiveMatch
                 $q->whereNull('injury_until')
                     ->orWhere('injury_until', '<', $matchDate);
             })
+            ->when($game->requiresSquadEnrollment(), fn ($q) => $q->whereNotNull('number'))
             ->get()
             ->map(fn ($p) => [
                 'id' => $p->id,
@@ -172,6 +173,7 @@ class ShowLiveMatch
             ->whereIn('id', $ids)
             ->get()
             ->map(fn ($p) => [
+                'id' => $p->id,
                 'name' => $p->player->name ?? '',
                 'positionAbbr' => PositionMapper::toAbbreviation($p->position),
                 'positionGroup' => $p->position_group,
@@ -254,6 +256,30 @@ class ShowLiveMatch
         $slotCompatibility = PositionSlotMapper::SLOT_COMPATIBILITY;
         $gridConfig = PitchGrid::getGridConfig();
 
+        // Narrative templates for client-side atmosphere generation
+        $narrativeTemplates = [
+            'shotOnTarget' => __('commentary.atmosphere_shot_on_target'),
+            'shotOffTarget' => __('commentary.atmosphere_shot_off_target'),
+            'foul' => __('commentary.atmosphere_foul'),
+            'contextualDrawOpen' => __('commentary.contextual_draw_open'),
+            'contextualDrawWithGoals' => __('commentary.contextual_draw_with_goals'),
+            'contextualHomeLeading' => __('commentary.contextual_home_leading'),
+            'contextualAwayLeading' => __('commentary.contextual_away_leading'),
+            'contextualHomeDominant' => __('commentary.contextual_home_dominant'),
+            'contextualAwayDominant' => __('commentary.contextual_away_dominant'),
+            'contextualTightGame' => __('commentary.contextual_tight_game'),
+            'contextualEndLosing' => __('commentary.contextual_end_losing'),
+            'contextualEndLosingByOne' => __('commentary.contextual_end_losing_by_one'),
+            'contextualEndWinning' => __('commentary.contextual_end_winning'),
+            'contextualEndDraw' => __('commentary.contextual_end_draw'),
+            'contextualSecondHalfStart' => __('commentary.contextual_second_half_start'),
+            'contextualAwayFans' => __('commentary.contextual_away_fans'),
+            'contextualHomeFans' => __('commentary.contextual_home_fans'),
+            'contextualHighFouls' => __('commentary.contextual_high_fouls'),
+            'goalAssisted' => __('commentary.goal_assisted'),
+            'goalSolo' => __('commentary.goal_solo'),
+        ];
+
         return view('live-match', [
             'game' => $game,
             'match' => $playerMatch,
@@ -301,6 +327,7 @@ class ShowLiveMatch
                 ?? $game->tactics?->default_pitch_positions ?? [],
             'slotAssignments' => $playerMatch->{"{$prefix}_slot_assignments"}
                 ?? $game->tactics?->default_slot_assignments ?? [],
+            'narrativeTemplates' => $narrativeTemplates,
         ]);
     }
 

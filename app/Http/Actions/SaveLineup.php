@@ -54,6 +54,7 @@ class SaveLineup
         $competitionId = $match->competition_id;
 
         // Validate the lineup against the formation
+        $requireEnrollment = $game->requiresSquadEnrollment();
         $errors = $this->lineupService->validateLineup(
             $playerIds,
             $gameId,
@@ -61,7 +62,8 @@ class SaveLineup
             $matchDate,
             $competitionId,
             $formation,
-            $slotAssignments
+            $slotAssignments,
+            $requireEnrollment,
         );
 
         if (!empty($errors)) {

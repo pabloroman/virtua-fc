@@ -9,7 +9,6 @@
         && !$gamePlayer->isLoanedIn($game->team_id)
         && !$gamePlayer->isLoanedOut($game->team_id)
         && !$gamePlayer->hasPreContractAgreement()
-        && !$gamePlayer->hasRenewalAgreed()
         && !$gamePlayer->hasAgreedTransfer()
         && !$gamePlayer->hasActiveLoanSearch();
     $isTransferWindow = $isCareerMode && $game->isTransferWindowOpen();

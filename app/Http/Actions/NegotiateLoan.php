@@ -6,7 +6,6 @@ use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\TransferOffer;
 use App\Modules\Notification\Services\NotificationService;
-use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\LoanService;
 use App\Modules\Transfer\Services\ScoutingService;
 use App\Support\Money;
@@ -48,13 +47,6 @@ class NegotiateLoan
             return response()->json([
                 'status' => 'error',
                 'message' => __('messages.loan_not_available'),
-            ], 422);
-        }
-
-        if (ContractService::isSquadFull($game)) {
-            return response()->json([
-                'status' => 'error',
-                'message' => __('messages.squad_full'),
             ], 422);
         }
 
@@ -131,13 +123,6 @@ class NegotiateLoan
             return response()->json([
                 'status' => 'error',
                 'message' => __('messages.loan_not_available'),
-            ], 422);
-        }
-
-        if (ContractService::isSquadFull($game)) {
-            return response()->json([
-                'status' => 'error',
-                'message' => __('messages.squad_full'),
             ], 422);
         }
 

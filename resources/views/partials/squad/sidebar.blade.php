@@ -137,22 +137,7 @@
                 </div>
             @endif
 
-            @if($expiringNextSeason->isNotEmpty())
-                <div>
-                    <div class="text-xs font-medium text-amber-600 mb-1.5">{{ __('squad.expiring_next_season') }}</div>
-                    <div class="space-y-1">
-                        @foreach($expiringNextSeason as $ep)
-                            <x-ghost-button color="slate" size="xs" @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $ep->id]) }}')"
-                                    class="w-full justify-between py-1 px-2 text-left">
-                                <span class="text-xs text-text-body truncate">{{ $ep->name }}</span>
-                                <span class="text-xs text-amber-500 font-medium shrink-0 ml-2">{{ $ep->contract_expiry_year }}</span>
-                            </x-ghost-button>
-                        @endforeach
-                    </div>
-                </div>
-            @endif
-
-            @if($expiringThisSeason->isEmpty() && $expiringNextSeason->isEmpty())
+            @if($expiringThisSeason->isEmpty())
                 <p class="text-xs text-text-secondary italic">{{ __('squad.no_contract_issues') }}</p>
             @endif
 

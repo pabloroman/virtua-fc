@@ -255,6 +255,10 @@ return [
     'live_second_yellow' => 'Doble amarilla',
     'live_injury' => 'Lesión',
     'live_assist' => 'Asist.',
+    'live_shot_on_target' => 'Tiro a puerta',
+    'live_shot_off_target' => 'Tiro fuera',
+    'live_foul' => 'Falta',
+    'live_commentary' => 'Comentarios',
     'live_speed' => 'Velocidad',
     'live_skip' => 'Saltar',
     'live_other_results' => 'Otros',
@@ -272,6 +276,9 @@ return [
     'live_tab_results' => 'Resultados',
     'lineup_unknown' => 'Alineación no disponible',
     'live_stat_goals' => 'Goles',
+    'live_stat_shots' => 'Tiros',
+    'live_stat_shots_on_target' => 'A puerta',
+    'live_stat_fouls' => 'Faltas',
     'live_stat_cards' => 'Tarjetas',
     'live_stat_injuries' => 'Lesiones',
     'live_stat_subs' => 'Sustituciones',
@@ -316,6 +323,7 @@ return [
     'sub_error_player_sent_off' => 'No se puede sustituir a un jugador expulsado',
     'sub_error_player_suspended' => 'El jugador está sancionado en esta competición',
     'sub_error_player_injured' => 'El jugador está lesionado',
+    'sub_error_player_not_registered' => 'El jugador no está inscrito en la plantilla',
 
     'match_not_in_progress' => 'Este partido ya no está en juego',
 

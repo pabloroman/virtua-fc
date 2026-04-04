@@ -10,6 +10,7 @@ use App\Modules\Player\PlayerAge;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use App\Modules\Squad\Services\PlayerGeneratorService;
+use App\Modules\Squad\Services\SquadNumberService;
 
 class YouthAcademyService
 {
@@ -102,6 +103,7 @@ class YouthAcademyService
 
     public function __construct(
         private readonly PlayerGeneratorService $playerGenerator,
+        private readonly SquadNumberService $squadNumberService,
     ) {}
 
     /**
@@ -296,6 +298,10 @@ class YouthAcademyService
             moraleMin: 70,
             moraleMax: 90,
         ));
+
+        $gamePlayer->update([
+            'number' => $this->squadNumberService->assignNumberForNewPlayer($game, $gamePlayer),
+        ]);
 
         $academy->delete();
 

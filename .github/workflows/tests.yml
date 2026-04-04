@@ -54,18 +54,8 @@ jobs:
           cp .env.example .env
           php artisan key:generate
 
-      - name: Run migrations
-        run: php artisan migrate --force
-        env:
-          DB_CONNECTION: pgsql
-          DB_HOST: 127.0.0.1
-          DB_PORT: 5432
-          DB_DATABASE: virtua_fc_test
-          DB_USERNAME: virtua_fc
-          DB_PASSWORD: password
-
       - name: Run tests
-        run: php artisan test
+        run: php artisan test --parallel --processes=4
         env:
           DB_CONNECTION: pgsql
           DB_HOST: 127.0.0.1

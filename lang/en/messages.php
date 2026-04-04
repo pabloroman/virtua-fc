@@ -95,9 +95,6 @@ return [
     'release_squad_too_small' => 'Cannot release — your squad must have at least :min players.',
     'release_position_minimum' => 'Cannot release — you need at least :min :group.',
 
-    // Squad cap
-    'squad_full' => 'Your squad already has the maximum of :max players. Release or sell a player first.',
-    'squad_trim_required' => 'Your squad has :count players. You must release at least :excess to meet the :max-player limit.',
     'cannot_loan_free_agent' => 'Cannot loan a free agent. Sign them directly instead.',
 
     // Pending actions

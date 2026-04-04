@@ -70,6 +70,9 @@ class WageNegotiationEvaluator
                 $counterWage = $previousCounter;
             }
 
+            // Never exceed the player's initial demand
+            $counterWage = min($counterWage, $playerDemand);
+
             return ['result' => 'countered', 'counterWage' => $counterWage];
         }
 

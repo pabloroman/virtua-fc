@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Builder;
  * @property bool $needs_new_season_setup
  * @property bool $needs_welcome
  * @property bool $pre_season
+ * @property bool $squad_registration_enabled
  * @property string|null $season_goal
  * @property string $competition_id
  * @property string $game_mode
@@ -119,6 +120,7 @@ class Game extends Model
         'needs_new_season_setup',
         'needs_welcome',
         'pre_season',
+        'squad_registration_enabled',
         'pending_actions',
         'setup_completed_at',
         'season_transitioning_at',
@@ -138,6 +140,7 @@ class Game extends Model
         'needs_new_season_setup' => 'boolean',
         'needs_welcome' => 'boolean',
         'pre_season' => 'boolean',
+        'squad_registration_enabled' => 'boolean',
         'pending_actions' => 'array',
         'setup_completed_at' => 'datetime',
         'season_transitioning_at' => 'datetime',
@@ -707,6 +710,11 @@ class Game extends Model
     public function isInPreSeason(): bool
     {
         return $this->pre_season ?? false;
+    }
+
+    public function requiresSquadEnrollment(): bool
+    {
+        return $this->squad_registration_enabled && !$this->isInPreSeason();
     }
 
     public function endPreSeason(): void

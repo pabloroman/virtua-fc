@@ -254,8 +254,10 @@ return [
     'radar_tec' => 'Technical',
     'radar_phy' => 'Physical',
 
-    // Squad cap
-    'squad_trim' => 'Squad Trim',
+    // Registration
+    'not_registered' => 'Not registered',
+    'too_many_first_team' => 'Maximum 25 first-team registrations (numbers 1-25) allowed.',
+    'drag_to_assign' => 'Drag a player here to assign them',
 
     // Grid positioning
     'drag_or_tap' => 'Tap a cell or drag the player',
@@ -289,7 +291,6 @@ return [
     'age_profile' => 'Age Profile',
     'contract_watch' => 'Contract Watch',
     'expiring_this_season' => 'Expiring this season',
-    'expiring_next_season' => 'Expiring next season',
     'no_contract_issues' => 'No contract issues',
     'highest_earners' => 'Highest earners',
 
@@ -349,4 +350,22 @@ return [
 
     // Number
     'number' => 'Number',
+
+    // Squad registration
+    'registration' => 'Registration',
+    'registration_title' => 'Squad Registration',
+    'registration_subtitle' => 'Assign shirt numbers for the season',
+    'first_team_slots' => 'First Team (1-25)',
+    'academy_slots' => 'Academy (26-99)',
+    'unregistered_players' => 'Unregistered',
+    'empty_slot' => 'Empty',
+    'save_registration' => 'Save',
+    'registration_saved' => 'Squad registration saved',
+    'registered_count' => ':count registered',
+    'academy_age_limit' => 'Only players under 23 can be registered with academy numbers (26-99)',
+    'registration_rules_title' => 'Registration Rules',
+    'registration_rule_first_team' => 'First team players are assigned shirt numbers 1 to 25.',
+    'registration_rule_academy' => 'Academy numbers (26-99) are reserved for players under 23 years old.',
+    'registration_rule_unregistered' => 'Unregistered players cannot be selected for matchday squads.',
+    'registration_readonly' => 'You can register players and modify shirt numbers only during transfer windows.',
 ];

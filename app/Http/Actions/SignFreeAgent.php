@@ -5,7 +5,6 @@ namespace App\Http\Actions;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Modules\Notification\Services\NotificationService;
-use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\ScoutingService;
 use App\Modules\Transfer\Services\TransferService;
 use Illuminate\Http\Request;
@@ -27,12 +26,6 @@ class SignFreeAgent
         if ($player->team_id !== null) {
             return redirect()->route('game.transfers', $gameId)
                 ->with('error', __('messages.not_free_agent'));
-        }
-
-        // Squad size cap
-        if (ContractService::isSquadFull($game)) {
-            return redirect()->route('game.transfers', $gameId)
-                ->with('error', __('messages.squad_full', ['max' => ContractService::MAX_SQUAD_SIZE]));
         }
 
         // Reputation gate: free agent must be willing to join

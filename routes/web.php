@@ -58,14 +58,15 @@ use App\Http\Actions\SaveLineup;
 use App\Http\Actions\SaveTacticalPreset;
 use App\Http\Actions\DeleteTacticalPreset;
 
+use App\Http\Actions\SaveSquadRegistration;
 use App\Http\Actions\SaveSquadSelection;
+use App\Http\Views\ShowSquadRegistration;
 use App\Http\Views\ShowSquadSelection;
 use App\Http\Actions\SubmitScoutSearch;
 use App\Http\Actions\SubmitPreContractOffer;
 use App\Http\Actions\StartPlayerTracking;
 use App\Http\Actions\StopPlayerTracking;
 use App\Http\Actions\ToggleShortlist;
-use App\Http\Actions\UpdatePlayerNumber;
 use App\Http\Actions\RemoveFromShortlist;
 use App\Http\Actions\DeleteScoutSearch;
 use App\Http\Actions\SkipPreSeason;
@@ -147,6 +148,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/game/{gameId}', ShowGame::class)->name('show-game');
         Route::get('/game/{gameId}/squad', ShowSquad::class)->name('game.squad');
         Route::get('/game/{gameId}/squad/academy', ShowAcademy::class)->name('game.squad.academy');
+        Route::get('/game/{gameId}/squad/registration', ShowSquadRegistration::class)->name('game.squad.registration');
+        Route::post('/game/{gameId}/squad/registration', SaveSquadRegistration::class)->name('game.squad.registration.save');
         Route::get('/game/{gameId}/player/{playerId}/detail', ShowPlayerDetail::class)->name('game.player.detail');
         Route::get('/game/{gameId}/academy/{playerId}/detail', ShowAcademyPlayerDetail::class)->name('game.academy.detail');
         Route::post('/game/{gameId}/academy/{playerId}/promote', PromoteAcademyPlayer::class)->name('game.academy.promote');
@@ -190,7 +193,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/game/{gameId}/transfers/decline-renewal/{playerId}', DeclineRenewal::class)->name('game.transfers.decline-renewal');
         Route::post('/game/{gameId}/transfers/reconsider-renewal/{playerId}', ReconsiderRenewal::class)->name('game.transfers.reconsider-renewal');
         Route::post('/game/{gameId}/squad/release/{playerId}', ReleasePlayer::class)->name('game.squad.release');
-        Route::post('/game/{gameId}/squad/{playerId}/number', UpdatePlayerNumber::class)->name('game.squad.number');
 
         // Scouting
         Route::get('/game/{gameId}/scouting', ShowScoutingHub::class)->name('game.scouting');

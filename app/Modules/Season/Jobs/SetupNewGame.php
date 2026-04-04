@@ -22,6 +22,7 @@ use App\Models\GamePlayer;
 use App\Models\TeamReputation;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -30,11 +31,16 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-class SetupNewGame implements ShouldQueue
+class SetupNewGame implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 1;
+
+    public function uniqueId(): string
+    {
+        return $this->gameId;
+    }
 
     private bool $usedTemplates = false;
     private Carbon $currentDate;
@@ -149,6 +155,8 @@ class SetupNewGame implements ShouldQueue
                 'team_id' => $ct->team_id,
                 'entry_round' => $ct->entry_round ?? 1,
             ])
+            ->unique(fn ($row) => $row['competition_id'] . '|' . $row['team_id'])
+            ->values()
             ->toArray();
 
         foreach (array_chunk($rows, 100) as $chunk) {
@@ -526,7 +534,9 @@ class SetupNewGame implements ShouldQueue
         $contractUntil = null;
         if (!empty($playerData['contract'])) {
             try {
-                $contractUntil = Carbon::parse($playerData['contract'])->toDateString();
+                $parsed = Carbon::parse($playerData['contract']);
+                $year = $parsed->month > 6 ? $parsed->year + 1 : $parsed->year;
+                $contractUntil = Carbon::createFromDate($year, 6, 30)->toDateString();
             } catch (\Exception $e) {
                 // Ignore invalid dates
             }

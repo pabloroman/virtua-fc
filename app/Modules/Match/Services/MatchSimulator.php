@@ -2411,6 +2411,7 @@ class MatchSimulator
             );
 
             $events = $events->merge($homeGoalEvents)->merge($awayGoalEvents);
+
             $events = $events->sortBy('minute')->values();
 
             $events = $this->applyPenaltyEvents(
