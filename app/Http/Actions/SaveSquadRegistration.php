@@ -33,9 +33,7 @@ class SaveSquadRegistration
             return back()->with('error', $e->getMessage());
         }
 
-        if (! $game->isTransferWindowOpen()) {
-            $game->removePendingAction('squad_registration');
-        }
+        $game->removePendingAction('squad_registration');
 
         return back()->with('success', __('squad.registration_saved'));
     }
