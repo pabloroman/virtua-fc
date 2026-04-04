@@ -13,7 +13,7 @@
     $moreActive = in_array($currentRoute, ['game.finances', 'game.transfers', 'game.transfers.outgoing', 'game.scouting', 'game.explore', 'game.competition', 'game.transfer-activity']);
 
     // Unread notification count
-    $unreadCount = $game->notifications()->where('is_read', false)->count();
+    $unreadCount = $game->notifications()->whereNull('read_at')->count();
 @endphp
 
 <div x-data="{ moreOpen: false }" class="lg:hidden">
