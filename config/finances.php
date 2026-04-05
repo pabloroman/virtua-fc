@@ -53,4 +53,48 @@ return [
         17 => 0.98,  // 15th-17th: -2%
         20 => 0.95,  // 18th-20th: -5%
     ],
+
+    // ── AI Team Financial Model ────────────────────────────────────────
+
+    // Transfer spending envelopes per season by reputation level (in cents).
+    // Represents the maximum an AI team can spend on incoming transfers per window.
+    'ai_transfer_budgets' => [
+        'elite'       => 120_000_000_00, // €120M
+        'continental' =>  60_000_000_00, // €60M
+        'established' =>  25_000_000_00, // €25M
+        'modest'      =>  10_000_000_00, // €10M
+        'local'       =>   3_000_000_00, // €3M
+    ],
+
+    // How much of AI team sale proceeds become available for purchases (0.0-1.0).
+    'ai_reinvestment_rate' => 0.70,
+
+    // Estimated total annual revenue by reputation level (in cents).
+    // Used to compute AI team financial pressure (wage-to-revenue ratio).
+    'ai_estimated_revenue' => [
+        'elite'       => 200_000_000_00, // €200M
+        'continental' => 100_000_000_00, // €100M
+        'established' =>  50_000_000_00, // €50M
+        'modest'      =>  25_000_000_00, // €25M
+        'local'       =>  10_000_000_00, // €10M
+    ],
+
+    // Per-team transfer activity count weights by reputation (summer window).
+    // Key = number of transfers, value = weight (higher = more likely).
+    'ai_transfer_count_weights_summer' => [
+        'elite'       => [2 => 10, 3 => 25, 4 => 30, 5 => 25, 6 => 10],
+        'continental' => [2 => 15, 3 => 30, 4 => 30, 5 => 20, 6 => 5],
+        'established' => [1 => 15, 2 => 30, 3 => 30, 4 => 15, 5 => 10],
+        'modest'      => [1 => 25, 2 => 35, 3 => 25, 4 => 15],
+        'local'       => [1 => 40, 2 => 35, 3 => 25],
+    ],
+
+    // Per-team transfer activity count weights by reputation (winter window).
+    'ai_transfer_count_weights_winter' => [
+        'elite'       => [1 => 30, 2 => 40, 3 => 30],
+        'continental' => [1 => 35, 2 => 40, 3 => 25],
+        'established' => [1 => 50, 2 => 35, 3 => 15],
+        'modest'      => [1 => 60, 2 => 30, 3 => 10],
+        'local'       => [1 => 70, 2 => 30],
+    ],
 ];

@@ -323,8 +323,10 @@ class DispositionService
     /**
      * Calculate selling club's disposition (willingness to sell).
      * Higher = more willing.
+     *
+     * @param  float|null  $financialPressure  Team's financial pressure (0.0-1.0). Higher = more willing to sell for cash.
      */
-    public function clubSellDisposition(GamePlayer $player): float
+    public function clubSellDisposition(GamePlayer $player, ?float $financialPressure = null): float
     {
         $disposition = 0.50;
 
@@ -361,6 +363,12 @@ class DispositionService
             $disposition += 0.10;
         } elseif ($age < PlayerAge::YOUNG_END) {
             $disposition -= 0.05;
+        }
+
+        // Financial pressure: cash-strapped clubs are more willing to sell
+        if ($financialPressure !== null && $financialPressure > 0.30) {
+            // +0.05 at pressure 0.30, up to +0.15 at pressure 1.0
+            $disposition += min(0.15, ($financialPressure - 0.30) * 0.214);
         }
 
         return max(0.10, min(0.95, $disposition));

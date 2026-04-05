@@ -27,10 +27,6 @@ use Illuminate\Support\Str;
  */
 class AITransferMarketService
 {
-    /** Per-team transfer activity budget (summer: 1-5, winter: 1-3) */
-    private const TRANSFER_COUNT_WEIGHTS_SUMMER = [1 => 15, 2 => 30, 3 => 30, 4 => 15, 5 => 10];
-    private const TRANSFER_COUNT_WEIGHTS_WINTER = [1 => 50, 2 => 35, 3 => 15];
-
     /** Percentage chance each sell is a squad clearing type (vs talent upgrade) */
     private const CLEARING_CHANCE = 65;
 
@@ -89,6 +85,7 @@ class AITransferMarketService
     public function __construct(
         private readonly ContractService $contractService,
         private readonly NotificationService $notificationService,
+        private readonly AITeamBudgetCalculator $budgetCalculator,
     ) {}
 
     /**
@@ -99,19 +96,20 @@ class AITransferMarketService
      */
     public function processTransferBatch(Game $game, string $window, int $batchSize = 10): void
     {
-        $isSummer = $window === 'summer';
-
         [
             'teamRosters' => $teamRosters,
             'teamAverages' => $teamAverages,
             'teams' => $teams,
             'takenNumbers' => $takenNumbers,
             'alreadyTransferredSet' => $alreadyTransferredSet,
-            'completedCounts' => $completedCounts,
+            'completedFinancials' => $completedFinancials,
+            'reputationLevels' => $reputationLevels,
         ] = $this->loadTransferContext($game, $window);
 
-        // Build deterministic budgets with completed activity subtracted
-        $teamBudgets = $this->buildDeterministicBudgets($teamRosters, $game, $window, $isSummer, $completedCounts);
+        // Build budgets with monetary envelopes via the calculator
+        $teamBudgets = $this->budgetCalculator->computeBudgets(
+            $teamRosters, $reputationLevels, $completedFinancials, $game->season, $window,
+        );
 
         // Filter to teams with remaining sell capacity
         $eligibleSellers = $teamBudgets->filter(function ($budget) {
@@ -151,8 +149,6 @@ class AITransferMarketService
      */
     public function processWindowClose(Game $game, string $window): void
     {
-        $isSummer = $window === 'summer';
-
         [
             'teamRosters' => $teamRosters,
             'teamAverages' => $teamAverages,
@@ -160,7 +156,8 @@ class AITransferMarketService
             'takenNumbers' => $takenNumbers,
             'alreadyTransferredSet' => $alreadyTransferredSet,
             'windowTransfers' => $windowTransfers,
-            'completedCounts' => $completedCounts,
+            'completedFinancials' => $completedFinancials,
+            'reputationLevels' => $reputationLevels,
         ] = $this->loadTransferContext($game, $window);
 
         $playerUpdates = [];
@@ -174,7 +171,9 @@ class AITransferMarketService
         );
 
         // Phase 2: Remaining AI-to-AI transfers
-        $teamBudgets = $this->buildDeterministicBudgets($teamRosters, $game, $window, $isSummer, $completedCounts);
+        $teamBudgets = $this->budgetCalculator->computeBudgets(
+            $teamRosters, $reputationLevels, $completedFinancials, $game->season, $window,
+        );
         $transferCount = $this->processAITransfers(
             $game, $window, $teamRosters, $teamAverages, $teams,
             $takenNumbers, $playerUpdates, $transferInserts,
@@ -529,13 +528,19 @@ class AITransferMarketService
 
                 // Prepare domestic transfer (with buyer reputation fee cap)
                 $buyerRepIndex = $this->getReputationIndex($buyerTeamId, $teamReputations);
+                $maxFee = self::MAX_FEE_BY_REPUTATION_INDEX[$buyerRepIndex] ?? 500_000_000;
+                $fee = min($player->market_value_cents, $maxFee);
                 $this->prepareTransfer($game, $player, $sellerTeamId, $buyerTeamId, $teams->get($buyerTeamId), $window, $assignedNumber, $playerUpdates, $transferInserts, buyerReputationIndex: $buyerRepIndex);
                 $count++;
                 $transferredPlayerIds[$player->id] = true;
 
-                // Update budgets
+                // Update transfer count budgets
                 $this->incrementBudget($teamBudgets, $sellerTeamId, 'sells');
                 $this->incrementBudget($teamBudgets, $buyerTeamId, 'buys');
+
+                // Update monetary budgets (seller earns, buyer spends)
+                $this->adjustBudgetEarnings($teamBudgets, $sellerTeamId, $fee);
+                $this->adjustBudgetSpending($teamBudgets, $buyerTeamId, $fee);
 
                 // Update caches: seller loses player, buyer gains player
                 $this->adjustGroupCount($groupCounts, $sellerTeamId, $posGroup, -1);
@@ -553,6 +558,8 @@ class AITransferMarketService
                     $count++;
                     $transferredPlayerIds[$player->id] = true;
                     $this->incrementBudget($teamBudgets, $sellerTeamId, 'sells');
+                    $foreignMaxFee = self::MAX_FEE_BY_REPUTATION_INDEX[1] ?? 500_000_000;
+                    $this->adjustBudgetEarnings($teamBudgets, $sellerTeamId, min($player->market_value_cents, $foreignMaxFee));
                     $this->adjustGroupCount($groupCounts, $sellerTeamId, $posGroup, -1);
                     $teamSizeDeltas->put($sellerTeamId, ($teamSizeDeltas->get($sellerTeamId, 0)) - 1);
                 }
@@ -787,9 +794,14 @@ class AITransferMarketService
                 continue;
             }
 
-            // Check buyer budget
+            // Check buyer transfer count budget
             $budget = $teamBudgets->get($teamId);
             if ($budget && ($budget['sells'] + $budget['buys']) >= $budget['max']) {
+                continue;
+            }
+
+            // Check buyer can afford this player
+            if ($budget && $player->market_value_cents > $budget['available']) {
                 continue;
             }
 
@@ -859,9 +871,14 @@ class AITransferMarketService
                 continue;
             }
 
-            // Check buyer budget
+            // Check buyer transfer count budget
             $budget = $teamBudgets->get($teamId);
             if ($budget && ($budget['sells'] + $budget['buys']) >= $budget['max']) {
+                continue;
+            }
+
+            // Check buyer can afford this player
+            if ($budget && $player->market_value_cents > $budget['available']) {
                 continue;
             }
 
@@ -1235,13 +1252,14 @@ class AITransferMarketService
         $teamAverages = $teamRosters->map(fn ($players) => $this->calculateTeamAverage($players));
         $teams = Team::whereIn('id', $teamRosters->keys())->get()->keyBy('id');
         $takenNumbers = $this->preloadSquadNumbers($game->id);
+        $reputationLevels = TeamReputation::resolveLevels($game->id, $teamRosters->keys()->all());
 
         $seasonTransfers = GameTransfer::where('game_id', $game->id)
             ->where('season', $game->season)
-            ->get(['id', 'game_id', 'game_player_id', 'from_team_id', 'to_team_id', 'window']);
+            ->get(['id', 'game_id', 'game_player_id', 'from_team_id', 'to_team_id', 'transfer_fee', 'window']);
         $alreadyTransferredSet = array_flip($seasonTransfers->pluck('game_player_id')->all());
         $windowTransfers = $seasonTransfers->where('window', $window);
-        $completedCounts = $this->buildCompletedCounts($windowTransfers, $game->team_id);
+        $completedFinancials = $this->buildCompletedFinancials($windowTransfers, $game->team_id);
 
         return [
             'teamRosters' => $teamRosters,
@@ -1250,7 +1268,8 @@ class AITransferMarketService
             'takenNumbers' => $takenNumbers,
             'alreadyTransferredSet' => $alreadyTransferredSet,
             'windowTransfers' => $windowTransfers,
-            'completedCounts' => $completedCounts,
+            'completedFinancials' => $completedFinancials,
+            'reputationLevels' => $reputationLevels,
         ];
     }
 
@@ -1325,72 +1344,60 @@ class AITransferMarketService
     // ── Budget & tracking helpers ───────────────────────────────────────
 
     /**
-     * Compute a deterministic transfer budget for a team using hash-based distribution.
-     * Same inputs always produce the same budget — no state storage needed.
+     * Adjust in-memory budget after a transfer: add spending to buyer.
      */
-    private function computeDeterministicBudget(string $teamId, string $season, string $window, bool $isSummer): int
+    private function adjustBudgetSpending(Collection $teamBudgets, string $teamId, int $fee): void
     {
-        $hash = crc32($teamId . $season . $window);
-        $weights = $isSummer ? self::TRANSFER_COUNT_WEIGHTS_SUMMER : self::TRANSFER_COUNT_WEIGHTS_WINTER;
-        $total = array_sum($weights);
-        $roll = (($hash & 0x7FFFFFFF) % $total) + 1;
-        $cumulative = 0;
-
-        foreach ($weights as $value => $weight) {
-            $cumulative += $weight;
-            if ($roll <= $cumulative) {
-                return $value;
-            }
+        $budget = $teamBudgets->get($teamId);
+        if ($budget) {
+            $budget['spent'] += $fee;
+            $budget['available'] = max(0, $budget['available'] - $fee);
+            $teamBudgets->put($teamId, $budget);
         }
-
-        return array_key_first($weights);
     }
 
     /**
-     * Build deterministic budgets for all AI teams, with prior activity subtracted.
+     * Adjust in-memory budget after a transfer: add earnings to seller.
      */
-    private function buildDeterministicBudgets(
-        Collection $teamRosters,
-        Game $game,
-        string $window,
-        bool $isSummer,
-        ?Collection $completedCounts = null,
-    ): Collection {
-        return $teamRosters->mapWithKeys(function ($players, $teamId) use ($game, $window, $isSummer, $completedCounts) {
-            $completed = $completedCounts?->get($teamId, ['sells' => 0, 'buys' => 0]) ?? ['sells' => 0, 'buys' => 0];
-
-            return [$teamId => [
-                'max' => $this->computeDeterministicBudget($teamId, $game->season, $window, $isSummer),
-                'sells' => $completed['sells'],
-                'buys' => $completed['buys'],
-            ]];
-        });
-    }
-
-    /**
-     * Count completed sells and buys per team from existing transfer records.
-     */
-    private function buildCompletedCounts(Collection $transfers, string $gameTeamId): Collection
+    private function adjustBudgetEarnings(Collection $teamBudgets, string $teamId, int $fee): void
     {
-        $counts = collect();
+        $budget = $teamBudgets->get($teamId);
+        if ($budget) {
+            $reinvestmentRate = (float) config('finances.ai_reinvestment_rate', 0.70);
+            $budget['earned'] += $fee;
+            $budget['available'] += (int) ($fee * $reinvestmentRate);
+            $teamBudgets->put($teamId, $budget);
+        }
+    }
+
+    /**
+     * Count completed sells/buys and sum fees per team from existing transfer records.
+     */
+    private function buildCompletedFinancials(Collection $transfers, string $gameTeamId): Collection
+    {
+        $data = collect();
 
         foreach ($transfers as $transfer) {
+            $fee = $transfer->transfer_fee ?? 0;
+
             if ($transfer->from_team_id && $transfer->from_team_id !== $gameTeamId) {
                 $teamId = $transfer->from_team_id;
-                $current = $counts->get($teamId, ['sells' => 0, 'buys' => 0]);
+                $current = $data->get($teamId, ['sells' => 0, 'buys' => 0, 'spent' => 0, 'earned' => 0]);
                 $current['sells']++;
-                $counts->put($teamId, $current);
+                $current['earned'] += $fee;
+                $data->put($teamId, $current);
             }
 
             if ($transfer->to_team_id && $transfer->to_team_id !== $gameTeamId) {
                 $teamId = $transfer->to_team_id;
-                $current = $counts->get($teamId, ['sells' => 0, 'buys' => 0]);
+                $current = $data->get($teamId, ['sells' => 0, 'buys' => 0, 'spent' => 0, 'earned' => 0]);
                 $current['buys']++;
-                $counts->put($teamId, $current);
+                $current['spent'] += $fee;
+                $data->put($teamId, $current);
             }
         }
 
-        return $counts;
+        return $data;
     }
 
     // ── Data loading helpers ────────────────────────────────────────────
