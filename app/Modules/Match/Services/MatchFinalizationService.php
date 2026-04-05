@@ -16,7 +16,6 @@ use App\Models\MatchEvent;
 use App\Models\PlayerSuspension;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class MatchFinalizationService
 {
@@ -35,14 +34,6 @@ class MatchFinalizationService
      */
     public function finalize(GameMatch $match, Game $game): void
     {
-        Log::channel('standings')->info('[Finalize] finalize() called', [
-            'match_id' => $match->id,
-            'game_id' => $game->id,
-            'pending_flag' => $game->pending_finalization_match_id,
-            'competition_id' => $match->competition_id,
-            'is_cup_tie' => $match->cup_tie_id !== null,
-        ]);
-
         $previousDate = $game->current_date->copy();
         $competition = Competition::find($match->competition_id);
 

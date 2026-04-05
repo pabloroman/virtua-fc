@@ -4,7 +4,6 @@ namespace App\Modules\Match\Listeners;
 
 use App\Modules\Match\Events\MatchFinalized;
 use App\Modules\Competition\Services\StandingsCalculator;
-use Illuminate\Support\Facades\Log;
 
 class UpdateLeagueStandings
 {
@@ -18,17 +17,6 @@ class UpdateLeagueStandings
         $competition = $event->competition;
         $isCupTie = $match->cup_tie_id !== null;
 
-        Log::channel('standings')->info('[ListenerPath] UpdateLeagueStandings fired', [
-            'match_id' => $match->id,
-            'competition_id' => $match->competition_id,
-            'is_league' => $competition?->isLeague(),
-            'is_cup_tie' => $isCupTie,
-            'standings_applied' => $match->standings_applied,
-            'home_team' => $match->home_team_id,
-            'away_team' => $match->away_team_id,
-            'score' => $match->home_score . '-' . $match->away_score,
-        ]);
-
         if (! $competition?->isLeague() || $isCupTie) {
             return;
         }
@@ -36,10 +24,6 @@ class UpdateLeagueStandings
         // Idempotency guard: skip if standings were already applied for this match
         // (prevents double-counting from concurrent finalization or safety net re-entry)
         if ($match->standings_applied) {
-            Log::channel('standings')->warning('[ListenerPath] SKIPPED — standings already applied', [
-                'match_id' => $match->id,
-            ]);
-
             return;
         }
 
@@ -55,9 +39,5 @@ class UpdateLeagueStandings
         $this->standingsCalculator->recalculatePositions($event->game->id, $match->competition_id, updatePrevPosition: false);
 
         $match->update(['standings_applied' => true]);
-
-        Log::channel('standings')->info('[ListenerPath] Applied standings + marked applied', [
-            'match_id' => $match->id,
-        ]);
     }
 }
