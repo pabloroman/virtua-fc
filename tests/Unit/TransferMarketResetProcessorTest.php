@@ -7,6 +7,7 @@ use App\Models\GamePlayer;
 use App\Models\ScoutReport;
 use App\Models\ShortlistedPlayer;
 use App\Models\Team;
+use App\Models\TransferListing;
 use App\Models\TransferOffer;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Processors\TransferMarketResetProcessor;
@@ -179,40 +180,39 @@ class TransferMarketResetProcessorTest extends TestCase
         $this->assertSame(1, TransferOffer::where('game_id', $otherGame->id)->count());
     }
 
-    public function test_clears_transfer_listed_status_from_players(): void
+    public function test_clears_transfer_listings_for_game(): void
     {
         $game = Game::factory()->create();
         $otherGame = Game::factory()->create();
         $team = Team::factory()->create();
 
-        $listedPlayer = GamePlayer::factory()->forGame($game)->forTeam($team)->create([
-            'transfer_status' => 'listed',
-            'transfer_listed_at' => '2025-01-10',
+        $listedPlayer = GamePlayer::factory()->forGame($game)->forTeam($team)->create();
+        TransferListing::create([
+            'game_id' => $game->id,
+            'game_player_id' => $listedPlayer->id,
+            'team_id' => $team->id,
+            'status' => TransferListing::STATUS_LISTED,
+            'listed_at' => '2025-01-10',
         ]);
 
-        $normalPlayer = GamePlayer::factory()->forGame($game)->forTeam($team)->create([
-            'transfer_status' => null,
-            'transfer_listed_at' => null,
-        ]);
+        $normalPlayer = GamePlayer::factory()->forGame($game)->forTeam($team)->create();
 
-        $otherGameListed = GamePlayer::factory()->forGame($otherGame)->forTeam($team)->create([
-            'transfer_status' => 'listed',
-            'transfer_listed_at' => '2025-02-01',
+        $otherGameListed = GamePlayer::factory()->forGame($otherGame)->forTeam($team)->create();
+        TransferListing::create([
+            'game_id' => $otherGame->id,
+            'game_player_id' => $otherGameListed->id,
+            'team_id' => $team->id,
+            'status' => TransferListing::STATUS_LISTED,
+            'listed_at' => '2025-02-01',
         ]);
 
         $data = new SeasonTransitionData(oldSeason: '2025', newSeason: '2026', competitionId: $game->competition_id);
 
         $this->processor->process($game, $data);
 
-        $listedPlayer->refresh();
-        $normalPlayer->refresh();
-        $otherGameListed->refresh();
-
-        $this->assertNull($listedPlayer->transfer_status);
-        $this->assertNull($listedPlayer->transfer_listed_at);
-        $this->assertNull($normalPlayer->transfer_status);
-        $this->assertSame('listed', $otherGameListed->transfer_status);
-        $this->assertNotNull($otherGameListed->transfer_listed_at);
+        $this->assertNull(TransferListing::where('game_player_id', $listedPlayer->id)->first());
+        $this->assertNull(TransferListing::where('game_player_id', $normalPlayer->id)->first());
+        $this->assertNotNull(TransferListing::where('game_player_id', $otherGameListed->id)->first());
     }
 
     public function test_has_priority_70(): void

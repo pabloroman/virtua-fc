@@ -9,6 +9,7 @@ use App\Modules\Transfer\Services\TransferService;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\RenewalNegotiation;
+use App\Models\TransferListing;
 use App\Models\TransferOffer;
 
 class ShowOutgoingTransfers
@@ -81,7 +82,7 @@ class ShowOutgoingTransfers
         $listedPlayers = GamePlayer::with(['player'])
             ->where('game_id', $gameId)
             ->where('team_id', $game->team_id)
-            ->where('transfer_status', GamePlayer::TRANSFER_STATUS_LISTED)
+            ->whereHas('transferListing', fn ($q) => $q->where('status', TransferListing::STATUS_LISTED))
             ->whereNotIn('id', $agreedPlayerIds)
             ->orderByDesc('market_value_cents')
             ->get();
@@ -101,7 +102,7 @@ class ShowOutgoingTransfers
         $loanSearches = GamePlayer::with(['player'])
             ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
-            ->where('transfer_status', GamePlayer::TRANSFER_STATUS_LOAN_SEARCH)
+            ->whereHas('transferListing', fn ($q) => $q->where('status', TransferListing::STATUS_LOAN_SEARCH))
             ->get();
 
         // Contract renewal data

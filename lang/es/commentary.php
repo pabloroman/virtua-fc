@@ -161,4 +161,80 @@ return [
         'Robo de balón y :player no lo duda, define con un disparo cruzado imparable',
         ':player (:team) se inventa un golazo individual desde la frontal',
     ],
+
+    // Narrativas tácticas — generadas según las configuraciones tácticas
+    'tactical_high_press_working' => [
+        ':user presiona con intensidad feroz, asfixiando la salida de balón :del_opp',
+        'La presión alta :del_user está recuperando el balón en zonas peligrosas',
+        ':user presiona sin descanso — :opp apenas puede salir de su campo',
+    ],
+    'tactical_high_press_fading' => [
+        'La intensidad de la presión :del_user empieza a caer. Las piernas pesan',
+        ':user no puede mantener esa presión inicial — :opp encuentra más espacios',
+        'Se nota el cansancio. La presión :del_user pierde mordiente',
+    ],
+    'tactical_high_press_exhausted' => [
+        ':user parece agotado. La presión alta pasa factura en el tramo final',
+        'Se acaban las fuerzas para :user — esa presión agresiva les está pasando factura',
+        ':opp percibe el cansancio :del_user y se lanza al ataque con confianza',
+    ],
+    'tactical_opp_press_fading' => [
+        'La presión alta :del_opp pierde fuerza — :user debería encontrar más espacio',
+        'La presión :del_opp ya no es la de antes. Se abren los espacios',
+    ],
+    'tactical_opp_exhausted' => [
+        ':opp parece fundido tras presionar tanto. :user puede aprovechar las piernas cansadas',
+        'La presión alta ha drenado :al_opp — se nota que van con la lengua fuera',
+    ],
+    'tactical_low_block_wall' => [
+        ':user se planta compacto y profundo, complicando mucho el juego :del_opp',
+        'Un muro defensivo disciplinado :del_user. :opp no encuentra la forma de entrar',
+        ':user defiende con muchos efectivos, negando cualquier ocasión clara :al_opp',
+    ],
+    'tactical_low_block_fresh' => [
+        'El planteamiento conservador :del_user da sus frutos — los jugadores aún se ven frescos',
+        'Niveles de energía altos para :user gracias a la disciplina defensiva',
+    ],
+    'tactical_possession_control' => [
+        ':user controla el tempo, moviendo el balón con paciencia buscando huecos',
+        'Posesión dominante :del_user — :opp persiguiendo sombras',
+        ':user maneja bien el balón, dictando el ritmo del partido',
+    ],
+    'tactical_possession_frustrated' => [
+        ':user domina la posesión pero no encuentra la forma de superar el bloque bajo :del_opp',
+        'Mucha posesión para :user pero el bloque bajo :del_opp frustra cada ataque',
+    ],
+    'tactical_counter_waiting' => [
+        ':user espera agazapado, listo para salir a la contra en cualquier momento',
+        ':user cede el territorio — busca golpear en la transición',
+        'Defensa paciente :del_user, preparado para saltar cuando surja la oportunidad',
+    ],
+    'tactical_counter_exploiting' => [
+        ':user explota el espacio detrás de la línea alta :del_opp con contraataques letales',
+        'El planteamiento agresivo :del_opp deja huecos — :user castiga a la contra',
+    ],
+    'tactical_direct_play' => [
+        ':user salta el mediocampo con balones largos, manteniendo a :opp en alerta',
+        'Juego directo :del_user — sin complicaciones, balón largo a los delanteros',
+    ],
+    'tactical_direct_bypassing_press' => [
+        'El juego directo :del_user sobrevuela la presión alta :del_opp — los balones largos encuentran su destino',
+        'La presión :del_opp queda anulada por los balones largos :del_user',
+    ],
+    // Sabor táctico en los goles
+    'goal_counter_attack' => [
+        '¡Contraataque letal! :player define tras una contra devastadora de :team',
+        '¡Clínico a la contra! :player convierte tras una salida veloz de :team',
+        '¡Gol de contraataque! :team sale a toda velocidad y :player define',
+    ],
+    'goal_possession' => [
+        ':team mueve el balón con paciencia hasta que :player encuentra el hueco. Posesión de manual',
+        'Elaboración paciente de :team y :player elige el momento perfecto para golpear',
+        'Jugada trenzada de :team — :player pone el broche final',
+    ],
+    'goal_direct' => [
+        '¡Balón largo y :player está ahí para definir por :team!',
+        ':team va directo y funciona — :player controla y define',
+        '¡Juego directo puro! El balón largo encuentra a :player que no perdona',
+    ],
 ];

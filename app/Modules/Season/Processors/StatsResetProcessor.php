@@ -38,7 +38,6 @@ class StatsResetProcessor implements SeasonProcessor
             'goals_conceded' => 0,
             'clean_sheets' => 0,
             'season_appearances' => 0,
-            'suspended_until_matchday' => null,
             'injury_until' => null,
             'injury_type' => null,
             'fitness' => 80,

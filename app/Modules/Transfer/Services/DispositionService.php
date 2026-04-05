@@ -164,7 +164,7 @@ class DispositionService
         }
 
         // Transfer listed = very willing
-        if ($player->transfer_status === 'listed') {
+        if ($player->isTransferListed()) {
             $disposition += 0.20;
         }
 

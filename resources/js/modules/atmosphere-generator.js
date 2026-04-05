@@ -520,6 +520,115 @@ export function generateContextualNarratives(config) {
 }
 
 /**
+ * Generate tactical narrative events based on both teams' tactical setups.
+ * These make tactical choices visible by commenting on their effects during the match.
+ *
+ * @param {Object} config - Must include tactics object with user/opponent setup
+ * @returns {Array} Tactical narrative events placed at specific checkpoints
+ */
+export function generateTacticalNarratives(config) {
+    const {
+        homeTeamId, homeTeamName, awayTeamName,
+        homeArticle, awayArticle,
+        narrativeTemplates, allEvents, userTeamId, tactics,
+    } = config;
+
+    if (!tactics || !narrativeTemplates) return [];
+
+    const events = [];
+    const usedMinutes = new Set();
+    for (const e of allEvents) usedMinutes.add(e.minute);
+
+    const isUserHome = userTeamId === homeTeamId;
+    const userTeamName = isUserHome ? homeTeamName : awayTeamName;
+    const oppTeamName = isUserHome ? awayTeamName : homeTeamName;
+    const userForms = buildTeamForms(userTeamName, isUserHome ? homeArticle : awayArticle);
+    const oppForms = buildTeamForms(oppTeamName, isUserHome ? awayArticle : homeArticle);
+
+    const replacements = {
+        ':del_user': userForms.del,
+        ':del_opp': oppForms.del,
+        ':al_user': userForms.al,
+        ':al_opp': oppForms.al,
+        ':el_user': userForms.el,
+        ':el_opp': oppForms.el,
+        ':user': userForms.name,
+        ':opp': oppForms.name,
+    };
+
+    // Tactical checkpoints: early (showing initial effect), mid (pressing fade), late (energy)
+    const checkpoints = [
+        { minute: 20, type: 'early' },
+        { minute: 55, type: 'fade' },
+        { minute: 75, type: 'late' },
+    ];
+
+    for (const cp of checkpoints) {
+        // ~40% chance of generating a tactical narrative at each checkpoint
+        if (Math.random() > 0.40) continue;
+
+        const m = uniqueMinute(usedMinutes, cp.minute, cp.minute + 3);
+        let templateKey = null;
+
+        if (cp.type === 'early') {
+            // Early-game: comment on the initial tactical setup
+            if (tactics.userPressing === 'high_press') {
+                templateKey = 'tacticalHighPressWorking';
+            } else if (tactics.userPressing === 'low_block' && tactics.userDefLine === 'deep') {
+                templateKey = 'tacticalLowBlockWall';
+            } else if (tactics.userPlayingStyle === 'possession') {
+                templateKey = 'tacticalPossessionControl';
+            } else if (tactics.userPlayingStyle === 'counter_attack') {
+                templateKey = 'tacticalCounterWaiting';
+            } else if (tactics.userPlayingStyle === 'direct') {
+                templateKey = 'tacticalDirectPlay';
+            }
+        } else if (cp.type === 'fade') {
+            // Mid-game: pressing fade or interaction effects
+            if (tactics.userPressing === 'high_press') {
+                templateKey = 'tacticalHighPressFading';
+            } else if (tactics.opponentPressing === 'high_press') {
+                templateKey = 'tacticalOppPressFading';
+            } else if (tactics.userPlayingStyle === 'possession' && tactics.opponentPressing === 'low_block' && tactics.opponentDefLine === 'deep') {
+                templateKey = 'tacticalPossessionFrustrated';
+            } else if (tactics.userPlayingStyle === 'direct' && tactics.opponentPressing === 'high_press') {
+                templateKey = 'tacticalDirectBypassingPress';
+            }
+        } else if (cp.type === 'late') {
+            // Late-game: energy and tactical consequences
+            if (tactics.userPressing === 'high_press') {
+                templateKey = 'tacticalHighPressExhausted';
+            } else if (tactics.opponentPressing === 'high_press') {
+                templateKey = 'tacticalOppExhausted';
+            } else if (tactics.userPressing === 'low_block') {
+                templateKey = 'tacticalLowBlockFresh';
+            } else if (tactics.userPlayingStyle === 'counter_attack' && (tactics.opponentMentality === 'attacking' || tactics.opponentDefLine === 'high_line')) {
+                templateKey = 'tacticalCounterExploiting';
+            }
+        }
+
+        if (!templateKey) continue;
+
+        const templates = narrativeTemplates[templateKey];
+        if (!templates || !templates.length) continue;
+
+        const narrative = pickNarrative(templates, replacements);
+        if (!narrative) continue;
+
+        events.push({
+            minute: m,
+            type: 'contextual',
+            playerName: '',
+            teamId: null,
+            gamePlayerId: null,
+            metadata: { narrative },
+        });
+    }
+
+    return events;
+}
+
+/**
  * Generate all atmosphere events for regular time (both halves).
  *
  * @param {Object} config - Same as generateAtmosphereForPeriod, minus minMinute/maxMinute
@@ -553,6 +662,7 @@ export function addGoalNarratives(events, config) {
     const {
         homeTeamId, homeTeamName, awayTeamName,
         homeArticle, awayArticle, narrativeTemplates,
+        userTeamId, tactics,
     } = config;
 
     const assistedTemplates = narrativeTemplates.goalAssisted || [];
@@ -562,12 +672,35 @@ export function addGoalNarratives(events, config) {
     const homeForms = buildTeamForms(homeTeamName, homeArticle);
     const awayForms = buildTeamForms(awayTeamName, awayArticle);
 
+    // Map playing styles to tactical goal template keys
+    const tacticalGoalTemplates = {
+        counter_attack: narrativeTemplates.goalCounterAttack || [],
+        possession: narrativeTemplates.goalPossession || [],
+        direct: narrativeTemplates.goalDirect || [],
+    };
+
+    // Determine which playing style each team uses
+    const isUserHome = userTeamId === homeTeamId;
+    const homeStyle = tactics ? (isUserHome ? tactics.userPlayingStyle : tactics.opponentPlayingStyle) : null;
+    const awayStyle = tactics ? (isUserHome ? tactics.opponentPlayingStyle : tactics.userPlayingStyle) : null;
+
     for (const event of events) {
         if (event.type !== 'goal' || event.narrative) continue;
 
         const isHome = event.teamId === homeTeamId;
         const teamForms = isHome ? homeForms : awayForms;
-        const templates = event.assistPlayerName ? assistedTemplates : soloTemplates;
+        const scoringStyle = isHome ? homeStyle : awayStyle;
+
+        // ~50% chance to use tactical template when a non-balanced style is active
+        const tacticalTemplates = scoringStyle ? (tacticalGoalTemplates[scoringStyle] || []) : [];
+        const useTactical = tacticalTemplates.length > 0 && Math.random() < 0.5;
+
+        let templates;
+        if (useTactical) {
+            templates = tacticalTemplates;
+        } else {
+            templates = event.assistPlayerName ? assistedTemplates : soloTemplates;
+        }
 
         event.narrative = pickNarrative(templates, {
             ':del_team': teamForms.del,

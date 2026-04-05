@@ -222,7 +222,6 @@ class ShowLineup
             'label' => $d->label(),
             'own_xg' => $d->ownXGModifier(),
             'opp_xg' => $d->opponentXGModifier(),
-            'threshold' => $d->physicalThreshold(),
         ]);
 
         $tacticalInteractions = config('match_simulation.tactical_interactions');
@@ -245,7 +244,6 @@ class ShowLineup
             'defensive_line' => collect(config('match_simulation.defensive_line'))->map(fn ($d) => [
                 'own_xg' => $d['own_xg'],
                 'opp_xg' => $d['opp_xg'],
-                'physical_threshold' => $d['physical_threshold'],
             ])->all(),
             'tactical_interactions' => config('match_simulation.tactical_interactions'),
         ];

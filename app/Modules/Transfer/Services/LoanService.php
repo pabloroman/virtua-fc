@@ -12,6 +12,7 @@ use App\Models\Loan;
 use App\Models\ShortlistedPlayer;
 use App\Models\Team;
 use App\Models\TeamReputation;
+use App\Models\TransferListing;
 use App\Models\TransferOffer;
 use App\Modules\Squad\Services\SquadNumberService;
 use App\Modules\Transfer\Enums\TransferWindowType;
@@ -33,10 +34,15 @@ class LoanService
      */
     public function startLoanSearch(Game $game, GamePlayer $player): void
     {
-        $player->update([
-            'transfer_status' => GamePlayer::TRANSFER_STATUS_LOAN_SEARCH,
-            'transfer_listed_at' => $game->current_date,
-        ]);
+        TransferListing::updateOrCreate(
+            ['game_player_id' => $player->id],
+            [
+                'game_id' => $game->id,
+                'team_id' => $player->team_id,
+                'status' => TransferListing::STATUS_LOAN_SEARCH,
+                'listed_at' => $game->current_date,
+            ],
+        );
     }
 
     /**
@@ -44,10 +50,7 @@ class LoanService
      */
     public function cancelLoanSearch(GamePlayer $player): void
     {
-        $player->update([
-            'transfer_status' => null,
-            'transfer_listed_at' => null,
-        ]);
+        TransferListing::where('game_player_id', $player->id)->delete();
     }
 
     /**
@@ -56,10 +59,10 @@ class LoanService
      */
     public function processLoanSearches(Game $game): array
     {
-        $searching = GamePlayer::with(['player'])
+        $searching = GamePlayer::with(['player', 'transferListing'])
             ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
-            ->where('transfer_status', GamePlayer::TRANSFER_STATUS_LOAN_SEARCH)
+            ->whereHas('transferListing', fn ($q) => $q->where('status', TransferListing::STATUS_LOAN_SEARCH))
             ->get();
 
         $found = [];
@@ -103,10 +106,7 @@ class LoanService
                             'resolved_at' => $game->current_date,
                         ]);
 
-                        $player->update([
-                            'transfer_status' => null,
-                            'transfer_listed_at' => null,
-                        ]);
+                        TransferListing::where('game_player_id', $player->id)->delete();
                     }
 
                     $found[] = [
@@ -120,10 +120,7 @@ class LoanService
 
             // Check if search has expired
             if ($this->isSearchExpired($player, $game->current_date)) {
-                $player->update([
-                    'transfer_status' => null,
-                    'transfer_listed_at' => null,
-                ]);
+                TransferListing::where('game_player_id', $player->id)->delete();
 
                 $expired[] = ['player' => $player];
             }
@@ -329,11 +326,13 @@ class LoanService
      */
     private function isSearchExpired(GamePlayer $player, Carbon $currentDate): bool
     {
-        if (!$player->transfer_listed_at) {
+        $listing = $player->transferListing;
+
+        if (!$listing?->listed_at) {
             return true;
         }
 
-        return $player->transfer_listed_at->diffInDays($currentDate) >= self::SEARCH_EXPIRY_DAYS;
+        return $listing->listed_at->diffInDays($currentDate) >= self::SEARCH_EXPIRY_DAYS;
     }
 
     /**
@@ -354,11 +353,10 @@ class LoanService
         ]);
 
         // Move player to AI team
+        TransferListing::where('game_player_id', $player->id)->delete();
         $player->update([
             'team_id' => $destinationTeam->id,
             'number' => null,
-            'transfer_status' => null,
-            'transfer_listed_at' => null,
         ]);
 
         return $loan;
@@ -381,12 +379,9 @@ class LoanService
         }
 
         // Clear any active loan searches
-        GamePlayer::where('game_id', $game->id)
-            ->where('transfer_status', GamePlayer::TRANSFER_STATUS_LOAN_SEARCH)
-            ->update([
-                'transfer_status' => null,
-                'transfer_listed_at' => null,
-            ]);
+        TransferListing::where('game_id', $game->id)
+            ->where('status', TransferListing::STATUS_LOAN_SEARCH)
+            ->delete();
 
         return $activeLoans;
     }
@@ -587,11 +582,10 @@ class LoanService
             'status' => Loan::STATUS_ACTIVE,
         ]);
 
+        TransferListing::where('game_player_id', $player->id)->delete();
         $player->update([
             'team_id' => $destinationTeamId,
             'number' => null,
-            'transfer_status' => null,
-            'transfer_listed_at' => null,
         ]);
 
         GameTransfer::record(

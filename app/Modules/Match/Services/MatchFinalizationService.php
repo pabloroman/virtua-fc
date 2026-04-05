@@ -48,11 +48,12 @@ class MatchFinalizationService
             $this->resolveCupTie($match, $game, $competition);
         }
 
-        // 4. Dispatch MatchFinalized for standings, GK stats, and notifications
-        MatchFinalized::dispatch($match, $game, $competition);
-
-        // 5. Clear the pending flag
+        // 4. Clear the pending flag before dispatching events (prevents re-entry
+        // from the finalizePendingMatch safety net if advance() runs concurrently)
         $game->update(['pending_finalization_match_id' => null]);
+
+        // 5. Dispatch MatchFinalized for standings, GK stats, and notifications
+        MatchFinalized::dispatch($match, $game, $competition);
 
         // 6. Advance current_date to the next upcoming match (forward-looking calendar).
         // This ensures transfer windows and other date-based logic reflect where

@@ -29,7 +29,6 @@
                 ? 'bg-accent-blue/10 text-accent-blue border-accent-blue/30 shadow-xs'
                 : 'bg-surface-700 text-text-secondary border-border-strong hover:border-white/20 hover:text-text-primary'"
             x-text="option.label"
-            x-tooltip="option.tooltip"
         ></button>
     </template>
 </div>

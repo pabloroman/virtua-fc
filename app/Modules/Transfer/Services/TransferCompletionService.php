@@ -8,6 +8,7 @@ use App\Models\GamePlayer;
 use App\Models\GameTransfer;
 use App\Models\Loan;
 use App\Models\ShortlistedPlayer;
+use App\Models\TransferListing;
 use App\Models\TransferOffer;
 use App\Modules\Player\PlayerAge;
 use App\Modules\Squad\Services\SquadNumberService;
@@ -37,11 +38,10 @@ class TransferCompletionService
         $isLoan = $offer->offer_type === TransferOffer::TYPE_LOAN_OUT;
 
         // Transfer player to the buying team
+        TransferListing::where('game_player_id', $player->id)->delete();
         $player->update([
             'team_id' => $offer->offering_team_id,
             'number' => null,
-            'transfer_status' => null,
-            'transfer_listed_at' => null,
         ]);
 
         // For loan-out offers, create a loan record so the player returns at season end
@@ -107,11 +107,10 @@ class TransferCompletionService
         $fromTeamId = $player->team_id;
 
         // Transfer player to the buying team
+        TransferListing::where('game_player_id', $player->id)->delete();
         $player->update([
             'team_id' => $offer->offering_team_id,
             'number' => null,
-            'transfer_status' => null,
-            'transfer_listed_at' => null,
             // Extend their contract with the new team
             'contract_until' => Carbon::createFromDate((int) $game->season + rand(2, 4) + 1, 6, 30),
         ]);
@@ -165,11 +164,10 @@ class TransferCompletionService
         $seasonYear = (int) $game->season;
         $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
 
+        TransferListing::where('game_player_id', $player->id)->delete();
         $player->update([
             'team_id' => $game->team_id,
             'number' => $this->squadNumberService->assignNumberForNewPlayer($game, $player),
-            'transfer_status' => null,
-            'transfer_listed_at' => null,
             'contract_until' => $newContractEnd,
             'annual_wage' => $offer->offered_wage ?? $player->annual_wage,
         ]);

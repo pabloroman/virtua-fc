@@ -18,7 +18,7 @@ import { assignPlayersToSlots } from './modules/slot-assignment.js';
 import { createPenaltyShootout } from './modules/penalty-shootout.js';
 import { createSubstitutionManager } from './modules/substitution-manager.js';
 import { createMatchSimulation } from './modules/match-simulation.js';
-import { generateRegularTimeAtmosphere, generateExtraTimeAtmosphere, addGoalNarratives, generateContextualNarratives } from './modules/atmosphere-generator.js';
+import { generateRegularTimeAtmosphere, generateExtraTimeAtmosphere, addGoalNarratives, generateContextualNarratives, generateTacticalNarratives } from './modules/atmosphere-generator.js';
 
 /**
  * Copy all own properties from source to target. Regular properties are
@@ -83,6 +83,10 @@ export default function liveMatch(config) {
         activePlayingStyle: config.activePlayingStyle || 'balanced',
         activePressing: config.activePressing || 'standard',
         activeDefLine: config.activeDefLine || 'normal',
+        opponentPlayingStyle: config.opponentPlayingStyle || 'balanced',
+        opponentPressing: config.opponentPressing || 'standard',
+        opponentDefLine: config.opponentDefLine || 'normal',
+        opponentMentality: config.opponentMentality || 'balanced',
         availableFormations: config.availableFormations || [],
         availableMentalities: config.availableMentalities || [],
         availablePlayingStyles: config.availablePlayingStyles || [],
@@ -913,6 +917,17 @@ export default function liveMatch(config) {
                 homeArticle: this.homeArticle,
                 awayArticle: this.awayArticle,
                 narrativeTemplates: this.narrativeTemplates,
+                userTeamId: this.userTeamId,
+                tactics: {
+                    userPlayingStyle: this.activePlayingStyle,
+                    userPressing: this.activePressing,
+                    userDefLine: this.activeDefLine,
+                    userMentality: this.activeMentality,
+                    opponentPlayingStyle: this.opponentPlayingStyle,
+                    opponentPressing: this.opponentPressing,
+                    opponentDefLine: this.opponentDefLine,
+                    opponentMentality: this.opponentMentality,
+                },
             };
         },
 
@@ -927,8 +942,13 @@ export default function liveMatch(config) {
                 ...cfg,
                 allEvents: this.events,
             });
-            if (atmosphere.length) {
-                this.events = [...this.events, ...atmosphere].sort((a, b) => a.minute - b.minute);
+            const tactical = generateTacticalNarratives({
+                ...cfg,
+                allEvents: this.events,
+            });
+            const allAtmosphere = [...atmosphere, ...tactical];
+            if (allAtmosphere.length) {
+                this.events = [...this.events, ...allAtmosphere].sort((a, b) => a.minute - b.minute);
             }
         },
 
