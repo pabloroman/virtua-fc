@@ -56,8 +56,8 @@ class RequestLoan
                 ->with('error', __('messages.loan_search_active', ['player' => $player->name]));
         }
 
-        // Check transfer_status isn't already set (e.g. listed for sale)
-        if ($player->transfer_status !== null) {
+        // Check player isn't already listed for sale
+        if ($player->isTransferListed()) {
             return redirect()->back()
                 ->with('error', __('messages.already_on_loan', ['player' => $player->name]));
         }

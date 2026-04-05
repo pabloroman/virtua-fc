@@ -4,6 +4,7 @@ namespace App\Http\Actions;
 
 use App\Models\Game;
 use App\Models\GamePlayer;
+use App\Models\TransferListing;
 use App\Modules\Transfer\Services\LoanService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,7 +21,7 @@ class CancelLoanSearch
         $player = GamePlayer::where('id', $playerId)
             ->where('game_id', $gameId)
             ->where('team_id', $game->team_id)
-            ->where('transfer_status', GamePlayer::TRANSFER_STATUS_LOAN_SEARCH)
+            ->whereHas('transferListing', fn ($q) => $q->where('status', TransferListing::STATUS_LOAN_SEARCH))
             ->firstOrFail();
 
         $this->loanService->cancelLoanSearch($player);

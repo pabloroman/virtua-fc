@@ -226,6 +226,13 @@ class ShowLiveMatch
         $userPressing = $playerMatch->{"{$prefix}_pressing"} ?? 'standard';
         $userDefLine = $playerMatch->{"{$prefix}_defensive_line"} ?? 'normal';
 
+        // Opponent's tactical setup (for tactical commentary)
+        $oppPrefix = $isUserHome ? 'away' : 'home';
+        $opponentPlayingStyle = $playerMatch->{"{$oppPrefix}_playing_style"} ?? 'balanced';
+        $opponentPressing = $playerMatch->{"{$oppPrefix}_pressing"} ?? 'standard';
+        $opponentDefLine = $playerMatch->{"{$oppPrefix}_defensive_line"} ?? 'normal';
+        $opponentMentality = $playerMatch->{"{$oppPrefix}_mentality"} ?? 'balanced';
+
         $availablePlayingStyles = array_map(fn (PlayingStyle $s) => [
             'value' => $s->value,
             'label' => $s->label(),
@@ -278,6 +285,24 @@ class ShowLiveMatch
             'contextualHighFouls' => __('commentary.contextual_high_fouls'),
             'goalAssisted' => __('commentary.goal_assisted'),
             'goalSolo' => __('commentary.goal_solo'),
+            // Tactical narratives
+            'tacticalHighPressWorking' => __('commentary.tactical_high_press_working'),
+            'tacticalHighPressFading' => __('commentary.tactical_high_press_fading'),
+            'tacticalHighPressExhausted' => __('commentary.tactical_high_press_exhausted'),
+            'tacticalOppPressFading' => __('commentary.tactical_opp_press_fading'),
+            'tacticalOppExhausted' => __('commentary.tactical_opp_exhausted'),
+            'tacticalLowBlockWall' => __('commentary.tactical_low_block_wall'),
+            'tacticalLowBlockFresh' => __('commentary.tactical_low_block_fresh'),
+            'tacticalPossessionControl' => __('commentary.tactical_possession_control'),
+            'tacticalPossessionFrustrated' => __('commentary.tactical_possession_frustrated'),
+            'tacticalCounterWaiting' => __('commentary.tactical_counter_waiting'),
+            'tacticalCounterExploiting' => __('commentary.tactical_counter_exploiting'),
+            'tacticalDirectPlay' => __('commentary.tactical_direct_play'),
+            'tacticalDirectBypassingPress' => __('commentary.tactical_direct_bypassing_press'),
+            // Tactical goal flavoring
+            'goalCounterAttack' => __('commentary.goal_counter_attack'),
+            'goalPossession' => __('commentary.goal_possession'),
+            'goalDirect' => __('commentary.goal_direct'),
         ];
 
         return view('live-match', [
@@ -298,6 +323,10 @@ class ShowLiveMatch
             'userPlayingStyle' => $userPlayingStyle,
             'userPressing' => $userPressing,
             'userDefLine' => $userDefLine,
+            'opponentPlayingStyle' => $opponentPlayingStyle,
+            'opponentPressing' => $opponentPressing,
+            'opponentDefLine' => $opponentDefLine,
+            'opponentMentality' => $opponentMentality,
             'availablePlayingStyles' => $availablePlayingStyles,
             'availablePressing' => $availablePressing,
             'availableDefLine' => $availableDefLine,

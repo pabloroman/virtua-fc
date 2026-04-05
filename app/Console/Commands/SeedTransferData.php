@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Team;
+use App\Models\TransferListing;
 use App\Models\TransferOffer;
 use Illuminate\Console\Command;
 
@@ -157,10 +158,22 @@ class SeedTransferData extends Command
         $this->info('  Inserted ' . count($records) . ' transfer_offer records.');
 
         // Mark two of the user's players as listed so the "listed players" block shows
-        GamePlayer::whereIn('id', [$myPlayers[0], $myPlayers[6]])
-            ->update(['transfer_status' => GamePlayer::TRANSFER_STATUS_LISTED]);
+        foreach ([$myPlayers[0], $myPlayers[6]] as $playerId) {
+            $gp = GamePlayer::find($playerId);
+            if ($gp) {
+                TransferListing::updateOrCreate(
+                    ['game_player_id' => $gp->id],
+                    [
+                        'game_id' => $gp->game_id,
+                        'team_id' => $gp->team_id,
+                        'status' => TransferListing::STATUS_LISTED,
+                        'listed_at' => $game->current_date,
+                    ],
+                );
+            }
+        }
 
-        $this->info('  Set transfer_status=listed on 2 players.');
+        $this->info('  Created transfer_listings for 2 players.');
         $this->newLine();
         $this->line('Summary of records created:');
         $this->table(

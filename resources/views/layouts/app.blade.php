@@ -119,5 +119,6 @@
             </footer>
             @endunless
         </div>
+        <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "cd6b25d4492f4012bfd641f2dcbaccaa"}'></script><!-- End Cloudflare Web Analytics -->
     </body>
 </html>

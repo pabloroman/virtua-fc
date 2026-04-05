@@ -2,9 +2,9 @@
 
 namespace App\Modules\Season\Processors;
 
-use App\Models\GamePlayer;
 use App\Models\ScoutReport;
 use App\Models\ShortlistedPlayer;
+use App\Models\TransferListing;
 use App\Models\TransferOffer;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
@@ -33,12 +33,7 @@ class TransferMarketResetProcessor implements SeasonProcessor
 
         TransferOffer::where('game_id', $game->id)->delete();
 
-        GamePlayer::where('game_id', $game->id)
-            ->whereNotNull('transfer_status')
-            ->update([
-                'transfer_status' => null,
-                'transfer_listed_at' => null,
-            ]);
+        TransferListing::where('game_id', $game->id)->delete();
 
         return $data;
     }

@@ -17,6 +17,7 @@ use App\Models\GameTransfer;
 use App\Models\ShortlistedPlayer;
 use App\Models\Team;
 use App\Models\TeamReputation;
+use App\Models\TransferListing;
 use App\Models\TransferOffer;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -115,10 +116,15 @@ class TransferService
             return;
         }
 
-        $player->update([
-            'transfer_status' => GamePlayer::TRANSFER_STATUS_LISTED,
-            'transfer_listed_at' => $player->game->current_date,
-        ]);
+        TransferListing::updateOrCreate(
+            ['game_player_id' => $player->id],
+            [
+                'game_id' => $player->game_id,
+                'team_id' => $player->team_id,
+                'status' => TransferListing::STATUS_LISTED,
+                'listed_at' => $player->game->current_date,
+            ],
+        );
     }
 
     /**
@@ -126,10 +132,7 @@ class TransferService
      */
     public function unlistPlayer(GamePlayer $player): void
     {
-        $player->update([
-            'transfer_status' => null,
-            'transfer_listed_at' => null,
-        ]);
+        TransferListing::where('game_player_id', $player->id)->delete();
 
         // Expire any pending offers
         $player->transferOffers()
@@ -154,14 +157,14 @@ class TransferService
         if ($allPlayersGrouped !== null) {
             $teamPlayers = $allPlayersGrouped->get($game->team_id, collect());
             $listedPlayers = $teamPlayers->filter(
-                fn ($p) => $p->transfer_status === GamePlayer::TRANSFER_STATUS_LISTED
+                fn ($p) => $p->isTransferListed()
                     && !$p->isLoanedIn($game->team_id)
             );
         } else {
             $listedPlayers = GamePlayer::with('transferOffers')
                 ->where('game_id', $game->id)
                 ->where('team_id', $game->team_id)
-                ->where('transfer_status', GamePlayer::TRANSFER_STATUS_LISTED)
+                ->whereHas('transferListing', fn ($q) => $q->where('status', TransferListing::STATUS_LISTED))
                 ->whereDoesntHave('activeLoan')
                 ->get();
         }
@@ -234,15 +237,15 @@ class TransferService
         if ($allPlayersGrouped !== null) {
             $teamPlayers = $allPlayersGrouped->get($game->team_id, collect());
             $starPlayers = $teamPlayers
-                ->filter(fn ($p) => $p->transfer_status === null
-                    && !$p->isLoanedIn($game->team_id))
+                ->filter(fn ($p) => !$p->relationLoaded('transferListing') || $p->transferListing === null)
+                ->filter(fn ($p) => !$p->isLoanedIn($game->team_id))
                 ->sortByDesc('market_value_cents')
                 ->take(self::STAR_PLAYER_COUNT);
         } else {
             $starPlayers = GamePlayer::with('transferOffers')
                 ->where('game_id', $game->id)
                 ->where('team_id', $game->team_id)
-                ->whereNull('transfer_status')
+                ->whereDoesntHave('transferListing')
                 ->whereDoesntHave('activeLoan')
                 ->orderByDesc('market_value_cents')
                 ->limit(self::STAR_PLAYER_COUNT)

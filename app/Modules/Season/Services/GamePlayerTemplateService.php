@@ -134,14 +134,31 @@ class GamePlayerTemplateService
             ->pluck('id', 'transfermarkt_id')
             ->toArray();
 
-        $allPlayers = DB::table('players')
-            ->select('id', 'transfermarkt_id', 'date_of_birth', 'technical_ability', 'physical_ability')
-            ->get()
-            ->keyBy('transfermarkt_id');
-
         $countryConfig = app(CountryConfig::class);
         $competitionIds = $countryConfig->playerInitializationOrder($countryCode);
         $continentalIds = $countryConfig->continentalSupportIds($countryCode);
+        $swissIds = $countryConfig->swissFormatCompetitionIds($countryCode);
+
+        // First pass: scan all JSON files to collect needed transfermarkt IDs
+        $neededTmIds = [];
+
+        foreach ($competitionIds as $competitionId) {
+            if (in_array($competitionId, $continentalIds)) {
+                continue;
+            }
+            $neededTmIds = array_merge($neededTmIds, $this->collectPlayerIdsFromCompetition($season, $competitionId));
+        }
+
+        foreach ($swissIds as $competitionId) {
+            $neededTmIds = array_merge($neededTmIds, $this->collectPlayerIdsFromSwissTeams($season, $competitionId));
+        }
+
+        // Load only the players we actually need
+        $players = DB::table('players')
+            ->select('id', 'transfermarkt_id', 'date_of_birth', 'technical_ability', 'physical_ability')
+            ->whereIn('transfermarkt_id', array_unique($neededTmIds))
+            ->get()
+            ->keyBy('transfermarkt_id');
 
         $totalCount = 0;
 
@@ -161,20 +178,18 @@ class GamePlayerTemplateService
             ->flip()
             ->toArray();
 
-        // Process tier + transfer pool competitions
+        // Second pass: generate template rows
         foreach ($competitionIds as $competitionId) {
             if (in_array($competitionId, $continentalIds)) {
                 continue;
             }
 
-            $rows = $this->generateForCompetition($competitionId, $season, $allTeamIds, $allPlayers, $processedTeamIds, $processedPlayerIds);
+            $rows = $this->generateForCompetition($competitionId, $season, $allTeamIds, $players, $processedTeamIds, $processedPlayerIds);
             $totalCount += $this->insertAndTrack($rows, $processedTeamIds, $processedPlayerIds);
         }
 
-        // Swiss format gap teams (UCL, UEL — teams not already covered)
-        $swissIds = $countryConfig->swissFormatCompetitionIds($countryCode);
         foreach ($swissIds as $competitionId) {
-            $rows = $this->generateForSwissGapTeams($competitionId, $season, $allTeamIds, $allPlayers, $processedTeamIds, $processedPlayerIds);
+            $rows = $this->generateForSwissGapTeams($competitionId, $season, $allTeamIds, $players, $processedTeamIds, $processedPlayerIds);
             $totalCount += $this->insertAndTrack($rows, $processedTeamIds, $processedPlayerIds);
         }
 
@@ -315,18 +330,23 @@ class GamePlayerTemplateService
             return null;
         }
 
-        $contractUntil = null;
-        if (!empty($playerData['contract'])) {
+        $referenceDate = Carbon::parse("{$season}-08-15");
+        $defaultContract = '2027-06-30';
+        $contractUntil = $defaultContract;
+
+        if (!empty($playerData['contract']) && $playerData['contract'] !== '-') {
             try {
                 $parsed = Carbon::parse($playerData['contract']);
                 $year = $parsed->month > 6 ? $parsed->year + 1 : $parsed->year;
-                $contractUntil = Carbon::createFromDate($year, 6, 30)->toDateString();
+                $candidate = Carbon::createFromDate($year, 6, 30);
+
+                if ($candidate->greaterThan($referenceDate)) {
+                    $contractUntil = $candidate->toDateString();
+                }
             } catch (\Exception $e) {
-                // Ignore invalid dates
+                // Invalid date — keep default
             }
         }
-
-        $referenceDate = Carbon::parse("{$season}-08-15");
         $dob = Carbon::parse($player->date_of_birth);
         $age = (int) $dob->diffInYears($referenceDate);
         $marketValueCents = Money::parseMarketValue($playerData['marketValue'] ?? null);
@@ -386,6 +406,50 @@ class GamePlayerTemplateService
         }
 
         return $clubs;
+    }
+
+    /**
+     * Collect player transfermarkt IDs from a competition's JSON files without loading DB data.
+     */
+    private function collectPlayerIdsFromCompetition(string $season, string $competitionId): array
+    {
+        $basePath = base_path("data/{$season}/{$competitionId}");
+        $teamsFilePath = "{$basePath}/teams.json";
+
+        if (file_exists($teamsFilePath)) {
+            $clubs = $this->loadClubsFromTeamsJson($teamsFilePath);
+        } else {
+            $clubs = $this->loadClubsFromTeamPoolFiles($basePath);
+        }
+
+        return $this->extractPlayerIdsFromClubs($clubs);
+    }
+
+    /**
+     * Collect player transfermarkt IDs from a Swiss format competition's teams.json.
+     */
+    private function collectPlayerIdsFromSwissTeams(string $season, string $competitionId): array
+    {
+        $teamsFilePath = base_path("data/{$season}/{$competitionId}/teams.json");
+        if (!file_exists($teamsFilePath)) {
+            return [];
+        }
+
+        $teamsData = json_decode(file_get_contents($teamsFilePath), true);
+        return $this->extractPlayerIdsFromClubs($teamsData['clubs'] ?? []);
+    }
+
+    private function extractPlayerIdsFromClubs(array $clubs): array
+    {
+        $ids = [];
+        foreach ($clubs as $club) {
+            foreach ($club['players'] ?? [] as $playerData) {
+                if (!empty($playerData['id'])) {
+                    $ids[] = $playerData['id'];
+                }
+            }
+        }
+        return $ids;
     }
 
     private function extractTransfermarktIdFromImage(string $imageUrl): ?string

@@ -2,7 +2,7 @@
 <template x-if="isAtmosphereEvent(event)">
     <div class="flex gap-2 items-baseline w-full">
         <span class="font-heading font-bold text-xs text-text-muted w-8 text-right shrink-0 tabular-nums"
-              x-text="event.minute + '\''"></span>
+              x-text="Math.floor(event.minute) + '\''"></span>
         <span class="text-xs text-text-muted leading-tight" x-text="event.metadata?.narrative || event.playerName"></span>
     </div>
 </template>
@@ -11,7 +11,7 @@
 <template x-if="!isAtmosphereEvent(event)">
     <div class="flex gap-3 w-full" :class="event.type === 'substitution_group' ? 'items-start' : 'items-center'">
         <span class="font-heading font-bold text-xs text-text-muted w-8 text-right shrink-0 tabular-nums"
-              x-text="event.minute + '\''"></span>
+              x-text="Math.floor(event.minute) + '\''"></span>
         <span class="w-6 text-center shrink-0 flex items-center justify-center"
               x-show="event.type === 'goal'">
             <svg class="w-3.5 h-3.5 text-accent-green" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="8"/></svg>

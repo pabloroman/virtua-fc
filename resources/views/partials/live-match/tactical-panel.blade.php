@@ -341,7 +341,6 @@
                                     <div>
                                         <h4 class="text-xs font-semibold text-text-muted uppercase mb-2 flex items-center gap-1.5">
                                             {{ __('game.tactical_formation') }}
-                                            <span x-tooltip.raw="{{ __('game.tactical_formation_hint') }}" class="cursor-help shrink-0"><svg class="w-3.5 h-3.5 text-text-body hover:text-text-muted" fill="currentColor" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-336c-17.7 0-32 14.3-32 32 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-44.2 35.8-80 80-80s80 35.8 80 80c0 47.2-36 67.2-56 74.5l0 3.8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8.1c0-20.5 14.8-35.2 30.1-40.2 6.4-2.1 13.2-5.5 18.2-10.3 4.3-4.2 7.7-10 7.7-19.6 0-17.7-14.3-32-32-32zM224 368a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg></span>
                                         </h4>
                                         <x-tactical-lever model="(pendingFormation ?? activeFormation)" set="pendingFormation" options="availableFormations" :columns="4" />
                                         <p class="mt-2 text-xs text-text-secondary italic min-h-5" x-text="getFormationTooltip()"></p>
@@ -351,7 +350,6 @@
                                     <div>
                                         <h4 class="text-xs font-semibold text-text-muted uppercase mb-2 flex items-center gap-1.5">
                                             {{ __('game.tactical_mentality') }}
-                                            <span x-tooltip.raw="{{ __('game.tactical_mentality_hint') }}" class="cursor-help shrink-0"><svg class="w-3.5 h-3.5 text-text-body hover:text-text-muted" fill="currentColor" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-336c-17.7 0-32 14.3-32 32 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-44.2 35.8-80 80-80s80 35.8 80 80c0 47.2-36 67.2-56 74.5l0 3.8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8.1c0-20.5 14.8-35.2 30.1-40.2 6.4-2.1 13.2-5.5 18.2-10.3 4.3-4.2 7.7-10 7.7-19.6 0-17.7-14.3-32-32-32zM224 368a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg></span>
                                         </h4>
                                         <x-tactical-lever model="(pendingMentality ?? activeMentality)" set="pendingMentality" options="availableMentalities" :columns="3" />
                                         <p class="mt-2 text-xs text-text-secondary italic min-h-5" x-text="getMentalityTooltip(pendingMentality ?? activeMentality)"></p>
@@ -361,7 +359,6 @@
                                     <div class="pt-3 border-t border-border-default">
                                         <h4 class="text-xs font-semibold text-text-muted uppercase mb-3 flex items-center gap-1.5">
                                             {{ __('game.instructions_title') }}
-                                            <span x-tooltip.raw="{{ __('game.tactical_guide_link') }}" class="cursor-help shrink-0"><svg class="w-3.5 h-3.5 text-text-body hover:text-text-muted" fill="currentColor" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-336c-17.7 0-32 14.3-32 32 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-44.2 35.8-80 80-80s80 35.8 80 80c0 47.2-36 67.2-56 74.5l0 3.8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8.1c0-20.5 14.8-35.2 30.1-40.2 6.4-2.1 13.2-5.5 18.2-10.3 4.3-4.2 7.7-10 7.7-19.6 0-17.7-14.3-32-32-32zM224 368a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg></span>
                                         </h4>
 
                                         {{-- Playing Style (In Possession) --}}

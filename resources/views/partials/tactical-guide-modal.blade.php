@@ -198,7 +198,6 @@
                                 <th class="px-4 py-2.5 text-left font-semibold text-text-body">{{ __('game.tg_line') }}</th>
                                 <th class="px-4 py-2.5 text-center font-semibold text-text-body">{{ __('game.tg_your_goals') }}</th>
                                 <th class="px-4 py-2.5 text-center font-semibold text-text-body">{{ __('game.tg_goals_conceded') }}</th>
-                                <th class="px-4 py-2.5 text-left font-semibold text-text-body hidden md:table-cell">{{ __('game.tg_note') }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-border-default">
@@ -215,20 +214,10 @@
                                         {{ $d['opp_xg'] == 1.0 ? '-' : ($d['opp_xg'] > 1.0 ? '+' : '') . round(($d['opp_xg'] - 1) * 100) . '%' }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-2.5 hidden md:table-cell text-xs text-text-muted">
-                                    @if($d['threshold'] > 0)
-                                        {{ __('game.tg_high_line_note', ['threshold' => $d['threshold']]) }}
-                                    @else
-                                        -
-                                    @endif
-                                </td>
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
-                </div>
-                <div class="px-4 py-2 bg-accent-green/10 border-t border-accent-green/20 text-xs text-accent-green md:hidden">
-                    {{ __('game.tg_high_line_note', ['threshold' => 80]) }}
                 </div>
             </div>
         </section>
@@ -280,6 +269,86 @@
                         <p class="text-xs text-text-muted mt-1">{{ __('game.tg_direct_bonus_desc') }}</p>
                     </div>
                     <span class="text-accent-green font-semibold text-sm shrink-0">+{{ round(($tacticalInteractions['direct_bypasses_high_press'] - 1) * 100) }}% {{ __('game.tg_your_goals') }}</span>
+                </div>
+
+                {{-- High Press vs Deep line --}}
+                <div class="bg-surface-700/50 rounded-lg border border-border-strong p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-accent-gold/10 text-accent-gold">{{ __('game.pressing_high_press') }}</span>
+                            <span class="text-text-secondary text-xs">vs</span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-accent-green/10 text-accent-green">{{ __('game.defline_deep') }}</span>
+                        </div>
+                        <p class="text-xs text-text-muted mt-1">{{ __('game.tg_high_press_vs_deep_desc') }}</p>
+                    </div>
+                    <span class="text-accent-red font-semibold text-sm shrink-0">{{ round(($tacticalInteractions['high_press_vs_deep'] - 1) * 100) }}% {{ __('game.tg_goals_conceded') }}</span>
+                </div>
+
+                {{-- Counter vs Low Block --}}
+                <div class="bg-surface-700/50 rounded-lg border border-border-strong p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-accent-blue/10 text-accent-blue">{{ __('game.style_counter_attack') }}</span>
+                            <span class="text-text-secondary text-xs">vs</span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-accent-gold/10 text-accent-gold">{{ __('game.pressing_low_block') }}</span>
+                        </div>
+                        <p class="text-xs text-text-muted mt-1">{{ __('game.tg_counter_vs_low_block_desc') }}</p>
+                    </div>
+                    <span class="text-accent-red font-semibold text-sm shrink-0">+{{ round(($tacticalInteractions['counter_vs_low_block'] - 1) * 100) }}% {{ __('game.tg_goals_conceded') }}</span>
+                </div>
+
+                {{-- Possession vs Deep + Low Block --}}
+                <div class="bg-surface-700/50 rounded-lg border border-border-strong p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-accent-blue/10 text-accent-blue">{{ __('game.style_possession') }}</span>
+                            <span class="text-text-secondary text-xs">vs</span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-accent-green/10 text-accent-green">{{ __('game.defline_deep') }}</span>
+                            <span class="text-text-secondary text-xs">+</span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-accent-gold/10 text-accent-gold">{{ __('game.pressing_low_block') }}</span>
+                        </div>
+                        <p class="text-xs text-text-muted mt-1">{{ __('game.tg_possession_vs_deep_low_block_desc') }}</p>
+                    </div>
+                    <span class="text-accent-red font-semibold text-sm shrink-0">{{ round(($tacticalInteractions['possession_vs_deep_low_block'] - 1) * 100) }}% {{ __('game.tg_your_goals') }}</span>
+                </div>
+
+                {{-- Direct vs Deep line --}}
+                <div class="bg-surface-700/50 rounded-lg border border-border-strong p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-accent-blue/10 text-accent-blue">{{ __('game.style_direct') }}</span>
+                            <span class="text-text-secondary text-xs">vs</span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-accent-green/10 text-accent-green">{{ __('game.defline_deep') }}</span>
+                        </div>
+                        <p class="text-xs text-text-muted mt-1">{{ __('game.tg_direct_vs_deep_desc') }}</p>
+                    </div>
+                    <span class="text-accent-green font-semibold text-sm shrink-0">+{{ round(($tacticalInteractions['direct_vs_deep'] - 1) * 100) }}% {{ __('game.tg_your_goals') }}</span>
+                </div>
+
+                {{-- High Line + High Press synergy --}}
+                <div class="bg-surface-700/50 rounded-lg border border-border-strong p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-accent-green/10 text-accent-green">{{ __('game.defline_high_line') }}</span>
+                            <span class="text-text-secondary text-xs">+</span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-accent-gold/10 text-accent-gold">{{ __('game.pressing_high_press') }}</span>
+                        </div>
+                        <p class="text-xs text-text-muted mt-1">{{ __('game.tg_high_line_high_press_synergy_desc') }}</p>
+                    </div>
+                    <span class="text-accent-green font-semibold text-sm shrink-0">+{{ round(($tacticalInteractions['high_line_high_press_synergy'] - 1) * 100) }}% {{ __('game.tg_your_goals') }}</span>
+                </div>
+
+                {{-- Attacking + High Line vulnerability --}}
+                <div class="bg-surface-700/50 rounded-lg border border-border-strong p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-accent-red/10 text-accent-red">{{ __('game.mentality_attacking') }}</span>
+                            <span class="text-text-secondary text-xs">+</span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-accent-green/10 text-accent-green">{{ __('game.defline_high_line') }}</span>
+                        </div>
+                        <p class="text-xs text-text-muted mt-1">{{ __('game.tg_attacking_high_line_vulnerability_desc') }}</p>
+                    </div>
+                    <span class="text-accent-red font-semibold text-sm shrink-0">+{{ round(($tacticalInteractions['attacking_high_line_vulnerability'] - 1) * 100) }}% {{ __('game.tg_goals_conceded') }}</span>
                 </div>
             </div>
         </section>

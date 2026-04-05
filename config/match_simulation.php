@@ -11,6 +11,26 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | AI-vs-AI Match Resolution
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, AI-vs-AI matches use a lightweight statistical resolver
+    | instead of the full MatchSimulator pipeline. This dramatically reduces
+    | CPU, memory, and database load for background batch processing.
+    |
+    | The resolver uses the same Dixon-Coles model and xG formula but skips:
+    | - Full lineup generation (FormationRecommender, tactical instructions)
+    | - Energy model and minute-by-minute simulation periods
+    | - AI substitution windows and bench management
+    |
+    | Rotation is preserved: players below the fitness threshold are penalized
+    | so fresher alternatives rotate in, spreading stats realistically.
+    |
+    */
+    'ai_resolver_enabled' => true,
+
+    /*
+    |--------------------------------------------------------------------------
     | Expected Goals (Ratio-Based Formula)
     |--------------------------------------------------------------------------
     |
@@ -165,15 +185,15 @@ return [
     */
     'formations' => [
         '4-4-2'   => ['attack' => 1.00, 'defense' => 1.00],   // Balanced baseline
-        '4-3-3'   => ['attack' => 1.08, 'defense' => 1.04],   // Attacking, slightly open
-        '4-2-3-1' => ['attack' => 1.03, 'defense' => 0.97],   // Solid and creative
-        '3-4-3'   => ['attack' => 1.12, 'defense' => 1.08],   // Very attacking, exposed
-        '3-5-2'   => ['attack' => 1.00, 'defense' => 0.96],   // Midfield control
-        '4-1-4-1' => ['attack' => 0.95, 'defense' => 0.92],   // Defensive midfield shield
-        '5-3-2'   => ['attack' => 0.88, 'defense' => 0.88],   // Defensive, hard to break
-        '5-4-1'   => ['attack' => 0.80, 'defense' => 0.86],   // Park the bus
-        '4-1-2-3' => ['attack' => 1.10, 'defense' => 1.02],   // Attacking with DM anchor
-        '4-3-2-1' => ['attack' => 1.05, 'defense' => 0.98],   // Creative, narrow attack
+        '4-3-3'   => ['attack' => 1.06, 'defense' => 1.06],   // Attacking, equally open
+        '4-2-3-1' => ['attack' => 1.03, 'defense' => 1.02],   // Slight attack, slight opening
+        '3-4-3'   => ['attack' => 1.12, 'defense' => 1.10],   // Very attacking, very exposed
+        '3-5-2'   => ['attack' => 0.97, 'defense' => 0.96],   // Midfield control, conservative
+        '4-1-4-1' => ['attack' => 0.95, 'defense' => 0.93],   // Defensive midfield shield
+        '5-3-2'   => ['attack' => 0.90, 'defense' => 0.88],   // Defensive, hard to break
+        '5-4-1'   => ['attack' => 0.84, 'defense' => 0.82],   // Park the bus
+        '4-1-2-3' => ['attack' => 1.08, 'defense' => 1.07],   // Attacking with DM anchor
+        '4-3-2-1' => ['attack' => 1.04, 'defense' => 1.03],   // Creative, narrow attack
     ],
 
     /*
@@ -187,9 +207,9 @@ return [
     |
     */
     'mentalities' => [
-        'defensive' => ['own_goals' => 0.80, 'opponent_goals' => 0.78],
+        'defensive' => ['own_goals' => 0.82, 'opponent_goals' => 0.78],
         'balanced'  => ['own_goals' => 1.00, 'opponent_goals' => 1.00],
-        'attacking' => ['own_goals' => 1.15, 'opponent_goals' => 1.10],
+        'attacking' => ['own_goals' => 1.15, 'opponent_goals' => 1.12],
     ],
 
     /*
@@ -203,10 +223,10 @@ return [
     |
     */
     'playing_styles' => [
-        'possession'     => ['own_xg' => 1.05, 'opp_xg' => 0.95, 'energy_drain' => 1.10],
+        'possession'     => ['own_xg' => 0.97, 'opp_xg' => 0.90, 'energy_drain' => 0.90],
         'balanced'       => ['own_xg' => 1.00, 'opp_xg' => 1.00, 'energy_drain' => 1.00],
-        'counter_attack' => ['own_xg' => 0.92, 'opp_xg' => 0.95, 'energy_drain' => 0.95],
-        'direct'         => ['own_xg' => 1.02, 'opp_xg' => 1.03, 'energy_drain' => 1.00],
+        'counter_attack' => ['own_xg' => 0.93, 'opp_xg' => 0.88, 'energy_drain' => 1.05],
+        'direct'         => ['own_xg' => 1.08, 'opp_xg' => 1.08, 'energy_drain' => 1.04],
     ],
 
     /*
@@ -222,9 +242,9 @@ return [
     |
     */
     'pressing' => [
-        'high_press' => ['own_xg' => 1.00, 'opp_xg' => 0.90, 'energy_drain' => 1.15, 'fade_after' => 60, 'fade_opp_xg' => 0.97],
+        'high_press' => ['own_xg' => 1.08, 'opp_xg' => 0.88, 'energy_drain' => 1.30, 'fade_after' => 55, 'fade_opp_xg' => 1.04],
         'standard'   => ['own_xg' => 1.00, 'opp_xg' => 1.00, 'energy_drain' => 1.00, 'fade_after' => null, 'fade_opp_xg' => null],
-        'low_block'  => ['own_xg' => 0.94, 'opp_xg' => 0.94, 'energy_drain' => 0.92, 'fade_after' => null, 'fade_opp_xg' => null],
+        'low_block'  => ['own_xg' => 0.92, 'opp_xg' => 0.87, 'energy_drain' => 0.85, 'fade_after' => null, 'fade_opp_xg' => null],
     ],
 
     /*
@@ -234,14 +254,12 @@ return [
     |
     | own_xg: multiplier on YOUR expected goals (high line compresses space)
     | opp_xg: multiplier on OPPONENT's expected goals against you
-    | physical_threshold: opponent forward physical ability above which
-    |                     the high line bonus is nullified (0 = never)
     |
     */
     'defensive_line' => [
-        'high_line' => ['own_xg' => 1.03, 'opp_xg' => 0.94, 'physical_threshold' => 80],
-        'normal'    => ['own_xg' => 1.00, 'opp_xg' => 1.00, 'physical_threshold' => 0],
-        'deep'      => ['own_xg' => 0.94, 'opp_xg' => 0.92, 'physical_threshold' => 0],
+        'high_line' => ['own_xg' => 1.06, 'opp_xg' => 0.94],
+        'normal'    => ['own_xg' => 1.00, 'opp_xg' => 1.00],
+        'deep'      => ['own_xg' => 0.93, 'opp_xg' => 0.88],
     ],
 
     /*
@@ -253,9 +271,18 @@ return [
     |
     */
     'tactical_interactions' => [
+        // Existing interactions
         'counter_vs_attacking_high_line' => 1.16,       // Counter-Attack bonus vs Attacking mentality + High Line
         'possession_disrupted_by_high_press' => 0.95,   // Possession own xG penalty vs opponent High Press
         'direct_bypasses_high_press' => 1.06,            // Direct own xG bonus vs opponent High Press
+
+        // New interactions
+        'high_press_vs_deep' => 0.96,                   // High Press defensive benefit reduced vs opponent Deep line (press has nowhere to win ball)
+        'counter_vs_low_block' => 1.06,                  // Counter-Attack team more vulnerable vs opponent Low Block (can't exploit space)
+        'possession_vs_deep_low_block' => 0.93,          // Possession own xG penalty vs opponent Deep + Low Block (can't break the wall)
+        'direct_vs_deep' => 1.08,                        // Direct own xG bonus vs opponent Deep line (long balls bypass deep block)
+        'high_line_high_press_synergy' => 1.06,          // Own xG bonus when using both High Line + High Press (coordinated pressing)
+        'attacking_high_line_vulnerability' => 1.04,     // Opponent own xG bonus vs team using Attacking mentality + High Line (general exposure)
     ],
 
     /*
@@ -264,10 +291,12 @@ return [
     |--------------------------------------------------------------------------
     |
     | Possession % is derived from tactical choices and team strength.
-    | It is purely cosmetic — it does NOT affect xG, energy, or simulation.
-    |
     | Each factor adds/subtracts from a base of 50. The raw scores for both
     | teams are then normalized so they sum to 100%.
+    |
+    | Possession also has a small gameplay effect: teams with dominant
+    | possession get a slight xG bonus (more territory = more chances),
+    | while teams with very low possession get a small penalty.
     |
     | noise_range: random ± variation (seeded per match for determinism)
     |
@@ -298,9 +327,32 @@ return [
             '4-1-4-1' => 2,
             '5-3-2' => 0,
             '5-4-1' => 1,
+            '4-1-2-3' => 1,
+            '4-3-2-1' => 2,
         ],
         'strength_max_bonus' => 5,
         'noise_range' => 3,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Possession xG Effect
+    |--------------------------------------------------------------------------
+    |
+    | Small xG modifier based on possession differential. Teams with dominant
+    | possession get a slight attacking bonus (more territory = more chances).
+    | This prevents possession from being purely cosmetic.
+    |
+    | max_bonus: maximum xG multiplier bonus at 65%+ possession (e.g. 0.08 = +8%)
+    | max_penalty: maximum xG penalty at 35%- possession (e.g. -0.05 = -5%)
+    | neutral_band: possession range where no modifier is applied
+    |
+    */
+    'possession_xg_effect' => [
+        'enabled' => true,
+        'max_bonus' => 0.08,
+        'max_penalty' => -0.05,
+        'neutral_band' => [47, 53],
     ],
 
     /*

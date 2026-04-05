@@ -10,6 +10,7 @@ use App\Models\GameNotification;
 use App\Models\GamePlayer;
 use App\Models\RenewalNegotiation;
 use App\Models\Team;
+use App\Models\TransferListing;
 use App\Models\TransferOffer;
 use App\Modules\Notification\Services\NotificationService;
 use App\Support\Money;
@@ -665,11 +666,10 @@ class ContractService
         }
 
         // Release the player to the free agent pool
+        TransferListing::where('game_player_id', $player->id)->delete();
         $player->update([
             'team_id' => null,
             'number' => null,
-            'transfer_status' => null,
-            'transfer_listed_at' => null,
         ]);
 
         // Cancel any active renewal negotiations

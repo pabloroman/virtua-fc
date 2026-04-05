@@ -260,11 +260,6 @@ export default function lineupManager(config) {
             if (!this.xgConfig || this.selectedPlayers.length === 0 || !this.opponentAverage) return null;
             if (!this.teamAverage) return null;
 
-            const bestFwdPhysical = this.selectedPlayers
-                .map(id => this.playersData[id])
-                .filter(p => p && p.positionGroup === 'Forward')
-                .reduce((max, p) => Math.max(max, p.physicalAbility), 0);
-
             return calculateXgPreview({
                 userAvg: this.teamAverage,
                 opponentAvg: this.opponentAverage,
@@ -281,7 +276,6 @@ export default function lineupManager(config) {
                 opponentDefLine: this.opponentDefLine,
                 formationModifiers: this.formationModifiers,
                 xgConfig: this.xgConfig,
-                userForwardPhysical: bestFwdPhysical,
             });
         },
 

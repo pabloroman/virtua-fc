@@ -51,12 +51,4 @@ enum DefensiveLineHeight: string
         return (float) config("match_simulation.defensive_line.{$this->value}.opp_xg", 1.00);
     }
 
-    /**
-     * Physical ability threshold above which opponent forwards nullify the high line.
-     * Returns 0 if no threshold applies.
-     */
-    public function physicalThreshold(): int
-    {
-        return (int) config("match_simulation.defensive_line.{$this->value}.physical_threshold", 0);
-    }
 }

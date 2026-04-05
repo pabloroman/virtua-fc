@@ -16,6 +16,7 @@ class NationalTeamStatsService
         return Team::query()
             ->join('tournament_summaries', 'teams.id', '=', 'tournament_summaries.team_id')
             ->where('teams.type', 'national')
+            ->whereNotNull('teams.slug')
             ->groupBy('teams.id')
             ->selectRaw('teams.*, COUNT(*) as tournaments_count')
             ->orderByDesc('tournaments_count')

@@ -122,6 +122,9 @@ class MatchResultProcessor
 
         foreach ($leagueResultsByCompetition as $competitionId => $results) {
             $this->standingsCalculator->bulkUpdateAfterMatches($gameId, $competitionId, $results);
+
+            $matchIds = array_column($results, 'matchId');
+            GameMatch::whereIn('id', $matchIds)->update(['standings_applied' => true]);
         }
 
     }
