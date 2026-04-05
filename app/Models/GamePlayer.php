@@ -28,7 +28,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $morale
  * @property \Illuminate\Support\Carbon|null $injury_until
  * @property string|null $injury_type
- * @property int|null $suspended_until_matchday
  * @property int $appearances
  * @property int $goals
  * @property int $own_goals
@@ -115,7 +114,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereRedCards($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereRetiringAtSeason($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereSeasonAppearances($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereSuspendedUntilMatchday($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereTeamId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereTransferListedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereTransferStatus($value)
@@ -145,7 +143,6 @@ class GamePlayer extends Model
         'durability',
         'injury_until',
         'injury_type',
-        'suspended_until_matchday',
         'appearances',
         'goals',
         'own_goals',
@@ -176,7 +173,6 @@ class GamePlayer extends Model
         'morale' => 'integer',
         'durability' => 'integer',
         'injury_until' => 'date',
-        'suspended_until_matchday' => 'integer',
         'appearances' => 'integer',
         'goals' => 'integer',
         'own_goals' => 'integer',
