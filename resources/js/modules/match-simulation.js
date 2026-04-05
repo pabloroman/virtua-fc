@@ -68,7 +68,13 @@ export function createMatchSimulation(ctx) {
         const isExtraTime = state.phase === 'extra_time_first_half' || state.phase === 'extra_time_second_half';
 
         if (isExtraTime) {
-            state.currentMinute = Math.min(state.currentMinute + deltaMinutes, 123);
+            if (state.phase === 'extra_time_first_half') {
+                state.currentMinute = Math.min(state.currentMinute + deltaMinutes, 105);
+            } else {
+                state.currentMinute = Math.min(state.currentMinute + deltaMinutes, 123);
+            }
+        } else if (state.phase === 'first_half') {
+            state.currentMinute = Math.min(state.currentMinute + deltaMinutes, 45);
         } else {
             state.currentMinute = Math.min(state.currentMinute + deltaMinutes, 93);
         }

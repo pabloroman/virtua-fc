@@ -315,10 +315,13 @@ export default function liveMatch(config) {
         },
 
         get totalMinutes() {
-            return this.hasExtraTime || this.isInExtraTime ? 120 : 90;
+            return this.hasExtraTime || this.isInExtraTime ? 120 : 93;
         },
 
         get etFirstHalfEvents() {
+            if (!this.hasExtraTime) {
+                return [];
+            }
             return this.groupSubstitutions(this.revealedEvents.filter(e => e.minute > 90 && e.minute <= 105));
         },
 
@@ -837,7 +840,7 @@ export default function liveMatch(config) {
             if (this.phase === 'extra_time_first_half' || this.phase === 'extra_time_second_half') {
                 return String(Math.min(m, 120));
             }
-            return String(Math.min(m, 90));
+            return String(Math.min(m, this.hasExtraTime ? 90 : 93));
         },
 
         get timelineProgress() {
@@ -1205,7 +1208,10 @@ export default function liveMatch(config) {
         },
 
         get secondHalfEvents() {
-            return this.groupSubstitutions(this.revealedEvents.filter(e => e.minute > 45 && e.minute <= 90));
+            const end = this.hasExtraTime ? 90 : 93;
+            return this.groupSubstitutions(
+                this.revealedEvents.filter(e => e.minute > 45 && e.minute <= end),
+            );
         },
 
         get firstHalfEvents() {
