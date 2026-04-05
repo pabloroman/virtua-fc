@@ -3,15 +3,7 @@
 namespace App\Modules\Match\Services;
 
 use App\Modules\Competition\Services\StandingsCalculator;
-use App\Modules\Lineup\Enums\DefensiveLineHeight;
-use App\Modules\Lineup\Enums\Formation;
-use App\Modules\Lineup\Enums\Mentality;
-use App\Modules\Lineup\Enums\PlayingStyle;
-use App\Modules\Lineup\Enums\PressingIntensity;
-use App\Modules\Lineup\Services\LineupService;
 use App\Modules\Match\DTOs\MatchdayAdvanceResult;
-use App\Modules\Match\DTOs\MatchEventData;
-use App\Modules\Match\DTOs\MatchResult;
 use App\Modules\Match\Jobs\ProcessCareerActions;
 use App\Modules\Match\Jobs\ProcessRemainingBatches;
 use App\Modules\Notification\Services\NotificationService;
@@ -19,7 +11,6 @@ use App\Modules\Squad\Services\EligibilityService;
 use App\Modules\Player\PlayerAge;
 use App\Modules\Player\Services\InjuryService;
 use App\Models\Competition;
-use App\Models\TeamReputation;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GameNotification;
@@ -35,8 +26,7 @@ class MatchdayOrchestrator
 
     public function __construct(
         private readonly MatchdayService $matchdayService,
-        private readonly LineupService $lineupService,
-        private readonly MatchSimulator $matchSimulator,
+        private readonly FullMatchSimulationService $fullMatchSimulation,
         private readonly MatchResultProcessor $matchResultProcessor,
         private readonly MatchFinalizationService $finalizationService,
         private readonly StandingsCalculator $standingsCalculator,
@@ -202,48 +192,9 @@ class MatchdayOrchestrator
             $matchResults = $this->aiMatchResolver->resolveMatches($matches, $allPlayers, $game, $suspendedByCompetition);
         } else {
             // --- Full simulation path (player-involved batches) ---
-            $clubProfiles = TeamReputation::where('game_id', $game->id)
-                ->whereIn('team_id', $teamIds)->get()->keyBy('team_id');
-
-            $this->lineupService->ensureLineupsForMatches($matches, $game, $allPlayers, $suspendedByCompetition, $clubProfiles);
-
-            // --- Check for forfeit (user's team has < 7 available players) ---
-            $forfeitResult = null;
-
-            if ($playerMatch) {
-                $isUserHome = $playerMatch->isHomeTeam($game->team_id);
-                $userLineupField = $isUserHome ? 'home_lineup' : 'away_lineup';
-                $userLineupCount = count($playerMatch->$userLineupField ?? []);
-                $userSquadSize = $allPlayers->get($game->team_id, collect())->count();
-
-                if ($userSquadSize > 0 && $userLineupCount < 7) {
-                    $forfeitResult = [
-                        'matchId' => $playerMatch->id,
-                        'homeTeamId' => $playerMatch->home_team_id,
-                        'awayTeamId' => $playerMatch->away_team_id,
-                        'homeScore' => $isUserHome ? 0 : 3,
-                        'awayScore' => $isUserHome ? 3 : 0,
-                        'homePossession' => 50,
-                        'awayPossession' => 50,
-                        'competitionId' => $playerMatch->competition_id,
-                        'events' => [],
-                    ];
-
-                    $this->notificationService->notifyMatchForfeit($game);
-                }
-            }
-
-            // --- Simulate matches (skip forfeited match) ---
-            $forfeitedMatchId = $forfeitResult ? $playerMatch->id : null;
-            $matchesToSimulate = $forfeitedMatchId
-                ? $matches->reject(fn ($m) => $m->id === $forfeitedMatchId)
-                : $matches;
-            $matchResults = $this->simulateMatches($matchesToSimulate, $game, $allPlayers);
-
-            if ($forfeitResult) {
-                $matchResults[] = $forfeitResult;
-                $playerMatch = null;
-            }
+            $resolution = $this->fullMatchSimulation->resolveMatches($matches, $game, $allPlayers, $suspendedByCompetition);
+            $matchResults = $resolution['matchResults'];
+            $playerMatch = $resolution['playerMatch'];
         }
 
         // Identify user's match — its score-dependent effects are deferred to finalization
@@ -381,135 +332,6 @@ class MatchdayOrchestrator
 
         // Dispatch career actions if any ticks accumulated
         $this->dispatchCareerActions($game->id, $totalTicks);
-    }
-
-    private function simulateMatches($matches, Game $game, $allPlayers): array
-    {
-        $results = [];
-        foreach ($matches as $match) {
-            $results[] = $this->simulateMatch($match, $allPlayers, $game);
-        }
-
-        return $results;
-    }
-
-    private function simulateMatch(GameMatch $match, $allPlayers, Game $game): array
-    {
-        $homePlayers = $this->getLineupPlayers($match, $allPlayers, 'home');
-        $awayPlayers = $this->getLineupPlayers($match, $allPlayers, 'away');
-
-        // Don't pass bench players for the user's team — they make their own
-        // substitution decisions during the live match. The simulator already
-        // guards with `$benchPlayers !== null`, so injury events are still
-        // generated but no auto-substitution follows.
-        $isUserMatch = $match->involvesTeam($game->team_id);
-        $isUserHome = $isUserMatch && $match->isHomeTeam($game->team_id);
-
-        $homeBenchPlayers = $isUserHome ? null : $this->getBenchPlayers($match, $allPlayers, 'home', $game);
-        $awayBenchPlayers = ($isUserMatch && ! $isUserHome) ? null : $this->getBenchPlayers($match, $allPlayers, 'away', $game);
-
-        $homeFormation = Formation::tryFrom($match->home_formation) ?? Formation::F_4_3_3;
-        $awayFormation = Formation::tryFrom($match->away_formation) ?? Formation::F_4_3_3;
-        $homeMentality = Mentality::tryFrom($match->home_mentality ?? '') ?? Mentality::BALANCED;
-        $awayMentality = Mentality::tryFrom($match->away_mentality ?? '') ?? Mentality::BALANCED;
-
-        $homePlayingStyle = PlayingStyle::tryFrom($match->home_playing_style ?? '') ?? PlayingStyle::BALANCED;
-        $awayPlayingStyle = PlayingStyle::tryFrom($match->away_playing_style ?? '') ?? PlayingStyle::BALANCED;
-        $homePressing = PressingIntensity::tryFrom($match->home_pressing ?? '') ?? PressingIntensity::STANDARD;
-        $awayPressing = PressingIntensity::tryFrom($match->away_pressing ?? '') ?? PressingIntensity::STANDARD;
-        $homeDefLine = DefensiveLineHeight::tryFrom($match->home_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
-        $awayDefLine = DefensiveLineHeight::tryFrom($match->away_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
-
-        // Neutralize tactical instructions for AI-vs-AI matches — these only
-        // add meaningful complexity for user-involved matches. Formation and
-        // mentality still apply to differentiate AI teams.
-        if (! $isUserMatch) {
-            $homePlayingStyle = PlayingStyle::BALANCED;
-            $awayPlayingStyle = PlayingStyle::BALANCED;
-            $homePressing = PressingIntensity::STANDARD;
-            $awayPressing = PressingIntensity::STANDARD;
-            $homeDefLine = DefensiveLineHeight::NORMAL;
-            $awayDefLine = DefensiveLineHeight::NORMAL;
-        }
-
-        $output = $this->matchSimulator->simulate(
-            $match->homeTeam,
-            $match->awayTeam,
-            $homePlayers,
-            $awayPlayers,
-            $homeFormation,
-            $awayFormation,
-            $homeMentality,
-            $awayMentality,
-            $game,
-            $homePlayingStyle,
-            $awayPlayingStyle,
-            $homePressing,
-            $awayPressing,
-            $homeDefLine,
-            $awayDefLine,
-            $homeBenchPlayers,
-            $awayBenchPlayers,
-            matchSeed: $match->id,
-            neutralVenue: $match->competition_id === 'WC2026',
-        );
-
-        $result = $output->result;
-        $performances = $output->performances;
-        $mvpPlayerId = $this->calculateMvp(
-            $result,
-            $performances,
-            $homePlayers,
-            $awayPlayers,
-            $match->home_team_id,
-            $match->away_team_id,
-        );
-
-        return [
-            'matchId' => $match->id,
-            'homeTeamId' => $match->home_team_id,
-            'awayTeamId' => $match->away_team_id,
-            'homeScore' => $result->homeScore,
-            'awayScore' => $result->awayScore,
-            'homePossession' => $result->homePossession,
-            'awayPossession' => $result->awayPossession,
-            'competitionId' => $match->competition_id,
-            'mvpPlayerId' => $mvpPlayerId,
-            'events' => $result->events->map(fn (MatchEventData $e) => $e->toArray())->all(),
-        ];
-    }
-
-    /**
-     * Get bench players for a team from the already-loaded player collection.
-     * Filters out lineup players and injured players. Zero additional queries.
-     */
-    private function getBenchPlayers(GameMatch $match, $allPlayers, string $side, Game $game): \Illuminate\Support\Collection
-    {
-        $lineupField = $side . '_lineup';
-        $teamIdField = $side . '_team_id';
-
-        $lineupIds = $match->$lineupField ?? [];
-        $teamPlayers = $allPlayers->get($match->$teamIdField, collect());
-
-        return $teamPlayers
-            ->reject(fn ($player) => in_array($player->id, $lineupIds))
-            ->reject(fn ($player) => $player->isInjured($game->current_date))
-            ->values();
-    }
-
-    private function getLineupPlayers(GameMatch $match, $allPlayers, string $side)
-    {
-        $lineupField = $side.'_lineup';
-        $teamIdField = $side.'_team_id';
-
-        $lineupIds = $match->$lineupField ?? [];
-        $teamPlayers = $allPlayers->get($match->$teamIdField, collect());
-
-        if (empty($lineupIds)) {
-            return collect();
-        }
-
-        return $teamPlayers->filter(fn ($p) => in_array($p->id, $lineupIds));
     }
 
     private function recalculateLeaguePositions(string $gameId, $matches): void
@@ -842,140 +664,6 @@ class MatchdayOrchestrator
                 );
             }
         }
-    }
-
-    /**
-     * Calculate the MVP (Most Valuable Player) for a match.
-     *
-     * Uses position-aware scoring so all position groups can realistically win:
-     * - Normalized performance (0.0-1.0) is the primary factor
-     * - Goal/assist bonuses scale by position rarity (a defender scoring is more noteworthy)
-     * - Goalkeepers and defenders earn clean sheet bonuses
-     * - Goalkeepers are penalized for conceding many goals
-     * - Players on the winning team get a small edge
-     *
-     * @param  MatchResult  $result  The match result with events
-     * @param  array<string, float>  $performances  Map of player ID to performance modifier (0.7-1.3)
-     * @param  \Illuminate\Support\Collection  $homePlayers  Home team lineup players
-     * @param  \Illuminate\Support\Collection  $awayPlayers  Away team lineup players
-     * @param  string  $homeTeamId  Home team ID
-     * @param  string  $awayTeamId  Away team ID
-     */
-    private function calculateMvp(
-        MatchResult $result,
-        array $performances,
-        \Illuminate\Support\Collection $homePlayers,
-        \Illuminate\Support\Collection $awayPlayers,
-        string $homeTeamId,
-        string $awayTeamId,
-    ): ?string {
-        if (empty($performances)) {
-            return null;
-        }
-
-        // Build lookup maps for position group and team membership
-        $positionGroups = [];
-        $playerTeams = [];
-        foreach ($homePlayers as $player) {
-            $positionGroups[$player->id] = $player->position_group;
-            $playerTeams[$player->id] = $homeTeamId;
-        }
-        foreach ($awayPlayers as $player) {
-            $positionGroups[$player->id] = $player->position_group;
-            $playerTeams[$player->id] = $awayTeamId;
-        }
-
-        $goalsConceded = [
-            $homeTeamId => $result->awayScore,
-            $awayTeamId => $result->homeScore,
-        ];
-
-        $winningTeamId = match (true) {
-            $result->homeScore > $result->awayScore => $homeTeamId,
-            $result->awayScore > $result->homeScore => $awayTeamId,
-            default => null,
-        };
-
-        // Position-scaled event bonuses (rarer contributions score higher)
-        $goalBonuses = ['Goalkeeper' => 0.50, 'Defender' => 0.35, 'Midfielder' => 0.25, 'Forward' => 0.20];
-        $assistBonuses = ['Goalkeeper' => 0.25, 'Defender' => 0.15, 'Midfielder' => 0.15, 'Forward' => 0.15];
-
-        // Count events per player
-        $goals = [];
-        $assists = [];
-        $yellowCards = [];
-        $redCards = [];
-
-        foreach ($result->events as $event) {
-            match ($event->type) {
-                'goal' => $goals[$event->gamePlayerId] = ($goals[$event->gamePlayerId] ?? 0) + 1,
-                'assist' => $assists[$event->gamePlayerId] = ($assists[$event->gamePlayerId] ?? 0) + 1,
-                'yellow_card' => $yellowCards[$event->gamePlayerId] = ($yellowCards[$event->gamePlayerId] ?? 0) + 1,
-                'red_card' => $redCards[$event->gamePlayerId] = ($redCards[$event->gamePlayerId] ?? 0) + 1,
-                default => null,
-            };
-        }
-
-        // Score each player
-        $bestPlayerId = null;
-        $bestScore = -INF;
-        $bestIsWinner = false;
-
-        foreach ($performances as $playerId => $performance) {
-            $group = $positionGroups[$playerId] ?? 'Midfielder';
-            $teamId = $playerTeams[$playerId] ?? null;
-            $teamConceded = $teamId ? ($goalsConceded[$teamId] ?? 0) : 0;
-
-            // Normalized performance: map 0.70-1.30 to 0.0-1.0
-            $score = ($performance - 0.70) / 0.60;
-
-            // Position-scaled goal/assist bonuses
-            $score += ($goals[$playerId] ?? 0) * ($goalBonuses[$group] ?? 0.15);
-            $score += ($assists[$playerId] ?? 0) * ($assistBonuses[$group] ?? 0.10);
-
-            // Card penalties
-            $score -= ($yellowCards[$playerId] ?? 0) * 0.10;
-            $score -= ($redCards[$playerId] ?? 0) * 0.30;
-
-            // Clean sheet bonus for goalkeepers and defenders
-            if ($teamConceded === 0) {
-                $score += match ($group) {
-                    'Goalkeeper' => 0.20,
-                    'Defender' => 0.15,
-                    default => 0.0,
-                };
-            } elseif ($teamConceded === 1) {
-                $score += match ($group) {
-                    'Goalkeeper' => 0.05,
-                    'Defender' => 0.05,
-                    default => 0.0,
-                };
-            }
-
-            // Goals conceded penalty for goalkeepers
-            if ($group === 'Goalkeeper') {
-                $score -= match (true) {
-                    $teamConceded >= 4 => 0.20,
-                    $teamConceded >= 3 => 0.10,
-                    default => 0.0,
-                };
-            }
-
-            // Winning team edge
-            $isWinner = $winningTeamId !== null && $teamId === $winningTeamId;
-            if ($isWinner) {
-                $score += 0.08;
-            }
-
-            // Tiebreak: prefer the player from the winning team
-            if ($score > $bestScore || ($score === $bestScore && $isWinner && ! $bestIsWinner)) {
-                $bestScore = $score;
-                $bestPlayerId = $playerId;
-                $bestIsWinner = $isWinner;
-            }
-        }
-
-        return $bestPlayerId;
     }
 
     /**
