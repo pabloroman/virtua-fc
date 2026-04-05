@@ -43,6 +43,7 @@ class MatchdayOrchestrator
         private readonly NotificationService $notificationService,
         private readonly EligibilityService $eligibilityService,
         private readonly InjuryService $injuryService,
+        private readonly AIMatchResolver $aiMatchResolver = new AIMatchResolver,
     ) {}
 
     public function advance(Game $game): MatchdayAdvanceResult
@@ -151,6 +152,9 @@ class MatchdayOrchestrator
             $handlers = array_intersect_key($handlers, [$playerMatch->competition_id => true]);
         }
 
+        // Determine if this is a pure AI-only batch eligible for fast resolution
+        $isAIOnlyBatch = ! $playerMatch && config('match_simulation.ai_resolver_enabled', false);
+
         // --- Load players ---
         $teamIds = $matches->pluck('home_team_id')
             ->merge($matches->pluck('away_team_id'))
@@ -189,53 +193,57 @@ class MatchdayOrchestrator
             ->map(fn ($group) => $group->pluck('game_player_id')->toArray())
             ->toArray();
 
-        $clubProfiles = TeamReputation::where('game_id', $game->id)
-            ->whereIn('team_id', $teamIds)->get()->keyBy('team_id');
+        if ($isAIOnlyBatch) {
+            // --- Fast AI resolution path ---
+            // Skips: FormationRecommender, full LineupService, MatchSimulator,
+            // AISubstitutionService, EnergyCalculator, tactical instruction selection.
+            // The AIMatchResolver handles lineup selection (with rotation) and
+            // statistical result generation in a single lightweight pass.
+            $matchResults = $this->aiMatchResolver->resolveMatches($matches, $allPlayers, $game, $suspendedByCompetition);
+        } else {
+            // --- Full simulation path (player-involved batches) ---
+            $clubProfiles = TeamReputation::where('game_id', $game->id)
+                ->whereIn('team_id', $teamIds)->get()->keyBy('team_id');
 
-        // --- Ensure lineups ---
-        $this->lineupService->ensureLineupsForMatches($matches, $game, $allPlayers, $suspendedByCompetition, $clubProfiles);
+            $this->lineupService->ensureLineupsForMatches($matches, $game, $allPlayers, $suspendedByCompetition, $clubProfiles);
 
-        // --- Check for forfeit (user's team has < 7 available players) ---
-        // $playerMatch was already resolved above (line 158) — reuse it after filtering
-        $forfeitResult = null;
+            // --- Check for forfeit (user's team has < 7 available players) ---
+            $forfeitResult = null;
 
-        if ($playerMatch) {
-            $isUserHome = $playerMatch->isHomeTeam($game->team_id);
-            $userLineupField = $isUserHome ? 'home_lineup' : 'away_lineup';
-            $userLineupCount = count($playerMatch->$userLineupField ?? []);
-            $userSquadSize = $allPlayers->get($game->team_id, collect())->count();
+            if ($playerMatch) {
+                $isUserHome = $playerMatch->isHomeTeam($game->team_id);
+                $userLineupField = $isUserHome ? 'home_lineup' : 'away_lineup';
+                $userLineupCount = count($playerMatch->$userLineupField ?? []);
+                $userSquadSize = $allPlayers->get($game->team_id, collect())->count();
 
-            // Only forfeit if the team actually has players but too few available.
-            // A squad of 0 means the game is in a test/setup state — let the simulator handle it.
-            if ($userSquadSize > 0 && $userLineupCount < 7) {
-                // Forfeit: 0-3 loss for the user's team
-                $forfeitResult = [
-                    'matchId' => $playerMatch->id,
-                    'homeTeamId' => $playerMatch->home_team_id,
-                    'awayTeamId' => $playerMatch->away_team_id,
-                    'homeScore' => $isUserHome ? 0 : 3,
-                    'awayScore' => $isUserHome ? 3 : 0,
-                    'homePossession' => 50,
-                    'awayPossession' => 50,
-                    'competitionId' => $playerMatch->competition_id,
-                    'events' => [],
-                ];
+                if ($userSquadSize > 0 && $userLineupCount < 7) {
+                    $forfeitResult = [
+                        'matchId' => $playerMatch->id,
+                        'homeTeamId' => $playerMatch->home_team_id,
+                        'awayTeamId' => $playerMatch->away_team_id,
+                        'homeScore' => $isUserHome ? 0 : 3,
+                        'awayScore' => $isUserHome ? 3 : 0,
+                        'homePossession' => 50,
+                        'awayPossession' => 50,
+                        'competitionId' => $playerMatch->competition_id,
+                        'events' => [],
+                    ];
 
-                $this->notificationService->notifyMatchForfeit($game);
+                    $this->notificationService->notifyMatchForfeit($game);
+                }
             }
-        }
 
-        // --- Simulate matches (skip forfeited match) ---
-        $forfeitedMatchId = $forfeitResult ? $playerMatch->id : null;
-        $matchesToSimulate = $forfeitedMatchId
-            ? $matches->reject(fn ($m) => $m->id === $forfeitedMatchId)
-            : $matches;
-        $matchResults = $this->simulateMatches($matchesToSimulate, $game, $allPlayers);
+            // --- Simulate matches (skip forfeited match) ---
+            $forfeitedMatchId = $forfeitResult ? $playerMatch->id : null;
+            $matchesToSimulate = $forfeitedMatchId
+                ? $matches->reject(fn ($m) => $m->id === $forfeitedMatchId)
+                : $matches;
+            $matchResults = $this->simulateMatches($matchesToSimulate, $game, $allPlayers);
 
-        if ($forfeitResult) {
-            $matchResults[] = $forfeitResult;
-            // Forfeited match is not a live match — process all effects immediately
-            $playerMatch = null;
+            if ($forfeitResult) {
+                $matchResults[] = $forfeitResult;
+                $playerMatch = null;
+            }
         }
 
         // Identify user's match — its score-dependent effects are deferred to finalization
@@ -259,7 +267,6 @@ class MatchdayOrchestrator
                 ->where('played', false)
                 ->exists();
 
-            // If the only remaining pre-season match is the player's current match, it counts as done
             if (! $hasFriendlies || ($playerMatch && ! GameMatch::where('game_id', $game->id)
                 ->where('competition_id', 'PRESEASON')
                 ->where('played', false)
@@ -267,7 +274,6 @@ class MatchdayOrchestrator
                 ->exists())) {
                 $game->endPreSeason();
 
-                // Notify if there are unenrolled players now that registration is enforced
                 if ($game->squad_registration_enabled) {
                     $unenrolledCount = GamePlayer::where('game_id', $game->id)
                         ->where('team_id', $game->team_id)

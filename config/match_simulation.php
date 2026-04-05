@@ -11,6 +11,26 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | AI-vs-AI Match Resolution
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, AI-vs-AI matches use a lightweight statistical resolver
+    | instead of the full MatchSimulator pipeline. This dramatically reduces
+    | CPU, memory, and database load for background batch processing.
+    |
+    | The resolver uses the same Dixon-Coles model and xG formula but skips:
+    | - Full lineup generation (FormationRecommender, tactical instructions)
+    | - Energy model and minute-by-minute simulation periods
+    | - AI substitution windows and bench management
+    |
+    | Rotation is preserved: players below the fitness threshold are penalized
+    | so fresher alternatives rotate in, spreading stats realistically.
+    |
+    */
+    'ai_resolver_enabled' => true,
+
+    /*
+    |--------------------------------------------------------------------------
     | Expected Goals (Ratio-Based Formula)
     |--------------------------------------------------------------------------
     |
