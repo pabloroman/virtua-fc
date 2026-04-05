@@ -12,6 +12,7 @@ use App\Modules\Season\Services\GameDeletionService;
 use App\Models\Game;
 use App\Models\GameMatch;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class FinalizeMatch
 {
@@ -25,23 +26,38 @@ class FinalizeMatch
 
     public function __invoke(Request $request, string $gameId)
     {
-        $game = Game::findOrFail($gameId);
+        // Atomic finalization: lock the game row to prevent double-submit
+        // (user clicking Continue twice) and races with the finalizePendingMatch
+        // safety net in MatchdayOrchestrator::advance().
+        $game = DB::transaction(function () use ($gameId) {
+            $game = Game::where('id', $gameId)->lockForUpdate()->first();
 
-        $matchId = $game->pending_finalization_match_id;
+            if (! $game) {
+                return null;
+            }
 
-        if (! $matchId) {
+            $matchId = $game->pending_finalization_match_id;
+
+            if (! $matchId) {
+                return $game;
+            }
+
+            $match = GameMatch::find($matchId);
+
+            if (! $match || ! $match->played) {
+                $game->update(['pending_finalization_match_id' => null]);
+
+                return $game;
+            }
+
+            $this->finalizationService->finalize($match, $game);
+
+            return $game;
+        });
+
+        if (! $game) {
             return redirect()->route('show-game', $gameId);
         }
-
-        $match = GameMatch::find($matchId);
-
-        if (! $match || ! $match->played) {
-            $game->update(['pending_finalization_match_id' => null]);
-
-            return redirect()->route('show-game', $gameId);
-        }
-
-        $this->finalizationService->finalize($match, $game);
 
         // Fire SeasonCompleted if no unplayed matches remain after finalization.
         // This covers the case where the player's match is the last match of the

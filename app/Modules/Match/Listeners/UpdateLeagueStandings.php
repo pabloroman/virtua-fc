@@ -21,6 +21,12 @@ class UpdateLeagueStandings
             return;
         }
 
+        // Idempotency guard: skip if standings were already applied for this match
+        // (prevents double-counting from concurrent finalization or safety net re-entry)
+        if ($match->standings_applied) {
+            return;
+        }
+
         $this->standingsCalculator->updateAfterMatch(
             gameId: $event->game->id,
             competitionId: $match->competition_id,
@@ -30,6 +36,8 @@ class UpdateLeagueStandings
             awayScore: $match->away_score,
         );
 
-        $this->standingsCalculator->recalculatePositions($event->game->id, $match->competition_id);
+        $this->standingsCalculator->recalculatePositions($event->game->id, $match->competition_id, updatePrevPosition: false);
+
+        $match->update(['standings_applied' => true]);
     }
 }

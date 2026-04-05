@@ -458,4 +458,72 @@ class AdvanceMatchdayTest extends TestCase
 
         return [$team3, $team4];
     }
+
+    public function test_double_finalization_does_not_double_count_standings(): void
+    {
+        // Create a league match
+        GameMatch::factory()->create([
+            'game_id' => $this->game->id,
+            'competition_id' => $this->leagueCompetition->id,
+            'round_number' => 1,
+            'home_team_id' => $this->playerTeam->id,
+            'away_team_id' => $this->opponentTeam->id,
+            'scheduled_date' => Carbon::parse('2024-08-16'),
+        ]);
+
+        // Initialize standings
+        foreach ([$this->playerTeam, $this->opponentTeam] as $team) {
+            GameStanding::create([
+                'game_id' => $this->game->id,
+                'competition_id' => $this->leagueCompetition->id,
+                'team_id' => $team->id,
+                'position' => 0,
+                'played' => 0,
+                'won' => 0,
+                'drawn' => 0,
+                'lost' => 0,
+                'goals_for' => 0,
+                'goals_against' => 0,
+                'points' => 0,
+            ]);
+        }
+
+        // Advance matchday
+        $action = app(AdvanceMatchday::class);
+        $action($this->game->id);
+
+        $this->game->refresh();
+        $match = GameMatch::find($this->game->pending_finalization_match_id);
+        $this->assertNotNull($match, 'User match should be pending finalization');
+
+        // Finalize the user's match
+        $finalizationService = app(MatchFinalizationService::class);
+        $finalizationService->finalize($match, $this->game);
+
+        // Verify standings_applied is set
+        $match->refresh();
+        $this->assertTrue($match->standings_applied, 'standings_applied should be true after finalization');
+
+        // Call finalize AGAIN (simulates double-submit or safety net re-entry)
+        $this->game->refresh();
+        $finalizationService->finalize($match, $this->game);
+
+        // Standings should still show 1 played, not 2
+        $homeStanding = GameStanding::where('game_id', $this->game->id)
+            ->where('team_id', $this->playerTeam->id)
+            ->first();
+
+        $awayStanding = GameStanding::where('game_id', $this->game->id)
+            ->where('team_id', $this->opponentTeam->id)
+            ->first();
+
+        $this->assertEquals(1, $homeStanding->played, 'Home team should have exactly 1 game played after double finalization');
+        $this->assertEquals(1, $awayStanding->played, 'Away team should have exactly 1 game played after double finalization');
+
+        $totalPoints = $homeStanding->points + $awayStanding->points;
+        $this->assertTrue(
+            $totalPoints === 3 || $totalPoints === 2,
+            "Total points should be 3 (win) or 2 (draw) after double finalization, got {$totalPoints}"
+        );
+    }
 }

@@ -210,7 +210,19 @@ class StandingsCalculator
      * When standings have group_label set (e.g. World Cup), positions are
      * recalculated within each group separately.
      */
-    public function recalculatePositions(string $gameId, string $competitionId): void
+    /**
+     * Recalculate positions for all teams in a competition.
+     * Uses a single bulk UPDATE with CASE WHEN instead of per-row updates.
+     *
+     * When standings have group_label set (e.g. World Cup), positions are
+     * recalculated within each group separately.
+     *
+     * @param  bool  $updatePrevPosition  Whether to snapshot prev_position. Pass false
+     *                                     when recalculating after the deferred (user's)
+     *                                     match — prev_position was already captured
+     *                                     during batch processing.
+     */
+    public function recalculatePositions(string $gameId, string $competitionId, bool $updatePrevPosition = true): void
     {
         // Get all standings ordered by ranking criteria
         $standings = GameStanding::where('game_id', $gameId)
@@ -225,27 +237,28 @@ class StandingsCalculator
         }
 
         // Build position assignments
-        $positionUpdates = []; // [standingId => [prev_position, position]]
+        $positionUpdates = []; // [standingId => position]
+        $prevPositionUpdates = []; // [standingId => prev_position]
         $hasGroups = $standings->whereNotNull('group_label')->isNotEmpty();
 
         if ($hasGroups) {
             foreach ($standings->groupBy('group_label') as $groupStandings) {
                 $position = 1;
                 foreach ($groupStandings as $standing) {
-                    $positionUpdates[$standing->id] = [
-                        'prev_position' => $standing->position ?: $position,
-                        'position' => $position,
-                    ];
+                    $positionUpdates[$standing->id] = $position;
+                    if ($updatePrevPosition) {
+                        $prevPositionUpdates[$standing->id] = $standing->position ?: $position;
+                    }
                     $position++;
                 }
             }
         } else {
             $position = 1;
             foreach ($standings as $standing) {
-                $positionUpdates[$standing->id] = [
-                    'prev_position' => $standing->position ?: $position,
-                    'position' => $position,
-                ];
+                $positionUpdates[$standing->id] = $position;
+                if ($updatePrevPosition) {
+                    $prevPositionUpdates[$standing->id] = $standing->position ?: $position;
+                }
                 $position++;
             }
         }
@@ -255,18 +268,29 @@ class StandingsCalculator
         $idList = "'" . implode("','", $ids) . "'";
 
         $posCases = [];
-        $prevCases = [];
-        foreach ($positionUpdates as $id => $values) {
-            $posCases[] = "WHEN id = '{$id}' THEN {$values['position']}";
-            $prevCases[] = "WHEN id = '{$id}' THEN {$values['prev_position']}";
+        foreach ($positionUpdates as $id => $position) {
+            $posCases[] = "WHEN id = '{$id}' THEN {$position}";
         }
 
-        DB::statement(
-            'UPDATE game_standings SET '
-            . 'position = CASE ' . implode(' ', $posCases) . ' END, '
-            . 'prev_position = CASE ' . implode(' ', $prevCases) . ' END '
-            . "WHERE id IN ({$idList})"
-        );
+        if ($updatePrevPosition) {
+            $prevCases = [];
+            foreach ($prevPositionUpdates as $id => $prevPosition) {
+                $prevCases[] = "WHEN id = '{$id}' THEN {$prevPosition}";
+            }
+
+            DB::statement(
+                'UPDATE game_standings SET '
+                . 'position = CASE ' . implode(' ', $posCases) . ' END, '
+                . 'prev_position = CASE ' . implode(' ', $prevCases) . ' END '
+                . "WHERE id IN ({$idList})"
+            );
+        } else {
+            DB::statement(
+                'UPDATE game_standings SET '
+                . 'position = CASE ' . implode(' ', $posCases) . ' END '
+                . "WHERE id IN ({$idList})"
+            );
+        }
     }
 
     /**
