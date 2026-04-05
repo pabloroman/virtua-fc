@@ -131,7 +131,7 @@ class AIMatchResolver
         $awayStrength = $this->calculateTeamStrength($awayXI);
 
         // Generate scoreline
-        $neutralVenue = $match->competition_id === 'WC2026';
+        $neutralVenue = $match->isNeutralVenue();
         [$homeXG, $awayXG] = $this->calculateExpectedGoals($homeStrength, $awayStrength, $neutralVenue);
         [$homeScore, $awayScore] = $this->dixonColesRandom($homeXG, $awayXG);
 
