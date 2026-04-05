@@ -4,6 +4,7 @@ namespace App\Modules\Competition\Services;
 
 use App\Models\GameStanding;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class StandingsCalculator
 {
@@ -63,6 +64,17 @@ class StandingsCalculator
                 $increments[$id]['points'] += $team['won'] ? 3 : ($team['drawn'] ? 1 : 0);
             }
         }
+
+        Log::channel('standings')->info('[Calculator] bulkUpdateAfterMatches', [
+            'game_id' => $gameId,
+            'competition_id' => $competitionId,
+            'match_count' => count($matchResults),
+            'team_increments' => collect($increments)->map(fn ($inc, $teamId) => [
+                'team_id' => $teamId,
+                'played' => $inc['played'],
+                'points' => $inc['points'],
+            ])->values()->toArray(),
+        ]);
 
         $teamIds = array_keys($increments);
         $standingIds = GameStanding::where('game_id', $gameId)

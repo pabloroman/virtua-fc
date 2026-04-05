@@ -19,6 +19,7 @@ use App\Models\GameStanding;
 use App\Models\PlayerSuspension;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MatchdayOrchestrator
 {
@@ -202,6 +203,14 @@ class MatchdayOrchestrator
 
         // --- Process results ---
         $this->matchResultProcessor->processAll($game->id, $currentDate, $matchResults, $deferMatchId, $allPlayers);
+
+        Log::channel('standings')->info('[Orchestrator] Batch processed', [
+            'game_id' => $game->id,
+            'match_count' => $matches->count(),
+            'player_match_only' => $playerMatchOnly,
+            'defer_match_id' => $deferMatchId,
+            'match_ids' => $matches->pluck('id')->toArray(),
+        ]);
 
         // --- Recalculate positions ---
         $this->recalculateLeaguePositions($game->id, $matches);
@@ -672,6 +681,11 @@ class MatchdayOrchestrator
      */
     private function finalizePendingMatch(Game $game): void
     {
+        Log::channel('standings')->info('[SafetyNet] finalizePendingMatch called', [
+            'game_id' => $game->id,
+            'pending_match_id' => $game->pending_finalization_match_id,
+        ]);
+
         if (! $game->pending_finalization_match_id) {
             return;
         }

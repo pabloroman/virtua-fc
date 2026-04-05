@@ -10,6 +10,7 @@ use App\Models\MatchEvent;
 use App\Models\PlayerSuspension;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Modules\Competition\Services\StandingsCalculator;
 use App\Modules\Squad\Services\EligibilityService;
@@ -105,9 +106,20 @@ class MatchResultProcessor
         $this->batchUpdateGoalkeeperStats($gkMatches, $gkResults, $allPlayers);
 
         // 9. Update standings per league in bulk (skip deferred match)
+        Log::channel('standings')->info('[BatchPath] processAll called', [
+            'game_id' => $gameId,
+            'total_matches' => count($matchResults),
+            'defer_match_id' => $deferMatchId,
+            'match_ids' => array_column($matchResults, 'matchId'),
+        ]);
+
         $leagueResultsByCompetition = [];
         foreach ($matchResults as $result) {
             if ($result['matchId'] === $deferMatchId) {
+                Log::channel('standings')->info('[BatchPath] Skipping deferred match', [
+                    'match_id' => $result['matchId'],
+                ]);
+
                 continue;
             }
 
@@ -125,6 +137,12 @@ class MatchResultProcessor
 
             $matchIds = array_column($results, 'matchId');
             GameMatch::whereIn('id', $matchIds)->update(['standings_applied' => true]);
+
+            Log::channel('standings')->info('[BatchPath] Applied standings for competition', [
+                'competition_id' => $competitionId,
+                'match_count' => count($results),
+                'match_ids' => $matchIds,
+            ]);
         }
 
     }
