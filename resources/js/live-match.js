@@ -19,7 +19,7 @@ import { createPenaltyShootout } from './modules/penalty-shootout.js';
 import { createSubstitutionManager } from './modules/substitution-manager.js';
 import { createMatchSimulation } from './modules/match-simulation.js';
 import { generateRegularTimeAtmosphere, generateExtraTimeAtmosphere, generateAtmosphereForPeriod, addGoalNarratives, generateContextualNarratives, generateTacticalNarratives } from './modules/atmosphere-generator.js';
-import { calculatePlayerRatings, ratingColor as _ratingColor, updateRosterPerformances } from './modules/player-ratings.js';
+import { calculatePlayerRatings, ratingColor as _ratingColor, updateRosterPerformances, countEvents, buildSubstitutionMap } from './modules/player-ratings.js';
 
 /**
  * Copy all own properties from source to target. Regular properties are
@@ -880,19 +880,57 @@ export default function liveMatch(config) {
         // =============================
 
         recalculatePlayerRatings() {
+            const allEvents = [...this.events, ...(this.extraTimeEvents || [])];
+            const subMap = buildSubstitutionMap(allEvents);
+
+            // Build sub-in player list for rating calculation
+            // User bench players who entered have performance data
+            const subsIn = [];
+            for (const bp of this.benchPlayers) {
+                if (bp.performance != null && subMap.subbedIn[bp.id]) {
+                    subsIn.push({
+                        id: bp.id,
+                        performance: bp.performance,
+                        positionGroup: bp.positionGroup,
+                        teamId: this.userTeamId,
+                    });
+                }
+            }
+            // Opponent subs: check if they have performance in the roster cache
+            for (const [inId, sub] of Object.entries(subMap.subbedIn)) {
+                if (sub.teamId && sub.teamId !== this.userTeamId) {
+                    // Find performance from the cached performances (passed via roster update)
+                    const opponentRoster = this.homeTeamId === this.userTeamId
+                        ? this.awayLineupRoster : this.homeLineupRoster;
+                    // Opponent subs aren't in the roster, but may have performance from resim
+                    // We can't rate them without performance data
+                }
+            }
+
             this.playerRatings = calculatePlayerRatings(
                 this.homeLineupRoster,
                 this.awayLineupRoster,
-                this.events,
+                allEvents,
                 this.finalHomeScore,
                 this.finalAwayScore,
                 this.homeTeamId,
                 this.awayTeamId,
+                subsIn,
             );
         },
 
         ratingColor(rating) {
             return _ratingColor(rating);
+        },
+
+        getEventIcons() {
+            const allEvents = [...this.events, ...(this.extraTimeEvents || [])];
+            return countEvents(allEvents);
+        },
+
+        getSubMap() {
+            const allEvents = [...this.events, ...(this.extraTimeEvents || [])];
+            return buildSubstitutionMap(allEvents);
         },
 
         // =============================

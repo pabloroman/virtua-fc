@@ -31,7 +31,7 @@ function resolvePositionGroup(abbr) {
  * Goal events may include assistPlayerId for the assisting player.
  * (Assist events are paired with goals in formatMatchEvents, not separate entries.)
  */
-function countEvents(events) {
+export function countEvents(events) {
     const goals = {};
     const assists = {};
     const yellowCards = {};
@@ -61,6 +61,44 @@ function countEvents(events) {
 }
 
 /**
+ * Build lookup maps for substitutions from match events.
+ *
+ * @param {Array} events - Match events array
+ * @returns {{ subbedOut: Object, subbedIn: Object }}
+ *   subbedOut: { [gamePlayerId]: { minute, replacedByName, replacedById } }
+ *   subbedIn:  { [playerInId]: { minute, replacedName, name, teamId } }
+ */
+export function buildSubstitutionMap(events) {
+    const subbedOut = {};
+    const subbedIn = {};
+
+    for (const e of events) {
+        if (e.type !== 'substitution') continue;
+
+        const outId = e.gamePlayerId;
+        const inId = e.metadata?.player_in_id;
+
+        if (outId) {
+            subbedOut[outId] = {
+                minute: e.minute,
+                replacedByName: e.playerInName || '',
+                replacedById: inId || null,
+            };
+        }
+        if (inId) {
+            subbedIn[inId] = {
+                minute: e.minute,
+                replacedName: e.playerName || '',
+                name: e.playerInName || '',
+                teamId: e.teamId,
+            };
+        }
+    }
+
+    return { subbedOut, subbedIn };
+}
+
+/**
  * Calculate match ratings for all players that have performance data.
  *
  * @param {Array} homeRoster  - Home team lineup roster (each has: id, positionGroup, performance)
@@ -70,9 +108,10 @@ function countEvents(events) {
  * @param {number} awayScore  - Final away score
  * @param {string} homeTeamId - Home team ID
  * @param {string} awayTeamId - Away team ID
+ * @param {Array} [subsIn=[]] - Additional sub-in players: { id, performance, positionGroup, teamId }
  * @returns {Object} Map of playerId → rating (1.0–10.0)
  */
-export function calculatePlayerRatings(homeRoster, awayRoster, events, homeScore, awayScore, homeTeamId, awayTeamId) {
+export function calculatePlayerRatings(homeRoster, awayRoster, events, homeScore, awayScore, homeTeamId, awayTeamId, subsIn = []) {
     const ratings = {};
     const { goals, assists, yellowCards, redCards } = countEvents(events);
 
@@ -88,6 +127,7 @@ export function calculatePlayerRatings(homeRoster, awayRoster, events, homeScore
     const allPlayers = [
         ...homeRoster.map(p => ({ ...p, teamId: homeTeamId })),
         ...awayRoster.map(p => ({ ...p, teamId: awayTeamId })),
+        ...subsIn,
     ];
 
     for (const player of allPlayers) {

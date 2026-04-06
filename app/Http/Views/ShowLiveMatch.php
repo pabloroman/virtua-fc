@@ -137,6 +137,9 @@ class ShowLiveMatch
         // Batch load suspended player IDs for this competition
         $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($playerMatch->competition_id);
 
+        // Load cached performances for all players (starters + subs)
+        $playerPerformances = Cache::get("match_performances:{$playerMatch->id}", []);
+
         // Bench players (all squad players NOT in the starting lineup, not suspended, not injured)
         $matchDate = $playerMatch->scheduled_date;
         $benchPlayers = GamePlayer::with('player')
@@ -164,13 +167,11 @@ class ShowLiveMatch
                 'fitness' => $p->fitness,
                 'morale' => $p->morale,
                 'minuteEntered' => null,
+                'performance' => $playerPerformances[$p->id] ?? null,
             ])
             ->sortBy('positionSort')
             ->values()
             ->all();
-
-        // Both teams' starting lineups for the Lineups tab
-        $playerPerformances = Cache::get("match_performances:{$playerMatch->id}", []);
 
         $mapLineup = fn (array $ids) => GamePlayer::with('player')
             ->whereIn('id', $ids)
