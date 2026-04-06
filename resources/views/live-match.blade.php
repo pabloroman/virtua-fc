@@ -706,13 +706,13 @@
                                                 <span class="skew-x-12" x-text="p.positionAbbr"></span>
                                             </span>
                                             <span class="text-xs flex-1 truncate" x-text="p.name"
-                                                  :class="(phase === 'full_time' && getSubMap().subbedOut[p.id]) ? 'text-text-muted line-through' : 'text-text-body'"></span>
+                                                  :class="(phase === 'full_time' && getSubMap().subbedOut[p.id]) ? 'text-text-muted' : 'text-text-body'"></span>
                                             {{-- Event icons (full time only) --}}
                                             <template x-if="phase === 'full_time'">
                                                 <span class="flex items-center gap-0.5 shrink-0">
                                                     <template x-if="getEventIcons().goals[p.id]">
-                                                        <span class="flex items-center gap-px text-text-secondary">
-                                                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="12" cy="12" r="4" fill="currentColor"/></svg>
+                                                        <span class="flex items-center gap-px text-accent-green">
+                                                            <svg class="w-3 h-3" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="8"/></svg>
                                                             <span x-show="getEventIcons().goals[p.id] > 1" x-text="'×' + getEventIcons().goals[p.id]" class="text-[8px] font-bold"></span>
                                                         </span>
                                                     </template>
@@ -740,9 +740,8 @@
                                         {{-- Sub-in row (shown below subbed-out player) --}}
                                         <template x-if="phase === 'full_time' && getSubMap().subbedOut[p.id]">
                                             <div class="flex items-center gap-2.5 px-3 py-1.5 pl-9 rounded-lg">
-                                                <span class="flex items-center gap-0.5 text-accent-green shrink-0">
+                                                <span class="flex items-center text-accent-green shrink-0">
                                                     <svg class="w-3 h-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd" transform="rotate(180 10 10)"/></svg>
-                                                    <span class="text-[9px] font-semibold" x-text="getSubMap().subbedOut[p.id]?.minute + '\''"></span>
                                                 </span>
                                                 <span class="text-xs text-text-body flex-1 truncate" x-text="getSubMap().subbedOut[p.id]?.replacedByName"></span>
                                                 {{-- Event icons for sub-in player --}}
@@ -795,13 +794,13 @@
                                                 <span class="skew-x-12" x-text="p.positionAbbr"></span>
                                             </span>
                                             <span class="text-xs flex-1 truncate" x-text="p.name"
-                                                  :class="(phase === 'full_time' && getSubMap().subbedOut[p.id]) ? 'text-text-muted line-through' : 'text-text-body'"></span>
+                                                  :class="(phase === 'full_time' && getSubMap().subbedOut[p.id]) ? 'text-text-muted' : 'text-text-body'"></span>
                                             {{-- Event icons (full time only) --}}
                                             <template x-if="phase === 'full_time'">
                                                 <span class="flex items-center gap-0.5 shrink-0">
                                                     <template x-if="getEventIcons().goals[p.id]">
-                                                        <span class="flex items-center gap-px text-text-secondary">
-                                                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="12" cy="12" r="4" fill="currentColor"/></svg>
+                                                        <span class="flex items-center gap-px text-accent-green">
+                                                            <svg class="w-3 h-3" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="8"/></svg>
                                                             <span x-show="getEventIcons().goals[p.id] > 1" x-text="'×' + getEventIcons().goals[p.id]" class="text-[8px] font-bold"></span>
                                                         </span>
                                                     </template>
@@ -829,9 +828,8 @@
                                         {{-- Sub-in row (shown below subbed-out player) --}}
                                         <template x-if="phase === 'full_time' && getSubMap().subbedOut[p.id]">
                                             <div class="flex items-center gap-2.5 px-3 py-1.5 pl-9 rounded-lg">
-                                                <span class="flex items-center gap-0.5 text-accent-green shrink-0">
+                                                <span class="flex items-center text-accent-green shrink-0">
                                                     <svg class="w-3 h-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd" transform="rotate(180 10 10)"/></svg>
-                                                    <span class="text-[9px] font-semibold" x-text="getSubMap().subbedOut[p.id]?.minute + '\''"></span>
                                                 </span>
                                                 <span class="text-xs text-text-body flex-1 truncate" x-text="getSubMap().subbedOut[p.id]?.replacedByName"></span>
                                                 {{-- Event icons for sub-in player --}}
