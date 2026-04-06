@@ -9,7 +9,7 @@
  */
 
 // Position-scaled bonuses (rarer contributions score higher)
-const GOAL_BONUSES = { Goalkeeper: 0.50, Defender: 0.35, Midfielder: 0.25, Forward: 0.20 };
+const GOAL_BONUSES = { Goalkeeper: 0.55, Defender: 0.45, Midfielder: 0.35, Forward: 0.30 };
 const ASSIST_BONUSES = { Goalkeeper: 0.25, Defender: 0.15, Midfielder: 0.15, Forward: 0.15 };
 
 /**
@@ -165,6 +165,14 @@ export function calculatePlayerRatings(homeRoster, awayRoster, events, homeScore
         // Winning team edge
         if (winningTeamId && player.teamId === winningTeamId) {
             score += 0.08;
+        }
+
+        // Goals against penalty for losing team (linear per goal conceded)
+        const losingTeamId = homeScore !== awayScore
+            ? (homeScore < awayScore ? homeTeamId : awayTeamId)
+            : null;
+        if (losingTeamId && player.teamId === losingTeamId) {
+            score -= Math.min(teamConceded * 0.04, 0.20);
         }
 
         // Convert to 1–10 scale

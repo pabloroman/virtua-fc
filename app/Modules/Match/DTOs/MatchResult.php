@@ -22,6 +22,8 @@ readonly class MatchResult
         public Collection $events,
         public int $homePossession = 50,
         public int $awayPossession = 50,
+        public float $homeXG = 0.0,
+        public float $awayXG = 0.0,
     ) {}
 
     /**
