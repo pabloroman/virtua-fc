@@ -86,6 +86,7 @@ return [
     'waits' => [
         'redis:gameplay' => 15,
         'redis:setup' => 120,
+        'redis:cleanup' => 600,
         'redis:mail' => 300,
     ],
 
@@ -221,6 +222,18 @@ return [
             'timeout' => 30,
             'nice' => 0,
         ],
+        'supervisor-cleanup' => [
+            'connection' => 'redis',
+            'queue' => ['cleanup'],
+            'balance' => 'false',
+            'maxProcesses' => 1,
+            'maxTime' => 0,
+            'maxJobs' => 0,
+            'memory' => 256,
+            'tries' => 3,
+            'timeout' => 300,
+            'nice' => 10,
+        ],
     ],
 
     'environments' => [
@@ -240,6 +253,9 @@ return [
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
             ],
+            'supervisor-cleanup' => [
+                'maxProcesses' => 1,
+            ],
         ],
 
         'local' => [
@@ -250,6 +266,9 @@ return [
                 'maxProcesses' => 1,
             ],
             'supervisor-mail' => [
+                'maxProcesses' => 1,
+            ],
+            'supervisor-cleanup' => [
                 'maxProcesses' => 1,
             ],
         ],
