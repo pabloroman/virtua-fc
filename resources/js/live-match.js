@@ -113,6 +113,7 @@ export default function liveMatch(config) {
 
         // Player match ratings (computed client-side from performance data)
         playerRatings: {},
+        hasSeenRatings: false,
 
         // Atmosphere generation (client-side commentary)
         homeLineupRoster: config.homeLineupRoster || [],

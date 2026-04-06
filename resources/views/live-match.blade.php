@@ -105,6 +105,8 @@
                     confirmPressing: {!! Js::from(__('game.confirm_pressing')) !!},
                     confirmDefLine: {!! Js::from(__('game.confirm_def_line')) !!},
                     mvpOfTheMatch: {!! Js::from(__('game.mvp_of_the_match')) !!},
+                    tabLineups: {!! Js::from(__('game.live_tab_lineups')) !!},
+                    tabRatings: {!! Js::from(__('game.live_tab_ratings')) !!},
                 },
              })"
              x-on:keydown.escape.window="if (!tacticalPanelOpen) skipToEnd()"
@@ -327,7 +329,7 @@
 
                 {{-- Tab Navigation --}}
                 <div class="flex items-center justify-center gap-0 px-4 border-b border-border-default overflow-x-auto scrollbar-hide">
-                    @foreach(['events' => __('game.live_tab_events'), 'stats' => __('game.live_tab_stats'), 'lineups' => __('game.live_tab_lineups')] as $tab => $label)
+                    @foreach(['events' => __('game.live_tab_events'), 'stats' => __('game.live_tab_stats')] as $tab => $label)
                         <button
                             @click="activeTab = '{{ $tab }}'"
                             class="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider whitespace-nowrap border-b-2 transition-colors"
@@ -336,6 +338,19 @@
                                 : 'text-text-muted border-transparent hover:text-text-secondary'"
                         >{{ $label }}</button>
                     @endforeach
+                    {{-- Lineups / Ratings tab — label changes at full time --}}
+                    <button
+                        @click="activeTab = 'lineups'; hasSeenRatings = true"
+                        class="relative px-4 py-3 text-[11px] font-semibold uppercase tracking-wider whitespace-nowrap border-b-2 transition-colors"
+                        :class="activeTab === 'lineups'
+                            ? 'text-text-primary border-accent-blue'
+                            : 'text-text-muted border-transparent hover:text-text-secondary'"
+                    >
+                        <span x-text="phase === 'full_time' ? translations.tabRatings : translations.tabLineups"></span>
+                        <span x-show="phase === 'full_time' && Object.keys(playerRatings).length > 0 && !hasSeenRatings && activeTab !== 'lineups'"
+                              x-cloak
+                              class="absolute top-2 right-1 w-2 h-2 rounded-full bg-accent-green"></span>
+                    </button>
                     @if(count($otherMatches) > 0)
                         <button
                             @click="activeTab = 'results'"
@@ -689,9 +704,11 @@
                                             <span class="skew-x-12" x-text="p.positionAbbr"></span>
                                         </span>
                                         <span class="text-xs text-text-body flex-1 truncate" x-text="p.name"></span>
-                                        <span class="inline-flex items-center justify-center min-w-[1.5rem] h-5 rounded-full px-1 text-[9px] font-semibold shrink-0"
-                                              :class="(phase === 'full_time' && playerRatings[p.id]) ? ratingColor(playerRatings[p.id]) : 'bg-surface-700 text-text-secondary'"
-                                              x-text="(phase === 'full_time' && playerRatings[p.id]) ? playerRatings[p.id].toFixed(1) : p.overallScore"></span>
+                                        <span x-show="phase === 'full_time' && playerRatings[p.id]"
+                                              x-cloak
+                                              class="inline-flex items-center justify-center min-w-[1.5rem] h-5 rounded-full px-1 text-[9px] font-semibold shrink-0"
+                                              :class="ratingColor(playerRatings[p.id])"
+                                              x-text="playerRatings[p.id]?.toFixed(1)"></span>
                                     </div>
                                 </template>
                             </div>
@@ -715,9 +732,11 @@
                                             <span class="skew-x-12" x-text="p.positionAbbr"></span>
                                         </span>
                                         <span class="text-xs text-text-body flex-1 truncate" x-text="p.name"></span>
-                                        <span class="inline-flex items-center justify-center min-w-[1.5rem] h-5 rounded-full px-1 text-[9px] font-semibold shrink-0"
-                                              :class="(phase === 'full_time' && playerRatings[p.id]) ? ratingColor(playerRatings[p.id]) : 'bg-surface-700 text-text-secondary'"
-                                              x-text="(phase === 'full_time' && playerRatings[p.id]) ? playerRatings[p.id].toFixed(1) : p.overallScore"></span>
+                                        <span x-show="phase === 'full_time' && playerRatings[p.id]"
+                                              x-cloak
+                                              class="inline-flex items-center justify-center min-w-[1.5rem] h-5 rounded-full px-1 text-[9px] font-semibold shrink-0"
+                                              :class="ratingColor(playerRatings[p.id])"
+                                              x-text="playerRatings[p.id]?.toFixed(1)"></span>
                                     </div>
                                 </template>
                             </div>

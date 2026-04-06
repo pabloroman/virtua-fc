@@ -279,6 +279,7 @@ return [
     'live_tab_events' => 'Eventos',
     'live_tab_stats' => 'Estadísticas',
     'live_tab_lineups' => 'Alineaciones',
+    'live_tab_ratings' => 'Notas',
     'live_tab_results' => 'Resultados',
     'lineup_unknown' => 'Alineación no disponible',
     'live_stat_goals' => 'Goles',

@@ -181,7 +181,6 @@ class ShowLiveMatch
                 'positionAbbr' => PositionMapper::toAbbreviation($p->position),
                 'positionGroup' => $p->position_group,
                 'positionSort' => LineupService::positionSortOrder($p->position),
-                'overallScore' => $p->overall_score,
                 'performance' => $playerPerformances[$p->id] ?? null,
             ])
             ->sortBy('positionSort')
