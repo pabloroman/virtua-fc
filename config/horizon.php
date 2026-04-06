@@ -225,7 +225,7 @@ return [
         'supervisor-cleanup' => [
             'connection' => 'redis',
             'queue' => ['cleanup'],
-            'balance' => 'false',
+            'balance' => false,
             'maxProcesses' => 1,
             'maxTime' => 0,
             'maxJobs' => 0,
