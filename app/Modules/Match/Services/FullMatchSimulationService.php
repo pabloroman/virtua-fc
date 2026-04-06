@@ -74,6 +74,7 @@ class FullMatchSimulationService
                     'homePossession' => 50,
                     'awayPossession' => 50,
                     'competitionId' => $playerMatch->competition_id,
+                    'performances' => [],
                     'events' => [],
                 ];
 
@@ -164,6 +165,7 @@ class FullMatchSimulationService
             'awayPossession' => $result->awayPossession,
             'competitionId' => $match->competition_id,
             'mvpPlayerId' => $mvpPlayerId,
+            'performances' => $performances,
             'events' => $result->events->map(fn (MatchEventData $e) => $e->toArray())->all(),
         ];
     }
