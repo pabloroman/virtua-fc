@@ -136,13 +136,7 @@ class MatchdayOrchestrator
         $matchday = $batch['matchday'];
         $currentDate = $batch['currentDate'];
 
-        // When playerMatchOnly is true, filter batch to only the player's match
-        // (sibling AI matches in the same batch are deferred to background processing)
         $playerMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
-        if ($playerMatchOnly && $playerMatch) {
-            $matches = collect([$playerMatch]);
-            $handlers = array_intersect_key($handlers, [$playerMatch->competition_id => true]);
-        }
 
         // Determine if this is a pure AI-only batch eligible for fast resolution
         $isAIOnlyBatch = ! $playerMatch && config('match_simulation.ai_resolver_enabled', false);
@@ -197,15 +191,27 @@ class MatchdayOrchestrator
             ->map(fn ($group) => $group->pluck('game_player_id')->toArray())
             ->toArray();
 
-        if ($isAIOnlyBatch) {
+        if ($playerMatchOnly && $playerMatch) {
+            // --- Mixed batch: full simulation for player, fast AI for siblings ---
+            $siblingMatches = $matches->reject(fn ($m) => $m->id === $playerMatch->id);
+
+            $resolution = $this->fullMatchSimulation->resolveMatches(
+                collect([$playerMatch]), $game, $allPlayers, $suspendedByCompetition
+            );
+            $matchResults = $resolution['matchResults'];
+            $playerMatch = $resolution['playerMatch'];
+
+            if ($siblingMatches->isNotEmpty()) {
+                $siblingResults = $this->aiMatchResolver->resolveMatches(
+                    $siblingMatches, $allPlayers, $game, $suspendedByCompetition
+                );
+                $matchResults = array_merge($matchResults, $siblingResults);
+            }
+        } elseif ($isAIOnlyBatch) {
             // --- Fast AI resolution path ---
-            // Skips: FormationRecommender, full LineupService, MatchSimulator,
-            // AISubstitutionService, EnergyCalculator, tactical instruction selection.
-            // The AIMatchResolver handles lineup selection (with rotation) and
-            // statistical result generation in a single lightweight pass.
             $matchResults = $this->aiMatchResolver->resolveMatches($matches, $allPlayers, $game, $suspendedByCompetition);
         } else {
-            // --- Full simulation path (player-involved batches) ---
+            // --- Full simulation path ---
             $resolution = $this->fullMatchSimulation->resolveMatches($matches, $game, $allPlayers, $suspendedByCompetition);
             $matchResults = $resolution['matchResults'];
             $playerMatch = $resolution['playerMatch'];
