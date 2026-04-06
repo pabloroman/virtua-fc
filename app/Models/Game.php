@@ -316,9 +316,10 @@ class Game extends Model
     /**
      * Check if a match in the given competition is pending finalization.
      *
-     * When the user plays a live match, side effects (standings, GK stats)
-     * are deferred until finalization. Knockout/playoff generation must
-     * wait until finalization completes so it reads correct standings.
+     * When the user plays a live match, side effects (standings, GK stats,
+     * cup tie resolution) are deferred until finalization. Round generation
+     * must wait until finalization completes so it reads correct standings
+     * and all cup ties are resolved.
      */
     public function hasPendingFinalizationForCompetition(string $competitionId): bool
     {
@@ -328,7 +329,6 @@ class Game extends Model
 
         return GameMatch::where('id', $this->pending_finalization_match_id)
             ->where('competition_id', $competitionId)
-            ->whereNull('cup_tie_id')
             ->exists();
     }
 

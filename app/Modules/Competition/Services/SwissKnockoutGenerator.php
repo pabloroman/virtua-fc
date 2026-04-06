@@ -105,6 +105,10 @@ class SwissKnockoutGenerator
             }
         }
 
+        if (count($matchups) !== 8) {
+            throw new \RuntimeException("Playoff generation failed: expected 8 matchups, got " . count($matchups));
+        }
+
         return $matchups;
     }
 
@@ -146,6 +150,13 @@ class SwissKnockoutGenerator
             }
         }
 
+        if (count($matchups) !== 8) {
+            throw new \RuntimeException(
+                "R16 generation failed: expected 8 matchups, got " . count($matchups)
+                . ". Completed playoff ties: " . $playoffTies->count()
+            );
+        }
+
         return $matchups;
     }
 
@@ -162,6 +173,19 @@ class SwissKnockoutGenerator
             ->where('completed', true)
             ->pluck('winner_id')
             ->shuffle();
+
+        $expectedMatchups = match ($round) {
+            self::ROUND_QUARTER_FINALS => 4,
+            self::ROUND_SEMI_FINALS => 2,
+            default => null,
+        };
+
+        if ($expectedMatchups !== null && $winners->count() !== $expectedMatchups * 2) {
+            throw new \RuntimeException(
+                "Open draw for round {$round} failed: expected " . ($expectedMatchups * 2)
+                . " winners, got " . $winners->count()
+            );
+        }
 
         $matchups = [];
 
