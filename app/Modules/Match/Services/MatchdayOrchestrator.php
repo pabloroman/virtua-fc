@@ -336,9 +336,12 @@ class MatchdayOrchestrator
 
     private function recalculateLeaguePositions(string $gameId, $matches): void
     {
-        // Get unique league competition IDs from this batch
+        // Get unique league competition IDs from league-phase matches only.
+        // Knockout matches (cup_tie_id set) must not trigger recalculation —
+        // non-deterministic sort order for tied teams can swap positions,
+        // breaking bracket seedings that depend on stable positions.
         $leagueCompetitionIds = $matches
-            ->filter(fn ($match) => $match->competition?->isLeague())
+            ->filter(fn ($match) => $match->competition?->isLeague() && $match->cup_tie_id === null)
             ->pluck('competition_id')
             ->unique();
 
