@@ -28,6 +28,8 @@ function resolvePositionGroup(abbr) {
 /**
  * Count relevant events per player from the events array.
  * Events have: { type, gamePlayerId, teamId }
+ * Goal events may include assistPlayerId for the assisting player.
+ * (Assist events are paired with goals in formatMatchEvents, not separate entries.)
  */
 function countEvents(events) {
     const goals = {};
@@ -42,9 +44,9 @@ function countEvents(events) {
         switch (event.type) {
             case 'goal':
                 goals[id] = (goals[id] || 0) + 1;
-                break;
-            case 'assist':
-                assists[id] = (assists[id] || 0) + 1;
+                if (event.assistPlayerId) {
+                    assists[event.assistPlayerId] = (assists[event.assistPlayerId] || 0) + 1;
+                }
                 break;
             case 'yellow_card':
                 yellowCards[id] = (yellowCards[id] || 0) + 1;

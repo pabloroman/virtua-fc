@@ -695,6 +695,7 @@ class MatchResimulationService
                 $key = $event['minute'].':'.$event['teamId'];
                 if (isset($assists[$key])) {
                     $event['assistPlayerName'] = $assists[$key]->gamePlayer->player->name ?? null;
+                    $event['assistPlayerId'] = $assists[$key]->game_player_id;
                 }
             }
 

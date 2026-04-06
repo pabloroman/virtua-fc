@@ -690,8 +690,8 @@
                                         </span>
                                         <span class="text-xs text-text-body flex-1 truncate" x-text="p.name"></span>
                                         <span class="inline-flex items-center justify-center min-w-[1.5rem] h-5 rounded-full px-1 text-[9px] font-semibold shrink-0"
-                                              :class="playerRatings[p.id] ? ratingColor(playerRatings[p.id]) : 'bg-surface-700 text-text-secondary'"
-                                              x-text="playerRatings[p.id] ? playerRatings[p.id].toFixed(1) : p.overallScore"></span>
+                                              :class="(phase === 'full_time' && playerRatings[p.id]) ? ratingColor(playerRatings[p.id]) : 'bg-surface-700 text-text-secondary'"
+                                              x-text="(phase === 'full_time' && playerRatings[p.id]) ? playerRatings[p.id].toFixed(1) : p.overallScore"></span>
                                     </div>
                                 </template>
                             </div>
@@ -716,8 +716,8 @@
                                         </span>
                                         <span class="text-xs text-text-body flex-1 truncate" x-text="p.name"></span>
                                         <span class="inline-flex items-center justify-center min-w-[1.5rem] h-5 rounded-full px-1 text-[9px] font-semibold shrink-0"
-                                              :class="playerRatings[p.id] ? ratingColor(playerRatings[p.id]) : 'bg-surface-700 text-text-secondary'"
-                                              x-text="playerRatings[p.id] ? playerRatings[p.id].toFixed(1) : p.overallScore"></span>
+                                              :class="(phase === 'full_time' && playerRatings[p.id]) ? ratingColor(playerRatings[p.id]) : 'bg-surface-700 text-text-secondary'"
+                                              x-text="(phase === 'full_time' && playerRatings[p.id]) ? playerRatings[p.id].toFixed(1) : p.overallScore"></span>
                                     </div>
                                 </template>
                             </div>

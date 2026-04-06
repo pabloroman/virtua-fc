@@ -400,6 +400,11 @@ export function createMatchSimulation(ctx) {
         if (_animFrame) {
             cancelAnimationFrame(_animFrame);
         }
+
+        // Calculate player match ratings now that all events are revealed
+        if (typeof state.recalculatePlayerRatings === 'function') {
+            state.recalculatePlayerRatings();
+        }
     }
 
     // =========================================================================

@@ -260,7 +260,10 @@ export default function liveMatch(config) {
             }));
 
             // Compute initial player ratings from cached performance data
-            this.recalculatePlayerRatings();
+            // (only if match is already at full time, e.g. page refresh)
+            if (this.phase === 'full_time') {
+                this.recalculatePlayerRatings();
+            }
 
             // If ET data was preloaded (page refresh during ET), set it up
             if (this.preloadedExtraTimeData) {
