@@ -364,7 +364,11 @@ class UefaQualificationProcessor implements SeasonProcessor
         }
 
         $vacatedCompetition = $vacatedEntry->competition_id;
-        $vacatedEntry->delete();
+
+        CompetitionEntry::where('game_id', $game->id)
+            ->where('team_id', $teamId)
+            ->where('competition_id', $vacatedCompetition)
+            ->delete();
 
         // Find the team's country to look up league standings
         $team = Team::find($teamId);
