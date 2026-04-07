@@ -217,6 +217,11 @@ class GameMatch extends Model
         return $this->events()->whereIn('event_type', ['yellow_card', 'red_card']);
     }
 
+    public function isNeutralVenue(): bool
+    {
+        return $this->competition_id === 'WC2026';
+    }
+
     public function involvesTeam(string $teamId): bool
     {
         return $this->home_team_id === $teamId || $this->away_team_id === $teamId;

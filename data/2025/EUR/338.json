@@ -1,0 +1,389 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/338.png",
+  "name": "Dynamo Kyiv",
+  "players": [
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Jan 22, 2002",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "417242",
+      "marketValue": "€3.50m",
+      "name": "Ruslan Neshcheret",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "35",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 10, 2001",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "539425",
+      "marketValue": "€500k",
+      "name": "Valentyn Morgun",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "51",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 11, 2003",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "726012",
+      "name": "Denys Ignatenko",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "74",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "May 30, 2005",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "1067225",
+      "marketValue": "€9.00m",
+      "name": "Taras Mykhavko",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "32",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "Feb 17, 1999",
+      "foot": "both",
+      "height": "1,85m",
+      "id": "404841",
+      "marketValue": "€3.50m",
+      "name": "Denys Popov",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 5, 2001",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "539436",
+      "marketValue": "€1.50m",
+      "name": "Kristian Bilovar",
+      "nationality": [
+        "Ukraine",
+        "Hungary"
+      ],
+      "number": "40",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 20, 2003",
+      "foot": "left",
+      "height": "1,97m",
+      "id": "949111",
+      "marketValue": "€1.50m",
+      "name": "Aliou Thiaré",
+      "nationality": [
+        "Senegal"
+      ],
+      "number": "66",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 16, 2006",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "1074060",
+      "marketValue": "€500k",
+      "name": "Vladyslav Zakharchenko",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "34",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 10, 2002",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "636237",
+      "marketValue": "€2.50m",
+      "name": "Kostyantyn Vivcharenko",
+      "nationality": [
+        "Ukraine",
+        "Bulgaria"
+      ],
+      "number": "2",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 1, 1998",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "366723",
+      "marketValue": "€2.50m",
+      "name": "Vladyslav Dubinchak",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "44",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 20, 1997",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "287792",
+      "marketValue": "€3.50m",
+      "name": "Oleksandr Tymchyk",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "18",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 2, 1992",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "59322",
+      "marketValue": "€1.20m",
+      "name": "Oleksandr Karavaev",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "20",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 6, 2006",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "1074045",
+      "marketValue": "€600k",
+      "name": "Maksym Korobov",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "13",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 23, 2002",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "669306",
+      "marketValue": "€10.00m",
+      "name": "Volodymyr Brazhko",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 22, 2001",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "626475",
+      "marketValue": "€2.50m",
+      "name": "Mykola Mykhaylenko",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "91",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "Oct 4, 1998",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "368611",
+      "marketValue": "€8.00m",
+      "name": "Mykola Shaparenko",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "10",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 7, 1997",
+      "foot": "left",
+      "height": "1,79m",
+      "id": "294780",
+      "marketValue": "€3.00m",
+      "name": "Oleksandr Pikhalyonok",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 3, 2003",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "726019",
+      "marketValue": "€1.00m",
+      "name": "Oleksandr Yatsyk",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "5",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 6, 1993",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "167722",
+      "marketValue": "€3.00m",
+      "name": "Vitaliy Buyalskyi",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "29",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 1, 1995",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "210689",
+      "marketValue": "€3.00m",
+      "name": "Vladyslav Kabaev",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "22",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "Jan 7, 2007",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1138725",
+      "marketValue": "€1.80m",
+      "name": "Bogdan Redushko",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "70",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 22, 2005",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "998742",
+      "marketValue": "€800k",
+      "name": "Shola Ogundana",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "16",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 17, 2003",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "726034",
+      "marketValue": "€5.00m",
+      "name": "Nazar Voloshyn",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "9",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 23, 1989",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "69015",
+      "marketValue": "€1.20m",
+      "name": "Andriy Yarmolenko",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "7",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Jan 11, 2006",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "1074053",
+      "marketValue": "€6.00m",
+      "name": "Matviy Ponomarenko",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "11",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 21, 2000",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "502842",
+      "marketValue": "€3.00m",
+      "name": "Eduardo Guerrero",
+      "nationality": [
+        "Panama"
+      ],
+      "number": "39",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 12, 2002",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "706166",
+      "marketValue": "€1.50m",
+      "name": "Vladislav Blănuță",
+      "nationality": [
+        "Romania",
+        "Moldova"
+      ],
+      "number": "77",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Valeriy Lobanovsky Stadion",
+  "stadiumSeats": "16873",
+  "transfermarktId": "338"
+}

@@ -75,7 +75,7 @@ class AIMatchResolver
         'Second Striker' => 6,
         'Left Winger' => 5,
         'Right Winger' => 5,
-        'Goalkeeper' => 4,
+        'Goalkeeper' => 0,
     ];
 
     /**
@@ -131,7 +131,7 @@ class AIMatchResolver
         $awayStrength = $this->calculateTeamStrength($awayXI);
 
         // Generate scoreline
-        $neutralVenue = $match->competition_id === 'WC2026';
+        $neutralVenue = $match->isNeutralVenue();
         [$homeXG, $awayXG] = $this->calculateExpectedGoals($homeStrength, $awayStrength, $neutralVenue);
         [$homeScore, $awayScore] = $this->dixonColesRandom($homeXG, $awayXG);
 

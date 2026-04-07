@@ -1,0 +1,396 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/527.png",
+  "name": "FC Lausanne-Sport",
+  "players": [
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Feb 11, 1997",
+      "foot": "right",
+      "height": "2,01m",
+      "id": "318707",
+      "marketValue": "€1.50m",
+      "name": "Karlo Letica",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "25",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 30, 1993",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "165435",
+      "marketValue": "€100k",
+      "name": "Thomas Castella",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 22, 2003",
+      "foot": "right",
+      "height": "1,99m",
+      "id": "707657",
+      "marketValue": "€5.00m",
+      "name": "Karim Sow",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "71",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 24, 2000",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "629637",
+      "marketValue": "€1.50m",
+      "name": "Kévin Mouanga",
+      "nationality": [
+        "Congo",
+        "France"
+      ],
+      "number": "14",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 31, 2005",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "923809",
+      "marketValue": "€400k",
+      "name": "Dircssi Ngonzo",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "May 13, 2004",
+      "height": "1,86m",
+      "id": "1060759",
+      "marketValue": "€175k",
+      "name": "Rodolfo Lippo",
+      "nationality": [
+        "Finland",
+        "Belgium"
+      ],
+      "number": "54",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 15, 1997",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "272640",
+      "marketValue": "€800k",
+      "name": "Morgan Poaty",
+      "nationality": [
+        "Congo",
+        "France"
+      ],
+      "number": "18",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 25, 2003",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "668941",
+      "marketValue": "€800k",
+      "name": "Sékou Fofana",
+      "nationality": [
+        "France"
+      ],
+      "number": "93",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 21, 2004",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "1020507",
+      "marketValue": "€800k",
+      "name": "Theo Bergvall",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "6",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 13, 2003",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "668259",
+      "marketValue": "€400k",
+      "name": "Hamza Abdallah",
+      "nationality": [
+        "Comoros",
+        "France"
+      ],
+      "number": "20",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 5, 2001",
+      "foot": "left",
+      "height": "1,91m",
+      "id": "667870",
+      "marketValue": "€4.00m",
+      "name": "Jamie Roche",
+      "nationality": [
+        "Sweden",
+        "England"
+      ],
+      "number": "8",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Feb 10, 1995",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "183312",
+      "marketValue": "€400k",
+      "name": "Olivier Custodio",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "10",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Feb 3, 2006",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "1133978",
+      "marketValue": "€400k",
+      "name": "Sékou Koné",
+      "nationality": [
+        "Mali"
+      ],
+      "number": "80",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 30, 2005",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "900486",
+      "marketValue": "€2.50m",
+      "name": "Gabriel Sigua",
+      "nationality": [
+        "Georgia"
+      ],
+      "number": "38",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 16, 2000",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "382774",
+      "marketValue": "€800k",
+      "name": "Nicky Beloko",
+      "nationality": [
+        "Switzerland",
+        "Cameroon"
+      ],
+      "number": "16",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 1, 2005",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "866282",
+      "marketValue": "€300k",
+      "name": "Souleymane N'Diaye",
+      "nationality": [
+        "Switzerland",
+        "Senegal"
+      ],
+      "number": "47",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 21, 2002",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "546880",
+      "marketValue": "€1.50m",
+      "name": "Brandon Soppy",
+      "nationality": [
+        "France"
+      ],
+      "number": "2",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 11, 2005",
+      "foot": "left",
+      "height": "1,71m",
+      "id": "970137",
+      "marketValue": "€1.50m",
+      "name": "Beyatt Lekoueiry",
+      "nationality": [
+        "Mauritania"
+      ],
+      "number": "27",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 19, 1991",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "222859",
+      "marketValue": "€400k",
+      "name": "Florent Mollet",
+      "nationality": [
+        "France"
+      ],
+      "number": "91",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 7, 2008",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "1177907",
+      "marketValue": "€300k",
+      "name": "Ethan Bruchez",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "19",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 9, 1999",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "511801",
+      "marketValue": "€700k",
+      "name": "Alban Ajdini",
+      "nationality": [
+        "Kosovo",
+        "Switzerland"
+      ],
+      "number": "7",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Aug 23, 2006",
+      "foot": "both",
+      "height": "1,88m",
+      "id": "1060454",
+      "marketValue": "€4.00m",
+      "name": "Omar Janneh",
+      "nationality": [
+        "Spain",
+        "The Gambia"
+      ],
+      "number": "78",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Sep 26, 2005",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "1227723",
+      "marketValue": "€3.00m",
+      "name": "Gaoussou Diakité",
+      "nationality": [
+        "Mali"
+      ],
+      "number": "70",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 27, 1999",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "501709",
+      "marketValue": "€1.80m",
+      "name": "Theo Bair",
+      "nationality": [
+        "Canada",
+        "Jamaica"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 4, 2003",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "638964",
+      "marketValue": "€800k",
+      "name": "Nathan Butler-Oyedeji",
+      "nationality": [
+        "England"
+      ],
+      "number": "11",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 5, 2004",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "847262",
+      "marketValue": "€500k",
+      "name": "Seydou Traoré",
+      "nationality": [
+        "Cote d'Ivoire"
+      ],
+      "number": "17",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 8, 2007",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "1194813",
+      "marketValue": "€500k",
+      "name": "Enzo Kana-Biyik",
+      "nationality": [
+        "France"
+      ],
+      "number": "22",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Stade de la Tuilière",
+  "stadiumSeats": "12544",
+  "transfermarktId": "527"
+}

@@ -18,7 +18,8 @@ import { assignPlayersToSlots } from './modules/slot-assignment.js';
 import { createPenaltyShootout } from './modules/penalty-shootout.js';
 import { createSubstitutionManager } from './modules/substitution-manager.js';
 import { createMatchSimulation } from './modules/match-simulation.js';
-import { generateRegularTimeAtmosphere, generateExtraTimeAtmosphere, addGoalNarratives, generateContextualNarratives, generateTacticalNarratives } from './modules/atmosphere-generator.js';
+import { generateRegularTimeAtmosphere, generateExtraTimeAtmosphere, generateAtmosphereForPeriod, addGoalNarratives, generateContextualNarratives, generateTacticalNarratives } from './modules/atmosphere-generator.js';
+import { calculatePlayerRatings, ratingColor as _ratingColor, updateRosterPerformances, countEvents, buildSubstitutionMap } from './modules/player-ratings.js';
 
 /**
  * Copy all own properties from source to target. Regular properties are
@@ -110,6 +111,10 @@ export default function liveMatch(config) {
         mvpPlayerName: config.mvpPlayerName || null,
         mvpPlayerTeamId: config.mvpPlayerTeamId || null,
 
+        // Player match ratings (computed client-side from performance data)
+        playerRatings: {},
+        hasSeenRatings: false,
+
         // Atmosphere generation (client-side commentary)
         homeLineupRoster: config.homeLineupRoster || [],
         awayLineupRoster: config.awayLineupRoster || [],
@@ -145,6 +150,7 @@ export default function liveMatch(config) {
         pendingDefLine: null,
         applyingChanges: false,
         showingConfirmation: false,
+        tacticalError: null,
 
         // Tab state
         activeTab: 'events',
@@ -254,6 +260,12 @@ export default function liveMatch(config) {
                 homeScore: 0,
                 awayScore: 0,
             }));
+
+            // Compute initial player ratings from cached performance data
+            // (only if match is already at full time, e.g. page refresh)
+            if (this.phase === 'full_time') {
+                this.recalculatePlayerRatings();
+            }
 
             // If ET data was preloaded (page refresh during ET), set it up
             if (this.preloadedExtraTimeData) {
@@ -502,6 +514,7 @@ export default function liveMatch(config) {
             this.resetSubstitutions();
             this.resetTactics();
             this.showingConfirmation = false;
+            this.tacticalError = null;
         },
 
         getOptionLabel(options, value) {
@@ -582,6 +595,7 @@ export default function liveMatch(config) {
         },
 
         showConfirmation() {
+            this.tacticalError = null;
             this.showingConfirmation = true;
         },
 
@@ -595,7 +609,18 @@ export default function liveMatch(config) {
                 this.addPendingSub();
             }
 
-            if (!this.hasPendingChanges || this.applyingChanges) return;
+            if (this.applyingChanges) return;
+
+            if (!this.hasPendingChanges) {
+                if (this.showingConfirmation) {
+                    this.tacticalError = this.translations.tacticalErrorNoPending
+                        || 'No changes to apply.';
+                    this.showingConfirmation = false;
+                }
+                return;
+            }
+
+            this.tacticalError = null;
             this.applyingChanges = true;
 
             const minute = Math.floor(this.currentMinute);
@@ -653,8 +678,18 @@ export default function liveMatch(config) {
                 });
 
                 if (!response.ok) {
-                    const error = await response.json();
-                    console.error('Tactical actions failed:', error);
+                    let errorMessage = this.translations.tacticalErrorGeneric
+                        || 'Something went wrong. Please try again.';
+                    try {
+                        const errorData = await response.json();
+                        console.error('Tactical actions failed:', errorData);
+                        if (errorData.error) {
+                            errorMessage = errorData.error;
+                        }
+                    } catch (parseErr) {
+                        console.error('Tactical actions failed (non-JSON response):', response.status);
+                    }
+                    this.tacticalError = errorMessage;
                     this.applyingChanges = false;
                     return;
                 }
@@ -708,13 +743,13 @@ export default function liveMatch(config) {
                     this.activeDefLine = result.defensiveLine;
                 }
 
-                // Filter server events up to current minute, but keep decorative atmosphere
-                // (shots/fouls). Contextual narratives are removed and regenerated below.
-                const isAtmosphere = (e) => e.type === 'shot_on_target' || e.type === 'shot_off_target' || e.type === 'foul';
+                // Filter server events up to current minute. Atmosphere events
+                // (shots/fouls) beyond this minute are discarded and regenerated
+                // below so they reflect substitutions and tactical changes.
                 if (isET) {
-                    this.extraTimeEvents = this.extraTimeEvents.filter(e => e.minute <= minute || isAtmosphere(e));
+                    this.extraTimeEvents = this.extraTimeEvents.filter(e => e.minute <= minute);
                 } else {
-                    this.events = this.events.filter(e => e.minute <= minute || isAtmosphere(e));
+                    this.events = this.events.filter(e => e.minute <= minute);
                     // Remove contextual narratives — they'll be freshly regenerated
                     // below to reflect the post-resimulation score.
                     this.events = this.events.filter(e => e.type !== 'contextual');
@@ -730,6 +765,44 @@ export default function liveMatch(config) {
                             playerInName: sub.playerInName,
                             teamId: sub.teamId,
                         });
+                    }
+
+                    // Also add substitution events to the main events array so
+                    // the atmosphere generator can track who is on/off the pitch.
+                    const subEvents = result.substitutions.map(sub => ({
+                        minute,
+                        type: 'substitution',
+                        playerName: sub.playerOutName,
+                        playerInName: sub.playerInName,
+                        teamId: sub.teamId,
+                        gamePlayerId: sub.playerOutId,
+                        metadata: { player_in_id: sub.playerInId },
+                    }));
+
+                    if (isET) {
+                        this.extraTimeEvents.push(...subEvents);
+                    } else {
+                        this.events.push(...subEvents);
+                    }
+                }
+
+                // Regenerate atmosphere events (shots/fouls) for the remaining
+                // match period, now aware of substitutions.
+                const atmCfg = this._atmosphereConfig();
+                const atmMaxMinute = isET ? 120 : 90;
+                const freshAtmosphere = generateAtmosphereForPeriod({
+                    ...atmCfg,
+                    allEvents: isET ? [...this.events, ...this.extraTimeEvents] : this.events,
+                    minMinute: minute + 1,
+                    maxMinute: atmMaxMinute,
+                });
+                if (freshAtmosphere.length) {
+                    if (isET) {
+                        this.extraTimeEvents.push(...freshAtmosphere);
+                        this.extraTimeEvents.sort((a, b) => a.minute - b.minute);
+                    } else {
+                        this.events.push(...freshAtmosphere);
+                        this.events.sort((a, b) => a.minute - b.minute);
                     }
                 }
 
@@ -798,10 +871,18 @@ export default function liveMatch(config) {
                     this.resetPossessionTarget();
                 }
 
+                // Update player performances and recalculate ratings
+                if (result.playerPerformances) {
+                    updateRosterPerformances(this.homeLineupRoster, this.awayLineupRoster, result.playerPerformances);
+                    this.recalculatePlayerRatings();
+                }
+
                 // Close the panel and resume
                 this.closeTacticalPanel();
             } catch (err) {
                 console.error('Tactical actions request failed:', err);
+                this.tacticalError = this.translations.tacticalErrorGeneric
+                    || 'Something went wrong. Please try again.';
             } finally {
                 this.applyingChanges = false;
             }
@@ -819,6 +900,64 @@ export default function liveMatch(config) {
 
 
         // recalculateScore — provided by match-simulation module
+
+        // =============================
+        // Player ratings
+        // =============================
+
+        recalculatePlayerRatings() {
+            const allEvents = [...this.events, ...(this.extraTimeEvents || [])];
+            const subMap = buildSubstitutionMap(allEvents);
+
+            // Build sub-in player list for rating calculation
+            // User bench players who entered have performance data
+            const subsIn = [];
+            for (const bp of this.benchPlayers) {
+                if (bp.performance != null && subMap.subbedIn[bp.id]) {
+                    subsIn.push({
+                        id: bp.id,
+                        performance: bp.performance,
+                        positionGroup: bp.positionGroup,
+                        teamId: this.userTeamId,
+                    });
+                }
+            }
+            // Opponent subs: check if they have performance in the roster cache
+            for (const [inId, sub] of Object.entries(subMap.subbedIn)) {
+                if (sub.teamId && sub.teamId !== this.userTeamId) {
+                    // Find performance from the cached performances (passed via roster update)
+                    const opponentRoster = this.homeTeamId === this.userTeamId
+                        ? this.awayLineupRoster : this.homeLineupRoster;
+                    // Opponent subs aren't in the roster, but may have performance from resim
+                    // We can't rate them without performance data
+                }
+            }
+
+            this.playerRatings = calculatePlayerRatings(
+                this.homeLineupRoster,
+                this.awayLineupRoster,
+                allEvents,
+                this.finalHomeScore,
+                this.finalAwayScore,
+                this.homeTeamId,
+                this.awayTeamId,
+                subsIn,
+            );
+        },
+
+        ratingColor(rating) {
+            return _ratingColor(rating);
+        },
+
+        getEventIcons() {
+            const allEvents = [...this.events, ...(this.extraTimeEvents || [])];
+            return countEvents(allEvents);
+        },
+
+        getSubMap() {
+            const allEvents = [...this.events, ...(this.extraTimeEvents || [])];
+            return buildSubstitutionMap(allEvents);
+        },
 
         // =============================
         // Display helpers

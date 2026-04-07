@@ -44,6 +44,15 @@
         </svg>
         {{ __('admin.nav_game_stats') }}
     </a>
+
+    <a href="{{ route('admin.tech-tools') }}"
+       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium min-h-[44px] transition-colors
+              {{ request()->routeIs('admin.tech-tools') ? 'bg-surface-700 text-text-primary' : 'text-text-muted hover:text-text-secondary hover:bg-surface-700/50' }}">
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21.75 6.75a4.5 4.5 0 01-4.884 4.484c-1.076-.091-2.264.071-2.95.904l-7.152 8.684a2.548 2.548 0 11-3.586-3.586l8.684-7.152c.833-.686.995-1.874.904-2.95a4.5 4.5 0 016.336-4.486l-3.276 3.276a3.004 3.004 0 002.25 2.25l3.276-3.276c.256.565.398 1.192.398 1.852z" />
+        </svg>
+        {{ __('admin.nav_tech_tools') }}
+    </a>
     @endif
 
     <a href="{{ route('editor.player-templates.index') }}"

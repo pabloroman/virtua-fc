@@ -21,7 +21,7 @@ class DeleteGameJob implements ShouldQueue
     public function __construct(
         public string $gameId,
     ) {
-        $this->onQueue('setup');
+        $this->onQueue('cleanup');
     }
 
     public function handle(): void
@@ -42,12 +42,11 @@ class DeleteGameJob implements ShouldQueue
             ->pluck('game_players.player_id')
             ->all();
 
-        // Explicit bottom-up deletion: children before parents, each in its own
-        // transaction. This avoids a single massive CASCADE transaction, reducing
-        // lock contention and WAL pressure.
+        // Explicit bottom-up deletion: children before parents. Large tables
+        // are deleted in batches to reduce lock duration and WAL pressure.
 
         // Tier 3: deepest children (depend on game_matches / game_players)
-        DB::table('match_events')->where('game_id', $this->gameId)->delete();
+        $this->deleteInBatches('match_events');
         DB::table('player_suspensions')
             ->whereIn('game_player_id', function ($q) {
                 $q->select('id')->from('game_players')->where('game_id', $this->gameId);
@@ -63,9 +62,9 @@ class DeleteGameJob implements ShouldQueue
         DB::table('financial_transactions')->where('game_id', $this->gameId)->delete();
 
         // Tier 1: direct children of games
-        DB::table('game_matches')->where('game_id', $this->gameId)->delete();
-        DB::table('game_players')->where('game_id', $this->gameId)->delete();
-        DB::table('game_notifications')->where('game_id', $this->gameId)->delete();
+        $this->deleteInBatches('game_matches');
+        $this->deleteInBatches('game_players');
+        $this->deleteInBatches('game_notifications');
         DB::table('game_standings')->where('game_id', $this->gameId)->delete();
         DB::table('game_finances')->where('game_id', $this->gameId)->delete();
         DB::table('game_investments')->where('game_id', $this->gameId)->delete();
@@ -96,5 +95,22 @@ class DeleteGameJob implements ShouldQueue
                     ->delete();
             }
         }
+    }
+
+    /**
+     * Delete rows in batches to reduce lock duration on large tables.
+     */
+    private function deleteInBatches(string $table, int $batchSize = 500): void
+    {
+        do {
+            $deleted = DB::table($table)
+                ->whereIn('id', function ($q) use ($table, $batchSize) {
+                    $q->select('id')
+                        ->from($table)
+                        ->where('game_id', $this->gameId)
+                        ->limit($batchSize);
+                })
+                ->delete();
+        } while ($deleted >= $batchSize);
     }
 }

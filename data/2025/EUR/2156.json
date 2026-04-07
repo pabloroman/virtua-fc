@@ -1,0 +1,463 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/2156.png",
+  "name": "AEK Larnaca",
+  "players": [
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Jun 15, 1991",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "47594",
+      "marketValue": "€250k",
+      "name": "Zlatan Alomerovic",
+      "nationality": [
+        "Serbia",
+        "Germany"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Jul 26, 2003",
+      "foot": "left",
+      "height": "1,93m",
+      "id": "605779",
+      "marketValue": "€250k",
+      "name": "Kewin Komar",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "12",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Jan 15, 1999",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "399664",
+      "marketValue": "€200k",
+      "name": "Dimitris Dimitriou",
+      "nationality": [
+        "Cyprus"
+      ],
+      "number": "99",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Sep 15, 1998",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "341023",
+      "marketValue": "€125k",
+      "name": "Andreas Paraskevas",
+      "nationality": [
+        "Cyprus"
+      ],
+      "number": "51",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Apr 20, 1993",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "157167",
+      "marketValue": "€600k",
+      "name": "Hrvoje Milicevic",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Croatia"
+      ],
+      "number": "15",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Apr 27, 1992",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "85372",
+      "marketValue": "€275k",
+      "name": "Enric Saborit",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Jun 9, 1987",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "87422",
+      "marketValue": "€50k",
+      "name": "Valentin Roberge",
+      "nationality": [
+        "Cyprus",
+        "France"
+      ],
+      "number": "27",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Jun 27, 1998",
+      "foot": "left",
+      "height": "1,71m",
+      "id": "366707",
+      "marketValue": "€1.60m",
+      "name": "Yahav Gurfinkel",
+      "nationality": [
+        "Israel",
+        "Hungary"
+      ],
+      "number": "13",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Oct 22, 1993",
+      "foot": "left",
+      "height": "1,65m",
+      "id": "337946",
+      "marketValue": "€450k",
+      "name": "Jairo Izquierdo",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "23",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Feb 3, 1993",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "246278",
+      "marketValue": "€275k",
+      "name": "Ángel García",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "14",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "May 14, 1995",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "223727",
+      "marketValue": "€1.00m",
+      "name": "Godswill Ekpolo",
+      "nationality": [
+        "Nigeria",
+        "Spain"
+      ],
+      "number": "22",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Jan 20, 1999",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "507160",
+      "marketValue": "€325k",
+      "name": "Petros Ioannou",
+      "nationality": [
+        "Cyprus"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Feb 1, 2007",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1112133",
+      "name": "Maximos Petousis",
+      "nationality": [
+        "Cyprus"
+      ],
+      "number": "42",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Feb 9, 1995",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "203970",
+      "marketValue": "€600k",
+      "name": "Charalampos Kyriakou",
+      "nationality": [
+        "Cyprus"
+      ],
+      "number": "25",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Sep 28, 1992",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "139352",
+      "marketValue": "€500k",
+      "name": "Gus Ledes",
+      "nationality": [
+        "Portugal",
+        "Brazil"
+      ],
+      "number": "7",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Feb 20, 1993",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "242497",
+      "marketValue": "€650k",
+      "name": "Pere Pons",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "17",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Dec 31, 1996",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "595781",
+      "marketValue": "€400k",
+      "name": "Jimmy Suárez",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "6",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "May 11, 1991",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "205809",
+      "marketValue": "€400k",
+      "name": "Marcus Rohdén",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Jun 8, 2008",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1197100",
+      "name": "Christodoulos Thoma",
+      "nationality": [
+        "Cyprus"
+      ],
+      "number": "35",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Jun 2, 1989",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "228917",
+      "marketValue": "€200k",
+      "name": "Jorge Miramón",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "21",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 5, 1997",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "339584",
+      "marketValue": "€1.00m",
+      "name": "Robert Mudrazija",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "32",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 25, 2003",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "719737",
+      "marketValue": "€400k",
+      "name": "Álex Cardero",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "86",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Feb 21, 2001",
+      "foot": "left",
+      "height": "1,79m",
+      "id": "511876",
+      "marketValue": "€275k",
+      "name": "Giorgos Naoum",
+      "nationality": [
+        "Cyprus"
+      ],
+      "number": "29",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Nov 20, 1995",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "358845",
+      "marketValue": "€1.00m",
+      "name": "Djordje Ivanovic",
+      "nationality": [
+        "Serbia",
+        "Croatia"
+      ],
+      "number": "9",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Jun 4, 2003",
+      "foot": "right",
+      "height": "1,69m",
+      "id": "633724",
+      "marketValue": "€750k",
+      "name": "Yerson Chacón",
+      "nationality": [
+        "Venezuela"
+      ],
+      "number": "18",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Aug 21, 2003",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "684307",
+      "marketValue": "€600k",
+      "name": "Youssef Amyn",
+      "nationality": [
+        "Iraq",
+        "Germany"
+      ],
+      "number": "20",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Aug 17, 1995",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "404688",
+      "marketValue": "€550k",
+      "name": "Waldo Rubio",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "10",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Nov 2, 2009",
+      "foot": "left",
+      "height": "1,79m",
+      "id": "1374131",
+      "name": "David Gerasimou",
+      "nationality": [
+        "Cyprus",
+        "Lithuania"
+      ],
+      "number": "37",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "May 7, 2005",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1015621",
+      "marketValue": "€100k",
+      "name": "Mathias Gonzalez",
+      "nationality": [
+        "Venezuela",
+        "Italy"
+      ],
+      "number": "41",
+      "position": "Second Striker"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Nov 20, 1999",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "538527",
+      "marketValue": "€1.00m",
+      "name": "Enzo Cabrera",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "30",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "May 6, 1994",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "263267",
+      "marketValue": "€400k",
+      "name": "Riad Bajic",
+      "nationality": [
+        "Bosnia-Herzegovina"
+      ],
+      "number": "11",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 14, 2007",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "1078685",
+      "name": "Christos Loukaidis",
+      "nationality": [
+        "Cyprus"
+      ],
+      "number": "36",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "AEK Arena - Georgios Karapatakis",
+  "stadiumSeats": "8058",
+  "transfermarktId": "2156"
+}

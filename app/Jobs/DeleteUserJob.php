@@ -16,7 +16,7 @@ class DeleteUserJob implements ShouldQueue
     public function __construct(
         public int $userId,
     ) {
-        $this->onQueue('setup');
+        $this->onQueue('cleanup');
     }
 
     public function handle(): void

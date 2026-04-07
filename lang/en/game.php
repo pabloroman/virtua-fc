@@ -254,6 +254,8 @@ return [
     'live_kick_off' => 'Kick off',
     'live_about_to_start' => 'The match is about to begin...',
     'live_goal' => 'Goal',
+    'live_penalty_goal' => 'Penalty',
+    'live_penalty_missed' => 'Penalty missed',
     'live_yellow_card' => 'Yellow card',
     'live_red_card' => 'Red card',
     'live_second_yellow' => 'Second yellow',
@@ -277,6 +279,7 @@ return [
     'live_tab_events' => 'Events',
     'live_tab_stats' => 'Stats',
     'live_tab_lineups' => 'Lineups',
+    'live_tab_ratings' => 'Ratings',
     'live_tab_results' => 'Results',
     'lineup_unknown' => 'No lineup known',
     'live_stat_goals' => 'Goals',
@@ -348,6 +351,8 @@ return [
     'tactical_reset_all' => 'Reset all',
     'positions_apply' => 'Apply positions',
     'tactical_no_changes' => 'No tactical changes to apply.',
+    'tactical_error_generic' => 'Something went wrong applying your changes. Please try again.',
+    'tactical_error_no_pending' => 'No changes to apply. Please modify your tactics and try again.',
     'tactical_unsaved_changes' => 'You have unsubmitted changes. Close anyway?',
     'confirm_title' => 'Review changes',
     'confirm_subs_heading' => 'Substitutions',
@@ -485,6 +490,7 @@ return [
     // MVP
     'mvp' => 'MVP',
     'mvp_of_the_match' => 'MVP of the Match',
+    'match_rating' => 'Match Rating',
 
     // xG Preview
     'xg_preview' => 'xG Preview',

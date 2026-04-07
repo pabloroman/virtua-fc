@@ -5,14 +5,10 @@ namespace App\Modules\Match\Services;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\TeamReputation;
-use App\Modules\Lineup\Enums\DefensiveLineHeight;
-use App\Modules\Lineup\Enums\Formation;
-use App\Modules\Lineup\Enums\Mentality;
-use App\Modules\Lineup\Enums\PlayingStyle;
-use App\Modules\Lineup\Enums\PressingIntensity;
 use App\Modules\Lineup\Services\LineupService;
 use App\Modules\Match\DTOs\MatchEventData;
 use App\Modules\Match\DTOs\MatchResult;
+use App\Modules\Match\DTOs\TacticalConfig;
 use App\Modules\Notification\Services\NotificationService;
 use Illuminate\Support\Collection;
 
@@ -78,6 +74,7 @@ class FullMatchSimulationService
                     'homePossession' => 50,
                     'awayPossession' => 50,
                     'competitionId' => $playerMatch->competition_id,
+                    'performances' => [],
                     'events' => [],
                 ];
 
@@ -120,28 +117,9 @@ class FullMatchSimulationService
         $homeBenchPlayers = $isUserHome ? null : $this->getBenchPlayers($match, $allPlayers, 'home', $game);
         $awayBenchPlayers = ($isUserMatch && ! $isUserHome) ? null : $this->getBenchPlayers($match, $allPlayers, 'away', $game);
 
-        $homeFormation = Formation::tryFrom($match->home_formation) ?? Formation::F_4_3_3;
-        $awayFormation = Formation::tryFrom($match->away_formation) ?? Formation::F_4_3_3;
-        $homeMentality = Mentality::tryFrom($match->home_mentality ?? '') ?? Mentality::BALANCED;
-        $awayMentality = Mentality::tryFrom($match->away_mentality ?? '') ?? Mentality::BALANCED;
-
-        $homePlayingStyle = PlayingStyle::tryFrom($match->home_playing_style ?? '') ?? PlayingStyle::BALANCED;
-        $awayPlayingStyle = PlayingStyle::tryFrom($match->away_playing_style ?? '') ?? PlayingStyle::BALANCED;
-        $homePressing = PressingIntensity::tryFrom($match->home_pressing ?? '') ?? PressingIntensity::STANDARD;
-        $awayPressing = PressingIntensity::tryFrom($match->away_pressing ?? '') ?? PressingIntensity::STANDARD;
-        $homeDefLine = DefensiveLineHeight::tryFrom($match->home_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
-        $awayDefLine = DefensiveLineHeight::tryFrom($match->away_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
-
-        // Neutralize tactical instructions for AI-vs-AI matches — these only
-        // add meaningful complexity for user-involved matches. Formation and
-        // mentality still apply to differentiate AI teams.
+        $tc = TacticalConfig::fromMatch($match);
         if (! $isUserMatch) {
-            $homePlayingStyle = PlayingStyle::BALANCED;
-            $awayPlayingStyle = PlayingStyle::BALANCED;
-            $homePressing = PressingIntensity::STANDARD;
-            $awayPressing = PressingIntensity::STANDARD;
-            $homeDefLine = DefensiveLineHeight::NORMAL;
-            $awayDefLine = DefensiveLineHeight::NORMAL;
+            $tc = $tc->neutralized();
         }
 
         $output = $this->matchSimulator->simulate(
@@ -149,21 +127,21 @@ class FullMatchSimulationService
             $match->awayTeam,
             $homePlayers,
             $awayPlayers,
-            $homeFormation,
-            $awayFormation,
-            $homeMentality,
-            $awayMentality,
+            $tc->homeFormation,
+            $tc->awayFormation,
+            $tc->homeMentality,
+            $tc->awayMentality,
             $game,
-            $homePlayingStyle,
-            $awayPlayingStyle,
-            $homePressing,
-            $awayPressing,
-            $homeDefLine,
-            $awayDefLine,
+            $tc->homePlayingStyle,
+            $tc->awayPlayingStyle,
+            $tc->homePressing,
+            $tc->awayPressing,
+            $tc->homeDefLine,
+            $tc->awayDefLine,
             $homeBenchPlayers,
             $awayBenchPlayers,
             matchSeed: $match->id,
-            neutralVenue: $match->competition_id === 'WC2026',
+            neutralVenue: $match->isNeutralVenue(),
         );
 
         $result = $output->result;
@@ -187,6 +165,7 @@ class FullMatchSimulationService
             'awayPossession' => $result->awayPossession,
             'competitionId' => $match->competition_id,
             'mvpPlayerId' => $mvpPlayerId,
+            'performances' => $performances,
             'events' => $result->events->map(fn (MatchEventData $e) => $e->toArray())->all(),
         ];
     }
@@ -256,7 +235,7 @@ class FullMatchSimulationService
         };
 
         // Position-scaled event bonuses (rarer contributions score higher)
-        $goalBonuses = ['Goalkeeper' => 0.50, 'Defender' => 0.35, 'Midfielder' => 0.25, 'Forward' => 0.20];
+        $goalBonuses = ['Goalkeeper' => 0.55, 'Defender' => 0.45, 'Midfielder' => 0.35, 'Forward' => 0.30];
         $assistBonuses = ['Goalkeeper' => 0.25, 'Defender' => 0.15, 'Midfielder' => 0.15, 'Forward' => 0.15];
 
         // Count events per player
@@ -324,6 +303,16 @@ class FullMatchSimulationService
             $isWinner = $winningTeamId !== null && $teamId === $winningTeamId;
             if ($isWinner) {
                 $score += 0.08;
+            }
+
+            // Goals against penalty for losing team (linear per goal conceded)
+            $losingTeamId = match (true) {
+                $result->homeScore > $result->awayScore => $awayTeamId,
+                $result->awayScore > $result->homeScore => $homeTeamId,
+                default => null,
+            };
+            if ($losingTeamId !== null && $teamId === $losingTeamId) {
+                $score -= min($teamConceded * 0.04, 0.20);
             }
 
             // Tiebreak: prefer the player from the winning team

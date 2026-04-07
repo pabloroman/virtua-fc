@@ -1,0 +1,377 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/1109.png",
+  "name": "BK Häcken",
+  "players": [
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "Sep 16, 2003",
+      "height": "1,87m",
+      "id": "1125081",
+      "marketValue": "€650k",
+      "name": "David Andersson",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "35",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jul 24, 1993",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "199221",
+      "marketValue": "€250k",
+      "name": "Andreas Linde",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Mar 10, 1989",
+      "foot": "left",
+      "height": "1,94m",
+      "id": "77825",
+      "marketValue": "€200k",
+      "name": "Etrit Berisha",
+      "nationality": [
+        "Albania",
+        "Sweden"
+      ],
+      "number": "99",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 23, 1997",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "309439",
+      "marketValue": "€1.00m",
+      "name": "Leo Väisänen",
+      "nationality": [
+        "Finland"
+      ],
+      "number": "15",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Apr 22, 1993",
+      "foot": "left",
+      "height": "1,92m",
+      "id": "198067",
+      "marketValue": "€500k",
+      "name": "Filip Helander",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "22",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Feb 22, 1994",
+      "foot": "right",
+      "height": "1,97m",
+      "id": "156937",
+      "marketValue": "€400k",
+      "name": "Johan Hammar",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "May 16, 2004",
+      "height": "1,90m",
+      "id": "944095",
+      "marketValue": "€400k",
+      "name": "Olle Samuelsson",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "23",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "Oct 6, 2007",
+      "height": "1,85m",
+      "id": "1177723",
+      "marketValue": "€100k",
+      "name": "Harry Hilvenius",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "44",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Mar 20, 1994",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "225676",
+      "marketValue": "€650k",
+      "name": "Adam Lundkvist",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "21",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 18, 1996",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "331214",
+      "marketValue": "€1.00m",
+      "name": "Brice Wembangomo",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "5",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 26, 2008",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "1172422",
+      "marketValue": "€1.00m",
+      "name": "Filip Öhman",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "28",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Sep 17, 2003",
+      "id": "692608",
+      "marketValue": "€100k",
+      "name": "Ben Engdahl",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "17",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Jun 13, 2004",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "685657",
+      "marketValue": "€2.00m",
+      "name": "Silas Andersen",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "8",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Oct 27, 2007",
+      "id": "1519157",
+      "marketValue": "€100k",
+      "name": "Abdoulaye Doumbia",
+      "nationality": [
+        "Cote d'Ivoire"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Jul 4, 2004",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "875631",
+      "marketValue": "€800k",
+      "name": "Sanders Ngabo",
+      "nationality": [
+        "Denmark",
+        "Burundi"
+      ],
+      "number": "7",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jul 15, 1999",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "665582",
+      "marketValue": "€400k",
+      "name": "David Seger",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "19",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Dec 25, 1990",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "51349",
+      "marketValue": "€350k",
+      "name": "Mikkel Rygaard",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "10",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Jun 4, 2007",
+      "id": "1138039",
+      "name": "Malte Ljungkull",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "40",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Oct 11, 2005",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "1065043",
+      "marketValue": "€2.50m",
+      "name": "Pontus Dahbo",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "16",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Jan 4, 1999",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "728722",
+      "marketValue": "€1.20m",
+      "name": "Julius Lindberg",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "11",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 24, 1999",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "866082",
+      "marketValue": "€700k",
+      "name": "Danilo Al-Saed",
+      "nationality": [
+        "Iraq",
+        "Sweden"
+      ],
+      "number": "18",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 24, 2005",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "1057820",
+      "marketValue": "€4.50m",
+      "name": "Jeremy Agbonifo",
+      "nationality": [
+        "Sweden",
+        "Nigeria"
+      ],
+      "number": "14",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 3, 1992",
+      "foot": "left",
+      "height": "1,91m",
+      "id": "208880",
+      "marketValue": "€650k",
+      "name": "Amor Layouni",
+      "nationality": [
+        "Tunisia",
+        "Sweden"
+      ],
+      "number": "24",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Jul 11, 2006",
+      "id": "1433084",
+      "name": "Sabri Kondo",
+      "nationality": [
+        "Tanzania"
+      ],
+      "number": "25",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jun 9, 2007",
+      "foot": "right",
+      "id": "1270792",
+      "name": "Christ Wawa",
+      "nationality": [
+        "Cote d'Ivoire"
+      ],
+      "number": "27",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Jun 8, 2004",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "1018784",
+      "marketValue": "€1.20m",
+      "name": "Adrian Svanbäck",
+      "nationality": [
+        "Finland",
+        "Sweden"
+      ],
+      "number": "20",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Aug 16, 2001",
+      "foot": "right",
+      "id": "900199",
+      "marketValue": "€600k",
+      "name": "Gustav Lindgren",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Nordic Wellness Arena",
+  "stadiumSeats": "6316",
+  "transfermarktId": "1109"
+}

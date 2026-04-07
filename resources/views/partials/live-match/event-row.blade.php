@@ -2,7 +2,7 @@
 <template x-if="isAtmosphereEvent(event)">
     <div class="flex gap-2 items-baseline w-full">
         <span class="font-heading font-bold text-xs text-text-muted w-8 text-right shrink-0 tabular-nums"
-              x-text="event.minute + '\''"></span>
+              x-text="Math.floor(event.minute) + '\''"></span>
         <span class="text-xs text-text-muted leading-tight" x-text="event.metadata?.narrative || event.playerName"></span>
     </div>
 </template>
@@ -11,7 +11,7 @@
 <template x-if="!isAtmosphereEvent(event)">
     <div class="flex gap-3 w-full" :class="event.type === 'substitution_group' ? 'items-start' : 'items-center'">
         <span class="font-heading font-bold text-xs text-text-muted w-8 text-right shrink-0 tabular-nums"
-              x-text="event.minute + '\''"></span>
+              x-text="Math.floor(event.minute) + '\''"></span>
         <span class="w-6 text-center shrink-0 flex items-center justify-center"
               x-show="event.type === 'goal'">
             <svg class="w-3.5 h-3.5 text-accent-green" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="8"/></svg>
@@ -29,6 +29,10 @@
             <div class="w-2.5 h-3.5 rounded-[2px] bg-accent-red"></div>
         </span>
         <span class="w-6 text-center shrink-0 flex items-center justify-center"
+              x-show="event.type === 'penalty_missed'">
+            <svg class="w-3.5 h-3.5 text-text-muted" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="8"/></svg>
+        </span>
+        <span class="w-6 text-center shrink-0 flex items-center justify-center"
               x-show="event.type === 'injury'">
             <svg class="w-3.5 h-3.5 text-accent-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
         </span>
@@ -44,7 +48,7 @@
                 <div>
                     <span class="font-semibold text-xs text-text-primary" x-text="event.type === 'substitution' ? event.playerInName : event.playerName"></span>
                     <template x-if="event.type === 'goal'">
-                        <span class="text-[10px] text-text-muted ml-1">{{ __('game.live_goal') }}</span>
+                        <span class="text-[10px] text-text-muted ml-1" x-text="event.metadata?.is_penalty ? '{{ __('game.live_penalty_goal') }}' : '{{ __('game.live_goal') }}'"></span>
                     </template>
                     <template x-if="event.type === 'own_goal'">
                         <span class="text-[10px] text-accent-red ml-1">({{ __('game.og') }})</span>
@@ -54,6 +58,9 @@
                     </template>
                     <template x-if="event.type === 'red_card'">
                         <span class="text-[10px] text-accent-red ml-1" x-text="event.metadata?.second_yellow ? '{{ __('game.live_second_yellow') }}' : '{{ __('game.live_red_card') }}'"></span>
+                    </template>
+                    <template x-if="event.type === 'penalty_missed'">
+                        <span class="text-[10px] text-text-muted ml-1">{{ __('game.live_penalty_missed') }}</span>
                     </template>
                     <template x-if="event.type === 'injury'">
                         <span class="text-[10px] text-accent-orange ml-1">{{ __('game.live_injury') }}</span>

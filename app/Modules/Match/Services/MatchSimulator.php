@@ -89,7 +89,7 @@ class MatchSimulator
         'Second Striker' => 6,
         'Left Winger' => 5,
         'Right Winger' => 5,
-        'Goalkeeper' => 4,
+        'Goalkeeper' => 0,
     ];
 
     /**
@@ -260,6 +260,8 @@ class MatchSimulator
         $allEvents = collect();
         $totalHomeScore = 0;
         $totalAwayScore = 0;
+        $totalHomeXG = 0.0;
+        $totalAwayXG = 0.0;
         $currentMinute = 0;
         $homeEntryMinutes = [];
         $awayEntryMinutes = [];
@@ -298,12 +300,15 @@ class MatchSimulator
                 awayExistingSubstitutions: $awaySubsUsed,
                 preservePerformance: true,
                 toMinute: $splitMinute,
+                skipXGAdjustment: true,
             );
 
             $periodResult = $periodOutput->result;
             $allEvents = $allEvents->merge($periodResult->events);
             $totalHomeScore += $periodResult->homeScore;
             $totalAwayScore += $periodResult->awayScore;
+            $totalHomeXG += $periodResult->homeXG;
+            $totalAwayXG += $periodResult->awayXG;
 
             // Track injuries, yellow cards, and injury auto-subs from this period
             foreach ($periodResult->events as $event) {
@@ -384,18 +389,29 @@ class MatchSimulator
             homeExistingSubstitutions: $homeSubsUsed,
             awayExistingSubstitutions: $awaySubsUsed,
             preservePerformance: true,
+            skipXGAdjustment: true,
         );
 
         $finalResult = $finalOutput->result;
         $allEvents = $allEvents->merge($finalResult->events);
         $totalHomeScore += $finalResult->homeScore;
         $totalAwayScore += $finalResult->awayScore;
+        $totalHomeXG += $finalResult->homeXG;
+        $totalAwayXG += $finalResult->awayXG;
 
         // Sort all events chronologically
         $allEvents = $allEvents->sortBy('minute')->values();
 
+        // Apply xG adjustment using accumulated totals from all periods
+        $this->adjustPerformancesForXG(
+            $totalHomeScore, $totalAwayScore,
+            $totalHomeXG, $totalAwayXG,
+            $homeTeam->id, $awayTeam->id,
+            $homePlayers, $awayPlayers,
+        );
+
         // Merge performance maps from all periods
-        $allPerformances = $finalOutput->performances;
+        $allPerformances = $this->matchPerformance;
 
         return new MatchSimulationOutput(
             new MatchResult($totalHomeScore, $totalAwayScore, $allEvents, $finalResult->homePossession, $finalResult->awayPossession),
@@ -689,6 +705,8 @@ class MatchSimulator
         $allEvents = collect();
         $totalHomeScore = 0;
         $totalAwayScore = 0;
+        $totalHomeXG = 0.0;
+        $totalAwayXG = 0.0;
         $currentMinute = $fromMinute;
         $homeSubsUsed = $homeExistingSubstitutions;
         $awaySubsUsed = $awayExistingSubstitutions;
@@ -719,12 +737,15 @@ class MatchSimulator
                 awayExistingSubstitutions: $awaySubsUsed,
                 preservePerformance: true,
                 toMinute: $splitMinute,
+                skipXGAdjustment: true,
             );
 
             $periodResult = $periodOutput->result;
             $allEvents = $allEvents->merge($periodResult->events);
             $totalHomeScore += $periodResult->homeScore;
             $totalAwayScore += $periodResult->awayScore;
+            $totalHomeXG += $periodResult->homeXG;
+            $totalAwayXG += $periodResult->awayXG;
 
             // Track injuries, yellows, and injury auto-subs from this period
             foreach ($periodResult->events as $event) {
@@ -804,18 +825,32 @@ class MatchSimulator
             homeExistingSubstitutions: $homeSubsUsed,
             awayExistingSubstitutions: $awaySubsUsed,
             preservePerformance: true,
+            skipXGAdjustment: true,
         );
 
         $finalResult = $finalOutput->result;
         $allEvents = $allEvents->merge($finalResult->events);
         $totalHomeScore += $finalResult->homeScore;
         $totalAwayScore += $finalResult->awayScore;
+        $totalHomeXG += $finalResult->homeXG;
+        $totalAwayXG += $finalResult->awayXG;
 
         $allEvents = $allEvents->sortBy('minute')->values();
 
+        // Apply xG adjustment using accumulated totals from all periods
+        // Use total scores including pre-resimulation goals for correct win/loss determination
+        $fullHomeScore = $scoreHomeAtMinute + $totalHomeScore;
+        $fullAwayScore = $scoreAwayAtMinute + $totalAwayScore;
+        $this->adjustPerformancesForXG(
+            $fullHomeScore, $fullAwayScore,
+            $totalHomeXG, $totalAwayXG,
+            $homeTeam->id, $awayTeam->id,
+            $homePlayers, $awayPlayers,
+        );
+
         return new MatchSimulationOutput(
             new MatchResult($totalHomeScore, $totalAwayScore, $allEvents, $finalResult->homePossession, $finalResult->awayPossession),
-            $finalOutput->performances,
+            $this->matchPerformance,
         );
     }
 
@@ -1319,6 +1354,71 @@ class MatchSimulator
     }
 
     /**
+     * Adjust raw performance modifiers based on xG over/underperformance.
+     *
+     * - Winning team that scored MORE than their xG: bonus (exceeded expectations)
+     * - Losing team that scored LESS than their xG: penalty (underperformed expectations)
+     * - Draws, winning below xG, losing above xG: no adjustment
+     */
+    private function adjustPerformancesForXG(
+        int $homeScore,
+        int $awayScore,
+        float $homeXG,
+        float $awayXG,
+        string $homeTeamId,
+        string $awayTeamId,
+        Collection $homePlayers,
+        Collection $awayPlayers,
+    ): void {
+        if ($homeScore === $awayScore) {
+            return;
+        }
+
+        $bonusPerGoal = 0.015;
+        $maxAdjustment = 0.04;
+        $minPerf = config('match_simulation.performance_min', 0.70);
+        $maxPerf = config('match_simulation.performance_max', 1.30);
+
+        // Build player → team map
+        $playerTeams = [];
+        foreach ($homePlayers as $p) {
+            $playerTeams[$p->id] = $homeTeamId;
+        }
+        foreach ($awayPlayers as $p) {
+            $playerTeams[$p->id] = $awayTeamId;
+        }
+
+        $winnerTeamId = $homeScore > $awayScore ? $homeTeamId : $awayTeamId;
+        $loserTeamId = $homeScore > $awayScore ? $awayTeamId : $homeTeamId;
+        $winnerScore = $homeScore > $awayScore ? $homeScore : $awayScore;
+        $winnerXG = $homeScore > $awayScore ? $homeXG : $awayXG;
+        $loserScore = $homeScore > $awayScore ? $awayScore : $homeScore;
+        $loserXG = $homeScore > $awayScore ? $awayXG : $homeXG;
+
+        // Winner exceeded xG → bonus
+        $winnerBonus = 0.0;
+        if ($winnerScore > $winnerXG) {
+            $winnerBonus = min(($winnerScore - $winnerXG) * $bonusPerGoal, $maxAdjustment);
+        }
+
+        // Loser underperformed xG → penalty
+        $loserPenalty = 0.0;
+        if ($loserScore < $loserXG) {
+            $loserPenalty = min(($loserXG - $loserScore) * $bonusPerGoal, $maxAdjustment);
+        }
+
+        foreach ($this->matchPerformance as $playerId => &$performance) {
+            $teamId = $playerTeams[$playerId] ?? null;
+            if ($teamId === $winnerTeamId && $winnerBonus > 0) {
+                $performance = min($maxPerf, $performance + $winnerBonus);
+            } elseif ($teamId === $loserTeamId && $loserPenalty > 0) {
+                $performance = max($minPerf, $performance - $loserPenalty);
+            }
+        }
+        unset($performance);
+    }
+
+    /**
      * Calculate cosmetic possession percentages from tactics and team strength.
      * Purely display — does not affect simulation outcomes.
      *
@@ -1613,6 +1713,7 @@ class MatchSimulator
         bool $neutralVenue = false,
         bool $preservePerformance = false,
         int $toMinute = 93,
+        bool $skipXGAdjustment = false,
     ): MatchSimulationOutput {
         if (! $preservePerformance) {
             $this->matchPerformance = [];
@@ -1820,6 +1921,12 @@ class MatchSimulator
 
             $events = $events->sortBy('minute')->values();
 
+            $events = $this->applyPenaltyEvents(
+                $events, $homePlayers, $awayPlayers,
+                $homeTeam->id, $awayTeam->id, $matchFraction,
+                $fromMinute + 1, $toMinute,
+            );
+
             $events = $this->reassignEventsFromUnavailablePlayers(
                 $events, $homePlayers, $awayPlayers, $homeTeam->id, $awayTeam->id
             );
@@ -1843,8 +1950,19 @@ class MatchSimulator
             $matchSeed,
         );
 
+        // Adjust performances based on xG over/underperformance
+        if (! $skipXGAdjustment) {
+            $this->adjustPerformancesForXG(
+                $homeScore, $awayScore,
+                $homeExpectedGoals, $awayExpectedGoals,
+                $homeTeam->id, $awayTeam->id,
+                $homePlayers, $awayPlayers,
+            );
+        }
+
         return new MatchSimulationOutput(
-            new MatchResult($homeScore, $awayScore, $events, $possession['home'], $possession['away']),
+            new MatchResult($homeScore, $awayScore, $events, $possession['home'], $possession['away'],
+                round($homeExpectedGoals, 2), round($awayExpectedGoals, 2)),
             $this->matchPerformance,
         );
     }
@@ -2183,6 +2301,93 @@ class MatchSimulator
     }
 
     /**
+     * Post-process events to tag some goals as penalties and add missed penalty events.
+     *
+     * Penalties are purely cosmetic — they do not change goal counts.
+     * Scored penalties tag an existing goal with is_penalty metadata.
+     * Missed penalties add a penalty_missed event.
+     */
+    private function applyPenaltyEvents(
+        Collection $events,
+        Collection $homePlayers,
+        Collection $awayPlayers,
+        string $homeTeamId,
+        string $awayTeamId,
+        float $matchFraction,
+        int $minMinute,
+        int $maxMinute,
+    ): Collection {
+        $penaltiesPerGame = config('match_simulation.penalties_per_game', 0.25);
+        $penaltyScoredChance = config('match_simulation.penalty_scored_chance', 85.0);
+
+        $penaltyCount = $this->poissonRandom($penaltiesPerGame * $matchFraction);
+        if ($penaltyCount === 0) {
+            return $events;
+        }
+
+        $penaltyTakerWeights = [
+            'Centre-Forward' => 30,
+            'Second Striker' => 25,
+            'Attacking Midfield' => 15,
+            'Left Winger' => 10,
+            'Right Winger' => 10,
+            'Central Midfield' => 5,
+            'Defensive Midfield' => 3,
+            'Left-Back' => 1,
+            'Right-Back' => 1,
+            'Centre-Back' => 1,
+            'Goalkeeper' => 0,
+        ];
+
+        $usedMinutes = $events->pluck('minute')->all();
+
+        for ($i = 0; $i < $penaltyCount; $i++) {
+            $isHome = random_int(0, 1) === 0;
+            $teamId = $isHome ? $homeTeamId : $awayTeamId;
+            $players = $isHome ? $homePlayers : $awayPlayers;
+
+            if ($players->isEmpty()) {
+                continue;
+            }
+
+            if ($this->percentChance($penaltyScoredChance)) {
+                // Scored penalty: tag an existing goal for this team
+                $teamGoals = $events->filter(
+                    fn (MatchEventData $e) => $e->type === 'goal' && $e->teamId === $teamId && ($e->metadata['is_penalty'] ?? false) === false
+                );
+
+                if ($teamGoals->isEmpty()) {
+                    continue;
+                }
+
+                $goalKey = $teamGoals->keys()->random();
+                $goal = $events[$goalKey];
+
+                $events[$goalKey] = new MatchEventData(
+                    $goal->teamId,
+                    $goal->gamePlayerId,
+                    $goal->minute,
+                    $goal->type,
+                    array_merge($goal->metadata ?? [], ['is_penalty' => true]),
+                );
+            } else {
+                // Missed penalty
+                $taker = $this->pickPlayerByPosition($players, $penaltyTakerWeights);
+                if (! $taker) {
+                    continue;
+                }
+
+                $minute = $this->generateUniqueMinuteInRange($usedMinutes, $minMinute, $maxMinute);
+                $usedMinutes[] = $minute;
+
+                $events->push(MatchEventData::penaltyMissed($teamId, $taker->id, $minute));
+            }
+        }
+
+        return $events->sortBy('minute')->values();
+    }
+
+    /**
      * Generate card events with minutes constrained to a range.
      */
     private function generateCardEventsInRange(
@@ -2411,6 +2616,12 @@ class MatchSimulator
             $events = $events->merge($homeGoalEvents)->merge($awayGoalEvents);
 
             $events = $events->sortBy('minute')->values();
+
+            $events = $this->applyPenaltyEvents(
+                $events, $homePlayers, $awayPlayers,
+                $homeTeam->id, $awayTeam->id, $etFraction,
+                $minMinute, $maxMinute,
+            );
 
             $events = $this->reassignEventsFromUnavailablePlayers(
                 $events, $homePlayers, $awayPlayers, $homeTeam->id, $awayTeam->id

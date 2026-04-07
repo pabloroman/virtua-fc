@@ -1,0 +1,406 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/6251.png",
+  "name": "Kuopion Palloseura",
+  "players": [
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Mar 7, 1996",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "223783",
+      "marketValue": "€500k",
+      "name": "Johannes Kreidl",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jun 3, 2003",
+      "height": "1,88m",
+      "id": "586591",
+      "marketValue": "€50k",
+      "name": "Hemmo Riihimäki",
+      "nationality": [
+        "Finland"
+      ],
+      "number": "12",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Feb 17, 2009",
+      "height": "1,83m",
+      "id": "1271200",
+      "name": "Kasperi Silen",
+      "nationality": [
+        "Finland"
+      ],
+      "number": "37",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Jun 22, 1995",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "263801",
+      "marketValue": "€450k",
+      "name": "Kasim Adams",
+      "nationality": [
+        "Ghana"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 16, 2001",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "567485",
+      "marketValue": "€250k",
+      "name": "Taneli Hämäläinen",
+      "nationality": [
+        "Finland"
+      ],
+      "number": "33",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Apr 17, 1997",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "1032012",
+      "marketValue": "€150k",
+      "name": "Brahima Magassa",
+      "nationality": [
+        "France",
+        "Mali"
+      ],
+      "number": "28",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jan 28, 2004",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "660581",
+      "marketValue": "€100k",
+      "name": "Arttu Lötjönen",
+      "nationality": [
+        "Finland"
+      ],
+      "number": "23",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Apr 27, 2008",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "1120423",
+      "marketValue": "€25k",
+      "name": "Tatu Hukkanen",
+      "nationality": [
+        "Finland"
+      ],
+      "number": "31",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "May 18, 2004",
+      "height": "1,92m",
+      "id": "1211943",
+      "name": "Karl Ward",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "2",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Nov 6, 1999",
+      "foot": "left",
+      "height": "1,70m",
+      "id": "587302",
+      "marketValue": "€300k",
+      "name": "Clinton Antwi",
+      "nationality": [
+        "Ghana"
+      ],
+      "number": "25",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "May 10, 2007",
+      "height": "1,67m",
+      "id": "1150689",
+      "marketValue": "€50k",
+      "name": "Rasmus Tikkanen",
+      "nationality": [
+        "Finland"
+      ],
+      "number": "32",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Sep 29, 2001",
+      "foot": "left",
+      "height": "1,71m",
+      "id": "459716",
+      "marketValue": "€300k",
+      "name": "Saku Heiskanen",
+      "nationality": [
+        "Finland"
+      ],
+      "number": "3",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jan 20, 2004",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "1147796",
+      "marketValue": "€200k",
+      "name": "Bob Nii Armah",
+      "nationality": [
+        "Ghana"
+      ],
+      "number": "24",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Aug 24, 2006",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "937939",
+      "marketValue": "€150k",
+      "name": "Akseli Puukko",
+      "nationality": [
+        "Finland"
+      ],
+      "number": "29",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Oct 9, 2000",
+      "height": "1,72m",
+      "id": "491703",
+      "marketValue": "€300k",
+      "name": "Valentín Gasc",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "10",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Mar 29, 1995",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "190456",
+      "marketValue": "€200k",
+      "name": "Jerry Voutilainen",
+      "nationality": [
+        "Finland"
+      ],
+      "number": "7",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Mar 17, 2004",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "716895",
+      "marketValue": "€200k",
+      "name": "Niilo Kujasalo",
+      "nationality": [
+        "Finland"
+      ],
+      "number": "13",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jan 2, 2006",
+      "height": "1,80m",
+      "id": "937985",
+      "marketValue": "€150k",
+      "name": "Samuel Pasanen",
+      "nationality": [
+        "Finland"
+      ],
+      "number": "14",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Sep 19, 1990",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "47703",
+      "marketValue": "€100k",
+      "name": "Petteri Pennanen",
+      "nationality": [
+        "Finland"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Apr 19, 2005",
+      "height": "1,75m",
+      "id": "741585",
+      "marketValue": "€100k",
+      "name": "Aaro Toivonen",
+      "nationality": [
+        "Finland"
+      ],
+      "number": "26",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Dec 5, 2007",
+      "height": "1,73m",
+      "id": "1509301",
+      "name": "Souleymane Soumahoro",
+      "nationality": [
+        "Cote d'Ivoire"
+      ],
+      "number": "20",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 31, 2006",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "901877",
+      "marketValue": "€600k",
+      "name": "Otto Ruoppi",
+      "nationality": [
+        "Finland"
+      ],
+      "number": "34",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Apr 22, 1999",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "511780",
+      "marketValue": "€150k",
+      "name": "Arttu Heinonen",
+      "nationality": [
+        "Finland"
+      ],
+      "number": "17",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Apr 4, 2007",
+      "height": "1,70m",
+      "id": "1046213",
+      "marketValue": "€25k",
+      "name": "Eemil Tanninen",
+      "nationality": [
+        "Finland"
+      ],
+      "number": "18",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Mar 28, 2003",
+      "height": "1,83m",
+      "id": "950405",
+      "marketValue": "€400k",
+      "name": "Calvin Kabuye",
+      "nationality": [
+        "Uganda",
+        "Sweden"
+      ],
+      "number": "19",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Aug 13, 1996",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "274746",
+      "marketValue": "€250k",
+      "name": "Saku Savolainen",
+      "nationality": [
+        "Finland"
+      ],
+      "number": "6",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Dec 7, 2002",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "740837",
+      "marketValue": "€250k",
+      "name": "Joslyn Luyeye-Lutumba",
+      "nationality": [
+        "Finland",
+        "DR Congo"
+      ],
+      "number": "21",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Mar 30, 1995",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "309923",
+      "marketValue": "€200k",
+      "name": "Jaime Moreno",
+      "nationality": [
+        "Nicaragua",
+        "Italy"
+      ],
+      "number": "11",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Apr 29, 1996",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "248024",
+      "marketValue": "€125k",
+      "name": "Gustav Engvall",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Väre Areena",
+  "stadiumSeats": "4778",
+  "transfermarktId": "6251"
+}

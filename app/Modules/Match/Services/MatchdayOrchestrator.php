@@ -18,6 +18,7 @@ use App\Models\GamePlayer;
 use App\Models\GameStanding;
 use App\Models\PlayerSuspension;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class MatchdayOrchestrator
@@ -209,6 +210,12 @@ class MatchdayOrchestrator
         // Mark user's match as pending finalization BEFORE post-match actions
         if ($playerMatch) {
             $game->update(['pending_finalization_match_id' => $playerMatch->id]);
+
+            // Cache raw performances for the user's match (used for client-side player ratings)
+            $userResult = collect($matchResults)->firstWhere('matchId', $playerMatch->id);
+            if ($userResult && ! empty($userResult['performances'])) {
+                Cache::put("match_performances:{$playerMatch->id}", $userResult['performances'], now()->addHours(24));
+            }
         }
 
         // End pre-season when no more pre-season matches remain
@@ -336,9 +343,12 @@ class MatchdayOrchestrator
 
     private function recalculateLeaguePositions(string $gameId, $matches): void
     {
-        // Get unique league competition IDs from this batch
+        // Get unique league competition IDs from league-phase matches only.
+        // Knockout matches (cup_tie_id set) must not trigger recalculation —
+        // non-deterministic sort order for tied teams can swap positions,
+        // breaking bracket seedings that depend on stable positions.
         $leagueCompetitionIds = $matches
-            ->filter(fn ($match) => $match->competition?->isLeague())
+            ->filter(fn ($match) => $match->competition?->isLeague() && $match->cup_tie_id === null)
             ->pluck('competition_id')
             ->unique();
 

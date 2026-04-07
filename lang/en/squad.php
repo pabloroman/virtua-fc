@@ -362,10 +362,10 @@ return [
     'save_registration' => 'Save',
     'registration_saved' => 'Squad registration saved',
     'registered_count' => ':count registered',
-    'academy_age_limit' => 'Only players under 23 can be registered with academy numbers (26-99)',
+    'academy_age_limit' => 'Only players aged 23 or younger can be registered with academy numbers (26-99)',
     'registration_rules_title' => 'Registration Rules',
     'registration_rule_first_team' => 'First team players are assigned shirt numbers 1 to 25.',
-    'registration_rule_academy' => 'Academy numbers (26-99) are reserved for players under 23 years old.',
+    'registration_rule_academy' => 'Academy numbers (26-99) are reserved for players aged 23 or younger.',
     'registration_rule_unregistered' => 'Unregistered players cannot be selected for matchday squads.',
     'registration_readonly' => 'You can register players and modify shirt numbers only during transfer windows.',
 ];

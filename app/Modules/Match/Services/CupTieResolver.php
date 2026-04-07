@@ -74,7 +74,7 @@ class CupTieResolver
                 $awayTeam,
                 $homePlayers,
                 $awayPlayers,
-                neutralVenue: $match->competition_id === 'WC2026',
+                neutralVenue: $match->isNeutralVenue(),
             );
 
             $homeScoreEt = $extraTimeResult->homeScore;
@@ -169,7 +169,7 @@ class CupTieResolver
                 $awayTeam,
                 $homePlayers,
                 $awayPlayers,
-                neutralVenue: $secondLeg->competition_id === 'WC2026',
+                neutralVenue: $secondLeg->isNeutralVenue(),
             );
 
             $homeScoreEt = $extraTimeResult->homeScore;

@@ -1,0 +1,375 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/540.png",
+  "name": "Slovan Bratislava",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 12, 1999",
+      "foot": "left",
+      "height": "1,95m",
+      "id": "471164",
+      "marketValue": "€3.00m",
+      "name": "Dominik Takac",
+      "nationality": [
+        "Slovakia"
+      ],
+      "number": "71",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 7, 2000",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "434073",
+      "marketValue": "€175k",
+      "name": "Martin Trnovsky",
+      "nationality": [
+        "Slovakia"
+      ],
+      "number": "31",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 19, 1993",
+      "foot": "right",
+      "height": "1,99m",
+      "id": "381477",
+      "marketValue": "€150k",
+      "name": "Matus Macik",
+      "nationality": [
+        "Slovakia"
+      ],
+      "number": "44",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Mar 23, 2000",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "470790",
+      "marketValue": "€2.50m",
+      "name": "Svetozar Markovic",
+      "nationality": [
+        "Serbia",
+        "Bosnia-Herzegovina"
+      ],
+      "number": "15",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 20, 1994",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "226793",
+      "marketValue": "€1.50m",
+      "name": "Kenan Bajric",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "12",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 15, 1992",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "122675",
+      "marketValue": "€350k",
+      "name": "Kevin Wimmer",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 14, 2001",
+      "foot": "left",
+      "height": "1,95m",
+      "id": "1234104",
+      "marketValue": "€325k",
+      "name": "Sidoine Fogning",
+      "nationality": [
+        "Cameroon"
+      ],
+      "number": "19",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jul 4, 1987",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "55972",
+      "marketValue": "€175k",
+      "name": "Guram Kashia",
+      "nationality": [
+        "Georgia"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 12, 2001",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "481627",
+      "marketValue": "€1.20m",
+      "name": "Sandro Cruz",
+      "nationality": [
+        "Angola",
+        "Portugal"
+      ],
+      "number": "57",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Jan 7, 2000",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "579631",
+      "marketValue": "€225k",
+      "name": "Sharani Zuberu",
+      "nationality": [
+        "Togo",
+        "Ghana"
+      ],
+      "number": "23",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 2, 1998",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "440383",
+      "marketValue": "€2.50m",
+      "name": "César Blackman",
+      "nationality": [
+        "Panama"
+      ],
+      "number": "28",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 8, 2001",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "490595",
+      "marketValue": "€1.00m",
+      "name": "Peter Pokorný",
+      "nationality": [
+        "Slovakia"
+      ],
+      "number": "3",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Jun 10, 2001",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "711597",
+      "marketValue": "€2.00m",
+      "name": "Rahim Ibrahim",
+      "nationality": [
+        "Ghana"
+      ],
+      "number": "5",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 13, 1997",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "376082",
+      "marketValue": "€1.50m",
+      "name": "Danylo Ignatenko",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "77",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 1, 2001",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "576449",
+      "marketValue": "€1.00m",
+      "name": "Daiki Matsuoka",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "41",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "May 12, 2008",
+      "height": "1,76m",
+      "id": "1077729",
+      "marketValue": "€350k",
+      "name": "Maxim Mateas",
+      "nationality": [
+        "Slovakia"
+      ],
+      "number": "16",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jan 31, 2027",
+      "dateOfBirth": "Aug 25, 2001",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "403760",
+      "marketValue": "€3.50m",
+      "name": "Niko Jankovic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 20, 2004",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "641657",
+      "marketValue": "€750k",
+      "name": "Artur Gajdos",
+      "nationality": [
+        "Slovakia"
+      ],
+      "number": "8",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 29, 2005",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "726661",
+      "marketValue": "€6.50m",
+      "name": "Nino Marcelli",
+      "nationality": [
+        "Slovakia"
+      ],
+      "number": "18",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Nov 12, 2004",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "1231655",
+      "marketValue": "€1.00m",
+      "name": "Alasana Yirajang",
+      "nationality": [
+        "The Gambia"
+      ],
+      "number": "14",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 8, 1991",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "92180",
+      "marketValue": "€325k",
+      "name": "Robert Mak",
+      "nationality": [
+        "Slovakia"
+      ],
+      "number": "21",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 30, 1989",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "92701",
+      "marketValue": "€175k",
+      "name": "Vladimír Weiss",
+      "nationality": [
+        "Slovakia"
+      ],
+      "number": "7",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 22, 1993",
+      "foot": "left",
+      "height": "1,79m",
+      "id": "270605",
+      "marketValue": "€1.30m",
+      "name": "Tigran Barseghyan",
+      "nationality": [
+        "Armenia"
+      ],
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 1, 2001",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "730126",
+      "marketValue": "€1.50m",
+      "name": "Mykola Kukharevych",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 27, 1994",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "179860",
+      "marketValue": "€1.50m",
+      "name": "Andraz Sporar",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "99",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Mar 16, 2004",
+      "foot": "right",
+      "height": "1,95m",
+      "id": "641676",
+      "marketValue": "€400k",
+      "name": "Adam Griger",
+      "nationality": [
+        "Slovakia"
+      ],
+      "number": "30",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "NFS - Tehelné Pole",
+  "stadiumSeats": "22500",
+  "transfermarktId": "540"
+}

@@ -7,6 +7,8 @@ use App\Http\Actions\Admin\SearchTeams;
 use App\Http\Actions\Admin\StorePlayerTemplate;
 use App\Http\Actions\Admin\UpdatePlayerTemplate;
 use App\Http\Actions\UpgradeInfrastructure;
+use App\Http\Actions\ImpersonateByGame;
+use App\Http\Actions\LookupGame;
 use App\Http\Actions\StartImpersonation;
 use App\Http\Actions\StopImpersonation;
 use App\Http\Actions\ToggleCareerAccess;
@@ -17,6 +19,7 @@ use App\Http\Actions\SendWaitlistInvite;
 use App\Http\Views\AdminActivation;
 use App\Http\Views\AdminDashboard;
 use App\Http\Views\AdminGameStats;
+use App\Http\Views\AdminTechTools;
 use App\Http\Views\AdminPlayerTemplateAuditLog;
 use App\Http\Views\AdminPlayerTemplates;
 use App\Http\Views\AdminPlayerTemplateSquad;
@@ -282,6 +285,9 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
         Route::post('/users/{userId}/toggle-career', ToggleCareerAccess::class)->name('toggle-career');
         Route::post('/users/{userId}/toggle-tournament', ToggleTournamentAccess::class)->name('toggle-tournament');
         Route::post('/users/{userId}/toggle-database-editing', ToggleDatabaseEditing::class)->name('toggle-database-editing');
+        Route::get('/tech-tools', AdminTechTools::class)->name('tech-tools');
+        Route::get('/tech-tools/lookup-game', LookupGame::class)->name('lookup-game');
+        Route::post('/tech-tools/impersonate-by-game', ImpersonateByGame::class)->name('impersonate-by-game');
     });
 });
 

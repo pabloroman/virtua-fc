@@ -254,6 +254,8 @@ return [
     'live_kick_off' => 'Comienza el partido',
     'live_about_to_start' => 'El partido está a punto de comenzar...',
     'live_goal' => 'Gol',
+    'live_penalty_goal' => 'Penalti',
+    'live_penalty_missed' => 'Penalti fallado',
     'live_yellow_card' => 'Tarjeta amarilla',
     'live_red_card' => 'Tarjeta roja',
     'live_second_yellow' => 'Doble amarilla',
@@ -277,6 +279,7 @@ return [
     'live_tab_events' => 'Eventos',
     'live_tab_stats' => 'Estadísticas',
     'live_tab_lineups' => 'Alineaciones',
+    'live_tab_ratings' => 'Notas',
     'live_tab_results' => 'Resultados',
     'lineup_unknown' => 'Alineación no disponible',
     'live_stat_goals' => 'Goles',
@@ -348,6 +351,8 @@ return [
     'tactical_reset_all' => 'Restablecer todo',
     'positions_apply' => 'Aplicar posiciones',
     'tactical_no_changes' => 'No hay cambios tácticos que aplicar.',
+    'tactical_error_generic' => 'Ocurrió un error al aplicar los cambios. Por favor, inténtalo de nuevo.',
+    'tactical_error_no_pending' => 'No hay cambios que aplicar. Modifica tu táctica e inténtalo de nuevo.',
     'tactical_unsaved_changes' => 'Tienes cambios sin confirmar. ¿Cerrar de todos modos?',
     'confirm_title' => 'Revisar cambios',
     'confirm_subs_heading' => 'Sustituciones',
@@ -485,6 +490,7 @@ return [
     // MVP
     'mvp' => 'MVP',
     'mvp_of_the_match' => 'MVP del partido',
+    'match_rating' => 'Valoración',
 
     // xG Preview
     'xg_preview' => 'Previsualización xG',

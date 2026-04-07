@@ -1,0 +1,320 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/3737.png",
+  "name": "Breidablik Kópavogur",
+  "players": [
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Aug 25, 1994",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "325087",
+      "marketValue": "€250k",
+      "name": "Anton Ari Einarsson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Nov 16, 2027",
+      "dateOfBirth": "Sep 21, 2008",
+      "id": "1072744",
+      "name": "Gylfi Berg Snaehólm",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "33",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Jul 22, 1994",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "313342",
+      "marketValue": "€250k",
+      "name": "Viktor Örn Margeirsson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "21",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Apr 12, 1996",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "317575",
+      "marketValue": "€150k",
+      "name": "Ívar Örn Árnason",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "May 19, 2005",
+      "foot": "right",
+      "id": "941544",
+      "marketValue": "€100k",
+      "name": "Ásgeir Helgi Orrason",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Nov 16, 2026",
+      "dateOfBirth": "Apr 25, 1999",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "429892",
+      "marketValue": "€100k",
+      "name": "Davíd Ingvarsson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "18",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Aug 4, 1990",
+      "foot": "left",
+      "height": "1,74m",
+      "id": "90035",
+      "marketValue": "€25k",
+      "name": "Kristinn Jónsson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "19",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Nov 16, 2028",
+      "dateOfBirth": "Sep 22, 2002",
+      "foot": "right",
+      "height": "1,68m",
+      "id": "576739",
+      "marketValue": "€350k",
+      "name": "Valgeir Valgeirsson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "17",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Jan 9, 2003",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "630752",
+      "marketValue": "€250k",
+      "name": "Óli Valur Ómarsson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "9",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Nov 16, 2028",
+      "dateOfBirth": "Jan 3, 2007",
+      "foot": "right",
+      "id": "1055663",
+      "marketValue": "€50k",
+      "name": "Gabríel Snaer Hallsson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "29",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Mar 13, 2003",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "665192",
+      "marketValue": "€350k",
+      "name": "Anton Logi Lúdvíksson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "13",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "May 31, 2002",
+      "foot": "right",
+      "id": "652274",
+      "marketValue": "€150k",
+      "name": "Arnór Gauti Jónsson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Sep 26, 1994",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "183365",
+      "marketValue": "€350k",
+      "name": "Höskuldur Gunnlaugsson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "7",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 30, 1997",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "282095",
+      "marketValue": "€275k",
+      "name": "Viktor Karl Einarsson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Nov 16, 2027",
+      "dateOfBirth": "Mar 22, 2005",
+      "id": "941546",
+      "marketValue": "€50k",
+      "name": "Tumi Fannar Gunnarsson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "25",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Apr 18, 1992",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "110170",
+      "marketValue": "€50k",
+      "name": "Andri Rafn Yeoman",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "30",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Jan 14, 2005",
+      "foot": "right",
+      "id": "908857",
+      "marketValue": "€150k",
+      "name": "Ágúst Orri Thorsteinsson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "15",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "Nov 16, 2026",
+      "dateOfBirth": "Apr 29, 1990",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "90044",
+      "marketValue": "€100k",
+      "name": "Kristinn Steindórsson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Nov 16, 2026",
+      "dateOfBirth": "Jun 11, 2007",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1373511",
+      "name": "Breki Freyr Ágústsson",
+      "nationality": [
+        "Iceland",
+        "United States"
+      ],
+      "number": "39",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Nov 16, 2027",
+      "dateOfBirth": "Oct 14, 1995",
+      "foot": "both",
+      "height": "1,73m",
+      "id": "229194",
+      "marketValue": "€275k",
+      "name": "Aron Bjarnason",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Nov 16, 2026",
+      "dateOfBirth": "Apr 28, 2005",
+      "foot": "right",
+      "id": "1107823",
+      "marketValue": "€50k",
+      "name": "Dagur Fjeldsted",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "16",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Feb 9, 2007",
+      "foot": "right",
+      "id": "1130619",
+      "marketValue": "€25k",
+      "name": "Jónatan Gudni Arnarsson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "13",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Apr 7, 1999",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "400174",
+      "marketValue": "€100k",
+      "name": "Kristófer Kristinsson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "23",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Kópavogsvöllur",
+  "stadiumSeats": "5501",
+  "transfermarktId": "3737"
+}

@@ -8,17 +8,15 @@ use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\MatchEvent;
 use App\Modules\Match\DTOs\ExtraTimeProcessResult;
-use App\Modules\Match\DTOs\MatchEventData;
 use App\Modules\Match\DTOs\PenaltyProcessResult;
-use App\Modules\Lineup\Enums\Formation;
-use App\Modules\Lineup\Enums\Mentality;
+use App\Modules\Match\DTOs\TacticalConfig;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 
 class ExtraTimeAndPenaltyService
 {
     public function __construct(
         private readonly MatchSimulator $matchSimulator,
+        private readonly MatchEventRepository $matchEventRepository,
     ) {}
 
     /**
@@ -41,11 +39,7 @@ class ExtraTimeAndPenaltyService
             }
         }
 
-        // Read formation/mentality from match record
-        $homeFormation = Formation::tryFrom($match->home_formation) ?? Formation::F_4_3_3;
-        $awayFormation = Formation::tryFrom($match->away_formation) ?? Formation::F_4_3_3;
-        $homeMentality = Mentality::tryFrom($match->home_mentality ?? '') ?? Mentality::BALANCED;
-        $awayMentality = Mentality::tryFrom($match->away_mentality ?? '') ?? Mentality::BALANCED;
+        $tc = TacticalConfig::fromMatch($match);
 
         $extraTimeResult = $this->matchSimulator->simulateExtraTime(
             $match->homeTeam,
@@ -54,11 +48,17 @@ class ExtraTimeAndPenaltyService
             $awayPlayers,
             $homeEntryMinutes,
             $awayEntryMinutes,
-            homeFormation: $homeFormation,
-            awayFormation: $awayFormation,
-            homeMentality: $homeMentality,
-            awayMentality: $awayMentality,
-            neutralVenue: $match->competition_id === 'WC2026',
+            homeFormation: $tc->homeFormation,
+            awayFormation: $tc->awayFormation,
+            homeMentality: $tc->homeMentality,
+            awayMentality: $tc->awayMentality,
+            homePlayingStyle: $tc->homePlayingStyle,
+            awayPlayingStyle: $tc->awayPlayingStyle,
+            homePressing: $tc->homePressing,
+            awayPressing: $tc->awayPressing,
+            homeDefLine: $tc->homeDefLine,
+            awayDefLine: $tc->awayDefLine,
+            neutralVenue: $match->isNeutralVenue(),
         );
 
         $match->update([
@@ -184,27 +184,11 @@ class ExtraTimeAndPenaltyService
      */
     private function storeExtraTimeEvents(GameMatch $match, Game $game, Collection $events): Collection
     {
-        $now = now();
+        $ids = $this->matchEventRepository->bulkInsert($events, $game->id, $match->id);
 
-        $rows = $events->map(fn (MatchEventData $e) => [
-            'id' => Str::uuid()->toString(),
-            'game_id' => $game->id,
-            'game_match_id' => $match->id,
-            'game_player_id' => $e->gamePlayerId,
-            'team_id' => $e->teamId,
-            'minute' => $e->minute,
-            'event_type' => $e->type,
-            'metadata' => $e->metadata ? json_encode($e->metadata) : null,
-            'created_at' => $now,
-        ])->all();
-
-        if (empty($rows)) {
+        if (empty($ids)) {
             return collect();
         }
-
-        MatchEvent::insert($rows);
-
-        $ids = array_column($rows, 'id');
 
         return MatchEvent::with('gamePlayer.player')
             ->whereIn('id', $ids)

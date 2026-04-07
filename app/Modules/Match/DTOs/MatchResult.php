@@ -22,6 +22,8 @@ readonly class MatchResult
         public Collection $events,
         public int $homePossession = 50,
         public int $awayPossession = 50,
+        public float $homeXG = 0.0,
+        public float $awayXG = 0.0,
     ) {}
 
     /**
@@ -78,6 +80,14 @@ readonly class MatchResult
     public function substitutions(): Collection
     {
         return $this->events->filter(fn (MatchEventData $e) => $e->type === 'substitution');
+    }
+
+    /**
+     * Get all penalty missed events.
+     */
+    public function penaltiesMissed(): Collection
+    {
+        return $this->events->filter(fn (MatchEventData $e) => $e->type === 'penalty_missed');
     }
 
     /**

@@ -13,6 +13,7 @@ use App\Models\Game;
 use App\Models\GameMatch;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class ProcessTacticalActions
@@ -85,20 +86,34 @@ class ProcessTacticalActions
             }
         }
 
-        $result = $this->tacticalChangeService->processLiveMatchChanges(
-            $match,
-            $game,
-            $validated['minute'],
-            $validated['previousSubstitutions'] ?? [],
-            $validated['substitutions'] ?? [],
-            $validated['formation'] ?? null,
-            $validated['mentality'] ?? null,
-            $validated['playing_style'] ?? null,
-            $validated['pressing'] ?? null,
-            $validated['defensive_line'] ?? null,
-            isExtraTime: $isExtraTime,
-            pitchPositions: $validated['pitch_positions'] ?? null,
-        );
+        try {
+            $result = $this->tacticalChangeService->processLiveMatchChanges(
+                $match,
+                $game,
+                $validated['minute'],
+                $validated['previousSubstitutions'] ?? [],
+                $validated['substitutions'] ?? [],
+                $validated['formation'] ?? null,
+                $validated['mentality'] ?? null,
+                $validated['playing_style'] ?? null,
+                $validated['pressing'] ?? null,
+                $validated['defensive_line'] ?? null,
+                isExtraTime: $isExtraTime,
+                pitchPositions: $validated['pitch_positions'] ?? null,
+            );
+        } catch (\Throwable $e) {
+            Log::error('ProcessTacticalActions failed', [
+                'match_id' => $match->id,
+                'game_id' => $game->id,
+                'minute' => $validated['minute'],
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'error' => __('game.tactical_error_generic'),
+            ], 422);
+        }
 
         return response()->json($result);
     }

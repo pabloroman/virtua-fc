@@ -422,7 +422,12 @@ export function generateContextualNarratives(config) {
     ];
 
     for (const cp of checkpoints) {
-        const m = uniqueMinute(usedMinutes, cp.minute, cp.minute + 3);
+        // Second-half-start uses 45.9 so it sorts after first-half events
+        // but before minute-46 events, appearing right after the half-time
+        // break in the feed. Displayed as "45'" via Math.floor in the template.
+        const m = cp.type === 'second_half_start'
+            ? 45.9
+            : uniqueMinute(usedMinutes, cp.minute, cp.minute + 3);
         const score = scoreAtMinute(allEvents, homeTeamId, m);
         const scoreStr = `${score.home}-${score.away}`;
 

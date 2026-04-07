@@ -5,11 +5,7 @@ namespace App\Modules\Match\Services;
 use App\Modules\Match\DTOs\MatchEventData;
 use App\Modules\Match\DTOs\MatchResult;
 use App\Modules\Match\DTOs\ResimulationResult;
-use App\Modules\Lineup\Enums\DefensiveLineHeight;
-use App\Modules\Lineup\Enums\Formation;
-use App\Modules\Lineup\Enums\Mentality;
-use App\Modules\Lineup\Enums\PlayingStyle;
-use App\Modules\Lineup\Enums\PressingIntensity;
+use App\Modules\Match\DTOs\TacticalConfig;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
@@ -17,8 +13,8 @@ use App\Models\MatchEvent;
 use App\Models\PlayerSuspension;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use App\Modules\Squad\Services\EligibilityService;
 
 class MatchResimulationService
@@ -26,6 +22,7 @@ class MatchResimulationService
     public function __construct(
         private readonly MatchSimulator $matchSimulator,
         private readonly EligibilityService $eligibilityService,
+        private readonly MatchEventRepository $matchEventRepository,
     ) {}
 
     /**
@@ -72,17 +69,7 @@ class MatchResimulationService
         $scoreAtMinute = $this->calculateScoreAtMinute($match);
 
         // 4. Read formation/mentality/instructions from match record (already updated by caller)
-        $homeFormation = Formation::tryFrom($match->home_formation) ?? Formation::F_4_3_3;
-        $awayFormation = Formation::tryFrom($match->away_formation) ?? Formation::F_4_3_3;
-        $homeMentality = Mentality::tryFrom($match->home_mentality ?? '') ?? Mentality::BALANCED;
-        $awayMentality = Mentality::tryFrom($match->away_mentality ?? '') ?? Mentality::BALANCED;
-
-        $homePlayingStyle = PlayingStyle::tryFrom($match->home_playing_style ?? '') ?? PlayingStyle::BALANCED;
-        $awayPlayingStyle = PlayingStyle::tryFrom($match->away_playing_style ?? '') ?? PlayingStyle::BALANCED;
-        $homePressing = PressingIntensity::tryFrom($match->home_pressing ?? '') ?? PressingIntensity::STANDARD;
-        $awayPressing = PressingIntensity::tryFrom($match->away_pressing ?? '') ?? PressingIntensity::STANDARD;
-        $homeDefLine = DefensiveLineHeight::tryFrom($match->home_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
-        $awayDefLine = DefensiveLineHeight::tryFrom($match->away_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
+        $tc = TacticalConfig::fromMatch($match);
 
         // 5. Exclude red-carded and substituted-out players
         $unavailablePlayerIds = MatchEvent::where('game_match_id', $match->id)
@@ -167,22 +154,22 @@ class MatchResimulationService
                 $match->awayTeam,
                 $homePlayers,
                 $awayPlayers,
-                $homeFormation,
-                $awayFormation,
-                $homeMentality,
-                $awayMentality,
+                $tc->homeFormation,
+                $tc->awayFormation,
+                $tc->homeMentality,
+                $tc->awayMentality,
                 $minute,
                 $game,
                 $existingInjuryTeamIds,
                 $existingYellowPlayerIds,
                 $homeEntryMinutes,
                 $awayEntryMinutes,
-                $homePlayingStyle,
-                $awayPlayingStyle,
-                $homePressing,
-                $awayPressing,
-                $homeDefLine,
-                $awayDefLine,
+                $tc->homePlayingStyle,
+                $tc->awayPlayingStyle,
+                $tc->homePressing,
+                $tc->awayPressing,
+                $tc->homeDefLine,
+                $tc->awayDefLine,
                 $homeBenchPlayers,
                 $awayBenchPlayers,
                 homeExistingSubstitutions: $homeExistingSubs,
@@ -199,27 +186,27 @@ class MatchResimulationService
                 $match->awayTeam,
                 $homePlayers,
                 $awayPlayers,
-                $homeFormation,
-                $awayFormation,
-                $homeMentality,
-                $awayMentality,
+                $tc->homeFormation,
+                $tc->awayFormation,
+                $tc->homeMentality,
+                $tc->awayMentality,
                 $minute,
                 $game,
                 $existingInjuryTeamIds,
                 $existingYellowPlayerIds,
                 $homeEntryMinutes,
                 $awayEntryMinutes,
-                $homePlayingStyle,
-                $awayPlayingStyle,
-                $homePressing,
-                $awayPressing,
-                $homeDefLine,
-                $awayDefLine,
+                $tc->homePlayingStyle,
+                $tc->awayPlayingStyle,
+                $tc->homePressing,
+                $tc->awayPressing,
+                $tc->homeDefLine,
+                $tc->awayDefLine,
                 $homeBenchPlayers,
                 $awayBenchPlayers,
                 homeExistingSubstitutions: $homeExistingSubs,
                 awayExistingSubstitutions: $awayExistingSubs,
-                neutralVenue: $match->competition_id === 'WC2026',
+                neutralVenue: $match->isNeutralVenue(),
             );
         }
 
@@ -228,10 +215,15 @@ class MatchResimulationService
         $newHomeScore = $scoreAtMinute['home'] + $remainderResult->homeScore;
         $newAwayScore = $scoreAtMinute['away'] + $remainderResult->awayScore;
 
-        // 11. Apply the new remainder events
+        // 11. Merge performances with cached values (preserves subbed-out players' data)
+        $cachedPerformances = Cache::get("match_performances:{$match->id}", []);
+        $mergedPerformances = array_merge($cachedPerformances, $remainderOutput->performances);
+        Cache::put("match_performances:{$match->id}", $mergedPerformances, now()->addHours(24));
+
+        // 12. Apply the new remainder events
         $this->applyNewEvents($match, $game, $remainderResult, $competitionId);
 
-        // 12. Update match score and possession
+        // 13. Update match score and possession
         // Note: Score-dependent side effects (standings, cup ties, GK stats, prize money)
         // are NOT handled here. They are deferred to FinalizeMatch, which applies them
         // once after the user finishes the live match. This eliminates the need for
@@ -246,6 +238,7 @@ class MatchResimulationService
         return new ResimulationResult(
             $newHomeScore, $newAwayScore, $oldHomeScore, $oldAwayScore,
             $remainderResult->homePossession, $remainderResult->awayPossession,
+            $mergedPerformances,
         );
     }
 
@@ -277,17 +270,7 @@ class MatchResimulationService
             $scoreAtMinute = $this->calculateScoreAtMinute($match, 90);
 
             // 4. Read formation/mentality/instructions from match record
-            $homeFormation = Formation::tryFrom($match->home_formation) ?? Formation::F_4_3_3;
-            $awayFormation = Formation::tryFrom($match->away_formation) ?? Formation::F_4_3_3;
-            $homeMentality = Mentality::tryFrom($match->home_mentality ?? '') ?? Mentality::BALANCED;
-            $awayMentality = Mentality::tryFrom($match->away_mentality ?? '') ?? Mentality::BALANCED;
-
-            $homePlayingStyle = PlayingStyle::tryFrom($match->home_playing_style ?? '') ?? PlayingStyle::BALANCED;
-            $awayPlayingStyle = PlayingStyle::tryFrom($match->away_playing_style ?? '') ?? PlayingStyle::BALANCED;
-            $homePressing = PressingIntensity::tryFrom($match->home_pressing ?? '') ?? PressingIntensity::STANDARD;
-            $awayPressing = PressingIntensity::tryFrom($match->away_pressing ?? '') ?? PressingIntensity::STANDARD;
-            $homeDefLine = DefensiveLineHeight::tryFrom($match->home_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
-            $awayDefLine = DefensiveLineHeight::tryFrom($match->away_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
+            $tc = TacticalConfig::fromMatch($match);
 
             // 5. Exclude red-carded and substituted-out players
             $unavailablePlayerIds = MatchEvent::where('game_match_id', $match->id)
@@ -320,17 +303,17 @@ class MatchResimulationService
                 $homeEntryMinutes,
                 $awayEntryMinutes,
                 fromMinute: $minute,
-                homeFormation: $homeFormation,
-                awayFormation: $awayFormation,
-                homeMentality: $homeMentality,
-                awayMentality: $awayMentality,
-                homePlayingStyle: $homePlayingStyle,
-                awayPlayingStyle: $awayPlayingStyle,
-                homePressing: $homePressing,
-                awayPressing: $awayPressing,
-                homeDefLine: $homeDefLine,
-                awayDefLine: $awayDefLine,
-                neutralVenue: $match->competition_id === 'WC2026',
+                homeFormation: $tc->homeFormation,
+                awayFormation: $tc->awayFormation,
+                homeMentality: $tc->homeMentality,
+                awayMentality: $tc->awayMentality,
+                homePlayingStyle: $tc->homePlayingStyle,
+                awayPlayingStyle: $tc->awayPlayingStyle,
+                homePressing: $tc->homePressing,
+                awayPressing: $tc->awayPressing,
+                homeDefLine: $tc->homeDefLine,
+                awayDefLine: $tc->awayDefLine,
+                neutralVenue: $match->isNeutralVenue(),
             );
 
             // 8. Calculate new ET score
@@ -348,9 +331,13 @@ class MatchResimulationService
                 'away_possession' => $remainderResult->awayPossession,
             ]);
 
+            // Pass through cached performances (ET simulator doesn't produce new ones)
+            $cachedPerformances = Cache::get("match_performances:{$match->id}", []);
+
             return new ResimulationResult(
                 $newHomeScore, $newAwayScore, $oldHomeScore, $oldAwayScore,
                 $remainderResult->homePossession, $remainderResult->awayPossession,
+                $cachedPerformances,
             );
         });
     }
@@ -536,27 +523,11 @@ class MatchResimulationService
      */
     private function applyNewEvents(GameMatch $match, Game $game, MatchResult $result, string $competitionId): void
     {
-        $now = now();
         $events = $result->events;
         $competition = \App\Models\Competition::find($competitionId);
         $handlerType = $competition->handler_type ?? 'league';
 
-        // Bulk insert match events
-        $rows = $events->map(fn (MatchEventData $e) => [
-            'id' => Str::uuid()->toString(),
-            'game_id' => $game->id,
-            'game_match_id' => $match->id,
-            'game_player_id' => $e->gamePlayerId,
-            'team_id' => $e->teamId,
-            'minute' => $e->minute,
-            'event_type' => $e->type,
-            'metadata' => $e->metadata ? json_encode($e->metadata) : null,
-            'created_at' => $now,
-        ])->all();
-
-        foreach (array_chunk($rows, 50) as $chunk) {
-            MatchEvent::insert($chunk);
-        }
+        $this->matchEventRepository->bulkInsert($events, $game->id, $match->id);
 
         // Update player stats
         $statIncrements = [];
@@ -724,6 +695,7 @@ class MatchResimulationService
                 $key = $event['minute'].':'.$event['teamId'];
                 if (isset($assists[$key])) {
                     $event['assistPlayerName'] = $assists[$key]->gamePlayer->player->name ?? null;
+                    $event['assistPlayerId'] = $assists[$key]->game_player_id;
                 }
             }
 

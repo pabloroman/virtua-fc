@@ -4,6 +4,7 @@ namespace App\Modules\Squad\Services;
 
 use App\Models\Game;
 use App\Models\GamePlayer;
+use App\Modules\Player\PlayerAge;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -82,7 +83,7 @@ class SquadRegistrationService
             ->where('team_id', $game->team_id)
             ->whereIn('id', $academyPlayerIds)
             ->whereHas('player', function ($q) use ($game) {
-                $q->where('date_of_birth', '<=', $game->current_date->subYears(23));
+                $q->where('date_of_birth', '<=', PlayerAge::dateOfBirthCutoff(PlayerAge::YOUNG_END + 1, $game->current_date));
             })
             ->count();
 

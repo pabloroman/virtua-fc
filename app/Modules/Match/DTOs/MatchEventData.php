@@ -78,6 +78,14 @@ readonly class MatchEventData
         ]);
     }
 
+    /**
+     * Create a penalty missed event.
+     */
+    public static function penaltyMissed(string $teamId, string $gamePlayerId, int $minute): self
+    {
+        return new self($teamId, $gamePlayerId, $minute, 'penalty_missed');
+    }
+
     public function toArray(): array
     {
         return [

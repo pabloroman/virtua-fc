@@ -8,6 +8,7 @@ use App\Modules\Lineup\Enums\Mentality;
 use App\Modules\Lineup\Enums\PlayingStyle;
 use App\Modules\Lineup\Enums\PressingIntensity;
 use App\Modules\Lineup\Services\LineupService;
+use Illuminate\Support\Facades\Cache;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -136,6 +137,9 @@ class ShowLiveMatch
         // Batch load suspended player IDs for this competition
         $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($playerMatch->competition_id);
 
+        // Load cached performances for all players (starters + subs)
+        $playerPerformances = Cache::get("match_performances:{$playerMatch->id}", []);
+
         // Bench players (all squad players NOT in the starting lineup, not suspended, not injured)
         $matchDate = $playerMatch->scheduled_date;
         $benchPlayers = GamePlayer::with('player')
@@ -163,12 +167,12 @@ class ShowLiveMatch
                 'fitness' => $p->fitness,
                 'morale' => $p->morale,
                 'minuteEntered' => null,
+                'performance' => $playerPerformances[$p->id] ?? null,
             ])
             ->sortBy('positionSort')
             ->values()
             ->all();
 
-        // Both teams' starting lineups for the Lineups tab
         $mapLineup = fn (array $ids) => GamePlayer::with('player')
             ->whereIn('id', $ids)
             ->get()
@@ -178,7 +182,7 @@ class ShowLiveMatch
                 'positionAbbr' => PositionMapper::toAbbreviation($p->position),
                 'positionGroup' => $p->position_group,
                 'positionSort' => LineupService::positionSortOrder($p->position),
-                'overallScore' => $p->overall_score,
+                'performance' => $playerPerformances[$p->id] ?? null,
             ])
             ->sortBy('positionSort')
             ->values()

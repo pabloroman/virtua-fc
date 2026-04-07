@@ -230,7 +230,7 @@ class ShowLineup
         $xgConfig = [
             'base_goals' => config('match_simulation.base_goals', 1.3),
             'skill_dominance' => config('match_simulation.skill_dominance', 2.0),
-            'home_advantage_goals' => $match->competition_id === 'WC2026'
+            'home_advantage_goals' => $match->isNeutralVenue()
                 ? 0.0
                 : config('match_simulation.home_advantage_goals', 0.15),
             'mentalities' => config('match_simulation.mentalities'),

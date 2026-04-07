@@ -1,0 +1,404 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/33741.png",
+  "name": "FC Drita",
+  "players": [
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 14, 1991",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "144860",
+      "marketValue": "€125k",
+      "name": "Faton Maloku",
+      "nationality": [
+        "Kosovo"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 17, 2000",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "601211",
+      "marketValue": "€50k",
+      "name": "Laurit Behluli",
+      "nationality": [
+        "Kosovo"
+      ],
+      "number": "22",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 16, 1994",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "593422",
+      "name": "Leutrim Rexhepi",
+      "nationality": [
+        "Kosovo"
+      ],
+      "number": "94",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 7, 1994",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "204664",
+      "marketValue": "€500k",
+      "name": "Egzon Bejtulai",
+      "nationality": [
+        "North Macedonia"
+      ],
+      "number": "15",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 23, 1998",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "624919",
+      "marketValue": "€375k",
+      "name": "Juan Camilo Mesa",
+      "nationality": [
+        "Colombia"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 15, 2000",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "454293",
+      "marketValue": "€375k",
+      "name": "Jorgo Pellumbi",
+      "nationality": [
+        "Albania"
+      ],
+      "number": "32",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 29, 1998",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "401979",
+      "marketValue": "€200k",
+      "name": "Abdoul Karim Danté",
+      "nationality": [
+        "Mali"
+      ],
+      "number": "21",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 9, 2004",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "1153539",
+      "marketValue": "€50k",
+      "name": "Hasan Gomda",
+      "nationality": [
+        "Ghana"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 7, 1999",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "575309",
+      "marketValue": "€600k",
+      "name": "Raddy Ovouka",
+      "nationality": [
+        "Congo"
+      ],
+      "number": "26",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 21, 2000",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "699165",
+      "marketValue": "€300k",
+      "name": "Blerton Sheji",
+      "nationality": [
+        "North Macedonia",
+        "Albania"
+      ],
+      "number": "3",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Feb 1, 1990",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "285559",
+      "marketValue": "€125k",
+      "name": "Besnik Krasniqi",
+      "nationality": [
+        "Kosovo"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 19, 2005",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "1056190",
+      "name": "Morris Fuseini",
+      "nationality": [
+        "Ghana"
+      ],
+      "number": "44",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 10, 1996",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "497191",
+      "marketValue": "€600k",
+      "name": "Albert Dabiqaj",
+      "nationality": [
+        "Kosovo"
+      ],
+      "number": "14",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 9, 1996",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "378255",
+      "marketValue": "€550k",
+      "name": "Rron Broja",
+      "nationality": [
+        "Kosovo",
+        "Albania"
+      ],
+      "number": "4",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 1, 1996",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "227092",
+      "marketValue": "€375k",
+      "name": "Vesel Limaj",
+      "nationality": [
+        "Germany",
+        "Kosovo"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 10, 2000",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "820336",
+      "marketValue": "€300k",
+      "name": "Kemehlo Nguena",
+      "nationality": [
+        "France",
+        "Cameroon"
+      ],
+      "number": "93",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 7, 1996",
+      "foot": "both",
+      "height": "1,82m",
+      "id": "607937",
+      "marketValue": "€275k",
+      "name": "Ilir Mustafa",
+      "nationality": [
+        "Kosovo"
+      ],
+      "number": "36",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 1, 2005",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "1278607",
+      "marketValue": "€150k",
+      "name": "Ben Zidane",
+      "nationality": [
+        "Cote d'Ivoire"
+      ],
+      "number": "27",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 11, 2005",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "1050516",
+      "marketValue": "€25k",
+      "name": "Engjëll Sylejmani",
+      "nationality": [
+        "Serbia",
+        "Kosovo"
+      ],
+      "number": "66",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 27, 2000",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "542937",
+      "marketValue": "€225k",
+      "name": "Florent Ramadani",
+      "nationality": [
+        "North Macedonia"
+      ],
+      "number": "11",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 5, 1997",
+      "foot": "both",
+      "height": "1,72m",
+      "id": "497192",
+      "marketValue": "€500k",
+      "name": "Almir Ajzeraj",
+      "nationality": [
+        "Kosovo"
+      ],
+      "number": "7",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 29, 2002",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "636752",
+      "marketValue": "€300k",
+      "name": "Veton Tusha",
+      "nationality": [
+        "Kosovo"
+      ],
+      "number": "25",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 27, 2007",
+      "foot": "right",
+      "id": "1339628",
+      "marketValue": "€75k",
+      "name": "Oniks Grezda",
+      "nationality": [
+        "Kosovo"
+      ],
+      "number": "37",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 6, 1996",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "481795",
+      "marketValue": "€275k",
+      "name": "Kristal Abazaj",
+      "nationality": [
+        "Albania"
+      ],
+      "number": "77",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 15, 1999",
+      "foot": "left",
+      "height": "1,74m",
+      "id": "542470",
+      "marketValue": "€250k",
+      "name": "Liridon Balaj",
+      "nationality": [
+        "Kosovo"
+      ],
+      "number": "10",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 18, 2007",
+      "foot": "left",
+      "height": "1,70m",
+      "id": "1468361",
+      "marketValue": "€75k",
+      "name": "Mike Arthur",
+      "nationality": [
+        "Ghana"
+      ],
+      "number": "99",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jul 23, 1998",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "354711",
+      "marketValue": "€800k",
+      "name": "Arb Manaj",
+      "nationality": [
+        "Kosovo",
+        "Albania"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 5, 1996",
+      "foot": "both",
+      "height": "1,87m",
+      "id": "268868",
+      "marketValue": "€300k",
+      "name": "Blerim Krasniqi",
+      "nationality": [
+        "Albania"
+      ],
+      "number": "19",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Stadiumi me bari sintetik (Gjilan)",
+  "stadiumSeats": "0",
+  "transfermarktId": "33741"
+}

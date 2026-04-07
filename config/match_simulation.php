@@ -61,7 +61,7 @@ return [
     |   skill_dominance 4.0 → xG: 3.53 vs 0.48 (upset ~2% of the time)
     |
     */
-    'base_goals' => 1.2,                // avg xG per team when evenly matched (~2.6 total)
+    'base_goals' => 1.3,                // avg xG per team when evenly matched (~2.6 total)
     'skill_dominance' => 2.3,           // how much team quality widens the xG gap (see above)
     'home_advantage_goals' => 0.20,     // fixed home xG bonus
 
@@ -127,7 +127,7 @@ return [
     */
     'dixon_coles_rho' => -0.05,         // goal correlation: 0 = independent Poisson, -0.13 = realistic
     'max_goals_cap' => 6,
-    'score_concentration' => 1.5,       // 1.0 = standard, >1 = results cluster closer to xG mode
+    'score_concentration' => 1.4,       // 1.0 = standard, >1 = results cluster closer to xG mode
 
     /*
     |--------------------------------------------------------------------------
@@ -143,6 +143,8 @@ return [
     'direct_red_chance' => 0.5,         // % chance of direct red card per team
     'injury_chance' => 1.0,             // % chance of injury per player per match
     'training_injury_chance' => 1.05,   // % chance of training injury per player per matchday (all squad members)
+    'penalties_per_game' => 0.25,       // Average penalties awarded per game (both teams combined)
+    'penalty_scored_chance' => 85.0,    // % chance a penalty is scored
 
     /*
     |--------------------------------------------------------------------------

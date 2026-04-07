@@ -68,73 +68,71 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
             return;
         }
 
-        DB::transaction(function () use ($game, $contractService, $developmentService, $setupPipeline, $fixtureProcessor, $standingsProcessor) {
-            $this->currentDate = $game->current_date ?? Carbon::parse("{$this->season}-08-15");
+        $this->currentDate = $game->current_date ?? Carbon::parse("{$this->season}-08-15");
 
-            // Step 1: Copy competition team rosters into per-game table
-            $this->copyCompetitionTeamsToGame();
+        // Step 1: Copy competition team rosters into per-game table
+        $this->copyCompetitionTeamsToGame();
 
-            // Step 1b: Initialize per-game reputation records for all teams
-            $this->initializeTeamReputations();
+        // Step 1b: Initialize per-game reputation records for all teams
+        $this->initializeTeamReputations();
 
-            // Step 2: Initialize game players (template-based or fallback)
-            $this->initializeGamePlayersFromTemplates($contractService, $developmentService);
+        // Step 2: Initialize game players (template-based or fallback)
+        $this->initializeGamePlayersFromTemplates($contractService, $developmentService);
 
-            // Step 3: Run shared setup processors
-            if ($this->gameMode === Game::MODE_CAREER) {
-                // Career mode: run all 4 shared processors (fixtures, standings, budget, cups/Swiss)
-                $allTeams = $this->loadTeamLookup();
-                $swissPotData = $this->buildSwissPotData($allTeams);
+        // Step 3: Run shared setup processors
+        if ($this->gameMode === Game::MODE_CAREER) {
+            // Career mode: run all 4 shared processors (fixtures, standings, budget, cups/Swiss)
+            $allTeams = $this->loadTeamLookup();
+            $swissPotData = $this->buildSwissPotData($allTeams);
 
-                $data = new SeasonTransitionData(
-                    oldSeason: '0',
-                    newSeason: $this->season,
-                    competitionId: $this->competitionId,
-                    isInitialSeason: true,
-                    metadata: $swissPotData ? [SeasonTransitionData::META_SWISS_POT_DATA => $swissPotData] : [],
-                );
+            $data = new SeasonTransitionData(
+                oldSeason: '0',
+                newSeason: $this->season,
+                competitionId: $this->competitionId,
+                isInitialSeason: true,
+                metadata: $swissPotData ? [SeasonTransitionData::META_SWISS_POT_DATA => $swissPotData] : [],
+            );
 
-                $setupPipeline->run($game->refresh(), $data);
+            $setupPipeline->run($game->refresh(), $data);
 
-                // Initialize players for Swiss format competitions (non-template path only)
-                if (!$this->usedTemplates) {
-                    $allPlayers = $this->loadPlayerLookup();
-                    $this->initializeSwissFormatPlayers($allTeams, $allPlayers, $contractService, $developmentService);
-                }
-            } else {
-                // Non-career mode: only fixtures + standings (no budget/cups)
-                $data = new SeasonTransitionData(
-                    oldSeason: '0',
-                    newSeason: $this->season,
-                    competitionId: $this->competitionId,
-                    isInitialSeason: true,
-                );
-
-                $fixtureProcessor->process($game, $data);
-                $standingsProcessor->process($game, $data);
-            }
-
-            // Compute tiers for players when templates weren't used (fallback + Swiss)
+            // Initialize players for Swiss format competitions (non-template path only)
             if (!$this->usedTemplates) {
-                app(PlayerTierService::class)->recomputeAllTiersForGame($this->gameId);
+                $allPlayers = $this->loadPlayerLookup();
+                $this->initializeSwissFormatPlayers($allTeams, $allPlayers, $contractService, $developmentService);
             }
+        } else {
+            // Non-career mode: only fixtures + standings (no budget/cups)
+            $data = new SeasonTransitionData(
+                oldSeason: '0',
+                newSeason: $this->season,
+                competitionId: $this->competitionId,
+                isInitialSeason: true,
+            );
 
-            // Mark setup as complete
-            Game::where('id', $this->gameId)->update([
-                'setup_completed_at' => now(),
-                'season_transition_step' => null,
-                'season_transition_data' => null,
-            ]);
+            $fixtureProcessor->process($game, $data);
+            $standingsProcessor->process($game, $data);
+        }
 
-            // Record activation event
-            app(\App\Modules\Season\Services\ActivationTracker::class)
-                ->record($game->user_id, \App\Models\ActivationEvent::EVENT_SETUP_COMPLETED, $this->gameId, $this->gameMode);
+        // Compute tiers for players when templates weren't used (fallback + Swiss)
+        if (!$this->usedTemplates) {
+            app(PlayerTierService::class)->recomputeAllTiersForGame($this->gameId);
+        }
 
-            // Notify the user that the summer transfer window is open
-            if ($this->gameMode === Game::MODE_CAREER) {
-                app(NotificationService::class)->notifyTransferWindowOpen($game->refresh(), 'summer');
-            }
-        });
+        // Mark setup as complete
+        Game::where('id', $this->gameId)->update([
+            'setup_completed_at' => now(),
+            'season_transition_step' => null,
+            'season_transition_data' => null,
+        ]);
+
+        // Record activation event
+        app(\App\Modules\Season\Services\ActivationTracker::class)
+            ->record($game->user_id, \App\Models\ActivationEvent::EVENT_SETUP_COMPLETED, $this->gameId, $this->gameMode);
+
+        // Notify the user that the summer transfer window is open
+        if ($this->gameMode === Game::MODE_CAREER) {
+            app(NotificationService::class)->notifyTransferWindowOpen($game->refresh(), 'summer');
+        }
     }
 
     private function copyCompetitionTeamsToGame(): void
@@ -159,9 +157,11 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
             ->values()
             ->toArray();
 
-        foreach (array_chunk($rows, 100) as $chunk) {
-            CompetitionEntry::insert($chunk);
-        }
+        DB::transaction(function () use ($rows) {
+            foreach (array_chunk($rows, 100) as $chunk) {
+                CompetitionEntry::insert($chunk);
+            }
+        });
     }
 
     /**
@@ -224,9 +224,11 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
             ];
         }
 
-        foreach (array_chunk($rows, 100) as $chunk) {
-            TeamReputation::insert($chunk);
-        }
+        DB::transaction(function () use ($rows) {
+            foreach (array_chunk($rows, 100) as $chunk) {
+                TeamReputation::insert($chunk);
+            }
+        });
     }
 
     private function loadTeamLookup(): Collection
@@ -384,7 +386,6 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
 
         $this->usedTemplates = true;
 
-        $seenPlayerIds = [];
         $gameId = $this->gameId;
 
         DB::table('game_player_templates')
@@ -393,16 +394,10 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
                 $query->select('id')->from('teams')->where('type', 'national');
             })
             ->orderBy('player_id')
-            ->chunk(500, function ($templates) use ($gameId, &$seenPlayerIds) {
+            ->chunk(200, function ($templates) use ($gameId) {
                 $rows = [];
 
                 foreach ($templates as $t) {
-                    // Skip duplicate players (same player listed under multiple teams)
-                    if (isset($seenPlayerIds[$t->player_id])) {
-                        continue;
-                    }
-                    $seenPlayerIds[$t->player_id] = true;
-
                     $rows[] = [
                         'id' => Str::uuid()->toString(),
                         'game_id' => $gameId,
@@ -428,7 +423,7 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
                 }
 
                 if (!empty($rows)) {
-                    GamePlayer::insert($rows);
+                    GamePlayer::insertOrIgnore($rows);
                 }
             });
     }

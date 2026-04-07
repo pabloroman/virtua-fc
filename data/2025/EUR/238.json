@@ -1,0 +1,424 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/238.png",
+  "name": "Lech Poznan",
+  "players": [
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 23, 2000",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "345452",
+      "marketValue": "€3.00m",
+      "name": "Bartosz Mrozek",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "41",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Dec 15, 2004",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "859218",
+      "marketValue": "€1.50m",
+      "name": "Plamen Andreev",
+      "nationality": [
+        "Bulgaria"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 30, 2026",
+      "dateOfBirth": "Feb 15, 2007",
+      "height": "1,84m",
+      "id": "1018353",
+      "marketValue": "€200k",
+      "name": "Mateusz Pruchniewski",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "33",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 18, 2007",
+      "height": "1,88m",
+      "id": "1007295",
+      "marketValue": "€4.00m",
+      "name": "Wojciech Mońka",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "27",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 17, 2001",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "539008",
+      "marketValue": "€1.00m",
+      "name": "Alex Douglas",
+      "nationality": [
+        "Sweden",
+        "Ghana"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 22, 2000",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "345454",
+      "marketValue": "€1.00m",
+      "name": "Mateusz Skrzypczak",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "72",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 10, 1994",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "179896",
+      "marketValue": "€650k",
+      "name": "Antonio Milic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "16",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Mar 18, 2009",
+      "foot": "left",
+      "height": "1,92m",
+      "id": "1295659",
+      "name": "Hubert Janyszka",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "90",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 30, 2006",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "991779",
+      "marketValue": "€3.00m",
+      "name": "Michał Gurgul",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "15",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 12, 1998",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "461906",
+      "marketValue": "€800k",
+      "name": "João Moutinho",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "4",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 28, 1996",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "225165",
+      "marketValue": "€2.00m",
+      "name": "Joel Pereira",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 4, 1998",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "353826",
+      "marketValue": "€800k",
+      "name": "Robert Gumny",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "20",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 18, 2004",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "555057",
+      "marketValue": "€5.00m",
+      "name": "Antoni Kozubal",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "43",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 10, 2004",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "952979",
+      "marketValue": "€1.20m",
+      "name": "Timothy Ouma",
+      "nationality": [
+        "Kenya"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 12, 2004",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "825960",
+      "marketValue": "€700k",
+      "name": "Gísli Thórdarson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "23",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 22, 1994",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "220969",
+      "marketValue": "€400k",
+      "name": "Radosław Murawski",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "22",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 18, 2008",
+      "height": "1,75m",
+      "id": "1137026",
+      "marketValue": "€200k",
+      "name": "Sammy Dudek",
+      "nationality": [
+        "Poland",
+        "Germany"
+      ],
+      "number": "53",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 14, 2001",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "721470",
+      "marketValue": "€2.00m",
+      "name": "Patrik Wålemark",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 4, 2001",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "537765",
+      "marketValue": "€2.00m",
+      "name": "Pablo Rodríguez",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "99",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 8, 1997",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "242813",
+      "marketValue": "€1.00m",
+      "name": "Filip Jagiełło",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "24",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 17, 2000",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "539043",
+      "marketValue": "€3.50m",
+      "name": "Luis Palma",
+      "nationality": [
+        "Honduras"
+      ],
+      "number": "77",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 26, 2000",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "448284",
+      "marketValue": "€1.50m",
+      "name": "Daniel Håkans",
+      "nationality": [
+        "Finland"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 26, 1998",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "323325",
+      "marketValue": "€1.50m",
+      "name": "Leo Bengtsson",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "14",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 20, 2006",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "1148082",
+      "marketValue": "€600k",
+      "name": "Kornel Lisman",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "56",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 10, 1996",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "294772",
+      "marketValue": "€2.00m",
+      "name": "Ali Gholizadeh",
+      "nationality": [
+        "Iran"
+      ],
+      "number": "8",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jul 16, 2000",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "676476",
+      "marketValue": "€1.50m",
+      "name": "Taofeek Ismaheel",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "88",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Feb 20, 2003",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "926954",
+      "marketValue": "€2.00m",
+      "name": "Yannick Agnero",
+      "nationality": [
+        "Cote d'Ivoire"
+      ],
+      "number": "7",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 31, 1993",
+      "foot": "both",
+      "height": "1,85m",
+      "id": "153637",
+      "marketValue": "€800k",
+      "name": "Mikael Ishak",
+      "nationality": [
+        "Sweden",
+        "Syria"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 23, 2007",
+      "height": "1,83m",
+      "id": "1073752",
+      "marketValue": "€250k",
+      "name": "Kamil Jakóbczyk",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "54",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 5, 2008",
+      "id": "1207415",
+      "name": "Wojciech Szymczak",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "17",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Enea Poznań",
+  "stadiumSeats": "42837",
+  "transfermarktId": "238"
+}

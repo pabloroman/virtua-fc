@@ -1,0 +1,350 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/17149.png",
+  "name": "Hamrun Spartans",
+  "players": [
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 13, 1988",
+      "height": "1,86m",
+      "id": "125033",
+      "marketValue": "€100k",
+      "name": "Henry Bonello",
+      "nationality": [
+        "Malta"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 25, 1998",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "873597",
+      "marketValue": "€50k",
+      "name": "Célio",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "98",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jun 13, 2006",
+      "id": "1510225",
+      "name": "Essien Borg",
+      "nationality": [
+        "Malta"
+      ],
+      "number": "14",
+      "position": "Defender"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Feb 10, 2005",
+      "id": "863078",
+      "marketValue": "€200k",
+      "name": "Sven Xerri",
+      "nationality": [
+        "Malta"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Dec 10, 1996",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "344870",
+      "marketValue": "€50k",
+      "name": "Ivan Inzoudine",
+      "nationality": [
+        "France"
+      ],
+      "number": "93",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 14, 1999",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "462223",
+      "marketValue": "€350k",
+      "name": "Vincenzo Polito",
+      "nationality": [
+        "Italy"
+      ],
+      "number": "13",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 17, 1995",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "1366690",
+      "marketValue": "€300k",
+      "name": "Rafael Compri",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Apr 9, 1998",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "309472",
+      "marketValue": "€450k",
+      "name": "Matthew Guillaumier",
+      "nationality": [
+        "Malta",
+        "England"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jul 22, 1996",
+      "id": "355903",
+      "marketValue": "€350k",
+      "name": "Matías García",
+      "nationality": [
+        "Malta",
+        "Argentina"
+      ],
+      "number": "8",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jul 29, 1997",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "274326",
+      "marketValue": "€350k",
+      "name": "Ognjen Bjelicic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "27",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Feb 24, 1991",
+      "height": "1,90m",
+      "id": "169049",
+      "marketValue": "€100k",
+      "name": "Emerson",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "91",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jul 3, 1998",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "395697",
+      "marketValue": "€400k",
+      "name": "Kléri Serber",
+      "nationality": [
+        "France",
+        "Guadeloupe"
+      ],
+      "number": "17",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 31, 1995",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "235793",
+      "marketValue": "€275k",
+      "name": "Danilo Bulevardi",
+      "nationality": [
+        "Italy"
+      ],
+      "number": "31",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 29, 2004",
+      "id": "903185",
+      "marketValue": "€100k",
+      "name": "Shaisen Attard",
+      "nationality": [
+        "Malta"
+      ],
+      "number": "7",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Apr 4, 2001",
+      "height": "1,64m",
+      "id": "580483",
+      "name": "Christopher Galea",
+      "nationality": [
+        "Malta"
+      ],
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 8, 1994",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "191723",
+      "marketValue": "€300k",
+      "name": "Ryan Camenzuli",
+      "nationality": [
+        "Malta"
+      ],
+      "number": "94",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 3, 2004",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "813973",
+      "marketValue": "€150k",
+      "name": "Michele Carboni",
+      "nationality": [
+        "Italy"
+      ],
+      "number": "32",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 1, 2004",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "727091",
+      "marketValue": "€100k",
+      "name": "Mouad El Fanis",
+      "nationality": [
+        "Belgium",
+        "Morocco"
+      ],
+      "number": "47",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 15, 2005",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "776915",
+      "marketValue": "€200k",
+      "name": "Sayha Seha",
+      "nationality": [
+        "Madagascar",
+        "France"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 18, 1998",
+      "foot": "right",
+      "id": "889992",
+      "marketValue": "€150k",
+      "name": "Jonny Robert",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "49",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jul 15, 1997",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "324380",
+      "marketValue": "€400k",
+      "name": "Joseph Mbong",
+      "nationality": [
+        "Malta",
+        "Nigeria"
+      ],
+      "number": "10",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Aug 21, 1989",
+      "foot": "both",
+      "height": "1,78m",
+      "id": "74585",
+      "marketValue": "€50k",
+      "name": "Ederson",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "25",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 5, 1996",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "348229",
+      "marketValue": "€250k",
+      "name": "Blessing Eleke",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "30",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 2, 1997",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "460898",
+      "marketValue": "€200k",
+      "name": "Damir Céter",
+      "nationality": [
+        "Colombia"
+      ],
+      "number": "24",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Jan 1, 2001",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "543560",
+      "marketValue": "€50k",
+      "name": "Kairou Amoustapha",
+      "nationality": [
+        "Niger"
+      ],
+      "number": "29",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Victor Tedesco Stadion",
+  "stadiumSeats": "6000",
+  "transfermarktId": "17149"
+}

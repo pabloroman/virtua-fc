@@ -87,8 +87,9 @@ class PreSeasonFixtureProcessor implements SeasonProcessor
 
         $userCountry = $game->country ?? 'ES';
 
-        // Find foreign teams with matching reputation
+        // Find foreign clubs with matching reputation (exclude national teams)
         return Team::where('country', '!=', $userCountry)
+            ->where('type', 'club')
             ->whereHas('clubProfile', function ($query) use ($validLevels) {
                 $query->whereIn('reputation_level', $validLevels);
             })

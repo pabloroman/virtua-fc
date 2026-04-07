@@ -1,0 +1,324 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/1167.png",
+  "name": "Shkendija Tetovo",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 24, 1998",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "292154",
+      "marketValue": "€400k",
+      "name": "Baboucarr Gaye",
+      "nationality": [
+        "The Gambia",
+        "Germany"
+      ],
+      "number": "24",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jul 4, 2002",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "720498",
+      "marketValue": "€150k",
+      "name": "Astrit Amzai",
+      "nationality": [
+        "North Macedonia"
+      ],
+      "number": "25",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Oct 28, 1994",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "865639",
+      "marketValue": "€25k",
+      "name": "Ferat Ramani",
+      "nationality": [
+        "North Macedonia"
+      ],
+      "number": "30",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 2, 2002",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "676121",
+      "marketValue": "€600k",
+      "name": "Imran Fetai",
+      "nationality": [
+        "North Macedonia"
+      ],
+      "number": "15",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Jan 9, 2006",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "944520",
+      "marketValue": "€300k",
+      "name": "Anes Meljichi",
+      "nationality": [
+        "North Macedonia"
+      ],
+      "number": "26",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jul 4, 2001",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "882003",
+      "marketValue": "€600k",
+      "name": "Ronaldo Webster",
+      "nationality": [
+        "Jamaica"
+      ],
+      "number": "11",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Mar 18, 2006",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "1072848",
+      "marketValue": "€175k",
+      "name": "Numan Ajetovikj",
+      "nationality": [
+        "North Macedonia"
+      ],
+      "number": "22",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 14, 2027",
+      "dateOfBirth": "Dec 31, 2000",
+      "id": "834018",
+      "marketValue": "€500k",
+      "name": "Aleksander Trumci",
+      "nationality": [
+        "Albania"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 5, 1994",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "190295",
+      "marketValue": "€100k",
+      "name": "Mevlan Murati",
+      "nationality": [
+        "North Macedonia",
+        "Albania"
+      ],
+      "number": "16",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 30, 2003",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "893187",
+      "marketValue": "€600k",
+      "name": "Reshat Ramadani",
+      "nationality": [
+        "North Macedonia",
+        "Albania"
+      ],
+      "number": "4",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Oct 14, 2000",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "647957",
+      "marketValue": "€400k",
+      "name": "Adamu Alhassan",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 18, 2000",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "690872",
+      "marketValue": "€250k",
+      "name": "Drilon Islami",
+      "nationality": [
+        "Kosovo"
+      ],
+      "number": "5",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 15, 1999",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "427336",
+      "marketValue": "€400k",
+      "name": "Arbin Zejnullai",
+      "nationality": [
+        "Albania",
+        "North Macedonia"
+      ],
+      "number": "17",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Oct 26, 1994",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "458362",
+      "marketValue": "€300k",
+      "name": "Endrit Krasniqi",
+      "nationality": [
+        "Kosovo",
+        "Albania"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 30, 1999",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "507733",
+      "marketValue": "€250k",
+      "name": "Sebastjan Spahiu",
+      "nationality": [
+        "Albania",
+        "Belgium"
+      ],
+      "number": "49",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Feb 6, 1994",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "226190",
+      "marketValue": "€300k",
+      "name": "Liridon Latifi",
+      "nationality": [
+        "Albania",
+        "Kosovo"
+      ],
+      "number": "77",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 28, 2003",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "821577",
+      "marketValue": "€175k",
+      "name": "Vane Krstevski",
+      "nationality": [
+        "North Macedonia"
+      ],
+      "number": "19",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 24, 2004",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "1008877",
+      "marketValue": "€600k",
+      "name": "Fabrice Tamba",
+      "nationality": [
+        "Senegal"
+      ],
+      "number": "29",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 2, 2001",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "723701",
+      "marketValue": "€175k",
+      "name": "Atdhe Mazari",
+      "nationality": [
+        "Albania",
+        "North Macedonia"
+      ],
+      "number": "20",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Mar 9, 2005",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "948529",
+      "marketValue": "€75k",
+      "name": "Lorik Kaba",
+      "nationality": [
+        "North Macedonia",
+        "Albania"
+      ],
+      "number": "27",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Jul 7, 2000",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "427953",
+      "marketValue": "€250k",
+      "name": "Fahd Ndzengue",
+      "nationality": [
+        "Gabon"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Dec 17, 1986",
+      "foot": "both",
+      "height": "1,82m",
+      "id": "66472",
+      "marketValue": "€200k",
+      "name": "Besart Ibraimi",
+      "nationality": [
+        "North Macedonia"
+      ],
+      "number": "7",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Ecolog Arena",
+  "stadiumSeats": "15000",
+  "transfermarktId": "1167"
+}

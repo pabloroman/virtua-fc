@@ -45,6 +45,19 @@ class UefaQualificationTest extends TestCase
         Competition::factory()->league()->create(['id' => 'ITA1', 'country' => 'IT', 'tier' => 1]);
         Competition::factory()->league()->create(['id' => 'FRA1', 'country' => 'FR', 'tier' => 1]);
 
+        // Segunda División (for relegation tests)
+        Competition::factory()->league()->create(['id' => 'ESP2', 'country' => 'ES', 'tier' => 2]);
+
+        // Copa del Rey (for cup winner tests)
+        Competition::factory()->create([
+            'id' => 'ESPCUP',
+            'name' => 'Copa del Rey',
+            'country' => 'ES',
+            'type' => 'cup',
+            'role' => Competition::ROLE_DOMESTIC_CUP,
+            'handler_type' => 'knockout_cup',
+        ]);
+
         // EUR team pool competition
         Competition::factory()->create([
             'id' => 'EUR',
@@ -128,11 +141,7 @@ class UefaQualificationTest extends TestCase
     public function test_ucl_has_36_entries_after_qualification(): void
     {
         $processor = app(UefaQualificationProcessor::class);
-        $data = new SeasonTransitionData(
-            oldSeason: '2025',
-            newSeason: '2026',
-            competitionId: 'ESP1',
-        );
+        $data = $this->makeTransitionData();
 
         $processor->process($this->game, $data);
 
@@ -146,11 +155,7 @@ class UefaQualificationTest extends TestCase
     public function test_uel_has_36_entries_after_qualification(): void
     {
         $processor = app(UefaQualificationProcessor::class);
-        $data = new SeasonTransitionData(
-            oldSeason: '2025',
-            newSeason: '2026',
-            competitionId: 'ESP1',
-        );
+        $data = $this->makeTransitionData();
 
         $processor->process($this->game, $data);
 
@@ -176,11 +181,7 @@ class UefaQualificationTest extends TestCase
             ['entry_round' => 1]
         );
 
-        $data = new SeasonTransitionData(
-            oldSeason: '2025',
-            newSeason: '2026',
-            competitionId: 'ESP1',
-        );
+        $data = $this->makeTransitionData();
         $data->setMetadata(SeasonTransitionData::META_UEL_WINNER, $uelWinner->id);
 
         $processor = app(UefaQualificationProcessor::class);
@@ -201,11 +202,7 @@ class UefaQualificationTest extends TestCase
         // Pick a team that's already in UCL (from standings-based qualification)
         $espTeam1 = $this->teamsByCountry['ES'][0]; // Position 1 in ESP1 standings
 
-        $data = new SeasonTransitionData(
-            oldSeason: '2025',
-            newSeason: '2026',
-            competitionId: 'ESP1',
-        );
+        $data = $this->makeTransitionData();
         $data->setMetadata(SeasonTransitionData::META_UEL_WINNER, $espTeam1->id);
 
         $processor = app(UefaQualificationProcessor::class);
@@ -221,11 +218,7 @@ class UefaQualificationTest extends TestCase
 
     public function test_no_team_appears_in_both_ucl_and_uel(): void
     {
-        $data = new SeasonTransitionData(
-            oldSeason: '2025',
-            newSeason: '2026',
-            competitionId: 'ESP1',
-        );
+        $data = $this->makeTransitionData();
 
         $processor = app(UefaQualificationProcessor::class);
         $processor->process($this->game, $data);
@@ -260,11 +253,7 @@ class UefaQualificationTest extends TestCase
         ]);
 
         $processor = app(SeasonArchiveProcessor::class);
-        $data = new SeasonTransitionData(
-            oldSeason: '2025',
-            newSeason: '2026',
-            competitionId: 'ESP1',
-        );
+        $data = $this->makeTransitionData();
 
         $result = $processor->process($this->game, $data);
 
@@ -288,11 +277,7 @@ class UefaQualificationTest extends TestCase
         );
 
         $processor = app(SeasonArchiveProcessor::class);
-        $data = new SeasonTransitionData(
-            oldSeason: '2025',
-            newSeason: '2026',
-            competitionId: 'ESP1',
-        );
+        $data = $this->makeTransitionData();
 
         $result = $processor->process($this->game, $data);
 
@@ -313,11 +298,7 @@ class UefaQualificationTest extends TestCase
         }
 
         $processor = app(UefaQualificationProcessor::class);
-        $data = new SeasonTransitionData(
-            oldSeason: '2025',
-            newSeason: '2026',
-            competitionId: 'ESP1',
-        );
+        $data = $this->makeTransitionData();
 
         $processor->process($this->game, $data);
 
@@ -336,8 +317,305 @@ class UefaQualificationTest extends TestCase
     }
 
     // =========================================
+    // Cup winner + UEL winner edge cases
+    // =========================================
+
+    public function test_cup_winner_not_in_league_top_7_gets_uel_spot(): void
+    {
+        // Team at position 10 wins the Copa del Rey
+        $cupWinner = $this->teamsByCountry['ES'][9]; // position 10
+        $this->createCupFinal('ESPCUP', $cupWinner->id);
+
+        $processor = app(UefaQualificationProcessor::class);
+        $data = $this->makeTransitionData();
+        $processor->process($this->game, $data);
+
+        $this->assertTrue(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'UEL')
+                ->where('team_id', $cupWinner->id)
+                ->exists(),
+            'Cup winner outside top 7 should qualify for UEL'
+        );
+    }
+
+    public function test_cup_winner_already_in_ucl_cascades_uel_spot(): void
+    {
+        // Team at position 1 (already UCL via league) wins Copa del Rey
+        $cupWinner = $this->teamsByCountry['ES'][0]; // position 1 = UCL
+        $this->createCupFinal('ESPCUP', $cupWinner->id);
+
+        $processor = app(UefaQualificationProcessor::class);
+        $data = $this->makeTransitionData();
+        $processor->process($this->game, $data);
+
+        // Cup winner should be in UCL (via league), NOT in UEL
+        $this->assertTrue(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'UCL')
+                ->where('team_id', $cupWinner->id)
+                ->exists()
+        );
+        $this->assertFalse(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'UEL')
+                ->where('team_id', $cupWinner->id)
+                ->exists()
+        );
+
+        // Position 8 (next non-qualified) should get the cascaded UEL spot
+        $nextTeam = $this->teamsByCountry['ES'][7]; // position 8
+        $this->assertTrue(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'UEL')
+                ->where('team_id', $nextTeam->id)
+                ->exists(),
+            'Cascaded UEL spot from cup winner should go to position 8'
+        );
+    }
+
+    public function test_uel_winner_with_cup_uel_spot_only_appears_in_ucl(): void
+    {
+        // Team at position 10 wins Copa AND UEL
+        $team = $this->teamsByCountry['ES'][9]; // position 10
+        $this->createCupFinal('ESPCUP', $team->id);
+
+        $processor = app(UefaQualificationProcessor::class);
+        $data = $this->makeTransitionData();
+        $data->setMetadata(SeasonTransitionData::META_UEL_WINNER, $team->id);
+
+        $processor->process($this->game, $data);
+
+        // Should be in UCL (via UEL winner upgrade)
+        $this->assertTrue(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'UCL')
+                ->where('team_id', $team->id)
+                ->exists(),
+            'Cup+UEL winner should be in UCL'
+        );
+
+        // Should NOT be in UEL (cup spot must cascade)
+        $this->assertFalse(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'UEL')
+                ->where('team_id', $team->id)
+                ->exists(),
+            'Cup+UEL winner should NOT remain in UEL'
+        );
+    }
+
+    public function test_uel_winner_vacated_uel_spot_cascades_to_next_team(): void
+    {
+        // Team at position 10 wins Copa AND UEL
+        $team = $this->teamsByCountry['ES'][9]; // position 10
+        $this->createCupFinal('ESPCUP', $team->id);
+
+        $processor = app(UefaQualificationProcessor::class);
+        $data = $this->makeTransitionData();
+        $data->setMetadata(SeasonTransitionData::META_UEL_WINNER, $team->id);
+
+        $processor->process($this->game, $data);
+
+        // The vacated UEL spot should go to the next non-qualified Spanish team.
+        // Positions 1-5 = UCL, 6 = UEL, 7 = UECL, 8 = next non-qualified
+        // But position 10 (the cup+UEL winner) is now in UCL, so position 8 gets UEL.
+        $nextTeam = $this->teamsByCountry['ES'][7]; // position 8
+        $this->assertTrue(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'UEL')
+                ->where('team_id', $nextTeam->id)
+                ->exists(),
+            'Vacated UEL spot should cascade to next non-qualified Spanish team'
+        );
+    }
+
+    public function test_no_team_appears_in_multiple_european_competitions(): void
+    {
+        // Team at position 10 wins Copa AND UEL — complex scenario
+        $team = $this->teamsByCountry['ES'][9];
+        $this->createCupFinal('ESPCUP', $team->id);
+
+        $processor = app(UefaQualificationProcessor::class);
+        $data = $this->makeTransitionData();
+        $data->setMetadata(SeasonTransitionData::META_UEL_WINNER, $team->id);
+
+        $processor->process($this->game, $data);
+
+        $entries = CompetitionEntry::where('game_id', $this->game->id)
+            ->whereIn('competition_id', ['UCL', 'UEL', 'UECL'])
+            ->get()
+            ->groupBy('team_id');
+
+        $duplicates = $entries->filter(fn ($group) => $group->count() > 1);
+        $this->assertTrue(
+            $duplicates->isEmpty(),
+            'No team should appear in multiple European competitions. Duplicates: ' .
+            $duplicates->map(fn ($group, $teamId) => $teamId . ' in ' . $group->pluck('competition_id')->implode(', '))->implode('; ')
+        );
+    }
+
+    // =========================================
+    // Filler team edge cases
+    // =========================================
+
+    public function test_relegated_team_is_not_filler_in_european_competitions(): void
+    {
+        // Register a Spanish team (position 15) in the EUR pool so it could be a filler
+        $relegatedTeam = $this->teamsByCountry['ES'][14]; // position 15
+        CompetitionTeam::create([
+            'competition_id' => 'EUR',
+            'team_id' => $relegatedTeam->id,
+            'season' => '2025',
+        ]);
+
+        // Simulate relegation: move team to ESP2
+        CompetitionEntry::create([
+            'game_id' => $this->game->id,
+            'competition_id' => 'ESP2',
+            'team_id' => $relegatedTeam->id,
+            'entry_round' => 1,
+        ]);
+
+        $processor = app(UefaQualificationProcessor::class);
+        $data = $this->makeTransitionData();
+        $processor->process($this->game, $data);
+
+        $inEuropean = CompetitionEntry::where('game_id', $this->game->id)
+            ->whereIn('competition_id', ['UCL', 'UEL', 'UECL'])
+            ->where('team_id', $relegatedTeam->id)
+            ->exists();
+
+        $this->assertFalse($inEuropean, 'A team from a configured country should never be a filler');
+    }
+
+    public function test_configured_country_teams_never_used_as_fillers(): void
+    {
+        $processor = app(UefaQualificationProcessor::class);
+        $data = $this->makeTransitionData();
+        $processor->process($this->game, $data);
+
+        $configuredCountries = ['ES', 'EN', 'DE', 'IT', 'FR'];
+
+        foreach (['UCL', 'UEL', 'UECL'] as $competitionId) {
+            $entries = CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', $competitionId)
+                ->pluck('team_id')
+                ->toArray();
+
+            // Get teams from configured countries that are in this competition
+            $configuredTeamsInComp = Team::whereIn('id', $entries)
+                ->whereIn('country', $configuredCountries)
+                ->pluck('id')
+                ->toArray();
+
+            // Every configured-country team in the competition must have qualified
+            // via league standings (not as a filler). Check they're in qualifying positions.
+            foreach ($configuredTeamsInComp as $teamId) {
+                $team = Team::find($teamId);
+                $slots = $this->countryConfig->continentalSlots($team->country);
+                $qualifyingTeamIds = [];
+                foreach ($slots as $leagueId => $allocations) {
+                    foreach ($allocations as $continentalId => $positions) {
+                        if ($continentalId === $competitionId) {
+                            foreach ($positions as $pos) {
+                                $qualifyingTeamIds[] = $this->teamsByCountry[$team->country][$pos - 1]->id ?? null;
+                            }
+                        }
+                    }
+                }
+
+                $this->assertContains(
+                    $teamId,
+                    $qualifyingTeamIds,
+                    "Team {$teamId} from {$team->country} in {$competitionId} should have qualified via standings, not as a filler"
+                );
+            }
+        }
+    }
+
+    public function test_uecl_has_36_entries_after_qualification(): void
+    {
+        $processor = app(UefaQualificationProcessor::class);
+        $data = $this->makeTransitionData();
+        $processor->process($this->game, $data);
+
+        $ueclCount = CompetitionEntry::where('game_id', $this->game->id)
+            ->where('competition_id', 'UECL')
+            ->count();
+
+        $this->assertEquals(36, $ueclCount, "UECL should have exactly 36 entries, got {$ueclCount}");
+    }
+
+    // =========================================
+    // Cup winner + UECL upgrade edge cases
+    // =========================================
+
+    public function test_cup_winner_in_uecl_via_league_gets_upgraded_to_uel(): void
+    {
+        // Team at position 7 (UECL via league) wins Copa del Rey
+        $cupWinner = $this->teamsByCountry['ES'][6]; // position 7 = UECL
+        $this->createCupFinal('ESPCUP', $cupWinner->id);
+
+        $processor = app(UefaQualificationProcessor::class);
+        $data = $this->makeTransitionData();
+        $processor->process($this->game, $data);
+
+        // Should be upgraded to UEL
+        $this->assertTrue(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'UEL')
+                ->where('team_id', $cupWinner->id)
+                ->exists(),
+            'Cup winner in UECL via league should be upgraded to UEL'
+        );
+
+        // Should NOT be in UECL anymore
+        $this->assertFalse(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'UECL')
+                ->where('team_id', $cupWinner->id)
+                ->exists(),
+            'Cup winner should no longer be in UECL after upgrade'
+        );
+
+        // Vacated UECL spot should cascade to position 8
+        $nextTeam = $this->teamsByCountry['ES'][7]; // position 8
+        $this->assertTrue(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'UECL')
+                ->where('team_id', $nextTeam->id)
+                ->exists(),
+            'Vacated UECL spot should cascade to position 8'
+        );
+    }
+
+    // =========================================
     // Helpers
     // =========================================
+
+    private function makeTransitionData(): SeasonTransitionData
+    {
+        return new SeasonTransitionData(
+            oldSeason: '2025',
+            newSeason: '2026',
+            competitionId: 'ESP1',
+        );
+    }
+
+    private function createCupFinal(string $cupId, string $winnerId): void
+    {
+        $loser = $this->eurPoolTeams[0]; // arbitrary opponent
+        CupTie::create([
+            'game_id' => $this->game->id,
+            'competition_id' => $cupId,
+            'round_number' => 7, // cup_final_round from config
+            'home_team_id' => $winnerId,
+            'away_team_id' => $loser->id,
+            'winner_id' => $winnerId,
+            'completed' => true,
+        ]);
+    }
 
     private function createCountryTeamsWithStandings(string $country, string $competitionId, int $count): void
     {

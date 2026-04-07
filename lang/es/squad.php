@@ -362,10 +362,10 @@ return [
     'save_registration' => 'Guardar',
     'registration_saved' => 'Inscripción guardada',
     'registered_count' => ':count inscritos',
-    'academy_age_limit' => 'Solo jugadores menores de 23 años pueden inscribirse con dorsal de cantera (26-99)',
+    'academy_age_limit' => 'Solo jugadores de 23 años o menores pueden inscribirse con dorsal de cantera (26-99)',
     'registration_rules_title' => 'Reglas de Inscripción',
     'registration_rule_first_team' => 'Los jugadores del primer equipo llevan dorsales del 1 al 25.',
-    'registration_rule_academy' => 'Los dorsales de cantera (26-99) están reservados para jugadores menores de 23 años.',
+    'registration_rule_academy' => 'Los dorsales de cantera (26-99) están reservados para jugadores de 23 años o menores.',
     'registration_rule_unregistered' => 'Los jugadores no inscritos no pueden ser convocados para los partidos.',
     'registration_readonly' => 'Puedes inscribir jugadores y modificar dorsales solo durante las ventanas de fichajes.',
 ];

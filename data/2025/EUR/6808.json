@@ -1,0 +1,437 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/6808.png",
+  "name": "HSK Zrinjski Mostar",
+  "players": [
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Aug 18, 1996",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "243679",
+      "marketValue": "€300k",
+      "name": "Goran Karacic",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Croatia"
+      ],
+      "number": "18",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Oct 18, 1997",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "532772",
+      "marketValue": "€200k",
+      "name": "Marin Ljubic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "40",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 7, 2004",
+      "foot": "right",
+      "id": "902989",
+      "marketValue": "€50k",
+      "name": "Tin Sajko",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "32",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Dec 15, 2003",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "895531",
+      "marketValue": "€500k",
+      "name": "Duje Dujmovic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "55",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 15, 1995",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "205936",
+      "marketValue": "€250k",
+      "name": "Darick Kobie Morris",
+      "nationality": [
+        "Croatia",
+        "United States"
+      ],
+      "number": "37",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Feb 3, 1991",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "109000",
+      "marketValue": "€50k",
+      "name": "Hrvoje Barisic",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Croatia"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "May 25, 2006",
+      "foot": "right",
+      "id": "909390",
+      "marketValue": "€50k",
+      "name": "David Karacic",
+      "nationality": [
+        "Bosnia-Herzegovina"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "May 26, 1989",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "145994",
+      "marketValue": "€50k",
+      "name": "Slobodan Jakovljevic",
+      "nationality": [
+        "Serbia",
+        "Bosnia-Herzegovina"
+      ],
+      "number": "27",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Mar 6, 1996",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "226082",
+      "marketValue": "€250k",
+      "name": "Petar Mamic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "12",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 6, 2002",
+      "foot": "left",
+      "id": "889801",
+      "marketValue": "€50k",
+      "name": "Toma Palic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "24",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Feb 5, 1999",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "540938",
+      "marketValue": "€300k",
+      "name": "Marko Vranjkovic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "19",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Jan 6, 1996",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "307098",
+      "marketValue": "€300k",
+      "name": "Kerim Memija",
+      "nationality": [
+        "Bosnia-Herzegovina"
+      ],
+      "number": "50",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Nov 18, 1990",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "83287",
+      "marketValue": "€50k",
+      "name": "Mateo Susic",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Croatia"
+      ],
+      "number": "16",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Oct 8, 2000",
+      "foot": "right",
+      "height": "1,95m",
+      "id": "454888",
+      "marketValue": "€600k",
+      "name": "Igor Savic",
+      "nationality": [
+        "Bosnia-Herzegovina"
+      ],
+      "number": "21",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 23, 1998",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "307697",
+      "marketValue": "€500k",
+      "name": "Stefano Surdanovic",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "23",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 17, 2002",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "731965",
+      "marketValue": "€350k",
+      "name": "Dan Lagumdzija",
+      "nationality": [
+        "Croatia",
+        "Bosnia-Herzegovina"
+      ],
+      "number": "5",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 15, 1998",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "341424",
+      "marketValue": "€350k",
+      "name": "Neven Djurasek",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "30",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Feb 2, 1998",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "419255",
+      "marketValue": "€400k",
+      "name": "Marijan Cavar",
+      "nationality": [
+        "Bosnia-Herzegovina"
+      ],
+      "number": "42",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "May 25, 1995",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "388145",
+      "marketValue": "€300k",
+      "name": "Antonio Ivancic",
+      "nationality": [
+        "Croatia",
+        "Bosnia-Herzegovina"
+      ],
+      "number": "20",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 1, 1997",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "332875",
+      "marketValue": "€300k",
+      "name": "Adi Nalic",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Sweden"
+      ],
+      "number": "22",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 25, 2005",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "917857",
+      "marketValue": "€125k",
+      "name": "Antonio Ilic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "17",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 24, 1999",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "376445",
+      "marketValue": "€500k",
+      "name": "Mario Cuze",
+      "nationality": [
+        "Croatia",
+        "Bosnia-Herzegovina"
+      ],
+      "number": "25",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jul 31, 2027",
+      "dateOfBirth": "May 17, 2000",
+      "foot": "right",
+      "id": "701391",
+      "marketValue": "€400k",
+      "name": "Karlo Abramovic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "77",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "May 6, 1997",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "473296",
+      "marketValue": "€250k",
+      "name": "Leo Mikic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "9",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Aug 16, 2004",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "651773",
+      "marketValue": "€700k",
+      "name": "Matej Sakota",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Croatia"
+      ],
+      "number": "14",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Apr 4, 1994",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "179899",
+      "marketValue": "€200k",
+      "name": "Tomislav Kis",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "10",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 3, 2006",
+      "foot": "right",
+      "id": "892166",
+      "marketValue": "€200k",
+      "name": "Toni Majic",
+      "nationality": [
+        "Croatia",
+        "Bosnia-Herzegovina"
+      ],
+      "number": "90",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Nov 2, 1990",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "109212",
+      "marketValue": "€150k",
+      "name": "Nemanja Bilbija",
+      "nationality": [
+        "Bosnia-Herzegovina"
+      ],
+      "number": "99",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Jan 3, 2000",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "430159",
+      "marketValue": "€100k",
+      "name": "Milan Sikanjic",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Serbia"
+      ],
+      "number": "8",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jul 22, 1991",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "171820",
+      "marketValue": "€100k",
+      "name": "Tomi Juric",
+      "nationality": [
+        "Australia",
+        "Croatia"
+      ],
+      "number": "11",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Bijeli Brijeg",
+  "stadiumSeats": "15000",
+  "transfermarktId": "6808"
+}
