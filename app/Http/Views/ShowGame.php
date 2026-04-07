@@ -83,7 +83,7 @@ class ShowGame
                     'gameId' => $gameId,
                     'matchId' => $result->matchId,
                 ]),
-                'season_complete' => redirect()->route('game.season-end', $gameId),
+                'season_complete' => redirect()->route($game->isTournamentMode() ? 'game.tournament-end' : 'game.season-end', $gameId),
                 'done' => redirect()->route('show-game', $gameId),
                 'blocked' => $result->pendingAction && $result->pendingAction['route']
                     ? redirect()->route($result->pendingAction['route'], $gameId)->with('warning', __('messages.action_required'))

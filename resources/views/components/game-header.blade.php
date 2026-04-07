@@ -116,7 +116,7 @@
                     @else
                         <div class="flex items-center gap-3">
                             <span class="hidden sm:inline text-sm text-text-secondary">{{ __('game.season_complete') }}</span>
-                            <x-primary-button-link color="amber" :href="route('game.season-end', $game->id)">
+                            <x-primary-button-link color="amber" :href="route($game->isTournamentMode() ? 'game.tournament-end' : 'game.season-end', $game->id)">
                                 {{ __('game.view_season_summary') }}
                             </x-primary-button-link>
                         </div>
