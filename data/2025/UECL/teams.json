@@ -1,0 +1,46 @@
+{
+    "id": "UECL",
+    "name": "UEFA Europa Conference League",
+    "seasonID": "2025",
+    "clubs": [
+        { "id": "430", "name": "ACF Fiorentina", "country": "IT", "pot": 1 },
+        { "id": "1090", "name": "AZ Alkmaar", "country": "NL", "pot": 1 },
+        { "id": "660", "name": "Shakhtar Donetsk", "country": "UA", "pot": 1 },
+        { "id": "540", "name": "Slovan Bratislava", "country": "SK", "pot": 1 },
+        { "id": "170", "name": "Rapid Vienna", "country": "AT", "pot": 1 },
+        { "id": "255", "name": "Legia Warszawa", "country": "PL", "pot": 1 },
+        { "id": "197", "name": "AC Sparta Prague", "country": "CZ", "pot": 1 },
+        { "id": "338", "name": "Dynamo Kyiv", "country": "UA", "pot": 1 },
+        { "id": "873", "name": "Crystal Palace", "country": "EN", "pot": 1 },
+
+        { "id": "238", "name": "Lech Poznan", "country": "PL", "pot": 2 },
+        { "id": "367", "name": "Rayo Vallecano", "country": "ES", "pot": 2 },
+        { "id": "3258", "name": "Shamrock Rovers", "country": "IE", "pot": 2 },
+        { "id": "829", "name": "Omonia Nicosia", "country": "CY", "pot": 2 },
+        { "id": "39", "name": "1.FSV Mainz 05", "country": "DE", "pot": 2 },
+        { "id": "667", "name": "RC Strasbourg Alsace", "country": "FR", "pot": 2 },
+        { "id": "2300", "name": "Jagiellonia Bialystok", "country": "PL", "pot": 2 },
+        { "id": "710", "name": "NK Celje", "country": "SI", "pot": 2 },
+        { "id": "144", "name": "HNK Rijeka", "country": "HR", "pot": 2 },
+
+        { "id": "6808", "name": "HSK Zrinjski Mostar", "country": "BI", "pot": 3 },
+        { "id": "38204", "name": "Lincoln Red Imps FC", "country": "GI", "pot": 3 },
+        { "id": "6251", "name": "Kuopion Palloseura", "country": "FI", "pot": 3 },
+        { "id": "2441", "name": "AEK Athens", "country": "GR", "pot": 3 },
+        { "id": "370", "name": "Aberdeen FC", "country": "SC", "pot": 3 },
+        { "id": "33741", "name": "FC Drita", "country": "XK", "pot": 3 },
+        { "id": "3737", "name": "Breidablik Kópavogur", "country": "IS", "pot": 3 },
+        { "id": "2311", "name": "SK Sigma Olomouc", "country": "CZ", "pot": 3 },
+        { "id": "152", "name": "Samsunspor", "country": "TR", "pot": 3 },
+
+        { "id": "9644", "name": "Raków Częstochowa", "country": "PL", "pot": 4 },
+        { "id": "2156", "name": "AEK Larnaca", "country": "CY", "pot": 4 },
+        { "id": "1167", "name": "Shkendija Tetovo", "country": "MK", "pot": 4 },
+        { "id": "1109", "name": "BK Häcken", "country": "SW", "pot": 4 },
+        { "id": "527", "name": "FC Lausanne-Sport", "country": "CH", "pot": 4 },
+        { "id": "40812", "name": "CS Universitatea Craiova", "country": "PL", "pot": 4 },
+        { "id": "17149", "name": "Hamrun Spartans", "country": "MT", "pot": 4 },
+        { "id": "60368", "name": "FC Noah Yerevan", "country": "AM", "pot": 4 },
+        { "id": "3909", "name": "Shelbourne FC", "country": "IE", "pot": 4 }
+    ]
+}

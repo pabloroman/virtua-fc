@@ -1,0 +1,465 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/3909.png",
+  "name": "Shelbourne FC",
+  "players": [
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Oct 17, 2001",
+      "foot": "right",
+      "height": "1,98m",
+      "id": "596142",
+      "marketValue": "€150k",
+      "name": "Wessel Speel",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Mar 17, 2005",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "741226",
+      "marketValue": "€50k",
+      "name": "Conor Walsh",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "31",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Oct 21, 2007",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1284436",
+      "name": "Cillian Campion",
+      "nationality": [
+        "Ireland"
+      ],
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Feb 3, 2008",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "1365582",
+      "name": "Finn Moylan",
+      "nationality": [
+        "Ireland"
+      ],
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Apr 1, 2008",
+      "foot": "both",
+      "height": "1,78m",
+      "id": "1134234",
+      "name": "Ali Topcu",
+      "nationality": [
+        "Ireland",
+        "Türkiye"
+      ],
+      "number": "50",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Nov 30, 2026",
+      "dateOfBirth": "Jul 22, 1993",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "122736",
+      "marketValue": "€200k",
+      "name": "Paddy Barrett",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "29",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Nov 30, 2026",
+      "dateOfBirth": "Apr 7, 2001",
+      "foot": "left",
+      "height": "1,79m",
+      "id": "434221",
+      "marketValue": "€175k",
+      "name": "Kameron Ledwidge",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Apr 9, 2002",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "630884",
+      "marketValue": "€175k",
+      "name": "Odhran Casey",
+      "nationality": [
+        "Northern Ireland"
+      ],
+      "number": "16",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 28, 2000",
+      "foot": "both",
+      "height": "1,94m",
+      "id": "655177",
+      "marketValue": "€125k",
+      "name": "Zeno Ibsen Rossi",
+      "nationality": [
+        "England",
+        "Italy"
+      ],
+      "number": "24",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Feb 6, 1998",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "495178",
+      "marketValue": "€100k",
+      "name": "Sam Bone",
+      "nationality": [
+        "England",
+        "Malaysia"
+      ],
+      "number": "15",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Oct 7, 2007",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "1005770",
+      "name": "James Roche",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "55",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Apr 4, 2003",
+      "foot": "left",
+      "height": "1,72m",
+      "id": "618495",
+      "marketValue": "€175k",
+      "name": "James Norris",
+      "nationality": [
+        "England"
+      ],
+      "number": "18",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Nov 30, 2027",
+      "dateOfBirth": "Apr 6, 2002",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "854959",
+      "marketValue": "€175k",
+      "name": "Milan Mbeng",
+      "nationality": [
+        "France",
+        "Cameroon"
+      ],
+      "number": "25",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Nov 30, 2026",
+      "dateOfBirth": "Jul 11, 1991",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "184670",
+      "marketValue": "€75k",
+      "name": "Sean Gannon",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Nov 30, 2027",
+      "dateOfBirth": "Sep 23, 2003",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "796024",
+      "marketValue": "€200k",
+      "name": "Jack Henry-Francis",
+      "nationality": [
+        "Ireland",
+        "England"
+      ],
+      "number": "21",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Nov 30, 2027",
+      "dateOfBirth": "Feb 2, 1998",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "293782",
+      "marketValue": "€125k",
+      "name": "JJ Lunney",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Nov 30, 2026",
+      "dateOfBirth": "Aug 31, 2000",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "423757",
+      "marketValue": "€275k",
+      "name": "Kerr McInroy",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "23",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jul 19, 2008",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "1461853",
+      "name": "Alex Flynn",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "52",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Nov 30, 2027",
+      "dateOfBirth": "Feb 27, 2003",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "745722",
+      "marketValue": "€150k",
+      "name": "Evan Caffrey",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "27",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Mar 5, 2008",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "1165133",
+      "name": "Cillian Ryan",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "60",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Nov 30, 2026",
+      "dateOfBirth": "Aug 2, 2002",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "746622",
+      "marketValue": "€225k",
+      "name": "Harry Wood",
+      "nationality": [
+        "England"
+      ],
+      "number": "7",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Nov 30, 2027",
+      "dateOfBirth": "Jan 8, 2001",
+      "foot": "left",
+      "height": "1,91m",
+      "id": "508343",
+      "marketValue": "€175k",
+      "name": "Ellis Chapman",
+      "nationality": [
+        "England"
+      ],
+      "number": "5",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Nov 30, 2027",
+      "dateOfBirth": "Jun 11, 1998",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "285282",
+      "marketValue": "€175k",
+      "name": "Ali Coote",
+      "nationality": [
+        "Scotland",
+        "England"
+      ],
+      "number": "14",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Aug 13, 2007",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1365581",
+      "name": "James Bailey",
+      "nationality": [
+        "Ireland"
+      ],
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Nov 30, 2028",
+      "dateOfBirth": "Dec 17, 2002",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "746613",
+      "marketValue": "€275k",
+      "name": "Will Jarvis",
+      "nationality": [
+        "England"
+      ],
+      "number": "36",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jun 1, 2001",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "1005113",
+      "marketValue": "€175k",
+      "name": "Maill Lundgren",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "28",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Nov 30, 2026",
+      "dateOfBirth": "May 21, 1996",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "567749",
+      "marketValue": "€125k",
+      "name": "Daniel Kelly",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "17",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Aug 13, 2005",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "955724",
+      "marketValue": "€125k",
+      "name": "Sean Moore",
+      "nationality": [
+        "Ireland",
+        "Northern Ireland"
+      ],
+      "number": "22",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Nov 30, 2027",
+      "dateOfBirth": "Jan 5, 1999",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "504115",
+      "marketValue": "€175k",
+      "name": "John Martin",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "10",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Nov 30, 2027",
+      "dateOfBirth": "Jun 20, 1998",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "379347",
+      "marketValue": "€150k",
+      "name": "Sean Boyd",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Nov 30, 2026",
+      "dateOfBirth": "Oct 21, 2002",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "655880",
+      "marketValue": "€150k",
+      "name": "Mipo Odubeko",
+      "nationality": [
+        "Ireland",
+        "Nigeria"
+      ],
+      "number": "11",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Nov 30, 2028",
+      "dateOfBirth": "Apr 28, 2002",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "681724",
+      "name": "Rodrigo Freitas",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "20",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Aug 19, 2009",
+      "id": "1442225",
+      "name": "Joey Wuna",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "56",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Tolka Park",
+  "stadiumSeats": "5723",
+  "transfermarktId": "3909"
+}

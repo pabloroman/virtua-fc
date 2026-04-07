@@ -8,7 +8,7 @@
       "foot": "right",
       "height": "1,95m",
       "id": "395421",
-      "marketValue": "€2.80m",
+      "marketValue": "€2.50m",
       "name": "Peter Vindahl",
       "nationality": [
         "Denmark"
@@ -22,7 +22,7 @@
       "foot": "left",
       "height": "1,97m",
       "id": "610607",
-      "marketValue": "€400k",
+      "marketValue": "€900k",
       "name": "Jakub Surovcik",
       "nationality": [
         "Slovakia"
@@ -60,7 +60,7 @@
       "dateOfBirth": "Jun 19, 2004",
       "height": "1,87m",
       "id": "929887",
-      "marketValue": "€3.00m",
+      "marketValue": "€4.50m",
       "name": "Adam Sevinsky",
       "nationality": [
         "Czech Republic"
@@ -88,26 +88,12 @@
       "foot": "right",
       "height": "1,87m",
       "id": "331963",
-      "marketValue": "€1.80m",
+      "marketValue": "€1.50m",
       "name": "Filip Panák",
       "nationality": [
         "Czech Republic"
       ],
       "number": "27",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "-",
-      "dateOfBirth": "Nov 24, 1997",
-      "foot": "left",
-      "height": "1,88m",
-      "id": "419723",
-      "marketValue": "€900k",
-      "name": "Elias Cobbaut",
-      "nationality": [
-        "Belgium"
-      ],
-      "number": "33",
       "position": "Centre-Back"
     },
     {
@@ -129,13 +115,55 @@
       "foot": "left",
       "height": "1,90m",
       "id": "142219",
-      "marketValue": "€800k",
+      "marketValue": "€700k",
       "name": "Jaroslav Zelený",
       "nationality": [
         "Czech Republic"
       ],
       "number": "30",
       "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Nov 24, 1997",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "419723",
+      "marketValue": "€600k",
+      "name": "Elias Cobbaut",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "33",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Apr 22, 2004",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "854085",
+      "marketValue": "€300k",
+      "name": "Ivan Mensah",
+      "nationality": [
+        "Ghana"
+      ],
+      "number": "50",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 25, 2002",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "713787",
+      "marketValue": "€2.80m",
+      "name": "Jhoanner Chávez",
+      "nationality": [
+        "Ecuador"
+      ],
+      "number": "14",
+      "position": "Left-Back"
     },
     {
       "contract": "Jun 30, 2026",
@@ -153,30 +181,30 @@
       "position": "Right-Back"
     },
     {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "May 8, 2002",
-      "foot": "right",
-      "height": "1,85m",
-      "id": "510310",
-      "marketValue": "€4.00m",
-      "name": "Sivert Mannsverk",
-      "nationality": [
-        "Norway"
-      ],
-      "number": "20",
-      "position": "Defensive Midfield"
-    },
-    {
       "contract": "-",
       "dateOfBirth": "Jun 20, 2003",
       "height": "1,90m",
       "id": "655300",
-      "marketValue": "€4.00m",
+      "marketValue": "€7.00m",
       "name": "Patrik Vydra",
       "nationality": [
         "Czech Republic"
       ],
       "number": "26",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 8, 2002",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "510310",
+      "marketValue": "€3.50m",
+      "name": "Sivert Mannsverk",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "20",
       "position": "Defensive Midfield"
     },
     {
@@ -223,12 +251,25 @@
       "position": "Central Midfield"
     },
     {
+      "contract": "-",
+      "dateOfBirth": "Jun 7, 2008",
+      "height": "1,83m",
+      "id": "1206877",
+      "marketValue": "€1.00m",
+      "name": "Hugo Sochurek",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "38",
+      "position": "Central Midfield"
+    },
+    {
       "contract": "Jun 30, 2026",
       "dateOfBirth": "Apr 25, 1992",
       "foot": "right",
       "height": "1,82m",
       "id": "143798",
-      "marketValue": "€1.50m",
+      "marketValue": "€1.20m",
       "name": "Pavel Kaderabek",
       "nationality": [
         "Czech Republic"
@@ -242,7 +283,7 @@
       "foot": "left",
       "height": "1,86m",
       "id": "539197",
-      "marketValue": "€4.00m",
+      "marketValue": "€4.50m",
       "name": "Matej Rynes",
       "nationality": [
         "Czech Republic"
@@ -309,19 +350,6 @@
     },
     {
       "contract": "-",
-      "dateOfBirth": "Mar 23, 2007",
-      "foot": "right",
-      "id": "1013797",
-      "marketValue": "€750k",
-      "name": "Ondrej Penxa",
-      "nationality": [
-        "Czech Republic"
-      ],
-      "number": "52",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "-",
       "dateOfBirth": "Feb 20, 2003",
       "foot": "right",
       "height": "1,75m",
@@ -336,14 +364,15 @@
     },
     {
       "contract": "-",
-      "dateOfBirth": "Jun 4, 2006",
-      "id": "765105",
-      "marketValue": "€450k",
-      "name": "Roman Mokrovics",
+      "dateOfBirth": "Mar 23, 2007",
+      "foot": "right",
+      "id": "1013797",
+      "marketValue": "€650k",
+      "name": "Ondrej Penxa",
       "nationality": [
         "Czech Republic"
       ],
-      "number": "31",
+      "number": "52",
       "position": "Left Winger"
     },
     {
@@ -352,7 +381,7 @@
       "foot": "both",
       "height": "1,88m",
       "id": "903706",
-      "marketValue": "€7.50m",
+      "marketValue": "€7.00m",
       "name": "Albion Rrahmani",
       "nationality": [
         "Kosovo"
@@ -362,34 +391,33 @@
     },
     {
       "contract": "-",
-      "dateOfBirth": "Jan 8, 1997",
-      "foot": "right",
-      "height": "1,85m",
-      "id": "334802",
-      "marketValue": "€3.00m",
-      "name": "Jan Kuchta",
-      "nationality": [
-        "Czech Republic"
-      ],
-      "number": "10",
-      "position": "Centre-Forward"
-    },
-    {
-      "contract": "-",
       "dateOfBirth": "Feb 26, 2004",
       "height": "1,93m",
       "id": "836196",
-      "marketValue": "€2.20m",
+      "marketValue": "€3.00m",
       "name": "Matyas Vojta",
       "nationality": [
         "Czech Republic"
       ],
       "number": "29",
       "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 8, 1997",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "334802",
+      "marketValue": "€2.50m",
+      "name": "Jan Kuchta",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "10",
+      "position": "Centre-Forward"
     }
   ],
   "stadiumName": "epet Arena",
   "stadiumSeats": "18243",
-  "transfermarktId": "197",
-  "country": "CZ"
+  "transfermarktId": "197"
 }

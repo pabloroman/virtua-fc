@@ -23,6 +23,7 @@ class FetchTeamCrests extends Command
 
         $transfermarktIds = DB::table('teams')
             ->whereNotNull('transfermarkt_id')
+            ->where('type', '=', 'club')
             ->distinct()
             ->pluck('transfermarkt_id');
 

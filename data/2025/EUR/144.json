@@ -1,0 +1,476 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/144.png",
+  "name": "HNK Rijeka",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 16, 1998",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "495320",
+      "marketValue": "€2.00m",
+      "name": "Martin Zlomislic",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Croatia"
+      ],
+      "number": "13",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 10, 1996",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "358195",
+      "marketValue": "€150k",
+      "name": "David Nwolokor",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "31",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 25, 2004",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "750003",
+      "marketValue": "€50k",
+      "name": "Aleksa Todorovic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "99",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 7, 2006",
+      "id": "1124807",
+      "name": "Niko Vucetic",
+      "nationality": [
+        "Croatia"
+      ],
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Sep 5, 1997",
+      "foot": "left",
+      "height": "2,01m",
+      "id": "384568",
+      "marketValue": "€2.80m",
+      "name": "Stjepan Radeljic",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Croatia"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 1, 2001",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "365107",
+      "marketValue": "€850k",
+      "name": "Anel Husic",
+      "nationality": [
+        "Switzerland",
+        "Bosnia-Herzegovina"
+      ],
+      "number": "51",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 6, 1993",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "207025",
+      "marketValue": "€500k",
+      "name": "Ante Majstorovic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "45",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 19, 1991",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "71594",
+      "marketValue": "€100k",
+      "name": "Mile Skoric",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 18, 2006",
+      "id": "1056490",
+      "marketValue": "€50k",
+      "name": "Roko Valincic",
+      "nationality": [
+        "Croatia"
+      ],
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 12, 1999",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "376452",
+      "marketValue": "€1.00m",
+      "name": "Mladen Devetak",
+      "nationality": [
+        "Serbia",
+        "Croatia"
+      ],
+      "number": "34",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 15, 2027",
+      "dateOfBirth": "Feb 24, 2004",
+      "height": "1,78m",
+      "id": "927834",
+      "marketValue": "€400k",
+      "name": "Noel Bodetic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "91",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 29, 2001",
+      "foot": "right",
+      "id": "745248",
+      "marketValue": "€1.50m",
+      "name": "Ante Orec",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "22",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 6, 1997",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "345311",
+      "marketValue": "€500k",
+      "name": "Justas Lasickas",
+      "nationality": [
+        "Lithuania"
+      ],
+      "number": "23",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Sep 30, 2004",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "979773",
+      "marketValue": "€100k",
+      "name": "Téo Barišić",
+      "nationality": [
+        "Croatia",
+        "France"
+      ],
+      "number": "28",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 7, 2001",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "671538",
+      "marketValue": "€500k",
+      "name": "Alfonso Barco",
+      "nationality": [
+        "Peru"
+      ],
+      "number": "55",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 20, 2004",
+      "id": "927847",
+      "marketValue": "€400k",
+      "name": "Bruno Burcul",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "24",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 7, 2006",
+      "id": "1009485",
+      "marketValue": "€400k",
+      "name": "Branko Pavic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "66",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 24, 2000",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "429987",
+      "marketValue": "€2.80m",
+      "name": "Tiago Dantas",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "26",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 12, 1998",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "320859",
+      "marketValue": "€1.50m",
+      "name": "Dejan Petrovic",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 7, 2006",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1056494",
+      "marketValue": "€75k",
+      "name": "Rajan Zlibanovic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "70",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 15, 2027",
+      "dateOfBirth": "Mar 9, 2001",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "432758",
+      "marketValue": "€9.00m",
+      "name": "Toni Fruk",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 24, 2004",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "650966",
+      "marketValue": "€2.50m",
+      "name": "Samuele Vignato",
+      "nationality": [
+        "Italy",
+        "Brazil"
+      ],
+      "number": "19",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Feb 13, 1997",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "293210",
+      "marketValue": "€400k",
+      "name": "Amer Gojak",
+      "nationality": [
+        "Bosnia-Herzegovina"
+      ],
+      "number": "14",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 20, 1998",
+      "foot": "left",
+      "height": "1,69m",
+      "id": "398886",
+      "marketValue": "€300k",
+      "name": "Merveil Ndockyt",
+      "nationality": [
+        "Congo"
+      ],
+      "number": "20",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jan 10, 2027",
+      "dateOfBirth": "May 17, 2002",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "610163",
+      "marketValue": "€50k",
+      "name": "Florent Shehu",
+      "nationality": [
+        "Switzerland",
+        "France"
+      ],
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 16, 2004",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "743567",
+      "marketValue": "€600k",
+      "name": "Gabriel Rukavina",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 30, 2001",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "847256",
+      "marketValue": "€400k",
+      "name": "Dimitri Legbo",
+      "nationality": [
+        "Cote d'Ivoire"
+      ],
+      "number": "24",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 10, 2002",
+      "foot": "both",
+      "height": "1,71m",
+      "id": "658713",
+      "marketValue": "€350k",
+      "name": "Tornike Morchiladze",
+      "nationality": [
+        "Georgia"
+      ],
+      "number": "7",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 2, 2007",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "1277268",
+      "marketValue": "€400k",
+      "name": "Dominik Thaqi",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "25",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 11, 2005",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "985103",
+      "marketValue": "€50k",
+      "name": "Matej Momcilovski",
+      "nationality": [
+        "North Macedonia",
+        "Croatia"
+      ],
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 21, 2005",
+      "height": "1,79m",
+      "id": "963878",
+      "marketValue": "€750k",
+      "name": "Daniel Adu-Adjei",
+      "nationality": [
+        "England",
+        "Ghana"
+      ],
+      "number": "18",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 26, 2002",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "927331",
+      "marketValue": "€700k",
+      "name": "Ante Matej Juric",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "77",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 7, 2005",
+      "id": "1373497",
+      "marketValue": "€250k",
+      "name": "Cherno Saho",
+      "nationality": [
+        "The Gambia"
+      ],
+      "number": "37",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 1, 1990",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "46415",
+      "marketValue": "€100k",
+      "name": "Duje Cop",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Stadion Rujevica",
+  "stadiumSeats": "8136",
+  "transfermarktId": "144"
+}

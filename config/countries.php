@@ -123,6 +123,7 @@ return [
                 // tiers + transfer_pool where possible, gaps filled from EUR pool
                 'UCL' => ['handler' => 'swiss_format', 'country' => 'EU'],
                 'UEL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                'UECL' => ['handler' => 'swiss_format', 'country' => 'EU'],
             ],
         ],
     ],
@@ -175,6 +176,7 @@ return [
             'continental' => [
                 'UCL' => ['handler' => 'swiss_format', 'country' => 'EU'],
                 'UEL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                'UECL' => ['handler' => 'swiss_format', 'country' => 'EU'],
             ],
         ],
     ],
@@ -227,6 +229,7 @@ return [
             'continental' => [
                 'UCL' => ['handler' => 'swiss_format', 'country' => 'EU'],
                 'UEL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                'UECL' => ['handler' => 'swiss_format', 'country' => 'EU'],
             ],
         ],
     ],
@@ -279,6 +282,7 @@ return [
             'continental' => [
                 'UCL' => ['handler' => 'swiss_format', 'country' => 'EU'],
                 'UEL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                'UECL' => ['handler' => 'swiss_format', 'country' => 'EU'],
             ],
         ],
     ],
@@ -331,6 +335,7 @@ return [
             'continental' => [
                 'UCL' => ['handler' => 'swiss_format', 'country' => 'EU'],
                 'UEL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                'UECL' => ['handler' => 'swiss_format', 'country' => 'EU'],
             ],
         ],
     ],

@@ -1,0 +1,411 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/9644.png",
+  "name": "Raków Częstochowa",
+  "players": [
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 19, 2003",
+      "foot": "both",
+      "height": "1,93m",
+      "id": "720120",
+      "marketValue": "€2.50m",
+      "name": "Kacper Trelowski",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 28, 2004",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "555074",
+      "marketValue": "€2.00m",
+      "name": "Oliwier Zych",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "48",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Apr 29, 2009",
+      "height": "1,95m",
+      "id": "1284269",
+      "name": "Wiktor Żołneczko",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "29",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 8, 2009",
+      "id": "1511247",
+      "name": "Dominik Czeremski",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "31",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 11, 1997",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "318257",
+      "marketValue": "€3.00m",
+      "name": "Stratos Svarnas",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 6, 2000",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "804134",
+      "marketValue": "€1.50m",
+      "name": "Bogdan Racovițan",
+      "nationality": [
+        "Romania",
+        "France"
+      ],
+      "number": "25",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 20, 1995",
+      "foot": "both",
+      "height": "1,89m",
+      "id": "248732",
+      "marketValue": "€1.00m",
+      "name": "Paweł Dawidowicz",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "27",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 19, 2003",
+      "height": "1,84m",
+      "id": "554288",
+      "marketValue": "€700k",
+      "name": "Ariel Mosór",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "2",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 2, 1994",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "280312",
+      "marketValue": "€450k",
+      "name": "Zoran Arsenic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "24",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Apr 26, 2005",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "1048759",
+      "name": "Jerzy Napieraj",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "21",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Sep 26, 2001",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "491039",
+      "marketValue": "€2.00m",
+      "name": "Marko Bulat",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "5",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 3, 1999",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "384823",
+      "marketValue": "€2.00m",
+      "name": "Oskar Repka",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 18, 2001",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "553562",
+      "marketValue": "€1.50m",
+      "name": "Karol Struski",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "23",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 30, 1996",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "248932",
+      "marketValue": "€1.50m",
+      "name": "Vladyslav Kochergin",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "30",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "Dec 22, 2006",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "1366314",
+      "marketValue": "€250k",
+      "name": "Abraham Ojo",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "22",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 27, 1995",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "343158",
+      "marketValue": "€1.50m",
+      "name": "Fran Tudor",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "7",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 16, 2000",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "528414",
+      "marketValue": "€1.50m",
+      "name": "Michael Ameyaw",
+      "nationality": [
+        "Poland",
+        "Ghana"
+      ],
+      "number": "19",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Dec 26, 2004",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "822074",
+      "marketValue": "€1.50m",
+      "name": "Mitja Ilenic",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "35",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 15, 2002",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "1046580",
+      "marketValue": "€1.00m",
+      "name": "Adriano",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "11",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "May 10, 1996",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "282434",
+      "marketValue": "€1.00m",
+      "name": "Jean Carlos Silva",
+      "nationality": [
+        "Spain",
+        "Brazil"
+      ],
+      "number": "20",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Sep 27, 1996",
+      "foot": "left",
+      "height": "1,70m",
+      "id": "442118",
+      "marketValue": "€700k",
+      "name": "Erick Otieno",
+      "nationality": [
+        "Kenya"
+      ],
+      "number": "26",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 5, 2004",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "555062",
+      "marketValue": "€2.50m",
+      "name": "Tomasz Pieńko",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "8",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 19, 2001",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "495669",
+      "marketValue": "€2.00m",
+      "name": "Lamine Diaby-Fadiga",
+      "nationality": [
+        "Guinea",
+        "France"
+      ],
+      "number": "80",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Oct 25, 2005",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "940548",
+      "marketValue": "€1.20m",
+      "name": "Bogdan Mirčetić",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "44",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 29, 1994",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "282371",
+      "marketValue": "€800k",
+      "name": "Ivi López",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 11, 1999",
+      "height": "1,87m",
+      "id": "453639",
+      "marketValue": "€600k",
+      "name": "Patryk Makuch",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "9",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 7, 2000",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "435587",
+      "marketValue": "€6.00m",
+      "name": "Jonatan Braut Brunes",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "18",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 23, 1997",
+      "foot": "right",
+      "height": "2,00m",
+      "id": "479675",
+      "marketValue": "€800k",
+      "name": "Leonardo Rocha",
+      "nationality": [
+        "Portugal",
+        "Brazil"
+      ],
+      "number": "17",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Sep 5, 2006",
+      "height": "1,88m",
+      "id": "1150520",
+      "marketValue": "€500k",
+      "name": "Isak Brusberg",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "39",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "zondacrypto Arena",
+  "stadiumSeats": "5500",
+  "transfermarktId": "9644"
+}

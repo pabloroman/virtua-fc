@@ -1,0 +1,488 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/3258.png",
+  "name": "Shamrock Rovers",
+  "players": [
+    {
+      "contract": "-",
+      "dateOfBirth": "Aug 5, 1999",
+      "foot": "left",
+      "height": "1,92m",
+      "id": "478712",
+      "marketValue": "€250k",
+      "name": "Ed McGinty",
+      "nationality": [
+        "Ireland",
+        "Scotland"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 18, 1993",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "217752",
+      "marketValue": "€50k",
+      "name": "Lee Steacy",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "25",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Oct 4, 2007",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "1366903",
+      "name": "Todd Bazunu",
+      "nationality": [
+        "Ireland",
+        "Nigeria"
+      ],
+      "number": "35",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jul 15, 2008",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "1134233",
+      "name": "Alex Noonan",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "41",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Mar 9, 1996",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "264193",
+      "marketValue": "€300k",
+      "name": "Dan Cleary",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jun 17, 1992",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "166158",
+      "marketValue": "€250k",
+      "name": "Roberto Lopes",
+      "nationality": [
+        "Cape Verde",
+        "Ireland"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "May 2, 2006",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "957327",
+      "marketValue": "€200k",
+      "name": "Cory O'Sullivan",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "27",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Dec 1, 1992",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "365180",
+      "marketValue": "€125k",
+      "name": "Lee Grace",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Nov 30, 2026",
+      "dateOfBirth": "Mar 26, 1998",
+      "foot": "left",
+      "height": "1,65m",
+      "id": "340920",
+      "marketValue": "€125k",
+      "name": "Trevor Clarke",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "18",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jul 9, 1990",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "85706",
+      "marketValue": "€100k",
+      "name": "Enda Stevens",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "3",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Oct 24, 2007",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "1109570",
+      "name": "Egor Vassenin",
+      "nationality": [
+        "Ireland",
+        "Russia"
+      ],
+      "number": "24",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 19, 1999",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "458633",
+      "marketValue": "€250k",
+      "name": "Tunmise Sobowale",
+      "nationality": [
+        "Ireland",
+        "Nigeria"
+      ],
+      "number": "22",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 13, 1992",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "108878",
+      "marketValue": "€200k",
+      "name": "Adam Matthews",
+      "nationality": [
+        "Wales"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 27, 1995",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "307513",
+      "marketValue": "€150k",
+      "name": "Gary O'Neill",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "16",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Nov 30, 2027",
+      "dateOfBirth": "Apr 12, 2002",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "586628",
+      "marketValue": "€500k",
+      "name": "Matthew Healy",
+      "nationality": [
+        "Ireland",
+        "United States"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Apr 11, 1997",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "365201",
+      "marketValue": "€250k",
+      "name": "Dylan Watts",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "7",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Nov 30, 2027",
+      "dateOfBirth": "Mar 20, 2000",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "485998",
+      "marketValue": "€150k",
+      "name": "Connor Malley",
+      "nationality": [
+        "England"
+      ],
+      "number": "23",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 29, 2006",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "1061560",
+      "marketValue": "€50k",
+      "name": "John O'Sullivan",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "27",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Mar 13, 2007",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "1226933",
+      "name": "Zak Reddy",
+      "nationality": [
+        "Ireland"
+      ],
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Nov 30, 2026",
+      "dateOfBirth": "Dec 23, 1999",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "577557",
+      "marketValue": "€200k",
+      "name": "Danny Grant",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "21",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Nov 30, 2026",
+      "dateOfBirth": "Apr 24, 1996",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "217757",
+      "marketValue": "€400k",
+      "name": "Jack Byrne",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "29",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Nov 30, 2026",
+      "dateOfBirth": "Oct 20, 1998",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "293783",
+      "marketValue": "€300k",
+      "name": "Daniel Mandroiu",
+      "nationality": [
+        "Ireland",
+        "Romania"
+      ],
+      "number": "14",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Oct 28, 2006",
+      "foot": "both",
+      "height": "1,75m",
+      "id": "957295",
+      "marketValue": "€275k",
+      "name": "Naj Razi",
+      "nationality": [
+        "Ireland",
+        "Algeria"
+      ],
+      "number": "28",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 10, 2009",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "1260393",
+      "marketValue": "€200k",
+      "name": "Victor Ozhianvuna",
+      "nationality": [
+        "Ireland",
+        "Russia"
+      ],
+      "number": "36",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "May 29, 2007",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "1259889",
+      "name": "Adam Brennan",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "19",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Apr 5, 1996",
+      "foot": "left",
+      "height": "1,72m",
+      "id": "264206",
+      "marketValue": "€300k",
+      "name": "Jake Mulraney",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Nov 30, 2026",
+      "dateOfBirth": "Nov 15, 2002",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "939272",
+      "marketValue": "€200k",
+      "name": "Maleace Asamoah",
+      "nationality": [
+        "England",
+        "Ghana"
+      ],
+      "number": "15",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Feb 9, 2008",
+      "foot": "both",
+      "height": "1,80m",
+      "id": "1134229",
+      "marketValue": "€50k",
+      "name": "Max Kovalevskis",
+      "nationality": [
+        "Ireland",
+        "Ukraine"
+      ],
+      "number": "38",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Sep 21, 1993",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "177892",
+      "marketValue": "€275k",
+      "name": "Graham Burke",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "10",
+      "position": "Second Striker"
+    },
+    {
+      "contract": "Nov 30, 2026",
+      "dateOfBirth": "Jul 31, 2008",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "1134231",
+      "marketValue": "€400k",
+      "name": "Michael Noonan",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "31",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Oct 17, 2002",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "713240",
+      "marketValue": "€250k",
+      "name": "John McGovern",
+      "nationality": [
+        "Northern Ireland"
+      ],
+      "number": "88",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Nov 30, 2026",
+      "dateOfBirth": "Oct 23, 1989",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "184007",
+      "marketValue": "€75k",
+      "name": "Rory Gaffney",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "20",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 2, 1990",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "122407",
+      "marketValue": "€50k",
+      "name": "Aaron Greene",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Nov 30, 2028",
+      "dateOfBirth": "Mar 6, 2009",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "1380362",
+      "name": "Ben Mahon",
+      "nationality": [
+        "Ireland"
+      ],
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Tallaght Stadium",
+  "stadiumSeats": "10500",
+  "transfermarktId": "3258"
+}

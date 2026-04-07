@@ -1,0 +1,428 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/2300.png",
+  "name": "Jagiellonia Bialystok",
+  "players": [
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 9, 2004",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "805834",
+      "marketValue": "€4.00m",
+      "name": "Sławomir Abramowicz",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "50",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 8, 2006",
+      "foot": "both",
+      "height": "1,90m",
+      "id": "965043",
+      "marketValue": "€1.00m",
+      "name": "Miłosz Piekutowski",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "22",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Sep 9, 2008",
+      "height": "1,91m",
+      "id": "1205033",
+      "name": "Adrian Damasiewicz",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "66",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 21, 2008",
+      "id": "1212054",
+      "name": "Jakub Rabiczko",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "67",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 29, 2000",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "690273",
+      "marketValue": "€2.50m",
+      "name": "Bernardo Vital",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "13",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 12, 2000",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "494236",
+      "marketValue": "€2.00m",
+      "name": "Andy Pelmard",
+      "nationality": [
+        "Madagascar",
+        "France"
+      ],
+      "number": "70",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 26, 2000",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "469688",
+      "marketValue": "€1.20m",
+      "name": "Dusan Stojinovic",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 2, 2002",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "554393",
+      "marketValue": "€800k",
+      "name": "Apostolos Konstantopoulos",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "44",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 18, 2000",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "405386",
+      "marketValue": "€450k",
+      "name": "Yuki Kobayashi",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 26, 2005",
+      "height": "1,85m",
+      "id": "1046873",
+      "name": "Bartłomiej Krasiewicz",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "53",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Sep 25, 2000",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "589013",
+      "marketValue": "€1.50m",
+      "name": "Bartlomiej Wdowik",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "27",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 14, 2003",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "575717",
+      "marketValue": "€500k",
+      "name": "Guilherme Montóia",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "23",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 5, 2001",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "607435",
+      "marketValue": "€2.50m",
+      "name": "Norbert Wojtuszek",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "15",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 24, 1999",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "341277",
+      "marketValue": "€1.50m",
+      "name": "Sergio Lozano",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "21",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 28, 2001",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "391929",
+      "marketValue": "€1.50m",
+      "name": "Leon Flach",
+      "nationality": [
+        "United States",
+        "Germany"
+      ],
+      "number": "31",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 14, 1991",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "280939",
+      "marketValue": "€250k",
+      "name": "Taras Romanczuk",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 27, 2006",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "1066230",
+      "name": "Eryk Kozłowski",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "85",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 3, 2007",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1118873",
+      "marketValue": "€3.50m",
+      "name": "Bartosz Mazurek",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "86",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 31, 2005",
+      "foot": "both",
+      "height": "1,82m",
+      "id": "895298",
+      "marketValue": "€600k",
+      "name": "Dawid Drachal",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "8",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 26, 1990",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "176423",
+      "marketValue": "€400k",
+      "name": "Jesús Imaz",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "11",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 22, 1996",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "263843",
+      "marketValue": "€1.00m",
+      "name": "Matías Nahuel",
+      "nationality": [
+        "Spain",
+        "Argentina"
+      ],
+      "number": "19",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 22, 1998",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "289167",
+      "marketValue": "€600k",
+      "name": "Kamil Jóźwiak",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "72",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 29, 2002",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "658730",
+      "marketValue": "€600k",
+      "name": "Kajetan Szmyt",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "77",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Feb 22, 1999",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "341272",
+      "marketValue": "€1.50m",
+      "name": "Álex Pozo",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "7",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 3, 2009",
+      "foot": "left",
+      "height": "1,70m",
+      "id": "1325371",
+      "marketValue": "€25k",
+      "name": "Zachary Zalewski",
+      "nationality": [
+        "Poland",
+        "Canada"
+      ],
+      "number": "80",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 1, 2007",
+      "foot": "both",
+      "height": "1,93m",
+      "id": "1118876",
+      "name": "Maciej Kuczyński",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "90",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 23, 1999",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "410649",
+      "marketValue": "€4.00m",
+      "name": "Afimico Pululu",
+      "nationality": [
+        "DR Congo",
+        "France"
+      ],
+      "number": "10",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 31, 2004",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "710969",
+      "marketValue": "€1.50m",
+      "name": "Samed Bazdar",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Serbia"
+      ],
+      "number": "14",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 26, 2005",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "747953",
+      "marketValue": "€800k",
+      "name": "Dimitris Rallis",
+      "nationality": [
+        "Greece",
+        "Netherlands"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 19, 2002",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "667903",
+      "marketValue": "€450k",
+      "name": "Youssuf Sylla",
+      "nationality": [
+        "Belgium",
+        "Guinea"
+      ],
+      "number": "17",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Chorten Arena",
+  "stadiumSeats": "22372",
+  "transfermarktId": "2300"
+}

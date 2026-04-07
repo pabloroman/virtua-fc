@@ -1,0 +1,384 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/38204.png",
+  "name": "Lincoln Red Imps FC",
+  "players": [
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 17, 2000",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "405559",
+      "marketValue": "€100k",
+      "name": "Jaylan Hankins",
+      "nationality": [
+        "Gibraltar"
+      ],
+      "number": "13",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 8, 1994",
+      "height": "1,84m",
+      "id": "294334",
+      "marketValue": "€75k",
+      "name": "Nauzet García",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 23, 2004",
+      "height": "1,92m",
+      "id": "1420881",
+      "name": "Curro",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "27",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 5, 1998",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "462809",
+      "marketValue": "€175k",
+      "name": "Christian Rutjens",
+      "nationality": [
+        "Spain",
+        "Netherlands"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jul 30, 1993",
+      "height": "1,87m",
+      "id": "344827",
+      "marketValue": "€125k",
+      "name": "Bernardo Lopes",
+      "nationality": [
+        "Gibraltar",
+        "Portugal"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 30, 2000",
+      "height": "1,78m",
+      "id": "340906",
+      "marketValue": "€125k",
+      "name": "Ethan Britto",
+      "nationality": [
+        "Gibraltar"
+      ],
+      "number": "20",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Dec 13, 1990",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "280018",
+      "marketValue": "€25k",
+      "name": "Jesús Toscano",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "2",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 27, 2001",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "593822",
+      "marketValue": "€75k",
+      "name": "Julliani Eersteling",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "66",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 16, 1988",
+      "foot": "both",
+      "height": "1,78m",
+      "id": "108104",
+      "marketValue": "€10k",
+      "name": "Ibrahim Ayew",
+      "nationality": [
+        "Ghana"
+      ],
+      "number": "5",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Feb 6, 1991",
+      "height": "1,83m",
+      "id": "270611",
+      "marketValue": "€25k",
+      "name": "Joe",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "23",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 19, 2005",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "915890",
+      "marketValue": "€75k",
+      "name": "Nicholas Pozo",
+      "nationality": [
+        "Gibraltar"
+      ],
+      "number": "4",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Sep 3, 1997",
+      "height": "1,78m",
+      "id": "399011",
+      "marketValue": "€75k",
+      "name": "Graeme Torrilla",
+      "nationality": [
+        "Gibraltar"
+      ],
+      "number": "22",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 1, 1989",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "69789",
+      "marketValue": "€10k",
+      "name": "Mandi",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 18, 2004",
+      "id": "670377",
+      "marketValue": "€25k",
+      "name": "Kyle Clinton",
+      "nationality": [
+        "Gibraltar"
+      ],
+      "number": "19",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 27, 1984",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "58018",
+      "marketValue": "€10k",
+      "name": "Nano",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "21",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 15, 2006",
+      "id": "974433",
+      "marketValue": "€10k",
+      "name": "Kaleem Smith",
+      "nationality": [
+        "Gibraltar"
+      ],
+      "number": "33",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jul 23, 1996",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "242295",
+      "marketValue": "€200k",
+      "name": "Álex Mula",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "37",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 10, 1998",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "532770",
+      "marketValue": "€150k",
+      "name": "Toni Kolega",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "24",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 4, 1995",
+      "foot": "right",
+      "height": "1,67m",
+      "id": "203616",
+      "marketValue": "€100k",
+      "name": "Juanje Argüez",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 7, 1991",
+      "foot": "left",
+      "height": "1,74m",
+      "id": "171979",
+      "marketValue": "€75k",
+      "name": "Toni García",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "18",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 13, 2000",
+      "id": "1155231",
+      "marketValue": "€75k",
+      "name": "Yussef Flalhi Idrissi",
+      "nationality": [
+        "Spain",
+        "Morocco"
+      ],
+      "number": "30",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Aug 13, 2005",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "934941",
+      "marketValue": "€25k",
+      "name": "Liam Jessop",
+      "nationality": [
+        "Gibraltar"
+      ],
+      "number": "17",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 19, 2004",
+      "id": "1061280",
+      "name": "Rubén García",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "77",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 13, 2000",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "376663",
+      "marketValue": "€200k",
+      "name": "Tjay De Barr",
+      "nationality": [
+        "Gibraltar"
+      ],
+      "number": "10",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Aug 31, 2026",
+      "dateOfBirth": "May 4, 1994",
+      "height": "1,70m",
+      "id": "454542",
+      "marketValue": "€100k",
+      "name": "Kike Gómez",
+      "nationality": [
+        "Spain",
+        "Philippines"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Feb 7, 1996",
+      "id": "538450",
+      "marketValue": "€25k",
+      "name": "Ayman El Ghobashy",
+      "nationality": [
+        "Egypt"
+      ],
+      "number": "99",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Sep 29, 1981",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "299116",
+      "marketValue": "€10k",
+      "name": "Lee Casciaro",
+      "nationality": [
+        "Gibraltar"
+      ],
+      "number": "7",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Dec 29, 2005",
+      "id": "942310",
+      "marketValue": "€10k",
+      "name": "Jonathan Sciortino",
+      "nationality": [
+        "Gibraltar"
+      ],
+      "number": "31",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Victoria Stadium",
+  "stadiumSeats": "5000",
+  "transfermarktId": "38204"
+}

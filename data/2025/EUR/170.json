@@ -8,7 +8,7 @@
       "foot": "right",
       "height": "1,90m",
       "id": "404881",
-      "marketValue": "€1.50m",
+      "marketValue": "€1.20m",
       "name": "Niklas Hedl",
       "nationality": [
         "Austria"
@@ -62,7 +62,7 @@
       "foot": "left",
       "height": "1,97m",
       "id": "683891",
-      "marketValue": "€4.00m",
+      "marketValue": "€3.50m",
       "name": "Serge-Philippe Raux-Yao",
       "nationality": [
         "France",
@@ -91,7 +91,7 @@
       "foot": "both",
       "height": "1,95m",
       "id": "319482",
-      "marketValue": "€2.00m",
+      "marketValue": "€1.50m",
       "name": "Nenad Cvetkovic",
       "nationality": [
         "Serbia"
@@ -163,7 +163,7 @@
       "foot": "left",
       "height": "1,82m",
       "id": "393766",
-      "marketValue": "€800k",
+      "marketValue": "€600k",
       "name": "Jonas Auer",
       "nationality": [
         "Austria"
@@ -206,7 +206,7 @@
       "foot": "left",
       "height": "1,88m",
       "id": "976234",
-      "marketValue": "€1.80m",
+      "marketValue": "€1.50m",
       "name": "Martin Ndzie",
       "nationality": [
         "Cameroon"
@@ -234,7 +234,7 @@
       "foot": "right",
       "height": "1,88m",
       "id": "458537",
-      "marketValue": "€300k",
+      "marketValue": "€500k",
       "name": "Tobias Børkeeiet",
       "nationality": [
         "Norway"
@@ -276,7 +276,7 @@
       "foot": "right",
       "height": "1,77m",
       "id": "619657",
-      "marketValue": "€3.50m",
+      "marketValue": "€3.00m",
       "name": "Tobias Gulliksen",
       "nationality": [
         "Norway"
@@ -296,20 +296,6 @@
         "Austria"
       ],
       "number": "18",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Aug 5, 1991",
-      "foot": "right",
-      "height": "1,79m",
-      "id": "49693",
-      "marketValue": "€450k",
-      "name": "Andreas Weimann",
-      "nationality": [
-        "Austria"
-      ],
-      "number": "26",
       "position": "Attacking Midfield"
     },
     {
@@ -360,7 +346,7 @@
       "foot": "left",
       "height": "1,73m",
       "id": "548031",
-      "marketValue": "€1.50m",
+      "marketValue": "€1.00m",
       "name": "Yusuf Demir",
       "nationality": [
         "Austria"
@@ -374,7 +360,7 @@
       "foot": "left",
       "height": "1,70m",
       "id": "565531",
-      "marketValue": "€1.00m",
+      "marketValue": "€800k",
       "name": "Marco Tilio",
       "nationality": [
         "Australia",
@@ -384,17 +370,17 @@
       "position": "Right Winger"
     },
     {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Jun 14, 2000",
-      "foot": "left",
-      "height": "1,85m",
-      "id": "391561",
-      "marketValue": "€175k",
-      "name": "Oliver Strunz",
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 20, 2006",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "1312171",
+      "marketValue": "€500k",
+      "name": "Daniel Nunoo",
       "nationality": [
-        "Austria"
+        "Ghana"
       ],
-      "number": "39",
+      "number": "54",
       "position": "Right Winger"
     },
     {
@@ -403,7 +389,7 @@
       "foot": "right",
       "height": "1,85m",
       "id": "526785",
-      "marketValue": "€2.00m",
+      "marketValue": "€1.50m",
       "name": "Claudy Mbuyi",
       "nationality": [
         "France",
@@ -418,11 +404,11 @@
       "foot": "right",
       "height": "1,83m",
       "id": "538974",
-      "marketValue": "€1.50m",
+      "marketValue": "€1.20m",
       "name": "Janis Antiste",
       "nationality": [
-        "France",
-        "Martinique"
+        "Martinique",
+        "France"
       ],
       "number": "90",
       "position": "Centre-Forward"
@@ -439,6 +425,20 @@
         "Austria"
       ],
       "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 5, 1991",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "49693",
+      "marketValue": "€450k",
+      "name": "Andreas Weimann",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "26",
       "position": "Centre-Forward"
     }
   ],
