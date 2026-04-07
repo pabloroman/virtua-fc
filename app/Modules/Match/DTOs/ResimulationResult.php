@@ -12,5 +12,6 @@ readonly class ResimulationResult
         public int $homePossession = 50,
         public int $awayPossession = 50,
         public array $performances = [],
+        public ?string $mvpPlayerId = null,
     ) {}
 }

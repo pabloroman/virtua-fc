@@ -1006,6 +1006,12 @@ export default function liveMatch(config) {
                     this.recalculatePlayerRatings();
                 }
 
+                // Update MVP after resimulation
+                if (result.mvpPlayerName !== undefined) {
+                    this.mvpPlayerName = result.mvpPlayerName;
+                    this.mvpPlayerTeamId = result.mvpPlayerTeamId;
+                }
+
                 // Close the panel and resume
                 this.closeTacticalPanel();
             } catch (err) {

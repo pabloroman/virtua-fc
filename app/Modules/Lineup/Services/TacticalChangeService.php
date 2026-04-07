@@ -160,6 +160,17 @@ class TacticalChangeService
             ], $newSubstitutions);
         }
 
+        // Resolve MVP player name and team for the frontend
+        $mvpPlayerName = null;
+        $mvpPlayerTeamId = null;
+        if ($result->mvpPlayerId) {
+            $mvpPlayer = GamePlayer::with('player')->find($result->mvpPlayerId);
+            if ($mvpPlayer) {
+                $mvpPlayerName = $mvpPlayer->player->name ?? null;
+                $mvpPlayerTeamId = $mvpPlayer->team_id;
+            }
+        }
+
         // Build combined response
         $response = [
             'newScore' => [
@@ -176,6 +187,8 @@ class TacticalChangeService
             'awayPossession' => $result->awayPossession,
             'substitutions' => $substitutionDetails,
             'playerPerformances' => $result->performances,
+            'mvpPlayerName' => $mvpPlayerName,
+            'mvpPlayerTeamId' => $mvpPlayerTeamId,
         ];
 
         if ($isExtraTime) {

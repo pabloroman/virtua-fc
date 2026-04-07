@@ -7,7 +7,6 @@ use App\Models\GameMatch;
 use App\Models\TeamReputation;
 use App\Modules\Lineup\Services\LineupService;
 use App\Modules\Match\DTOs\MatchEventData;
-use App\Modules\Match\DTOs\MatchResult;
 use App\Modules\Match\DTOs\TacticalConfig;
 use App\Modules\Notification\Services\NotificationService;
 use Illuminate\Support\Collection;
@@ -146,13 +145,15 @@ class FullMatchSimulationService
 
         $result = $output->result;
         $performances = $output->performances;
-        $mvpPlayerId = $this->calculateMvp(
-            $result,
+        $mvpPlayerId = MvpCalculator::calculate(
             $performances,
             $homePlayers,
             $awayPlayers,
             $match->home_team_id,
             $match->away_team_id,
+            $result->homeScore,
+            $result->awayScore,
+            $result->events,
         );
 
         return [
@@ -199,130 +200,4 @@ class FullMatchSimulationService
         return $teamPlayers->filter(fn ($p) => in_array($p->id, $lineupIds));
     }
 
-    private function calculateMvp(
-        MatchResult $result,
-        array $performances,
-        Collection $homePlayers,
-        Collection $awayPlayers,
-        string $homeTeamId,
-        string $awayTeamId,
-    ): ?string {
-        if (empty($performances)) {
-            return null;
-        }
-
-        // Build lookup maps for position group and team membership
-        $positionGroups = [];
-        $playerTeams = [];
-        foreach ($homePlayers as $player) {
-            $positionGroups[$player->id] = $player->position_group;
-            $playerTeams[$player->id] = $homeTeamId;
-        }
-        foreach ($awayPlayers as $player) {
-            $positionGroups[$player->id] = $player->position_group;
-            $playerTeams[$player->id] = $awayTeamId;
-        }
-
-        $goalsConceded = [
-            $homeTeamId => $result->awayScore,
-            $awayTeamId => $result->homeScore,
-        ];
-
-        $winningTeamId = match (true) {
-            $result->homeScore > $result->awayScore => $homeTeamId,
-            $result->awayScore > $result->homeScore => $awayTeamId,
-            default => null,
-        };
-
-        // Position-scaled event bonuses (rarer contributions score higher)
-        $goalBonuses = ['Goalkeeper' => 0.55, 'Defender' => 0.45, 'Midfielder' => 0.35, 'Forward' => 0.30];
-        $assistBonuses = ['Goalkeeper' => 0.25, 'Defender' => 0.15, 'Midfielder' => 0.15, 'Forward' => 0.15];
-
-        // Count events per player
-        $goals = [];
-        $assists = [];
-        $yellowCards = [];
-        $redCards = [];
-
-        foreach ($result->events as $event) {
-            match ($event->type) {
-                'goal' => $goals[$event->gamePlayerId] = ($goals[$event->gamePlayerId] ?? 0) + 1,
-                'assist' => $assists[$event->gamePlayerId] = ($assists[$event->gamePlayerId] ?? 0) + 1,
-                'yellow_card' => $yellowCards[$event->gamePlayerId] = ($yellowCards[$event->gamePlayerId] ?? 0) + 1,
-                'red_card' => $redCards[$event->gamePlayerId] = ($redCards[$event->gamePlayerId] ?? 0) + 1,
-                default => null,
-            };
-        }
-
-        // Score each player
-        $bestPlayerId = null;
-        $bestScore = -INF;
-        $bestIsWinner = false;
-
-        foreach ($performances as $playerId => $performance) {
-            $group = $positionGroups[$playerId] ?? 'Midfielder';
-            $teamId = $playerTeams[$playerId] ?? null;
-            $teamConceded = $teamId ? ($goalsConceded[$teamId] ?? 0) : 0;
-
-            // Normalized performance: map 0.70-1.30 to 0.0-1.0
-            $score = ($performance - 0.70) / 0.60;
-
-            // Position-scaled goal/assist bonuses
-            $score += ($goals[$playerId] ?? 0) * ($goalBonuses[$group] ?? 0.15);
-            $score += ($assists[$playerId] ?? 0) * ($assistBonuses[$group] ?? 0.10);
-
-            // Card penalties
-            $score -= ($yellowCards[$playerId] ?? 0) * 0.10;
-            $score -= ($redCards[$playerId] ?? 0) * 0.30;
-
-            // Clean sheet bonus for goalkeepers and defenders
-            if ($teamConceded === 0) {
-                $score += match ($group) {
-                    'Goalkeeper' => 0.20,
-                    'Defender' => 0.15,
-                    default => 0.0,
-                };
-            } elseif ($teamConceded === 1) {
-                $score += match ($group) {
-                    'Goalkeeper' => 0.05,
-                    'Defender' => 0.05,
-                    default => 0.0,
-                };
-            }
-
-            // Goals conceded penalty for goalkeepers
-            if ($group === 'Goalkeeper') {
-                $score -= match (true) {
-                    $teamConceded >= 4 => 0.20,
-                    $teamConceded >= 3 => 0.10,
-                    default => 0.0,
-                };
-            }
-
-            // Winning team edge
-            $isWinner = $winningTeamId !== null && $teamId === $winningTeamId;
-            if ($isWinner) {
-                $score += 0.08;
-            }
-
-            // Goals against penalty for losing team (linear per goal conceded)
-            $losingTeamId = match (true) {
-                $result->homeScore > $result->awayScore => $awayTeamId,
-                $result->awayScore > $result->homeScore => $homeTeamId,
-                default => null,
-            };
-            if ($losingTeamId !== null && $teamId === $losingTeamId) {
-                $score -= min($teamConceded * 0.04, 0.20);
-            }
-
-            // Tiebreak: prefer the player from the winning team
-            if ($score > $bestScore || ($score === $bestScore && $isWinner && ! $bestIsWinner)) {
-                $bestScore = $score;
-                $bestPlayerId = $playerId;
-                $bestIsWinner = $isWinner;
-            }
-        }
-
-        return $bestPlayerId;
-    }
 }

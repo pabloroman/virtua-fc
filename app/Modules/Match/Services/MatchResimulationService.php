@@ -223,7 +223,28 @@ class MatchResimulationService
         // 12. Apply the new remainder events
         $this->applyNewEvents($match, $game, $remainderResult, $competitionId);
 
-        // 13. Update match score and possession
+        // 13. Recalculate MVP from all events and merged performances
+        $allEvents = MatchEvent::where('game_match_id', $match->id)->get();
+
+        // Rebuild full player collections including substituted-out players
+        // (they were excluded from resimulation but still have performances)
+        $performancePlayerIds = array_keys($mergedPerformances);
+        $allMvpPlayers = GamePlayer::whereIn('id', $performancePlayerIds)->get();
+        $allHomePlayers = $allMvpPlayers->filter(fn ($p) => $p->team_id === $match->home_team_id);
+        $allAwayPlayers = $allMvpPlayers->filter(fn ($p) => $p->team_id === $match->away_team_id);
+
+        $mvpPlayerId = MvpCalculator::calculate(
+            $mergedPerformances,
+            $allHomePlayers,
+            $allAwayPlayers,
+            $match->home_team_id,
+            $match->away_team_id,
+            $newHomeScore,
+            $newAwayScore,
+            $allEvents,
+        );
+
+        // 14. Update match score, possession, and MVP
         // Note: Score-dependent side effects (standings, cup ties, GK stats, prize money)
         // are NOT handled here. They are deferred to FinalizeMatch, which applies them
         // once after the user finishes the live match. This eliminates the need for
@@ -233,12 +254,14 @@ class MatchResimulationService
             'away_score' => $newAwayScore,
             'home_possession' => $remainderResult->homePossession,
             'away_possession' => $remainderResult->awayPossession,
+            'mvp_player_id' => $mvpPlayerId,
         ]);
 
         return new ResimulationResult(
             $newHomeScore, $newAwayScore, $oldHomeScore, $oldAwayScore,
             $remainderResult->homePossession, $remainderResult->awayPossession,
             $mergedPerformances,
+            $mvpPlayerId,
         );
     }
 
@@ -323,21 +346,40 @@ class MatchResimulationService
             // 9. Apply the new remainder events
             $this->applyNewEvents($match, $game, $remainderResult, $competitionId);
 
-            // 10. Update ET scores and possession (not regular-time scores)
+            // 10. Recalculate MVP from all events (regular + ET)
+            $cachedPerformances = Cache::get("match_performances:{$match->id}", []);
+            $allEvents = MatchEvent::where('game_match_id', $match->id)->get();
+            $performancePlayerIds = array_keys($cachedPerformances);
+            $allMvpPlayers = GamePlayer::whereIn('id', $performancePlayerIds)->get();
+
+            $totalHomeScore = $match->home_score + $newHomeScore;
+            $totalAwayScore = $match->away_score + $newAwayScore;
+
+            $mvpPlayerId = MvpCalculator::calculate(
+                $cachedPerformances,
+                $allMvpPlayers->filter(fn ($p) => $p->team_id === $match->home_team_id),
+                $allMvpPlayers->filter(fn ($p) => $p->team_id === $match->away_team_id),
+                $match->home_team_id,
+                $match->away_team_id,
+                $totalHomeScore,
+                $totalAwayScore,
+                $allEvents,
+            );
+
+            // 11. Update ET scores, possession, and MVP
             $match->update([
                 'home_score_et' => $newHomeScore,
                 'away_score_et' => $newAwayScore,
                 'home_possession' => $remainderResult->homePossession,
                 'away_possession' => $remainderResult->awayPossession,
+                'mvp_player_id' => $mvpPlayerId,
             ]);
-
-            // Pass through cached performances (ET simulator doesn't produce new ones)
-            $cachedPerformances = Cache::get("match_performances:{$match->id}", []);
 
             return new ResimulationResult(
                 $newHomeScore, $newAwayScore, $oldHomeScore, $oldAwayScore,
                 $remainderResult->homePossession, $remainderResult->awayPossession,
                 $cachedPerformances,
+                $mvpPlayerId,
             );
         });
     }
