@@ -5,65 +5,62 @@ namespace App\Modules\Player\Services;
 /**
  * Static configuration for player development curves.
  *
- * Defines age-based development multipliers and match experience bonuses.
- * Values > 1.0 indicate growth, values < 1.0 indicate decline.
+ * Uses direct signed change values per age instead of multipliers.
+ * Positive = growth, zero = plateau, negative = decline.
+ * Growth requires playing time — no appearances means no growth (stagnation).
  */
 final class DevelopmentCurve
 {
     /**
-     * Base development points per season (before multipliers).
+     * Minimum appearances to qualify for any growth at all.
+     * Below this threshold, positive development is zero (stagnation).
      */
-    public const BASE_DEVELOPMENT = 2;
+    public const MIN_APPEARANCES_FOR_GROWTH = 10;
 
     /**
-     * Minimum appearances in a season to qualify for the starter bonus.
+     * Appearances needed for full growth rate.
+     * Between MIN and this value, growth scales linearly.
      */
-    public const MIN_APPEARANCES_FOR_BONUS = 15;
+    public const FULL_BONUS_APPEARANCES = 25;
 
     /**
-     * Multiplier for players who meet the appearance threshold.
-     * Represents +50% development bonus for regular starters.
-     */
-    public const APPEARANCE_BONUS = 1.5;
-
-    /**
-     * Age-based development multipliers for technical and physical abilities.
+     * Age-based development changes (points per season for a regular starter).
      *
-     * - 16-20: High growth (multipliers > 1.2)
-     * - 21-24: Moderate growth (multipliers 1.0-1.1)
-     * - 25-31: Peak years (stable, technical ~1.0, physical starts declining)
-     * - 32+: Veteran decline (physical declines faster than technical)
+     * - 16-19: Growth phase (young players improve if they play)
+     * - 20-21: Late development (smaller gains)
+     * - 22-24: Plateau (no growth, no decline — peak maintenance)
+     * - 25-26: Physical decline begins, technical holds
+     * - 27+: Both abilities decline, physical faster than technical
      */
     public const AGE_CURVES = [
-        16 => ['technical' => 1.4, 'physical' => 1.5],
-        17 => ['technical' => 1.3, 'physical' => 1.4],
-        18 => ['technical' => 1.2, 'physical' => 1.3],
-        19 => ['technical' => 1.15, 'physical' => 1.2],
-        20 => ['technical' => 1.1, 'physical' => 1.1],
-        21 => ['technical' => 1.1, 'physical' => 1.1],
-        22 => ['technical' => 1.05, 'physical' => 1.0],
-        23 => ['technical' => 1.0, 'physical' => 1.0],
-        24 => ['technical' => 1.0, 'physical' => 1.0],
-        25 => ['technical' => 1.0, 'physical' => 0.95],
-        26 => ['technical' => 1.0, 'physical' => 0.9],
-        27 => ['technical' => 0.95, 'physical' => 0.85],
-        28 => ['technical' => 0.9, 'physical' => 0.8],
-        29 => ['technical' => 0.85, 'physical' => 0.7],
-        30 => ['technical' => 0.8, 'physical' => 0.6],
-        31 => ['technical' => 0.7, 'physical' => 0.5],
-        32 => ['technical' => 0.6, 'physical' => 0.4],
-        33 => ['technical' => 0.5, 'physical' => 0.3],
-        34 => ['technical' => 0.4, 'physical' => 0.2],
+        16 => ['technical' => 3, 'physical' => 3],
+        17 => ['technical' => 2, 'physical' => 3],
+        18 => ['technical' => 2, 'physical' => 2],
+        19 => ['technical' => 2, 'physical' => 2],
+        20 => ['technical' => 1, 'physical' => 1],
+        21 => ['technical' => 1, 'physical' => 1],
+        22 => ['technical' => 1, 'physical' => 0],
+        23 => ['technical' => 0, 'physical' => 0],
+        24 => ['technical' => 0, 'physical' => 0],
+        25 => ['technical' => 0, 'physical' => -1],
+        26 => ['technical' => 0, 'physical' => -1],
+        27 => ['technical' => -1, 'physical' => -1],
+        28 => ['technical' => -1, 'physical' => -2],
+        29 => ['technical' => -1, 'physical' => -2],
+        30 => ['technical' => -2, 'physical' => -3],
+        31 => ['technical' => -2, 'physical' => -3],
+        32 => ['technical' => -3, 'physical' => -4],
+        33 => ['technical' => -3, 'physical' => -4],
+        34 => ['technical' => -4, 'physical' => -5],
     ];
 
     /**
-     * Get the development multipliers for a given age.
+     * Get the development changes for a given age.
      *
-     * @return array{technical: float, physical: float}
+     * @return array{technical: int, physical: int}
      */
-    public static function getMultipliers(int $age): array
+    public static function getChanges(int $age): array
     {
-        // Clamp age to our defined range
         if ($age < 16) {
             return self::AGE_CURVES[16];
         }
@@ -78,38 +75,39 @@ final class DevelopmentCurve
     /**
      * Calculate development change for a single ability.
      *
-     * @param float $multiplier The age-based multiplier for this ability
-     * @param bool $hasAppearanceBonus Whether the player qualifies for the starter bonus
-     * @return int The change in ability points (can be negative for decline)
+     * Growth (positive baseChange) requires playing time:
+     * - Below MIN_APPEARANCES_FOR_GROWTH: zero growth (stagnation)
+     * - Between MIN and FULL_BONUS: scaled growth
+     * - At FULL_BONUS+: full growth
+     *
+     * Decline (negative baseChange) happens regardless, but active players decline slower.
+     *
+     * @param int $baseChange The age-based change for this ability (from AGE_CURVES)
+     * @param int $seasonAppearances Number of appearances this season
+     * @return int The final change in ability points
      */
-    public static function calculateChange(float $multiplier, bool $hasAppearanceBonus): int
+    public static function calculateChange(int $baseChange, int $seasonAppearances): int
     {
-        // Base development adjusted by age multiplier
-        $development = self::BASE_DEVELOPMENT * $multiplier;
+        if ($baseChange > 0) {
+            // Growth requires playing time — no play = no growth
+            if ($seasonAppearances < self::MIN_APPEARANCES_FOR_GROWTH) {
+                return 0;
+            }
 
-        // Apply appearance bonus for players who play regularly
-        if ($hasAppearanceBonus && $multiplier > 0) {
-            $development *= self::APPEARANCE_BONUS;
+            $playFactor = min(1.0, $seasonAppearances / self::FULL_BONUS_APPEARANCES);
+
+            return (int) round($baseChange * $playFactor);
         }
 
-        // For declining players (multiplier < 1), convert to negative change
-        // e.g., multiplier 0.6 means they develop at 60% rate, but since they're
-        // past peak, this becomes decline
-        if ($multiplier < 1.0) {
-            // The further below 1.0, the more they decline
-            // 0.8 = -0.4 points, 0.5 = -1.0 points, 0.2 = -1.6 points
-            $declineRate = (1.0 - $multiplier) * self::BASE_DEVELOPMENT;
-            return (int) round(-$declineRate);
+        if ($baseChange < 0) {
+            // Decline happens regardless, but active players decline at half rate
+            if ($seasonAppearances >= self::MIN_APPEARANCES_FOR_GROWTH) {
+                return (int) round($baseChange * 0.5);
+            }
+
+            return $baseChange;
         }
 
-        return (int) round($development);
-    }
-
-    /**
-     * Check if the player qualifies for the appearance bonus.
-     */
-    public static function qualifiesForBonus(int $seasonAppearances): bool
-    {
-        return $seasonAppearances >= self::MIN_APPEARANCES_FOR_BONUS;
+        return 0;
     }
 }

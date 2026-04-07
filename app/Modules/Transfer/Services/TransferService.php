@@ -44,7 +44,7 @@ class TransferService
      * Premium range for unsolicited offers (tempting the seller).
      */
     private const UNSOLICITED_PRICE_MIN = 1.00;
-    private const UNSOLICITED_PRICE_MAX = 1.20;
+    private const UNSOLICITED_PRICE_MAX = 1.15;
 
     /**
      * Age adjustments for transfer pricing.

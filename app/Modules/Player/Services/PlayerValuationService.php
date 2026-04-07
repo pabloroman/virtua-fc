@@ -24,10 +24,11 @@ class PlayerValuationService
         [63, 200_000_000],       // €2M
         [68, 500_000_000],       // €5M
         [73, 1_000_000_000],     // €10M
-        [78, 2_000_000_000],     // €20M
+        [78, 2_500_000_000],     // €25M
         [83, 5_000_000_000],     // €50M
-        [88, 10_000_000_000],    // €100M
-        [95, 20_000_000_000],    // €200M
+        [88, 8_000_000_000],     // €80M
+        [92, 12_000_000_000],    // €120M
+        [95, 15_000_000_000],    // €150M
     ];
 
     /**
@@ -89,12 +90,12 @@ class PlayerValuationService
         // Deterministic base value via log-linear interpolation of forward mapping anchors
         $baseValue = $this->abilityToBaseValue($averageAbility);
 
-        // Age multiplier
+        // Age multiplier (reduced youth premiums for realistic valuations)
         $ageMultiplier = match (true) {
-            $age <= 19 => 1.8,
-            $age <= 21 => 1.5,
-            $age <= 23 => 1.3,
-            $age <= 26 => 1.1,
+            $age <= 19 => 1.3,
+            $age <= 21 => 1.2,
+            $age <= 23 => 1.1,
+            $age <= 26 => 1.05,
             $age <= 31 => 1.0,
             $age <= 33 => 0.75,
             $age <= 35 => 0.45,
@@ -108,11 +109,11 @@ class PlayerValuationService
             $change = $averageAbility - $previousAbility;
 
             if ($age <= PlayerAge::YOUNG_END && $change > 0) {
-                // Young players who improve get bigger boost (confirming potential)
+                // Young players who improve get a modest boost (confirming potential)
                 $trendMultiplier = match (true) {
-                    $change >= 5 => 1.4,
-                    $change >= 3 => 1.25,
-                    default => 1.1,
+                    $change >= 5 => 1.2,
+                    $change >= 3 => 1.1,
+                    default => 1.0,
                 };
             } elseif ($change < 0) {
                 // Declining players lose value faster
@@ -126,8 +127,8 @@ class PlayerValuationService
 
         $newValue = (int) round($baseValue * $ageMultiplier * $trendMultiplier);
 
-        // Clamp to reasonable range: €100K to €200M
-        return max(100_000_00, min(200_000_000_00, $newValue));
+        // Clamp to reasonable range: €100K to €150M
+        return max(100_000_00, min(150_000_000_00, $newValue));
     }
 
     /**

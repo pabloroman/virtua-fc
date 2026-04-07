@@ -86,9 +86,10 @@ class YouthAcademyService
 
     /**
      * Season growth rates for development.
+     * Controls what fraction of (potential - current) is gained per season.
      */
-    private const GROWTH_RATE_ACADEMY = 0.45;
-    private const GROWTH_RATE_LOAN = 0.50;
+    private const GROWTH_RATE_ACADEMY = 0.25;
+    private const GROWTH_RATE_LOAN = 0.35;
 
     /**
      * Position groups with weights for random selection.
@@ -405,8 +406,10 @@ class YouthAcademyService
         // Ability mean = academy base quality + team context bonus
         $abilityMean = self::ACADEMY_BASE_QUALITY[$academyTier] + self::TEAM_CONTEXT_BONUS[$teamMedianTier];
 
-        $technical = $this->clampAbility($this->gaussianRandom($abilityMean, self::ABILITY_STD_DEV));
-        $physical = $this->clampAbility($this->gaussianRandom($abilityMean, self::ABILITY_STD_DEV));
+        $age = rand(17, 19);
+
+        $technical = $this->clampAbility($this->gaussianRandom($abilityMean, self::ABILITY_STD_DEV), $age);
+        $physical = $this->clampAbility($this->gaussianRandom($abilityMean, self::ABILITY_STD_DEV), $age);
 
         // Potential = best current ability + normally distributed upside
         $currentBest = max($technical, $physical);
@@ -414,15 +417,14 @@ class YouthAcademyService
         $upside = max(0, (int) round($this->gaussianRandom($upsideMean, self::POTENTIAL_UPSIDE_STD_DEV)));
         $potential = $currentBest + $upside;
 
-        // Apply floor guarantee and ceiling
+        // Apply floor guarantee and ceiling (88 max — elite potential proven on first team)
         $potential = max($potential, self::POTENTIAL_FLOOR[$academyTier]);
-        $potential = min(95, max($potential, $currentBest));
+        $potential = min(88, max($potential, $currentBest));
 
         $potentialVariance = rand(3, 8);
         $potentialLow = max($potential - $potentialVariance, $currentBest);
         $potentialHigh = min($potential + $potentialVariance, 99);
 
-        $age = rand(17, 19);
         $dateOfBirth = $game->current_date->copy()->subYears($age)->subDays(rand(0, 364));
 
         $teamName = $game->team->name;
@@ -466,10 +468,18 @@ class YouthAcademyService
 
     /**
      * Clamp a sampled ability value to the valid academy prospect range.
+     * Enforces age-based ceiling: academy players are still developing.
      */
-    private function clampAbility(float $value): int
+    private function clampAbility(float $value, int $age): int
     {
-        return max(50, min(90, (int) round($value)));
+        $ageCap = match ($age) {
+            17 => 72,
+            18 => 74,
+            19 => 76,
+            default => 78,
+        };
+
+        return max(50, min($ageCap, (int) round($value)));
     }
 
     /**

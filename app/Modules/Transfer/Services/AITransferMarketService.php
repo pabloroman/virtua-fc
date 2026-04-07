@@ -59,6 +59,20 @@ class AITransferMarketService
     /** Maximum squad size — buyers can't exceed this */
     private const MAX_SQUAD_SIZE = 30;
 
+    /**
+     * Maximum transfer fee an AI team can pay, by reputation index (0=elite, 6=local).
+     * Only elite clubs can spend 120M+; mid-table clubs are limited to realistic levels.
+     */
+    private const MAX_FEE_BY_REPUTATION_INDEX = [
+        0 => 12_000_000_000,  // €120M — elite clubs (Real Madrid, Barcelona)
+        1 => 7_000_000_000,   // €70M  — continental clubs
+        2 => 3_000_000_000,   // €30M  — established clubs
+        3 => 1_500_000_000,   // €15M  — modest clubs
+        4 => 500_000_000,     // €5M   — local clubs
+        5 => 500_000_000,     // €5M
+        6 => 500_000_000,     // €5M
+    ];
+
     /** Minimum free agents to preserve — AI stops signing when pool drops to this */
     private const MIN_FREE_AGENT_POOL = 15;
 
@@ -515,8 +529,9 @@ class AITransferMarketService
                 $buyerTeamId = $buyer['teamId'];
                 $assignedNumber = $this->allocateSquadNumber($takenNumbers, $buyerTeamId);
 
-                // Prepare domestic transfer
-                $this->prepareTransfer($game, $player, $sellerTeamId, $buyerTeamId, $teams->get($buyerTeamId), $window, $assignedNumber, $playerUpdates, $transferInserts);
+                // Prepare domestic transfer (with buyer reputation fee cap)
+                $buyerRepIndex = $this->getReputationIndex($buyerTeamId, $teamReputations);
+                $this->prepareTransfer($game, $player, $sellerTeamId, $buyerTeamId, $teams->get($buyerTeamId), $window, $assignedNumber, $playerUpdates, $transferInserts, buyerReputationIndex: $buyerRepIndex);
                 $count++;
                 $transferredPlayerIds[$player->id] = true;
 
@@ -536,7 +551,7 @@ class AITransferMarketService
                     $foreignIndex++;
                     $assignedNumber = $this->allocateSquadNumber($takenNumbers, $foreignTeam->id);
 
-                    $this->prepareTransfer($game, $player, $sellerTeamId, $foreignTeam->id, $foreignTeam, $window, $assignedNumber, $playerUpdates, $transferInserts, maxContractYears: 4);
+                    $this->prepareTransfer($game, $player, $sellerTeamId, $foreignTeam->id, $foreignTeam, $window, $assignedNumber, $playerUpdates, $transferInserts, maxContractYears: 4, buyerReputationIndex: 1);
                     $count++;
                     $transferredPlayerIds[$player->id] = true;
                     $this->incrementBudget($teamBudgets, $sellerTeamId, 'sells');
@@ -949,8 +964,10 @@ class AITransferMarketService
         array &$transferInserts,
         int $minContractYears = 2,
         int $maxContractYears = 3,
+        int $buyerReputationIndex = 6,
     ): void {
-        $fee = $player->market_value_cents;
+        $maxFee = self::MAX_FEE_BY_REPUTATION_INDEX[$buyerReputationIndex] ?? 500_000_000;
+        $fee = min($player->market_value_cents, $maxFee);
         $seasonYear = (int) $game->season;
         $contractYears = mt_rand($minContractYears, $maxContractYears);
         $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
