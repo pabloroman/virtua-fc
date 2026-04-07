@@ -297,6 +297,7 @@ class ShowLiveMatch
             'contextualHighFouls' => __('commentary.contextual_high_fouls'),
             'goalAssisted' => __('commentary.goal_assisted'),
             'goalSolo' => __('commentary.goal_solo'),
+            'goalPenalty' => __('commentary.goal_penalty'),
             // Tactical narratives
             'tacticalHighPressWorking' => __('commentary.tactical_high_press_working'),
             'tacticalHighPressFading' => __('commentary.tactical_high_press_fading'),

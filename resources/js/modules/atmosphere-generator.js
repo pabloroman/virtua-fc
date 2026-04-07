@@ -672,6 +672,7 @@ export function addGoalNarratives(events, config) {
 
     const assistedTemplates = narrativeTemplates.goalAssisted || [];
     const soloTemplates = narrativeTemplates.goalSolo || [];
+    const penaltyTemplates = narrativeTemplates.goalPenalty || [];
     if (!assistedTemplates.length && !soloTemplates.length) return;
 
     const homeForms = buildTeamForms(homeTeamName, homeArticle);
@@ -696,12 +697,17 @@ export function addGoalNarratives(events, config) {
         const teamForms = isHome ? homeForms : awayForms;
         const scoringStyle = isHome ? homeStyle : awayStyle;
 
+        // Penalty goals always use penalty-specific templates
+        const isPenalty = event.metadata?.is_penalty && penaltyTemplates.length > 0;
+
         // ~50% chance to use tactical template when a non-balanced style is active
         const tacticalTemplates = scoringStyle ? (tacticalGoalTemplates[scoringStyle] || []) : [];
-        const useTactical = tacticalTemplates.length > 0 && Math.random() < 0.5;
+        const useTactical = !isPenalty && tacticalTemplates.length > 0 && Math.random() < 0.5;
 
         let templates;
-        if (useTactical) {
+        if (isPenalty) {
+            templates = penaltyTemplates;
+        } else if (useTactical) {
             templates = tacticalTemplates;
         } else {
             templates = event.assistPlayerName ? assistedTemplates : soloTemplates;

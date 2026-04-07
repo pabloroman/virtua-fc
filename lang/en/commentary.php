@@ -221,6 +221,14 @@ return [
         ':user\'s direct play is going right over :el_opp\'s high press — long balls finding their targets',
         'The press from :el_opp is being bypassed by :el_user\'s direct long balls',
     ],
+    'goal_penalty' => [
+        'Penalty! :player (:team) steps up and sends the keeper the wrong way. Cool as you like',
+        ':player (:team) places the ball on the spot, runs up and fires it into the corner. No chance for the keeper',
+        'Penalty to :team. :player sends it straight down the middle as the keeper dives away',
+        ':player (:team) takes responsibility from twelve yards and makes no mistake. Ice cold',
+        'Penalty goal! :player (:team) waits for the keeper to commit and slots it the other side',
+        ':player (:team) steps up to the spot and hammers it into the top corner. Unstoppable',
+    ],
     // Tactical goal flavoring
     'goal_counter_attack' => [
         'Lightning counter-attack! :player finishes after a devastating break by :team',
