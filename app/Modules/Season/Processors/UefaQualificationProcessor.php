@@ -282,7 +282,9 @@ class UefaQualificationProcessor implements SeasonProcessor
      * Qualify the UEL winner into next season's UCL.
      *
      * If the winner is already in UCL, do nothing.
-     * Otherwise, add them and remove a non-configured-country team to maintain 36.
+     * Otherwise, add them to UCL (replacing a non-configured-country team to
+     * maintain 36), and cascade any vacated UEL/UECL spot to the next
+     * non-qualified team from the same country's league standings.
      */
     private function qualifyUelWinner(Game $game, SeasonTransitionData $data): void
     {
@@ -338,6 +340,71 @@ class UefaQualificationProcessor implements SeasonProcessor
                 'entry_round' => 1,
             ]
         );
+
+        // Cascade: if the UEL winner had a UEL or UECL spot (e.g. from cup winner),
+        // remove it and give that spot to the next non-qualified team from the
+        // same country's league standings.
+        $this->cascadeVacatedSpot($game, $uelWinnerId);
+    }
+
+    /**
+     * If a team holds a UEL or UECL entry that is now redundant because they
+     * were upgraded to UCL, remove it and cascade the spot to the next
+     * non-qualified team from the same country's league standings.
+     */
+    private function cascadeVacatedSpot(Game $game, string $teamId): void
+    {
+        $vacatedEntry = CompetitionEntry::where('game_id', $game->id)
+            ->where('team_id', $teamId)
+            ->whereIn('competition_id', ['UEL', 'UECL'])
+            ->first();
+
+        if (!$vacatedEntry) {
+            return;
+        }
+
+        $vacatedCompetition = $vacatedEntry->competition_id;
+        $vacatedEntry->delete();
+
+        // Find the team's country to look up league standings
+        $team = Team::find($teamId);
+        if (!$team) {
+            return;
+        }
+
+        $countryCode = $team->country;
+        $slots = $this->countryConfig->continentalSlots($countryCode);
+        if (empty($slots)) {
+            return;
+        }
+
+        // Get the league standings and current qualifications for this country
+        $leagueId = array_key_first($slots);
+        $leagueStandings = $this->getLeagueStandings($game, $leagueId);
+        if (empty($leagueStandings)) {
+            return;
+        }
+
+        // Build current qualifications map from competition_entries
+        $countryTeamIds = Team::where('country', $countryCode)->pluck('id')->toArray();
+
+        $currentQualifications = CompetitionEntry::where('game_id', $game->id)
+            ->whereIn('competition_id', ['UCL', 'UEL', 'UECL'])
+            ->whereIn('team_id', $countryTeamIds)
+            ->pluck('competition_id', 'team_id')
+            ->toArray();
+
+        $nextTeam = $this->getNextNonQualifiedTeam($leagueStandings, $currentQualifications);
+        if ($nextTeam) {
+            CompetitionEntry::updateOrCreate(
+                [
+                    'game_id' => $game->id,
+                    'competition_id' => $vacatedCompetition,
+                    'team_id' => $nextTeam,
+                ],
+                ['entry_round' => 1]
+            );
+        }
     }
 
     /**
