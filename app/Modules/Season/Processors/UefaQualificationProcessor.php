@@ -344,7 +344,9 @@ class UefaQualificationProcessor implements SeasonProcessor
      * Fill remaining continental slots to reach 36 teams per swiss_format competition.
      *
      * Selects European teams (from competitions with country='EU') that are not
-     * already in any swiss_format competition.
+     * already in any swiss_format competition. Only teams from non-configured
+     * countries (those without continental_slots) are eligible as fillers, since
+     * configured countries already have all their spots allocated via processCountry().
      */
     private function fillRemainingContinentalSlots(Game $game, array $swissCompetitionIds): void
     {
@@ -358,11 +360,20 @@ class UefaQualificationProcessor implements SeasonProcessor
             ->pluck('team_id')
             ->toArray();
 
-        // European team pool: teams registered in any competition with country='EU'
+        // Countries with continental_slots already have their spots filled by
+        // processCountry(). Fillers must come from other European countries only.
+        $configuredCountries = collect($this->countryConfig->allCountryCodes())
+            ->filter(fn (string $code) => !empty($this->countryConfig->continentalSlots($code)))
+            ->all();
+
+        // European team pool: teams registered in any competition with country='EU',
+        // excluding teams already placed and teams from configured countries.
         $europeanTeamPool = CompetitionTeam::query()
             ->join('competitions', 'competition_teams.competition_id', '=', 'competitions.id')
+            ->join('teams', 'competition_teams.team_id', '=', 'teams.id')
             ->where('competitions.country', 'EU')
             ->whereNotIn('competition_teams.team_id', $usedTeamIds)
+            ->whereNotIn('teams.country', $configuredCountries)
             ->distinct()
             ->pluck('competition_teams.team_id')
             ->toArray();
