@@ -17,7 +17,7 @@
     </head>
     <body class="font-sans antialiased bg-surface-900 text-text-primary">
     <div class="min-h-screen">
-    <main class="text-text-body pt-0 pb-24 sm:pt-2 sm:pb-24">
+    <main class="text-text-body pt-0 pb-32 sm:pt-2 sm:pb-32">
         <div class="max-w-4xl mx-auto px-4 pb-8"
              @if($animationSeen) x-cloak @endif
              x-data="liveMatch({
