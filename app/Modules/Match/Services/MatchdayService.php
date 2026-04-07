@@ -128,6 +128,30 @@ class MatchdayService
     }
 
     /**
+     * Get the next unplayed match for the player's team, generating any
+     * pending knockout fixtures first (e.g. 3rd-place + final after both
+     * semi-finals are resolved).
+     *
+     * This is the read-path counterpart to getNextMatchBatch() — safe to
+     * call from views/controllers that need to display the upcoming match.
+     */
+    public function getNextPlayerMatch(Game $game): ?GameMatch
+    {
+        // Ensure knockout rounds are generated before looking for the player's match.
+        // Covers the edge case where both semi-final ties are resolved but the
+        // 3rd-place / final matches weren't generated yet due to timing between
+        // the background batch job and the finalization flow.
+        $this->generatePendingMatches($game);
+
+        return GameMatch::where('game_id', $game->id)
+            ->where('played', false)
+            ->where(fn ($q) => $q->where('home_team_id', $game->team_id)
+                ->orWhere('away_team_id', $game->team_id))
+            ->orderBy('scheduled_date')
+            ->first();
+    }
+
+    /**
      * Find the next unplayed match.
      */
     private function findNextMatch(string $gameId): ?GameMatch

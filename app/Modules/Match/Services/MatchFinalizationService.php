@@ -59,19 +59,7 @@ class MatchFinalizationService
         // 6. Advance current_date to the next upcoming match (forward-looking calendar).
         // This ensures transfer windows and other date-based logic reflect where
         // the season calendar actually is, not when the last match was played.
-        $nextMatch = GameMatch::where('game_id', $game->id)
-            ->where('played', false)
-            ->orderBy('scheduled_date')
-            ->first();
-
-        if ($nextMatch) {
-            $game->update(['current_date' => $nextMatch->scheduled_date->toDateString()]);
-            $game->refresh();
-
-            if ($nextMatch->scheduled_date->gt($previousDate)) {
-                GameDateAdvanced::dispatch($game, $previousDate, $nextMatch->scheduled_date);
-            }
-        }
+        $this->advanceCurrentDate($game, $previousDate);
 
         // 7. Generate any pending knockout/playoff fixtures now that standings are final.
         // This covers both league matches (where standings determine playoff seedings)
@@ -80,6 +68,33 @@ class MatchFinalizationService
         if ($competition) {
             $handler = $this->handlerResolver->resolve($competition);
             $handler->beforeMatches($game, $game->current_date->toDateString());
+        }
+
+        // 8. Re-advance current_date if step 7 generated new matches (e.g. 3rd-place +
+        // final after both semifinals completed). Step 6 may have found no matches
+        // because they didn't exist yet.
+        $this->advanceCurrentDate($game, $previousDate);
+    }
+
+    /**
+     * Advance the game's current_date to the next unplayed match if one exists.
+     */
+    private function advanceCurrentDate(Game $game, Carbon $previousDate): void
+    {
+        $nextMatch = GameMatch::where('game_id', $game->id)
+            ->where('played', false)
+            ->orderBy('scheduled_date')
+            ->first();
+
+        if (! $nextMatch) {
+            return;
+        }
+
+        $game->update(['current_date' => $nextMatch->scheduled_date->toDateString()]);
+        $game->refresh();
+
+        if ($nextMatch->scheduled_date->gt($previousDate)) {
+            GameDateAdvanced::dispatch($game, $previousDate, $nextMatch->scheduled_date);
         }
     }
 

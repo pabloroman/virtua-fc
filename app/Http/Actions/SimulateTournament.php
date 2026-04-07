@@ -36,7 +36,13 @@ class SimulateTournament
                 ]);
             }
 
-            if (in_array($result->type, ['blocked', 'done', 'season_complete'])) {
+            if ($result->type === 'blocked') {
+                // Transient block — redirect back to game view instead of ending tournament
+                return redirect()->route('show-game', $game->id)
+                    ->with('warning', __('messages.action_required'));
+            }
+
+            if (in_array($result->type, ['done', 'season_complete'])) {
                 break;
             }
 
