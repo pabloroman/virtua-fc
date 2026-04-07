@@ -51,6 +51,7 @@ class MatchFinalizationService
         // 4. Clear the pending flag before dispatching events (prevents re-entry
         // from the finalizePendingMatch safety net if advance() runs concurrently)
         $game->update(['pending_finalization_match_id' => null]);
+        session()->forget("live_match_animated:{$match->id}");
 
         // 5. Dispatch MatchFinalized for standings, GK stats, and notifications
         MatchFinalized::dispatch($match, $game, $competition);

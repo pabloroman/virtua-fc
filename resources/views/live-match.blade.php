@@ -19,6 +19,7 @@
     <div class="min-h-screen">
     <main class="text-text-body pt-0 pb-24 sm:pt-2 sm:pb-24">
         <div class="max-w-4xl mx-auto px-4 pb-8"
+             @if($animationSeen) x-cloak @endif
              x-data="liveMatch({
                 events: {{ Js::from($events) }},
                 homeTeamId: '{{ $match->home_team_id }}',
@@ -76,6 +77,8 @@
                 homeArticle: {{ Js::from($match->homeTeam->article) }},
                 awayArticle: {{ Js::from($match->awayTeam->article) }},
                 narrativeTemplates: {{ Js::from($narrativeTemplates) }},
+                matchId: '{{ $match->id }}',
+                animationSeen: {{ $animationSeen ? 'true' : 'false' }},
                 translations: {
                     unsavedTacticalChanges: {!! Js::from(__('game.tactical_unsaved_changes')) !!},
                     extraTime: {!! Js::from(__('game.live_extra_time')) !!},
@@ -993,7 +996,7 @@
                         </template>
 
                         {{-- Continue button --}}
-                        <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
+                        <form method="POST" action="{{ route('game.finalize-match', $game->id) }}" x-on:submit="_clearEventsCache()">
                             @csrf
                             <template x-if="isTournamentDecisive">
                                 <input type="hidden" name="tournament_end" value="1">

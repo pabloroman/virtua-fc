@@ -405,6 +405,11 @@ export function createMatchSimulation(ctx) {
         if (typeof state.recalculatePlayerRatings === 'function') {
             state.recalculatePlayerRatings();
         }
+
+        // Cache events so page refreshes show the same feed
+        if (typeof state._cacheEvents === 'function') {
+            state._cacheEvents();
+        }
     }
 
     // =========================================================================

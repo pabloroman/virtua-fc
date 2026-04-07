@@ -107,6 +107,10 @@ export default function liveMatch(config) {
         knockoutRoundNumber: config.knockoutRoundNumber || null,
         knockoutRoundName: config.knockoutRoundName || '',
 
+        // Animation state (server-side flag to skip animation on page refresh)
+        matchId: config.matchId || '',
+        animationSeen: config.animationSeen || false,
+
         // MVP
         mvpPlayerName: config.mvpPlayerName || null,
         mvpPlayerTeamId: config.mvpPlayerTeamId || null,
@@ -285,14 +289,139 @@ export default function liveMatch(config) {
             };
             document.addEventListener('visibilitychange', this._onVisibilityChange);
 
-            // Generate client-side atmosphere events (shots, fouls) and narratives
-            this._injectAtmosphere();
-            if (this.preloadedExtraTimeData) {
-                this._injectETAtmosphere();
+            // On page refresh, try to restore cached events so the feed is
+            // identical to what the user saw during the live simulation.
+            if (this.animationSeen && this._restoreEventsFromCache()) {
+                this.skipToFullTimeImmediate();
+            } else {
+                // Generate client-side atmosphere events (shots, fouls) and narratives
+                this._injectAtmosphere();
+                if (this.preloadedExtraTimeData) {
+                    this._injectETAtmosphere();
+                }
+
+                if (this.animationSeen) {
+                    // Cache miss on refresh — synthesize fresh (rare edge case)
+                    this.skipToFullTimeImmediate();
+                } else {
+                    this.startSimulation();
+                }
+            }
+        },
+
+        /**
+         * Cold-start the component directly into full_time state without any
+         * animation. Used on page refresh so the user sees the final result
+         * immediately instead of replaying the live experience.
+         */
+        skipToFullTimeImmediate() {
+            // Synthesize any missing goal events so the event list is complete
+            this.events = this.synthesizeGoalsIfNeeded(this.events);
+
+            // Reveal all regular-time events and track substitutions
+            for (let i = 0; i < this.events.length; i++) {
+                const event = this.events[i];
+                this.revealedEvents.unshift(event);
+                this.lastRevealedIndex = i;
+
+                if (event.type === 'substitution' && event.teamId === this.userTeamId) {
+                    this.substitutionsMade.push({
+                        playerOutId: event.gamePlayerId,
+                        playerInId: event.metadata?.player_in_id ?? '',
+                        minute: event.minute,
+                        playerOutName: event.playerName ?? '',
+                        playerInName: event.playerInName ?? '',
+                    });
+                    const playerInId = event.metadata?.player_in_id;
+                    if (playerInId) {
+                        const benchPlayer = this.benchPlayers.find(p => p.id === playerInId);
+                        if (benchPlayer) benchPlayer.minuteEntered = event.minute;
+                    }
+                }
             }
 
-            // Start the match simulation (synthesize goals + kickoff delay)
-            this.startSimulation();
+            // Set regular-time scores
+            this.homeScore = this.finalHomeScore;
+            this.awayScore = this.finalAwayScore;
+
+            // Handle extra time if preloaded (ET already simulated before refresh)
+            if (this.preloadedExtraTimeData) {
+                for (let i = 0; i < this.extraTimeEvents.length; i++) {
+                    const event = this.extraTimeEvents[i];
+                    this.revealedEvents.unshift(event);
+                    this.lastRevealedETIndex = i;
+
+                    if (event.type === 'substitution' && event.teamId === this.userTeamId) {
+                        this.substitutionsMade.push({
+                            playerOutId: event.gamePlayerId,
+                            playerInId: event.metadata?.player_in_id ?? '',
+                            minute: event.minute,
+                            playerOutName: event.playerName ?? '',
+                            playerInName: event.playerInName ?? '',
+                        });
+                    }
+                }
+                this.homeScore = this.finalHomeScore + this.etHomeScore;
+                this.awayScore = this.finalAwayScore + this.etAwayScore;
+                this.currentMinute = 120;
+            } else {
+                this.currentMinute = 90;
+            }
+
+            // Set other match scores to final values
+            for (let i = 0; i < this.otherMatches.length; i++) {
+                this.otherMatchScores[i] = {
+                    homeScore: this.otherMatches[i].homeScore,
+                    awayScore: this.otherMatches[i].awayScore,
+                };
+            }
+
+            // Set final possession (no oscillation)
+            this.homePossession = this._basePossession;
+            this.awayPossession = 100 - this._basePossession;
+
+            // Set phase to full_time and calculate player ratings
+            this.phase = 'full_time';
+            this.recalculatePlayerRatings();
+        },
+
+        /**
+         * Cache the current events arrays to localStorage so page refreshes
+         * show the exact same event feed the user saw during live simulation.
+         */
+        _cacheEvents() {
+            if (!this.matchId) return;
+            try {
+                const payload = {
+                    events: this.events,
+                    extraTimeEvents: this.extraTimeEvents,
+                };
+                localStorage.setItem(`live_match_events:${this.matchId}`, JSON.stringify(payload));
+            } catch (_) { /* quota exceeded — silently skip */ }
+        },
+
+        /**
+         * Restore cached events from localStorage. Returns true if cache was
+         * found and applied, false otherwise.
+         */
+        _restoreEventsFromCache() {
+            if (!this.matchId) return false;
+            try {
+                const raw = localStorage.getItem(`live_match_events:${this.matchId}`);
+                if (!raw) return false;
+                const cached = JSON.parse(raw);
+                if (cached.events) this.events = cached.events;
+                if (cached.extraTimeEvents) this.extraTimeEvents = cached.extraTimeEvents;
+                return true;
+            } catch (_) { return false; }
+        },
+
+        /**
+         * Remove the cached events entry for this match.
+         */
+        _clearEventsCache() {
+            if (!this.matchId) return;
+            localStorage.removeItem(`live_match_events:${this.matchId}`);
         },
 
         // =====================================================================

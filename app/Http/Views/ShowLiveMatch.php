@@ -39,6 +39,14 @@ class ShowLiveMatch
             return redirect()->route('show-game', $gameId);
         }
 
+        // Track whether the live animation has already been seen for this match.
+        // First visit sets the flag and plays the animation; refreshes skip to full_time.
+        $sessionKey = "live_match_animated:{$matchId}";
+        $animationSeen = session()->has($sessionKey);
+        if (! $animationSeen) {
+            session()->put($sessionKey, true);
+        }
+
         // Determine if this is a knockout match (cup tie) that could go to ET
         $isKnockout = $playerMatch->cup_tie_id !== null;
         $extraTimeData = null;
@@ -361,6 +369,7 @@ class ShowLiveMatch
             'slotAssignments' => $playerMatch->{"{$prefix}_slot_assignments"}
                 ?? $game->tactics?->default_slot_assignments ?? [],
             'narrativeTemplates' => $narrativeTemplates,
+            'animationSeen' => $animationSeen,
         ]);
     }
 
