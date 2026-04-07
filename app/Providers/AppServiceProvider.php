@@ -36,8 +36,13 @@ use App\Modules\Season\Listeners\SimulateOtherLeagues;
 use App\Modules\Competition\Services\CompetitionHandlerResolver;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Queue\Events\JobFailed;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
@@ -105,5 +110,29 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(GameDateAdvanced::class, ProcessTransferWindowClose::class);
         Event::listen(GameDateAdvanced::class, NotifyTransferWindowClosed::class);
         Event::listen(GameDateAdvanced::class, EnforceSquadRegistration::class);
+
+        Queue::failing(function (JobFailed $event) {
+            try {
+                Cache::throttle('job_failure_alert')
+                    ->allow(1)
+                    ->every(300)
+                    ->then(fn () => Mail::raw(
+                        "Job: {$event->job->resolveName()}\n\n"
+                        ."Queue: {$event->job->getQueue()}\n"
+                        ."Exception: {$event->exception->getMessage()}\n\n"
+                        ."Trace:\n{$event->exception->getTraceAsString()}",
+                        function ($message) use ($event) {
+                            $message->to(config('mail.from.address'))
+                                ->subject("[VirtuaFC] Job failed: {$event->job->resolveName()}");
+                        }
+                    ));
+            } catch (\Throwable $e) {
+                Log::error('Failed to send job failure alert email', [
+                    'job' => $event->job->resolveName(),
+                    'mail_error' => $e->getMessage(),
+                    'original_error' => $event->exception->getMessage(),
+                ]);
+            }
+        });
     }
 }
