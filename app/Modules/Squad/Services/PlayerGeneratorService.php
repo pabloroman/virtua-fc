@@ -8,6 +8,7 @@ use App\Models\GamePlayer;
 use App\Models\Player;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use App\Models\ClubProfile;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Player\Services\InjuryService;
 use App\Modules\Player\Services\PlayerDevelopmentService;
@@ -307,6 +308,124 @@ class PlayerGeneratorService
             dateOfBirth: $dateOfBirth,
             contractYears: mt_rand(2, 4),
         );
+    }
+
+    /**
+     * Base ability mean by reputation tier for AI academy graduates.
+     *
+     * Mirrors YouthAcademyService::ACADEMY_BASE_QUALITY but with a maturity
+     * bonus to reflect 1-3 years of development before first-team promotion.
+     */
+    private const REPUTATION_BASE_QUALITY = [
+        0 => 45,   // local
+        1 => 50,   // modest
+        2 => 57,   // established
+        3 => 67,   // continental
+        4 => 74,   // elite
+    ];
+
+    /**
+     * Standard deviation for the ability normal distribution (matches YouthAcademyService).
+     */
+    private const ABILITY_STD_DEV = 6;
+
+    /**
+     * Average potential upside (points above current ability) per reputation tier.
+     */
+    private const POTENTIAL_UPSIDE_MEAN = [
+        0 => 12,
+        1 => 12,
+        2 => 10,
+        3 => 8,
+        4 => 8,
+    ];
+
+    private const POTENTIAL_UPSIDE_STD_DEV = 5;
+
+    /**
+     * Absolute minimum potential guaranteed by reputation tier.
+     */
+    private const POTENTIAL_FLOOR = [
+        0 => 42,
+        1 => 45,
+        2 => 50,
+        3 => 55,
+        4 => 60,
+    ];
+
+    /**
+     * Build a GeneratedPlayerData for an AI academy graduate (young, reputation-based ability).
+     *
+     * Simulates a player being promoted from an AI team's academy to the first team.
+     * Quality is driven by the team's reputation, mirroring how the user's youth
+     * academy uses tiers to determine prospect quality.
+     */
+    public function buildYouthPlayerData(
+        Game $game,
+        string $teamId,
+        string $position,
+        string $reputationLevel,
+    ): GeneratedPlayerData {
+        $reputationIndex = ClubProfile::getReputationTierIndex($reputationLevel);
+        $abilityMean = self::REPUTATION_BASE_QUALITY[$reputationIndex];
+
+        $technical = $this->clampAbility($this->gaussianRandom($abilityMean, self::ABILITY_STD_DEV));
+        $physical = $this->clampAbility($this->gaussianRandom($abilityMean, self::ABILITY_STD_DEV));
+
+        // Potential: best current ability + normally distributed upside, with floor guarantee
+        $currentBest = max($technical, $physical);
+        $upsideMean = self::POTENTIAL_UPSIDE_MEAN[$reputationIndex];
+        $upside = max(0, (int) round($this->gaussianRandom($upsideMean, self::POTENTIAL_UPSIDE_STD_DEV)));
+        $potential = $currentBest + $upside;
+        $potential = max($potential, self::POTENTIAL_FLOOR[$reputationIndex]);
+        $potential = min(88, max($potential, $currentBest));
+
+        $potentialVariance = mt_rand(3, 8);
+        $potentialLow = max($potential - $potentialVariance, $currentBest);
+        $potentialHigh = min($potential + $potentialVariance, 99);
+
+        $ageRoll = mt_rand(1, 100);
+        $age = match (true) {
+            $ageRoll <= 20 => 20,
+            $ageRoll <= 55 => 21,
+            $ageRoll <= 85 => 22,
+            default => 23,
+        };
+
+        $dateOfBirth = $game->current_date->copy()->subYears($age)->subDays(mt_rand(0, 364));
+
+        return new GeneratedPlayerData(
+            teamId: $teamId,
+            position: $position,
+            technical: $technical,
+            physical: $physical,
+            dateOfBirth: $dateOfBirth,
+            contractYears: mt_rand(3, 5),
+            potential: $potential,
+            potentialLow: $potentialLow,
+            potentialHigh: $potentialHigh,
+        );
+    }
+
+    /**
+     * Clamp a sampled ability value to the valid range for AI academy graduates.
+     */
+    private function clampAbility(float $value): int
+    {
+        return max(30, min(80, (int) round($value)));
+    }
+
+    /**
+     * Generate a normally distributed random value using the Box-Muller transform.
+     */
+    private function gaussianRandom(float $mean, float $stdDev): float
+    {
+        $u1 = mt_rand(1, PHP_INT_MAX) / PHP_INT_MAX;
+        $u2 = mt_rand(1, PHP_INT_MAX) / PHP_INT_MAX;
+
+        $z = sqrt(-2.0 * log($u1)) * cos(2.0 * M_PI * $u2);
+
+        return $mean + $stdDev * $z;
     }
 
     /**

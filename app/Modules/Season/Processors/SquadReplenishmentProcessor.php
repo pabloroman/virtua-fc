@@ -4,10 +4,10 @@ namespace App\Modules\Season\Processors;
 
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
-use App\Modules\Squad\DTOs\GeneratedPlayerData;
 use App\Modules\Squad\Services\PlayerGeneratorService;
 use App\Models\Game;
 use App\Models\GamePlayer;
+use App\Models\TeamReputation;
 use App\Modules\Player\PlayerAge;
 use App\Support\PositionMapper;
 use Carbon\Carbon;
@@ -20,12 +20,15 @@ use Illuminate\Support\Collection;
  * Fills gaps caused by any source of attrition: retirements, expired contracts,
  * transfers, or any other mechanism that removes players.
  *
+ * All generated players are young academy graduates (ages 20-23), with ability
+ * driven by the team's reputation tier — mirroring the user's youth academy.
+ * Higher-reputation teams produce better prospects.
+ *
  * Three rules are enforced for AI teams:
  * 1. Position group minimums (3 GK, 6 DEF, 6 MID, 4 FWD) — always, even if
  *    total squad size is sufficient (e.g. user buys all AI team's goalkeepers).
  * 2. Minimum squad size of 22 — fill remaining gaps by position target priority.
- * 3. Youth intake — each AI team receives 2-3 young players (17-20) per season,
- *    simulating AI youth academies and maintaining healthy age balance.
+ * 3. Youth intake — each AI team receives 2-3 additional young players per season.
  *
  * User team replenishment is handled separately in YouthAcademyPromotionProcessor
  * (setup pipeline), which promotes academy players first before generating synthetic ones.
@@ -47,12 +50,6 @@ class SquadReplenishmentProcessor implements SeasonProcessor
      * Maximum squad size before we skip youth intake (leave buffer for transfers).
      */
     private const YOUTH_INTAKE_SQUAD_CAP = 28;
-
-    /**
-     * Youth ability factor range (multiplied by team average ability).
-     */
-    private const YOUTH_ABILITY_FACTOR_MIN = 0.55;
-    private const YOUTH_ABILITY_FACTOR_MAX = 0.75;
 
     /**
      * Position weights for youth intake (mirrors realistic academy output).
@@ -134,25 +131,26 @@ class SquadReplenishmentProcessor implements SeasonProcessor
             ->get()
             ->groupBy('team_id');
 
-        $aiTeamIds = $playersByTeam->keys()->reject(fn ($id) => $id === $game->team_id);
+        $aiTeamIds = $playersByTeam->keys()->reject(fn ($id) => $id === $game->team_id)->values();
+        $reputationLevels = TeamReputation::resolveLevels($game->id, $aiTeamIds->all());
 
         foreach ($aiTeamIds as $teamId) {
             $players = $playersByTeam->get($teamId, collect());
-            $teamAvgAbility = $this->playerGenerator->calculateTeamAverageAbility($players);
+            $reputationLevel = $reputationLevels->get($teamId, 'established');
             $positionCounts = $players->groupBy('position')->map->count();
 
             // Phase 1: Fill squad gaps (position minimums + squad size minimum)
             $positionsToFill = $this->determinePositionsToFill($positionCounts, $players->count());
 
             foreach ($positionsToFill as $position) {
-                $playerData = $this->playerGenerator->buildReplenishmentPlayerData(
-                    $game, $teamId, $position, $teamAvgAbility,
+                $playerData = $this->playerGenerator->buildYouthPlayerData(
+                    $game, $teamId, $position, $reputationLevel,
                 );
                 $bulkData[] = $playerData;
                 $bulkMeta[] = ['teamId' => $teamId, 'type' => 'replenishment'];
             }
 
-            // Phase 2: Youth intake — inject young players to maintain age balance
+            // Phase 2: Youth intake — additional young players per season
             $currentSquadSize = $players->count() + count($positionsToFill);
             $youthCount = mt_rand(self::YOUTH_INTAKE_MIN, self::YOUTH_INTAKE_MAX);
 
@@ -166,8 +164,8 @@ class SquadReplenishmentProcessor implements SeasonProcessor
 
             for ($i = 0; $i < $youthCount; $i++) {
                 $position = $this->selectWeightedYouthPosition();
-                $playerData = $this->buildYouthPlayerData(
-                    $game, $teamId, $position, $teamAvgAbility, $data->newSeason,
+                $playerData = $this->playerGenerator->buildYouthPlayerData(
+                    $game, $teamId, $position, $reputationLevel,
                 );
                 $bulkData[] = $playerData;
                 $bulkMeta[] = ['teamId' => $teamId, 'type' => 'youth_intake'];
@@ -200,48 +198,6 @@ class SquadReplenishmentProcessor implements SeasonProcessor
         }
 
         return $data->setMetadata('squadReplenishment', $generatedPlayers);
-    }
-
-    /**
-     * Build a GeneratedPlayerData for a youth player (does not insert to DB).
-     */
-    private function buildYouthPlayerData(
-        Game $game,
-        string $teamId,
-        string $position,
-        int $teamAvgAbility,
-        string $newSeason,
-    ): GeneratedPlayerData {
-        $factor = self::YOUTH_ABILITY_FACTOR_MIN
-            + (mt_rand(0, 100) / 100) * (self::YOUTH_ABILITY_FACTOR_MAX - self::YOUTH_ABILITY_FACTOR_MIN);
-        $baseAbility = max(30, min(70, (int) round($teamAvgAbility * $factor)));
-
-        $techBias = mt_rand(-5, 5);
-        $technical = max(25, min(75, $baseAbility + $techBias));
-        $physical = max(25, min(75, $baseAbility - $techBias));
-
-        $ageRoll = mt_rand(1, 100);
-        $age = match (true) {
-            $ageRoll <= 15 => 17,
-            $ageRoll <= 45 => 18,
-            $ageRoll <= 80 => 19,
-            default => 20,
-        };
-
-        $currentDate = $game->current_date;
-        $birthYear = $currentDate->year - $age;
-        $birthMonth = mt_rand(1, $currentDate->month);
-        $maxDay = $birthMonth === $currentDate->month ? $currentDate->day : 28;
-        $dateOfBirth = Carbon::createFromDate($birthYear, $birthMonth, mt_rand(1, $maxDay));
-
-        return new GeneratedPlayerData(
-            teamId: $teamId,
-            position: $position,
-            technical: $technical,
-            physical: $physical,
-            dateOfBirth: $dateOfBirth,
-            contractYears: mt_rand(3, 5),
-        );
     }
 
     /**
