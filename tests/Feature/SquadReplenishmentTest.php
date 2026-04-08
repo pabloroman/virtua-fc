@@ -4,11 +4,13 @@ namespace Tests\Feature;
 
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Processors\SquadReplenishmentProcessor;
+use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Player;
 use App\Models\Team;
+use App\Models\TeamReputation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -246,18 +248,32 @@ class SquadReplenishmentTest extends TestCase
         }
     }
 
-    public function test_generated_players_scale_to_team_ability(): void
+    public function test_generated_players_scale_to_team_reputation(): void
     {
-        // Create a strong team (avg ability ~80)
-        $strongTeam = Team::factory()->create(['name' => 'Strong AI Team']);
+        // Create an elite team
+        $eliteTeam = Team::factory()->create(['name' => 'Elite AI Team']);
+        TeamReputation::create([
+            'game_id' => $this->game->id,
+            'team_id' => $eliteTeam->id,
+            'reputation_level' => ClubProfile::REPUTATION_ELITE,
+            'base_reputation_level' => ClubProfile::REPUTATION_ELITE,
+            'reputation_points' => 450,
+        ]);
         for ($i = 0; $i < 18; $i++) {
-            $this->createGamePlayer($strongTeam, 'Central Midfield', techAbility: 80, physAbility: 80);
+            $this->createGamePlayer($eliteTeam, 'Central Midfield', techAbility: 80, physAbility: 80);
         }
 
-        // Create a weak team (avg ability ~45)
-        $weakTeam = Team::factory()->create(['name' => 'Weak AI Team']);
+        // Create a modest team
+        $modestTeam = Team::factory()->create(['name' => 'Modest AI Team']);
+        TeamReputation::create([
+            'game_id' => $this->game->id,
+            'team_id' => $modestTeam->id,
+            'reputation_level' => ClubProfile::REPUTATION_MODEST,
+            'base_reputation_level' => ClubProfile::REPUTATION_MODEST,
+            'reputation_points' => 150,
+        ]);
         for ($i = 0; $i < 18; $i++) {
-            $this->createGamePlayer($weakTeam, 'Central Midfield', techAbility: 45, physAbility: 45);
+            $this->createGamePlayer($modestTeam, 'Central Midfield', techAbility: 45, physAbility: 45);
         }
 
         $processor = app(SquadReplenishmentProcessor::class);
@@ -266,22 +282,22 @@ class SquadReplenishmentTest extends TestCase
         $processor->process($this->game, $data);
 
         // Get newly generated players for each team
-        $strongNewPlayers = GamePlayer::where('game_id', $this->game->id)
-            ->where('team_id', $strongTeam->id)
+        $eliteNewPlayers = GamePlayer::where('game_id', $this->game->id)
+            ->where('team_id', $eliteTeam->id)
             ->orderBy('id', 'desc')
             ->take(4)
             ->get();
 
-        $weakNewPlayers = GamePlayer::where('game_id', $this->game->id)
-            ->where('team_id', $weakTeam->id)
+        $modestNewPlayers = GamePlayer::where('game_id', $this->game->id)
+            ->where('team_id', $modestTeam->id)
             ->orderBy('id', 'desc')
             ->take(4)
             ->get();
 
-        $strongAvg = $strongNewPlayers->avg(fn ($p) => ($p->game_technical_ability + $p->game_physical_ability) / 2);
-        $weakAvg = $weakNewPlayers->avg(fn ($p) => ($p->game_technical_ability + $p->game_physical_ability) / 2);
+        $eliteAvg = $eliteNewPlayers->avg(fn ($p) => ($p->game_technical_ability + $p->game_physical_ability) / 2);
+        $modestAvg = $modestNewPlayers->avg(fn ($p) => ($p->game_technical_ability + $p->game_physical_ability) / 2);
 
-        $this->assertGreaterThan($weakAvg, $strongAvg);
+        $this->assertGreaterThan($modestAvg, $eliteAvg);
     }
 
     public function test_multiple_ai_teams_are_replenished_independently(): void
@@ -359,8 +375,8 @@ class SquadReplenishmentTest extends TestCase
         foreach ($youthEntries as $entry) {
             $gamePlayer = GamePlayer::find($entry['playerId']);
             $age = $gamePlayer->age($this->game->current_date);
-            $this->assertGreaterThanOrEqual(17, $age, "Youth player should be at least 17");
-            $this->assertLessThanOrEqual(20, $age, "Youth player should be at most 20");
+            $this->assertGreaterThanOrEqual(20, $age, "Youth player should be at least 20");
+            $this->assertLessThanOrEqual(23, $age, "Youth player should be at most 23");
         }
     }
 
@@ -383,7 +399,7 @@ class SquadReplenishmentTest extends TestCase
         foreach ($youthEntries as $entry) {
             $gamePlayer = GamePlayer::find($entry['playerId']);
             $avgAbility = ($gamePlayer->game_technical_ability + $gamePlayer->game_physical_ability) / 2;
-            // Youth should be 55-75% of team avg (70) = roughly 38-53
+            // Youth ability is reputation-based (established = base 57), below team avg of 70
             $this->assertLessThan(70, $avgAbility, "Youth player ability should be below team average");
         }
     }
