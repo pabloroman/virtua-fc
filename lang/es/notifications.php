@@ -65,9 +65,9 @@ return [
     'loan_return_title' => ':player regresa de cesión',
     'loan_return_message' => ':player ha regresado de su cesión :team_en.',
 
-    // Low fitness
-    'low_fitness_title' => ':player con baja forma física',
-    'low_fitness_message' => ':player tiene solo :fitness% de forma física y necesita descanso.',
+    // Low energy
+    'low_fitness_title' => ':player con baja energía',
+    'low_fitness_message' => ':player tiene solo :fitness% de energía y necesita descanso.',
 
     // Loan search
     'loan_destination_found_title' => 'Destino encontrado para :player',

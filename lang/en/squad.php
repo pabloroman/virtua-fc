@@ -23,7 +23,7 @@ return [
     'technical_abbr' => 'TEC',
     'physical_abbr' => 'PHY',
     'years_abbr' => 'yrs',
-    'fitness' => 'FIT',
+    'fitness' => 'ENE',
     'morale' => 'MOR',
     'overall' => 'OVR',
 
@@ -50,7 +50,7 @@ return [
     // Summary
     'wage_bill' => 'Wage Bill',
     'per_year' => '/yr',
-    'avg_fitness' => 'Avg Fitness',
+    'avg_fitness' => 'Avg Energy',
     'avg_morale' => 'Avg Morale',
     'low' => 'low',
 
@@ -97,8 +97,8 @@ return [
     'coach_attacking_recommended' => 'You have the advantage. Attacking mentality can maximize your goals.',
     'coach_risky_formation' => 'Your attacking formation against a stronger opponent will give them more chances. Consider a more defensive one.',
     'coach_home_advantage' => "You're playing at home (+0.15 expected goals).",
-    'coach_critical_fitness' => ':names at critical fitness (<50). 2x injury risk. Consider rotating them.',
-    'coach_low_fitness' => ':count player(s) with low fitness (<70). They perform worse and have higher injury risk.',
+    'coach_critical_fitness' => ':names at critical energy (<50). 2x injury risk. Consider rotating them.',
+    'coach_low_fitness' => ':count player(s) with low energy (<70). They perform worse and have higher injury risk.',
     'coach_low_morale' => ':count player(s) with low morale. They\'ll perform worse in the match.',
     'coach_bench_frustration' => ':count quality player(s) not playing and losing morale. Rotate to keep them happy.',
     'coach_opponent_expected_label' => 'Expected',
@@ -181,7 +181,7 @@ return [
     'abilities' => 'Abilities',
     'technical_full' => 'Technical',
     'physical_full' => 'Physical',
-    'fitness_full' => 'Fitness',
+    'fitness_full' => 'Energy',
     'morale_full' => 'Morale',
     'season_stats' => 'Season Stats',
     'clean_sheets_full' => 'Clean Sheets',
@@ -222,7 +222,7 @@ return [
 
     // Lineup help text
     'lineup_help_toggle' => 'How does lineup selection work?',
-    'lineup_help_intro' => 'Choose 11 players for each match. Your formation, player fitness, and positional compatibility all affect performance.',
+    'lineup_help_intro' => 'Choose 11 players for each match. Your formation, player energy, and positional compatibility all affect performance.',
     'lineup_help_formation_title' => 'Formation & Mentality',
     'lineup_help_formation_desc' => 'The formation determines which positions are available on the pitch. Players perform best in their natural position.',
     'lineup_help_compatibility_natural' => 'Natural — player is in their best position, full performance.',
@@ -230,8 +230,8 @@ return [
     'lineup_help_compatibility_poor' => 'Poor / Unsuitable — significant penalty, avoid if possible.',
     'lineup_help_mentality_desc' => 'Mentality affects how attacking or defensive your team plays.',
     'lineup_help_condition_title' => 'Fitness & Morale',
-    'lineup_help_condition_desc' => 'Players with low fitness or morale perform worse. Rotate your squad to keep everyone fresh.',
-    'lineup_help_fitness' => 'Fitness drops after each match and recovers between matchdays. Injuries increase when fitness is low.',
+    'lineup_help_condition_desc' => 'Players with low energy or morale perform worse. Rotate your squad to keep everyone fresh.',
+    'lineup_help_fitness' => 'Energy drops during each match and recovers between matchdays. Players start matches at their current energy level — manage rotations to keep them fresh.',
     'lineup_help_morale' => 'Morale is affected by results, playing time, and contract status.',
     'lineup_help_auto' => 'Use "Auto Select" to let the system pick the best available XI for your formation.',
 
@@ -249,7 +249,7 @@ return [
     'radar_def' => 'Defense',
     'radar_mid' => 'Midfield',
     'radar_att' => 'Attack',
-    'radar_fit' => 'Fitness',
+    'radar_fit' => 'Energy',
     'radar_mor' => 'Morale',
     'radar_tec' => 'Technical',
     'radar_phy' => 'Physical',
@@ -295,14 +295,14 @@ return [
     'highest_earners' => 'Highest earners',
 
     // Tooltips
-    'tooltip_fitness' => 'Avg squad fitness — affects stamina and performance',
+    'tooltip_fitness' => 'Avg squad energy — determines starting energy in matches and affects performance',
     'tooltip_morale' => 'Avg squad morale — affects motivation and consistency',
     'tooltip_avg_overall' => 'Avg squad overall rating',
 
     // Alerts
     'alert_many_injured' => ':count players injured — consider resting starters',
     'alert_low_morale' => ':count players with low morale',
-    'alert_low_fitness' => ':count players with low fitness',
+    'alert_low_fitness' => ':count players with low energy',
     'alert_thin_position' => 'Only :count player(s) at :position — thin cover',
     'alert_no_cover' => 'No cover at :position',
     'alert_no_natural_cover' => 'No natural :position — partial cover available',

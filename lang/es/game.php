@@ -297,7 +297,7 @@ return [
     'live_lineup_starters' => 'Once titular',
     'live_injury_alert' => 'se ha lesionado. Realiza una sustitución.',
     'player_booked' => 'Amonestado',
-    'ovr_fitness' => 'Forma',
+    'ovr_fitness' => 'Energía',
     'ovr_morale' => 'Moral',
     'live_injuries_report' => 'Parte de Lesiones',
     'live_extra_time' => 'Prórroga',

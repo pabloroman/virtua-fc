@@ -148,29 +148,32 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Player Energy / Stamina
+    | Player Energy (Unified Fitness/Stamina)
     |--------------------------------------------------------------------------
     |
-    | Players lose energy over the match based on physical ability and age.
-    | Tired players contribute less to team strength, making substitutions
-    | tactically meaningful.
+    | Energy is unified with fitness: players start each match at their
+    | current fitness level (not always 100). Drain is proportional to
+    | starting energy, preventing death spirals in congested schedules.
     |
-    | drain = base_drain - (physicalAbility - 50) * physical_ability_factor
-    |         + max(0, age - age_threshold) * age_penalty_per_year
+    | drain = (base_drain - (physicalAbility - 50) * physical_ability_factor
+    |          + max(0, age - age_threshold) * age_penalty_per_year)
+    |         × (startingEnergy / 100)
+    |
+    | A typical player (physical 70, age 25) starting at 100 ends at ~60.
     | Goalkeepers drain at gk_drain_multiplier rate.
     |
     | Energy modifies player strength via:
     |   modifier = min_effectiveness + (energy/100) * (1 - min_effectiveness)
-    |   Range: min_effectiveness (0.6) to 1.0
+    |   Range: min_effectiveness (0.50) to 1.0
     |
     */
     'energy' => [
-        'base_drain_per_minute' => 0.75,
+        'base_drain_per_minute' => 0.55,
         'physical_ability_factor' => 0.005,
         'age_threshold' => 28,
         'age_penalty_per_year' => 0.015,
         'gk_drain_multiplier' => 0.5,
-        'min_effectiveness' => 0.6,
+        'min_effectiveness' => 0.50,
     ],
 
     /*

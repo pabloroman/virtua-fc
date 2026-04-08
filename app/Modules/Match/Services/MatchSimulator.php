@@ -1063,18 +1063,16 @@ class MatchSimulator
             $effectiveTechnical = $player->technical_ability * $performance;
             // Physical attributes are more consistent
             $effectivePhysical = $player->physical_ability * (0.5 + $performance * 0.5);
-            // Fitness and morale are not modified - they influence performance
-            $fitness = $player->fitness;
             $morale = $player->morale;
 
             // Weighted contribution — ability-dominant so team quality differences are wide
-            // Fitness/morale still affect matches through getMatchPerformance() modifiers
-            $playerStrength = ($effectiveTechnical * 0.55) +
-                              ($effectivePhysical * 0.35) +
-                              ($fitness * 0.05) +
+            // Fitness no longer has a separate weight — its impact comes entirely
+            // through the energy effectiveness modifier (fitness = starting energy)
+            $playerStrength = ($effectiveTechnical * 0.575) +
+                              ($effectivePhysical * 0.375) +
                               ($morale * 0.05);
 
-            // Apply energy/stamina modifier
+            // Apply energy modifier — fitness IS starting energy in the unified model
             $entryMinute = $playerEntryMinutes[$player->id] ?? 0;
             $isGK = $player->position === 'Goalkeeper';
             $avgEnergy = EnergyCalculator::averageEnergy(
@@ -1085,6 +1083,7 @@ class MatchSimulator
                 $fromMinute,
                 93,
                 $tacticalDrainMultiplier,
+                (float) $player->fitness,
             );
             $playerStrength *= EnergyCalculator::effectivenessModifier($avgEnergy);
 
@@ -1299,19 +1298,15 @@ class MatchSimulator
         $stdDev = config('match_simulation.performance_std_dev', 0.12);
         $basePerformance = 1.0 + ($z * $stdDev);
 
-        // Morale influences performance more than fitness
+        // Morale influences "form on the day"
         // High morale (80+) slightly increases chance of good performance
         // Low morale (<50) increases chance of poor performance
         $moraleModifier = ($player->morale - 65) / 200; // Range: -0.075 to +0.175
 
-        // Fitness affects consistency - low fitness increases variance
-        $fitnessModifier = 0;
-        if ($player->fitness < 70) {
-            // Low fitness = more likely to have a poor game
-            $fitnessModifier = ($player->fitness - 70) / 300; // Negative modifier
-        }
+        // Fitness impact is handled by the unified energy model in calculateTeamStrength()
+        // (fitness = starting energy → proportional drain → effectiveness modifier)
 
-        $performance = $basePerformance + $moraleModifier + $fitnessModifier;
+        $performance = $basePerformance + $moraleModifier;
 
         // Clamp to configurable range
         $minPerf = config('match_simulation.performance_min', 0.70);

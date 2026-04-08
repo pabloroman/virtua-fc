@@ -23,7 +23,7 @@ return [
     'technical_abbr' => 'TEC',
     'physical_abbr' => 'FIS',
     'years_abbr' => 'años',
-    'fitness' => 'FOR',
+    'fitness' => 'ENE',
     'morale' => 'MOR',
     'overall' => 'MED',
 
@@ -50,7 +50,7 @@ return [
     // Summary
     'wage_bill' => 'Masa Salarial',
     'per_year' => '/año',
-    'avg_fitness' => 'Media Forma',
+    'avg_fitness' => 'Media Energía',
     'avg_morale' => 'Media Moral',
     'low' => 'bajo',
 
@@ -97,8 +97,8 @@ return [
     'coach_attacking_recommended' => 'Tienes ventaja. Una mentalidad ofensiva puede maximizar tus goles.',
     'coach_risky_formation' => 'Tu formación ofensiva contra un rival superior les dará más ocasiones. Considera una más defensiva.',
     'coach_home_advantage' => 'Jugáis en casa (+0.15 goles esperados).',
-    'coach_critical_fitness' => ':names en forma crítica (<50). Riesgo de lesión 2x mayor. Considera rotarlos.',
-    'coach_low_fitness' => ':count jugador(es) con forma baja (<70). Rinden peor y tienen mayor riesgo de lesión.',
+    'coach_critical_fitness' => ':names con energía crítica (<50). Riesgo de lesión 2x mayor. Considera rotarlos.',
+    'coach_low_fitness' => ':count jugador(es) con energía baja (<70). Rinden peor y tienen mayor riesgo de lesión.',
     'coach_low_morale' => ':count jugador(es) con moral baja. Tendrán peor rendimiento en el partido.',
     'coach_bench_frustration' => ':count jugador(es) de calidad sin jugar y perdiendo moral. Rota para mantenerlos contentos.',
     'coach_opponent_expected_label' => 'Previsto',
@@ -181,7 +181,7 @@ return [
     'abilities' => 'Habilidades',
     'technical_full' => 'Técnica',
     'physical_full' => 'Físico',
-    'fitness_full' => 'Forma',
+    'fitness_full' => 'Energía',
     'morale_full' => 'Moral',
     'season_stats' => 'Estadísticas de Temporada',
     'clean_sheets_full' => 'Porterías a Cero',
@@ -222,16 +222,16 @@ return [
 
     // Lineup help text
     'lineup_help_toggle' => '¿Cómo funciona la alineación?',
-    'lineup_help_intro' => 'Elige 11 jugadores para cada partido. Tu formación, la forma física y la compatibilidad posicional afectan al rendimiento.',
+    'lineup_help_intro' => 'Elige 11 jugadores para cada partido. Tu formación, la energía y la compatibilidad posicional afectan al rendimiento.',
     'lineup_help_formation_title' => 'Formación y Mentalidad',
     'lineup_help_formation_desc' => 'La formación determina qué posiciones hay disponibles en el campo. Los jugadores rinden mejor en su posición natural.',
     'lineup_help_compatibility_natural' => 'Natural — el jugador está en su mejor posición, rendimiento completo.',
     'lineup_help_compatibility_good' => 'Bueno / Muy Bueno — penalización leve, pero el jugador puede rendir bien.',
     'lineup_help_compatibility_poor' => 'Malo / Inadecuado — penalización significativa, evítalo si es posible.',
     'lineup_help_mentality_desc' => 'La mentalidad afecta a lo ofensivo o defensivo que juega tu equipo.',
-    'lineup_help_condition_title' => 'Forma Física y Moral',
-    'lineup_help_condition_desc' => 'Los jugadores con baja forma física o moral rinden peor. Rota la plantilla para mantener a todos frescos.',
-    'lineup_help_fitness' => 'La forma física baja después de cada partido y se recupera entre jornadas. Las lesiones aumentan cuando la forma es baja.',
+    'lineup_help_condition_title' => 'Energía y Moral',
+    'lineup_help_condition_desc' => 'Los jugadores con baja energía o moral rinden peor. Rota la plantilla para mantener a todos frescos.',
+    'lineup_help_fitness' => 'La energía baja durante cada partido y se recupera entre jornadas. Los jugadores empiezan los partidos con su nivel de energía actual — gestiona las rotaciones para mantenerlos frescos.',
     'lineup_help_morale' => 'La moral se ve afectada por los resultados, los minutos jugados y la situación contractual.',
     'lineup_help_auto' => 'Usa "Selección Auto" para que el sistema elija el mejor XI disponible para tu formación.',
 
@@ -249,7 +249,7 @@ return [
     'radar_def' => 'Defensa',
     'radar_mid' => 'Mediocampo',
     'radar_att' => 'Ataque',
-    'radar_fit' => 'Forma',
+    'radar_fit' => 'Energía',
     'radar_mor' => 'Moral',
     'radar_tec' => 'Técnica',
     'radar_phy' => 'Físico',
@@ -295,14 +295,14 @@ return [
     'highest_earners' => 'Mayores salarios',
 
     // Tooltips
-    'tooltip_fitness' => 'Forma física media — afecta resistencia y rendimiento',
+    'tooltip_fitness' => 'Energía media — determina la energía inicial en los partidos y afecta el rendimiento',
     'tooltip_morale' => 'Moral media — afecta motivación y consistencia',
     'tooltip_avg_overall' => 'Puntuación media de la plantilla',
 
     // Alerts
     'alert_many_injured' => ':count jugadores lesionados — considera rotar titulares',
     'alert_low_morale' => ':count jugadores con moral baja',
-    'alert_low_fitness' => ':count jugadores con baja forma física',
+    'alert_low_fitness' => ':count jugadores con baja energía',
     'alert_thin_position' => 'Solo :count jugador(es) en :position — poca cobertura',
     'alert_no_cover' => 'Sin cobertura en :position',
     'alert_no_natural_cover' => 'Sin :position natural — cobertura parcial disponible',

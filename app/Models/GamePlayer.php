@@ -669,7 +669,7 @@ class GamePlayer extends Model
 
     /**
      * Calculate overall score from 4 attributes.
-     * Technical + Physical (game-specific) + Fitness + Morale
+     * Technical + Physical (game-specific) + Energy + Morale
      */
     public function getOverallScoreAttribute(): int
     {

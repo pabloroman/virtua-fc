@@ -65,9 +65,9 @@ return [
     'loan_return_title' => ':player returns from loan',
     'loan_return_message' => ':player has returned from loan :team_en.',
 
-    // Low fitness
-    'low_fitness_title' => ':player has low fitness',
-    'low_fitness_message' => ':player has only :fitness% fitness and needs rest.',
+    // Low energy
+    'low_fitness_title' => ':player has low energy',
+    'low_fitness_message' => ':player has only :fitness% energy and needs rest.',
 
     // Loan search
     'loan_destination_found_title' => 'Destination found for :player',

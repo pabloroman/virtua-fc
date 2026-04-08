@@ -139,7 +139,7 @@ return [
     'tpl_market_value_cents' => 'Value (cents)',
     'tpl_contract_until' => 'Contract Until',
     'tpl_annual_wage' => 'Annual Wage',
-    'tpl_fitness' => 'Fitness',
+    'tpl_fitness' => 'Energy',
     'tpl_morale' => 'Morale',
     'tpl_durability' => 'Durability',
     'tpl_tech' => 'Technical',

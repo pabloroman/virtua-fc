@@ -82,11 +82,11 @@ return [
     'morale_high_v1' => 'La confianza está por las nubes en el vestuario.',
     'morale_high_v2' => 'El equipo está enchufado. Moral alta en toda la plantilla.',
 
-    'fitness_low_v1' => 'Los niveles de forma física preocupan — rotaciones podrían ser necesarias.',
+    'fitness_low_v1' => 'Los niveles de energía preocupan — rotaciones podrían ser necesarias.',
     'fitness_low_v2' => 'El equipo se nota cansado. La fatiga podría ser un factor hoy.',
 
     'fitness_high_v1' => 'La plantilla está fresca y preparada.',
-    'fitness_high_v2' => 'Niveles de forma física óptimos. Sin excusas hoy.',
+    'fitness_high_v2' => 'Niveles de energía óptimos. Sin excusas hoy.',
 
     // ── Análisis del Rival ──────────────────────────────────────────
 

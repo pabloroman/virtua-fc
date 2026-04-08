@@ -60,31 +60,23 @@ class PlayerConditionServiceTest extends TestCase
     }
 
     // -------------------------------------------------------
-    // Core recovery mechanics
+    // Core recovery mechanics (unified energy model)
     // -------------------------------------------------------
 
-    public function test_seven_day_gap_creates_near_neutral_change_for_average_midfielder(): void
+    public function test_seven_day_gap_allows_full_recovery_from_match(): void
     {
         $player = $this->createPlayer([
             'position' => 'Central Midfield',
-            'fitness' => 90,
+            'fitness' => 100,
             'game_physical_ability' => 70,
         ]);
 
-        // Run many iterations to test the average trend
-        $totalChange = 0;
-        $iterations = 200;
+        // With unified energy: match drains ~40% (100→60), recovery over 5 days (capped)
+        // should bring back close to 100
+        $change = $this->calculateFitnessChange->invoke($this->service, $player, true, 7, $this->currentDate);
 
-        for ($i = 0; $i < $iterations; $i++) {
-            $change = $this->calculateFitnessChange->invoke($this->service, $player, true, 7, $this->currentDate);
-            $totalChange += $change;
-        }
-
-        $avgChange = $totalChange / $iterations;
-
-        // At fitness 90, 7-day gap should be roughly neutral (within ±7)
-        $this->assertGreaterThan(-7, $avgChange, 'Average 7-day change should not be too negative');
-        $this->assertLessThan(7, $avgChange, 'Average 7-day change should not be too positive');
+        // At fitness 100, recovery should roughly offset the energy drain
+        $this->assertGreaterThan(-10, $change, '7-day gap should nearly offset match drain');
     }
 
     public function test_three_day_gap_creates_significant_fitness_drop(): void
@@ -95,31 +87,25 @@ class PlayerConditionServiceTest extends TestCase
             'game_physical_ability' => 70,
         ]);
 
-        $totalChange = 0;
-        $iterations = 200;
+        $change = $this->calculateFitnessChange->invoke($this->service, $player, true, 3, $this->currentDate);
 
-        for ($i = 0; $i < $iterations; $i++) {
-            $change = $this->calculateFitnessChange->invoke($this->service, $player, true, 3, $this->currentDate);
-            $totalChange += $change;
-        }
-
-        $avgChange = $totalChange / $iterations;
-
-        // 3-day gap should cause meaningful drop (net negative)
-        $this->assertLessThan(-3, $avgChange, '3-day gap should cause significant fitness loss');
+        // 3-day gap: less recovery, still loses ~36 energy from match
+        // Recovery at fitness 90: ~5.0 * (1 + 2*0.1) = 6/day * 3 = 18
+        // Loss: ~36. Net: ~-18. Should be negative.
+        $this->assertLessThan(0, $change, '3-day gap should cause meaningful fitness loss');
     }
 
     public function test_resting_player_recovers_fitness(): void
     {
         $player = $this->createPlayer([
-            'fitness' => 75,
+            'fitness' => 60,
             'game_physical_ability' => 70,
         ]);
 
         $change = $this->calculateFitnessChange->invoke($this->service, $player, false, 7, $this->currentDate);
 
-        // Resting at fitness 75 for 7 days should give substantial recovery
-        $this->assertGreaterThan(5, $change, 'Resting should provide meaningful recovery');
+        // Resting at fitness 60 for 5 days (capped): rate = 5 * (1 + 2*0.4) = 9/day * 5 = 45
+        $this->assertGreaterThan(20, $change, 'Resting should provide substantial recovery');
     }
 
     public function test_recovery_is_faster_at_low_fitness(): void
@@ -129,7 +115,7 @@ class PlayerConditionServiceTest extends TestCase
             'game_physical_ability' => 70,
         ];
 
-        $playerLow = $this->createPlayer(array_merge($attrs, ['fitness' => 60]));
+        $playerLow = $this->createPlayer(array_merge($attrs, ['fitness' => 50]));
         $playerHigh = $this->createPlayer(array_merge($attrs, ['fitness' => 95]));
 
         $recoveryLow = $this->calculateFitnessChange->invoke($this->service, $playerLow, false, 5, $this->currentDate);
@@ -147,9 +133,47 @@ class PlayerConditionServiceTest extends TestCase
 
         $recovery = $this->calculateFitnessChange->invoke($this->service, $player, false, 5, $this->currentDate);
 
-        // At fitness 100, recovery scaling factor is 1.0 (base only)
-        // base 2.0 * 1.0 * 5 days = 10
-        $this->assertLessThanOrEqual(12, $recovery, 'Recovery at max fitness should be low');
+        // At fitness 100, recovery scaling = 1.0 (base only): 5.0 * 1.0 * 5 = 25
+        $this->assertLessThanOrEqual(30, $recovery, 'Recovery at max fitness should be moderate');
+    }
+
+    // -------------------------------------------------------
+    // Energy drain replaces position-based loss
+    // -------------------------------------------------------
+
+    public function test_goalkeepers_lose_less_energy_than_midfielders(): void
+    {
+        $gk = $this->createPlayer([
+            'position' => 'Goalkeeper',
+            'fitness' => 100,
+            'game_physical_ability' => 70,
+        ]);
+
+        $mid = $this->createPlayer([
+            'position' => 'Central Midfield',
+            'fitness' => 100,
+            'game_physical_ability' => 70,
+        ]);
+
+        // GK drain multiplier = 0.5x, so GK loses much less energy
+        $gkChange = $this->calculateFitnessChange->invoke($this->service, $gk, true, 7, $this->currentDate);
+        $midChange = $this->calculateFitnessChange->invoke($this->service, $mid, true, 7, $this->currentDate);
+
+        $this->assertGreaterThan($midChange, $gkChange,
+            'GK should have better net fitness change than midfielder');
+    }
+
+    public function test_high_physical_players_drain_less(): void
+    {
+        $highPhys = $this->createPlayer(['fitness' => 100, 'game_physical_ability' => 90]);
+        $lowPhys = $this->createPlayer(['fitness' => 100, 'game_physical_ability' => 40]);
+
+        // Same recovery period, different drain rates
+        $changeHigh = $this->calculateFitnessChange->invoke($this->service, $highPhys, true, 7, $this->currentDate);
+        $changeLow = $this->calculateFitnessChange->invoke($this->service, $lowPhys, true, 7, $this->currentDate);
+
+        $this->assertGreaterThan($changeLow, $changeHigh,
+            'High physical player should lose less energy per match');
     }
 
     // -------------------------------------------------------
@@ -158,27 +182,8 @@ class PlayerConditionServiceTest extends TestCase
 
     public function test_young_players_lose_less_fitness(): void
     {
-        // Young player (age < 24 requires date_of_birth to make them young)
-        $game = Game::factory()->create(['current_date' => '2025-10-01']);
-        $team = Team::factory()->create();
-
-        $youngPlayer = GamePlayer::factory()->forGame($game)->forTeam($team)->create([
-            'position' => 'Central Midfield',
-            'fitness' => 90,
-            'game_physical_ability' => 70,
-        ]);
-
-        $oldPlayer = GamePlayer::factory()->forGame($game)->forTeam($team)->create([
-            'position' => 'Central Midfield',
-            'fitness' => 90,
-            'game_physical_ability' => 70,
-        ]);
-
-        // Use reflection to test the age modifier directly
-        $getAgeLossModifier = new ReflectionMethod(PlayerConditionService::class, 'getAgeLossModifier');
         $config = config('player.condition');
 
-        // Mock young player age by checking the config thresholds
         $youngMod = $config['age_loss_modifier']['young'];
         $veteranMod = $config['age_loss_modifier']['veteran'];
 
@@ -193,8 +198,8 @@ class PlayerConditionServiceTest extends TestCase
 
     public function test_high_physical_players_recover_faster(): void
     {
-        $highPhys = $this->createPlayer(['fitness' => 80, 'game_physical_ability' => 85]);
-        $lowPhys = $this->createPlayer(['fitness' => 80, 'game_physical_ability' => 50]);
+        $highPhys = $this->createPlayer(['fitness' => 60, 'game_physical_ability' => 85]);
+        $lowPhys = $this->createPlayer(['fitness' => 60, 'game_physical_ability' => 50]);
 
         $recoveryHigh = $this->calculateFitnessChange->invoke($this->service, $highPhys, false, 5, $this->currentDate);
         $recoveryLow = $this->calculateFitnessChange->invoke($this->service, $lowPhys, false, 5, $this->currentDate);
@@ -203,34 +208,22 @@ class PlayerConditionServiceTest extends TestCase
     }
 
     // -------------------------------------------------------
-    // Position differences
+    // Proportional drain (unified energy model)
     // -------------------------------------------------------
 
-    public function test_goalkeepers_lose_less_fitness_than_midfielders(): void
+    public function test_lower_starting_fitness_means_less_absolute_drain(): void
     {
-        $gk = $this->createPlayer([
-            'position' => 'Goalkeeper',
-            'fitness' => 90,
-            'game_physical_ability' => 70,
-        ]);
+        $highFit = $this->createPlayer(['fitness' => 100, 'game_physical_ability' => 70]);
+        $lowFit = $this->createPlayer(['fitness' => 60, 'game_physical_ability' => 70]);
 
-        $mid = $this->createPlayer([
-            'position' => 'Central Midfield',
-            'fitness' => 90,
-            'game_physical_ability' => 70,
-        ]);
+        // Same recovery period (1 day = minimal recovery, isolates the drain)
+        $changeHigh = $this->calculateFitnessChange->invoke($this->service, $highFit, true, 1, $this->currentDate);
+        $changeLow = $this->calculateFitnessChange->invoke($this->service, $lowFit, true, 1, $this->currentDate);
 
-        $totalGk = 0;
-        $totalMid = 0;
-        $iterations = 200;
-
-        for ($i = 0; $i < $iterations; $i++) {
-            $totalGk += $this->calculateFitnessChange->invoke($this->service, $gk, true, 7, $this->currentDate);
-            $totalMid += $this->calculateFitnessChange->invoke($this->service, $mid, true, 7, $this->currentDate);
-        }
-
-        $this->assertGreaterThan($totalMid / $iterations, $totalGk / $iterations,
-            'GK should have better net fitness change than midfielder');
+        // Higher fitness → more absolute drain (proportional)
+        // changeHigh should be more negative than changeLow
+        $this->assertLessThan($changeLow, $changeHigh,
+            'Player at 100 fitness should lose more absolute energy than player at 60');
     }
 
     // -------------------------------------------------------
@@ -323,34 +316,49 @@ class PlayerConditionServiceTest extends TestCase
         // Pin age to 27 (prime bracket) to eliminate age-modifier variance
         $player = $this->createPlayer([
             'position' => 'Central Midfield',
-            'fitness' => 90,
+            'fitness' => 100,
             'game_physical_ability' => 70,
         ], [
             'date_of_birth' => Carbon::parse('2025-10-01')->subYears(27)->subMonths(6),
         ]);
 
         // Simulate 5 matches: Sat(7d) → Tue(3d) → Sat(4d) → Tue(3d) → Sat(4d)
-        // Average over multiple runs to account for randomness
-        $totalFinal = 0;
-        $iterations = 100;
+        $gaps = [7, 3, 4, 3, 4];
+        $fitness = 100;
 
-        for ($i = 0; $i < $iterations; $i++) {
-            $gaps = [7, 3, 4, 3, 4];
-            $fitness = 90;
-
-            foreach ($gaps as $gap) {
-                $player->fitness = $fitness;
-                $change = $this->calculateFitnessChange->invoke($this->service, $player, true, $gap, $this->currentDate);
-                $fitness = max(40, min(100, $fitness + $change));
-            }
-
-            $totalFinal += $fitness;
+        foreach ($gaps as $gap) {
+            $player->fitness = $fitness;
+            $change = $this->calculateFitnessChange->invoke($this->service, $player, true, $gap, $this->currentDate);
+            $fitness = max(40, min(100, $fitness + $change));
         }
 
-        $avgFinal = $totalFinal / $iterations;
+        // After 5 congested matches starting at 100, fitness should drop meaningfully
+        // With unified energy model: each match drains ~40% of starting energy,
+        // recovery partially compensates. Expected equilibrium around 70-85.
+        $this->assertLessThan(90, $fitness, 'Congested schedule should drop fitness significantly');
+        $this->assertGreaterThan(50, $fitness, 'Fitness should not drop unreasonably low');
+    }
 
-        // After 5 matches in congested period (starting at 90), average should drop meaningfully
-        $this->assertLessThan(85, $avgFinal, 'Congested schedule should average below 85');
-        $this->assertGreaterThan(60, $avgFinal, 'Fitness should not drop unreasonably low');
+    public function test_weekly_schedule_maintains_high_fitness(): void
+    {
+        $player = $this->createPlayer([
+            'position' => 'Central Midfield',
+            'fitness' => 100,
+            'game_physical_ability' => 70,
+        ], [
+            'date_of_birth' => Carbon::parse('2025-10-01')->subYears(27)->subMonths(6),
+        ]);
+
+        // Simulate 5 weekly matches (7 days between each)
+        $fitness = 100;
+
+        for ($i = 0; $i < 5; $i++) {
+            $player->fitness = $fitness;
+            $change = $this->calculateFitnessChange->invoke($this->service, $player, true, 7, $this->currentDate);
+            $fitness = max(40, min(100, $fitness + $change));
+        }
+
+        // Weekly matches should allow near-full recovery (stabilize 90-100)
+        $this->assertGreaterThan(85, $fitness, 'Weekly schedule should maintain high fitness');
     }
 }

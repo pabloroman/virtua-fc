@@ -82,11 +82,11 @@ return [
     'morale_high_v1' => 'Confidence is sky-high in the dressing room.',
     'morale_high_v2' => 'The squad is buzzing. High spirits across the board.',
 
-    'fitness_low_v1' => 'Fitness levels are concerning — rotation might be wise.',
+    'fitness_low_v1' => 'Energy levels are concerning — rotation might be wise.',
     'fitness_low_v2' => 'The squad looks leggy. Fatigue could be a factor today.',
 
     'fitness_high_v1' => 'The squad is fresh and ready to go.',
-    'fitness_high_v2' => 'High fitness levels across the board. No excuses today.',
+    'fitness_high_v2' => 'High energy levels across the board. No excuses today.',
 
     // ── Opponent Scouting ───────────────────────────────────────────
 

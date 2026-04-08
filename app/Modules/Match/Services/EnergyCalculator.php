@@ -5,13 +5,13 @@ namespace App\Modules\Match\Services;
 class EnergyCalculator
 {
     /**
-     * Calculate energy drain per minute for a player.
+     * Calculate base energy drain per minute for a player (before proportional scaling).
      *
      * @param  float  $tacticalDrainMultiplier  Combined tactical drain (playing style × pressing)
      */
     public static function drainPerMinute(int $physicalAbility, int $age, bool $isGoalkeeper, float $tacticalDrainMultiplier = 1.0): float
     {
-        $baseDrain = config('match_simulation.energy.base_drain_per_minute', 0.75);
+        $baseDrain = config('match_simulation.energy.base_drain_per_minute', 0.55);
         $physicalFactor = config('match_simulation.energy.physical_ability_factor', 0.005);
         $ageThreshold = config('match_simulation.energy.age_threshold', 28);
         $agePenalty = config('match_simulation.energy.age_penalty_per_year', 0.015);
@@ -33,30 +33,42 @@ class EnergyCalculator
 
     /**
      * Calculate energy at a specific minute for a player.
+     *
+     * Drain is proportional to starting energy: players who begin a match
+     * at lower energy (from congested schedules) drain proportionally less
+     * per minute, preventing death spirals.
+     *
+     * @param  float  $startingEnergy  Energy at match start (equals player fitness, 0-100)
      */
-    public static function energyAtMinute(int $physicalAbility, int $age, bool $isGoalkeeper, int $currentMinute, int $minuteEntered = 0, float $tacticalDrainMultiplier = 1.0): float
+    public static function energyAtMinute(int $physicalAbility, int $age, bool $isGoalkeeper, int $currentMinute, int $minuteEntered = 0, float $tacticalDrainMultiplier = 1.0, float $startingEnergy = 100.0): float
     {
         $minutesPlayed = max(0, $currentMinute - $minuteEntered);
-        $drain = self::drainPerMinute($physicalAbility, $age, $isGoalkeeper, $tacticalDrainMultiplier);
+        $baseDrain = self::drainPerMinute($physicalAbility, $age, $isGoalkeeper, $tacticalDrainMultiplier);
 
-        return max(0, min(100, 100 - $drain * $minutesPlayed));
+        // Proportional drain: scale by starting energy so fatigued players
+        // lose less absolute energy per minute, creating stable equilibria
+        $effectiveDrain = $baseDrain * ($startingEnergy / 100);
+
+        return max(0, min($startingEnergy, $startingEnergy - $effectiveDrain * $minutesPlayed));
     }
 
     /**
      * Calculate average energy over a period (linear drain → midpoint).
+     *
+     * @param  float  $startingEnergy  Energy at match start (equals player fitness, 0-100)
      */
-    public static function averageEnergy(int $physicalAbility, int $age, bool $isGoalkeeper, int $entryMinute, int $fromMinute, int $toMinute = 93, float $tacticalDrainMultiplier = 1.0): float
+    public static function averageEnergy(int $physicalAbility, int $age, bool $isGoalkeeper, int $entryMinute, int $fromMinute, int $toMinute = 93, float $tacticalDrainMultiplier = 1.0, float $startingEnergy = 100.0): float
     {
-        // Player hasn't entered yet — shouldn't happen but return full energy
+        // Player hasn't entered yet — shouldn't happen but return starting energy
         if ($entryMinute > $toMinute) {
-            return 100.0;
+            return $startingEnergy;
         }
 
         // If player entered after fromMinute, only average from entry onward
         $effectiveFrom = max($fromMinute, $entryMinute);
 
-        $energyStart = self::energyAtMinute($physicalAbility, $age, $isGoalkeeper, $effectiveFrom, $entryMinute, $tacticalDrainMultiplier);
-        $energyEnd = self::energyAtMinute($physicalAbility, $age, $isGoalkeeper, $toMinute, $entryMinute, $tacticalDrainMultiplier);
+        $energyStart = self::energyAtMinute($physicalAbility, $age, $isGoalkeeper, $effectiveFrom, $entryMinute, $tacticalDrainMultiplier, $startingEnergy);
+        $energyEnd = self::energyAtMinute($physicalAbility, $age, $isGoalkeeper, $toMinute, $entryMinute, $tacticalDrainMultiplier, $startingEnergy);
 
         return ($energyStart + $energyEnd) / 2;
     }
@@ -70,7 +82,7 @@ class EnergyCalculator
      */
     public static function effectivenessModifier(float $averageEnergy): float
     {
-        $minEffectiveness = config('match_simulation.energy.min_effectiveness', 0.5);
+        $minEffectiveness = config('match_simulation.energy.min_effectiveness', 0.50);
         $normalized = $averageEnergy / 100;
 
         // Below 40% energy: steeper drop-off via power curve

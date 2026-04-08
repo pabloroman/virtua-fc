@@ -221,6 +221,7 @@ class AISubstitutionService
                     $minute,
                     0, // started from minute 0
                     $tacticalDrainMultiplier,
+                    (float) $player->fitness,
                 );
 
                 // Base urgency from tiredness (0.0 to 1.0)

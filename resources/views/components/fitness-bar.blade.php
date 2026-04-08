@@ -16,7 +16,7 @@
 
 <div {{ $attributes->merge(['class' => 'flex items-center gap-1.5']) }}>
     @if($showLabel)
-        <span class="text-[10px] text-text-muted">FIT</span>
+        <span class="text-[10px] text-text-muted">ENE</span>
     @endif
     <div class="{{ $barWidth }} h-1.5 rounded-full bg-surface-600 overflow-hidden">
         <div class="h-full rounded-full {{ $fillColor }} fitness-bar" style="width: {{ $value }}%"></div>
