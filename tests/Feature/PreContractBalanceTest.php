@@ -11,6 +11,7 @@ use App\Models\Team;
 use App\Models\User;
 use App\Modules\Transfer\Enums\NegotiationScenario;
 use App\Modules\Transfer\Services\ContractService;
+use App\Modules\Transfer\Services\DispositionService;
 use App\Modules\Transfer\Services\ScoutingService;
 use App\Modules\Transfer\Services\TransferService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -21,6 +22,7 @@ class PreContractBalanceTest extends TestCase
     use RefreshDatabase;
 
     private ContractService $contractService;
+    private DispositionService $dispositionService;
     private ScoutingService $scoutingService;
     private TransferService $transferService;
     private Competition $competition;
@@ -30,6 +32,7 @@ class PreContractBalanceTest extends TestCase
         parent::setUp();
 
         $this->contractService = app(ContractService::class);
+        $this->dispositionService = app(DispositionService::class);
         $this->scoutingService = app(ScoutingService::class);
         $this->transferService = app(TransferService::class);
 
@@ -50,7 +53,7 @@ class PreContractBalanceTest extends TestCase
             sourceReputation: ClubProfile::REPUTATION_ESTABLISHED,
         );
 
-        $modifier = $this->scoutingService->calculateReputationModifier($game->team, $player);
+        $modifier = $this->dispositionService->reputationModifier($game->team, $player);
 
         $this->assertEquals(1.0, $modifier);
     }
@@ -62,7 +65,7 @@ class PreContractBalanceTest extends TestCase
             sourceReputation: ClubProfile::REPUTATION_MODEST,
         );
 
-        $modifier = $this->scoutingService->calculateReputationModifier($game->team, $player);
+        $modifier = $this->dispositionService->reputationModifier($game->team, $player);
 
         $this->assertEquals(1.0, $modifier);
     }
@@ -97,7 +100,7 @@ class PreContractBalanceTest extends TestCase
                 sourceReputation: ClubProfile::REPUTATION_ELITE,
             );
 
-            $modifier = $this->scoutingService->calculateReputationModifier($game->team, $player);
+            $modifier = $this->dispositionService->reputationModifier($game->team, $player);
 
             $this->assertEquals(
                 $expectedModifier,
@@ -124,7 +127,7 @@ class PreContractBalanceTest extends TestCase
             'team_id' => null, // Free agent
         ]);
 
-        $modifier = $this->scoutingService->calculateReputationModifier($game->team, $player);
+        $modifier = $this->dispositionService->reputationModifier($game->team, $player);
 
         $this->assertEquals(1.0, $modifier);
     }
