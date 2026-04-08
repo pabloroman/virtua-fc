@@ -112,9 +112,12 @@
                     tacticalErrorNoPending: {!! Js::from(__('game.tactical_error_no_pending')) !!},
                     tabLineups: {!! Js::from(__('game.live_tab_lineups')) !!},
                     tabRatings: {!! Js::from(__('game.live_tab_ratings')) !!},
+                    skipToHt: {!! Js::from(__('game.live_skip_ht')) !!},
+                    skipToFt: {!! Js::from(__('game.live_skip_ft')) !!},
+                    freeWindow: {!! Js::from(__('game.sub_free_window')) !!},
                 },
              })"
-             x-on:keydown.escape.window="if (!tacticalPanelOpen) skipToEnd()"
+             x-on:keydown.escape.window="if (!tacticalPanelOpen) { (phase === 'first_half' || phase === 'pre_match') ? skipToHalfTime() : skipToEnd() }"
         >
             @php
                 $compBadge = \App\Support\CompetitionColors::badge($match->competition);
@@ -288,8 +291,8 @@
                         </template>
                     </div>
 
-                    {{-- Playback Controls: Pause | Speed | Skip --}}
-                    <div class="flex items-center justify-center gap-0.5 pb-3" x-show="phase !== 'full_time' && !penaltyPickerOpen">
+                    {{-- Playback Controls: Pause | Speed | Skip to HT | Skip to FT --}}
+                    <div class="flex items-center justify-center gap-0.5 pb-3" x-show="phase !== 'full_time' && phase !== 'half_time' && !penaltyPickerOpen">
                         {{-- Pause/Play --}}
                         <button
                             @click="togglePause()"
@@ -317,16 +320,61 @@
                             </template>
                         </div>
 
+                        {{-- Skip to half-time (first half / pre-match only) --}}
+                        <button
+                            x-show="phase === 'first_half' || phase === 'pre_match'"
+                            @click="skipToHalfTime()"
+                            class="h-8 px-2 rounded-lg bg-surface-700 border border-border-default flex items-center justify-center gap-1 text-text-muted hover:text-text-primary transition-colors"
+                            :title="translations.skipToHt">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-3.5">
+                                <path d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
+                            </svg>
+                            <span class="text-[9px] font-semibold uppercase tracking-wider">{{ __('game.live_skip_ht') }}</span>
+                        </button>
+
                         {{-- Skip to end --}}
                         <button
                             @click="skipToEnd()"
-                            class="w-8 h-8 rounded-lg bg-surface-700 border border-border-default flex items-center justify-center text-text-muted hover:text-text-primary transition-colors"
+                            class="h-8 px-2 rounded-lg bg-surface-700 border border-border-default flex items-center justify-center gap-1 text-text-muted hover:text-text-primary transition-colors"
                             x-bind:disabled="extraTimeLoading"
-                            :class="extraTimeLoading ? 'opacity-50 cursor-not-allowed' : ''">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
+                            :class="extraTimeLoading ? 'opacity-50 cursor-not-allowed' : ''"
+                            :title="translations.skipToFt">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-3.5">
                                 <path d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
                             </svg>
+                            <span class="text-[9px] font-semibold uppercase tracking-wider">{{ __('game.live_skip_ft') }}</span>
                         </button>
+                    </div>
+
+                    {{-- Half-time pause controls --}}
+                    <div class="flex flex-col items-center gap-2 pb-3" x-show="phase === 'half_time'" x-cloak>
+                        <div class="flex items-center gap-2">
+                            <button
+                                @click="openTacticalPanel('substitutions')"
+                                class="h-8 px-3 rounded-lg bg-surface-700 border border-border-default flex items-center justify-center gap-1.5 text-text-muted hover:text-text-primary transition-colors text-xs font-medium">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                                </svg>
+                                {{ __('game.tactical_tab_substitutions') }}
+                            </button>
+                            <button
+                                @click="startSecondHalf()"
+                                class="h-8 px-3 rounded-lg bg-accent-blue text-white flex items-center justify-center gap-1.5 transition-colors text-xs font-semibold hover:bg-accent-blue/90">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-3.5">
+                                    <path d="M3 3.732a1.5 1.5 0 0 1 2.305-1.265l6.706 4.267a1.5 1.5 0 0 1 0 2.531l-6.706 4.268A1.5 1.5 0 0 1 3 12.267V3.732Z" />
+                                </svg>
+                                {{ __('game.live_start_second_half') }}
+                            </button>
+                            <button
+                                @click="skipToEnd()"
+                                class="h-8 px-2 rounded-lg bg-surface-700 border border-border-default flex items-center justify-center gap-1 text-text-muted hover:text-text-primary transition-colors"
+                                :title="translations.skipToFt">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-3.5">
+                                    <path d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
+                                </svg>
+                                <span class="text-[9px] font-semibold uppercase tracking-wider">{{ __('game.live_skip_ft') }}</span>
+                            </button>
+                        </div>
                     </div>
 
                 </div>{{-- /sticky padding --}}

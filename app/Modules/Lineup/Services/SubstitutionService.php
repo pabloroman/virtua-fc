@@ -41,8 +41,9 @@ class SubstitutionService
             throw new \InvalidArgumentException('game.sub_error_limit_reached');
         }
 
-        // Check substitution window limit
-        $previousWindows = count(array_unique(array_column($previousSubstitutions, 'minute')));
+        // Check substitution window limit (half-time subs at minute 45 are a free window)
+        $previousMinutes = array_unique(array_column($previousSubstitutions, 'minute'));
+        $previousWindows = count(array_filter($previousMinutes, fn ($m) => $m !== 45));
         if ($previousWindows >= $maxWindows) {
             throw new \InvalidArgumentException('game.sub_error_windows_reached');
         }

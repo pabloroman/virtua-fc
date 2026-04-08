@@ -427,8 +427,9 @@ export default function liveMatch(config) {
 
         // =====================================================================
         // Match simulation — provided by match-simulation module via Object.assign in init()
-        // Methods: startSimulation, togglePause, setSpeed, skipToEnd, enterFullTime,
-        //          synthesizeGoalsIfNeeded, recalculateScore, resetPossessionTarget
+        // Methods: startSimulation, togglePause, setSpeed, skipToHalfTime, skipToEnd,
+        //          startSecondHalf, enterFullTime, synthesizeGoalsIfNeeded,
+        //          recalculateScore, resetPossessionTarget
         // =====================================================================
 
         // =============================
