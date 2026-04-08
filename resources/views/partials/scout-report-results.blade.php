@@ -46,7 +46,10 @@
                     $askingPrice = $detail['asking_price'] ?? 0;
                     $formattedAskingPrice = $detail['formatted_asking_price'] ?? '-';
                     $wageDemand = $detail['wage_demand'] ?? 0;
-                    $formattedWageDemand = $detail['formatted_wage_demand'] ?? '-';
+                    $preContractWageDemand = $detail['pre_contract_wage_demand'] ?? null;
+                    $formattedWageDemand = $preContractWageDemand
+                        ? \App\Support\Money::format($preContractWageDemand)
+                        : ($detail['formatted_wage_demand'] ?? '-');
                     $canAffordFee = $detail['can_afford_fee'] ?? false;
                     $canAffordLoan = $detail['can_afford_loan'] ?? false;
                     $availableBudget = (int) (($detail['available_budget'] ?? 0) / 100);
