@@ -9,6 +9,7 @@ use App\Models\GamePlayer;
 use App\Modules\Player\PlayerAge;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use App\Modules\Squad\Services\PlayerAttributeSampler;
 use App\Modules\Squad\Services\PlayerGeneratorService;
 use App\Modules\Squad\Services\SquadNumberService;
 
@@ -49,10 +50,6 @@ class YouthAcademyService
         5 => 4,
     ];
 
-    /**
-     * Standard deviation for the ability normal distribution.
-     * Uniform across all tiers — only the mean differentiates them.
-     */
     private const ABILITY_STD_DEV = 6;
 
     /**
@@ -66,9 +63,6 @@ class YouthAcademyService
         4 => 10,
     ];
 
-    /**
-     * Standard deviation for potential upside sampling.
-     */
     private const POTENTIAL_UPSIDE_STD_DEV = 5;
 
     /**
@@ -105,6 +99,7 @@ class YouthAcademyService
     public function __construct(
         private readonly PlayerGeneratorService $playerGenerator,
         private readonly SquadNumberService $squadNumberService,
+        private readonly PlayerAttributeSampler $sampler,
     ) {}
 
     /**
@@ -408,22 +403,25 @@ class YouthAcademyService
 
         $age = rand(17, 19);
 
-        $technical = $this->clampAbility($this->gaussianRandom($abilityMean, self::ABILITY_STD_DEV), $age);
-        $physical = $this->clampAbility($this->gaussianRandom($abilityMean, self::ABILITY_STD_DEV), $age);
+        $ageCap = match ($age) {
+            17 => 72,
+            18 => 74,
+            19 => 76,
+            default => 78,
+        };
+        $technical = $this->sampler->sampleAbility($abilityMean, self::ABILITY_STD_DEV, 50, $ageCap);
+        $physical = $this->sampler->sampleAbility($abilityMean, self::ABILITY_STD_DEV, 50, $ageCap);
 
-        // Potential = best current ability + normally distributed upside
         $currentBest = max($technical, $physical);
-        $upsideMean = self::POTENTIAL_UPSIDE_MEAN[$academyTier];
-        $upside = max(0, (int) round($this->gaussianRandom($upsideMean, self::POTENTIAL_UPSIDE_STD_DEV)));
-        $potential = $currentBest + $upside;
-
-        // Apply floor guarantee and ceiling (88 max — elite potential proven on first team)
-        $potential = max($potential, self::POTENTIAL_FLOOR[$academyTier]);
-        $potential = min(88, max($potential, $currentBest));
-
-        $potentialVariance = rand(3, 8);
-        $potentialLow = max($potential - $potentialVariance, $currentBest);
-        $potentialHigh = min($potential + $potentialVariance, 99);
+        $potentialData = $this->sampler->generatePotentialFromAbility(
+            $currentBest,
+            self::POTENTIAL_UPSIDE_MEAN[$academyTier],
+            self::POTENTIAL_UPSIDE_STD_DEV,
+            self::POTENTIAL_FLOOR[$academyTier],
+        );
+        $potential = $potentialData['potential'];
+        $potentialLow = $potentialData['potentialLow'];
+        $potentialHigh = $potentialData['potentialHigh'];
 
         $dateOfBirth = $game->current_date->copy()->subYears($age)->subDays(rand(0, 364));
 
@@ -451,35 +449,6 @@ class YouthAcademyService
             'initial_technical' => $technical,
             'initial_physical' => $physical,
         ]);
-    }
-
-    /**
-     * Generate a normally distributed random value using the Box-Muller transform.
-     */
-    private function gaussianRandom(float $mean, float $stdDev): float
-    {
-        $u1 = mt_rand(1, PHP_INT_MAX) / PHP_INT_MAX;
-        $u2 = mt_rand(1, PHP_INT_MAX) / PHP_INT_MAX;
-
-        $z = sqrt(-2.0 * log($u1)) * cos(2.0 * M_PI * $u2);
-
-        return $mean + $stdDev * $z;
-    }
-
-    /**
-     * Clamp a sampled ability value to the valid academy prospect range.
-     * Enforces age-based ceiling: academy players are still developing.
-     */
-    private function clampAbility(float $value, int $age): int
-    {
-        $ageCap = match ($age) {
-            17 => 72,
-            18 => 74,
-            19 => 76,
-            default => 78,
-        };
-
-        return max(50, min($ageCap, (int) round($value)));
     }
 
     /**

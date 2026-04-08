@@ -41,6 +41,7 @@ class PlayerGeneratorService
         private readonly ContractService $contractService,
         private readonly PlayerDevelopmentService $developmentService,
         private readonly PlayerValuationService $valuationService,
+        private readonly PlayerAttributeSampler $sampler,
     ) {}
 
     /**
@@ -324,9 +325,6 @@ class PlayerGeneratorService
         4 => 74,   // elite
     ];
 
-    /**
-     * Standard deviation for the ability normal distribution (matches YouthAcademyService).
-     */
     private const ABILITY_STD_DEV = 6;
 
     /**
@@ -369,20 +367,19 @@ class PlayerGeneratorService
         $reputationIndex = ClubProfile::getReputationTierIndex($reputationLevel);
         $abilityMean = self::REPUTATION_BASE_QUALITY[$reputationIndex];
 
-        $technical = $this->clampAbility($this->gaussianRandom($abilityMean, self::ABILITY_STD_DEV));
-        $physical = $this->clampAbility($this->gaussianRandom($abilityMean, self::ABILITY_STD_DEV));
+        $technical = $this->sampler->sampleAbility($abilityMean, self::ABILITY_STD_DEV, 30, 80);
+        $physical = $this->sampler->sampleAbility($abilityMean, self::ABILITY_STD_DEV, 30, 80);
 
-        // Potential: best current ability + normally distributed upside, with floor guarantee
         $currentBest = max($technical, $physical);
-        $upsideMean = self::POTENTIAL_UPSIDE_MEAN[$reputationIndex];
-        $upside = max(0, (int) round($this->gaussianRandom($upsideMean, self::POTENTIAL_UPSIDE_STD_DEV)));
-        $potential = $currentBest + $upside;
-        $potential = max($potential, self::POTENTIAL_FLOOR[$reputationIndex]);
-        $potential = min(88, max($potential, $currentBest));
-
-        $potentialVariance = mt_rand(3, 8);
-        $potentialLow = max($potential - $potentialVariance, $currentBest);
-        $potentialHigh = min($potential + $potentialVariance, 99);
+        $potentialData = $this->sampler->generatePotentialFromAbility(
+            $currentBest,
+            self::POTENTIAL_UPSIDE_MEAN[$reputationIndex],
+            self::POTENTIAL_UPSIDE_STD_DEV,
+            self::POTENTIAL_FLOOR[$reputationIndex],
+        );
+        $potential = $potentialData['potential'];
+        $potentialLow = $potentialData['potentialLow'];
+        $potentialHigh = $potentialData['potentialHigh'];
 
         $ageRoll = mt_rand(1, 100);
         $age = match (true) {
@@ -405,27 +402,6 @@ class PlayerGeneratorService
             potentialLow: $potentialLow,
             potentialHigh: $potentialHigh,
         );
-    }
-
-    /**
-     * Clamp a sampled ability value to the valid range for AI academy graduates.
-     */
-    private function clampAbility(float $value): int
-    {
-        return max(30, min(80, (int) round($value)));
-    }
-
-    /**
-     * Generate a normally distributed random value using the Box-Muller transform.
-     */
-    private function gaussianRandom(float $mean, float $stdDev): float
-    {
-        $u1 = mt_rand(1, PHP_INT_MAX) / PHP_INT_MAX;
-        $u2 = mt_rand(1, PHP_INT_MAX) / PHP_INT_MAX;
-
-        $z = sqrt(-2.0 * log($u1)) * cos(2.0 * M_PI * $u2);
-
-        return $mean + $stdDev * $z;
     }
 
     /**
