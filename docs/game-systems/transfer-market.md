@@ -55,6 +55,10 @@ Players will not accept wages below their current salary (**salary floor**), exc
 
 From the winter window onward, AI clubs can approach players with expiring contracts. These are free transfers (no fee) that complete at season end.
 
+Pre-contract negotiations use a **low disposition base** (0.40) because players running out of contract have maximum leverage and are selective about their next club. The disposition is further reduced by an **ambition penalty**: top-tier players (based on market value tier) resist joining clubs whose reputation is below their tier (-0.15 per tier gap). This makes it progressively harder for lower-reputation clubs to sign world-class free agents. The wage negotiation uses a tight **flexibility ratio** (0.15), meaning players accept very little discount below their demand.
+
+The async evaluation path (AI-initiated offers) uses a 65% base acceptance chance when meeting the full wage demand, modified multiplicatively by both the reputation gap and the ambition gap.
+
 ## Player Release
 
 The user can unilaterally terminate a player's contract at any time during the season (no transfer window required). The player becomes a free agent and may be signed by AI teams when the next transfer window closes.

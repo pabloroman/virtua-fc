@@ -1010,6 +1010,7 @@ class ContractService
             round: $offer->terms_round,
             maxRounds: self::MAX_NEGOTIATION_ROUNDS,
             previousCounter: $offer->wage_counter_offer,
+            flexibilityRatio: 0.15, // Tighter than renewals (0.18) — expiring-contract players have maximum leverage
         );
 
         return $this->applyTermsEvaluation($offer, $evaluation, [

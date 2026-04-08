@@ -230,7 +230,7 @@ class PreContractBalanceTest extends TestCase
         // (wage demand has ±10% internal variance, so a single calculation may not cover subsequent rolls)
         $generousOffer = (int) ($this->scoutingService->calculatePreContractWageDemand($player) * 1.5);
 
-        // With no gap, modifier is 1.0 → 85% chance
+        // With no gap, modifier is 1.0 → 65% chance
         $acceptedCount = 0;
         for ($i = 0; $i < 100; $i++) {
             $result = $this->scoutingService->evaluatePreContractOffer($player, $generousOffer, $game->team);
@@ -239,7 +239,7 @@ class PreContractBalanceTest extends TestCase
             }
         }
 
-        $this->assertGreaterThan(50, $acceptedCount, "Expected mostly accepts with same reputation, got {$acceptedCount}/100 accepts");
+        $this->assertGreaterThan(35, $acceptedCount, "Expected majority accepts with same reputation, got {$acceptedCount}/100 accepts");
     }
 
     public function test_evaluate_pre_contract_offer_rejects_below_85_percent_of_premium_demand(): void

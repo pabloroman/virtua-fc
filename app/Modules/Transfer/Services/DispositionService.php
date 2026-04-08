@@ -293,15 +293,37 @@ class DispositionService
             $disposition -= 0.05;
         }
 
-        // Team reputation comparison
-        $buyingRep = $buyingClubGame->team?->reputation ?? 50;
-        $currentRep = $player->team?->reputation ?? 50;
-        if ($buyingRep > $currentRep + 10) {
-            $disposition += 0.15;
-        } elseif ($buyingRep >= $currentRep - 10) {
-            $disposition += 0.05;
+        // Team reputation comparison using proper tier system
+        $gameId = $player->game_id;
+        if ($player->team_id && $buyingClubGame->team_id) {
+            $sourceIndex = ClubProfile::getReputationTierIndex(
+                TeamReputation::resolveLevel($gameId, $player->team_id)
+            );
+            $offeringIndex = ClubProfile::getReputationTierIndex(
+                TeamReputation::resolveLevel($gameId, $buyingClubGame->team_id)
+            );
+            $gap = $offeringIndex - $sourceIndex;
+
+            if ($gap >= 2) {
+                $disposition += 0.15; // Big step up
+            } elseif ($gap === 1) {
+                $disposition += 0.10; // Step up
+            } elseif ($gap === 0) {
+                $disposition += 0.05; // Lateral
+            } elseif ($gap === -1) {
+                $disposition -= 0.05; // Step down
+            } else {
+                $disposition -= 0.15; // Big step down
+            }
+
+            // Ambition: top-tier players resist joining clubs below their level
+            $playerTierIndex = ($player->tier ?? 1) - 1; // normalize to 0-4
+            $tierGap = $playerTierIndex - $offeringIndex;
+            if ($tierGap > 0) {
+                $disposition -= $tierGap * 0.15;
+            }
         } else {
-            $disposition -= 0.10;
+            $disposition += 0.05; // Free agent or unknown — neutral
         }
 
         // Round penalty
@@ -320,11 +342,11 @@ class DispositionService
 
     /**
      * Calculate a player's disposition for a pre-contract (willingness to sign).
-     * Higher base than transfer — player is running out of contract, more motivated.
+     * Low base — players on expiring contracts have maximum leverage and are selective.
      */
     public function preContractDisposition(GamePlayer $player, Game $buyingClubGame, int $round = 1): float
     {
-        $disposition = 0.60;
+        $disposition = 0.40;
 
         // Morale
         $morale = $player->morale;
@@ -347,6 +369,18 @@ class DispositionService
             $disposition -= 0.05;
         } elseif ($round >= 3) {
             $disposition -= 0.10;
+        }
+
+        // Ambition: top-tier players resist joining clubs below their level
+        if ($buyingClubGame->team) {
+            $reputationLevel = TeamReputation::resolveLevel($buyingClubGame->game_id ?? $player->game_id, $buyingClubGame->team_id);
+            $clubReputationIndex = ClubProfile::getReputationTierIndex($reputationLevel);
+            $playerTierIndex = ($player->tier ?? 1) - 1; // normalize to 0-4
+
+            $tierGap = $playerTierIndex - $clubReputationIndex;
+            if ($tierGap > 0) {
+                $disposition -= $tierGap * 0.15;
+            }
         }
 
         // Apply reputation gap modifier (same scale the scout willingness uses)
