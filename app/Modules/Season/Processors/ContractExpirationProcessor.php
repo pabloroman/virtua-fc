@@ -17,11 +17,11 @@ use Illuminate\Support\Facades\Log;
  * Priority: 20 (runs early, before contract renewals are applied)
  *
  * Players with contract_until <= June 30 of the ending season:
- * - User's team: released (removed from squad)
+ * - User's team: become free agents (team_id = null)
  * - AI teams: veterans (35+) have a 50% chance of non-renewal and become
  *   free agents (team_id = null). All others are auto-renewed.
  *   Free agents may be signed by AI teams when the new season starts
- *   (AITransferMarketService).
+ *   (AIFreeAgentSigningProcessor).
  */
 class ContractExpirationProcessor implements SeasonProcessor
 {
@@ -72,16 +72,15 @@ class ContractExpirationProcessor implements SeasonProcessor
             ->flip()
             ->all();
 
-        $releasedIds = [];
         $freeAgentIds = [];
         $autoRenewedIds = [];
         $newContractEnd = Carbon::createFromDate($seasonYear + 3, 6, 30);
 
         foreach ($expiredPlayers as $player) {
             if ($player->team_id === $game->team_id) {
-                // User's team: release (except pre-contract departures)
+                // User's team: become free agents (except pre-contract departures)
                 if (!isset($preContractPlayerIds[$player->id])) {
-                    $releasedIds[] = $player->id;
+                    $freeAgentIds[] = $player->id;
                 }
             } else {
                 // AI teams: veterans (35+) have 50% chance of becoming free agents
@@ -95,9 +94,6 @@ class ContractExpirationProcessor implements SeasonProcessor
         }
 
         // Batch operations
-        if (!empty($releasedIds)) {
-            GamePlayer::whereIn('id', $releasedIds)->delete();
-        }
         if (!empty($freeAgentIds)) {
             GamePlayer::whereIn('id', $freeAgentIds)->update(['team_id' => null, 'number' => null]);
         }
@@ -105,7 +101,7 @@ class ContractExpirationProcessor implements SeasonProcessor
             GamePlayer::whereIn('id', $autoRenewedIds)->update(['contract_until' => $newContractEnd]);
         }
 
-        Log::info('[ContractExpiration] Free agents created: ' . count($freeAgentIds) . ', released: ' . count($releasedIds) . ', auto-renewed: ' . count($autoRenewedIds));
+        Log::info('[ContractExpiration] Free agents created: ' . count($freeAgentIds) . ', auto-renewed: ' . count($autoRenewedIds));
 
         return $data;
     }
