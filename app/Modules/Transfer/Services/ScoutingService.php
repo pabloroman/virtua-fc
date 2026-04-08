@@ -12,25 +12,11 @@ use App\Support\Money;
 use App\Support\PositionMapper;
 use Illuminate\Support\Collection;
 use App\Modules\Player\PlayerAge;
+use App\Modules\Transfer\Enums\NegotiationScenario;
 use App\Modules\Transfer\Services\ContractService;
 
 class ScoutingService
 {
-
-    /**
-     * Wage premium multipliers for players on expiring contracts (pre-contract signings).
-     * Keyed by minimum market value in cents.
-     * Checked in descending order — first match wins.
-     */
-    private const FREE_AGENT_WAGE_PREMIUMS = [
-        10_000_000_000 => 1.50, // €100M+
-        5_000_000_000  => 1.45, // €50M+
-        2_000_000_000  => 1.40, // €20M+
-        1_000_000_000  => 1.35, // €10M+
-        500_000_000    => 1.30, // €5M+
-        200_000_000    => 1.25, // €2M+
-        0              => 1.20, // < €2M
-    ];
 
     /**
      * Scouting tier effects on searches.
@@ -519,65 +505,9 @@ class ScoutingService
     // WAGE DEMAND
     // =========================================
 
-    /**
-     * Calculate the wage a player would demand to join.
-     */
-    public function calculateWageDemand(GamePlayer $player): int
-    {
-        $minimumWage = $player->team
-            ? $this->contractService->getMinimumWageForTeam($player->team)
-            : $this->contractService->getDefaultMinimumWage();
-
-        $wage = $this->contractService->calculateAnnualWage(
-            $player->market_value_cents,
-            $minimumWage,
-            $player->age($player->game->current_date),
-            deterministic: true,
-        );
-
-        return Money::roundPrice($wage);
-    }
-
-    /**
-     * Calculate the wage a player on an expiring contract demands for a pre-contract signing.
-     * Applies a premium on top of the base wage demand (represents signing bonus + agent fees + leverage).
-     */
-    public function calculatePreContractWageDemand(GamePlayer $player): int
-    {
-        $baseWage = $this->calculateWageDemand($player);
-        $premium = $this->getFreeAgentWagePremium($player->market_value_cents);
-
-        return Money::roundPrice((int) ($baseWage * $premium));
-    }
-
-    /**
-     * Get the free agent wage premium multiplier based on market value.
-     */
-    private function getFreeAgentWagePremium(int $marketValueCents): float
-    {
-        foreach (self::FREE_AGENT_WAGE_PREMIUMS as $minValue => $premium) {
-            if ($marketValueCents >= $minValue) {
-                return $premium;
-            }
-        }
-
-        return 1.20;
-    }
-
     // =========================================
     // REPUTATION GATE
     // =========================================
-
-    /**
-     * Calculate the acceptance probability modifier based on reputation gap.
-     * Compares the player's current team reputation to the bidding team's reputation.
-     *
-     * @return float Modifier between 0.02 and 1.0
-     */
-    public function calculateReputationModifier(Team $biddingTeam, GamePlayer $player): float
-    {
-        return $this->dispositionService->reputationModifier($biddingTeam, $player);
-    }
 
     // =========================================
     // FREE AGENT REPUTATION GATE
@@ -614,9 +544,9 @@ class ScoutingService
      */
     public function evaluatePreContractOffer(GamePlayer $player, int $offeredWage, Team $biddingTeam): array
     {
-        $wageDemand = $this->calculatePreContractWageDemand($player);
+        $demand = $this->contractService->calculateWageDemand($player, NegotiationScenario::PRE_CONTRACT);
 
-        return $this->dispositionService->evaluatePreContractOffer($player, $offeredWage, $wageDemand, $biddingTeam);
+        return $this->dispositionService->evaluatePreContractOffer($player, $offeredWage, $demand['wage'], $biddingTeam);
     }
 
     /**
@@ -626,12 +556,15 @@ class ScoutingService
     {
         $isFreeAgent = $player->team_id === null;
         $askingPrice = $isFreeAgent ? 0 : $this->calculateAskingPrice($player);
-        $wageDemand = $this->calculateWageDemand($player);
+        $transferDemand = $this->contractService->calculateWageDemand($player, NegotiationScenario::TRANSFER);
+        $wageDemand = $transferDemand['wage'];
         $importance = $isFreeAgent ? 0.0 : $this->calculatePlayerImportance($player);
 
         // For expiring-contract players, show the premium wage demand
         $isExpiring = $player->contract_until && $player->contract_until <= $game->getSeasonEndDate();
-        $preContractWageDemand = $isExpiring ? $this->calculatePreContractWageDemand($player) : null;
+        $preContractWageDemand = $isExpiring
+            ? $this->contractService->calculateWageDemand($player, NegotiationScenario::PRE_CONTRACT)['wage']
+            : null;
 
         $investment = $game->currentInvestment;
         $committedBudget = TransferOffer::committedBudget($game->id);

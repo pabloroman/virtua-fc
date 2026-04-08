@@ -5,6 +5,7 @@ namespace App\Http\Actions;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\RenewalNegotiation;
+use App\Modules\Transfer\Enums\NegotiationScenario;
 use App\Modules\Transfer\Services\ContractService;
 use App\Support\Money;
 use Illuminate\Http\JsonResponse;
@@ -96,8 +97,8 @@ class NegotiateRenewal
             ], 422);
         }
 
-        $demand = $this->contractService->calculateRenewalDemand($player);
-        $disposition = $this->contractService->calculateDisposition($player);
+        $demand = $this->contractService->calculateWageDemand($player, NegotiationScenario::RENEWAL);
+        $disposition = $this->contractService->calculateDisposition($player, NegotiationScenario::RENEWAL);
         $mood = $this->contractService->getMoodIndicator($disposition);
 
         return response()->json([

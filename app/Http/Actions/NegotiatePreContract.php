@@ -6,9 +6,9 @@ use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\TransferOffer;
 use App\Modules\Notification\Services\NotificationService;
+use App\Modules\Transfer\Enums\NegotiationScenario;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\DispositionService;
-use App\Modules\Transfer\Services\ScoutingService;
 use App\Support\Money;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,7 +20,6 @@ class NegotiatePreContract
 
     public function __construct(
         private readonly ContractService $contractService,
-        private readonly ScoutingService $scoutingService,
         private readonly NotificationService $notificationService,
         private readonly DispositionService $dispositionService,
     ) {}
@@ -125,7 +124,7 @@ class NegotiatePreContract
         }
 
         // Calculate wage demand (deterministic — no variance)
-        $demand = $this->contractService->calculatePreContractWageDemand($player, $this->scoutingService);
+        $demand = $this->contractService->calculateWageDemand($player, NegotiationScenario::PRE_CONTRACT);
         $mood = $this->dispositionService->willingnessMoodIndicator($player, $game);
         $demandInEuros = (int) ($demand['wage'] / 100);
 
@@ -188,8 +187,8 @@ class NegotiatePreContract
         $offerWageCents = $validated['wage'] * 100;
         $offeredYears = $validated['years'];
 
-        $result = $this->contractService->negotiatePreContractTermsSync(
-            $offer, $offerWageCents, $offeredYears, $game, $this->scoutingService
+        $result = $this->contractService->negotiateTermsSync(
+            $offer, $offerWageCents, $offeredYears, NegotiationScenario::PRE_CONTRACT, $game,
         );
 
         $offer = $result['offer'];
@@ -251,7 +250,7 @@ class NegotiatePreContract
             ], 422);
         }
 
-        $this->contractService->acceptPreContractTermsCounter($offer);
+        $this->contractService->acceptTermsCounterForScenario($offer, NegotiationScenario::PRE_CONTRACT);
         $offer->refresh();
 
         return $this->completePreContractNegotiation($offer, $game, $player);

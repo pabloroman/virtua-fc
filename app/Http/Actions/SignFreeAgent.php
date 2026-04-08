@@ -5,14 +5,17 @@ namespace App\Http\Actions;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Modules\Notification\Services\NotificationService;
-use App\Modules\Transfer\Services\ScoutingService;
+use App\Modules\Transfer\Enums\NegotiationScenario;
+use App\Modules\Transfer\Services\ContractService;
+use App\Modules\Transfer\Services\DispositionService;
 use App\Modules\Transfer\Services\TransferService;
 use Illuminate\Http\Request;
 
 class SignFreeAgent
 {
     public function __construct(
-        private readonly ScoutingService $scoutingService,
+        private readonly ContractService $contractService,
+        private readonly DispositionService $dispositionService,
         private readonly TransferService $transferService,
         private readonly NotificationService $notificationService,
     ) {}
@@ -29,14 +32,14 @@ class SignFreeAgent
         }
 
         // Reputation gate: free agent must be willing to join
-        if (! $this->scoutingService->canSignFreeAgent($player, $game->id, $game->team_id)) {
+        if (! $this->dispositionService->canSignFreeAgent($player, $game->id, $game->team_id)) {
             return redirect()->route('game.transfers', $gameId)
                 ->with('error', __('messages.free_agent_reputation_too_low'));
         }
 
-        $wageDemand = $this->scoutingService->calculateWageDemand($player);
+        $demand = $this->contractService->calculateWageDemand($player, NegotiationScenario::FREE_AGENT);
 
-        $offer = $this->transferService->signFreeAgent($game, $player, $wageDemand);
+        $offer = $this->transferService->signFreeAgent($game, $player, $demand['wage']);
         $this->notificationService->notifyTransferComplete($game, $offer);
 
         return redirect()->route('game.transfers', $gameId)

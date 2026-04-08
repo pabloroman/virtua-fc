@@ -10,6 +10,7 @@ use App\Models\TeamReputation;
 use App\Models\TransferOffer;
 use App\Modules\Player\PlayerAge;
 use App\Modules\Player\Services\PlayerTierService;
+use App\Modules\Transfer\Enums\NegotiationScenario;
 use Illuminate\Support\Collection;
 
 class DispositionService
@@ -130,6 +131,192 @@ class DispositionService
     }
 
     // =========================================
+    // UNIFIED NEGOTIATION DISPOSITION
+    // =========================================
+
+    /**
+     * Calculate a player's disposition for any negotiation scenario.
+     *
+     * Disposition (0.10-0.95) represents how willing a player is to accept
+     * a lower wage. Higher = more flexible. All scenarios share the same
+     * factor-based algorithm with scenario-driven weights.
+     *
+     * @param GamePlayer $player The player being negotiated with
+     * @param NegotiationScenario $scenario The type of negotiation
+     * @param Game|null $buyingClubGame The buying club's game (null for renewals)
+     * @param int $round Current negotiation round (1-3)
+     */
+    public function calculateNegotiationDisposition(
+        GamePlayer $player,
+        NegotiationScenario $scenario,
+        ?Game $buyingClubGame = null,
+        int $round = 1,
+    ): float {
+        $disposition = $scenario->baseDisposition();
+        $age = $player->age($player->game->current_date);
+        $isRenewal = $scenario === NegotiationScenario::RENEWAL;
+
+        // ── Morale ──
+        $disposition += $this->moraleFactor($player->morale, $isRenewal);
+
+        // ── Appearances (renewal only: reward loyalty / penalize bench warming) ──
+        if ($isRenewal) {
+            $disposition += $this->appearancesFactor($player);
+        }
+
+        // ── Age ──
+        $disposition += $this->ageFactor($age, $isRenewal);
+
+        // ── Round penalty (all scenarios) ──
+        $disposition += $this->roundPenalty($round);
+
+        // ── Pre-contract pressure (renewal only: expiring players are harder to renew) ──
+        if ($isRenewal) {
+            $disposition += $this->preContractPressureFactor($player);
+        }
+
+        // ── Reputation step bonus (transfer/free-agent: moving up/down matters) ──
+        if (in_array($scenario, [NegotiationScenario::TRANSFER, NegotiationScenario::FREE_AGENT])
+            && $buyingClubGame?->team_id && $player->team_id) {
+            $disposition += $this->reputationStepBonus($player, $buyingClubGame);
+        }
+
+        // ── Ambition: top-tier players resist joining clubs below their level ──
+        $targetTeamId = $isRenewal ? $player->team_id : $buyingClubGame?->team_id;
+        if ($targetTeamId) {
+            $disposition += $this->ambitionPenalty($player, $targetTeamId, $isRenewal);
+        }
+
+        // ── Pre-contract: reputation modifier applied multiplicatively ──
+        if ($scenario === NegotiationScenario::PRE_CONTRACT && $buyingClubGame?->team) {
+            $disposition *= $this->reputationModifier($buyingClubGame->team, $player);
+        }
+
+        return max(0.10, min(0.95, $disposition));
+    }
+
+    // ── Disposition factor helpers ──
+
+    private function moraleFactor(int $morale, bool $isRenewal): float
+    {
+        if ($morale >= ($isRenewal ? 80 : 70)) {
+            return $isRenewal ? 0.15 : 0.10;
+        }
+        if ($isRenewal && $morale >= 60) {
+            return 0.08;
+        }
+        if ($morale < 40) {
+            return $isRenewal ? -0.10 : -0.05;
+        }
+
+        return 0.0;
+    }
+
+    private function appearancesFactor(GamePlayer $player): float
+    {
+        $appearances = $player->season_appearances ?? $player->appearances ?? 0;
+
+        if ($appearances >= 25) {
+            return 0.10;
+        }
+        if ($appearances >= 15) {
+            return 0.05;
+        }
+        if ($appearances < 10) {
+            return -0.10;
+        }
+
+        return 0.0;
+    }
+
+    private function ageFactor(int $age, bool $isRenewal): float
+    {
+        if ($age >= PlayerAge::PRIME_END) {
+            return $isRenewal ? 0.12 : 0.10;
+        }
+        if ($isRenewal && $age >= PlayerAge::primePhaseAge(0.5)) {
+            return 0.05;
+        }
+        if ($age <= PlayerAge::YOUNG_END) {
+            return $isRenewal ? -0.08 : -0.05;
+        }
+
+        return 0.0;
+    }
+
+    private function roundPenalty(int $round): float
+    {
+        if ($round >= 3) {
+            return -0.10;
+        }
+        if ($round === 2) {
+            return -0.05;
+        }
+
+        return 0.0;
+    }
+
+    private function preContractPressureFactor(GamePlayer $player): float
+    {
+        $month = $player->game->current_date->month;
+
+        if ($month < 1 || $month > 5) {
+            return 0.0;
+        }
+
+        if ($player->relationLoaded('transferOffers')) {
+            $hasPreContractOffer = $player->transferOffers->contains(function ($offer) {
+                return $offer->offer_type === TransferOffer::TYPE_PRE_CONTRACT
+                    && $offer->status === TransferOffer::STATUS_PENDING;
+            });
+        } else {
+            $hasPreContractOffer = $player->transferOffers()
+                ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
+                ->where('status', TransferOffer::STATUS_PENDING)
+                ->exists();
+        }
+
+        return $hasPreContractOffer ? -0.15 : -0.08;
+    }
+
+    private function reputationStepBonus(GamePlayer $player, Game $buyingClubGame): float
+    {
+        $gameId = $player->game_id;
+        $sourceIndex = ClubProfile::getReputationTierIndex(
+            TeamReputation::resolveLevel($gameId, $player->team_id)
+        );
+        $offeringIndex = ClubProfile::getReputationTierIndex(
+            TeamReputation::resolveLevel($gameId, $buyingClubGame->team_id)
+        );
+        $gap = $offeringIndex - $sourceIndex;
+
+        return match (true) {
+            $gap >= 2 => 0.15,
+            $gap === 1 => 0.10,
+            $gap === 0 => 0.05,
+            $gap === -1 => -0.05,
+            default => -0.15,
+        };
+    }
+
+    private function ambitionPenalty(GamePlayer $player, string $targetTeamId, bool $isRenewal): float
+    {
+        $reputationLevel = TeamReputation::resolveLevel($player->game_id, $targetTeamId);
+        $clubReputationIndex = ClubProfile::getReputationTierIndex($reputationLevel);
+        $playerTierIndex = ($player->tier ?? 1) - 1;
+
+        $tierGap = $playerTierIndex - $clubReputationIndex;
+
+        if ($tierGap <= 0) {
+            return 0.0;
+        }
+
+        $penaltyPerTier = $isRenewal ? self::AMBITION_PENALTY_PER_TIER_GAP : 0.15;
+
+        return -$tierGap * $penaltyPerTier;
+    }
+
+    // =========================================
     // CLUB DISPOSITION (WILLINGNESS TO SELL)
     // =========================================
 
@@ -174,219 +361,6 @@ class DispositionService
             $disposition += 0.10;
         } elseif ($age < PlayerAge::YOUNG_END) {
             $disposition -= 0.05;
-        }
-
-        return max(0.10, min(0.95, $disposition));
-    }
-
-    // =========================================
-    // PLAYER RENEWAL DISPOSITION
-    // =========================================
-
-    /**
-     * Calculate a player's disposition score for renewal (0.10 – 0.95).
-     * Higher = more willing to accept a lower wage.
-     */
-    public function renewalDisposition(GamePlayer $player, int $round = 1): float
-    {
-        $disposition = 0.50;
-
-        // Morale bonus
-        $morale = $player->morale;
-        if ($morale >= 80) {
-            $disposition += 0.15;
-        } elseif ($morale >= 60) {
-            $disposition += 0.08;
-        } elseif ($morale < 40) {
-            $disposition -= 0.10;
-        }
-
-        // Appearances bonus
-        $appearances = $player->season_appearances ?? $player->appearances ?? 0;
-        if ($appearances >= 25) {
-            $disposition += 0.10;
-        } elseif ($appearances >= 15) {
-            $disposition += 0.05;
-        } elseif ($appearances < 10) {
-            $disposition -= 0.10;
-        }
-
-        // Age factor
-        $age = $player->age($player->game->current_date);
-        if ($age >= PlayerAge::PRIME_END) {
-            $disposition += 0.12;
-        } elseif ($age >= PlayerAge::primePhaseAge(0.5)) {
-            $disposition += 0.05;
-        } elseif ($age <= PlayerAge::YOUNG_END) {
-            $disposition -= 0.08;
-        }
-
-        // Round penalty
-        if ($round === 2) {
-            $disposition -= 0.05;
-        } elseif ($round >= 3) {
-            $disposition -= 0.10;
-        }
-
-        // Pre-contract pressure (Jan-May)
-        $game = $player->game;
-        $month = $game->current_date->month;
-        if ($month >= 1 && $month <= 5) {
-            // Has a concrete pre-contract offer
-            if ($player->relationLoaded('transferOffers')) {
-                $hasPreContractOffer = $player->transferOffers->contains(function ($offer) {
-                    return $offer->offer_type === TransferOffer::TYPE_PRE_CONTRACT
-                        && $offer->status === TransferOffer::STATUS_PENDING;
-                });
-            } else {
-                $hasPreContractOffer = $player->transferOffers()
-                    ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-                    ->where('status', TransferOffer::STATUS_PENDING)
-                    ->exists();
-            }
-
-            if ($hasPreContractOffer) {
-                $disposition -= 0.15;
-            } else {
-                $disposition -= 0.08;
-            }
-        }
-
-        // Ambition: players too good for their team's reputation want to move up
-        $reputationLevel = TeamReputation::resolveLevel($player->game_id, $player->team_id);
-        $teamReputationIndex = ClubProfile::getReputationTierIndex($reputationLevel); // 0-4
-        $playerTierIndex = $player->tier - 1; // normalize to 0-4
-
-        $tierGap = $playerTierIndex - $teamReputationIndex;
-        if ($tierGap > 0) {
-            $disposition -= $tierGap * self::AMBITION_PENALTY_PER_TIER_GAP;
-        }
-
-        return max(0.10, min(0.95, $disposition));
-    }
-
-    // =========================================
-    // PLAYER TRANSFER SIGNING DISPOSITION
-    // =========================================
-
-    /**
-     * Calculate a player's disposition for a transfer (willingness to join).
-     * Different from renewal — considers team attractiveness, not appearances.
-     */
-    public function transferSigningDisposition(GamePlayer $player, Game $buyingClubGame, int $round = 1): float
-    {
-        $disposition = 0.50;
-
-        // Morale (content player = open to moves)
-        $morale = $player->morale;
-        if ($morale >= 70) {
-            $disposition += 0.10;
-        } elseif ($morale < 40) {
-            $disposition -= 0.05;
-        }
-
-        // Age (older = wants a good final contract)
-        $age = $player->age($player->game->current_date);
-        if ($age >= PlayerAge::PRIME_END) {
-            $disposition += 0.10;
-        } elseif ($age <= PlayerAge::YOUNG_END) {
-            $disposition -= 0.05;
-        }
-
-        // Team reputation comparison using proper tier system
-        $gameId = $player->game_id;
-        if ($player->team_id && $buyingClubGame->team_id) {
-            $sourceIndex = ClubProfile::getReputationTierIndex(
-                TeamReputation::resolveLevel($gameId, $player->team_id)
-            );
-            $offeringIndex = ClubProfile::getReputationTierIndex(
-                TeamReputation::resolveLevel($gameId, $buyingClubGame->team_id)
-            );
-            $gap = $offeringIndex - $sourceIndex;
-
-            if ($gap >= 2) {
-                $disposition += 0.15; // Big step up
-            } elseif ($gap === 1) {
-                $disposition += 0.10; // Step up
-            } elseif ($gap === 0) {
-                $disposition += 0.05; // Lateral
-            } elseif ($gap === -1) {
-                $disposition -= 0.05; // Step down
-            } else {
-                $disposition -= 0.15; // Big step down
-            }
-
-            // Ambition: top-tier players resist joining clubs below their level
-            $playerTierIndex = ($player->tier ?? 1) - 1; // normalize to 0-4
-            $tierGap = $playerTierIndex - $offeringIndex;
-            if ($tierGap > 0) {
-                $disposition -= $tierGap * 0.15;
-            }
-        } else {
-            $disposition += 0.05; // Free agent or unknown — neutral
-        }
-
-        // Round penalty
-        if ($round === 2) {
-            $disposition -= 0.05;
-        } elseif ($round >= 3) {
-            $disposition -= 0.10;
-        }
-
-        return max(0.10, min(0.95, $disposition));
-    }
-
-    // =========================================
-    // PLAYER PRE-CONTRACT DISPOSITION
-    // =========================================
-
-    /**
-     * Calculate a player's disposition for a pre-contract (willingness to sign).
-     * Low base — players on expiring contracts have maximum leverage and are selective.
-     */
-    public function preContractDisposition(GamePlayer $player, Game $buyingClubGame, int $round = 1): float
-    {
-        $disposition = 0.40;
-
-        // Morale
-        $morale = $player->morale;
-        if ($morale >= 70) {
-            $disposition += 0.10;
-        } elseif ($morale < 40) {
-            $disposition -= 0.05;
-        }
-
-        // Age (older = wants security)
-        $age = $player->age($player->game->current_date);
-        if ($age >= 32) {
-            $disposition += 0.12;
-        } elseif ($age <= 23) {
-            $disposition -= 0.05;
-        }
-
-        // Round penalty
-        if ($round === 2) {
-            $disposition -= 0.05;
-        } elseif ($round >= 3) {
-            $disposition -= 0.10;
-        }
-
-        // Ambition: top-tier players resist joining clubs below their level
-        if ($buyingClubGame->team) {
-            $reputationLevel = TeamReputation::resolveLevel($buyingClubGame->game_id ?? $player->game_id, $buyingClubGame->team_id);
-            $clubReputationIndex = ClubProfile::getReputationTierIndex($reputationLevel);
-            $playerTierIndex = ($player->tier ?? 1) - 1; // normalize to 0-4
-
-            $tierGap = $playerTierIndex - $clubReputationIndex;
-            if ($tierGap > 0) {
-                $disposition -= $tierGap * 0.15;
-            }
-        }
-
-        // Apply reputation gap modifier (same scale the scout willingness uses)
-        if ($buyingClubGame->team) {
-            $reputationModifier = $this->reputationModifier($buyingClubGame->team, $player);
-            $disposition *= $reputationModifier;
         }
 
         return max(0.10, min(0.95, $disposition));

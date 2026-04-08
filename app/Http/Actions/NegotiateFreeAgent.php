@@ -6,9 +6,9 @@ use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\TransferOffer;
 use App\Modules\Notification\Services\NotificationService;
+use App\Modules\Transfer\Enums\NegotiationScenario;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\DispositionService;
-use App\Modules\Transfer\Services\ScoutingService;
 use App\Modules\Transfer\Services\TransferService;
 use App\Support\Money;
 use Illuminate\Http\JsonResponse;
@@ -21,7 +21,6 @@ class NegotiateFreeAgent
 
     public function __construct(
         private readonly ContractService $contractService,
-        private readonly ScoutingService $scoutingService,
         private readonly TransferService $transferService,
         private readonly NotificationService $notificationService,
         private readonly DispositionService $dispositionService,
@@ -58,7 +57,7 @@ class NegotiateFreeAgent
             ], 422);
         }
 
-        if (! $this->scoutingService->canSignFreeAgent($player, $game->id, $game->team_id)) {
+        if (! $this->dispositionService->canSignFreeAgent($player, $game->id, $game->team_id)) {
             return response()->json([
                 'status' => 'error',
                 'message' => __('messages.free_agent_reputation_too_low'),
@@ -119,7 +118,7 @@ class NegotiateFreeAgent
             ], 422);
         }
 
-        $demand = $this->contractService->calculateFreeAgentWageDemand($player, $this->scoutingService);
+        $demand = $this->contractService->calculateWageDemand($player, NegotiationScenario::FREE_AGENT);
         $mood = $this->dispositionService->willingnessMoodIndicator($player, $game);
         $demandInEuros = (int) ($demand['wage'] / 100);
 
@@ -172,8 +171,8 @@ class NegotiateFreeAgent
             ]);
         }
 
-        $result = $this->contractService->negotiateFreeAgentTermsSync(
-            $offer, $validated['wage'] * 100, $validated['years'], $game, $this->scoutingService
+        $result = $this->contractService->negotiateTermsSync(
+            $offer, $validated['wage'] * 100, $validated['years'], NegotiationScenario::FREE_AGENT, $game,
         );
 
         $offer = $result['offer'];
@@ -229,7 +228,7 @@ class NegotiateFreeAgent
             ], 422);
         }
 
-        $this->contractService->acceptFreeAgentTermsCounter($offer);
+        $this->contractService->acceptTermsCounterForScenario($offer, NegotiationScenario::FREE_AGENT);
         $offer->refresh();
 
         return $this->completeFreeAgentSigning($offer, $game, $player);

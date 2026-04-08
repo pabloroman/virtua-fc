@@ -9,6 +9,8 @@ use App\Models\GamePlayer;
 use App\Models\Player;
 use App\Models\Team;
 use App\Models\User;
+use App\Modules\Transfer\Enums\NegotiationScenario;
+use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\ScoutingService;
 use App\Modules\Transfer\Services\TransferService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -18,6 +20,7 @@ class PreContractBalanceTest extends TestCase
 {
     use RefreshDatabase;
 
+    private ContractService $contractService;
     private ScoutingService $scoutingService;
     private TransferService $transferService;
     private Competition $competition;
@@ -26,6 +29,7 @@ class PreContractBalanceTest extends TestCase
     {
         parent::setUp();
 
+        $this->contractService = app(ContractService::class);
         $this->scoutingService = app(ScoutingService::class);
         $this->transferService = app(TransferService::class);
 
@@ -151,8 +155,8 @@ class PreContractBalanceTest extends TestCase
         // Run multiple times to account for wage variance and check average ratio
         $ratios = [];
         for ($i = 0; $i < 20; $i++) {
-            $baseWage = $this->scoutingService->calculateWageDemand($player);
-            $premiumWage = $this->scoutingService->calculatePreContractWageDemand($player);
+            $baseWage = $this->contractService->calculateWageDemand($player, NegotiationScenario::TRANSFER)['wage'];
+            $premiumWage = $this->contractService->calculateWageDemand($player, NegotiationScenario::PRE_CONTRACT)['wage'];
             if ($baseWage > 0) {
                 $ratios[] = $premiumWage / $baseWage;
             }
@@ -184,8 +188,8 @@ class PreContractBalanceTest extends TestCase
             'market_value_cents' => 100_000_000,
         ]);
 
-        $baseWage = $this->scoutingService->calculateWageDemand($player);
-        $premiumWage = $this->scoutingService->calculatePreContractWageDemand($player);
+        $baseWage = $this->contractService->calculateWageDemand($player, NegotiationScenario::TRANSFER)['wage'];
+        $premiumWage = $this->contractService->calculateWageDemand($player, NegotiationScenario::PRE_CONTRACT)['wage'];
 
         $this->assertGreaterThanOrEqual($baseWage, $premiumWage);
     }
@@ -202,7 +206,7 @@ class PreContractBalanceTest extends TestCase
             marketValueCents: 5_000_000_000,
         );
 
-        $premiumWage = $this->scoutingService->calculatePreContractWageDemand($player);
+        $premiumWage = $this->contractService->calculateWageDemand($player, NegotiationScenario::PRE_CONTRACT)['wage'];
 
         // Run 100 evaluations — with gap 4 (elite → local), modifier is 0.08
         // 85% × 0.08 = 6.8% → should rarely accept
@@ -228,7 +232,7 @@ class PreContractBalanceTest extends TestCase
 
         // Offer well above any possible demand to guarantee hitting the 85% base chance
         // (wage demand has ±10% internal variance, so a single calculation may not cover subsequent rolls)
-        $generousOffer = (int) ($this->scoutingService->calculatePreContractWageDemand($player) * 1.5);
+        $generousOffer = (int) ($this->contractService->calculateWageDemand($player, NegotiationScenario::PRE_CONTRACT)['wage'] * 1.5);
 
         // With no gap, modifier is 1.0 → 65% chance
         $acceptedCount = 0;
@@ -250,8 +254,8 @@ class PreContractBalanceTest extends TestCase
             marketValueCents: 1_000_000_000,
         );
 
-        $premiumWage = $this->scoutingService->calculatePreContractWageDemand($player);
-        $lowOffer = (int) ($premiumWage * 0.50); // Way below 85% threshold (even with ±10% wage variance between calls)
+        $premiumWage = $this->contractService->calculateWageDemand($player, NegotiationScenario::PRE_CONTRACT)['wage'];
+        $lowOffer = (int) ($premiumWage * 0.50); // Way below 85% threshold
 
         $result = $this->scoutingService->evaluatePreContractOffer($player, $lowOffer, $game->team);
         $this->assertFalse($result['accepted']);

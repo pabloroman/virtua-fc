@@ -4,6 +4,7 @@ namespace App\Modules\Transfer\Services;
 
 use App\Modules\Player\PlayerAge;
 use App\Modules\Squad\Services\SquadNumberService;
+use App\Modules\Transfer\Enums\NegotiationScenario;
 use App\Modules\Transfer\Enums\TransferWindowType;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\LoanService;
@@ -28,6 +29,7 @@ class TransferService
     public function __construct(
         private readonly LoanService $loanService,
         private readonly TransferCompletionService $completionService,
+        private readonly ContractService $contractService,
         private readonly DispositionService $dispositionService,
         private readonly SquadNumberService $squadNumberService,
     ) {}
@@ -501,8 +503,8 @@ class TransferService
         $resolvedOffers = collect();
 
         foreach ($pendingOffers as $offer) {
-            $wageDemand = $scoutingService->calculatePreContractWageDemand($offer->gamePlayer);
-            $evaluation = $this->dispositionService->evaluatePreContractOffer($offer->gamePlayer, $offer->offered_wage, $wageDemand, $game->team);
+            $demand = $this->contractService->calculateWageDemand($offer->gamePlayer, NegotiationScenario::PRE_CONTRACT);
+            $evaluation = $this->dispositionService->evaluatePreContractOffer($offer->gamePlayer, $offer->offered_wage, $demand['wage'], $game->team);
 
             $offer->update([
                 'status' => $evaluation['accepted'] ? TransferOffer::STATUS_AGREED : TransferOffer::STATUS_REJECTED,
@@ -1122,7 +1124,7 @@ class TransferService
                 throw new \InvalidArgumentException(__('transfers.already_bidding'));
             }
 
-            $wageDemand = $scoutingService->calculateWageDemand($player);
+            $transferDemand = $this->contractService->calculateWageDemand($player, NegotiationScenario::TRANSFER);
 
             $offer = TransferOffer::create([
                 'game_id' => $game->id,
@@ -1132,7 +1134,7 @@ class TransferService
                 'offer_type' => TransferOffer::TYPE_USER_BID,
                 'direction' => TransferOffer::DIRECTION_INCOMING,
                 'transfer_fee' => $bidCents,
-                'offered_wage' => $wageDemand,
+                'offered_wage' => $transferDemand['wage'],
                 'status' => TransferOffer::STATUS_PENDING,
                 'expires_at' => $game->current_date->addDays(30),
                 'game_date' => $game->current_date,

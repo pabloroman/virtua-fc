@@ -9,6 +9,7 @@ use App\Models\GamePlayer;
 use App\Modules\Player\PlayerAge;
 
 use App\Modules\Player\Services\PlayerDevelopmentService;
+use App\Modules\Transfer\Enums\NegotiationScenario;
 use App\Modules\Transfer\Services\ContractService;
 use App\Support\PositionSlotMapper;
 
@@ -146,9 +147,9 @@ class SquadService
             $renewalEligible = $allPlayers->filter(fn ($p) => $p->canBeOfferedRenewal($seasonEndDate))
                 ->sortBy('contract_until');
             foreach ($renewalEligible as $player) {
-                $demand = $this->contractService->calculateRenewalDemand($player);
+                $demand = $this->contractService->calculateWageDemand($player, NegotiationScenario::RENEWAL);
                 $midpoint = (int) (ceil(($player->annual_wage + $demand['wage']) / 2 / 100 / 10000) * 10000);
-                $disposition = $this->contractService->calculateDisposition($player);
+                $disposition = $this->contractService->calculateDisposition($player, NegotiationScenario::RENEWAL);
                 $mood = $this->contractService->getMoodIndicator($disposition);
                 $renewalData[$player->id] = [
                     'demand' => $demand,
