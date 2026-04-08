@@ -609,6 +609,60 @@ class DispositionService
     }
 
     // =========================================
+    // PRE-CONTRACT OFFER EVALUATION
+    // =========================================
+
+    /**
+     * Evaluate whether a player accepts a pre-contract offer based on offered wage vs demand,
+     * reputation gap, and player ambition.
+     *
+     * @return array{accepted: bool, message: string}
+     */
+    public function evaluatePreContractOffer(GamePlayer $player, int $offeredWage, int $wageDemand, Team $biddingTeam): array
+    {
+        if ($offeredWage >= $wageDemand) {
+            $baseChance = 65;
+        } elseif ($offeredWage >= (int) ($wageDemand * 0.85)) {
+            $baseChance = 25;
+        } else {
+            return [
+                'accepted' => false,
+                'message' => __('messages.pre_contract_rejected', ['player' => $player->name]),
+            ];
+        }
+
+        // Apply reputation modifier
+        $reputationModifier = $this->reputationModifier($biddingTeam, $player);
+
+        // Apply ambition modifier: top-tier players resist joining clubs below their level
+        $gameId = $player->game_id;
+        $clubReputationIndex = ClubProfile::getReputationTierIndex(
+            TeamReputation::resolveLevel($gameId, $biddingTeam->id)
+        );
+        $playerTierIndex = ($player->tier ?? 1) - 1; // normalize to 0-4
+        $tierGap = $playerTierIndex - $clubReputationIndex;
+        $ambitionModifier = $tierGap > 0
+            ? max(0.10, 1.0 - $tierGap * 0.25)
+            : 1.0;
+
+        $finalChance = (int) ($baseChance * $reputationModifier * $ambitionModifier);
+
+        $accepted = rand(1, 100) <= $finalChance;
+
+        if ($accepted) {
+            return [
+                'accepted' => true,
+                'message' => __('messages.pre_contract_accepted', ['player' => $player->name]),
+            ];
+        }
+
+        return [
+            'accepted' => false,
+            'message' => __('messages.pre_contract_rejected', ['player' => $player->name]),
+        ];
+    }
+
+    // =========================================
     // MOOD INDICATORS
     // =========================================
 

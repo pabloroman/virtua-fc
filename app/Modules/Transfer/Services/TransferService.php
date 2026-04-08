@@ -501,7 +501,8 @@ class TransferService
         $resolvedOffers = collect();
 
         foreach ($pendingOffers as $offer) {
-            $evaluation = $scoutingService->evaluatePreContractOffer($offer->gamePlayer, $offer->offered_wage, $game->team);
+            $wageDemand = $scoutingService->calculatePreContractWageDemand($offer->gamePlayer);
+            $evaluation = $this->dispositionService->evaluatePreContractOffer($offer->gamePlayer, $offer->offered_wage, $wageDemand, $game->team);
 
             $offer->update([
                 'status' => $evaluation['accepted'] ? TransferOffer::STATUS_AGREED : TransferOffer::STATUS_REJECTED,
