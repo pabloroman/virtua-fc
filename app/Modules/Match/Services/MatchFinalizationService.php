@@ -81,20 +81,8 @@ class MatchFinalizationService
      */
     private function advanceCurrentDate(Game $game, Carbon $previousDate): void
     {
-        $nextMatch = GameMatch::where('game_id', $game->id)
-            ->where('played', false)
-            ->orderBy('scheduled_date')
-            ->first();
-
-        if (! $nextMatch) {
-            return;
-        }
-
-        $game->update(['current_date' => $nextMatch->scheduled_date->toDateString()]);
-        $game->refresh();
-
-        if ($nextMatch->scheduled_date->gt($previousDate)) {
-            GameDateAdvanced::dispatch($game, $previousDate, $nextMatch->scheduled_date);
+        if ($game->advanceDateToNextMatch() && $game->current_date->gt($previousDate)) {
+            GameDateAdvanced::dispatch($game, $previousDate, $game->current_date);
         }
     }
 

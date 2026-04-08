@@ -264,6 +264,39 @@ class Game extends Model
     }
 
     // ==========================================
+    // Date Advancement
+    // ==========================================
+
+    /**
+     * Advance current_date to the next unplayed match (forward-looking).
+     *
+     * This is the single canonical way to advance the game calendar.
+     * Only moves forward — never regresses the date.
+     *
+     * @return bool Whether the date actually changed.
+     */
+    public function advanceDateToNextMatch(): bool
+    {
+        $nextMatch = GameMatch::where('game_id', $this->id)
+            ->where('played', false)
+            ->orderBy('scheduled_date')
+            ->first();
+
+        if (! $nextMatch) {
+            return false;
+        }
+
+        if ($this->current_date && $nextMatch->scheduled_date->lte($this->current_date)) {
+            return false;
+        }
+
+        $this->update(['current_date' => $nextMatch->scheduled_date->toDateString()]);
+        $this->refresh();
+
+        return true;
+    }
+
+    // ==========================================
     // Pending Actions (Game Progress Blocking)
     // ==========================================
 
