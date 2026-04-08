@@ -49,8 +49,8 @@ export function createMatchSimulation(ctx) {
         const state = ctx();
 
         if (state.phase === 'full_time' || state.phase === 'pre_match'
-            || state.phase === 'half_time' || state.phase === 'going_to_extra_time'
-            || state.phase === 'penalties') {
+            || state.phase === 'half_time' || state.phase === 'extra_time_half_time'
+            || state.phase === 'going_to_extra_time' || state.phase === 'penalties') {
             return;
         }
 
@@ -329,13 +329,11 @@ export function createMatchSimulation(ctx) {
 
         // Check if this is a knockout match and we need extra time
         if (state.isKnockout && needsExtraTime()) {
-            if (state.preloadedExtraTimeData) {
-                state.phase = 'going_to_extra_time';
-                _startETTimeout = setTimeout(() => startExtraTime(), 2000);
-            } else {
-                state.phase = 'going_to_extra_time';
+            state.phase = 'going_to_extra_time';
+            if (!state.preloadedExtraTimeData) {
                 fetchExtraTime();
             }
+            // The user must start ET via startExtraTime() or skipToEnd()
         } else {
             enterFullTime();
         }
@@ -345,12 +343,16 @@ export function createMatchSimulation(ctx) {
         const state = ctx();
         state.currentMinute = 105;
         state.phase = 'extra_time_half_time';
+        // ET half-time is a proper pause — the user must dismiss it to start
+        // the ET second half (via startETSecondHalf), or skip to end.
+    }
 
-        setTimeout(() => {
-            state.phase = 'extra_time_second_half';
-            _lastTick = performance.now();
-            _animFrame = requestAnimationFrame(tick);
-        }, 1500);
+    function startETSecondHalf() {
+        const state = ctx();
+        if (state.phase !== 'extra_time_half_time') return;
+        state.phase = 'extra_time_second_half';
+        _lastTick = performance.now();
+        _animFrame = requestAnimationFrame(tick);
     }
 
     function enterExtraTimeEnd() {
@@ -479,7 +481,7 @@ export function createMatchSimulation(ctx) {
                 resetPossessionTarget();
             }
 
-            _startETTimeout = setTimeout(() => startExtraTime(), 2000);
+            // ET data is ready — the user starts ET via startExtraTime()
         } catch (err) {
             console.error('Extra time request failed:', err);
             enterFullTime();
@@ -490,6 +492,7 @@ export function createMatchSimulation(ctx) {
 
     function startExtraTime() {
         const state = ctx();
+        if (state.phase !== 'going_to_extra_time' || state.extraTimeLoading) return;
         state.currentMinute = 91;
         state.phase = 'extra_time_first_half';
         state.lastRevealedETIndex = -1;
@@ -708,6 +711,8 @@ export function createMatchSimulation(ctx) {
 
         // Phase transitions (some called externally by confirmAllChanges / penalty module)
         startSecondHalf,
+        startExtraTime,
+        startETSecondHalf,
         enterFullTime,
 
         // Event/score methods (called by confirmAllChanges)

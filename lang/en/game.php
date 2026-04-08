@@ -270,6 +270,8 @@ return [
     'live_skip_ht' => 'HT',
     'live_skip_ft' => 'FT',
     'live_start_second_half' => 'Start 2nd Half',
+    'live_start_extra_time' => 'Start Extra Time',
+    'live_start_et_second_half' => 'Start 2nd Half ET',
     'live_other_results' => 'Others',
     'live_continue_dashboard' => 'Continue',
     'live_label' => 'Live',

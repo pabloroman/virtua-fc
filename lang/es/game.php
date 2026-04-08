@@ -270,6 +270,8 @@ return [
     'live_skip_ht' => 'DES',
     'live_skip_ft' => 'FIN',
     'live_start_second_half' => 'Iniciar 2ª Parte',
+    'live_start_extra_time' => 'Iniciar Prórroga',
+    'live_start_et_second_half' => 'Iniciar 2ª Parte PR',
     'live_other_results' => 'Otros',
     'live_continue_dashboard' => 'Continuar',
     'live_label' => 'En vivo',

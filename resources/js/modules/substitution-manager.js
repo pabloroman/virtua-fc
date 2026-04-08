@@ -39,9 +39,10 @@ export function createSubstitutionManager(ctx) {
     }
 
     function getWindowsUsed() {
-        // Half-time subs (minute 45) don't count as a window
+        // Half-time subs (minute 45 / ET minute 105) don't count as a window
         const minutes = new Set(ctx().substitutionsMade.map(s => s.minute));
         minutes.delete(45);
+        minutes.delete(105);
         return minutes.size;
     }
 

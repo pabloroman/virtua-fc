@@ -169,7 +169,7 @@
                                 </div>
 
                                 {{-- Free half-time window indicator --}}
-                                <div x-show="phase === 'half_time'" x-transition class="flex items-center gap-2.5 p-3 mb-4 bg-accent-green/10 border border-accent-green/20 rounded-lg">
+                                <div x-show="phase === 'half_time' || phase === 'extra_time_half_time' || phase === 'going_to_extra_time'" x-transition class="flex items-center gap-2.5 p-3 mb-4 bg-accent-green/10 border border-accent-green/20 rounded-lg">
                                     <span class="flex items-center justify-center w-8 h-8 rounded-full bg-accent-green/10 shrink-0">
                                         <svg class="w-4 h-4 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
