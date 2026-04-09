@@ -8,7 +8,6 @@ use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\ShortlistedPlayer;
 use App\Models\TransferOffer;
-use App\Support\FakeSecondaryPositions;
 use App\Support\Money;
 use App\Support\PositionMapper;
 use Illuminate\Http\Request;
@@ -77,7 +76,7 @@ class ShowScoutingHub
                 'positionAbbr' => $positionDisplay['abbreviation'],
                 'positionBg' => $positionDisplay['bg'],
                 'positionText' => $positionDisplay['text'],
-                'secondaryPositions' => collect(FakeSecondaryPositions::for($gp->id, $gp->position))
+                'positions' => collect($gp->positions)
                     ->map(fn ($pos) => PositionMapper::getPositionDisplay($pos))
                     ->values()
                     ->all(),

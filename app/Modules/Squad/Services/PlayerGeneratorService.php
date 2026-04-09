@@ -13,6 +13,7 @@ use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Player\Services\InjuryService;
 use App\Modules\Player\Services\PlayerDevelopmentService;
 use App\Modules\Player\Services\PlayerTierService;
+use App\Support\PositionSlotMapper;
 use App\Modules\Player\Services\PlayerValuationService;
 
 /**
@@ -122,7 +123,7 @@ class PlayerGeneratorService
             'player_id' => $player->id,
             'team_id' => $data->teamId,
             'position' => $data->position,
-            'secondary_positions' => [],
+            'secondary_positions' => $this->generatePositions($data->position),
             'market_value_cents' => $marketValue,
             'contract_until' => $contractUntil,
             'annual_wage' => $annualWage,
@@ -549,6 +550,39 @@ class PlayerGeneratorService
         }
 
         return $this->identityPool;
+    }
+
+    /**
+     * Generate positions array for a computer-generated player.
+     *
+     * Always includes the primary position. ~50% get no extras,
+     * ~40% get one adjacent position, ~10% get two.
+     *
+     * @return string[]
+     */
+    private function generatePositions(string $position): array
+    {
+        $adjacent = PositionSlotMapper::getAdjacentPositions($position);
+        if (empty($adjacent)) {
+            return [$position];
+        }
+
+        $rand = random_int(0, 99);
+        if ($rand < 50) {
+            return [$position];
+        }
+
+        $pick1 = $adjacent[array_rand($adjacent)];
+        if ($rand < 90) {
+            return [$position, $pick1];
+        }
+
+        $remaining = array_values(array_diff($adjacent, [$pick1]));
+        if (empty($remaining)) {
+            return [$position, $pick1];
+        }
+
+        return [$position, $pick1, $remaining[array_rand($remaining)]];
     }
 
 }

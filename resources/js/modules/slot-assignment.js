@@ -1,16 +1,20 @@
 /**
- * Get per-player compatibility score for a specific slot, considering secondary positions.
+ * Get per-player compatibility score for a specific slot.
  *
- * @param {Object} player - Player data with position and optional secondaryPositions
+ * Iterates all positions the player can play (player.positions) and returns
+ * the best compatibility score. Falls back to player.position if positions
+ * array is not available.
+ *
+ * @param {Object} player - Player data with positions array
  * @param {string} slotLabel - The slot code (e.g., 'CB', 'DM', 'CM')
  * @param {Object} slotCompatibility - Compatibility matrix { slotLabel: { position: score } }
- * @returns {number} Best compatibility score across primary and secondary positions
+ * @returns {number} Best compatibility score across all positions
  */
 export function getPlayerCompatibility(player, slotLabel, slotCompatibility) {
-    let best = slotCompatibility[slotLabel]?.[player.position] ?? 0;
-    for (const secPos of (player.secondaryPositions || [])) {
-        const secScore = slotCompatibility[slotLabel]?.[secPos] ?? 0;
-        if (secScore > best) best = secScore;
+    let best = 0;
+    for (const pos of (player.positions || [player.position])) {
+        const score = slotCompatibility[slotLabel]?.[pos] ?? 0;
+        if (score > best) best = score;
     }
     return best;
 }

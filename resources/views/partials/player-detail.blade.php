@@ -24,8 +24,6 @@
         'declining' => __('squad.declining'),
     ];
 
-    $secondaryPositions = \App\Support\FakeSecondaryPositions::for($gamePlayer->id, $gamePlayer->position);
-
     $overallColor = match(true) {
         $gamePlayer->overall_score >= 80 => 'bg-accent-green',
         $gamePlayer->overall_score >= 70 => 'bg-lime-500',
@@ -38,9 +36,8 @@
 <div class="px-5 py-4 border-b border-border-default flex items-center justify-between">
     <div class="flex items-center gap-3 min-w-0">
         <div class="flex items-center gap-1 shrink-0">
-            <x-position-badge :position="$gamePlayer->position" />
-            @foreach($secondaryPositions as $secPos)
-                <x-position-badge :position="$secPos" size="sm" />
+            @foreach($gamePlayer->positions as $pos)
+                <x-position-badge :position="$pos" />
             @endforeach
         </div>
         <h3 class="font-heading text-lg font-semibold text-text-primary truncate">{{ $gamePlayer->name }}</h3>
@@ -79,14 +76,9 @@
                 <span>{{ $gamePlayer->age($game->current_date) }} {{ __('app.years') }}@if($gamePlayer->player->height) · {{ $gamePlayer->player->height }}@endif</span>
             </div>
             <div class="text-[11px] text-text-faint mt-1">
-                {{ $gamePlayer->position_name }}
-                @if(!empty($secondaryPositions))
-                    <span class="text-text-faint/60">·</span>
-                    <span class="text-text-muted">{{ __('squad.also_plays') }}</span>
-                    @foreach($secondaryPositions as $secPos)
-                        <span class="text-text-secondary">{{ \App\Support\PositionMapper::toDisplayName($secPos) }}</span>@if(!$loop->last)<span class="text-text-faint/60">,</span>@endif
-                    @endforeach
-                @endif
+                @foreach($gamePlayer->positions as $pos)
+                    <span class="text-text-secondary">{{ \App\Support\PositionMapper::toDisplayName($pos) }}</span>@if(!$loop->last)<span class="text-text-faint/60">·</span>@endif
+                @endforeach
             </div>
 
             {{-- Status badges --}}
