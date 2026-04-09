@@ -300,14 +300,10 @@
                                                             : 'bg-surface-800 border border-border-strong hover:border-border-strong text-text-body'"
                                                     >
                                                         <div class="flex items-center gap-0.5 shrink-0">
-                                                            <span class="inline-flex items-center justify-center w-7 h-7 text-xs -skew-x-12 font-semibold text-white"
-                                                                  :class="getPositionBadgeColor(player.positionGroup)">
-                                                                <span class="skew-x-12" x-text="player.positionAbbr"></span>
-                                                            </span>
-                                                            <template x-for="secPos in (player.secondaryPositions || []).slice(0, 2)" :key="secPos">
-                                                                <span class="inline-flex items-center justify-center w-5 h-5 text-[10px] -skew-x-12 font-semibold"
-                                                                      :class="getSecondaryBadgeClasses(secPos)">
-                                                                    <span class="skew-x-12" x-text="getSecondaryAbbr(secPos)"></span>
+                                                            <template x-for="pos in (player.positions || [player.position])" :key="pos">
+                                                                <span class="inline-flex items-center justify-center w-7 h-7 text-xs -skew-x-12 font-semibold text-white"
+                                                                      :class="getSecondaryBadgeClasses(pos)">
+                                                                    <span class="skew-x-12" x-text="getSecondaryAbbr(pos)"></span>
                                                                 </span>
                                                             </template>
                                                         </div>

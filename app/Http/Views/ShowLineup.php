@@ -11,7 +11,6 @@ use App\Modules\Lineup\Enums\PressingIntensity;
 use App\Modules\Lineup\Services\LineupService;
 
 use App\Models\Game;
-use App\Support\FakeSecondaryPositions;
 use App\Support\PitchGrid;
 use App\Support\PositionSlotMapper;
 use App\Support\TeamColors;
@@ -97,7 +96,7 @@ class ShowLineup
                 'position' => $p->position,
                 'positionGroup' => $p->position_group,
                 'positionAbbr' => $p->position_abbreviation,
-                'secondaryPositions' => FakeSecondaryPositions::for($p->id, $p->position),
+                'positions' => $p->positions,
                 'overallScore' => $p->overall_score,
                 'technicalAbility' => $p->technical_ability,
                 'physicalAbility' => $p->physical_ability,

@@ -15,7 +15,6 @@ use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\PlayerSuspension;
 use App\Modules\Match\Services\MatchResimulationService;
-use App\Support\FakeSecondaryPositions;
 use App\Support\PitchGrid;
 use App\Support\PositionMapper;
 use App\Support\PositionSlotMapper;
@@ -131,7 +130,7 @@ class ShowLiveMatch
                 'positionAbbr' => PositionMapper::toAbbreviation($p->position),
                 'positionGroup' => $p->position_group,
                 'positionSort' => LineupService::positionSortOrder($p->position),
-                'secondaryPositions' => FakeSecondaryPositions::for($p->id, $p->position),
+                'positions' => $p->positions,
                 'physicalAbility' => $p->physical_ability,
                 'technicalAbility' => $p->technical_ability,
                 'age' => $p->age($currentDate),
@@ -170,7 +169,7 @@ class ShowLiveMatch
                 'positionAbbr' => PositionMapper::toAbbreviation($p->position),
                 'positionGroup' => $p->position_group,
                 'positionSort' => LineupService::positionSortOrder($p->position),
-                'secondaryPositions' => FakeSecondaryPositions::for($p->id, $p->position),
+                'positions' => $p->positions,
                 'physicalAbility' => $p->physical_ability,
                 'technicalAbility' => $p->technical_ability,
                 'age' => $p->age($currentDate),

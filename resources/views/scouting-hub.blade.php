@@ -229,12 +229,9 @@
                                                 <div class="flex items-center gap-3 cursor-pointer" @click="toggleExpand(player)">
                                                     {{-- Position badges --}}
                                                     <div class="flex items-center gap-1 shrink-0">
-                                                        <span :class="player.positionBg + ' ' + player.positionText + ' inline-flex items-center justify-center w-7 h-7 text-xs -skew-x-12 font-semibold'">
-                                                            <span class="skew-x-12" x-text="player.positionAbbr"></span>
-                                                        </span>
-                                                        <template x-for="secPos in (player.secondaryPositions || [])" :key="secPos.abbreviation">
-                                                            <span :class="secPos.bg + ' ' + secPos.text + ' inline-flex items-center justify-center w-5 h-5 text-[10px] -skew-x-12 font-semibold'">
-                                                                <span class="skew-x-12" x-text="secPos.abbreviation"></span>
+                                                        <template x-for="pos in (player.positions || [])" :key="pos.abbreviation">
+                                                            <span :class="pos.bg + ' ' + pos.text + ' inline-flex items-center justify-center w-7 h-7 text-xs -skew-x-12 font-semibold'">
+                                                                <span class="skew-x-12" x-text="pos.abbreviation"></span>
                                                             </span>
                                                         </template>
                                                     </div>

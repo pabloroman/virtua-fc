@@ -188,6 +188,22 @@ class GamePlayer extends Model
     ];
 
     /**
+     * All positions this player can play.
+     *
+     * The secondary_positions column stores the full list (including primary).
+     * Falls back to the primary position when secondary_positions is empty
+     * (e.g. computer-generated players or legacy data).
+     *
+     * @return string[]
+     */
+    public function getPositionsAttribute(): array
+    {
+        $positions = $this->secondary_positions ?? [];
+
+        return !empty($positions) ? $positions : [$this->position];
+    }
+
+    /**
      * Check if player has announced retirement.
      */
     public function isRetiring(): bool

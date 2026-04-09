@@ -42,7 +42,6 @@
         presets: @js($presetsConfig),
         translations: {
             natural: '{{ __('squad.natural') }}',
-            naturalSecondary: '{{ __('squad.natural_secondary') }}',
             veryGood: '{{ __('squad.very_good') }}',
             good: '{{ __('squad.good') }}',
             okay: '{{ __('squad.okay') }}',
@@ -275,7 +274,6 @@
                                                     $competitionId,
                                                 );
                                                 $posGroup = \App\Support\PositionMapper::getPositionGroup($player->position);
-                                                $secondaryPositions = \App\Support\FakeSecondaryPositions::for($player->id, $player->position);
                                             @endphp
                                             <div
                                                 x-show="posTab === 'all' || posTab === '{{ $posGroup }}'"
@@ -301,9 +299,8 @@
                                                         </div>
                                                         <div class="flex items-center gap-2 mt-0.5">
                                                             <div class="flex items-center gap-0.5">
-                                                                <x-position-badge :position="$player->position" size="sm" />
-                                                                @foreach($secondaryPositions as $secPos)
-                                                                    <x-position-badge :position="$secPos" size="sm" />
+                                                                @foreach($player->positions as $pos)
+                                                                    <x-position-badge :position="$pos" size="sm" />
                                                                 @endforeach
                                                             </div>
                                                             @if(!$isUnavailable)

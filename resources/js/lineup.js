@@ -305,18 +305,12 @@ export default function lineupManager(config) {
 
         getCompatibilityDisplay(positionOrPlayerId, slotCode) {
             const score = this.getSlotCompatibility(positionOrPlayerId, slotCode);
-            // Check if compatibility comes from a secondary position
-            const player = this.playersData[positionOrPlayerId];
-            const isSecondary = player
-                && (this.slotCompatibility[slotCode]?.[player.position] ?? 0) < score
-                && (player.secondaryPositions || []).some(sp => (this.slotCompatibility[slotCode]?.[sp] ?? 0) >= score);
-
-            if (score >= 100) return { label: isSecondary ? this.translations.naturalSecondary : this.translations.natural, class: 'text-green-600', ring: 'ring-green-500', score, isSecondary };
-            if (score >= 80) return { label: this.translations.veryGood, class: 'text-emerald-600', ring: 'ring-emerald-500', score, isSecondary };
-            if (score >= 60) return { label: this.translations.good, class: 'text-lime-600', ring: 'ring-lime-500', score, isSecondary };
-            if (score >= 40) return { label: this.translations.okay, class: 'text-yellow-600', ring: 'ring-yellow-500', score, isSecondary };
-            if (score >= 20) return { label: this.translations.poor, class: 'text-orange-500', ring: 'ring-orange-500', score, isSecondary };
-            return { label: this.translations.unsuitable, class: 'text-red-600', ring: 'ring-red-500', score, isSecondary: false };
+            if (score >= 100) return { label: this.translations.natural, class: 'text-green-600', ring: 'ring-green-500', score };
+            if (score >= 80) return { label: this.translations.veryGood, class: 'text-emerald-600', ring: 'ring-emerald-500', score };
+            if (score >= 60) return { label: this.translations.good, class: 'text-lime-600', ring: 'ring-lime-500', score };
+            if (score >= 40) return { label: this.translations.okay, class: 'text-yellow-600', ring: 'ring-yellow-500', score };
+            if (score >= 20) return { label: this.translations.poor, class: 'text-orange-500', ring: 'ring-orange-500', score };
+            return { label: this.translations.unsuitable, class: 'text-red-600', ring: 'ring-red-500', score };
         },
 
         isSelected(id) { return this.selectedPlayers.includes(id) },
