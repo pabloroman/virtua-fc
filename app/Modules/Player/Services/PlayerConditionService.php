@@ -129,11 +129,13 @@ class PlayerConditionService
      * players lose energy proportionally to their starting fitness,
      * based on physical ability, age, and position (GK multiplier).
      *
-     * Recovery uses the same nonlinear formula: faster when far below 100,
-     * slow near the top. Weekly matches recover to ~100; congested periods
-     * (every 3 days) stabilize around 75-85 starting energy.
+     * Recovery is based on the estimated post-match energy level so that
+     * the nonlinear formula correctly accelerates recovery from the low
+     * energy state after a match. This ensures:
+     * - Weekly matches: full recovery to 100
+     * - Congested periods (3 days): stabilize around 75-80 starting energy
      *
-     * Formula: recoveryRate = base × physicalMod × (1 + scaling × (100 − fitness) / 100)
+     * Formula: recoveryRate = base × physicalMod × (1 + scaling × (100 − postMatchEnergy) / 100)
      */
     private function calculateFitnessChange(GamePlayer $player, bool $playedMatch, int $daysSinceLastMatch, Carbon $currentDate): int
     {
@@ -145,12 +147,9 @@ class PlayerConditionService
         $scaling = $config['recovery_scaling'];
         $maxRecoveryDays = $config['max_recovery_days'];
         $physicalModifier = $this->getPhysicalRecoveryModifier($player, $config);
-
         $effectiveBase = $baseRecovery * $physicalModifier;
-        $recoveryRate = $effectiveBase * (1 + $scaling * (self::MAX_FITNESS - $currentFitness) / 100);
 
         $recoveryDays = min($daysSinceLastMatch, $maxRecoveryDays);
-        $recovery = (int) round($recoveryRate * $recoveryDays);
 
         if ($playedMatch) {
             // Energy-drain-based loss: use EnergyCalculator to determine
@@ -173,8 +172,19 @@ class PlayerConditionService
 
             $loss = (int) round(($currentFitness - $endingEnergy) * $ageModifier);
 
+            // Recovery is based on estimated post-match energy, not current fitness.
+            // After playing, the player is at low energy and recovers faster from there.
+            // This correctly models: play match → drop to ~60% → recover over N days.
+            $estimatedPostMatch = max(self::MIN_FITNESS, $currentFitness - $loss);
+            $recoveryRate = $effectiveBase * (1 + $scaling * (self::MAX_FITNESS - $estimatedPostMatch) / 100);
+            $recovery = (int) round($recoveryRate * $recoveryDays);
+
             return $recovery - $loss;
         }
+
+        // Non-playing players: recovery only, based on current fitness
+        $recoveryRate = $effectiveBase * (1 + $scaling * (self::MAX_FITNESS - $currentFitness) / 100);
+        $recovery = (int) round($recoveryRate * $recoveryDays);
 
         return $recovery;
     }
