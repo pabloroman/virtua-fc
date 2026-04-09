@@ -227,10 +227,17 @@
                                             <div class="px-4 md:px-5 py-3 hover:bg-surface-700/50">
                                                 {{-- Player Summary Row --}}
                                                 <div class="flex items-center gap-3 cursor-pointer" @click="toggleExpand(player)">
-                                                    {{-- Position badge --}}
-                                                    <span :class="player.positionBg + ' ' + player.positionText + ' inline-flex items-center justify-center w-7 h-7 text-xs -skew-x-12 font-semibold'">
-                                                        <span class="skew-x-12" x-text="player.positionAbbr"></span>
-                                                    </span>
+                                                    {{-- Position badges --}}
+                                                    <div class="flex items-center gap-1 shrink-0">
+                                                        <span :class="player.positionBg + ' ' + player.positionText + ' inline-flex items-center justify-center w-7 h-7 text-xs -skew-x-12 font-semibold'">
+                                                            <span class="skew-x-12" x-text="player.positionAbbr"></span>
+                                                        </span>
+                                                        <template x-for="secPos in (player.secondaryPositions || [])" :key="secPos.abbreviation">
+                                                            <span :class="secPos.bg + ' ' + secPos.text + ' ' + secPos.ring + ' inline-flex items-center justify-center w-5 h-5 text-[10px] -skew-x-12 font-semibold'">
+                                                                <span class="skew-x-12" x-text="secPos.abbreviation"></span>
+                                                            </span>
+                                                        </template>
+                                                    </div>
                                                     {{-- Name, age, team --}}
                                                     <div class="min-w-0 flex-1">
                                                         <div class="flex items-center gap-2 flex-wrap">

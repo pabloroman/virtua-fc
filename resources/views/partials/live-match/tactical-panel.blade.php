@@ -299,10 +299,18 @@
                                                             ? 'bg-accent-green/10 border border-green-300 text-green-800'
                                                             : 'bg-surface-800 border border-border-strong hover:border-border-strong text-text-body'"
                                                     >
-                                                        <span class="inline-flex items-center justify-center w-7 h-7 text-xs -skew-x-12 font-semibold text-white shrink-0"
-                                                              :class="getPositionBadgeColor(player.positionGroup)">
-                                                            <span class="skew-x-12" x-text="player.positionAbbr"></span>
-                                                        </span>
+                                                        <div class="flex items-center gap-0.5 shrink-0">
+                                                            <span class="inline-flex items-center justify-center w-7 h-7 text-xs -skew-x-12 font-semibold text-white"
+                                                                  :class="getPositionBadgeColor(player.positionGroup)">
+                                                                <span class="skew-x-12" x-text="player.positionAbbr"></span>
+                                                            </span>
+                                                            <template x-for="secPos in (player.secondaryPositions || []).slice(0, 2)" :key="secPos">
+                                                                <span class="inline-flex items-center justify-center w-5 h-5 text-[10px] -skew-x-12 font-semibold"
+                                                                      :class="getSecondaryBadgeClasses(secPos)">
+                                                                    <span class="skew-x-12" x-text="getSecondaryAbbr(secPos)"></span>
+                                                                </span>
+                                                            </template>
+                                                        </div>
                                                         <span class="flex-1 truncate font-medium" x-text="player.name"></span>
                                                         {{-- Energy bar for bench players (shows fitness = starting energy) --}}
                                                         <span class="flex items-center gap-1 shrink-0">

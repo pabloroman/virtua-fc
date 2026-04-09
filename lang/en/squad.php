@@ -76,11 +76,15 @@ return [
 
     // Compatibility
     'natural' => 'Natural',
+    'natural_secondary' => 'Natural (2nd)',
     'very_good' => 'Very Good',
     'good' => 'Good',
     'okay' => 'Okay',
     'poor' => 'Poor',
     'unsuitable' => 'Unsuitable',
+
+    // Secondary positions
+    'also_plays' => 'Also plays',
 
     // Lineup editor
     'pitch' => 'Pitch',
