@@ -6,13 +6,8 @@ use App\Modules\Competition\Services\CountryConfig;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Services\SeasonSetupPipeline;
-use App\Modules\Transfer\Services\ContractService;
-use App\Modules\Player\Services\InjuryService;
-use App\Modules\Player\Services\PlayerDevelopmentService;
-use App\Modules\Player\Services\PlayerTierService;
 use App\Modules\Season\Processors\LeagueFixtureProcessor;
 use App\Modules\Season\Processors\StandingsResetProcessor;
-use App\Support\Money;
 use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\CompetitionEntry;
@@ -42,11 +37,7 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
         return $this->gameId;
     }
 
-    private bool $usedTemplates = false;
     private Carbon $currentDate;
-
-    /** @var array<string, list<string>> Transfermarkt ID → secondary positions */
-    private ?array $secondaryPositionsMap = null;
 
     public function __construct(
         public string $gameId,
@@ -59,8 +50,6 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
     }
 
     public function handle(
-        ContractService $contractService,
-        PlayerDevelopmentService $developmentService,
         SeasonSetupPipeline $setupPipeline,
         LeagueFixtureProcessor $fixtureProcessor,
         StandingsResetProcessor $standingsProcessor,
@@ -79,8 +68,8 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
         // Step 1b: Initialize per-game reputation records for all teams
         $this->initializeTeamReputations();
 
-        // Step 2: Initialize game players (template-based or fallback)
-        $this->initializeGamePlayersFromTemplates($contractService, $developmentService);
+        // Step 2: Initialize game players from templates (required)
+        $this->initializeGamePlayersFromTemplates();
 
         // Step 3: Run shared setup processors
         if ($this->gameMode === Game::MODE_CAREER) {
@@ -97,12 +86,6 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
             );
 
             $setupPipeline->run($game->refresh(), $data);
-
-            // Initialize players for Swiss format competitions (non-template path only)
-            if (!$this->usedTemplates) {
-                $allPlayers = $this->loadPlayerLookup();
-                $this->initializeSwissFormatPlayers($allTeams, $allPlayers, $contractService, $developmentService);
-            }
         } else {
             // Non-career mode: only fixtures + standings (no budget/cups)
             $data = new SeasonTransitionData(
@@ -114,11 +97,6 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
 
             $fixtureProcessor->process($game, $data);
             $standingsProcessor->process($game, $data);
-        }
-
-        // Compute tiers for players when templates weren't used (fallback + Swiss)
-        if (!$this->usedTemplates) {
-            app(PlayerTierService::class)->recomputeAllTiersForGame($this->gameId);
         }
 
         // Mark setup as complete
@@ -243,15 +221,6 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
             ->keyBy('transfermarkt_id');
     }
 
-    private function loadPlayerLookup(): Collection
-    {
-        return DB::table('players')
-            ->select('id', 'transfermarkt_id', 'technical_ability', 'physical_ability', 'date_of_birth')
-            ->whereNotNull('transfermarkt_id')
-            ->get()
-            ->keyBy('transfermarkt_id');
-    }
-
     /**
      * Build Swiss pot data from JSON for all Swiss competitions (initial season only).
      *
@@ -303,75 +272,13 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
     }
 
     /**
-     * Initialize players for Swiss format competitions (fallback path only).
-     * Skipped when templates are used since all players are already loaded.
+     * Initialize game players from pre-computed templates.
+     * Templates must exist — fails if they don't.
      */
-    private function initializeSwissFormatPlayers(
-        Collection $allTeams,
-        Collection $allPlayers,
-        ContractService $contractService,
-        PlayerDevelopmentService $developmentService,
-    ): void {
-        $countryConfig = app(CountryConfig::class);
-        $game = Game::find($this->gameId);
-        $countryCode = $game->country ?? 'ES';
-
-        $swissIds = $countryConfig->swissFormatCompetitionIds($countryCode);
-
-        foreach ($swissIds as $competitionId) {
-            $teamsFilePath = base_path("data/{$this->season}/{$competitionId}/teams.json");
-            if (!file_exists($teamsFilePath)) {
-                continue;
-            }
-
-            $teamsData = json_decode(file_get_contents($teamsFilePath), true);
-            $clubs = $teamsData['clubs'] ?? [];
-            $minimumWage = $contractService->getMinimumWageForCompetition($competitionId);
-
-            foreach ($clubs as $club) {
-                $transfermarktId = $club['id'] ?? null;
-                if (!$transfermarktId) {
-                    continue;
-                }
-
-                $team = $allTeams->get($transfermarktId);
-                if (!$team) {
-                    continue;
-                }
-
-                // Skip teams that already have game players (e.g., Spanish teams from ESP1)
-                if (GamePlayer::where('game_id', $this->gameId)->where('team_id', $team->id)->exists()) {
-                    continue;
-                }
-
-                $playersData = $club['players'] ?? [];
-                $playerRows = [];
-
-                foreach ($playersData as $playerData) {
-                    $row = $this->prepareGamePlayerRow($team, $playerData, $minimumWage, $allPlayers, $contractService, $developmentService, $this->currentDate);
-                    if ($row) {
-                        $playerRows[] = $row;
-                    }
-                }
-
-                foreach (array_chunk($playerRows, 100) as $chunk) {
-                    GamePlayer::insert($chunk);
-                }
-            }
-        }
-    }
-
-    /**
-     * Initialize game players from pre-computed templates, falling back to
-     * the old per-player computation if templates don't exist.
-     */
-    private function initializeGamePlayersFromTemplates(
-        ContractService $contractService,
-        PlayerDevelopmentService $developmentService,
-    ): void {
+    private function initializeGamePlayersFromTemplates(): void
+    {
         // Idempotency: skip if players already exist
         if (GamePlayer::where('game_id', $this->gameId)->exists()) {
-            $this->usedTemplates = true; // assume templates if players exist
             return;
         }
 
@@ -380,14 +287,11 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
             ->exists();
 
         if (!$hasTemplates) {
-            // Fallback: load lightweight lookups only when needed
-            $allTeams = $this->loadTeamLookup();
-            $allPlayers = $this->loadPlayerLookup();
-            $this->initializeGamePlayers($allTeams, $allPlayers, $contractService, $developmentService);
-            return;
+            throw new \RuntimeException(
+                "No game_player_templates found for season {$this->season}. "
+                . 'Run php artisan app:refresh-player-templates first.'
+            );
         }
-
-        $this->usedTemplates = true;
 
         $gameId = $this->gameId;
 
@@ -430,209 +334,5 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
                     GamePlayer::insertOrIgnore($rows);
                 }
             });
-    }
-
-    // =====================================================================
-    // Fallback methods — used when game_player_templates table is empty
-    // =====================================================================
-
-    /**
-     * Initialize game players for all teams, following the config-driven
-     * dependency order: playable tiers → transfer pool → continental.
-     */
-    private function initializeGamePlayers(
-        Collection $allTeams,
-        Collection $allPlayers,
-        ContractService $contractService,
-        PlayerDevelopmentService $developmentService,
-    ): void {
-        $countryConfig = app(CountryConfig::class);
-        $game = Game::find($this->gameId);
-        $countryCode = $game->country ?? 'ES';
-
-        $competitionIds = $countryConfig->playerInitializationOrder($countryCode);
-        $continentalIds = $countryConfig->continentalSupportIds($countryCode);
-
-        foreach ($competitionIds as $competitionId) {
-            if (in_array($competitionId, $continentalIds)) {
-                continue;
-            }
-
-            $this->initializeGamePlayersForCompetition(
-                $competitionId,
-                $allTeams,
-                $allPlayers,
-                $contractService,
-                $developmentService,
-            );
-        }
-    }
-
-    private function initializeGamePlayersForCompetition(
-        string $competitionId,
-        Collection $allTeams,
-        Collection $allPlayers,
-        ContractService $contractService,
-        PlayerDevelopmentService $developmentService,
-    ): void {
-        $basePath = base_path("data/{$this->season}/{$competitionId}");
-        $teamsFilePath = "{$basePath}/teams.json";
-
-        if (file_exists($teamsFilePath)) {
-            $clubs = $this->loadClubsFromTeamsJson($teamsFilePath);
-        } else {
-            $clubs = $this->loadClubsFromTeamPoolFiles($basePath);
-        }
-
-        if (empty($clubs)) {
-            return;
-        }
-
-        $minimumWage = $contractService->getMinimumWageForCompetition($competitionId);
-
-        foreach ($clubs as $club) {
-            $transfermarktId = $club['transfermarktId'] ?? $this->extractTransfermarktIdFromImage($club['image'] ?? '');
-            if (!$transfermarktId) {
-                continue;
-            }
-
-            $team = $allTeams->get($transfermarktId);
-            if (!$team) {
-                continue;
-            }
-
-            $playerRows = [];
-            $playersData = $club['players'] ?? [];
-            foreach ($playersData as $playerData) {
-                $row = $this->prepareGamePlayerRow($team, $playerData, $minimumWage, $allPlayers, $contractService, $developmentService, $this->currentDate);
-                if ($row) {
-                    $playerRows[] = $row;
-                }
-            }
-
-            if (!empty($playerRows)) {
-                GamePlayer::insert($playerRows);
-            }
-        }
-    }
-
-    private function prepareGamePlayerRow(
-        object $team,
-        array $playerData,
-        int $minimumWage,
-        Collection $allPlayers,
-        ContractService $contractService,
-        PlayerDevelopmentService $developmentService,
-        Carbon $currentDate,
-    ): ?array {
-        $player = $allPlayers->get($playerData['id']);
-        if (!$player) {
-            return null;
-        }
-
-        $contractUntil = null;
-        if (!empty($playerData['contract'])) {
-            try {
-                $parsed = Carbon::parse($playerData['contract']);
-                $year = $parsed->month > 6 ? $parsed->year + 1 : $parsed->year;
-                $contractUntil = Carbon::createFromDate($year, 6, 30)->toDateString();
-            } catch (\Exception $e) {
-                // Ignore invalid dates
-            }
-        }
-
-        $age = (int) Carbon::parse($player->date_of_birth)->diffInYears($currentDate);
-        $marketValueCents = Money::parseMarketValue($playerData['marketValue'] ?? null);
-        $annualWage = $contractService->calculateAnnualWage($marketValueCents, $minimumWage, $age);
-
-        $currentAbility = (int) round(
-            ($player->technical_ability + $player->physical_ability) / 2
-        );
-        $potentialData = $developmentService->generatePotential(
-            $age,
-            $currentAbility
-        );
-
-        $secondaryPositions = $this->getSecondaryPositions($playerData['id']);
-
-        return [
-            'id' => Str::uuid()->toString(),
-            'game_id' => $this->gameId,
-            'player_id' => $player->id,
-            'team_id' => $team->id,
-            'number' => isset($playerData['number']) ? (int) $playerData['number'] : null,
-            'position' => $playerData['position'] ?? 'Unknown',
-            'secondary_positions' => json_encode($secondaryPositions),
-            'market_value' => $playerData['marketValue'] ?? null,
-            'market_value_cents' => $marketValueCents,
-            'contract_until' => $contractUntil,
-            'annual_wage' => $annualWage,
-            'fitness' => rand(90, 100),
-            'morale' => rand(65, 80),
-            'durability' => InjuryService::generateDurability(),
-            'game_technical_ability' => $player->technical_ability,
-            'game_physical_ability' => $player->physical_ability,
-            'potential' => $potentialData['potential'],
-            'potential_low' => $potentialData['low'],
-            'potential_high' => $potentialData['high'],
-            'season_appearances' => 0,
-        ];
-    }
-
-    private function loadClubsFromTeamsJson(string $teamsFilePath): array
-    {
-        $data = json_decode(file_get_contents($teamsFilePath), true);
-        return $data['clubs'] ?? [];
-    }
-
-    private function loadClubsFromTeamPoolFiles(string $basePath): array
-    {
-        $clubs = [];
-
-        foreach (glob("{$basePath}/*.json") as $filePath) {
-            $data = json_decode(file_get_contents($filePath), true);
-            if (!$data) {
-                continue;
-            }
-
-            $clubs[] = [
-                'image' => $data['image'] ?? '',
-                'transfermarktId' => $this->extractTransfermarktIdFromImage($data['image'] ?? ''),
-                'players' => $data['players'] ?? [],
-            ];
-        }
-
-        return $clubs;
-    }
-
-    private function extractTransfermarktIdFromImage(string $imageUrl): ?string
-    {
-        if (preg_match('/\/(\d+)\.png$/', $imageUrl, $matches)) {
-            return $matches[1];
-        }
-        return null;
-    }
-
-    /**
-     * Get secondary positions for a player by Transfermarkt ID.
-     *
-     * @return list<string>
-     */
-    private function getSecondaryPositions(string $transfermarktId): array
-    {
-        if ($this->secondaryPositionsMap === null) {
-            $path = base_path('data/players/player_positions_ES.json');
-            if (!file_exists($path)) {
-                $this->secondaryPositionsMap = [];
-            } else {
-                $entries = json_decode(file_get_contents($path), true);
-                $this->secondaryPositionsMap = [];
-                foreach ($entries as $entry) {
-                    $this->secondaryPositionsMap[$entry['id']] = $entry['positions'] ?? [];
-                }
-            }
-        }
-
-        return $this->secondaryPositionsMap[$transfermarktId] ?? [];
     }
 }

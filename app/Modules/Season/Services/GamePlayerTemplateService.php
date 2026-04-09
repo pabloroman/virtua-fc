@@ -497,16 +497,14 @@ class GamePlayerTemplateService
      */
     private function loadSecondaryPositionsMap(): array
     {
-        $path = base_path('data/players/player_positions_ES.json');
-        if (!file_exists($path)) {
-            return [];
-        }
-
-        $entries = json_decode(file_get_contents($path), true);
+        $files = glob(base_path('data/players/player_positions_*.json'));
         $map = [];
 
-        foreach ($entries as $entry) {
-            $map[$entry['id']] = $entry['positions'] ?? [];
+        foreach ($files as $file) {
+            $entries = json_decode(file_get_contents($file), true);
+            foreach ($entries as $entry) {
+                $map[$entry['id']] = $entry['positions'] ?? [];
+            }
         }
 
         return $map;
