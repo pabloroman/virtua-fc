@@ -198,9 +198,9 @@
             </div>
             <h2 class="text-3xl font-bold text-text-primary mb-2">{{ __('game.other_competitions_in_progress') }}</h2>
             <p class="text-text-muted mb-8">{{ __('game.other_competitions_desc') }}</p>
-            <form action="{{ route('game.advance', $game->id) }}" method="POST">
+            <form action="{{ route('game.advance', $game->id) }}" method="POST" x-data="{ submitting: false }" @submit="if (submitting) { $event.preventDefault(); return; } submitting = true">
                 @csrf
-                <x-primary-button color="red">
+                <x-primary-button color="red" x-bind:disabled="submitting">
                     {{ __('game.advance_other_matches') }}
                 </x-primary-button>
             </form>

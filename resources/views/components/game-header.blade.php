@@ -109,7 +109,7 @@
                         @elseif($continueToHome)
                             <x-primary-button-link :href="route('show-game', $game->id)">{{ __('app.continue') }}</x-primary-button-link>
                         @else
-                            <x-primary-button type="button" @click="$dispatch('show-pre-match', '{{ route('game.pre-match-data', $game->id) }}')">
+                            <x-primary-button type="button" x-data="{ clicked: false }" @click="if (clicked) return; clicked = true; $dispatch('show-pre-match', '{{ route('game.pre-match-data', $game->id) }}')" x-bind:disabled="clicked">
                                 {{ __('app.continue') }}
                             </x-primary-button>
                         @endif
@@ -130,9 +130,12 @@
     @if($nextMatch && !$game->hasPendingActions() && !$continueToHome)
     <div x-data="{
         loading: false,
+        submitting: false,
         content: '',
         loadPreMatch(url) {
+            if (this.submitting) return;
             if (localStorage.getItem('autoLineup') === '1') {
+                this.submitting = true;
                 this.$refs.autoAdvanceForm.submit();
                 return;
             }
@@ -143,7 +146,8 @@
                     const contentType = r.headers.get('content-type') || '';
                     if (contentType.includes('application/json')) {
                         return r.json().then(data => {
-                            if (data.lineupReady) {
+                            if (data.lineupReady && !this.submitting) {
+                                this.submitting = true;
                                 this.$refs.autoAdvanceForm.submit();
                             }
                         });
