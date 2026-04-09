@@ -3,6 +3,7 @@
 @php
 $sizeClasses = match($size) {
     'xs' => 'px-2.5 py-1 text-xs rounded-md',
+    'sm' => 'px-3 py-1.5 text-xs rounded-lg min-h-[36px]',
     default => 'px-4 py-2 min-h-[44px] text-sm rounded-lg',
 };
 @endphp

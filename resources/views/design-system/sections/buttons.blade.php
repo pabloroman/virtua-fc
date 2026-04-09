@@ -18,6 +18,7 @@
                 <x-primary-button type="button" color="sky">Sky</x-primary-button>
                 <x-primary-button type="button" color="teal">Teal</x-primary-button>
                 <x-primary-button type="button" color="emerald">Emerald</x-primary-button>
+                <x-primary-button type="button" size="sm">Small (sm)</x-primary-button>
             </div>
         </div>
 
@@ -57,7 +58,7 @@
                         <td class="py-2 pr-4"><code class="text-[10px] text-accent-blue">size</code></td>
                         <td class="py-2 pr-4">string</td>
                         <td class="py-2 pr-4"><code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">'default'</code></td>
-                        <td class="py-2">default | xs</td>
+                        <td class="py-2">default | sm | xs</td>
                     </tr>
                 </tbody>
             </table>
@@ -74,7 +75,8 @@
         <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-4">
             <div class="flex flex-wrap gap-3">
                 <x-secondary-button>Cancel</x-secondary-button>
-                <x-secondary-button size="xs">Small</x-secondary-button>
+                <x-secondary-button size="sm">Compact (sm)</x-secondary-button>
+                <x-secondary-button size="xs">Extra Small (xs)</x-secondary-button>
             </div>
         </div>
 
@@ -85,6 +87,7 @@
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
             <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="code">&lt;x-secondary-button&gt;Cancel&lt;/x-secondary-button&gt;
+&lt;x-secondary-button size="sm"&gt;Compact&lt;/x-secondary-button&gt;
 &lt;x-secondary-button size="xs"&gt;Small&lt;/x-secondary-button&gt;</code></pre>
         </div>
     </div>

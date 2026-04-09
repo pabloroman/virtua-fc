@@ -292,26 +292,27 @@
                     </div>
 
                     {{-- Playback Controls: Pause | Speed | Skip to HT | Skip to FT --}}
-                    <div class="flex items-center justify-center gap-0.5 pb-3" x-show="phase !== 'full_time' && phase !== 'half_time' && phase !== 'going_to_extra_time' && phase !== 'extra_time_half_time' && !penaltyPickerOpen">
+                    <div class="flex items-center justify-center gap-1.5 pb-3" x-show="phase !== 'full_time' && phase !== 'half_time' && phase !== 'going_to_extra_time' && phase !== 'extra_time_half_time' && !penaltyPickerOpen">
                         {{-- Pause/Play --}}
-                        <button
+                        <x-secondary-button
+                            size="sm"
                             @click="togglePause()"
-                            class="w-8 h-8 rounded-lg bg-surface-700 border border-border-default flex items-center justify-center text-text-muted hover:text-text-primary transition-colors"
-                            :class="userPaused ? 'text-accent-gold' : ''">
+                            class="!px-2.5"
+                            x-bind:class="userPaused ? '!text-accent-gold' : ''">
                             <svg x-show="!userPaused" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
                                 <path d="M4.5 2a.5.5 0 0 0-.5.5v11a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-11a.5.5 0 0 0-.5-.5h-1ZM10.5 2a.5.5 0 0 0-.5.5v11a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-11a.5.5 0 0 0-.5-.5h-1Z" />
                             </svg>
                             <svg x-show="userPaused" x-cloak xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
                                 <path d="M3 3.732a1.5 1.5 0 0 1 2.305-1.265l6.706 4.267a1.5 1.5 0 0 1 0 2.531l-6.706 4.268A1.5 1.5 0 0 1 3 12.267V3.732Z" />
                             </svg>
-                        </button>
+                        </x-secondary-button>
 
                         {{-- Speed selector --}}
-                        <div class="inline-flex bg-surface-700 rounded-lg p-0.5 border border-border-default">
+                        <div class="inline-flex bg-surface-700 rounded-lg p-0.5 border border-border-strong min-h-[36px] items-center">
                             <template x-for="s in [1, 2, 4]" :key="s">
                                 <button
                                     @click="setSpeed(s)"
-                                    class="text-[10px] font-semibold tracking-wide w-8 h-7 rounded-md transition-colors flex items-center justify-center"
+                                    class="text-xs font-semibold tracking-wide w-9 h-8 rounded-md transition-colors flex items-center justify-center"
                                     :class="speed === s
                                         ? 'bg-accent-blue text-white'
                                         : 'text-text-muted hover:text-text-secondary'"
@@ -321,136 +322,138 @@
                         </div>
 
                         {{-- Skip to half-time (first half / pre-match only) --}}
-                        <button
+                        <x-secondary-button
+                            size="sm"
                             x-show="phase === 'first_half' || phase === 'pre_match'"
                             @click="skipToHalfTime()"
-                            class="h-8 px-2 rounded-lg bg-surface-700 border border-border-default flex items-center justify-center gap-1 text-text-muted hover:text-text-primary transition-colors"
-                            :title="translations.skipToHt">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-3.5">
-                                <path d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
+                            class="!px-2.5"
+                            x-bind:title="translations.skipToHt">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-4">
+                                <path d="M3.288 4.818A1.5 1.5 0 0 0 1 6.095v7.81a1.5 1.5 0 0 0 2.288 1.276l6.323-3.905c.155-.096.285-.213.389-.344v2.973a1.5 1.5 0 0 0 2.288 1.276l6.323-3.905a1.5 1.5 0 0 0 0-2.552l-6.323-3.906A1.5 1.5 0 0 0 10 6.095v2.973a1.506 1.506 0 0 0-.389-.344L3.288 4.818Z" />
+                                <path d="M19 4.75a.75.75 0 0 0-.75-.75h-.5a.75.75 0 0 0-.75.75v10.5c0 .414.336.75.75.75h.5a.75.75 0 0 0 .75-.75V4.75Z" />
                             </svg>
-                            <span class="text-[9px] font-semibold uppercase tracking-wider">{{ __('game.live_skip_ht') }}</span>
-                        </button>
+                        </x-secondary-button>
 
                         {{-- Skip to end --}}
-                        <button
+                        <x-secondary-button
+                            size="sm"
                             @click="skipToEnd()"
-                            class="h-8 px-2 rounded-lg bg-surface-700 border border-border-default flex items-center justify-center gap-1 text-text-muted hover:text-text-primary transition-colors"
+                            class="!px-2.5"
                             x-bind:disabled="extraTimeLoading"
-                            :class="extraTimeLoading ? 'opacity-50 cursor-not-allowed' : ''"
-                            :title="translations.skipToFt">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-3.5">
+                            x-bind:title="translations.skipToFt">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
                                 <path d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
                             </svg>
-                            <span class="text-[9px] font-semibold uppercase tracking-wider">{{ __('game.live_skip_ft') }}</span>
-                        </button>
+                        </x-secondary-button>
                     </div>
 
                     {{-- Half-time pause controls --}}
-                    <div class="flex flex-col items-center gap-2 pb-3" x-show="phase === 'half_time'" x-cloak>
-                        <div class="flex items-center gap-2">
-                            <button
-                                @click="openTacticalPanel('substitutions')"
-                                class="h-8 px-3 rounded-lg bg-surface-700 border border-border-default flex items-center justify-center gap-1.5 text-text-muted hover:text-text-primary transition-colors text-xs font-medium">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
-                                </svg>
-                                {{ __('game.tactical_tab_substitutions') }}
-                            </button>
-                            <button
-                                @click="startSecondHalf()"
-                                class="h-8 px-3 rounded-lg bg-accent-blue text-white flex items-center justify-center gap-1.5 transition-colors text-xs font-semibold hover:bg-accent-blue/90">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-3.5">
-                                    <path d="M3 3.732a1.5 1.5 0 0 1 2.305-1.265l6.706 4.267a1.5 1.5 0 0 1 0 2.531l-6.706 4.268A1.5 1.5 0 0 1 3 12.267V3.732Z" />
-                                </svg>
-                                {{ __('game.live_start_second_half') }}
-                            </button>
-                            <button
-                                @click="skipToEnd()"
-                                class="h-8 px-2 rounded-lg bg-surface-700 border border-border-default flex items-center justify-center gap-1 text-text-muted hover:text-text-primary transition-colors"
-                                :title="translations.skipToFt">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-3.5">
-                                    <path d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
-                                </svg>
-                                <span class="text-[9px] font-semibold uppercase tracking-wider">{{ __('game.live_skip_ft') }}</span>
-                            </button>
-                        </div>
+                    <div class="flex items-center justify-center gap-1.5 pb-3" x-show="phase === 'half_time'" x-cloak>
+                        <x-secondary-button
+                            size="sm"
+                            @click="openTacticalPanel('substitutions')"
+                            class="gap-1.5">
+                            <svg class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                            </svg>
+                            {{ __('game.tactical_tab_substitutions') }}
+                        </x-secondary-button>
+                        <x-primary-button
+                            size="sm"
+                            type="button"
+                            @click="startSecondHalf()"
+                            class="gap-1.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-3.5">
+                                <path d="M3 3.732a1.5 1.5 0 0 1 2.305-1.265l6.706 4.267a1.5 1.5 0 0 1 0 2.531l-6.706 4.268A1.5 1.5 0 0 1 3 12.267V3.732Z" />
+                            </svg>
+                            {{ __('game.live_start_second_half') }}
+                        </x-primary-button>
+                        <x-secondary-button
+                            size="sm"
+                            @click="skipToEnd()"
+                            class="!px-2.5"
+                            x-bind:title="translations.skipToFt">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
+                                <path d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
+                            </svg>
+                        </x-secondary-button>
                     </div>
 
                     {{-- Going to extra time pause controls --}}
-                    <div class="flex flex-col items-center gap-2 pb-3" x-show="phase === 'going_to_extra_time'" x-cloak>
-                        <div class="flex items-center gap-2">
-                            <button
-                                @click="openTacticalPanel('substitutions')"
-                                x-bind:disabled="extraTimeLoading"
-                                class="h-8 px-3 rounded-lg bg-surface-700 border border-border-default flex items-center justify-center gap-1.5 text-text-muted hover:text-text-primary transition-colors text-xs font-medium"
-                                :class="extraTimeLoading ? 'opacity-50 cursor-not-allowed' : ''">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                    <div class="flex items-center justify-center gap-1.5 pb-3" x-show="phase === 'going_to_extra_time'" x-cloak>
+                        <x-secondary-button
+                            size="sm"
+                            @click="openTacticalPanel('substitutions')"
+                            x-bind:disabled="extraTimeLoading"
+                            class="gap-1.5">
+                            <svg class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                            </svg>
+                            {{ __('game.tactical_tab_substitutions') }}
+                        </x-secondary-button>
+                        <x-primary-button
+                            size="sm"
+                            type="button"
+                            color="amber"
+                            @click="startExtraTime()"
+                            x-bind:disabled="extraTimeLoading"
+                            class="gap-1.5">
+                            <template x-if="extraTimeLoading">
+                                <svg class="animate-spin size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                                 </svg>
-                                {{ __('game.tactical_tab_substitutions') }}
-                            </button>
-                            <button
-                                @click="startExtraTime()"
-                                x-bind:disabled="extraTimeLoading"
-                                class="h-8 px-3 rounded-lg bg-accent-orange text-white flex items-center justify-center gap-1.5 transition-colors text-xs font-semibold hover:bg-accent-orange/90"
-                                :class="extraTimeLoading ? 'opacity-50 cursor-not-allowed' : ''">
-                                <template x-if="extraTimeLoading">
-                                    <svg class="animate-spin size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                                    </svg>
-                                </template>
-                                <template x-if="!extraTimeLoading">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-3.5">
-                                        <path d="M3 3.732a1.5 1.5 0 0 1 2.305-1.265l6.706 4.267a1.5 1.5 0 0 1 0 2.531l-6.706 4.268A1.5 1.5 0 0 1 3 12.267V3.732Z" />
-                                    </svg>
-                                </template>
-                                {{ __('game.live_start_extra_time') }}
-                            </button>
-                            <button
-                                @click="skipToEnd()"
-                                x-bind:disabled="extraTimeLoading"
-                                class="h-8 px-2 rounded-lg bg-surface-700 border border-border-default flex items-center justify-center gap-1 text-text-muted hover:text-text-primary transition-colors"
-                                :class="extraTimeLoading ? 'opacity-50 cursor-not-allowed' : ''"
-                                :title="translations.skipToFt">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-3.5">
-                                    <path d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
-                                </svg>
-                                <span class="text-[9px] font-semibold uppercase tracking-wider">{{ __('game.live_skip_ft') }}</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    {{-- Extra time half-time pause controls --}}
-                    <div class="flex flex-col items-center gap-2 pb-3" x-show="phase === 'extra_time_half_time'" x-cloak>
-                        <div class="flex items-center gap-2">
-                            <button
-                                @click="openTacticalPanel('substitutions')"
-                                class="h-8 px-3 rounded-lg bg-surface-700 border border-border-default flex items-center justify-center gap-1.5 text-text-muted hover:text-text-primary transition-colors text-xs font-medium">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
-                                </svg>
-                                {{ __('game.tactical_tab_substitutions') }}
-                            </button>
-                            <button
-                                @click="startETSecondHalf()"
-                                class="h-8 px-3 rounded-lg bg-accent-orange text-white flex items-center justify-center gap-1.5 transition-colors text-xs font-semibold hover:bg-accent-orange/90">
+                            </template>
+                            <template x-if="!extraTimeLoading">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-3.5">
                                     <path d="M3 3.732a1.5 1.5 0 0 1 2.305-1.265l6.706 4.267a1.5 1.5 0 0 1 0 2.531l-6.706 4.268A1.5 1.5 0 0 1 3 12.267V3.732Z" />
                                 </svg>
-                                {{ __('game.live_start_et_second_half') }}
-                            </button>
-                            <button
-                                @click="skipToEnd()"
-                                class="h-8 px-2 rounded-lg bg-surface-700 border border-border-default flex items-center justify-center gap-1 text-text-muted hover:text-text-primary transition-colors"
-                                :title="translations.skipToFt">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-3.5">
-                                    <path d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
-                                </svg>
-                                <span class="text-[9px] font-semibold uppercase tracking-wider">{{ __('game.live_skip_ft') }}</span>
-                            </button>
-                        </div>
+                            </template>
+                            {{ __('game.live_start_extra_time') }}
+                        </x-primary-button>
+                        <x-secondary-button
+                            size="sm"
+                            @click="skipToEnd()"
+                            x-bind:disabled="extraTimeLoading"
+                            class="!px-2.5"
+                            x-bind:title="translations.skipToFt">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
+                                <path d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
+                            </svg>
+                        </x-secondary-button>
+                    </div>
+
+                    {{-- Extra time half-time pause controls --}}
+                    <div class="flex items-center justify-center gap-1.5 pb-3" x-show="phase === 'extra_time_half_time'" x-cloak>
+                        <x-secondary-button
+                            size="sm"
+                            @click="openTacticalPanel('substitutions')"
+                            class="gap-1.5">
+                            <svg class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                            </svg>
+                            {{ __('game.tactical_tab_substitutions') }}
+                        </x-secondary-button>
+                        <x-primary-button
+                            size="sm"
+                            type="button"
+                            color="amber"
+                            @click="startETSecondHalf()"
+                            class="gap-1.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-3.5">
+                                <path d="M3 3.732a1.5 1.5 0 0 1 2.305-1.265l6.706 4.267a1.5 1.5 0 0 1 0 2.531l-6.706 4.268A1.5 1.5 0 0 1 3 12.267V3.732Z" />
+                            </svg>
+                            {{ __('game.live_start_et_second_half') }}
+                        </x-primary-button>
+                        <x-secondary-button
+                            size="sm"
+                            @click="skipToEnd()"
+                            class="!px-2.5"
+                            x-bind:title="translations.skipToFt">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
+                                <path d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
+                            </svg>
+                        </x-secondary-button>
                     </div>
 
                 </div>{{-- /sticky padding --}}
