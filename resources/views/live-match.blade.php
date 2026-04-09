@@ -77,6 +77,7 @@
                 homeArticle: {{ Js::from($match->homeTeam->article) }},
                 awayArticle: {{ Js::from($match->awayTeam->article) }},
                 narrativeTemplates: {{ Js::from($narrativeTemplates) }},
+                freeSubWindowMinutes: @js(config('match_simulation.free_sub_window_minutes', [45, 90, 105])),
                 matchId: '{{ $match->id }}',
                 animationSeen: {{ $animationSeen ? 'true' : 'false' }},
                 translations: {

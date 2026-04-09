@@ -39,11 +39,11 @@ export function createSubstitutionManager(ctx) {
     }
 
     function getWindowsUsed() {
-        // Free windows (half-time 45, pre-ET 90, ET half-time 105) don't count
-        const minutes = new Set(ctx().substitutionsMade.map(s => s.minute));
-        minutes.delete(45);
-        minutes.delete(90);
-        minutes.delete(105);
+        // Free windows (half-time, pre-ET, ET half-time) don't count
+        const state = ctx();
+        const freeMinutes = state.freeSubWindowMinutes || [45, 90, 105];
+        const minutes = new Set(state.substitutionsMade.map(s => s.minute));
+        freeMinutes.forEach(m => minutes.delete(m));
         return minutes.size;
     }
 

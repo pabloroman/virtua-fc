@@ -89,6 +89,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Team Strength Weights
+    |--------------------------------------------------------------------------
+    |
+    | Weights for combining player attributes into team strength.
+    | Must sum to 1.0. Used by both MatchSimulator and AIMatchResolver.
+    |
+    */
+    'strength_weight_technical' => 0.575,
+    'strength_weight_physical' => 0.375,
+    'strength_weight_morale' => 0.05,
+
+    /*
+    |--------------------------------------------------------------------------
     | Goal Distribution (Dixon-Coles Model)
     |--------------------------------------------------------------------------
     |
@@ -145,6 +158,9 @@ return [
     'training_injury_chance' => 1.05,   // % chance of training injury per player per matchday (all squad members)
     'penalties_per_game' => 0.25,       // Average penalties awarded per game (both teams combined)
     'penalty_scored_chance' => 85.0,    // % chance a penalty is scored
+
+    // Minutes at which substitutions don't consume a window (half-time, pre-ET, ET half-time)
+    'free_sub_window_minutes' => [45, 90, 105],
 
     /*
     |--------------------------------------------------------------------------

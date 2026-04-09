@@ -254,11 +254,15 @@ class AIMatchResolver
             return 0.30;
         }
 
+        $wTech = config('match_simulation.strength_weight_technical', 0.575);
+        $wPhys = config('match_simulation.strength_weight_physical', 0.375);
+        $wMorale = config('match_simulation.strength_weight_morale', 0.05);
+
         $totalStrength = 0;
         foreach ($lineup as $player) {
-            $playerStrength = ($player->technical_ability * 0.575) +
-                              ($player->physical_ability * 0.375) +
-                              ($player->morale * 0.05);
+            $playerStrength = ($player->technical_ability * $wTech) +
+                              ($player->physical_ability * $wPhys) +
+                              ($player->morale * $wMorale);
             $totalStrength += $playerStrength;
         }
 

@@ -44,7 +44,7 @@ class SubstitutionService
         // Check substitution window limit (half-time at minute 45, pre-extra-time
         // at minute 90, and ET half-time at minute 105 are free windows — they don't
         // count toward the limit)
-        $freeMinutes = [45, 90, 105];
+        $freeMinutes = config('match_simulation.free_sub_window_minutes', [45, 90, 105]);
         $previousMinutes = array_unique(array_column($previousSubstitutions, 'minute'));
         $previousWindows = count(array_filter($previousMinutes, fn ($m) => ! in_array($m, $freeMinutes)));
         if ($previousWindows >= $maxWindows) {
