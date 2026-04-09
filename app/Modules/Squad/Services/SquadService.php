@@ -11,6 +11,7 @@ use App\Modules\Player\PlayerAge;
 use App\Modules\Player\Services\PlayerDevelopmentService;
 use App\Modules\Transfer\Enums\NegotiationScenario;
 use App\Modules\Transfer\Services\ContractService;
+use App\Support\FakeSecondaryPositions;
 use App\Support\PositionSlotMapper;
 
 class SquadService
@@ -207,6 +208,7 @@ class SquadService
         foreach (PositionSlotMapper::getAllSlots() as $slot) {
             $depth[$slot] = [
                 'count' => 0,
+                'secondary_count' => 0,
                 'players' => [],
             ];
         }
@@ -216,6 +218,15 @@ class SquadService
             if ($slot && isset($depth[$slot])) {
                 $depth[$slot]['count']++;
                 $depth[$slot]['players'][] = $player->name;
+            }
+
+            // Count secondary position coverage (Phase 0: fake data)
+            $secondaries = FakeSecondaryPositions::for($player->id, $player->position);
+            foreach ($secondaries as $secPos) {
+                $secSlot = $positionToSlot[$secPos] ?? null;
+                if ($secSlot && $secSlot !== $slot && isset($depth[$secSlot])) {
+                    $depth[$secSlot]['secondary_count']++;
+                }
             }
         }
 

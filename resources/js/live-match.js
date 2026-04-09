@@ -10,6 +10,8 @@ import {
     calculateDrainRate as _calculateDrainRate,
     getOvrBadgeClasses as _getOvrBadgeClasses,
     getPositionBadgeColor as _getPositionBadgeColor,
+    getSecondaryBadgeClasses as _getSecondaryBadgeClasses,
+    getSecondaryAbbr as _getSecondaryAbbr,
     isValidGridCell as _isValidGridCell,
     getZoneColorClass as _getZoneColorClass,
 } from './modules/pitch-renderer.js';
@@ -1413,6 +1415,14 @@ export default function liveMatch(config) {
 
         getPositionBadgeColor(group) {
             return _getPositionBadgeColor(group);
+        },
+
+        getSecondaryBadgeClasses(position) {
+            return _getSecondaryBadgeClasses(position);
+        },
+
+        getSecondaryAbbr(position) {
+            return _getSecondaryAbbr(position);
         },
 
         getOvrBadgeClasses(score) {

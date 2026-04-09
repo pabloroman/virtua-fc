@@ -71,11 +71,16 @@
                         @for($i = 0; $i < min($data['count'], 5); $i++)
                             <div class="w-4 h-4 rounded-xs {{ $barColor }}"></div>
                         @endfor
-                        @if($data['count'] === 0)
+                        @for($i = 0; $i < min($data['secondary_count'], 3); $i++)
+                            <div class="w-4 h-4 rounded-xs border border-dashed {{ $data['count'] >= 2 ? 'border-green-400/50 bg-green-400/15' : 'border-amber-400/50 bg-amber-400/15' }}"></div>
+                        @endfor
+                        @if($data['count'] === 0 && $data['secondary_count'] === 0)
                             <div class="w-4 h-4 rounded-xs border-2 border-dashed border-red-500/40"></div>
                         @endif
                     </div>
-                    <span class="text-xs tabular-nums text-text-secondary w-4 text-right">{{ $data['count'] }}</span>
+                    <span class="text-xs tabular-nums text-text-secondary w-6 text-right">
+                        {{ $data['count'] }}@if($data['secondary_count'] > 0)<span class="text-text-faint text-[10px]">+{{ $data['secondary_count'] }}</span>@endif
+                    </span>
                 </div>
             @endforeach
         </div>

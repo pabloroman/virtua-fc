@@ -63,6 +63,13 @@
                         @error('position')
                             <p class="text-sm text-accent-red mt-1">{{ $message }}</p>
                         @enderror
+                        <div class="mt-2">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <x-checkbox-input name="include_secondary" value="1" />
+                                <span class="text-sm text-text-body">{{ __('transfers.include_secondary') }}</span>
+                            </label>
+                            <p class="text-xs text-text-muted mt-1.5 ml-6">{{ __('transfers.include_secondary_hint') }}</p>
+                        </div>
                     </div>
 
                     {{-- Scope --}}

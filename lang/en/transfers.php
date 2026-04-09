@@ -98,6 +98,8 @@ return [
     'value_range' => 'Market Value Range',
     'contract' => 'Contract',
     'expiring_contract' => 'Final year of contract',
+    'include_secondary' => 'Include secondary positions',
+    'include_secondary_hint' => 'Also find players who can play this position as a secondary role',
     'start_scout_search' => 'Start Search',
 
     // Scout searching

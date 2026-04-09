@@ -42,6 +42,7 @@
         presets: @js($presetsConfig),
         translations: {
             natural: '{{ __('squad.natural') }}',
+            naturalSecondary: '{{ __('squad.natural_secondary') }}',
             veryGood: '{{ __('squad.very_good') }}',
             good: '{{ __('squad.good') }}',
             okay: '{{ __('squad.okay') }}',
@@ -274,6 +275,7 @@
                                                     $competitionId,
                                                 );
                                                 $posGroup = \App\Support\PositionMapper::getPositionGroup($player->position);
+                                                $secondaryPositions = \App\Support\FakeSecondaryPositions::for($player->id, $player->position);
                                             @endphp
                                             <div
                                                 x-show="posTab === 'all' || posTab === '{{ $posGroup }}'"
@@ -298,7 +300,12 @@
                                                             @endif
                                                         </div>
                                                         <div class="flex items-center gap-2 mt-0.5">
-                                                            <x-position-badge :position="$player->position" size="sm" />
+                                                            <div class="flex items-center gap-0.5">
+                                                                <x-position-badge :position="$player->position" size="sm" />
+                                                                @foreach($secondaryPositions as $secPos)
+                                                                    <x-position-badge :position="$secPos" size="sm" variant="secondary" />
+                                                                @endforeach
+                                                            </div>
                                                             @if(!$isUnavailable)
                                                             <div class="flex items-center gap-1">
                                                                 <div class="w-8 h-1 rounded-full bg-surface-600 overflow-hidden">

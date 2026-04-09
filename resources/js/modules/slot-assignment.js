@@ -1,4 +1,21 @@
 /**
+ * Get per-player compatibility score for a specific slot, considering secondary positions.
+ *
+ * @param {Object} player - Player data with position and optional secondaryPositions
+ * @param {string} slotLabel - The slot code (e.g., 'CB', 'DM', 'CM')
+ * @param {Object} slotCompatibility - Compatibility matrix { slotLabel: { position: score } }
+ * @returns {number} Best compatibility score across primary and secondary positions
+ */
+export function getPlayerCompatibility(player, slotLabel, slotCompatibility) {
+    let best = slotCompatibility[slotLabel]?.[player.position] ?? 0;
+    for (const secPos of (player.secondaryPositions || [])) {
+        const secScore = slotCompatibility[slotLabel]?.[secPos] ?? 0;
+        if (secScore > best) best = secScore;
+    }
+    return best;
+}
+
+/**
  * Unified player-to-slot assignment logic.
  *
  * Used by both the lineup page and live match to map players onto formation
@@ -19,7 +36,7 @@ export function assignPlayersToSlots(slots, players, slotCompatibility, manualAs
         const slot = slots.find(s => s.id === parseInt(slotId));
         const player = players.find(p => p.id === playerId);
         if (slot && player && !assigned.has(player.id)) {
-            const compatibility = slotCompatibility[slot.label]?.[player.position] ?? 0;
+            const compatibility = getPlayerCompatibility(player, slot.label, slotCompatibility);
             slot.player = { ...player, compatibility };
             slot.compatibility = compatibility;
             slot.isManual = true;
@@ -43,7 +60,7 @@ export function assignPlayersToSlots(slots, players, slotCompatibility, manualAs
             if (assigned.has(player.id)) return;
             const naturalSlot = slots.find(s =>
                 !s.player &&
-                (slotCompatibility[s.label]?.[player.position] ?? 0) === 100
+                getPlayerCompatibility(player, s.label, slotCompatibility) === 100
             );
             if (naturalSlot) {
                 naturalSlot.player = { ...player, compatibility: 100 };
@@ -70,7 +87,7 @@ export function assignPlayersToSlots(slots, players, slotCompatibility, manualAs
 
             unassignedPlayers.forEach(player => {
                 if (assigned.has(player.id)) return;
-                const compatibility = slotCompatibility[slot.label]?.[player.position] ?? 0;
+                const compatibility = getPlayerCompatibility(player, slot.label, slotCompatibility);
                 if (compatibility < 40) return;
                 const weightedScore = (player.overallScore * 0.7) + (compatibility * 0.3);
                 if (weightedScore > bestScore) {
@@ -94,7 +111,7 @@ export function assignPlayersToSlots(slots, players, slotCompatibility, manualAs
         stillEmpty.forEach((slot, index) => {
             if (stillUnassigned[index]) {
                 const player = stillUnassigned[index];
-                const compatibility = slotCompatibility[slot.label]?.[player.position] ?? 0;
+                const compatibility = getPlayerCompatibility(player, slot.label, slotCompatibility);
                 slot.player = { ...player, compatibility };
                 slot.compatibility = compatibility;
             }

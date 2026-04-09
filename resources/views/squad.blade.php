@@ -246,6 +246,7 @@
                                     $unavailReason = $gp->unavailability_reason;
                                     $groupKey = $group['group'];
                                     $posAbbrev = \App\Support\PositionMapper::toAbbreviation($gp->position);
+                                    $secondaryPositions = \App\Support\FakeSecondaryPositions::for($gp->id, $gp->position);
 
                                     $statusKey = 'none';
                                     if ($isCareerMode) {
@@ -271,6 +272,11 @@
                                                     <span class="text-sm font-medium text-text-primary truncate">{{ $gp->player->name }}</span>
                                                     <span class="text-[10px] text-text-faint">{{ $gp->age($game->current_date) }}</span>
                                                     @include('partials.squad.player-status-icon', ['gp' => $gp, 'game' => $game, 'seasonEndDate' => $seasonEndDate])
+                                                    @if(!empty($secondaryPositions))
+                                                        @foreach($secondaryPositions as $secPos)
+                                                            <x-position-badge :position="$secPos" size="sm" variant="secondary" />
+                                                        @endforeach
+                                                    @endif
                                                 </div>
                                                 <div class="flex items-center gap-3 mt-1">
                                                     @if($unavailReason)
@@ -329,8 +335,11 @@
                                         </div>
 
                                         {{-- Position badge --}}
-                                        <div class="flex justify-center">
+                                        <div class="flex items-center justify-center gap-0.5">
                                             <x-position-badge :position="$gp->position" size="sm" />
+                                            @foreach($secondaryPositions as $secPos)
+                                                <x-position-badge :position="$secPos" size="sm" variant="secondary" />
+                                            @endforeach
                                         </div>
 
                                         {{-- Age --}}
