@@ -139,7 +139,7 @@ export function getPositionBadgeColor(group) {
 // =====================================================================
 
 export function calculateDrainRate(physicalAbility, age, positionGroup) {
-    const baseDrain = 0.75;
+    const baseDrain = 0.55;
     const physicalBonus = (physicalAbility - 50) * 0.005;
     const agePenalty = Math.max(0, (age - 28)) * 0.015;
     let drain = baseDrain - physicalBonus + agePenalty;
@@ -148,10 +148,13 @@ export function calculateDrainRate(physicalAbility, age, positionGroup) {
 }
 
 export function getPlayerEnergy(player, currentMinute) {
-    if (player.minuteEntered === null || player.minuteEntered === undefined) return 100;
+    const startingEnergy = player.fitness ?? 100;
+    if (player.minuteEntered === null || player.minuteEntered === undefined) return startingEnergy;
     const minutesPlayed = Math.max(0, Math.floor(currentMinute) - player.minuteEntered);
-    const drain = calculateDrainRate(player.physicalAbility, player.age, player.positionGroup);
-    return Math.max(0, Math.round(100 - drain * minutesPlayed));
+    const baseDrain = calculateDrainRate(player.physicalAbility, player.age, player.positionGroup);
+    // Proportional drain: scales with starting energy to prevent death spirals
+    const effectiveDrain = baseDrain * (startingEnergy / 100);
+    return Math.max(0, Math.round(startingEnergy - effectiveDrain * minutesPlayed));
 }
 
 export function getEnergyColor(energy) {
