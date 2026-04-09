@@ -154,22 +154,14 @@ const POSITION_GROUP = {
     'Second Striker': 'Forward',
 };
 
-const SECONDARY_COLORS = {
-    'Goalkeeper':  { bg: 'bg-amber-500/10',   text: 'text-amber-400',   ring: 'ring-1 ring-inset ring-amber-500/40' },
-    'Defender':    { bg: 'bg-blue-500/10',     text: 'text-blue-400',    ring: 'ring-1 ring-inset ring-blue-500/40' },
-    'Midfielder':  { bg: 'bg-emerald-500/10',  text: 'text-emerald-400', ring: 'ring-1 ring-inset ring-emerald-500/40' },
-    'Forward':     { bg: 'bg-red-500/10',      text: 'text-red-400',     ring: 'ring-1 ring-inset ring-red-500/40' },
-};
-
 /**
- * Get CSS classes for a secondary position badge (outline style).
+ * Get CSS classes for a secondary position badge (same solid style as primary).
  * @param {string} position - Canonical position name
  * @returns {string} CSS class string
  */
 export function getSecondaryBadgeClasses(position) {
     const group = POSITION_GROUP[position] || 'Midfielder';
-    const colors = SECONDARY_COLORS[group];
-    return `${colors.bg} ${colors.text} ${colors.ring}`;
+    return getPositionBadgeColor(group) + ' text-white';
 }
 
 /**

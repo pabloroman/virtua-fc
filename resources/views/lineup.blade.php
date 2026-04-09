@@ -303,7 +303,7 @@
                                                             <div class="flex items-center gap-0.5">
                                                                 <x-position-badge :position="$player->position" size="sm" />
                                                                 @foreach($secondaryPositions as $secPos)
-                                                                    <x-position-badge :position="$secPos" size="sm" variant="secondary" />
+                                                                    <x-position-badge :position="$secPos" size="sm" />
                                                                 @endforeach
                                                             </div>
                                                             @if(!$isUnavailable)

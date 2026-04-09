@@ -78,7 +78,7 @@ class ShowScoutingHub
                 'positionBg' => $positionDisplay['bg'],
                 'positionText' => $positionDisplay['text'],
                 'secondaryPositions' => collect(FakeSecondaryPositions::for($gp->id, $gp->position))
-                    ->map(fn ($pos) => PositionMapper::getSecondaryPositionDisplay($pos))
+                    ->map(fn ($pos) => PositionMapper::getPositionDisplay($pos))
                     ->values()
                     ->all(),
                 'age' => $gp->age($game->current_date),
