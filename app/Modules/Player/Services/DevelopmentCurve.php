@@ -61,6 +61,7 @@ final class DevelopmentCurve
      */
     public static function getChanges(int $age): array
     {
+        // Clamp age to our defined range
         if ($age < 16) {
             return self::AGE_CURVES[16];
         }

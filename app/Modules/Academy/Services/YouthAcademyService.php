@@ -50,6 +50,10 @@ class YouthAcademyService
         5 => 4,
     ];
 
+    /**
+     * Standard deviation for the ability normal distribution.
+     * Uniform across all tiers — only the mean differentiates them.
+     */
     private const ABILITY_STD_DEV = 6;
 
     /**
@@ -63,6 +67,9 @@ class YouthAcademyService
         4 => 10,
     ];
 
+    /**
+     * Standard deviation for potential upside sampling.
+     */
     private const POTENTIAL_UPSIDE_STD_DEV = 5;
 
     /**

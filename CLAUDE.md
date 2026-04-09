@@ -171,4 +171,4 @@ Every feature must look correct in both themes. Dark mode is `:root` default; li
 
 ## Code Quality
 
-Never leave dead code, commented-out code, or unused functions. Clean up after refactoring.
+Never leave dead code, commented-out code, or unused functions. Clean up after refactoring. **Do not remove explanatory comments** — comments that clarify *why* something works a certain way, describe non-obvious behavior, or provide useful context (e.g., inline examples, domain rationale) must be preserved. Only remove comments that are literally dead code (`// $old = thing()`) or that merely restate what the code already says.

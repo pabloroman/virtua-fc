@@ -132,24 +132,31 @@ class PlayerDevelopmentService
         $valueBonus = $this->getValuePotentialBonus($age, $marketValueCents);
 
         if ($age <= PlayerAge::ACADEMY_END) {
+            // Young players: high potential ceiling
+            // Base range 8-20, plus value bonus for proven youngsters
             $basePotentialRange = rand(8, 20);
             $potentialRange = $basePotentialRange + $valueBonus;
-            $uncertainty = rand(5, 10);
+            $uncertainty = rand(5, 10); // Higher uncertainty for young players
         } elseif ($age <= 24) {
+            // Developing players: moderate potential
             $basePotentialRange = rand(4, 12);
             $potentialRange = $basePotentialRange + (int) ($valueBonus * 0.6);
             $uncertainty = rand(4, 7);
         } elseif ($age <= PlayerAge::PRIME_END) {
+            // Peak players: small potential margin
             $basePotentialRange = rand(0, 5);
             $potentialRange = $basePotentialRange + (int) ($valueBonus * 0.3);
             $uncertainty = rand(2, 4);
         } else {
+            // Veterans: potential reflects proven quality
             $potentialRange = $this->getVeteranPotentialBonus($age, $currentAbility, $marketValueCents);
-            $uncertainty = 2;
+            $uncertainty = 2; // Low uncertainty — we know what they can do
         }
 
+        // True potential (hidden from user)
         $truePotential = min(99, $currentAbility + $potentialRange);
 
+        // Scouted range (visible to user) — adds uncertainty around true value
         $low = max($currentAbility, $truePotential - $uncertainty);
         $high = min(99, $truePotential + $uncertainty);
 
@@ -167,10 +174,12 @@ class PlayerDevelopmentService
      */
     private function getValuePotentialBonus(int $age, int $marketValueCents): int
     {
+        // No bonus for veterans (handled separately in getVeteranPotentialBonus)
         if ($age >= 29) {
             return 0;
         }
 
+        // Typical market value for age (what an "average good player" is worth)
         $typicalValueForAge = match (true) {
             $age <= 17 => 50_000_000,       // €500K
             $age <= 19 => 200_000_000,      // €2M
@@ -182,8 +191,9 @@ class PlayerDevelopmentService
 
         $valueRatio = $marketValueCents / max(1, $typicalValueForAge);
 
+        // Higher ratio = more proven potential
         return match (true) {
-            $valueRatio >= 100 => 10,
+            $valueRatio >= 100 => 10, // e.g. €120M 17yo (240x typical) = elite potential
             $valueRatio >= 50 => 8,
             $valueRatio >= 20 => 6,
             $valueRatio >= 10 => 4,
@@ -195,10 +205,13 @@ class PlayerDevelopmentService
     /**
      * Calculate potential adjustment for veteran players.
      *
+     * Veterans with exceptional market value have proven their quality ceiling.
+     *
      * @return int Points to add to current ability for potential
      */
     private function getVeteranPotentialBonus(int $age, int $currentAbility, int $marketValueCents): int
     {
+        // Typical market value for veterans
         $typicalValueForAge = match (true) {
             $age <= 33 => 800_000_000,   // €8M
             $age <= 35 => 400_000_000,   // €4M
@@ -209,11 +222,11 @@ class PlayerDevelopmentService
         $valueRatio = $marketValueCents / max(1, $typicalValueForAge);
 
         return match (true) {
-            $valueRatio >= 10 => 8,
-            $valueRatio >= 5 => 5,
+            $valueRatio >= 10 => 8,  // 10x typical = proven world class (Lewandowski, Modric)
+            $valueRatio >= 5 => 5,   // 5x typical = proven high quality
             $valueRatio >= 3 => 3,
             $valueRatio >= 2 => 1,
-            default => 0,
+            default => 0,            // Typical veteran = current ability is their ceiling
         };
     }
 
@@ -275,6 +288,7 @@ class PlayerDevelopmentService
                 'status' => PlayerAge::developmentStatus($age),
             ];
 
+            // Use projected values for next iteration
             $currentTech = $projectedTech;
             $currentPhys = $projectedPhys;
         }
@@ -310,12 +324,15 @@ class PlayerDevelopmentService
         $player->update([
             'game_technical_ability' => $newTech,
             'game_physical_ability' => $newPhys,
-            'season_appearances' => 0,
+            'season_appearances' => 0, // Reset for new season
         ]);
     }
 
     /**
      * Recalculate potential for an existing player.
+     *
+     * Called when market value changes significantly or when
+     * we want to update potential estimates based on performance.
      */
     public function recalculatePotential(GamePlayer $player): array
     {
