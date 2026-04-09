@@ -40,7 +40,7 @@
         <div class="flex items-center gap-1 shrink-0">
             <x-position-badge :position="$gamePlayer->position" />
             @foreach($secondaryPositions as $secPos)
-                <x-position-badge :position="$secPos" size="sm" variant="secondary" />
+                <x-position-badge :position="$secPos" size="sm" />
             @endforeach
         </div>
         <h3 class="font-heading text-lg font-semibold text-text-primary truncate">{{ $gamePlayer->name }}</h3>

@@ -53,16 +53,6 @@ class PositionMapper
     ];
 
     /**
-     * CSS color classes for secondary/outline position badges.
-     */
-    private static array $groupColorsSecondary = [
-        'Goalkeeper' => ['bg' => 'bg-amber-500/10', 'text' => 'text-amber-400', 'ring' => 'ring-1 ring-inset ring-amber-500/40'],
-        'Defender' => ['bg' => 'bg-blue-500/10', 'text' => 'text-blue-400', 'ring' => 'ring-1 ring-inset ring-blue-500/40'],
-        'Midfielder' => ['bg' => 'bg-emerald-500/10', 'text' => 'text-emerald-400', 'ring' => 'ring-1 ring-inset ring-emerald-500/40'],
-        'Forward' => ['bg' => 'bg-red-500/10', 'text' => 'text-red-400', 'ring' => 'ring-1 ring-inset ring-red-500/40'],
-    ];
-
-    /**
      * Map scout filter values to translation key prefixes.
      */
     private static array $filterToKey = [
@@ -127,16 +117,6 @@ class PositionMapper
     }
 
     /**
-     * Get CSS color classes for a secondary/outline position badge.
-     *
-     * @return array{bg: string, text: string, ring: string}
-     */
-    public static function getSecondaryColorsForGroup(string $group): array
-    {
-        return self::$groupColorsSecondary[$group] ?? self::$groupColorsSecondary['Midfielder'];
-    }
-
-    /**
      * Get CSS color classes for a canonical position name.
      *
      * @return array{bg: string, text: string}
@@ -163,23 +143,6 @@ class PositionMapper
             'abbreviation' => $abbreviation,
             'bg' => $colors['bg'],
             'text' => $colors['text'],
-        ];
-    }
-
-    /**
-     * Get abbreviation with secondary/outline color classes for a canonical position name.
-     *
-     * @return array{abbreviation: string, bg: string, text: string, ring: string}
-     */
-    public static function getSecondaryPositionDisplay(string $position): array
-    {
-        $abbreviation = self::toAbbreviation($position);
-        $group = self::$positionToGroup[$position] ?? 'Midfielder';
-        $colors = self::getSecondaryColorsForGroup($group);
-
-        return [
-            'abbreviation' => $abbreviation,
-            ...$colors,
         ];
     }
 

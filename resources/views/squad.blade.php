@@ -274,7 +274,7 @@
                                                     @include('partials.squad.player-status-icon', ['gp' => $gp, 'game' => $game, 'seasonEndDate' => $seasonEndDate])
                                                     @if(!empty($secondaryPositions))
                                                         @foreach($secondaryPositions as $secPos)
-                                                            <x-position-badge :position="$secPos" size="sm" variant="secondary" />
+                                                            <x-position-badge :position="$secPos" size="sm" />
                                                         @endforeach
                                                     @endif
                                                 </div>
@@ -338,7 +338,7 @@
                                         <div class="flex items-center justify-center gap-0.5">
                                             <x-position-badge :position="$gp->position" size="sm" />
                                             @foreach($secondaryPositions as $secPos)
-                                                <x-position-badge :position="$secPos" size="sm" variant="secondary" />
+                                                <x-position-badge :position="$secPos" size="sm" />
                                             @endforeach
                                         </div>
 

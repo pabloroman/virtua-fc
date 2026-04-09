@@ -67,7 +67,7 @@
                             <div class="flex items-center gap-1 shrink-0">
                                 <x-position-badge :position="$player->position" />
                                 @foreach(\App\Support\FakeSecondaryPositions::for($player->id, $player->position) as $secPos)
-                                    <x-position-badge :position="$secPos" size="sm" variant="secondary" />
+                                    <x-position-badge :position="$secPos" size="sm" />
                                 @endforeach
                             </div>
                             <div class="min-w-0">
