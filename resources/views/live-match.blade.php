@@ -1125,20 +1125,20 @@
                         </template>
 
                         {{-- Continue button --}}
-                        <form method="POST" action="{{ route('game.finalize-match', $game->id) }}" x-on:submit="_clearEventsCache()">
+                        <form method="POST" action="{{ route('game.finalize-match', $game->id) }}" x-data="{ submitting: false }" x-on:submit="if (submitting) { $event.preventDefault(); return; } submitting = true; _clearEventsCache()">
                             @csrf
                             <template x-if="isTournamentDecisive">
                                 <input type="hidden" name="tournament_end" value="1">
                             </template>
                             <x-primary-button type="submit"
                                     class="w-full justify-center gap-2"
-                                    x-bind:disabled="!processingReady">
-                                <svg x-show="!processingReady" class="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                                    x-bind:disabled="!processingReady || submitting">
+                                <svg x-show="!processingReady || submitting" class="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                                 </svg>
-                                <span x-text="processingReady ? '{{ __('game.live_continue') }}' : '{{ __('game.processing_short') }}'"></span>
-                                <svg x-show="processingReady" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                <span x-text="submitting ? '{{ __('game.processing_short') }}' : (processingReady ? '{{ __('game.live_continue') }}' : '{{ __('game.processing_short') }}')"></span>
+                                <svg x-show="processingReady && !submitting" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             </x-primary-button>
                         </form>
                     </div>
