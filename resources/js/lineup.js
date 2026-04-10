@@ -348,6 +348,31 @@ export default function lineupManager(config) {
             return (this.isSelected(playerId) ? 0 : 1000) + positionRank;
         },
 
+        // Map a formation slot label (e.g. "CB", "LM") to the same rank
+        // PositionMapper::positionSortOrder uses server-side, so empty
+        // starter placeholders interleave correctly with filled rows.
+        slotLabelSortOrder(label) {
+            const map = { GK: 1, CB: 10, LB: 11, RB: 12, DM: 20, CM: 21, LM: 22, RM: 23, AM: 24, LW: 30, RW: 31, CF: 33 };
+            return map[label] ?? 99;
+        },
+
+        // Map a slot label → position group, for the posTab filter tabs.
+        slotLabelToGroup(label) {
+            if (label === 'GK') return 'Goalkeeper';
+            if (['CB', 'LB', 'RB'].includes(label)) return 'Defender';
+            if (['DM', 'CM', 'AM', 'LM', 'RM'].includes(label)) return 'Midfielder';
+            return 'Forward';
+        },
+
+        // Guard: empty slot placeholders should only render when the
+        // slotMap is in sync with selectedPlayers. Prevents the visual
+        // flash during the formation-change fetch window, where slotMap
+        // is momentarily {} but selectedPlayers still has 11 entries.
+        // Self-healing — no state flag needed.
+        slotMapIsConsistent() {
+            return Object.keys(this.slotMap).length === this.selectedPlayers.length;
+        },
+
         // Toggle player selection (from player list)
         toggle(id, isUnavailable) {
             if (isUnavailable) return;
