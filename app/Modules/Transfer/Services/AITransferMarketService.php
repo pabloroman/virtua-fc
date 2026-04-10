@@ -60,7 +60,7 @@ class AITransferMarketService
     private const MAX_SQUAD_SIZE = 30;
 
     /**
-     * Maximum transfer fee an AI team can pay, by reputation index (0=elite, 6=local).
+     * Maximum transfer fee an AI team can pay, by reputation index (0=elite, 4=local).
      * Only elite clubs can spend 120M+; mid-table clubs are limited to realistic levels.
      */
     private const MAX_FEE_BY_REPUTATION_INDEX = [
@@ -69,8 +69,6 @@ class AITransferMarketService
         2 => 3_000_000_000,   // €30M  — established clubs
         3 => 1_500_000_000,   // €15M  — modest clubs
         4 => 500_000_000,     // €5M   — local clubs
-        5 => 500_000_000,     // €5M
-        6 => 500_000_000,     // €5M
     ];
 
     /** Minimum free agents to preserve — AI stops signing when pool drops to this */
@@ -964,7 +962,7 @@ class AITransferMarketService
         array &$transferInserts,
         int $minContractYears = 2,
         int $maxContractYears = 3,
-        int $buyerReputationIndex = 6,
+        int $buyerReputationIndex = 4,
     ): void {
         $maxFee = self::MAX_FEE_BY_REPUTATION_INDEX[$buyerReputationIndex] ?? 500_000_000;
         $fee = min($player->market_value_cents, $maxFee);
@@ -1400,7 +1398,7 @@ class AITransferMarketService
     /**
      * Load reputation tier indices for all AI teams.
      *
-     * @return Collection<string, int> teamId => reputation index (0 = elite, 6 = local)
+     * @return Collection<string, int> teamId => reputation index (0 = elite, 4 = local)
      */
     private function loadTeamReputations(Game $game, Collection $teamRosters): Collection
     {
@@ -1409,14 +1407,14 @@ class AITransferMarketService
         return $teamRosters->keys()->mapWithKeys(function ($teamId) use ($levels) {
             $level = $levels->get($teamId) ?? ClubProfile::REPUTATION_LOCAL;
 
-            // Invert: ClubProfile uses 0=local,6=elite; this service needs 0=elite,6=local
-            return [$teamId => 6 - ClubProfile::getReputationTierIndex($level)];
+            // Invert: ClubProfile uses 0=local,4=elite; this service needs 0=elite,4=local
+            return [$teamId => 4 - ClubProfile::getReputationTierIndex($level)];
         });
     }
 
     private function getReputationIndex(string $teamId, Collection $teamReputations): int
     {
-        return $teamReputations->get($teamId, 6);
+        return $teamReputations->get($teamId, 4);
     }
 
     // ── Utility helpers ─────────────────────────────────────────────────
