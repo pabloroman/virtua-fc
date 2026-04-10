@@ -23,7 +23,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/>
                 </svg>
-                <span class="text-[9px] font-medium uppercase tracking-wider leading-none">{{ __('app.dashboard') }}</span>
+                <span class="text-[9px] font-medium uppercase tracking-wider leading-tight text-center">{{ __('app.dashboard') }}</span>
             </a>
 
             {{-- Squad --}}
@@ -31,7 +31,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/>
                 </svg>
-                <span class="text-[9px] font-medium uppercase tracking-wider leading-none">{{ __('app.squad') }}</span>
+                <span class="text-[9px] font-medium uppercase tracking-wider leading-tight text-center">{{ __('app.squad') }}</span>
             </a>
 
             {{-- Starting XI (only when there's a next match) --}}
@@ -40,7 +40,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12"/>
                 </svg>
-                <span class="text-[9px] font-medium uppercase tracking-wider leading-none">{{ __('app.starting_xi') }}</span>
+                <span class="text-[9px] font-medium uppercase tracking-wider leading-tight text-center">{{ __('app.starting_xi') }}</span>
             </a>
             @endif
 
@@ -50,7 +50,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/>
                 </svg>
-                <span class="text-[9px] font-medium uppercase tracking-wider leading-none">{{ __('app.transfers') }}</span>
+                <span class="text-[9px] font-medium uppercase tracking-wider leading-tight text-center">{{ __('app.transfers') }}</span>
             </a>
             @endif
 
@@ -62,7 +62,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
                 </svg>
-                <span class="text-[9px] font-medium uppercase tracking-wider leading-none">{{ __('app.more') }}</span>
+                <span class="text-[9px] font-medium uppercase tracking-wider leading-tight text-center">{{ __('app.more') }}</span>
             </button>
         </div>
     </nav>
