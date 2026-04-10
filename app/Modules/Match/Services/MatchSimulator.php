@@ -1101,41 +1101,6 @@ class MatchSimulator
     }
 
     /**
-     * Calculate striker quality bonus for expected goals.
-     *
-     * Elite forwards (90+) provide a significant boost to their team's
-     * expected goals, reflecting their ability to create chances from nothing.
-     *
-     * @param  Collection<GamePlayer>  $lineup
-     * @return float Bonus expected goals (0.0 to ~0.5)
-     */
-    private function calculateStrikerBonus(Collection $lineup): float
-    {
-        $forwardPositions = ['Centre-Forward', 'Second Striker', 'Left Winger', 'Right Winger'];
-
-        // Get the best forward in the lineup (using effective score for match-day variance)
-        $bestForwardScore = 0;
-        foreach ($lineup as $player) {
-            if (in_array($player->position, $forwardPositions)) {
-                $effectiveScore = $this->getEffectiveScore($player);
-                $bestForwardScore = max($bestForwardScore, $effectiveScore);
-            }
-        }
-
-        // No bonus if no forwards or if best forward is below 85
-        if ($bestForwardScore < 85) {
-            return 0.0;
-        }
-
-        // Bonus scales from 0 at 85 to ~0.30 at 100
-        // Formula: (rating - 85) / 50 gives 0.0 to 0.30 range
-        // Only truly elite forwards provide a noticeable boost
-        // A 94-rated forward gets +0.18 expected goals
-        // A 88-rated striker gets +0.06 expected goals
-        return ($bestForwardScore - 85) / 50;
-    }
-
-    /**
      * Calculate opponent xG multiplier based on goalkeeper quality.
      *
      * Returns a multiplier >= 1.0 applied to the OPPONENT's expected goals.
@@ -1518,7 +1483,7 @@ class MatchSimulator
 
     /**
      * Calculate base expected goals from strength ratio, formation, mentality, and match fraction.
-     * Does not include tactical instruction modifiers, striker bonus, or max goals cap.
+     * Does not include tactical instruction modifiers or max goals cap.
      *
      * @return array{0: float, 1: float} [homeXG, awayXG]
      */
@@ -1763,9 +1728,6 @@ class MatchSimulator
             $effectiveMinute,
         );
 
-        $homeExpectedGoals += $this->calculateStrikerBonus($homePlayers) * $matchFraction;
-        $awayExpectedGoals += $this->calculateStrikerBonus($awayPlayers) * $matchFraction;
-
         // Goalkeeper quality: missing/out-of-position GK increases opponent xG
         $awayExpectedGoals *= $this->calculateGoalkeeperModifier($homePlayers);
         $homeExpectedGoals *= $this->calculateGoalkeeperModifier($awayPlayers);
@@ -1866,9 +1828,6 @@ class MatchSimulator
                     $effectiveMinute,
                     $homePlayers, $awayPlayers,
                 );
-
-                $homeExpectedGoals += $this->calculateStrikerBonus($homePlayers) * $matchFraction;
-                $awayExpectedGoals += $this->calculateStrikerBonus($awayPlayers) * $matchFraction;
 
                 $awayExpectedGoals *= $this->calculateGoalkeeperModifier($homePlayers);
                 $homeExpectedGoals *= $this->calculateGoalkeeperModifier($awayPlayers);
@@ -2033,9 +1992,6 @@ class MatchSimulator
             $homePlayers, $awayPlayers,
         );
 
-        $homeXG1 += $this->calculateStrikerBonus($homePlayers) * $fraction1;
-        $awayXG1 += $this->calculateStrikerBonus($awayPlayers) * $fraction1;
-
         $awayXG1 *= $this->calculateGoalkeeperModifier($homePlayers);
         $homeXG1 *= $this->calculateGoalkeeperModifier($awayPlayers);
 
@@ -2092,9 +2048,6 @@ class MatchSimulator
             $homeMentality, $awayMentality,
             $effectiveMinute2,
         );
-
-        $homeXG2 += $this->calculateStrikerBonus($homePlayers2) * $fraction2;
-        $awayXG2 += $this->calculateStrikerBonus($awayPlayers2) * $fraction2;
 
         $awayXG2 *= $this->calculateGoalkeeperModifier($homePlayers2);
         $homeXG2 *= $this->calculateGoalkeeperModifier($awayPlayers2);

@@ -20,8 +20,6 @@ The stronger team is always favored regardless of venue — home advantage is a 
 
 **Team strength** is calculated from the 11-player lineup with ability-dominant weights (technical 57.5%, physical 37.5%, morale 5%), each modified by a per-player energy effectiveness modifier and a random daily performance variance (normal distribution, tight range). See `calculateTeamStrength()` in `MatchSimulator`.
 
-**Striker bonus**: The best forward in the lineup above a quality threshold adds bonus xG. See `calculateStrikerBonus()`.
-
 All base values and exponents are configurable in `config/match_simulation.php`.
 
 ## Formation & Mentality
