@@ -283,10 +283,13 @@ class ScoutingService
 
         $totalMultiplier = $importanceMultiplier * $contractModifier * $ageModifier;
 
-        // Important players with contract leverage: team is reluctant to sell,
-        // never ask below market value. Players without leverage (expiring)
-        // or with low importance can be discounted down to 0.75x.
-        $floor = $effectiveImportance >= 0.5 ? 1.0 : 0.75;
+        // Important players are never sold below market value — the club's
+        // reluctance (see DispositionService::clubSellDisposition) is driven
+        // by raw importance, so the asking price floor must be too. Contract
+        // leverage decay still reduces the premium above market value via
+        // $importanceMultiplier, but shouldn't drag a key player's price
+        // below 1.0x. Non-key players can be discounted down to 0.75x.
+        $floor = $importance >= 0.5 ? 1.0 : 0.75;
         $totalMultiplier = min(max($totalMultiplier, $floor), 1.5);
 
         $askingPrice = $base * $totalMultiplier;
