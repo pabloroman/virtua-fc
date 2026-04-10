@@ -544,7 +544,12 @@ class Game extends Model
             return __('app.summer_window');
         }
 
-        return $this->transferWindow()->nextWindowDisplayName();
+        // If a window is currently open, that is the window any pending "agreed"
+        // transfer will complete in — not the chronologically next one.
+        $tw = $this->transferWindow();
+
+        return ($tw->isOpen() ? $tw->displayName() : null)
+            ?? $tw->nextWindowDisplayName();
     }
 
     /**

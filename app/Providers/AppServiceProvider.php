@@ -30,6 +30,7 @@ use App\Modules\Match\Listeners\UpdateManagerStats;
 use App\Modules\Season\Listeners\GrantCareerAccessToChampion;
 use App\Modules\Squad\Listeners\CheckRecoveredPlayers;
 use App\Modules\Squad\Listeners\EnforceSquadRegistration;
+use App\Modules\Transfer\Listeners\CompleteAgreedTransfersOnWindowOpen;
 use App\Modules\Transfer\Listeners\ProcessTransferWindowClose;
 use App\Modules\Season\Listeners\RecordSeasonCompleted;
 use App\Modules\Season\Listeners\SimulateOtherLeagues;
@@ -106,6 +107,7 @@ class AppServiceProvider extends ServiceProvider
 
         Event::listen(GameDateAdvanced::class, CheckRecoveredPlayers::class);
         Event::listen(GameDateAdvanced::class, NotifyTransferWindowOpen::class);
+        Event::listen(GameDateAdvanced::class, CompleteAgreedTransfersOnWindowOpen::class);
         Event::listen(GameDateAdvanced::class, NotifyTransferWindowClosing::class);
         Event::listen(GameDateAdvanced::class, ProcessTransferWindowClose::class);
         Event::listen(GameDateAdvanced::class, NotifyTransferWindowClosed::class);
