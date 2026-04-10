@@ -190,17 +190,17 @@ class GamePlayer extends Model
     /**
      * All positions this player can play.
      *
-     * The secondary_positions column stores the full list (including primary).
-     * Falls back to the primary position when secondary_positions is empty
-     * (e.g. computer-generated players or legacy data).
+     * Merges the primary position with any secondary positions, de-duplicated
+     * and capped at 3 total. The primary position always comes first.
      *
      * @return string[]
      */
     public function getPositionsAttribute(): array
     {
-        $positions = $this->secondary_positions ?? [];
+        $secondary = $this->secondary_positions ?? [];
+        $positions = array_values(array_unique(array_merge([$this->position], $secondary)));
 
-        return !empty($positions) ? $positions : [$this->position];
+        return array_slice($positions, 0, 3);
     }
 
     /**
