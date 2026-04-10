@@ -76,7 +76,7 @@
                         {{-- ============================== --}}
                         {{-- LEFT COLUMN (2/3) — Shortlist + Search History --}}
                         {{-- ============================== --}}
-                        <div class="md:col-span-2 space-y-6">
+                        <div class="md:col-span-2 space-y-6 order-2 md:order-1">
 
                             {{-- Shortlist Section (Reactive Alpine.js) --}}
                             <div x-data="{
@@ -677,7 +677,7 @@
                         {{-- ============================== --}}
                         {{-- RIGHT COLUMN (1/3) — Search Panel --}}
                         {{-- ============================== --}}
-                        <div class="space-y-6">
+                        <div class="space-y-6 order-1 md:order-2">
 
                             @if($searchingReport)
                                 {{-- Searching State --}}
