@@ -54,7 +54,6 @@ class ScoutingService
     public function __construct(
         private readonly ContractService $contractService,
         private readonly DispositionService $dispositionService,
-        private readonly AITeamBudgetCalculator $budgetCalculator,
     ) {}
 
     /**
@@ -258,13 +257,11 @@ class ScoutingService
 
     /**
      * Calculate the AI's asking price for a player.
-     *
-     * @param  Collection|null  $teammates  Pre-loaded teammates for financial pressure calculation
      */
-    public function calculateAskingPrice(GamePlayer $player, ?Collection $teammates = null): int
+    public function calculateAskingPrice(GamePlayer $player): int
     {
         $base = $player->market_value_cents;
-        $importance = $this->calculatePlayerImportance($player, $teammates);
+        $importance = $this->calculatePlayerImportance($player);
 
         // Importance multiplier: 0.8x for worst, 1.0x for average, 1.2x for best
         $importanceMultiplier = 0.8 + ($importance * 0.4);
@@ -277,10 +274,6 @@ class ScoutingService
 
         $totalMultiplier = $importanceMultiplier * $contractModifier * $ageModifier;
 
-        // Financial pressure discount: cash-strapped clubs accept lower prices
-        $pressureDiscount = $this->getFinancialPressureDiscount($player, $teammates);
-        $totalMultiplier *= $pressureDiscount;
-
         // Important players: team is reluctant to sell, never ask below market value.
         // Low-importance players can be discounted down to 0.75x.
         $floor = $importance >= 0.5 ? 1.0 : 0.75;
@@ -289,31 +282,6 @@ class ScoutingService
         $askingPrice = $base * $totalMultiplier;
 
         return Money::roundPrice((int) $askingPrice);
-    }
-
-    /**
-     * Calculate a discount factor (0.80-1.00) based on the selling team's financial pressure.
-     */
-    private function getFinancialPressureDiscount(GamePlayer $player, ?Collection $teammates = null): float
-    {
-        if ($player->team_id === null) {
-            return 1.0;
-        }
-
-        $teammates ??= GamePlayer::where('game_id', $player->game_id)
-            ->where('team_id', $player->team_id)
-            ->select(['id', 'annual_wage'])
-            ->get();
-
-        $reputationLevel = \App\Models\TeamReputation::resolveLevel($player->game_id, $player->team_id);
-        $pressure = $this->budgetCalculator->financialPressure($teammates, $reputationLevel);
-
-        if ($pressure <= 0.30) {
-            return 1.0; // Financially healthy — no discount
-        }
-
-        // Scale from 1.0 at pressure 0.30 down to 0.80 at pressure 1.0
-        return max(0.80, 1.0 - ($pressure - 0.30) * 0.286);
     }
 
     /**
