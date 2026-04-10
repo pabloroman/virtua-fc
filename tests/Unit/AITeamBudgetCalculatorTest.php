@@ -167,35 +167,6 @@ class AITeamBudgetCalculatorTest extends TestCase
         );
     }
 
-    public function test_offer_multiplier_returns_null_when_cant_afford(): void
-    {
-        $result = $this->calculator->offerMultiplier(100_000_000_00, 50_000_000_00);
-        $this->assertNull($result);
-    }
-
-    public function test_offer_multiplier_returns_value_when_affordable(): void
-    {
-        $result = $this->calculator->offerMultiplier(10_000_000_00, 100_000_000_00);
-        $this->assertNotNull($result);
-        $this->assertGreaterThanOrEqual(0.75, $result);
-        $this->assertLessThanOrEqual(1.10, $result);
-    }
-
-    public function test_offer_multiplier_higher_for_comfortable_purchases(): void
-    {
-        // Run multiple times to account for randomness
-        $cheapTotal = 0;
-        $expensiveTotal = 0;
-        $iterations = 50;
-
-        for ($i = 0; $i < $iterations; $i++) {
-            $cheapTotal += $this->calculator->offerMultiplier(5_000_000_00, 100_000_000_00) ?? 0;
-            $expensiveTotal += $this->calculator->offerMultiplier(60_000_000_00, 100_000_000_00) ?? 0;
-        }
-
-        $this->assertGreaterThan($expensiveTotal / $iterations, $cheapTotal / $iterations);
-    }
-
     public function test_budget_tracks_transfer_counts(): void
     {
         $teamRosters = collect([

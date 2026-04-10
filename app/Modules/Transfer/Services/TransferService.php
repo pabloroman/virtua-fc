@@ -32,7 +32,6 @@ class TransferService
         private readonly ContractService $contractService,
         private readonly DispositionService $dispositionService,
         private readonly SquadNumberService $squadNumberService,
-        private readonly AITeamBudgetCalculator $budgetCalculator,
     ) {}
 
     /**
@@ -198,10 +197,7 @@ class TransferService
             }
 
             if (rand(1, 100) <= $offerChance) {
-                $result = $this->getEligibleBuyersWithSquadValues($player, $buyerPool);
-                $buyers = $result['buyers'];
-                $squadValues = $result['squadValues'];
-                $buyerBudgets = $result['buyerBudgets'] ?? collect();
+                ['buyers' => $buyers, 'squadValues' => $squadValues] = $this->getEligibleBuyersWithSquadValues($player, $buyerPool);
 
                 // Exclude teams that already made offers
                 $existingOfferTeamIds = $playerOffers
@@ -219,7 +215,6 @@ class TransferService
                         player: $player,
                         offeringTeam: $buyer,
                         offerType: TransferOffer::TYPE_LISTED,
-                        buyerBudget: $buyerBudgets->get($buyer->id, 0),
                     );
                     $offers->push($offer);
                 }
@@ -277,25 +272,14 @@ class TransferService
 
             // Random chance for an offer
             if (rand(1, 100) <= self::UNSOLICITED_OFFER_CHANCE * 100) {
-                $result = $this->getEligibleBuyersWithSquadValues($player, $buyerPool);
-                $buyers = $result['buyers'];
-                $squadValues = $result['squadValues'];
-                $buyerBudgets = $result['buyerBudgets'] ?? collect();
+                ['buyers' => $buyers, 'squadValues' => $squadValues] = $this->getEligibleBuyersWithSquadValues($player, $buyerPool);
 
-                // For unsolicited offers, only allow buyers where player costs < 60% of budget
-                $affordableBuyers = $buyers->filter(function ($team) use ($buyerBudgets, $player) {
-                    $budget = $buyerBudgets->get($team->id, 0);
-
-                    return $budget <= 0 || $player->market_value_cents <= $budget * 0.60;
-                });
-
-                if ($affordableBuyers->isNotEmpty()) {
-                    $buyer = $this->selectWeightedBuyer($affordableBuyers, $player, $squadValues);
+                if ($buyers->isNotEmpty()) {
+                    $buyer = $this->selectWeightedBuyer($buyers, $player, $squadValues);
                     $offer = $this->createOffer(
                         player: $player,
                         offeringTeam: $buyer,
                         offerType: TransferOffer::TYPE_UNSOLICITED,
-                        buyerBudget: $buyerBudgets->get($buyer->id, 0),
                     );
                     $offers->push($offer);
                 }
@@ -637,9 +621,9 @@ class TransferService
     /**
      * Create an offer for a player.
      */
-    private function createOffer(GamePlayer $player, Team $offeringTeam, string $offerType, int $buyerBudget = 0): TransferOffer
+    private function createOffer(GamePlayer $player, Team $offeringTeam, string $offerType): TransferOffer
     {
-        $transferFee = $this->calculateOfferPrice($player, $offerType, $buyerBudget);
+        $transferFee = $this->calculateOfferPrice($player, $offerType);
         $expiryDays = $offerType === TransferOffer::TYPE_LISTED
             ? self::LISTED_OFFER_EXPIRY_DAYS
             : self::UNSOLICITED_OFFER_EXPIRY_DAYS;
@@ -658,9 +642,9 @@ class TransferService
     }
 
     /**
-     * Calculate offer price based on player, offer type, and buyer's financial capacity.
+     * Calculate offer price based on player and offer type.
      */
-    private function calculateOfferPrice(GamePlayer $player, string $offerType, int $buyerBudget = 0): int
+    private function calculateOfferPrice(GamePlayer $player, string $offerType): int
     {
         $baseValue = $player->market_value_cents;
 
@@ -669,14 +653,6 @@ class TransferService
             $typeModifier = self::LISTED_PRICE_MIN + (mt_rand() / mt_getrandmax()) * (self::LISTED_PRICE_MAX - self::LISTED_PRICE_MIN);
         } else {
             $typeModifier = self::UNSOLICITED_PRICE_MIN + (mt_rand() / mt_getrandmax()) * (self::UNSOLICITED_PRICE_MAX - self::UNSOLICITED_PRICE_MIN);
-        }
-
-        // Budget-aware scaling: richer buyers offer more
-        if ($buyerBudget > 0 && $baseValue > 0) {
-            $budgetMultiplier = $this->budgetCalculator->offerMultiplier($baseValue, $buyerBudget);
-            if ($budgetMultiplier !== null) {
-                $typeModifier *= $budgetMultiplier;
-            }
         }
 
         // Age modifier
@@ -721,15 +697,7 @@ class TransferService
         $leagueTeams = Team::whereIn('id', $leagueTeamIds)->get()->keyBy('id');
         $reputationLevels = TeamReputation::resolveLevels($game->id, $leagueTeamIds);
 
-        // Compute virtual budgets for AI buyer affordability checks
-        $buyerBudgets = $this->computeBuyerBudgets($game, $leagueTeamIds, $reputationLevels);
-
-        return [
-            'leagueTeams' => $leagueTeams,
-            'squadValues' => $squadValues,
-            'reputationLevels' => $reputationLevels,
-            'buyerBudgets' => $buyerBudgets,
-        ];
+        return ['leagueTeams' => $leagueTeams, 'squadValues' => $squadValues, 'reputationLevels' => $reputationLevels];
     }
 
     /**
@@ -749,7 +717,6 @@ class TransferService
             $squadValues = $buyerPool['squadValues'];
             $leagueTeams = $buyerPool['leagueTeams'];
             $reputationLevels = $buyerPool['reputationLevels'];
-            $buyerBudgets = $buyerPool['buyerBudgets'] ?? collect();
 
             // Filter to teams whose squad value can support the transfer fee
             $eligibleTeamIds = $squadValues
@@ -765,15 +732,9 @@ class TransferService
 
                     return $playerTier < $minTier;
                 })
-                ->reject(function ($team) use ($buyerBudgets, $playerValue) {
-                    // Reject buyers who can't afford the player (>80% of their budget)
-                    $budget = $buyerBudgets->get($team->id, 0);
-
-                    return $budget > 0 && $playerValue > $budget * 0.80;
-                })
                 ->values();
 
-            return ['buyers' => $buyers, 'squadValues' => $squadValues, 'buyerBudgets' => $buyerBudgets];
+            return ['buyers' => $buyers, 'squadValues' => $squadValues];
         }
 
         $game = $player->game;
@@ -807,9 +768,8 @@ class TransferService
             ->toArray();
 
         $buyers = Team::whereIn('id', $eligibleTeamIds)->get();
-        $buyerBudgets = $this->computeBuyerBudgets($game, $eligibleTeamIds, $reputationLevels);
 
-        return ['buyers' => $buyers, 'squadValues' => $squadValues, 'buyerBudgets' => $buyerBudgets];
+        return ['buyers' => $buyers, 'squadValues' => $squadValues];
     }
 
     /**
@@ -822,26 +782,6 @@ class TransferService
             ->selectRaw('team_id, SUM(market_value_cents) as total_value')
             ->groupBy('team_id')
             ->pluck('total_value', 'team_id');
-    }
-
-    /**
-     * Compute virtual transfer budgets for AI buyer teams.
-     *
-     * Returns a simple map of teamId => available budget (in cents).
-     * Uses reputation-based spending envelopes from config. No extra DB queries
-     * needed since reputation levels are already resolved.
-     *
-     * @return Collection<string, int> teamId => available budget in cents
-     */
-    private function computeBuyerBudgets(Game $game, array $teamIds, Collection $reputationLevels): Collection
-    {
-        $budgetsByReputation = config('finances.ai_transfer_budgets', []);
-
-        return collect($teamIds)->mapWithKeys(function ($teamId) use ($reputationLevels, $budgetsByReputation) {
-            $reputation = $reputationLevels[$teamId] ?? ClubProfile::REPUTATION_LOCAL;
-
-            return [$teamId => $budgetsByReputation[$reputation] ?? $budgetsByReputation['local'] ?? 300_000_000];
-        });
     }
 
     /**

@@ -111,42 +111,6 @@ class AITeamBudgetCalculator
     }
 
     /**
-     * Compute a budget-aware offer multiplier for a buyer making an offer.
-     *
-     * Returns a multiplier (0.75-1.10) based on how affordable the player
-     * is relative to the buyer's budget. Returns null if the buyer can't afford.
-     *
-     * @param  int  $playerMarketValue  Player's market value in cents
-     * @param  int  $buyerBudget  Buyer's available budget in cents
-     * @return float|null  Multiplier for the offer fee, or null if can't afford
-     */
-    public function offerMultiplier(int $playerMarketValue, int $buyerBudget): ?float
-    {
-        if ($buyerBudget <= 0 || $playerMarketValue <= 0) {
-            return null;
-        }
-
-        $costRatio = $playerMarketValue / $buyerBudget;
-
-        if ($costRatio > 0.80) {
-            return null; // Can't afford
-        }
-
-        // Comfortable purchase: offer premium
-        if ($costRatio < 0.20) {
-            return 1.0 + (mt_rand(0, 10) / 100); // 1.00-1.10
-        }
-
-        // Normal purchase
-        if ($costRatio < 0.50) {
-            return 0.85 + (mt_rand(0, 15) / 100); // 0.85-1.00
-        }
-
-        // Stretching: lowball
-        return 0.75 + (mt_rand(0, 15) / 100); // 0.75-0.90
-    }
-
-    /**
      * Compute a deterministic transfer count for a team using hash-based distribution.
      * Same inputs always produce the same count — no state storage needed.
      */
