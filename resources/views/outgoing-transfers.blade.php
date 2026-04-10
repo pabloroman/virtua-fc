@@ -151,7 +151,7 @@
                                                             ],
                                                         ]);
                                                     @endphp
-                                                    <x-primary-button type="button" x-on:click="$dispatch('open-negotiation', {{ $counterOfferDetail }})">
+                                                    <x-primary-button type="button" size="sm" x-on:click="$dispatch('open-negotiation', {{ $counterOfferDetail }})">
                                                         {{ __('transfers.negotiate') }}
                                                     </x-primary-button>
                                                 </div>
@@ -209,7 +209,7 @@
                                                                 ],
                                                             ]);
                                                         @endphp
-                                                        <x-action-button color="green" type="button" x-on:click="$dispatch('open-negotiation', {{ $renewalDetail }})">
+                                                        <x-action-button color="green" type="button" size="sm" x-on:click="$dispatch('open-negotiation', {{ $renewalDetail }})">
                                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                                                             {{ __('squad.renew') }}
                                                         </x-action-button>
@@ -275,7 +275,7 @@
                                                             ],
                                                         ]);
                                                     @endphp
-                                                    <x-primary-button type="button" x-on:click="$dispatch('open-negotiation', {{ $counterOfferDetail }})">
+                                                    <x-primary-button type="button" size="sm" x-on:click="$dispatch('open-negotiation', {{ $counterOfferDetail }})">
                                                         {{ __('transfers.negotiate') }}
                                                     </x-primary-button>
                                                 </div>

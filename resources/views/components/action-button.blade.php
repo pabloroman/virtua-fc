@@ -1,4 +1,4 @@
-@props(['color' => 'blue'])
+@props(['color' => 'blue', 'size' => 'default'])
 
 @php
 $colors = [
@@ -9,8 +9,13 @@ $colors = [
     'violet' => 'border-violet-500/20 text-violet-400 bg-violet-500/10 hover:bg-violet-500/20',
 ];
 $colorClasses = $colors[$color] ?? $colors['blue'];
+
+$sizeClasses = match($size) {
+    'sm' => 'px-3 py-1.5 text-xs rounded-lg min-h-[36px]',
+    default => 'px-3 py-1.5 text-sm rounded-lg min-h-[44px]',
+};
 @endphp
 
-<button {{ $attributes->merge(['type' => 'submit', 'class' => "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border {$colorClasses} transition-colors min-h-[44px]"]) }}>
+<button {{ $attributes->merge(['type' => 'submit', 'class' => "inline-flex items-center gap-1.5 {$sizeClasses} font-medium border {$colorClasses} transition-colors"]) }}>
     {{ $slot }}
 </button>
