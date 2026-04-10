@@ -99,8 +99,6 @@ return [
     'value_range' => 'Rango de Valor de Mercado',
     'contract' => 'Contrato',
     'expiring_contract' => 'Último año de contrato',
-    'include_secondary' => 'Incluir posiciones secundarias',
-    'include_secondary_hint' => 'También encontrar jugadores que pueden jugar esta posición como rol secundario',
     'start_scout_search' => 'Iniciar Búsqueda',
 
     // Scout searching
