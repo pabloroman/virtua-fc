@@ -256,7 +256,7 @@
                             </div>
 
                             {{-- Player list --}}
-                            <div :class="{ 'select-none': listDragPlayerId }">
+                            <div class="flex flex-col" :class="{ 'select-none': listDragPlayerId }">
                                 @foreach([
                                     ['name' => __('squad.goalkeepers'), 'players' => $goalkeepers, 'role' => 'Goalkeeper'],
                                     ['name' => __('squad.defenders'), 'players' => $defenders, 'role' => 'Defender'],
@@ -275,6 +275,7 @@
                                             @endphp
                                             <div
                                                 x-show="posTab === 'all' || posTab === '{{ $posGroup }}'"
+                                                :style="`order: ${listSortOrder('{{ $player->id }}')}`"
                                                 @click="toggle('{{ $player->id }}', {{ $isUnavailable ? 'true' : 'false' }})"
                                                 @mousedown="startListDrag('{{ $player->id }}', $event)"
                                                 @mouseenter="hoveredPlayerId = '{{ $player->id }}'"
