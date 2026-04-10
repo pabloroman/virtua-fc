@@ -3,6 +3,9 @@
     'game',
     'showTeam' => false,
     'isOwnTeam' => false,
+    'showOvr' => false,
+    'askingPrice' => null,
+    'teamPlacement' => 'column', // 'column' | 'inline'
 ])
 
 @php
@@ -20,11 +23,18 @@ $canNegotiateFreeAgent = $isFreeAgent && !$isOwnTeam;
     </td>
     {{-- Name + nationality + mobile details --}}
     <td class="py-2 pr-3">
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 min-w-0">
             @if($player->nationality_flag['code'] ?? null)
             <img src="{{ Storage::disk('assets')->url('flags/' . $player->nationality_flag['code'] . '.svg') }}" class="w-4 h-3 rounded-xs shadow-xs shrink-0" title="{{ $player->nationality_flag['name'] }}">
             @endif
             <span class="font-medium text-text-primary truncate">{{ $player->name }}</span>
+            @if($teamPlacement === 'inline' && $showTeam && $player->team)
+            <span class="hidden md:inline-flex items-center gap-1 text-xs text-text-muted min-w-0 shrink">
+                <span class="text-text-muted/60">&middot;</span>
+                <img src="{{ $player->team->image }}" alt="{{ $player->team->name }}" class="w-4 h-4 shrink-0 object-contain">
+                <span class="truncate">{{ $player->team->name }}</span>
+            </span>
+            @endif
             @if(!$showTeam && $player->is_loaned_in)
             <span class="text-[10px] bg-violet-500/10 text-violet-400 px-1.5 py-0.5 rounded-sm font-medium shrink-0">{{ __('transfers.loans') }}</span>
             @endif
@@ -43,13 +53,21 @@ $canNegotiateFreeAgent = $isFreeAgent && !$isOwnTeam;
             <span>{{ $player->age($game->current_date) }} {{ __('app.years') }}</span>
             <span>&middot;</span>
             <span>{{ \App\Support\Money::format($player->market_value_cents) }}</span>
+            @if($showOvr)
+                <span>&middot;</span>
+                <span>OVR {{ $player->overall_score }}</span>
+            @endif
+            @if($askingPrice !== null)
+                <span>&middot;</span>
+                <span class="font-medium text-text-primary">{{ \App\Support\Money::format($askingPrice) }}</span>
+            @endif
             @if(!$showTeam)
                 <span>&middot;</span>
                 <span>{{ $player->contract_until?->year ?? '—' }}</span>
             @endif
         </div>
     </td>
-    @if($showTeam)
+    @if($showTeam && $teamPlacement === 'column')
     {{-- Team --}}
     <td class="py-2 pr-3 hidden md:table-cell">
         @if($player->team)
@@ -64,8 +82,18 @@ $canNegotiateFreeAgent = $isFreeAgent && !$isOwnTeam;
     @endif
     {{-- Age --}}
     <td class="py-2 pr-3 hidden md:table-cell text-center text-text-secondary tabular-nums">{{ $player->age($game->current_date) }}</td>
+    @if($showOvr)
+    {{-- OVR --}}
+    <td class="py-2 pr-3 hidden md:table-cell text-center">
+        <x-rating-badge :value="$player->overall_score" size="sm" />
+    </td>
+    @endif
     {{-- Market value --}}
     <td class="py-2 pr-3 hidden md:table-cell text-text-secondary tabular-nums">{{ \App\Support\Money::format($player->market_value_cents) }}</td>
+    @if($askingPrice !== null)
+    {{-- Asking price --}}
+    <td class="py-2 pr-3 hidden md:table-cell text-right font-semibold text-text-primary tabular-nums">{{ \App\Support\Money::format($askingPrice) }}</td>
+    @endif
     @if(!$showTeam)
     {{-- Contract --}}
     <td class="py-2 pr-3 hidden md:table-cell text-center text-text-muted tabular-nums">{{ $player->contract_until?->year ?? '—' }}</td>

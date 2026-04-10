@@ -25,7 +25,7 @@
             ['href' => route('game.transfers.market', $game->id), 'label' => __('transfers.market_tab'), 'active' => true],
         ]" />
 
-        <div class="mt-6" x-data="{ posFilter: 'all' }">
+        <div class="mt-6">
             @if(!$isTransferWindow)
                 {{-- Window closed state --}}
                 <div class="bg-surface-800 border border-border-default rounded-xl p-8 text-center">
@@ -43,192 +43,32 @@
                     <p class="text-text-secondary text-sm">{{ __('transfers.market_empty') }}</p>
                 </div>
             @else
-                {{-- Position filter pills --}}
-                <div class="flex flex-wrap gap-2 mb-4">
-                    @foreach([
-                        'all' => __('transfers.explore_filter_all'),
-                        'gk' => __('squad.goalkeepers'),
-                        'def' => __('squad.defenders'),
-                        'mid' => __('squad.midfielders'),
-                        'fwd' => __('squad.forwards'),
-                    ] as $filterKey => $filterLabel)
-                        <button
-                            @click="posFilter = '{{ $filterKey }}'"
-                            :class="posFilter === '{{ $filterKey }}'
-                                ? 'bg-accent-blue/15 text-accent-blue border-accent-blue/30'
-                                : 'bg-surface-800 text-text-secondary border-border-default hover:bg-surface-700'"
-                            class="px-3 py-1.5 text-xs font-medium rounded-full border transition-colors"
-                        >
-                            {{ $filterLabel }}
-                        </button>
-                    @endforeach
-                </div>
-
-                {{-- Budget info --}}
-                <div class="mb-4 text-xs text-text-secondary">
-                    {{ __('transfers.budget_available') }}: <span class="font-semibold text-text-primary">{{ \App\Support\Money::format($availableBudget) }}</span>
-                </div>
-
-                {{-- Desktop table --}}
-                <div class="hidden md:block overflow-x-auto">
+                <div class="overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead>
-                            <tr class="border-b border-border-default text-text-muted text-xs uppercase tracking-wider">
-                                <th class="text-left py-3 px-3 font-medium">{{ __('transfers.transfer_activity_player') }}</th>
-                                <th class="text-center py-3 px-2 font-medium">{{ __('transfers.transfer_activity_position') }}</th>
-                                <th class="text-center py-3 px-2 font-medium">{{ __('transfers.transfer_activity_age') }}</th>
-                                <th class="text-center py-3 px-2 font-medium">OVR</th>
-                                <th class="text-right py-3 px-2 font-medium">{{ __('transfers.market_value') }}</th>
-                                <th class="text-right py-3 px-2 font-medium">{{ __('transfers.market_asking_price') }}</th>
-                                <th class="text-left py-3 px-3 font-medium">{{ __('transfers.explore_search_team') }}</th>
-                                <th class="text-right py-3 px-3 font-medium"></th>
+                            <tr class="text-left border-b border-border-default">
+                                <th class="py-2.5 pl-4 w-12"></th>
+                                <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider"></th>
+                                <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider text-center hidden md:table-cell">{{ __('transfers.explore_age') }}</th>
+                                <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider text-center hidden md:table-cell">OVR</th>
+                                <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider hidden md:table-cell">{{ __('transfers.explore_value') }}</th>
+                                <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider text-right hidden md:table-cell">{{ __('transfers.market_asking_price') }}</th>
+                                <th class="py-2.5 w-10"></th>
+                                <th class="py-2.5 pr-4 w-10"></th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($listings as $listing)
-                                @php
-                                    $gp = $listing->gamePlayer;
-                                    $posGroup = strtolower(match($gp->position_group) {
-                                        'Goalkeeper' => 'gk',
-                                        'Defender' => 'def',
-                                        'Midfielder' => 'mid',
-                                        'Forward' => 'fwd',
-                                        default => 'mid',
-                                    });
-                                    $posDisp = $gp->position_display;
-                                    $playerInfo = \Illuminate\Support\Js::from([
-                                        'age' => $gp->age($game->current_date),
-                                        'position' => $posDisp['abbreviation'],
-                                        'positionBg' => $posDisp['bg'],
-                                        'positionText' => $posDisp['text'],
-                                        'marketValue' => $gp->formatted_market_value,
-                                        'contractYear' => $gp->contract_expiry_year,
-                                    ]);
-                                @endphp
-                                <tr x-show="posFilter === 'all' || posFilter === '{{ $posGroup }}'"
-                                    class="border-b border-border-default/50 hover:bg-surface-700/50 transition-colors">
-                                    {{-- Player name --}}
-                                    <td class="py-3 px-3">
-                                        <span class="font-medium text-text-primary">{{ $gp->name }}</span>
-                                    </td>
-
-                                    {{-- Position --}}
-                                    <td class="py-3 px-2 text-center">
-                                        <x-position-badge :position="$gp->position" size="sm" />
-                                    </td>
-
-                                    {{-- Age --}}
-                                    <td class="py-3 px-2 text-center text-text-secondary">{{ $gp->age($game->current_date) }}</td>
-
-                                    {{-- OVR --}}
-                                    <td class="py-3 px-2 text-center">
-                                        <x-rating-badge :value="$gp->overall_score" size="sm" />
-                                    </td>
-
-                                    {{-- Market Value --}}
-                                    <td class="py-3 px-2 text-right text-text-secondary">{{ $gp->formatted_market_value }}</td>
-
-                                    {{-- Asking Price --}}
-                                    <td class="py-3 px-2 text-right font-medium text-text-primary">{{ \App\Support\Money::format($listing->asking_price) }}</td>
-
-                                    {{-- Team --}}
-                                    <td class="py-3 px-3">
-                                        @if($gp->team)
-                                            <div class="flex items-center gap-1.5">
-                                                <x-team-crest :team="$gp->team" class="w-4 h-4 shrink-0" />
-                                                <span class="text-text-secondary truncate">{{ $gp->team->name }}</span>
-                                            </div>
-                                        @endif
-                                    </td>
-
-                                    {{-- Bid button --}}
-                                    <td class="py-3 px-3 text-right">
-                                        @if($availableBudget > 0)
-                                            <x-primary-button size="xs"
-                                                @click="$dispatch('open-negotiation', {
-                                                    playerName: {{ \Illuminate\Support\Js::from($gp->name) }},
-                                                    negotiateUrl: {{ \Illuminate\Support\Js::from(route('game.negotiate.transfer', [$game->id, $gp->id])) }},
-                                                    mode: 'transfer_fee',
-                                                    phase: 'club_fee',
-                                                    chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_transfer_title')) }},
-                                                    playerInfo: {{ $playerInfo }}
-                                                })">
-                                                {{ __('transfers.market_bid') }}
-                                            </x-primary-button>
-                                        @endif
-                                    </td>
-                                </tr>
+                                <x-explore-player-row
+                                    :player="$listing->gamePlayer"
+                                    :game="$game"
+                                    :show-team="true"
+                                    team-placement="inline"
+                                    :show-ovr="true"
+                                    :asking-price="$listing->asking_price" />
                             @endforeach
                         </tbody>
                     </table>
-                </div>
-
-                {{-- Mobile cards --}}
-                <div class="md:hidden space-y-3">
-                    @foreach($listings as $listing)
-                        @php
-                            $gp = $listing->gamePlayer;
-                            $posGroup = strtolower(match($gp->position_group) {
-                                'Goalkeeper' => 'gk',
-                                'Defender' => 'def',
-                                'Midfielder' => 'mid',
-                                'Forward' => 'fwd',
-                                default => 'mid',
-                            });
-                            $posDisp = $gp->position_display;
-                            $playerInfo = \Illuminate\Support\Js::from([
-                                'age' => $gp->age($game->current_date),
-                                'position' => $posDisp['abbreviation'],
-                                'positionBg' => $posDisp['bg'],
-                                'positionText' => $posDisp['text'],
-                                'marketValue' => $gp->formatted_market_value,
-                                'contractYear' => $gp->contract_expiry_year,
-                            ]);
-                        @endphp
-                        <div x-show="posFilter === 'all' || posFilter === '{{ $posGroup }}'"
-                             class="bg-surface-800 border border-border-default rounded-xl p-4">
-                            <div class="flex items-center justify-between mb-3">
-                                <div class="flex items-center gap-2 min-w-0">
-                                    <x-position-badge :position="$gp->position" size="sm" />
-                                    <span class="font-medium text-text-primary truncate">{{ $gp->name }}</span>
-                                </div>
-                                <x-rating-badge :value="$gp->overall_score" size="sm" />
-                            </div>
-
-                            <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs mb-3">
-                                <div class="flex justify-between">
-                                    <span class="text-text-muted">{{ __('transfers.transfer_activity_age') }}</span>
-                                    <span class="text-text-secondary">{{ $gp->age($game->current_date) }}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-text-muted">{{ __('transfers.explore_search_team') }}</span>
-                                    <span class="text-text-secondary truncate ml-1">{{ $gp->team?->name }}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-text-muted">{{ __('transfers.market_value') }}</span>
-                                    <span class="text-text-secondary">{{ $gp->formatted_market_value }}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-text-muted">{{ __('transfers.market_asking_price') }}</span>
-                                    <span class="font-medium text-text-primary">{{ \App\Support\Money::format($listing->asking_price) }}</span>
-                                </div>
-                            </div>
-
-                            @if($availableBudget > 0)
-                                <x-primary-button size="xs" class="w-full justify-center"
-                                    @click="$dispatch('open-negotiation', {
-                                        playerName: {{ \Illuminate\Support\Js::from($gp->name) }},
-                                        negotiateUrl: {{ \Illuminate\Support\Js::from(route('game.negotiate.transfer', [$game->id, $gp->id])) }},
-                                        mode: 'transfer_fee',
-                                        phase: 'club_fee',
-                                        chatTitle: {{ \Illuminate\Support\Js::from(__('transfers.chat_transfer_title')) }},
-                                        playerInfo: {{ $playerInfo }}
-                                    })">
-                                    {{ __('transfers.market_bid') }}
-                                </x-primary-button>
-                            @endif
-                        </div>
-                    @endforeach
                 </div>
             @endif
         </div>
