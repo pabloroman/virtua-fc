@@ -705,6 +705,18 @@ class AITransferMarketService
             $score += 3;
         }
 
+        // Contract situation: short contracts = must sell or lose for free
+        if ($player->contract_until) {
+            $yearsLeft = $currentDate->diffInYears($player->contract_until);
+            if ($yearsLeft <= 1) {
+                $score += 6;
+            } elseif ($yearsLeft <= 2) {
+                $score += 3;
+            } elseif ($yearsLeft >= 4) {
+                $score -= 2;
+            }
+        }
+
         // Random variance
         $score += mt_rand(0, 2);
 
@@ -757,6 +769,16 @@ class AITransferMarketService
         $surplus = $groupCount - (self::IDEAL_GROUP_COUNTS[$group] ?? 4);
         if ($surplus > 0) {
             $score += min(4, $surplus * 2);
+        }
+
+        // Contract situation: short contracts = must sell
+        if ($player->contract_until) {
+            $yearsLeft = $currentDate->diffInYears($player->contract_until);
+            if ($yearsLeft <= 1) {
+                $score += 6;
+            } elseif ($yearsLeft <= 2) {
+                $score += 3;
+            }
         }
 
         // Random variance
