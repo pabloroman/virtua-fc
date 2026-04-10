@@ -277,7 +277,7 @@ class PreContractBalanceTest extends TestCase
         );
 
         // Low bid — should be rejected on price, not reputation
-        $askingPrice = $this->scoutingService->calculateAskingPrice($player);
+        $askingPrice = $this->scoutingService->calculateAskingPrice($player, $game->current_date);
         $bidAmount = (int) ($askingPrice * 0.5);
 
         $result = $this->scoutingService->evaluateBid($player, $bidAmount, $game);
@@ -294,7 +294,7 @@ class PreContractBalanceTest extends TestCase
         );
 
         // Offer above asking price — reputation gate should NOT apply
-        $askingPrice = $this->scoutingService->calculateAskingPrice($player);
+        $askingPrice = $this->scoutingService->calculateAskingPrice($player, $game->current_date);
         $bidAmount = (int) ($askingPrice * 1.5);
 
         for ($i = 0; $i < 50; $i++) {

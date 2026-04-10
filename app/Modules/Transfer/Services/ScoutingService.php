@@ -10,6 +10,7 @@ use App\Models\Team;
 use App\Models\TransferOffer;
 use App\Support\Money;
 use App\Support\PositionMapper;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use App\Modules\Player\PlayerAge;
 use App\Modules\Transfer\Enums\NegotiationScenario;
@@ -258,7 +259,7 @@ class ScoutingService
     /**
      * Calculate the AI's asking price for a player.
      */
-    public function calculateAskingPrice(GamePlayer $player): int
+    public function calculateAskingPrice(GamePlayer $player, Carbon $currentDate): int
     {
         $base = $player->market_value_cents;
         $importance = $this->calculatePlayerImportance($player);
@@ -267,7 +268,7 @@ class ScoutingService
         // it has leverage to refuse bids. As the contract runs down that
         // leverage decays — an expiring star is worth about what a buyer
         // would pay for any player they can pick up free next window.
-        $leverage = $this->getContractLeverage($player);
+        $leverage = $this->getContractLeverage($player, $currentDate);
         $effectiveImportance = $importance * $leverage;
 
         // Importance multiplier: 0.8x for worst (or no leverage), 1.0x for
@@ -275,10 +276,10 @@ class ScoutingService
         $importanceMultiplier = 0.8 + ($effectiveImportance * 0.4);
 
         // Contract modifier (fee discount from less time remaining)
-        $contractModifier = $this->getContractModifier($player);
+        $contractModifier = $this->getContractModifier($player, $currentDate);
 
         // Age modifier
-        $ageModifier = $this->getAgeModifier($player->age($player->game->current_date));
+        $ageModifier = $this->getAgeModifier($player->age($currentDate));
 
         $totalMultiplier = $importanceMultiplier * $contractModifier * $ageModifier;
 
@@ -312,13 +313,13 @@ class ScoutingService
      * expiring end there is no premium because the buyer can simply wait and
      * sign free.
      */
-    private function getContractLeverage(GamePlayer $player): float
+    private function getContractLeverage(GamePlayer $player, Carbon $currentDate): float
     {
         if (! $player->contract_until) {
             return 0.0;
         }
 
-        $yearsLeft = $player->game->current_date->diffInYears($player->contract_until);
+        $yearsLeft = $currentDate->diffInYears($player->contract_until);
 
         if ($yearsLeft >= 4) {
             return 1.0;
@@ -339,14 +340,13 @@ class ScoutingService
     /**
      * Get contract years modifier for asking price.
      */
-    private function getContractModifier(GamePlayer $player): float
+    private function getContractModifier(GamePlayer $player, Carbon $currentDate): float
     {
         if (! $player->contract_until) {
             return 0.5;
         }
 
-        $game = $player->game;
-        $yearsLeft = $game->current_date->diffInYears($player->contract_until);
+        $yearsLeft = $currentDate->diffInYears($player->contract_until);
 
         if ($yearsLeft >= 4) {
             return 1.2;
@@ -393,7 +393,8 @@ class ScoutingService
      */
     public function evaluateBid(GamePlayer $player, int $bidAmount, ?Game $game = null, ?int $previousCounter = null): array
     {
-        $askingPrice = $this->calculateAskingPrice($player);
+        $currentDate = $game?->current_date ?? $player->game->current_date;
+        $askingPrice = $this->calculateAskingPrice($player, $currentDate);
 
         // Use the previous counter as ceiling so the club never raises their demand
         $ceiling = ($previousCounter !== null && $previousCounter < $askingPrice)
@@ -596,7 +597,7 @@ class ScoutingService
     public function getPlayerScoutingDetail(GamePlayer $player, Game $game): array
     {
         $isFreeAgent = $player->team_id === null;
-        $askingPrice = $isFreeAgent ? 0 : $this->calculateAskingPrice($player);
+        $askingPrice = $isFreeAgent ? 0 : $this->calculateAskingPrice($player, $game->current_date);
         $transferDemand = $this->contractService->calculateWageDemand($player, NegotiationScenario::TRANSFER);
         $wageDemand = $transferDemand['wage'];
         $importance = $isFreeAgent ? 0.0 : $this->calculatePlayerImportance($player);
