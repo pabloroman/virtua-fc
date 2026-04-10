@@ -332,6 +332,22 @@ export default function lineupManager(config) {
 
         isSelected(id) { return this.selectedPlayers.includes(id) },
 
+        // Reactive sort order for the Available Players list. Used as a CSS
+        // `order` value so the list re-settles whenever selection state
+        // changes (drag, toggle, formation swap, auto XI, pitch removal).
+        //   0–99    → starting XI, sorted by position (GK, DEF, MID, FWD)
+        //   1000+   → bench, sorted by position
+        //   2000+   → unavailable (injured/suspended), sorted by position
+        listSortOrder(playerId) {
+            const player = this.playersData[playerId];
+            if (!player) return 9999;
+            const positionRank = player.sortOrder ?? 99;
+            if (!player.isAvailable) {
+                return 2000 + positionRank;
+            }
+            return (this.isSelected(playerId) ? 0 : 1000) + positionRank;
+        },
+
         // Toggle player selection (from player list)
         toggle(id, isUnavailable) {
             if (isUnavailable) return;
