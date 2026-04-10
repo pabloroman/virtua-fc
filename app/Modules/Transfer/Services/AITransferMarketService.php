@@ -603,6 +603,7 @@ class AITransferMarketService
             $teamAvg = $teamAverages[$teamId] ?? 55;
             $teamRepIndex = $this->getReputationIndex($teamId, $teamReputations);
             $teamGroupCounts = $groupCounts->get($teamId, collect());
+            $importanceMap = $this->buildImportanceMap($players);
 
             $eligible = $players->filter(
                 fn (GamePlayer $p) => ! $p->retiring_at_season && ! isset($alreadyTransferredSet[$p->id])
@@ -617,12 +618,18 @@ class AITransferMarketService
 
             // Score clearing and upgrade candidates separately
             $clearingCandidates = $eligible
-                ->map(fn ($p) => $this->scoreClearingCandidate($p, $teamAvg, $teamGroupCounts, $currentDate))
+                ->map(fn ($p) => $this->scoreClearingCandidate(
+                    $p, $teamAvg, $teamGroupCounts, $currentDate,
+                    $importanceMap[$p->id] ?? 0.5
+                ))
                 ->filter()
                 ->sortByDesc('score');
 
             $upgradeCandidates = $eligible
-                ->map(fn ($p) => $this->scoreUpgradeCandidate($p, $teamAvg, $teamRepIndex, $teamGroupCounts, $currentDate))
+                ->map(fn ($p) => $this->scoreUpgradeCandidate(
+                    $p, $teamAvg, $teamRepIndex, $teamGroupCounts, $currentDate,
+                    $importanceMap[$p->id] ?? 0.5
+                ))
                 ->filter()
                 ->sortByDesc('score');
 
@@ -670,14 +677,30 @@ class AITransferMarketService
     /**
      * Score a player as a squad clearing candidate (surplus/backup player).
      */
-    private function scoreClearingCandidate(GamePlayer $player, int $teamAvg, Collection $teamGroupCounts, Carbon $currentDate): ?array
-    {
+    private function scoreClearingCandidate(
+        GamePlayer $player,
+        int $teamAvg,
+        Collection $teamGroupCounts,
+        Carbon $currentDate,
+        float $importance,
+    ): ?array {
         $ability = $this->getPlayerAbility($player);
         $group = $this->getPositionGroup($player->position);
         $groupCount = $teamGroupCounts->get($group, 0);
 
         // Never sell below minimum depth
         if ($groupCount <= (self::MIN_GROUP_COUNTS[$group] ?? 2)) {
+            return null;
+        }
+
+        $yearsLeft = $player->contract_until
+            ? (int) $currentDate->diffInYears($player->contract_until)
+            : 0;
+
+        // Core players aren't "cleared" — clearing dumps surplus, not starters.
+        // Only exception: renewal has failed (contract <= 1 year) and the club
+        // is forced to recoup something rather than lose the player for free.
+        if ($importance >= 0.60 && $yearsLeft > 1) {
             return null;
         }
 
@@ -705,13 +728,15 @@ class AITransferMarketService
             $score += 3;
         }
 
-        // Contract situation: short contracts = must sell or lose for free
+        // Contract bonus — short contracts push clubs to list, but the pull is
+        // scaled down for important players because clubs renew them first.
+        // Long contracts slightly discourage clearing regardless of role.
         if ($player->contract_until) {
-            $yearsLeft = $currentDate->diffInYears($player->contract_until);
+            $scale = 1.0 - ($importance * 0.75); // core ~0.25x, fringe ~1.0x
             if ($yearsLeft <= 1) {
-                $score += 6;
+                $score += (int) round(6 * $scale);
             } elseif ($yearsLeft <= 2) {
-                $score += 3;
+                $score += (int) round(3 * $scale);
             } elseif ($yearsLeft >= 4) {
                 $score -= 2;
             }
@@ -730,13 +755,14 @@ class AITransferMarketService
     /**
      * Score a player as a talent upgrade candidate (quality player attractive to bigger clubs).
      */
-    private function scoreUpgradeCandidate(GamePlayer $player, int $teamAvg, int $teamRepIndex, Collection $teamGroupCounts, Carbon $currentDate): ?array
-    {
-        // Elite clubs have no higher-reputation domestic buyer
-        if ($teamRepIndex <= 0) {
-            return null;
-        }
-
+    private function scoreUpgradeCandidate(
+        GamePlayer $player,
+        int $teamAvg,
+        int $teamRepIndex,
+        Collection $teamGroupCounts,
+        Carbon $currentDate,
+        float $importance,
+    ): ?array {
         $ability = $this->getPlayerAbility($player);
         $group = $this->getPositionGroup($player->position);
         $groupCount = $teamGroupCounts->get($group, 0);
@@ -748,6 +774,18 @@ class AITransferMarketService
 
         // Must be at or above team average — this is a quality player
         if ($ability < $teamAvg) {
+            return null;
+        }
+
+        $yearsLeft = $player->contract_until
+            ? (int) $currentDate->diffInYears($player->contract_until)
+            : 0;
+
+        // Elite and continental clubs don't sell core players upward — there's
+        // no larger domestic buyer. They only let a star go when renewal has
+        // failed and the contract is running out.
+        // (This service uses an inverted scale: 2=elite, 3=continental.)
+        if ($importance >= 0.60 && $teamRepIndex <= 3 && $yearsLeft > 1) {
             return null;
         }
 
@@ -771,13 +809,13 @@ class AITransferMarketService
             $score += min(4, $surplus * 2);
         }
 
-        // Contract situation: short contracts = must sell
+        // Contract bonus, scaled by importance (see scoreClearingCandidate).
         if ($player->contract_until) {
-            $yearsLeft = $currentDate->diffInYears($player->contract_until);
+            $scale = 1.0 - ($importance * 0.75);
             if ($yearsLeft <= 1) {
-                $score += 6;
+                $score += (int) round(6 * $scale);
             } elseif ($yearsLeft <= 2) {
-                $score += 3;
+                $score += (int) round(3 * $scale);
             }
         }
 
@@ -789,6 +827,31 @@ class AITransferMarketService
         }
 
         return ['player' => $player, 'score' => $score];
+    }
+
+    /**
+     * Build a player_id → importance map for a team's roster.
+     *
+     * Importance is the player's rank within his squad by overall ability,
+     * mapped to a 0.0 (worst) .. 1.0 (best) scale. This identifies the core
+     * players (roughly the top 11 by rank, importance >= 0.60 in a 25-player
+     * squad) so scoring can protect them from being listed casually.
+     *
+     * @return array<string, float>
+     */
+    private function buildImportanceMap(Collection $players): array
+    {
+        $sorted = $players
+            ->sortByDesc(fn (GamePlayer $p) => $this->getPlayerAbility($p))
+            ->values();
+
+        $total = $sorted->count();
+        $map = [];
+        foreach ($sorted as $rank => $player) {
+            $map[$player->id] = 1.0 - ($rank / max($total - 1, 1));
+        }
+
+        return $map;
     }
 
     /**

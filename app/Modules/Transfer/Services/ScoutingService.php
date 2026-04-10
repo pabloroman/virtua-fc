@@ -263,10 +263,18 @@ class ScoutingService
         $base = $player->market_value_cents;
         $importance = $this->calculatePlayerImportance($player);
 
-        // Importance multiplier: 0.8x for worst, 1.0x for average, 1.2x for best
-        $importanceMultiplier = 0.8 + ($importance * 0.4);
+        // Contract leverage: a club can only charge an importance premium if
+        // it has leverage to refuse bids. As the contract runs down that
+        // leverage decays — an expiring star is worth about what a buyer
+        // would pay for any player they can pick up free next window.
+        $leverage = $this->getContractLeverage($player);
+        $effectiveImportance = $importance * $leverage;
 
-        // Contract modifier
+        // Importance multiplier: 0.8x for worst (or no leverage), 1.0x for
+        // average, 1.2x for the club's best player on a long contract.
+        $importanceMultiplier = 0.8 + ($effectiveImportance * 0.4);
+
+        // Contract modifier (fee discount from less time remaining)
         $contractModifier = $this->getContractModifier($player);
 
         // Age modifier
@@ -274,9 +282,10 @@ class ScoutingService
 
         $totalMultiplier = $importanceMultiplier * $contractModifier * $ageModifier;
 
-        // Important players: team is reluctant to sell, never ask below market value.
-        // Low-importance players can be discounted down to 0.75x.
-        $floor = $importance >= 0.5 ? 1.0 : 0.75;
+        // Important players with contract leverage: team is reluctant to sell,
+        // never ask below market value. Players without leverage (expiring)
+        // or with low importance can be discounted down to 0.75x.
+        $floor = $effectiveImportance >= 0.5 ? 1.0 : 0.75;
         $totalMultiplier = min(max($totalMultiplier, $floor), 1.5);
 
         $askingPrice = $base * $totalMultiplier;
@@ -293,6 +302,38 @@ class ScoutingService
     public function calculatePlayerImportance(GamePlayer $player, ?Collection $teammates = null): float
     {
         return $this->dispositionService->playerImportance($player, $teammates);
+    }
+
+    /**
+     * Get the contract leverage factor (0.0 to 1.0).
+     *
+     * A club can only charge an importance premium if it has leverage to
+     * refuse bids. As the contract runs down that leverage decays — at the
+     * expiring end there is no premium because the buyer can simply wait and
+     * sign free.
+     */
+    private function getContractLeverage(GamePlayer $player): float
+    {
+        if (! $player->contract_until) {
+            return 0.0;
+        }
+
+        $yearsLeft = $player->game->current_date->diffInYears($player->contract_until);
+
+        if ($yearsLeft >= 4) {
+            return 1.0;
+        }
+        if ($yearsLeft >= 3) {
+            return 0.85;
+        }
+        if ($yearsLeft >= 2) {
+            return 0.65;
+        }
+        if ($yearsLeft >= 1) {
+            return 0.30;
+        }
+
+        return 0.0; // Expiring
     }
 
     /**
