@@ -65,10 +65,14 @@ class PlayerConditionServiceTest extends TestCase
 
     public function test_seven_day_gap_allows_full_recovery_from_match(): void
     {
+        // Pin age to 27 (prime bracket, below the 28-year energy penalty threshold)
+        // to eliminate variance from the factory's random date_of_birth.
         $player = $this->createPlayer([
             'position' => 'Central Midfield',
             'fitness' => 100,
             'game_physical_ability' => 70,
+        ], [
+            'date_of_birth' => Carbon::parse('2025-10-01')->subYears(27)->subMonths(6),
         ]);
 
         // With unified energy: match drains ~40% (100→60), recovery over 5 days (capped)
