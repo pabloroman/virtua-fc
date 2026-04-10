@@ -85,7 +85,9 @@ $canNegotiateFreeAgent = $isFreeAgent && !$isOwnTeam;
     @if($showOvr)
     {{-- OVR --}}
     <td class="py-2 pr-3 hidden md:table-cell text-center">
-        <x-rating-badge :value="$player->overall_score" size="sm" />
+        <div class="flex justify-center">
+            <x-rating-badge :value="$player->overall_score" size="sm" />
+        </div>
     </td>
     @endif
     {{-- Market value --}}

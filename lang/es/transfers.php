@@ -281,6 +281,7 @@ return [
     'explore_midfielders' => 'Centrocampistas',
     'explore_forwards' => 'Delanteros',
     'explore_age' => 'Edad',
+    'explore_rating' => 'Nota',
     'explore_value' => 'Valor',
     'explore_free_agents' => 'Agentes Libres',
     'explore_free_agents_hint' => 'Explora agentes libres disponibles. Los agentes libres se pueden fichar en cualquier momento, incluso fuera de las ventanas de fichajes.',

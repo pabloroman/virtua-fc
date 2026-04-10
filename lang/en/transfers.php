@@ -276,6 +276,7 @@ return [
     'explore_midfielders' => 'Midfielders',
     'explore_forwards' => 'Forwards',
     'explore_age' => 'Age',
+    'explore_rating' => 'Rating',
     'explore_value' => 'Value',
     'explore_free_agents' => 'Free Agents',
     'explore_free_agents_hint' => 'Browse available free agents. Free agents can be signed at any time, even outside transfer windows.',
