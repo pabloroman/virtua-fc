@@ -32,6 +32,7 @@ class FormationRecommender
             }
 
             $position = $player->position ?? $player['position'];
+            $secondaryPositions = $player->secondary_positions ?? $player['secondary_positions'] ?? null;
             $overallScore = $player->overall_score ?? $player['overallScore'] ?? $player['overall_score'];
 
             // Find an empty slot where this player has natural compatibility (100)
@@ -42,9 +43,9 @@ class FormationRecommender
                     continue;
                 }
 
-                $compatibility = PositionSlotMapper::getCompatibilityScore($position, $slot['label']);
+                $compatibility = PositionSlotMapper::getPlayerCompatibilityScore($position, $secondaryPositions, $slot['label']);
                 if ($compatibility === 100) {
-                    $effectiveRating = PositionSlotMapper::getEffectiveRating($overallScore, $position, $slot['label']);
+                    $effectiveRating = PositionSlotMapper::getEffectiveRatingFromCompatibility($overallScore, $compatibility);
                     $assigned[] = [
                         'slot' => $slot,
                         'player' => [
@@ -87,16 +88,17 @@ class FormationRecommender
                 }
 
                 $position = $player->position ?? $player['position'];
+                $secondaryPositions = $player->secondary_positions ?? $player['secondary_positions'] ?? null;
                 $overallScore = $player->overall_score ?? $player['overallScore'] ?? $player['overall_score'];
 
-                $compatibility = PositionSlotMapper::getCompatibilityScore($position, $slot['label']);
+                $compatibility = PositionSlotMapper::getPlayerCompatibilityScore($position, $secondaryPositions, $slot['label']);
 
                 // Skip if player can't play in this slot
                 if ($compatibility === 0) {
                     continue;
                 }
 
-                $effectiveRating = PositionSlotMapper::getEffectiveRating($overallScore, $position, $slot['label']);
+                $effectiveRating = PositionSlotMapper::getEffectiveRatingFromCompatibility($overallScore, $compatibility);
 
                 // Weighted score: 70% effective rating, 30% compatibility
                 $weightedScore = ($effectiveRating * 0.7) + ($compatibility * 0.3);
@@ -203,6 +205,7 @@ class FormationRecommender
             'id' => $p->id,
             'name' => $p->name,
             'position' => $p->position,
+            'secondary_positions' => $p->secondary_positions,
             'overall_score' => $p->overall_score,
         ])->values()->all();
 

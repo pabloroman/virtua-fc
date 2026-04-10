@@ -128,12 +128,22 @@ class PositionSlotMapper
     {
         $compatibility = self::getCompatibilityScore($position, $slotCode);
 
-        // Natural position = full rating
-        // 0 compatibility = 50% penalty (half the rating)
-        $penalty = (100 - $compatibility) / 200;
-        $effective = $overallScore * (1 - $penalty);
+        return self::getEffectiveRatingFromCompatibility($overallScore, $compatibility);
+    }
 
-        return (int) round($effective);
+    /**
+     * Calculate effective rating from a pre-computed compatibility score.
+     *
+     * Use this when the caller already knows the compatibility (e.g. after calling
+     * getPlayerCompatibilityScore) to avoid re-computing it.
+     *
+     * Natural position (100) = full rating. 0 compatibility = 50% penalty.
+     */
+    public static function getEffectiveRatingFromCompatibility(int $overallScore, int $compatibility): int
+    {
+        $penalty = (100 - $compatibility) / 200;
+
+        return (int) round($overallScore * (1 - $penalty));
     }
 
     /**

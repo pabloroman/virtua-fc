@@ -266,7 +266,7 @@ class SquadService
                     'message' => __('squad.alert_thin_position', ['position' => PositionSlotMapper::getSlotDisplayName($slot), 'count' => $data['count']]),
                 ];
             } elseif ($slot !== 'GK' && $data['count'] === 0) {
-                $hasCompatibleCover = $players->contains(fn ($p) => PositionSlotMapper::getCompatibilityScore($p->position, $slot) >= 60);
+                $hasCompatibleCover = $players->contains(fn ($p) => PositionSlotMapper::getPlayerCompatibilityScore($p->position, $p->secondary_positions, $slot) >= 60);
                 $positionName = PositionSlotMapper::getSlotDisplayName($slot);
 
                 if ($hasCompatibleCover) {
