@@ -11,7 +11,14 @@ import {
 import { createPitchGrid } from './modules/pitch-grid.js';
 import { calculateXgPreview } from './modules/xg-calculator.js';
 import { generateCoachTips } from './modules/coach-tips.js';
-import { assignPlayersToSlots, getPlayerCompatibility } from './modules/slot-assignment.js';
+import {
+    swapSlots,
+    placeInFirstMatchingSlot,
+    removePlayer,
+    buildSlotView,
+    getPlayerCompatibility,
+    normalizeSlotMap,
+} from './modules/slot-map.js';
 
 /**
  * Copy all own properties from source to target. Regular properties are
@@ -48,9 +55,12 @@ export default function lineupManager(config) {
         defensiveLineOptions: config.defensiveLineOptions || [],
         autoLineup: config.autoLineup || [],
 
-        // Manual slot assignments: { slotId: playerId }
-        // When a user explicitly assigns a player to a slot, it's tracked here.
-        manualAssignments: config.currentSlotAssignments || {},
+        // The authoritative slot map: { slotId: playerId }. This is reactive
+        // state, not a computed value — drag-drop, click-to-assign, add, and
+        // remove all mutate it directly. Formation change and the Auto
+        // button POST to the backend and replace the whole map with the
+        // response. The algorithm lives on the server, not here.
+        slotMap: config.currentSlotMap || {},
 
         // Player being hovered in the list (for pitch highlight)
         hoveredPlayerId: null,
@@ -80,15 +90,17 @@ export default function lineupManager(config) {
         _initialPlayingStyle: null,
         _initialPressing: null,
         _initialDefLine: null,
-        _initialAssignments: null,
+        _initialSlotMap: null,
         _initialPitchPositions: null,
         _isSaving: false,
+        _isFetchingSlots: false,
 
         // Server data
         playersData: config.playersData,
         formationSlots: config.formationSlots,
         slotCompatibility: config.slotCompatibility,
         autoLineupUrl: config.autoLineupUrl,
+        computeSlotsUrl: config.computeSlotsUrl,
         teamColors: config.teamColors,
         translations: config.translations,
         formationModifiers: config.formationModifiers || {},
@@ -105,15 +117,23 @@ export default function lineupManager(config) {
         init() {
             // Filter out players no longer in the squad (e.g. sold after lineup was saved)
             this.selectedPlayers = this.selectedPlayers.filter(id => this.playersData[id]);
-            if (Object.keys(this.manualAssignments).length > 0) {
+            if (Object.keys(this.slotMap).length > 0) {
                 const clean = {};
-                for (const [slotId, playerId] of Object.entries(this.manualAssignments)) {
-                    if (this.playersData[playerId]) {
+                for (const [slotId, playerId] of Object.entries(this.slotMap)) {
+                    if (this.playersData[playerId] && this.selectedPlayers.includes(playerId)) {
                         clean[slotId] = playerId;
                     }
                 }
-                this.manualAssignments = clean;
+                this.slotMap = clean;
             }
+            // Defense-in-depth: force any selected player missing from the
+            // slot map onto the pitch so we can never start with a ghost.
+            this.slotMap = normalizeSlotMap(
+                this.slotMap,
+                this.selectedPlayers,
+                this.currentSlots,
+                this.playersData,
+            );
 
             // Snapshot the initial state for dirty detection (after filtering)
             this._initialPlayers = [...this.selectedPlayers].sort();
@@ -122,7 +142,7 @@ export default function lineupManager(config) {
             this._initialPlayingStyle = config.currentPlayingStyle || 'balanced';
             this._initialPressing = config.currentPressing || 'standard';
             this._initialDefLine = config.currentDefLine || 'normal';
-            this._initialAssignments = JSON.stringify(this.manualAssignments);
+            this._initialSlotMap = JSON.stringify(this.slotMap);
             this._initialPitchPositions = JSON.stringify(config.currentPitchPositions || {});
 
             // Warn on navigation away with unsaved changes
@@ -142,23 +162,11 @@ export default function lineupManager(config) {
                 onTapFallback: null,
                 onPositionChanged: null,
                 onSwap: (draggedSlot, occupyingSlot) => {
-                    // Swap player assignments: each player takes the other's slot.
-                    // When the target slot is empty, the dragged player simply
-                    // moves there and the source slot becomes empty.
-                    // Snapshot current assignments first so auto-assigned players
-                    // don't reshuffle when we update manualAssignments.
-                    this._preserveCurrentAssignments(null);
-                    const newAssignments = { ...this.manualAssignments };
-                    const draggedPlayer = draggedSlot.player?.id;
-                    const occupyingPlayer = occupyingSlot.player?.id;
-                    if (draggedPlayer) newAssignments[occupyingSlot.id] = draggedPlayer;
-                    if (occupyingPlayer) {
-                        newAssignments[draggedSlot.id] = occupyingPlayer;
-                    } else {
-                        // Target was empty — clear the source slot
-                        delete newAssignments[draggedSlot.id];
-                    }
-                    this.manualAssignments = newAssignments;
+                    // Drag-drop is the user's explicit intent — no algorithm,
+                    // no compat scoring, no reshuffling. Just exchange two
+                    // entries in the slot map. If the target is empty, the
+                    // source becomes empty.
+                    this.slotMap = swapSlots(this.slotMap, draggedSlot.id, occupyingSlot.id);
                 },
                 pitchElementId: 'pitch-field',
                 getPositions: () => this.pitchPositions,
@@ -179,7 +187,7 @@ export default function lineupManager(config) {
             if (this.selectedPlayingStyle !== this._initialPlayingStyle) return true;
             if (this.selectedPressing !== this._initialPressing) return true;
             if (this.selectedDefLine !== this._initialDefLine) return true;
-            if (JSON.stringify(this.manualAssignments) !== this._initialAssignments) return true;
+            if (JSON.stringify(this.slotMap) !== this._initialSlotMap) return true;
             if (JSON.stringify(this.pitchPositions) !== this._initialPitchPositions) return true;
             if (JSON.stringify([...this.selectedPlayers].sort()) !== JSON.stringify(this._initialPlayers)) return true;
             return false;
@@ -188,7 +196,6 @@ export default function lineupManager(config) {
         // Computed
         get selectedCount() { return this.selectedPlayers.length },
         get currentSlots() { return this.formationSlots[this.selectedFormation] || [] },
-        get hasManualAssignments() { return Object.keys(this.manualAssignments).length > 0 },
 
         get activePresetId() {
             const sorted = [...this.selectedPlayers].sort();
@@ -209,8 +216,21 @@ export default function lineupManager(config) {
             this.selectedPressing = preset.pressing;
             this.selectedDefLine = preset.defensive_line;
             this.selectedPlayers = [...preset.lineup];
-            this.manualAssignments = preset.slot_assignments ? { ...preset.slot_assignments } : {};
             this.pitchPositions = preset.pitch_positions ? { ...preset.pitch_positions } : {};
+
+            if (preset.slot_assignments && Object.keys(preset.slot_assignments).length > 0) {
+                this.slotMap = normalizeSlotMap(
+                    { ...preset.slot_assignments },
+                    this.selectedPlayers,
+                    this.currentSlots,
+                    this.playersData,
+                );
+            } else {
+                // Legacy preset without a stored slot map — ask the backend.
+                // _refreshSlotMapFromServer normalizes its own response.
+                this.slotMap = {};
+                this._refreshSlotMapFromServer();
+            }
         },
 
         get teamAverage() {
@@ -280,12 +300,9 @@ export default function lineupManager(config) {
         },
 
         get slotAssignments() {
-            const slots = this.currentSlots.map(slot => ({ ...slot, player: null, compatibility: 0, isManual: false }));
-            const selectedPlayerData = this.selectedPlayers
-                .map(id => this.playersData[id])
-                .filter(p => p);
-
-            return assignPlayersToSlots(slots, selectedPlayerData, this.slotCompatibility, this.manualAssignments);
+            // Pure projection of the authoritative slot map onto the slot list.
+            // No algorithm, no reshuffling — what the map says, the pitch shows.
+            return buildSlotView(this.slotMap, this.currentSlots, this.playersData, this.slotCompatibility);
         },
 
         // Methods
@@ -325,17 +342,10 @@ export default function lineupManager(config) {
                 return;
             }
 
-            // If an empty slot is waiting for assignment, assign this player to it
+            // If an empty slot is waiting for assignment, drop this player into it.
             if (this.assigningSlotId !== null && !this.isSelected(id)) {
                 if (this.selectedCount < 11) {
-                    // Freeze existing auto-assignments so adding the new player
-                    // doesn't reshuffle everyone else into "better" slots.
-                    // Set manualAssignments BEFORE pushing to selectedPlayers —
-                    // the push triggers a reactive recompute of slotAssignments,
-                    // and the manual assignment must already be in place so the
-                    // player lands in the user-chosen slot, not a "better fit".
-                    this._preserveCurrentAssignments(null);
-                    this.manualAssignments = { ...this.manualAssignments, [this.assigningSlotId]: id };
+                    this.slotMap = { ...this.slotMap, [this.assigningSlotId]: id };
                     this.selectedPlayers.push(id);
                 }
                 this.assigningSlotId = null;
@@ -343,53 +353,111 @@ export default function lineupManager(config) {
             }
 
             if (this.isSelected(id)) {
-                // Preserve current slot assignments so remaining players don't get reshuffled
-                this._preserveCurrentAssignments(id);
+                // Remove: clear their slot and drop them from the lineup.
+                this.slotMap = removePlayer(this.slotMap, id);
                 this.selectedPlayers = this.selectedPlayers.filter(p => p !== id);
             } else if (this.selectedCount < 11) {
+                // Add: place in the first empty slot matching their primary,
+                // falling back to any empty slot. Local only — no round trip.
+                this.slotMap = placeInFirstMatchingSlot(this.slotMap, this.currentSlots, this.playersData[id]);
                 this.selectedPlayers.push(id);
             }
             this.assigningSlotId = null;
         },
 
-        quickSelect() {
+        async quickSelect() {
             this.selectedPlayers = [...this.autoLineup];
-            this.manualAssignments = {};
             this.pitchPositions = {};
             this.positioningSlotId = null;
             this.assigningSlotId = null;
+            // Ask the backend for the fresh slot map — the Auto button is the
+            // only client-side action that deliberately invokes the full
+            // algorithm.
+            await this._refreshSlotMapFromServer();
         },
 
         clearSelection() {
             this.selectedPlayers = [];
-            this.manualAssignments = {};
+            this.slotMap = {};
             this.pitchPositions = {};
             this.positioningSlotId = null;
             this.assigningSlotId = null;
         },
 
         async updateAutoLineup() {
+            // Clear slot-specific state synchronously — slot IDs carry
+            // formation-specific semantics, so the old map is meaningless
+            // against the new pitch shape. Doing this before the fetch
+            // avoids a brief visual glitch where old slot IDs flash against
+            // the wrong labels during the network round-trip.
+            this.slotMap = {};
+            this.pitchPositions = {};
+            this.positioningSlotId = null;
+            this.assigningSlotId = null;
+
             try {
                 const response = await fetch(`${this.autoLineupUrl}?formation=${this.selectedFormation}`);
                 const data = await response.json();
                 this.autoLineup = data.autoLineup;
-
-                // Clear slot-specific state (slot IDs change per formation)
-                this.manualAssignments = {};
-                this.pitchPositions = {};
-                this.positioningSlotId = null;
-                this.assigningSlotId = null;
-
-                // Keep currently selected players — _autoAssignToSlots will
-                // re-slot them into the new formation's positions automatically.
             } catch (e) {
                 console.error('Failed to fetch auto lineup', e);
+            }
+
+            if (this.selectedPlayers.length > 0) {
+                // Fetch a fresh slot map for the new formation + current squad.
+                // _refreshSlotMapFromServer runs normalizeSlotMap on the response.
+                await this._refreshSlotMapFromServer();
+            }
+        },
+
+        /**
+         * POST to the backend to compute the authoritative slot map for the
+         * current formation + selected players, and replace local state with
+         * the response. The only two paths that call this are the "Auto"
+         * button and formation change — both rare, both expected to have a
+         * tiny network latency.
+         */
+        async _refreshSlotMapFromServer() {
+            if (!this.computeSlotsUrl || this.selectedPlayers.length === 0) {
+                return;
+            }
+
+            this._isFetchingSlots = true;
+            try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+                const response = await fetch(this.computeSlotsUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        formation: this.selectedFormation,
+                        player_ids: this.selectedPlayers,
+                        manual_assignments: {},
+                    }),
+                });
+                if (!response.ok) return;
+                const data = await response.json();
+                // Backend Pass 5 should already guarantee a full map, but
+                // run the frontend mirror just in case the server returned
+                // a short map (old data, server error, whatever).
+                this.slotMap = normalizeSlotMap(
+                    data.slot_assignments ?? {},
+                    this.selectedPlayers,
+                    this.currentSlots,
+                    this.playersData,
+                );
+            } catch (e) {
+                console.error('Failed to compute slot assignments', e);
+            } finally {
+                this._isFetchingSlots = false;
             }
         },
 
         removeFromSlot(playerId) {
-            // Preserve current slot assignments so remaining players don't get reshuffled
-            this._preserveCurrentAssignments(playerId);
+            this.slotMap = removePlayer(this.slotMap, playerId);
             this.selectedPlayers = this.selectedPlayers.filter(p => p !== playerId);
         },
 
@@ -440,31 +508,6 @@ export default function lineupManager(config) {
 
         getNumberStyle(role) {
             return _getNumberStyle(role, this.teamColors);
-        },
-
-        // Snapshot all current slot assignments (manual + auto) as manual,
-        // excluding a specific player. This prevents remaining players from
-        // being reshuffled when someone is deselected.
-        _preserveCurrentAssignments(excludePlayerId) {
-            const current = this.slotAssignments;
-            const newManual = {};
-            for (const slot of current) {
-                if (slot.player && slot.player.id !== excludePlayerId) {
-                    newManual[slot.id] = slot.player.id;
-                }
-            }
-            this.manualAssignments = newManual;
-        },
-
-        // Remove a player from all manual assignments
-        _removePlayerFromManualAssignments(playerId) {
-            const newAssignments = {};
-            for (const [slotId, pid] of Object.entries(this.manualAssignments)) {
-                if (pid !== playerId) {
-                    newAssignments[slotId] = pid;
-                }
-            }
-            this.manualAssignments = newAssignments;
         },
 
         // =====================================================================
@@ -610,10 +653,16 @@ export default function lineupManager(config) {
                 this.selectedPlayers.push(playerId);
 
                 if (this.listDragNearestSlotId !== null) {
-                    // Assign to the nearest compatible empty slot
-                    this.manualAssignments = { ...this.manualAssignments, [this.listDragNearestSlotId]: playerId };
+                    // Explicit drop target — use it.
+                    this.slotMap = { ...this.slotMap, [this.listDragNearestSlotId]: playerId };
+                } else {
+                    // No explicit target — fall through to the primary-match helper.
+                    this.slotMap = placeInFirstMatchingSlot(
+                        this.slotMap,
+                        this.currentSlots,
+                        this.playersData[playerId],
+                    );
                 }
-                // If no nearest slot, auto-assign handles it via slotAssignments computed
             }
             // If not over pitch, cancel (don't select)
 

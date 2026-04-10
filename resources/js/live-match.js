@@ -16,7 +16,12 @@ import {
     getZoneColorClass as _getZoneColorClass,
 } from './modules/pitch-renderer.js';
 import { createPitchGrid } from './modules/pitch-grid.js';
-import { assignPlayersToSlots } from './modules/slot-assignment.js';
+import {
+    applySubstitution,
+    buildSlotView,
+    getPlayerCompatibility,
+    placeInFirstMatchingSlot,
+} from './modules/slot-map.js';
 import { createPenaltyShootout } from './modules/penalty-shootout.js';
 import { createSubstitutionManager } from './modules/substitution-manager.js';
 import { createMatchSimulation } from './modules/match-simulation.js';
@@ -144,7 +149,20 @@ export default function liveMatch(config) {
         positioningSlotId: null,
         livePitchPositions: config.pitchPositions || {},
         _pitchPositionsFormation: config.activeFormation || '4-3-3',
-        manualAssignments: config.manualAssignments || {},
+        // Authoritative slot map for the starting XI, seeded from the server.
+        // Confirmed substitutions are replayed on top of this in the
+        // slotAssignments getter, so we never mutate it directly except
+        // when the formation changes mid-match.
+        startingSlotMap: config.slotAssignments || {},
+
+        // Slot map for the currently-previewed (but not yet committed)
+        // formation. Populated by `refreshFormationPreview()` when the user
+        // clicks a formation button in the tactical panel. Null means
+        // either "not previewing" or "fetch in flight" — the getter falls
+        // back to a local placement in that window so the pitch isn't empty.
+        previewSlotMap: null,
+        computeSlotsUrl: config.computeSlotsUrl || '',
+        _previewFetchId: 0,
         _savedPitchPositions: config.pitchPositions ? { ...config.pitchPositions } : {},
         _positionJustApplied: false,
 
@@ -564,6 +582,7 @@ export default function liveMatch(config) {
             this.pendingSubs = [];
             this.pendingFormation = null;
             this.pendingMentality = null;
+            this.previewSlotMap = null;
             if (!keepInjuryAlert) {
                 this.injuryAlertPlayer = null;
             }
@@ -578,6 +597,7 @@ export default function liveMatch(config) {
             this.pendingSubs = [];
             this.pendingFormation = null;
             this.pendingMentality = null;
+            this.previewSlotMap = null;
             this.draggingSlotId = null;
             this.dragPosition = null;
             this.positioningSlotId = null;
@@ -640,6 +660,75 @@ export default function liveMatch(config) {
             this.pendingPlayingStyle = null;
             this.pendingPressing = null;
             this.pendingDefLine = null;
+            this.previewSlotMap = null;
+        },
+
+        /**
+         * Fired by the tactical-lever callback whenever the user clicks a
+         * formation button in the tactical panel. Hits the backend's
+         * compute-slots endpoint with the current on-pitch 11 + the new
+         * formation, and stores the resulting slot map in `previewSlotMap`.
+         * The `slotAssignments` getter then renders the pitch from it.
+         *
+         * Uses the same endpoint as the lineup page's formation change, so
+         * the placement algorithm is exactly one thing in exactly one place.
+         * Previous live-match previews used a naive client-side heuristic
+         * that mis-handled players whose primary position had no matching
+         * slot in the new formation (e.g. a Defensive Midfielder in a 4-3-3,
+         * which has no DM slot).
+         *
+         * Uses a monotonic `_previewFetchId` to ignore stale responses when
+         * the user clicks multiple formations in quick succession.
+         */
+        async refreshFormationPreview() {
+            // If the pending formation matches the active one, we're not
+            // previewing anything — drop any cached preview.
+            if (this.pendingFormation === null || this.pendingFormation === this.activeFormation) {
+                this.previewSlotMap = null;
+                return;
+            }
+            if (!this.computeSlotsUrl) {
+                return;
+            }
+
+            // Clear the previous preview so the getter falls back to the
+            // local placeholder during the fetch window.
+            this.previewSlotMap = null;
+
+            const fetchId = ++this._previewFetchId;
+            const targetFormation = this.pendingFormation;
+            const playerIds = this.getActiveLineupPlayers().map(p => p.id);
+
+            if (playerIds.length === 0) {
+                return;
+            }
+
+            try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? this.csrfToken ?? '';
+                const response = await fetch(this.computeSlotsUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        formation: targetFormation,
+                        player_ids: playerIds,
+                        manual_assignments: {},
+                    }),
+                });
+                if (!response.ok) return;
+                // Ignore stale responses from superseded clicks.
+                if (fetchId !== this._previewFetchId) return;
+                // Ignore responses for a formation the user already moved off.
+                if (this.pendingFormation !== targetFormation) return;
+
+                const data = await response.json();
+                this.previewSlotMap = data.slot_assignments ?? {};
+            } catch (e) {
+                console.error('Failed to compute formation preview', e);
+            }
         },
 
         resetAllChanges() {
@@ -859,9 +948,18 @@ export default function liveMatch(config) {
                             this._savedPitchPositions = {};
                         }
                         this._pitchPositionsFormation = result.formation;
-                        this.manualAssignments = {};
+                        // Promote the preview map (computed by the backend
+                        // during refreshFormationPreview) to the new
+                        // authoritative starting map. If we didn't preview,
+                        // use whatever the server returned, falling back to
+                        // empty — the next page refresh will re-resolve.
+                        this.startingSlotMap = result.slot_assignments
+                            ?? this.previewSlotMap
+                            ?? {};
                     }
                 }
+                // Pending-state reset includes the preview map.
+                this.previewSlotMap = null;
                 if (result.mentality) {
                     this.activeMentality = result.mentality;
                 }
@@ -1264,27 +1362,52 @@ export default function liveMatch(config) {
 
         /**
          * Computed slot assignments for the pitch display.
-         * Maps current lineup players onto formation slots,
-         * then previews pending substitutions inline.
+         *
+         * Normal case (current formation): start from the authoritative
+         * starting-XI map and replay confirmed substitutions on top. No
+         * algorithm, no reshuffling.
+         *
+         * Formation-preview case: the user is previewing a different shape
+         * from the tactical panel and hasn't committed yet. Slot IDs change
+         * between formations so the saved map is useless. We do a quick
+         * local placement — walk the current on-pitch 11 and drop each into
+         * the first empty slot of the new formation that matches their
+         * primary position. It's not as smart as the backend algorithm,
+         * but it's instant, and the user can drag-drop to fix anything
+         * before committing. The real map is computed server-side when the
+         * change is applied.
          */
         get slotAssignments() {
-            const slots = this.currentPitchSlots.map(slot => ({
-                ...slot,
-                player: null,
-                compatibility: 0,
-                isManual: false,
-            }));
-
-            // Build current active lineup (initial + substitutions applied)
-            const activeLineup = this.getActiveLineupPlayers();
-
-            // Skip manual assignments when previewing a different formation — slot IDs
-            // are formation-specific, so old mappings would place players incorrectly.
             const effectiveFormation = this.pendingFormation ?? this.activeFormation;
-            const useManualAssignments = (effectiveFormation === this._pitchPositionsFormation) ? this.manualAssignments : {};
-            const assignments = assignPlayersToSlots(slots, activeLineup, this.slotCompatibility, useManualAssignments);
+            const isFormationPreview = effectiveFormation !== this._pitchPositionsFormation;
 
-            // Preview pending subs on the pitch: swap out → in
+            let map;
+            if (isFormationPreview) {
+                if (this.previewSlotMap) {
+                    // Authoritative preview map from the backend — same
+                    // algorithm the lineup page uses. Use it as-is.
+                    map = { ...this.previewSlotMap };
+                } else {
+                    // Fetch in flight (or not started yet). Fall back to a
+                    // naive local primary-match placement so the pitch isn't
+                    // empty. The correct placement will snap in once
+                    // refreshFormationPreview() resolves.
+                    map = {};
+                    const active = this.getActiveLineupPlayers();
+                    for (const player of active) {
+                        map = placeInFirstMatchingSlot(map, this.currentPitchSlots, player);
+                    }
+                }
+            } else {
+                // Start from the saved slot map and replay confirmed subs on top.
+                map = { ...this.startingSlotMap };
+                const confirmedSubs = this.substitutionsMade || [];
+                for (const sub of confirmedSubs) {
+                    map = applySubstitution(map, sub.playerOutId, sub.playerInId);
+                }
+            }
+
+            // Layer pending subs on top (in-memory preview only — not committed).
             const allPendingSubs = [...this.pendingSubs];
             if (this.selectedPlayerOut && this.selectedPlayerIn) {
                 const alreadyPending = allPendingSubs.some(
@@ -1298,17 +1421,34 @@ export default function liveMatch(config) {
                 }
             }
 
+            const pendingInIds = new Set();
             for (const sub of allPendingSubs) {
-                const slot = assignments.find(s => s.player?.id === sub.playerOut.id);
-                if (slot) {
-                    slot.player = { ...sub.playerIn, isPendingSub: true };
+                map = applySubstitution(map, sub.playerOut.id, sub.playerIn.id);
+                pendingInIds.add(sub.playerIn.id);
+            }
+
+            // Index players by id for the pitch view. Includes both the
+            // starting XI and the full bench so subbed-in players render.
+            const playersById = {};
+            for (const p of this.lineupPlayers || []) playersById[p.id] = p;
+            for (const p of this.benchPlayers || []) playersById[p.id] = p;
+
+            const assignments = buildSlotView(map, this.currentPitchSlots, playersById, this.slotCompatibility);
+
+            // Mark pending-sub players with isPendingSub so the pitch can
+            // style them (dashed border, muted colors, etc.) without
+            // committing the sub.
+            for (const row of assignments) {
+                if (row.player && pendingInIds.has(row.player.id)) {
+                    row.player = { ...row.player, isPendingSub: true };
                 }
             }
 
-            // Post-process: ensure a non-red-carded Goalkeeper occupies the GK slot.
-            // When a GK is sent off and a reserve GK is subbed in, the algorithm places
-            // the sent-off GK in the GK slot (natural fit) and the reserve GK in the
-            // outfield slot. Swap them so the active GK is shown in goal.
+            // Post-process: ensure a non-red-carded Goalkeeper occupies the
+            // GK slot. When a GK is sent off and a reserve GK comes on as a
+            // direct swap, the reserve ends up in the GK slot automatically.
+            // This block only matters in edge cases where the reserve GK was
+            // subbed into a different slot (rare, old data paths).
             const redCarded = this.redCardedPlayerIds;
             const gkSlot = assignments.find(s => s.role === 'Goalkeeper');
             if (gkSlot?.player && redCarded.includes(gkSlot.player.id)) {
@@ -1322,8 +1462,8 @@ export default function liveMatch(config) {
                     const temp = gkSlot.player;
                     gkSlot.player = reserveGkSlot.player;
                     reserveGkSlot.player = temp;
-                    gkSlot.compatibility = this.slotCompatibility[gkSlot.label]?.[gkSlot.player.position] ?? 0;
-                    reserveGkSlot.compatibility = this.slotCompatibility[reserveGkSlot.label]?.[reserveGkSlot.player.position] ?? 0;
+                    gkSlot.compatibility = getPlayerCompatibility(gkSlot.player, gkSlot.label, this.slotCompatibility);
+                    reserveGkSlot.compatibility = getPlayerCompatibility(reserveGkSlot.player, reserveGkSlot.label, this.slotCompatibility);
                 }
             }
 

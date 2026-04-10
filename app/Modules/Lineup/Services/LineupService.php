@@ -413,17 +413,153 @@ class LineupService
     }
 
     /**
-     * Save lineup to match record.
+     * Save a team's lineup state (player list, optionally formation, optionally
+     * slot assignments) to a match record.
+     *
+     * The slot assignments map is the authoritative player-to-slot layout for
+     * this match. When the caller passes a formation but no slot map, we
+     * compute one on the fly via FormationRecommender so every saved lineup
+     * ends up with a complete {slotId: playerId} snapshot.
+     *
+     * @param  array<int, string>  $playerIds
+     * @param  array<int|string, string>|null  $slotAssignments  [slotId => playerId]
      */
-    public function saveLineup(GameMatch $match, string $teamId, array $playerIds): void
-    {
-        if ($match->home_team_id === $teamId) {
-            $match->home_lineup = $playerIds;
-        } elseif ($match->away_team_id === $teamId) {
-            $match->away_lineup = $playerIds;
+    public function saveLineup(
+        GameMatch $match,
+        string $teamId,
+        array $playerIds,
+        ?Formation $formation = null,
+        ?array $slotAssignments = null,
+    ): void {
+        $prefix = $this->prefixFor($match, $teamId);
+        if ($prefix === null) {
+            return;
+        }
+
+        $match->{"{$prefix}_lineup"} = $playerIds;
+
+        if ($formation !== null) {
+            $match->{"{$prefix}_formation"} = $formation->value;
+        }
+
+        // Resolve the formation we should use to compute the slot map: the
+        // explicitly-passed one wins, else whatever is already on the match.
+        $formationForSlots = $formation ?? Formation::tryFrom($match->{"{$prefix}_formation"} ?? '');
+
+        if ($slotAssignments === null && $formationForSlots !== null && ! empty($playerIds)) {
+            $players = $this->loadPlayersForLineup($match->game_id, $teamId, $playerIds);
+            if ($players->isNotEmpty()) {
+                $slotAssignments = $this->computeSlotAssignments($formationForSlots, $players);
+            }
+        }
+
+        if ($slotAssignments !== null) {
+            $match->{"{$prefix}_slot_assignments"} = $slotAssignments;
         }
 
         $match->save();
+    }
+
+    /**
+     * Compute the {slotId => playerId} map for a given formation + squad,
+     * honoring any caller-provided manual pins. Thin wrapper over
+     * FormationRecommender::bestXIFor that flattens the response to the
+     * shape consumed by the frontend and persisted to the DB.
+     *
+     * @param  array<int|string, string>  $manualAssignments
+     * @return array<int|string, string>  [slotId => playerId]
+     */
+    public function computeSlotAssignments(
+        Formation $formation,
+        Collection $players,
+        array $manualAssignments = [],
+    ): array {
+        $bestXI = $this->formationRecommender->bestXIFor($formation, $players, $manualAssignments);
+
+        $map = [];
+        foreach ($bestXI as $row) {
+            if ($row['player'] === null) {
+                continue;
+            }
+            $map[(string) $row['slot']['id']] = $row['player']['id'];
+        }
+
+        return $map;
+    }
+
+    /**
+     * Return the authoritative slot map for a team in a match. If the match
+     * row already has a persisted map, use it as-is. Otherwise lazily compute
+     * from the stored lineup + formation (no persistence — read paths stay
+     * side-effect-free). Falls back to an empty array when there's nothing
+     * to compute from.
+     *
+     * @return array<int|string, string>  [slotId => playerId]
+     */
+    public function resolveSlotAssignments(GameMatch $match, string $teamId): array
+    {
+        $prefix = $this->prefixFor($match, $teamId);
+        if ($prefix === null) {
+            return [];
+        }
+
+        $persisted = $match->{"{$prefix}_slot_assignments"} ?? null;
+        if (is_array($persisted) && ! empty($persisted)) {
+            return $persisted;
+        }
+
+        $lineup = $match->{"{$prefix}_lineup"} ?? null;
+        $formationValue = $match->{"{$prefix}_formation"} ?? null;
+        if (empty($lineup) || empty($formationValue)) {
+            return [];
+        }
+
+        $formation = Formation::tryFrom($formationValue);
+        if ($formation === null) {
+            return [];
+        }
+
+        $players = $this->loadPlayersForLineup($match->game_id, $teamId, $lineup);
+        if ($players->isEmpty()) {
+            return [];
+        }
+
+        return $this->computeSlotAssignments($formation, $players);
+    }
+
+    /**
+     * Determine which side of a match a team is on. Returns 'home', 'away',
+     * or null if the team isn't playing in this match.
+     */
+    private function prefixFor(GameMatch $match, string $teamId): ?string
+    {
+        if ($match->home_team_id === $teamId) {
+            return 'home';
+        }
+        if ($match->away_team_id === $teamId) {
+            return 'away';
+        }
+        return null;
+    }
+
+    /**
+     * Load a team's GamePlayer records by a specific set of ids. Used by the
+     * save/resolve slot-assignment paths — they need full player records
+     * (position, secondary_positions, overall_score) to run the algorithm.
+     *
+     * @param  array<int, string>  $playerIds
+     */
+    private function loadPlayersForLineup(string $gameId, string $teamId, array $playerIds): Collection
+    {
+        if (empty($playerIds)) {
+            return collect();
+        }
+
+        return GamePlayer::with('player')
+            ->where('game_id', $gameId)
+            ->where('team_id', $teamId)
+            ->whereIn('id', $playerIds)
+            ->get();
     }
 
     /**
@@ -736,10 +872,16 @@ class LineupService
 
         $prefix = $match->home_team_id === $teamId ? 'home' : 'away';
 
+        // Track which formation is active so we can compute slot assignments below.
+        $activeFormation = null;
+
         if ($isPlayerTeam) {
             // Player's team: use their chosen formation, mentality, and instructions
             if ($playerFormation) {
                 $match->{$prefix . '_formation'} = $playerFormation->value;
+                $activeFormation = $playerFormation;
+            } else {
+                $activeFormation = Formation::tryFrom($match->{$prefix . '_formation'} ?? '');
             }
             $match->{$prefix . '_mentality'} = $playerMentality;
             $match->{$prefix . '_playing_style'} = $playerPlayingStyle;
@@ -768,6 +910,19 @@ class LineupService
             $match->{$prefix . '_playing_style'} = $aiStyle->value;
             $match->{$prefix . '_pressing'} = $aiPressing->value;
             $match->{$prefix . '_defensive_line'} = $aiDefLine->value;
+            $activeFormation = $aiFormation;
+        }
+
+        // Compute and persist the slot map so the frontend never has to
+        // re-derive it. We already have the team's GamePlayer records loaded
+        // as $availablePlayers, so we filter down to the chosen 11 in memory
+        // instead of hitting the DB again.
+        if ($activeFormation !== null && ! empty($lineup)) {
+            $lineupPlayers = $availablePlayers->filter(fn ($p) => in_array($p->id, $lineup, true))->values();
+            if ($lineupPlayers->isNotEmpty()) {
+                $slotAssignments = $this->computeSlotAssignments($activeFormation, $lineupPlayers);
+                $match->{$prefix . '_slot_assignments'} = $slotAssignments;
+            }
         }
     }
 

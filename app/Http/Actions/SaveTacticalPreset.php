@@ -107,9 +107,17 @@ class SaveTacticalPreset
 
         $playerIds = $validated['lineup'];
 
-        // Save lineup and formation to match
-        $this->lineupService->saveLineup($match, $game->team_id, $playerIds);
-        $this->lineupService->saveFormation($match, $game->team_id, $validated['formation']);
+        // Save lineup + formation + slot map atomically. If the preset has
+        // no stored slot_assignments (edge case), saveLineup will compute
+        // them server-side before persisting.
+        $formation = Formation::from($validated['formation']);
+        $this->lineupService->saveLineup(
+            $match,
+            $game->team_id,
+            $playerIds,
+            $formation,
+            $slotAssignments,
+        );
         $this->lineupService->saveMentality($match, $game->team_id, $validated['mentality']);
 
         $prefix = $match->isHomeTeam($game->team_id) ? 'home' : 'away';

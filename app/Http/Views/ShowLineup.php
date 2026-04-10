@@ -62,7 +62,6 @@ class ShowLineup
                 $requireEnrollment,
             );
             $currentLineup = $previous['lineup'];
-            $currentSlotAssignments = $game->tactics?->default_slot_assignments;
         }
 
         $currentFormation = $currentFormation ?? $defaultFormation;
@@ -110,6 +109,22 @@ class ShowLineup
         $validPlayerIds = array_keys($playersData);
         if (! empty($currentLineup)) {
             $currentLineup = array_values(array_intersect($currentLineup, $validPlayerIds));
+        }
+
+        // Resolve the authoritative slot map for this match. If the match row
+        // already has a persisted map, use it; otherwise lazily compute from
+        // the stored lineup + formation (no persistence on the read path).
+        // Falls back to the team's default_slot_assignments for brand-new
+        // games where the match has no lineup yet.
+        $currentSlotMap = $this->lineupService->resolveSlotAssignments($match, $game->team_id);
+        if (empty($currentSlotMap) && ! empty($game->tactics?->default_slot_assignments)) {
+            $currentSlotMap = $game->tactics->default_slot_assignments;
+        }
+        if (! empty($currentSlotMap)) {
+            $currentSlotMap = array_filter(
+                $currentSlotMap,
+                fn ($playerId) => in_array($playerId, $validPlayerIds),
+            );
         }
 
         // Prepare pitch slots for each formation, adding Spanish display labels
@@ -265,9 +280,8 @@ class ShowLineup
             'midfielders' => $playersByGroup['midfielders'],
             'forwards' => $playersByGroup['forwards'],
             'currentLineup' => $currentLineup,
-            'currentSlotAssignments' => ! empty($game->tactics?->default_slot_assignments)
-                ? array_filter($game->tactics->default_slot_assignments, fn ($playerId) => in_array($playerId, $validPlayerIds))
-                : null,
+            'currentSlotMap' => ! empty($currentSlotMap) ? $currentSlotMap : (object) [],
+            'computeSlotsUrl' => route('game.lineup.computeSlots', $game->id),
             'autoLineup' => $autoLineup,
             'formationOptions' => $formationOptions,
             'currentFormation' => $currentFormation,

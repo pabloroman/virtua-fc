@@ -57,6 +57,7 @@ use App\Http\Actions\RejectTransferOffer;
 use App\Http\Actions\RequestBudgetLoan;
 use App\Http\Actions\RequestLoan;
 use App\Http\Actions\WithdrawTransferOffer;
+use App\Http\Actions\ComputeSlotAssignments;
 use App\Http\Actions\SaveLineup;
 use App\Http\Actions\SaveTacticalPreset;
 use App\Http\Actions\DeleteTacticalPreset;
@@ -174,6 +175,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/game/{gameId}/skip-pre-season', SkipPreSeason::class)->name('game.skip-pre-season');
         Route::post('/game/{gameId}/lineup', SaveLineup::class)->name('game.lineup.save');
         Route::get('/game/{gameId}/lineup/auto', GetAutoLineup::class)->name('game.lineup.auto');
+        Route::post('/game/{gameId}/lineup/compute-slots', ComputeSlotAssignments::class)->name('game.lineup.computeSlots');
         Route::post('/game/{gameId}/tactical-presets', SaveTacticalPreset::class)->name('game.tactical-presets.save');
         Route::delete('/game/{gameId}/tactical-presets/{presetId}', DeleteTacticalPreset::class)->name('game.tactical-presets.delete');
 

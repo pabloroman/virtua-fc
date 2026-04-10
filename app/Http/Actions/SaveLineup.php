@@ -73,9 +73,16 @@ class SaveLineup
                 ->withInput(['players' => $playerIds, 'formation' => $formation->value, 'mentality' => $mentality->value]);
         }
 
-        // Save the lineup, slot assignments, formation, mentality, and instructions for this match
-        $this->lineupService->saveLineup($match, $game->team_id, $playerIds);
-        $this->lineupService->saveFormation($match, $game->team_id, $formation->value);
+        // Save the lineup + formation + slot map in one call. If the form
+        // omitted slot_assignments (rare, e.g. a cached page), saveLineup
+        // will compute them server-side before persisting.
+        $this->lineupService->saveLineup(
+            $match,
+            $game->team_id,
+            $playerIds,
+            $formation,
+            $slotAssignments,
+        );
         $this->lineupService->saveMentality($match, $game->team_id, $mentality->value);
 
         // Save instructions on the match record

@@ -6,11 +6,13 @@ use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\MatchEvent;
+use App\Modules\Lineup\Enums\Formation;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\Modules\Match\Services\ExtraTimeAndPenaltyService;
 use App\Modules\Match\Services\MatchResimulationService;
 use App\Modules\Lineup\Services\SubstitutionService;
+use App\Modules\Lineup\Services\LineupService;
 
 class TacticalChangeService
 {
@@ -18,6 +20,7 @@ class TacticalChangeService
         private readonly MatchResimulationService $resimulationService,
         private readonly SubstitutionService $substitutionService,
         private readonly ExtraTimeAndPenaltyService $extraTimeService,
+        private readonly LineupService $lineupService,
     ) {}
 
     /**
@@ -43,15 +46,20 @@ class TacticalChangeService
         // Apply tactical changes to the match record
         $matchUpdates = [];
 
+        // Track whether the formation is actually changing so we can
+        // recompute the slot map later (after the active lineup is built).
+        $formationChanged = false;
         if ($formation !== null) {
             $matchUpdates["{$prefix}_formation"] = $formation;
 
-            // When the formation changes, clear stale slot assignments — slot IDs
-            // map to different positions per formation.
             if ($formation !== $match->{"{$prefix}_formation"}) {
+                // Slot IDs map to different positions per formation, so the
+                // old map is meaningless. We'll compute a fresh one below
+                // once the substitutions have been reconciled.
                 $matchUpdates["{$prefix}_pitch_positions"] = $pitchPositions;
                 $matchUpdates["{$prefix}_slot_assignments"] = null;
                 $pitchPositions = null; // already queued
+                $formationChanged = true;
             }
         }
         if ($mentality !== null) {
@@ -94,6 +102,24 @@ class TacticalChangeService
         // Capture effective tactical values before re-simulation
         $effectiveFormation = $match->{"{$prefix}_formation"};
         $effectiveMentality = $match->{"{$prefix}_mentality"};
+
+        // If the user committed a formation change, compute a fresh slot map
+        // for the new formation using the current on-pitch 11 (which already
+        // reflects all confirmed substitutions via $userLineup), and persist
+        // it to the match row. This is the same authoritative algorithm the
+        // lineup page and the live-match preview call — one source of truth.
+        $newSlotAssignments = null;
+        if ($formationChanged) {
+            $userPlayers = $isUserHome ? $homePlayers : $awayPlayers;
+            $formationEnum = Formation::tryFrom($formation);
+            if ($formationEnum !== null && $userPlayers->isNotEmpty()) {
+                $newSlotAssignments = $this->lineupService->computeSlotAssignments(
+                    $formationEnum,
+                    $userPlayers,
+                );
+                $match->update(["{$prefix}_slot_assignments" => $newSlotAssignments]);
+            }
+        }
 
         // Single re-simulation with all changes applied
         if ($isExtraTime) {
@@ -189,6 +215,10 @@ class TacticalChangeService
             'playerPerformances' => $result->performances,
             'mvpPlayerName' => $mvpPlayerName,
             'mvpPlayerTeamId' => $mvpPlayerTeamId,
+            // Only included when the formation actually changed; the
+            // frontend promotes this to `startingSlotMap` so the pitch
+            // keeps rendering the correct placement after apply.
+            'slot_assignments' => $newSlotAssignments,
         ];
 
         if ($isExtraTime) {

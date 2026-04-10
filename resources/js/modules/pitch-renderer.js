@@ -293,4 +293,7 @@ export function getZoneColorClass(role) {
     }
 }
 
-// Slot assignment has been extracted to modules/slot-assignment.js
+// Slot-map mechanical helpers (swap, place, remove, sub, buildView) live in
+// modules/slot-map.js. The authoritative placement algorithm runs on the
+// PHP side (FormationRecommender) and is invoked via the
+// `game.lineup.computeSlots` endpoint when needed.

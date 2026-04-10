@@ -230,7 +230,7 @@
 
                                 {{-- Selected player out indicator (from pitch tap) --}}
                                 <div x-show="livePitchSelectedOutId && selectedPlayerOut" class="mb-3 flex items-center gap-2 px-3 py-2 bg-accent-red/10 border border-accent-red/20 rounded-md text-sm">
-                                    <span class="inline-flex items-center justify-center w-7 h-7 text-xs -skew-x-12 font-semibold text-white shrink-0"
+                                    <span class="inline-flex items-center justify-center w-5 h-5 text-[8px] -skew-x-12 font-semibold text-white shrink-0"
                                           :class="getPositionBadgeColor(selectedPlayerOut?.positionGroup)">
                                         <span class="skew-x-12" x-text="selectedPlayerOut?.positionAbbr"></span>
                                     </span>
@@ -258,7 +258,7 @@
                                                             ? 'bg-accent-red/10 border border-accent-red/20 text-accent-red'
                                                             : 'bg-surface-800 border border-border-strong hover:border-border-strong text-text-body'"
                                                     >
-                                                        <span class="inline-flex items-center justify-center w-7 h-7 text-xs -skew-x-12 font-semibold text-white shrink-0"
+                                                        <span class="inline-flex items-center justify-center w-5 h-5 text-[8px] -skew-x-12 font-semibold text-white shrink-0"
                                                               :class="getPositionBadgeColor(player.positionGroup)">
                                                             <span class="skew-x-12" x-text="player.positionAbbr"></span>
                                                         </span>
@@ -301,7 +301,7 @@
                                                     >
                                                         <div class="flex items-center gap-0.5 shrink-0">
                                                             <template x-for="pos in (player.positions || [player.position])" :key="pos">
-                                                                <span class="inline-flex items-center justify-center w-7 h-7 text-xs -skew-x-12 font-semibold text-white"
+                                                                <span class="inline-flex items-center justify-center w-5 h-5 text-[8px] -skew-x-12 font-semibold text-white"
                                                                       :class="getSecondaryBadgeClasses(pos)">
                                                                     <span class="skew-x-12" x-text="getSecondaryAbbr(pos)"></span>
                                                                 </span>
@@ -368,7 +368,7 @@
                                         <h4 class="text-xs font-semibold text-text-muted uppercase mb-2 flex items-center gap-1.5">
                                             {{ __('game.tactical_formation') }}
                                         </h4>
-                                        <x-tactical-lever model="(pendingFormation ?? activeFormation)" set="pendingFormation" options="availableFormations" :columns="4" />
+                                        <x-tactical-lever model="(pendingFormation ?? activeFormation)" set="pendingFormation" options="availableFormations" :columns="4" callback="refreshFormationPreview()" />
                                         <p class="mt-2 text-xs text-text-secondary italic min-h-5" x-text="getFormationTooltip()"></p>
                                     </div>
 

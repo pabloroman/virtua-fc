@@ -22,6 +22,10 @@ use App\Support\TeamColors;
 
 class ShowLiveMatch
 {
+    public function __construct(
+        private readonly LineupService $lineupService,
+    ) {}
+
     public function __invoke(string $gameId, string $matchId)
     {
         $game = Game::with('team')->findOrFail($gameId);
@@ -369,8 +373,15 @@ class ShowLiveMatch
             'gridConfig' => $gridConfig,
             'pitchPositions' => $playerMatch->{"{$prefix}_pitch_positions"}
                 ?? $game->tactics?->default_pitch_positions ?? [],
-            'slotAssignments' => $playerMatch->{"{$prefix}_slot_assignments"}
-                ?? $game->tactics?->default_slot_assignments ?? [],
+            // Authoritative slot map: persisted value on the match if present,
+            // otherwise lazy-computed via LineupService, with a final fallback
+            // to the team's default_slot_assignments for brand-new installs.
+            'slotAssignments' => $this->lineupService->resolveSlotAssignments($playerMatch, $game->team_id)
+                ?: ($game->tactics?->default_slot_assignments ?? []),
+            // Endpoint for formation-preview fetches from the tactical panel.
+            // Same endpoint the lineup page uses — single source of truth for
+            // the placement algorithm.
+            'computeSlotsUrl' => route('game.lineup.computeSlots', $game->id),
             'narrativeTemplates' => $narrativeTemplates,
             'animationSeen' => $animationSeen,
         ]);
