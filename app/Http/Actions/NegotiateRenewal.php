@@ -35,7 +35,7 @@ class NegotiateRenewal
 
         $player = GamePlayer::with($eagerLoads)
             ->where('game_id', $gameId)
-            ->where('team_id', $game->team_id)
+            ->ownedByTeam($game->team_id)
             ->findOrFail($playerId);
 
         return match ($action) {

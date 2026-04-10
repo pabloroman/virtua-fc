@@ -113,7 +113,7 @@ class ShowOutgoingTransfers
         $seasonEndDate = $game->getSeasonEndDate();
         $declinedRenewals = GamePlayer::with(['player', 'latestRenewalNegotiation'])
             ->where('game_id', $gameId)
-            ->where('team_id', $game->team_id)
+            ->ownedByTeam($game->team_id)
             ->whereHas('latestRenewalNegotiation', fn ($q) => $q->where('status', RenewalNegotiation::STATUS_CLUB_DECLINED))
             ->get()
             ->filter(fn (GamePlayer $p) => $p->isContractExpiring($seasonEndDate) && $p->hasDeclinedRenewal());
@@ -129,7 +129,7 @@ class ShowOutgoingTransfers
         if (!empty($cooldownPlayerIds)) {
             $cooldownRenewals = GamePlayer::with(['player'])
                 ->where('game_id', $gameId)
-                ->where('team_id', $game->team_id)
+                ->ownedByTeam($game->team_id)
                 ->whereIn('id', $cooldownPlayerIds)
                 ->get()
                 ->filter(fn (GamePlayer $p) => $p->isContractExpiring($seasonEndDate));

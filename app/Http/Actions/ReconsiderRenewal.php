@@ -17,7 +17,7 @@ class ReconsiderRenewal
         $game = Game::findOrFail($gameId);
         $player = GamePlayer::with('latestRenewalNegotiation')
             ->where('game_id', $gameId)
-            ->where('team_id', $game->team_id)
+            ->ownedByTeam($game->team_id)
             ->findOrFail($playerId);
 
         if (!$player->hasDeclinedRenewal()) {

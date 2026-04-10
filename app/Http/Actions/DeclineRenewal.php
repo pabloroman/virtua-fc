@@ -17,7 +17,7 @@ class DeclineRenewal
     {
         $game = Game::findOrFail($gameId);
         $player = GamePlayer::where('game_id', $gameId)
-            ->where('team_id', $game->team_id)
+            ->ownedByTeam($game->team_id)
             ->findOrFail($playerId);
 
         if (!$player->isContractExpiring() || $player->isRetiring() || $player->hasRenewalAgreed()) {

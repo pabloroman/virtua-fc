@@ -325,7 +325,7 @@ class ContractService
 
         return GamePlayer::with(['player', 'team', 'game', 'transferOffers', 'latestRenewalNegotiation', 'activeRenewalNegotiation', 'activeLoan'])
             ->where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
+            ->ownedByTeam($game->team_id)
             ->get()
             ->filter(fn ($player) => $player->canBeOfferedRenewal($seasonEndDate, $game->current_date))
             ->sortBy('contract_until');
@@ -341,7 +341,7 @@ class ContractService
     {
         return GamePlayer::with('player')
             ->where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
+            ->ownedByTeam($game->team_id)
             ->whereNotNull('pending_annual_wage')
             ->orderByDesc('pending_annual_wage')
             ->get();

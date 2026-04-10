@@ -347,6 +347,28 @@ class GamePlayer extends Model
     }
 
     /**
+     * Scope: players owned by a team.
+     *
+     * A team "owns" a player if either:
+     *   - the player is currently at the team and is not a borrowed (loaned-in) player, OR
+     *   - the player is loaned out from the team (an active Loan exists with parent_team_id = $teamId).
+     *
+     * Loaned-in players (currently at the team but belonging to another club)
+     * are explicitly excluded. Use this for contract-related operations
+     * (renewals, pre-contracts) where the owning club retains authority even
+     * while a player is away on loan.
+     */
+    public function scopeOwnedByTeam($query, string $teamId)
+    {
+        return $query->where(function ($q) use ($teamId) {
+            $q->where(function ($present) use ($teamId) {
+                $present->where('team_id', $teamId)
+                    ->whereDoesntHave('activeLoan');
+            })->orWhereHas('activeLoan', fn ($loanQuery) => $loanQuery->where('parent_team_id', $teamId));
+        });
+    }
+
+    /**
      * Check if player is transfer listed.
      */
     public function isTransferListed(): bool
@@ -497,8 +519,9 @@ class GamePlayer extends Model
             return false;
         }
 
-        // Loaned-in players belong to another club — we can't renew them
-        if ($this->isOnLoan()) {
+        // Loaned-in players belong to another club — we can't renew them.
+        // Loaned-out players (ours, playing elsewhere) can still be renewed.
+        if ($this->isLoanedIn($this->game->team_id)) {
             return false;
         }
 
