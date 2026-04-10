@@ -61,17 +61,17 @@
                 @endphp
                 <div class="px-4 md:px-6 py-4" x-data="{ expanded: false, shortlisted: {{ $isShortlisted ? 'true' : 'false' }}, toggling: false }" @shortlist-toggled.window="if($event.detail.playerId === '{{ $player->id }}') { shortlisted = $event.detail.action === 'added' }">
                     {{-- Player Summary Row --}}
-                    <div class="flex items-center gap-3 cursor-pointer" @click="expanded = !expanded">
+                    <div class="flex flex-col md:flex-row md:items-center gap-3 cursor-pointer" @click="expanded = !expanded">
                         {{-- Position + Name --}}
                         <div class="flex items-center gap-3 min-w-0 flex-1">
                             <div class="flex items-center gap-1 shrink-0">
                                 @foreach($player->positions as $pos)
-                                    <x-position-badge :position="$pos" />
+                                    <x-position-badge :position="$pos" class="md:w-5 md:h-5 md:text-[8px]" />
                                 @endforeach
                             </div>
                             <div class="min-w-0">
                                 <div class="flex items-center gap-2 flex-wrap">
-                                    <span class="font-semibold text-text-primary truncate">{{ $player->name }}</span>
+                                    <span class="font-semibold text-text-primary">{{ $player->name }}</span>
                                     <span class="text-xs text-text-secondary">{{ $player->age($game->current_date) }} {{ __('app.years') }}</span>
                                     @if($isFreeAgent)
                                         <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-medium bg-accent-green/10 text-accent-green">{{ __('transfers.free_agent') }}</span>
@@ -89,7 +89,7 @@
                         </div>
 
                         {{-- Ability estimate + Price + Shortlist --}}
-                        <div class="flex items-center gap-3 sm:gap-4 shrink-0">
+                        <div class="flex items-center justify-between gap-4 md:justify-end md:shrink-0">
                             <div class="text-right">
                                 <div class="text-xs text-text-secondary">{{ __('transfers.ability') }}</div>
                                 <div class="text-sm font-semibold text-text-body tabular-nums">{{ $techRange[0] }}-{{ $techRange[1] }}</div>
