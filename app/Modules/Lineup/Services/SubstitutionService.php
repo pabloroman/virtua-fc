@@ -163,6 +163,9 @@ class SubstitutionService
     /**
      * Load both teams' lineups and benches for resimulation.
      *
+     * @param  int|null  $minute  If provided, reconstructs the opponent lineup/bench as of
+     *                            this minute (only subs with minute ≤ $minute are applied).
+     *                            Pass null for a full-match reconstruction (all subs applied).
      * @return array{homePlayers: \Illuminate\Support\Collection, awayPlayers: \Illuminate\Support\Collection, homeBench: \Illuminate\Support\Collection, awayBench: \Illuminate\Support\Collection}
      */
     public function loadTeamsForResimulation(
@@ -170,6 +173,7 @@ class SubstitutionService
         Game $game,
         \Illuminate\Support\Collection $userLineup,
         array $substitutions,
+        ?int $minute = null,
     ): array {
         $isUserHome = $match->isHomeTeam($game->team_id);
 
@@ -182,15 +186,36 @@ class SubstitutionService
 
         $opponentLineupIds = $isUserHome ? ($match->away_lineup ?? []) : ($match->home_lineup ?? []);
 
-        // Apply opponent substitutions from match record (auto-subs from initial simulation)
-        // so that injured/subbed-out players are excluded and their replacements are included.
-        foreach ($match->substitutions ?? [] as $sub) {
-            if ($sub['team_id'] === $opponentTeamId) {
+        // Read opponent substitution events from match_events (source of truth) rather
+        // than $match->substitutions, which is populated once during initial simulation
+        // and is not updated by subsequent resimulations. Filtering by minute ensures
+        // the reconstructed lineup matches the actual state at $minute — any sub events
+        // at minute > $minute will be reverted by doResimulate() anyway.
+        $opponentSubEventsQuery = MatchEvent::where('game_match_id', $match->id)
+            ->where('team_id', $opponentTeamId)
+            ->where('event_type', 'substitution');
+        if ($minute !== null) {
+            $opponentSubEventsQuery->where('minute', '<=', $minute);
+        }
+        $opponentSubEvents = $opponentSubEventsQuery->orderBy('minute')->get();
+
+        // Track subbed-out players explicitly so they are excluded from the bench.
+        // Without this, a starter who was subbed out ends up back on the bench
+        // (because "squad − lineup" sees them as off-pitch), letting the AI wrongly
+        // pick them again as a replacement later in the match.
+        $opponentSubbedOutIds = [];
+        foreach ($opponentSubEvents as $subEvent) {
+            $playerOutId = $subEvent->game_player_id;
+            $playerInId = $subEvent->metadata['player_in_id'] ?? null;
+            if ($playerOutId !== null) {
                 $opponentLineupIds = array_values(array_filter(
                     $opponentLineupIds,
-                    fn ($id) => $id !== $sub['player_out_id']
+                    fn ($id) => $id !== $playerOutId
                 ));
-                $opponentLineupIds[] = $sub['player_in_id'];
+                $opponentSubbedOutIds[] = $playerOutId;
+            }
+            if ($playerInId !== null) {
+                $opponentLineupIds[] = $playerInId;
             }
         }
 
@@ -200,6 +225,7 @@ class SubstitutionService
         $opponentPlayers = $opponentSquad->filter(fn ($p) => in_array($p->id, $opponentLineupIds));
         $opponentBench = $opponentSquad
             ->reject(fn ($p) => in_array($p->id, $opponentLineupIds))
+            ->reject(fn ($p) => in_array($p->id, $opponentSubbedOutIds))
             ->reject(fn ($p) => $p->isInjured($match->scheduled_date))
             ->reject(fn ($p) => in_array($p->id, $suspendedPlayerIds))
             ->values();

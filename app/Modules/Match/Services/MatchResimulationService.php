@@ -108,28 +108,38 @@ class MatchResimulationService
                 $awayEntryMinutes[$sub['playerInId']] = $sub['minute'];
             }
         }
-        // Opponent's substitutions that happened before the resimulation minute
-        foreach ($match->substitutions ?? [] as $sub) {
-            if ($sub['team_id'] !== $game->team_id && $sub['minute'] <= $minute) {
-                if ($isUserHome) {
-                    $awayEntryMinutes[$sub['player_in_id']] = $sub['minute'];
-                } else {
-                    $homeEntryMinutes[$sub['player_in_id']] = $sub['minute'];
-                }
+        // Opponent's substitutions up to the resimulation minute. Read from match_events
+        // (source of truth after any prior resimulations) rather than $match->substitutions,
+        // which is populated by the initial simulation and not updated by subsequent resims
+        // — leaving it stale and out of sync with the actual events.
+        $opponentTeamId = $isUserHome ? $match->away_team_id : $match->home_team_id;
+        $opponentSubEvents = MatchEvent::where('game_match_id', $match->id)
+            ->where('team_id', $opponentTeamId)
+            ->where('event_type', 'substitution')
+            ->where('minute', '<=', $minute)
+            ->get();
+        foreach ($opponentSubEvents as $subEvent) {
+            $playerInId = $subEvent->metadata['player_in_id'] ?? null;
+            if ($playerInId === null) {
+                continue;
+            }
+            if ($isUserHome) {
+                $awayEntryMinutes[$playerInId] = $subEvent->minute;
+            } else {
+                $homeEntryMinutes[$playerInId] = $subEvent->minute;
             }
         }
 
-        // 8. Count existing substitutions and windows per team to enforce limits
+        // 8. Count existing substitutions and windows per team to enforce limits.
+        // Opponent counts come from match_events (post-revert state) so repeated
+        // resimulations can't push the opponent past the sub/window caps by
+        // counting against a stale $match->substitutions snapshot.
         $userSubCount = count($allSubstitutions);
-        $opponentSubs = collect($match->substitutions ?? [])
-            ->filter(fn ($s) => $s['team_id'] !== $game->team_id);
-        $opponentSubCount = $opponentSubs->count();
+        $opponentSubCount = $opponentSubEvents->count();
         $homeExistingSubs = $isUserHome ? $userSubCount : $opponentSubCount;
         $awayExistingSubs = $isUserHome ? $opponentSubCount : $userSubCount;
 
-        // Count opponent windows used before the resimulation minute
-        $opponentWindowsUsed = $opponentSubs
-            ->filter(fn ($s) => $s['minute'] <= $minute)
+        $opponentWindowsUsed = $opponentSubEvents
             ->pluck('minute')
             ->unique()
             ->count();
