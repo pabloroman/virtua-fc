@@ -19,9 +19,7 @@ class ShowTransferMarket
         $game = Game::findOrFail($gameId);
 
         $isTransferWindow = $game->isTransferWindowOpen();
-        $listings = $isTransferWindow
-            ? $this->transferMarketService->getMarketListings($game)
-            : collect();
+        $listings = $this->transferMarketService->getMarketListings($game);
 
         $headerData = $this->headerService->getHeaderData($game);
 

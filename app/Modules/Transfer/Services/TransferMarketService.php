@@ -6,6 +6,7 @@ use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\GameTransfer;
 use App\Models\TransferListing;
+use App\Models\TransferOffer;
 use App\Modules\Player\PlayerAge;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -21,6 +22,13 @@ class TransferMarketService
 {
     /** Maximum number of AI listings active at any time */
     private const MAX_LISTINGS = 50;
+
+    /**
+     * Soft-fill threshold: refresh only tops up new listings when the
+     * current count drops below this, giving the market stable browsing
+     * between natural churn events instead of replacing listings daily.
+     */
+    private const SOFT_FILL_THRESHOLD = 30;
 
     /** Listings expire after this many days */
     private const LISTING_EXPIRY_DAYS = 30;
@@ -44,9 +52,11 @@ class TransferMarketService
     ) {}
 
     /**
-     * Refresh AI market listings. Called each matchday during transfer windows.
+     * Refresh AI market listings. Called every matchday, year-round.
      *
-     * Removes expired listings, then generates new ones up to MAX_LISTINGS.
+     * Always removes expired listings. Only tops up new listings when the
+     * active count drops below SOFT_FILL_THRESHOLD, so the market is stable
+     * between natural churn events instead of replacing rows daily.
      */
     public function refreshListings(Game $game): void
     {
@@ -65,10 +75,12 @@ class TransferMarketService
             ->whereNotNull('asking_price')
             ->count();
 
-        $slotsAvailable = self::MAX_LISTINGS - $currentCount;
-        if ($slotsAvailable <= 0) {
+        // Soft-fill: only top up when the market has noticeably decayed
+        if ($currentCount >= self::SOFT_FILL_THRESHOLD) {
             return;
         }
+
+        $slotsAvailable = self::MAX_LISTINGS - $currentCount;
 
         // Load context
         $teamRosters = $this->loadAIRosters($game);
@@ -119,27 +131,25 @@ class TransferMarketService
     }
 
     /**
-     * Clear all AI listings when the transfer window closes.
-     */
-    public function clearListings(Game $game): void
-    {
-        TransferListing::where('game_id', $game->id)
-            ->where('team_id', '!=', $game->team_id)
-            ->where('status', TransferListing::STATUS_LISTED)
-            ->whereNotNull('asking_price')
-            ->delete();
-    }
-
-    /**
      * Get active market listings for the view.
+     *
+     * Excludes players for whom the user already has an agreed offer
+     * waiting on a window — otherwise the user would see "available" rows
+     * for players they've already bought.
      */
     public function getMarketListings(Game $game): Collection
     {
+        $alreadyAgreedIds = TransferOffer::where('game_id', $game->id)
+            ->where('offering_team_id', $game->team_id)
+            ->where('status', TransferOffer::STATUS_AGREED)
+            ->pluck('game_player_id');
+
         return TransferListing::with(['gamePlayer.player', 'gamePlayer.team'])
             ->where('game_id', $game->id)
             ->where('team_id', '!=', $game->team_id)
             ->where('status', TransferListing::STATUS_LISTED)
             ->whereNotNull('asking_price')
+            ->whereNotIn('game_player_id', $alreadyAgreedIds)
             ->orderByDesc('asking_price')
             ->get();
     }

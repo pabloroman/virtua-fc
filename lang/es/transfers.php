@@ -418,4 +418,5 @@ return [
     'market_empty' => 'No hay jugadores en el mercado actualmente.',
     'market_bid' => 'Pujar',
     'market_asking_price' => 'Precio de Salida',
+    'market_window_closed_notice' => 'La ventana de fichajes está cerrada. Puedes seguir negociando con los clubes — los acuerdos se incorporarán a tu equipo cuando se abra la próxima ventana.',
 ];

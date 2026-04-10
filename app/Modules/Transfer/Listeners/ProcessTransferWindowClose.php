@@ -6,13 +6,11 @@ use App\Models\GameNotification;
 use App\Modules\Match\Events\GameDateAdvanced;
 use App\Modules\Transfer\Enums\TransferWindowType;
 use App\Modules\Transfer\Services\AITransferMarketService;
-use App\Modules\Transfer\Services\TransferMarketService;
 
 class ProcessTransferWindowClose
 {
     public function __construct(
         private readonly AITransferMarketService $aiTransferMarketService,
-        private readonly TransferMarketService $transferMarketService,
     ) {}
 
     public function handle(GameDateAdvanced $event): void
@@ -40,7 +38,5 @@ class ProcessTransferWindowClose
         }
 
         $this->aiTransferMarketService->processWindowClose($game, $previousWindow->value);
-
-        $this->transferMarketService->clearListings($game);
     }
 }

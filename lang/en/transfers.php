@@ -413,4 +413,5 @@ return [
     'market_empty' => 'No players currently listed on the market.',
     'market_bid' => 'Bid',
     'market_asking_price' => 'Asking Price',
+    'market_window_closed_notice' => 'The transfer window is closed. You can still negotiate with clubs — any agreed signings will join your team when the next window opens.',
 ];

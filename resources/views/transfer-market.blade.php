@@ -27,14 +27,16 @@
 
         <div class="mt-6">
             @if(!$isTransferWindow)
-                {{-- Window closed state --}}
-                <div class="bg-surface-800 border border-border-default rounded-xl p-8 text-center">
-                    <svg class="w-12 h-12 mx-auto text-text-muted mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/>
+                {{-- Window closed banner — listings remain browseable; agreed bids complete on next window open --}}
+                <div class="mb-4 flex items-center gap-3 px-4 py-3 bg-accent-blue/10 border border-accent-blue/20 rounded-lg text-sm text-accent-blue">
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    <p class="text-text-secondary text-sm">{{ __('transfers.market_closed') }}</p>
+                    <span>{{ __('transfers.market_window_closed_notice') }}</span>
                 </div>
-            @elseif($listings->isEmpty())
+            @endif
+
+            @if($listings->isEmpty())
                 {{-- No listings --}}
                 <div class="bg-surface-800 border border-border-default rounded-xl p-8 text-center">
                     <svg class="w-12 h-12 mx-auto text-text-muted mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

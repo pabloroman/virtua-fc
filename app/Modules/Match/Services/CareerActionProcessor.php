@@ -201,15 +201,18 @@ class CareerActionProcessor
 
     private function processAITransferBatch(Game $game): void
     {
-        $windowType = TransferWindowType::fromDate($game->current_date);
+        // The user-facing market is refreshed year-round so players can be
+        // bought at any time. Bids accepted out-of-window are stored as
+        // STATUS_AGREED and flushed when the next window opens.
+        $this->transferMarketService->refreshListings($game);
 
+        // AI-to-AI transfer activity only runs while a window is open.
+        $windowType = TransferWindowType::fromDate($game->current_date);
         if (! $windowType) {
             return;
         }
 
         $this->aiTransferMarketService->processTransferBatch($game, $windowType->value);
-
-        $this->transferMarketService->refreshListings($game);
     }
 
 }
