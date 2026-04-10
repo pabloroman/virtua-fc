@@ -158,7 +158,7 @@
                                         <span class="text-sm font-medium text-text-primary truncate flex-1 min-w-0" x-text="getPlayer({{ $i }}).name"></span>
                                         <span class="text-xs text-text-muted tabular-nums shrink-0" x-text="getPlayer({{ $i }}).age + ' {{ __('squad.years_abbr') }}'"></span>
 
-                                        <div class="rating-badge w-7 h-7 rounded-md text-[10px] flex items-center justify-center shrink-0"
+                                        <div class="rating-badge w-7 h-7 rounded-md text-xs flex items-center justify-center shrink-0"
                                              :class="ratingBadgeClass(getPlayer({{ $i }}).overall)">
                                             <span class="font-heading font-bold" x-text="getPlayer({{ $i }}).overall"></span>
                                         </div>
@@ -221,7 +221,7 @@
                                     <span class="text-sm font-medium text-text-primary truncate flex-1 min-w-0" x-text="players[entry.id].name"></span>
                                     <span class="text-xs text-text-muted tabular-nums shrink-0" x-text="players[entry.id].age + ' {{ __('squad.years_abbr') }}'"></span>
 
-                                    <div class="rating-badge w-7 h-7 rounded-md text-[10px] flex items-center justify-center shrink-0"
+                                    <div class="rating-badge w-7 h-7 rounded-md text-xs flex items-center justify-center shrink-0"
                                          :class="ratingBadgeClass(players[entry.id].overall)">
                                         <span class="font-heading font-bold" x-text="players[entry.id].overall"></span>
                                     </div>
@@ -274,7 +274,7 @@
                                     <span class="text-sm font-medium text-text-primary truncate flex-1 min-w-0" x-text="players[playerId].name"></span>
                                     <span class="text-xs text-text-muted tabular-nums shrink-0" x-text="players[playerId].age + ' {{ __('squad.years_abbr') }}'"></span>
 
-                                    <div class="rating-badge w-7 h-7 rounded-md text-[10px] flex items-center justify-center shrink-0"
+                                    <div class="rating-badge w-7 h-7 rounded-md text-xs flex items-center justify-center shrink-0"
                                          :class="ratingBadgeClass(players[playerId].overall)">
                                         <span class="font-heading font-bold" x-text="players[playerId].overall"></span>
                                     </div>

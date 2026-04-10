@@ -10,7 +10,7 @@
     };
 
     $sizeClasses = match($size) {
-        'sm' => 'w-7 h-7 rounded-md text-[10px]',
+        'sm' => 'w-7 h-7 rounded-md text-xs',
         'lg' => 'w-12 h-12 rounded-lg text-lg',
         default => 'w-9 h-9 rounded-lg text-sm',
     };

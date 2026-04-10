@@ -53,7 +53,7 @@
                                   :class="getPositionBadgeColor(kicker.positionGroup)"
                                   x-text="kicker.positionAbbr"></span>
                             <span class="text-sm font-semibold text-text-primary flex-1 truncate" x-text="kicker.name"></span>
-                            <span class="rating-badge w-7 h-7 rounded-md text-[10px] flex items-center justify-center shrink-0"
+                            <span class="rating-badge w-7 h-7 rounded-md text-xs flex items-center justify-center shrink-0"
                                   :class="getRatingBadgeClass(kicker.overallScore)">
                                 <span class="font-heading font-bold" x-text="kicker.overallScore"></span>
                             </span>
@@ -86,7 +86,7 @@
                                   :class="getPositionBadgeColor(player.positionGroup)"
                                   x-text="player.positionAbbr"></span>
                             <span class="text-sm text-text-primary flex-1 truncate" x-text="player.name"></span>
-                            <span class="rating-badge w-7 h-7 rounded-md text-[10px] flex items-center justify-center shrink-0"
+                            <span class="rating-badge w-7 h-7 rounded-md text-xs flex items-center justify-center shrink-0"
                                   :class="getRatingBadgeClass(player.overallScore)">
                                 <span class="font-heading font-bold" x-text="player.overallScore"></span>
                             </span>
