@@ -127,7 +127,10 @@ class SquadService
         $highEarners = collect();
 
         if ($isCareerMode) {
-            $expiringThisSeason = $allPlayers->filter(fn ($p) => $p->isContractExpiring($seasonEndDate))
+            // Retiring players can't be renewed or sold — exclude them from the watchlist
+            // so the user isn't nudged to act on something they can't resolve.
+            $expiringThisSeason = $allPlayers
+                ->filter(fn ($p) => $p->isContractExpiring($seasonEndDate) && !$p->isRetiring())
                 ->sortByDesc('overall_score')
                 ->values();
 

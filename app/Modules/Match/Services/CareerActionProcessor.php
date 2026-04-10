@@ -163,6 +163,7 @@ class CareerActionProcessor
             ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->whereNull('pending_annual_wage') // not already renewed
+            ->whereNull('retiring_at_season') // retiring players can't be renewed — don't nag
             ->where('contract_until', '<=', $sixMonthsOut)
             ->where('contract_until', '>', $currentDate)
             ->whereDoesntHave('transferOffers', function ($q) {
