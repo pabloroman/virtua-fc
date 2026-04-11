@@ -240,7 +240,7 @@ class SeedReferenceData extends Command
         );
     }
 
-    private function linkReserveTeams(array $config): void
+    protected function linkReserveTeams(array $config): void
     {
         $reserveTeams = $config['reserve_teams'] ?? [];
         if (empty($reserveTeams)) {
@@ -258,6 +258,75 @@ class SeedReferenceData extends Command
                 $this->line("  Linked reserve team: {$child->name} → {$parent->name}");
             }
         }
+    }
+
+    /**
+     * Seed a specific subset of competitions from a country's config into an
+     * existing database, reusing the same idempotent primitives as a full
+     * country seed. Codes may refer to tier competitions (including siblings
+     * like ESP3A/ESP3B) or promotion_playoffs entries (like ESP3PO). Unknown
+     * codes are warned about and skipped.
+     *
+     * Used by targeted one-off commands (e.g. AddPrimeraRfef) that want to
+     * add a handful of new competitions without re-touching unrelated data.
+     *
+     * @param  string[]  $competitionCodes
+     */
+    protected function seedCompetitionsByCode(string $countryCode, array $competitionCodes): void
+    {
+        $countryConfig = app(CountryConfig::class);
+        $config = $countryConfig->get($countryCode);
+        if (!$config) {
+            $this->warn("No config found for country: {$countryCode}");
+            return;
+        }
+
+        $flag = $countryConfig->flag($countryCode);
+
+        // Build a lookup of every tier competition (primary + siblings) keyed by code.
+        $tierLookup = [];
+        foreach ($config['tiers'] ?? [] as $tier => $tierConfig) {
+            $tierLookup[$tierConfig['competition']] = [$tier, $tierConfig];
+            foreach ($tierConfig['siblings'] ?? [] as $sibling) {
+                $tierLookup[$sibling['competition']] = [$tier, $sibling];
+            }
+        }
+
+        $promotionPlayoffs = $config['promotion_playoffs'] ?? [];
+
+        foreach ($competitionCodes as $code) {
+            if (isset($tierLookup[$code])) {
+                [$tier, $entry] = $tierLookup[$code];
+                $this->seedCompetition([
+                    'code'    => $code,
+                    'path'    => "data/2025/{$code}",
+                    'tier'    => $tier,
+                    'handler' => $entry['handler'] ?? 'league',
+                    'country' => $countryCode,
+                    'flag'    => $flag,
+                    'role'    => 'league',
+                ]);
+                continue;
+            }
+
+            if (isset($promotionPlayoffs[$code])) {
+                $playoffConfig = $promotionPlayoffs[$code];
+                $this->seedPromotionPlayoff(
+                    $code,
+                    $playoffConfig['parent_tier'] ?? 0,
+                    $playoffConfig['handler'] ?? 'knockout_cup',
+                    $countryCode,
+                    $flag,
+                );
+                continue;
+            }
+
+            $this->warn("  Unknown competition code for {$countryCode}: {$code}");
+        }
+
+        // Link any reserve teams whose parent/child pair now exists. Safe to
+        // call repeatedly — rows already set are a no-op update.
+        $this->linkReserveTeams($config);
     }
 
     private function createDefaultUser(): void
@@ -301,7 +370,7 @@ class SeedReferenceData extends Command
         $this->info('Cleared.');
     }
 
-    private function seedCompetition(array $config): void
+    protected function seedCompetition(array $config): void
     {
         $basePath = base_path($config['path']);
         $code = $config['code'];
@@ -543,7 +612,7 @@ class SeedReferenceData extends Command
      * competition row itself needs to exist so cup ties / matches can point
      * at it.
      */
-    private function seedPromotionPlayoff(string $code, int $tier, string $handler, string $country, string $flag): void
+    protected function seedPromotionPlayoff(string $code, int $tier, string $handler, string $country, string $flag): void
     {
         if (isset($this->seededCompetitions[$code])) {
             $this->line("  Skipping {$code} (already seeded)");
