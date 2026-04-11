@@ -102,6 +102,13 @@ return [
         'Heading for a stalemate at :venue, neither side able to find a winner',
         'One point apiece it seems, the clock ticking down at :venue',
     ],
+    'contextual_end_draw_knockout' => [
+        'Normal time winding down at :venue with the tie still wide open',
+        'Still level at :venue, extra time is looming',
+        'Neither side can find the decisive goal, this is heading to extra time',
+        'The clock runs down at :venue and the deadlock keeps the tie alive',
+        'One last push to avoid extra time, neither side wants to prolong this',
+    ],
     'contextual_second_half_start' => [
         'Second half underway at :venue with the score :score',
         'Back to action at :venue. :score at the break',

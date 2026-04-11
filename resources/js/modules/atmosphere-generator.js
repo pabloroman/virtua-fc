@@ -386,6 +386,7 @@ export function generateContextualNarratives(config) {
         homeTeamId, awayTeamId, homeTeamName, awayTeamName,
         homeArticle, awayArticle,
         venueName, narrativeTemplates, allEvents,
+        isKnockout, isTwoLeggedTie,
     } = config;
 
     const venue = venueName || '';
@@ -476,7 +477,20 @@ export function generateContextualNarratives(config) {
                     templateKey = deficit === 1 ? 'contextualEndLosingByOne' : 'contextualEndLosing';
                 }
             } else {
-                templateKey = 'contextualEndDraw';
+                // Tied at minute 85. Select pool by competition type.
+                if (isKnockout && isTwoLeggedTie) {
+                    // Aggregate across two legs (plus away goals / first-leg
+                    // result) determines the winner — a draw here is not
+                    // inherently "heading to extra time". Stay silent; the
+                    // null templateKey is handled by the guard below.
+                    templateKey = null;
+                } else if (isKnockout) {
+                    // Single-leg knockout: a draw leads to extra time.
+                    templateKey = 'contextualEndDrawKnockout';
+                } else {
+                    // League / regular phase: a draw yields a point each.
+                    templateKey = 'contextualEndDraw';
+                }
             }
         } else {
             // Mid-game: pick based on state

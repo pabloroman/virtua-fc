@@ -66,6 +66,15 @@ class ShowLiveMatch
             $twoLeggedInfo = $this->buildTwoLeggedInfo($playerMatch);
         }
 
+        // True when the current match is either leg of a two-legged cup tie.
+        // Used to suppress late-game "draw" commentary in two-legged ties,
+        // where aggregate scoring (not this single match) determines the
+        // winner so "heading to extra time" phrasing would be misleading.
+        $isTwoLeggedTie = false;
+        if ($isKnockout) {
+            $isTwoLeggedTie = CupTie::find($playerMatch->cup_tie_id)?->isTwoLegged() ?? false;
+        }
+
         // Build the events payload for the Alpine.js component
         // When ET is already played, separate regular (<=93) and ET events (>93)
         $allEvents = $playerMatch->events;
@@ -297,6 +306,7 @@ class ShowLiveMatch
             'contextualEndLosingByOne' => __('commentary.contextual_end_losing_by_one'),
             'contextualEndWinning' => __('commentary.contextual_end_winning'),
             'contextualEndDraw' => __('commentary.contextual_end_draw'),
+            'contextualEndDrawKnockout' => __('commentary.contextual_end_draw_knockout'),
             'contextualSecondHalfStart' => __('commentary.contextual_second_half_start'),
             'contextualAwayFans' => __('commentary.contextual_away_fans'),
             'contextualHomeFans' => __('commentary.contextual_home_fans'),
@@ -350,6 +360,7 @@ class ShowLiveMatch
             'availablePressing' => $availablePressing,
             'availableDefLine' => $availableDefLine,
             'isKnockout' => $isKnockout,
+            'isTwoLeggedTie' => $isTwoLeggedTie,
             'extraTimeData' => $extraTimeData,
             'twoLeggedInfo' => $twoLeggedInfo,
             'isTournamentMode' => $isTournamentMode,

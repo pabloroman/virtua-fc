@@ -104,6 +104,7 @@ export default function liveMatch(config) {
 
         // Extra time / knockout config
         isKnockout: config.isKnockout || false,
+        isTwoLeggedTie: config.isTwoLeggedTie || false,
         extraTimeUrl: config.extraTimeUrl || '',
         penaltiesUrl: config.penaltiesUrl || '',
         twoLeggedInfo: config.twoLeggedInfo || null,
@@ -1293,6 +1294,8 @@ export default function liveMatch(config) {
                 awayArticle: this.awayArticle,
                 narrativeTemplates: this.narrativeTemplates,
                 userTeamId: this.userTeamId,
+                isKnockout: this.isKnockout,
+                isTwoLeggedTie: this.isTwoLeggedTie,
                 tactics: {
                     userPlayingStyle: this.activePlayingStyle,
                     userPressing: this.activePressing,

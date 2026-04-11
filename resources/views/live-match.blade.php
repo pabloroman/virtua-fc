@@ -53,6 +53,7 @@
                 availablePressing: {{ Js::from($availablePressing) }},
                 availableDefLine: {{ Js::from($availableDefLine) }},
                 isKnockout: {{ $isKnockout ? 'true' : 'false' }},
+                isTwoLeggedTie: {{ $isTwoLeggedTie ? 'true' : 'false' }},
                 extraTimeUrl: '{{ $extraTimeUrl }}',
                 penaltiesUrl: '{{ $penaltiesUrl }}',
                 extraTimeData: {{ Js::from($extraTimeData) }},

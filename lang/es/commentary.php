@@ -102,6 +102,13 @@ return [
         'Se encamina hacia las tablas en el :venue, ninguno encuentra el gol de la victoria',
         'Un punto para cada uno parece ser el resultado final en el :venue',
     ],
+    'contextual_end_draw_knockout' => [
+        'Se acerca el final del tiempo reglamentario en el :venue y la eliminatoria sigue abierta',
+        'Tablas en el :venue, esto huele a prórroga',
+        'Ninguno encuentra el gol decisivo, el tiempo extra está cada vez más cerca',
+        'Se agotan los minutos en el :venue con el empate que no rompe la incógnita',
+        'Último empujón para evitar la prórroga, ninguno quiere prolongar la agonía',
+    ],
     'contextual_second_half_start' => [
         'Comienza la segunda parte en el :venue con el marcador :score',
         'De vuelta a la acción en el :venue. :score al descanso',
