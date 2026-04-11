@@ -502,6 +502,17 @@ class DispositionService
 
         $importance = $this->playerImportance($player);
 
+        // If the club has already publicly signalled willingness to part with the player
+        // (listed for sale or actively loan-searched), skip the importance-based rejection
+        // gates. Rejecting as "key player" would contradict the club's own market stance —
+        // see clubSellDisposition() which already applies the same signal to sell willingness.
+        if ($player->isTransferListed() || $player->hasActiveLoanSearch()) {
+            return [
+                'result' => 'accepted',
+                'message' => __('transfers.loan_accepted', ['team' => $player->team?->name, 'player' => $player->name]),
+            ];
+        }
+
         if ($importance > 0.7) {
             return [
                 'result' => 'rejected',
@@ -550,8 +561,13 @@ class DispositionService
 
         $importance = $this->playerImportance($player);
 
+        // If the club has publicly signalled willingness to part with the player
+        // (listed for sale or actively loan-searched), bypass the "key player" gate —
+        // rejecting on importance grounds would contradict the club's own market stance.
+        $publicMarketSignal = $player->isTransferListed() || $player->hasActiveLoanSearch();
+
         // Gate 1: Key player — club refuses to loan
-        if ($importance > 0.70) {
+        if (! $publicMarketSignal && $importance > 0.70) {
             return [
                 'result' => 'rejected',
                 'disposition' => 0.15,
