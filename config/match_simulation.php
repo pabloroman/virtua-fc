@@ -61,7 +61,7 @@ return [
     |   skill_dominance 4.0 → xG: 3.53 vs 0.48 (upset ~2% of the time)
     |
     */
-    'base_goals' => 1.4,                // avg xG per team when evenly matched (~2.6 total)
+    'base_goals' => 1.5,                // avg xG per team when evenly matched (~2.6 total)
     'skill_dominance' => 2.4,           // how much team quality widens the xG gap (see above)
     'home_advantage_goals' => 0.20,     // fixed home xG bonus
 

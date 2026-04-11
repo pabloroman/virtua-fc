@@ -686,9 +686,11 @@ class SeedReferenceData extends Command
 
             if ($existingTeam) {
                 $teamId = $existingTeam->id;
-                // Update colors for existing teams
+                // Update colors and stadium name for existing teams so reference
+                // refreshes (e.g. app:add-primera-rfef) pick up renamed stadiums.
                 DB::table('teams')->where('id', $teamId)->update([
                     'colors' => json_encode($colors),
+                    'stadium_name' => $club['stadiumName'] ?? $existingTeam->stadium_name,
                 ]);
             } else {
                 $teamId = Str::uuid()->toString();

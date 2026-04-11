@@ -121,6 +121,14 @@ return [
         // Maps child transfermarkt_id => parent transfermarkt_id.
         'reserve_teams' => [
             9899 => 681,   // Real Sociedad B → Real Sociedad
+            6767 => 418,   // Real Madrid Castilla → Real Madrid
+            8516 => 331,   // CA Osasuna Promesas → CA Osasuna
+            6688 => 621,   // Bilbao Athletic → Athletic Bilbao
+            8733 => 940,   // RC Celta Fortuna → Celta de Vigo
+            11972 => 1050, // Villarreal CF B → Villarreal CF
+            8519 => 368,   // Sevilla Atlético → Sevilla FC
+            3679 => 13,    // Atlético Madrileño → Atlético de Madrid
+            2865 => 150,   // Betis Deportivo Balompié → Real Betis Balompié
         ],
 
         'continental_slots' => [
