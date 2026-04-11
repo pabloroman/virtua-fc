@@ -620,7 +620,7 @@ export function createMatchSimulation(ctx) {
         enterHalfTime();
     }
 
-    function skipToEnd() {
+    async function skipToEnd() {
         const state = ctx();
         state.userPaused = false;
 
@@ -662,6 +662,23 @@ export function createMatchSimulation(ctx) {
             || state.phase === 'extra_time_second_half' || state.phase === 'extra_time_half_time')) {
             skipExtraTime();
             return;
+        }
+
+        // Regular-time skip: before fast-forwarding, ask the backend to
+        // re-simulate the remainder with AI substitutions enabled for the
+        // user's team. Only kicks in when the user presses Skip — normal
+        // minute-by-minute play stays fully manual. If the request is
+        // skipped, no-op'd, or fails, we fall through to the pure client
+        // fast-forward with the original pre-computed events.
+        if (state._skippingToEnd) return;
+        state._skippingToEnd = true;
+        try {
+            const skipMinute = Math.max(1, Math.min(89, Math.floor(state.currentMinute)));
+            if (typeof state.autoSubUserTeamBeforeSkip === 'function') {
+                await state.autoSubUserTeamBeforeSkip(skipMinute);
+            }
+        } finally {
+            state._skippingToEnd = false;
         }
 
         state.currentMinute = 93;
