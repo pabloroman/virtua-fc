@@ -76,7 +76,7 @@ class CountryConfig
     /**
      * Get tier configs for a country.
      *
-     * @return array<int, array{competition: string, teams: int, config_class?: class-string}>
+     * @return array<int, array{competition: string, teams: int, config_class?: class-string, siblings?: array<array{competition: string, teams: int, config_class?: class-string}>}>
      */
     public function tiers(string $countryCode): array
     {
@@ -92,15 +92,90 @@ class CountryConfig
     }
 
     /**
+     * Get all competition IDs at a tier, including siblings.
+     *
+     * Most tiers have a single competition (e.g. ESP1 at tier 1). Primera RFEF
+     * is the first to use siblings — tier 3 returns ['ESP3A', 'ESP3B'].
+     *
+     * @return string[]
+     */
+    public function tierCompetitionIds(string $countryCode, int $tier): array
+    {
+        $tierConfig = $this->tiers($countryCode)[$tier] ?? null;
+        if (!$tierConfig) {
+            return [];
+        }
+
+        $ids = [$tierConfig['competition']];
+
+        foreach ($tierConfig['siblings'] ?? [] as $sibling) {
+            if (!empty($sibling['competition'])) {
+                $ids[] = $sibling['competition'];
+            }
+        }
+
+        return $ids;
+    }
+
+    /**
+     * Get every tier config entry (primary + siblings) for a country as a
+     * flat list. Useful for seeding, player initialization, and promotion
+     * rule lookup.
+     *
+     * @return array<array{competition: string, teams: int, handler?: string, config_class?: class-string}>
+     */
+    public function flattenedTiers(string $countryCode): array
+    {
+        $entries = [];
+        foreach ($this->tiers($countryCode) as $tier => $tierConfig) {
+            $primary = $tierConfig;
+            unset($primary['siblings']);
+            $primary['tier'] = $tier;
+            $entries[] = $primary;
+
+            foreach ($tierConfig['siblings'] ?? [] as $sibling) {
+                $sibling['tier'] = $tier;
+                $entries[] = $sibling;
+            }
+        }
+        return $entries;
+    }
+
+    /**
+     * Get promotion playoff configs for a country (e.g. Primera RFEF's ESP3PO).
+     *
+     * @return array<string, array{handler?: string, config_class?: class-string, parent_tier?: int}>
+     */
+    public function promotionPlayoffs(string $countryCode): array
+    {
+        return $this->get($countryCode)['promotion_playoffs'] ?? [];
+    }
+
+    /**
+     * Get promotion playoff competition IDs for a country.
+     *
+     * @return string[]
+     */
+    public function promotionPlayoffIds(string $countryCode): array
+    {
+        return array_keys($this->promotionPlayoffs($countryCode));
+    }
+
+    /**
      * Find the country code that owns a given competition ID.
      */
     public function countryForCompetition(string $competitionId): ?string
     {
         foreach ($this->allCountries() as $code => $config) {
-            // Check tiers
+            // Check tiers (including siblings)
             foreach ($config['tiers'] ?? [] as $tier) {
                 if ($tier['competition'] === $competitionId) {
                     return $code;
+                }
+                foreach ($tier['siblings'] ?? [] as $sibling) {
+                    if (($sibling['competition'] ?? null) === $competitionId) {
+                        return $code;
+                    }
                 }
             }
 
@@ -109,6 +184,11 @@ class CountryConfig
                 if ($cupId === $competitionId) {
                     return $code;
                 }
+            }
+
+            // Check promotion playoffs
+            if (array_key_exists($competitionId, $config['promotion_playoffs'] ?? [])) {
+                return $code;
             }
 
             // Check supercup
@@ -178,10 +258,15 @@ class CountryConfig
     public function configClassForCompetition(string $competitionId): ?string
     {
         foreach ($this->allCountries() as $config) {
-            // Check tiers
+            // Check tiers (including siblings)
             foreach ($config['tiers'] ?? [] as $tier) {
                 if ($tier['competition'] === $competitionId && isset($tier['config_class'])) {
                     return $tier['config_class'];
+                }
+                foreach ($tier['siblings'] ?? [] as $sibling) {
+                    if (($sibling['competition'] ?? null) === $competitionId && isset($sibling['config_class'])) {
+                        return $sibling['config_class'];
+                    }
                 }
             }
 
@@ -189,6 +274,13 @@ class CountryConfig
             foreach ($config['domestic_cups'] ?? [] as $cupId => $cupConfig) {
                 if ($cupId === $competitionId && isset($cupConfig['config_class'])) {
                     return $cupConfig['config_class'];
+                }
+            }
+
+            // Check promotion playoffs
+            foreach ($config['promotion_playoffs'] ?? [] as $playoffId => $playoffConfig) {
+                if ($playoffId === $competitionId && isset($playoffConfig['config_class'])) {
+                    return $playoffConfig['config_class'];
                 }
             }
 
@@ -261,9 +353,14 @@ class CountryConfig
     {
         $ids = [];
 
-        // 1. Playable tier competitions
+        // 1. Playable tier competitions (including siblings at each tier)
         foreach ($this->tiers($countryCode) as $tier) {
             $ids[] = $tier['competition'];
+            foreach ($tier['siblings'] ?? [] as $sibling) {
+                if (!empty($sibling['competition'])) {
+                    $ids[] = $sibling['competition'];
+                }
+            }
         }
 
         // 2. Transfer pool competitions

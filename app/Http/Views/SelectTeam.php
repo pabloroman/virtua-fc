@@ -17,7 +17,10 @@ final class SelectTeam
             return redirect()->route('dashboard')->withErrors(['limit' => __('messages.game_limit_reached')]);
         }
 
-        // Build country → tier → competition structure for career mode (cached — static reference data)
+        // Build country → tier → competition structure for career mode (cached — static reference data).
+        // Tiers may declare sibling competitions (e.g. Primera RFEF's ESP3A and
+        // ESP3B both live at tier 3), so the tiers list is keyed by competition
+        // ID rather than tier number to keep every league selectable.
         $countries = Cache::remember('career_mode_countries', 3600, function () use ($countryConfig) {
             $countries = [];
 
@@ -26,11 +29,18 @@ final class SelectTeam
                 $tiers = [];
 
                 foreach ($config['tiers'] as $tier => $tierConfig) {
-                    $competition = Competition::with('teams')
-                        ->find($tierConfig['competition']);
+                    $entries = [$tierConfig];
+                    foreach ($tierConfig['siblings'] ?? [] as $sibling) {
+                        $entries[] = $sibling;
+                    }
 
-                    if ($competition) {
-                        $tiers[$tier] = $competition;
+                    foreach ($entries as $entry) {
+                        $competition = Competition::with('teams')
+                            ->find($entry['competition']);
+
+                        if ($competition) {
+                            $tiers[$competition->id] = $competition;
+                        }
                     }
                 }
 

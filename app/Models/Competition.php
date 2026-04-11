@@ -64,6 +64,9 @@ class Competition extends Model
     private const SHORT_NAMES = [
         'ESP1'    => 'Liga',
         'ESP2'    => 'Liga 2',
+        'ESP3A'   => 'RFEF 1',
+        'ESP3B'   => 'RFEF 2',
+        'ESP3PO'  => 'RFEF PO',
         'ESPCUP'  => 'Copa',
         'ESPSUP'  => 'Supercopa',
         'ENG1'    => 'Premier',

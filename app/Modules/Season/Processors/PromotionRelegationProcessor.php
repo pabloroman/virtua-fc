@@ -2,6 +2,7 @@
 
 namespace App\Modules\Season\Processors;
 
+use App\Modules\Competition\Contracts\SelfSwappingPromotionRule;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Processors\SeasonSimulationProcessor;
@@ -57,16 +58,31 @@ class PromotionRelegationProcessor implements SeasonProcessor
                     );
                 }
 
-                $this->swapTeams(
-                    promoted: $promoted,
-                    relegated: $relegated,
-                    topDivision: $rule->getTopDivision(),
-                    bottomDivision: $rule->getBottomDivision(),
-                    gameId: $game->id,
-                );
+                if ($rule instanceof SelfSwappingPromotionRule) {
+                    // Multi-feeder rules (e.g. Primera RFEF, which promotes
+                    // from ESP3A + ESP3B + ESP3PO) own their swap logic. The
+                    // processor re-simulates based on the reported affected
+                    // competitions; the rule is responsible for tracking them.
+                    $rule->performSwap($game, $promoted, $relegated);
 
-                $affectedCompetitionIds[] = $rule->getTopDivision();
-                $affectedCompetitionIds[] = $rule->getBottomDivision();
+                    $affectedCompetitionIds[] = $rule->getTopDivision();
+                    foreach ($promoted as $entry) {
+                        if (!empty($entry['origin'])) {
+                            $affectedCompetitionIds[] = $entry['origin'];
+                        }
+                    }
+                } else {
+                    $this->swapTeams(
+                        promoted: $promoted,
+                        relegated: $relegated,
+                        topDivision: $rule->getTopDivision(),
+                        bottomDivision: $rule->getBottomDivision(),
+                        gameId: $game->id,
+                    );
+
+                    $affectedCompetitionIds[] = $rule->getTopDivision();
+                    $affectedCompetitionIds[] = $rule->getBottomDivision();
+                }
 
                 $allPromoted = array_merge($allPromoted, $promoted);
                 $allRelegated = array_merge($allRelegated, $relegated);

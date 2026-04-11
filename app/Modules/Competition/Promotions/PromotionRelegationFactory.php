@@ -3,6 +3,7 @@
 namespace App\Modules\Competition\Promotions;
 
 use App\Modules\Competition\Contracts\PromotionRelegationRule;
+use App\Modules\Competition\Playoffs\PlayoffGeneratorFactory;
 use App\Modules\Competition\Services\CountryConfig;
 use App\Modules\Competition\Services\ReserveTeamFilter;
 
@@ -13,6 +14,7 @@ class PromotionRelegationFactory
     public function __construct(
         private CountryConfig $countryConfig,
         private ReserveTeamFilter $reserveTeamFilter,
+        private PlayoffGeneratorFactory $playoffGeneratorFactory,
     ) {}
 
     /**
@@ -70,6 +72,24 @@ class PromotionRelegationFactory
 
         foreach ($this->countryConfig->allCountryCodes() as $countryCode) {
             foreach ($this->countryConfig->promotions($countryCode) as $promotion) {
+                // Custom rule classes (SelfSwappingPromotionRule implementations)
+                // own their own wiring. We re-use the PlayoffGeneratorFactory's
+                // existing instance so there's exactly one generator per rule.
+                if (!empty($promotion['rule_class'])) {
+                    $playoffGenerator = null;
+                    if (!empty($promotion['playoff_generator'])) {
+                        $firstSource = $promotion['playoff_source_divisions'][0]
+                            ?? $promotion['bottom_division'];
+                        $playoffGenerator = $this->playoffGeneratorFactory->forCompetition($firstSource);
+                    }
+
+                    $rules[] = new ($promotion['rule_class'])(
+                        playoffGenerator: $playoffGenerator,
+                        reserveTeamFilter: $this->reserveTeamFilter,
+                    );
+                    continue;
+                }
+
                 $playoffGenerator = null;
                 if (isset($promotion['playoff_generator'])) {
                     $tiers = $this->countryConfig->tiers($countryCode);
