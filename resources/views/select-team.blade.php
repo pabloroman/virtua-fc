@@ -67,7 +67,7 @@
                                         {{ __('game.mode_career') }}
                                     </h3>
                                     <p class="text-xs md:text-sm mt-0.5 text-text-muted">
-                                        {{ __('game.career_requires_invite') }}
+                                        {{ __('game.career_unlock_hint') }}
                                     </p>
                                 </div>
                                 <div class="shrink-0">

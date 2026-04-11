@@ -393,7 +393,7 @@ return [
     'mode_tournament_desc' => 'Dirige una selección en el Mundial',
     'mode_tournament_badge' => 'Copa del Mundo',
     'wc2026_name' => 'Copa del Mundo 2026',
-    'career_requires_invite' => 'Próximamente',
+    'career_unlock_hint' => 'Gana el Mundial para desbloquearlo',
 
     // Season Goals
     'goal_title' => 'Ganar la Liga',
