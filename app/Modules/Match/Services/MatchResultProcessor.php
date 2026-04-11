@@ -33,22 +33,13 @@ class MatchResultProcessor
      */
     public function processAll(string $gameId, string $currentDate, array $matchResults, ?string $deferMatchId = null, $allPlayers = null): void
     {
-        // Load game once for previous date capture and date guard
-        $game = Game::find($gameId);
-
-        // 1. Update game state — only advance current_date forward.
-        // Background batch processing must not regress the date that was
-        // already set by the player's batch.
-        $newDate = Carbon::parse($currentDate);
-        if (! $game->current_date || $newDate->gte($game->current_date)) {
-            Game::where('id', $gameId)->update(['current_date' => $newDate->toDateString()]);
-        }
-
-        // 2. Bulk update match records (scores + played)
+        // 1. Bulk update match records (scores + played) — must happen before
+        // date advancement so advanceDateToNextMatch sees these matches as played.
         $this->bulkUpdateMatchScores($matchResults);
 
-        // Reload game with post-update state for the rest of the method
+        // 2. Advance current_date to the next unplayed match (forward-looking).
         $game = Game::find($gameId);
+        $game->advanceDateToNextMatch();
         $matchIds = array_column($matchResults, 'matchId');
         $matches = GameMatch::whereIn('id', $matchIds)->get()->keyBy('id');
 
