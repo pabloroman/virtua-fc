@@ -86,6 +86,7 @@ class AITransferMarketService
         private readonly ContractService $contractService,
         private readonly NotificationService $notificationService,
         private readonly AITeamBudgetCalculator $budgetCalculator,
+        private readonly AIExclusionList $exclusionList,
     ) {}
 
     /**
@@ -247,6 +248,11 @@ class AITransferMarketService
         $teamNeeds = [];
         foreach ($teamRosters as $teamId => $players) {
             if ($players->count() >= self::MAX_SQUAD_SIZE) {
+                continue;
+            }
+
+            // Skip AI teams configured to rely exclusively on their youth academy
+            if ($this->exclusionList->contains($teamId)) {
                 continue;
             }
 
@@ -879,6 +885,11 @@ class AITransferMarketService
                 continue;
             }
 
+            // Skip AI teams configured to rely exclusively on their youth academy
+            if ($this->exclusionList->contains($teamId)) {
+                continue;
+            }
+
             // Check buyer transfer count budget
             $budget = $teamBudgets->get($teamId);
             if ($budget && ($budget['sells'] + $budget['buys']) >= $budget['max']) {
@@ -953,6 +964,11 @@ class AITransferMarketService
 
         foreach ($teamRosters as $teamId => $players) {
             if ($teamId === $sellerTeamId || $teamId === $game->team_id) {
+                continue;
+            }
+
+            // Skip AI teams configured to rely exclusively on their youth academy
+            if ($this->exclusionList->contains($teamId)) {
                 continue;
             }
 
@@ -1115,6 +1131,11 @@ class AITransferMarketService
 
         foreach ($teamRosters as $teamId => $players) {
             if ($players->count() >= self::MAX_SQUAD_SIZE) {
+                continue;
+            }
+
+            // Skip AI teams configured to rely exclusively on their youth academy
+            if ($this->exclusionList->contains($teamId)) {
                 continue;
             }
 
@@ -1294,6 +1315,11 @@ class AITransferMarketService
         foreach ($teamRosters as $teamId => $players) {
             $squadSize = $players->count();
             if ($squadSize >= self::MAX_SQUAD_SIZE) {
+                continue;
+            }
+
+            // Skip AI teams configured to rely exclusively on their youth academy
+            if ($this->exclusionList->contains($teamId)) {
                 continue;
             }
 

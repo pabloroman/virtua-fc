@@ -27,6 +27,7 @@ class LoanService
     public function __construct(
         private readonly DispositionService $dispositionService,
         private readonly SquadNumberService $squadNumberService,
+        private readonly AIExclusionList $exclusionList,
     ) {}
 
     /**
@@ -141,7 +142,10 @@ class LoanService
                     ->where('type', 'league');
             })
             ->where('id', '!=', $game->team_id)
-            ->get();
+            ->get()
+            // Exclude AI teams configured to rely exclusively on their youth academy
+            ->reject(fn (Team $team) => $this->exclusionList->contains($team->id))
+            ->values();
 
         if ($teams->isEmpty()) {
             return null;

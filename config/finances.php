@@ -97,4 +97,12 @@ return [
         'modest'      => [1 => 60, 2 => 30, 3 => 10],
         'local'       => [1 => 70, 2 => 30],
     ],
+
+    // Teams (by slug) that will never sign players via the AI transfer market.
+    // When not controlled by the user, these clubs rely exclusively on their
+    // synthetic youth academy for squad replenishment. They can still sell
+    // players, but cannot buy, sign free agents, or receive loan moves.
+    'ai_excluded_from_signing' => [
+        // e.g. 'athletic-club',
+    ],
 ];
