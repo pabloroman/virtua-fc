@@ -278,6 +278,7 @@ class SeasonArchiveProcessor implements SeasonProcessor
 
         GameMatch::where('game_id', $game->id)
             ->where('played', true)
+            ->where(fn ($q) => $q->where('home_team_id', $game->team_id)->orWhere('away_team_id', $game->team_id))
             ->chunk(200, function ($chunk) use (&$results) {
                 foreach ($chunk as $match) {
                     $results[] = [
