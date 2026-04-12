@@ -20,6 +20,8 @@ php artisan config:clear                        # Clear config cache after chang
 
 The queue worker must be running for background jobs. `composer dev` handles this via `php artisan queue:listen --tries=1`.
 
+**Do not run tests automatically after making changes.** Tests run in CI after pushing to a branch. Only run tests locally when explicitly asked.
+
 ## Architecture
 
 ### HTTP Layer

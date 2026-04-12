@@ -14,13 +14,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property array<array-key, mixed> $player_season_stats
  * @property array<array-key, mixed> $season_awards
  * @property array<array-key, mixed> $match_results
- * @property string|null $match_events_archive
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Game $game
  * @property-read array|null $best_goalkeeper
  * @property-read array|null $champion
- * @property-read array $match_events
  * @property-read array|null $most_assists
  * @property-read array|null $top_scorer
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SeasonArchive newModelQuery()
@@ -30,7 +28,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SeasonArchive whereFinalStandings($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SeasonArchive whereGameId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SeasonArchive whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SeasonArchive whereMatchEventsArchive($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SeasonArchive whereMatchResults($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SeasonArchive wherePlayerSeasonStats($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SeasonArchive whereSeason($value)
@@ -50,7 +47,6 @@ class SeasonArchive extends Model
         'season_awards',
         'match_results',
         'transfer_activity',
-        'match_events_archive',
         'transition_log',
     ];
 
@@ -66,30 +62,6 @@ class SeasonArchive extends Model
     public function game(): BelongsTo
     {
         return $this->belongsTo(Game::class);
-    }
-
-    /**
-     * Get decompressed match events from archive.
-     */
-    public function getMatchEventsAttribute(): array
-    {
-        if (empty($this->match_events_archive)) {
-            return [];
-        }
-
-        $decoded = @base64_decode($this->match_events_archive, true);
-
-        if ($decoded === false) {
-            return [];
-        }
-
-        $decompressed = @gzuncompress($decoded);
-
-        if ($decompressed === false) {
-            return [];
-        }
-
-        return json_decode($decompressed, true) ?? [];
     }
 
     /**

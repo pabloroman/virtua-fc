@@ -12,7 +12,6 @@ use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\GameStanding;
 use App\Models\GameTransfer;
-use App\Models\MatchEvent;
 use App\Models\SeasonArchive;
 use Illuminate\Support\Facades\DB;
 
@@ -61,9 +60,6 @@ class SeasonArchiveProcessor implements SeasonProcessor
         // Capture transfer activity
         $transferActivity = $this->captureTransferActivity($game);
 
-        // Compress detailed match events
-        $eventsArchive = $this->compressMatchEvents($game);
-
         // Create archive record
         SeasonArchive::create([
             'game_id' => $game->id,
@@ -73,7 +69,6 @@ class SeasonArchiveProcessor implements SeasonProcessor
             'season_awards' => $awards,
             'match_results' => $matchResults,
             'transfer_activity' => $transferActivity,
-            'match_events_archive' => $eventsArchive,
         ]);
 
         // Delete archived data to free up space
@@ -303,34 +298,6 @@ class SeasonArchiveProcessor implements SeasonProcessor
             });
 
         return $results;
-    }
-
-    /**
-     * Compress all match events into a gzipped blob.
-     */
-    private function compressMatchEvents(Game $game): ?string
-    {
-        $events = [];
-
-        MatchEvent::where('game_id', $game->id)
-            ->chunk(1000, function ($chunk) use (&$events) {
-                foreach ($chunk as $event) {
-                    $events[] = [
-                        'match_id' => $event->game_match_id,
-                        'player_id' => $event->game_player_id,
-                        'team_id' => $event->team_id,
-                        'minute' => $event->minute,
-                        'event_type' => $event->event_type,
-                        'metadata' => $event->metadata,
-                    ];
-                }
-            });
-
-        if (empty($events)) {
-            return null;
-        }
-
-        return base64_encode(gzcompress(json_encode($events), 6));
     }
 
     /**
