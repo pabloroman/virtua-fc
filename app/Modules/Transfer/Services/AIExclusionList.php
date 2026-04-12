@@ -5,13 +5,16 @@ namespace App\Modules\Transfer\Services;
 use App\Models\Team;
 
 /**
- * Resolves the configured set of AI teams that are excluded from signing players.
+ * Resolves the set of AI teams that are excluded from signing players.
  *
- * Excluded teams (listed by slug in config/finances.php `ai_excluded_from_signing`)
- * never buy, sign free agents, or receive loan moves while AI-controlled. They
- * rely exclusively on synthetic youth academy generation for replenishment.
- * The exclusion only matters when the team is not the user's team — user-controlled
- * teams bypass the AI transfer code paths entirely.
+ * Two sources of exclusion:
+ * 1. Config-driven: slugs listed in `finances.ai_excluded_from_signing`
+ * 2. Automatic: B teams / filiales (teams with a non-null `parent_team_id`)
+ *
+ * Excluded teams never buy, sign free agents, or receive loan moves while
+ * AI-controlled. They rely exclusively on synthetic youth academy generation
+ * for replenishment. The exclusion only matters when the team is not the
+ * user's team — user-controlled teams bypass the AI transfer code paths entirely.
  */
 class AIExclusionList
 {
@@ -27,7 +30,7 @@ class AIExclusionList
     }
 
     /**
-     * Resolve configured slugs to team UUIDs (one query, memoized per instance).
+     * Resolve excluded team UUIDs from config slugs and reserve teams (single pass, memoized).
      *
      * @return array<string, true>
      */
@@ -37,14 +40,17 @@ class AIExclusionList
             return $this->excludedTeamIds;
         }
 
-        $slugs = config('finances.ai_excluded_from_signing', []);
+        $ids = [];
 
-        if (empty($slugs)) {
-            return $this->excludedTeamIds = [];
+        // Config-driven exclusions (by slug)
+        $slugs = config('finances.ai_excluded_from_signing', []);
+        if (! empty($slugs)) {
+            $ids = Team::whereIn('slug', $slugs)->pluck('id')->all();
         }
 
-        $ids = Team::whereIn('slug', $slugs)->pluck('id')->all();
+        // B teams / filiales are always excluded
+        $reserveIds = Team::whereNotNull('parent_team_id')->pluck('id')->all();
 
-        return $this->excludedTeamIds = array_fill_keys($ids, true);
+        return $this->excludedTeamIds = array_fill_keys(array_merge($ids, $reserveIds), true);
     }
 }

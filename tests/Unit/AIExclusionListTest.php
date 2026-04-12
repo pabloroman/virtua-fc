@@ -14,7 +14,7 @@ class AIExclusionListTest extends TestCase
     public function test_empty_config_excludes_nothing(): void
     {
         config(['finances.ai_excluded_from_signing' => []]);
-        $team = Team::factory()->create(['slug' => 'any-team']);
+        $team = Team::factory()->create(['slug' => 'any-team', 'parent_team_id' => null]);
 
         $list = new AIExclusionList();
 
@@ -60,6 +60,47 @@ class AIExclusionListTest extends TestCase
         $this->assertFalse($list->contains($c->id));
     }
 
+    public function test_reserve_team_is_automatically_excluded(): void
+    {
+        config(['finances.ai_excluded_from_signing' => []]);
+
+        $parent = Team::factory()->create(['slug' => 'parent-fc', 'parent_team_id' => null]);
+        $reserve = Team::factory()->create(['slug' => 'parent-fc-b', 'parent_team_id' => $parent->id]);
+
+        $list = new AIExclusionList();
+
+        $this->assertFalse($list->contains($parent->id));
+        $this->assertTrue($list->contains($reserve->id));
+    }
+
+    public function test_reserve_team_excluded_even_without_config_slugs(): void
+    {
+        config(['finances.ai_excluded_from_signing' => []]);
+
+        $parent = Team::factory()->create(['slug' => 'solo-parent', 'parent_team_id' => null]);
+        $reserve = Team::factory()->create(['slug' => 'solo-parent-b', 'parent_team_id' => $parent->id]);
+
+        $list = new AIExclusionList();
+
+        $this->assertTrue($list->contains($reserve->id));
+        $this->assertFalse($list->contains($parent->id));
+    }
+
+    public function test_config_and_reserve_exclusions_combine(): void
+    {
+        $parent = Team::factory()->create(['slug' => 'config-excluded', 'parent_team_id' => null]);
+        $reserve = Team::factory()->create(['slug' => 'reserve-team', 'parent_team_id' => $parent->id]);
+        $normal = Team::factory()->create(['slug' => 'normal-team', 'parent_team_id' => null]);
+
+        config(['finances.ai_excluded_from_signing' => ['config-excluded']]);
+
+        $list = new AIExclusionList();
+
+        $this->assertTrue($list->contains($parent->id));
+        $this->assertTrue($list->contains($reserve->id));
+        $this->assertFalse($list->contains($normal->id));
+    }
+
     public function test_resolution_is_memoized(): void
     {
         Team::factory()->create(['slug' => 'memo-fc']);
@@ -67,11 +108,10 @@ class AIExclusionListTest extends TestCase
 
         $list = new AIExclusionList();
 
-        // First call triggers the query
+        // First call triggers the queries
         $list->contains('irrelevant-id');
 
-        // Second call should not re-query — we can't directly assert query count
-        // without listening to the query log, so enable the log and verify.
+        // Second call should not re-query
         \DB::enableQueryLog();
         \DB::flushQueryLog();
         $list->contains('another-irrelevant-id');
