@@ -1,4 +1,6 @@
 {
+  "id": "E3G2",
+  "name": "Primera Federación - Grupo II",
   "clubs": [
     {
       "image": "https://tmssl.akamaized.net/images/wappen/big/171.png",
@@ -7070,7 +7072,5 @@
       "stadiumSeats": "1300",
       "transfermarktId": "2865"
     }
-  ],
-  "id": "E3G2",
-  "updatedAt": "2026-04-11T13:56:06.673Z"
+  ]
 }

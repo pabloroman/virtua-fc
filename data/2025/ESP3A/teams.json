@@ -1,4 +1,6 @@
 {
+  "id": "E3G1",
+  "name": "Primera Federación - Grupo I",
   "clubs": [
     {
       "image": "https://tmssl.akamaized.net/images/wappen/big/648.png",
@@ -6888,7 +6890,5 @@
       "stadiumSeats": "1171",
       "transfermarktId": "8733"
     }
-  ],
-  "id": "E3G1",
-  "updatedAt": "2026-04-11T13:58:25.181Z"
+  ]
 }
