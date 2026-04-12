@@ -107,8 +107,10 @@ class UefaQualificationTest extends TestCase
             'season' => '2025',
         ]);
 
-        // Create teams per configured country with standings
-        $this->createCountryTeamsWithStandings('ES', 'ESP1', 20);
+        // Create teams per configured country with standings.
+        // The user team is placed at position 1 in ES so it qualifies for UCL,
+        // which is required for filler allocation (only the user's competition gets filled).
+        $this->createCountryTeamsWithStandings('ES', 'ESP1', 20, $userTeam);
         $this->createCountryTeamsWithStandings('EN', 'ENG1', 20);
         $this->createCountryTeamsWithStandings('DE', 'DEU1', 18);
         $this->createCountryTeamsWithStandings('IT', 'ITA1', 20);
@@ -687,11 +689,11 @@ class UefaQualificationTest extends TestCase
         ]);
     }
 
-    private function createCountryTeamsWithStandings(string $country, string $competitionId, int $count): void
+    private function createCountryTeamsWithStandings(string $country, string $competitionId, int $count, ?Team $firstTeam = null): void
     {
         $teams = [];
         for ($i = 0; $i < $count; $i++) {
-            $team = Team::factory()->create(['country' => $country]);
+            $team = ($i === 0 && $firstTeam) ? $firstTeam : Team::factory()->create(['country' => $country]);
             $teams[] = $team;
 
             // Create standings
