@@ -14,19 +14,19 @@ class InjuryService
     /**
      * Base injury chance per player per match (percentage).
      */
-    private const BASE_INJURY_CHANCE = 1.0;
+    private const BASE_INJURY_CHANCE = 0.8;
 
     /**
      * Base training injury chance per player per matchday (percentage).
      * Applies to all squad members (playing and non-playing).
      */
-    private const TRAINING_INJURY_CHANCE = 1.05;
+    private const TRAINING_INJURY_CHANCE = 1.0;
 
     /**
      * Goalkeepers face far fewer physical duels and run significantly less
      * than outfield players, so their injury risk is much lower.
      */
-    private const GK_MATCH_INJURY_MULTIPLIER = 0.3;
+    private const GK_MATCH_INJURY_MULTIPLIER = 0.2;
 
     private const GK_TRAINING_INJURY_MULTIPLIER = 0.5;
 
@@ -120,18 +120,18 @@ class InjuryService
         'Metatarsal fracture' => [
             'weeks' => [8, 12],
             'positions' => ['MF', 'FW', 'DF'],
-            'weight' => 4,
+            'weight' => 6,
         ],
         // Severe (20+ weeks) - Rare
         'ACL tear' => [
             'weeks' => [24, 36],
             'positions' => ['DF', 'MF', 'FW'],
-            'weight' => 2,
+            'weight' => 4,
         ],
         'Achilles rupture' => [
             'weeks' => [20, 28],
             'positions' => ['FW', 'MF', 'DF'],
-            'weight' => 1,
+            'weight' => 2,
         ],
     ];
 
@@ -180,7 +180,6 @@ class InjuryService
     public function calculateInjuryProbability(GamePlayer $player, ?Carbon $lastMatchDate = null, ?Carbon $currentMatchDate = null, ?Game $game = null): float
     {
         $baseProbability = self::BASE_INJURY_CHANCE;
-
         // Get multipliers
         $durabilityMultiplier = $this->getDurabilityMultiplier($player);
         $ageMultiplier = $this->getAgeMultiplier($player->age($player->game->current_date));
