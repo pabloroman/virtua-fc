@@ -6,6 +6,7 @@ use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Models\GamePlayerMatchState;
 use App\Models\MatchEvent;
 use App\Models\PlayerSuspension;
 use Carbon\Carbon;
@@ -366,19 +367,11 @@ class MatchResultProcessor
             ? $allPlayers->flatten()->keyBy('id')->only($allPlayerIds)
             : GamePlayer::whereIn('id', $allPlayerIds)->get()->keyBy('id');
 
-        // Apply stat increments in memory (for special events processing below)
-        foreach ($statIncrements as $playerId => $increments) {
-            $player = $players->get($playerId);
-            if (! $player) {
-                continue;
-            }
-
-            foreach ($increments as $column => $amount) {
-                $player->{$column} += $amount;
-            }
-        }
-
-        // Bulk update all stat increments in a single query
+        // Bulk update all stat increments in a single query.
+        // (We used to mirror the increments onto the in-memory $player models
+        // here, but nothing downstream in this method reads them — the
+        // following card/injury processing only touches PlayerSuspension and
+        // batchApplyInjuries, which both query their own state.)
         $this->bulkUpdatePlayerStats($statIncrements);
 
         // Separate card events from injury events
@@ -471,6 +464,10 @@ class MatchResultProcessor
     /**
      * Bulk update player stat increments in a single query using CASE WHEN.
      *
+     * Targets the {@see \App\Models\GamePlayerMatchState} satellite — every
+     * id here originates from a match lineup, so the satellite row is
+     * guaranteed to exist for all of them.
+     *
      * @param  array<string, array<string, int>>  $statIncrements  [playerId => [column => increment]]
      */
     private function bulkUpdatePlayerStats(array $statIncrements): void
@@ -496,7 +493,7 @@ class MatchResultProcessor
             foreach ($statIncrements as $playerId => $increments) {
                 $amount = $increments[$column] ?? 0;
                 if ($amount !== 0) {
-                    $cases[] = "WHEN id = '{$playerId}' THEN {$column} + {$amount}";
+                    $cases[] = "WHEN game_player_id = '{$playerId}' THEN {$column} + {$amount}";
                 }
             }
             if (! empty($cases)) {
@@ -505,7 +502,11 @@ class MatchResultProcessor
         }
 
         if (! empty($setClauses)) {
-            DB::statement("UPDATE game_players SET " . implode(', ', $setClauses) . " WHERE id IN ({$idList})");
+            DB::statement("UPDATE game_player_match_state SET " . implode(', ', $setClauses) . " WHERE game_player_id IN ({$idList})");
+
+            // Dual-write to legacy columns for rollback safety
+            $legacyClauses = str_replace('game_player_id', 'id', implode(', ', $setClauses));
+            GamePlayerMatchState::legacyWrite("UPDATE game_players SET {$legacyClauses} WHERE id IN ({$idList})");
         }
     }
 
@@ -531,10 +532,18 @@ class MatchResultProcessor
         $allLineupIds = array_unique($allLineupIds);
 
         if (! empty($allLineupIds)) {
-            GamePlayer::whereIn('id', $allLineupIds)->update([
-                'appearances' => DB::raw('appearances + 1'),
-                'season_appearances' => DB::raw('season_appearances + 1'),
-            ]);
+            DB::table('game_player_match_state')
+                ->whereIn('game_player_id', $allLineupIds)
+                ->update([
+                    'appearances' => DB::raw('appearances + 1'),
+                    'season_appearances' => DB::raw('season_appearances + 1'),
+                ]);
+
+            // Dual-write to legacy columns for rollback safety
+            GamePlayerMatchState::legacyEloquentWrite(
+                GamePlayer::whereIn('id', $allLineupIds),
+                ['appearances' => DB::raw('appearances + 1'), 'season_appearances' => DB::raw('season_appearances + 1')]
+            );
         }
     }
 
@@ -704,7 +713,8 @@ class MatchResultProcessor
             return;
         }
 
-        // Bulk update using CASE WHEN
+        // Bulk update using CASE WHEN. Targets the satellite — every GK id
+        // came from a lineup, so the satellite row exists.
         $ids = array_keys($increments);
         $idList = "'" . implode("','", $ids) . "'";
         $setClauses = [];
@@ -713,7 +723,7 @@ class MatchResultProcessor
             $cases = [];
             foreach ($increments as $gkId => $values) {
                 if ($values[$column] !== 0) {
-                    $cases[] = "WHEN id = '{$gkId}' THEN {$column} + {$values[$column]}";
+                    $cases[] = "WHEN game_player_id = '{$gkId}' THEN {$column} + {$values[$column]}";
                 }
             }
             if (! empty($cases)) {
@@ -722,7 +732,11 @@ class MatchResultProcessor
         }
 
         if (! empty($setClauses)) {
-            DB::statement('UPDATE game_players SET ' . implode(', ', $setClauses) . " WHERE id IN ({$idList})");
+            DB::statement('UPDATE game_player_match_state SET ' . implode(', ', $setClauses) . " WHERE game_player_id IN ({$idList})");
+
+            // Dual-write to legacy columns for rollback safety
+            $legacyClauses = str_replace('game_player_id', 'id', implode(', ', $setClauses));
+            GamePlayerMatchState::legacyWrite("UPDATE game_players SET {$legacyClauses} WHERE id IN ({$idList})");
         }
     }
 }

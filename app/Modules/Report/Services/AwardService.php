@@ -13,13 +13,15 @@ class AwardService
      */
     public function getTopScorers(string $gameId, Collection|array|null $teamIds = null, int $limit = 5): Collection
     {
-        return GamePlayer::with(['player', 'team'])
+        return GamePlayer::with(['player', 'team', 'matchState'])
+            ->join('game_player_match_state', 'game_players.id', '=', 'game_player_match_state.game_player_id')
             ->where('game_id', $gameId)
             ->when($teamIds, fn ($q) => $q->whereIn('team_id', $teamIds))
-            ->where('goals', '>', 0)
-            ->orderByDesc('goals')
-            ->orderByDesc('assists')
-            ->orderBy('appearances')
+            ->where('game_player_match_state.goals', '>', 0)
+            ->orderByDesc('game_player_match_state.goals')
+            ->orderByDesc('game_player_match_state.assists')
+            ->orderBy('game_player_match_state.appearances')
+            ->select('game_players.*')
             ->limit($limit)
             ->get();
     }
@@ -29,12 +31,14 @@ class AwardService
      */
     public function getTopAssisters(string $gameId, Collection|array|null $teamIds = null, int $limit = 5): Collection
     {
-        return GamePlayer::with(['player', 'team'])
+        return GamePlayer::with(['player', 'team', 'matchState'])
+            ->join('game_player_match_state', 'game_players.id', '=', 'game_player_match_state.game_player_id')
             ->where('game_id', $gameId)
             ->when($teamIds, fn ($q) => $q->whereIn('team_id', $teamIds))
-            ->where('assists', '>', 0)
-            ->orderByDesc('assists')
-            ->orderByDesc('goals')
+            ->where('game_player_match_state.assists', '>', 0)
+            ->orderByDesc('game_player_match_state.assists')
+            ->orderByDesc('game_player_match_state.goals')
+            ->select('game_players.*')
             ->limit($limit)
             ->get();
     }
@@ -44,11 +48,13 @@ class AwardService
      */
     public function getTopGoalkeepers(string $gameId, Collection|array|null $teamIds = null, int $minAppearances = 3, int $limit = 5): Collection
     {
-        return GamePlayer::with(['player', 'team'])
+        return GamePlayer::with(['player', 'team', 'matchState'])
+            ->join('game_player_match_state', 'game_players.id', '=', 'game_player_match_state.game_player_id')
             ->where('game_id', $gameId)
             ->when($teamIds, fn ($q) => $q->whereIn('team_id', $teamIds))
             ->where('position', 'Goalkeeper')
-            ->where('appearances', '>=', $minAppearances)
+            ->where('game_player_match_state.appearances', '>=', $minAppearances)
+            ->select('game_players.*')
             ->get()
             ->sortBy([
                 ['clean_sheets', 'desc'],
@@ -71,7 +77,7 @@ class AwardService
             return [collect(), null, $mvpCounts];
         }
 
-        $players = GamePlayer::with(['player', 'team'])
+        $players = GamePlayer::with(['player', 'team', 'matchState'])
             ->whereIn('id', $mvpCounts->keys()->all())
             ->get()
             ->keyBy('id');
@@ -96,10 +102,12 @@ class AwardService
      */
     public function getTeamSquadStats(string $gameId, string $teamId): Collection
     {
-        return GamePlayer::with('player')
+        return GamePlayer::with(['player', 'matchState'])
+            ->leftJoin('game_player_match_state', 'game_players.id', '=', 'game_player_match_state.game_player_id')
             ->where('game_id', $gameId)
             ->where('team_id', $teamId)
-            ->orderByDesc('appearances')
+            ->orderByDesc('game_player_match_state.appearances')
+            ->select('game_players.*')
             ->get();
     }
 }

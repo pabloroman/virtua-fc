@@ -3,6 +3,7 @@
 namespace App\Modules\Squad\Services;
 
 use App\Models\GamePlayer;
+use App\Models\GamePlayerMatchState;
 use App\Models\PlayerSuspension;
 use App\Modules\Squad\DTOs\SuspensionRuleSet;
 use Carbon\Carbon;
@@ -27,15 +28,27 @@ class EligibilityService
     /**
      * Apply an injury to a player.
      *
+     * Writes to the {@see GamePlayerMatchState} satellite. Injuries only ever
+     * happen to players in active match lineups, so the satellite row is
+     * guaranteed to exist.
+     *
      * @param string $injuryType Description of the injury
      * @param int $weeksOut Number of weeks the player will be out
      * @param Carbon $matchDate The date of the match when injury occurred
      */
     public function applyInjury(GamePlayer $player, string $injuryType, int $weeksOut, Carbon $matchDate): void
     {
-        $player->injury_type = $injuryType;
-        $player->injury_until = \Illuminate\Support\Carbon::instance($matchDate->copy()->addWeeks($weeksOut));
-        $player->save();
+        $injuryValues = [
+            'injury_type' => $injuryType,
+            'injury_until' => \Illuminate\Support\Carbon::instance($matchDate->copy()->addWeeks($weeksOut))->toDateString(),
+        ];
+
+        GamePlayerMatchState::where('game_player_id', $player->id)->update($injuryValues);
+        GamePlayerMatchState::legacyEloquentWrite(
+            GamePlayer::where('id', $player->id), $injuryValues
+        );
+
+        $player->unsetRelation('matchState');
     }
 
     /**
@@ -57,15 +70,22 @@ class EligibilityService
             $type = str_replace("'", "''", $injury['injuryType']);
             $until = $injury['injuryUntil']->toDateString();
             $ids[] = "'{$id}'";
-            $typeCases[] = "WHEN id = '{$id}' THEN '{$type}'";
-            $untilCases[] = "WHEN id = '{$id}' THEN '{$until}'::date";
+            $typeCases[] = "WHEN game_player_id = '{$id}' THEN '{$type}'";
+            $untilCases[] = "WHEN game_player_id = '{$id}' THEN '{$until}'::date";
         }
 
         $idList = implode(',', $ids);
         DB::statement(
-            'UPDATE game_players SET injury_type = CASE ' . implode(' ', $typeCases) . ' END, '
+            'UPDATE game_player_match_state SET injury_type = CASE ' . implode(' ', $typeCases) . ' END, '
             . 'injury_until = CASE ' . implode(' ', $untilCases) . ' END '
-            . "WHERE id IN ({$idList})"
+            . "WHERE game_player_id IN ({$idList})"
+        );
+
+        // Dual-write to legacy columns for rollback safety
+        $legacyTypeCases = str_replace('game_player_id', 'id', implode(' ', $typeCases));
+        $legacyUntilCases = str_replace('game_player_id', 'id', implode(' ', $untilCases));
+        GamePlayerMatchState::legacyWrite(
+            "UPDATE game_players SET injury_type = CASE {$legacyTypeCases} END, injury_until = CASE {$legacyUntilCases} END WHERE id IN ({$idList})"
         );
     }
 
@@ -74,9 +94,14 @@ class EligibilityService
      */
     public function clearInjury(GamePlayer $player): void
     {
-        $player->injury_until = null;
-        $player->injury_type = null;
-        $player->save();
+        $clearValues = ['injury_type' => null, 'injury_until' => null];
+
+        GamePlayerMatchState::where('game_player_id', $player->id)->update($clearValues);
+        GamePlayerMatchState::legacyEloquentWrite(
+            GamePlayer::where('id', $player->id), $clearValues
+        );
+
+        $player->unsetRelation('matchState');
     }
 
     /**

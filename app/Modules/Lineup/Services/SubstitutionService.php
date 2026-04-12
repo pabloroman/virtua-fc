@@ -157,7 +157,7 @@ class SubstitutionService
             $lineupIds[] = $sub['playerInId'];
         }
 
-        return GamePlayer::with('player')->whereIn('id', $lineupIds)->get();
+        return GamePlayer::with(['player', 'matchState'])->whereIn('id', $lineupIds)->get();
     }
 
     /**
@@ -179,7 +179,7 @@ class SubstitutionService
 
         // Load opponent full squad (1 query) to derive both lineup and bench
         $opponentTeamId = $isUserHome ? $match->away_team_id : $match->home_team_id;
-        $opponentSquad = GamePlayer::with('player')
+        $opponentSquad = GamePlayer::with(['player', 'matchState'])
             ->where('game_id', $game->id)
             ->where('team_id', $opponentTeamId)
             ->get();
@@ -233,7 +233,7 @@ class SubstitutionService
         // User bench: squad minus active lineup minus subbed-out players minus injured/suspended
         $activeLineupIds = $userLineup->pluck('id')->all();
         $subbedOutIds = array_column($substitutions, 'playerOutId');
-        $userSquad = GamePlayer::with('player')
+        $userSquad = GamePlayer::with(['player', 'matchState'])
             ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->get();

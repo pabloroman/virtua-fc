@@ -148,15 +148,16 @@ class SkipMatchToEnd
 
         $suspendedIds = PlayerSuspension::suspendedPlayerIdsForCompetition($match->competition_id);
 
-        return GamePlayer::where('game_id', $game->id)
+        return GamePlayer::with('matchState')
+            ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->whereNotIn('id', $activeIds)
             ->whereNotIn('id', $suspendedIds)
-            ->where(function ($q) use ($match) {
-                $q->whereNull('injury_until')
-                    ->orWhere('injury_until', '<', $match->scheduled_date);
-            })
             ->when($game->requiresSquadEnrollment(), fn ($q) => $q->whereNotNull('number'))
+            ->get()
+            // injury_until lives on the satellite — filter via accessor
+            // (the user's bench is small enough for PHP-side filtering).
+            ->reject(fn ($p) => $p->injury_until !== null && $p->injury_until->gte($match->scheduled_date))
             ->count();
     }
 }

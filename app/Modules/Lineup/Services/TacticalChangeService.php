@@ -5,6 +5,7 @@ namespace App\Modules\Lineup\Services;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Models\GamePlayerMatchState;
 use App\Models\MatchEvent;
 use App\Modules\Lineup\Enums\Formation;
 use Illuminate\Support\Facades\DB;
@@ -200,12 +201,18 @@ class TacticalChangeService
                 $playerIds[] = $sub['playerInId'];
             }
 
-            // Batch: increment appearances, insert events
+            // Batch: increment appearances on the match-state satellite
+            // (subbed-in players belong to the user's team, so they always
+            // have a satellite row), insert events.
             $playerInIds = array_column($newSubstitutions, 'playerInId');
-            GamePlayer::whereIn('id', $playerInIds)->update([
-                'appearances' => DB::raw('appearances + 1'),
-                'season_appearances' => DB::raw('season_appearances + 1'),
-            ]);
+            $appearanceUpdate = ['appearances' => DB::raw('appearances + 1'), 'season_appearances' => DB::raw('season_appearances + 1')];
+            DB::table('game_player_match_state')
+                ->whereIn('game_player_id', $playerInIds)
+                ->update($appearanceUpdate);
+            GamePlayerMatchState::legacyEloquentWrite(
+                GamePlayer::whereIn('id', $playerInIds),
+                $appearanceUpdate
+            );
             MatchEvent::insert($eventRows);
 
             // Load player names for response

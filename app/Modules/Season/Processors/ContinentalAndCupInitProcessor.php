@@ -6,10 +6,12 @@ use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Competition\Services\CountryConfig;
 use App\Modules\Season\Services\SeasonInitializationService;
+use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GameStanding;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Initializes Swiss format competitions (UCL) and conducts cup draws
@@ -64,6 +66,21 @@ class ContinentalAndCupInitProcessor implements SeasonProcessor
             // otherwise null triggers auto-assignment by market value
             $teamsWithPots = $swissPotData[$competitionId] ?? null;
 
+            // If the user actually qualified for this competition, foreign
+            // opponent rosters need a game_player_match_state row before
+            // their first fixture is simulated. Pool players (foreign-league
+            // teams that exist purely for the transfer market) are not
+            // seeded with satellite rows at game-creation time, so we
+            // backfill them here on demand.
+            $userParticipates = CompetitionEntry::where('game_id', $game->id)
+                ->where('competition_id', $competitionId)
+                ->where('team_id', $game->team_id)
+                ->exists();
+
+            if ($userParticipates) {
+                $this->ensureMatchStateForOpponents($game->id, $competitionId);
+            }
+
             // Initialize Swiss fixtures + standings (skips if team doesn't participate)
             $this->service->initializeSwissCompetition(
                 $game->id,
@@ -73,6 +90,36 @@ class ContinentalAndCupInitProcessor implements SeasonProcessor
                 $teamsWithPots,
             );
         }
+    }
+
+    /**
+     * Bulk-insert default match-state rows for every player on every team
+     * that participates in $competitionId in this game and doesn't already
+     * have one. Idempotent — opponents promoted in a previous European
+     * campaign keep their existing satellite (and its accumulated stats).
+     */
+    private function ensureMatchStateForOpponents(string $gameId, string $competitionId): void
+    {
+        $opponentTeamIds = CompetitionEntry::where('game_id', $gameId)
+            ->where('competition_id', $competitionId)
+            ->pluck('team_id');
+
+        if ($opponentTeamIds->isEmpty()) {
+            return;
+        }
+
+        DB::statement(<<<'SQL'
+            INSERT INTO game_player_match_state (
+                game_player_id, fitness, morale, injury_until, injury_type,
+                appearances, season_appearances, goals, own_goals, assists,
+                yellow_cards, red_cards, goals_conceded, clean_sheets
+            )
+            SELECT gp.id, 80, 80, NULL, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            FROM game_players gp
+            WHERE gp.game_id = ?
+              AND gp.team_id IN (SELECT unnest(?::uuid[]))
+            ON CONFLICT (game_player_id) DO NOTHING
+        SQL, [$gameId, '{' . implode(',', $opponentTeamIds->all()) . '}']);
     }
 
     /**

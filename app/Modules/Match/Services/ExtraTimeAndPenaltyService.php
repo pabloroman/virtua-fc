@@ -144,7 +144,7 @@ class ExtraTimeAndPenaltyService
         $awayIds = array_values(array_filter($awayIds, fn ($id) => ! in_array($id, $redCardedIds)));
 
         $allIds = array_merge($homeIds, $awayIds);
-        $players = GamePlayer::with('player')->whereIn('id', $allIds)->get()->keyBy('id');
+        $players = GamePlayer::with(['player', 'matchState'])->whereIn('id', $allIds)->get()->keyBy('id');
 
         return [
             $players->only($homeIds)->values(),

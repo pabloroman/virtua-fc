@@ -9,6 +9,7 @@ use App\Modules\Match\DTOs\TacticalConfig;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Models\GamePlayerMatchState;
 use App\Models\MatchEvent;
 use App\Models\PlayerSuspension;
 use Carbon\Carbon;
@@ -463,8 +464,12 @@ class MatchResimulationService
             }
 
             if ($event->event_type === 'injury') {
-                GamePlayer::where('id', $event->game_player_id)
-                    ->update(['injury_type' => null, 'injury_until' => null]);
+                $clearValues = ['injury_type' => null, 'injury_until' => null];
+                GamePlayerMatchState::where('game_player_id', $event->game_player_id)
+                    ->update($clearValues);
+                GamePlayerMatchState::legacyEloquentWrite(
+                    GamePlayer::where('id', $event->game_player_id), $clearValues
+                );
             }
         }
 
@@ -477,14 +482,17 @@ class MatchResimulationService
             ->all();
 
         if (! empty($subbedInPlayerIds)) {
-            $clamp = ['GREATEST(appearances - 1, 0)', 'GREATEST(season_appearances - 1, 0)'];
-
-            GamePlayer::whereIn('id', $subbedInPlayerIds)
+            $decrementValues = [
+                'appearances' => DB::raw('GREATEST(appearances - 1, 0)'),
+                'season_appearances' => DB::raw('GREATEST(season_appearances - 1, 0)'),
+            ];
+            GamePlayerMatchState::whereIn('game_player_id', $subbedInPlayerIds)
                 ->where('appearances', '>', 0)
-                ->update([
-                    'appearances' => DB::raw($clamp[0]),
-                    'season_appearances' => DB::raw($clamp[1]),
-                ]);
+                ->update($decrementValues);
+            GamePlayerMatchState::legacyEloquentWrite(
+                GamePlayer::whereIn('id', $subbedInPlayerIds)->where('appearances', '>', 0),
+                $decrementValues
+            );
         }
 
         // Delete the events
@@ -531,16 +539,22 @@ class MatchResimulationService
             }
         }
 
-        // Update each affected player — set stats to counted values (0 if no events remain)
-        $players = GamePlayer::whereIn('id', $playerIds)->get();
-        foreach ($players as $player) {
-            $counts = $statsMap[$player->id] ?? [];
-            $player->goals = $counts['goals'] ?? 0;
-            $player->own_goals = $counts['own_goals'] ?? 0;
-            $player->assists = $counts['assists'] ?? 0;
-            $player->yellow_cards = $counts['yellow_cards'] ?? 0;
-            $player->red_cards = $counts['red_cards'] ?? 0;
-            $player->save();
+        // Update each affected player's satellite — set stats to counted
+        // values (0 if no events remain). Only resimulated matches involve
+        // active-team lineups, so the satellite row is guaranteed to exist.
+        foreach ($playerIds as $playerId) {
+            $counts = $statsMap[$playerId] ?? [];
+            $statValues = [
+                'goals' => $counts['goals'] ?? 0,
+                'own_goals' => $counts['own_goals'] ?? 0,
+                'assists' => $counts['assists'] ?? 0,
+                'yellow_cards' => $counts['yellow_cards'] ?? 0,
+                'red_cards' => $counts['red_cards'] ?? 0,
+            ];
+            GamePlayerMatchState::where('game_player_id', $playerId)->update($statValues);
+            GamePlayerMatchState::legacyEloquentWrite(
+                GamePlayer::where('id', $playerId), $statValues
+            );
         }
     }
 
@@ -636,17 +650,21 @@ class MatchResimulationService
         ));
         $players = GamePlayer::whereIn('id', $allPlayerIds)->get()->keyBy('id');
 
-        // Apply stat increments
+        // Apply stat increments to the satellite in individual UPDATE queries
+        // (small dataset — typically ≤5 event-producing players per re-simulation).
         foreach ($statIncrements as $playerId => $increments) {
-            $player = $players->get($playerId);
-            if (! $player) {
+            if (empty($increments) || ! $players->has($playerId)) {
                 continue;
             }
 
+            $updates = [];
             foreach ($increments as $column => $amount) {
-                $player->{$column} += $amount;
+                $updates[$column] = DB::raw("{$column} + {$amount}");
             }
-            $player->save();
+            GamePlayerMatchState::where('game_player_id', $playerId)->update($updates);
+            GamePlayerMatchState::legacyEloquentWrite(
+                GamePlayer::where('id', $playerId), $updates
+            );
         }
 
         // Process special events

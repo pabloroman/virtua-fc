@@ -86,7 +86,9 @@ class PlayerRetirementProcessor implements SeasonProcessor
         // set from ~500 to ~20-40 before PHP-side probability evaluation.
         $minRetirementCutoff = PlayerAge::dateOfBirthCutoff(PlayerAge::MIN_RETIREMENT_OUTFIELD, $game->current_date);
 
-        $candidates = GamePlayer::with(['player', 'team', 'game'])
+        // matchState is eager-loaded because shouldRetire() reads
+        // fitness/season_appearances via the GamePlayer accessor delegates.
+        $candidates = GamePlayer::with(['player', 'team', 'game', 'matchState'])
             ->where('game_id', $game->id)
             ->whereNotNull('team_id')
             ->whereNull('retiring_at_season')

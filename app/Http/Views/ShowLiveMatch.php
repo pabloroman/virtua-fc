@@ -133,7 +133,7 @@ class ShowLiveMatch
 
         // Starting lineup players (for the "sub out" picker)
         $currentDate = $game->current_date;
-        $lineupPlayers = GamePlayer::with('player')
+        $lineupPlayers = GamePlayer::with(['player', 'matchState'])
             ->whereIn('id', $userLineupIds)
             ->get()
             ->map(fn ($p) => [
@@ -164,17 +164,16 @@ class ShowLiveMatch
 
         // Bench players (all squad players NOT in the starting lineup, not suspended, not injured)
         $matchDate = $playerMatch->scheduled_date;
-        $benchPlayers = GamePlayer::with('player')
+        $benchPlayers = GamePlayer::with(['player', 'matchState'])
             ->where('game_id', $gameId)
             ->where('team_id', $game->team_id)
             ->whereNotIn('id', $userLineupIds)
             ->whereNotIn('id', $suspendedPlayerIds)
-            ->where(function ($q) use ($matchDate) {
-                $q->whereNull('injury_until')
-                    ->orWhere('injury_until', '<', $matchDate);
-            })
             ->when($game->requiresSquadEnrollment(), fn ($q) => $q->whereNotNull('number'))
             ->get()
+            // injury_until lives on the satellite — filter via the accessor
+            // (the user's squad is small enough that PHP-side filtering is fine).
+            ->reject(fn ($p) => $p->injury_until !== null && $p->injury_until->gte($matchDate))
             ->map(fn ($p) => [
                 'id' => $p->id,
                 'name' => $p->player->name ?? '',
@@ -196,7 +195,7 @@ class ShowLiveMatch
             ->values()
             ->all();
 
-        $mapLineup = fn (array $ids) => GamePlayer::with('player')
+        $mapLineup = fn (array $ids) => GamePlayer::with(['player', 'matchState'])
             ->whereIn('id', $ids)
             ->get()
             ->map(fn ($p) => [

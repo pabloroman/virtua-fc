@@ -7,6 +7,7 @@ use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Models\Game;
 use App\Models\GameNotification;
 use App\Models\GamePlayer;
+use App\Models\GamePlayerMatchState;
 use App\Models\PlayerSuspension;
 use Illuminate\Support\Facades\DB;
 
@@ -28,7 +29,10 @@ class StatsResetProcessor implements SeasonProcessor
             $query->select('id')->from('game_players')->where('game_id', $game->id);
         })->delete();
 
-        GamePlayer::where('game_id', $game->id)->update([
+        // Reset every active player's match-state. Pool players have no
+        // satellite row to reset — and they have no stats to reset either,
+        // so this is correct.
+        $resetValues = [
             'appearances' => 0,
             'goals' => 0,
             'own_goals' => 0,
@@ -42,7 +46,19 @@ class StatsResetProcessor implements SeasonProcessor
             'injury_type' => null,
             'fitness' => 80,
             'morale' => 80,
-        ]);
+        ];
+
+        DB::table('game_player_match_state')
+            ->whereIn('game_player_id', function ($q) use ($game) {
+                $q->select('id')->from('game_players')->where('game_id', $game->id);
+            })
+            ->update($resetValues);
+
+        // Dual-write to legacy columns for rollback safety
+        GamePlayerMatchState::legacyEloquentWrite(
+            GamePlayer::where('game_id', $game->id),
+            $resetValues
+        );
 
         // Mark all previous-season notifications as read so the new season starts clean
         GameNotification::where('game_id', $game->id)

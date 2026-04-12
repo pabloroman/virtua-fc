@@ -4,6 +4,7 @@ namespace App\Modules\Match\Listeners;
 
 use App\Modules\Match\Events\MatchFinalized;
 use App\Models\GamePlayer;
+use App\Models\GamePlayerMatchState;
 use Illuminate\Support\Facades\DB;
 
 class UpdateGoalkeeperStats
@@ -55,7 +56,7 @@ class UpdateGoalkeeperStats
             $cases = [];
             foreach ($increments as $gkId => $values) {
                 if ($values[$column] !== 0) {
-                    $cases[] = "WHEN id = '{$gkId}' THEN {$column} + {$values[$column]}";
+                    $cases[] = "WHEN game_player_id = '{$gkId}' THEN {$column} + {$values[$column]}";
                 }
             }
             if (! empty($cases)) {
@@ -64,7 +65,10 @@ class UpdateGoalkeeperStats
         }
 
         if (! empty($setClauses)) {
-            DB::statement('UPDATE game_players SET ' . implode(', ', $setClauses) . " WHERE id IN ({$idList})");
+            DB::statement('UPDATE game_player_match_state SET ' . implode(', ', $setClauses) . " WHERE game_player_id IN ({$idList})");
+
+            $legacyClauses = str_replace('game_player_id', 'id', implode(', ', $setClauses));
+            GamePlayerMatchState::legacyWrite("UPDATE game_players SET {$legacyClauses} WHERE id IN ({$idList})");
         }
     }
 }

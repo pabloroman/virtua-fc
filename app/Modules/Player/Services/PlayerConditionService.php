@@ -3,6 +3,7 @@
 namespace App\Modules\Player\Services;
 
 use App\Models\GamePlayer;
+use App\Models\GamePlayerMatchState;
 use App\Modules\Match\Services\EnergyCalculator;
 use App\Modules\Player\PlayerAge;
 use Carbon\Carbon;
@@ -95,6 +96,10 @@ class PlayerConditionService
 
     /**
      * Perform bulk update of fitness and morale using a single query.
+     *
+     * Targets the sparse {@see \App\Models\GamePlayerMatchState} satellite —
+     * the id list is built from match lineups, so by construction every id
+     * is an active player and has a satellite row already.
      */
     private function bulkUpdateConditions(array $updates): void
     {
@@ -107,18 +112,25 @@ class PlayerConditionService
         $moraleCases = [];
 
         foreach ($updates as $id => $values) {
-            $fitnessCases[] = "WHEN id = '{$id}' THEN {$values['fitness']}";
-            $moraleCases[] = "WHEN id = '{$id}' THEN {$values['morale']}";
+            $fitnessCases[] = "WHEN game_player_id = '{$id}' THEN {$values['fitness']}";
+            $moraleCases[] = "WHEN game_player_id = '{$id}' THEN {$values['morale']}";
         }
 
         $idList = "'" . implode("','", $ids) . "'";
 
         DB::statement("
-            UPDATE game_players
+            UPDATE game_player_match_state
             SET fitness = CASE " . implode(' ', $fitnessCases) . " END,
                 morale = CASE " . implode(' ', $moraleCases) . " END
-            WHERE id IN ({$idList})
+            WHERE game_player_id IN ({$idList})
         ");
+
+        // Dual-write to legacy columns for rollback safety
+        $legacyFitnessCases = str_replace('game_player_id', 'id', implode(' ', $fitnessCases));
+        $legacyMoraleCases = str_replace('game_player_id', 'id', implode(' ', $moraleCases));
+        GamePlayerMatchState::legacyWrite(
+            "UPDATE game_players SET fitness = CASE {$legacyFitnessCases} END, morale = CASE {$legacyMoraleCases} END WHERE id IN ({$idList})"
+        );
     }
 
     /**

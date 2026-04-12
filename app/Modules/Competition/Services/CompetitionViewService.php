@@ -88,7 +88,7 @@ class CompetitionViewService
             return collect();
         }
 
-        $players = GamePlayer::with('player')
+        $players = GamePlayer::with(['player', 'matchState'])
             ->whereIn('id', $scorerRows->pluck('game_player_id')->unique())
             ->get()
             ->keyBy('id');
