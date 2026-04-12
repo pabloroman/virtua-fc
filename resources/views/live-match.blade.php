@@ -35,7 +35,6 @@
                 benchPlayers: {{ Js::from($benchPlayers) }},
                 userTeamId: '{{ $game->team_id }}',
                 tacticalActionsUrl: '{{ $tacticalActionsUrl }}',
-                skipToEndUrl: '{{ $skipToEndUrl }}',
                 csrfToken: '{{ csrf_token() }}',
                 maxSubstitutions: 5,
                 maxWindows: 3,

@@ -39,7 +39,6 @@ class TacticalChangeService
         ?string $defensiveLine = null,
         bool $isExtraTime = false,
         ?array $pitchPositions = null,
-        bool $autoSubUserTeam = false,
     ): array {
         $isUserHome = $match->isHomeTeam($game->team_id);
         $prefix = $isUserHome ? 'home' : 'away';
@@ -128,53 +127,22 @@ class TacticalChangeService
         if ($isExtraTime) {
             $result = $this->resimulationService->resimulateExtraTime($match, $game, $minute, $homePlayers, $awayPlayers, $allSubs, $homeBench, $awayBench);
         } else {
-            $result = $this->resimulationService->resimulate(
-                $match,
-                $game,
-                $minute,
-                $homePlayers,
-                $awayPlayers,
-                $allSubs,
-                $homeBench,
-                $awayBench,
-                autoSubUserTeam: $autoSubUserTeam,
-            );
+            $result = $this->resimulationService->resimulate($match, $game, $minute, $homePlayers, $awayPlayers, $allSubs, $homeBench, $awayBench);
         }
 
-        // Rebuild substitutions JSON: keep opponent entries, replace user entries.
+        // Rebuild substitutions JSON: keep opponent entries, replace user entries with allSubs.
         // This cleans up stale entries from previous simulations that were reverted.
-        // When $autoSubUserTeam is true, the resimulation may have generated fresh
-        // user-team substitution events in the remainder (they exist as MatchEvent
-        // rows but are not in $allSubs). Re-read the user substitutions from the
-        // events table so the JSON stays authoritative.
         $opponentSubs = collect($match->substitutions ?? [])
             ->filter(fn ($s) => ($s['team_id'] ?? null) !== $game->team_id)
             ->values()
             ->all();
 
-        if ($autoSubUserTeam) {
-            $userSubs = MatchEvent::where('game_match_id', $match->id)
-                ->where('event_type', MatchEvent::TYPE_SUBSTITUTION)
-                ->where('team_id', $game->team_id)
-                ->orderBy('minute')
-                ->get()
-                ->map(fn ($e) => [
-                    'team_id' => $game->team_id,
-                    'player_out_id' => $e->game_player_id,
-                    'player_in_id' => $e->metadata['player_in_id'] ?? null,
-                    'minute' => $e->minute,
-                ])
-                ->filter(fn ($s) => $s['player_in_id'] !== null)
-                ->values()
-                ->all();
-        } else {
-            $userSubs = array_map(fn ($s) => [
-                'team_id' => $game->team_id,
-                'player_out_id' => $s['playerOutId'],
-                'player_in_id' => $s['playerInId'],
-                'minute' => $s['minute'],
-            ], $allSubs);
-        }
+        $userSubs = array_map(fn ($s) => [
+            'team_id' => $game->team_id,
+            'player_out_id' => $s['playerOutId'],
+            'player_in_id' => $s['playerInId'],
+            'minute' => $s['minute'],
+        ], $allSubs);
 
         $match->update(['substitutions' => array_merge($opponentSubs, $userSubs)]);
 

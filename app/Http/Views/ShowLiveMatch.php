@@ -343,7 +343,6 @@ class ShowLiveMatch
             'lineupPlayers' => $lineupPlayers,
             'benchPlayers' => $benchPlayers,
             'tacticalActionsUrl' => route('game.match.tactical-actions', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
-            'skipToEndUrl' => route('game.match.skip-to-end', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
             'extraTimeUrl' => route('game.match.extra-time', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
             'penaltiesUrl' => route('game.match.penalties', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
             'userFormation' => $userFormation,

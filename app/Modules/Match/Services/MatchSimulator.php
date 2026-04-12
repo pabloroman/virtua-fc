@@ -123,13 +123,11 @@ class MatchSimulator
         ?Collection $awayBenchPlayers = null,
         string $matchSeed = '',
         bool $neutralVenue = false,
-        ?string $userTeamId = null,
     ): MatchSimulationOutput {
         $homeBenchAvailable = $homeBenchPlayers !== null && $homeBenchPlayers->isNotEmpty();
         $awayBenchAvailable = $awayBenchPlayers !== null && $awayBenchPlayers->isNotEmpty();
         $hasAIBench = $homeBenchAvailable || $awayBenchAvailable;
-        $isUserMatch = $userTeamId !== null
-            && ($userTeamId === $homeTeam->id || $userTeamId === $awayTeam->id);
+        $isUserMatch = ($homeBenchAvailable xor $awayBenchAvailable);
 
         $aiSubMode = config('match_simulation.ai_substitutions.mode', 'all');
         $aiSubsActive = $hasAIBench && match ($aiSubMode) {
@@ -150,7 +148,6 @@ class MatchSimulator
                 $homeDefLine, $awayDefLine,
                 $homeBenchPlayers, $awayBenchPlayers,
                 $matchSeed,
-                $userTeamId,
             );
         }
 
@@ -200,7 +197,6 @@ class MatchSimulator
         ?Collection $homeBenchPlayers,
         ?Collection $awayBenchPlayers,
         string $matchSeed,
-        ?string $userTeamId = null,
     ): MatchSimulationOutput {
         $homeFormation = $homeFormation ?? Formation::F_4_4_2;
         $awayFormation = $awayFormation ?? Formation::F_4_4_2;
@@ -216,14 +212,11 @@ class MatchSimulator
         $homeTacticalDrain = $homePlayingStyle->energyDrainMultiplier() * $homePressing->energyDrainMultiplier();
         $awayTacticalDrain = $awayPlayingStyle->energyDrainMultiplier() * $awayPressing->energyDrainMultiplier();
 
-        // Determine how many tactical subs each AI team will make.
-        // The user's team gets 0 tactical windows — their bench is only here
-        // so processInjurySubstitution() can fire inside simulateRemainder().
-        // Tactical AI subs for the user team are deferred to "Skip to end".
-        $homeTotalSubs = ($homeBenchPlayers !== null && $userTeamId !== $homeTeam->id)
+        // Determine how many subs each AI team will make
+        $homeTotalSubs = $homeBenchPlayers !== null
             ? $this->aiSubstitutionService->decideTotalSubs($homeBenchPlayers->count())
             : 0;
-        $awayTotalSubs = ($awayBenchPlayers !== null && $userTeamId !== $awayTeam->id)
+        $awayTotalSubs = $awayBenchPlayers !== null
             ? $this->aiSubstitutionService->decideTotalSubs($awayBenchPlayers->count())
             : 0;
 
