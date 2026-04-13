@@ -64,6 +64,7 @@ return [
     'base_goals' => 1.4,                // avg xG per team when evenly matched (~2.6 total)
     'skill_dominance' => 2.4,           // how much team quality widens the xG gap (see above)
     'home_advantage_goals' => 0.20,     // fixed home xG bonus
+    'defensive_quality_damping' => 0.6, // how much quality advantage erodes defensive tactics (0=none, higher=more erosion)
 
     /*
     |--------------------------------------------------------------------------
@@ -209,8 +210,8 @@ return [
         '3-4-3'   => ['attack' => 1.12, 'defense' => 1.10],   // Very attacking, very exposed
         '3-5-2'   => ['attack' => 0.97, 'defense' => 0.96],   // Midfield control, conservative
         '4-1-4-1' => ['attack' => 0.95, 'defense' => 0.93],   // Defensive midfield shield
-        '5-3-2'   => ['attack' => 0.90, 'defense' => 0.88],   // Defensive, hard to break
-        '5-4-1'   => ['attack' => 0.84, 'defense' => 0.82],   // Park the bus
+        '5-3-2'   => ['attack' => 0.90, 'defense' => 0.90],   // Defensive, hard to break
+        '5-4-1'   => ['attack' => 0.84, 'defense' => 0.86],   // Park the bus
         '4-1-2-3' => ['attack' => 1.08, 'defense' => 1.07],   // Attacking with DM anchor
         '4-3-2-1' => ['attack' => 1.04, 'defense' => 1.03],   // Creative, narrow attack
     ],
@@ -226,7 +227,7 @@ return [
     |
     */
     'mentalities' => [
-        'defensive' => ['own_goals' => 0.82, 'opponent_goals' => 0.78],
+        'defensive' => ['own_goals' => 0.88, 'opponent_goals' => 0.84],
         'balanced'  => ['own_goals' => 1.00, 'opponent_goals' => 1.00],
         'attacking' => ['own_goals' => 1.15, 'opponent_goals' => 1.12],
     ],

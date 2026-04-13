@@ -1532,6 +1532,9 @@ class MatchSimulator
      * Covers playing style, pressing (with minute-based fade), defensive line
      * (with high-line nullification), and tactical interactions.
      *
+     * Defensive modifiers are attenuated when the attacking team is significantly
+     * stronger — quality eventually prevails against a parked bus.
+     *
      * @return array{0: float, 1: float} [homeXG, awayXG]
      */
     private function applyTacticalModifiers(
@@ -1546,7 +1549,11 @@ class MatchSimulator
         Mentality $homeMentality,
         Mentality $awayMentality,
         float $effectiveMinute,
+        float $strengthRatio = 1.0,
     ): array {
+        $preHomeXG = $homeXG;
+        $preAwayXG = $awayXG;
+
         // Playing Style: own xG modifier and opponent xG modifier
         $homeXG *= $homePlayingStyle->ownXGModifier();
         $homeXG *= $awayPlayingStyle->opponentXGModifier();
@@ -1647,6 +1654,29 @@ class MatchSimulator
             $homeXG *= $attackingHighLineVuln;
         }
 
+        // Attenuate defensive effect based on the attacker's quality advantage.
+        // When a team is much stronger, opponent's defensive tactics are less
+        // effective — quality prevails through possession, individual skill,
+        // and forcing defensive errors over 90 minutes.
+        $damping = (float) config('match_simulation.defensive_quality_damping', 1.2);
+
+        if ($preHomeXG > 0) {
+            $homeReduction = $homeXG / $preHomeXG;
+            if ($homeReduction < 1.0 && $strengthRatio > 1.0) {
+                $attenuation = 1.0 / pow($strengthRatio, $damping);
+                $homeXG = $preHomeXG * (1.0 - (1.0 - $homeReduction) * $attenuation);
+            }
+        }
+
+        if ($preAwayXG > 0) {
+            $awayReduction = $awayXG / $preAwayXG;
+            $inverseRatio = $strengthRatio > 0 ? 1.0 / $strengthRatio : 1.0;
+            if ($awayReduction < 1.0 && $inverseRatio > 1.0) {
+                $attenuation = 1.0 / pow($inverseRatio, $damping);
+                $awayXG = $preAwayXG * (1.0 - (1.0 - $awayReduction) * $attenuation);
+            }
+        }
+
         return [$homeXG, $awayXG];
     }
 
@@ -1725,6 +1755,7 @@ class MatchSimulator
         );
 
         $effectiveMinute = $fromMinute + ($toMinute - $fromMinute) / 2;
+        $strengthRatio = $awayStrength > 0 ? $homeStrength / $awayStrength : 1.0;
 
         [$homeExpectedGoals, $awayExpectedGoals] = $this->applyTacticalModifiers(
             $homeExpectedGoals, $awayExpectedGoals,
@@ -1733,6 +1764,7 @@ class MatchSimulator
             $homeDefLine, $awayDefLine,
             $homeMentality, $awayMentality,
             $effectiveMinute,
+            $strengthRatio,
         );
 
         // Goalkeeper quality: missing/out-of-position GK increases opponent xG
@@ -1826,6 +1858,8 @@ class MatchSimulator
                     $neutralVenue,
                 );
 
+                $strengthRatio = $awayStrength > 0 ? $homeStrength / $awayStrength : 1.0;
+
                 [$homeExpectedGoals, $awayExpectedGoals] = $this->applyTacticalModifiers(
                     $homeExpectedGoals, $awayExpectedGoals,
                     $homePlayingStyle, $awayPlayingStyle,
@@ -1833,7 +1867,7 @@ class MatchSimulator
                     $homeDefLine, $awayDefLine,
                     $homeMentality, $awayMentality,
                     $effectiveMinute,
-                    $homePlayers, $awayPlayers,
+                    $strengthRatio,
                 );
 
                 $awayExpectedGoals *= $this->calculateGoalkeeperModifier($homePlayers);
@@ -1989,6 +2023,8 @@ class MatchSimulator
             $neutralVenue,
         );
 
+        $strengthRatio = $awayStrength > 0 ? $homeStrength / $awayStrength : 1.0;
+
         [$homeXG1, $awayXG1] = $this->applyTacticalModifiers(
             $homeXG1, $awayXG1,
             $homePlayingStyle, $awayPlayingStyle,
@@ -1996,7 +2032,7 @@ class MatchSimulator
             $homeDefLine, $awayDefLine,
             $homeMentality, $awayMentality,
             $effectiveMinute1,
-            $homePlayers, $awayPlayers,
+            $strengthRatio,
         );
 
         $awayXG1 *= $this->calculateGoalkeeperModifier($homePlayers);
@@ -2047,6 +2083,8 @@ class MatchSimulator
             $neutralVenue,
         );
 
+        $strengthRatio2 = $awayStrength2 > 0 ? $homeStrength2 / $awayStrength2 : 1.0;
+
         [$homeXG2, $awayXG2] = $this->applyTacticalModifiers(
             $homeXG2, $awayXG2,
             $homePlayingStyle, $awayPlayingStyle,
@@ -2054,6 +2092,7 @@ class MatchSimulator
             $homeDefLine, $awayDefLine,
             $homeMentality, $awayMentality,
             $effectiveMinute2,
+            $strengthRatio2,
         );
 
         $awayXG2 *= $this->calculateGoalkeeperModifier($homePlayers2);
@@ -2533,6 +2572,8 @@ class MatchSimulator
 
         $etEffectiveMinute = $fromMinute + ($etMinutesRemaining / 2);
 
+        $strengthRatio = $awayStrength > 0 ? $homeStrength / $awayStrength : 1.0;
+
         [$homeExpectedGoals, $awayExpectedGoals] = $this->applyTacticalModifiers(
             $homeExpectedGoals, $awayExpectedGoals,
             $homePlayingStyle, $awayPlayingStyle,
@@ -2540,7 +2581,7 @@ class MatchSimulator
             $homeDefLine, $awayDefLine,
             $homeMentality, $awayMentality,
             $etEffectiveMinute,
-            $homePlayers, $awayPlayers,
+            $strengthRatio,
         );
 
         // Goalkeeper quality
