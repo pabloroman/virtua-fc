@@ -203,52 +203,44 @@ class LineupService
     }
 
     /**
-     * Select the best XI from a collection of players, respecting formation requirements.
+     * Select the best XI from a collection of players, respecting formation slot requirements.
      * Returns Collection of GamePlayer objects.
      *
-     * This is the core selection algorithm used by both autoSelectLineup (for match lineups)
-     * and for calculating opponent team ratings.
+     * Delegates to FormationRecommender which runs a multi-pass algorithm
+     * (primary position → secondary → swap → weighted fallback) to find the
+     * best natural fit for each slot in the formation. This avoids the old
+     * position-group-based selection which could exclude natural-fit players
+     * when a group's top-rated players didn't match the specific slots needed.
      */
     public function selectBestXI(Collection $availablePlayers, ?Formation $formation = null, bool $applyFitnessRotation = false): Collection
     {
         $formation = $formation ?? Formation::F_4_3_3;
-        $requirements = $formation->requirements();
 
-        // Sort key: effective score accounts for fitness when rotation is enabled
-        $sortKey = $applyFitnessRotation
-            ? fn ($p) => $this->effectiveScore($p)
-            : fn ($p) => $p->overall_score;
-
-        $selected = collect();
-
-        // Group players by position category
-        $grouped = $availablePlayers->groupBy(fn ($p) => $p->position_group);
-
-        // Select players for each position group
-        foreach ($requirements as $positionGroup => $count) {
-            $positionPlayers = ($grouped->get($positionGroup) ?? collect())
-                ->sortByDesc($sortKey)
-                ->take($count);
-
-            $selected = $selected->merge($positionPlayers);
+        if ($availablePlayers->count() <= 11) {
+            return $availablePlayers;
         }
 
-        // If we don't have enough for standard formation, fill with best available
-        if ($selected->count() < 11) {
-            $selectedIds = $selected->pluck('id')->toArray();
-            $remaining = $availablePlayers
-                ->filter(fn ($p) => !in_array($p->id, $selectedIds))
-                ->sortByDesc($sortKey);
+        // When fitness rotation is active, adjust overall_score before passing
+        // to the recommender so it accounts for fatigue in its rating-based ranking.
+        $pool = $availablePlayers;
+        if ($applyFitnessRotation) {
+            $pool = $availablePlayers->map(function ($player) {
+                $clone = clone $player;
+                $clone->overall_score = (int) round($this->effectiveScore($player));
 
-            foreach ($remaining as $player) {
-                if ($selected->count() >= 11) {
-                    break;
-                }
-                $selected->push($player);
-            }
+                return $clone;
+            });
         }
 
-        return $selected;
+        $bestXI = $this->formationRecommender->bestXIFor($formation, $pool);
+
+        $selectedIds = collect($bestXI)
+            ->pluck('player.id')
+            ->filter()
+            ->toArray();
+
+        // Return the original (non-cloned) players to preserve model state
+        return $availablePlayers->filter(fn ($p) => in_array($p->id, $selectedIds));
     }
 
     /**
