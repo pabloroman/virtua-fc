@@ -254,6 +254,14 @@ class TransferService
                 ->get();
         }
 
+        // Collect team IDs that already have a pending unsolicited offer for any player on the user's squad
+        $excludedBuyerTeamIds = TransferOffer::where('game_id', $game->id)
+            ->where('offer_type', TransferOffer::TYPE_UNSOLICITED)
+            ->where('status', TransferOffer::STATUS_PENDING)
+            ->whereHas('gamePlayer', fn ($q) => $q->where('team_id', $game->team_id))
+            ->pluck('offering_team_id')
+            ->toArray();
+
         foreach ($starPlayers as $player) {
             // Use pre-loaded transferOffers relationship to avoid N+1
             $playerOffers = $player->relationLoaded('transferOffers')
@@ -274,14 +282,20 @@ class TransferService
             if (rand(1, 100) <= self::UNSOLICITED_OFFER_CHANCE * 100) {
                 ['buyers' => $buyers, 'squadValues' => $squadValues] = $this->getEligibleBuyersWithSquadValues($player, $buyerPool);
 
-                if ($buyers->isNotEmpty()) {
-                    $buyer = $this->selectWeightedBuyer($buyers, $player, $squadValues);
+                // Exclude teams that already have a pending unsolicited offer for another player on this squad
+                $availableBuyers = $buyers->filter(
+                    fn ($team) => !in_array($team->id, $excludedBuyerTeamIds)
+                );
+
+                if ($availableBuyers->isNotEmpty()) {
+                    $buyer = $this->selectWeightedBuyer($availableBuyers, $player, $squadValues);
                     $offer = $this->createOffer(
                         player: $player,
                         offeringTeam: $buyer,
                         offerType: TransferOffer::TYPE_UNSOLICITED,
                     );
                     $offers->push($offer);
+                    $excludedBuyerTeamIds[] = $buyer->id;
                 }
             }
         }
