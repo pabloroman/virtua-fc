@@ -423,7 +423,7 @@ class MatchNarrativeService
             ->join('game_player_match_state', 'game_players.id', '=', 'game_player_match_state.game_player_id')
             ->where('game_players.game_id', $game->id)
             ->where('game_players.team_id', $game->team_id)
-            ->where('game_player_match_state.injury_until', '>', $game->current_date)
+            ->where('game_player_match_state.injury_until', '>=', $game->current_date)
             ->count();
 
         if ($injuryCount >= 4) {

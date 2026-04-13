@@ -932,7 +932,7 @@ class GamePlayer extends Model
 
         return $query->where(function ($q) use ($date) {
             $q->whereNull('game_player_match_state.injury_until')
-                ->orWhere('game_player_match_state.injury_until', '<=', $date->toDateString());
+                ->orWhere('game_player_match_state.injury_until', '<', $date->toDateString());
         });
     }
 
