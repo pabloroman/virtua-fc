@@ -35,7 +35,7 @@ class MatchSimulator
     /**
      * Match performance cache - stores per-player performance modifiers for the current match.
      * Each player gets a random "form on the day" that affects their contribution.
-     * Range: 0.7 to 1.3 (30% variance from their base ability)
+     * Range: 0.75 to 1.25 (25% variance from their base ability)
      *
      * @var array<string, float>
      */
@@ -1247,13 +1247,13 @@ class MatchSimulator
      * A player with high morale and fitness has a better chance of a good performance.
      *
      * Performance distribution (bell curve centered around 1.0):
-     * - 0.70-0.85: Poor day (rare for high morale/fitness players)
-     * - 0.85-0.95: Below average
-     * - 0.95-1.05: Average
-     * - 1.05-1.15: Above average
-     * - 1.15-1.30: Outstanding day (rare)
+     * - 0.75-0.85: Poor day (rare, ~10% of players)
+     * - 0.85-0.95: Below average (~20%)
+     * - 0.95-1.05: Average (~40%)
+     * - 1.05-1.15: Above average (~20%)
+     * - 1.15-1.25: Outstanding day (rare, ~10%)
      *
-     * @return float Performance modifier (0.7 to 1.3)
+     * @return float Performance modifier (0.75 to 1.25)
      */
     private function getMatchPerformance(GamePlayer $player): float
     {
@@ -1310,15 +1310,15 @@ class MatchSimulator
      * Convert match performance to a display rating (1-10 scale).
      * This can be used for post-match player ratings.
      *
-     * @param  float  $performance  The raw performance modifier (0.7-1.3)
+     * @param  float  $performance  The raw performance modifier (0.75-1.25)
      * @return float Rating on 1-10 scale
      */
     public static function performanceToRating(float $performance): float
     {
-        // Map 0.7-1.3 to 4.0-9.5 scale (typical football rating range)
-        // 0.7 -> 4.0 (very poor)
-        // 1.0 -> 6.5 (average)
-        // 1.3 -> 9.0 (outstanding)
+        // Map performance to display rating scale (typical football rating range)
+        // 0.75 -> 5.4 (very poor)
+        // 1.0  -> 7.5 (average)
+        // 1.25 -> 9.6 (outstanding)
         $rating = 4.0 + (($performance - 0.7) / 0.6) * 5.0;
 
         return round(max(1.0, min(10.0, $rating)), 1);

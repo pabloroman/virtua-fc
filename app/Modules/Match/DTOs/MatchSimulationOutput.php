@@ -10,7 +10,7 @@ readonly class MatchSimulationOutput
 {
     /**
      * @param  MatchResult  $result  The match result (scores, events, possession)
-     * @param  array<string, float>  $performances  Map of player ID to performance modifier (0.7-1.3)
+     * @param  array<string, float>  $performances  Map of player ID to performance modifier (0.75-1.25)
      */
     public function __construct(
         public MatchResult $result,

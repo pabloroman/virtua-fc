@@ -76,17 +76,17 @@ return [
     |
     | performance_std_dev: Standard deviation of the bell curve (0.03-0.20)
     |   - 0.03 = very consistent, best team almost always wins
-    |   - 0.05 = low variance, lineup quality is decisive (default)
-    |   - 0.08 = moderate variance, some upsets
+    |   - 0.05 = low variance, lineup quality is decisive
+    |   - 0.10 = moderate variance, meaningful rating spread (default)
     |   - 0.20 = high variance, many upsets
     |
     | performance_min/max: Absolute bounds for performance modifier
-    |   - Default 0.90-1.10 means players can perform 10% below or above their rating
+    |   - Default 0.75-1.25 means players can perform 25% below or above their rating
     |
     */
-    'performance_std_dev' => 0.05,
-    'performance_min' => 0.90,
-    'performance_max' => 1.10,
+    'performance_std_dev' => 0.10,
+    'performance_min' => 0.75,
+    'performance_max' => 1.25,
 
     /*
     |--------------------------------------------------------------------------
