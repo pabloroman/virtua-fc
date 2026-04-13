@@ -6,6 +6,7 @@ use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Models\GamePlayerMatchState;
 use App\Models\MatchEvent;
 use App\Models\PlayerSuspension;
 use Carbon\Carbon;
@@ -366,19 +367,11 @@ class MatchResultProcessor
             ? $allPlayers->flatten()->keyBy('id')->only($allPlayerIds)
             : GamePlayer::whereIn('id', $allPlayerIds)->get()->keyBy('id');
 
-        // Apply stat increments in memory (for special events processing below)
-        foreach ($statIncrements as $playerId => $increments) {
-            $player = $players->get($playerId);
-            if (! $player) {
-                continue;
-            }
-
-            foreach ($increments as $column => $amount) {
-                $player->{$column} += $amount;
-            }
-        }
-
-        // Bulk update all stat increments in a single query
+        // Bulk update all stat increments in a single query.
+        // (We used to mirror the increments onto the in-memory $player models
+        // here, but nothing downstream in this method reads them — the
+        // following card/injury processing only touches PlayerSuspension and
+        // batchApplyInjuries, which both query their own state.)
         $this->bulkUpdatePlayerStats($statIncrements);
 
         // Separate card events from injury events
@@ -475,38 +468,7 @@ class MatchResultProcessor
      */
     private function bulkUpdatePlayerStats(array $statIncrements): void
     {
-        if (empty($statIncrements)) {
-            return;
-        }
-
-        // Collect all columns that need updating
-        $columns = [];
-        foreach ($statIncrements as $increments) {
-            foreach (array_keys($increments) as $col) {
-                $columns[$col] = true;
-            }
-        }
-
-        $ids = array_keys($statIncrements);
-        $idList = "'" . implode("','", $ids) . "'";
-
-        $setClauses = [];
-        foreach (array_keys($columns) as $column) {
-            $cases = [];
-            foreach ($statIncrements as $playerId => $increments) {
-                $amount = $increments[$column] ?? 0;
-                if ($amount !== 0) {
-                    $cases[] = "WHEN id = '{$playerId}' THEN {$column} + {$amount}";
-                }
-            }
-            if (! empty($cases)) {
-                $setClauses[] = "{$column} = CASE " . implode(' ', $cases) . " ELSE {$column} END";
-            }
-        }
-
-        if (! empty($setClauses)) {
-            DB::statement("UPDATE game_players SET " . implode(', ', $setClauses) . " WHERE id IN ({$idList})");
-        }
+        GamePlayerMatchState::bulkIncrementStats($statIncrements);
     }
 
     /**
@@ -530,12 +492,7 @@ class MatchResultProcessor
 
         $allLineupIds = array_unique($allLineupIds);
 
-        if (! empty($allLineupIds)) {
-            GamePlayer::whereIn('id', $allLineupIds)->update([
-                'appearances' => DB::raw('appearances + 1'),
-                'season_appearances' => DB::raw('season_appearances + 1'),
-            ]);
-        }
+        GamePlayerMatchState::bulkIncrementAppearances($allLineupIds);
     }
 
     /**
@@ -704,25 +661,6 @@ class MatchResultProcessor
             return;
         }
 
-        // Bulk update using CASE WHEN
-        $ids = array_keys($increments);
-        $idList = "'" . implode("','", $ids) . "'";
-        $setClauses = [];
-
-        foreach (['goals_conceded', 'clean_sheets'] as $column) {
-            $cases = [];
-            foreach ($increments as $gkId => $values) {
-                if ($values[$column] !== 0) {
-                    $cases[] = "WHEN id = '{$gkId}' THEN {$column} + {$values[$column]}";
-                }
-            }
-            if (! empty($cases)) {
-                $setClauses[] = "{$column} = CASE " . implode(' ', $cases) . " ELSE {$column} END";
-            }
-        }
-
-        if (! empty($setClauses)) {
-            DB::statement('UPDATE game_players SET ' . implode(', ', $setClauses) . " WHERE id IN ({$idList})");
-        }
+        GamePlayerMatchState::bulkIncrementStats($increments);
     }
 }

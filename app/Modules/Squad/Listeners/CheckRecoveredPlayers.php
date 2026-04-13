@@ -19,10 +19,14 @@ class CheckRecoveredPlayers
     {
         $game = $event->game;
 
-        $recoveredPlayers = GamePlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->whereNotNull('injury_until')
-            ->where('injury_until', '<', $event->newDate->toDateString())
+        // Find players whose injury_until has passed. The user's squad
+        // always has match-state rows so an INNER JOIN is correct.
+        $recoveredPlayers = GamePlayer::with('matchState')
+            ->joinMatchState()
+            ->where('game_players.game_id', $game->id)
+            ->where('game_players.team_id', $game->team_id)
+            ->whereMatchStatNotNull('injury_until')
+            ->whereMatchStat('injury_until', '<', $event->newDate->toDateString())
             ->get();
 
         if ($recoveredPlayers->isEmpty()) {

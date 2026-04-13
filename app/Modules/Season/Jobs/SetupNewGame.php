@@ -14,7 +14,9 @@ use App\Models\CompetitionEntry;
 use App\Models\CompetitionTeam;
 use App\Models\Game;
 use App\Models\GamePlayer;
+use App\Models\GamePlayerMatchState;
 use App\Models\TeamReputation;
+use App\Modules\Player\Support\GamePlayerScopeResolver;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -295,18 +297,30 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
 
         $gameId = $this->gameId;
 
+        // Determine the active team set so we know which players need a
+        // game_player_match_state satellite row at seed time. Players whose
+        // team is outside the active scope (foreign-league transfer pool) get
+        // no satellite row — see GamePlayerScopeResolver for the rules.
+        $game = Game::find($gameId);
+        $activeTeamIds = array_flip(
+            app(GamePlayerScopeResolver::class)->activeTeamIdsForGame($game)
+        );
+
         DB::table('game_player_templates')
             ->where('season', $this->season)
             ->whereNotIn('team_id', function ($query) {
                 $query->select('id')->from('teams')->where('type', 'national');
             })
             ->orderBy('player_id')
-            ->chunk(200, function ($templates) use ($gameId) {
+            ->chunk(200, function ($templates) use ($gameId, $activeTeamIds) {
                 $rows = [];
+                $matchStateRows = [];
 
                 foreach ($templates as $t) {
+                    $gamePlayerId = Str::uuid()->toString();
+
                     $rows[] = [
-                        'id' => Str::uuid()->toString(),
+                        'id' => $gamePlayerId,
                         'game_id' => $gameId,
                         'player_id' => $t->player_id,
                         'team_id' => $t->team_id,
@@ -317,8 +331,6 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
                         'market_value_cents' => $t->market_value_cents,
                         'contract_until' => $t->contract_until,
                         'annual_wage' => $t->annual_wage,
-                        'fitness' => $t->fitness,
-                        'morale' => $t->morale,
                         'durability' => $t->durability,
                         'game_technical_ability' => $t->game_technical_ability,
                         'game_physical_ability' => $t->game_physical_ability,
@@ -326,12 +338,28 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
                         'potential_low' => $t->potential_low,
                         'potential_high' => $t->potential_high,
                         'tier' => $t->tier,
-                        'season_appearances' => 0,
                     ];
+
+                    // Active-scope players get a satellite row carrying their
+                    // initial fitness/morale from the template. Pool players
+                    // (foreign leagues) skip this — they never participate in
+                    // simulated matches, so their hot-write columns stay at
+                    // GamePlayerMatchState::DEFAULTS via the accessor delegates.
+                    if (isset($activeTeamIds[$t->team_id])) {
+                        $matchStateRows[] = [
+                            'game_player_id' => $gamePlayerId,
+                            'fitness' => $t->fitness,
+                            'morale' => $t->morale,
+                        ];
+                    }
                 }
 
                 if (!empty($rows)) {
                     GamePlayer::insertOrIgnore($rows);
+                }
+
+                if (!empty($matchStateRows)) {
+                    GamePlayerMatchState::createForPlayers($matchStateRows);
                 }
             });
     }

@@ -49,9 +49,10 @@ class ShowPreMatchData
             $hasInjured = false;
             $hasSuspended = false;
 
-            $lineupPlayers = GamePlayer::where('game_id', $gameId)
+            $lineupPlayers = GamePlayer::with('matchState')
+                ->where('game_id', $gameId)
                 ->whereIn('id', $lineup)
-                ->get(['id', 'injury_until']);
+                ->get(['id']);
 
             foreach ($lineupPlayers as $player) {
                 if (in_array($player->id, $suspendedPlayerIds)) {

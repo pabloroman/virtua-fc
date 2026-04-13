@@ -136,6 +136,9 @@ class BudgetProjectionService
             ->where(fn ($q) => $q->whereNull('game_technical_ability')->orWhereNull('game_physical_ability'))
             ->exists();
 
+        // matchState is needed by calculateStrengthFromPlayers — pool players
+        // (no satellite) fall back to default fitness/morale via the accessor.
+        $query->with('matchState');
         if ($needsPlayerRelation) {
             $query->with('player');
         }
@@ -162,7 +165,7 @@ class BudgetProjectionService
     {
         $players = GamePlayer::where('game_id', $game->id)
             ->where('team_id', $team->id)
-            ->with('player')
+            ->with(['player', 'matchState'])
             ->get();
 
         return $this->calculateStrengthFromPlayers($players);

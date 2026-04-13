@@ -6,9 +6,8 @@ use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Models\Game;
 use App\Models\GameNotification;
-use App\Models\GamePlayer;
+use App\Models\GamePlayerMatchState;
 use App\Models\PlayerSuspension;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Resets player and game stats for the new season.
@@ -28,7 +27,10 @@ class StatsResetProcessor implements SeasonProcessor
             $query->select('id')->from('game_players')->where('game_id', $game->id);
         })->delete();
 
-        GamePlayer::where('game_id', $game->id)->update([
+        // Reset every active player's match-state. Pool players have no
+        // satellite row to reset — and they have no stats to reset either,
+        // so this is correct.
+        GamePlayerMatchState::bulkResetForGame($game->id, [
             'appearances' => 0,
             'goals' => 0,
             'own_goals' => 0,

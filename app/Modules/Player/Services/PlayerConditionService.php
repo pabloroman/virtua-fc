@@ -3,10 +3,10 @@
 namespace App\Modules\Player\Services;
 
 use App\Models\GamePlayer;
+use App\Models\GamePlayerMatchState;
 use App\Modules\Match\Services\EnergyCalculator;
 use App\Modules\Player\PlayerAge;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 
 class PlayerConditionService
 {
@@ -98,27 +98,7 @@ class PlayerConditionService
      */
     private function bulkUpdateConditions(array $updates): void
     {
-        if (empty($updates)) {
-            return;
-        }
-
-        $ids = array_keys($updates);
-        $fitnessCases = [];
-        $moraleCases = [];
-
-        foreach ($updates as $id => $values) {
-            $fitnessCases[] = "WHEN id = '{$id}' THEN {$values['fitness']}";
-            $moraleCases[] = "WHEN id = '{$id}' THEN {$values['morale']}";
-        }
-
-        $idList = "'" . implode("','", $ids) . "'";
-
-        DB::statement("
-            UPDATE game_players
-            SET fitness = CASE " . implode(' ', $fitnessCases) . " END,
-                morale = CASE " . implode(' ', $moraleCases) . " END
-            WHERE id IN ({$idList})
-        ");
+        GamePlayerMatchState::bulkSetValues($updates);
     }
 
     /**

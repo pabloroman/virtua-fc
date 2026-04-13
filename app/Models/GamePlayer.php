@@ -135,26 +135,13 @@ class GamePlayer extends Model
         'contract_until',
         'annual_wage',
         'pending_annual_wage',
-        'fitness',
-        'morale',
         'durability',
-        'injury_until',
-        'injury_type',
-        'appearances',
-        'goals',
-        'own_goals',
-        'assists',
-        'yellow_cards',
-        'red_cards',
-        'goals_conceded',
-        'clean_sheets',
         'game_technical_ability',
         'game_physical_ability',
         'tier',
         'potential',
         'potential_low',
         'potential_high',
-        'season_appearances',
         'retiring_at_season',
     ];
 
@@ -165,18 +152,7 @@ class GamePlayer extends Model
         'contract_until' => 'date',
         'annual_wage' => 'integer',
         'pending_annual_wage' => 'integer',
-        'fitness' => 'integer',
-        'morale' => 'integer',
         'durability' => 'integer',
-        'injury_until' => 'date',
-        'appearances' => 'integer',
-        'goals' => 'integer',
-        'own_goals' => 'integer',
-        'assists' => 'integer',
-        'yellow_cards' => 'integer',
-        'red_cards' => 'integer',
-        'goals_conceded' => 'integer',
-        'clean_sheets' => 'integer',
         // Development fields
         'game_technical_ability' => 'integer',
         'game_physical_ability' => 'integer',
@@ -184,7 +160,6 @@ class GamePlayer extends Model
         'potential' => 'integer',
         'potential_low' => 'integer',
         'potential_high' => 'integer',
-        'season_appearances' => 'integer',
     ];
 
     /**
@@ -224,6 +199,22 @@ class GamePlayer extends Model
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);
+    }
+
+    /**
+     * Sparse satellite holding the per-matchday hot-write columns
+     * (fitness, morale, injury, match stats). Only "active" players
+     * have a row — see {@see \App\Modules\Player\Support\GamePlayerScopeResolver}.
+     *
+     * Read access is mediated by the get*Attribute() delegates below so
+     * existing call sites that use `$player->fitness`, `$player->goals`
+     * etc. work transparently. Write paths must update the satellite
+     * directly via `GamePlayerMatchState` queries — never via
+     * `$player->fitness = X`.
+     */
+    public function matchState(): HasOne
+    {
+        return $this->hasOne(GamePlayerMatchState::class, 'game_player_id');
     }
 
     public function matchEvents(): HasMany
@@ -851,5 +842,212 @@ class GamePlayer extends Model
             'name' => $nationalities[0],
             'code' => $code,
         ];
+    }
+
+    // ==========================================================================
+    // Match-state query scopes
+    //
+    // These scopes hide the satellite join so callers never reference
+    // the table name or column names directly.
+    // ==========================================================================
+
+    private static array $validMatchStatColumns;
+
+    private static function validMatchStatColumns(): array
+    {
+        return self::$validMatchStatColumns ??= array_keys(GamePlayerMatchState::DEFAULTS);
+    }
+
+    private static function assertValidMatchStatColumn(string $column): void
+    {
+        if (! in_array($column, self::validMatchStatColumns(), true)) {
+            throw new \InvalidArgumentException("Invalid match stat column: {$column}");
+        }
+    }
+
+    /**
+     * INNER JOIN the satellite table (only players with a satellite row).
+     */
+    public function scopeJoinMatchState($query)
+    {
+        return $query
+            ->join('game_player_match_state', 'game_players.id', '=', 'game_player_match_state.game_player_id')
+            ->select('game_players.*');
+    }
+
+    /**
+     * LEFT JOIN the satellite table (includes pool players without a row).
+     */
+    public function scopeLeftJoinMatchState($query)
+    {
+        return $query
+            ->leftJoin('game_player_match_state', 'game_players.id', '=', 'game_player_match_state.game_player_id')
+            ->select('game_players.*');
+    }
+
+    /**
+     * Order by a column on the satellite table.
+     */
+    public function scopeOrderByMatchStat($query, string $column, string $direction = 'desc')
+    {
+        self::assertValidMatchStatColumn($column);
+
+        return $query->orderBy("game_player_match_state.{$column}", $direction);
+    }
+
+    /**
+     * Filter by a column on the satellite table.
+     */
+    public function scopeWhereMatchStat($query, string $column, string $operator, $value = null)
+    {
+        self::assertValidMatchStatColumn($column);
+
+        return $query->where("game_player_match_state.{$column}", $operator, $value);
+    }
+
+    /**
+     * Filter by a satellite column being not null.
+     */
+    public function scopeWhereMatchStatNotNull($query, string $column)
+    {
+        self::assertValidMatchStatColumn($column);
+
+        return $query->whereNotNull("game_player_match_state.{$column}");
+    }
+
+    /**
+     * Exclude injured players (injury_until is null or in the past).
+     * Joins the satellite table if not already joined.
+     */
+    public function scopeNotInjuredOn($query, Carbon $date)
+    {
+        // Check if the satellite join is already present
+        $joins = $query->getQuery()->joins ?? [];
+        $alreadyJoined = collect($joins)->contains(fn ($join) => $join->table === 'game_player_match_state');
+
+        if (! $alreadyJoined) {
+            $query->join('game_player_match_state', 'game_players.id', '=', 'game_player_match_state.game_player_id')
+                ->select('game_players.*');
+        }
+
+        return $query->where(function ($q) use ($date) {
+            $q->whereNull('game_player_match_state.injury_until')
+                ->orWhere('game_player_match_state.injury_until', '<=', $date->toDateString());
+        });
+    }
+
+    // ==========================================================================
+    // Match-state delegates
+    //
+    // The 13 hot-write columns (fitness, morale, injury, match stats) live on
+    // {@see GamePlayerMatchState}. The accessors below let existing read sites
+    // keep using `$player->fitness` etc. without knowing about the satellite.
+    //
+    // Read priority:
+    //   1. In-memory override (`isDirty`) — e.g. CompetitionViewService
+    //      decorating a model with per-competition tallies.
+    //   2. Satellite (when eager-loaded) — authoritative after code deploy.
+    //   3. Legacy column from `$this->attributes` — backward compat during
+    //      the transition window before the drop-columns migration runs.
+    //   4. Lazy-load satellite (post-drop, when old column is gone).
+    //   5. Default from {@see GamePlayerMatchState::DEFAULTS}.
+    //
+    // To avoid N+1 in hot paths, callers should `with('matchState')` when
+    // loading collections. The match simulator, squad service, lineup loader
+    // and dashboard all do this.
+    // ==========================================================================
+
+    /**
+     * Read a match-state value through the standard priority chain.
+     */
+    private function matchStateValue(string $column, mixed $default): mixed
+    {
+        // 1. In-memory override (e.g. decoration for display)
+        if ($this->isDirty($column)) {
+            return $this->attributes[$column];
+        }
+
+        // 2. Satellite (authoritative when eager-loaded)
+        if ($this->relationLoaded('matchState') && $this->matchState !== null) {
+            return $this->matchState->{$column};
+        }
+
+        // 3. Legacy column (transition period before drop migration)
+        if (array_key_exists($column, $this->attributes) && ! $this->isDirty($column)) {
+            return $this->attributes[$column];
+        }
+
+        // 4. Lazy-load satellite (post-drop, column gone from attributes)
+        return $this->matchState?->{$column} ?? $default;
+    }
+
+    public function getFitnessAttribute(): int
+    {
+        return (int) $this->matchStateValue('fitness', GamePlayerMatchState::DEFAULTS['fitness']);
+    }
+
+    public function getMoraleAttribute(): int
+    {
+        return (int) $this->matchStateValue('morale', GamePlayerMatchState::DEFAULTS['morale']);
+    }
+
+    public function getInjuryUntilAttribute(): ?Carbon
+    {
+        $value = $this->matchStateValue('injury_until', null);
+        if ($value === null) {
+            return null;
+        }
+
+        return $value instanceof Carbon ? $value : Carbon::parse($value);
+    }
+
+    public function getInjuryTypeAttribute(): ?string
+    {
+        return $this->matchStateValue('injury_type', null);
+    }
+
+    public function getAppearancesAttribute(): int
+    {
+        return (int) $this->matchStateValue('appearances', GamePlayerMatchState::DEFAULTS['appearances']);
+    }
+
+    public function getSeasonAppearancesAttribute(): int
+    {
+        return (int) $this->matchStateValue('season_appearances', GamePlayerMatchState::DEFAULTS['season_appearances']);
+    }
+
+    public function getGoalsAttribute(): int
+    {
+        return (int) $this->matchStateValue('goals', GamePlayerMatchState::DEFAULTS['goals']);
+    }
+
+    public function getOwnGoalsAttribute(): int
+    {
+        return (int) $this->matchStateValue('own_goals', GamePlayerMatchState::DEFAULTS['own_goals']);
+    }
+
+    public function getAssistsAttribute(): int
+    {
+        return (int) $this->matchStateValue('assists', GamePlayerMatchState::DEFAULTS['assists']);
+    }
+
+    public function getYellowCardsAttribute(): int
+    {
+        return (int) $this->matchStateValue('yellow_cards', GamePlayerMatchState::DEFAULTS['yellow_cards']);
+    }
+
+    public function getRedCardsAttribute(): int
+    {
+        return (int) $this->matchStateValue('red_cards', GamePlayerMatchState::DEFAULTS['red_cards']);
+    }
+
+    public function getGoalsConcededAttribute(): int
+    {
+        return (int) $this->matchStateValue('goals_conceded', GamePlayerMatchState::DEFAULTS['goals_conceded']);
+    }
+
+    public function getCleanSheetsAttribute(): int
+    {
+        return (int) $this->matchStateValue('clean_sheets', GamePlayerMatchState::DEFAULTS['clean_sheets']);
     }
 }

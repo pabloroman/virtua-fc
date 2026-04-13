@@ -3,6 +3,7 @@
 namespace App\Modules\Player\Services;
 
 use App\Models\GamePlayer;
+use App\Models\GamePlayerMatchState;
 use App\Modules\Player\PlayerAge;
 use App\Modules\Player\Services\DevelopmentCurve;
 
@@ -318,14 +319,21 @@ class PlayerDevelopmentService
 
     /**
      * Apply development changes to a player.
+     *
+     * Splits the write between game_players (ability columns) and the
+     * match-state satellite (season_appearances reset). Active-team players
+     * always have a satellite row by the time development runs; the silent
+     * no-op for missing rows is correct because pool players never accrue
+     * appearances anyway.
      */
     public function applyDevelopment(GamePlayer $player, int $newTech, int $newPhys): void
     {
         $player->update([
             'game_technical_ability' => $newTech,
             'game_physical_ability' => $newPhys,
-            'season_appearances' => 0, // Reset for new season
         ]);
+
+        GamePlayerMatchState::bulkSetValues([$player->id => ['season_appearances' => 0]]);
     }
 
     /**

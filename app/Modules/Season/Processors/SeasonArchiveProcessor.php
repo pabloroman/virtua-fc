@@ -151,7 +151,7 @@ class SeasonArchiveProcessor implements SeasonProcessor
     {
         $stats = [];
 
-        GamePlayer::with('player')
+        GamePlayer::with(['player', 'matchState'])
             ->where('game_id', $game->id)
             ->whereNotNull('team_id')
             ->chunk(200, function ($chunk) use (&$stats) {
@@ -229,10 +229,11 @@ class SeasonArchiveProcessor implements SeasonProcessor
      */
     private function calculateBestGoalkeeper(Game $game): ?array
     {
-        $goalkeepers = GamePlayer::with('player')
+        $goalkeepers = GamePlayer::with(['player', 'matchState'])
+            ->joinMatchState()
             ->where('game_id', $game->id)
             ->where('position', 'Goalkeeper')
-            ->where('appearances', '>=', self::MIN_GOALKEEPER_APPEARANCES)
+            ->whereMatchStat('appearances', '>=', self::MIN_GOALKEEPER_APPEARANCES)
             ->get();
 
         if ($goalkeepers->isEmpty()) {

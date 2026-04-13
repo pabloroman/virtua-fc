@@ -5,6 +5,7 @@ namespace App\Modules\Squad\Services;
 use App\Modules\Squad\DTOs\GeneratedPlayerData;
 use App\Models\Game;
 use App\Models\GamePlayer;
+use App\Models\GamePlayerMatchState;
 use App\Models\Player;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
@@ -127,20 +128,27 @@ class PlayerGeneratorService
             'market_value_cents' => $marketValue,
             'contract_until' => $contractUntil,
             'annual_wage' => $annualWage,
-            'fitness' => mt_rand($data->fitnessMin, $data->fitnessMax),
-            'morale' => mt_rand($data->moraleMin, $data->moraleMax),
             'durability' => InjuryService::generateDurability(),
             'game_technical_ability' => $data->technical,
             'game_physical_ability' => $data->physical,
             'potential' => $potential,
             'potential_low' => $potentialLow,
             'potential_high' => $potentialHigh,
-            'season_appearances' => 0,
             'tier' => PlayerTierService::tierFromMarketValue($marketValue),
         ]);
 
-        // Set relation to avoid lazy-load when caller accesses $gamePlayer->player
+        // Generated players (youth grads, replenishment) always belong to
+        // teams in the active scope, so they always need a match-state row.
+        $matchState = GamePlayerMatchState::createWithDefaults(
+            $gamePlayer->id,
+            mt_rand($data->fitnessMin, $data->fitnessMax),
+            mt_rand($data->moraleMin, $data->moraleMax),
+        );
+
+        // Set relations to avoid lazy-load when caller accesses derived
+        // attributes via the GamePlayer accessor delegates.
         $gamePlayer->setRelation('player', $player);
+        $gamePlayer->setRelation('matchState', $matchState);
 
         // Update cache with the newly created player
         $teamKey = "{$game->id}:{$data->teamId}";
@@ -171,6 +179,7 @@ class PlayerGeneratorService
 
         $playerRows = [];
         $gamePlayerRows = [];
+        $matchStateRows = [];
         $results = [];
         $batchNames = [];
 
@@ -228,16 +237,21 @@ class PlayerGeneratorService
                 'market_value_cents' => $marketValue,
                 'contract_until' => $contractUntil->format('Y-m-d'),
                 'annual_wage' => $annualWage,
-                'fitness' => mt_rand($data->fitnessMin, $data->fitnessMax),
-                'morale' => mt_rand($data->moraleMin, $data->moraleMax),
                 'durability' => InjuryService::generateDurability(),
                 'game_technical_ability' => $data->technical,
                 'game_physical_ability' => $data->physical,
                 'potential' => $potential,
                 'potential_low' => $potentialLow,
                 'potential_high' => $potentialHigh,
-                'season_appearances' => 0,
                 'tier' => PlayerTierService::tierFromMarketValue($marketValue),
+            ];
+
+            // Bulk-generated players (youth grads, replenishment) always end
+            // up on active-scope teams, so they always get a satellite row.
+            $matchStateRows[] = [
+                'game_player_id' => $gamePlayerId,
+                'fitness' => mt_rand($data->fitnessMin, $data->fitnessMax),
+                'morale' => mt_rand($data->moraleMin, $data->moraleMax),
             ];
 
             // Update caches for subsequent iterations
@@ -262,6 +276,9 @@ class PlayerGeneratorService
         foreach (array_chunk($gamePlayerRows, 500) as $chunk) {
             GamePlayer::insert($chunk);
         }
+
+        // Bulk insert satellite match-state rows
+        GamePlayerMatchState::createForPlayers($matchStateRows);
 
         return $results;
     }

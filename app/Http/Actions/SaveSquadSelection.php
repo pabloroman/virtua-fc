@@ -6,6 +6,7 @@ use App\Modules\Player\Services\InjuryService;
 use App\Modules\Player\Services\PlayerDevelopmentService;
 use App\Models\Game;
 use App\Models\GamePlayer;
+use App\Models\GamePlayerMatchState;
 use App\Models\Player;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -60,14 +61,17 @@ class SaveSquadSelection
         $playerModels = Player::whereIn('transfermarkt_id', $tmIds)->get()->keyBy('transfermarkt_id');
 
         $playerRows = [];
+        $matchStateRows = [];
         foreach ($tmIds as $tmId) {
             $player = $playerModels->get($tmId);
             if (!$player) {
                 continue;
             }
 
+            $gamePlayerId = Str::uuid()->toString();
+
             $playerRows[] = [
-                'id' => Str::uuid()->toString(),
+                'id' => $gamePlayerId,
                 'game_id' => $gameId,
                 'player_id' => $player->id,
                 'team_id' => $teamId,
@@ -77,15 +81,24 @@ class SaveSquadSelection
                 'market_value_cents' => 0,
                 'contract_until' => null,
                 'annual_wage' => 0,
-                'fitness' => rand(90, 100),
-                'morale' => rand(70, 85),
                 'durability' => InjuryService::generateDurability(),
                 'game_technical_ability' => $player->technical_ability,
                 'game_physical_ability' => $player->physical_ability,
-                'season_appearances' => 0,
+            ];
+
+            $matchStateRows[] = [
+                'game_player_id' => $gamePlayerId,
+                'fitness' => rand(90, 100),
+                'morale' => rand(70, 85),
             ];
         }
 
-        GamePlayer::insert($playerRows);
+        if (!empty($playerRows)) {
+            GamePlayer::insert($playerRows);
+        }
+
+        if (!empty($matchStateRows)) {
+            GamePlayerMatchState::createForPlayers($matchStateRows);
+        }
     }
 }

@@ -409,17 +409,19 @@ class MatchNarrativeService
     {
         $candidates = [];
 
-        $stats = GamePlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->selectRaw('AVG(morale) as avg_morale, AVG(fitness) as avg_fitness')
+        $stats = GamePlayer::joinMatchState()
+            ->where('game_players.game_id', $game->id)
+            ->where('game_players.team_id', $game->team_id)
+            ->selectRaw('AVG(game_player_match_state.morale) as avg_morale, AVG(game_player_match_state.fitness) as avg_fitness')
             ->first();
 
         $avgMorale = (int) round($stats->avg_morale ?? 50);
         $avgFitness = (int) round($stats->avg_fitness ?? 50);
 
-        $injuryCount = GamePlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->where('injury_until', '>', $game->current_date)
+        $injuryCount = GamePlayer::joinMatchState()
+            ->where('game_players.game_id', $game->id)
+            ->where('game_players.team_id', $game->team_id)
+            ->whereMatchStat('injury_until', '>', $game->current_date)
             ->count();
 
         if ($injuryCount >= 4) {

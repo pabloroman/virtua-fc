@@ -10,6 +10,7 @@ use App\Modules\Player\Services\PlayerValuationService;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Applies player development changes at the end of the season.
@@ -33,8 +34,12 @@ class PlayerDevelopmentProcessor implements SeasonProcessor
         $upsertRows = [];
         $currentDate = $game->current_date;
 
-        // Join players table for date_of_birth (age calculation) and ability fallbacks
+        // Join players for date_of_birth (age calculation) and ability
+        // fallbacks. Left-join the satellite for season_appearances —
+        // pool players have no satellite row, in which case
+        // season_appearances is 0 (they never play, so this is correct).
         GamePlayer::join('players', 'game_players.player_id', '=', 'players.id')
+            ->leftJoinMatchState()
             ->where('game_players.game_id', $game->id)
             ->select([
                 'game_players.id',
@@ -45,7 +50,7 @@ class PlayerDevelopmentProcessor implements SeasonProcessor
                 'game_players.game_technical_ability',
                 'game_players.game_physical_ability',
                 'game_players.market_value_cents',
-                'game_players.season_appearances',
+                DB::raw('COALESCE(game_player_match_state.season_appearances, 0) AS season_appearances'),
                 'game_players.potential',
                 'players.technical_ability',
                 'players.physical_ability',

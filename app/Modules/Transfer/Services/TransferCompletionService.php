@@ -5,6 +5,7 @@ namespace App\Modules\Transfer\Services;
 use App\Models\FinancialTransaction;
 use App\Models\Game;
 use App\Models\GamePlayer;
+use App\Models\GamePlayerMatchState;
 use App\Models\GameTransfer;
 use App\Models\Loan;
 use App\Models\ShortlistedPlayer;
@@ -115,6 +116,12 @@ class TransferCompletionService
             'contract_until' => Carbon::createFromDate((int) $game->season + rand(2, 4) + 1, 6, 30),
         ]);
 
+        // If the destination team is in the active scope, the player will
+        // start playing matches against the user — make sure they have a
+        // satellite row. No-op for users selling to other active teams.
+        GamePlayerMatchState::createWithDefaults($player->id);
+        $player->unsetRelation('matchState');
+
         GameTransfer::record(
             gameId: $game->id,
             gamePlayerId: $player->id,
@@ -172,6 +179,12 @@ class TransferCompletionService
             'annual_wage' => $offer->offered_wage ?? $player->annual_wage,
         ]);
 
+        // The signing might be a foreign-pool player (no satellite row yet)
+        // — give them defaults so the user's match simulation can pick them
+        // up immediately. No-op if a row already exists.
+        GamePlayerMatchState::createWithDefaults($player->id);
+        $player->unsetRelation('matchState');
+
         GameTransfer::record(
             gameId: $game->id,
             gamePlayerId: $player->id,
@@ -224,6 +237,12 @@ class TransferCompletionService
             'contract_until' => $newContractEnd,
             'annual_wage' => $offer->offered_wage,
         ]);
+
+        // Free agents may originate from a foreign team that never had a
+        // satellite row — give them defaults so the user can immediately
+        // pick them in lineups. No-op if a row already exists.
+        GamePlayerMatchState::createWithDefaults($player->id);
+        $player->unsetRelation('matchState');
 
         $offer->update([
             'status' => TransferOffer::STATUS_COMPLETED,

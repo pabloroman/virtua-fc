@@ -26,7 +26,7 @@ class SquadService
         $gameId = $game->id;
 
         // Get all players for user's team with relationships
-        $allPlayers = GamePlayer::with(['player', 'game', 'team', 'activeLoan', 'transferOffers', 'suspensions', 'activeRenewalNegotiation', 'latestRenewalNegotiation'])
+        $allPlayers = GamePlayer::with(['player', 'game', 'team', 'matchState', 'activeLoan', 'transferOffers', 'suspensions', 'activeRenewalNegotiation', 'latestRenewalNegotiation'])
             ->where('game_id', $gameId)
             ->where('team_id', $game->team_id)
             ->get();

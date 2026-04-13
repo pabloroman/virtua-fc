@@ -9,6 +9,7 @@ use App\Modules\Match\DTOs\TacticalConfig;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Models\GamePlayerMatchState;
 use App\Models\MatchEvent;
 use App\Models\PlayerSuspension;
 use Carbon\Carbon;
@@ -556,8 +557,7 @@ class MatchResimulationService
             }
 
             if ($event->event_type === 'injury') {
-                GamePlayer::where('id', $event->game_player_id)
-                    ->update(['injury_type' => null, 'injury_until' => null]);
+                GamePlayerMatchState::clearInjury($event->game_player_id);
             }
         }
 
@@ -570,14 +570,7 @@ class MatchResimulationService
             ->all();
 
         if (! empty($subbedInPlayerIds)) {
-            $clamp = ['GREATEST(appearances - 1, 0)', 'GREATEST(season_appearances - 1, 0)'];
-
-            GamePlayer::whereIn('id', $subbedInPlayerIds)
-                ->where('appearances', '>', 0)
-                ->update([
-                    'appearances' => DB::raw($clamp[0]),
-                    'season_appearances' => DB::raw($clamp[1]),
-                ]);
+            GamePlayerMatchState::bulkDecrementAppearances($subbedInPlayerIds);
         }
 
         // Delete the events
@@ -624,17 +617,22 @@ class MatchResimulationService
             }
         }
 
-        // Update each affected player — set stats to counted values (0 if no events remain)
-        $players = GamePlayer::whereIn('id', $playerIds)->get();
-        foreach ($players as $player) {
-            $counts = $statsMap[$player->id] ?? [];
-            $player->goals = $counts['goals'] ?? 0;
-            $player->own_goals = $counts['own_goals'] ?? 0;
-            $player->assists = $counts['assists'] ?? 0;
-            $player->yellow_cards = $counts['yellow_cards'] ?? 0;
-            $player->red_cards = $counts['red_cards'] ?? 0;
-            $player->save();
+        // Set stats to counted values (0 if no events remain). Only
+        // resimulated matches involve active-team lineups, so the
+        // satellite row is guaranteed to exist.
+        $updates = [];
+        foreach ($playerIds as $playerId) {
+            $counts = $statsMap[$playerId] ?? [];
+            $updates[$playerId] = [
+                'goals' => $counts['goals'] ?? 0,
+                'own_goals' => $counts['own_goals'] ?? 0,
+                'assists' => $counts['assists'] ?? 0,
+                'yellow_cards' => $counts['yellow_cards'] ?? 0,
+                'red_cards' => $counts['red_cards'] ?? 0,
+            ];
         }
+
+        GamePlayerMatchState::bulkSetValues($updates);
     }
 
     /**
@@ -729,18 +727,11 @@ class MatchResimulationService
         ));
         $players = GamePlayer::whereIn('id', $allPlayerIds)->get()->keyBy('id');
 
-        // Apply stat increments
-        foreach ($statIncrements as $playerId => $increments) {
-            $player = $players->get($playerId);
-            if (! $player) {
-                continue;
-            }
-
-            foreach ($increments as $column => $amount) {
-                $player->{$column} += $amount;
-            }
-            $player->save();
-        }
+        // Apply stat increments (small dataset — typically ≤5 event-producing
+        // players per re-simulation). Filter to players that actually exist.
+        $validIncrements = array_intersect_key($statIncrements, $players->all());
+        $validIncrements = array_filter($validIncrements, fn ($inc) => ! empty($inc));
+        GamePlayerMatchState::bulkIncrementStats($validIncrements);
 
         // Process special events
         // Skip card suspensions for pre-season matches (cards are recorded but don't carry over)

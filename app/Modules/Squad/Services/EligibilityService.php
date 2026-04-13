@@ -3,11 +3,11 @@
 namespace App\Modules\Squad\Services;
 
 use App\Models\GamePlayer;
+use App\Models\GamePlayerMatchState;
 use App\Models\PlayerSuspension;
 use App\Modules\Squad\DTOs\SuspensionRuleSet;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class EligibilityService
@@ -27,15 +27,21 @@ class EligibilityService
     /**
      * Apply an injury to a player.
      *
+     * Writes to the {@see GamePlayerMatchState} satellite. Injuries only ever
+     * happen to players in active match lineups, so the satellite row is
+     * guaranteed to exist.
+     *
      * @param string $injuryType Description of the injury
      * @param int $weeksOut Number of weeks the player will be out
      * @param Carbon $matchDate The date of the match when injury occurred
      */
     public function applyInjury(GamePlayer $player, string $injuryType, int $weeksOut, Carbon $matchDate): void
     {
-        $player->injury_type = $injuryType;
-        $player->injury_until = \Illuminate\Support\Carbon::instance($matchDate->copy()->addWeeks($weeksOut));
-        $player->save();
+        $injuryUntil = \Illuminate\Support\Carbon::instance($matchDate->copy()->addWeeks($weeksOut))->toDateString();
+
+        GamePlayerMatchState::setInjury($player->id, $injuryType, $injuryUntil);
+
+        $player->unsetRelation('matchState');
     }
 
     /**
@@ -45,28 +51,7 @@ class EligibilityService
      */
     public function batchApplyInjuries(array $injuries): void
     {
-        if (empty($injuries)) {
-            return;
-        }
-
-        $typeCases = [];
-        $untilCases = [];
-        $ids = [];
-        foreach ($injuries as $injury) {
-            $id = $injury['playerId'];
-            $type = str_replace("'", "''", $injury['injuryType']);
-            $until = $injury['injuryUntil']->toDateString();
-            $ids[] = "'{$id}'";
-            $typeCases[] = "WHEN id = '{$id}' THEN '{$type}'";
-            $untilCases[] = "WHEN id = '{$id}' THEN '{$until}'::date";
-        }
-
-        $idList = implode(',', $ids);
-        DB::statement(
-            'UPDATE game_players SET injury_type = CASE ' . implode(' ', $typeCases) . ' END, '
-            . 'injury_until = CASE ' . implode(' ', $untilCases) . ' END '
-            . "WHERE id IN ({$idList})"
-        );
+        GamePlayerMatchState::bulkSetInjuries($injuries);
     }
 
     /**
@@ -74,9 +59,9 @@ class EligibilityService
      */
     public function clearInjury(GamePlayer $player): void
     {
-        $player->injury_until = null;
-        $player->injury_type = null;
-        $player->save();
+        GamePlayerMatchState::clearInjury($player->id);
+
+        $player->unsetRelation('matchState');
     }
 
     /**

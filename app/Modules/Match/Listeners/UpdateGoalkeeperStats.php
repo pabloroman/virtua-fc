@@ -4,7 +4,7 @@ namespace App\Modules\Match\Listeners;
 
 use App\Modules\Match\Events\MatchFinalized;
 use App\Models\GamePlayer;
-use Illuminate\Support\Facades\DB;
+use App\Models\GamePlayerMatchState;
 
 class UpdateGoalkeeperStats
 {
@@ -47,24 +47,6 @@ class UpdateGoalkeeperStats
             return;
         }
 
-        $ids = array_keys($increments);
-        $idList = "'" . implode("','", $ids) . "'";
-        $setClauses = [];
-
-        foreach (['goals_conceded', 'clean_sheets'] as $column) {
-            $cases = [];
-            foreach ($increments as $gkId => $values) {
-                if ($values[$column] !== 0) {
-                    $cases[] = "WHEN id = '{$gkId}' THEN {$column} + {$values[$column]}";
-                }
-            }
-            if (! empty($cases)) {
-                $setClauses[] = "{$column} = CASE " . implode(' ', $cases) . " ELSE {$column} END";
-            }
-        }
-
-        if (! empty($setClauses)) {
-            DB::statement('UPDATE game_players SET ' . implode(', ', $setClauses) . " WHERE id IN ({$idList})");
-        }
+        GamePlayerMatchState::bulkIncrementStats($increments);
     }
 }

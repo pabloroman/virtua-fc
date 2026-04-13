@@ -67,8 +67,10 @@ class SeasonSummaryService
         // Other competitions
         $otherCompetitionResults = $this->competitionSummaryService->buildOtherCompetitionResults($game);
 
-        // Team in numbers
-        $teamPlayers = GamePlayer::with(['player', 'team'])
+        // Team in numbers — eager-load matchState because every aggregation
+        // below (top scorer, assists, appearances, cards, clean sheets) reads
+        // through the satellite via the GamePlayer accessor delegates.
+        $teamPlayers = GamePlayer::with(['player', 'team', 'matchState'])
             ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->get();

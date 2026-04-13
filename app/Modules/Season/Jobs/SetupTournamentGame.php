@@ -8,6 +8,7 @@ use App\Models\CompetitionTeam;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Models\GamePlayerMatchState;
 use App\Models\GameStanding;
 use App\Models\Team;
 use Illuminate\Bus\Queueable;
@@ -192,6 +193,9 @@ class SetupTournamentGame implements ShouldQueue
         $gameId = $this->gameId;
         $userTeamId = $this->teamId;
 
+        // Tournament mode (WC2026) only loads teams the user actually faces,
+        // so every player here is "active" — they all need a match-state
+        // satellite row from the start.
         DB::table('game_player_templates')
             ->where('season', '2025')
             ->whereIn('team_id', $wcTeamIds)
@@ -199,10 +203,13 @@ class SetupTournamentGame implements ShouldQueue
             ->orderBy('player_id')
             ->chunk(500, function ($templates) use ($gameId) {
                 $rows = [];
+                $matchStateRows = [];
 
                 foreach ($templates as $t) {
+                    $gamePlayerId = Str::uuid()->toString();
+
                     $rows[] = [
-                        'id' => Str::uuid()->toString(),
+                        'id' => $gamePlayerId,
                         'game_id' => $gameId,
                         'player_id' => $t->player_id,
                         'team_id' => $t->team_id,
@@ -212,8 +219,6 @@ class SetupTournamentGame implements ShouldQueue
                         'market_value_cents' => $t->market_value_cents,
                         'contract_until' => $t->contract_until,
                         'annual_wage' => $t->annual_wage,
-                        'fitness' => $t->fitness,
-                        'morale' => $t->morale,
                         'durability' => $t->durability,
                         'game_technical_ability' => $t->game_technical_ability,
                         'game_physical_ability' => $t->game_physical_ability,
@@ -221,12 +226,21 @@ class SetupTournamentGame implements ShouldQueue
                         'potential_low' => $t->potential_low,
                         'potential_high' => $t->potential_high,
                         'tier' => $t->tier,
-                        'season_appearances' => 0,
+                    ];
+
+                    $matchStateRows[] = [
+                        'game_player_id' => $gamePlayerId,
+                        'fitness' => $t->fitness,
+                        'morale' => $t->morale,
                     ];
                 }
 
                 if (!empty($rows)) {
                     GamePlayer::insert($rows);
+                }
+
+                if (!empty($matchStateRows)) {
+                    GamePlayerMatchState::createForPlayers($matchStateRows);
                 }
             });
     }
