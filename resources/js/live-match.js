@@ -1201,6 +1201,21 @@ export default function liveMatch(config) {
                 this.finalAwayScore = result.newScore.away;
             }
 
+            // Reset the revealed-events feed and re-reveal only events up to
+            // the skip minute. Without this, any events that the tick loop
+            // revealed from the original pre-simulation before the backend
+            // responded would remain as stale "ghost" entries in the feed.
+            this.revealedEvents = [];
+            this.lastRevealedIndex = -1;
+            for (let i = 0; i < this.events.length; i++) {
+                if (this.events[i].minute <= minute) {
+                    this.revealedEvents.unshift(this.events[i]);
+                    this.lastRevealedIndex = i;
+                } else {
+                    break;
+                }
+            }
+
             // Update possession bar.
             if (result.homePossession !== undefined) {
                 this._basePossession = result.homePossession;

@@ -672,6 +672,16 @@ export function createMatchSimulation(ctx) {
         // fast-forward with the original pre-computed events.
         if (state._skippingToEnd) return;
         state._skippingToEnd = true;
+
+        // Stop the tick loop while awaiting the backend resimulation.
+        // Without this, tick keeps revealing events from the original
+        // pre-simulation into revealedEvents, causing "ghost goals" when
+        // the resimulation produces a different result.
+        if (_animFrame) {
+            cancelAnimationFrame(_animFrame);
+            _animFrame = null;
+        }
+
         try {
             const skipMinute = Math.max(1, Math.min(89, Math.floor(state.currentMinute)));
             if (typeof state.autoSubUserTeamBeforeSkip === 'function') {
