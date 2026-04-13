@@ -9,7 +9,6 @@ use App\Modules\Lineup\Services\LineupService;
 use App\Modules\Match\DTOs\MatchEventData;
 use App\Modules\Match\DTOs\TacticalConfig;
 use App\Modules\Notification\Services\NotificationService;
-use App\Support\PositionSlotMapper;
 use Illuminate\Support\Collection;
 
 /**
@@ -121,8 +120,8 @@ class FullMatchSimulationService
             $tc = $tc->neutralized();
         }
 
-        $homePlayerSlots = $this->buildPlayerSlotMap($match, 'home');
-        $awayPlayerSlots = $this->buildPlayerSlotMap($match, 'away');
+        $homePlayerSlots = $match->playerSlotMap('home');
+        $awayPlayerSlots = $match->playerSlotMap('away');
 
         $output = $this->matchSimulator->simulate(
             $match->homeTeam,
@@ -189,22 +188,6 @@ class FullMatchSimulationService
             ->reject(fn ($player) => in_array($player->id, $lineupIds))
             ->reject(fn ($player) => $player->isInjured($game->current_date))
             ->values();
-    }
-
-    private function buildPlayerSlotMap(GameMatch $match, string $side): array
-    {
-        $slotAssignments = $match->{"{$side}_slot_assignments"} ?? [];
-        $formationValue = $match->{"{$side}_formation"} ?? null;
-
-        if (empty($slotAssignments) || empty($formationValue)) {
-            return [];
-        }
-
-        $formation = \App\Modules\Lineup\Enums\Formation::tryFrom($formationValue);
-
-        return $formation
-            ? PositionSlotMapper::buildPlayerSlotMap($slotAssignments, $formation->pitchSlots())
-            : [];
     }
 
     private function getLineupPlayers(GameMatch $match, $allPlayers, string $side): Collection

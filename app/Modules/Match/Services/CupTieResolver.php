@@ -10,7 +10,6 @@ use App\Models\GamePlayer;
 use App\Models\Team;
 use Illuminate\Support\Collection;
 use App\Modules\Match\Services\MatchSimulator;
-use App\Support\PositionSlotMapper;
 
 class CupTieResolver
 {
@@ -76,8 +75,8 @@ class CupTieResolver
                 $homePlayers,
                 $awayPlayers,
                 neutralVenue: $match->isNeutralVenue(),
-                homePlayerSlots: $this->buildPlayerSlotMap($match, 'home'),
-                awayPlayerSlots: $this->buildPlayerSlotMap($match, 'away'),
+                homePlayerSlots: $match->playerSlotMap('home'),
+                awayPlayerSlots: $match->playerSlotMap('away'),
             );
 
             $homeScoreEt = $extraTimeResult->homeScore;
@@ -173,8 +172,8 @@ class CupTieResolver
                 $homePlayers,
                 $awayPlayers,
                 neutralVenue: $secondLeg->isNeutralVenue(),
-                homePlayerSlots: $this->buildPlayerSlotMap($secondLeg, 'home'),
-                awayPlayerSlots: $this->buildPlayerSlotMap($secondLeg, 'away'),
+                homePlayerSlots: $secondLeg->playerSlotMap('home'),
+                awayPlayerSlots: $secondLeg->playerSlotMap('away'),
             );
 
             $homeScoreEt = $extraTimeResult->homeScore;
@@ -244,19 +243,4 @@ class CupTieResolver
         ]);
     }
 
-    private function buildPlayerSlotMap(GameMatch $match, string $side): array
-    {
-        $slotAssignments = $match->{"{$side}_slot_assignments"} ?? [];
-        $formationValue = $match->{"{$side}_formation"} ?? null;
-
-        if (empty($slotAssignments) || empty($formationValue)) {
-            return [];
-        }
-
-        $formation = \App\Modules\Lineup\Enums\Formation::tryFrom($formationValue);
-
-        return $formation
-            ? PositionSlotMapper::buildPlayerSlotMap($slotAssignments, $formation->pitchSlots())
-            : [];
-    }
 }

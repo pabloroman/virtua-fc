@@ -221,8 +221,8 @@ class MatchResimulationService
             default => false,
         };
 
-        $homePlayerSlots = $this->buildPlayerSlotMap($match, 'home', $allSubstitutions, $isUserHome ? 'home' : null);
-        $awayPlayerSlots = $this->buildPlayerSlotMap($match, 'away', $allSubstitutions, $isUserHome ? null : 'away');
+        $homePlayerSlots = $isUserHome ? $this->playerSlotMapWithSubs($match, 'home', $allSubstitutions) : $match->playerSlotMap('home');
+        $awayPlayerSlots = $isUserHome ? $match->playerSlotMap('away') : $this->playerSlotMapWithSubs($match, 'away', $allSubstitutions);
 
         if ($aiSubsActive) {
             $remainderOutput = $this->matchSimulator->simulateRemainderWithAISubs(
@@ -441,8 +441,8 @@ class MatchResimulationService
             }
 
             // 7. Re-simulate extra time remainder
-            $homePlayerSlots = $this->buildPlayerSlotMap($match, 'home', $allSubstitutions, $isUserHome ? 'home' : null);
-            $awayPlayerSlots = $this->buildPlayerSlotMap($match, 'away', $allSubstitutions, $isUserHome ? null : 'away');
+            $homePlayerSlots = $isUserHome ? $this->playerSlotMapWithSubs($match, 'home', $allSubstitutions) : $match->playerSlotMap('home');
+            $awayPlayerSlots = $isUserHome ? $match->playerSlotMap('away') : $this->playerSlotMapWithSubs($match, 'away', $allSubstitutions);
 
             $remainderResult = $this->matchSimulator->simulateExtraTime(
                 $match->homeTeam,
@@ -864,12 +864,12 @@ class MatchResimulationService
     }
 
     /**
-     * Build a {playerId => slotCode} map from match slot assignments,
-     * applying any completed substitutions so the map reflects the current lineup.
+     * Build a {playerId => slotCode} map with completed substitutions applied.
      *
-     * @param  string|null  $subSide  If non-null, apply $substitutions to this side's assignments
+     * Used for the user's side during resimulation, where manual subs have
+     * changed who occupies each slot since the match started.
      */
-    private function buildPlayerSlotMap(GameMatch $match, string $side, array $substitutions = [], ?string $subSide = null): array
+    private function playerSlotMapWithSubs(GameMatch $match, string $side, array $substitutions): array
     {
         $slotAssignments = $match->{"{$side}_slot_assignments"} ?? [];
         $formationValue = $match->{"{$side}_formation"} ?? null;
@@ -878,14 +878,11 @@ class MatchResimulationService
             return [];
         }
 
-        // Apply completed substitutions to the slot assignments
-        if ($subSide === $side) {
-            foreach ($substitutions as $sub) {
-                foreach ($slotAssignments as $slotId => $playerId) {
-                    if ($playerId === $sub['playerOutId']) {
-                        $slotAssignments[$slotId] = $sub['playerInId'];
-                        break;
-                    }
+        foreach ($substitutions as $sub) {
+            foreach ($slotAssignments as $slotId => $playerId) {
+                if ($playerId === $sub['playerOutId']) {
+                    $slotAssignments[$slotId] = $sub['playerInId'];
+                    break;
                 }
             }
         }

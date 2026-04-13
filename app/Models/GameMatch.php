@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use App\Modules\Lineup\Enums\Formation;
+use App\Support\PositionSlotMapper;
 
 /**
  * @property string $id
@@ -291,5 +293,29 @@ class GameMatch extends Model
             return $this->away_team_id;
         }
         return null; // Draw
+    }
+
+    /**
+     * Build a {playerId => slotCode} map for one side of the match.
+     *
+     * Combines the persisted slot assignments with the formation's pitch slots
+     * to produce the map consumed by MatchSimulator for position penalties.
+     *
+     * @return array<string, string>
+     */
+    public function playerSlotMap(string $side): array
+    {
+        $slotAssignments = $this->{"{$side}_slot_assignments"} ?? [];
+        $formationValue = $this->{"{$side}_formation"} ?? null;
+
+        if (empty($slotAssignments) || empty($formationValue)) {
+            return [];
+        }
+
+        $formation = Formation::tryFrom($formationValue);
+
+        return $formation
+            ? PositionSlotMapper::buildPlayerSlotMap($slotAssignments, $formation->pitchSlots())
+            : [];
     }
 }
