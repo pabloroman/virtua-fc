@@ -946,11 +946,8 @@ class GamePlayer extends Model
     // Read priority:
     //   1. In-memory override (`isDirty`) — e.g. CompetitionViewService
     //      decorating a model with per-competition tallies.
-    //   2. Satellite (when eager-loaded) — authoritative after code deploy.
-    //   3. Legacy column from `$this->attributes` — backward compat during
-    //      the transition window before the drop-columns migration runs.
-    //   4. Lazy-load satellite (post-drop, when old column is gone).
-    //   5. Default from {@see GamePlayerMatchState::DEFAULTS}.
+    //   2. Satellite (when eager-loaded) — preferred to avoid N+1.
+    //   3. Lazy-load satellite / default.
     //
     // To avoid N+1 in hot paths, callers should `with('matchState')` when
     // loading collections. The match simulator, squad service, lineup loader
@@ -972,12 +969,7 @@ class GamePlayer extends Model
             return $this->matchState->{$column};
         }
 
-        // 3. Legacy column (transition period before drop migration)
-        if (array_key_exists($column, $this->attributes) && ! $this->isDirty($column)) {
-            return $this->attributes[$column];
-        }
-
-        // 4. Lazy-load satellite (post-drop, column gone from attributes)
+        // 3. Lazy-load satellite (or fall back to default)
         return $this->matchState?->{$column} ?? $default;
     }
 

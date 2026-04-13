@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * Sparse satellite of GamePlayer holding the per-matchday hot-write state:
@@ -105,72 +104,11 @@ class GamePlayerMatchState extends Model
         return $this->belongsTo(GamePlayer::class, 'game_player_id');
     }
 
-    /**
-     * Dual-write a raw SQL UPDATE to the legacy `game_players` columns.
-     *
-     * Only executes while the legacy columns still exist (before the
-     * drop-columns migration). This keeps the old columns in sync so a
-     * rollback of the code deploy doesn't lose data.
-     *
-     * @param string $sql  The UPDATE statement targeting `game_players`.
-     * @param array  $bindings  Positional bind values.
-     */
-    public static function legacyWrite(string $sql, array $bindings = []): void
-    {
-        if (! static::legacyColumnsExist()) {
-            return;
-        }
-
-        DB::statement($sql, $bindings);
-    }
-
-    /**
-     * Dual-write an Eloquent-style update to the legacy `game_players` columns.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder $query  A query scoped to game_players rows.
-     * @param array $values  Column => value pairs to update.
-     */
-    public static function legacyEloquentWrite($query, array $values): void
-    {
-        if (! static::legacyColumnsExist()) {
-            return;
-        }
-
-        $query->update($values);
-    }
-
-    /**
-     * Whether the legacy match-state columns still exist on `game_players`.
-     *
-     * Cached once per request. Returns true before the drop-columns migration
-     * runs, false after. Used by write paths to dual-write to both tables
-     * during the transition window so that a rollback doesn't lose data.
-     */
-    private static ?bool $legacyColumnsExist = null;
-
-    public static function legacyColumnsExist(): bool
-    {
-        if (self::$legacyColumnsExist === null) {
-            self::$legacyColumnsExist = Schema::hasColumn('game_players', 'fitness');
-        }
-
-        return self::$legacyColumnsExist;
-    }
-
-    /**
-     * Reset the cached schema check. Only needed in tests that run
-     * migrations mid-test.
-     */
-    public static function resetLegacyColumnsCache(): void
-    {
-        self::$legacyColumnsExist = null;
-    }
-
     // ──────────────────────────────────────────────────────────────
     //  Centralized write API
     //
     //  All satellite writes go through these methods so callers never
-    //  reference the table name, column list, or dual-write mechanism.
+    //  reference the table name or column list directly.
     // ──────────────────────────────────────────────────────────────
 
     /**
@@ -285,9 +223,6 @@ class GamePlayerMatchState extends Model
 
         if (! empty($setClauses)) {
             DB::statement('UPDATE game_player_match_state SET ' . implode(', ', $setClauses) . " WHERE game_player_id IN ({$idList})");
-
-            $legacyClauses = str_replace('game_player_id', 'id', implode(', ', $setClauses));
-            static::legacyWrite("UPDATE game_players SET {$legacyClauses} WHERE id IN ({$idList})");
         }
     }
 
@@ -310,11 +245,6 @@ class GamePlayerMatchState extends Model
         DB::table('game_player_match_state')
             ->whereIn('game_player_id', $playerIds)
             ->update($values);
-
-        static::legacyEloquentWrite(
-            GamePlayer::whereIn('id', $playerIds),
-            $values
-        );
     }
 
     /**
@@ -354,9 +284,6 @@ class GamePlayerMatchState extends Model
 
         if (! empty($setClauses)) {
             DB::statement('UPDATE game_player_match_state SET ' . implode(', ', $setClauses) . " WHERE game_player_id IN ({$idList})");
-
-            $legacyClauses = str_replace('game_player_id', 'id', implode(', ', $setClauses));
-            static::legacyWrite("UPDATE game_players SET {$legacyClauses} WHERE id IN ({$idList})");
         }
     }
 
@@ -370,11 +297,6 @@ class GamePlayerMatchState extends Model
                 $q->select('id')->from('game_players')->where('game_id', $gameId);
             })
             ->update($values);
-
-        static::legacyEloquentWrite(
-            GamePlayer::where('game_id', $gameId),
-            $values
-        );
     }
 
     /**
@@ -388,9 +310,6 @@ class GamePlayerMatchState extends Model
         ];
 
         static::where('game_player_id', $gamePlayerId)->update($values);
-        static::legacyEloquentWrite(
-            GamePlayer::where('id', $gamePlayerId), $values
-        );
     }
 
     /**
@@ -422,12 +341,6 @@ class GamePlayerMatchState extends Model
             . 'injury_until = CASE ' . implode(' ', $untilCases) . ' END '
             . "WHERE game_player_id IN ({$idList})"
         );
-
-        $legacyTypeCases = str_replace('game_player_id', 'id', implode(' ', $typeCases));
-        $legacyUntilCases = str_replace('game_player_id', 'id', implode(' ', $untilCases));
-        static::legacyWrite(
-            "UPDATE game_players SET injury_type = CASE {$legacyTypeCases} END, injury_until = CASE {$legacyUntilCases} END WHERE id IN ({$idList})"
-        );
     }
 
     /**
@@ -438,9 +351,6 @@ class GamePlayerMatchState extends Model
         $values = ['injury_type' => null, 'injury_until' => null];
 
         static::where('game_player_id', $gamePlayerId)->update($values);
-        static::legacyEloquentWrite(
-            GamePlayer::where('id', $gamePlayerId), $values
-        );
     }
 
     /**
@@ -462,10 +372,5 @@ class GamePlayerMatchState extends Model
         static::whereIn('game_player_id', $playerIds)
             ->where('appearances', '>', 0)
             ->update($values);
-
-        static::legacyEloquentWrite(
-            GamePlayer::whereIn('id', $playerIds)->where('appearances', '>', 0),
-            $values
-        );
     }
 }
