@@ -103,7 +103,7 @@ class ExtraTimePenaltyDecisionTest extends TestCase
         $this->game->update(['pending_finalization_match_id' => $match->id]);
 
         // Load the live match page (simulates page refresh)
-        $response = $this->get(route('show-live-match', [
+        $response = $this->get(route('game.live-match', [
             'gameId' => $this->game->id,
             'matchId' => $match->id,
         ]));
@@ -133,7 +133,7 @@ class ExtraTimePenaltyDecisionTest extends TestCase
 
         $this->game->update(['pending_finalization_match_id' => $match->id]);
 
-        $response = $this->get(route('show-live-match', [
+        $response = $this->get(route('game.live-match', [
             'gameId' => $this->game->id,
             'matchId' => $match->id,
         ]));
