@@ -361,8 +361,10 @@ class MatchResimulationService
             // 2. Revert all events after the minute
             $this->revertEventsAfterMinute($match, $minute, $competitionId);
 
-            // 3. Calculate ET-only score at minute (events with minute > 90 that remain)
-            $scoreAtMinute = $this->calculateScoreAtMinute($match, 90);
+            // 3. Calculate ET-only score at minute (events with minute > 93 that remain).
+            // Use 93 (not 90) because stoppage-time goals at minutes 91-93 are
+            // regular-time events already counted in home_score/away_score.
+            $scoreAtMinute = $this->calculateScoreAtMinute($match, 93);
 
             // 4. Read formation/mentality/instructions from match record
             $tc = TacticalConfig::fromMatch($match);

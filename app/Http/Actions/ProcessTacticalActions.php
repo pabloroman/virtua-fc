@@ -68,7 +68,7 @@ class ProcessTacticalActions
             return response()->json(['error' => __('game.tactical_no_changes')], 422);
         }
 
-        $isExtraTime = $validated['minute'] > 90;
+        $isExtraTime = $validated['minute'] > 90 || $match->is_extra_time;
 
         // Validate substitutions if present
         if ($hasSubs) {

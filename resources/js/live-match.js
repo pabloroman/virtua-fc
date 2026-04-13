@@ -846,7 +846,20 @@ export default function liveMatch(config) {
             this.tacticalError = null;
             this.applyingChanges = true;
 
-            const minute = Math.floor(this.currentMinute);
+            let minute = Math.floor(this.currentMinute);
+
+            // A sub made during the going_to_extra_time phase has
+            // currentMinute = 90 (set by enterRegularTimeEnd), which the
+            // backend would interpret as regular time (minute <= 90). Clamp
+            // to 93 so the backend correctly routes to resimulateExtraTime
+            // and doesn't delete stoppage-time goal events (minutes 91-93).
+            const isETPhase = this.phase === 'going_to_extra_time'
+                || this.phase === 'extra_time_first_half'
+                || this.phase === 'extra_time_second_half'
+                || this.phase === 'extra_time_half_time';
+            if (isETPhase && minute <= 93) {
+                minute = Math.max(minute, 93);
+            }
 
             try {
                 const payload = {
