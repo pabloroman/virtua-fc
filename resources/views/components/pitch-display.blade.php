@@ -196,13 +196,12 @@
                         @endif
 
                         @if($isLineup)
-                        {{-- Compatibility dot (lineup mode) --}}
+                        {{-- Out-of-position penalty badge (lineup mode) --}}
                         <span
-                            x-show="slot.compatibility > 0 && slot.compatibility < 60"
+                            x-show="slot.compatibility > 0 && slot.compatibility < 100"
                             x-cloak
-                            class="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full shadow-sm border border-black/20"
-                            :class="slot.compatibility < 40 ? 'bg-accent-red' : 'bg-accent-gold'"
-                        ></span>
+                            class="absolute -bottom-1 left-1/2 -translate-x-1/2 px-1 h-3.5 rounded-sm text-[7px] font-bold leading-none flex items-center justify-center shadow-sm whitespace-nowrap bg-accent-red/90 text-white"
+                        >-25%</span>
                         @endif
                     </div>
 

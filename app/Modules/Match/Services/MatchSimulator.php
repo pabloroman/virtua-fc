@@ -17,6 +17,7 @@ use App\Models\Team;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use App\Support\PositionMapper;
+use App\Support\PositionSlotMapper;
 use App\Modules\Player\Services\InjuryService;
 use App\Modules\Match\Services\EnergyCalculator;
 
@@ -40,6 +41,12 @@ class MatchSimulator
      * @var array<string, float>
      */
     private array $matchPerformance = [];
+
+    /** @var array<string, string> Player ID → slot code for home team (for position penalty) */
+    private array $homePlayerSlotMap = [];
+
+    /** @var array<string, string> Player ID → slot code for away team (for position penalty) */
+    private array $awayPlayerSlotMap = [];
 
     // Position weights for goal scoring (used by pickGoalScorer with dampened quality)
     private const GOAL_SCORING_WEIGHTS = [
@@ -124,7 +131,12 @@ class MatchSimulator
         string $matchSeed = '',
         bool $neutralVenue = false,
         ?string $userTeamId = null,
+        ?array $homePlayerSlots = null,
+        ?array $awayPlayerSlots = null,
     ): MatchSimulationOutput {
+        $this->homePlayerSlotMap = $homePlayerSlots ?? [];
+        $this->awayPlayerSlotMap = $awayPlayerSlots ?? [];
+
         $homeBenchAvailable = $homeBenchPlayers !== null && $homeBenchPlayers->isNotEmpty();
         $awayBenchAvailable = $awayBenchPlayers !== null && $awayBenchPlayers->isNotEmpty();
         $hasAIBench = $homeBenchAvailable || $awayBenchAvailable;
@@ -439,13 +451,15 @@ class MatchSimulator
     ): void {
         $subsUsed++;
         $windowsUsed++;
-        $players = $players->reject(fn ($p) => $p->id === $event->gamePlayerId);
+        $playerOutId = $event->gamePlayerId;
+        $players = $players->reject(fn ($p) => $p->id === $playerOutId);
         if ($benchPlayers !== null) {
             $subIn = $benchPlayers->firstWhere('id', $event->metadata['player_in_id']);
             if ($subIn) {
                 $players->push($subIn);
                 $benchPlayers = $benchPlayers->reject(fn ($p) => $p->id === $subIn->id)->values();
                 $entryMinutes[$subIn->id] = $event->minute;
+                $this->transferSlotForSubstitution($playerOutId, $subIn->id);
             }
         }
         $players = $players->values();
@@ -496,6 +510,7 @@ class MatchSimulator
                 ->push($sub['player_in'])->values();
             $benchPlayers = $benchPlayers->reject(fn ($p) => $p->id === $sub['player_in']->id)->values();
             $entryMinutes[$sub['player_in']->id] = $splitMinute;
+            $this->transferSlotForSubstitution($sub['player_out']->id, $sub['player_in']->id);
             $subsUsed++;
         }
     }
@@ -597,6 +612,7 @@ class MatchSimulator
             ->push($reactiveSub['player_in'])->values();
         $bench = $bench->reject(fn ($p) => $p->id === $reactiveSub['player_in']->id)->values();
         $entryMinutes[$reactiveSub['player_in']->id] = $subMinute;
+        $this->transferSlotForSubstitution($reactiveSub['player_out']->id, $reactiveSub['player_in']->id);
         $subsUsed++;
         $windowsUsed++;
     }
@@ -639,7 +655,16 @@ class MatchSimulator
         int $scoreAwayAtMinute = 0,
         string $matchSeed = '',
         ?string $userTeamId = null,
+        ?array $homePlayerSlots = null,
+        ?array $awayPlayerSlots = null,
     ): MatchSimulationOutput {
+        if ($homePlayerSlots !== null) {
+            $this->homePlayerSlotMap = $homePlayerSlots;
+        }
+        if ($awayPlayerSlots !== null) {
+            $this->awayPlayerSlotMap = $awayPlayerSlots;
+        }
+
         $homeFormation = $homeFormation ?? Formation::F_4_3_3;
         $awayFormation = $awayFormation ?? Formation::F_4_3_3;
         $homeMentality = $homeMentality ?? Mentality::BALANCED;
@@ -1053,7 +1078,7 @@ class MatchSimulator
      * @param  int  $fromMinute  Start of the simulation period (for energy averaging)
      * @param  array<string, int>  $playerEntryMinutes  Map of player ID to minute they entered the match
      */
-    private function calculateTeamStrength(Collection $lineup, int $fromMinute = 0, array $playerEntryMinutes = [], float $tacticalDrainMultiplier = 1.0, ?Carbon $currentDate = null): float
+    private function calculateTeamStrength(Collection $lineup, int $fromMinute = 0, array $playerEntryMinutes = [], float $tacticalDrainMultiplier = 1.0, ?Carbon $currentDate = null, array $playerSlotMap = []): float
     {
         if ($lineup->count() < 7) {
             // Fallback for severely depleted lineup - reflects amateur/semi-pro level
@@ -1082,6 +1107,13 @@ class MatchSimulator
             $playerStrength = ($effectiveTechnical * $wTech) +
                               ($effectivePhysical * $wPhys) +
                               ($morale * $wMorale);
+
+            // Apply out-of-position penalty (flat 25% reduction)
+            if (isset($playerSlotMap[$player->id])) {
+                $playerStrength *= PositionSlotMapper::getSimulationMultiplier(
+                    $player->position, $player->secondary_positions, $playerSlotMap[$player->id]
+                );
+            }
 
             // Apply energy modifier — fitness IS starting energy in the unified model
             $entryMinute = $playerEntryMinutes[$player->id] ?? 0;
@@ -1685,9 +1717,18 @@ class MatchSimulator
         bool $preservePerformance = false,
         int $toMinute = 93,
         bool $skipXGAdjustment = false,
+        ?array $homePlayerSlots = null,
+        ?array $awayPlayerSlots = null,
     ): MatchSimulationOutput {
         if (! $preservePerformance) {
             $this->matchPerformance = [];
+        }
+
+        if ($homePlayerSlots !== null) {
+            $this->homePlayerSlotMap = $homePlayerSlots;
+        }
+        if ($awayPlayerSlots !== null) {
+            $this->awayPlayerSlotMap = $awayPlayerSlots;
         }
 
         $homeFormation = $homeFormation ?? Formation::F_4_3_3;
@@ -1713,8 +1754,8 @@ class MatchSimulator
         $currentDate = $game?->current_date ?? now();
 
         // Preliminary strength calculation (used for card bias and as final strength if no injury sub)
-        $homeStrength = $this->calculateTeamStrength($homePlayers, $fromMinute, $homeEntryMinutes, $homeTacticalDrain, $currentDate);
-        $awayStrength = $this->calculateTeamStrength($awayPlayers, $fromMinute, $awayEntryMinutes, $awayTacticalDrain, $currentDate);
+        $homeStrength = $this->calculateTeamStrength($homePlayers, $fromMinute, $homeEntryMinutes, $homeTacticalDrain, $currentDate, $this->homePlayerSlotMap);
+        $awayStrength = $this->calculateTeamStrength($awayPlayers, $fromMinute, $awayEntryMinutes, $awayTacticalDrain, $currentDate, $this->awayPlayerSlotMap);
 
         [$homeExpectedGoals, $awayExpectedGoals] = $this->calculateBaseExpectedGoals(
             $homeStrength, $awayStrength,
@@ -1815,8 +1856,8 @@ class MatchSimulator
 
             // Recalculate strength and goals with updated lineup if an injury sub occurred
             if ($lineupChanged) {
-                $homeStrength = $this->calculateTeamStrength($homePlayers, $fromMinute, $homeEntryMinutes, $homeTacticalDrain, $currentDate);
-                $awayStrength = $this->calculateTeamStrength($awayPlayers, $fromMinute, $awayEntryMinutes, $awayTacticalDrain, $currentDate);
+                $homeStrength = $this->calculateTeamStrength($homePlayers, $fromMinute, $homeEntryMinutes, $homeTacticalDrain, $currentDate, $this->homePlayerSlotMap);
+                $awayStrength = $this->calculateTeamStrength($awayPlayers, $fromMinute, $awayEntryMinutes, $awayTacticalDrain, $currentDate, $this->awayPlayerSlotMap);
 
                 [$homeExpectedGoals, $awayExpectedGoals] = $this->calculateBaseExpectedGoals(
                     $homeStrength, $awayStrength,
@@ -2036,8 +2077,8 @@ class MatchSimulator
         $fraction2 = max(0, $toMinute - $splitMinute) / 93;
         $effectiveMinute2 = $splitMinute + ($toMinute - $splitMinute) / 2;
 
-        $homeStrength2 = $this->calculateTeamStrength($homePlayers2, $splitMinute, $homeEntryMinutes, $homeTacticalDrain, $currentDate);
-        $awayStrength2 = $this->calculateTeamStrength($awayPlayers2, $splitMinute, $awayEntryMinutes, $awayTacticalDrain, $currentDate);
+        $homeStrength2 = $this->calculateTeamStrength($homePlayers2, $splitMinute, $homeEntryMinutes, $homeTacticalDrain, $currentDate, $this->homePlayerSlotMap);
+        $awayStrength2 = $this->calculateTeamStrength($awayPlayers2, $splitMinute, $awayEntryMinutes, $awayTacticalDrain, $currentDate, $this->awayPlayerSlotMap);
 
         [$homeXG2, $awayXG2] = $this->calculateBaseExpectedGoals(
             $homeStrength2, $awayStrength2,
@@ -2121,7 +2162,23 @@ class MatchSimulator
         // Update bench: remove replacement
         $bench = $bench->reject(fn ($p) => $p->id === $replacement->id)->values();
 
+        $this->transferSlotForSubstitution($injuredPlayer->id, $replacement->id);
+
         return [$subEvents, $lineup, $bench];
+    }
+
+    /**
+     * Transfer slot assignment from outgoing to incoming player during a substitution.
+     */
+    private function transferSlotForSubstitution(string $playerOutId, string $playerInId): void
+    {
+        if (isset($this->homePlayerSlotMap[$playerOutId])) {
+            $this->homePlayerSlotMap[$playerInId] = $this->homePlayerSlotMap[$playerOutId];
+            unset($this->homePlayerSlotMap[$playerOutId]);
+        } elseif (isset($this->awayPlayerSlotMap[$playerOutId])) {
+            $this->awayPlayerSlotMap[$playerInId] = $this->awayPlayerSlotMap[$playerOutId];
+            unset($this->awayPlayerSlotMap[$playerOutId]);
+        }
     }
 
     /**
@@ -2491,7 +2548,15 @@ class MatchSimulator
         ?DefensiveLineHeight $homeDefLine = null,
         ?DefensiveLineHeight $awayDefLine = null,
         bool $neutralVenue = false,
+        ?array $homePlayerSlots = null,
+        ?array $awayPlayerSlots = null,
     ): MatchResult {
+        if ($homePlayerSlots !== null) {
+            $this->homePlayerSlotMap = $homePlayerSlots;
+        }
+        if ($awayPlayerSlots !== null) {
+            $this->awayPlayerSlotMap = $awayPlayerSlots;
+        }
         $events = collect();
 
         $homeFormation = $homeFormation ?? Formation::F_4_3_3;
@@ -2517,8 +2582,8 @@ class MatchSimulator
         $currentDate = $homePlayers->first()?->game?->current_date ?? now();
 
         // Ratio-based xG — energy already accounts for fatigue
-        $homeStrength = $this->calculateTeamStrength($homePlayers, $fromMinute, $homeEntryMinutes, $homeTacticalDrain, $currentDate);
-        $awayStrength = $this->calculateTeamStrength($awayPlayers, $fromMinute, $awayEntryMinutes, $awayTacticalDrain, $currentDate);
+        $homeStrength = $this->calculateTeamStrength($homePlayers, $fromMinute, $homeEntryMinutes, $homeTacticalDrain, $currentDate, $this->homePlayerSlotMap);
+        $awayStrength = $this->calculateTeamStrength($awayPlayers, $fromMinute, $awayEntryMinutes, $awayTacticalDrain, $currentDate, $this->awayPlayerSlotMap);
 
         $baseGoals = config('match_simulation.base_goals', 1.3);
 

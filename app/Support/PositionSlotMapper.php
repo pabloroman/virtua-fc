@@ -10,6 +10,9 @@ namespace App\Support;
  */
 class PositionSlotMapper
 {
+    /** Flat penalty applied when a player is out of position (compat < 100). */
+    public const OUT_OF_POSITION_PENALTY = 0.25;
+
     /**
      * Compatibility matrix: [slot_code => [position => score]]
      * Score: 100 = natural, 80 = very good, 60 = good, 40 = acceptable, 20 = poor, 0 = unsuitable
@@ -301,5 +304,57 @@ class PositionSlotMapper
         }
 
         return $best;
+    }
+
+    /**
+     * Check whether a player is out of position in a given slot.
+     *
+     * @param  string[]|null  $secondaryPositions
+     */
+    public static function isOutOfPosition(string $primaryPosition, ?array $secondaryPositions, string $slotCode): bool
+    {
+        return self::getPlayerCompatibilityScore($primaryPosition, $secondaryPositions, $slotCode) < 100;
+    }
+
+    /**
+     * Get the simulation strength multiplier for a player in a given slot.
+     *
+     * Returns 1.0 for a natural position (compat 100), or applies a flat
+     * OUT_OF_POSITION_PENALTY when the player is out of position.
+     *
+     * @param  string[]|null  $secondaryPositions
+     */
+    public static function getSimulationMultiplier(string $primaryPosition, ?array $secondaryPositions, string $slotCode): float
+    {
+        if (! self::isOutOfPosition($primaryPosition, $secondaryPositions, $slotCode)) {
+            return 1.0;
+        }
+
+        return 1.0 - self::OUT_OF_POSITION_PENALTY;
+    }
+
+    /**
+     * Convert a {slotId => playerId} map + formation slots into {playerId => slotCode}.
+     *
+     * @param  array<string, string>  $slotAssignments  [slotId => playerId]
+     * @param  array<array{id: int, label: string}>  $formationSlots  From Formation::pitchSlots()
+     * @return array<string, string>  [playerId => slotCode]
+     */
+    public static function buildPlayerSlotMap(array $slotAssignments, array $formationSlots): array
+    {
+        $slotIdToLabel = [];
+        foreach ($formationSlots as $slot) {
+            $slotIdToLabel[(string) $slot['id']] = $slot['label'];
+        }
+
+        $playerSlotMap = [];
+        foreach ($slotAssignments as $slotId => $playerId) {
+            $label = $slotIdToLabel[(string) $slotId] ?? null;
+            if ($label !== null) {
+                $playerSlotMap[$playerId] = $label;
+            }
+        }
+
+        return $playerSlotMap;
     }
 }
