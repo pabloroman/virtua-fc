@@ -21,7 +21,14 @@ final class SelectTeam
         // Tiers may declare sibling competitions (e.g. Primera RFEF's ESP3A and
         // ESP3B both live at tier 3), so the tiers list is keyed by competition
         // ID rather than tier number to keep every league selectable.
-        $countries = Cache::remember('career_mode_countries', 3600, function () use ($countryConfig) {
+        //
+        // Tiers with 'playable' => false are filtered out so their teams can't
+        // be selected. The flag value is embedded in the cache key so toggling
+        // the env var naturally busts the cache without manual invalidation.
+        $primeraRfefEnabled = config('countries.ES.tiers.3.playable', true);
+        $cacheKey = 'career_mode_countries:' . ($primeraRfefEnabled ? '1' : '0');
+
+        $countries = Cache::remember($cacheKey, 3600, function () use ($countryConfig) {
             $countries = [];
 
             foreach ($countryConfig->playableCountryCodes() as $code) {
@@ -29,6 +36,10 @@ final class SelectTeam
                 $tiers = [];
 
                 foreach ($config['tiers'] as $tier => $tierConfig) {
+                    if (($tierConfig['playable'] ?? true) === false) {
+                        continue;
+                    }
+
                     $entries = [$tierConfig];
                     foreach ($tierConfig['siblings'] ?? [] as $sibling) {
                         $entries[] = $sibling;

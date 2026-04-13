@@ -117,6 +117,7 @@ return [
     'game_limit_reached' => 'Has alcanzado el límite máximo de 3 partidas. Elimina una para crear otra nueva.',
     'career_mode_requires_invite' => '¡El modo carrera requiere una invitación. Juega el Mundial gratis!',
     'tournament_mode_requires_access' => 'El modo torneo requiere acceso. Contacta con un administrador para empezar.',
+    'competition_not_available' => 'Esta competición aún no está disponible para nuevas partidas.',
 
     // Pre-match confirmation
     'pre_match_title' => 'Previa del Partido',

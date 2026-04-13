@@ -162,6 +162,31 @@ class CountryConfig
     }
 
     /**
+     * Check whether a competition belongs to a playable tier.
+     *
+     * Tiers may set 'playable' => false (backed by an env-based feature flag)
+     * to prevent new games from being created with those teams. Siblings
+     * inherit the parent tier's playable flag.
+     */
+    public function isCompetitionPlayable(string $competitionId): bool
+    {
+        foreach ($this->allCountries() as $config) {
+            foreach ($config['tiers'] ?? [] as $tierConfig) {
+                if ($tierConfig['competition'] === $competitionId) {
+                    return $tierConfig['playable'] ?? true;
+                }
+                foreach ($tierConfig['siblings'] ?? [] as $sibling) {
+                    if (($sibling['competition'] ?? null) === $competitionId) {
+                        return $tierConfig['playable'] ?? true;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Find the country code that owns a given competition ID.
      */
     public function countryForCompetition(string $competitionId): ?string

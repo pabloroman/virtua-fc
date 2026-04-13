@@ -37,6 +37,7 @@ return [
                 'teams' => 20,
                 'handler' => 'league_with_playoff',
                 'config_class' => \App\Modules\Competition\Configs\PrimeraRFEFConfig::class,
+                'playable' => (bool) env('FEATURE_PRIMERA_RFEF', false),
                 // Primera RFEF has two parallel groups of 20 teams. ESP3A is
                 // the "primary" entry so existing call sites that expect one
                 // competition per tier continue to work; ESP3B is enumerated

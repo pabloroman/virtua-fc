@@ -3,6 +3,7 @@
 namespace App\Http\Actions;
 
 use App\Models\ActivationEvent;
+use App\Modules\Competition\Services\CountryConfig;
 use App\Modules\Season\Services\ActivationTracker;
 use App\Modules\Season\Services\GameCreationService;
 use App\Modules\Season\Services\TournamentCreationService;
@@ -16,6 +17,7 @@ class InitGame
         private readonly GameCreationService $gameCreationService,
         private readonly TournamentCreationService $tournamentCreationService,
         private readonly ActivationTracker $activationTracker,
+        private readonly CountryConfig $countryConfig,
     ) {}
 
     public function __invoke(Request $request)
@@ -38,6 +40,16 @@ class InitGame
 
         if ($gameMode === Game::MODE_TOURNAMENT && ! $request->user()->canPlayTournamentMode()) {
             return back()->withErrors(['game_mode' => __('messages.tournament_mode_requires_access')]);
+        }
+
+        // Block career games with teams from disabled tiers (feature-flagged competitions)
+        if ($gameMode === Game::MODE_CAREER) {
+            $competitionId = \App\Models\CompetitionTeam::where('team_id', $request->get('team_id'))
+                ->value('competition_id');
+
+            if ($competitionId && ! $this->countryConfig->isCompetitionPlayable($competitionId)) {
+                return back()->withErrors(['team_id' => __('messages.competition_not_available')]);
+            }
         }
 
         if ($gameMode === Game::MODE_TOURNAMENT) {

@@ -117,6 +117,7 @@ return [
     'game_limit_reached' => 'You have reached the maximum limit of 3 games. Delete one to create another.',
     'career_mode_requires_invite' => 'Career mode requires an invitation. Play the World Cup for free!',
     'tournament_mode_requires_access' => 'Tournament mode requires access. Contact an admin to get started.',
+    'competition_not_available' => 'This competition is not yet available for new games.',
 
     // Pre-match confirmation
     'pre_match_title' => 'Pre-Match',
