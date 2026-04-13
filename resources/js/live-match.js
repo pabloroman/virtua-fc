@@ -73,6 +73,7 @@ export default function liveMatch(config) {
         lineupPlayers: config.lineupPlayers || [],
         benchPlayers: config.benchPlayers || [],
         tacticalActionsUrl: config.tacticalActionsUrl || '',
+        skipToEndUrl: config.skipToEndUrl || '',
         csrfToken: config.csrfToken || '',
         maxSubstitutions: config.maxSubstitutions || 5,
         maxWindows: config.maxWindows || 3,
@@ -1123,6 +1124,109 @@ export default function liveMatch(config) {
             } finally {
                 this.applyingChanges = false;
             }
+        },
+
+        /**
+         * Called by skipToEnd() before the client-only fast-forward.
+         * Asks the backend to re-simulate the remainder of the regular-time
+         * match with AI substitutions enabled for the user's team — so
+         * players who fast-forward don't finish with the tired starting 11.
+         *
+         * Returns true if the backend produced new events (caller should
+         * use the updated state.events), false if the call was skipped,
+         * no-op'd, or failed (caller falls through to the pure client-side
+         * fast-forward with the original pre-computed events).
+         */
+        async autoSubUserTeamBeforeSkip(minute) {
+            // Guard: endpoint, phase, bench, sub budget.
+            if (!this.skipToEndUrl) return false;
+            if (minute >= 90) return false;
+            if (!this.benchPlayers || this.benchPlayers.length === 0) return false;
+            if (this.substitutionsMade.length >= this.maxSubstitutions) return false;
+
+            // Windows-used check (mirrors getWindowsUsed in substitution-manager).
+            const freeMinutes = this.freeSubWindowMinutes || [45, 90, 105];
+            const usedWindowMinutes = new Set(this.substitutionsMade.map(s => s.minute));
+            freeMinutes.forEach(m => usedWindowMinutes.delete(m));
+            if (usedWindowMinutes.size >= this.maxWindows) return false;
+
+            let result;
+            try {
+                const response = await fetch(this.skipToEndUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': this.csrfToken,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        minute,
+                        previousSubstitutions: this.substitutionsMade.map(s => ({
+                            playerOutId: s.playerOutId,
+                            playerInId: s.playerInId,
+                            minute: s.minute,
+                        })),
+                    }),
+                });
+
+                if (!response.ok) {
+                    console.warn('Skip-to-end auto-sub request returned', response.status);
+                    return false;
+                }
+
+                result = await response.json();
+            } catch (err) {
+                console.warn('Skip-to-end auto-sub request failed, falling back:', err);
+                return false;
+            }
+
+            if (!result || !result.autoSubsApplied) {
+                return false;
+            }
+
+            // Merge: drop pre-computed events after the skip minute and
+            // replace them with the freshly-simulated remainder. The existing
+            // trackSubstitutionIfNeeded picks up any new user-team sub events
+            // as the fast-forward reveals them.
+            this.events = this.events.filter(e => e.minute <= minute);
+
+            if (result.newEvents && result.newEvents.length > 0) {
+                this.events.push(...result.newEvents);
+                this.events.sort((a, b) => a.minute - b.minute);
+            }
+
+            // Update final score (the resimulation may have changed it).
+            if (result.newScore) {
+                this.finalHomeScore = result.newScore.home;
+                this.finalAwayScore = result.newScore.away;
+            }
+
+            // Update possession bar.
+            if (result.homePossession !== undefined) {
+                this._basePossession = result.homePossession;
+                this._possessionDisplay = result.homePossession;
+                this.homePossession = result.homePossession;
+                this.awayPossession = result.awayPossession;
+                if (typeof this.resetPossessionTarget === 'function') {
+                    this.resetPossessionTarget();
+                }
+            }
+
+            // Update player performances and post-match ratings.
+            if (result.playerPerformances) {
+                updateRosterPerformances(this.homeLineupRoster, this.awayLineupRoster, result.playerPerformances);
+                if (typeof this.recalculatePlayerRatings === 'function') {
+                    this.recalculatePlayerRatings();
+                }
+            }
+
+            // Update MVP (may have changed after resimulation).
+            if (result.mvpPlayerName !== undefined) {
+                this.mvpPlayerName = result.mvpPlayerName;
+                this.mvpPlayerTeamId = result.mvpPlayerTeamId;
+            }
+
+            return true;
         },
 
         // =============================

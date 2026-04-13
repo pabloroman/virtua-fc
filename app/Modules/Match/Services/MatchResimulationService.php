@@ -40,9 +40,10 @@ class MatchResimulationService
         array $allSubstitutions = [],
         ?Collection $homeBenchPlayers = null,
         ?Collection $awayBenchPlayers = null,
+        bool $autoSubUserTeam = false,
     ): ResimulationResult {
-        return DB::transaction(function () use ($match, $game, $minute, $homePlayers, $awayPlayers, $allSubstitutions, $homeBenchPlayers, $awayBenchPlayers) {
-            return $this->doResimulate($match, $game, $minute, $homePlayers, $awayPlayers, $allSubstitutions, $homeBenchPlayers, $awayBenchPlayers);
+        return DB::transaction(function () use ($match, $game, $minute, $homePlayers, $awayPlayers, $allSubstitutions, $homeBenchPlayers, $awayBenchPlayers, $autoSubUserTeam) {
+            return $this->doResimulate($match, $game, $minute, $homePlayers, $awayPlayers, $allSubstitutions, $homeBenchPlayers, $awayBenchPlayers, $autoSubUserTeam);
         });
     }
 
@@ -55,6 +56,7 @@ class MatchResimulationService
         array $allSubstitutions = [],
         ?Collection $homeBenchPlayers = null,
         ?Collection $awayBenchPlayers = null,
+        bool $autoSubUserTeam = false,
     ): ResimulationResult {
         $competitionId = $match->competition_id;
 
@@ -146,13 +148,21 @@ class MatchResimulationService
         $homeWindowsUsed = $isUserHome ? 0 : $opponentWindowsUsed;
         $awayWindowsUsed = $isUserHome ? $opponentWindowsUsed : 0;
 
-        // 9. Re-simulate the remainder with AI substitutions for the opponent
+        // 9. Re-simulate the remainder with AI substitutions.
+        // By default only the opponent gets auto-subs (the user controls their own
+        // team via the tactical panel). When $autoSubUserTeam is true — set by the
+        // "Skip to end" flow — both teams get auto-subs so the match finishes with
+        // realistic substitutions instead of the tired starting 11.
         $hasOpponentBench = $isUserHome
             ? ($awayBenchPlayers !== null && $awayBenchPlayers->isNotEmpty())
             : ($homeBenchPlayers !== null && $homeBenchPlayers->isNotEmpty());
+        $hasUserBench = $isUserHome
+            ? ($homeBenchPlayers !== null && $homeBenchPlayers->isNotEmpty())
+            : ($awayBenchPlayers !== null && $awayBenchPlayers->isNotEmpty());
+        $hasAnyBench = $hasOpponentBench || ($autoSubUserTeam && $hasUserBench);
 
         $aiSubMode = config('match_simulation.ai_substitutions.mode', 'all');
-        $aiSubsActive = $hasOpponentBench && match ($aiSubMode) {
+        $aiSubsActive = $hasAnyBench && match ($aiSubMode) {
             'all' => true,
             'ai_only' => false, // user is in the match, so skip in ai_only mode
             default => false,
@@ -188,7 +198,8 @@ class MatchResimulationService
                 awayWindowsUsed: $awayWindowsUsed,
                 scoreHomeAtMinute: $scoreAtMinute['home'],
                 scoreAwayAtMinute: $scoreAtMinute['away'],
-                userTeamId: $game->team_id,
+                // Passing null opts the user team INTO auto-subs for this remainder.
+                userTeamId: $autoSubUserTeam ? null : $game->team_id,
             );
         } else {
             $remainderOutput = $this->matchSimulator->simulateRemainder(

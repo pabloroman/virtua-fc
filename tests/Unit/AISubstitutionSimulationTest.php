@@ -273,4 +273,119 @@ class AISubstitutionSimulationTest extends TestCase
 
         $this->assertTrue($subsSeen, 'ai_only mode should still produce subs in AI-vs-AI matches');
     }
+
+    public function test_user_team_gets_injury_auto_sub_when_bench_passed_with_user_team_id(): void
+    {
+        // Crank injury chance to 100% so every simulation produces an injury.
+        config(['match_simulation.injury_chance' => 100]);
+
+        $game = Game::factory()->create(['current_date' => '2025-10-01']);
+        $homeTeam = Team::factory()->create();
+        $awayTeam = Team::factory()->create();
+
+        $homePlayers = $this->createLineup($game, $homeTeam, 11, 75);
+        $awayPlayers = $this->createLineup($game, $awayTeam, 11, 75);
+        $homeBench = $this->createBenchPlayers($game, $homeTeam, 7, 72);
+        $awayBench = $this->createBenchPlayers($game, $awayTeam, 7, 72);
+
+        $injurySubSeen = false;
+        for ($i = 0; $i < 10; $i++) {
+            $output = $this->simulator->simulate(
+                $homeTeam, $awayTeam,
+                $homePlayers, $awayPlayers,
+                Formation::F_4_4_2, Formation::F_4_4_2,
+                Mentality::BALANCED, Mentality::BALANCED,
+                $game,
+                homeBenchPlayers: $homeBench,
+                awayBenchPlayers: $awayBench,
+                userTeamId: $homeTeam->id,
+            );
+
+            // Look for a substitution event on the user team (home)
+            $homeSubEvents = $output->result->substitutions()
+                ->filter(fn ($e) => $e->teamId === $homeTeam->id);
+
+            if ($homeSubEvents->isNotEmpty()) {
+                $injurySubSeen = true;
+
+                // The sub should be at injury minute + 1, not at a tactical
+                // window (60-85). Injury auto-subs fire within the first half
+                // too, so some may be well before minute 46.
+                $injuryEvents = $output->result->events
+                    ->filter(fn ($e) => $e->type === 'injury' && $e->teamId === $homeTeam->id);
+                if ($injuryEvents->isNotEmpty()) {
+                    $injuryMinute = $injuryEvents->first()->minute;
+                    $subMinute = $homeSubEvents->first()->minute;
+                    $this->assertEquals(
+                        $injuryMinute + 1,
+                        $subMinute,
+                        'Injury auto-sub should fire at injury minute + 1',
+                    );
+                }
+                break;
+            }
+        }
+
+        $this->assertTrue($injurySubSeen, 'User team should get an injury auto-sub when bench is passed with userTeamId');
+    }
+
+    public function test_user_team_gets_no_tactical_ai_subs_in_pre_simulation(): void
+    {
+        $game = Game::factory()->create(['current_date' => '2025-10-01']);
+        $homeTeam = Team::factory()->create();
+        $awayTeam = Team::factory()->create();
+
+        $homePlayers = $this->createLineup($game, $homeTeam, 11, 75);
+        $awayPlayers = $this->createLineup($game, $awayTeam, 11, 75);
+        $homeBench = $this->createBenchPlayers($game, $homeTeam, 7, 72);
+        $awayBench = $this->createBenchPlayers($game, $awayTeam, 7, 72);
+
+        // Disable injuries and direct red cards. Yellows have a hard floor of
+        // Poisson(0.1) so a second-yellow red card can still occur very rarely,
+        // which triggers a reactive sub (same category as injury auto-subs).
+        // Tactical AI subs would produce 3-5 per match — we check that the user
+        // team never exceeds 1 sub per iteration (at most a forced reactive sub).
+        config([
+            'match_simulation.injury_chance' => 0,
+            'match_simulation.direct_red_chance' => 0,
+        ]);
+
+        $totalUserSubs = 0;
+        $iterations = 10;
+
+        for ($i = 0; $i < $iterations; $i++) {
+            $output = $this->simulator->simulate(
+                $homeTeam, $awayTeam,
+                $homePlayers, $awayPlayers,
+                Formation::F_4_4_2, Formation::F_4_4_2,
+                Mentality::BALANCED, Mentality::BALANCED,
+                $game,
+                homeBenchPlayers: $homeBench,
+                awayBenchPlayers: $awayBench,
+                userTeamId: $homeTeam->id,
+            );
+
+            $homeSubCount = $output->result->substitutions()
+                ->filter(fn ($e) => $e->teamId === $homeTeam->id)
+                ->count();
+
+            // At most 1 forced reactive sub (red card) per match.
+            // Tactical AI subs would give 3-5.
+            $this->assertLessThanOrEqual(
+                1,
+                $homeSubCount,
+                "User team should have at most 1 forced reactive sub, got $homeSubCount (iteration $i)",
+            );
+
+            $totalUserSubs += $homeSubCount;
+        }
+
+        // Across 10 simulations, tactical AI subs would give 30-50 total.
+        // We should see close to 0 (only the rare second-yellow reactive sub).
+        $this->assertLessThanOrEqual(
+            3,
+            $totalUserSubs,
+            "User team total subs across $iterations iterations should be near-zero (forced reactive only), got $totalUserSubs",
+        );
+    }
 }

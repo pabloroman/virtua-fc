@@ -119,6 +119,7 @@ use App\Http\Views\ShowTournamentLeaderboard;
 use App\Http\Views\ShowTournamentSummary;
 use App\Http\Actions\ProcessTacticalActions;
 use App\Http\Actions\PromoteAcademyPlayer;
+use App\Http\Actions\SkipMatchToEnd;
 use App\Http\Actions\StartNewSeason;
 use Illuminate\Support\Facades\Route;
 
@@ -182,6 +183,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/game/{gameId}/tactical-presets/{presetId}', DeleteTacticalPreset::class)->name('game.tactical-presets.delete');
 
         Route::post('/game/{gameId}/match/{matchId}/tactical-actions', ProcessTacticalActions::class)->name('game.match.tactical-actions');
+        Route::post('/game/{gameId}/match/{matchId}/skip-to-end', SkipMatchToEnd::class)->name('game.match.skip-to-end');
         Route::post('/game/{gameId}/match/{matchId}/extra-time', ProcessExtraTime::class)->name('game.match.extra-time');
         Route::post('/game/{gameId}/match/{matchId}/penalties', ProcessPenalties::class)->name('game.match.penalties');
         Route::post('/game/{gameId}/finalize-match', FinalizeMatch::class)->name('game.finalize-match');
