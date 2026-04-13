@@ -71,8 +71,8 @@ class MatchdayOrchestrator
                     fn ($m) => $m->involvesTeam($game->team_id)
                 );
 
-                // When the player's match is in the batch, only simulate their match
-                // — sibling AI matches are deferred to background processing
+                // When the player's match is in the batch, simulate it fully
+                // — sibling AI matches are resolved via fast AI resolver
                 $result = $this->processBatch($game, $batch, $batchHasPlayerMatch);
 
                 if ($result['playerMatch']) {

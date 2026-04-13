@@ -347,7 +347,8 @@ class AdvanceMatchdayTest extends TestCase
 
         $this->assertEquals('live_match', $result->type);
 
-        // Player's match should be played, AI match should NOT (deferred to background)
+        // Both matches should be played — sibling AI matches in the same batch
+        // are now resolved synchronously via AIMatchResolver
         $this->assertDatabaseHas('game_matches', [
             'game_id' => $this->game->id,
             'home_team_id' => $this->playerTeam->id,
@@ -356,7 +357,7 @@ class AdvanceMatchdayTest extends TestCase
         $this->assertDatabaseHas('game_matches', [
             'game_id' => $this->game->id,
             'home_team_id' => $team3->id,
-            'played' => false,
+            'played' => true,
         ]);
 
         // remaining_batches_processing_at flag should be set
@@ -381,25 +382,19 @@ class AdvanceMatchdayTest extends TestCase
 
         $this->assertEquals('live_match', $result->type);
 
-        // AI match not yet played
-        $this->assertDatabaseHas('game_matches', [
-            'game_id' => $this->game->id,
-            'home_team_id' => $team3->id,
-            'played' => false,
-        ]);
-
-        // Now manually call processRemainingBatches (simulating the job running)
-        Queue::fake([]); // Stop faking so career actions can dispatch if needed
-        $this->game->refresh();
-        $orchestrator = app(MatchdayOrchestrator::class);
-        $orchestrator->processRemainingBatches($this->game, 0);
-
-        // AI match should now be played
+        // AI sibling match already played synchronously via AIMatchResolver
         $this->assertDatabaseHas('game_matches', [
             'game_id' => $this->game->id,
             'home_team_id' => $team3->id,
             'played' => true,
         ]);
+
+        // Now manually call processRemainingBatches (simulating the job running)
+        // — no remaining matches, but flag should still be cleared
+        Queue::fake([]); // Stop faking so career actions can dispatch if needed
+        $this->game->refresh();
+        $orchestrator = app(MatchdayOrchestrator::class);
+        $orchestrator->processRemainingBatches($this->game, 0);
 
         // Flag should be cleared
         $this->game->refresh();
