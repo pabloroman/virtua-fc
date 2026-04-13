@@ -83,6 +83,37 @@ class MatchResimulationService
         $homePlayers = $homePlayers->reject(fn ($p) => in_array($p->id, $unavailablePlayerIds));
         $awayPlayers = $awayPlayers->reject(fn ($p) => in_array($p->id, $unavailablePlayerIds));
 
+        // 5b. Add back players who entered via substitution (injury auto-subs
+        // or tactical subs that happened during pre-simulation). Without this,
+        // the team plays with fewer than 11 players because the subbed-out
+        // player was removed above but the replacement was never added.
+        $isUserHome = $match->isHomeTeam($game->team_id);
+        $userTeamId = $game->team_id;
+
+        $userAutoSubEvents = MatchEvent::where('game_match_id', $match->id)
+            ->where('team_id', $userTeamId)
+            ->where('event_type', 'substitution')
+            ->where('minute', '<=', $minute)
+            ->whereNotIn('game_player_id', collect($allSubstitutions)->pluck('playerOutId')->all())
+            ->get();
+
+        $autoSubPlayerInIds = $userAutoSubEvents
+            ->map(fn ($e) => $e->metadata['player_in_id'] ?? null)
+            ->filter()
+            ->all();
+
+        if (! empty($autoSubPlayerInIds)) {
+            $autoSubPlayersIn = GamePlayer::with('player')
+                ->whereIn('id', $autoSubPlayerInIds)
+                ->get();
+
+            if ($isUserHome) {
+                $homePlayers = $homePlayers->merge($autoSubPlayersIn)->values();
+            } else {
+                $awayPlayers = $awayPlayers->merge($autoSubPlayersIn)->values();
+            }
+        }
+
         // 6. Get existing injuries/yellows for context
         $existingInjuryTeamIds = MatchEvent::where('game_match_id', $match->id)
             ->where('minute', '<=', $minute)
@@ -99,15 +130,27 @@ class MatchResimulationService
             ->all();
 
         // 7. Build entry minute maps from substitutions
-        $isUserHome = $match->isHomeTeam($game->team_id);
         $homeEntryMinutes = [];
         $awayEntryMinutes = [];
-        // User's substitutions
+        // User's manual substitutions
         foreach ($allSubstitutions as $sub) {
             if ($isUserHome) {
                 $homeEntryMinutes[$sub['playerInId']] = $sub['minute'];
             } else {
                 $awayEntryMinutes[$sub['playerInId']] = $sub['minute'];
+            }
+        }
+        // User's pre-simulated auto-subs (injury auto-subs from the initial
+        // simulation that aren't in the frontend's manual sub list).
+        foreach ($userAutoSubEvents as $subEvent) {
+            $playerInId = $subEvent->metadata['player_in_id'] ?? null;
+            if ($playerInId === null) {
+                continue;
+            }
+            if ($isUserHome) {
+                $homeEntryMinutes[$playerInId] = $subEvent->minute;
+            } else {
+                $awayEntryMinutes[$playerInId] = $subEvent->minute;
             }
         }
         // Opponent's substitutions up to the resimulation minute. Read from match_events
@@ -133,10 +176,11 @@ class MatchResimulationService
         }
 
         // 8. Count existing substitutions and windows per team to enforce limits.
-        // Opponent counts come from match_events (post-revert state) so repeated
-        // resimulations can't push the opponent past the sub/window caps by
-        // counting against a stale $match->substitutions snapshot.
-        $userSubCount = count($allSubstitutions);
+        // Both teams' counts come from match_events (post-revert state) so repeated
+        // resimulations can't push past the sub/window caps by counting against
+        // stale snapshots. The user's manual subs are combined with any pre-simulated
+        // auto-subs that occurred before the resimulation minute.
+        $userSubCount = count($allSubstitutions) + $userAutoSubEvents->count();
         $opponentSubCount = $opponentSubEvents->count();
         $homeExistingSubs = $isUserHome ? $userSubCount : $opponentSubCount;
         $awayExistingSubs = $isUserHome ? $opponentSubCount : $userSubCount;
@@ -145,8 +189,15 @@ class MatchResimulationService
             ->pluck('minute')
             ->unique()
             ->count();
-        $homeWindowsUsed = $isUserHome ? 0 : $opponentWindowsUsed;
-        $awayWindowsUsed = $isUserHome ? $opponentWindowsUsed : 0;
+        // Combine manual and auto-sub minutes to get total windows used.
+        // Subs at the same minute share a window (counted once).
+        $userWindowsUsed = collect($allSubstitutions)
+            ->pluck('minute')
+            ->merge($userAutoSubEvents->pluck('minute'))
+            ->unique()
+            ->count();
+        $homeWindowsUsed = $isUserHome ? $userWindowsUsed : $opponentWindowsUsed;
+        $awayWindowsUsed = $isUserHome ? $opponentWindowsUsed : $userWindowsUsed;
 
         // 9. Re-simulate the remainder with AI substitutions.
         // By default only the opponent gets auto-subs (the user controls their own

@@ -1201,16 +1201,26 @@ export default function liveMatch(config) {
                 this.finalAwayScore = result.newScore.away;
             }
 
-            // Reset the revealed-events feed and re-reveal only events up to
-            // the skip minute. Without this, any events that the tick loop
-            // revealed from the original pre-simulation before the backend
-            // responded would remain as stale "ghost" entries in the feed.
+            // Reset the revealed-events feed, substitution tracking, and
+            // re-reveal only events up to the skip minute. Without this:
+            // - Ghost entries from the original pre-simulation linger in the feed
+            // - substitutionsMade has stale entries from the old simulation
             this.revealedEvents = [];
+            this.substitutionsMade = [];
             this.lastRevealedIndex = -1;
             for (let i = 0; i < this.events.length; i++) {
                 if (this.events[i].minute <= minute) {
                     this.revealedEvents.unshift(this.events[i]);
                     this.lastRevealedIndex = i;
+                    if (this.events[i].type === 'substitution' && this.events[i].teamId === this.userTeamId) {
+                        this.substitutionsMade.push({
+                            playerOutId: this.events[i].gamePlayerId,
+                            playerInId: this.events[i].metadata?.player_in_id ?? '',
+                            minute: this.events[i].minute,
+                            playerOutName: this.events[i].playerName ?? '',
+                            playerInName: this.events[i].playerInName ?? '',
+                        });
+                    }
                 } else {
                     break;
                 }
