@@ -334,7 +334,7 @@ export default function lineupManager(config) {
 
         // Toggle player selection (from player list)
         toggle(id, isUnavailable) {
-            if (isUnavailable) return;
+            if (isUnavailable && !this.isSelected(id)) return;
 
             // Suppress click after a list-to-pitch drag gesture
             if (this._listDragMoved) {

@@ -282,11 +282,13 @@
                                                 @mousedown="startListDrag('{{ $player->id }}', $event)"
                                                 @mouseenter="hoveredPlayerId = '{{ $player->id }}'"
                                                 @mouseleave="hoveredPlayerId = null"
-                                                class="available-player px-3 py-2.5 border-b border-border-default {{ $isUnavailable ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer' }}"
+                                                class="available-player px-3 py-2.5 border-b border-border-default"
                                                 :class="{
                                                     'bg-accent-blue/10 border-accent-blue/20': isSelected('{{ $player->id }}'),
                                                     'opacity-30': listDragPlayerId === '{{ $player->id }}',
-                                                    'opacity-50': !isSelected('{{ $player->id }}') && selectedCount >= 11 && !{{ $isUnavailable ? 'true' : 'false' }}
+                                                    'opacity-50': !isSelected('{{ $player->id }}') && selectedCount >= 11 && !{{ $isUnavailable ? 'true' : 'false' }},
+                                                    'opacity-40 cursor-not-allowed': {{ $isUnavailable ? 'true' : 'false' }} && !isSelected('{{ $player->id }}'),
+                                                    'cursor-pointer': !{{ $isUnavailable ? 'true' : 'false' }} || isSelected('{{ $player->id }}')
                                                 }"
                                             >
                                                 <div class="flex items-center gap-2.5">
@@ -316,14 +318,12 @@
                                                         </div>
                                                     </div>
                                                     <x-rating-badge :value="$player->overall_score" size="sm" class="shrink-0" />
-                                                    @if(!$isUnavailable)
                                                     <div class="w-5 h-5 rounded-sm border flex items-center justify-center transition-colors shrink-0"
                                                         :class="isSelected('{{ $player->id }}') ? 'border-accent-blue bg-accent-blue' : 'border-border-strong'">
                                                         <svg x-show="isSelected('{{ $player->id }}')" x-cloak class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                                                         </svg>
                                                     </div>
-                                                    @endif
                                                 </div>
                                             </div>
                                         @endforeach
