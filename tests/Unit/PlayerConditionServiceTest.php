@@ -94,8 +94,8 @@ class PlayerConditionServiceTest extends TestCase
         $change = $this->calculateFitnessChange->invoke($this->service, $player, true, 3, $this->currentDate);
 
         // 3-day gap: less recovery, still loses ~36 energy from match
-        // Recovery at fitness 90: ~5.0 * (1 + 2*0.1) = 6/day * 3 = 18
-        // Loss: ~36. Net: ~-18. Should be negative.
+        // Recovery at fitness 90: ~4.0 * (1 + 0.6*0.1) * 3 ≈ 13
+        // Loss: ~36. Net: ~-23. Should be negative.
         $this->assertLessThan(0, $change, '3-day gap should cause meaningful fitness loss');
     }
 
@@ -108,7 +108,7 @@ class PlayerConditionServiceTest extends TestCase
 
         $change = $this->calculateFitnessChange->invoke($this->service, $player, false, 7, $this->currentDate);
 
-        // Resting at fitness 60 for 5 days (capped): rate = 5 * (1 + 2*0.4) = 9/day * 5 = 45
+        // Resting at fitness 60 for 7 days (capped): rate = 4.0 * (1 + 0.6*0.4) = 4.96/day * 7 ≈ 35
         $this->assertGreaterThan(20, $change, 'Resting should provide substantial recovery');
     }
 
@@ -137,7 +137,7 @@ class PlayerConditionServiceTest extends TestCase
 
         $recovery = $this->calculateFitnessChange->invoke($this->service, $player, false, 5, $this->currentDate);
 
-        // At fitness 100, recovery scaling = 1.0 (base only): 5.0 * 1.0 * 5 = 25
+        // At fitness 100, recovery scaling = 1.0 (base only): 4.0 * 1.0 * 5 = 20
         $this->assertLessThanOrEqual(30, $recovery, 'Recovery at max fitness should be moderate');
     }
 
@@ -338,7 +338,7 @@ class PlayerConditionServiceTest extends TestCase
 
         // After 5 congested matches starting at 100, fitness should drop meaningfully
         // With unified energy model: each match drains ~40% of starting energy,
-        // recovery partially compensates. Expected equilibrium around 70-85.
+        // recovery partially compensates. Expected equilibrium around 50-60.
         $this->assertLessThan(90, $fitness, 'Congested schedule should drop fitness significantly');
         $this->assertGreaterThan(50, $fitness, 'Fitness should not drop unreasonably low');
     }

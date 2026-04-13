@@ -17,9 +17,9 @@ return [
     | Recovery formula:
     |   recoveryRate = base × physicalMod × (1 + scaling × (100 − fitness) / 100)
     |
-    | Weekly matches: stabilize around 85-90 starting energy (not full 100),
+    | Weekly matches: stabilize around 88-92 starting energy (not full 100),
     | so even normal schedules reward rotation.
-    | Congested periods (every 3 days): stabilize around 65-75 starting energy,
+    | Congested periods (every 3-4 days): stabilize around 48-55 starting energy,
     | forcing squad rotation for optimal performance.
     |
     | Age modifies energy loss per match (veterans lose more).
@@ -28,8 +28,8 @@ return [
     */
     'condition' => [
         'base_recovery_per_day' => 4.0,         // recovery rate per day at fitness 100
-        'recovery_scaling' => 1.7,              // how much faster recovery is at low fitness
-        'max_recovery_days' => 5,               // cap recovery calculation at this many days
+        'recovery_scaling' => 0.6,              // how much faster recovery is at low fitness
+        'max_recovery_days' => 7,               // cap recovery calculation at this many days
 
         'age_loss_modifier' => [                // multiplier on energy loss by age bracket (thresholds from PlayerAge)
             'young' => 0.92,                    // <= YOUNG_END: less fatigue per match
