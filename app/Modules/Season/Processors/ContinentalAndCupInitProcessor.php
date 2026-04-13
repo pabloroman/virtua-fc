@@ -6,10 +6,8 @@ use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Competition\Services\CountryConfig;
 use App\Modules\Season\Services\SeasonInitializationService;
-use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GameMatch;
-use App\Models\GamePlayerMatchState;
 use App\Models\GameStanding;
 use Carbon\Carbon;
 
@@ -65,26 +63,6 @@ class ContinentalAndCupInitProcessor implements SeasonProcessor
             // Use explicit pot data when available (initial season from JSON),
             // otherwise null triggers auto-assignment by market value
             $teamsWithPots = $swissPotData[$competitionId] ?? null;
-
-            // If the user actually qualified for this competition, foreign
-            // opponent rosters need a game_player_match_state row before
-            // their first fixture is simulated. Pool players (foreign-league
-            // teams that exist purely for the transfer market) are not
-            // seeded with satellite rows at game-creation time, so we
-            // backfill them here on demand.
-            $userParticipates = CompetitionEntry::where('game_id', $game->id)
-                ->where('competition_id', $competitionId)
-                ->where('team_id', $game->team_id)
-                ->exists();
-
-            if ($userParticipates) {
-                $opponentTeamIds = CompetitionEntry::where('game_id', $game->id)
-                    ->where('competition_id', $competitionId)
-                    ->pluck('team_id')
-                    ->all();
-
-                GamePlayerMatchState::ensureExistForGamePlayers($game->id, $opponentTeamIds);
-            }
 
             // Initialize Swiss fixtures + standings (skips if team doesn't participate)
             $this->service->initializeSwissCompetition(

@@ -15,6 +15,7 @@ use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GameNotification;
 use App\Models\GamePlayer;
+use App\Models\GamePlayerMatchState;
 use App\Models\GameStanding;
 use App\Models\PlayerSuspension;
 use Carbon\Carbon;
@@ -170,6 +171,20 @@ class MatchdayOrchestrator
         // (avoids ~220 queries from the age accessor)
         foreach ($allPlayers as $player) {
             $player->setRelation('game', $game);
+        }
+
+        // Ensure all players in this batch have a satellite row before
+        // simulation. Players from the foreign transfer pool (or recently
+        // transferred) may lack one. This is the single guarantee point —
+        // no other code needs to defensively create satellite rows.
+        GamePlayerMatchState::ensureExistForGamePlayers($game->id, $teamIds->all());
+
+        // Re-load matchState for any rows just created (players whose
+        // relation was null will now have a row).
+        foreach ($allPlayers as $player) {
+            if (! $player->relationLoaded('matchState') || $player->matchState === null) {
+                $player->load('matchState');
+            }
         }
 
         $allPlayers = $allPlayers->groupBy('team_id');
