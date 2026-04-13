@@ -45,6 +45,25 @@ function mixinModule(target, source) {
     }
 }
 
+/**
+ * Determine the minute value to send to the backend for a tactical change.
+ * During ET-related phases, the currentMinute may be 90 (set by
+ * enterRegularTimeEnd), which the backend would interpret as regular time.
+ * Clamp to 93 so the backend routes to resimulateExtraTime and doesn't
+ * delete stoppage-time goal events.
+ */
+export function resolveMinuteForTacticalChange(currentMinute, phase) {
+    const minute = Math.floor(currentMinute);
+    const isETPhase = phase === 'going_to_extra_time'
+        || phase === 'extra_time_first_half'
+        || phase === 'extra_time_second_half'
+        || phase === 'extra_time_half_time';
+    if (isETPhase && minute <= 93) {
+        return Math.max(minute, 93);
+    }
+    return minute;
+}
+
 export default function liveMatch(config) {
     // Create modules early with a deferred context reference so their
     // getters are defined on the raw data object BEFORE Alpine wraps it.
@@ -846,20 +865,7 @@ export default function liveMatch(config) {
             this.tacticalError = null;
             this.applyingChanges = true;
 
-            let minute = Math.floor(this.currentMinute);
-
-            // A sub made during the going_to_extra_time phase has
-            // currentMinute = 90 (set by enterRegularTimeEnd), which the
-            // backend would interpret as regular time (minute <= 90). Clamp
-            // to 93 so the backend correctly routes to resimulateExtraTime
-            // and doesn't delete stoppage-time goal events (minutes 91-93).
-            const isETPhase = this.phase === 'going_to_extra_time'
-                || this.phase === 'extra_time_first_half'
-                || this.phase === 'extra_time_second_half'
-                || this.phase === 'extra_time_half_time';
-            if (isETPhase && minute <= 93) {
-                minute = Math.max(minute, 93);
-            }
+            const minute = resolveMinuteForTacticalChange(this.currentMinute, this.phase);
 
             try {
                 const payload = {
