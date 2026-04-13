@@ -14,6 +14,7 @@ use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\PlayerSuspension;
+use App\Modules\Match\Services\ExtraTimeAndPenaltyService;
 use App\Modules\Match\Services\MatchResimulationService;
 use App\Support\PitchGrid;
 use App\Support\PositionMapper;
@@ -24,6 +25,7 @@ class ShowLiveMatch
 {
     public function __construct(
         private readonly LineupService $lineupService,
+        private readonly ExtraTimeAndPenaltyService $extraTimeService,
     ) {}
 
     public function __invoke(string $gameId, string $matchId)
@@ -423,8 +425,12 @@ class ShowLiveMatch
                 'away' => $match->away_score_penalties,
             ];
         } else {
-            // ET done but penalties not yet — user needs to pick kickers
-            $data['needsPenalties'] = true;
+            // ET done but penalties not yet resolved — check whether the ET
+            // result is actually a draw. Without this, a page refresh after
+            // ET ended 2-1 would incorrectly send the user to penalties.
+            $data['needsPenalties'] = $this->extraTimeService->checkNeedsPenalties(
+                $match, $match->home_score_et ?? 0, $match->away_score_et ?? 0
+            );
         }
 
         return $data;

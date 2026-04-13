@@ -377,15 +377,55 @@ class MatchResimulationService
             $homePlayers = $homePlayers->reject(fn ($p) => in_array($p->id, $unavailablePlayerIds));
             $awayPlayers = $awayPlayers->reject(fn ($p) => in_array($p->id, $unavailablePlayerIds));
 
-            // 6. Build entry minute maps from substitutions
+            // 5b. Add back players who entered via auto-sub (same fix as doResimulate)
             $isUserHome = $match->isHomeTeam($game->team_id);
+            $userTeamId = $game->team_id;
+
+            $userAutoSubEvents = MatchEvent::where('game_match_id', $match->id)
+                ->where('team_id', $userTeamId)
+                ->where('event_type', 'substitution')
+                ->where('minute', '<=', $minute)
+                ->whereNotIn('game_player_id', collect($allSubstitutions)->pluck('playerOutId')->all())
+                ->get();
+
+            $autoSubPlayerInIds = $userAutoSubEvents
+                ->map(fn ($e) => $e->metadata['player_in_id'] ?? null)
+                ->filter()
+                ->all();
+
+            if (! empty($autoSubPlayerInIds)) {
+                $autoSubPlayersIn = GamePlayer::with('player')
+                    ->whereIn('id', $autoSubPlayerInIds)
+                    ->get();
+
+                if ($isUserHome) {
+                    $homePlayers = $homePlayers->merge($autoSubPlayersIn)->values();
+                } else {
+                    $awayPlayers = $awayPlayers->merge($autoSubPlayersIn)->values();
+                }
+            }
+
+            // 6. Build entry minute maps from substitutions
             $homeEntryMinutes = [];
             $awayEntryMinutes = [];
+            // User's manual substitutions
             foreach ($allSubstitutions as $sub) {
                 if ($isUserHome) {
                     $homeEntryMinutes[$sub['playerInId']] = $sub['minute'];
                 } else {
                     $awayEntryMinutes[$sub['playerInId']] = $sub['minute'];
+                }
+            }
+            // User's pre-simulated auto-subs
+            foreach ($userAutoSubEvents as $subEvent) {
+                $playerInId = $subEvent->metadata['player_in_id'] ?? null;
+                if ($playerInId === null) {
+                    continue;
+                }
+                if ($isUserHome) {
+                    $homeEntryMinutes[$playerInId] = $subEvent->minute;
+                } else {
+                    $awayEntryMinutes[$playerInId] = $subEvent->minute;
                 }
             }
 
