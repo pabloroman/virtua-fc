@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\DB;
  * Uses PromotionRelegationFactory to get the rules for each country/league system.
  * Rules define which positions are relegated/promoted and whether playoffs are involved.
  *
- * Priority: 26 (runs after supercup qualification, before fixture generation)
+ * Priority: 85 (runs after supercup qualification, before reputation update)
  */
 class PromotionRelegationProcessor implements SeasonProcessor
 {
@@ -39,17 +39,22 @@ class PromotionRelegationProcessor implements SeasonProcessor
             $allRelegated = [];
             $affectedCompetitionIds = [];
 
-            // Process all configured promotion/relegation rules
+            // Two-pass approach: gather all promoted/relegated teams while
+            // standings are pristine, then execute swaps. This prevents an
+            // earlier rule's swap from corrupting standings that a later rule
+            // reads — e.g. the ESP1↔ESP2 swap inserting teams at the bottom
+            // of ESP2 before the ESP2↔ESP3 rule reads positions 19–22.
+
+            // Pass 1: Read — collect promoted/relegated teams from every rule.
+            $ruleData = [];
             foreach ($this->ruleFactory->all() as $rule) {
                 $promoted = $rule->getPromotedTeams($game);
                 $relegated = $rule->getRelegatedTeams($game);
 
-                // Skip if no teams to move (e.g., playoffs not complete)
                 if (empty($promoted) && empty($relegated)) {
                     continue;
                 }
 
-                // Validate balance: promoted count must equal relegated count
                 if (count($promoted) !== count($relegated)) {
                     throw new \RuntimeException(
                         "Promotion/relegation imbalance between {$rule->getTopDivision()} and {$rule->getBottomDivision()}: " .
@@ -58,11 +63,12 @@ class PromotionRelegationProcessor implements SeasonProcessor
                     );
                 }
 
+                $ruleData[] = compact('rule', 'promoted', 'relegated');
+            }
+
+            // Pass 2: Write — execute swaps now that all reads are done.
+            foreach ($ruleData as ['rule' => $rule, 'promoted' => $promoted, 'relegated' => $relegated]) {
                 if ($rule instanceof SelfSwappingPromotionRule) {
-                    // Multi-feeder rules (e.g. Primera RFEF, which promotes
-                    // from ESP3A + ESP3B + ESP3PO) own their swap logic. The
-                    // processor re-simulates based on the reported affected
-                    // competitions; the rule is responsible for tracking them.
                     $rule->performSwap($game, $promoted, $relegated);
 
                     $affectedCompetitionIds[] = $rule->getTopDivision();

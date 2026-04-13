@@ -13,6 +13,8 @@ use App\Modules\Competition\Promotions\ConfigDrivenPromotionRule;
 use App\Modules\Competition\Promotions\PromotionRelegationFactory;
 use App\Modules\Competition\Services\ReserveTeamFilter;
 use App\Modules\Report\Services\SeasonSummaryService;
+use App\Modules\Season\DTOs\SeasonTransitionData;
+use App\Modules\Season\Processors\PromotionRelegationProcessor;
 use App\Modules\Season\Processors\SeasonSimulationProcessor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -418,5 +420,151 @@ class PromotionRelegationValidationTest extends TestCase
 
         $this->assertNotNull($simulated);
         $this->assertCount(22, $simulated->results);
+    }
+
+    // ──────────────────────────────────────────────────
+    // Two-pass swap: ESP1 relegation must not cascade to ESP3
+    // ──────────────────────────────────────────────────
+
+    public function test_two_pass_prevents_cascading_relegation_when_player_in_esp2(): void
+    {
+        // When the player manages an ESP2 team, ESP2 has real standings.
+        // The ESP1↔ESP2 swap runs first and inserts relegated ESP1 teams
+        // at position 99 in ESP2. Without the two-pass fix, those teams
+        // would land at positions 20–22 after re-sort and get immediately
+        // relegated to ESP3 by the next rule — a cascading relegation bug.
+
+        Competition::factory()->league()->create(['id' => 'ESP3A', 'tier' => 3]);
+        Competition::factory()->league()->create(['id' => 'ESP3B', 'tier' => 3]);
+        Competition::factory()->knockoutCup()->create(['id' => 'ESP3PO', 'tier' => 3]);
+
+        // --- ESP1: 20 simulated teams ---
+        $esp1TeamIds = [];
+        for ($i = 0; $i < 20; $i++) {
+            $team = Team::factory()->create();
+            $esp1TeamIds[] = $team->id;
+            CompetitionEntry::create([
+                'game_id' => $this->game->id,
+                'competition_id' => 'ESP1',
+                'team_id' => $team->id,
+            ]);
+        }
+        SimulatedSeason::create([
+            'game_id' => $this->game->id,
+            'season' => '2025',
+            'competition_id' => 'ESP1',
+            'results' => $esp1TeamIds,
+        ]);
+
+        // --- ESP2: 22 teams with real standings (player's league) ---
+        $esp2TeamIds = [];
+        for ($i = 1; $i <= 22; $i++) {
+            $team = Team::factory()->create();
+            $esp2TeamIds[] = $team->id;
+            GameStanding::create([
+                'game_id' => $this->game->id,
+                'competition_id' => 'ESP2',
+                'team_id' => $team->id,
+                'position' => $i,
+                'played' => 42,
+                'won' => max(1, 23 - $i),
+                'drawn' => 5,
+                'lost' => $i,
+                'goals_for' => max(10, 60 - $i),
+                'goals_against' => 20 + $i,
+                'points' => max(1, 23 - $i) * 3 + 5,
+            ]);
+            CompetitionEntry::create([
+                'game_id' => $this->game->id,
+                'competition_id' => 'ESP2',
+                'team_id' => $team->id,
+            ]);
+        }
+
+        // Player's team is at position 10 — safe from promotion/relegation
+        $this->game->update([
+            'competition_id' => 'ESP2',
+            'team_id' => $esp2TeamIds[9],
+        ]);
+
+        // The teams that should be relegated from ESP2 (original positions 19–22)
+        $expectedRelegatedFromEsp2 = array_slice($esp2TeamIds, 18, 4);
+
+        // The ESP1 teams that will be relegated to ESP2 (simulated positions 18–20)
+        $expectedRelegatedFromEsp1 = array_slice($esp1TeamIds, 17, 3);
+
+        // --- ESP3A: 20 simulated teams ---
+        $esp3aTeamIds = [];
+        for ($i = 0; $i < 20; $i++) {
+            $team = Team::factory()->create();
+            $esp3aTeamIds[] = $team->id;
+            CompetitionEntry::create([
+                'game_id' => $this->game->id,
+                'competition_id' => 'ESP3A',
+                'team_id' => $team->id,
+            ]);
+        }
+        SimulatedSeason::create([
+            'game_id' => $this->game->id,
+            'season' => '2025',
+            'competition_id' => 'ESP3A',
+            'results' => $esp3aTeamIds,
+        ]);
+
+        // --- ESP3B: 20 simulated teams ---
+        $esp3bTeamIds = [];
+        for ($i = 0; $i < 20; $i++) {
+            $team = Team::factory()->create();
+            $esp3bTeamIds[] = $team->id;
+            CompetitionEntry::create([
+                'game_id' => $this->game->id,
+                'competition_id' => 'ESP3B',
+                'team_id' => $team->id,
+            ]);
+        }
+        SimulatedSeason::create([
+            'game_id' => $this->game->id,
+            'season' => '2025',
+            'competition_id' => 'ESP3B',
+            'results' => $esp3bTeamIds,
+        ]);
+
+        // --- Run the processor ---
+        $processor = app(PromotionRelegationProcessor::class);
+        $data = new SeasonTransitionData(
+            oldSeason: '2025',
+            newSeason: '2026',
+            competitionId: 'ESP2',
+        );
+        $processor->process($this->game, $data);
+
+        // Original ESP2 bottom-4 teams should now be in ESP3A or ESP3B
+        foreach ($expectedRelegatedFromEsp2 as $teamId) {
+            $this->assertTrue(
+                CompetitionEntry::where('game_id', $this->game->id)
+                    ->whereIn('competition_id', ['ESP3A', 'ESP3B'])
+                    ->where('team_id', $teamId)
+                    ->exists(),
+                "ESP2 team at original bottom-4 position should have been relegated to ESP3"
+            );
+        }
+
+        // ESP1 relegated teams should be in ESP2, NOT cascaded down to ESP3
+        foreach ($expectedRelegatedFromEsp1 as $teamId) {
+            $this->assertTrue(
+                CompetitionEntry::where('game_id', $this->game->id)
+                    ->where('competition_id', 'ESP2')
+                    ->where('team_id', $teamId)
+                    ->exists(),
+                "Team relegated from ESP1 should be in ESP2"
+            );
+            $this->assertFalse(
+                CompetitionEntry::where('game_id', $this->game->id)
+                    ->whereIn('competition_id', ['ESP3A', 'ESP3B'])
+                    ->where('team_id', $teamId)
+                    ->exists(),
+                "Team relegated from ESP1 should NOT cascade to ESP3"
+            );
+        }
     }
 }
