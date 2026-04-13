@@ -12,6 +12,24 @@ use Illuminate\Support\Collection;
 class InjuryService
 {
     /**
+     * In-memory cache for upcoming match dates, keyed by "gameId:teamId:date".
+     * Avoids duplicate game_matches queries when multiple injuries affect the
+     * same team within a single batch. Cleared between batches via clearMatchDateCache().
+     *
+     * @var array<string, Collection>
+     */
+    private static array $matchDateCache = [];
+
+    /**
+     * Clear the in-memory match date cache. Call between batches since
+     * newly played matches change the set of unplayed future matches.
+     */
+    public static function clearMatchDateCache(): void
+    {
+        self::$matchDateCache = [];
+    }
+
+    /**
      * Base injury chance per player per match (percentage).
      */
     private const BASE_INJURY_CHANCE = 0.8;
@@ -573,12 +591,22 @@ class InjuryService
 
     private static function getUpcomingMatchDates(string $gameId, string $teamId, Carbon $referenceDate): Collection
     {
-        return GameMatch::where('game_id', $gameId)
+        $key = "{$gameId}:{$teamId}:{$referenceDate->toDateString()}";
+
+        if (isset(self::$matchDateCache[$key])) {
+            return self::$matchDateCache[$key];
+        }
+
+        $result = GameMatch::where('game_id', $gameId)
             ->where('played', false)
             ->where(fn ($q) => $q->where('home_team_id', $teamId)
                                   ->orWhere('away_team_id', $teamId))
             ->where('scheduled_date', '>=', $referenceDate)
             ->orderBy('scheduled_date')
             ->pluck('scheduled_date');
+
+        self::$matchDateCache[$key] = $result;
+
+        return $result;
     }
 }

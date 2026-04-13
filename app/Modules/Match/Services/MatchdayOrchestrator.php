@@ -26,6 +26,9 @@ class MatchdayOrchestrator
 {
     private int $careerActionTicks = 0;
 
+    /** @var string[] Team IDs whose satellite rows have been ensured this run */
+    private array $ensuredTeamIds = [];
+
     public function __construct(
         private readonly MatchdayService $matchdayService,
         private readonly FullMatchSimulationService $fullMatchSimulation,
@@ -41,6 +44,7 @@ class MatchdayOrchestrator
     public function advance(Game $game): MatchdayAdvanceResult
     {
         $this->careerActionTicks = 0;
+        $this->ensuredTeamIds = [];
 
         $result = DB::transaction(function () use ($game) {
             // Lock the game row to prevent concurrent matchday advancement
@@ -136,6 +140,9 @@ class MatchdayOrchestrator
         $matchday = $batch['matchday'];
         $currentDate = $batch['currentDate'];
 
+        // Clear cached match dates from prior batches (played matches changed)
+        InjuryService::clearMatchDateCache();
+
         // When playerMatchOnly is true, filter batch to only the player's match
         // (sibling AI matches in the same batch are deferred to background processing)
         $playerMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
@@ -173,17 +180,33 @@ class MatchdayOrchestrator
             $player->setRelation('game', $game);
         }
 
-        // Ensure all players in this batch have a satellite row before
-        // simulation. Players from the foreign transfer pool (or recently
-        // transferred) may lack one. This is the single guarantee point —
-        // no other code needs to defensively create satellite rows.
-        GamePlayerMatchState::ensureExistForGamePlayers($game->id, $teamIds->all());
+        // Ensure satellite rows exist for teams not yet ensured this run.
+        // Skips the INSERT...ON CONFLICT for teams whose rows were already
+        // guaranteed in a prior batch (same orchestrator instance).
+        $newTeamIds = $teamIds->diff($this->ensuredTeamIds)->values()->all();
 
-        // Re-load matchState for any rows just created (players whose
-        // relation was null will now have a row).
-        foreach ($allPlayers as $player) {
-            if (! $player->relationLoaded('matchState') || $player->matchState === null) {
-                $player->load('matchState');
+        if (! empty($newTeamIds)) {
+            GamePlayerMatchState::ensureExistForGamePlayers($game->id, $newTeamIds);
+            $this->ensuredTeamIds = array_merge($this->ensuredTeamIds, $newTeamIds);
+        }
+
+        // Batch re-load matchState for players whose satellite row was
+        // missing at eager-load time (just created by ensureExist, or
+        // recently transferred). Single query instead of N individual loads.
+        $missingIds = $allPlayers
+            ->filter(fn ($p) => ! $p->relationLoaded('matchState') || $p->matchState === null)
+            ->pluck('id')
+            ->all();
+
+        if (! empty($missingIds)) {
+            $freshStates = GamePlayerMatchState::whereIn('game_player_id', $missingIds)
+                ->get()
+                ->keyBy('game_player_id');
+
+            foreach ($allPlayers as $player) {
+                if (isset($freshStates[$player->id])) {
+                    $player->setRelation('matchState', $freshStates[$player->id]);
+                }
             }
         }
 
@@ -215,7 +238,9 @@ class MatchdayOrchestrator
         $deferMatchId = $playerMatch?->id;
 
         // --- Process results ---
-        $this->matchResultProcessor->processAll($game->id, $currentDate, $matchResults, $deferMatchId, $allPlayers);
+        // Derive competitions from already-loaded match relations to avoid re-querying
+        $competitions = $matches->pluck('competition')->filter()->unique('id')->keyBy('id');
+        $this->matchResultProcessor->processAll($game, $currentDate, $matchResults, $deferMatchId, $allPlayers, $matches, $competitions);
 
         // --- Recalculate positions ---
         $this->recalculateLeaguePositions($game->id, $matches);
@@ -333,25 +358,42 @@ class MatchdayOrchestrator
     /**
      * Process remaining batches in the background (called by ProcessRemainingBatches job).
      * Simulates all unplayed batches and dispatches career actions when done.
+     *
+     * Each batch runs in its own transaction to limit lock duration, WAL
+     * accumulation, and allow per-batch garbage collection of player collections.
      */
     public function processRemainingBatches(Game $game, int $priorCareerActionTicks): void
     {
         $this->careerActionTicks = 0;
+        $this->ensuredTeamIds = [];
+        $gameId = $game->id;
 
-        DB::transaction(function () use ($game) {
-            $game = Game::where('id', $game->id)->lockForUpdate()->first();
+        while ($nextBatch = $this->matchdayService->getNextMatchBatch($game)) {
+            $involvesPlayer = $nextBatch['matches']->contains(
+                fn ($m) => $m->involvesTeam($game->team_id)
+            );
 
-            $this->autoSimulateRemainingBatches($game);
-        });
+            if ($involvesPlayer) {
+                break;
+            }
+
+            DB::transaction(function () use ($gameId, $nextBatch) {
+                $lockedGame = Game::where('id', $gameId)->lockForUpdate()->first();
+                $this->processBatch($lockedGame, $nextBatch);
+            });
+
+            // Reload fresh game for next iteration (outside transaction scope)
+            $game = Game::find($gameId);
+        }
 
         // Total career action ticks = prior (from advance's synchronous batches) + new (from background batches)
         $totalTicks = $priorCareerActionTicks + $this->careerActionTicks;
 
         // Clear the remaining batches flag
-        Game::where('id', $game->id)->update(['remaining_batches_processing_at' => null]);
+        Game::where('id', $gameId)->update(['remaining_batches_processing_at' => null]);
 
         // Dispatch career actions if any ticks accumulated
-        $this->dispatchCareerActions($game->id, $totalTicks);
+        $this->dispatchCareerActions($gameId, $totalTicks);
     }
 
     private function recalculateLeaguePositions(string $gameId, $matches): void

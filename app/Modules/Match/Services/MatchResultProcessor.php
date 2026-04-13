@@ -30,12 +30,15 @@ class MatchResultProcessor
     /**
      * Process all match results for a matchday in batched operations.
      *
+     * @param  Game|string  $gameOrId  Game instance (preferred) or game ID for backward compatibility
      * @param  string|null  $deferMatchId  Match ID to skip standings and GK stats for (deferred to finalization)
+     * @param  \Illuminate\Support\Collection|null  $batchMatches  Pre-loaded match models (avoids re-query)
+     * @param  \Illuminate\Support\Collection|null  $preloadedCompetitions  Pre-loaded competitions keyed by ID
      */
-    public function processAll(string $gameId, string $currentDate, array $matchResults, ?string $deferMatchId = null, $allPlayers = null): void
+    public function processAll(Game|string $gameOrId, string $currentDate, array $matchResults, ?string $deferMatchId = null, $allPlayers = null, $batchMatches = null, $preloadedCompetitions = null): void
     {
-        // Load game once for previous date capture and date guard
-        $game = Game::find($gameId);
+        $game = $gameOrId instanceof Game ? $gameOrId : Game::findOrFail($gameOrId);
+        $gameId = $game->id;
 
         // 1. Update game state — only advance current_date forward.
         // Background batch processing must not regress the date that was
@@ -43,19 +46,21 @@ class MatchResultProcessor
         $newDate = Carbon::parse($currentDate);
         if (! $game->current_date || $newDate->gte($game->current_date)) {
             Game::where('id', $gameId)->update(['current_date' => $newDate->toDateString()]);
+            $game->current_date = $newDate;
         }
 
         // 2. Bulk update match records (scores + played)
         $this->bulkUpdateMatchScores($matchResults);
 
-        // Reload game with post-update state for the rest of the method
-        $game = Game::find($gameId);
+        // Use pre-loaded matches when available, otherwise query
         $matchIds = array_column($matchResults, 'matchId');
-        $matches = GameMatch::whereIn('id', $matchIds)->get()->keyBy('id');
+        $matches = $batchMatches
+            ? $batchMatches->keyBy('id')
+            : GameMatch::whereIn('id', $matchIds)->get()->keyBy('id');
 
-        // Load competitions once (typically 1-2 unique)
-        $competitionIds = collect($matchResults)->pluck('competitionId')->unique();
-        $competitions = Competition::whereIn('id', $competitionIds)->get()->keyBy('id');
+        // Use pre-loaded competitions when available, otherwise query
+        $competitions = $preloadedCompetitions
+            ?? Competition::whereIn('id', collect($matchResults)->pluck('competitionId')->unique())->get()->keyBy('id');
 
         // 3. Serve suspensions for all matches (batch, using pre-loaded player IDs)
         // Exclude players from the deferred match's teams — their suspensions
@@ -562,27 +567,30 @@ class MatchResultProcessor
 
         // Collect all team IDs from this batch
         $teamIds = $matches->flatMap(fn ($m) => [$m->home_team_id, $m->away_team_id])->unique()->values();
+        $teamIdArray = $teamIds->all();
+        $dateString = $currentMatchDate->toDateString();
 
-        // Query each team's most recent played match BEFORE this batch's date
-        $lastMatchDates = DB::table('game_matches')
-            ->where('game_id', $gameId)
-            ->where('played', true)
-            ->where('scheduled_date', '<', $currentMatchDate->toDateString())
-            ->where(fn ($q) => $q
-                ->whereIn('home_team_id', $teamIds)
-                ->orWhereIn('away_team_id', $teamIds))
-            ->get(['home_team_id', 'away_team_id', 'scheduled_date']);
-
-        // Build per-team last-match lookup
+        // Query each team's most recent played match BEFORE this batch's date.
+        // Uses UNION ALL + GROUP BY to return one row per team instead of
+        // fetching all played match rows and aggregating in PHP.
         $lastPlayedByTeam = [];
-        foreach ($lastMatchDates as $row) {
-            $date = Carbon::parse($row->scheduled_date);
-            foreach ([$row->home_team_id, $row->away_team_id] as $tid) {
-                if ($teamIds->contains($tid)) {
-                    if (! isset($lastPlayedByTeam[$tid]) || $date->gt($lastPlayedByTeam[$tid])) {
-                        $lastPlayedByTeam[$tid] = $date;
-                    }
-                }
+
+        if (! empty($teamIdArray)) {
+            $rows = DB::select(<<<'SQL'
+                SELECT team_id, MAX(scheduled_date) as last_date
+                FROM (
+                    SELECT home_team_id AS team_id, scheduled_date FROM game_matches
+                    WHERE game_id = ? AND played = true AND scheduled_date < ?
+                    UNION ALL
+                    SELECT away_team_id AS team_id, scheduled_date FROM game_matches
+                    WHERE game_id = ? AND played = true AND scheduled_date < ?
+                ) sub
+                WHERE team_id = ANY(?::uuid[])
+                GROUP BY team_id
+            SQL, [$gameId, $dateString, $gameId, $dateString, '{' . implode(',', $teamIdArray) . '}']);
+
+            foreach ($rows as $row) {
+                $lastPlayedByTeam[$row->team_id] = Carbon::parse($row->last_date);
             }
         }
 
