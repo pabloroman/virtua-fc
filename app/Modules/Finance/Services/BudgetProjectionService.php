@@ -5,7 +5,6 @@ namespace App\Modules\Finance\Services;
 use App\Models\BudgetLoan;
 use App\Models\ClubProfile;
 use App\Models\Competition;
-use App\Models\CompetitionEntry;
 use App\Models\FinancialTransaction;
 use App\Models\Game;
 use App\Models\GameFinances;
@@ -13,10 +12,14 @@ use App\Models\GameInvestment;
 use App\Models\GamePlayer;
 use App\Models\Team;
 use App\Models\TeamReputation;
+use App\Modules\Squad\Services\SquadService;
 use Carbon\Carbon;
 
 class BudgetProjectionService
 {
+    public function __construct(
+        private readonly SquadService $squadService,
+    ) {}
     /**
      * UEFA and RFEF solidarity funds (€250K)
      */
@@ -44,10 +47,10 @@ class BudgetProjectionService
         $league = $game->competition;
 
         // Calculate squad strengths for all teams in the league
-        $teamStrengths = $this->calculateLeagueStrengths($game, $league);
+        $teamStrengths = $this->squadService->calculateLeagueStrengths($game, $league);
 
         // Get user's projected position
-        $projectedPosition = $this->getProjectedPosition($team->id, $teamStrengths);
+        $projectedPosition = $this->squadService->getProjectedPosition($team->id, $teamStrengths);
 
         // Calculate projected revenues
         $projectedTvRevenue = $this->calculateTvRevenue($projectedPosition, $league);
@@ -110,105 +113,6 @@ class BudgetProjectionService
         );
 
         return $finances;
-    }
-
-    /**
-     * Calculate squad strengths for all teams in a league.
-     * Returns array of [team_id => strength] sorted by strength descending.
-     *
-     * Loads all players across all teams in one query to avoid N+1.
-     */
-    public function calculateLeagueStrengths(Game $game, Competition $league): array
-    {
-        $teamIds = CompetitionEntry::where('game_id', $game->id)
-            ->where('competition_id', $league->id)
-            ->pluck('team_id')
-            ->toArray();
-
-        $teams = Team::whereIn('id', $teamIds)->get();
-
-        // Only eager-load player relation when game abilities are null (mid-season fallback)
-        $query = GamePlayer::where('game_id', $game->id)
-            ->whereIn('team_id', $teamIds);
-
-        $needsPlayerRelation = GamePlayer::where('game_id', $game->id)
-            ->whereIn('team_id', $teamIds)
-            ->where(fn ($q) => $q->whereNull('game_technical_ability')->orWhereNull('game_physical_ability'))
-            ->exists();
-
-        // matchState is needed by calculateStrengthFromPlayers — pool players
-        // (no satellite) fall back to default fitness/morale via the accessor.
-        $query->with('matchState');
-        if ($needsPlayerRelation) {
-            $query->with('player');
-        }
-
-        $playersByTeam = $query->get()->groupBy('team_id');
-
-        $strengths = [];
-        foreach ($teams as $team) {
-            $teamPlayers = $playersByTeam->get($team->id, collect());
-            $strengths[$team->id] = $this->calculateStrengthFromPlayers($teamPlayers);
-        }
-
-        // Sort by strength descending
-        arsort($strengths);
-
-        return $strengths;
-    }
-
-    /**
-     * Calculate squad strength for a team.
-     * Uses average OVR of best 18 players.
-     */
-    public function calculateSquadStrength(Game $game, Team $team): float
-    {
-        $players = GamePlayer::where('game_id', $game->id)
-            ->where('team_id', $team->id)
-            ->with(['player', 'matchState'])
-            ->get();
-
-        return $this->calculateStrengthFromPlayers($players);
-    }
-
-    /**
-     * Calculate strength from a pre-loaded collection of players.
-     * Uses average OVR of best 18 players.
-     */
-    private function calculateStrengthFromPlayers($players): float
-    {
-        $scores = $players->map(function ($player) {
-                $technical = $player->game_technical_ability ?? $player->player?->technical_ability ?? 50;
-                $physical = $player->game_physical_ability ?? $player->player?->physical_ability ?? 50;
-                $fitness = $player->fitness ?? 70;
-                $morale = $player->morale ?? 70;
-
-                return ($technical + $physical + $fitness + $morale) / 4;
-            })
-            ->sortDesc()
-            ->take(18);
-
-        if ($scores->isEmpty()) {
-            return 0;
-        }
-
-        return round($scores->avg(), 1);
-    }
-
-    /**
-     * Get projected position for a team based on strength rankings.
-     */
-    public function getProjectedPosition(string $teamId, array $teamStrengths): int
-    {
-        $position = 1;
-        foreach ($teamStrengths as $id => $strength) {
-            if ($id === $teamId) {
-                return $position;
-            }
-            $position++;
-        }
-
-        return $position; // Fallback to last position
     }
 
     /**

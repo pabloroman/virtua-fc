@@ -3,11 +3,13 @@
 namespace App\Modules\Squad\Services;
 
 use App\Models\AcademyPlayer;
+use App\Models\Competition;
+use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Models\Team;
 use App\Modules\Player\PlayerAge;
-
 use App\Modules\Player\Services\PlayerDevelopmentService;
 use App\Modules\Transfer\Enums\NegotiationScenario;
 use App\Modules\Transfer\Services\ContractService;
@@ -294,5 +296,80 @@ class SquadService
         }
 
         return $alerts;
+    }
+
+    /**
+     * Calculate squad strength as the average ability of the best 18 players.
+     * Uses only technical + physical ability (not volatile match state like fitness/morale).
+     */
+    public function calculateSquadStrength($players): float
+    {
+        $scores = $players->map(function ($player) {
+            return (int) round(($player->current_technical_ability + $player->current_physical_ability) / 2);
+        })
+            ->sortDesc()
+            ->take(18);
+
+        if ($scores->isEmpty()) {
+            return 0;
+        }
+
+        return round($scores->avg(), 1);
+    }
+
+    /**
+     * Calculate strength rankings for all teams in a league competition.
+     *
+     * @return array<string, float> Team ID => strength score, sorted descending
+     */
+    public function calculateLeagueStrengths(Game $game, Competition $league): array
+    {
+        $teamIds = CompetitionEntry::where('game_id', $game->id)
+            ->where('competition_id', $league->id)
+            ->pluck('team_id')
+            ->toArray();
+
+        $teams = Team::whereIn('id', $teamIds)->get();
+
+        $query = GamePlayer::where('game_id', $game->id)
+            ->whereIn('team_id', $teamIds);
+
+        // Only eager-load player relation when game abilities are null (mid-season fallback)
+        $needsPlayerRelation = GamePlayer::where('game_id', $game->id)
+            ->whereIn('team_id', $teamIds)
+            ->where(fn ($q) => $q->whereNull('game_technical_ability')->orWhereNull('game_physical_ability'))
+            ->exists();
+
+        if ($needsPlayerRelation) {
+            $query->with('player');
+        }
+
+        $playersByTeam = $query->get()->groupBy('team_id');
+
+        $strengths = [];
+        foreach ($teams as $team) {
+            $teamPlayers = $playersByTeam->get($team->id, collect());
+            $strengths[$team->id] = $this->calculateSquadStrength($teamPlayers);
+        }
+
+        arsort($strengths);
+
+        return $strengths;
+    }
+
+    /**
+     * Get projected position for a team based on strength rankings.
+     */
+    public function getProjectedPosition(string $teamId, array $teamStrengths): int
+    {
+        $position = 1;
+        foreach ($teamStrengths as $id => $strength) {
+            if ($id === $teamId) {
+                return $position;
+            }
+            $position++;
+        }
+
+        return $position;
     }
 }
