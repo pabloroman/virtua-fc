@@ -170,7 +170,7 @@ class ExtraTimePenaltyDecisionTest extends TestCase
                 'first_leg_match_id' => $firstLeg->id,
             ]);
 
-        // Second leg (reversed home/away): 0-1 → aggregate 1-1
+        // Second leg (reversed home/away): 1-0 for opponent → aggregate 1-1
         $secondLeg = GameMatch::factory()->create([
             'game_id' => $this->game->id,
             'competition_id' => $this->cupCompetition->id,
@@ -179,8 +179,8 @@ class ExtraTimePenaltyDecisionTest extends TestCase
             'away_team_id' => $this->playerTeam->id,
             'scheduled_date' => Carbon::parse('2024-08-17'),
             'played' => true,
-            'home_score' => 0,
-            'away_score' => 1,
+            'home_score' => 1,
+            'away_score' => 0,
             'cup_tie_id' => $cupTie->id,
         ]);
 
