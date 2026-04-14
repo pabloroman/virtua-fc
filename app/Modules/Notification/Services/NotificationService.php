@@ -230,10 +230,10 @@ class NotificationService
         return $this->create(
             game: $game,
             type: GameNotification::TYPE_TRANSFER_OFFER_RECEIVED,
-            title: __('notifications.transfer_offer_title', ['team_de' => $offer->offeringTeam->nameWithDe()]),
+            title: __('notifications.transfer_offer_title', ['player' => $player->name]),
             message: __('notifications.transfer_offer_message', [
                 'team' => $offer->offeringTeam->name,
-                'player' => $player->name,
+                'team_el' => Str::ucfirst($offer->offeringTeam->nameWithEl()),
                 'fee' => $fee,
             ]),
             priority: GameNotification::PRIORITY_INFO,
@@ -491,11 +491,11 @@ class NotificationService
             game: $game,
             type: GameNotification::TYPE_LOAN_DESTINATION_FOUND,
             title: __('notifications.loan_offer_received_title', [
-                'team_de' => $destination->nameWithDe(),
+                'player' => $player->name,
             ]),
             message: __('notifications.loan_offer_received_message', [
                 'team' => $destination->name,
-                'player' => $player->name,
+                'team_el' => Str::ucfirst($destination->nameWithEl()),
             ]),
             priority: GameNotification::PRIORITY_INFO,
             metadata: [

@@ -82,8 +82,8 @@ return [
     'best' => 'Mejor',
 
     // Recent transfers
-    'recent_sales' => 'Ventas Recientes',
-    'recent_signings' => 'Fichajes Recientes',
+    'recent_sales' => 'Salidas Recientes',
+    'recent_signings' => 'Entradas Recientes',
 
     // Scouting
     'scout_search_desc' => 'Tu ojeador buscará jugadores y te presentará una lista corta de candidatos que mejor se adapten a tu equipo. Cuanto más específicos sean los criterios, mejores serán los resultados.',

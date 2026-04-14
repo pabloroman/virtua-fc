@@ -37,8 +37,8 @@ return [
     'player_recovered_message' => ':player se ha recuperado y está disponible para jugar.',
 
     // Transfer offers
-    'transfer_offer_title' => 'Oferta :team_de',
-    'transfer_offer_message' => ':team ha ofrecido :fee por :player.',
+    'transfer_offer_title' => 'Oferta de compra por :player',
+    'transfer_offer_message' => ':team_el ha ofrecido :fee por el jugador.',
     'free_transfer' => 'Traspaso Libre',
 
     // Transfer complete
@@ -70,8 +70,8 @@ return [
     'low_fitness_message' => ':player tiene solo :fitness% de energía y necesita descanso.',
 
     // Loan search
-    'loan_offer_received_title' => 'Oferta de cesión :team_de',
-    'loan_offer_received_message' => ':team ha ofrecido llevarse a :player cedido.',
+    'loan_offer_received_title' => 'Oferta de cesión por :player',
+    'loan_offer_received_message' => ':team_el ha ofrecido llevarse cedido al jugador.',
     'loan_search_failed_title' => 'Búsqueda de cesión fallida',
     'loan_search_failed_message' => 'No se encontró un club interesado en ceder a :player. El jugador vuelve a estar disponible.',
 

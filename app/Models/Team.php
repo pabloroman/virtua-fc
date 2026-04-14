@@ -213,4 +213,18 @@ class Team extends Model
             default => 'en el ' . $this->name,
         };
     }
+
+    /**
+     * Team name with definite article as nominative: "el Real Madrid",
+     * "la Real Sociedad", "Osasuna". Article is lowercase; use Str::ucfirst()
+     * at the call site when starting a sentence.
+     */
+    public function nameWithEl(): string
+    {
+        return match ($this->article) {
+            'la' => 'la ' . $this->name,
+            null => $this->name,
+            default => 'el ' . $this->name,
+        };
+    }
 }
