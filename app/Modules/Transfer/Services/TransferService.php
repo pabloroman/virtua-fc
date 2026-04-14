@@ -262,6 +262,13 @@ class TransferService
             ->pluck('offering_team_id')
             ->toArray();
 
+        // Exclude same-league + same-reputation rivals from unsolicited offers only.
+        // Listed-player and pre-contract paths are unaffected by design — see getRivalTeamIds().
+        $excludedBuyerTeamIds = array_values(array_unique(array_merge(
+            $excludedBuyerTeamIds,
+            $this->getRivalTeamIds($game, $buyerPool),
+        )));
+
         foreach ($starPlayers as $player) {
             // Use pre-loaded transferOffers relationship to avoid N+1
             $playerOffers = $player->relationLoaded('transferOffers')
@@ -712,6 +719,44 @@ class TransferService
         $reputationLevels = TeamReputation::resolveLevels($game->id, $leagueTeamIds);
 
         return ['leagueTeams' => $leagueTeams, 'squadValues' => $squadValues, 'reputationLevels' => $reputationLevels];
+    }
+
+    /**
+     * Rivals = teams in the user's same domestic league AND same reputation tier.
+     * Real-world equivalent: Real Madrid <-> Barcelona. Such unsolicited moves
+     * are vanishingly rare and break immersion when AI-generated. Only unsolicited
+     * offers are filtered; listed-player and pre-contract offers remain open
+     * because the user either opened the door or the contract is expiring.
+     *
+     * @param  array{leagueTeams: Collection, squadValues: Collection, reputationLevels: Collection}|null  $buyerPool
+     * @return array<int, string>
+     */
+    private function getRivalTeamIds(Game $game, ?array $buyerPool = null): array
+    {
+        if (!$game->competition_id) {
+            return [];
+        }
+
+        $userReputation = TeamReputation::resolveLevel($game->id, $game->team_id);
+
+        $sameLeagueIds = $game->competition
+            ->teams()
+            ->wherePivot('season', $game->season)
+            ->where('teams.id', '!=', $game->team_id)
+            ->pluck('teams.id')
+            ->all();
+
+        if (empty($sameLeagueIds)) {
+            return [];
+        }
+
+        $reputationLevels = $buyerPool['reputationLevels']
+            ?? TeamReputation::resolveLevels($game->id, $sameLeagueIds);
+
+        return collect($sameLeagueIds)
+            ->filter(fn ($id) => ($reputationLevels[$id] ?? ClubProfile::REPUTATION_LOCAL) === $userReputation)
+            ->values()
+            ->all();
     }
 
     /**
