@@ -491,11 +491,11 @@ class NotificationService
             game: $game,
             type: GameNotification::TYPE_LOAN_DESTINATION_FOUND,
             title: __('notifications.loan_offer_received_title', [
-                'player' => $player->name,
+                'team_de' => $destination->nameWithDe(),
             ]),
             message: __('notifications.loan_offer_received_message', [
-                'player' => $player->name,
                 'team' => $destination->name,
+                'player' => $player->name,
             ]),
             priority: GameNotification::PRIORITY_INFO,
             metadata: [

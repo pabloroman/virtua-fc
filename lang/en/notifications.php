@@ -70,8 +70,8 @@ return [
     'low_fitness_message' => ':player has only :fitness% energy and needs rest.',
 
     // Loan search
-    'loan_offer_received_title' => 'Loan offer for :player',
-    'loan_offer_received_message' => ':team has offered to take :player on loan. Accept it from the outgoing transfers page.',
+    'loan_offer_received_title' => 'Loan offer :team_de',
+    'loan_offer_received_message' => ':team has offered to take :player on loan.',
     'loan_search_failed_title' => 'Loan search failed',
     'loan_search_failed_message' => 'No club was interested in loaning :player. The player is available again.',
 

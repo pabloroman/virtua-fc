@@ -70,8 +70,8 @@ return [
     'low_fitness_message' => ':player tiene solo :fitness% de energía y necesita descanso.',
 
     // Loan search
-    'loan_offer_received_title' => 'Oferta de cesión por :player',
-    'loan_offer_received_message' => ':team ha ofrecido llevarse a :player cedido. Acéptala desde la página de traspasos.',
+    'loan_offer_received_title' => 'Oferta de cesión :team_de',
+    'loan_offer_received_message' => ':team ha ofrecido llevarse a :player cedido.',
     'loan_search_failed_title' => 'Búsqueda de cesión fallida',
     'loan_search_failed_message' => 'No se encontró un club interesado en ceder a :player. El jugador vuelve a estar disponible.',
 
