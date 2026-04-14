@@ -59,14 +59,21 @@ class TransferService
     private const UNSOLICITED_OFFER_EXPIRY_DAYS = 14;
 
     /**
-     * Chance of unsolicited offer per star player per matchday.
+     * Per-matchday unsolicited offer chance keyed by player tier (1-5).
+     * Stars still attract heavy AI interest; rotation and bench players get
+     * occasional bids from lower-tier clubs that can realistically afford
+     * them — giving the user transfer-market decisions across the full squad
+     * rather than only the top 5 by value. The reputation/budget gates in
+     * getEligibleBuyersWithSquadValues() continue to enforce realism (e.g.
+     * Segunda clubs still can't bid on tier-4+ La Liga starters).
      */
-    private const UNSOLICITED_OFFER_CHANCE = 0.05; // 5%
-
-    /**
-     * Number of star players to consider for unsolicited offers.
-     */
-    private const STAR_PLAYER_COUNT = 5;
+    private const UNSOLICITED_OFFER_CHANCE_BY_TIER = [
+        5 => 0.05,   // World class
+        4 => 0.03,   // Excellent
+        3 => 0.02,   // Good — bench/rotation at top clubs
+        2 => 0.01,   // Average
+        1 => 0.005,  // Low
+    ];
 
     /**
      * Maximum transfer fee as a fraction of the buying team's squad value.
@@ -235,22 +242,23 @@ class TransferService
     {
         $offers = collect();
 
-        // Use pre-loaded players if available, otherwise load
+        // Use pre-loaded players if available, otherwise load.
+        // Sorted by value DESC so higher-value players get first pick of
+        // buyers — once a buyer commits to one player in this call, they're
+        // added to $excludedBuyerTeamIds and can't bid on another.
         if ($allPlayersGrouped !== null) {
             $teamPlayers = $allPlayersGrouped->get($game->team_id, collect());
-            $starPlayers = $teamPlayers
+            $eligiblePlayers = $teamPlayers
                 ->filter(fn ($p) => !$p->relationLoaded('transferListing') || $p->transferListing === null)
                 ->filter(fn ($p) => !$p->isLoanedIn($game->team_id))
-                ->sortByDesc('market_value_cents')
-                ->take(self::STAR_PLAYER_COUNT);
+                ->sortByDesc('market_value_cents');
         } else {
-            $starPlayers = GamePlayer::with('transferOffers')
+            $eligiblePlayers = GamePlayer::with('transferOffers')
                 ->where('game_id', $game->id)
                 ->where('team_id', $game->team_id)
                 ->whereDoesntHave('transferListing')
                 ->whereDoesntHave('activeLoan')
                 ->orderByDesc('market_value_cents')
-                ->limit(self::STAR_PLAYER_COUNT)
                 ->get();
         }
 
@@ -268,7 +276,7 @@ class TransferService
             $this->getRivalTeamIds($game, $buyerPool),
         )));
 
-        foreach ($starPlayers as $player) {
+        foreach ($eligiblePlayers as $player) {
             // Use pre-loaded transferOffers relationship to avoid N+1
             $playerOffers = $player->relationLoaded('transferOffers')
                 ? $player->transferOffers
@@ -284,8 +292,9 @@ class TransferService
                 continue;
             }
 
-            // Random chance for an offer
-            if (rand(1, 100) <= self::UNSOLICITED_OFFER_CHANCE * 100) {
+            // Tier-scaled random chance for an offer
+            $chance = self::UNSOLICITED_OFFER_CHANCE_BY_TIER[$player->tier] ?? 0;
+            if ($chance > 0 && mt_rand() / mt_getrandmax() < $chance) {
                 ['buyers' => $buyers, 'squadValues' => $squadValues] = $this->getEligibleBuyersWithSquadValues($player, $buyerPool);
 
                 // Exclude teams that already have a pending unsolicited offer for another player on this squad

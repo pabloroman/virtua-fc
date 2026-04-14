@@ -96,6 +96,35 @@ class UnsolicitedRivalExclusionTest extends TestCase
         );
     }
 
+    public function test_lower_reputation_buyers_can_pursue_mid_tier_players(): void
+    {
+        // An ELITE team's €8M rotation player (tier 3) is the kind of
+        // player a MODEST club can realistically afford. Before tier-scaled
+        // chances, only the top-5 by value were visible to the AI so these
+        // players were effectively invisible in the transfer market.
+        [$game] = $this->createScenario(
+            userReputation: ClubProfile::REPUTATION_ELITE,
+            aiCompetitionId: 'ESP2',
+            aiReputation: ClubProfile::REPUTATION_MODEST,
+            playerValueCents: 800_000_000, // €8M, tier 3 (2% per matchday)
+        );
+
+        $this->runUntilOfferOrLimit(
+            fn () => $this->transferService->generateUnsolicitedOffers($game),
+            $game,
+            TransferOffer::TYPE_UNSOLICITED,
+            maxIterations: 1500,
+        );
+
+        $this->assertGreaterThan(
+            0,
+            TransferOffer::where('game_id', $game->id)
+                ->where('offer_type', TransferOffer::TYPE_UNSOLICITED)
+                ->count(),
+            'Mid-tier players must be reachable by lower-reputation clubs under the tier-scaled chance.',
+        );
+    }
+
     public function test_rival_still_allowed_to_bid_on_listed_players(): void
     {
         [$game, $player] = $this->createScenario(
@@ -133,6 +162,7 @@ class UnsolicitedRivalExclusionTest extends TestCase
         string $userReputation,
         string $aiCompetitionId,
         string $aiReputation,
+        int $playerValueCents = 3_000_000_000,
     ): array {
         $season = '2025';
 
@@ -192,13 +222,14 @@ class UnsolicitedRivalExclusionTest extends TestCase
             'reputation_points' => TeamReputation::pointsForTier($aiReputation),
         ]);
 
-        // Star player for the user — market value large enough to satisfy
-        // tier-4+ gate (ELITE buyers demand tier 4+) and the AI squad-ratio
-        // check (fee <= 15% of buyer squad value).
+        // Player for the user — market value determines their tier, which in
+        // turn gates which buyer reputations are interested (see
+        // MIN_TIER_BY_REPUTATION) and the per-matchday chance of an offer
+        // (see UNSOLICITED_OFFER_CHANCE_BY_TIER).
         $player = GamePlayer::factory()->create([
             'game_id' => $game->id,
             'team_id' => $userTeam->id,
-            'market_value_cents' => 3_000_000_000, // €30M, tier 4
+            'market_value_cents' => $playerValueCents,
             'contract_until' => '2027-06-30',
         ]);
 
@@ -217,10 +248,10 @@ class UnsolicitedRivalExclusionTest extends TestCase
 
     /**
      * Call the generator repeatedly until at least one offer of the given type
-     * exists, or we hit the iteration ceiling. The probability of no offer
-     * after this many iterations (at 5%+ per-iteration odds) is astronomically
-     * small, so a failure almost certainly indicates a real regression rather
-     * than RNG unluckiness.
+     * exists, or we hit the iteration ceiling. The default ceiling is sized
+     * so that at the lowest realistic per-iteration odds (~2% for tier-3
+     * players) the probability of a false-negative is vanishingly small —
+     * a failure therefore points to a real regression, not RNG unluckiness.
      */
     private function runUntilOfferOrLimit(callable $generator, Game $game, string $offerType, int $maxIterations = 500): void
     {
