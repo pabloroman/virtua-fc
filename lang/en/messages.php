@@ -28,6 +28,9 @@ return [
     'already_on_loan' => ':player is already on loan.',
     'loan_search_started' => 'A loan destination search has started for :player. You will be notified when a club is found.',
     'loan_search_active' => ':player already has an active loan search.',
+    'loan_offer_accepted' => ':player loaned :team_a.',
+    'loan_offer_accepted_pre_window' => ':player will be loaned to :team when the :window window opens.',
+    'loan_offer_rejected' => ':team_de loan offer rejected.',
     'loan_search_cancelled' => ':player loan search has been cancelled.',
 
     // Contract messages

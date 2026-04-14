@@ -480,25 +480,32 @@ class NotificationService
     }
 
     /**
-     * Create a loan destination found notification.
+     * Notify the user that one or more AI clubs have tabled loan offers for a
+     * player they listed for a loan move. The user picks one (or rejects all)
+     * from the outgoing-transfers screen.
+     *
+     * @param  Collection<int, Team>  $destinations
      */
-    public function notifyLoanDestinationFound(Game $game, GamePlayer $player, Team $destination, bool $windowOpen): GameNotification
+    public function notifyLoanOffersReceived(Game $game, GamePlayer $player, Collection $destinations): GameNotification
     {
-        $message = $windowOpen
-            ? __('notifications.loan_destination_found_message', ['player' => $player->name, 'team_a' => $destination->nameWithA()])
-            : __('notifications.loan_destination_found_waiting', ['player' => $player->name, 'team_a' => $destination->nameWithA()]);
+        $teamNames = $destinations->map(fn (Team $team) => $team->name)->values();
 
         return $this->create(
             game: $game,
             type: GameNotification::TYPE_LOAN_DESTINATION_FOUND,
-            title: __('notifications.loan_destination_found_title', ['player' => $player->name]),
-            message: $message,
+            title: __('notifications.loan_offers_received_title', [
+                'count' => $teamNames->count(),
+                'player' => $player->name,
+            ]),
+            message: __('notifications.loan_offers_received_message', [
+                'player' => $player->name,
+                'teams' => $teamNames->join(', '),
+            ]),
             priority: GameNotification::PRIORITY_INFO,
             metadata: [
                 'player_id' => $player->id,
-                'team_id' => $destination->id,
-                'team_name' => $destination->name,
-                'window_open' => $windowOpen,
+                'team_ids' => $destinations->pluck('id')->all(),
+                'team_names' => $teamNames->all(),
             ],
         );
     }

@@ -56,7 +56,7 @@ class LoanService
 
     /**
      * Process all active loan searches each matchday.
-     * Returns arrays of found and expired results.
+     * Returns arrays of found (new offers received) and expired results.
      */
     public function processLoanSearches(Game $game): array
     {
@@ -69,15 +69,44 @@ class LoanService
         $found = [];
         $expired = [];
 
+        // Pre-load players that already have pending loan-out offers so we don't
+        // generate a second batch while the user is still deciding on the first.
+        $playersWithPendingOffers = TransferOffer::where('game_id', $game->id)
+            ->where('offer_type', TransferOffer::TYPE_LOAN_OUT)
+            ->where('direction', TransferOffer::DIRECTION_OUTGOING)
+            ->where('status', TransferOffer::STATUS_PENDING)
+            ->whereIn('game_player_id', $searching->pluck('id'))
+            ->pluck('game_player_id')
+            ->unique()
+            ->flip();
+
         foreach ($searching as $player) {
+            // If the user hasn't decided on the current offer batch yet, do not
+            // generate more offers. Offers expire with the listing (see below).
+            if ($playersWithPendingOffers->has($player->id)) {
+                // Still honour expiry — if the whole search has timed out,
+                // clear the listing and let expireOffers sweep the pendings.
+                if ($this->isSearchExpired($player, $game->current_date)) {
+                    TransferListing::where('game_player_id', $player->id)->delete();
+                    $expired[] = ['player' => $player];
+                }
+                continue;
+            }
+
             // Roll probability
             if (rand(1, 100) <= self::MATCH_PROBABILITY) {
-                $destination = $this->findBestDestination($game, $player);
+                $destinations = $this->findLoanDestinations($game, $player);
 
-                if ($destination) {
-                    // Complete the loan
-                    if ($game->isTransferWindowOpen()) {
-                        TransferOffer::create([
+                if ($destinations->isNotEmpty()) {
+                    $listing = $player->transferListing;
+                    // Pending offers live as long as the underlying search does.
+                    $expiresAt = $listing?->listed_at
+                        ? $listing->listed_at->copy()->addDays(self::SEARCH_EXPIRY_DAYS)
+                        : $game->current_date->copy()->addDays(self::SEARCH_EXPIRY_DAYS);
+
+                    $offers = collect();
+                    foreach ($destinations as $destination) {
+                        $offers->push(TransferOffer::create([
                             'game_id' => $game->id,
                             'game_player_id' => $player->id,
                             'offering_team_id' => $destination->id,
@@ -85,34 +114,16 @@ class LoanService
                             'offer_type' => TransferOffer::TYPE_LOAN_OUT,
                             'direction' => TransferOffer::DIRECTION_OUTGOING,
                             'transfer_fee' => 0,
-                            'status' => TransferOffer::STATUS_COMPLETED,
-                            'expires_at' => $game->current_date->addDays(30),
+                            'status' => TransferOffer::STATUS_PENDING,
+                            'expires_at' => $expiresAt,
                             'game_date' => $game->current_date,
-                            'resolved_at' => $game->current_date,
-                        ]);
-
-                        $this->processLoanOut($game, $player, $destination);
-                    } else {
-                        TransferOffer::create([
-                            'game_id' => $game->id,
-                            'game_player_id' => $player->id,
-                            'offering_team_id' => $destination->id,
-                            'selling_team_id' => $game->team_id,
-                            'offer_type' => TransferOffer::TYPE_LOAN_OUT,
-                            'direction' => TransferOffer::DIRECTION_OUTGOING,
-                            'transfer_fee' => 0,
-                            'status' => TransferOffer::STATUS_AGREED,
-                            'expires_at' => $game->current_date->addDays(30),
-                            'game_date' => $game->current_date,
-                            'resolved_at' => $game->current_date,
-                        ]);
-
-                        TransferListing::where('game_player_id', $player->id)->delete();
+                        ]));
                     }
 
                     $found[] = [
                         'player' => $player,
-                        'destination' => $destination,
+                        'destinations' => $destinations,
+                        'offers' => $offers,
                         'windowOpen' => $game->isTransferWindowOpen(),
                     ];
                     continue;
@@ -131,9 +142,14 @@ class LoanService
     }
 
     /**
-     * Find the best destination team using scoring algorithm.
+     * Find up to $max loan destinations using weighted random sampling without
+     * replacement. Teams that don't clear the minimum score threshold are
+     * excluded, which means fringe players may receive fewer than $max offers
+     * (or none) — the caller handles that case.
+     *
+     * @return Collection<int, Team>
      */
-    private function findBestDestination(Game $game, GamePlayer $player): ?Team
+    private function findLoanDestinations(Game $game, GamePlayer $player, int $max = 3): Collection
     {
         $teams = Team::transferMarketEligible()
             ->with(['clubProfile', 'competitions'])
@@ -148,7 +164,7 @@ class LoanService
             ->values();
 
         if ($teams->isEmpty()) {
-            return null;
+            return collect();
         }
 
         // Pre-load position group counts for all candidate teams in one query
@@ -158,7 +174,7 @@ class LoanService
         // Batch-load all team reputations in one query
         $teamReputations = TeamReputation::resolveLevels($game->id, $teamIds);
 
-        // Score each team
+        // Score each team and keep only qualifiers
         $scored = $teams->map(function (Team $team) use ($game, $player, $positionCounts, $teamReputations) {
             return [
                 'team' => $team,
@@ -167,26 +183,39 @@ class LoanService
         })
         ->filter(fn ($item) => $item['score'] >= 20)
         ->sortByDesc('score')
-        ->take(5)
+        ->take(10) // Widen the pool so the weighted draw can diversify
         ->values();
 
         if ($scored->isEmpty()) {
-            return null;
+            return collect();
         }
 
-        // Weighted random from top candidates
-        $totalWeight = $scored->sum('score');
-        $roll = rand(1, $totalWeight);
-        $cumulative = 0;
+        // Weighted random without replacement: each iteration draws one team
+        // proportional to its remaining score, removes it from the pool, and
+        // continues until we have $max picks or the pool is exhausted.
+        $pool = $scored->all();
+        $picks = collect();
 
-        foreach ($scored as $item) {
-            $cumulative += $item['score'];
-            if ($roll <= $cumulative) {
-                return $item['team'];
+        while (!empty($pool) && $picks->count() < $max) {
+            $totalWeight = array_sum(array_column($pool, 'score'));
+            if ($totalWeight <= 0) {
+                break;
             }
+            $roll = rand(1, $totalWeight);
+            $cumulative = 0;
+            $winnerIndex = array_key_last($pool);
+            foreach ($pool as $index => $item) {
+                $cumulative += $item['score'];
+                if ($roll <= $cumulative) {
+                    $winnerIndex = $index;
+                    break;
+                }
+            }
+            $picks->push($pool[$winnerIndex]['team']);
+            unset($pool[$winnerIndex]);
         }
 
-        return $scored->first()['team'];
+        return $picks->values();
     }
 
     /**
@@ -337,33 +366,6 @@ class LoanService
         }
 
         return $listing->listed_at->diffInDays($currentDate) >= self::SEARCH_EXPIRY_DAYS;
-    }
-
-    /**
-     * Process a loan-out: user's player goes to AI team.
-     */
-    private function processLoanOut(Game $game, GamePlayer $player, Team $destinationTeam): Loan
-    {
-        $returnDate = $game->getSeasonEndDate();
-
-        $loan = Loan::create([
-            'game_id' => $game->id,
-            'game_player_id' => $player->id,
-            'parent_team_id' => $game->team_id,
-            'loan_team_id' => $destinationTeam->id,
-            'started_at' => $game->current_date,
-            'return_at' => $returnDate,
-            'status' => Loan::STATUS_ACTIVE,
-        ]);
-
-        // Move player to AI team
-        TransferListing::where('game_player_id', $player->id)->delete();
-        $player->update([
-            'team_id' => $destinationTeam->id,
-            'number' => null,
-        ]);
-
-        return $loan;
     }
 
     /**
@@ -634,6 +636,66 @@ class LoanService
     public function getLoanMoodIndicator(float $disposition): array
     {
         return $this->dispositionService->moodIndicator($disposition, 'loan');
+    }
+
+    /**
+     * Accept a pending loan-out offer: completes the loan if the window is
+     * open (moves player, creates Loan), or marks it as agreed so it completes
+     * when the window opens. Any sibling pending offers for the same player
+     * are auto-rejected.
+     */
+    public function acceptLoanOffer(TransferOffer $offer, Game $game): void
+    {
+        // Reject sibling offers for the same player
+        TransferOffer::where('game_id', $game->id)
+            ->where('game_player_id', $offer->game_player_id)
+            ->where('offer_type', TransferOffer::TYPE_LOAN_OUT)
+            ->where('direction', TransferOffer::DIRECTION_OUTGOING)
+            ->where('status', TransferOffer::STATUS_PENDING)
+            ->where('id', '!=', $offer->id)
+            ->update([
+                'status' => TransferOffer::STATUS_REJECTED,
+                'resolved_at' => $game->current_date,
+            ]);
+
+        if ($game->isTransferWindowOpen()) {
+            // completeLoanOut already removes the TransferListing
+            $this->completeLoanOut($offer, $game);
+            return;
+        }
+
+        // Window closed: mark as agreed, remove listing (no more offers).
+        // TransferService::completeIncomingTransfers() will finalise the move
+        // when the window opens.
+        $offer->update([
+            'status' => TransferOffer::STATUS_AGREED,
+            'resolved_at' => $game->current_date,
+        ]);
+        TransferListing::where('game_player_id', $offer->game_player_id)->delete();
+    }
+
+    /**
+     * Reject a single loan-out offer. If this was the last pending offer for
+     * the player, the loan search is cancelled — the user can re-list the
+     * player to try again.
+     */
+    public function rejectLoanOffer(TransferOffer $offer, Game $game): void
+    {
+        $offer->update([
+            'status' => TransferOffer::STATUS_REJECTED,
+            'resolved_at' => $game->current_date,
+        ]);
+
+        $remaining = TransferOffer::where('game_id', $game->id)
+            ->where('game_player_id', $offer->game_player_id)
+            ->where('offer_type', TransferOffer::TYPE_LOAN_OUT)
+            ->where('direction', TransferOffer::DIRECTION_OUTGOING)
+            ->where('status', TransferOffer::STATUS_PENDING)
+            ->count();
+
+        if ($remaining === 0) {
+            TransferListing::where('game_player_id', $offer->game_player_id)->delete();
+        }
     }
 
 }

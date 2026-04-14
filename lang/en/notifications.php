@@ -70,9 +70,8 @@ return [
     'low_fitness_message' => ':player has only :fitness% energy and needs rest.',
 
     // Loan search
-    'loan_destination_found_title' => 'Destination found for :player',
-    'loan_destination_found_message' => ':player has been loaned :team_a.',
-    'loan_destination_found_waiting' => ':player will be loaned :team_a when the transfer window opens.',
+    'loan_offers_received_title' => ':count loan offers for :player',
+    'loan_offers_received_message' => 'You have loan offers for :player from: :teams. Pick one to complete the loan or reject them.',
     'loan_search_failed_title' => 'Loan search failed',
     'loan_search_failed_message' => 'No club was interested in loaning :player. The player is available again.',
 

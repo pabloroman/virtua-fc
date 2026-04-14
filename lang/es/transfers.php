@@ -29,6 +29,11 @@ return [
     'loans_out_section' => 'Cesiones Activas (Salidas)',
     'loan_searches_section' => 'Buscando Destino de Cesión',
     'loan_searches_help' => 'Jugadores buscando un club para ser cedidos',
+    'loan_offers_count' => '{1} 1 oferta de cesión recibida|[2,*] :count ofertas de cesión recibidas',
+    'loan_offer_expires_in' => 'Expira en :days días',
+    'accept_loan_offer' => 'Aceptar cesión',
+    'reject_loan_offer' => 'Rechazar',
+    'confirm_accept_loan_offer' => '¿Ceder a :player al :team?',
     // Legacy keys kept for compatibility
     'loans' => 'Cesiones',
 

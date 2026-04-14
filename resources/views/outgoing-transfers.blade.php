@@ -357,13 +357,23 @@
                                 <p class="text-sm text-text-muted mb-3">{{ __('transfers.loan_searches_help') }}</p>
                                 <div class="space-y-3">
                                     @foreach($loanSearches as $gamePlayer)
-                                    <div class="bg-accent-blue/10 border border-accent-blue/20 rounded-xl p-4">
+                                    @php
+                                        $offersForPlayer = $loanOffers->get($gamePlayer->id, collect());
+                                        $hasOffers = $offersForPlayer->isNotEmpty();
+                                    @endphp
+                                    <div class="bg-accent-blue/10 border border-accent-blue/20 rounded-xl p-4 space-y-3">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
                                                 <div class="w-10 h-10 rounded-full bg-accent-blue/20 flex items-center justify-center shrink-0">
-                                                    <svg class="w-5 h-5 text-accent-blue animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                                                    </svg>
+                                                    @if($hasOffers)
+                                                        <svg class="w-5 h-5 text-accent-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                                        </svg>
+                                                    @else
+                                                        <svg class="w-5 h-5 text-accent-blue animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                                        </svg>
+                                                    @endif
                                                 </div>
                                                 <div>
                                                     <div class="font-semibold text-text-primary">{{ $gamePlayer->name }}</div>
@@ -373,10 +383,16 @@
                                                 </div>
                                             </div>
                                             <div class="flex items-center gap-3">
-                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent-blue/10 text-accent-blue">
-                                                    <span class="w-1.5 h-1.5 bg-accent-blue rounded-full animate-pulse"></span>
-                                                    {{ __('transfers.searching_destination') }}
-                                                </span>
+                                                @if($hasOffers)
+                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent-blue/10 text-accent-blue">
+                                                        {{ __('transfers.loan_offers_count', ['count' => $offersForPlayer->count()]) }}
+                                                    </span>
+                                                @else
+                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent-blue/10 text-accent-blue">
+                                                        <span class="w-1.5 h-1.5 bg-accent-blue rounded-full animate-pulse"></span>
+                                                        {{ __('transfers.searching_destination') }}
+                                                    </span>
+                                                @endif
                                                 <form method="post" action="{{ route('game.loans.cancel', [$game->id, $gamePlayer->id]) }}">
                                                     @csrf
                                                     <x-ghost-button type="submit" color="red" size="xs">
@@ -385,6 +401,37 @@
                                                 </form>
                                             </div>
                                         </div>
+
+                                        @if($hasOffers)
+                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                            @foreach($offersForPlayer as $offer)
+                                            <div class="bg-surface-700 border border-border-default rounded-lg p-3 flex flex-col gap-3">
+                                                <div class="flex items-start justify-between gap-2">
+                                                    <div class="min-w-0">
+                                                        <div class="font-semibold text-text-primary truncate">{{ $offer->offeringTeam->name }}</div>
+                                                        <div class="text-xs text-text-muted mt-0.5">
+                                                            {{ __('transfers.loan_offer_expires_in', ['days' => max(0, (int) round($game->current_date->diffInDays($offer->expires_at, false)))]) }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="flex gap-2">
+                                                    <form method="post" action="{{ route('game.loans.offers.accept', [$game->id, $offer->id]) }}" class="flex-1" onsubmit="return confirm('{{ __('transfers.confirm_accept_loan_offer', ['team' => $offer->offeringTeam->name, 'player' => $gamePlayer->name]) }}')">
+                                                        @csrf
+                                                        <x-primary-button type="submit" color="green" size="xs" class="w-full justify-center">
+                                                            {{ __('transfers.accept_loan_offer') }}
+                                                        </x-primary-button>
+                                                    </form>
+                                                    <form method="post" action="{{ route('game.loans.offers.reject', [$game->id, $offer->id]) }}">
+                                                        @csrf
+                                                        <x-ghost-button type="submit" color="red" size="xs">
+                                                            {{ __('transfers.reject_loan_offer') }}
+                                                        </x-ghost-button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        @endif
                                     </div>
                                     @endforeach
                                 </div>

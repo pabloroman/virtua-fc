@@ -105,6 +105,19 @@ class ShowOutgoingTransfers
             ->whereHas('transferListing', fn ($q) => $q->where('status', TransferListing::STATUS_LOAN_SEARCH))
             ->get();
 
+        // Pending loan-out offers grouped by player so each search entry can
+        // surface the offers the user needs to accept or reject.
+        $loanOffers = TransferOffer::with(['offeringTeam', 'gamePlayer.player'])
+            ->where('game_id', $gameId)
+            ->where('direction', TransferOffer::DIRECTION_OUTGOING)
+            ->where('offer_type', TransferOffer::TYPE_LOAN_OUT)
+            ->where('status', TransferOffer::STATUS_PENDING)
+            ->whereHas('gamePlayer', fn ($q) => $q->where('team_id', $game->team_id))
+            ->where('expires_at', '>=', $game->current_date)
+            ->orderByDesc('game_date')
+            ->get()
+            ->groupBy('game_player_id');
+
         // Contract renewal data
         $renewalEligiblePlayers = $this->contractService->getPlayersEligibleForRenewal($game);
         $pendingRenewals = $this->contractService->getPlayersWithPendingRenewals($game);
@@ -146,6 +159,7 @@ class ShowOutgoingTransfers
             'recentTransfers' => $recentTransfers,
             'loansOut' => $loansOut,
             'loanSearches' => $loanSearches,
+            'loanOffers' => $loanOffers,
             'renewalEligiblePlayers' => $renewalEligiblePlayers,
             'pendingRenewals' => $pendingRenewals,
             'declinedRenewals' => $declinedRenewals,

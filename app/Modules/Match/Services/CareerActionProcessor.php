@@ -97,11 +97,10 @@ class CareerActionProcessor
         // Process loan searches
         $loanResults = $this->loanService->processLoanSearches($game);
         foreach ($loanResults['found'] as $result) {
-            $this->notificationService->notifyLoanDestinationFound(
+            $this->notificationService->notifyLoanOffersReceived(
                 $game,
                 $result['player'],
-                $result['destination'],
-                $result['windowOpen'],
+                $result['destinations'],
             );
         }
         foreach ($loanResults['expired'] as $result) {

@@ -187,7 +187,7 @@ class RenewalForLoanedPlayerTest extends TestCase
             'status' => Loan::STATUS_ACTIVE,
         ]);
 
-        // Mirror LoanService::processLoanOut: the player physically moves.
+        // Mirror LoanService::completeLoanOut: the player physically moves.
         $player->update(['team_id' => $destination->id, 'number' => null]);
 
         return $loan;

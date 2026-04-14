@@ -29,6 +29,11 @@ return [
     'loans_out_section' => 'Active Loans (Out)',
     'loan_searches_section' => 'Searching for Loan Destination',
     'loan_searches_help' => 'Players looking for a club to go on loan',
+    'loan_offers_count' => '{1} 1 loan offer received|[2,*] :count loan offers received',
+    'loan_offer_expires_in' => 'Expires in :days days',
+    'accept_loan_offer' => 'Accept loan',
+    'reject_loan_offer' => 'Reject',
+    'confirm_accept_loan_offer' => 'Send :player on loan to :team?',
     // Legacy keys kept for compatibility
     'loans' => 'Loans',
 
