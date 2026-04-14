@@ -76,7 +76,7 @@
             </div>
 
             {{-- Split layout: Pitch (left) + Controls (right) --}}
-            <div class="flex-1 min-h-0 overflow-y-auto lg:overflow-y-hidden">
+            <div x-ref="tacticalScrollContainer" class="flex-1 min-h-0 overflow-y-auto lg:overflow-y-hidden">
                 <div class="flex flex-col lg:flex-row lg:h-full">
 
                     {{-- LEFT: Pitch visualization --}}

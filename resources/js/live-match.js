@@ -840,6 +840,19 @@ export default function liveMatch(config) {
         showConfirmation() {
             this.tacticalError = null;
             this.showingConfirmation = true;
+            // On mobile the pitch and controls stack vertically in a single
+            // scroll container, and the confirmation overlay is positioned
+            // absolutely within the controls panel. If the user had scrolled
+            // down (e.g. to pick a bench player) before tapping "Apply",
+            // the overlay's content would sit above the viewport. Reset the
+            // scroll so the pitch and the "Revisar cambios" summary are
+            // both visible.
+            this.$nextTick(() => {
+                const scrollContainer = this.$refs.tacticalScrollContainer;
+                if (scrollContainer) {
+                    scrollContainer.scrollTop = 0;
+                }
+            });
         },
 
         cancelConfirmation() {
