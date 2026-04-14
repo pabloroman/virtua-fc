@@ -10,6 +10,7 @@ use App\Models\Team;
 use App\Models\TeamReputation;
 use App\Models\TransferOffer;
 use App\Models\User;
+use App\Modules\Player\Services\PlayerTierService;
 use App\Modules\Transfer\Services\TransferService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -224,11 +225,14 @@ class UnsolicitedRivalExclusionTest extends TestCase
         // Player for the user — market value determines their tier, which in
         // turn gates which buyer reputations are interested (see
         // MIN_TIER_BY_REPUTATION) and the per-matchday chance of an offer
-        // (see UNSOLICITED_OFFER_CHANCE_BY_TIER).
+        // (see UNSOLICITED_OFFER_CHANCE_BY_TIER). Pass `tier` explicitly
+        // because GamePlayerFactory derives it from its own random value —
+        // an overridden `market_value_cents` doesn't flow through.
         $player = GamePlayer::factory()->create([
             'game_id' => $game->id,
             'team_id' => $userTeam->id,
             'market_value_cents' => $playerValueCents,
+            'tier' => PlayerTierService::tierFromMarketValue($playerValueCents),
             'contract_until' => '2027-06-30',
         ]);
 
