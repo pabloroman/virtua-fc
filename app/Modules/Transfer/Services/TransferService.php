@@ -60,19 +60,28 @@ class TransferService
 
     /**
      * Per-matchday unsolicited offer chance keyed by player tier (1-5).
-     * Stars still attract heavy AI interest; rotation and bench players get
-     * occasional bids from lower-tier clubs that can realistically afford
-     * them — giving the user transfer-market decisions across the full squad
-     * rather than only the top 5 by value. The reputation/budget gates in
-     * getEligibleBuyersWithSquadValues() continue to enforce realism (e.g.
-     * Segunda clubs still can't bid on tier-4+ La Liga starters).
+     *
+     * The curve peaks at tier 3 (€5–20M) and tapers at both extremes to
+     * mirror real transfer-market dynamics:
+     *
+     *   - Tier 5 (world class, €50M+) — only a handful of clubs can afford
+     *     them, so unsolicited bids are rare. Elite clubs tend to sign at
+     *     most one marquee player a year.
+     *   - Tier 3 (good, €5–20M) — hundreds of clubs worldwide can afford
+     *     and want these players. This is where the market is most active.
+     *   - Tier 1 (low, <€1M) — still some interest from low-budget clubs,
+     *     but the pool of buyers willing to spend an offer slot is smaller.
+     *
+     * The reputation/budget gates in getEligibleBuyersWithSquadValues()
+     * continue to enforce realism (e.g. Segunda clubs still can't bid on
+     * tier-4+ La Liga starters).
      */
     private const UNSOLICITED_OFFER_CHANCE_BY_TIER = [
-        5 => 0.05,   // World class
-        4 => 0.03,   // Excellent
-        3 => 0.02,   // Good — bench/rotation at top clubs
-        2 => 0.01,   // Average
-        1 => 0.005,  // Low
+        5 => 0.005,  // World class — tiny buyer pool
+        4 => 0.012,  // Excellent — uncommon
+        3 => 0.025,  // Good — peak market activity
+        2 => 0.020,  // Average — active mid-market
+        1 => 0.010,  // Low — moderate interest
     ];
 
     /**

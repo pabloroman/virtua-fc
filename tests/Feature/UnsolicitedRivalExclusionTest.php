@@ -99,21 +99,20 @@ class UnsolicitedRivalExclusionTest extends TestCase
     public function test_lower_reputation_buyers_can_pursue_mid_tier_players(): void
     {
         // An ELITE team's €8M rotation player (tier 3) is the kind of
-        // player a MODEST club can realistically afford. Before tier-scaled
-        // chances, only the top-5 by value were visible to the AI so these
-        // players were effectively invisible in the transfer market.
+        // player a MODEST club can realistically afford. Tier 3 is the peak
+        // of the UNSOLICITED_OFFER_CHANCE_BY_TIER curve — the mid-market
+        // where hundreds of clubs worldwide are realistic buyers.
         [$game] = $this->createScenario(
             userReputation: ClubProfile::REPUTATION_ELITE,
             aiCompetitionId: 'ESP2',
             aiReputation: ClubProfile::REPUTATION_MODEST,
-            playerValueCents: 800_000_000, // €8M, tier 3 (2% per matchday)
+            playerValueCents: 800_000_000, // €8M, tier 3
         );
 
         $this->runUntilOfferOrLimit(
             fn () => $this->transferService->generateUnsolicitedOffers($game),
             $game,
             TransferOffer::TYPE_UNSOLICITED,
-            maxIterations: 1500,
         );
 
         $this->assertGreaterThan(
@@ -248,12 +247,12 @@ class UnsolicitedRivalExclusionTest extends TestCase
 
     /**
      * Call the generator repeatedly until at least one offer of the given type
-     * exists, or we hit the iteration ceiling. The default ceiling is sized
-     * so that at the lowest realistic per-iteration odds (~2% for tier-3
-     * players) the probability of a false-negative is vanishingly small —
-     * a failure therefore points to a real regression, not RNG unluckiness.
+     * exists, or we hit the iteration ceiling. The ceiling is sized so that
+     * even at tier-4's ~1.2% per-iteration odds the probability of a
+     * false-negative is vanishingly small (under 1-in-10-million) — a failure
+     * therefore points to a real regression, not RNG unluckiness.
      */
-    private function runUntilOfferOrLimit(callable $generator, Game $game, string $offerType, int $maxIterations = 500): void
+    private function runUntilOfferOrLimit(callable $generator, Game $game, string $offerType, int $maxIterations = 2000): void
     {
         for ($i = 0; $i < $maxIterations; $i++) {
             $generator();
