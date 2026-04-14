@@ -9,20 +9,21 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * @property string $id
  * @property string $game_player_id
+ * @property string $game_id
  * @property string $competition_id
  * @property int $matches_remaining
  * @property int $yellow_cards
  * @property-read \App\Models\Competition|null $competition
+ * @property-read \App\Models\Game $game
  * @property-read \App\Models\GamePlayer $gamePlayer
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PlayerSuspension newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PlayerSuspension newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PlayerSuspension query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PlayerSuspension whereCompetitionId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PlayerSuspension whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PlayerSuspension whereGameId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PlayerSuspension whereGamePlayerId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PlayerSuspension whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PlayerSuspension whereMatchesRemaining($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PlayerSuspension whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 class PlayerSuspension extends Model
@@ -33,6 +34,7 @@ class PlayerSuspension extends Model
 
     protected $fillable = [
         'game_player_id',
+        'game_id',
         'competition_id',
         'matches_remaining',
         'yellow_cards',
@@ -46,6 +48,11 @@ class PlayerSuspension extends Model
     public function gamePlayer(): BelongsTo
     {
         return $this->belongsTo(GamePlayer::class);
+    }
+
+    public function game(): BelongsTo
+    {
+        return $this->belongsTo(Game::class);
     }
 
     public function competition(): BelongsTo
@@ -76,12 +83,16 @@ class PlayerSuspension extends Model
 
     /**
      * Create or update a suspension for a player in a competition.
+     *
+     * The (game_player_id, competition_id) pair is already unique (game_player_id
+     * is globally unique via UUID), so game_id is set only on insert and kept
+     * out of the lookup keys.
      */
-    public static function applySuspension(string $gamePlayerId, string $competitionId, int $matches): self
+    public static function applySuspension(string $gamePlayerId, string $gameId, string $competitionId, int $matches): self
     {
         return self::updateOrCreate(
             ['game_player_id' => $gamePlayerId, 'competition_id' => $competitionId],
-            ['matches_remaining' => $matches],
+            ['game_id' => $gameId, 'matches_remaining' => $matches],
         );
     }
 
@@ -90,11 +101,11 @@ class PlayerSuspension extends Model
      *
      * @return int The updated yellow card count for this competition
      */
-    public static function recordYellowCard(string $gamePlayerId, string $competitionId): int
+    public static function recordYellowCard(string $gamePlayerId, string $gameId, string $competitionId): int
     {
         $record = self::firstOrCreate(
             ['game_player_id' => $gamePlayerId, 'competition_id' => $competitionId],
-            ['matches_remaining' => 0, 'yellow_cards' => 0],
+            ['game_id' => $gameId, 'matches_remaining' => 0, 'yellow_cards' => 0],
         );
 
         $record->increment('yellow_cards');
@@ -126,13 +137,19 @@ class PlayerSuspension extends Model
     }
 
     /**
-     * Get all suspended player IDs for a competition (single query, for batch filtering).
+     * Get all suspended player IDs for a given game + competition (single query, for batch filtering).
+     *
+     * Scoping by game_id is essential: competition_id is a shared reference (e.g. 'ESP1'
+     * is the same row across all games), so without it this query would return suspensions
+     * from every active game that uses the competition. Backed by the partial index
+     * `player_suspensions_active_idx (game_id, competition_id) WHERE matches_remaining > 0`.
      *
      * @return array<string>
      */
-    public static function suspendedPlayerIdsForCompetition(string $competitionId): array
+    public static function suspendedPlayerIdsForCompetition(string $gameId, string $competitionId): array
     {
-        return self::where('competition_id', $competitionId)
+        return self::where('game_id', $gameId)
+            ->where('competition_id', $competitionId)
             ->where('matches_remaining', '>', 0)
             ->pluck('game_player_id')
             ->all();

@@ -64,7 +64,7 @@ class SubstitutionService
         }
 
         // Pre-load all suspended player IDs for this competition (single query)
-        $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($match->competition_id);
+        $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($match->game_id, $match->competition_id);
 
         // Pre-load red-carded player IDs up to this minute (single query instead of N)
         $playerOutIds = array_column($newSubstitutions, 'playerOutId');
@@ -220,7 +220,7 @@ class SubstitutionService
         }
 
         // Pre-load suspended player IDs for this competition (single query)
-        $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($match->competition_id);
+        $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($match->game_id, $match->competition_id);
 
         $opponentPlayers = $opponentSquad->filter(fn ($p) => in_array($p->id, $opponentLineupIds));
         $opponentBench = $opponentSquad

@@ -228,6 +228,7 @@ class PreseasonSuspensionTest extends TestCase
         // Manually set up a PlayerSuspension record with 4 yellows (just under threshold)
         PlayerSuspension::create([
             'game_player_id' => $player->id,
+            'game_id' => $this->game->id,
             'competition_id' => 'PRESEASON',
             'matches_remaining' => 0,
             'yellow_cards' => 4,

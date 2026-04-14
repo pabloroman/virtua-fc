@@ -395,7 +395,7 @@ class MatchResultProcessor
         }
 
         // Batch process all card events (~4-5 queries total instead of ~3 per card)
-        $cardResults = $this->eligibilityService->batchProcessCards($cardEvents, $competitions);
+        $cardResults = $this->eligibilityService->batchProcessCards($cardEvents, $competitions, $game->id);
 
         // Build a lookup of which match each card event came from (for notification filtering)
         $cardEventMatchLookup = [];

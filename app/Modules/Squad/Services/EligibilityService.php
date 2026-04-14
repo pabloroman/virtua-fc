@@ -21,7 +21,7 @@ class EligibilityService
      */
     public function applySuspension(GamePlayer $player, int $matches, string $competitionId): void
     {
-        PlayerSuspension::applySuspension($player->id, $competitionId, $matches);
+        PlayerSuspension::applySuspension($player->id, $player->game_id, $competitionId, $matches);
     }
 
     /**
@@ -71,13 +71,13 @@ class EligibilityService
      *
      * @return int|null Number of matches banned, or null if no suspension
      */
-    public function processYellowCard(string $gamePlayerId, string $competitionId, string $handlerType = 'league'): ?int
+    public function processYellowCard(string $gamePlayerId, string $gameId, string $competitionId, string $handlerType = 'league'): ?int
     {
-        $competitionYellows = PlayerSuspension::recordYellowCard($gamePlayerId, $competitionId);
+        $competitionYellows = PlayerSuspension::recordYellowCard($gamePlayerId, $gameId, $competitionId);
         $banLength = $this->checkYellowCardAccumulation($competitionYellows, $handlerType);
 
         if ($banLength) {
-            PlayerSuspension::applySuspension($gamePlayerId, $competitionId, $banLength);
+            PlayerSuspension::applySuspension($gamePlayerId, $gameId, $competitionId, $banLength);
         }
 
         return $banLength;
@@ -131,9 +131,10 @@ class EligibilityService
      *
      * @param  array  $cardEvents  [{game_player_id, competitionId, event_type, metadata}]
      * @param  Collection  $competitions  keyed by ID
+     * @param  string  $gameId  The game these events belong to (all events in a batch share one game)
      * @return array  [suspensions => [{game_player_id, competition_id, ban_length, reason}]]
      */
-    public function batchProcessCards(array $cardEvents, Collection $competitions): array
+    public function batchProcessCards(array $cardEvents, Collection $competitions, string $gameId): array
     {
         if (empty($cardEvents)) {
             return ['suspensions' => []];
@@ -181,6 +182,7 @@ class EligibilityService
                 $missingRows[] = [
                     'id' => $newId,
                     'game_player_id' => $pair['game_player_id'],
+                    'game_id' => $gameId,
                     'competition_id' => $pair['competition_id'],
                     'yellow_cards' => 0,
                     'matches_remaining' => 0,
@@ -189,6 +191,7 @@ class EligibilityService
                 $record = new PlayerSuspension();
                 $record->id = $newId;
                 $record->game_player_id = $pair['game_player_id'];
+                $record->game_id = $gameId;
                 $record->competition_id = $pair['competition_id'];
                 $record->yellow_cards = 0;
                 $record->matches_remaining = 0;
@@ -298,8 +301,8 @@ class EligibilityService
      */
     public function resetYellowCardsForCompetition(string $gameId, string $competitionId): void
     {
-        PlayerSuspension::where('competition_id', $competitionId)
-            ->whereHas('gamePlayer', fn ($q) => $q->where('game_id', $gameId))
+        PlayerSuspension::where('game_id', $gameId)
+            ->where('competition_id', $competitionId)
             ->where('yellow_cards', '>', 0)
             ->update(['yellow_cards' => 0]);
     }

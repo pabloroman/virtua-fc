@@ -146,7 +146,7 @@ class SkipMatchToEnd
         ));
         $activeIds = array_merge($activeIds, $subbedInIds);
 
-        $suspendedIds = PlayerSuspension::suspendedPlayerIdsForCompetition($match->competition_id);
+        $suspendedIds = PlayerSuspension::suspendedPlayerIdsForCompetition($match->game_id, $match->competition_id);
 
         return GamePlayer::query()
             ->where('game_players.game_id', $game->id)

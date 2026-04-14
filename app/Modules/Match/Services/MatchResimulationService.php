@@ -540,8 +540,11 @@ class MatchResimulationService
         $isPreseason = $handlerType === 'preseason';
 
         if (! $isPreseason) {
-            // Pre-load all suspensions for affected players in this competition (single query)
-            $suspensionsByPlayer = PlayerSuspension::where('competition_id', $competitionId)
+            // Pre-load all suspensions for affected players in this competition (single query).
+            // game_id scoping is redundant here since whereIn on globally-unique game_player_ids
+            // already constrains the result, but we keep it for index alignment and hygiene.
+            $suspensionsByPlayer = PlayerSuspension::where('game_id', $match->game_id)
+                ->where('competition_id', $competitionId)
                 ->whereIn('game_player_id', $affectedPlayerIds)
                 ->get()
                 ->keyBy('game_player_id');
@@ -759,7 +762,7 @@ class MatchResimulationService
             switch ($event->type) {
                 case 'yellow_card':
                     if (! $isPreseason) {
-                        $this->eligibilityService->processYellowCard($player->id, $competitionId, $handlerType);
+                        $this->eligibilityService->processYellowCard($player->id, $player->game_id, $competitionId, $handlerType);
                     }
                     break;
                 case 'red_card':

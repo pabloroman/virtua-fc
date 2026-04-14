@@ -39,7 +39,7 @@ class LineupService
             ->get();
 
         // Batch load suspended player IDs for this competition (single query)
-        $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($competitionId);
+        $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($gameId, $competitionId);
 
         // Filter in memory using pre-loaded suspension data
         return $players->filter(function (GamePlayer $player) use ($matchDate, $suspendedPlayerIds, $requireEnrollment) {

@@ -69,6 +69,7 @@ class SuspensionDeferralTest extends TestCase
 
         PlayerSuspension::create([
             'game_player_id' => $suspendedPlayer->id,
+            'game_id' => $this->game->id,
             'competition_id' => $this->competition->id,
             'matches_remaining' => 1,
             'yellow_cards' => 5,
@@ -130,6 +131,7 @@ class SuspensionDeferralTest extends TestCase
 
         PlayerSuspension::create([
             'game_player_id' => $suspendedPlayer->id,
+            'game_id' => $this->game->id,
             'competition_id' => $this->competition->id,
             'matches_remaining' => 1,
             'yellow_cards' => 5,
@@ -156,7 +158,8 @@ class SuspensionDeferralTest extends TestCase
         $playerMatch = GameMatch::find($this->game->pending_finalization_match_id);
         $userLineupIds = $playerMatch->home_lineup ?? [];
 
-        $suspendedPlayerIds = PlayerSuspension::where('competition_id', $playerMatch->competition_id)
+        $suspendedPlayerIds = PlayerSuspension::where('game_id', $this->game->id)
+            ->where('competition_id', $playerMatch->competition_id)
             ->where('matches_remaining', '>', 0)
             ->pluck('game_player_id')
             ->toArray();
@@ -225,6 +228,7 @@ class SuspensionDeferralTest extends TestCase
 
         PlayerSuspension::create([
             'game_player_id' => $redCardPlayer->id,
+            'game_id' => $this->game->id,
             'competition_id' => $this->competition->id,
             'matches_remaining' => 1,
             'yellow_cards' => 0,
@@ -270,6 +274,7 @@ class SuspensionDeferralTest extends TestCase
 
         PlayerSuspension::create([
             'game_player_id' => $suspendedPlayer->id,
+            'game_id' => $this->game->id,
             'competition_id' => $this->competition->id,
             'matches_remaining' => 1,
             'yellow_cards' => 5,
@@ -322,6 +327,7 @@ class SuspensionDeferralTest extends TestCase
 
         PlayerSuspension::create([
             'game_player_id' => $redCardPlayer->id,
+            'game_id' => $this->game->id,
             'competition_id' => $this->competition->id,
             'matches_remaining' => 1,
             'yellow_cards' => 0,
@@ -365,6 +371,7 @@ class SuspensionDeferralTest extends TestCase
 
         PlayerSuspension::create([
             'game_player_id' => $suspendedPlayer->id,
+            'game_id' => $this->game->id,
             'competition_id' => $this->competition->id,
             'matches_remaining' => 1,
             'yellow_cards' => 5,
@@ -437,6 +444,7 @@ class SuspensionDeferralTest extends TestCase
 
         PlayerSuspension::create([
             'game_player_id' => $suspendedPlayer->id,
+            'game_id' => $this->game->id,
             'competition_id' => $copa->id,
             'matches_remaining' => 1,
             'yellow_cards' => 3,
@@ -505,6 +513,7 @@ class SuspensionDeferralTest extends TestCase
 
         PlayerSuspension::create([
             'game_player_id' => $suspendedPlayer->id,
+            'game_id' => $this->game->id,
             'competition_id' => $this->competition->id,
             'matches_remaining' => 1,
             'yellow_cards' => 5,

@@ -45,7 +45,7 @@ class ShowPreMatchData
         } elseif (count($lineup) < 11) {
             $issueMessage = __('messages.pre_match_incomplete');
         } else {
-            $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($competitionId);
+            $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($gameId, $competitionId);
             $hasInjured = false;
             $hasSuspended = false;
 

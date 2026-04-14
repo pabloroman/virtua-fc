@@ -159,7 +159,7 @@ class ShowLiveMatch
             ->all();
 
         // Batch load suspended player IDs for this competition
-        $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($playerMatch->competition_id);
+        $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($gameId, $playerMatch->competition_id);
 
         // Load cached performances for all players (starters + subs)
         $playerPerformances = Cache::get("match_performances:{$playerMatch->id}", []);
