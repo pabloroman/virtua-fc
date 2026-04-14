@@ -47,11 +47,13 @@ class LoanService
     }
 
     /**
-     * Cancel an active loan search for a player.
+     * Cancel an active loan search for a player and expire any pending loan
+     * offers that were tabled while the search was open.
      */
     public function cancelLoanSearch(GamePlayer $player): void
     {
         TransferListing::where('game_player_id', $player->id)->delete();
+        $this->expirePendingLoanOutOffers($player->game, $player->id);
     }
 
     /**
@@ -85,9 +87,10 @@ class LoanService
             // generate more offers. Offers expire with the listing (see below).
             if ($playersWithPendingOffers->has($player->id)) {
                 // Still honour expiry — if the whole search has timed out,
-                // clear the listing and let expireOffers sweep the pendings.
+                // clear the listing and expire the pending offers alongside it.
                 if ($this->isSearchExpired($player, $game->current_date)) {
                     TransferListing::where('game_player_id', $player->id)->delete();
+                    $this->expirePendingLoanOutOffers($game, $player->id);
                     $expired[] = ['player' => $player];
                 }
                 continue;
@@ -98,11 +101,10 @@ class LoanService
                 $destinations = $this->findLoanDestinations($game, $player);
 
                 if ($destinations->isNotEmpty()) {
-                    $listing = $player->transferListing;
-                    // Pending offers live as long as the underlying search does.
-                    $expiresAt = $listing?->listed_at
-                        ? $listing->listed_at->copy()->addDays(self::SEARCH_EXPIRY_DAYS)
-                        : $game->current_date->copy()->addDays(self::SEARCH_EXPIRY_DAYS);
+                    // Offers live for the full search window from the moment
+                    // they arrive so the user always has time to respond, even
+                    // if the underlying listing is already a few matchdays old.
+                    $expiresAt = $game->current_date->copy()->addDays(self::SEARCH_EXPIRY_DAYS);
 
                     $offers = collect();
                     foreach ($destinations as $destination) {
@@ -352,6 +354,24 @@ class LoanService
 
         // Middle ground
         return $isSmallClub ? 12 : 15;
+    }
+
+    /**
+     * Expire any pending loan-out offers for a player whose listing was just
+     * cleared (either by timeout or cancellation). Keeps the offer table in
+     * sync with the listing state.
+     */
+    private function expirePendingLoanOutOffers(Game $game, string $gamePlayerId): void
+    {
+        TransferOffer::where('game_id', $game->id)
+            ->where('game_player_id', $gamePlayerId)
+            ->where('offer_type', TransferOffer::TYPE_LOAN_OUT)
+            ->where('direction', TransferOffer::DIRECTION_OUTGOING)
+            ->where('status', TransferOffer::STATUS_PENDING)
+            ->update([
+                'status' => TransferOffer::STATUS_EXPIRED,
+                'resolved_at' => $game->current_date,
+            ]);
     }
 
     /**

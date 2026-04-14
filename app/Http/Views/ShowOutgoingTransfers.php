@@ -116,6 +116,8 @@ class ShowOutgoingTransfers
             ->where('expires_at', '>=', $game->current_date)
             ->orderByDesc('game_date')
             ->get()
+            // days_until_expiry reads ->game->current_date; hydrate once for all rows.
+            ->each(fn (TransferOffer $offer) => $offer->setRelation('game', $game))
             ->groupBy('game_player_id');
 
         // Contract renewal data

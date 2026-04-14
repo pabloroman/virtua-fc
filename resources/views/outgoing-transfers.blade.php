@@ -383,16 +383,12 @@
                                                 </div>
                                             </div>
                                             <div class="flex items-center gap-3">
-                                                @if($hasOffers)
-                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent-blue/10 text-accent-blue">
-                                                        {{ __('transfers.loan_offers_count', ['count' => $offersForPlayer->count()]) }}
-                                                    </span>
-                                                @else
+                                                @unless($hasOffers)
                                                     <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent-blue/10 text-accent-blue">
                                                         <span class="w-1.5 h-1.5 bg-accent-blue rounded-full animate-pulse"></span>
                                                         {{ __('transfers.searching_destination') }}
                                                     </span>
-                                                @endif
+                                                @endunless
                                                 <form method="post" action="{{ route('game.loans.cancel', [$game->id, $gamePlayer->id]) }}">
                                                     @csrf
                                                     <x-ghost-button type="submit" color="red" size="xs">
@@ -410,7 +406,7 @@
                                                     <div class="min-w-0">
                                                         <div class="font-semibold text-text-primary truncate">{{ $offer->offeringTeam->name }}</div>
                                                         <div class="text-xs text-text-muted mt-0.5">
-                                                            {{ __('transfers.loan_offer_expires_in', ['days' => max(0, (int) round($game->current_date->diffInDays($offer->expires_at, false)))]) }}
+                                                            {{ __('transfers.loan_offer_expires_in', ['days' => $offer->days_until_expiry]) }}
                                                         </div>
                                                     </div>
                                                 </div>
