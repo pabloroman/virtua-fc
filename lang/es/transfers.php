@@ -29,10 +29,9 @@ return [
     'loans_out_section' => 'Cesiones Activas (Salidas)',
     'loan_searches_section' => 'Buscando Destino de Cesión',
     'loan_searches_help' => 'Jugadores buscando un club para ser cedidos',
-    'loan_offer_expires_in' => 'Expira en :days días',
-    'accept_loan_offer' => 'Aceptar cesión',
-    'reject_loan_offer' => 'Rechazar',
-    'confirm_accept_loan_offer' => '¿Ceder a :player al :team?',
+    'loan_offers_received' => 'Ofertas de Cesión Recibidas',
+    'loan_offers_received_help' => 'Ofertas de cesión recibidas por jugadores que has puesto en el mercado de cesiones',
+    'accept_loan_offer' => 'Aceptar',
     // Legacy keys kept for compatibility
     'loans' => 'Cesiones',
 

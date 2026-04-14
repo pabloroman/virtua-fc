@@ -31,7 +31,6 @@ return [
     'loan_search_cancelled' => 'Se ha cancelado la búsqueda de cesión de :player.',
     'loan_offer_accepted' => ':player cedido :team_a.',
     'loan_offer_accepted_pre_window' => ':player será cedido al :team cuando abra la ventana de :window.',
-    'loan_offer_rejected' => 'Oferta de cesión :team_de rechazada.',
 
     // Contract messages
     'renewal_agreed' => ':player ha aceptado una extensión de :years años a :wage/año (efectivo desde la próxima temporada).',

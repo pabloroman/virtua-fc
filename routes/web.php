@@ -54,7 +54,6 @@ use App\Http\Actions\NegotiatePreContract;
 use App\Http\Actions\NegotiateRenewal;
 use App\Http\Actions\NegotiateTransfer;
 use App\Http\Actions\ReleasePlayer;
-use App\Http\Actions\RejectLoanOffer;
 use App\Http\Actions\RejectTransferOffer;
 use App\Http\Actions\RequestBudgetLoan;
 use App\Http\Actions\RequestLoan;
@@ -234,7 +233,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/game/{gameId}/loans/out/{playerId}', RequestLoan::class)->name('game.loans.out');
         Route::post('/game/{gameId}/loans/cancel/{playerId}', CancelLoanSearch::class)->name('game.loans.cancel');
         Route::post('/game/{gameId}/loans/offers/{offerId}/accept', AcceptLoanOffer::class)->name('game.loans.offers.accept');
-        Route::post('/game/{gameId}/loans/offers/{offerId}/reject', RejectLoanOffer::class)->name('game.loans.offers.reject');
 
         // Season End
         Route::get('/game/{gameId}/season-end', ShowSeasonEnd::class)->name('game.season-end');

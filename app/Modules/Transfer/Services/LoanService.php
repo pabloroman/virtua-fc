@@ -694,28 +694,4 @@ class LoanService
         TransferListing::where('game_player_id', $offer->game_player_id)->delete();
     }
 
-    /**
-     * Reject a single loan-out offer. If this was the last pending offer for
-     * the player, the loan search is cancelled — the user can re-list the
-     * player to try again.
-     */
-    public function rejectLoanOffer(TransferOffer $offer, Game $game): void
-    {
-        $offer->update([
-            'status' => TransferOffer::STATUS_REJECTED,
-            'resolved_at' => $game->current_date,
-        ]);
-
-        $remaining = TransferOffer::where('game_id', $game->id)
-            ->where('game_player_id', $offer->game_player_id)
-            ->where('offer_type', TransferOffer::TYPE_LOAN_OUT)
-            ->where('direction', TransferOffer::DIRECTION_OUTGOING)
-            ->where('status', TransferOffer::STATUS_PENDING)
-            ->count();
-
-        if ($remaining === 0) {
-            TransferListing::where('game_player_id', $offer->game_player_id)->delete();
-        }
-    }
-
 }
