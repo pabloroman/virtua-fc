@@ -262,8 +262,7 @@ class TransferService
             ->pluck('offering_team_id')
             ->toArray();
 
-        // Exclude same-league + same-reputation rivals from unsolicited offers only.
-        // Listed-player and pre-contract paths are unaffected by design — see getRivalTeamIds().
+        // Rivals are excluded from unsolicited offers only — see getRivalTeamIds().
         $excludedBuyerTeamIds = array_values(array_unique(array_merge(
             $excludedBuyerTeamIds,
             $this->getRivalTeamIds($game, $buyerPool),
@@ -704,7 +703,7 @@ class TransferService
      * Pre-load the buyer pool (league teams + squad values) for a game.
      * Call once per career action tick and pass to offer-generation methods.
      *
-     * @return array{leagueTeams: Collection, squadValues: Collection}
+     * @return array{leagueTeams: Collection, squadValues: Collection, reputationLevels: \Illuminate\Support\Collection}
      */
     public function loadBuyerPool(Game $game): array
     {

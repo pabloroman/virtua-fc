@@ -14,13 +14,6 @@ use App\Modules\Transfer\Services\TransferService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-/**
- * Rivals = teams in the user's same domestic league AND same reputation tier
- * (e.g. Real Madrid <-> Barcelona). These pairings should not generate
- * unsolicited transfer offers, since such moves are vanishingly rare in real
- * football. Listed and pre-contract flows remain unrestricted because the user
- * either opened the door (listing) or the player is free to leave (expiring).
- */
 class UnsolicitedRivalExclusionTest extends TestCase
 {
     use RefreshDatabase;
@@ -134,7 +127,7 @@ class UnsolicitedRivalExclusionTest extends TestCase
      * rival filter's effect is unambiguous (any offer that gets created must
      * come from that AI team).
      *
-     * @return array{0: Game, 1: GamePlayer, 2: Team}
+     * @return array{0: Game, 1: GamePlayer}
      */
     private function createScenario(
         string $userReputation,
@@ -219,7 +212,7 @@ class UnsolicitedRivalExclusionTest extends TestCase
             ]);
         }
 
-        return [$game, $player, $aiTeam];
+        return [$game, $player];
     }
 
     /**
