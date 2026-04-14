@@ -480,32 +480,28 @@ class NotificationService
     }
 
     /**
-     * Notify the user that one or more AI clubs have tabled loan offers for a
-     * player they listed for a loan move. The user picks one (or rejects all)
-     * from the outgoing-transfers screen.
-     *
-     * @param  Collection<int, Team>  $destinations
+     * Notify the user that an AI club has tabled a loan offer for a player
+     * they listed on the loan market. The user accepts it on the outgoing
+     * transfers screen; ignoring it lets it expire and lets further offers
+     * roll in on later matchdays.
      */
-    public function notifyLoanOffersReceived(Game $game, GamePlayer $player, Collection $destinations): GameNotification
+    public function notifyLoanOfferReceived(Game $game, GamePlayer $player, Team $destination): GameNotification
     {
-        $teamNames = $destinations->map(fn (Team $team) => $team->name)->values();
-
         return $this->create(
             game: $game,
             type: GameNotification::TYPE_LOAN_DESTINATION_FOUND,
-            title: __('notifications.loan_offers_received_title', [
-                'count' => $teamNames->count(),
+            title: __('notifications.loan_offer_received_title', [
                 'player' => $player->name,
             ]),
-            message: __('notifications.loan_offers_received_message', [
+            message: __('notifications.loan_offer_received_message', [
                 'player' => $player->name,
-                'teams' => $teamNames->join(', '),
+                'team' => $destination->name,
             ]),
             priority: GameNotification::PRIORITY_INFO,
             metadata: [
                 'player_id' => $player->id,
-                'team_ids' => $destinations->pluck('id')->all(),
-                'team_names' => $teamNames->all(),
+                'team_id' => $destination->id,
+                'team_name' => $destination->name,
             ],
         );
     }

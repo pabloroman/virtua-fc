@@ -83,11 +83,10 @@ class LoanService
             ->flip();
 
         foreach ($searching as $player) {
-            // If the user hasn't decided on the current offer batch yet, do not
-            // generate more offers. Offers expire with the listing (see below).
+            // Only one offer is live at a time per player. If the user hasn't
+            // decided yet, skip the probability roll. If the whole search has
+            // timed out while an offer sat pending, clear both.
             if ($playersWithPendingOffers->has($player->id)) {
-                // Still honour expiry — if the whole search has timed out,
-                // clear the listing and expire the pending offers alongside it.
                 if ($this->isSearchExpired($player, $game->current_date)) {
                     TransferListing::where('game_player_id', $player->id)->delete();
                     $this->expirePendingLoanOutOffers($game, $player->id);
@@ -98,34 +97,31 @@ class LoanService
 
             // Roll probability
             if (rand(1, 100) <= self::MATCH_PROBABILITY) {
-                $destinations = $this->findLoanDestinations($game, $player);
+                $destination = $this->findBestDestination($game, $player);
 
-                if ($destinations->isNotEmpty()) {
+                if ($destination) {
                     // Offers live for the full search window from the moment
                     // they arrive so the user always has time to respond, even
                     // if the underlying listing is already a few matchdays old.
                     $expiresAt = $game->current_date->copy()->addDays(self::SEARCH_EXPIRY_DAYS);
 
-                    $offers = collect();
-                    foreach ($destinations as $destination) {
-                        $offers->push(TransferOffer::create([
-                            'game_id' => $game->id,
-                            'game_player_id' => $player->id,
-                            'offering_team_id' => $destination->id,
-                            'selling_team_id' => $game->team_id,
-                            'offer_type' => TransferOffer::TYPE_LOAN_OUT,
-                            'direction' => TransferOffer::DIRECTION_OUTGOING,
-                            'transfer_fee' => 0,
-                            'status' => TransferOffer::STATUS_PENDING,
-                            'expires_at' => $expiresAt,
-                            'game_date' => $game->current_date,
-                        ]));
-                    }
+                    $offer = TransferOffer::create([
+                        'game_id' => $game->id,
+                        'game_player_id' => $player->id,
+                        'offering_team_id' => $destination->id,
+                        'selling_team_id' => $game->team_id,
+                        'offer_type' => TransferOffer::TYPE_LOAN_OUT,
+                        'direction' => TransferOffer::DIRECTION_OUTGOING,
+                        'transfer_fee' => 0,
+                        'status' => TransferOffer::STATUS_PENDING,
+                        'expires_at' => $expiresAt,
+                        'game_date' => $game->current_date,
+                    ]);
 
                     $found[] = [
                         'player' => $player,
-                        'destinations' => $destinations,
-                        'offers' => $offers,
+                        'destination' => $destination,
+                        'offer' => $offer,
                         'windowOpen' => $game->isTransferWindowOpen(),
                     ];
                     continue;
@@ -144,14 +140,10 @@ class LoanService
     }
 
     /**
-     * Find up to $max loan destinations using weighted random sampling without
-     * replacement. Teams that don't clear the minimum score threshold are
-     * excluded, which means fringe players may receive fewer than $max offers
-     * (or none) — the caller handles that case.
-     *
-     * @return Collection<int, Team>
+     * Pick a single loan destination via weighted random from the top
+     * candidates, or null if no team clears the minimum score threshold.
      */
-    private function findLoanDestinations(Game $game, GamePlayer $player, int $max = 3): Collection
+    private function findBestDestination(Game $game, GamePlayer $player): ?Team
     {
         $teams = Team::transferMarketEligible()
             ->with(['clubProfile', 'competitions'])
@@ -166,7 +158,7 @@ class LoanService
             ->values();
 
         if ($teams->isEmpty()) {
-            return collect();
+            return null;
         }
 
         // Pre-load position group counts for all candidate teams in one query
@@ -176,7 +168,7 @@ class LoanService
         // Batch-load all team reputations in one query
         $teamReputations = TeamReputation::resolveLevels($game->id, $teamIds);
 
-        // Score each team and keep only qualifiers
+        // Score each team
         $scored = $teams->map(function (Team $team) use ($game, $player, $positionCounts, $teamReputations) {
             return [
                 'team' => $team,
@@ -185,39 +177,26 @@ class LoanService
         })
         ->filter(fn ($item) => $item['score'] >= 20)
         ->sortByDesc('score')
-        ->take(10) // Widen the pool so the weighted draw can diversify
+        ->take(5)
         ->values();
 
         if ($scored->isEmpty()) {
-            return collect();
+            return null;
         }
 
-        // Weighted random without replacement: each iteration draws one team
-        // proportional to its remaining score, removes it from the pool, and
-        // continues until we have $max picks or the pool is exhausted.
-        $pool = $scored->all();
-        $picks = collect();
+        // Weighted random from top candidates
+        $totalWeight = $scored->sum('score');
+        $roll = rand(1, $totalWeight);
+        $cumulative = 0;
 
-        while (!empty($pool) && $picks->count() < $max) {
-            $totalWeight = array_sum(array_column($pool, 'score'));
-            if ($totalWeight <= 0) {
-                break;
+        foreach ($scored as $item) {
+            $cumulative += $item['score'];
+            if ($roll <= $cumulative) {
+                return $item['team'];
             }
-            $roll = rand(1, $totalWeight);
-            $cumulative = 0;
-            $winnerIndex = array_key_last($pool);
-            foreach ($pool as $index => $item) {
-                $cumulative += $item['score'];
-                if ($roll <= $cumulative) {
-                    $winnerIndex = $index;
-                    break;
-                }
-            }
-            $picks->push($pool[$winnerIndex]['team']);
-            unset($pool[$winnerIndex]);
         }
 
-        return $picks->values();
+        return $scored->first()['team'];
     }
 
     /**
