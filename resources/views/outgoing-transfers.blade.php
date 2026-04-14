@@ -129,7 +129,7 @@
                                             <div class="flex flex-col md:flex-row md:items-center gap-3 md:gap-4">
                                                 <div class="md:text-right">
                                                     <div class="text-xl font-bold text-accent-green">{{ $offer->formatted_transfer_fee }}</div>
-                                                    <div class="text-xs text-text-muted">{{ __('transfers.expires_in_days', ['days' => $offer->days_until_expiry]) }}</div>
+                                                    <div class="text-xs text-text-muted">{{ trans_choice('transfers.expires_in_days', $offer->days_until_expiry, ['days' => $offer->days_until_expiry]) }}</div>
                                                 </div>
                                                 <div class="flex flex-wrap gap-2">
                                                     @php
@@ -181,7 +181,7 @@
                                                     </div>
                                                     <div class="text-sm text-text-secondary">
                                                         {{ $offer->gamePlayer->position_name }} &middot; {{ $offer->gamePlayer->age($game->current_date) }} {{ __('app.years') }} &middot;
-                                                        {{ __('squad.expires_in_days', ['days' => $offer->days_until_expiry]) }}
+                                                        {{ trans_choice('squad.expires_in_days', $offer->days_until_expiry, ['days' => $offer->days_until_expiry]) }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -253,7 +253,7 @@
                                             <div class="flex flex-col md:flex-row md:items-center gap-3 md:gap-4">
                                                 <div class="md:text-right">
                                                     <div class="text-xl font-bold text-accent-green">{{ $offer->formatted_transfer_fee }}</div>
-                                                    <div class="text-xs text-text-muted">{{ __('transfers.expires_in_days', ['days' => $offer->days_until_expiry]) }}</div>
+                                                    <div class="text-xs text-text-muted">{{ trans_choice('transfers.expires_in_days', $offer->days_until_expiry, ['days' => $offer->days_until_expiry]) }}</div>
                                                 </div>
                                                 <div class="flex flex-wrap gap-2">
                                                     @php
