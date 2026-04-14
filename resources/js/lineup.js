@@ -235,10 +235,28 @@ export default function lineupManager(config) {
 
         get teamAverage() {
             if (this.selectedPlayers.length === 0) return 0;
+
+            // Build a {playerId → slotLabel} map from the current slot assignments
+            // so we can score each player against the slot they actually occupy,
+            // applying the out-of-position penalty when relevant.
+            const playerToSlotLabel = {};
+            for (const slot of this.currentSlots) {
+                const playerId = this.slotMap?.[slot.id];
+                if (playerId) {
+                    playerToSlotLabel[playerId] = slot.label;
+                }
+            }
+
             let total = 0;
             this.selectedPlayers.forEach(id => {
-                if (this.playersData[id]) {
-                    total += this.playersData[id].overallScore;
+                const player = this.playersData[id];
+                if (!player) return;
+                const slotLabel = playerToSlotLabel[id];
+                if (slotLabel) {
+                    const compat = getPlayerCompatibility(player, slotLabel, this.slotCompatibility);
+                    total += compat < 100 ? player.overallScore * 0.75 : player.overallScore;
+                } else {
+                    total += player.overallScore;
                 }
             });
             return Math.round(total / 11);

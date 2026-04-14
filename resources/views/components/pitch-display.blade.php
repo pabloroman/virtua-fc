@@ -136,6 +136,7 @@
                             @if($isLineup)
                                 'ring-2 ring-white ring-offset-1 ring-offset-emerald-600 scale-110': positioningSlotId === slot.id,
                                 'ring-2 ring-white/70 scale-110 shadow-xl': hoveredPlayerId && hoveredPlayerId === slot.player?.id && positioningSlotId !== slot.id,
+                                'saturate-50 opacity-80': slot.player && slot.compatibility < 100,
                             @endif
                             @if($isLive)
                                 'ring-2 ring-red-400 ring-offset-1 ring-offset-red-600/50 scale-110': livePitchSelectedOutId === slot.player?.id && positioningSlotId !== slot.id,
@@ -149,15 +150,18 @@
                             <span class="font-bold {{ $compact ? 'text-[10px] leading-none inline-flex items-center justify-center w-6 h-6' : 'text-xs leading-none inline-flex items-center justify-center w-7 h-7' }} rounded-full" :style="getNumberStyle(slot.role)" x-text="slot.player?.number || getInitials(slot.player?.name)"></span>
                         </div>
 
-                        {{-- OVR badge --}}
+                        {{-- OVR badge (shows effective rating after any out-of-position penalty) --}}
                         <span class="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-0.5 rounded-sm text-[9px] font-bold leading-none flex items-center justify-center shadow-sm"
                             :class="{
-                                'bg-accent-green text-white': slot.player?.overallScore >= 80,
-                                'bg-lime-500 text-white': slot.player?.overallScore >= 70 && slot.player?.overallScore < 80,
-                                'bg-accent-gold text-white': slot.player?.overallScore >= 60 && slot.player?.overallScore < 70,
-                                'bg-accent-orange text-white': slot.player?.overallScore < 60,
+                                'bg-accent-green text-white': slot.player?.effectiveRating >= 80,
+                                'bg-lime-500 text-white': slot.player?.effectiveRating >= 70 && slot.player?.effectiveRating < 80,
+                                'bg-accent-gold text-white': slot.player?.effectiveRating >= 60 && slot.player?.effectiveRating < 70,
+                                'bg-accent-orange text-white': slot.player?.effectiveRating < 60,
+                                @if($isLineup)
+                                    'ring-1 ring-accent-red': slot.player && slot.compatibility < 100,
+                                @endif
                             }"
-                            x-text="slot.player?.overallScore"></span>
+                            x-text="slot.player?.effectiveRating"></span>
 
                         @if($isLineup)
                         {{-- Remove button (lineup mode) --}}
@@ -195,14 +199,6 @@
                         ></span>
                         @endif
 
-                        @if($isLineup)
-                        {{-- Out-of-position penalty badge (lineup mode) --}}
-                        <span
-                            x-show="slot.player && slot.compatibility < 100"
-                            x-cloak
-                            class="absolute -bottom-1 left-1/2 -translate-x-1/2 px-1 h-3.5 rounded-sm text-[7px] font-bold leading-none flex items-center justify-center shadow-sm whitespace-nowrap bg-accent-red/90 text-white"
-                        >-25%</span>
-                        @endif
                     </div>
 
                     {{-- Player name --}}

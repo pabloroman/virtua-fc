@@ -133,14 +133,23 @@ export function buildSlotView(map, slots, playersById, compatibilityMatrix = nul
         const player = playerId ? playersById[playerId] : null;
 
         let compatibility = 0;
+        let effectiveRating = 0;
         if (player && compatibilityMatrix) {
             compatibility = getPlayerCompatibility(player, slot.label, compatibilityMatrix);
+            // Flat 25% penalty when out of position — mirrors
+            // PositionSlotMapper::getSimulationMultiplier() on the backend.
+            effectiveRating = compatibility < 100
+                ? Math.round(player.overallScore * 0.75)
+                : player.overallScore;
+        } else if (player) {
+            effectiveRating = player.overallScore;
         }
 
         return {
             ...slot,
-            player: player ? { ...player, compatibility } : null,
+            player: player ? { ...player, compatibility, effectiveRating } : null,
             compatibility,
+            effectiveRating,
             // `isManual` is vestigial — the old algorithm distinguished auto
             // vs manual placements, but the new flow has no such distinction.
             // Kept on the shape so existing Blade templates keep type-matching.
