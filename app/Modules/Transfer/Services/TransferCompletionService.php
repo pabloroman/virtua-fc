@@ -46,13 +46,14 @@ class TransferCompletionService
 
         // For loan-out offers, create a loan record so the player returns at season end
         if ($isLoan) {
+            $effectiveStart = $game->getLoanEffectiveStartDate();
             Loan::create([
                 'game_id' => $game->id,
                 'game_player_id' => $player->id,
                 'parent_team_id' => $game->team_id,
                 'loan_team_id' => $offer->offering_team_id,
-                'started_at' => $game->current_date,
-                'return_at' => $game->getSeasonEndDate(),
+                'started_at' => $effectiveStart,
+                'return_at' => $game->getSeasonEndDateFor($effectiveStart),
                 'status' => Loan::STATUS_ACTIVE,
             ]);
         }

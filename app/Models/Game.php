@@ -571,6 +571,32 @@ class Game extends Model
     }
 
     /**
+     * Effective date a newly-finalized loan will start on: today if the
+     * transfer window is open, otherwise the next window opening date.
+     * Used so loans agreed while the window is closed record the date on
+     * which the player actually moves, not the date the deal was agreed.
+     */
+    public function getLoanEffectiveStartDate(): Carbon
+    {
+        $window = $this->transferWindow();
+
+        return $window->isOpen()
+            ? $this->current_date->copy()
+            : ($window->openingBoundaryDate() ?? $this->current_date->copy());
+    }
+
+    /**
+     * June 30 of the football season that contains the given date.
+     * A season runs July 1 → June 30 of the following calendar year.
+     */
+    public function getSeasonEndDateFor(Carbon $date): Carbon
+    {
+        $endYear = $date->month >= 7 ? $date->year + 1 : $date->year;
+
+        return Carbon::createFromDate($endYear, 6, 30);
+    }
+
+    /**
      * Get the first competitive match of the season.
      */
     public function getFirstCompetitiveMatch(): ?GameMatch

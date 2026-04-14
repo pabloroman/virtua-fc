@@ -520,14 +520,15 @@ class LoanService
             return;
         }
 
-        $returnDate = $game->getSeasonEndDate();
+        $effectiveStart = $game->getLoanEffectiveStartDate();
+        $returnDate = $game->getSeasonEndDateFor($effectiveStart);
 
         Loan::create([
             'game_id' => $game->id,
             'game_player_id' => $player->id,
             'parent_team_id' => $parentTeamId,
             'loan_team_id' => $game->team_id,
-            'started_at' => $game->current_date,
+            'started_at' => $effectiveStart,
             'return_at' => $returnDate,
             'status' => Loan::STATUS_ACTIVE,
         ]);
@@ -575,14 +576,15 @@ class LoanService
     {
         $player = $offer->gamePlayer;
         $destinationTeamId = $offer->offering_team_id;
-        $returnDate = $game->getSeasonEndDate();
+        $effectiveStart = $game->getLoanEffectiveStartDate();
+        $returnDate = $game->getSeasonEndDateFor($effectiveStart);
 
         Loan::create([
             'game_id' => $game->id,
             'game_player_id' => $player->id,
             'parent_team_id' => $game->team_id,
             'loan_team_id' => $destinationTeamId,
-            'started_at' => $game->current_date,
+            'started_at' => $effectiveStart,
             'return_at' => $returnDate,
             'status' => Loan::STATUS_ACTIVE,
         ]);
