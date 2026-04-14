@@ -234,6 +234,75 @@ class PlayerRetirementTest extends TestCase
         $this->assertTrue($retired[0]['wasUserTeam']);
     }
 
+    public function test_processor_deletes_retiring_free_agent(): void
+    {
+        // A player who announced retirement while on a team, then lost their
+        // team_id (e.g. contract expiration earlier in the same closing), must
+        // still be removed — not linger as a free agent next season.
+        $player = Player::factory()->age(36)->create([
+            'technical_ability' => 65,
+            'physical_ability' => 65,
+        ]);
+        $gamePlayer = GamePlayer::factory()->create([
+            'game_id' => $this->game->id,
+            'player_id' => $player->id,
+            'team_id' => null,
+            'position' => 'Central Midfield',
+            'fitness' => 80,
+            'season_appearances' => 15,
+            'game_technical_ability' => 65,
+            'game_physical_ability' => 65,
+            'retiring_at_season' => '2024',
+        ]);
+
+        $processor = app(PlayerRetirementProcessor::class);
+        $data = new SeasonTransitionData(oldSeason: '2024', newSeason: '2025', competitionId: 'ESP1');
+
+        $result = $processor->process($this->game, $data);
+
+        $this->assertDatabaseMissing('game_players', ['id' => $gamePlayer->id]);
+
+        $retired = $result->getMetadata('retiredPlayers');
+        $this->assertCount(1, $retired);
+        $this->assertEquals($gamePlayer->id, $retired[0]['playerId']);
+        $this->assertNull($retired[0]['teamId']);
+        $this->assertFalse($retired[0]['wasUserTeam']);
+    }
+
+    public function test_processor_announces_retirement_for_free_agent(): void
+    {
+        // Free agents aged past retirement should receive an announcement on
+        // the same closing-cycle cadence as rostered players. Age 40 outfield
+        // is MAX_CAREER_OUTFIELD, so shouldRetire() returns true deterministically.
+        $player = Player::factory()->age(40)->create([
+            'technical_ability' => 65,
+            'physical_ability' => 65,
+        ]);
+        $gamePlayer = GamePlayer::factory()->create([
+            'game_id' => $this->game->id,
+            'player_id' => $player->id,
+            'team_id' => null,
+            'position' => 'Central Midfield',
+            'fitness' => 80,
+            'season_appearances' => 0,
+            'game_technical_ability' => 65,
+            'game_physical_ability' => 65,
+            'retiring_at_season' => null,
+        ]);
+
+        $processor = app(PlayerRetirementProcessor::class);
+        $data = new SeasonTransitionData(oldSeason: '2024', newSeason: '2025', competitionId: 'ESP1');
+
+        $result = $processor->process($this->game, $data);
+
+        $gamePlayer->refresh();
+        $this->assertEquals('2025', $gamePlayer->retiring_at_season);
+
+        $announcements = $result->getMetadata('retirementAnnouncements');
+        $announcedIds = array_column($announcements, 'playerId');
+        $this->assertContains($gamePlayer->id, $announcedIds);
+    }
+
     public function test_processor_does_not_retire_players_from_different_season(): void
     {
         $player = $this->createGamePlayer(

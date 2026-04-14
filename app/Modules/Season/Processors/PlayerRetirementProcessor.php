@@ -51,9 +51,12 @@ class PlayerRetirementProcessor implements SeasonProcessor
      */
     private function processRetirements(Game $game, SeasonTransitionData $data): array
     {
+        // Include free agents (team_id IS NULL): a player who announced retirement
+        // while on a team can have their contract expire in the same season closing
+        // (ContractExpirationProcessor runs first), leaving team_id null. We still
+        // want those players removed from the game.
         $retiringPlayers = GamePlayer::with(['player', 'team', 'game'])
             ->where('game_id', $game->id)
-            ->whereNotNull('team_id')
             ->where('retiring_at_season', $data->oldSeason)
             ->get();
 
@@ -88,9 +91,10 @@ class PlayerRetirementProcessor implements SeasonProcessor
 
         // matchState is eager-loaded because shouldRetire() reads
         // fitness/season_appearances via the GamePlayer accessor delegates.
+        // Free agents (team_id IS NULL) are included so they also receive
+        // retirement announcements on the same cadence as rostered players.
         $candidates = GamePlayer::with(['player', 'team', 'game', 'matchState'])
             ->where('game_id', $game->id)
-            ->whereNotNull('team_id')
             ->whereNull('retiring_at_season')
             ->whereHas('player', fn ($q) => $q->where('date_of_birth', '<=', $minRetirementCutoff))
             ->get()
