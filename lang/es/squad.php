@@ -61,7 +61,7 @@ return [
     'new_wage_from_next' => 'Nuevo salario desde próxima temporada',
     'has_pre_contract_offers' => '¡Tiene ofertas de precontrato!',
     'renew' => 'Renovar',
-    'expires_in_days' => 'Expira en :days días',
+    'expires_in_days' => '{0}Expira hoy|{1}Expira en :count día|[2,*]Expira en :count días',
 
     // Lineup validation
     'formation_position_mismatch' => 'La formación :formation requiere :required :position, pero seleccionaste :actual.',

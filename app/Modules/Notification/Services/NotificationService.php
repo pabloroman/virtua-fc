@@ -257,10 +257,9 @@ class NotificationService
             game: $game,
             type: GameNotification::TYPE_TRANSFER_OFFER_EXPIRING,
             title: __('notifications.offer_expiring_title', ['player' => $player->name]),
-            message: __('notifications.offer_expiring_message', [
+            message: trans_choice('notifications.offer_expiring_message', $offer->days_until_expiry, [
                 'team_de' => $offer->offeringTeam->nameWithDe(),
                 'player' => $player->name,
-                'days' => $offer->days_until_expiry,
             ]),
             priority: GameNotification::PRIORITY_WARNING,
             metadata: [

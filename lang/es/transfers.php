@@ -64,7 +64,7 @@ return [
     // Offers received
     'offers_received' => 'Ofertas Recibidas',
     'offers_received_help' => 'Ofertas recibidas por jugadores que has puesto en venta',
-    'expires_in_days' => 'Expira en :days días',
+    'expires_in_days' => '{0}Expira hoy|{1}Expira en :count día|[2,*]Expira en :count días',
     'from' => 'de',
 
     // Agreed transfers

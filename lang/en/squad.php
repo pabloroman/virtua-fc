@@ -61,7 +61,7 @@ return [
     'new_wage_from_next' => 'New wage from next season',
     'has_pre_contract_offers' => 'Has pre-contract offers!',
     'renew' => 'Renew',
-    'expires_in_days' => 'Expires in :days days',
+    'expires_in_days' => '{0}Expires today|{1}Expires in :count day|[2,*]Expires in :count days',
 
     // Lineup validation
     'formation_position_mismatch' => 'Formation :formation requires :required :position, but you selected :actual.',

@@ -51,7 +51,7 @@ return [
 
     // Expiring offers
     'offer_expiring_title' => 'Oferta por :player expira pronto',
-    'offer_expiring_message' => 'La oferta :team_de por :player expira en :days días.',
+    'offer_expiring_message' => '{0}La oferta :team_de por :player expira hoy.|{1}La oferta :team_de por :player expira en :count día.|[2,*]La oferta :team_de por :player expira en :count días.',
 
     // Scout
     'scout_complete_title' => 'Informe de Ojeador Listo',

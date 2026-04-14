@@ -51,7 +51,7 @@ return [
 
     // Expiring offers
     'offer_expiring_title' => 'Offer for :player expiring soon',
-    'offer_expiring_message' => 'The offer :team_de for :player expires in :days days.',
+    'offer_expiring_message' => '{0}The offer :team_de for :player expires today.|{1}The offer :team_de for :player expires in :count day.|[2,*]The offer :team_de for :player expires in :count days.',
 
     // Scout
     'scout_complete_title' => 'Scout Report Ready',
