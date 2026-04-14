@@ -227,7 +227,7 @@ return [
     'lineup_help_formation_title' => 'Formación y Mentalidad',
     'lineup_help_formation_desc' => 'La formación determina qué posiciones hay disponibles en el campo. Los jugadores rinden mejor en su posición natural.',
     'lineup_help_compatibility_natural' => 'Natural — el jugador está en su mejor posición, rendimiento completo.',
-    'lineup_help_compatibility_good' => 'Bueno / Muy Bueno — penalización del 25% en el rendimiento del partido.',
+    'lineup_help_compatibility_good' => 'Muy Bueno — juega sin penalización. Bueno — penalización del 25% en el partido.',
     'lineup_help_compatibility_poor' => 'Malo / Inadecuado — penalización del 25%. Evítalo si es posible.',
     'lineup_help_mentality_desc' => 'La mentalidad afecta a lo ofensivo o defensivo que juega tu equipo.',
     'lineup_help_condition_title' => 'Energía y Moral',

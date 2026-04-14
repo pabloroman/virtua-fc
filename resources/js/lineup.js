@@ -254,7 +254,8 @@ export default function lineupManager(config) {
                 const slotLabel = playerToSlotLabel[id];
                 if (slotLabel) {
                     const compat = getPlayerCompatibility(player, slotLabel, this.slotCompatibility);
-                    total += compat < 100 ? player.overallScore * 0.75 : player.overallScore;
+                    // Natural (100) and Very Good (80) play without penalty — see PositionSlotMapper::NATURAL_POSITION_THRESHOLD
+                    total += compat < 80 ? player.overallScore * 0.75 : player.overallScore;
                 } else {
                     total += player.overallScore;
                 }

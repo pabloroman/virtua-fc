@@ -227,7 +227,7 @@ return [
     'lineup_help_formation_title' => 'Formation & Mentality',
     'lineup_help_formation_desc' => 'The formation determines which positions are available on the pitch. Players perform best in their natural position.',
     'lineup_help_compatibility_natural' => 'Natural — player is in their best position, full performance.',
-    'lineup_help_compatibility_good' => 'Good / Very Good — 25% performance penalty in matches.',
+    'lineup_help_compatibility_good' => 'Very Good — plays without penalty. Good — 25% match penalty.',
     'lineup_help_compatibility_poor' => 'Poor / Unsuitable — 25% performance penalty. Avoid if possible.',
     'lineup_help_mentality_desc' => 'Mentality affects how attacking or defensive your team plays.',
     'lineup_help_condition_title' => 'Fitness & Morale',

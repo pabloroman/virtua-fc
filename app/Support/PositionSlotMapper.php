@@ -10,8 +10,15 @@ namespace App\Support;
  */
 class PositionSlotMapper
 {
-    /** Flat penalty applied when a player is out of position (compat < 100). */
+    /** Flat penalty applied when a player is out of position (compat < NATURAL_POSITION_THRESHOLD). */
     public const OUT_OF_POSITION_PENALTY = 0.25;
+
+    /**
+     * Minimum compatibility score considered "at home" in a slot.
+     * Natural (100) and Very Good (80) both play without penalty;
+     * anything below is treated as out of position.
+     */
+    public const NATURAL_POSITION_THRESHOLD = 80;
 
     /**
      * Compatibility matrix: [slot_code => [position => score]]
@@ -313,7 +320,7 @@ class PositionSlotMapper
      */
     public static function isOutOfPosition(string $primaryPosition, ?array $secondaryPositions, string $slotCode): bool
     {
-        return self::getPlayerCompatibilityScore($primaryPosition, $secondaryPositions, $slotCode) < 100;
+        return self::getPlayerCompatibilityScore($primaryPosition, $secondaryPositions, $slotCode) < self::NATURAL_POSITION_THRESHOLD;
     }
 
     /**

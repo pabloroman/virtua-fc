@@ -136,7 +136,7 @@
                             @if($isLineup)
                                 'ring-2 ring-white ring-offset-1 ring-offset-emerald-600 scale-110': positioningSlotId === slot.id,
                                 'ring-2 ring-white/70 scale-110 shadow-xl': hoveredPlayerId && hoveredPlayerId === slot.player?.id && positioningSlotId !== slot.id,
-                                'saturate-50 opacity-80': slot.player && slot.compatibility < 100,
+                                'saturate-50 opacity-80': slot.player && slot.compatibility < 80,
                             @endif
                             @if($isLive)
                                 'ring-2 ring-red-400 ring-offset-1 ring-offset-red-600/50 scale-110': livePitchSelectedOutId === slot.player?.id && positioningSlotId !== slot.id,
@@ -158,7 +158,7 @@
                                 'bg-accent-gold text-white': slot.player?.effectiveRating >= 60 && slot.player?.effectiveRating < 70,
                                 'bg-accent-orange text-white': slot.player?.effectiveRating < 60,
                                 @if($isLineup)
-                                    'ring-1 ring-accent-red': slot.player && slot.compatibility < 100,
+                                    'ring-1 ring-accent-red': slot.player && slot.compatibility < 80,
                                 @endif
                             }"
                             x-text="slot.player?.effectiveRating"></span>

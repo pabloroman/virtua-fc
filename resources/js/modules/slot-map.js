@@ -138,7 +138,8 @@ export function buildSlotView(map, slots, playersById, compatibilityMatrix = nul
             compatibility = getPlayerCompatibility(player, slot.label, compatibilityMatrix);
             // Flat 25% penalty when out of position — mirrors
             // PositionSlotMapper::getSimulationMultiplier() on the backend.
-            effectiveRating = compatibility < 100
+            // Natural (100) and Very Good (80) both play without penalty.
+            effectiveRating = compatibility < 80
                 ? Math.round(player.overallScore * 0.75)
                 : player.overallScore;
         } else if (player) {
