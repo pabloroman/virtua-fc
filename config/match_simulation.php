@@ -186,7 +186,7 @@ return [
     */
     'energy' => [
         'base_drain_per_minute' => 0.55,
-        'physical_ability_factor' => 0.005,
+        'physical_ability_factor' => 0.004,
         'age_threshold' => 28,
         'age_penalty_per_year' => 0.015,
         'gk_drain_multiplier' => 0.5,

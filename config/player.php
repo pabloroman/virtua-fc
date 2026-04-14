@@ -40,9 +40,9 @@ return [
         'physical_recovery_modifier' => [       // multiplier on base recovery rate
             'high_threshold' => 80,
             'low_threshold' => 60,
-            'high' => 1.10,                     // physical >= 80: faster recovery
+            'high' => 1.05,                     // physical >= 80: faster recovery
             'medium' => 1.0,                    // 60-79: baseline
-            'low' => 0.90,                      // < 60: slower recovery
+            'low' => 0.95,                      // < 60: slower recovery
         ],
 
         'ai_rotation_threshold' => 70,          // AI benches players below this energy
