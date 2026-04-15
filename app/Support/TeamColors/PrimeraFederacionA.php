@@ -27,21 +27,21 @@ final class PrimeraFederacionA implements TeamColorProvider
             ],
             'Pontevedra CF' => [
                 'pattern' => 'solid',
-                'primary' => 'rose-800', // Granate característico
+                'primary' => 'rose-800',
                 'secondary' => 'white',
                 'number' => 'white',
             ],
             'Real Madrid Castilla' => [
                 'pattern' => 'solid',
                 'primary' => 'white',
-                'secondary' => 'black',
-                'number' => 'black',
+                'secondary' => 'white',
+                'number' => 'purple-800',
             ],
             'SD Ponferradina' => [
                 'pattern' => 'stripes',
                 'primary' => 'blue-700',
                 'secondary' => 'white',
-                'number' => 'amber-400', // A menudo usan dorsales dorados/amarillos
+                'number' => 'amber-400',
             ],
             'Barakaldo CF' => [
                 'pattern' => 'stripes',
@@ -86,7 +86,7 @@ final class PrimeraFederacionA implements TeamColorProvider
                 'number' => 'black',
             ],
             'Unionistas CF' => [
-                'pattern' => 'halves', // Mitad negro, mitad blanco
+                'pattern' => 'halves',
                 'primary' => 'black',
                 'secondary' => 'white',
                 'number' => 'white',
@@ -105,7 +105,7 @@ final class PrimeraFederacionA implements TeamColorProvider
             ],
             'CA Osasuna Promesas' => [
                 'pattern' => 'solid',
-                'primary' => 'red-600',
+                'primary' => 'red-700',
                 'secondary' => 'blue-900',
                 'number' => 'white',
             ],
@@ -123,8 +123,8 @@ final class PrimeraFederacionA implements TeamColorProvider
             ],
             'RC Celta Fortuna' => [
                 'pattern' => 'solid',
-                'primary' => 'sky-400', // Celeste característico
-                'secondary' => 'white',
+                'primary' => 'sky-400',
+                'secondary' => 'sky-400',
                 'number' => 'white',
             ],
         ];

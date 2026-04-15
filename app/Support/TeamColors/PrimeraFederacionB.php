@@ -22,8 +22,8 @@ final class PrimeraFederacionB implements TeamColorProvider
             'Villarreal CF B' => [
                 'pattern' => 'solid',
                 'primary' => 'yellow-400',
-                'secondary' => 'blue-800',
-                'number' => 'blue-800',
+                'secondary' => 'yellow-400',
+                'number' => 'blue-900',
             ],
             'FC Cartagena' => [
                 'pattern' => 'stripes',
@@ -107,7 +107,7 @@ final class PrimeraFederacionB implements TeamColorProvider
                 'pattern' => 'stripes',
                 'primary' => 'red-600',
                 'secondary' => 'white',
-                'number' => 'blue-800',
+                'number' => 'blue-700',
             ],
             'Juventud Torremolinos CF' => [
                 'pattern' => 'stripes',
@@ -125,7 +125,7 @@ final class PrimeraFederacionB implements TeamColorProvider
                 'pattern' => 'stripes',
                 'primary' => 'green-600',
                 'secondary' => 'white',
-                'number' => 'black',
+                'number' => 'white',
             ],
         ];
     }
