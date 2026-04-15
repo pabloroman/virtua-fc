@@ -14,6 +14,15 @@ export function createMatchSimulation(ctx) {
     let _lastTick = null;
     let _animFrame = null;
 
+    // Atmosphere events are low-value commentary (shots, fouls, contextual lines).
+    // They stream past without pausing the clock, keeping the match flowing.
+    // Must match isAtmosphereEvent() in live-match.js.
+    const ATMOSPHERE_EVENT_TYPES = new Set(['shot_on_target', 'shot_off_target', 'foul', 'contextual']);
+
+    function isAtmosphereEventType(type) {
+        return ATMOSPHERE_EVENT_TYPES.has(type);
+    }
+
     /**
      * Track user-team substitution events as they are revealed during animation.
      * Populates substitutionsMade progressively so the lineup display stays in
@@ -209,7 +218,9 @@ export function createMatchSimulation(ctx) {
             updateScore(event);
             triggerGoalFlash();
             pauseForDrama(1500);
-        } else {
+        } else if (!isAtmosphereEventType(event.type)) {
+            // Real events (cards, subs, injuries, missed pens) still pause for drama.
+            // Atmosphere events flow past without interrupting the clock.
             pauseForDrama(1500);
         }
 
@@ -236,7 +247,7 @@ export function createMatchSimulation(ctx) {
             updateScore(event);
             triggerGoalFlash();
             pauseForDrama(1500);
-        } else {
+        } else if (!isAtmosphereEventType(event.type)) {
             pauseForDrama(1500);
         }
     }
