@@ -9,7 +9,7 @@ final class PrimeraFederacionB implements TeamColorProvider
         return [
             'Real Murcia CF' => [
                 'pattern' => 'solid',
-                'primary' => 'red-600',
+                'primary' => 'red-800',
                 'secondary' => 'white',
                 'number' => 'white',
             ],
@@ -125,7 +125,7 @@ final class PrimeraFederacionB implements TeamColorProvider
                 'pattern' => 'stripes',
                 'primary' => 'green-600',
                 'secondary' => 'white',
-                'number' => 'white',
+                'number' => 'black',
             ],
         ];
     }

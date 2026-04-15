@@ -2,52 +2,61 @@
     <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary mb-2">Shirt Badges</h2>
     <p class="text-sm text-text-secondary mb-8">Player badges on the pitch lineup view use team-specific shirt patterns and colors. Each badge shows the player's number or initials with a contrast-aware backdrop for patterned shirts.</p>
 
-    <div x-data="shirtBadgePreview()" class="space-y-6">
+    <div class="space-y-8">
         {{-- Pattern legend --}}
         <div class="flex flex-wrap gap-3 text-xs">
-            <template x-for="p in ['solid', 'stripes', 'hoops', 'sash', 'bar', 'halves', 'quarters', 'chevron']" :key="p">
-                <span class="px-2.5 py-1 bg-surface-700 text-text-secondary border border-border-default rounded-full font-medium uppercase tracking-wide" x-text="p"></span>
-            </template>
+            @foreach (['solid', 'stripes', 'hoops', 'sash', 'bar', 'halves', 'quarters', 'chevron'] as $pattern)
+                <span class="px-2.5 py-1 bg-surface-700 text-text-secondary border border-border-default rounded-full font-medium uppercase tracking-wide">{{ $pattern }}</span>
+            @endforeach
         </div>
 
-        {{-- GK + all teams grid --}}
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {{-- Goalkeeper reference --}}
-            <div class="flex flex-col items-center gap-2 p-3 bg-surface-800 rounded-xl border border-border-default">
-                <div class="bg-pitch-base rounded-lg p-3 flex gap-2 items-center">
-                    <div class="relative w-11 h-11 rounded-xl border border-white/20 shadow-lg flex items-center justify-center" style="background: linear-gradient(to bottom right, #FBBF24, #D97706)">
-                        <span class="font-bold text-xs leading-none inline-flex items-center justify-center w-7 h-7 rounded-full" style="color: #FFFFFF; text-shadow: 0 1px 2px rgba(0,0,0,0.5)">1</span>
-                    </div>
-                    <div class="relative w-11 h-11 rounded-xl border border-white/20 shadow-lg flex items-center justify-center" style="background: linear-gradient(to bottom right, #FBBF24, #D97706)">
-                        <span class="font-bold text-xs leading-none inline-flex items-center justify-center w-7 h-7 rounded-full" style="color: #FFFFFF; text-shadow: 0 1px 2px rgba(0,0,0,0.5)">GK</span>
-                    </div>
-                </div>
-                <div class="text-[11px] text-text-body font-medium text-center">Goalkeeper</div>
-                <div class="text-[10px] text-text-muted uppercase tracking-widest">all teams</div>
-            </div>
-
-            {{-- Team badges --}}
-            <template x-for="[name, tc] in teams" :key="name">
+        {{-- Goalkeeper reference --}}
+        <div>
+            <h3 class="font-heading text-lg font-bold uppercase tracking-wide text-text-secondary mb-3">Goalkeeper</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 <div class="flex flex-col items-center gap-2 p-3 bg-surface-800 rounded-xl border border-border-default">
                     <div class="bg-pitch-base rounded-lg p-3 flex gap-2 items-center">
-                        <div class="relative w-11 h-11 rounded-xl border border-white/20 shadow-lg flex items-center justify-center" :style="getShirtStyle(tc)">
-                            <span class="font-bold text-xs leading-none inline-flex items-center justify-center w-7 h-7 rounded-full" :style="getNumberStyle(tc)">10</span>
+                        <div class="relative w-11 h-11 rounded-xl border border-white/20 shadow-lg flex items-center justify-center" style="background: linear-gradient(to bottom right, #FBBF24, #D97706)">
+                            <span class="font-bold text-xs leading-none inline-flex items-center justify-center w-7 h-7 rounded-full" style="color: #FFFFFF; text-shadow: 0 1px 2px rgba(0,0,0,0.5)">1</span>
                         </div>
-                        <div class="relative w-11 h-11 rounded-xl border border-white/20 shadow-lg flex items-center justify-center" :style="getShirtStyle(tc)">
-                            <span class="font-bold text-xs leading-none inline-flex items-center justify-center w-7 h-7 rounded-full" :style="getNumberStyle(tc)" x-text="getInitials(name)"></span>
+                        <div class="relative w-11 h-11 rounded-xl border border-white/20 shadow-lg flex items-center justify-center" style="background: linear-gradient(to bottom right, #FBBF24, #D97706)">
+                            <span class="font-bold text-xs leading-none inline-flex items-center justify-center w-7 h-7 rounded-full" style="color: #FFFFFF; text-shadow: 0 1px 2px rgba(0,0,0,0.5)">GK</span>
                         </div>
                     </div>
-                    <div class="text-[11px] text-text-body font-medium text-center truncate w-full" x-text="name"></div>
-                    <div class="text-[10px] text-text-muted uppercase tracking-widest" x-text="tc.pattern"></div>
+                    <div class="text-[11px] text-text-body font-medium text-center">Goalkeeper</div>
+                    <div class="text-[10px] text-text-muted uppercase tracking-widest">all teams</div>
                 </div>
-            </template>
+            </div>
         </div>
+
+        {{-- Teams grouped by competition --}}
+        @foreach ($allTeams as $groupLabel => $groupTeams)
+            <div x-data="shirtBadgeGroup(@js($groupTeams))" class="space-y-3">
+                <h3 class="font-heading text-lg font-bold uppercase tracking-wide text-text-secondary">{{ $groupLabel }}</h3>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <template x-for="[name, tc] in teams" :key="name">
+                        <div class="flex flex-col items-center gap-2 p-3 bg-surface-800 rounded-xl border border-border-default">
+                            <div class="bg-pitch-base rounded-lg p-3 flex gap-2 items-center">
+                                <div class="relative w-11 h-11 rounded-xl border border-white/20 shadow-lg flex items-center justify-center" :style="getShirtStyle(tc)">
+                                    <span class="font-bold text-xs leading-none inline-flex items-center justify-center w-7 h-7 rounded-full" :style="getNumberStyle(tc)">10</span>
+                                </div>
+                                <div class="relative w-11 h-11 rounded-xl border border-white/20 shadow-lg flex items-center justify-center" :style="getShirtStyle(tc)">
+                                    <span class="font-bold text-xs leading-none inline-flex items-center justify-center w-7 h-7 rounded-full" :style="getNumberStyle(tc)" x-text="getInitials(name)"></span>
+                                </div>
+                            </div>
+                            <div class="text-[11px] text-text-body font-medium text-center truncate w-full" x-text="name"></div>
+                            <div class="text-[10px] text-text-muted uppercase tracking-widest" x-text="tc.pattern"></div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        @endforeach
     </div>
 
     <script>
-        function shirtBadgePreview() {
+        function shirtBadgeGroup(teamData) {
             return {
-                teams: Object.entries(@js($allTeams)),
+                teams: Object.entries(teamData),
 
                 getShirtStyle(tc) {
                     const p = tc.primary;

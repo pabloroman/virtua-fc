@@ -95,6 +95,36 @@ class TeamColors
     }
 
     /**
+     * Get all teams grouped by competition with hex colors (for design system).
+     */
+    public static function allGrouped(): array
+    {
+        $providers = [
+            'La Liga' => LaLiga::teams(),
+            'La Liga 2' => LaLiga2::teams(),
+            'Primera Federación A' => PrimeraFederacionA::teams(),
+            'Primera Federación B' => PrimeraFederacionB::teams(),
+            'Premier League' => PremierLeague::teams(),
+            'Bundesliga' => Bundesliga::teams(),
+            'Ligue 1' => Ligue1::teams(),
+            'Serie A' => SerieA::teams(),
+            'European Transfer Pool' => EuropeanTransferPool::teams(),
+            'World Cup' => WorldCup::teams(),
+        ];
+
+        $result = [];
+        foreach ($providers as $label => $teams) {
+            $group = [];
+            foreach ($teams as $name => $colors) {
+                $group[$name] = self::toHex($colors);
+            }
+            $result[$label] = $group;
+        }
+
+        return $result;
+    }
+
+    /**
      * Get all teams with hex colors for preview/testing.
      */
     public static function all(): array

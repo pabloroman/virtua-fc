@@ -137,7 +137,7 @@ Route::get('/leaderboard/national-teams', ShowNationalTeamStatsIndex::class)->na
 Route::get('/leaderboard/national-team/{slug}', ShowNationalTeamStats::class)->name('leaderboard.national-team');
 Route::get('/manager/{username}', ShowManagerProfile::class)->name('manager.profile');
 Route::get('/design-system', fn () => view('design-system.index', [
-    'allTeams' => \App\Support\TeamColors::all(),
+    'allTeams' => \App\Support\TeamColors::allGrouped(),
 ]))->name('design-system');
 
 Route::middleware('auth')->group(function () {
