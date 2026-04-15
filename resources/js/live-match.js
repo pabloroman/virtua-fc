@@ -91,6 +91,9 @@ export default function liveMatch(config) {
         // Substitution config
         lineupPlayers: config.lineupPlayers || [],
         benchPlayers: config.benchPlayers || [],
+        // Opponent bench — minimal payload { id, positionGroup, performance, teamId }
+        // used only to rate opponent subs at full-time. Not displayed in the UI.
+        opponentBenchPlayers: config.opponentBenchPlayers || [],
         tacticalActionsUrl: config.tacticalActionsUrl || '',
         skipToEndUrl: config.skipToEndUrl || '',
         csrfToken: config.csrfToken || '',
@@ -1138,7 +1141,10 @@ export default function liveMatch(config) {
 
                 // Update player performances and recalculate ratings
                 if (result.playerPerformances) {
-                    updateRosterPerformances(this.homeLineupRoster, this.awayLineupRoster, result.playerPerformances);
+                    updateRosterPerformances(
+                        [this.homeLineupRoster, this.awayLineupRoster, this.benchPlayers, this.opponentBenchPlayers],
+                        result.playerPerformances,
+                    );
                     this.recalculatePlayerRatings();
                 }
 
@@ -1270,7 +1276,10 @@ export default function liveMatch(config) {
 
             // Update player performances and post-match ratings.
             if (result.playerPerformances) {
-                updateRosterPerformances(this.homeLineupRoster, this.awayLineupRoster, result.playerPerformances);
+                updateRosterPerformances(
+                    [this.homeLineupRoster, this.awayLineupRoster, this.benchPlayers, this.opponentBenchPlayers],
+                    result.playerPerformances,
+                );
                 if (typeof this.recalculatePlayerRatings === 'function') {
                     this.recalculatePlayerRatings();
                 }
@@ -1306,8 +1315,8 @@ export default function liveMatch(config) {
             const allEvents = [...this.events, ...(this.extraTimeEvents || [])];
             const subMap = buildSubstitutionMap(allEvents);
 
-            // Build sub-in player list for rating calculation
-            // User bench players who entered have performance data
+            // Build sub-in player list for rating calculation: any bench player
+            // (user or opponent) who came on and has cached performance data.
             const subsIn = [];
             for (const bp of this.benchPlayers) {
                 if (bp.performance != null && subMap.subbedIn[bp.id]) {
@@ -1319,14 +1328,14 @@ export default function liveMatch(config) {
                     });
                 }
             }
-            // Opponent subs: check if they have performance in the roster cache
-            for (const [inId, sub] of Object.entries(subMap.subbedIn)) {
-                if (sub.teamId && sub.teamId !== this.userTeamId) {
-                    // Find performance from the cached performances (passed via roster update)
-                    const opponentRoster = this.homeTeamId === this.userTeamId
-                        ? this.awayLineupRoster : this.homeLineupRoster;
-                    // Opponent subs aren't in the roster, but may have performance from resim
-                    // We can't rate them without performance data
+            for (const bp of this.opponentBenchPlayers) {
+                if (bp.performance != null && subMap.subbedIn[bp.id]) {
+                    subsIn.push({
+                        id: bp.id,
+                        performance: bp.performance,
+                        positionGroup: bp.positionGroup,
+                        teamId: bp.teamId,
+                    });
                 }
             }
 
