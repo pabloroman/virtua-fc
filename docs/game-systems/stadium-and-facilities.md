@@ -122,8 +122,9 @@ Goal: one meaningful player decision; validate elasticity and fan-satisfaction m
 - Ticket-pricing policy presets (Accessible / Standard / Premium / Elite) on `ClubStadium`.
 - Demand curve incorporates pricing-tier elasticity.
 - Fan satisfaction effect: sustained premium pricing drains fan base; accessible pricing + success boosts it.
+- Per-matchday **Día del Club** checkbox (default off) on home league fixtures. Applies a supplement on season-ticket holders, boosting matchday revenue for that match with a small attendance drop and a fan-base cost that grows with repeated use. No season cap — the compounding fan-base cost is the natural brake.
 - Optional: season-ticket allocation slider.
-- AI heuristic: each club picks a pricing tier based on reputation + recent form. Elite clubs default to Premium, mid-table to Standard, strugglers to Accessible. Clubs drop a tier after sustained low attendance.
+- AI heuristic: each club picks a pricing tier based on reputation + recent form. Elite clubs default to Premium, mid-table to Standard, strugglers to Accessible. Clubs drop a tier after sustained low attendance. Día del Club has no dedicated AI behaviour — AI matchday revenue is governed by a general heuristic.
 - Notifications: fan unrest warning on sustained high pricing + poor results.
 
 Deliverable: first real player decision, first fan-base feedback loop.
@@ -163,10 +164,7 @@ Deliverable: multi-season progression arc.
 - **Fan base surface**: displayed to the player as a 0–100 number.
 - **Stadium expansion during construction**: Barcelona model — capacity drops during the build, not additive-only. Makes expansion a real multi-season commitment.
 - **Naming rights granularity**: whole-stadium only; no per-stand / per-section deals.
-
-### Open
-
-- **Per-match ticket price tweaking.** Ticketing is an annual policy (chosen pricing tier), but the user can override individual fixtures within bounds. **Proposed shape:** for any given fixture, bump the pricing tier ±1 step (e.g. Premium → Elite for the Barça visit; drop a dead-rubber end-of-season match to Accessible to fill the ground). Each bump-up carries a small fan-satisfaction cost; bump-downs are free. No hard cap on bumps per season — the fan-satisfaction cost is the natural brake. **Needs confirmation or alternative shape before Phase 3.**
+- **Día del Club mechanic**: per-matchday checkbox (default off) available on every home league fixture. Ticking it applies a supplement on season-ticket holders for that match, multiplying matchday revenue at the cost of a small attendance drop (socios who skip rather than pay) and a fan-base hit. The fan-base hit grows with repeated use within a season — frequency is self-regulating, no hard season cap. Home league fixtures only (Copa and CL finals are played at neutral venues and therefore cannot be home games). This is an intentional carve-out from Principle 5 (AI parity): the mechanic is narrow enough that AI clubs don't get a dedicated heuristic — their matchday revenue is handled by a general AI heuristic instead.
 
 ### Decided later (non-blocking for the vision)
 
