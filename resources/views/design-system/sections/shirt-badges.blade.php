@@ -5,7 +5,7 @@
     <div x-data="shirtBadgePreview()" class="space-y-6">
         {{-- Pattern legend --}}
         <div class="flex flex-wrap gap-3 text-xs">
-            <template x-for="p in ['solid', 'stripes', 'hoops', 'sash', 'bar', 'halves']" :key="p">
+            <template x-for="p in ['solid', 'stripes', 'hoops', 'sash', 'bar', 'halves', 'quarters', 'chevron']" :key="p">
                 <span class="px-2.5 py-1 bg-surface-700 text-text-secondary border border-border-default rounded-full font-medium uppercase tracking-wide" x-text="p"></span>
             </template>
         </div>
@@ -63,6 +63,12 @@
                             return `background: linear-gradient(90deg, ${p} 0%, ${p} 35%, ${s} 35%, ${s} 65%, ${p} 65%, ${p} 100%)`;
                         case 'halves':
                             return `background: linear-gradient(90deg, ${p} 50%, ${s} 50%)`;
+                        case 'quarters':
+                            return `background: conic-gradient(from 90deg, ${p} 0deg 90deg, ${s} 90deg 180deg, ${p} 180deg 270deg, ${s} 270deg 360deg)`;
+                        case 'chevron': {
+                            const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><path d='M0 14 L50 74 L100 14 L100 34 L50 94 L0 34 Z' fill='${s}'/></svg>`;
+                            return `background-color: ${p}; background-image: url("data:image/svg+xml,${encodeURIComponent(svg)}"); background-size: 100% 100%; background-repeat: no-repeat`;
+                        }
                         default:
                             return `background: ${p}`;
                     }

@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Team Color Lab</title>
+    <style>
+        :root { color-scheme: dark; }
+        body { margin: 0; font-family: Inter, Segoe UI, Arial, sans-serif; background: #0b1120; color: #e2e8f0; }
+        .wrap { max-width: 1100px; margin: 0 auto; padding: 20px; }
+        .grid { display: grid; grid-template-columns: 320px 1fr; gap: 20px; }
+        .card { background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 16px; }
+        h1 { font-size: 20px; margin: 0 0 14px; }
+        label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 6px; }
+        .field { margin-bottom: 12px; }
+        select, input, button, textarea {
+            width: 100%;
+            border: 1px solid #475569;
+            background: #0b1120;
+            color: #e2e8f0;
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        button { cursor: pointer; background: #1d4ed8; border-color: #1d4ed8; font-weight: 600; }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .preview-area {
+            min-height: 380px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            background: linear-gradient(180deg, #14532d, #166534);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .preview-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #16a34a;
+            border-radius: 10px;
+            padding: 12px;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+        }
+        .badge {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .num {
+            width: 28px;
+            height: 28px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 12px;
+            line-height: 1;
+        }
+        .meta { margin-top: 12px; color: #94a3b8; font-size: 12px; }
+        textarea { min-height: 110px; resize: vertical; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+        @media (max-width: 900px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <h1>Team Color Lab</h1>
+    <div class="grid">
+        <div class="card">
+            <div class="field">
+                <label for="teamPreset">Equipo Primera RFEF</label>
+                <select id="teamPreset"></select>
+            </div>
+            <div class="field">
+                <label for="team">Nombre manual</label>
+                <input id="team" value="SD Ponferradina">
+            </div>
+            <div class="field">
+                <label for="pattern">Pattern</label>
+                <select id="pattern"></select>
+            </div>
+            <div class="field">
+                <label for="role">Rol preview</label>
+                <select id="role">
+                    <option value="Midfielder">Outfield</option>
+                    <option value="Goalkeeper">Goalkeeper</option>
+                </select>
+            </div>
+            <div class="row">
+                <div class="field">
+                    <label for="primary">Primary</label>
+                    <select id="primary"></select>
+                </div>
+                <div class="field">
+                    <label for="secondary">Secondary</label>
+                    <select id="secondary"></select>
+                </div>
+            </div>
+            <div class="field">
+                <label for="number">Number</label>
+                <select id="number"></select>
+            </div>
+            <div class="field">
+                <label for="numberText">Dorsal preview</label>
+                <input id="numberText" value="10">
+            </div>
+            <div class="field">
+                <button id="copyBtn" type="button">Copiar snippet PHP</button>
+            </div>
+            <textarea id="snippet" readonly></textarea>
+            <div class="meta" id="hexMeta"></div>
+        </div>
+        <div class="card">
+            <div class="preview-area">
+                <div class="preview-row">
+                    <div class="badge" id="shirtBadgeNumber">
+                        <span class="num" id="shirtNumber">10</span>
+                    </div>
+                    <div class="badge" id="shirtBadgeInitials">
+                        <span class="num" id="shirtInitials">SP</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const palette = {
+        white: '#FFFFFF',
+        black: '#000000',
+        'gray-900': '#111827',
+        'red-500': '#EF4444',
+        'red-600': '#DC2626',
+        'red-700': '#B91C1C',
+        'red-800': '#991B1B',
+        'red-900': '#7F1D1D',
+        'rose-800': '#9F1239',
+        'orange-500': '#F97316',
+        'orange-600': '#EA580C',
+        'amber-400': '#FBBF24',
+        'amber-500': '#F59E0B',
+        'amber-600': '#D97706',
+        'yellow-400': '#FACC15',
+        'yellow-500': '#EAB308',
+        'lime-500': '#84CC16',
+        'green-600': '#16A34A',
+        'green-700': '#15803D',
+        'emerald-600': '#059669',
+        'emerald-700': '#047857',
+        'teal-700': '#0F766E',
+        'sky-400': '#38BDF8',
+        'sky-500': '#0EA5E9',
+        'sky-600': '#0284C7',
+        'blue-500': '#3B82F6',
+        'blue-600': '#2563EB',
+        'blue-700': '#1D4ED8',
+        'blue-800': '#1E40AF',
+        'blue-900': '#1E3A8A',
+        'indigo-700': '#4338CA',
+        'purple-600': '#9333EA',
+        'purple-700': '#7E22CE',
+        'purple-800': '#6B21A8'
+    };
+
+    const patterns = ['solid', 'stripes', 'hoops', 'sash', 'bar', 'halves', 'quarters', 'chevron'];
+    const primeraRfefGroupA = {
+        'Arenas Club': { pattern: 'stripes', primary: 'red-600', secondary: 'black', number: 'white' },
+        'Barakaldo CF': { pattern: 'stripes', primary: 'yellow-400', secondary: 'black', number: 'black' },
+        'Bilbao Athletic': { pattern: 'stripes', primary: 'red-600', secondary: 'white', number: 'black' },
+        'CA Osasuna Promesas': { pattern: 'solid', primary: 'red-600', secondary: 'blue-900', number: 'white' },
+        'CD Arenteiro': { pattern: 'solid', primary: 'emerald-600', secondary: 'white', number: 'white' },
+        'CD Guadalajara': { pattern: 'solid', primary: 'purple-800', secondary: 'white', number: 'white' },
+        'CD Lugo': { pattern: 'stripes', primary: 'red-600', secondary: 'white', number: 'black' },
+        'CD Tenerife': { pattern: 'solid', primary: 'white', secondary: 'blue-700', number: 'blue-700' },
+        'CF Talavera de la Reina': { pattern: 'stripes', primary: 'white', secondary: 'blue-600', number: 'black' },
+        'CP Cacereño': { pattern: 'solid', primary: 'emerald-700', secondary: 'white', number: 'white' },
+        'Mérida AD': { pattern: 'solid', primary: 'white', secondary: 'black', number: 'black' },
+        'Ourense CF': { pattern: 'solid', primary: 'blue-600', secondary: 'white', number: 'white' },
+        'Pontevedra CF': { pattern: 'solid', primary: 'rose-800', secondary: 'white', number: 'white' },
+        'RC Celta Fortuna': { pattern: 'solid', primary: 'sky-400', secondary: 'white', number: 'white' },
+        'Racing Ferrol': { pattern: 'solid', primary: 'green-700', secondary: 'white', number: 'white' },
+        'Real Avilés Industrial': { pattern: 'stripes', primary: 'white', secondary: 'blue-700', number: 'black' },
+        'Real Madrid Castilla': { pattern: 'solid', primary: 'white', secondary: 'black', number: 'black' },
+        'SD Ponferradina': { pattern: 'stripes', primary: 'blue-700', secondary: 'white', number: 'amber-400' },
+        'Unionistas CF': { pattern: 'halves', primary: 'black', secondary: 'white', number: 'white' },
+        'Zamora CF': { pattern: 'stripes', primary: 'red-600', secondary: 'white', number: 'black' }
+    };
+    const primeraRfefGroupB = {
+        'AD Alcorcón': { pattern: 'solid', primary: 'yellow-400', secondary: 'black', number: 'black' },
+        'Algeciras CF': { pattern: 'stripes', primary: 'red-600', secondary: 'white', number: 'blue-800' },
+        'Antequera CF': { pattern: 'stripes', primary: 'green-600', secondary: 'white', number: 'black' },
+        'Atlético Madrileño': { pattern: 'stripes', primary: 'red-600', secondary: 'white', number: 'blue-800' },
+        'Atlético Sanluqueño CF': { pattern: 'stripes', primary: 'green-600', secondary: 'white', number: 'black' },
+        'Betis Deportivo Balompié': { pattern: 'stripes', primary: 'green-600', secondary: 'white', number: 'black' },
+        'CD Eldense': { pattern: 'stripes', primary: 'blue-800', secondary: 'red-600', number: 'white' },
+        'CD Teruel': { pattern: 'solid', primary: 'red-600', secondary: 'blue-800', number: 'white' },
+        'CE Europa': { pattern: 'chevron', primary: 'white', secondary: 'blue-600', number: 'blue-700' },
+        'CE Sabadell FC': { pattern: 'quarters', primary: 'white', secondary: 'blue-700', number: 'black' },
+        'FC Cartagena': { pattern: 'stripes', primary: 'black', secondary: 'white', number: 'red-600' },
+        'Gimnàstic de Tarragona': { pattern: 'solid', primary: 'red-700', secondary: 'black', number: 'white' },
+        'Hércules CF': { pattern: 'stripes', primary: 'blue-700', secondary: 'white', number: 'black' },
+        'Juventud Torremolinos CF': { pattern: 'stripes', primary: 'green-600', secondary: 'white', number: 'black' },
+        'Marbella FC': { pattern: 'solid', primary: 'white', secondary: 'blue-600', number: 'blue-600' },
+        'Real Murcia CF': { pattern: 'solid', primary: 'red-600', secondary: 'white', number: 'white' },
+        'SD Tarazona': { pattern: 'solid', primary: 'red-600', secondary: 'blue-800', number: 'white' },
+        'Sevilla Atlético': { pattern: 'solid', primary: 'white', secondary: 'red-600', number: 'black' },
+        'UD Ibiza': { pattern: 'solid', primary: 'sky-400', secondary: 'white', number: 'white' },
+        'Villarreal CF B': { pattern: 'solid', primary: 'yellow-400', secondary: 'blue-800', number: 'blue-800' }
+    };
+    const primeraRfefTeams = { ...primeraRfefGroupA, ...primeraRfefGroupB };
+    const ids = {
+        teamPreset: document.getElementById('teamPreset'),
+        team: document.getElementById('team'),
+        pattern: document.getElementById('pattern'),
+        primary: document.getElementById('primary'),
+        secondary: document.getElementById('secondary'),
+        number: document.getElementById('number'),
+        numberText: document.getElementById('numberText'),
+        role: document.getElementById('role'),
+        shirtBadgeNumber: document.getElementById('shirtBadgeNumber'),
+        shirtBadgeInitials: document.getElementById('shirtBadgeInitials'),
+        shirtNumber: document.getElementById('shirtNumber'),
+        shirtInitials: document.getElementById('shirtInitials'),
+        snippet: document.getElementById('snippet'),
+        copyBtn: document.getElementById('copyBtn'),
+        hexMeta: document.getElementById('hexMeta')
+    };
+
+    function makeOption(value, text) {
+        const opt = document.createElement('option');
+        opt.value = value;
+        opt.textContent = text ?? value;
+        return opt;
+    }
+
+    function textColorForBackground(hex) {
+        const lum = hexLuminance(hex);
+        return lum > 0.55 ? '#0B1120' : '#F8FAFC';
+    }
+
+    function styleColorOption(opt, hex) {
+        opt.style.backgroundColor = hex;
+        opt.style.color = textColorForBackground(hex);
+        opt.style.fontWeight = '600';
+    }
+
+    function fillSelects() {
+        const groupAElement = document.createElement('optgroup');
+        groupAElement.label = 'Grupo A';
+        Object.keys(primeraRfefGroupA)
+            .sort((a, b) => a.localeCompare(b, 'es'))
+            .forEach(name => groupAElement.appendChild(makeOption(name, name)));
+        ids.teamPreset.appendChild(groupAElement);
+
+        const groupBElement = document.createElement('optgroup');
+        groupBElement.label = 'Grupo B';
+        Object.keys(primeraRfefGroupB)
+            .sort((a, b) => a.localeCompare(b, 'es'))
+            .forEach(name => groupBElement.appendChild(makeOption(name, name)));
+        ids.teamPreset.appendChild(groupBElement);
+
+        patterns.forEach(p => ids.pattern.appendChild(makeOption(p)));
+        Object.keys(palette).forEach(k => {
+            const label = `${k} (${palette[k]})`;
+            const primaryOption = makeOption(k, label);
+            const secondaryOption = makeOption(k, label);
+            const numberOption = makeOption(k, label);
+            styleColorOption(primaryOption, palette[k]);
+            styleColorOption(secondaryOption, palette[k]);
+            styleColorOption(numberOption, palette[k]);
+            ids.primary.appendChild(primaryOption);
+            ids.secondary.appendChild(secondaryOption);
+            ids.number.appendChild(numberOption);
+        });
+        ids.teamPreset.value = 'SD Ponferradina';
+        applyTeamPreset(ids.teamPreset.value);
+    }
+
+    function applyTeamPreset(teamName) {
+        const teamColors = primeraRfefTeams[teamName];
+        if (!teamColors) return;
+        ids.team.value = teamName;
+        ids.pattern.value = teamColors.pattern;
+        ids.primary.value = teamColors.primary;
+        ids.secondary.value = teamColors.secondary;
+        ids.number.value = teamColors.number;
+    }
+
+    function getInitials(name) {
+        if (!name) return '??';
+        const parts = name.trim().split(/\s+/);
+        if (parts.length === 1) {
+            return parts[0].substring(0, 2).toUpperCase();
+        }
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+
+    function hexLuminance(hex) {
+        if (!hex || hex.length < 7) return 0.5;
+        const r = Number.parseInt(hex.slice(1, 3), 16) / 255;
+        const g = Number.parseInt(hex.slice(3, 5), 16) / 255;
+        const b = Number.parseInt(hex.slice(5, 7), 16) / 255;
+        return 0.299 * r + 0.587 * g + 0.114 * b;
+    }
+
+    function getBackdropColor(tc) {
+        const numLum = hexLuminance(tc.number);
+        const priLum = hexLuminance(tc.primary);
+        const secLum = hexLuminance(tc.secondary);
+        return Math.abs(numLum - priLum) >= Math.abs(numLum - secLum) ? tc.primary : tc.secondary;
+    }
+
+    function getShirtStyle(role, teamColors) {
+        if (role === 'Goalkeeper') {
+            return 'background: linear-gradient(to bottom right, #FBBF24, #D97706)';
+        }
+
+        const tc = teamColors;
+        if (!tc) return 'background: linear-gradient(to bottom right, #3B82F6, #1D4ED8)';
+
+        const p = tc.primary;
+        const s = tc.secondary;
+
+        switch (tc.pattern) {
+            case 'stripes':
+                return `background: linear-gradient(90deg, ${s} 3px, ${p} 3px, ${p} 9px, ${s} 9px); background-size: 12px 100%; background-position: center`;
+            case 'hoops':
+                return `background: linear-gradient(0deg, ${s} 3px, ${p} 3px, ${p} 9px, ${s} 9px); background-size: 100% 12px; background-position: center`;
+            case 'sash':
+                return `background: linear-gradient(135deg, ${p} 0%, ${p} 35%, ${s} 35%, ${s} 65%, ${p} 65%, ${p} 100%)`;
+            case 'bar':
+                return `background: linear-gradient(90deg, ${p} 0%, ${p} 35%, ${s} 35%, ${s} 65%, ${p} 65%, ${p} 100%)`;
+            case 'halves':
+                return `background: linear-gradient(90deg, ${p} 50%, ${s} 50%)`;
+            case 'quarters':
+                return `background: conic-gradient(from 90deg, ${p} 0deg 90deg, ${s} 90deg 180deg, ${p} 180deg 270deg, ${s} 270deg 360deg)`;
+            case 'chevron': {
+                const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><path d='M0 14 L50 74 L100 14 L100 34 L50 94 L0 34 Z' fill='${s}'/></svg>`;
+                return `background-color: ${p}; background-image: url("data:image/svg+xml,${encodeURIComponent(svg)}"); background-size: 100% 100%; background-repeat: no-repeat`;
+            }
+            default:
+                return `background: ${p}`;
+        }
+    }
+
+    function getNumberStyle(role, teamColors) {
+        if (role === 'Goalkeeper') {
+            return 'color: #FFFFFF; text-shadow: 0 1px 2px rgba(0,0,0,0.5)';
+        }
+        const tc = teamColors;
+        if (!tc) return 'color: #FFFFFF; text-shadow: 0 1px 2px rgba(0,0,0,0.5)';
+
+        const color = tc.number || '#FFFFFF';
+
+        if (tc.pattern !== 'solid') {
+            const backdrop = getBackdropColor(tc);
+            return `color: ${color}; background: ${backdrop}CC; text-shadow: 0 1px 2px rgba(0,0,0,0.15)`;
+        }
+
+        return `color: ${color}; text-shadow: 0 1px 2px rgba(0,0,0,0.2)`;
+    }
+
+    function render() {
+        const team = ids.team.value.trim() || 'Team';
+        const role = ids.role.value;
+        const pattern = ids.pattern.value;
+        const primary = ids.primary.value;
+        const secondary = ids.secondary.value;
+        const number = ids.number.value;
+        const numberText = ids.numberText.value.trim() || '10';
+
+        const tc = {
+            pattern,
+            primary: palette[primary],
+            secondary: palette[secondary],
+            number: palette[number],
+        };
+
+        const shirtStyle = getShirtStyle(role, tc);
+        const numberStyle = getNumberStyle(role, tc);
+
+        ids.shirtBadgeNumber.style.cssText = shirtStyle;
+        ids.shirtBadgeInitials.style.cssText = shirtStyle;
+        ids.shirtNumber.style.cssText = numberStyle;
+        ids.shirtInitials.style.cssText = numberStyle;
+        ids.shirtNumber.textContent = numberText;
+        ids.shirtInitials.textContent = getInitials(team);
+
+        ids.snippet.value = `'${team}' => [\n    'pattern' => '${pattern}',\n    'primary' => '${primary}',\n    'secondary' => '${secondary}',\n    'number' => '${number}',\n],`;
+        ids.hexMeta.textContent = `primary ${tc.primary} · secondary ${tc.secondary} · number ${tc.number}`;
+    }
+
+    ids.copyBtn.addEventListener('click', async () => {
+        try {
+            await navigator.clipboard.writeText(ids.snippet.value);
+            ids.copyBtn.textContent = 'Copiado';
+            setTimeout(() => { ids.copyBtn.textContent = 'Copiar snippet PHP'; }, 1200);
+        } catch (e) {
+            console.error(e);
+            ids.copyBtn.textContent = 'No se pudo copiar';
+            setTimeout(() => { ids.copyBtn.textContent = 'Copiar snippet PHP'; }, 1200);
+        }
+    });
+
+    ids.teamPreset.addEventListener('change', () => {
+        applyTeamPreset(ids.teamPreset.value);
+        render();
+    });
+
+    [ids.team, ids.role, ids.pattern, ids.primary, ids.secondary, ids.number, ids.numberText].forEach(el => {
+        el.addEventListener('input', render);
+        el.addEventListener('change', render);
+    });
+
+    fillSelects();
+    render();
+</script>
+</body>
+</html>

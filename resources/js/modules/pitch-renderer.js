@@ -71,6 +71,12 @@ export function getShirtStyle(role, teamColors) {
             return `background: linear-gradient(90deg, ${p} 0%, ${p} 35%, ${s} 35%, ${s} 65%, ${p} 65%, ${p} 100%)`;
         case 'halves':
             return `background: linear-gradient(90deg, ${p} 50%, ${s} 50%)`;
+        case 'quarters':
+            return `background: conic-gradient(from 90deg, ${p} 0deg 90deg, ${s} 90deg 180deg, ${p} 180deg 270deg, ${s} 270deg 360deg)`;
+        case 'chevron': {
+            const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><path d='M0 14 L50 74 L100 14 L100 34 L50 94 L0 34 Z' fill='${s}'/></svg>`;
+            return `background-color: ${p}; background-image: url("data:image/svg+xml,${encodeURIComponent(svg)}"); background-size: 100% 100%; background-repeat: no-repeat`;
+        }
         default:
             return `background: ${p}`;
     }
@@ -105,9 +111,9 @@ function getBackdropColor(tc) {
 
 function hexLuminance(hex) {
     if (!hex || hex.length < 7) return 0.5;
-    const r = parseInt(hex.slice(1, 3), 16) / 255;
-    const g = parseInt(hex.slice(3, 5), 16) / 255;
-    const b = parseInt(hex.slice(5, 7), 16) / 255;
+    const r = Number.parseInt(hex.slice(1, 3), 16) / 255;
+    const g = Number.parseInt(hex.slice(3, 5), 16) / 255;
+    const b = Number.parseInt(hex.slice(5, 7), 16) / 255;
     return 0.299 * r + 0.587 * g + 0.114 * b;
 }
 
