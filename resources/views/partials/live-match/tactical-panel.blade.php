@@ -270,8 +270,14 @@
                                                         <span x-show="isPlayerYellowCarded(player.id)"
                                                               x-tooltip.raw="{{ __('game.player_booked') }}"
                                                               class="shrink-0 w-2 h-3 rounded-[1px] bg-yellow-400 border border-yellow-500"></span>
+                                                        {{-- Live match rating (performance-only, shown when data is available) --}}
+                                                        <span x-show="getBaseRating(player.id) !== null"
+                                                              class="ml-auto inline-flex items-center justify-center min-w-[1.5rem] h-5 rounded-full px-1 text-[9px] font-semibold shrink-0"
+                                                              :class="ratingColor(getBaseRating(player.id))"
+                                                              x-text="getBaseRating(player.id)?.toFixed(1)"></span>
                                                         {{-- Energy bar --}}
-                                                        <span class="ml-auto flex items-center gap-1 shrink-0">
+                                                        <span class="flex items-center gap-1 shrink-0"
+                                                              :class="getBaseRating(player.id) === null ? 'ml-auto' : ''">
                                                             <span class="text-[10px] tabular-nums font-semibold"
                                                                   :class="getEnergyTextColor(getPlayerEnergy(player))"
                                                                   x-text="getPlayerEnergy(player) + '%'"></span>
