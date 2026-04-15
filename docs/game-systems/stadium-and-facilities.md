@@ -14,9 +14,9 @@ Turn four static inputs (fixed seat count, reputation-indexed matchday rate, lum
 2. **Slow variables are inputs, not outputs.** Fan base, reputation, stadium capacity move slowly and *drive* fast variables (attendance, sponsor value). Never the other way around.
 3. **Presets before sliders.** User decisions use discrete, curated options (pricing tier, accept/reject sponsor offer). Free-text numbers invite degenerate optimization and heavy balancing work.
 4. **Replace, don't stack.** Where this system owns a revenue line (matchday, commercial), it **replaces** the existing formula. Revenue is never double-counted.
-5. **AI parity.** Every user-facing decision has a matching AI heuristic.
+5. **AI parity.** Every user-facing decision has a matching AI heuristic. [Explain: How this would work? there are no mentions in the document to this. ]
 6. **Subsidy floor stays.** The existing public-subsidy protection for struggling clubs is preserved end-to-end. The design space to shape is the ceiling, not the floor.
-7. **Mobile-first surface.** Every screen works at 375px. Categorical decisions over spreadsheets.
+7. **Mobile-first surface.** Every screen works at 375px. Categorical decisions over spreadsheets. [This text is not relevant. This should be the case for every other feature in the project, I don't understand the need of highlighting this hera]
 
 ## End-State Vision
 
@@ -59,7 +59,7 @@ Replaces the `commercial_per_seat × position_growth` lump sum with negotiated, 
 | Stadium naming rights | Continental+ | 5–10 seasons | Large base + minor bonus |
 | Official partners (N) | Scaled by fan base | 1–2 seasons | Flat base |
 
-Offers generated in the season-closing window. User accepts, rejects, or counters. Performance bonuses trigger at season settlement from standings and competition outcomes. This is where the "performance → money" flywheel delivers its most dramatic payoffs.
+Offers generated in the season-closing window [Why season closing? Isn't pre-season more logical?]. User accepts, rejects, or counters. Performance bonuses trigger at season settlement from standings and competition outcomes. This is where the "performance → money" flywheel delivers its most dramatic payoffs.
 
 ### Pillar 4 — Merchandising (Integrated, Not Standalone)
 
@@ -97,13 +97,18 @@ Goal: establish attendance and fan base as first-class concepts with visible out
 - New `fan_base` stat on `ClubProfile` (0–100). Seeded from reputation. Updated at season close by a new processor (trophies, promotion/relegation, European nights, homegrown academy graduates).
 - `SeasonSettlementProcessor::calculateMatchdayRevenue()` replaced by a sum over recorded attendance × current per-reputation per-seat rate.
 - `BudgetProjectionService::calculateMatchdayRevenue()` projects attendance deterministically from the same curve.
-- New Stadium page: capacity, fan base, last-match attendance, projected vs. actual matchday revenue. No controls yet.
 - Match reports show attendance.
 - AI: no changes (deterministic curve applies equally to all clubs).
 
 Deliverable: visible attendance in every match, foundational fan-base stat, no regressions to projected totals.
 
-### Phase 2 — Ticketing as a decision layer
+### Phase 2 — UI Skeleton
+- New top level navigation item: 'Club'. This one is a shell for Finance, Stadium, Reputation and other non-sporting related aspects of club management. It should give a home to this category of features in the future
+- Move existing 'Finances' page under 'Club'
+- New Stadium page under 'Club': capacity, fan base, last-match attendance, projected vs. actual matchday revenue. No controls yet.
+- New Reputation page under 'Club': display reputation milestones, season-over-season growth, and current reputation of your club.
+
+### Phase 3 — Ticketing as a decision layer
 
 Goal: one meaningful player decision; validate elasticity and fan-satisfaction mechanics.
 
@@ -116,7 +121,7 @@ Goal: one meaningful player decision; validate elasticity and fan-satisfaction m
 
 Deliverable: first real player decision, first fan-base feedback loop.
 
-### Phase 3 — Commercial portfolio (sponsor contracts)
+### Phase 4 — Commercial portfolio (sponsor contracts)
 
 Goal: replace lump-sum commercial revenue with negotiated contracts and performance bonuses — the heart of the flywheel.
 
@@ -131,7 +136,7 @@ Goal: replace lump-sum commercial revenue with negotiated contracts and performa
 
 Deliverable: replaces commercial revenue with the most emotionally-rewarding payoff loop in the feature.
 
-### Phase 4 — Stadium capital
+### Phase 5 — Stadium capital
 
 Goal: long-term infrastructure strategy — the slowest, most transformative lever.
 
@@ -146,13 +151,13 @@ Deliverable: multi-season progression arc.
 
 ## Open Design Questions
 
-1. Does **fan base** surface to players as a 0–100 number, a qualitative label ("devoted / loyal / casual"), or indirectly via attendance trend?
-2. Is **per-match ticket price tweaking** allowed, or is ticketing strictly an annual policy with category tiers?
-3. How aggressive should **Phase 3 rebalancing** be? Replacing `commercial_per_seat` changes every club's baseline income and cascades into wages, transfer budgets, and AI behaviour.
-4. Do we want **financial distress states** (debt, transfer bans) in parallel with the subsidy floor, or does the floor continue to prevent collapse?
-5. Does **stadium expansion** reduce capacity *during* construction (Barcelona model) or only add capacity on completion (simpler)?
-6. Are **naming rights** tied to the whole stadium only, or can clubs sell stand/section naming (West Ham "Betway Stand" model)?
-7. How do we surface **marquee-player merchandising** without demanding a full star-power attribute on Player in Phase 3? Option: model merch as a flat fan-base multiplier in Phase 3, introduce star-power later.
+1. Does **fan base** surface to players as a 0–100 number, a qualitative label ("devoted / loyal / casual"), or indirectly via attendance trend? [It surfaces a as 0-100 number]
+2. Is **per-match ticket price tweaking** allowed, or is ticketing strictly an annual policy with category tiers? [I think it should be tweaked to an extent]
+3. How aggressive should **Phase 3 rebalancing** be? Replacing `commercial_per_seat` changes every club's baseline income and cascades into wages, transfer budgets, and AI behaviour. [We can decide that later, it's not relevant for the roadmap or the high level picture]
+4. Do we want **financial distress states** (debt, transfer bans) in parallel with the subsidy floor, or does the floor continue to prevent collapse? [We can decide that later, it's not relevant for the roadmap or the high level picture]
+5. Does **stadium expansion** reduce capacity *during* construction (Barcelona model) or only add capacity on completion (simpler)? [Yes, Barcelona model]
+6. Are **naming rights** tied to the whole stadium only, or can clubs sell stand/section naming (West Ham "Betway Stand" model)? [Whole stadium only. Simpler is better]
+7. How do we surface **marquee-player merchandising** without demanding a full star-power attribute on Player in Phase 3? Option: model merch as a flat fan-base multiplier in Phase 3, introduce star-power later. [We can decide that later, it's not relevant for the roadmap or the high level picture]
 
 ## Key Files
 
