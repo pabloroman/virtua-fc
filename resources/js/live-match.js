@@ -26,7 +26,7 @@ import { createPenaltyShootout } from './modules/penalty-shootout.js';
 import { createSubstitutionManager } from './modules/substitution-manager.js';
 import { createMatchSimulation } from './modules/match-simulation.js';
 import { generateRegularTimeAtmosphere, generateExtraTimeAtmosphere, generateTacticalNarratives, addGoalNarratives, regenerateShotsAndFouls, regenerateNarratives } from './modules/atmosphere-generator.js';
-import { calculatePlayerRatings, ratingColor as _ratingColor, updateRosterPerformances, countEvents, buildSubstitutionMap } from './modules/player-ratings.js';
+import { calculatePlayerRatings, ratingColor as _ratingColor, updateRosterPerformances, countEvents, buildSubstitutionMap, performanceToBaseRating } from './modules/player-ratings.js';
 
 /**
  * Copy all own properties from source to target. Regular properties are
@@ -1367,6 +1367,30 @@ export default function liveMatch(config) {
 
         ratingColor(rating) {
             return _ratingColor(rating);
+        },
+
+        /**
+         * Live (pre-full-time) rating for a player, derived solely from the
+         * cached performance modifier — no event, score, or card bonuses.
+         *
+         * Only exposed during the half-time (and ET half-time) substitution
+         * window. Outside those windows the rating has no actionable value —
+         * showing it during live play would just be noise, and showing it at
+         * full time would compete with the proper event-weighted rating.
+         *
+         * Returns null when not in a half-time window or when no performance
+         * data is available for the player.
+         */
+        getBaseRating(playerId) {
+            if (!playerId) return null;
+            if (this.phase !== 'half_time' && this.phase !== 'extra_time_half_time') {
+                return null;
+            }
+            const player = this.homeLineupRoster.find(p => p.id === playerId)
+                || this.awayLineupRoster.find(p => p.id === playerId)
+                || (this.benchPlayers || []).find(p => p.id === playerId);
+            if (!player) return null;
+            return performanceToBaseRating(player.performance);
         },
 
         getEventIcons() {

@@ -42,6 +42,26 @@ class MatchSimulator
      */
     private array $matchPerformance = [];
 
+    /**
+     * Seed the per-player performance cache with values from a prior simulation.
+     *
+     * Used by MatchResimulationService so that a player's "form on the day" is
+     * preserved across resimulations (e.g. half-time tactical changes). Without
+     * this, every resimulation would re-roll performance and make the in-match
+     * player rating non-predictive — a 6.9 striker at half-time could randomly
+     * become a 9.0 striker in the 2nd half just because the user clicked play.
+     *
+     * Players not present in the seed will get a fresh roll on first call to
+     * getMatchPerformance() — this is intentional for substitutes who weren't
+     * previously on the pitch.
+     *
+     * @param  array<string, float>  $performances  Map of player ID → performance modifier
+     */
+    public function seedPerformance(array $performances): void
+    {
+        $this->matchPerformance = $performances;
+    }
+
     /** @var array<string, string> Player ID → slot code for home team (for position penalty) */
     private array $homePlayerSlotMap = [];
 
@@ -657,6 +677,7 @@ class MatchSimulator
         ?string $userTeamId = null,
         ?array $homePlayerSlots = null,
         ?array $awayPlayerSlots = null,
+        bool $preservePerformance = false,
     ): MatchSimulationOutput {
         if ($homePlayerSlots !== null) {
             $this->homePlayerSlotMap = $homePlayerSlots;
@@ -731,8 +752,11 @@ class MatchSimulator
             );
         }
 
-        // Reset performance cache for the resimulation
-        $this->matchPerformance = [];
+        // Reset performance cache for the resimulation unless the caller has
+        // seeded it from a prior simulation (preserves "form on the day").
+        if (! $preservePerformance) {
+            $this->matchPerformance = [];
+        }
 
         $allEvents = collect();
         $totalHomeScore = 0;
