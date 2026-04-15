@@ -11,6 +11,7 @@
 <template x-if="!isAtmosphereEvent(event)">
     <div class="flex gap-3 w-full" :class="event.type === 'substitution_group' ? 'items-start' : 'items-center'">
         <span class="font-heading font-bold text-xs text-text-muted w-8 text-right shrink-0 tabular-nums"
+              :class="event.type === 'goal' ? 'text-accent-gold text-sm' : ''"
               x-text="Math.floor(event.minute) + '\''"></span>
         <span class="w-6 text-center shrink-0 flex items-center justify-center"
               x-show="event.type === 'goal'">
@@ -48,7 +49,8 @@
                 <div>
                     <span class="font-semibold text-xs text-text-primary" x-text="event.type === 'substitution' ? event.playerInName : event.playerName"></span>
                     <template x-if="event.type === 'goal'">
-                        <span class="text-[10px] text-text-muted ml-1" x-text="event.metadata?.is_penalty ? '{{ __('game.live_penalty_goal') }}' : '{{ __('game.live_goal') }}'"></span>
+                        <span class="inline-flex items-center rounded px-1.5 py-0.5 ml-1.5 text-[9px] font-heading font-bold uppercase tracking-wider bg-accent-gold/20 text-accent-gold"
+                              x-text="event.metadata?.is_penalty ? '{{ __('game.live_penalty_goal') }}' : '{{ __('game.live_goal') }}'"></span>
                     </template>
                     <template x-if="event.type === 'own_goal'">
                         <span class="text-[10px] text-accent-red ml-1">({{ __('game.og') }})</span>
@@ -72,7 +74,7 @@
                         <div class="text-[10px] text-text-secondary" x-text="'{{ __('game.live_assist') }} ' + event.assistPlayerName"></div>
                     </template>
                     <template x-if="event.narrative && showCommentary">
-                        <div class="text-[10px] text-text-muted leading-tight mt-0.5" x-text="event.narrative"></div>
+                        <div class="text-xs text-text-muted leading-tight mt-0.5" x-text="event.narrative"></div>
                     </template>
                 </div>
             </template>

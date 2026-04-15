@@ -692,6 +692,7 @@ export function addGoalNarratives(events, config) {
     const assistedTemplates = narrativeTemplates.goalAssisted || [];
     const soloTemplates = narrativeTemplates.goalSolo || [];
     const penaltyTemplates = narrativeTemplates.goalPenalty || [];
+    const prefixTemplates = narrativeTemplates.goalPrefix || [];
     if (!assistedTemplates.length && !soloTemplates.length) return;
 
     const homeForms = buildTeamForms(homeTeamName, homeArticle);
@@ -732,12 +733,18 @@ export function addGoalNarratives(events, config) {
             templates = event.assistPlayerName ? assistedTemplates : soloTemplates;
         }
 
-        event.narrative = pickNarrative(templates, {
+        const replacements = {
             ':del_team': teamForms.del,
             ':el_team': teamForms.el,
             ':player': event.playerName,
             ':team': teamForms.name,
-        });
+        };
+
+        // Prefix each goal narrative with an emphatic opener ("¡GOLAZO del ...!",
+        // "GOAL for ...!", etc.) so goal events read with punch in the feed.
+        const prefix = pickNarrative(prefixTemplates, replacements);
+        const body = pickNarrative(templates, replacements);
+        event.narrative = prefix ? `${prefix} ${body}` : body;
     }
 }
 
