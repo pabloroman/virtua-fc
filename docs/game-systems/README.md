@@ -15,6 +15,7 @@ High-level documentation of the game systems that power VirtuaFC. These document
 | [Injury System](injury-system.md) | Injury probability, durability, medical tiers, recovery |
 | [Season Lifecycle](season-lifecycle.md) | Season flow, matchday progression, end-of-season pipeline |
 | [Club Economy System](club-economy-system.md) | Budget allocation, revenue sources, investment tiers, debt |
+| [Stadium & Facilities](stadium-and-facilities.md) | Long-term vision: attendance, fan base, ticketing, sponsor portfolio, capital upgrades |
 | [Reputation System](reputation-system.md) | Dynamic reputation tiers based on sustained performance |
 | [Transfer Market](transfer-market.md) | Scouting, buying, selling, loans, contracts |
 | [Youth Academy](academy-redesign.md) | Phased stat reveals, development, evaluations |
