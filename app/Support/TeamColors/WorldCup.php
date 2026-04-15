@@ -301,7 +301,7 @@ final class WorldCup implements TeamColorProvider
                 'number' => 'blue-900',
             ],
             'Croatia' => [
-                'pattern' => 'hoops',
+                'pattern' => 'quarters',
                 'primary' => 'red-600',
                 'secondary' => 'white',
                 'number' => 'blue-700',
