@@ -251,6 +251,7 @@ export function generateAtmosphereForPeriod(config) {
             events.push({
                 minute,
                 type: 'shot_on_target',
+                atmosphere: true,
                 playerName: player.name,
                 teamId: team.id,
                 gamePlayerId: player.id || null,
@@ -276,6 +277,7 @@ export function generateAtmosphereForPeriod(config) {
             events.push({
                 minute,
                 type: 'shot_off_target',
+                atmosphere: true,
                 playerName: player.name,
                 teamId: team.id,
                 gamePlayerId: player.id || null,
@@ -307,6 +309,7 @@ export function generateAtmosphereForPeriod(config) {
             events.push({
                 minute,
                 type: 'foul',
+                atmosphere: true,
                 playerName: player.name,
                 teamId: team.id,
                 gamePlayerId: player.id || null,
@@ -528,6 +531,7 @@ export function generateContextualNarratives(config) {
         events.push({
             minute: m,
             type: 'contextual',
+            atmosphere: true,
             playerName: '',
             teamId: null,
             gamePlayerId: null,
@@ -637,6 +641,7 @@ export function generateTacticalNarratives(config) {
         events.push({
             minute: m,
             type: 'contextual',
+            atmosphere: true,
             playerName: '',
             teamId: null,
             gamePlayerId: null,

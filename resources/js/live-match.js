@@ -1432,7 +1432,10 @@ export default function liveMatch(config) {
         },
 
         isAtmosphereEvent(event) {
-            return event.type === 'shot_on_target' || event.type === 'shot_off_target' || event.type === 'foul' || event.type === 'contextual';
+            // Atmosphere events are tagged at creation by the atmosphere generator.
+            // Using the flag (not a hardcoded type list) keeps this in sync automatically
+            // when new atmosphere event types are added.
+            return !!event.atmosphere;
         },
 
         /**

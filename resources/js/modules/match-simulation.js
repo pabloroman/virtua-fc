@@ -209,7 +209,10 @@ export function createMatchSimulation(ctx) {
             updateScore(event);
             triggerGoalFlash();
             pauseForDrama(1500);
-        } else {
+        } else if (!event.atmosphere) {
+            // Real events (cards, subs, injuries, missed pens) still pause for drama.
+            // Atmosphere events are tagged by the atmosphere generator and flow past
+            // without interrupting the clock.
             pauseForDrama(1500);
         }
 
@@ -236,7 +239,7 @@ export function createMatchSimulation(ctx) {
             updateScore(event);
             triggerGoalFlash();
             pauseForDrama(1500);
-        } else {
+        } else if (!event.atmosphere) {
             pauseForDrama(1500);
         }
     }
