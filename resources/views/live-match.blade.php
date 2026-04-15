@@ -33,6 +33,7 @@
                 awayTeamImage: '{{ $match->awayTeam->image }}',
                 lineupPlayers: {{ Js::from($lineupPlayers) }},
                 benchPlayers: {{ Js::from($benchPlayers) }},
+                opponentBenchPlayers: {{ Js::from($opponentBenchPlayers) }},
                 userTeamId: '{{ $game->team_id }}',
                 tacticalActionsUrl: '{{ $tacticalActionsUrl }}',
                 skipToEndUrl: '{{ $skipToEndUrl }}',

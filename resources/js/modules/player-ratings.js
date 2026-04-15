@@ -216,14 +216,18 @@ export function ratingColor(rating) {
 }
 
 /**
- * Merge new performance values into roster arrays.
+ * Merge new performance values into one or more roster arrays.
  *
- * @param {Array} homeRoster       - Home team roster
- * @param {Array} awayRoster       - Away team roster
+ * Pass every array that holds player performance data (starters AND benches
+ * for both teams) so post-resimulation ratings include late substitutes —
+ * leaving out the benches causes substitute ratings to silently disappear.
+ *
+ * @param {Array<Array>} rosters   - Arrays of player objects to update in place
  * @param {Object} newPerformances - Map of playerId → performance modifier
  */
-export function updateRosterPerformances(homeRoster, awayRoster, newPerformances) {
-    for (const roster of [homeRoster, awayRoster]) {
+export function updateRosterPerformances(rosters, newPerformances) {
+    for (const roster of rosters) {
+        if (!roster) continue;
         for (const player of roster) {
             if (newPerformances[player.id] !== undefined) {
                 player.performance = newPerformances[player.id];

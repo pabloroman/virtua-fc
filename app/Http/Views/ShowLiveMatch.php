@@ -195,6 +195,25 @@ class ShowLiveMatch
             ->values()
             ->all();
 
+        // Opponent bench — minimal payload used only to rate opponent
+        // substitutes at full-time. We don't show this list in the UI, so we
+        // only expose the fields the client-side rating formula needs.
+        $opponentTeamId = $isUserHome ? $playerMatch->away_team_id : $playerMatch->home_team_id;
+        $opponentLineupIds = $isUserHome
+            ? ($playerMatch->away_lineup ?? [])
+            : ($playerMatch->home_lineup ?? []);
+        $opponentBenchPlayers = GamePlayer::where('game_players.game_id', $gameId)
+            ->where('team_id', $opponentTeamId)
+            ->whereNotIn('id', $opponentLineupIds)
+            ->get()
+            ->map(fn ($p) => [
+                'id' => $p->id,
+                'positionGroup' => $p->position_group,
+                'performance' => $playerPerformances[$p->id] ?? null,
+                'teamId' => $opponentTeamId,
+            ])
+            ->all();
+
         $mapLineup = fn (array $ids) => GamePlayer::with(['player', 'matchState'])
             ->whereIn('id', $ids)
             ->get()
@@ -342,6 +361,7 @@ class ShowLiveMatch
             'resultsUrl' => $resultsUrl,
             'lineupPlayers' => $lineupPlayers,
             'benchPlayers' => $benchPlayers,
+            'opponentBenchPlayers' => $opponentBenchPlayers,
             'tacticalActionsUrl' => route('game.match.tactical-actions', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
             'skipToEndUrl' => route('game.match.skip-to-end', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
             'extraTimeUrl' => route('game.match.extra-time', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
