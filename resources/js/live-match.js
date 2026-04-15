@@ -1794,6 +1794,70 @@ export default function liveMatch(config) {
         },
 
         // =============================
+        // Synthetic stats (cosmetic only)
+        // =============================
+        // Passes, corners, and offsides aren't tracked by the match simulator
+        // but managers expect them on the stats panel. We fake them with
+        // deterministic per-match values that scale with elapsed minute and
+        // possession share, so the numbers look plausible and tick upward
+        // naturally without ever jumping around between renders.
+
+        /**
+         * Stable multiplier in [0.85, 1.15] derived from matchId + stat + side.
+         * Same match always produces the same totals; different matches differ.
+         */
+        _syntheticStatSeed(stat, side) {
+            const key = `${this.matchId}:${stat}:${side}`;
+            let hash = 0;
+            for (let i = 0; i < key.length; i++) {
+                hash = ((hash << 5) - hash + key.charCodeAt(i)) | 0;
+            }
+            return 0.85 + ((Math.abs(hash) % 301) / 1000);
+        },
+
+        /**
+         * Elapsed minutes for synthetic stat accrual, capped so numbers stop
+         * climbing at full-time (including extra time when applicable).
+         */
+        _elapsedMinutesForStats() {
+            const cap = (this.phase === 'extra_time_first_half' || this.phase === 'extra_time_second_half'
+                || this.phase === 'extra_time_half_time' || this.phase === 'penalties') ? 123 : 93;
+            return Math.max(0, Math.min(this.currentMinute, cap));
+        },
+
+        /**
+         * Synthetic pass count: ~8 passes/minute baseline per team, scaled by
+         * possession share so the dominant team accumulates more. A 50%
+         * possession team at full time lands around ~720 passes.
+         */
+        getSyntheticPasses(side) {
+            const possession = side === 'home' ? this._basePossession : (100 - this._basePossession);
+            const passesPerMinute = 8 * (possession / 50);
+            const value = passesPerMinute * this._elapsedMinutesForStats() * this._syntheticStatSeed('passes', side);
+            return Math.floor(value);
+        },
+
+        /**
+         * Synthetic corner count: ~5/match baseline, nudged by possession.
+         */
+        getSyntheticCorners(side) {
+            const possession = side === 'home' ? this._basePossession : (100 - this._basePossession);
+            const possFactor = 0.7 + (possession / 100) * 0.6;
+            const value = 5 * (this._elapsedMinutesForStats() / 90) * possFactor * this._syntheticStatSeed('corners', side);
+            return Math.floor(value);
+        },
+
+        /**
+         * Synthetic offside count: ~2.5/match baseline, independent of
+         * possession because offsides track attacking risk-taking more than
+         * sustained possession.
+         */
+        getSyntheticOffsides(side) {
+            const value = 2.5 * (this._elapsedMinutesForStats() / 90) * this._syntheticStatSeed('offsides', side);
+            return Math.floor(value);
+        },
+
+        // =============================
         // Energy / Stamina — delegated to pitch-renderer
         // =============================
 
