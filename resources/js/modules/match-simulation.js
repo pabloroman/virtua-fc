@@ -547,8 +547,10 @@ export function createMatchSimulation(ctx) {
     function updatePossession() {
         const state = ctx();
         if (state.currentMinute >= state._possessionNextShift) {
-            const swing = (Math.random() - 0.5) * 16;
-            state._possessionTarget = Math.max(25, Math.min(75, state._basePossession + swing));
+            // Wider swing amplitude + wider clamp range so bursts of dominance
+            // register on the bar instead of hovering near the base value.
+            const swing = (Math.random() - 0.5) * 36;
+            state._possessionTarget = Math.max(15, Math.min(85, state._basePossession + swing));
             state._possessionNextShift = state.currentMinute + 2 + Math.random() * 2;
         }
         state._possessionDisplay += (state._possessionTarget - state._possessionDisplay) * 0.03;
