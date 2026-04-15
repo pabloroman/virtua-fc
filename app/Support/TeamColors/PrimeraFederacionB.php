@@ -39,8 +39,8 @@ final class PrimeraFederacionB implements TeamColorProvider
             ],
             'CE Sabadell FC' => [
                 'pattern' => 'quarters',
-                'primary' => 'white',
-                'secondary' => 'blue-700',
+                'primary' => 'blue-700',
+                'secondary' => 'white',
                 'number' => 'black',
             ],
             'Marbella FC' => [
