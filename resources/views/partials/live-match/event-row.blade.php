@@ -11,10 +11,16 @@
 <template x-if="!isAtmosphereEvent(event)">
     <div class="flex gap-3 w-full" :class="event.type === 'substitution_group' ? 'items-start' : 'items-center'">
         <span class="font-heading font-bold text-xs text-text-muted w-8 text-right shrink-0 tabular-nums"
+              :class="event.type === 'goal' ? 'text-accent-gold text-sm' : ''"
               x-text="Math.floor(event.minute) + '\''"></span>
-        <span class="w-6 text-center shrink-0 flex items-center justify-center"
+        {{-- Football icon for goals: panelled ball drawn with currentColor so it inherits the gold accent --}}
+        <span class="w-6 text-center shrink-0 flex items-center justify-center text-accent-gold"
               x-show="event.type === 'goal'">
-            <svg class="w-3.5 h-3.5 text-accent-green" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="8"/></svg>
+            <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round">
+                <circle cx="8" cy="8" r="6.5" fill="currentColor" fill-opacity="0.15"/>
+                <polygon points="8,4.4 10.7,6.35 9.7,9.55 6.3,9.55 5.3,6.35" fill="currentColor"/>
+                <path d="M8 1.5 L8 4.4 M13.8 6.3 L10.7 6.35 M11.7 13.2 L9.7 9.55 M4.3 13.2 L6.3 9.55 M2.2 6.3 L5.3 6.35"/>
+            </svg>
         </span>
         <span class="w-6 text-center shrink-0 flex items-center justify-center"
               x-show="event.type === 'own_goal'">
@@ -46,9 +52,13 @@
         <div class="flex-1 min-w-0">
             <template x-if="event.type !== 'substitution_group'">
                 <div>
-                    <span class="font-semibold text-xs text-text-primary" x-text="event.type === 'substitution' ? event.playerInName : event.playerName"></span>
+                    <span
+                        class="text-text-primary"
+                        :class="event.type === 'goal' ? 'font-heading font-bold text-sm' : 'font-semibold text-xs'"
+                        x-text="event.type === 'substitution' ? event.playerInName : event.playerName"></span>
                     <template x-if="event.type === 'goal'">
-                        <span class="text-[10px] text-text-muted ml-1" x-text="event.metadata?.is_penalty ? '{{ __('game.live_penalty_goal') }}' : '{{ __('game.live_goal') }}'"></span>
+                        <span class="inline-flex items-center rounded px-1.5 py-0.5 ml-1.5 text-[9px] font-heading font-bold uppercase tracking-wider bg-accent-gold/20 text-accent-gold"
+                              x-text="event.metadata?.is_penalty ? '{{ __('game.live_penalty_goal') }}' : '{{ __('game.live_goal') }}'"></span>
                     </template>
                     <template x-if="event.type === 'own_goal'">
                         <span class="text-[10px] text-accent-red ml-1">({{ __('game.og') }})</span>

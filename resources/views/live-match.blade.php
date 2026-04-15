@@ -600,7 +600,7 @@
                             <template x-for="(event, idx) in etSecondHalfEvents" :key="'etsh-' + idx">
                                 <div class="px-3 rounded-lg "
                                      x-show="!isAtmosphereEvent(event) || showCommentary"
-                                     :class="[isGoalEvent(event) ? 'bg-goal-highlight border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent', isAtmosphereEvent(event) ? 'py-1' : 'py-2.5']"
+                                     :class="[isGoalEvent(event) ? 'bg-accent-gold/10 border-l-4 border-l-accent-gold py-3' : 'border-l-2 border-l-transparent ' + (isAtmosphereEvent(event) ? 'py-1' : 'py-2.5')]"
                                 >
                                     @include('partials.live-match.event-row')
                                 </div>
@@ -619,7 +619,7 @@
                             <template x-for="(event, idx) in etFirstHalfEvents" :key="'etfh-' + idx">
                                 <div class="px-3 rounded-lg "
                                      x-show="!isAtmosphereEvent(event) || showCommentary"
-                                     :class="[isGoalEvent(event) ? 'bg-goal-highlight border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent', isAtmosphereEvent(event) ? 'py-1' : 'py-2.5']"
+                                     :class="[isGoalEvent(event) ? 'bg-accent-gold/10 border-l-4 border-l-accent-gold py-3' : 'border-l-2 border-l-transparent ' + (isAtmosphereEvent(event) ? 'py-1' : 'py-2.5')]"
                                 >
                                     @include('partials.live-match.event-row')
                                 </div>
@@ -638,7 +638,7 @@
                             <template x-for="(event, idx) in secondHalfEvents" :key="'sh-' + idx">
                                 <div class="px-3 rounded-lg "
                                      x-show="!isAtmosphereEvent(event) || showCommentary"
-                                     :class="[isGoalEvent(event) ? 'bg-goal-highlight border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent', isAtmosphereEvent(event) ? 'py-1' : 'py-2.5']"
+                                     :class="[isGoalEvent(event) ? 'bg-accent-gold/10 border-l-4 border-l-accent-gold py-3' : 'border-l-2 border-l-transparent ' + (isAtmosphereEvent(event) ? 'py-1' : 'py-2.5')]"
                                 >
                                     @include('partials.live-match.event-row')
                                 </div>
@@ -657,7 +657,7 @@
                             <template x-for="(event, idx) in firstHalfEvents" :key="'fh-' + idx">
                                 <div class="px-3 rounded-lg "
                                      x-show="!isAtmosphereEvent(event) || showCommentary"
-                                     :class="[isGoalEvent(event) ? 'bg-goal-highlight border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent', isAtmosphereEvent(event) ? 'py-1' : 'py-2.5']"
+                                     :class="[isGoalEvent(event) ? 'bg-accent-gold/10 border-l-4 border-l-accent-gold py-3' : 'border-l-2 border-l-transparent ' + (isAtmosphereEvent(event) ? 'py-1' : 'py-2.5')]"
                                 >
                                     @include('partials.live-match.event-row')
                                 </div>
