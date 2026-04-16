@@ -328,7 +328,6 @@ class ShowLiveMatch
             'contextualSecondHalfStart' => __('commentary.contextual_second_half_start'),
             'contextualAwayFans' => __('commentary.contextual_away_fans'),
             'contextualHomeFans' => __('commentary.contextual_home_fans'),
-            'contextualHighFouls' => __('commentary.contextual_high_fouls'),
             'goalPrefix' => __('commentary.goal_prefix'),
             'goalAssisted' => __('commentary.goal_assisted'),
             'goalSolo' => __('commentary.goal_solo'),

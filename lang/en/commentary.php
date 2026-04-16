@@ -130,13 +130,6 @@ return [
         'The stands are rocking at :venue, the fans willing :home on',
         'Deafening noise from the :home faithful, the crowd is the twelfth man today',
     ],
-    'contextual_high_fouls' => [
-        'A feisty encounter with plenty of fouls, the referee has his hands full',
-        'A physical game at :venue, the referee\'s whistle getting a workout',
-        'Tempers flaring at :venue, the game is becoming very stop-start with all these fouls',
-        'The referee struggling to keep a lid on this one, fouls coming thick and fast',
-        'A bruising encounter at :venue, neither side holding back in the challenges',
-    ],
     // Goal prefix — prepended to each goal narrative for emphasis
     'goal_prefix' => [
         'GOAL for :team!',

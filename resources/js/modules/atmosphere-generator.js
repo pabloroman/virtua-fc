@@ -1,10 +1,12 @@
 /**
  * Client-side atmosphere event generator.
  *
- * Generates cosmetic match events (shots on/off target, fouls) and narrative
- * text for substitutions/injuries. These events are purely decorative and
- * don't affect match outcomes — they exist to make the live match feed
- * feel more like real football commentary.
+ * Generates cosmetic shot events (on/off target) and narrative text for
+ * substitutions/injuries. These events are purely decorative and don't affect
+ * match outcomes — they exist to make the live match feed feel more like real
+ * football commentary. Numeric-only counters (passes, corners, offsides,
+ * fouls) live in `match-stats.js` and are rendered directly in the stats
+ * panel without producing events.
  *
  * @module atmosphere-generator
  */
@@ -17,18 +19,9 @@ const SHOT_WEIGHTS = {
     Goalkeeper: 0,
 };
 
-// Position-group weights for foul attribution (defenders foul more)
-const FOUL_WEIGHTS = {
-    Defender: 20,
-    Midfielder: 12,
-    Forward: 4,
-    Goalkeeper: 0,
-};
-
 // Tuning constants (cosmetic only — no gameplay impact)
 const SHOTS_PER_XG = 3.0;
 const ON_TARGET_RATIO = 0.3;
-const FOULS_BASE_PER_TEAM = 2.0;
 const XG_BASELINE = 1.2; // added to score as xG proxy
 
 /**
@@ -294,38 +287,6 @@ export function generateAtmosphereForPeriod(config) {
         }
     }
 
-    // --- Fouls ---
-    for (const team of teams) {
-        const variation = (Math.random() * 2 - 1); // -1 to +1
-        const fouls = Math.max(0, Math.round((FOULS_BASE_PER_TEAM + variation) * matchFraction));
-
-        for (let i = 0; i < fouls; i++) {
-            const minute = uniqueMinute(usedMinutes, minMinute, maxMinute);
-            const available = getAvailablePlayers(team.players, allEvents, minute, team.id)
-                .filter(p => p.positionGroup !== 'Goalkeeper');
-            const player = pickWeightedPlayer(available, FOUL_WEIGHTS);
-            if (!player) continue;
-
-            events.push({
-                minute,
-                type: 'foul',
-                atmosphere: true,
-                playerName: player.name,
-                teamId: team.id,
-                gamePlayerId: player.id || null,
-                metadata: {
-                    narrative: pickNarrative(narrativeTemplates.foul || [], {
-                        ':del_opponent': team.opponentForms.del,
-                        ':el_team': team.forms.el,
-                        ':player': player.name,
-                        ':team': team.name,
-                        ':opponent': team.opponentName,
-                    }),
-                },
-            });
-        }
-    }
-
     return events;
 }
 
@@ -440,8 +401,6 @@ export function generateContextualNarratives(config) {
         const shotTypes = ['shot_on_target', 'shot_off_target', 'goal'];
         const homeShots = countEventsInRange(allEvents, homeTeamId, shotTypes, m - lookback, m);
         const awayShots = countEventsInRange(allEvents, awayTeamId, shotTypes, m - lookback, m);
-        const homeFouls = countEventsInRange(allEvents, homeTeamId, ['foul', 'yellow_card'], 1, m);
-        const awayFouls = countEventsInRange(allEvents, awayTeamId, ['foul', 'yellow_card'], 1, m);
 
         let templateKey = null;
         // Build replacements with longer keys first to avoid substring collisions
@@ -498,14 +457,11 @@ export function generateContextualNarratives(config) {
         } else {
             // Mid-game: pick based on state
             const dominant = homeShots >= awayShots + 3 ? 'home' : awayShots >= homeShots + 3 ? 'away' : null;
-            const totalFouls = homeFouls + awayFouls;
 
             if (dominant === 'home') {
                 templateKey = 'contextualHomeDominant';
             } else if (dominant === 'away') {
                 templateKey = 'contextualAwayDominant';
-            } else if (totalFouls >= 8) {
-                templateKey = 'contextualHighFouls';
             } else if (score.home === score.away && score.home === 0) {
                 templateKey = 'contextualDrawOpen';
             } else if (score.home === score.away) {
@@ -749,12 +705,12 @@ export function addGoalNarratives(events, config) {
 }
 
 /**
- * Regenerate shot/foul atmosphere for [minMinute..maxMinute] and merge
- * into the target array (sorted by minute).
+ * Regenerate shot atmosphere for [minMinute..maxMinute] and merge into the
+ * target array (sorted by minute).
  *
- * Call BEFORE merging any server-resimulated real events so fresh
- * shots/fouls aren't influenced by just-added goals — this matches the
- * long-standing ordering used by the tactical-change flow.
+ * Call BEFORE merging any server-resimulated real events so fresh shots
+ * aren't influenced by just-added goals — this matches the long-standing
+ * ordering used by the tactical-change flow.
  *
  * @param {object}   params.config              _atmosphereConfig() payload
  * @param {object[]} params.target              array to mutate (events or extraTimeEvents)
@@ -763,7 +719,7 @@ export function addGoalNarratives(events, config) {
  * @param {number}   params.minMinute
  * @param {number}   params.maxMinute           90 for regular time, 120 for extra time
  */
-export function regenerateShotsAndFouls({ config, target, availabilityEvents, minMinute, maxMinute }) {
+export function regenerateShots({ config, target, availabilityEvents, minMinute, maxMinute }) {
     const fresh = generateAtmosphereForPeriod({
         ...config,
         allEvents: availabilityEvents,

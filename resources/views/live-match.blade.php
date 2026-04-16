@@ -796,9 +796,9 @@
                         {{-- Fouls --}}
                         <div>
                             <div class="flex items-center justify-between mb-1.5">
-                                <span class="font-heading font-bold text-sm text-text-primary tabular-nums" x-text="getStatCount('foul', 'home')"></span>
+                                <span class="font-heading font-bold text-sm text-text-primary tabular-nums" x-text="getSyntheticFouls('home')"></span>
                                 <span class="text-[10px] text-text-muted uppercase tracking-wider">{{ __('game.live_stat_fouls') }}</span>
-                                <span class="font-heading font-bold text-sm text-text-primary tabular-nums" x-text="getStatCount('foul', 'away')"></span>
+                                <span class="font-heading font-bold text-sm text-text-primary tabular-nums" x-text="getSyntheticFouls('away')"></span>
                             </div>
                         </div>
 

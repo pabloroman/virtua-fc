@@ -130,13 +130,6 @@ return [
         'Retumba el :venue, la grada anima sin parar :al_home',
         'La afición :del_home es el jugador número doce hoy en el :venue',
     ],
-    'contextual_high_fouls' => [
-        'Partido muy intenso con muchas faltas, el árbitro tiene trabajo',
-        'Juego duro en el :venue, el árbitro no para de pitar faltas',
-        'Se están calentando los ánimos en el :venue, el juego se corta constantemente por las faltas',
-        'El colegiado no da abasto, las faltas se suceden una tras otra',
-        'Encuentro bronco en el :venue, los dos equipos entran fuerte en cada disputa',
-    ],
     // Prefijo de goles — se antepone a cada narración de gol para darle énfasis
     'goal_prefix' => [
         '¡Gol :del_team!',
