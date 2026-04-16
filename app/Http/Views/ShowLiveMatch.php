@@ -310,6 +310,7 @@ class ShowLiveMatch
             'contextualAwayFans' => __('commentary.contextual_away_fans'),
             'contextualHomeFans' => __('commentary.contextual_home_fans'),
             'contextualHighFouls' => __('commentary.contextual_high_fouls'),
+            'goalPrefix' => __('commentary.goal_prefix'),
             'goalAssisted' => __('commentary.goal_assisted'),
             'goalSolo' => __('commentary.goal_solo'),
             'goalPenalty' => __('commentary.goal_penalty'),

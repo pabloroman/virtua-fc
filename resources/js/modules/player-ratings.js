@@ -183,6 +183,25 @@ export function calculatePlayerRatings(homeRoster, awayRoster, events, homeScore
 }
 
 /**
+ * Convert a raw performance modifier (0.70–1.30) to a 1–10 base rating.
+ *
+ * Used for the live / half-time rating shown before the match is decided —
+ * no event, score, or clean-sheet adjustments. Mirrors the normalisation step
+ * in calculatePlayerRatings() and MatchSimulator::performanceToRating() so
+ * the in-match reading stays consistent with the final full-time rating for
+ * players whose match is event-neutral.
+ *
+ * @param {number|null|undefined} performance - Raw performance modifier
+ * @returns {number|null} Rating on 1–10 scale, or null when no data.
+ */
+export function performanceToBaseRating(performance) {
+    if (performance == null) return null;
+    const normalized = (performance - 0.70) / 0.60;
+    const rating = Math.max(1, Math.min(10, normalized * 4 + 5));
+    return Math.round(rating * 10) / 10;
+}
+
+/**
  * Return CSS classes for a rating value's color tier.
  *
  * @param {number} rating - Rating on 1–10 scale

@@ -137,6 +137,19 @@ return [
         'The referee struggling to keep a lid on this one, fouls coming thick and fast',
         'A bruising encounter at :venue, neither side holding back in the challenges',
     ],
+    // Goal prefix — prepended to each goal narrative for emphasis
+    'goal_prefix' => [
+        'GOAL for :team!',
+        'GOAL! :team strike!',
+        'GOOOOOAL for :team!',
+        'WHAT A GOAL from :team!',
+        ':team score!',
+        ':team find the net!',
+        'GOOOAL!! :team!',
+        'A goal for :team!',
+        'IT\'S IN! :team!',
+        'WHAT A STRIKE from :team!',
+    ],
     'goal_assisted' => [
         'Cross into the box and :player rises unmarked to head home',
         ':player (:team) receives on the penalty spot, controls and finishes with class',

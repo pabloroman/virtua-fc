@@ -25,8 +25,8 @@ import {
 import { createPenaltyShootout } from './modules/penalty-shootout.js';
 import { createSubstitutionManager } from './modules/substitution-manager.js';
 import { createMatchSimulation } from './modules/match-simulation.js';
-import { generateRegularTimeAtmosphere, generateExtraTimeAtmosphere, generateAtmosphereForPeriod, addGoalNarratives, generateContextualNarratives, generateTacticalNarratives } from './modules/atmosphere-generator.js';
-import { calculatePlayerRatings, ratingColor as _ratingColor, updateRosterPerformances, countEvents, buildSubstitutionMap } from './modules/player-ratings.js';
+import { generateRegularTimeAtmosphere, generateExtraTimeAtmosphere, generateTacticalNarratives, addGoalNarratives, regenerateShotsAndFouls, regenerateNarratives } from './modules/atmosphere-generator.js';
+import { calculatePlayerRatings, ratingColor as _ratingColor, updateRosterPerformances, countEvents, buildSubstitutionMap, performanceToBaseRating } from './modules/player-ratings.js';
 
 /**
  * Copy all own properties from source to target. Regular properties are
@@ -1054,22 +1054,13 @@ export default function liveMatch(config) {
                 // Regenerate atmosphere events (shots/fouls) for the remaining
                 // match period, now aware of substitutions.
                 const atmCfg = this._atmosphereConfig();
-                const atmMaxMinute = isET ? 120 : 90;
-                const freshAtmosphere = generateAtmosphereForPeriod({
-                    ...atmCfg,
-                    allEvents: isET ? [...this.events, ...this.extraTimeEvents] : this.events,
+                regenerateShotsAndFouls({
+                    config: atmCfg,
+                    target: isET ? this.extraTimeEvents : this.events,
+                    availabilityEvents: isET ? [...this.events, ...this.extraTimeEvents] : this.events,
                     minMinute: minute + 1,
-                    maxMinute: atmMaxMinute,
+                    maxMinute: isET ? 120 : 90,
                 });
-                if (freshAtmosphere.length) {
-                    if (isET) {
-                        this.extraTimeEvents.push(...freshAtmosphere);
-                        this.extraTimeEvents.sort((a, b) => a.minute - b.minute);
-                    } else {
-                        this.events.push(...freshAtmosphere);
-                        this.events.sort((a, b) => a.minute - b.minute);
-                    }
-                }
 
                 // Append new events and update scores
                 if (isET) {
@@ -1078,7 +1069,12 @@ export default function liveMatch(config) {
                         this.extraTimeEvents.sort((a, b) => a.minute - b.minute);
                     }
 
-                    addGoalNarratives(this.extraTimeEvents, this._atmosphereConfig());
+                    regenerateNarratives({
+                        config: this._atmosphereConfig(),
+                        target: this.extraTimeEvents,
+                        availabilityEvents: [...this.events, ...this.extraTimeEvents],
+                        minMinute: minute + 1,
+                    });
 
                     this.lastRevealedETIndex = -1;
                     for (let i = 0; i < this.extraTimeEvents.length; i++) {
@@ -1106,12 +1102,13 @@ export default function liveMatch(config) {
                     // Regenerate narratives: goal text for new server goals + contextual
                     // commentary for checkpoints after the tactical minute (old ones were
                     // removed because they reflected the pre-resimulation score).
-                    const cfg = this._atmosphereConfig();
-                    addGoalNarratives(this.events, cfg);
-                    const freshContextual = generateContextualNarratives({ ...cfg, allEvents: this.events });
-                    if (freshContextual.length) {
-                        this.events = [...this.events, ...freshContextual].sort((a, b) => a.minute - b.minute);
-                    }
+                    regenerateNarratives({
+                        config: this._atmosphereConfig(),
+                        target: this.events,
+                        availabilityEvents: this.events,
+                        minMinute: minute + 1,
+                        includeContextual: true,
+                    });
 
                     // Recalculate after all event modifications (synthesize, narratives)
                     // to avoid stale indices from array insertions and re-sorts.
@@ -1223,6 +1220,20 @@ export default function liveMatch(config) {
             // as the fast-forward reveals them.
             this.events = this.events.filter(e => e.minute <= minute);
 
+            // Regenerate shots/fouls for the skipped-over window BEFORE merging
+            // the server's resimulated events, matching the tactical-change
+            // ordering (fresh shots aren't skewed by just-merged goals).
+            // Skip-to-end is bounded to minute < 90 (guard above), so extra-time
+            // atmosphere is out of scope here.
+            const atmCfg = this._atmosphereConfig();
+            regenerateShotsAndFouls({
+                config: atmCfg,
+                target: this.events,
+                availabilityEvents: this.events,
+                minMinute: minute + 1,
+                maxMinute: 90,
+            });
+
             if (result.newEvents && result.newEvents.length > 0) {
                 this.events.push(...result.newEvents);
                 this.events.sort((a, b) => a.minute - b.minute);
@@ -1233,6 +1244,18 @@ export default function liveMatch(config) {
                 this.finalHomeScore = result.newScore.home;
                 this.finalAwayScore = result.newScore.away;
             }
+
+            // Regenerate narratives AFTER the newEvents merge so goal narratives
+            // attach to the fresh server goals, plus contextual + tactical
+            // commentary for post-skip checkpoints.
+            regenerateNarratives({
+                config: atmCfg,
+                target: this.events,
+                availabilityEvents: this.events,
+                minMinute: minute + 1,
+                includeContextual: true,
+                includeTactical: true,
+            });
 
             // Reset the revealed-events feed and substitution tracking,
             // then re-reveal ALL events in one synchronous pass so Alpine
@@ -1346,6 +1369,30 @@ export default function liveMatch(config) {
             return _ratingColor(rating);
         },
 
+        /**
+         * Live (pre-full-time) rating for a player, derived solely from the
+         * cached performance modifier — no event, score, or card bonuses.
+         *
+         * Only exposed during the half-time (and ET half-time) substitution
+         * window. Outside those windows the rating has no actionable value —
+         * showing it during live play would just be noise, and showing it at
+         * full time would compete with the proper event-weighted rating.
+         *
+         * Returns null when not in a half-time window or when no performance
+         * data is available for the player.
+         */
+        getBaseRating(playerId) {
+            if (!playerId) return null;
+            if (this.phase !== 'half_time' && this.phase !== 'extra_time_half_time') {
+                return null;
+            }
+            const player = this.homeLineupRoster.find(p => p.id === playerId)
+                || this.awayLineupRoster.find(p => p.id === playerId)
+                || (this.benchPlayers || []).find(p => p.id === playerId);
+            if (!player) return null;
+            return performanceToBaseRating(player.performance);
+        },
+
         getEventIcons() {
             const allEvents = [...this.events, ...(this.extraTimeEvents || [])];
             return countEvents(allEvents);
@@ -1432,7 +1479,10 @@ export default function liveMatch(config) {
         },
 
         isAtmosphereEvent(event) {
-            return event.type === 'shot_on_target' || event.type === 'shot_off_target' || event.type === 'foul' || event.type === 'contextual';
+            // Atmosphere events are tagged at creation by the atmosphere generator.
+            // Using the flag (not a hardcoded type list) keeps this in sync automatically
+            // when new atmosphere event types are added.
+            return !!event.atmosphere;
         },
 
         /**
