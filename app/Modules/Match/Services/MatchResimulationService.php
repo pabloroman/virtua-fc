@@ -224,6 +224,16 @@ class MatchResimulationService
         $homePlayerSlots = $isUserHome ? $this->playerSlotMapWithSubs($match, 'home', $allSubstitutions) : $match->playerSlotMap('home');
         $awayPlayerSlots = $isUserHome ? $match->playerSlotMap('away') : $this->playerSlotMapWithSubs($match, 'away', $allSubstitutions);
 
+        // Seed the simulator with previously rolled performance modifiers so a
+        // player's "form on the day" persists across the full match. Without
+        // this, every resimulation (tactical change, half-time play, skip to
+        // end) re-rolls performance — making the in-match player rating
+        // non-predictive and misleading the user's sub decisions.
+        // Subs who weren't on the pitch yet will get a fresh roll naturally
+        // via getMatchPerformance() when first called.
+        $cachedPerformances = Cache::get("match_performances:{$match->id}", []);
+        $this->matchSimulator->seedPerformance($cachedPerformances);
+
         if ($aiSubsActive) {
             $remainderOutput = $this->matchSimulator->simulateRemainderWithAISubs(
                 $match->homeTeam,
@@ -258,6 +268,7 @@ class MatchResimulationService
                 userTeamId: $autoSubUserTeam ? null : $game->team_id,
                 homePlayerSlots: $homePlayerSlots,
                 awayPlayerSlots: $awayPlayerSlots,
+                preservePerformance: true,
             );
         } else {
             $remainderOutput = $this->matchSimulator->simulateRemainder(
@@ -286,6 +297,7 @@ class MatchResimulationService
                 homeExistingSubstitutions: $homeExistingSubs,
                 awayExistingSubstitutions: $awayExistingSubs,
                 neutralVenue: $match->isNeutralVenue(),
+                preservePerformance: true,
                 homePlayerSlots: $homePlayerSlots,
                 awayPlayerSlots: $awayPlayerSlots,
             );
@@ -296,8 +308,14 @@ class MatchResimulationService
         $newHomeScore = $scoreAtMinute['home'] + $remainderResult->homeScore;
         $newAwayScore = $scoreAtMinute['away'] + $remainderResult->awayScore;
 
-        // 11. Merge performances with cached values (preserves subbed-out players' data)
-        $cachedPerformances = Cache::get("match_performances:{$match->id}", []);
+        // 11. Merge performances with cached values.
+        // The simulator was seeded with these cached values so players on the
+        // pitch keep their original "form on the day" and appear unchanged in
+        // $remainderOutput->performances. array_merge still serves a purpose:
+        // it keeps the records of subbed-out players (who aren't touched by
+        // the remainder simulation) and folds in any fresh rolls for subs who
+        // came onto the pitch. It also preserves any xG-adjustment tweaks
+        // applied during the remainder (±0.04).
         $mergedPerformances = array_merge($cachedPerformances, $remainderOutput->performances);
         Cache::put("match_performances:{$match->id}", $mergedPerformances, now()->addHours(24));
 
@@ -443,6 +461,13 @@ class MatchResimulationService
             // 7. Re-simulate extra time remainder
             $homePlayerSlots = $isUserHome ? $this->playerSlotMapWithSubs($match, 'home', $allSubstitutions) : $match->playerSlotMap('home');
             $awayPlayerSlots = $isUserHome ? $match->playerSlotMap('away') : $this->playerSlotMapWithSubs($match, 'away', $allSubstitutions);
+
+            // Seed the simulator with previously rolled performance modifiers so
+            // players keep their "form on the day" into extra time instead of
+            // getting fresh rolls. Subs who came on during ET will get a fresh
+            // roll naturally on first call to getMatchPerformance().
+            $etSeedPerformances = Cache::get("match_performances:{$match->id}", []);
+            $this->matchSimulator->seedPerformance($etSeedPerformances);
 
             $remainderResult = $this->matchSimulator->simulateExtraTime(
                 $match->homeTeam,

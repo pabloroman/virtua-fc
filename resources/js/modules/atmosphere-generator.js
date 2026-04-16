@@ -251,6 +251,7 @@ export function generateAtmosphereForPeriod(config) {
             events.push({
                 minute,
                 type: 'shot_on_target',
+                atmosphere: true,
                 playerName: player.name,
                 teamId: team.id,
                 gamePlayerId: player.id || null,
@@ -276,6 +277,7 @@ export function generateAtmosphereForPeriod(config) {
             events.push({
                 minute,
                 type: 'shot_off_target',
+                atmosphere: true,
                 playerName: player.name,
                 teamId: team.id,
                 gamePlayerId: player.id || null,
@@ -307,6 +309,7 @@ export function generateAtmosphereForPeriod(config) {
             events.push({
                 minute,
                 type: 'foul',
+                atmosphere: true,
                 playerName: player.name,
                 teamId: team.id,
                 gamePlayerId: player.id || null,
@@ -528,6 +531,7 @@ export function generateContextualNarratives(config) {
         events.push({
             minute: m,
             type: 'contextual',
+            atmosphere: true,
             playerName: '',
             teamId: null,
             gamePlayerId: null,
@@ -637,6 +641,7 @@ export function generateTacticalNarratives(config) {
         events.push({
             minute: m,
             type: 'contextual',
+            atmosphere: true,
             playerName: '',
             teamId: null,
             gamePlayerId: null,
@@ -687,6 +692,7 @@ export function addGoalNarratives(events, config) {
     const assistedTemplates = narrativeTemplates.goalAssisted || [];
     const soloTemplates = narrativeTemplates.goalSolo || [];
     const penaltyTemplates = narrativeTemplates.goalPenalty || [];
+    const prefixTemplates = narrativeTemplates.goalPrefix || [];
     if (!assistedTemplates.length && !soloTemplates.length) return;
 
     const homeForms = buildTeamForms(homeTeamName, homeArticle);
@@ -727,12 +733,89 @@ export function addGoalNarratives(events, config) {
             templates = event.assistPlayerName ? assistedTemplates : soloTemplates;
         }
 
-        event.narrative = pickNarrative(templates, {
+        const replacements = {
             ':del_team': teamForms.del,
             ':el_team': teamForms.el,
             ':player': event.playerName,
             ':team': teamForms.name,
-        });
+        };
+
+        // Prefix each goal narrative with an emphatic opener ("¡GOLAZO del ...!",
+        // "GOAL for ...!", etc.) so goal events read with punch in the feed.
+        const prefix = pickNarrative(prefixTemplates, replacements);
+        const body = pickNarrative(templates, replacements);
+        event.narrative = prefix ? `${prefix} ${body}` : body;
     }
 }
 
+/**
+ * Regenerate shot/foul atmosphere for [minMinute..maxMinute] and merge
+ * into the target array (sorted by minute).
+ *
+ * Call BEFORE merging any server-resimulated real events so fresh
+ * shots/fouls aren't influenced by just-added goals — this matches the
+ * long-standing ordering used by the tactical-change flow.
+ *
+ * @param {object}   params.config              _atmosphereConfig() payload
+ * @param {object[]} params.target              array to mutate (events or extraTimeEvents)
+ * @param {object[]} params.availabilityEvents  full context for who's on the pitch
+ *                                              (regular + ET when mutating extraTimeEvents)
+ * @param {number}   params.minMinute
+ * @param {number}   params.maxMinute           90 for regular time, 120 for extra time
+ */
+export function regenerateShotsAndFouls({ config, target, availabilityEvents, minMinute, maxMinute }) {
+    const fresh = generateAtmosphereForPeriod({
+        ...config,
+        allEvents: availabilityEvents,
+        minMinute,
+        maxMinute,
+    });
+    if (fresh.length) {
+        target.push(...fresh);
+        target.sort((a, b) => a.minute - b.minute);
+    }
+}
+
+/**
+ * Regenerate narratives on the target array. Always re-runs
+ * addGoalNarratives (needed after new server goals have been merged in),
+ * then optionally generates contextual/tactical narratives for checkpoints
+ * at or after minMinute and merges them into the target.
+ *
+ * Call AFTER merging server-resimulated real events so goal narratives
+ * attach to the fresh goals.
+ *
+ * @param {object}   params.config
+ * @param {object[]} params.target
+ * @param {object[]} params.availabilityEvents
+ * @param {number}   params.minMinute
+ * @param {boolean}  [params.includeContextual=false]
+ * @param {boolean}  [params.includeTactical=false]
+ */
+export function regenerateNarratives({
+    config,
+    target,
+    availabilityEvents,
+    minMinute,
+    includeContextual = false,
+    includeTactical = false,
+}) {
+    addGoalNarratives(target, config);
+    const fresh = [];
+    if (includeContextual) {
+        fresh.push(
+            ...generateContextualNarratives({ ...config, allEvents: availabilityEvents })
+                .filter(e => e.minute >= minMinute)
+        );
+    }
+    if (includeTactical) {
+        fresh.push(
+            ...generateTacticalNarratives({ ...config, allEvents: availabilityEvents })
+                .filter(e => e.minute >= minMinute)
+        );
+    }
+    if (fresh.length) {
+        target.push(...fresh);
+        target.sort((a, b) => a.minute - b.minute);
+    }
+}
