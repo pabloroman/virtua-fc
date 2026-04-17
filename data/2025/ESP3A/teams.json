@@ -1,0 +1,6894 @@
+{
+  "id": "E3G1",
+  "name": "Primera Federación - Grupo I",
+  "clubs": [
+    {
+      "image": "https://tmssl.akamaized.net/images/wappen/big/648.png",
+      "name": "CD Tenerife",
+      "players": [
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Jul 8, 1998",
+          "foot": "right",
+          "height": "1,87m",
+          "id": "335221",
+          "marketValue": "€600k",
+          "name": "Dani Martín",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "1",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 6, 2004",
+          "id": "1334559",
+          "marketValue": "€50k",
+          "name": "Gabriel De Vuyst",
+          "nationality": [
+            "Spain",
+            "Belgium"
+          ],
+          "number": "13",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Apr 19, 1997",
+          "foot": "right",
+          "height": "1,79m",
+          "id": "410696",
+          "marketValue": "€500k",
+          "name": "Anthony Landázuri",
+          "nationality": [
+            "Ecuador"
+          ],
+          "number": "12",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 12, 2004",
+          "foot": "both",
+          "height": "1,93m",
+          "id": "923915",
+          "marketValue": "€300k",
+          "name": "Antal Yaakobishvili",
+          "nationality": [
+            "Hungary",
+            "Georgia"
+          ],
+          "number": "5",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 3, 1995",
+          "foot": "left",
+          "height": "1,85m",
+          "id": "281773",
+          "marketValue": "€200k",
+          "name": "José León",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "4",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 21, 1995",
+          "foot": "right",
+          "height": "1,89m",
+          "id": "441265",
+          "marketValue": "€100k",
+          "name": "Facundo Agüero",
+          "nationality": [
+            "Argentina",
+            "Italy"
+          ],
+          "number": "3",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Jun 16, 1990",
+          "foot": "left",
+          "height": "1,80m",
+          "id": "96539",
+          "marketValue": "€50k",
+          "name": "Marc Mateu",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "21",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Jun 26, 2000",
+          "foot": "right",
+          "height": "1,79m",
+          "id": "820375",
+          "marketValue": "€500k",
+          "name": "David Rodríguez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "2",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Apr 15, 2003",
+          "foot": "right",
+          "id": "1191770",
+          "marketValue": "€300k",
+          "name": "César Álvarez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "19",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Mar 22, 2000",
+          "foot": "right",
+          "id": "688747",
+          "marketValue": "€300k",
+          "name": "Juanjo Sánchez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "6",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 14, 1995",
+          "foot": "right",
+          "height": "1,85m",
+          "id": "350208",
+          "marketValue": "€200k",
+          "name": "Javi Pérez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "8",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Jan 27, 1998",
+          "height": "1,70m",
+          "id": "949472",
+          "marketValue": "€200k",
+          "name": "Fabricio",
+          "nationality": [
+            "Brazil"
+          ],
+          "number": "15",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 30, 2003",
+          "foot": "right",
+          "height": "1,90m",
+          "id": "1030374",
+          "marketValue": "€150k",
+          "name": "Alberto Ulloa",
+          "nationality": [
+            "Spain",
+            "Chile"
+          ],
+          "number": "27",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 13, 1984",
+          "foot": "right",
+          "height": "1,81m",
+          "id": "71834",
+          "marketValue": "€50k",
+          "name": "Aitor Sanz",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "16",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Jan 26, 2008",
+          "foot": "left",
+          "height": "1,78m",
+          "id": "1197368",
+          "marketValue": "€300k",
+          "name": "Dani Fernández",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "29",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 10, 1997",
+          "foot": "left",
+          "height": "1,63m",
+          "id": "421118",
+          "marketValue": "€150k",
+          "name": "Cris Montes",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "7",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Jun 4, 1991",
+          "foot": "right",
+          "height": "1,88m",
+          "id": "197576",
+          "marketValue": "€100k",
+          "name": "Maikel Mesa",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "11",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Sep 9, 1995",
+          "foot": "right",
+          "height": "1,70m",
+          "id": "336731",
+          "marketValue": "€400k",
+          "name": "Nacho Gil",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "10",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 12, 2002",
+          "foot": "right",
+          "height": "1,77m",
+          "id": "1067111",
+          "marketValue": "€250k",
+          "name": "Alassan Manjam",
+          "nationality": [
+            "Guinea-Bissau",
+            "Spain"
+          ],
+          "number": "20",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Feb 9, 2003",
+          "foot": "right",
+          "id": "1041934",
+          "marketValue": "€150k",
+          "name": "Jeremy Jorge",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "23",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "May 21, 1999",
+          "foot": "right",
+          "height": "1,81m",
+          "id": "412046",
+          "marketValue": "€500k",
+          "name": "Iván Chapela",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "24",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Sep 21, 1996",
+          "foot": "left",
+          "height": "1,89m",
+          "id": "598611",
+          "marketValue": "€600k",
+          "name": "Jesús de Miguel",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "9",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "May 10, 2001",
+          "foot": "left",
+          "height": "1,92m",
+          "id": "1033478",
+          "marketValue": "€400k",
+          "name": "Gastón Valles",
+          "nationality": [
+            "Uruguay"
+          ],
+          "number": "22",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Jan 1, 2004",
+          "foot": "right",
+          "height": "1,83m",
+          "id": "1054209",
+          "marketValue": "€200k",
+          "name": "Mahamadou Baldé",
+          "nationality": [
+            "Spain",
+            "Senegal"
+          ],
+          "number": "17",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 22, 2003",
+          "foot": "left",
+          "height": "1,80m",
+          "id": "1254491",
+          "marketValue": "€200k",
+          "name": "Fran Sabina",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "28",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Mar 17, 2003",
+          "foot": "right",
+          "height": "1,82m",
+          "id": "926854",
+          "marketValue": "€100k",
+          "name": "Noel López",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "14",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 12, 1986",
+          "foot": "left",
+          "height": "1,89m",
+          "id": "114060",
+          "marketValue": "€100k",
+          "name": "Enric Gallego",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "18",
+          "position": "Centre-Forward"
+        }
+      ],
+      "stadiumName": "Heliodoro Rodríguez López",
+      "stadiumSeats": "22824",
+      "transfermarktId": "648"
+    },
+    {
+      "image": "https://tmssl.akamaized.net/images/wappen/big/46854.png",
+      "name": "Mérida AD",
+      "players": [
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Oct 8, 2004",
+          "foot": "right",
+          "height": "1,96m",
+          "id": "914198",
+          "marketValue": "€300k",
+          "name": "Adrián Csenterics",
+          "nationality": [
+            "Hungary"
+          ],
+          "number": "1",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 12, 1997",
+          "height": "1,86m",
+          "id": "536659",
+          "marketValue": "€150k",
+          "name": "Pablo Cacharrón",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "13",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 8, 2002",
+          "foot": "left",
+          "height": "1,85m",
+          "id": "710009",
+          "marketValue": "€250k",
+          "name": "Javi Lancho",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "3",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 26, 2001",
+          "foot": "right",
+          "height": "1,95m",
+          "id": "625882",
+          "marketValue": "€200k",
+          "name": "Javi Domínguez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "5",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Oct 27, 1996",
+          "foot": "right",
+          "height": "1,93m",
+          "id": "381198",
+          "marketValue": "€150k",
+          "name": "Gaizka Martínez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "15",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Nov 5, 1998",
+          "foot": "right",
+          "id": "783890",
+          "marketValue": "€100k",
+          "name": "Luis Pareja",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "4",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 8, 1997",
+          "foot": "left",
+          "height": "1,77m",
+          "id": "523166",
+          "marketValue": "€250k",
+          "name": "Eudald Vergés",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "23",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 9, 2003",
+          "id": "794960",
+          "marketValue": "€150k",
+          "name": "Manu Rivas",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "22",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 14, 1993",
+          "foot": "right",
+          "height": "1,75m",
+          "id": "142019",
+          "marketValue": "€150k",
+          "name": "Pipe",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "19",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Sep 24, 2004",
+          "foot": "right",
+          "height": "1,82m",
+          "id": "1171426",
+          "marketValue": "€50k",
+          "name": "Jacobo Martí",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "20",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Jan 30, 2000",
+          "foot": "right",
+          "height": "1,75m",
+          "id": "636118",
+          "marketValue": "€300k",
+          "name": "Martín Solar",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "8",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 14, 2004",
+          "foot": "right",
+          "height": "1,85m",
+          "id": "1174093",
+          "marketValue": "€250k",
+          "name": "Geo Almeida",
+          "nationality": [
+            "Portugal"
+          ],
+          "number": "6",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 26, 1994",
+          "foot": "right",
+          "height": "1,72m",
+          "id": "821009",
+          "marketValue": "€200k",
+          "name": "Raúl Beneit",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "21",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 4, 2002",
+          "id": "979855",
+          "marketValue": "€50k",
+          "name": "Victor Corral",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "17",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 6, 2001",
+          "foot": "right",
+          "height": "1,75m",
+          "id": "628926",
+          "marketValue": "€200k",
+          "name": "Miguel Capitas",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "16",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 9, 2004",
+          "foot": "right",
+          "height": "1,83m",
+          "id": "605111",
+          "marketValue": "€150k",
+          "name": "Benjamin Dibrani",
+          "nationality": [
+            "Albania",
+            "Germany"
+          ],
+          "number": "18",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Oct 7, 1997",
+          "foot": "right",
+          "id": "729187",
+          "marketValue": "€250k",
+          "name": "Chiqui",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "7",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Dec 4, 1996",
+          "foot": "left",
+          "height": "1,67m",
+          "id": "379530",
+          "marketValue": "€250k",
+          "name": "Carlos Doncel",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "10",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 4, 1997",
+          "foot": "left",
+          "height": "1,75m",
+          "id": "364403",
+          "marketValue": "€200k",
+          "name": "Rui Gomes",
+          "nationality": [
+            "Portugal"
+          ],
+          "number": "12",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 3, 1997",
+          "foot": "right",
+          "height": "1,87m",
+          "id": "590878",
+          "marketValue": "€150k",
+          "name": "Javi Areso",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "11",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Sep 1, 1999",
+          "id": "499855",
+          "marketValue": "€200k",
+          "name": "Sigurdur Hallsson",
+          "nationality": [
+            "Iceland"
+          ],
+          "number": "9",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Jan 26, 2001",
+          "height": "1,85m",
+          "id": "825670",
+          "marketValue": "€150k",
+          "name": "Sofiane El Ftouhi",
+          "nationality": [
+            "France",
+            "Morocco"
+          ],
+          "number": "14",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Mar 7, 2003",
+          "foot": "right",
+          "height": "1,88m",
+          "id": "891973",
+          "marketValue": "€50k",
+          "name": "Rodrigo Pereira",
+          "nationality": [
+            "Portugal"
+          ],
+          "number": "24",
+          "position": "Centre-Forward"
+        }
+      ],
+      "stadiumName": "Romano José Fouto",
+      "stadiumSeats": "14537",
+      "transfermarktId": "46854"
+    },
+    {
+      "image": "https://tmssl.akamaized.net/images/wappen/big/1176.png",
+      "name": "Racing Ferrol",
+      "players": [
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 18, 1996",
+          "foot": "right",
+          "height": "1,82m",
+          "id": "242301",
+          "marketValue": "€500k",
+          "name": "Miquel Parera",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "1",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Jan 28, 2004",
+          "foot": "right",
+          "height": "1,81m",
+          "id": "646741",
+          "marketValue": "€150k",
+          "name": "César Fernández",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "13",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 10, 1996",
+          "foot": "left",
+          "height": "1,88m",
+          "id": "355534",
+          "marketValue": "€150k",
+          "name": "Lucas Díaz",
+          "nationality": [
+            "Spain",
+            "Switzerland"
+          ],
+          "number": "25",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Aug 7, 2004",
+          "foot": "right",
+          "height": "1,77m",
+          "id": "646745",
+          "marketValue": "€250k",
+          "name": "Edgar Pujol",
+          "nationality": [
+            "Dominican Republic",
+            "Spain"
+          ],
+          "number": "3",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 29, 1998",
+          "foot": "left",
+          "height": "1,84m",
+          "id": "335226",
+          "marketValue": "€250k",
+          "name": "Álex Zalaya",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "15",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 23, 1999",
+          "id": "888271",
+          "marketValue": "€200k",
+          "name": "Markel Artetxe",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "4",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 3, 1992",
+          "foot": "left",
+          "height": "1,89m",
+          "id": "248330",
+          "marketValue": "€100k",
+          "name": "Chema Rodríguez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "12",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 6, 2000",
+          "foot": "left",
+          "id": "632743",
+          "marketValue": "€400k",
+          "name": "Álvaro Ramón",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "17",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Nov 9, 1994",
+          "foot": "left",
+          "height": "1,82m",
+          "id": "249471",
+          "marketValue": "€200k",
+          "name": "Saúl García",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "16",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 1, 1997",
+          "foot": "right",
+          "height": "1,70m",
+          "id": "527964",
+          "marketValue": "€300k",
+          "name": "Miguel Leal",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "2",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Oct 23, 2005",
+          "id": "1064145",
+          "marketValue": "€50k",
+          "name": "Alvaro Mardones",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "22",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 12, 1997",
+          "foot": "right",
+          "height": "1,76m",
+          "id": "531062",
+          "marketValue": "€300k",
+          "name": "Fabio González",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "6",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 23, 1996",
+          "foot": "right",
+          "height": "1,85m",
+          "id": "450258",
+          "marketValue": "€200k",
+          "name": "Ander Gorostidi",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "8",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 28, 1990",
+          "foot": "left",
+          "height": "1,80m",
+          "id": "38817",
+          "marketValue": "€100k",
+          "name": "Sergio Tejera",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "14",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 2, 2000",
+          "foot": "right",
+          "height": "1,84m",
+          "id": "547354",
+          "marketValue": "€350k",
+          "name": "Pascu",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "10",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 14, 2003",
+          "foot": "left",
+          "height": "1,82m",
+          "id": "891931",
+          "marketValue": "€300k",
+          "name": "Jairo Noriega",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "5",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 26, 2002",
+          "foot": "right",
+          "height": "1,75m",
+          "id": "568182",
+          "marketValue": "€200k",
+          "name": "Raúl Dacosta",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "11",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Oct 20, 1999",
+          "foot": "right",
+          "height": "1,78m",
+          "id": "808648",
+          "marketValue": "€150k",
+          "name": "Álvaro Juan",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "7",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 25, 2004",
+          "foot": "right",
+          "height": "1,78m",
+          "id": "1117692",
+          "marketValue": "€50k",
+          "name": "Azael García",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "24",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Nov 20, 1996",
+          "foot": "left",
+          "height": "1,79m",
+          "id": "304250",
+          "marketValue": "€150k",
+          "name": "David Concha",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "18",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 16, 1998",
+          "foot": "right",
+          "height": "1,79m",
+          "id": "645318",
+          "marketValue": "€400k",
+          "name": "Antón Escobar",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "9",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Nov 10, 2003",
+          "foot": "right",
+          "height": "1,83m",
+          "id": "924885",
+          "marketValue": "€400k",
+          "name": "Martim Tavares",
+          "nationality": [
+            "Portugal"
+          ],
+          "number": "21",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 26, 2001",
+          "foot": "right",
+          "height": "1,80m",
+          "id": "721698",
+          "marketValue": "€150k",
+          "name": "Ekain Azkune",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "19",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 19, 1991",
+          "foot": "left",
+          "height": "1,83m",
+          "id": "57935",
+          "marketValue": "€150k",
+          "name": "Álvaro Giménez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "20",
+          "position": "Centre-Forward"
+        }
+      ],
+      "stadiumName": "A Malata",
+      "stadiumSeats": "12043",
+      "transfermarktId": "1176"
+    },
+    {
+      "image": "https://tmssl.akamaized.net/images/wappen/big/5650.png",
+      "name": "Pontevedra CF",
+      "players": [
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 5, 1994",
+          "height": "1,85m",
+          "id": "296838",
+          "marketValue": "€200k",
+          "name": "Raúl Marqueta",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "13",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 15, 1991",
+          "height": "1,81m",
+          "id": "67552",
+          "marketValue": "€50k",
+          "name": "Edu Sousa",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "1",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 10, 1997",
+          "foot": "right",
+          "height": "1,82m",
+          "id": "251880",
+          "marketValue": "€300k",
+          "name": "Antonio Montoro",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "23",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 9, 2001",
+          "foot": "right",
+          "height": "1,90m",
+          "id": "707276",
+          "marketValue": "€250k",
+          "name": "Miki Bosch",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "4",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 19, 2000",
+          "foot": "right",
+          "height": "1,83m",
+          "id": "537760",
+          "marketValue": "€250k",
+          "name": "Benjamín Garay",
+          "nationality": [
+            "Argentina",
+            "Spain"
+          ],
+          "number": "19",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 7, 1996",
+          "foot": "right",
+          "height": "1,83m",
+          "id": "323462",
+          "marketValue": "€100k",
+          "name": "Álvaro Pérez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "5",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 18, 1995",
+          "foot": "both",
+          "height": "1,85m",
+          "id": "290059",
+          "marketValue": "€100k",
+          "name": "Juanra",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "15",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 26, 2001",
+          "foot": "left",
+          "height": "1,75m",
+          "id": "534373",
+          "marketValue": "€150k",
+          "name": "Adrián Expósito",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "3",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 18, 1999",
+          "foot": "right",
+          "height": "1,73m",
+          "id": "639387",
+          "marketValue": "€150k",
+          "name": "Victor Eimil",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "2",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2029",
+          "dateOfBirth": "Oct 30, 1996",
+          "foot": "right",
+          "height": "1,67m",
+          "id": "217153",
+          "marketValue": "€300k",
+          "name": "Yelko Pino",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "10",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 12, 1997",
+          "foot": "right",
+          "id": "681717",
+          "marketValue": "€250k",
+          "name": "Ander Vidorreta",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "16",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 7, 2000",
+          "foot": "right",
+          "height": "1,80m",
+          "id": "632710",
+          "marketValue": "€200k",
+          "name": "Tiago Rodríguez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "24",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Dec 19, 1995",
+          "foot": "right",
+          "height": "1,82m",
+          "id": "510966",
+          "marketValue": "€50k",
+          "name": "Facundo Ballardo",
+          "nationality": [
+            "Argentina",
+            "Spain"
+          ],
+          "number": "12",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 8, 1997",
+          "foot": "left",
+          "height": "1,89m",
+          "id": "510993",
+          "marketValue": "€250k",
+          "name": "Alain Ribeiro",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "6",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Dec 28, 2004",
+          "foot": "both",
+          "height": "1,75m",
+          "id": "1061611",
+          "marketValue": "€50k",
+          "name": "Luisao Macías",
+          "nationality": [
+            "Ecuador",
+            "Spain"
+          ],
+          "number": "17",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 26, 2004",
+          "foot": "left",
+          "height": "1,75m",
+          "id": "941115",
+          "marketValue": "€500k",
+          "name": "Rubén López",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "18",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Oct 10, 2000",
+          "id": "900368",
+          "marketValue": "€200k",
+          "name": "Miguel Cuesta",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "11",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 2, 1989",
+          "foot": "left",
+          "height": "1,78m",
+          "id": "279406",
+          "marketValue": "€50k",
+          "name": "Álex González",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "7",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Oct 27, 1995",
+          "foot": "right",
+          "height": "1,79m",
+          "id": "330985",
+          "marketValue": "€250k",
+          "name": "Brais Abelenda",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "8",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 14, 1997",
+          "foot": "right",
+          "height": "1,78m",
+          "id": "399704",
+          "marketValue": "€200k",
+          "name": "Alberto Gil",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "20",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 31, 2004",
+          "foot": "left",
+          "height": "1,77m",
+          "id": "941104",
+          "marketValue": "€200k",
+          "name": "Diego Gómez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "21",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 26, 2003",
+          "foot": "right",
+          "height": "1,78m",
+          "id": "575715",
+          "marketValue": "€250k",
+          "name": "João Resende",
+          "nationality": [
+            "Portugal"
+          ],
+          "number": "14",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 13, 2004",
+          "foot": "right",
+          "height": "1,83m",
+          "id": "892923",
+          "marketValue": "€200k",
+          "name": "Alex Comparada",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "22",
+          "position": "Centre-Forward"
+        }
+      ],
+      "stadiumName": "Pasarón",
+      "stadiumSeats": "10500",
+      "transfermarktId": "5650"
+    },
+    {
+      "image": "https://tmssl.akamaized.net/images/wappen/big/6767.png",
+      "name": "Real Madrid Castilla",
+      "players": [
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 24, 2005",
+          "foot": "right",
+          "height": "1,99m",
+          "id": "1055220",
+          "marketValue": "€3.00m",
+          "name": "Fran González",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "1",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Feb 13, 2005",
+          "foot": "right",
+          "height": "1,93m",
+          "id": "973314",
+          "marketValue": "€200k",
+          "name": "Sergio Mestre",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "25",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Jan 9, 2004",
+          "height": "1,86m",
+          "id": "948268",
+          "marketValue": "€100k",
+          "name": "Guille Súnico",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "13",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2029",
+          "dateOfBirth": "Oct 20, 2006",
+          "foot": "left",
+          "height": "1,88m",
+          "id": "1186245",
+          "marketValue": "€5.00m",
+          "name": "Víctor Valdepeñas",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "3",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2029",
+          "dateOfBirth": "Aug 20, 2007",
+          "foot": "right",
+          "height": "1,92m",
+          "id": "964563",
+          "marketValue": "€5.00m",
+          "name": "Joan Martínez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "15",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2029",
+          "dateOfBirth": "Feb 7, 2007",
+          "foot": "left",
+          "height": "1,84m",
+          "id": "1208520",
+          "marketValue": "€5.00m",
+          "name": "Diego Aguado",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "21",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2029",
+          "dateOfBirth": "Apr 18, 2006",
+          "foot": "left",
+          "height": "1,80m",
+          "id": "1365849",
+          "marketValue": "€3.00m",
+          "name": "Lamini Fati",
+          "nationality": [
+            "Spain",
+            "Guinea-Bissau"
+          ],
+          "number": "23",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Mar 16, 2007",
+          "foot": "right",
+          "height": "1,88m",
+          "id": "1176520",
+          "marketValue": "€600k",
+          "name": "Mario Rivas",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "4",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Mar 20, 2004",
+          "height": "1,75m",
+          "id": "940464",
+          "marketValue": "€600k",
+          "name": "Manu Serrano",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "5",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2030",
+          "dateOfBirth": "Mar 15, 2007",
+          "foot": "left",
+          "height": "1,81m",
+          "id": "1318907",
+          "marketValue": "€500k",
+          "name": "Liberto Navascués",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "32",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Mar 14, 2004",
+          "foot": "right",
+          "height": "1,70m",
+          "id": "935281",
+          "marketValue": "€5.00m",
+          "name": "David Jiménez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "2",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2029",
+          "dateOfBirth": "Mar 26, 2007",
+          "foot": "right",
+          "height": "1,79m",
+          "id": "937950",
+          "marketValue": "€3.00m",
+          "name": "Jesús Fortea",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "17",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Aug 17, 2005",
+          "foot": "right",
+          "height": "1,75m",
+          "id": "948255",
+          "marketValue": "€500k",
+          "name": "Cristian Perea",
+          "nationality": [
+            "Spain",
+            "Colombia"
+          ],
+          "number": "6",
+          "position": "Defensive Midfield"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Mar 24, 2006",
+          "foot": "right",
+          "height": "1,78m",
+          "id": "1186235",
+          "marketValue": "€7.50m",
+          "name": "Jorge Cestero",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "14",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Mar 15, 2004",
+          "foot": "right",
+          "height": "1,70m",
+          "id": "646824",
+          "marketValue": "€5.00m",
+          "name": "Manuel Ángel",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "8",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2029",
+          "dateOfBirth": "Aug 12, 2006",
+          "foot": "right",
+          "height": "1,77m",
+          "id": "1107966",
+          "marketValue": "€2.00m",
+          "name": "Roberto Martín",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "28",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Sep 3, 2005",
+          "foot": "left",
+          "height": "1,73m",
+          "id": "948259",
+          "marketValue": "€400k",
+          "name": "Daniel Mesonero",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "30",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Nov 11, 2004",
+          "foot": "right",
+          "height": "1,82m",
+          "id": "948272",
+          "marketValue": "€6.00m",
+          "name": "César Palacios",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "10",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 11, 2005",
+          "foot": "left",
+          "height": "1,75m",
+          "id": "741293",
+          "marketValue": "€1.00m",
+          "name": "Pol Fortuny",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "20",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 1, 2003",
+          "foot": "right",
+          "height": "1,81m",
+          "id": "668182",
+          "marketValue": "€400k",
+          "name": "Bruno Iglesias",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "11",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Aug 4, 2006",
+          "foot": "right",
+          "height": "1,76m",
+          "id": "1319941",
+          "marketValue": "€200k",
+          "name": "Gabri Castrelo",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "33",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Mar 18, 2005",
+          "foot": "right",
+          "height": "1,75m",
+          "id": "948260",
+          "marketValue": "€400k",
+          "name": "Hugo de Llanos",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "22",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2030",
+          "dateOfBirth": "Jan 4, 2008",
+          "foot": "right",
+          "height": "1,81m",
+          "id": "1262288",
+          "marketValue": "€200k",
+          "name": "Alexis Ciria",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "47",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2029",
+          "dateOfBirth": "Mar 28, 2007",
+          "foot": "left",
+          "height": "1,77m",
+          "id": "962124",
+          "marketValue": "€3.00m",
+          "name": "Daniel Yáñez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "7",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Mar 15, 2005",
+          "foot": "right",
+          "height": "1,79m",
+          "id": "790447",
+          "marketValue": "€200k",
+          "name": "Álvaro Ginés",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "37",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Dec 28, 2004",
+          "foot": "right",
+          "height": "1,73m",
+          "id": "875306",
+          "marketValue": "€300k",
+          "name": "Álvaro Leiva",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "39",
+          "position": "Second Striker"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 4, 2007",
+          "height": "1,85m",
+          "id": "1176519",
+          "marketValue": "€2.00m",
+          "name": "Adrián Arnu",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "49",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Jan 18, 2003",
+          "foot": "both",
+          "height": "1,83m",
+          "id": "720523",
+          "marketValue": "€1.00m",
+          "name": "Loren Zúñiga",
+          "nationality": [
+            "Equatorial Guinea",
+            "Spain"
+          ],
+          "number": "9",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Jan 16, 2005",
+          "foot": "left",
+          "height": "1,84m",
+          "id": "891310",
+          "marketValue": "€700k",
+          "name": "Rachad Fettal",
+          "nationality": [
+            "Spain",
+            "Morocco"
+          ],
+          "number": "18",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "May 29, 2006",
+          "foot": "right",
+          "height": "1,86m",
+          "id": "1186237",
+          "marketValue": "€200k",
+          "name": "Jacobo Ortega",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "29",
+          "position": "Centre-Forward"
+        }
+      ],
+      "stadiumName": "Alfredo Di Stéfano",
+      "stadiumSeats": "9000",
+      "transfermarktId": "6767"
+    },
+    {
+      "image": "https://tmssl.akamaized.net/images/wappen/big/4032.png",
+      "name": "SD Ponferradina",
+      "players": [
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Oct 17, 1993",
+          "foot": "right",
+          "height": "1,94m",
+          "id": "238032",
+          "marketValue": "€150k",
+          "name": "Andrés Prieto",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "1",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 22, 2002",
+          "height": "1,94m",
+          "id": "713632",
+          "marketValue": "€150k",
+          "name": "Ángel Jiménez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "13",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 5, 2003",
+          "foot": "right",
+          "height": "1,80m",
+          "id": "635521",
+          "marketValue": "€50k",
+          "name": "Pablo Barredo",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "25",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "May 8, 1999",
+          "foot": "right",
+          "height": "1,84m",
+          "id": "594109",
+          "marketValue": "€250k",
+          "name": "Boris Moltenis",
+          "nationality": [
+            "Martinique",
+            "France"
+          ],
+          "number": "4",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 6, 1996",
+          "id": "716578",
+          "marketValue": "€200k",
+          "name": "Germán Nóvoa",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "3",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 21, 1991",
+          "foot": "right",
+          "height": "1,89m",
+          "id": "531267",
+          "marketValue": "€100k",
+          "name": "David Andújar",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "2",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "-",
+          "dateOfBirth": "Jun 14, 2005",
+          "foot": "right",
+          "height": "1,93m",
+          "id": "1452009",
+          "marketValue": "€50k",
+          "name": "Vladyslav Kysil",
+          "nationality": [
+            "Ukraine"
+          ],
+          "number": "26",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 5, 1996",
+          "foot": "left",
+          "height": "1,87m",
+          "id": "340206",
+          "marketValue": "€250k",
+          "name": "Andoni López",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "19",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 6, 2004",
+          "foot": "left",
+          "height": "1,84m",
+          "id": "1044871",
+          "marketValue": "€100k",
+          "name": "Vasco Sousa",
+          "nationality": [
+            "Portugal"
+          ],
+          "number": "15",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 16, 2005",
+          "foot": "right",
+          "id": "895333",
+          "marketValue": "€150k",
+          "name": "Koke Iglesias",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "12",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 28, 2002",
+          "height": "1,80m",
+          "id": "636113",
+          "marketValue": "€100k",
+          "name": "Mario Jorrín",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "23",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Mar 16, 1997",
+          "foot": "right",
+          "height": "1,76m",
+          "id": "307519",
+          "marketValue": "€300k",
+          "name": "Fede San Emeterio",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "6",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 10, 1993",
+          "height": "1,84m",
+          "id": "349889",
+          "marketValue": "€150k",
+          "name": "Eneko Undabarrena",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "5",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 2, 2003",
+          "foot": "left",
+          "height": "1,74m",
+          "id": "960948",
+          "marketValue": "€150k",
+          "name": "Eugene Frimpong",
+          "nationality": [
+            "Ghana"
+          ],
+          "number": "16",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 25, 1991",
+          "foot": "right",
+          "height": "1,87m",
+          "id": "67542",
+          "marketValue": "€100k",
+          "name": "Erik Morán",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "24",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 2, 1995",
+          "foot": "right",
+          "height": "1,84m",
+          "id": "327650",
+          "marketValue": "€200k",
+          "name": "Xemi Fernández",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "14",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 2, 1999",
+          "foot": "left",
+          "height": "1,80m",
+          "id": "599263",
+          "marketValue": "€150k",
+          "name": "Vicente Esquerdo",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "22",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 1, 2002",
+          "height": "1,86m",
+          "id": "949489",
+          "marketValue": "€200k",
+          "name": "Abdoulaye Keita",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "17",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 14, 1995",
+          "foot": "right",
+          "height": "1,83m",
+          "id": "324475",
+          "marketValue": "€200k",
+          "name": "Carlos Calderón",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "7",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "May 5, 2002",
+          "foot": "right",
+          "height": "1,82m",
+          "id": "622991",
+          "marketValue": "€400k",
+          "name": "Slavy",
+          "nationality": [
+            "Bulgaria",
+            "Spain"
+          ],
+          "number": "8",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 22, 2001",
+          "id": "628471",
+          "marketValue": "€250k",
+          "name": "José Luis Cortés",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "9",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 9, 1992",
+          "foot": "right",
+          "height": "1,77m",
+          "id": "176067",
+          "marketValue": "€200k",
+          "name": "Borja Valle",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "10",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 18, 2005",
+          "id": "1230202",
+          "marketValue": "€200k",
+          "name": "Borja Vázquez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "18",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Oct 17, 2003",
+          "foot": "left",
+          "id": "940462",
+          "marketValue": "€150k",
+          "name": "Pau Ferrer",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "20",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 7, 1995",
+          "foot": "right",
+          "height": "1,85m",
+          "id": "221580",
+          "marketValue": "€100k",
+          "name": "Steven Petkov",
+          "nationality": [
+            "Bulgaria"
+          ],
+          "number": "11",
+          "position": "Centre-Forward"
+        }
+      ],
+      "stadiumName": "El Toralín",
+      "stadiumSeats": "8432",
+      "transfermarktId": "4032"
+    },
+    {
+      "image": "https://tmssl.akamaized.net/images/wappen/big/3708.png",
+      "name": "Barakaldo CF",
+      "players": [
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 8, 2003",
+          "foot": "right",
+          "height": "1,85m",
+          "id": "668278",
+          "marketValue": "€100k",
+          "name": "Ibon Ispizua",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "1",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 16, 1997",
+          "foot": "right",
+          "height": "1,90m",
+          "id": "448835",
+          "marketValue": "€100k",
+          "name": "Gaizka Campos",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "13",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Nov 29, 2001",
+          "foot": "right",
+          "height": "1,86m",
+          "id": "1078990",
+          "marketValue": "€250k",
+          "name": "Markel Arana",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "18",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 21, 1999",
+          "foot": "right",
+          "height": "1,87m",
+          "id": "783429",
+          "marketValue": "€200k",
+          "name": "Unai Dufur",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "4",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 7, 1990",
+          "foot": "right",
+          "height": "1,85m",
+          "id": "89368",
+          "marketValue": "€100k",
+          "name": "Borja García",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "3",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 1, 2006",
+          "foot": "left",
+          "id": "1136037",
+          "marketValue": "€100k",
+          "name": "Iker Ropero",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "24",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 26, 2002",
+          "foot": "left",
+          "height": "1,88m",
+          "id": "634259",
+          "marketValue": "€50k",
+          "name": "Javier Vicario",
+          "nationality": [
+            "Spain"
+          ],
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 8, 2002",
+          "foot": "left",
+          "height": "1,78m",
+          "id": "625043",
+          "marketValue": "€250k",
+          "name": "Oier López",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "16",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 29, 2005",
+          "foot": "left",
+          "id": "1056960",
+          "marketValue": "€150k",
+          "name": "Urtzi Albizua",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "23",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Dec 20, 1998",
+          "id": "888290",
+          "marketValue": "€200k",
+          "name": "Iker Pedernales",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "7",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 22, 2002",
+          "foot": "right",
+          "height": "1,78m",
+          "id": "709182",
+          "marketValue": "€150k",
+          "name": "Beñat de Jesús",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "2",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 1, 1995",
+          "foot": "right",
+          "height": "1,77m",
+          "id": "455379",
+          "marketValue": "€200k",
+          "name": "Julen Huidobro",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "8",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 30, 2001",
+          "foot": "right",
+          "height": "1,83m",
+          "id": "625046",
+          "marketValue": "€150k",
+          "name": "Unai Naveira",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "6",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 5, 2000",
+          "id": "632929",
+          "marketValue": "€100k",
+          "name": "Iván Castillo",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "15",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Oct 24, 1991",
+          "foot": "right",
+          "height": "1,79m",
+          "id": "156887",
+          "marketValue": "€100k",
+          "name": "Álvaro Peña",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "21",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 25, 1990",
+          "id": "380602",
+          "marketValue": "€50k",
+          "name": "Ekaitz Molina",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "5",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 18, 2001",
+          "foot": "right",
+          "height": "1,80m",
+          "id": "634108",
+          "marketValue": "€150k",
+          "name": "Eric Pérez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "11",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 2, 2004",
+          "foot": "right",
+          "height": "1,85m",
+          "id": "867611",
+          "marketValue": "€150k",
+          "name": "José de León",
+          "nationality": [
+            "Dominican Republic",
+            "Spain"
+          ],
+          "number": "17",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 23, 2004",
+          "foot": "right",
+          "height": "1,78m",
+          "id": "1080166",
+          "marketValue": "€50k",
+          "name": "Marc Torra",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "22",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Dec 16, 1996",
+          "foot": "right",
+          "height": "1,65m",
+          "id": "442767",
+          "marketValue": "€150k",
+          "name": "Iñigo Muñoz",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "14",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 13, 2003",
+          "height": "1,83m",
+          "id": "1079049",
+          "marketValue": "€150k",
+          "name": "Saliou Mandiang",
+          "nationality": [
+            "Senegal",
+            "Spain"
+          ],
+          "number": "20",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Oct 13, 2002",
+          "id": "1189287",
+          "marketValue": "€250k",
+          "name": "Aitor Galarza",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "19",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 25, 1997",
+          "foot": "right",
+          "height": "1,85m",
+          "id": "338288",
+          "marketValue": "€200k",
+          "name": "Alex Valiño",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "9",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 4, 1992",
+          "foot": "right",
+          "height": "1,87m",
+          "id": "192736",
+          "marketValue": "€100k",
+          "name": "Sabin Merino",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "10",
+          "position": "Centre-Forward"
+        }
+      ],
+      "stadiumName": "Nuevo Lasesarre",
+      "stadiumSeats": "7960",
+      "transfermarktId": "3708"
+    },
+    {
+      "image": "https://tmssl.akamaized.net/images/wappen/big/10907.png",
+      "name": "Zamora CF",
+      "players": [
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Nov 15, 1995",
+          "foot": "right",
+          "height": "1,77m",
+          "id": "258825",
+          "marketValue": "€200k",
+          "name": "Fermín Sobrón",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "1",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 14, 2003",
+          "foot": "left",
+          "height": "1,94m",
+          "id": "945699",
+          "name": "Adrián Pereda",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "13",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Mar 19, 2001",
+          "foot": "right",
+          "height": "1,85m",
+          "id": "628882",
+          "marketValue": "€250k",
+          "name": "Luismi Luengo",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "2",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 16, 2002",
+          "foot": "left",
+          "height": "1,85m",
+          "id": "711639",
+          "marketValue": "€200k",
+          "name": "Miki Codina",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "20",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 8, 1995",
+          "foot": "left",
+          "height": "1,84m",
+          "id": "510960",
+          "marketValue": "€150k",
+          "name": "Erik Ruiz",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "5",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 1, 1995",
+          "height": "1,85m",
+          "id": "351204",
+          "marketValue": "€100k",
+          "name": "Ismael Athuman",
+          "nationality": [
+            "Kenya",
+            "Spain"
+          ],
+          "number": "4",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 5, 2002",
+          "foot": "left",
+          "height": "1,80m",
+          "id": "882823",
+          "marketValue": "€200k",
+          "name": "Dani Merchán",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "3",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 20, 2007",
+          "id": "1180825",
+          "name": "Mani López",
+          "nationality": [
+            "Morocco",
+            "Spain"
+          ],
+          "number": "21",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 21, 2001",
+          "foot": "right",
+          "height": "1,77m",
+          "id": "634122",
+          "marketValue": "€200k",
+          "name": "Diego Moreno",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "14",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 9, 2003",
+          "foot": "right",
+          "height": "1,80m",
+          "id": "881436",
+          "marketValue": "€200k",
+          "name": "Sergi López",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "23",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 3, 1996",
+          "height": "1,89m",
+          "id": "386668",
+          "marketValue": "€300k",
+          "name": "Markel Lozano",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "16",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 23, 1997",
+          "foot": "right",
+          "id": "786039",
+          "marketValue": "€200k",
+          "name": "Mario García",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "6",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 31, 1994",
+          "foot": "right",
+          "height": "1,82m",
+          "id": "282000",
+          "marketValue": "€200k",
+          "name": "Carlos Ramos",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "10",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Nov 29, 1998",
+          "foot": "left",
+          "id": "531498",
+          "marketValue": "€100k",
+          "name": "Alejandro Marcelo",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "8",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Feb 11, 2000",
+          "foot": "right",
+          "height": "1,72m",
+          "id": "632562",
+          "marketValue": "€300k",
+          "name": "Abde Damar",
+          "nationality": [
+            "Morocco"
+          ],
+          "number": "19",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 12, 1996",
+          "foot": "right",
+          "height": "1,67m",
+          "id": "437893",
+          "marketValue": "€150k",
+          "name": "Álvaro Romero",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "11",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Oct 6, 1994",
+          "foot": "right",
+          "height": "1,70m",
+          "id": "480445",
+          "marketValue": "€150k",
+          "name": "Loren Burón",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "15",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 1, 2000",
+          "foot": "right",
+          "height": "1,72m",
+          "id": "632899",
+          "marketValue": "€250k",
+          "name": "Jaime Sancho",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "22",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 23, 1989",
+          "foot": "right",
+          "height": "1,76m",
+          "id": "101733",
+          "marketValue": "€100k",
+          "name": "Kike Márquez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "7",
+          "position": "Second Striker"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Mar 23, 1997",
+          "foot": "right",
+          "height": "1,83m",
+          "id": "1005309",
+          "marketValue": "€250k",
+          "name": "Javier Carbonell",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "17",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 13, 1997",
+          "foot": "right",
+          "height": "1,75m",
+          "id": "677181",
+          "marketValue": "€200k",
+          "name": "Mario Losada",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "9",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Jun 27, 2003",
+          "foot": "right",
+          "height": "1,82m",
+          "id": "750681",
+          "marketValue": "€200k",
+          "name": "Joshua Farrell",
+          "nationality": [
+            "Wales",
+            "Spain"
+          ],
+          "number": "18",
+          "position": "Centre-Forward"
+        }
+      ],
+      "stadiumName": "Ruta de la Plata",
+      "stadiumSeats": "7813",
+      "transfermarktId": "10907"
+    },
+    {
+      "image": "https://tmssl.akamaized.net/images/wappen/big/11000.png",
+      "name": "CD Lugo",
+      "players": [
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 4, 1990",
+          "foot": "right",
+          "height": "1,86m",
+          "id": "129374",
+          "marketValue": "€100k",
+          "name": "Marc Martínez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "1",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 4, 2002",
+          "foot": "right",
+          "height": "1,86m",
+          "id": "634429",
+          "marketValue": "€50k",
+          "name": "Iker Piedra",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "13",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 9, 1998",
+          "foot": "right",
+          "height": "1,82m",
+          "id": "311454",
+          "marketValue": "€250k",
+          "name": "José Amo",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "16",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 7, 2000",
+          "foot": "right",
+          "height": "1,85m",
+          "id": "632495",
+          "marketValue": "€250k",
+          "name": "Josep Gayá",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "24",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Feb 3, 2001",
+          "id": "634118",
+          "marketValue": "€200k",
+          "name": "Ibaider Garriz",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "3",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 4, 1993",
+          "foot": "right",
+          "height": "1,88m",
+          "id": "248337",
+          "marketValue": "€100k",
+          "name": "Pablo Trigueros",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "4",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 17, 1994",
+          "foot": "left",
+          "height": "1,71m",
+          "id": "162036",
+          "marketValue": "€150k",
+          "name": "Diego Caballo",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "17",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "May 20, 2004",
+          "foot": "left",
+          "id": "947436",
+          "marketValue": "€50k",
+          "name": "Pere Haro",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "6",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 6, 1999",
+          "foot": "right",
+          "height": "1,77m",
+          "id": "572299",
+          "marketValue": "€150k",
+          "name": "Iago López",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "20",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Jul 1, 2005",
+          "id": "1125701",
+          "marketValue": "€100k",
+          "name": "Yago Rodríguez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "2",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Nov 14, 2006",
+          "foot": "right",
+          "height": "1,76m",
+          "id": "1333520",
+          "marketValue": "€400k",
+          "name": "Gabriel Costa",
+          "nationality": [
+            "Portugal"
+          ],
+          "number": "18",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 8, 1997",
+          "foot": "left",
+          "height": "1,88m",
+          "id": "483742",
+          "marketValue": "€300k",
+          "name": "Antonio Perera",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "12",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 6, 2001",
+          "foot": "right",
+          "height": "1,81m",
+          "id": "634460",
+          "marketValue": "€250k",
+          "name": "Álex Balboa",
+          "nationality": [
+            "Equatorial Guinea",
+            "Spain"
+          ],
+          "number": "8",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 31, 2003",
+          "foot": "right",
+          "height": "1,73m",
+          "id": "627218",
+          "marketValue": "€250k",
+          "name": "Txus Alba",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "10",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 15, 1994",
+          "foot": "right",
+          "height": "1,78m",
+          "id": "379224",
+          "marketValue": "€150k",
+          "name": "Kevin Presa",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "14",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 7, 2004",
+          "foot": "right",
+          "height": "1,72m",
+          "id": "961902",
+          "marketValue": "€300k",
+          "name": "Neco Celorio",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "9",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 26, 1996",
+          "foot": "right",
+          "height": "1,86m",
+          "id": "217155",
+          "marketValue": "€300k",
+          "name": "Borja Sánchez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "25",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 28, 1995",
+          "foot": "left",
+          "height": "1,76m",
+          "id": "380277",
+          "marketValue": "€200k",
+          "name": "Santi Samanes",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "22",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 19, 1992",
+          "foot": "left",
+          "height": "1,78m",
+          "id": "210143",
+          "marketValue": "€100k",
+          "name": "Álex Gallar",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "5",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Dec 31, 1990",
+          "foot": "right",
+          "height": "1,80m",
+          "id": "100722",
+          "marketValue": "€100k",
+          "name": "Lago Júnior",
+          "nationality": [
+            "Cote d'Ivoire",
+            "Spain"
+          ],
+          "number": "23",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 27, 1996",
+          "foot": "left",
+          "height": "1,80m",
+          "id": "355397",
+          "marketValue": "€250k",
+          "name": "Víctor Pastrana",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "11",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Feb 3, 2004",
+          "foot": "right",
+          "height": "1,74m",
+          "id": "1065763",
+          "marketValue": "€50k",
+          "name": "Jorge González",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "7",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 4, 1998",
+          "foot": "right",
+          "height": "1,84m",
+          "id": "605466",
+          "marketValue": "€500k",
+          "name": "Iker Unzueta",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "19",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 18, 1995",
+          "foot": "right",
+          "height": "1,83m",
+          "id": "496415",
+          "marketValue": "€200k",
+          "name": "Nicolás Reniero",
+          "nationality": [
+            "Argentina",
+            "Italy"
+          ],
+          "number": "15",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2029",
+          "dateOfBirth": "Sep 19, 2006",
+          "foot": "both",
+          "height": "1,92m",
+          "id": "1107991",
+          "marketValue": "€50k",
+          "name": "Ognjen Teofilovic",
+          "nationality": [
+            "Serbia"
+          ],
+          "number": "21",
+          "position": "Centre-Forward"
+        }
+      ],
+      "stadiumName": "Anxo Carro",
+      "stadiumSeats": "7070",
+      "transfermarktId": "11000"
+    },
+    {
+      "image": "https://tmssl.akamaized.net/images/wappen/big/16576.png",
+      "name": "CD Guadalajara",
+      "players": [
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 8, 1998",
+          "foot": "right",
+          "height": "1,90m",
+          "id": "550934",
+          "marketValue": "€150k",
+          "name": "Amador Zarco",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "1",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 6, 2003",
+          "foot": "right",
+          "height": "1,86m",
+          "id": "935228",
+          "marketValue": "€50k",
+          "name": "Dani Vicente",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "13",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Jul 5, 1996",
+          "foot": "right",
+          "height": "1,80m",
+          "id": "391271",
+          "marketValue": "€200k",
+          "name": "Javier Ablanque",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "4",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Dec 5, 2003",
+          "foot": "left",
+          "height": "1,84m",
+          "id": "935499",
+          "marketValue": "€100k",
+          "name": "Lucas Pérez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "2",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 5, 2003",
+          "id": "932354",
+          "marketValue": "€100k",
+          "name": "Víctor Rodríguez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "15",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 26, 1989",
+          "foot": "left",
+          "height": "1,85m",
+          "id": "161251",
+          "marketValue": "€50k",
+          "name": "Jorge Casado",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "23",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 18, 2001",
+          "foot": "left",
+          "height": "1,86m",
+          "id": "625884",
+          "marketValue": "€200k",
+          "name": "Julio Martínez",
+          "nationality": [
+            "Spain",
+            "Colombia"
+          ],
+          "number": "18",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 24, 1994",
+          "foot": "left",
+          "height": "1,86m",
+          "id": "385912",
+          "marketValue": "€100k",
+          "name": "Kike Cadete",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "16",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 19, 2005",
+          "id": "960983",
+          "marketValue": "€50k",
+          "name": "Agus Moreno",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "3",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 7, 1996",
+          "foot": "right",
+          "id": "511023",
+          "marketValue": "€150k",
+          "name": "Dani Gallardo",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "5",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 30, 1999",
+          "id": "677179",
+          "marketValue": "€200k",
+          "name": "Raúl Tavares",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "14",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Nov 22, 2000",
+          "id": "1003958",
+          "marketValue": "€200k",
+          "name": "Samu Mayo",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "22",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Dec 13, 1995",
+          "id": "891092",
+          "marketValue": "€150k",
+          "name": "Pablo Rojo",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "6",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Oct 20, 1997",
+          "id": "555118",
+          "marketValue": "€150k",
+          "name": "Toño Calvo",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "8",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 28, 1997",
+          "foot": "left",
+          "height": "1,80m",
+          "id": "396172",
+          "marketValue": "€150k",
+          "name": "Miki Muñoz",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "20",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Nov 22, 2001",
+          "id": "713638",
+          "marketValue": "€200k",
+          "name": "Neskes",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "7",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 4, 2003",
+          "foot": "right",
+          "height": "1,70m",
+          "id": "1045767",
+          "marketValue": "€250k",
+          "name": "Pablo Muñoz",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "19",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 16, 2002",
+          "foot": "both",
+          "height": "1,75m",
+          "id": "1055547",
+          "marketValue": "€150k",
+          "name": "Unax Álvarez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "11",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 10, 1999",
+          "foot": "both",
+          "height": "1,78m",
+          "id": "598162",
+          "marketValue": "€150k",
+          "name": "Javi Gómez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "17",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Oct 31, 1997",
+          "id": "708001",
+          "marketValue": "€150k",
+          "name": "Guille Perero",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "21",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 19, 2001",
+          "foot": "right",
+          "height": "1,90m",
+          "id": "911791",
+          "marketValue": "€250k",
+          "name": "Salifo Mendes",
+          "nationality": [
+            "Guinea-Bissau",
+            "Spain"
+          ],
+          "number": "24",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Dec 25, 1999",
+          "foot": "both",
+          "height": "1,84m",
+          "id": "595916",
+          "marketValue": "€200k",
+          "name": "Alejandro Cañizo",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "9",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Oct 22, 2002",
+          "id": "875860",
+          "marketValue": "€200k",
+          "name": "David Amigo",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "10",
+          "position": "Centre-Forward"
+        }
+      ],
+      "stadiumName": "Pedro Escartín",
+      "stadiumSeats": "6000",
+      "transfermarktId": "16576"
+    },
+    {
+      "image": "https://tmssl.akamaized.net/images/wappen/big/11602.png",
+      "name": "CP Cacereño",
+      "players": [
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 11, 1999",
+          "foot": "right",
+          "height": "1,85m",
+          "id": "731214",
+          "marketValue": "€150k",
+          "name": "Diego Nieves",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "1",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 28, 2004",
+          "foot": "left",
+          "height": "1,91m",
+          "id": "892421",
+          "marketValue": "€50k",
+          "name": "Alex Quevedo",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "13",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 24, 2002",
+          "id": "718579",
+          "marketValue": "€150k",
+          "name": "Iván Martínez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "2",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 14, 1996",
+          "foot": "right",
+          "height": "1,85m",
+          "id": "423172",
+          "marketValue": "€150k",
+          "name": "José Manuel Alonso",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "21",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 25, 1993",
+          "foot": "left",
+          "height": "1,85m",
+          "id": "513175",
+          "marketValue": "€100k",
+          "name": "Adrián Crespo",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "4",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 21, 1991",
+          "foot": "right",
+          "height": "1,86m",
+          "id": "230902",
+          "marketValue": "€50k",
+          "name": "Javi Barrio",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "3",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 18, 1999",
+          "foot": "left",
+          "height": "1,78m",
+          "id": "785266",
+          "marketValue": "€200k",
+          "name": "Joserra de Diego",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "5",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 28, 2003",
+          "height": "1,83m",
+          "id": "989453",
+          "marketValue": "€50k",
+          "name": "Oussama El Goumiri",
+          "nationality": [
+            "Morocco",
+            "Spain"
+          ],
+          "number": "23",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 3, 2000",
+          "foot": "right",
+          "height": "1,75m",
+          "id": "890629",
+          "marketValue": "€150k",
+          "name": "Emi Hernández",
+          "nationality": [
+            "Spain",
+            "Argentina"
+          ],
+          "number": "22",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 15, 2001",
+          "foot": "right",
+          "height": "1,83m",
+          "id": "635944",
+          "marketValue": "€150k",
+          "name": "Nico Conesa",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "6",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 7, 1996",
+          "foot": "right",
+          "height": "1,74m",
+          "id": "256120",
+          "marketValue": "€150k",
+          "name": "Wilfrid Kaptoum",
+          "nationality": [
+            "Cameroon"
+          ],
+          "number": "12",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 25, 1996",
+          "foot": "right",
+          "height": "1,68m",
+          "id": "296234",
+          "marketValue": "€100k",
+          "name": "Deco",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "8",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 3, 2000",
+          "height": "1,71m",
+          "id": "784911",
+          "marketValue": "€100k",
+          "name": "Diego Gutiérrez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "16",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 25, 2003",
+          "id": "773610",
+          "marketValue": "€100k",
+          "name": "Rubén Valdera",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "24",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 27, 2002",
+          "height": "1,82m",
+          "id": "718580",
+          "marketValue": "€50k",
+          "name": "Antonio Marchena",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "14",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 4, 2003",
+          "foot": "right",
+          "height": "1,80m",
+          "id": "1065779",
+          "marketValue": "€50k",
+          "name": "Raúl Sanchís",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "18",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 12, 2001",
+          "foot": "right",
+          "height": "1,78m",
+          "id": "536846",
+          "marketValue": "€150k",
+          "name": "Javier Ajenjo",
+          "nationality": [
+            "Poland",
+            "Spain"
+          ],
+          "number": "10",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 16, 2001",
+          "foot": "right",
+          "id": "1225848",
+          "marketValue": "€50k",
+          "name": "Álex Monerris",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "15",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Oct 10, 2000",
+          "foot": "left",
+          "height": "1,87m",
+          "id": "634489",
+          "marketValue": "€200k",
+          "name": "Miguel Berlanga",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "17",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 14, 2000",
+          "id": "783885",
+          "marketValue": "€150k",
+          "name": "Iván Fernández",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "7",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 17, 1999",
+          "foot": "right",
+          "height": "1,77m",
+          "id": "606572",
+          "marketValue": "€150k",
+          "name": "Rubén Sanchidrián",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "11",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 22, 2000",
+          "id": "1147892",
+          "marketValue": "€200k",
+          "name": "Pau Palacín",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "20",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 8, 2003",
+          "foot": "right",
+          "id": "715819",
+          "marketValue": "€200k",
+          "name": "Kensly Vázquez",
+          "nationality": [
+            "Haiti",
+            "Spain"
+          ],
+          "number": "25",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 13, 1999",
+          "id": "554814",
+          "marketValue": "€150k",
+          "name": "Diego Gómez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "9",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 12, 2000",
+          "foot": "left",
+          "height": "1,80m",
+          "id": "783882",
+          "marketValue": "€100k",
+          "name": "César Gómez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "19",
+          "position": "Centre-Forward"
+        }
+      ],
+      "stadiumName": "Príncipe Felipe",
+      "stadiumSeats": "5972",
+      "transfermarktId": "11602"
+    },
+    {
+      "image": "https://tmssl.akamaized.net/images/wappen/big/55398.png",
+      "name": "Ourense CF",
+      "players": [
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 29, 1993",
+          "foot": "left",
+          "height": "1,92m",
+          "id": "248551",
+          "marketValue": "€100k",
+          "name": "Álvaro Ratón",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "1",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 26, 2001",
+          "height": "1,82m",
+          "id": "551184",
+          "marketValue": "€100k",
+          "name": "Alberto Sánchez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "13",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 31, 1999",
+          "foot": "right",
+          "height": "1,84m",
+          "id": "557144",
+          "marketValue": "€300k",
+          "name": "Miguel Prado",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "5",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 26, 1999",
+          "foot": "right",
+          "height": "1,84m",
+          "id": "537370",
+          "marketValue": "€250k",
+          "name": "Fran Carmona",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "4",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 27, 2000",
+          "foot": "left",
+          "height": "1,84m",
+          "id": "1120211",
+          "marketValue": "€200k",
+          "name": "Aymane Jelbat",
+          "nationality": [
+            "Morocco"
+          ],
+          "number": "12",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 4, 2003",
+          "foot": "left",
+          "height": "1,89m",
+          "id": "718025",
+          "marketValue": "€150k",
+          "name": "Adrián Pérez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "14",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 21, 2002",
+          "foot": "left",
+          "height": "1,77m",
+          "id": "715625",
+          "marketValue": "€300k",
+          "name": "Hugo Sanz",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "3",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 23, 2001",
+          "foot": "right",
+          "height": "1,74m",
+          "id": "636303",
+          "marketValue": "€200k",
+          "name": "Enol Coto",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "2",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 14, 1996",
+          "id": "522200",
+          "marketValue": "€250k",
+          "name": "Jerin Ramos",
+          "nationality": [
+            "Cape Verde",
+            "Spain"
+          ],
+          "number": "8",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 22, 2000",
+          "foot": "right",
+          "height": "1,84m",
+          "id": "790879",
+          "marketValue": "€200k",
+          "name": "David Rabadán",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "18",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 4, 2001",
+          "foot": "right",
+          "height": "1,85m",
+          "id": "536849",
+          "marketValue": "€200k",
+          "name": "Álvaro Yuste",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "22",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 5, 2005",
+          "foot": "right",
+          "height": "1,78m",
+          "id": "895242",
+          "marketValue": "€150k",
+          "name": "David Muñoz",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "16",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 23, 2001",
+          "foot": "right",
+          "height": "1,83m",
+          "id": "672953",
+          "marketValue": "€150k",
+          "name": "César Moreno",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "24",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 1, 2006",
+          "id": "1434744",
+          "marketValue": "€50k",
+          "name": "Lamine Gueye",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "20",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 3, 2000",
+          "foot": "right",
+          "height": "1,83m",
+          "id": "634459",
+          "marketValue": "€200k",
+          "name": "Nacho Castillo",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "6",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 29, 2004",
+          "foot": "left",
+          "height": "1,86m",
+          "id": "1158713",
+          "marketValue": "€100k",
+          "name": "Iker Punzano",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "23",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 28, 1998",
+          "foot": "left",
+          "height": "1,77m",
+          "id": "585854",
+          "marketValue": "€200k",
+          "name": "Aitor Aranzabe",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "11",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 11, 2003",
+          "id": "1128259",
+          "marketValue": "€100k",
+          "name": "Luis Rivas",
+          "nationality": [
+            "Colombia"
+          ],
+          "number": "15",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 15, 2006",
+          "height": "1,86m",
+          "id": "1256108",
+          "marketValue": "€300k",
+          "name": "Adrián Guerrero",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "21",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 11, 1994",
+          "foot": "right",
+          "height": "1,83m",
+          "id": "591094",
+          "marketValue": "€150k",
+          "name": "Raúl Hernández",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "17",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 1, 1997",
+          "foot": "right",
+          "height": "1,81m",
+          "id": "458003",
+          "marketValue": "€300k",
+          "name": "Amin Bouzaig",
+          "nationality": [
+            "Morocco",
+            "Spain"
+          ],
+          "number": "7",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 23, 1999",
+          "foot": "both",
+          "height": "1,74m",
+          "id": "531825",
+          "marketValue": "€200k",
+          "name": "Sergio Benito",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "9",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Dec 20, 2004",
+          "foot": "right",
+          "height": "1,78m",
+          "id": "983525",
+          "marketValue": "€200k",
+          "name": "Martín Ochoa",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "10",
+          "position": "Centre-Forward"
+        }
+      ],
+      "stadiumName": "O Couto",
+      "stadiumSeats": "5659",
+      "transfermarktId": "55398"
+    },
+    {
+      "image": "https://tmssl.akamaized.net/images/wappen/big/20844.png",
+      "name": "Real Avilés Industrial",
+      "players": [
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 10, 2000",
+          "foot": "both",
+          "height": "1,85m",
+          "id": "495627",
+          "marketValue": "€200k",
+          "name": "Álvaro Fernández",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "1",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Nov 3, 2003",
+          "height": "1,92m",
+          "id": "930096",
+          "marketValue": "€50k",
+          "name": "Nando Almodóvar",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "13",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 7, 1999",
+          "foot": "left",
+          "height": "1,92m",
+          "id": "436078",
+          "marketValue": "€100k",
+          "name": "Ricardo Grigore",
+          "nationality": [
+            "Romania"
+          ],
+          "number": "12",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Dec 7, 1995",
+          "foot": "right",
+          "height": "1,94m",
+          "id": "238726",
+          "marketValue": "€50k",
+          "name": "Julio Rodríguez",
+          "nationality": [
+            "Spain"
+          ],
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Oct 14, 1986",
+          "foot": "right",
+          "height": "1,81m",
+          "id": "45256",
+          "marketValue": "€50k",
+          "name": "Jean-Sylvain Babin",
+          "nationality": [
+            "Martinique",
+            "France"
+          ],
+          "number": "5",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Nov 16, 2003",
+          "foot": "right",
+          "height": "1,85m",
+          "id": "1020754",
+          "marketValue": "€50k",
+          "name": "Chukwuma Eze",
+          "nationality": [
+            "Nigeria"
+          ],
+          "number": "15",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 11, 2003",
+          "foot": "left",
+          "height": "1,90m",
+          "id": "1064126",
+          "marketValue": "€50k",
+          "name": "Andrés López",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "24",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 13, 2004",
+          "foot": "left",
+          "id": "942987",
+          "marketValue": "€150k",
+          "name": "Osky Menéndez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "26",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 29, 1991",
+          "foot": "left",
+          "height": "1,80m",
+          "id": "175647",
+          "marketValue": "€100k",
+          "name": "Viti Díaz",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "3",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 12, 2004",
+          "foot": "right",
+          "id": "1157610",
+          "marketValue": "€150k",
+          "name": "Guzmán Ortega",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "2",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 26, 1993",
+          "foot": "right",
+          "height": "1,78m",
+          "id": "126722",
+          "marketValue": "€100k",
+          "name": "Edu Campabadal",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "20",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Dec 24, 1998",
+          "foot": "right",
+          "height": "1,87m",
+          "id": "497527",
+          "marketValue": "€250k",
+          "name": "Kevin Bautista",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "8",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 9, 1997",
+          "foot": "right",
+          "height": "1,91m",
+          "id": "374077",
+          "marketValue": "€250k",
+          "name": "Christian Rivera",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "23",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 7, 2001",
+          "height": "1,82m",
+          "id": "636122",
+          "marketValue": "€150k",
+          "name": "Álvaro Gete",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "18",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 17, 1994",
+          "foot": "right",
+          "height": "1,82m",
+          "id": "263857",
+          "marketValue": "€100k",
+          "name": "Adrián Gómez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "16",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 25, 1996",
+          "foot": "right",
+          "height": "1,74m",
+          "id": "531555",
+          "marketValue": "€50k",
+          "name": "Edu Cortina",
+          "nationality": [
+            "Spain"
+          ],
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 6, 1995",
+          "height": "1,84m",
+          "id": "512103",
+          "marketValue": "€150k",
+          "name": "Luis Alcalde",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "7",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Nov 6, 1995",
+          "foot": "left",
+          "height": "1,68m",
+          "id": "380396",
+          "marketValue": "€200k",
+          "name": "Isi Ros",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "22",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 17, 1996",
+          "foot": "right",
+          "height": "1,70m",
+          "id": "510372",
+          "marketValue": "€150k",
+          "name": "Berto Cayarga",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "14",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 18, 2002",
+          "foot": "right",
+          "height": "1,77m",
+          "id": "1081338",
+          "marketValue": "€150k",
+          "name": "Quicala Bari",
+          "nationality": [
+            "Guinea-Bissau",
+            "Spain"
+          ],
+          "number": "17",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Nov 7, 2001",
+          "foot": "right",
+          "height": "1,84m",
+          "id": "719725",
+          "marketValue": "€250k",
+          "name": "Álvaro Santamaría",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "9",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 11, 2001",
+          "foot": "right",
+          "height": "1,82m",
+          "id": "624326",
+          "marketValue": "€250k",
+          "name": "Javi Cueto",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "10",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 4, 1999",
+          "id": "599207",
+          "marketValue": "€200k",
+          "name": "Raúl Rubio",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "11",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Dec 13, 2000",
+          "id": "634109",
+          "marketValue": "€200k",
+          "name": "Aitor Uzkudun",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "21",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 18, 1984",
+          "foot": "left",
+          "height": "1,76m",
+          "id": "51408",
+          "marketValue": "€25k",
+          "name": "Natalio",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "19",
+          "position": "Centre-Forward"
+        }
+      ],
+      "stadiumName": "Román Suárez Puerta",
+      "stadiumSeats": "5400",
+      "transfermarktId": "20844"
+    },
+    {
+      "image": "https://tmssl.akamaized.net/images/wappen/big/52397.png",
+      "name": "Unionistas CF",
+      "players": [
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 25, 2000",
+          "foot": "right",
+          "height": "1,92m",
+          "id": "635929",
+          "marketValue": "€400k",
+          "name": "Salvi Carrasco",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "1",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 26, 2004",
+          "foot": "left",
+          "id": "1006478",
+          "marketValue": "€100k",
+          "name": "Marco Suárez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "13",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 7, 2000",
+          "foot": "right",
+          "height": "1,88m",
+          "id": "627283",
+          "marketValue": "€250k",
+          "name": "Vadik Murria",
+          "nationality": [
+            "Russia",
+            "Spain"
+          ],
+          "number": "16",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 26, 2002",
+          "foot": "right",
+          "height": "1,85m",
+          "id": "834736",
+          "marketValue": "€200k",
+          "name": "Aleix Gorjón",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "3",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 25, 2001",
+          "height": "1,83m",
+          "id": "720410",
+          "marketValue": "€200k",
+          "name": "Farru",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "5",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 9, 1991",
+          "foot": "right",
+          "height": "1,85m",
+          "id": "67541",
+          "marketValue": "€50k",
+          "name": "Ramiro Mayor",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "4",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 6, 1999",
+          "foot": "left",
+          "height": "1,80m",
+          "id": "610531",
+          "marketValue": "€200k",
+          "name": "Mounir Errahaly",
+          "nationality": [
+            "Morocco"
+          ],
+          "number": "17",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 23, 2001",
+          "id": "569871",
+          "marketValue": "€200k",
+          "name": "Raúl Prada",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "19",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 9, 1999",
+          "foot": "right",
+          "id": "472259",
+          "marketValue": "€300k",
+          "name": "Víctor Olmedo",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "2",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 5, 2006",
+          "foot": "right",
+          "id": "1165332",
+          "marketValue": "€100k",
+          "name": "Jan Encuentra",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "20",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 25, 2005",
+          "foot": "right",
+          "height": "1,78m",
+          "id": "1143456",
+          "marketValue": "€50k",
+          "name": "Abderrezzek Saidi",
+          "nationality": [
+            "Algeria",
+            "France"
+          ],
+          "number": "14",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 7, 2001",
+          "height": "1,88m",
+          "id": "855875",
+          "marketValue": "€400k",
+          "name": "José Masllorens",
+          "nationality": [
+            "Spain",
+            "Colombia"
+          ],
+          "number": "24",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 9, 2000",
+          "id": "1006318",
+          "marketValue": "€200k",
+          "name": "Juanje",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "6",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Nov 7, 2002",
+          "id": "636530",
+          "marketValue": "€150k",
+          "name": "Jota López",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "8",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 29, 2003",
+          "foot": "right",
+          "height": "1,75m",
+          "id": "965893",
+          "marketValue": "€150k",
+          "name": "Juanma Lendínez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "22",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 21, 1993",
+          "height": "1,87m",
+          "id": "195337",
+          "marketValue": "€200k",
+          "name": "Carlos de la Nava",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "10",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 7, 2000",
+          "foot": "left",
+          "height": "1,79m",
+          "id": "635333",
+          "marketValue": "€200k",
+          "name": "Serpeta",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "9",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 12, 1997",
+          "foot": "right",
+          "height": "1,80m",
+          "id": "644906",
+          "marketValue": "€150k",
+          "name": "Aarón Piñán",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "23",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Sep 4, 2004",
+          "foot": "left",
+          "id": "1173695",
+          "marketValue": "€100k",
+          "name": "Hugo de Bustos",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "18",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 31, 2005",
+          "foot": "left",
+          "height": "1,76m",
+          "id": "792376",
+          "marketValue": "€50k",
+          "name": "Adam Arvelo",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "7",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 6, 1997",
+          "foot": "right",
+          "height": "1,78m",
+          "id": "398165",
+          "marketValue": "€250k",
+          "name": "Álvaro Gómez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "11",
+          "position": "Second Striker"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 7, 2000",
+          "foot": "right",
+          "height": "1,78m",
+          "id": "626960",
+          "marketValue": "€200k",
+          "name": "Juan Artola",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "12",
+          "position": "Second Striker"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 1, 2003",
+          "foot": "right",
+          "height": "1,75m",
+          "id": "708078",
+          "marketValue": "€150k",
+          "name": "Josué Chibozo",
+          "nationality": [
+            "Benin"
+          ],
+          "number": "15",
+          "position": "Second Striker"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 16, 2003",
+          "foot": "right",
+          "height": "1,78m",
+          "id": "1135730",
+          "marketValue": "€100k",
+          "name": "Pere Marco",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "21",
+          "position": "Centre-Forward"
+        }
+      ],
+      "stadiumName": "Reina Sofía",
+      "stadiumSeats": "4895",
+      "transfermarktId": "52397"
+    },
+    {
+      "image": "https://tmssl.akamaized.net/images/wappen/big/58946.png",
+      "name": "CD Arenteiro",
+      "players": [
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 15, 1995",
+          "foot": "right",
+          "height": "1,76m",
+          "id": "510330",
+          "marketValue": "€150k",
+          "name": "Diego García",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "13",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 12, 2003",
+          "foot": "right",
+          "height": "1,86m",
+          "id": "1055833",
+          "marketValue": "€100k",
+          "name": "Alvin Abajas",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "1",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 19, 2002",
+          "foot": "right",
+          "height": "1,93m",
+          "id": "973690",
+          "marketValue": "€200k",
+          "name": "Luca Lohr",
+          "nationality": [
+            "Spain",
+            "Germany"
+          ],
+          "number": "3",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 11, 1997",
+          "foot": "right",
+          "height": "1,86m",
+          "id": "396115",
+          "marketValue": "€150k",
+          "name": "Eliseo Falcón",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "4",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 19, 1995",
+          "foot": "right",
+          "height": "1,86m",
+          "id": "383114",
+          "marketValue": "€150k",
+          "name": "Gorka Pérez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "5",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 16, 2005",
+          "id": "947435",
+          "marketValue": "€50k",
+          "name": "Pablo Moyá",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "2",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 18, 2002",
+          "foot": "left",
+          "height": "1,75m",
+          "id": "635346",
+          "marketValue": "€200k",
+          "name": "Diego Moreno",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "15",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 27, 1994",
+          "foot": "left",
+          "height": "1,76m",
+          "id": "336736",
+          "marketValue": "€100k",
+          "name": "Daniel Lasure",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "16",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 18, 2002",
+          "foot": "right",
+          "height": "1,75m",
+          "id": "707571",
+          "marketValue": "€100k",
+          "name": "Alpha",
+          "nationality": [
+            "Spain",
+            "Guinea"
+          ],
+          "number": "19",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 5, 1991",
+          "foot": "right",
+          "height": "1,72m",
+          "id": "221312",
+          "marketValue": "€100k",
+          "name": "Jordan Sánchez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "22",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 2, 1997",
+          "foot": "right",
+          "height": "1,76m",
+          "id": "313113",
+          "marketValue": "€200k",
+          "name": "Álex López",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "21",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 12, 2004",
+          "foot": "right",
+          "height": "1,79m",
+          "id": "882772",
+          "marketValue": "€200k",
+          "name": "Álvaro Bastida",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "25",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 1, 2002",
+          "foot": "right",
+          "height": "1,84m",
+          "id": "707273",
+          "marketValue": "€150k",
+          "name": "Brais Val",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "6",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 29, 2002",
+          "height": "1,77m",
+          "id": "720037",
+          "marketValue": "€150k",
+          "name": "Dani González",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "8",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 10, 1999",
+          "foot": "left",
+          "height": "1,87m",
+          "id": "981742",
+          "marketValue": "€50k",
+          "name": "Adilson",
+          "nationality": [
+            "Guinea-Bissau",
+            "Portugal"
+          ],
+          "number": "14",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 10, 1997",
+          "foot": "right",
+          "height": "1,81m",
+          "id": "399779",
+          "marketValue": "€200k",
+          "name": "Chuca",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "10",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 17, 2000",
+          "foot": "right",
+          "height": "1,73m",
+          "id": "701052",
+          "marketValue": "€100k",
+          "name": "Bilal Kandoussi",
+          "nationality": [
+            "Spain",
+            "Morocco"
+          ],
+          "number": "23",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 1, 1988",
+          "foot": "right",
+          "height": "1,70m",
+          "id": "71918",
+          "marketValue": "€50k",
+          "name": "David Ferreiro",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "7",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 21, 2003",
+          "foot": "left",
+          "height": "1,74m",
+          "id": "863661",
+          "marketValue": "€25k",
+          "name": "Antonio Molina",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "17",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 23, 2001",
+          "foot": "both",
+          "height": "1,80m",
+          "id": "466808",
+          "marketValue": "€150k",
+          "name": "Jaume Cuéllar",
+          "nationality": [
+            "Bolivia",
+            "Spain"
+          ],
+          "number": "11",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 6, 2002",
+          "foot": "left",
+          "height": "1,76m",
+          "id": "920193",
+          "marketValue": "€25k",
+          "name": "Babucarr Boye",
+          "nationality": [
+            "The Gambia"
+          ],
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 25, 2003",
+          "foot": "right",
+          "height": "1,88m",
+          "id": "1066186",
+          "marketValue": "€300k",
+          "name": "Víctor Mingo",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "18",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 30, 1999",
+          "id": "656345",
+          "marketValue": "€50k",
+          "name": "Nacho Ramón",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "9",
+          "position": "Centre-Forward"
+        }
+      ],
+      "stadiumName": "O Espiñedo",
+      "stadiumSeats": "4500",
+      "transfermarktId": "58946"
+    },
+    {
+      "image": "https://tmssl.akamaized.net/images/wappen/big/47421.png",
+      "name": "CF Talavera de la Reina",
+      "players": [
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Oct 4, 1998",
+          "foot": "both",
+          "height": "1,85m",
+          "id": "422459",
+          "marketValue": "€200k",
+          "name": "Javier Belman",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "13",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 22, 1998",
+          "id": "891919",
+          "marketValue": "€150k",
+          "name": "Jaime González",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "1",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 5, 2002",
+          "foot": "left",
+          "height": "1,82m",
+          "id": "710000",
+          "marketValue": "€150k",
+          "name": "David Cuenca",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "2",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 7, 1999",
+          "id": "783873",
+          "marketValue": "€150k",
+          "name": "Álvaro López",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "4",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 21, 2000",
+          "foot": "right",
+          "height": "1,89m",
+          "id": "789792",
+          "marketValue": "€150k",
+          "name": "Sergi Molina",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "5",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 24, 1995",
+          "foot": "right",
+          "height": "1,83m",
+          "id": "317429",
+          "marketValue": "€150k",
+          "name": "Manuel Farrando",
+          "nationality": [
+            "Spain",
+            "Argentina"
+          ],
+          "number": "23",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 10, 2000",
+          "foot": "left",
+          "height": "1,84m",
+          "id": "628612",
+          "marketValue": "€200k",
+          "name": "Aleix Roig",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "3",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 9, 2002",
+          "foot": "right",
+          "height": "1,80m",
+          "id": "667997",
+          "marketValue": "€150k",
+          "name": "Bilal Ouacharaf",
+          "nationality": [
+            "Morocco",
+            "Spain"
+          ],
+          "number": "17",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 19, 2001",
+          "foot": "left",
+          "height": "1,74m",
+          "id": "717960",
+          "marketValue": "€200k",
+          "name": "Luis Sánchez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "8",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 9, 2001",
+          "foot": "right",
+          "height": "1,83m",
+          "id": "628466",
+          "marketValue": "€200k",
+          "name": "Isaiah Navarro",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "16",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 13, 1994",
+          "foot": "right",
+          "height": "1,80m",
+          "id": "336856",
+          "marketValue": "€150k",
+          "name": "Luis Acosta",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "15",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Dec 11, 1990",
+          "foot": "right",
+          "height": "1,88m",
+          "id": "131357",
+          "marketValue": "€50k",
+          "name": "Pedro Capó",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "18",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Dec 2, 1997",
+          "height": "1,73m",
+          "id": "541867",
+          "marketValue": "€200k",
+          "name": "Pitu Doncel",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "6",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 17, 1997",
+          "foot": "right",
+          "id": "504398",
+          "marketValue": "€200k",
+          "name": "Sergio Montero",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "21",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 18, 1996",
+          "foot": "right",
+          "height": "1,83m",
+          "id": "337781",
+          "marketValue": "€150k",
+          "name": "Arturo Molina",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "14",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 1, 2000",
+          "foot": "right",
+          "height": "1,70m",
+          "id": "887254",
+          "marketValue": "€150k",
+          "name": "Edu Gallardo",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "11",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 7, 1998",
+          "height": "1,87m",
+          "id": "311435",
+          "marketValue": "€150k",
+          "name": "Ferni",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "20",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 15, 2004",
+          "id": "1064122",
+          "marketValue": "€100k",
+          "name": "Valen Gómez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "19",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 14, 2005",
+          "foot": "right",
+          "height": "1,78m",
+          "id": "1064543",
+          "marketValue": "€100k",
+          "name": "Nordin Al Lal",
+          "nationality": [
+            "Morocco",
+            "Spain"
+          ],
+          "number": "24",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Dec 30, 1995",
+          "foot": "both",
+          "height": "1,87m",
+          "id": "358425",
+          "marketValue": "€200k",
+          "name": "Gonzalo Di Renzo",
+          "nationality": [
+            "Argentina",
+            "Italy"
+          ],
+          "number": "7",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 14, 2004",
+          "foot": "right",
+          "height": "1,85m",
+          "id": "945713",
+          "marketValue": "€200k",
+          "name": "Marcos Moreno",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "9",
+          "position": "Centre-Forward"
+        }
+      ],
+      "stadiumName": "El Prado",
+      "stadiumSeats": "4200",
+      "transfermarktId": "47421"
+    },
+    {
+      "image": "https://tmssl.akamaized.net/images/wappen/big/8516.png",
+      "name": "CA Osasuna Promesas",
+      "players": [
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Apr 23, 2003",
+          "foot": "both",
+          "height": "1,91m",
+          "id": "890817",
+          "marketValue": "€200k",
+          "name": "Dimitrios Stamatakis",
+          "nationality": [
+            "Greece"
+          ],
+          "number": "1",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "May 2, 2004",
+          "foot": "left",
+          "height": "1,87m",
+          "id": "929864",
+          "marketValue": "€50k",
+          "name": "Rafa Fernández",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "13",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 18, 2002",
+          "foot": "right",
+          "height": "1,87m",
+          "id": "618808",
+          "marketValue": "€200k",
+          "name": "Diego Espejo",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "4",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 11, 2003",
+          "foot": "right",
+          "height": "1,90m",
+          "id": "567026",
+          "marketValue": "€150k",
+          "name": "Anton Efremov",
+          "nationality": [
+            "Russia"
+          ],
+          "number": "15",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Nov 3, 2005",
+          "foot": "left",
+          "id": "1065454",
+          "marketValue": "€100k",
+          "name": "Unai Santos",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "5",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 16, 2003",
+          "foot": "both",
+          "height": "1,88m",
+          "id": "705881",
+          "marketValue": "€100k",
+          "name": "Mikel Serrano",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "23",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 19, 2005",
+          "foot": "right",
+          "height": "1,91m",
+          "id": "1065268",
+          "marketValue": "€50k",
+          "name": "Álex Jimenez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "3",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 13, 2003",
+          "foot": "left",
+          "height": "1,79m",
+          "id": "834486",
+          "marketValue": "€150k",
+          "name": "Raúl Chasco",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "21",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Jun 26, 2006",
+          "foot": "left",
+          "id": "1258840",
+          "marketValue": "€50k",
+          "name": "Asier Larrión",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "22",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Jan 30, 2007",
+          "id": "1452008",
+          "marketValue": "€50k",
+          "name": "Ander Alonso",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "29",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Apr 19, 2005",
+          "foot": "right",
+          "height": "1,78m",
+          "id": "1065442",
+          "marketValue": "€800k",
+          "name": "Iñigo Arguibide",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "2",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 1, 2002",
+          "foot": "right",
+          "height": "1,74m",
+          "id": "907013",
+          "marketValue": "€400k",
+          "name": "Rufino Lucero",
+          "nationality": [
+            "Argentina"
+          ],
+          "number": "12",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 1, 2004",
+          "id": "1065451",
+          "marketValue": "€50k",
+          "name": "Mikel Ansó",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "30",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Jun 7, 2007",
+          "id": "1479320",
+          "marketValue": "€50k",
+          "name": "Kepa Sarango",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "36",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2029",
+          "dateOfBirth": "Oct 30, 2004",
+          "foot": "right",
+          "height": "1,86m",
+          "id": "1038512",
+          "marketValue": "€1.00m",
+          "name": "Asier Osambela",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "24",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 28, 2003",
+          "foot": "right",
+          "height": "1,82m",
+          "id": "941080",
+          "marketValue": "€300k",
+          "name": "Jon García",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "14",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 3, 2005",
+          "id": "1065440",
+          "marketValue": "€200k",
+          "name": "Mauro Echegoyen",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "6",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 1, 2004",
+          "id": "1065437",
+          "marketValue": "€100k",
+          "name": "Ibai Arrasate",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "34",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Apr 24, 2005",
+          "id": "948258",
+          "marketValue": "€50k",
+          "name": "Bruno Pérez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "20",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Apr 10, 2007",
+          "id": "1452006",
+          "marketValue": "€50k",
+          "name": "Xabi Garin",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "26",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 11, 2003",
+          "id": "718203",
+          "marketValue": "€200k",
+          "name": "Manu Rico",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "10",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Apr 6, 2005",
+          "foot": "right",
+          "height": "1,79m",
+          "id": "1065272",
+          "marketValue": "€200k",
+          "name": "Miguel Auría",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "16",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 9, 2000",
+          "foot": "right",
+          "height": "1,87m",
+          "id": "635581",
+          "marketValue": "€400k",
+          "name": "Ander Yoldi",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "8",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 25, 2003",
+          "foot": "both",
+          "height": "1,81m",
+          "id": "928726",
+          "marketValue": "€300k",
+          "name": "Roberto Arroyo",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "17",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2029",
+          "dateOfBirth": "Jan 17, 2008",
+          "foot": "right",
+          "height": "1,80m",
+          "id": "1066213",
+          "marketValue": "€300k",
+          "name": "Asier Bonel",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "19",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 18, 2003",
+          "id": "1164330",
+          "marketValue": "€200k",
+          "name": "Martin Pedroarena",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "11",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Feb 20, 2005",
+          "foot": "right",
+          "height": "1,80m",
+          "id": "1065441",
+          "marketValue": "€150k",
+          "name": "Carlos Lumbreras",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "7",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 18, 2002",
+          "foot": "left",
+          "height": "1,89m",
+          "id": "706184",
+          "marketValue": "€150k",
+          "name": "Dani González",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "9",
+          "position": "Centre-Forward"
+        }
+      ],
+      "stadiumName": "Instalaciones de Tajonar",
+      "stadiumSeats": "4000",
+      "transfermarktId": "8516"
+    },
+    {
+      "image": "https://tmssl.akamaized.net/images/wappen/big/6688.png",
+      "name": "Bilbao Athletic",
+      "players": [
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Nov 1, 2004",
+          "foot": "left",
+          "height": "1,82m",
+          "id": "1056956",
+          "marketValue": "€300k",
+          "name": "Mikel Santos",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "13",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Jul 22, 2004",
+          "foot": "right",
+          "height": "1,88m",
+          "id": "1171530",
+          "marketValue": "€100k",
+          "name": "Iker Galindo",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "27",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Apr 21, 2004",
+          "foot": "left",
+          "height": "1,86m",
+          "id": "1056955",
+          "marketValue": "€50k",
+          "name": "Eric Gamen",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "1",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 3, 2005",
+          "foot": "left",
+          "height": "1,85m",
+          "id": "1124051",
+          "marketValue": "€1.00m",
+          "name": "Iker Monreal",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "28",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 5, 2003",
+          "foot": "left",
+          "height": "1,86m",
+          "id": "905015",
+          "marketValue": "€400k",
+          "name": "Jon de Luis",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "3",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 26, 2003",
+          "foot": "right",
+          "height": "1,84m",
+          "id": "834488",
+          "marketValue": "€200k",
+          "name": "Aimar Duñabeitia",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "4",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 28, 2003",
+          "foot": "right",
+          "height": "1,85m",
+          "id": "1189292",
+          "marketValue": "€50k",
+          "name": "Ander Izagirre",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "14",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 24, 2004",
+          "foot": "left",
+          "height": "1,80m",
+          "id": "938726",
+          "marketValue": "€200k",
+          "name": "Miguel Barandalla",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "12",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 2, 2002",
+          "foot": "right",
+          "height": "1,85m",
+          "id": "710672",
+          "marketValue": "€250k",
+          "name": "Xabi Irurita",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "2",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 23, 2003",
+          "foot": "right",
+          "height": "1,82m",
+          "id": "710653",
+          "marketValue": "€200k",
+          "name": "Iker Alday",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "15",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jun 28, 2004",
+          "foot": "right",
+          "height": "1,75m",
+          "id": "926766",
+          "marketValue": "€200k",
+          "name": "Johaneko Louis-Jean",
+          "nationality": [
+            "France"
+          ],
+          "number": "19",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2029",
+          "dateOfBirth": "Jan 4, 2004",
+          "foot": "right",
+          "height": "1,83m",
+          "id": "979324",
+          "marketValue": "€1.00m",
+          "name": "Eder García",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "18",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Apr 22, 2004",
+          "foot": "right",
+          "height": "1,93m",
+          "id": "1055874",
+          "marketValue": "€200k",
+          "name": "Manex Gibelalde",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "6",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Jun 8, 2004",
+          "foot": "right",
+          "height": "1,75m",
+          "id": "1063597",
+          "marketValue": "€200k",
+          "name": "Eñaut Lete",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "8",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2029",
+          "dateOfBirth": "Jan 21, 2007",
+          "foot": "right",
+          "height": "1,88m",
+          "id": "1179373",
+          "marketValue": "€50k",
+          "name": "Beñat García",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "21",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Oct 4, 2005",
+          "foot": "left",
+          "height": "1,81m",
+          "id": "1088323",
+          "marketValue": "€50k",
+          "name": "Javi Sola",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "26",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Mar 14, 2005",
+          "foot": "left",
+          "height": "1,95m",
+          "id": "1056967",
+          "marketValue": "€50k",
+          "name": "Gaizka Alboniga-Menor",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "30",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Jun 23, 2006",
+          "foot": "both",
+          "height": "1,83m",
+          "id": "924110",
+          "marketValue": "€600k",
+          "name": "Efe Korkut",
+          "nationality": [
+            "Türkiye",
+            "Germany"
+          ],
+          "number": "20",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Mar 8, 2004",
+          "foot": "left",
+          "height": "1,77m",
+          "id": "938730",
+          "marketValue": "€500k",
+          "name": "Ibon Sánchez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "10",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Jun 11, 2006",
+          "foot": "left",
+          "height": "1,85m",
+          "id": "1038182",
+          "marketValue": "€1.00m",
+          "name": "Elijah Gift",
+          "nationality": [
+            "Spain",
+            "Cuba"
+          ],
+          "number": "23",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Oct 14, 2005",
+          "foot": "left",
+          "height": "1,78m",
+          "id": "1222475",
+          "marketValue": "€200k",
+          "name": "Aritz Conde",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "31",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Oct 25, 2006",
+          "foot": "left",
+          "height": "1,78m",
+          "id": "1162017",
+          "marketValue": "€1.00m",
+          "name": "Adrián Pérez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "22",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 16, 2003",
+          "foot": "left",
+          "height": "1,70m",
+          "id": "1120228",
+          "marketValue": "€300k",
+          "name": "Endika Buján",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "11",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Nov 8, 2006",
+          "foot": "right",
+          "height": "1,77m",
+          "id": "937948",
+          "marketValue": "€200k",
+          "name": "Peio Huestamendia",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "17",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "May 6, 2005",
+          "foot": "right",
+          "height": "1,90m",
+          "id": "1056970",
+          "marketValue": "€1.00m",
+          "name": "Asier Hierro",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "7",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 13, 2003",
+          "foot": "right",
+          "height": "1,83m",
+          "id": "834754",
+          "marketValue": "€400k",
+          "name": "Ibai Sanz",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "9",
+          "position": "Centre-Forward"
+        }
+      ],
+      "stadiumName": "Instalaciones de Lezama",
+      "stadiumSeats": "3250",
+      "transfermarktId": "6688"
+    },
+    {
+      "image": "https://tmssl.akamaized.net/images/wappen/big/16122.png",
+      "name": "Arenas Club",
+      "players": [
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Oct 30, 2003",
+          "foot": "right",
+          "height": "1,90m",
+          "id": "938722",
+          "marketValue": "€150k",
+          "name": "Oier Gastesi",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "1",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 27, 2001",
+          "id": "894945",
+          "marketValue": "€100k",
+          "name": "Anartz Peña",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "13",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Oct 9, 2004",
+          "foot": "right",
+          "height": "1,92m",
+          "id": "1198833",
+          "marketValue": "€50k",
+          "name": "Sergio Aragoneses",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "25",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 30, 2000",
+          "foot": "right",
+          "height": "1,85m",
+          "id": "634928",
+          "marketValue": "€200k",
+          "name": "Paul Álvarez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "4",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Oct 23, 2003",
+          "foot": "left",
+          "height": "1,90m",
+          "id": "710678",
+          "marketValue": "€200k",
+          "name": "Christian Mutilva",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "19",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 24, 1998",
+          "foot": "right",
+          "height": "1,77m",
+          "id": "295082",
+          "marketValue": "€200k",
+          "name": "Jon Sillero",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "21",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 19, 2003",
+          "foot": "right",
+          "height": "1,86m",
+          "id": "1151840",
+          "marketValue": "€100k",
+          "name": "Santi Borikó",
+          "nationality": [
+            "Equatorial Guinea",
+            "Spain"
+          ],
+          "number": "24",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 22, 2001",
+          "foot": "left",
+          "height": "1,80m",
+          "id": "634452",
+          "marketValue": "€150k",
+          "name": "Pablo García",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "5",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Nov 14, 2005",
+          "id": "1273448",
+          "marketValue": "€150k",
+          "name": "Ander Sustatxa",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "23",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 3, 1992",
+          "foot": "left",
+          "height": "1,68m",
+          "id": "158080",
+          "marketValue": "€100k",
+          "name": "Eneko Zabaleta",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "20",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 17, 2003",
+          "foot": "left",
+          "height": "1,76m",
+          "id": "947432",
+          "marketValue": "€50k",
+          "name": "Marcos Fernández",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "3",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Mar 3, 2003",
+          "foot": "right",
+          "height": "1,84m",
+          "id": "1062967",
+          "marketValue": "€100k",
+          "name": "Jon Merino",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "6",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jul 2, 2001",
+          "foot": "right",
+          "height": "1,76m",
+          "id": "638210",
+          "marketValue": "€200k",
+          "name": "Mikel Zabala",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "8",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 30, 2000",
+          "height": "1,89m",
+          "id": "468549",
+          "marketValue": "€200k",
+          "name": "Tamir Glazer",
+          "nationality": [
+            "Israel",
+            "Germany"
+          ],
+          "number": "14",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 3, 2002",
+          "id": "702662",
+          "marketValue": "€150k",
+          "name": "Adrián Verde",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "16",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "May 24, 2001",
+          "foot": "right",
+          "height": "1,80m",
+          "id": "634107",
+          "marketValue": "€150k",
+          "name": "Alex Hidalgo",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "10",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Oct 2, 2002",
+          "foot": "right",
+          "id": "710656",
+          "marketValue": "€200k",
+          "name": "Ángel Troncho",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "11",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Oct 25, 2001",
+          "foot": "right",
+          "height": "1,85m",
+          "id": "888293",
+          "marketValue": "€100k",
+          "name": "Carlos Mattheus",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "22",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 27, 2001",
+          "foot": "right",
+          "height": "1,79m",
+          "id": "634106",
+          "marketValue": "€200k",
+          "name": "Urko Collado",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "7",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 16, 2001",
+          "foot": "right",
+          "height": "1,76m",
+          "id": "715690",
+          "marketValue": "€150k",
+          "name": "Sergio Navarro",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "17",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 29, 2003",
+          "foot": "right",
+          "height": "1,84m",
+          "id": "834756",
+          "marketValue": "€100k",
+          "name": "Julen Lartitegi",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "12",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 5, 2005",
+          "foot": "right",
+          "height": "1,86m",
+          "id": "1056973",
+          "marketValue": "€100k",
+          "name": "Txus Vizcay",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "2",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Apr 27, 1991",
+          "foot": "right",
+          "height": "1,82m",
+          "id": "141835",
+          "marketValue": "€50k",
+          "name": "Álvaro Vázquez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "9",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Sep 21, 2006",
+          "foot": "right",
+          "height": "1,97m",
+          "id": "1452360",
+          "marketValue": "€50k",
+          "name": "Mathieu Seyram",
+          "nationality": [
+            "Benin",
+            "Ghana"
+          ],
+          "number": "15",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Aug 24, 2007",
+          "foot": "right",
+          "height": "1,80m",
+          "id": "1009764",
+          "marketValue": "€50k",
+          "name": "Óscar Bazaga",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "27",
+          "position": "Centre-Forward"
+        }
+      ],
+      "stadiumName": "Gobela",
+      "stadiumSeats": "1400",
+      "transfermarktId": "16122"
+    },
+    {
+      "image": "https://tmssl.akamaized.net/images/wappen/big/8733.png",
+      "name": "RC Celta Fortuna",
+      "players": [
+        {
+          "contract": "Jun 30, 2029",
+          "dateOfBirth": "Jan 7, 2002",
+          "foot": "right",
+          "height": "1,88m",
+          "id": "581640",
+          "marketValue": "€200k",
+          "name": "Coke Carrillo",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "1",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "May 4, 2006",
+          "foot": "right",
+          "height": "1,96m",
+          "id": "1087860",
+          "name": "Caio Barone",
+          "nationality": [
+            "Brazil",
+            "Italy"
+          ],
+          "number": "13",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Jan 10, 2006",
+          "height": "1,88m",
+          "id": "1131898",
+          "name": "Marcos González",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "25",
+          "position": "Goalkeeper"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Mar 10, 2007",
+          "height": "1,85m",
+          "id": "1342235",
+          "marketValue": "€500k",
+          "name": "Anxo Rodríguez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "26",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "May 21, 2003",
+          "id": "996418",
+          "marketValue": "€200k",
+          "name": "Pablo Meixús",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "6",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2029",
+          "dateOfBirth": "Jan 16, 2004",
+          "height": "1,85m",
+          "id": "941853",
+          "marketValue": "€150k",
+          "name": "Kike Ribes",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "3",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Feb 1, 2006",
+          "foot": "left",
+          "height": "1,84m",
+          "id": "1178600",
+          "marketValue": "€150k",
+          "name": "Jaime Vázquez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "4",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2029",
+          "dateOfBirth": "Jan 5, 2005",
+          "foot": "right",
+          "height": "1,90m",
+          "id": "1435769",
+          "marketValue": "€50k",
+          "name": "Seyni Mbaye Ndiaye",
+          "nationality": [
+            "Senegal"
+          ],
+          "number": "22",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Feb 13, 2007",
+          "id": "1321101",
+          "marketValue": "€50k",
+          "name": "Anthony Khayat",
+          "nationality": [
+            "United Arab Emirates",
+            "Lebanon"
+          ],
+          "number": "32",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Mar 31, 2002",
+          "foot": "left",
+          "height": "1,80m",
+          "id": "586736",
+          "marketValue": "€200k",
+          "name": "Joel López",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "18",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2029",
+          "dateOfBirth": "Jul 7, 2004",
+          "foot": "left",
+          "height": "1,72m",
+          "id": "709970",
+          "marketValue": "€50k",
+          "name": "Jan Oliveras",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "14",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Mar 2, 2006",
+          "foot": "right",
+          "height": "1,78m",
+          "id": "1244137",
+          "marketValue": "€300k",
+          "name": "Pablo Gavián",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "2",
+          "position": "Right-Back"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Oct 31, 2006",
+          "height": "1,87m",
+          "id": "1262787",
+          "marketValue": "€300k",
+          "name": "Hugo Burcio",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "5",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Jan 22, 2007",
+          "foot": "right",
+          "height": "1,83m",
+          "id": "1293040",
+          "marketValue": "€300k",
+          "name": "Andrés Antañón",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "8",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Jan 15, 2003",
+          "id": "1074670",
+          "marketValue": "€200k",
+          "name": "David de la Iglesia",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "10",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2029",
+          "dateOfBirth": "Jan 12, 2004",
+          "foot": "right",
+          "height": "1,70m",
+          "id": "709964",
+          "marketValue": "€150k",
+          "name": "Adrià Capdevila",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "16",
+          "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Feb 19, 2006",
+          "id": "961085",
+          "marketValue": "€800k",
+          "name": "Óscar Marcos",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "19",
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Apr 18, 2006",
+          "id": "1064465",
+          "marketValue": "€500k",
+          "name": "Ángel Arcos",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "11",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2026",
+          "dateOfBirth": "Feb 10, 2006",
+          "id": "1177255",
+          "marketValue": "€200k",
+          "name": "Bernard Somuah",
+          "nationality": [
+            "Ghana"
+          ],
+          "number": "17",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2029",
+          "dateOfBirth": "Mar 24, 2003",
+          "foot": "left",
+          "height": "1,83m",
+          "id": "834755",
+          "marketValue": "€200k",
+          "name": "Luis Bilbao",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "21",
+          "position": "Left Winger"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Feb 7, 2003",
+          "foot": "right",
+          "height": "1,77m",
+          "id": "707279",
+          "marketValue": "€500k",
+          "name": "Hugo González",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "7",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2029",
+          "dateOfBirth": "May 24, 2006",
+          "foot": "right",
+          "id": "1323788",
+          "marketValue": "€100k",
+          "name": "Germain Milla",
+          "nationality": [
+            "Cameroon"
+          ],
+          "number": "23",
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2029",
+          "dateOfBirth": "May 1, 2003",
+          "foot": "right",
+          "height": "1,87m",
+          "id": "938695",
+          "marketValue": "€200k",
+          "name": "Álvaro Marín",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "9",
+          "position": "Centre-Forward"
+        }
+      ],
+      "stadiumName": "Barreiro",
+      "stadiumSeats": "1171",
+      "transfermarktId": "8733"
+    }
+  ]
+}

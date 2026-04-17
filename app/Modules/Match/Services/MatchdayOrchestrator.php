@@ -8,7 +8,6 @@ use App\Modules\Match\Jobs\ProcessCareerActions;
 use App\Modules\Match\Jobs\ProcessRemainingBatches;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Squad\Services\EligibilityService;
-use App\Modules\Stadium\Services\MatchAttendanceService;
 use App\Modules\Player\PlayerAge;
 use App\Modules\Player\Services\InjuryService;
 use App\Models\Competition;
@@ -36,7 +35,6 @@ class MatchdayOrchestrator
         private readonly NotificationService $notificationService,
         private readonly EligibilityService $eligibilityService,
         private readonly InjuryService $injuryService,
-        private readonly MatchAttendanceService $matchAttendanceService,
         private readonly AIMatchResolver $aiMatchResolver = new AIMatchResolver,
     ) {}
 
@@ -161,14 +159,6 @@ class MatchdayOrchestrator
         InjuryService::clearMatchDateCache();
 
         $playerMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
-
-        // Persist a MatchAttendance row for every fixture in this batch *before*
-        // simulation runs, so the live-match screen can display the figure and
-        // future atmosphere events have a value to read. Idempotent — replays
-        // and the MatchFinalized safety-net listener no-op once a row exists.
-        foreach ($matches as $match) {
-            $this->matchAttendanceService->resolveForMatch($match, $game);
-        }
 
         // Determine if this is a pure AI-only batch eligible for fast resolution
         $isAIOnlyBatch = ! $playerMatch && config('match_simulation.ai_resolver_enabled', false);

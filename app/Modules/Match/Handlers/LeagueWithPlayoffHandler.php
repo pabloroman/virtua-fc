@@ -132,8 +132,14 @@ class LeagueWithPlayoffHandler extends CupCompetitionHandler
         $config = $generator->getRoundConfig($round, $game->season);
         $matchups = $generator->generateMatchups($game, $round);
 
-        foreach ($matchups as [$homeTeamId, $awayTeamId]) {
-            $this->createTie($game, $competitionId, $homeTeamId, $awayTeamId, $config);
+        // Matchups are either [homeId, awayId] or [homeId, awayId, bracketPosition].
+        // The third element lets bracket-style playoffs (e.g. Primera RFEF, which
+        // has two fixed brackets) preserve their wiring on CupTie rows.
+        foreach ($matchups as $matchup) {
+            $homeTeamId = $matchup[0];
+            $awayTeamId = $matchup[1];
+            $bracketPosition = $matchup[2] ?? null;
+            $this->createTie($game, $competitionId, $homeTeamId, $awayTeamId, $config, $bracketPosition);
         }
     }
 }

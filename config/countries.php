@@ -32,6 +32,24 @@ return [
                 'handler' => 'league_with_playoff',
                 'config_class' => \App\Modules\Competition\Configs\LaLiga2Config::class,
             ],
+            3 => [
+                'competition' => 'ESP3A',
+                'teams' => 20,
+                'handler' => 'league_with_playoff',
+                'config_class' => \App\Modules\Competition\Configs\PrimeraRFEFConfig::class,
+                // Primera RFEF has two parallel groups of 20 teams. ESP3A is
+                // the "primary" entry so existing call sites that expect one
+                // competition per tier continue to work; ESP3B is enumerated
+                // via CountryConfig::tierCompetitionIds()/siblings.
+                'siblings' => [
+                    [
+                        'competition' => 'ESP3B',
+                        'teams' => 20,
+                        'handler' => 'league_with_playoff',
+                        'config_class' => \App\Modules\Competition\Configs\PrimeraRFEFConfig::class,
+                    ],
+                ],
+            ],
         ],
 
         'domestic_cups' => [
@@ -42,6 +60,19 @@ return [
             ],
             'ESPSUP' => [
                 'handler' => 'knockout_cup',
+            ],
+        ],
+
+        // Promotion playoffs are knockout cup competitions populated at the
+        // end of a regular season, used to decide the last promotion spots
+        // in formats that don't fit a single-league-with-playoff shape.
+        // Primera RFEF (ESP3) uses ESP3PO to mix the top finishers of its
+        // two groups into a shared 8-team bracket.
+        'promotion_playoffs' => [
+            'ESP3PO' => [
+                'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\PrimeraRFEFPlayoffConfig::class,
+                'parent_tier' => 3,
             ],
         ],
 
@@ -62,12 +93,42 @@ return [
                 'playoff_positions' => [3, 4, 5, 6],
                 'playoff_generator' => \App\Modules\Competition\Playoffs\ESP2PlayoffGenerator::class,
             ],
+            [
+                // ESP2 ↔ Primera RFEF (ESP3A + ESP3B + ESP3PO).
+                //
+                // 'bottom_division' is nominal — the real swap logic lives in
+                // PrimeraRFEFPromotionRule which implements SelfSwappingPromotionRule
+                // and handles promotion from three feeder competitions plus
+                // redistribution of relegated teams across two groups.
+                'top_division' => 'ESP2',
+                'bottom_division' => 'ESP3A',
+                'relegated_positions' => [19, 20, 21, 22],
+                'direct_promotion_positions' => [1],
+                'playoff_positions' => [2, 3, 4, 5],
+                'rule_class' => \App\Modules\Competition\Promotions\PrimeraRFEFPromotionRule::class,
+                'playoff_generator' => \App\Modules\Competition\Playoffs\PrimeraRFEFPlayoffGenerator::class,
+                // Register the same playoff generator under both groups so
+                // whichever one the player is in triggers the playoff draw.
+                'playoff_source_divisions' => ['ESP3A', 'ESP3B'],
+                // Cup ties and match rows are stored under ESP3PO rather than
+                // the feeder groups — that's how ESP3PO becomes a standalone
+                // competition for the bracket phase.
+                'playoff_competition' => 'ESP3PO',
+            ],
         ],
 
         // Reserve teams that cannot be promoted to the same division as their parent.
         // Maps child transfermarkt_id => parent transfermarkt_id.
         'reserve_teams' => [
             9899 => 681,   // Real Sociedad B → Real Sociedad
+            6767 => 418,   // Real Madrid Castilla → Real Madrid
+            8516 => 331,   // CA Osasuna Promesas → CA Osasuna
+            6688 => 621,   // Bilbao Athletic → Athletic Bilbao
+            8733 => 940,   // RC Celta Fortuna → Celta de Vigo
+            11972 => 1050, // Villarreal CF B → Villarreal CF
+            8519 => 368,   // Sevilla Atlético → Sevilla FC
+            3679 => 13,    // Atlético Madrileño → Atlético de Madrid
+            2865 => 150,   // Betis Deportivo Balompié → Real Betis Balompié
         ],
 
         'continental_slots' => [

@@ -112,16 +112,26 @@ class SeedReferenceData extends Command
         $this->newLine();
         $this->info("=== {$config['name']} ({$countryCode}) ===");
 
-        // Step 1: Seed tier competitions (leagues with teams + players)
+        // Step 1: Seed tier competitions (leagues with teams + players).
+        // Each tier entry may declare a 'siblings' list of additional
+        // competitions at the same tier (e.g. Primera RFEF has ESP3A + ESP3B),
+        // which are seeded here alongside the primary entry.
         $tiers = $config['tiers'] ?? [];
         $flag = $countryConfig->flag($countryCode);
-        $this->line("  Step 1/4: Seeding " . count($tiers) . " tier competition(s)...");
+        $tierSeedList = [];
         foreach ($tiers as $tier => $tierConfig) {
+            $tierSeedList[] = [$tier, $tierConfig];
+            foreach ($tierConfig['siblings'] ?? [] as $sibling) {
+                $tierSeedList[] = [$tier, $sibling];
+            }
+        }
+        $this->line("  Step 1/4: Seeding " . count($tierSeedList) . " tier competition(s)...");
+        foreach ($tierSeedList as [$tier, $tierEntry]) {
             $this->seedCompetition([
-                'code' => $tierConfig['competition'],
-                'path' => "data/2025/{$tierConfig['competition']}",
+                'code' => $tierEntry['competition'],
+                'path' => "data/2025/{$tierEntry['competition']}",
                 'tier' => $tier,
-                'handler' => $tierConfig['handler'] ?? 'league',
+                'handler' => $tierEntry['handler'] ?? 'league',
                 'country' => $countryCode,
                 'flag' => $flag,
                 'role' => 'league',
@@ -131,6 +141,25 @@ class SeedReferenceData extends Command
 
         // Step 1b: Link reserve teams to their parent teams
         $this->linkReserveTeams($config);
+
+        // Step 1c: Seed promotion playoff competitions (e.g. Primera RFEF's
+        // ESP3PO). These are bare knockout_cup competition rows with no
+        // pre-populated teams — per-game entries are populated dynamically by
+        // PrimeraRFEFPlayoffGenerator when the regular season ends.
+        $promotionPlayoffs = $config['promotion_playoffs'] ?? [];
+        if (!empty($promotionPlayoffs)) {
+            $this->line("  Step 1c: Seeding " . count($promotionPlayoffs) . " promotion playoff(s)...");
+            foreach ($promotionPlayoffs as $playoffId => $playoffConfig) {
+                $this->seedPromotionPlayoff(
+                    $playoffId,
+                    $playoffConfig['parent_tier'] ?? 0,
+                    $playoffConfig['handler'] ?? 'knockout_cup',
+                    $countryCode,
+                    $flag,
+                );
+            }
+            $this->line("  Step 1c: Done.");
+        }
 
         // Step 2: Seed domestic cups — supercup first so main cup can look up
         // supercup teams for entry_round calculation
@@ -211,7 +240,7 @@ class SeedReferenceData extends Command
         );
     }
 
-    private function linkReserveTeams(array $config): void
+    protected function linkReserveTeams(array $config): void
     {
         $reserveTeams = $config['reserve_teams'] ?? [];
         if (empty($reserveTeams)) {
@@ -229,6 +258,75 @@ class SeedReferenceData extends Command
                 $this->line("  Linked reserve team: {$child->name} → {$parent->name}");
             }
         }
+    }
+
+    /**
+     * Seed a specific subset of competitions from a country's config into an
+     * existing database, reusing the same idempotent primitives as a full
+     * country seed. Codes may refer to tier competitions (including siblings
+     * like ESP3A/ESP3B) or promotion_playoffs entries (like ESP3PO). Unknown
+     * codes are warned about and skipped.
+     *
+     * Used by targeted one-off commands (e.g. AddPrimeraRfef) that want to
+     * add a handful of new competitions without re-touching unrelated data.
+     *
+     * @param  string[]  $competitionCodes
+     */
+    protected function seedCompetitionsByCode(string $countryCode, array $competitionCodes): void
+    {
+        $countryConfig = app(CountryConfig::class);
+        $config = $countryConfig->get($countryCode);
+        if (!$config) {
+            $this->warn("No config found for country: {$countryCode}");
+            return;
+        }
+
+        $flag = $countryConfig->flag($countryCode);
+
+        // Build a lookup of every tier competition (primary + siblings) keyed by code.
+        $tierLookup = [];
+        foreach ($config['tiers'] ?? [] as $tier => $tierConfig) {
+            $tierLookup[$tierConfig['competition']] = [$tier, $tierConfig];
+            foreach ($tierConfig['siblings'] ?? [] as $sibling) {
+                $tierLookup[$sibling['competition']] = [$tier, $sibling];
+            }
+        }
+
+        $promotionPlayoffs = $config['promotion_playoffs'] ?? [];
+
+        foreach ($competitionCodes as $code) {
+            if (isset($tierLookup[$code])) {
+                [$tier, $entry] = $tierLookup[$code];
+                $this->seedCompetition([
+                    'code'    => $code,
+                    'path'    => "data/2025/{$code}",
+                    'tier'    => $tier,
+                    'handler' => $entry['handler'] ?? 'league',
+                    'country' => $countryCode,
+                    'flag'    => $flag,
+                    'role'    => 'league',
+                ]);
+                continue;
+            }
+
+            if (isset($promotionPlayoffs[$code])) {
+                $playoffConfig = $promotionPlayoffs[$code];
+                $this->seedPromotionPlayoff(
+                    $code,
+                    $playoffConfig['parent_tier'] ?? 0,
+                    $playoffConfig['handler'] ?? 'knockout_cup',
+                    $countryCode,
+                    $flag,
+                );
+                continue;
+            }
+
+            $this->warn("  Unknown competition code for {$countryCode}: {$code}");
+        }
+
+        // Link any reserve teams whose parent/child pair now exists. Safe to
+        // call repeatedly — rows already set are a no-op update.
+        $this->linkReserveTeams($config);
     }
 
     private function createDefaultUser(): void
@@ -272,7 +370,7 @@ class SeedReferenceData extends Command
         $this->info('Cleared.');
     }
 
-    private function seedCompetition(array $config): void
+    protected function seedCompetition(array $config): void
     {
         $basePath = base_path($config['path']);
         $code = $config['code'];
@@ -292,6 +390,16 @@ class SeedReferenceData extends Command
             $this->line("  Skipping {$code} (already seeded)");
             return;
         }
+
+        // Skip gracefully when team data is not yet available. This lets us
+        // ship code scaffolding for new competitions (e.g. Primera RFEF's
+        // ESP3A/ESP3B) before the matching data files land; the competition
+        // is simply left out of the DB until real data is provided.
+        if (!$isTeamPool && !file_exists("{$basePath}/teams.json")) {
+            $this->warn("  Skipping {$code}: teams.json not found at {$basePath}/");
+            return;
+        }
+
         $this->seededCompetitions[$code] = true;
 
         $this->info("Seeding {$code} ({$handler})...");
@@ -495,6 +603,41 @@ class SeedReferenceData extends Command
         return $teamIdMap;
     }
 
+    /**
+     * Seed a bare promotion playoff competition (e.g. Primera RFEF's ESP3PO).
+     *
+     * Promotion playoffs have no pre-seeded teams or players — their
+     * CompetitionEntry rows are created dynamically at the end of the
+     * Primera RFEF regular season by PrimeraRFEFPlayoffGenerator. Only the
+     * competition row itself needs to exist so cup ties / matches can point
+     * at it.
+     */
+    protected function seedPromotionPlayoff(string $code, int $tier, string $handler, string $country, string $flag): void
+    {
+        if (isset($this->seededCompetitions[$code])) {
+            $this->line("  Skipping {$code} (already seeded)");
+            return;
+        }
+        $this->seededCompetitions[$code] = true;
+
+        DB::table('competitions')->updateOrInsert(
+            ['id' => $code],
+            [
+                'name' => $code,
+                'country' => $country,
+                'flag' => $flag,
+                'tier' => $tier,
+                'type' => 'cup',
+                'role' => 'domestic_cup',
+                'scope' => 'domestic',
+                'handler_type' => $handler,
+                'season' => '2025',
+            ]
+        );
+
+        $this->line("  Competition: {$code} (promotion playoff)");
+    }
+
     private function seedCompetitionRecord(string $code, array $data, int $tier, string $type, string $handler, string $country, string $flag, string $role = 'league'): void
     {
         $season = $data['seasonID'] ?? '2025';
@@ -544,7 +687,7 @@ class SeedReferenceData extends Command
             if ($existingTeam) {
                 $teamId = $existingTeam->id;
                 // Update mutable fields for existing teams so reference
-                // refreshes pick up new data (stadium info, images, etc.).
+                // refreshes (e.g. app:add-primera-rfef) pick up new data.
                 $stadiumSeats = isset($club['stadiumSeats'])
                     ? (int) str_replace(['.', ','], '', $club['stadiumSeats'])
                     : 0;
