@@ -18,6 +18,7 @@ use App\Modules\Match\Handlers\LeagueWithPlayoffHandler;
 use App\Modules\Match\Handlers\SwissFormatHandler;
 use App\Modules\Match\Listeners\AwardCupPrizeMoney;
 use App\Modules\Match\Listeners\ConductNextCupRoundDraw;
+use App\Modules\Match\Listeners\EnsureMatchAttendance;
 use App\Modules\Notification\Listeners\NotifyTransferWindowClosed;
 use App\Modules\Notification\Listeners\NotifyTransferWindowClosing;
 use App\Modules\Notification\Listeners\NotifyTransferWindowOpen;
@@ -93,6 +94,7 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(MatchFinalized::class, SendMatchNotifications::class);
         Event::listen(MatchFinalized::class, SendCompetitionProgressNotifications::class);
         Event::listen(MatchFinalized::class, UpdateManagerStats::class);
+        Event::listen(MatchFinalized::class, EnsureMatchAttendance::class);
 
         Event::listen(CupTieResolved::class, AwardCupPrizeMoney::class);
         Event::listen(CupTieResolved::class, ConductNextCupRoundDraw::class);

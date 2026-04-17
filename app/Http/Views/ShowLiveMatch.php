@@ -13,9 +13,11 @@ use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Models\MatchAttendance;
 use App\Models\PlayerSuspension;
 use App\Modules\Match\Services\ExtraTimeAndPenaltyService;
 use App\Modules\Match\Services\MatchResimulationService;
+use App\Modules\Stadium\Services\MatchAttendanceService;
 use App\Support\PitchGrid;
 use App\Support\PositionMapper;
 use App\Support\PositionSlotMapper;
@@ -26,6 +28,7 @@ class ShowLiveMatch
     public function __construct(
         private readonly LineupService $lineupService,
         private readonly ExtraTimeAndPenaltyService $extraTimeService,
+        private readonly MatchAttendanceService $matchAttendanceService,
     ) {}
 
     public function __invoke(string $gameId, string $matchId)
@@ -352,9 +355,21 @@ class ShowLiveMatch
             'goalDirect' => __('commentary.goal_direct'),
         ];
 
+        // Resolve attendance for the live-match HUD. The orchestrator's pre-match
+        // hook normally writes the row before this view loads; the defensive
+        // resolveForMatch call covers deep-links and replays (idempotent).
+        $attendanceRow = MatchAttendance::where('game_match_id', $playerMatch->id)->first()
+            ?? $this->matchAttendanceService->resolveForMatch($playerMatch, $game);
+        $attendance = $attendanceRow?->attendance;
+        $attendanceCapacity = $attendanceRow?->capacity_at_match;
+        $attendancePercent = $attendanceRow?->fillRatePercent();
+
         return view('live-match', [
             'game' => $game,
             'match' => $playerMatch,
+            'attendance' => $attendance,
+            'attendanceCapacity' => $attendanceCapacity,
+            'attendancePercent' => $attendancePercent,
             'events' => $events,
             'otherMatches' => $otherMatches,
             'resultsUrl' => $resultsUrl,

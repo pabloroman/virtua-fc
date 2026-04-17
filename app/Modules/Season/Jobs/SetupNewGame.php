@@ -17,6 +17,7 @@ use App\Models\GamePlayer;
 use App\Models\GamePlayerMatchState;
 use App\Models\TeamReputation;
 use App\Modules\Player\Support\GamePlayerScopeResolver;
+use App\Modules\Stadium\Services\FanLoyaltyService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -169,8 +170,9 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
 
         $teamIds = $entries->pluck('team_id')->unique();
 
-        $clubProfiles = ClubProfile::whereIn('team_id', $teamIds)
-            ->pluck('reputation_level', 'team_id');
+        $clubProfileRows = ClubProfile::whereIn('team_id', $teamIds)
+            ->get(['team_id', 'reputation_level', 'fan_loyalty'])
+            ->keyBy('team_id');
 
         // Build a map of team_id => lowest competition tier (1 = top division)
         $competitionTiers = Competition::whereIn('id', $entries->pluck('competition_id')->unique())
@@ -185,10 +187,13 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
         }
 
         $divisionBonus = (int) config('reputation.division_bonus', 25);
+        $fanLoyaltyService = app(FanLoyaltyService::class);
 
         $rows = [];
         foreach ($teamIds as $teamId) {
-            $level = $clubProfiles[$teamId] ?? ClubProfile::REPUTATION_LOCAL;
+            $profile = $clubProfileRows[$teamId] ?? null;
+            $level = $profile->reputation_level ?? ClubProfile::REPUTATION_LOCAL;
+            $curatedLoyalty = $profile?->fan_loyalty;
             $points = TeamReputation::pointsForTier($level);
 
             // Apply division bonus for Modest/Local teams in tier 1
@@ -197,6 +202,12 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
                 $points += $divisionBonus;
             }
 
+            // base_loyalty captures cultural identity (never moves);
+            // loyalty_points starts equal and drifts from that anchor.
+            $seededLoyalty = $fanLoyaltyService->seedInitialValue(
+                $curatedLoyalty !== null ? (int) $curatedLoyalty : null,
+            );
+
             $rows[] = [
                 'id' => Str::uuid()->toString(),
                 'game_id' => $this->gameId,
@@ -204,6 +215,8 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
                 'reputation_level' => $level,
                 'base_reputation_level' => $level,
                 'reputation_points' => $points,
+                'base_loyalty' => $seededLoyalty,
+                'loyalty_points' => $seededLoyalty,
             ];
         }
 

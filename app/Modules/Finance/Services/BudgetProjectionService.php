@@ -3,7 +3,6 @@
 namespace App\Modules\Finance\Services;
 
 use App\Models\BudgetLoan;
-use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\FinancialTransaction;
 use App\Models\Game;

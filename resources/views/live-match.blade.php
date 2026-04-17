@@ -78,6 +78,9 @@
                 homeLineupRoster: {{ Js::from($homeLineupDisplay) }},
                 awayLineupRoster: {{ Js::from($awayLineupDisplay) }},
                 venueName: {{ Js::from($match->homeTeam->stadium_name ?? '') }},
+                attendance: @js($attendance ?? null),
+                attendanceCapacity: @js($attendanceCapacity ?? null),
+                attendancePercent: @js($attendancePercent ?? null),
                 homeArticle: {{ Js::from($match->homeTeam->article) }},
                 awayArticle: {{ Js::from($match->awayTeam->article) }},
                 narrativeTemplates: {{ Js::from($narrativeTemplates) }},
@@ -153,7 +156,12 @@
                                 {{ $match->round_name ? __($match->round_name) : __('game.matchday_n', ['number' => $match->round_number]) }}
                             </div>
                             @if($match->homeTeam->stadium_name)
-                                <div class="text-[9px] text-text-muted font-normal tracking-wide truncate hidden sm:block">{{ $match->homeTeam->stadium_name }}</div>
+                                <div class="text-[10px] sm:text-xs text-text-secondary font-normal tracking-wide truncate">
+                                    {{ $match->homeTeam->stadium_name }}
+                                    @if(!empty($attendance))
+                                        <span class="text-text-muted"> · {{ number_format($attendance) }} <span class="hidden sm:inline">{{ __('game.spectators') }} </span>({{ $attendancePercent }}%)</span>
+                                    @endif
+                                </div>
                             @endif
                         </div>
                     </div>

@@ -25,11 +25,19 @@ The mature system has four pillars layered on shared plumbing.
 
 Per-match attendance replaces annualized matchday revenue. Each fixture computes a concrete attendance number from a demand curve.
 
-**Demand curve inputs:** fan base, reputation, league position, opponent quality, derby/rival flag, competition weight (CL knockout > league > cup early round), recent form, ticket pricing tier, stadium capacity cap.
+**Demand curve inputs:** fan loyalty, reputation (as a secondary floor), league position, opponent quality, derby/rival flag, competition weight (CL knockout > league > cup early round), recent form, ticket pricing tier, stadium capacity cap.
 
-**Fan base** is a slow-moving stat (0–100) shifted by trophies, European nights, promotion/relegation, homegrown stars, scandals, long-term pricing policy. Changes a little per season, a lot over multi-season arcs. Sticky in both directions — Newcastle doesn't lose its fans in the Championship.
+**Fan loyalty** is the stadium-occupancy stat. Its storage is split across two scales to separate editorial curation from in-game math:
 
-**Fan base is not a pure function of reputation.** Some clubs have disproportionately loyal followings for their competitive level — Athletic Bilbao, Newcastle, St. Pauli, Union Berlin routinely sell out while sitting outside the elite tier. Others underperform their reputation on the terraces (sparse attendances at notionally big clubs). The seeded starting value therefore combines a reputation-tier baseline with a **per-club loyalty bias** (`ClubProfile.fan_loyalty`, a static attribute curated in reference data). The bias is applied once at seed time and then the stat evolves dynamically from there. Loyalty also slightly amplifies the demand curve so that high-loyalty clubs fill their stadiums even in lean years.
+- **`ClubProfile.fan_loyalty`** — the curated real-world anchor on a coarse 0–10 editorial scale. 10 = iconic/cult (Athletic Bilbao, St. Pauli, Celtic), 8 = strong (Real Madrid, Union Berlin), 5 = average (the default), 4 and below = notably low-following. Deliberately low-resolution: the number is an editorial judgment, not a measurement.
+- **`TeamReputation.base_loyalty`** — the seeded anchor on the 0–100 internal scale (copied from `fan_loyalty × 10` at game start). Never moves during the game. Captures cultural identity.
+- **`TeamReputation.loyalty_points`** — the current value (0–100). Starts equal to `base_loyalty` and drifts with outcomes: trophies, European nights, homegrown stars, and promotion push it up; relegation, scandals, and long-term overpricing pull it down. The finer 0–100 resolution lets small season-end nudges accumulate meaningfully. Clamped so it can't fall more than 15 points below `base_loyalty` — the "Newcastle doesn't lose its fans in the Championship" floor.
+
+**Loyalty drives occupancy, reputation drives price.** At equal stadium sizes, a more loyal crowd creates a higher occupancy rate regardless of reputation — a Rayo Vallecano game fills a larger share of its smaller ground than a Villarreal game fills of its bigger one. Reputation still matters in two places: it sets the per-seat ticket price (an elite club's seat is worth more than a local club's), and it provides a secondary floor on the demand curve so a marquee club with crashed loyalty still draws walk-up interest.
+
+Two emergent hooks the later phases can build on:
+- **Home-xG bonus** for high-loyalty matchdays — the 12th man as a simulation input.
+- **Capacity expansion is not automatically a win.** Adding seats at a low-loyalty club produces a visibly emptier stadium; expansion only pays off when loyalty is consistently pressing against capacity.
 
 Displayed in match reports and a new Stadium page.
 
@@ -88,24 +96,32 @@ Modelled as royalties on the kit manufacturer contract, scaled by fan base, marq
 
 ## Roadmap
 
-### Phase 1 — Plumbing (no user decisions)
+### Phase 1a — Plumbing / display-only (no user decisions, no financial impact)
 
-Goal: establish attendance and fan base as first-class concepts with visible output, without adding any new decision surface.
+Goal: establish attendance and fan loyalty as first-class concepts with visible output, without adding any new decision surface or changing how revenue is calculated. If there's a bug in attendance computation, it stays cosmetic.
 
-- New `fan_base` column on `TeamReputation` (game-scoped, 0–100). Seeded from reputation tier plus per-club `fan_loyalty` bias (see below). Updated at season close by a new `FanBaseUpdateProcessor` (trophies, promotion/relegation, European nights, homegrown academy graduates).
-- New `fan_loyalty` column on `ClubProfile` (static per-club, small signed integer). Curated in reference data so high-loyalty clubs (Athletic Bilbao, Newcastle, St. Pauli, Union Berlin) start with a fan base above their tier baseline and vice versa.
+- New `fan_loyalty` column on `ClubProfile` (static per-club, 0–10 editorial scale). Curated real-world anchor for each club's stadium-filling power. Uncurated clubs default to 5 (the scale midpoint).
+- New `base_loyalty` + `loyalty_points` columns on `TeamReputation` (game-scoped, 0–100). Mirrors the existing `base_reputation_level` / `reputation_points` pair. `base_loyalty` seeds from `ClubProfile.fan_loyalty × 10` and never moves; `loyalty_points` starts equal and is static until Phase 1b wires up the drift processor.
 - New `MatchAttendance` record per fixture, computed and persisted **pre-match** (in `MatchdayOrchestrator::processBatch` before simulation) so the live-match screen can display the figure and future phases can hook atmosphere events.
-- Demand curve service computing attendance from fan base, reputation, position, opponent, competition weight, loyalty amplifier, capacity cap. Recent form and derby flags deferred to later phases.
-- `SeasonSettlementProcessor::calculateMatchdayRevenue()` replaced by a sum over recorded attendance × current per-reputation per-seat rate.
-- `BudgetProjectionService::calculateMatchdayRevenue()` projects attendance deterministically from the same curve.
-- Match reports show attendance.
+- Demand curve service computing attendance from: `0.50 + (loyalty_points / 100) × 0.45` as the primary fill rate (mapping loyalty 0 → 50%, loyalty 100 → 95%), `reputation_fill_floor[tier]` as a secondary floor for elite/continental clubs, plus context modifiers for opponent reputation, competition weight, and league position. Calibrated against real La Liga / La Liga 2 / Premier League / Bundesliga / Serie A / Ligue 1 occupancy data. Capped at stadium capacity. Recent form and derby flags deferred to later phases.
+- Live match screen and match reports show attendance.
 - AI: no changes (deterministic curve applies equally to all clubs).
+- **Revenue unchanged**: `BudgetProjectionService` and `SeasonSettlementProcessor` keep their existing flat `capacity × per-seat` formulas. Matchday revenue is not yet driven by attendance.
+- **Loyalty drift inactive**: `FanLoyaltyUpdateProcessor` exists but is not wired into `SeasonClosingPipeline`. `loyalty_points` stays at its seeded value until Phase 1b.
 
-**Deferred from original Phase 1 scope:** The dedicated `ClubStadium` model (and migrating `stadium_name`/`stadium_seats` off `Team`) is pushed to Phase 5, when capacity expansion and naming rights actually need mutable per-game stadium state. Phase 1 continues to read capacity and venue name from `Team`.
+**Deferred from original Phase 1 scope:** The dedicated `ClubStadium` model (and migrating `stadium_name`/`stadium_seats` off `Team`) is pushed to Phase 5, when capacity expansion and naming rights actually need mutable per-game stadium state. Phase 1a continues to read capacity and venue name from `Team`.
 
-Deliverable: visible attendance in every match, foundational fan-base stat, no regressions to projected totals.
+Deliverable: visible attendance in every match, foundational loyalty stat, zero regressions to gameplay or financial projections.
 
-**Shipping note:** Phase 1 ships as a backend-only step. The only user-visible output is the attendance figure in match reports. The dedicated Stadium page arrives in Phase 2.
+### Phase 1b — Financial integration (attendance drives revenue + loyalty drifts)
+
+Goal: wire the Phase 1a plumbing into the financial model and season-end pipeline, once attendance numbers are validated in production.
+
+- `SeasonSettlementProcessor::calculateMatchdayRevenue()` replaced by a sum over recorded `MatchAttendance` rows × current per-reputation per-seat rate. Falls back to the legacy formula if no attendance rows exist.
+- `BudgetProjectionService::calculateMatchdayRevenue()` projects attendance deterministically from the same demand curve the engine uses at match time. Financial Center projections track settled reality.
+- `FanLoyaltyUpdateProcessor` wired into `SeasonClosingPipeline` (priority 92, after reputation + settlement). Nudges `loyalty_points` based on season outcomes (trophies, league position, gravity).
+
+Deliverable: matchday revenue tracks actual attendance; loyalty drifts season-to-season; the flywheel is live.
 
 ### Phase 2 — UI Skeleton (Club hub)
 
@@ -185,10 +201,10 @@ Deliverable: multi-season progression arc.
 | `app/Modules/Season/Services/SeasonClosingPipeline.php` | New processors: fan-base update, stadium-construction tick |
 | `app/Modules/Season/Services/SeasonSetupPipeline.php` | New processor: sponsor-offer generation, before `BudgetProjectionProcessor` (Phase 4) |
 | `app/Modules/Match/Services/MatchdayOrchestrator.php` | Pre-match hook that persists `MatchAttendance` before simulation (Phase 1) |
-| `app/Models/TeamReputation.php` | New column: `fan_base` (game-scoped, Phase 1) |
-| `app/Models/ClubProfile.php` | New column: `fan_loyalty` (static per-club bias, Phase 1). Later phases add `SponsorContract[]` |
+| `app/Models/TeamReputation.php` | New columns: `base_loyalty` + `loyalty_points` (game-scoped, Phase 1) |
+| `app/Models/ClubProfile.php` | New column: `fan_loyalty` (curated per-club anchor, 0-10 editorial scale, Phase 1). Later phases add `SponsorContract[]` |
 | `app/Models/Team.php` | `stadium_name`/`stadium_seats` migrate off to a game-scoped `ClubStadium` in Phase 5 |
-| `config/finances.php` | New keys: `baseline_fill_rate`, `fan_base_seed`, `fan_base_deltas` (Phase 1). `commercial_per_seat`/`commercial_growth` retired in Phase 4 |
+| `config/finances.php` | New keys: `reputation_fill_floor`, `loyalty_deltas` (Phase 1). `commercial_per_seat`/`commercial_growth` retired in Phase 4 |
 
 ## Related Docs
 

@@ -18,6 +18,13 @@ class TeamReputation extends Model
         'reputation_level',
         'base_reputation_level',
         'reputation_points',
+        'base_loyalty',
+        'loyalty_points',
+    ];
+
+    protected $casts = [
+        'base_loyalty' => 'integer',
+        'loyalty_points' => 'integer',
     ];
 
     /**
@@ -32,6 +39,22 @@ class TeamReputation extends Model
         ClubProfile::REPUTATION_CONTINENTAL  => 300,
         ClubProfile::REPUTATION_ELITE        => 400,
     ];
+
+    /**
+     * Bounds for the loyalty stats (0-100). loyalty_points drifts season to
+     * season driven by on-pitch outcomes, pricing policy, and homegrown
+     * stars; base_loyalty is the curated anchor from ClubProfile.fan_loyalty
+     * that stays put for the life of the game.
+     */
+    public const LOYALTY_MIN = 0;
+    public const LOYALTY_MAX = 100;
+
+    /**
+     * Loyalty can't drop more than this many points below base_loyalty.
+     * Captures the "Newcastle doesn't lose its fans in the Championship"
+     * floor — cultural identity cushions the fall when form collapses.
+     */
+    public const MAX_LOYALTY_DROP_BELOW_BASE = 15;
 
     /**
      * Maximum tiers a team can drop below its seeded base reputation.

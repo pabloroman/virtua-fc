@@ -54,6 +54,33 @@ return [
         20 => 0.95,  // 18th-20th: -5%
     ],
 
+    // ── Stadium & Fan Loyalty (Phase 1 plumbing) ───────────────────────
+
+    // Secondary floor on stadium occupancy. With the loyalty formula
+    // (0.50 + loyalty/100 × 0.45), the natural minimum is 50% at loyalty 0.
+    // These floors only trigger for elite/continental clubs whose loyalty
+    // has collapsed below the level implied by their reputation — a marquee
+    // brand still draws walk-ups and tourists even when the terraces have
+    // thinned. For established and below the formula floor is sufficient.
+    'reputation_fill_floor' => [
+        'elite'        => 0.65, // kicks in at loyalty_points < 34
+        'continental'  => 0.60, // kicks in at loyalty_points < 23
+        'established'  => 0.55, // kicks in at loyalty_points < 12
+        'modest'       => 0.50, // matches formula floor; effectively a no-op
+        'local'        => 0.50,
+    ],
+
+    // Per-event nudges applied to loyalty_points by FanLoyaltyUpdateProcessor
+    // at season close. Clamped to [0, 100] after summing; also floored at
+    // base_loyalty - MAX_LOYALTY_DROP_BELOW_BASE so loyal clubs stay loyal.
+    'loyalty_deltas' => [
+        'league_title'        =>  5, // Won the top-tier league
+        'cup'                 =>  3, // Per cup victory (CupTie winner)
+        'top_four_finish'     =>  1, // Finished 1st-4th in any league
+        'bottom_three_finish' => -2, // Finished in the bottom three of any league
+        'gravity'             => -1, // Applied unconditionally each season
+    ],
+
     // ── AI Team Financial Model ────────────────────────────────────────
 
     // Transfer spending envelopes per season by reputation level (in cents).
