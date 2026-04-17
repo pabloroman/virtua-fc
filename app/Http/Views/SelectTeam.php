@@ -17,8 +17,18 @@ final class SelectTeam
             return redirect()->route('dashboard')->withErrors(['limit' => __('messages.game_limit_reached')]);
         }
 
-        // Build country → tier → competition structure for career mode (cached — static reference data)
-        $countries = Cache::remember('career_mode_countries', 3600, function () use ($countryConfig) {
+        // Build country → tier → competition structure for career mode (cached — static reference data).
+        // Tiers may declare sibling competitions (e.g. Primera RFEF's ESP3A and
+        // ESP3B both live at tier 3), so the tiers list is keyed by competition
+        // ID rather than tier number to keep every league selectable.
+        //
+        // Tier-3 competitions (Primera RFEF) are gated behind is_admin until
+        // the feature has been validated in production. Remove this gate once
+        // the staged rollout is complete.
+        $isAdmin = $request->user()->is_admin;
+
+        $cacheKey = $isAdmin ? 'career_mode_countries:admin' : 'career_mode_countries';
+        $countries = Cache::remember($cacheKey, 3600, function () use ($countryConfig, $isAdmin) {
             $countries = [];
 
             foreach ($countryConfig->playableCountryCodes() as $code) {
@@ -26,11 +36,23 @@ final class SelectTeam
                 $tiers = [];
 
                 foreach ($config['tiers'] as $tier => $tierConfig) {
-                    $competition = Competition::with('teams')
-                        ->find($tierConfig['competition']);
+                    // Gate tier 3 behind isAdmin for staged rollout
+                    if ($tier >= 3 && !$isAdmin) {
+                        continue;
+                    }
 
-                    if ($competition) {
-                        $tiers[$tier] = $competition;
+                    $entries = [$tierConfig];
+                    foreach ($tierConfig['siblings'] ?? [] as $sibling) {
+                        $entries[] = $sibling;
+                    }
+
+                    foreach ($entries as $entry) {
+                        $competition = Competition::with('teams')
+                            ->find($entry['competition']);
+
+                        if ($competition) {
+                            $tiers[$competition->id] = $competition;
+                        }
                     }
                 }
 
