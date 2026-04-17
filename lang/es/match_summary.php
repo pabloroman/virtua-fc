@@ -195,14 +195,14 @@ return [
         '¡:player se llevó el balón a casa! :goals goles para enmarcar.',
     ],
     'upset' => [
-        'Batacazo. :el_winner dio la sorpresa y se llevó la victoria ante :el_loser.',
-        '¡Sorpresón! :el_winner tumba :al_loser en una noche para el recuerdo.',
-        ':el_winner puso patas arriba los pronósticos y se llevó el partido.',
+        '¡Batacazo :del_loser! :el_winner dio la sorpresa y se lleva el partido.',
+        ':el_winner da la sorpresa y tumba :al_loser con una gran actuación colectiva.',
+        ':el_winner puso patas arriba los pronósticos y gana :en_venue.',
     ],
     'expected_win' => [
         ':el_winner no dio opción y demostró su superioridad en todo momento.',
-        'No hubo historia. :el_winner hizo valer su superioridad ante :el_loser.',
-        'Sin sorpresas: :el_winner derrotó :del_loser sin demasiada dificultad',
+        ':el_winner hizo valer su superioridad ante :el_loser en un partido que no tuvo historia.',
+        ':el_winner derrotó :al_loser con facilidad :en_venue.',
     ],
     'high_scoring' => [
         'Los delanteros estuvieron acertados en un partido donde vimos :total goles.',
