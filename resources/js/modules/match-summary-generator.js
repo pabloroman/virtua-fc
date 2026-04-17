@@ -29,6 +29,17 @@ function pickTemplate(templates, replacements) {
     return applyReplacements(text, replacements);
 }
 
+function capitalizeSentences(text) {
+    if (!text) return text;
+    // Uppercase the first letter after sentence-starting positions:
+    // start of string, sentence terminator + whitespace, or Spanish opening
+    // "¡"/"¿". Skip any intervening punctuation/whitespace so "¡el_home" →
+    // "¡El Real Madrid" rather than leaving the letter lowercase.
+    return text.replace(/(^|[.!?]\s+|[¡¿])([\s¡¿]*)([\p{L}])/gu, (_, lead, between, ch) => {
+        return lead + between + ch.toUpperCase();
+    });
+}
+
 function applyReplacements(text, replacements) {
     let result = text;
     // Sort by length desc so longer placeholders (e.g. :scorer) are replaced
@@ -303,7 +314,7 @@ export function generateMatchSummary(config) {
     });
     if (shout) sentences.unshift(shout);
 
-    return sentences.filter(Boolean).join(' ');
+    return capitalizeSentences(sentences.filter(Boolean).join(' '));
 }
 
 function buildOpening(t, replacements, ctx) {
