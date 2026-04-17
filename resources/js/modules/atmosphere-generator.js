@@ -293,7 +293,7 @@ export function generateAtmosphereForPeriod(config) {
 /**
  * Compute the score at a given minute by scanning goal/own_goal events.
  */
-function scoreAtMinute(allEvents, homeTeamId, minute) {
+export function scoreAtMinute(allEvents, homeTeamId, minute) {
     let home = 0;
     let away = 0;
     for (const e of allEvents) {
@@ -330,7 +330,7 @@ function countEventsInRange(allEvents, teamId, types, minMinute, maxMinute) {
  *   del: "del Real Madrid" / "de la Real Sociedad" / "de Osasuna"
  *   al:  "al Real Madrid" / "a la Real Sociedad" / "a Osasuna"
  */
-function buildTeamForms(name, article) {
+export function buildTeamForms(name, article) {
     if (article === 'la') {
         return { name, el: 'la ' + name, del: 'de la ' + name, al: 'a la ' + name };
     }

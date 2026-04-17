@@ -91,6 +91,28 @@ class GameStanding extends Model
         return $this->belongsTo(Team::class);
     }
 
+    /**
+     * Look up a team's standing in the given competition, falling back to the
+     * game's primary league competition when the requested one has no row
+     * (e.g. cup matches where the team only appears in the league table).
+     */
+    public static function forTeamInCompetition(Game $game, string $teamId, string $competitionId): ?self
+    {
+        $standing = self::where('game_id', $game->id)
+            ->where('competition_id', $competitionId)
+            ->where('team_id', $teamId)
+            ->first();
+
+        if (!$standing && $competitionId !== $game->competition_id) {
+            $standing = self::where('game_id', $game->id)
+                ->where('competition_id', $game->competition_id)
+                ->where('team_id', $teamId)
+                ->first();
+        }
+
+        return $standing;
+    }
+
     public function getGoalDifferenceAttribute(): int
     {
         return $this->goals_for - $this->goals_against;

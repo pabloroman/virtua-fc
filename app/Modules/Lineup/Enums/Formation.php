@@ -2,8 +2,12 @@
 
 namespace App\Modules\Lineup\Enums;
 
+use App\Modules\Lineup\Enums\Concerns\HasTacticalOptions;
+
 enum Formation: string
 {
+    use HasTacticalOptions;
+
     case F_4_3_3 = '4-3-3';
     case F_4_4_2 = '4-4-2';
     case F_4_2_3_1 = '4-2-3-1';

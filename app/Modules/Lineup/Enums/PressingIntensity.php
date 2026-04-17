@@ -2,8 +2,12 @@
 
 namespace App\Modules\Lineup\Enums;
 
+use App\Modules\Lineup\Enums\Concerns\HasTacticalOptions;
+
 enum PressingIntensity: string
 {
+    use HasTacticalOptions;
+
     case HIGH_PRESS = 'high_press';
     case STANDARD = 'standard';
     case LOW_BLOCK = 'low_block';

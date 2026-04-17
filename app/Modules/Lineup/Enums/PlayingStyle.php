@@ -2,8 +2,12 @@
 
 namespace App\Modules\Lineup\Enums;
 
+use App\Modules\Lineup\Enums\Concerns\HasTacticalOptions;
+
 enum PlayingStyle: string
 {
+    use HasTacticalOptions;
+
     case POSSESSION = 'possession';
     case BALANCED = 'balanced';
     case COUNTER_ATTACK = 'counter_attack';

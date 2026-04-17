@@ -2,8 +2,12 @@
 
 namespace App\Modules\Lineup\Enums;
 
+use App\Modules\Lineup\Enums\Concerns\HasTacticalOptions;
+
 enum Mentality: string
 {
+    use HasTacticalOptions;
+
     case DEFENSIVE = 'defensive';
     case BALANCED = 'balanced';
     case ATTACKING = 'attacking';

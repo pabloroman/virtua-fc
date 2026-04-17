@@ -156,6 +156,32 @@ class CupTie extends Model
     }
 
     /**
+     * First-leg summary payload for the second leg's live-match view.
+     * Returns null when this tie isn't two-legged, when the given match
+     * isn't the second leg, or when the first leg hasn't been played yet.
+     *
+     * @return array{firstLegHomeScore: int, firstLegAwayScore: int, tieHomeTeamId: string, tieAwayTeamId: string}|null
+     */
+    public function firstLegInfoFor(GameMatch $match): ?array
+    {
+        if (! $this->isTwoLegged() || $this->second_leg_match_id !== $match->id) {
+            return null;
+        }
+
+        $firstLeg = $this->firstLegMatch;
+        if (! $firstLeg?->played) {
+            return null;
+        }
+
+        return [
+            'firstLegHomeScore' => $firstLeg->home_score,
+            'firstLegAwayScore' => $firstLeg->away_score,
+            'tieHomeTeamId' => $this->home_team_id,
+            'tieAwayTeamId' => $this->away_team_id,
+        ];
+    }
+
+    /**
      * Get aggregate score for two-legged ties.
      *
      * @return array{home: int, away: int}

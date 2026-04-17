@@ -12,14 +12,15 @@ use Illuminate\Support\Facades\Cache;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
-use App\Models\GamePlayer;
+use App\Models\GameStanding;
 use App\Models\MatchAttendance;
 use App\Models\PlayerSuspension;
 use App\Modules\Match\Services\ExtraTimeAndPenaltyService;
 use App\Modules\Match\Services\MatchResimulationService;
 use App\Modules\Stadium\Services\MatchAttendanceService;
+use App\Support\LiveMatchLineupPresenter;
+use App\Support\LiveMatchNarrativeTemplates;
 use App\Support\PitchGrid;
-use App\Support\PositionMapper;
 use App\Support\PositionSlotMapper;
 use App\Support\TeamColors;
 
@@ -56,19 +57,24 @@ class ShowLiveMatch
             session()->put($sessionKey, true);
         }
 
+        // Load team form from standings (for match summary at full time)
+        $homeStanding = GameStanding::forTeamInCompetition($game, $playerMatch->home_team_id, $playerMatch->competition_id);
+        $awayStanding = GameStanding::forTeamInCompetition($game, $playerMatch->away_team_id, $playerMatch->competition_id);
+
         // Determine if this is a knockout match (cup tie) that could go to ET
         $isKnockout = $playerMatch->cup_tie_id !== null;
         $extraTimeData = null;
 
         // If match already has ET data (page refresh during ET), prepare it
         if ($isKnockout && $playerMatch->is_extra_time) {
-            $extraTimeData = $this->buildExtraTimeData($playerMatch);
+            $extraTimeData = $this->extraTimeService->buildRefreshState($playerMatch);
         }
 
         // For two-legged ties, pass first leg aggregate info
         $twoLeggedInfo = null;
         if ($isKnockout) {
-            $twoLeggedInfo = $this->buildTwoLeggedInfo($playerMatch);
+            $twoLeggedInfo = CupTie::with('firstLegMatch')->find($playerMatch->cup_tie_id)
+                ?->firstLegInfoFor($playerMatch);
         }
 
         // True when the current match is either leg of a two-legged cup tie.
@@ -136,104 +142,25 @@ class ShowLiveMatch
             ? ($playerMatch->home_lineup ?? [])
             : ($playerMatch->away_lineup ?? []);
 
-        // Starting lineup players (for the "sub out" picker)
         $currentDate = $game->current_date;
-        $lineupPlayers = GamePlayer::with(['player', 'matchState'])
-            ->whereIn('id', $userLineupIds)
-            ->get()
-            ->map(fn ($p) => [
-                'id' => $p->id,
-                'name' => $p->player->name ?? '',
-                'position' => $p->position,
-                'positionAbbr' => PositionMapper::toAbbreviation($p->position),
-                'positionGroup' => $p->position_group,
-                'positionSort' => LineupService::positionSortOrder($p->position),
-                'positions' => $p->positions,
-                'physicalAbility' => $p->physical_ability,
-                'technicalAbility' => $p->technical_ability,
-                'age' => $p->age($currentDate),
-                'overallScore' => $p->overall_score,
-                'fitness' => $p->fitness,
-                'morale' => $p->morale,
-                'minuteEntered' => 0,
-            ])
-            ->sortBy('positionSort')
-            ->values()
-            ->all();
-
-        // Batch load suspended player IDs for this competition
+        $matchDate = $playerMatch->scheduled_date;
         $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($gameId, $playerMatch->competition_id);
-
-        // Load cached performances for all players (starters + subs)
         $playerPerformances = Cache::get("match_performances:{$playerMatch->id}", []);
 
-        // Bench players (all squad players NOT in the starting lineup, not suspended, not injured)
-        $matchDate = $playerMatch->scheduled_date;
-        $benchPlayers = GamePlayer::with(['player', 'matchState'])
-            ->where('game_players.game_id', $gameId)
-            ->where('team_id', $game->team_id)
-            ->whereNotIn('id', $userLineupIds)
-            ->whereNotIn('id', $suspendedPlayerIds)
-            ->when($game->requiresSquadEnrollment(), fn ($q) => $q->whereNotNull('number'))
-            ->notInjuredOn($matchDate)
-            ->get()
-            ->map(fn ($p) => [
-                'id' => $p->id,
-                'name' => $p->player->name ?? '',
-                'position' => $p->position,
-                'positionAbbr' => PositionMapper::toAbbreviation($p->position),
-                'positionGroup' => $p->position_group,
-                'positionSort' => LineupService::positionSortOrder($p->position),
-                'positions' => $p->positions,
-                'physicalAbility' => $p->physical_ability,
-                'technicalAbility' => $p->technical_ability,
-                'age' => $p->age($currentDate),
-                'overallScore' => $p->overall_score,
-                'fitness' => $p->fitness,
-                'morale' => $p->morale,
-                'minuteEntered' => null,
-                'performance' => $playerPerformances[$p->id] ?? null,
-            ])
-            ->sortBy('positionSort')
-            ->values()
-            ->all();
-
-        // Opponent bench — minimal payload used only to rate opponent
-        // substitutes at full-time. We don't show this list in the UI, so we
-        // only expose the fields the client-side rating formula needs.
         $opponentTeamId = $isUserHome ? $playerMatch->away_team_id : $playerMatch->home_team_id;
         $opponentLineupIds = $isUserHome
             ? ($playerMatch->away_lineup ?? [])
             : ($playerMatch->home_lineup ?? []);
-        $opponentBenchPlayers = GamePlayer::where('game_players.game_id', $gameId)
-            ->where('team_id', $opponentTeamId)
-            ->whereNotIn('id', $opponentLineupIds)
-            ->get()
-            ->map(fn ($p) => [
-                'id' => $p->id,
-                'positionGroup' => $p->position_group,
-                'performance' => $playerPerformances[$p->id] ?? null,
-                'teamId' => $opponentTeamId,
-            ])
-            ->all();
 
-        $mapLineup = fn (array $ids) => GamePlayer::with(['player', 'matchState'])
-            ->whereIn('id', $ids)
-            ->get()
-            ->map(fn ($p) => [
-                'id' => $p->id,
-                'name' => $p->player->name ?? '',
-                'positionAbbr' => PositionMapper::toAbbreviation($p->position),
-                'positionGroup' => $p->position_group,
-                'positionSort' => LineupService::positionSortOrder($p->position),
-                'performance' => $playerPerformances[$p->id] ?? null,
-            ])
-            ->sortBy('positionSort')
-            ->values()
-            ->all();
-
-        $homeLineupDisplay = $mapLineup($playerMatch->home_lineup ?? []);
-        $awayLineupDisplay = $mapLineup($playerMatch->away_lineup ?? []);
+        $lineupPlayers = LiveMatchLineupPresenter::startingLineup($userLineupIds, $currentDate);
+        $benchPlayers = LiveMatchLineupPresenter::userBench(
+            $game, $userLineupIds, $suspendedPlayerIds, $matchDate, $currentDate, $playerPerformances
+        );
+        $opponentBenchPlayers = LiveMatchLineupPresenter::opponentBench(
+            $gameId, $opponentTeamId, $opponentLineupIds, $playerPerformances
+        );
+        $homeLineupDisplay = LiveMatchLineupPresenter::displayRoster($playerMatch->home_lineup ?? [], $playerPerformances);
+        $awayLineupDisplay = LiveMatchLineupPresenter::displayRoster($playerMatch->away_lineup ?? [], $playerPerformances);
 
         // User's current tactical setup
         $userFormation = $isUserHome
@@ -243,16 +170,8 @@ class ShowLiveMatch
             ? ($playerMatch->home_mentality ?? Mentality::BALANCED->value)
             : ($playerMatch->away_mentality ?? Mentality::BALANCED->value);
 
-        $availableFormations = array_map(fn ($f) => [
-            'value' => $f->value,
-            'label' => $f->label(),
-            'tooltip' => $f->tooltip(),
-        ], Formation::cases());
-        $availableMentalities = array_map(fn ($m) => [
-            'value' => $m->value,
-            'label' => $m->label(),
-            'tooltip' => $m->tooltip(),
-        ], Mentality::cases());
+        $availableFormations = Formation::options();
+        $availableMentalities = Mentality::options();
 
         // Tournament context
         $isTournamentMode = $game->isTournamentMode();
@@ -281,21 +200,9 @@ class ShowLiveMatch
         $opponentDefLine = $playerMatch->{"{$oppPrefix}_defensive_line"} ?? 'normal';
         $opponentMentality = $playerMatch->{"{$oppPrefix}_mentality"} ?? 'balanced';
 
-        $availablePlayingStyles = array_map(fn (PlayingStyle $s) => [
-            'value' => $s->value,
-            'label' => $s->label(),
-            'tooltip' => $s->tooltip(),
-        ], PlayingStyle::cases());
-        $availablePressing = array_map(fn (PressingIntensity $p) => [
-            'value' => $p->value,
-            'label' => $p->label(),
-            'tooltip' => $p->tooltip(),
-        ], PressingIntensity::cases());
-        $availableDefLine = array_map(fn (DefensiveLineHeight $d) => [
-            'value' => $d->value,
-            'label' => $d->label(),
-            'tooltip' => $d->tooltip(),
-        ], DefensiveLineHeight::cases());
+        $availablePlayingStyles = PlayingStyle::options();
+        $availablePressing = PressingIntensity::options();
+        $availableDefLine = DefensiveLineHeight::options();
 
         // Pitch visualization data for tactical panel
         $formationSlots = [];
@@ -311,49 +218,7 @@ class ShowLiveMatch
         $slotCompatibility = PositionSlotMapper::SLOT_COMPATIBILITY;
         $gridConfig = PitchGrid::getGridConfig();
 
-        // Narrative templates for client-side atmosphere generation
-        $narrativeTemplates = [
-            'shotOnTarget' => __('commentary.atmosphere_shot_on_target'),
-            'shotOffTarget' => __('commentary.atmosphere_shot_off_target'),
-            'foul' => __('commentary.atmosphere_foul'),
-            'contextualDrawOpen' => __('commentary.contextual_draw_open'),
-            'contextualDrawWithGoals' => __('commentary.contextual_draw_with_goals'),
-            'contextualHomeLeading' => __('commentary.contextual_home_leading'),
-            'contextualAwayLeading' => __('commentary.contextual_away_leading'),
-            'contextualHomeDominant' => __('commentary.contextual_home_dominant'),
-            'contextualAwayDominant' => __('commentary.contextual_away_dominant'),
-            'contextualTightGame' => __('commentary.contextual_tight_game'),
-            'contextualEndLosing' => __('commentary.contextual_end_losing'),
-            'contextualEndLosingByOne' => __('commentary.contextual_end_losing_by_one'),
-            'contextualEndWinning' => __('commentary.contextual_end_winning'),
-            'contextualEndDraw' => __('commentary.contextual_end_draw'),
-            'contextualEndDrawKnockout' => __('commentary.contextual_end_draw_knockout'),
-            'contextualSecondHalfStart' => __('commentary.contextual_second_half_start'),
-            'contextualAwayFans' => __('commentary.contextual_away_fans'),
-            'contextualHomeFans' => __('commentary.contextual_home_fans'),
-            'goalPrefix' => __('commentary.goal_prefix'),
-            'goalAssisted' => __('commentary.goal_assisted'),
-            'goalSolo' => __('commentary.goal_solo'),
-            'goalPenalty' => __('commentary.goal_penalty'),
-            // Tactical narratives
-            'tacticalHighPressWorking' => __('commentary.tactical_high_press_working'),
-            'tacticalHighPressFading' => __('commentary.tactical_high_press_fading'),
-            'tacticalHighPressExhausted' => __('commentary.tactical_high_press_exhausted'),
-            'tacticalOppPressFading' => __('commentary.tactical_opp_press_fading'),
-            'tacticalOppExhausted' => __('commentary.tactical_opp_exhausted'),
-            'tacticalLowBlockWall' => __('commentary.tactical_low_block_wall'),
-            'tacticalLowBlockFresh' => __('commentary.tactical_low_block_fresh'),
-            'tacticalPossessionControl' => __('commentary.tactical_possession_control'),
-            'tacticalPossessionFrustrated' => __('commentary.tactical_possession_frustrated'),
-            'tacticalCounterWaiting' => __('commentary.tactical_counter_waiting'),
-            'tacticalCounterExploiting' => __('commentary.tactical_counter_exploiting'),
-            'tacticalDirectPlay' => __('commentary.tactical_direct_play'),
-            'tacticalDirectBypassingPress' => __('commentary.tactical_direct_bypassing_press'),
-            // Tactical goal flavoring
-            'goalCounterAttack' => __('commentary.goal_counter_attack'),
-            'goalPossession' => __('commentary.goal_possession'),
-            'goalDirect' => __('commentary.goal_direct'),
-        ];
+        $narrativeTemplates = LiveMatchNarrativeTemplates::build();
 
         // Resolve attendance for the live-match HUD. The orchestrator's pre-match
         // hook normally writes the row before this view loads; the defensive
@@ -430,77 +295,13 @@ class ShowLiveMatch
             'computeSlotsUrl' => route('game.lineup.computeSlots', $game->id),
             'narrativeTemplates' => $narrativeTemplates,
             'animationSeen' => $animationSeen,
+            'homeForm' => $homeStanding?->form ? str_split($homeStanding->form) : [],
+            'awayForm' => $awayStanding?->form ? str_split($awayStanding->form) : [],
+            'homePosition' => $homeStanding?->position,
+            'awayPosition' => $awayStanding?->position,
+            'competitionRole' => $playerMatch->competition->role,
+            'competitionName' => __($playerMatch->competition->name),
         ]);
     }
 
-    /**
-     * Build ET data for page-refresh scenario (ET already simulated).
-     */
-    private function buildExtraTimeData(GameMatch $match): array
-    {
-        $etEvents = $match->events
-            ->filter(fn ($e) => $e->minute > 93);
-
-        $formattedEvents = MatchResimulationService::formatMatchEvents($etEvents);
-
-        $data = [
-            'extraTimeEvents' => $formattedEvents,
-            'homeScoreET' => $match->home_score_et ?? 0,
-            'awayScoreET' => $match->away_score_et ?? 0,
-            'penalties' => null,
-            'needsPenalties' => false,
-        ];
-
-        if ($match->home_score_penalties !== null) {
-            $data['penalties'] = [
-                'home' => $match->home_score_penalties,
-                'away' => $match->away_score_penalties,
-            ];
-        } else {
-            // ET done but penalties not yet resolved — check whether the ET
-            // result is actually a draw. Without this, a page refresh after
-            // ET ended 2-1 would incorrectly send the user to penalties.
-            $data['needsPenalties'] = $this->extraTimeService->checkNeedsPenalties(
-                $match, $match->home_score_et ?? 0, $match->away_score_et ?? 0
-            );
-        }
-
-        return $data;
-    }
-
-    /**
-     * Build first-leg info for two-legged ties.
-     */
-    private function buildTwoLeggedInfo(GameMatch $match): ?array
-    {
-        $cupTie = CupTie::with('firstLegMatch')->find($match->cup_tie_id);
-
-        if (! $cupTie) {
-            return null;
-        }
-
-        $roundConfig = $cupTie->getRoundConfig();
-
-        if (! $roundConfig?->twoLegged) {
-            return null;
-        }
-
-        // Only relevant for second leg
-        if ($cupTie->second_leg_match_id !== $match->id) {
-            return null;
-        }
-
-        $firstLeg = $cupTie->firstLegMatch;
-
-        if (! $firstLeg?->played) {
-            return null;
-        }
-
-        return [
-            'firstLegHomeScore' => $firstLeg->home_score,
-            'firstLegAwayScore' => $firstLeg->away_score,
-            'tieHomeTeamId' => $cupTie->home_team_id,
-            'tieAwayTeamId' => $cupTie->away_team_id,
-        ];
-    }
 }

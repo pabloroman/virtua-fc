@@ -161,6 +161,43 @@ class ExtraTimeAndPenaltyService
      * Determine if penalties are needed after extra time,
      * accounting for two-legged aggregate scores.
      */
+    /**
+     * Rebuild the ET payload for a page-refresh scenario where extra time
+     * has already been simulated — so the client can skip the animation
+     * and restore the right state (already at penalties, needs penalties,
+     * or ET settled the match).
+     *
+     * @return array<string, mixed>
+     */
+    public function buildRefreshState(GameMatch $match): array
+    {
+        $etEvents = $match->events->filter(fn ($e) => $e->minute > 93);
+
+        $state = [
+            'extraTimeEvents' => MatchResimulationService::formatMatchEvents($etEvents),
+            'homeScoreET' => $match->home_score_et ?? 0,
+            'awayScoreET' => $match->away_score_et ?? 0,
+            'penalties' => null,
+            'needsPenalties' => false,
+        ];
+
+        if ($match->home_score_penalties !== null) {
+            $state['penalties'] = [
+                'home' => $match->home_score_penalties,
+                'away' => $match->away_score_penalties,
+            ];
+        } else {
+            // ET done but penalties not yet resolved — check whether the ET
+            // result is actually a draw. Without this, a page refresh after
+            // ET ended 2-1 would incorrectly send the user to penalties.
+            $state['needsPenalties'] = $this->checkNeedsPenalties(
+                $match, $match->home_score_et ?? 0, $match->away_score_et ?? 0
+            );
+        }
+
+        return $state;
+    }
+
     public function checkNeedsPenalties(GameMatch $match, int $homeScoreET, int $awayScoreET): bool
     {
         $totalHome = $match->home_score + $homeScoreET;

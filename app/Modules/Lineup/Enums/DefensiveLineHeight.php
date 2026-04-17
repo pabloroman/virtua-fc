@@ -2,8 +2,12 @@
 
 namespace App\Modules\Lineup\Enums;
 
+use App\Modules\Lineup\Enums\Concerns\HasTacticalOptions;
+
 enum DefensiveLineHeight: string
 {
+    use HasTacticalOptions;
+
     case HIGH_LINE = 'high_line';
     case NORMAL = 'normal';
     case DEEP = 'deep';

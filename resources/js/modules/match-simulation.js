@@ -422,9 +422,18 @@ export function createMatchSimulation(ctx) {
             state.recalculatePlayerRatings();
         }
 
-        // Cache events so page refreshes show the same feed
-        if (typeof state._cacheEvents === 'function') {
-            state._cacheEvents();
+        // Generate match summary report.
+        // When a skip-to-end resimulation is in flight, defer summary
+        // generation until the response arrives — the promise callback
+        // in skipToEnd() handles it with the corrected events/scores.
+        if (!state._skippingToEnd) {
+            if (typeof state._generateMatchSummary === 'function') {
+                state.matchSummary = state._generateMatchSummary();
+            }
+
+            if (typeof state._cacheEvents === 'function') {
+                state._cacheEvents();
+            }
         }
     }
 
@@ -631,6 +640,39 @@ export function createMatchSimulation(ctx) {
         enterHalfTime();
     }
 
+    /**
+     * Animate the clock from the current minute up to 90 using
+     * requestAnimationFrame with easeOutCubic easing. Duration scales
+     * with the number of minutes to cover (800ms–1500ms). When the
+     * animation finishes the clock is snapped to 93 (stoppage-time
+     * end) and the callback fires.
+     */
+    function animateClockToEnd(fromMinute, onComplete) {
+        const state = ctx();
+        const toMinute = 90;
+        const minutesToCover = toMinute - fromMinute;
+        const duration = Math.max(800, Math.min(1500, minutesToCover * 20));
+        const startTime = performance.now();
+
+        function advanceFrame(now) {
+            const elapsed = now - startTime;
+            const t = Math.min(elapsed / duration, 1);
+            const eased = 1 - Math.pow(1 - t, 3);
+
+            state.currentMinute = fromMinute + minutesToCover * eased;
+
+            if (t < 1) {
+                _animFrame = requestAnimationFrame(advanceFrame);
+            } else {
+                state.currentMinute = 93;
+                updateOtherMatches();
+                onComplete();
+            }
+        }
+
+        _animFrame = requestAnimationFrame(advanceFrame);
+    }
+
     async function skipToEnd() {
         const state = ctx();
 
@@ -693,13 +735,34 @@ export function createMatchSimulation(ctx) {
         // When the response arrives, autoSubUserTeamBeforeSkip replaces
         // state.events and rebuilds revealedEvents in one synchronous pass.
         const skipMinute = Math.max(1, Math.min(89, Math.floor(state.currentMinute)));
-        if (typeof state.autoSubUserTeamBeforeSkip === 'function') {
-            state.autoSubUserTeamBeforeSkip(skipMinute);
+        const skipPromise = (typeof state.autoSubUserTeamBeforeSkip === 'function')
+            ? state.autoSubUserTeamBeforeSkip(skipMinute)
+            : Promise.resolve(false);
+
+        // Cancel the normal tick loop so it doesn't reveal stale events
+        // or interfere with the fast-forward animation.
+        if (_animFrame) {
+            cancelAnimationFrame(_animFrame);
+            _animFrame = null;
         }
 
-        state.currentMinute = 93;
-        updateOtherMatches();
-        enterFullTime();
+        // Animate the clock from the current minute up to 90, then
+        // transition to full time. The rapid tick-up fills the dead
+        // time while the server processes the resimulation request.
+        const fromMinute = state.currentMinute;
+        animateClockToEnd(fromMinute, () => enterFullTime());
+
+        // Generate match summary after the resimulation resolves (or
+        // no-ops). Both paths produce correct summaries: resimulation
+        // merges fresh events/scores first; no-op keeps the originals.
+        skipPromise.then(() => {
+            if (typeof state._generateMatchSummary === 'function') {
+                state.matchSummary = state._generateMatchSummary();
+            }
+            if (typeof state._cacheEvents === 'function') {
+                state._cacheEvents();
+            }
+        });
     }
 
     // =========================================================================

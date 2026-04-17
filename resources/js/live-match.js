@@ -28,6 +28,7 @@ import { createMatchSimulation } from './modules/match-simulation.js';
 import { createMatchStats } from './modules/match-stats.js';
 import { generateRegularTimeAtmosphere, generateExtraTimeAtmosphere, generateTacticalNarratives, addGoalNarratives, regenerateShots, regenerateNarratives } from './modules/atmosphere-generator.js';
 import { calculatePlayerRatings, ratingColor as _ratingColor, updateRosterPerformances, countEvents, buildSubstitutionMap, performanceToBaseRating } from './modules/player-ratings.js';
+import { generateMatchSummary } from './modules/match-summary-generator.js';
 
 /**
  * Copy all own properties from source to target. Regular properties are
@@ -159,6 +160,15 @@ export default function liveMatch(config) {
         homeArticle: config.homeArticle !== undefined ? config.homeArticle : 'el',
         awayArticle: config.awayArticle !== undefined ? config.awayArticle : 'el',
         narrativeTemplates: config.narrativeTemplates || {},
+
+        // Match summary (generated at full time)
+        matchSummary: null,
+        homeForm: config.homeForm || [],
+        awayForm: config.awayForm || [],
+        homePosition: config.homePosition || null,
+        awayPosition: config.awayPosition || null,
+        competitionRole: config.competitionRole || 'league',
+        competitionName: config.competitionName || '',
 
         // Pitch visualization config
         formationSlots: config.formationSlots || {},
@@ -431,6 +441,11 @@ export default function liveMatch(config) {
             // Set phase to full_time and calculate player ratings
             this.phase = 'full_time';
             this.recalculatePlayerRatings();
+
+            // Generate match summary if not restored from cache
+            if (!this.matchSummary && typeof this._generateMatchSummary === 'function') {
+                this.matchSummary = this._generateMatchSummary();
+            }
         },
 
         /**
@@ -443,6 +458,7 @@ export default function liveMatch(config) {
                 const payload = {
                     events: this.events,
                     extraTimeEvents: this.extraTimeEvents,
+                    matchSummary: this.matchSummary,
                 };
                 localStorage.setItem(`live_match_events:${this.matchId}`, JSON.stringify(payload));
             } catch (_) { /* quota exceeded — silently skip */ }
@@ -460,6 +476,7 @@ export default function liveMatch(config) {
                 const cached = JSON.parse(raw);
                 if (cached.events) this.events = cached.events;
                 if (cached.extraTimeEvents) this.extraTimeEvents = cached.extraTimeEvents;
+                if (cached.matchSummary) this.matchSummary = cached.matchSummary;
                 return true;
             } catch (_) { return false; }
         },
@@ -1568,6 +1585,32 @@ export default function liveMatch(config) {
             if (atmosphere.length) {
                 this.extraTimeEvents = [...this.extraTimeEvents, ...atmosphere].sort((a, b) => a.minute - b.minute);
             }
+        },
+
+        // =====================================================================
+        // Match Summary (generated at full time)
+        // =====================================================================
+
+        _generateMatchSummary() {
+            return generateMatchSummary({
+                ...this._atmosphereConfig(),
+                mvpPlayerName: this.mvpPlayerName,
+                mvpPlayerTeamId: this.mvpPlayerTeamId,
+                hasExtraTime: this.hasExtraTime,
+                etHomeScore: this.etHomeScore,
+                etAwayScore: this.etAwayScore,
+                penaltyResult: this.penaltyResult,
+                allEvents: [...this.events, ...this.extraTimeEvents],
+                isKnockout: this.isKnockout,
+                knockoutRoundNumber: this.knockoutRoundNumber,
+                competitionRole: this.competitionRole,
+                competitionName: this.competitionName,
+                homeForm: this.homeForm,
+                awayForm: this.awayForm,
+                homePosition: this.homePosition,
+                awayPosition: this.awayPosition,
+                tournamentResultType: this.tournamentResultType,
+            });
         },
 
         // =====================================================================
