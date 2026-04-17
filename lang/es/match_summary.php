@@ -19,16 +19,16 @@ return [
     // Opening sentences — League
     // =========================================================================
     'opening_home_win' => [
-        ':el_home gana en :venue frente :al_away (:score).',
-        'Victoria :del_home en :venue frente :al_away (:score).',
-        ':el_home se impone en :venue ante :el_away (:score).',
+        ':el_home gana en el :venue frente :al_away (:score).',
+        'Victoria :del_home en el :venue frente :al_away (:score).',
+        ':el_home se impone :al_away en el :venue (:score).',
         'Los aficionados :del_home celebran la victoria contra :el_away (:score)',
         'Victoria :del_home frente :al_away (:score).',
     ],
     'opening_away_win' => [
-        ':el_away gana en :venue y se lleva los tres puntos (:score).',
-        'Victoria :del_away como visitante frente :al_home (:score).',
-        ':el_away se impone en :venue ante :el_home (:score).',
+        ':el_away gana en el :venue y se lleva el partido (:score).',
+        'Victoria :del_away en casa :del_home (:score).',
+        ':el_away se lleva el gato al agua en el :venue ante :el_home (:score).',
     ],
     'opening_blowout' => [
         ':el_winner arrolla :al_loser en :venue (:score) haciendo un gran partido.',

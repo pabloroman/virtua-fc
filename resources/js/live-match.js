@@ -1602,6 +1602,8 @@ export default function liveMatch(config) {
                 penaltyResult: this.penaltyResult,
                 allEvents: [...this.events, ...this.extraTimeEvents],
                 isKnockout: this.isKnockout,
+                isTwoLeggedTie: this.isTwoLeggedTie,
+                isSecondLeg: this.twoLeggedInfo !== null,
                 knockoutRoundNumber: this.knockoutRoundNumber,
                 competitionRole: this.competitionRole,
                 competitionName: this.competitionName,

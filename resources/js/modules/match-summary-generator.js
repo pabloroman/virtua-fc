@@ -50,16 +50,6 @@ function teamPlaceholders(forms) {
     };
 }
 
-function formatScorerName(event, templates) {
-    let name = event.playerName || '?';
-    if (event.type === 'own_goal' && templates.summaryOwnGoalNote) {
-        name += ' (' + templates.summaryOwnGoalNote + ')';
-    } else if (event.metadata?.is_penalty && templates.summaryPenaltyGoalNote) {
-        name += ' (' + templates.summaryPenaltyGoalNote + ')';
-    }
-    return name;
-}
-
 function countTrailingStreak(formArray, predicate) {
     let count = 0;
     for (let i = formArray.length - 1; i >= 0; i--) {
@@ -144,6 +134,9 @@ export function generateMatchSummary(config) {
         hasExtraTime, etHomeScore, etAwayScore,
         penaltyResult,
         allEvents,
+        isKnockout,
+        isTwoLeggedTie,
+        isSecondLeg,
         knockoutRoundNumber,
         competitionRole,
         competitionName,
@@ -186,7 +179,10 @@ export function generateMatchSummary(config) {
     const isBlowout = goalDiff >= 3;
     const isNarrowWin = goalDiff === 1 && !isDraw;
     const isCup = competitionRole === 'domestic_cup' || competitionRole === 'european';
-    const isHighStakes = isCup && knockoutRoundNumber && knockoutRoundNumber >= 5;
+    // A knockout match decides progression (single-leg tie, or second leg of
+    // a two-legged tie). First legs and Swiss league-phase matches don't.
+    const isKnockoutDecisive = !!isKnockout && (!isTwoLeggedTie || !!isSecondLeg);
+    const isHighStakes = isKnockoutDecisive && knockoutRoundNumber && knockoutRoundNumber >= 5;
     const isChampion = tournamentResultType === 'champion';
 
     const hatTrick = detectHatTrick(allEvents);
@@ -236,7 +232,7 @@ export function generateMatchSummary(config) {
 
     sentences.push(buildOpening(t, replacements, {
         isDraw, isGoalless, isBlowout, isNarrowWin,
-        isCup, isHighStakes, isChampion,
+        isKnockoutDecisive, isHighStakes, isChampion,
         hasExtraTime, penaltyResult,
         winnerId, homeTeamId,
     }));
@@ -297,7 +293,7 @@ export function generateMatchSummary(config) {
 function buildOpening(t, replacements, ctx) {
     const {
         isDraw, isGoalless, isBlowout, isNarrowWin,
-        isCup, isHighStakes, isChampion,
+        isKnockoutDecisive, isHighStakes, isChampion,
         hasExtraTime, penaltyResult,
         winnerId, homeTeamId,
     } = ctx;
@@ -318,11 +314,11 @@ function buildOpening(t, replacements, ctx) {
         return pickTemplate(t.summaryOpeningHighStakesWin, replacements);
     }
 
-    if (isCup && winnerId && t.summaryOpeningCupWin) {
+    if (isKnockoutDecisive && winnerId && t.summaryOpeningCupWin) {
         return pickTemplate(t.summaryOpeningCupWin, replacements);
     }
 
-    if (isCup && isDraw && t.summaryOpeningCupDraw) {
+    if (isKnockoutDecisive && isDraw && t.summaryOpeningCupDraw) {
         return pickTemplate(t.summaryOpeningCupDraw, replacements);
     }
 
@@ -361,26 +357,48 @@ function buildGoalNarrative(t, replacements, ctx) {
         return '';
     }
 
-    // Own goals credit the opposing team.
+    // Own goals credit the opposing team. Tally on raw name so a player
+    // who scored both a regular goal and a penalty counts as one entry.
+    // Own goals are kept in a separate bucket entry so the "(own goal)"
+    // annotation doesn't get swallowed by a regular goal in the same match.
     const homeTally = {};
     const awayTally = {};
     for (const g of goals) {
         const scoredForHome = (g.type === 'goal' && g.teamId === homeTeamId)
             || (g.type === 'own_goal' && g.teamId !== homeTeamId);
         const bucket = scoredForHome ? homeTally : awayTally;
-        const name = formatScorerName(g, t);
-        bucket[name] = (bucket[name] || 0) + 1;
+        const rawName = g.playerName || '?';
+        const isOwnGoal = g.type === 'own_goal';
+        const key = isOwnGoal ? `${rawName}\0og` : rawName;
+        if (!bucket[key]) {
+            bucket[key] = { name: rawName, count: 0, isOwnGoal, hasPenalty: false };
+        }
+        bucket[key].count++;
+        if (g.metadata?.is_penalty) {
+            bucket[key].hasPenalty = true;
+        }
     }
 
     const formatScorers = (tally) => {
-        const names = Object.entries(tally).map(([name, count]) =>
-            count > 1 ? `${name} (x${count})` : name
-        );
+        const names = Object.values(tally).map((entry) => {
+            if (entry.count > 1) {
+                return `${entry.name} (x${entry.count})`;
+            }
+            if (entry.isOwnGoal && t.summaryOwnGoalNote) {
+                return `${entry.name} (${t.summaryOwnGoalNote})`;
+            }
+            if (entry.hasPenalty && t.summaryPenaltyGoalNote) {
+                return `${entry.name} (${t.summaryPenaltyGoalNote})`;
+            }
+            return entry.name;
+        });
         return joinScorers(names, conjunction);
     };
 
-    const isSingleGoal = (tally) =>
-        Object.keys(tally).length === 1 && Object.values(tally)[0] === 1;
+    const isSingleGoal = (tally) => {
+        const entries = Object.values(tally);
+        return entries.length === 1 && entries[0].count === 1;
+    };
 
     const teamFragment = (tally, forms) => {
         const scorers = formatScorers(tally);

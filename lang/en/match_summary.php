@@ -26,9 +26,9 @@ return [
         'Victory for :home against :away (:score).',
     ],
     'opening_away_win' => [
-        ':away win at :venue and take the three points (:score).',
-        'Away victory for :away against :home (:score).',
-        ':away prevail at :venue against :home (:score).',
+        ':away win at :venue and take the match (:score).',
+        'Away victory for :away at :home\'s ground (:score).',
+        ':away do the business at :venue against :home (:score).',
     ],
     'opening_blowout' => [
         ':winner demolish :loser at :venue (:score) with a great performance.',
