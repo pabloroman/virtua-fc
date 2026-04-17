@@ -8,7 +8,7 @@ return [
         'FULL TIME!!',
         'IT\'S ALL OVER!!',
         'THAT\'S THE FINAL WHISTLE!!',
-        'FULL TIME AT :venue!!',
+        'FULL TIME :en_venue!!',
         'IT\'S OVER!!',
         'THE REFEREE BLOWS THE WHISTLE!!',
         'AND THAT IS THAT!!',
@@ -19,42 +19,42 @@ return [
     // Opening sentences — League
     // =========================================================================
     'opening_home_win' => [
-        ':home win at :venue against :away (:score).',
-        'Victory for :home at :venue against :away (:score).',
-        ':home prevail at :venue against :away (:score).',
+        ':home win :en_venue against :away (:score).',
+        'Victory for :home :en_venue against :away (:score).',
+        ':home prevail :en_venue against :away (:score).',
         ':home fans celebrate a victory against :away (:score).',
         'Victory for :home against :away (:score).',
     ],
     'opening_away_win' => [
-        ':away win at :venue and take the match (:score).',
+        ':away win :en_venue and take the match (:score).',
         'Away victory for :away at :home\'s ground (:score).',
-        ':away do the business at :venue against :home (:score).',
+        ':away do the business :en_venue against :home (:score).',
     ],
     'opening_blowout' => [
-        ':winner demolish :loser at :venue (:score) with a great performance.',
-        'Emphatic win for :winner at :venue against :loser (:score), a superb display.',
-        ':winner thrash :loser at :venue (:score).',
+        ':winner demolish :loser :en_venue (:score) with a great performance.',
+        'Emphatic win for :winner :en_venue against :loser (:score), a superb display.',
+        ':winner thrash :loser :en_venue (:score).',
         ':winner demolish :loser (:score), who never had a chance to take anything from the match.',
         ':winner fans celebrate the rout against :loser (:score).',
     ],
     'opening_draw' => [
-        ':goals_each-all draw at :venue between :home and :away.',
-        'Full time at :venue! :home can\'t find a way past :away.',
-        'Points shared at :venue between :home and :away (:score).',
+        ':goals_each-all draw :en_venue between :home and :away.',
+        'Full time :en_venue! :home can\'t find a way past :away.',
+        'Points shared :en_venue between :home and :away (:score).',
         ':goals_each-all draw between :home and :away, where neither side could impose themselves on the other.',
         ':home and :away share the points and goals (:score).',
     ],
     'opening_goalless' => [
-        'No goals at :venue between :home and :away. A scoreless draw that leaves neither side happy.',
-        'Goalless draw at :venue. Neither :home nor :away manage to find the net in a match that had everything but goals.',
-        'Stalemate at :venue. :home and :away share a point in a dull, goalless affair.',
+        'No goals :en_venue between :home and :away. A scoreless draw that leaves neither side happy.',
+        'Goalless draw :en_venue. Neither :home nor :away manage to find the net in a match that had everything but goals.',
+        'Stalemate :en_venue. :home and :away share a point in a dull, goalless affair.',
         'No goals between :home and :away, in a match that won\'t be remembered for its excitement.',
         'Goalless draw: neither :home nor :away manage to find the net.',
     ],
     'opening_narrow_win' => [
-        ':winner edge it at :venue against :loser (:score).',
-        'Tight win for :winner against :loser at :venue (:score).',
-        ':winner grind out a win at :venue against :loser (:score).',
+        ':winner edge it :en_venue against :loser (:score).',
+        'Tight win for :winner against :loser :en_venue (:score).',
+        ':winner grind out a win :en_venue against :loser (:score).',
         ':winner edge it against :loser (:score).',
         'Tight win for :winner against :loser (:score).',
     ],
@@ -63,29 +63,29 @@ return [
     // Opening sentences — Extra time & penalties (knockout)
     // =========================================================================
     'opening_extra_time' => [
-        ':winner win in extra time at :venue (:score).',
-        'It took extra time, but :winner prevail at :venue (:score).',
+        ':winner win in extra time :en_venue (:score).',
+        'It took extra time, but :winner prevail :en_venue (:score).',
         ':winner win in extra time (:score).',
         'It took extra time, but :winner prevail (:score).',
     ],
     'opening_penalties' => [
         ':winner go through on penalties (:pen_score) after drawing :score_regular.',
-        'Penalties decide it at :venue. :winner go through (:pen_score).',
+        'Penalties decide it :en_venue. :winner go through (:pen_score).',
     ],
 
     // =========================================================================
     // Opening sentences — Cup-specific
     // =========================================================================
     'opening_cup_win' => [
-        ':winner advance in the :competition after beating :loser at :venue (:score).',
-        ':winner go through at :venue against :loser (:score).',
-        ':loser are knocked out at :venue. :winner progress (:score).',
+        ':winner advance in the :competition after beating :loser :en_venue (:score).',
+        ':winner go through :en_venue against :loser (:score).',
+        ':loser are knocked out :en_venue. :winner progress (:score).',
         ':winner advance in the :competition after beating :loser (:score).',
         ':loser are knocked out. :winner progress (:score).',
     ],
     'opening_cup_draw' => [
-        'Draw at :venue between :home and :away (:score) in the :competition.',
-        ':home and :away share the spoils (:score) at :venue in the :competition.',
+        'Draw :en_venue between :home and :away (:score) in the :competition.',
+        ':home and :away share the spoils (:score) :en_venue in the :competition.',
         'Draw between :home and :away (:score) in the :competition.',
     ],
 
@@ -93,16 +93,16 @@ return [
     // Opening sentences — High stakes (semifinals, finals)
     // =========================================================================
     'opening_high_stakes_win' => [
-        ':winner triumph at :venue and advance in the :competition! (:score)',
-        'Huge win for :winner against :loser at :venue! (:score)',
-        ':winner do it! Victory at :venue against :loser (:score).',
+        ':winner triumph :en_venue and advance in the :competition! (:score)',
+        'Huge win for :winner against :loser :en_venue! (:score)',
+        ':winner do it! Victory :en_venue against :loser (:score).',
         ':winner triumph and advance in the :competition! (:score)',
         'Huge win for :winner against :loser! (:score)',
     ],
     'opening_high_stakes_champion' => [
-        ':winner are :competition champions! Final won at :venue against :loser (:score).',
+        ':winner are :competition champions! Final won :en_venue against :loser (:score).',
         ':winner lift the :competition trophy after beating :loser in the final (:score)!',
-        'The :competition belongs to :winner! Final settled at :venue against :loser (:score).',
+        'The :competition belongs to :winner! Final settled :en_venue against :loser (:score).',
     ],
 
     // =========================================================================
@@ -210,7 +210,7 @@ return [
         'An incredible match where a total of :total goals hit the scoreboard.',
     ],
     'few_chances' => [
-        'A dull match at :venue with little football and few chances on goal.',
+        'A dull match :en_venue with little football and few chances on goal.',
         'Little football and even less danger. The fans found this one long.',
         'A grey match with barely any goalscoring chances.',
     ],

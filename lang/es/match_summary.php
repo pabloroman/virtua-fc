@@ -8,7 +8,7 @@ return [
         '¡¡FINAL DEL PARTIDO!!',
         '¡¡SE ACABÓ!!',
         '¡¡NO HAY TIEMPO PARA MÁS!!',
-        '¡¡FINAL EN :venue!!',
+        '¡¡FINAL :en_venue!!',
         '¡¡SE TERMINÓ!!',
         '¡¡PITIDO FINAL!!',
         '¡¡FIN DEL PARTIDO!!',
@@ -19,42 +19,42 @@ return [
     // Opening sentences — League
     // =========================================================================
     'opening_home_win' => [
-        ':el_home gana en el :venue frente :al_away (:score).',
-        'Victoria :del_home en el :venue frente :al_away (:score).',
-        ':el_home se impone :al_away en el :venue (:score).',
+        ':el_home gana :en_venue frente :al_away (:score).',
+        'Victoria :del_home :en_venue frente :al_away (:score).',
+        ':el_home se impone :al_away :en_venue (:score).',
         'Los aficionados :del_home celebran la victoria contra :el_away (:score)',
         'Victoria :del_home frente :al_away (:score).',
     ],
     'opening_away_win' => [
-        ':el_away gana en el :venue y se lleva el partido (:score).',
+        ':el_away gana :en_venue y se lleva el partido (:score).',
         'Victoria :del_away en casa :del_home (:score).',
-        ':el_away se lleva el gato al agua en el :venue ante :el_home (:score).',
+        ':el_away se lleva el gato al agua :en_venue ante :el_home (:score).',
     ],
     'opening_blowout' => [
-        ':el_winner arrolla :al_loser en :venue (:score) haciendo un gran partido.',
-        'Goleada :del_winner en :venue frente :al_loser (:score), que firma una gran actuación',
-        'Paliza :del_winner :al_loser en :venue (:score).',
+        ':el_winner arrolla :al_loser :en_venue (:score) haciendo un gran partido.',
+        'Goleada :del_winner :en_venue frente :al_loser (:score), que firma una gran actuación',
+        'Paliza :del_winner :al_loser :en_venue (:score).',
         ':el_winner arrolla :al_loser (:score), que nunca tuvo opciones de llevarse el partido',
         'Los aficionados :del_winner celebran la goleada frente :al_loser (:score).',
     ],
     'opening_draw' => [
-        'Empate a :goals_each en :venue entre :el_home y :el_away.',
-        '¡Final en :venue! :el_home no puede pasar del empate contra :el_away.',
-        'Reparto de puntos en :venue entre :el_home y :el_away (:score).',
+        'Empate a :goals_each :en_venue entre :el_home y :el_away.',
+        '¡Final :en_venue! :el_home no puede pasar del empate contra :el_away.',
+        'Reparto de puntos :en_venue entre :el_home y :el_away (:score).',
         'Empate a :goals_each entre :el_home y :el_away donde ninguno de los equipos supo imponerse al otro',
         ':el_home y :el_away se reparten los puntos y los goles (:score).',
     ],
     'opening_goalless' => [
-        'Sin goles en :venue entre :el_home y :el_away. Un empate a cero que no deja contento a ninguno de los dos equipos.',
-        'Empate sin goles en :venue. Ni :el_home ni :el_away logran marcar en un partido en que hubo de todo, menos goles.',
-        'A cero en :venue. :el_home y :el_away se reparten un punto en un partido soso y sin goles.',
+        'Sin goles :en_venue entre :el_home y :el_away. Un empate a cero que no deja contento a ninguno de los dos equipos.',
+        'Empate sin goles :en_venue. Ni :el_home ni :el_away logran marcar en un partido en que hubo de todo, menos goles.',
+        'A cero :en_venue. :el_home y :el_away se reparten un punto en un partido soso y sin goles.',
         'Sin goles entre :el_home y :el_away, en un partido que no será recordado por su emoción',
         'Empate sin goles: ni :el_home ni :el_away logran marcar.',
     ],
     'opening_narrow_win' => [
-        ':el_winner se lleva la victoria por la mínima en :venue (:score).',
-        'Triunfo ajustado :del_winner frente :al_loser en :venue (:score).',
-        ':el_winner sufre pero gana en :venue frente :al_loser (:score).',
+        ':el_winner se lleva la victoria por la mínima :en_venue (:score).',
+        'Triunfo ajustado :del_winner frente :al_loser :en_venue (:score).',
+        ':el_winner sufre pero gana :en_venue frente :al_loser (:score).',
         ':el_winner se lleva la victoria por la mínima frente :al_loser (:score).',
         'Triunfo ajustado :del_winner ante :el_loser (:score).',
     ],
@@ -63,29 +63,29 @@ return [
     // Opening sentences — Extra time & penalties (knockout)
     // =========================================================================
     'opening_extra_time' => [
-        ':el_winner se impone en la prórroga en :venue (:score).',
-        'Necesitó la prórroga, pero :el_winner se lleva la victoria en :venue (:score).',
+        ':el_winner se impone en la prórroga :en_venue (:score).',
+        'Necesitó la prórroga, pero :el_winner se lleva la victoria :en_venue (:score).',
         ':el_winner se impone en la prórroga (:score).',
         'Tras la prórroga, :el_winner se lleva la victoria (:score).',
     ],
     'opening_penalties' => [
         ':el_winner se clasifica en la tanda de penaltis (:pen_score) tras empatar :score_regular.',
-        'Los penaltis deciden en :venue. :el_winner se clasifica (:pen_score).',
+        'Los penaltis deciden :en_venue. :el_winner se clasifica (:pen_score).',
     ],
 
     // =========================================================================
     // Opening sentences — Cup-specific
     // =========================================================================
     'opening_cup_win' => [
-        ':el_winner avanza en la :competition tras imponerse :al_loser en :venue (:score).',
-        ':el_winner se clasifica en :venue frente :al_loser (:score).',
-        ':el_loser queda eliminado en :venue. :el_winner pasa de ronda (:score).',
+        ':el_winner avanza en la :competition tras imponerse :al_loser :en_venue (:score).',
+        ':el_winner se clasifica :en_venue frente :al_loser (:score).',
+        ':el_loser queda eliminado :en_venue. :el_winner pasa de ronda (:score).',
         ':el_winner avanza en la :competition tras imponerse :al_loser (:score).',
         ':el_loser queda eliminado. :el_winner pasa de ronda (:score).',
     ],
     'opening_cup_draw' => [
-        'Empate en :venue entre :el_home y :el_away (:score) en la :competition.',
-        ':el_home y :el_away empatan (:score) en :venue por la :competition.',
+        'Empate :en_venue entre :el_home y :el_away (:score) en la :competition.',
+        ':el_home y :el_away empatan (:score) :en_venue por la :competition.',
         'Empate entre :el_home y :el_away (:score) en la :competition.',
     ],
 
@@ -93,16 +93,16 @@ return [
     // Opening sentences — High stakes (semifinals, finals)
     // =========================================================================
     'opening_high_stakes_win' => [
-        '¡:el_winner se impone en :venue y avanza en la :competition! (:score)',
-        '¡Enorme victoria :del_winner frente :al_loser en :venue! (:score)',
-        '¡:el_winner lo consigue! Victoria en :venue frente :al_loser (:score).',
+        '¡:el_winner se impone :en_venue y avanza en la :competition! (:score)',
+        '¡Enorme victoria :del_winner frente :al_loser :en_venue! (:score)',
+        '¡:el_winner lo consigue! Victoria :en_venue frente :al_loser (:score).',
         '¡:el_winner se impone y avanza en la :competition! (:score)',
         '¡Enorme victoria :del_winner frente :al_loser! (:score)',
     ],
     'opening_high_stakes_champion' => [
-        '¡:el_winner es campeón de la :competition! Victoria en la final en :venue frente :al_loser (:score).',
+        '¡:el_winner es campeón de la :competition! Victoria en la final :en_venue frente :al_loser (:score).',
         '¡:el_winner levanta el título de la :competition tras imponerse en la final :al_loser (:score)!',
-        '¡La :competition es :del_winner! Final resuelta en :venue frente :al_loser (:score).',
+        '¡La :competition es :del_winner! Final resuelta :en_venue frente :al_loser (:score).',
     ],
 
     // =========================================================================
@@ -210,7 +210,7 @@ return [
         'Impresionante partido donde un total de :total goles subieron al marcador',
     ],
     'few_chances' => [
-        'Un partido aburrido en :venue donde se vió poco juego y ocasiones de gol.',
+        'Un partido aburrido :en_venue donde se vió poco juego y ocasiones de gol.',
         'Poco fútbol y menos peligro. A los aficionados se les hizo largo.',
         'Partido gris en el que apenas hubo ocasiones de gol.',
     ],

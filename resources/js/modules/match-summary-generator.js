@@ -13,11 +13,16 @@ import { buildTeamForms } from './atmosphere-generator.js';
 
 function pickTemplate(templates, replacements) {
     if (!templates || !templates.length) return '';
-    // Tournament matches have no venue; drop templates that reference :venue
-    // so we don't render awkward empty placeholders.
+    // Tournament matches have no venue; drop templates that reference any
+    // venue placeholder so we don't render awkward empty phrases.
     let pool = templates;
-    if (replacements && replacements[':venue'] === '') {
-        const filtered = templates.filter(t => !t.includes(':venue'));
+    const venueMissing = replacements
+        && (replacements[':en_venue'] === '' || replacements[':en_venue'] === undefined)
+        && (replacements[':venue'] === '' || replacements[':venue'] === undefined);
+    if (venueMissing) {
+        const filtered = templates.filter(t =>
+            !t.includes(':en_venue') && !t.includes(':el_venue') && !t.includes(':del_venue') && !t.includes(':venue')
+        );
         if (filtered.length) pool = filtered;
     }
     const text = pool[Math.floor(Math.random() * pool.length)];
@@ -129,6 +134,9 @@ export function generateMatchSummary(config) {
         homeArticle, awayArticle,
         homeScore, awayScore,
         venueName,
+        venueEnPhrase,
+        venueElPhrase,
+        venueDePhrase,
         narrativeTemplates: t,
         mvpPlayerName, mvpPlayerTeamId,
         hasExtraTime, etHomeScore, etAwayScore,
@@ -223,6 +231,9 @@ export function generateMatchSummary(config) {
         ':pen_score': penaltyResult ? `${penaltyResult.home}-${penaltyResult.away}` : '',
         ':goals_each': String(totalHome),
         ':venue': venueName || '',
+        ':en_venue': venueEnPhrase || '',
+        ':el_venue': venueElPhrase || '',
+        ':del_venue': venueDePhrase || '',
         ':competition': competitionName || '',
     };
 
@@ -284,7 +295,12 @@ export function generateMatchSummary(config) {
         }));
     }
 
-    const shout = pickTemplate(t.summaryShout || [], { ':venue': venueName || '' });
+    const shout = pickTemplate(t.summaryShout || [], {
+        ':venue': venueName || '',
+        ':en_venue': venueEnPhrase || '',
+        ':el_venue': venueElPhrase || '',
+        ':del_venue': venueDePhrase || '',
+    });
     if (shout) sentences.unshift(shout);
 
     return sentences.filter(Boolean).join(' ');
