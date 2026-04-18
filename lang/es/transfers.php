@@ -26,6 +26,8 @@ return [
     'players_leaving_free_help' => 'Jugadores que han firmado precontrato con otro club',
     'expiring_contracts_section' => 'Jugadores en Último Año de Contrato',
     'contract_renewals_section' => 'Renovaciones de Contrato',
+    'player_wont_renew' => 'Ha superado las ambiciones del club — no firmará renovación',
+    'player_wants_raise' => 'Descontento con su sueldo',
     'pending_renewals_section' => 'Renovaciones Pendientes',
     'loans_out_section' => 'Cesiones Activas (Salidas)',
     'loan_searches_section' => 'Buscando Destino de Cesión',

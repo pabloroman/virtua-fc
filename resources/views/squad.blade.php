@@ -269,7 +269,7 @@
                                             <div class="flex-1 min-w-0">
                                                 <div class="flex items-center gap-1.5">
                                                     <span class="text-sm font-medium text-text-primary truncate">{{ $gp->player->name }}</span>
-                                                    @include('partials.squad.player-status-icon', ['gp' => $gp, 'game' => $game, 'seasonEndDate' => $seasonEndDate])
+                                                    @include('partials.squad.player-status-icon', ['gp' => $gp, 'game' => $game, 'seasonEndDate' => $seasonEndDate, 'playerFlags' => $playerFlags ?? []])
                                                     @if($unavailReason)
                                                         <span class="text-[8px] px-1 py-0.5 rounded-sm bg-red-500/10 text-accent-red font-medium shrink-0">{{ $unavailReason }}</span>
                                                     @endif
@@ -359,7 +359,7 @@
                                             <div class="min-w-0">
                                                 <div class="flex items-center gap-2">
                                                     <span class="text-sm font-medium text-text-primary truncate">{{ $gp->player->name }}</span>
-                                                    @include('partials.squad.player-status-icon', ['gp' => $gp, 'game' => $game, 'seasonEndDate' => $seasonEndDate])
+                                                    @include('partials.squad.player-status-icon', ['gp' => $gp, 'game' => $game, 'seasonEndDate' => $seasonEndDate, 'playerFlags' => $playerFlags ?? []])
                                                 </div>
                                                 @if($gp->nationality_flag)
                                                 <div class="flex items-center gap-1 mt-0.5">

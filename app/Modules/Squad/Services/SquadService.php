@@ -13,6 +13,7 @@ use App\Modules\Player\PlayerAge;
 use App\Modules\Player\Services\PlayerDevelopmentService;
 use App\Modules\Transfer\Enums\NegotiationScenario;
 use App\Modules\Transfer\Services\ContractService;
+use App\Modules\Transfer\Services\DispositionService;
 use App\Support\PositionSlotMapper;
 
 class SquadService
@@ -20,6 +21,7 @@ class SquadService
     public function __construct(
         private readonly ContractService $contractService,
         private readonly PlayerDevelopmentService $developmentService,
+        private readonly DispositionService $dispositionService,
     ) {}
 
     public function buildSquadOverview(Game $game): array
@@ -164,6 +166,11 @@ class SquadService
             }
         }
 
+        // Per-player flags (stature/wage gap) used to drive squad indicators.
+        $playerFlags = $isCareerMode
+            ? $this->dispositionService->buildSquadFlags($game)->toArray()
+            : [];
+
         // MVP counts for the user's team across all competitions
         $mvpCounts = GameMatch::mvpCountsByPlayer($gameId);
 
@@ -201,6 +208,7 @@ class SquadService
             'renewalData' => $renewalData,
             'academyCount' => $academyCount,
             'mvpCounts' => $mvpCounts,
+            'playerFlags' => $playerFlags,
         ];
     }
 

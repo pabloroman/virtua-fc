@@ -26,6 +26,8 @@ return [
     'players_leaving_free_help' => 'Players who have signed a pre-contract with another club',
     'expiring_contracts_section' => 'Players in Final Year of Contract',
     'contract_renewals_section' => 'Contract Renewals',
+    'player_wont_renew' => 'Has outgrown the club — will not sign a new contract',
+    'player_wants_raise' => 'Unhappy with wage',
     'pending_renewals_section' => 'Pending Renewals',
     'loans_out_section' => 'Active Loans (Out)',
     'loan_searches_section' => 'Searching for Loan Destination',

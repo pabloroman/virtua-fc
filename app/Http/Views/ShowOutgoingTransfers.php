@@ -3,6 +3,7 @@
 namespace App\Http\Views;
 
 use App\Modules\Transfer\Services\ContractService;
+use App\Modules\Transfer\Services\DispositionService;
 use App\Modules\Transfer\Services\LoanService;
 use App\Modules\Transfer\Services\TransferHeaderService;
 use App\Modules\Transfer\Services\TransferService;
@@ -19,6 +20,7 @@ class ShowOutgoingTransfers
         private readonly ContractService $contractService,
         private readonly LoanService $loanService,
         private readonly TransferHeaderService $headerService,
+        private readonly DispositionService $dispositionService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -125,6 +127,19 @@ class ShowOutgoingTransfers
 
         // Declined renewals (club-declined only — player rejections use cooldown)
         $seasonEndDate = $game->getSeasonEndDate();
+
+        // Per-player flags (stature/wage gap) used to drive indicators and filtering.
+        $playerFlags = $this->dispositionService->buildSquadFlags($game)->toArray();
+
+        // Narrow the renewal list: final-contract-year, wage-gap (wants a raise),
+        // or stature-gap (will not re-sign at any terms). Users can still renew a
+        // long-contract player from the player detail page; the list itself stays
+        // focused on actionable cases.
+        $renewalEligiblePlayers = $renewalEligiblePlayers->filter(
+            fn (GamePlayer $p) => $p->isContractExpiring($seasonEndDate)
+                || ($playerFlags[$p->id]['stature_gap'] ?? false)
+                || ($playerFlags[$p->id]['wage_gap'] ?? false)
+        )->values();
         $declinedRenewals = GamePlayer::with(['player', 'latestRenewalNegotiation'])
             ->where('game_id', $gameId)
             ->ownedByTeam($game->team_id)
@@ -164,6 +179,7 @@ class ShowOutgoingTransfers
             'pendingRenewals' => $pendingRenewals,
             'declinedRenewals' => $declinedRenewals,
             'cooldownRenewals' => $cooldownRenewals,
+            'playerFlags' => $playerFlags,
             ...$this->headerService->getHeaderData($game),
         ]);
     }

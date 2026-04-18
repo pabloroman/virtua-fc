@@ -225,6 +225,16 @@ class ContractService
         $premium = $scenario->wagePremium($player->market_value_cents);
         $demandedWage = (int) ($baseWage * $premium);
 
+        // Wage-gap renewals: the player knows same-tier teammates earn more
+        // and demands the peer median wage at minimum.
+        if ($scenario === NegotiationScenario::RENEWAL
+            && $this->dispositionService->hasWageGap($player)) {
+            $peerMedian = $this->dispositionService->peerMedianWage($player);
+            if ($peerMedian > $demandedWage) {
+                $demandedWage = $peerMedian;
+            }
+        }
+
         // Renewals: player wants at least a raise over their current wage
         if ($scenario === NegotiationScenario::RENEWAL) {
             $currentWageWithPremium = (int) ($player->annual_wage * $premium);
@@ -271,6 +281,12 @@ class ContractService
             return false;
         }
 
+        // Capture wage-gap state before the update so we can grant a relief
+        // boost if this renewal actually addresses a wage grievance. The peer
+        // median is read now because the player is about to be updated.
+        $hadWageGap = $this->dispositionService->hasWageGap($player);
+        $peerMedian = $hadWageGap ? $this->dispositionService->peerMedianWage($player) : 0;
+
         $seasonYear = (int) $game->season;
 
         // New contract ends in June of (current season + contract years).
@@ -284,6 +300,18 @@ class ContractService
             'contract_until' => $newContractEnd,
             'pending_annual_wage' => $newWage,
         ]);
+
+        // Wage-gap resolution: small morale boost when the renewal actually
+        // closes the peer-median gap. Token raises that don't clear the gap
+        // get no boost — the drip will keep firing.
+        if ($hadWageGap && $newWage >= $peerMedian && $player->matchState) {
+            $player->matchState->update([
+                'morale' => min(
+                    DispositionService::MAX_MORALE,
+                    $player->matchState->morale + DispositionService::WAGE_GAP_RENEWAL_BOOST,
+                ),
+            ]);
+        }
 
         return true;
     }

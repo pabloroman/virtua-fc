@@ -211,13 +211,18 @@ class DispositionService
     /**
      * Decide whether a player is willing to sit down for contract renewal talks at all.
      *
-     * Gates the opening of the negotiation before any wage demand is computed.
-     * A content player (morale ≥ threshold) with plenty of contract left has no
-     * incentive to renegotiate. An unhappy player, or one nearing the end of
-     * their deal, will always engage.
+     * A player whose stature has outgrown the club will not sign a new deal at any
+     * wage or length — their only path is to run down the current contract and
+     * leave on a transfer (or free). An underpaid player will always listen
+     * because a renewal is their route to fair wages. Otherwise standard gates
+     * apply: freshly-signed, content players with lots of contract left decline.
      */
     public function isWillingToNegotiateRenewal(GamePlayer $player): bool
     {
+        if ($this->hasStatureGap($player)) {
+            return false;
+        }
+
         if (!$player->contract_until) {
             return true;
         }
@@ -228,7 +233,11 @@ class DispositionService
             return true;
         }
 
-        return $player->morale < self::RENEWAL_CONTENT_MORALE_THRESHOLD;
+        if ($player->morale < self::RENEWAL_CONTENT_MORALE_THRESHOLD) {
+            return true;
+        }
+
+        return $this->hasWageGap($player);
     }
 
     // ── Disposition factor helpers ──
@@ -717,6 +726,161 @@ class DispositionService
             'accepted' => false,
             'message' => __('messages.pre_contract_rejected', ['player' => $player->name]),
         ];
+    }
+
+    // =========================================
+    // STATURE GAP & WAGE GAP
+    // =========================================
+
+    /**
+     * Fraction of peer-median wage at which a player starts to feel underpaid.
+     * Below this threshold, they push for renewal and demand the peer median.
+     */
+    public const WAGE_GAP_RATIO = 0.80;
+
+    /**
+     * True when the player's tier requires a higher-reputation club than the
+     * one they currently belong to. Such a player has outgrown the club: no
+     * wage or contract length can retain them — their next move is upward.
+     *
+     * Pass an explicit $teamId to evaluate against a prospective signing club
+     * (defaults to the player's current team for renewal checks).
+     */
+    public function hasStatureGap(GamePlayer $player, ?string $teamId = null): bool
+    {
+        $teamId ??= $player->team_id;
+
+        if (!$teamId || !$player->game_id) {
+            return false;
+        }
+
+        // On-loan players are physically at a different club than their
+        // owner. Stature is relative to the owner's reputation, not the
+        // loan destination — skip the check and let the renewal proceed.
+        if ($player->isOnLoan()) {
+            return false;
+        }
+
+        return $this->tierReputationGap($player, $player->game_id, $teamId) > 0;
+    }
+
+    /**
+     * True when the player earns materially less than same-tier peers in their
+     * own squad. Wage-gap players always listen to renewal talks and their
+     * demand is pegged to the peer median (not their current-wage floor).
+     */
+    public function hasWageGap(GamePlayer $player): bool
+    {
+        if (!$player->team_id) {
+            return false;
+        }
+
+        // On-loan players are compared against the wrong set of peers.
+        // Skip the check until they're back at the owning club.
+        if ($player->isOnLoan()) {
+            return false;
+        }
+
+        // A pending renewal (agreed but not yet applied until season end)
+        // should close the flag immediately — otherwise the manager keeps
+        // being dripped for months after doing the right thing.
+        $effectiveWage = $player->pending_annual_wage ?: $player->annual_wage;
+        if ($effectiveWage <= 0) {
+            return false;
+        }
+
+        $peerMedian = $this->peerMedianWage($player);
+        if ($peerMedian <= 0) {
+            return false;
+        }
+
+        return $effectiveWage < (int) ($peerMedian * self::WAGE_GAP_RATIO);
+    }
+
+    /**
+     * Median annual wage of same-tier squad peers (excluding the player).
+     * Returns 0 if there are no comparable teammates.
+     */
+    public function peerMedianWage(GamePlayer $player): int
+    {
+        if (!$player->team_id || !$player->tier) {
+            return 0;
+        }
+
+        $wages = GamePlayer::where('game_id', $player->game_id)
+            ->where('team_id', $player->team_id)
+            ->where('tier', $player->tier)
+            ->where('id', '!=', $player->id)
+            ->where('annual_wage', '>', 0)
+            ->pluck('annual_wage')
+            ->sort()
+            ->values();
+
+        if ($wages->isEmpty()) {
+            return 0;
+        }
+
+        $count = $wages->count();
+        if ($count % 2 === 1) {
+            return (int) $wages[intdiv($count, 2)];
+        }
+
+        return (int) (($wages[$count / 2 - 1] + $wages[$count / 2]) / 2);
+    }
+
+    /**
+     * Apply the monthly morale drip for wage-gap players. Pure action: the
+     * caller decides when to invoke (typically the month-boundary listener).
+     * Drops morale by 1 for every wage-gap squad player whose morale is above
+     * the floor. Returns the number of players affected.
+     */
+    public const WAGE_GAP_MORALE_DRIP = 5;
+    public const WAGE_GAP_MORALE_FLOOR = 60;
+    public const WAGE_GAP_RENEWAL_BOOST = 10;
+    public const MAX_MORALE = 100;
+
+    public function applyWageGapMoraleDrip(Game $game): int
+    {
+        $squad = GamePlayer::with('matchState')
+            ->joinMatchState()
+            ->where('game_players.game_id', $game->id)
+            ->where('game_players.team_id', $game->team_id)
+            ->whereMatchStat('morale', '>', self::WAGE_GAP_MORALE_FLOOR)
+            ->get();
+
+        $affected = 0;
+        foreach ($squad as $player) {
+            if (!$this->hasWageGap($player)) {
+                continue;
+            }
+            $player->matchState->update([
+                'morale' => max(self::WAGE_GAP_MORALE_FLOOR, $player->morale - self::WAGE_GAP_MORALE_DRIP),
+            ]);
+            $affected++;
+        }
+
+        return $affected;
+    }
+
+    /**
+     * Per-player flag map for a game's squad. Used by the squad and renewal
+     * views to render the "won't renew" / "wants raise" indicators without
+     * recomputing the checks for every row.
+     *
+     * @return Collection<string, array{stature_gap: bool, wage_gap: bool}>
+     */
+    public function buildSquadFlags(Game $game): Collection
+    {
+        $squad = GamePlayer::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->get();
+
+        return $squad->mapWithKeys(fn (GamePlayer $p) => [
+            $p->id => [
+                'stature_gap' => $this->hasStatureGap($p),
+                'wage_gap' => $this->hasWageGap($p),
+            ],
+        ]);
     }
 
     // =========================================
