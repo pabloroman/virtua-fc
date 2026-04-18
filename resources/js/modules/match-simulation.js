@@ -755,7 +755,26 @@ export function createMatchSimulation(ctx) {
         // Generate match summary after the resimulation resolves (or
         // no-ops). Both paths produce correct summaries: resimulation
         // merges fresh events/scores first; no-op keeps the originals.
-        skipPromise.then(() => {
+        skipPromise.then((autoSubsApplied) => {
+            // When autoSubUserTeamBeforeSkip returns false (no bench, no
+            // sub budget, no windows left, server decided no subs needed,
+            // or request failed), it never touched homeScore/awayScore or
+            // revealedEvents, and enterFullTime's _skippingToEnd guard
+            // also skipped them — so the scoreboard would stay frozen at
+            // the pre-skip score while the commentary already reflects
+            // finalHomeScore/finalAwayScore. Perform the sync here so the
+            // top scoreboard matches the ground-truth result.
+            if (!autoSubsApplied) {
+                state.homeScore = state.finalHomeScore;
+                state.awayScore = state.finalAwayScore;
+                for (let i = state.lastRevealedIndex + 1; i < state.events.length; i++) {
+                    const event = state.events[i];
+                    state.revealedEvents.unshift(event);
+                    trackSubstitutionIfNeeded(event);
+                }
+                state.lastRevealedIndex = state.events.length - 1;
+            }
+
             if (typeof state._generateMatchSummary === 'function') {
                 state.matchSummary = state._generateMatchSummary();
             }
