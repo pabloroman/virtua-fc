@@ -128,6 +128,7 @@ return [
     'counter_offer_received' => 'Contraoferta Recibida',
     'transfer_agreed' => 'Fichaje Acordado',
     'already_bidding' => 'Ya tienes una oferta por este jugador',
+    'pre_contract_player_not_interested' => ':player no está interesado en fichar por un club de nuestra categoría.',
     'negotiation_cooldown' => 'Las negociaciones con este jugador se rompieron recientemente. Espera a la siguiente jornada para intentarlo de nuevo.',
     'negotiation_cooldown_short' => 'Espera a la próxima jornada',
     'renewal_cooldown' => 'Este jugador rechazó tu oferta de renovación recientemente. Espera a la siguiente jornada para intentarlo de nuevo.',

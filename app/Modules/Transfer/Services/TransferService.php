@@ -1135,6 +1135,12 @@ class TransferService
             throw new \InvalidArgumentException(__('messages.player_not_expiring'));
         }
 
+        if (!$this->dispositionService->canSignPreContract($player, $game->id, $game->team_id)) {
+            throw new \InvalidArgumentException(
+                __('transfers.pre_contract_player_not_interested', ['player' => $player->name])
+            );
+        }
+
         $existingOffer = TransferOffer::where('game_id', $game->id)
             ->where('game_player_id', $player->id)
             ->where('direction', TransferOffer::DIRECTION_INCOMING)

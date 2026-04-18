@@ -64,6 +64,17 @@ class NegotiatePreContract
             ], 422);
         }
 
+        // Reputation gate: high-profile players refuse lower-reputation clubs outright.
+        // Same tier-vs-reputation floor the free-agent flow uses — without this check
+        // the wage-flexibility disposition alone lets a full-wage offer pass regardless
+        // of how large the reputation gap is.
+        if (!$this->dispositionService->canSignPreContract($player, $game->id, $game->team_id)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => __('transfers.pre_contract_player_not_interested', ['player' => $player->name]),
+            ], 422);
+        }
+
         // Check for existing countered offer to resume
         $existing = TransferOffer::where('game_id', $game->id)
             ->where('game_player_id', $player->id)

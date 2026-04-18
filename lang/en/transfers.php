@@ -127,6 +127,7 @@ return [
     'counter_offer_received' => 'Counter Offer Received',
     'transfer_agreed' => 'Transfer Agreed',
     'already_bidding' => 'You already have a bid for this player',
+    'pre_contract_player_not_interested' => ":player isn't interested in signing for a club at our level.",
     'negotiation_cooldown' => 'Negotiations with this player broke down recently. Wait until the next matchday to try again.',
     'negotiation_cooldown_short' => 'Wait until next matchday',
     'renewal_cooldown' => 'This player rejected your renewal offer recently. Wait until the next matchday to try again.',

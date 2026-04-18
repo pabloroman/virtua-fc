@@ -487,21 +487,27 @@ class DispositionService
     }
 
     /**
+     * Check whether a player is willing to accept a pre-contract offer from a team,
+     * based on the player's tier vs the bidding team's reputation.
+     *
+     * Uses the same tier-vs-reputation floor as free-agent signings: an expiring
+     * player moving on a free transfer is close enough to a free agent that the
+     * same ambition gate applies. Prevents e.g. a tier-5 star from accepting a
+     * pre-contract with a Segunda-level club regardless of wage offered.
+     */
+    public function canSignPreContract(GamePlayer $player, string $gameId, string $teamId): bool
+    {
+        return $this->meetsTierReputationFloor($player, $gameId, $teamId);
+    }
+
+    /**
      * Determine a free agent's willingness to sign for a team.
      *
      * @return string 'willing' (will sign), 'reluctant' (1 tier below minimum), or 'unwilling' (2+ below)
      */
     public function freeAgentWillingnessLevel(GamePlayer $player, string $gameId, string $teamId): string
     {
-        $playerTier = $player->tier ?? PlayerTierService::tierFromMarketValue($player->market_value_cents);
-        $minReputation = self::MIN_REPUTATION_BY_PLAYER_TIER[$playerTier] ?? ClubProfile::REPUTATION_LOCAL;
-
-        $teamReputation = TeamReputation::resolveLevel($gameId, $teamId);
-
-        $teamIndex = ClubProfile::getReputationTierIndex($teamReputation);
-        $minIndex = ClubProfile::getReputationTierIndex($minReputation);
-
-        $gap = $minIndex - $teamIndex;
+        $gap = $this->tierReputationGap($player, $gameId, $teamId);
 
         if ($gap <= 0) {
             return 'willing';
@@ -512,6 +518,31 @@ class DispositionService
         }
 
         return 'unwilling';
+    }
+
+    /**
+     * Whether the team's reputation meets the minimum required by the player's tier.
+     */
+    private function meetsTierReputationFloor(GamePlayer $player, string $gameId, string $teamId): bool
+    {
+        return $this->tierReputationGap($player, $gameId, $teamId) <= 0;
+    }
+
+    /**
+     * How far the team's reputation sits below the player-tier minimum.
+     * Positive = team is below the floor; 0 or negative = team meets or exceeds it.
+     */
+    private function tierReputationGap(GamePlayer $player, string $gameId, string $teamId): int
+    {
+        $playerTier = $player->tier ?? PlayerTierService::tierFromMarketValue($player->market_value_cents);
+        $minReputation = self::MIN_REPUTATION_BY_PLAYER_TIER[$playerTier] ?? ClubProfile::REPUTATION_LOCAL;
+
+        $teamReputation = TeamReputation::resolveLevel($gameId, $teamId);
+
+        $teamIndex = ClubProfile::getReputationTierIndex($teamReputation);
+        $minIndex = ClubProfile::getReputationTierIndex($minReputation);
+
+        return $minIndex - $teamIndex;
     }
 
     // =========================================
