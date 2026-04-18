@@ -292,6 +292,18 @@ class MatchSimulator
             );
         }
 
+        // Capture the initial lineup and bench so a post-match reassignment pass
+        // can rebuild the pool of players who were ever on the pitch. The
+        // per-period reassignment inside simulateRemainder only sees its own
+        // events, so a card generated in period K can't "see" a red-card
+        // reactive sub or AI sub that fires between periods. We rerun the
+        // reassignment over the full event list at the end to guarantee no
+        // event is attributed to a player who was already off the pitch.
+        $initialHomePlayers = $homePlayers;
+        $initialAwayPlayers = $awayPlayers;
+        $initialHomeBench = $homeBenchPlayers;
+        $initialAwayBench = $awayBenchPlayers;
+
         // Reset performance cache once for the entire match
         $this->matchPerformance = [];
 
@@ -441,6 +453,14 @@ class MatchSimulator
         // Sort all events chronologically
         $allEvents = $allEvents->sortBy('minute')->values();
 
+        // Final cross-period reassignment pass. See note at the top of the
+        // function for why this is necessary.
+        $allHomePlayers = $this->buildAllPlayersSeen($initialHomePlayers, $initialHomeBench, $allEvents, $homeTeam->id);
+        $allAwayPlayers = $this->buildAllPlayersSeen($initialAwayPlayers, $initialAwayBench, $allEvents, $awayTeam->id);
+        $allEvents = $this->reassignEventsFromUnavailablePlayers(
+            $allEvents, $allHomePlayers, $allAwayPlayers, $homeTeam->id, $awayTeam->id
+        );
+
         // Apply xG adjustment using accumulated totals from all periods
         $this->adjustPerformancesForXG(
             $totalHomeScore, $totalAwayScore,
@@ -456,6 +476,41 @@ class MatchSimulator
             new MatchResult($totalHomeScore, $totalAwayScore, $allEvents, $finalResult->homePossession, $finalResult->awayPossession),
             $allPerformances,
         );
+    }
+
+    /**
+     * Build the set of players who were ever on the pitch for a team across a
+     * full match. Starts from the initial lineup and adds any player brought
+     * on via a substitution event. Used by the final cross-period
+     * reassignment pass so it can rebuild the pool of valid teammates at any
+     * minute (subbed-out and subbed-in players are both considered).
+     */
+    private function buildAllPlayersSeen(
+        Collection $initialLineup,
+        ?Collection $initialBench,
+        Collection $events,
+        string $teamId,
+    ): Collection {
+        $all = $initialLineup->keyBy('id');
+        if ($initialBench === null) {
+            return $all->values();
+        }
+        $benchById = $initialBench->keyBy('id');
+        foreach ($events as $event) {
+            if ($event->type !== 'substitution' || $event->teamId !== $teamId) {
+                continue;
+            }
+            $playerInId = $event->metadata['player_in_id'] ?? null;
+            if ($playerInId === null || $all->has($playerInId)) {
+                continue;
+            }
+            $subIn = $benchById->get($playerInId);
+            if ($subIn !== null) {
+                $all->put($playerInId, $subIn);
+            }
+        }
+
+        return $all->values();
     }
 
     /**
@@ -758,6 +813,13 @@ class MatchSimulator
             $this->matchPerformance = [];
         }
 
+        // Capture lineup/bench at entry so the final reassignment pass can
+        // rebuild the full pool of players who were ever on the pitch.
+        $initialHomePlayers = $homePlayers;
+        $initialAwayPlayers = $awayPlayers;
+        $initialHomeBench = $homeBenchPlayers;
+        $initialAwayBench = $awayBenchPlayers;
+
         $allEvents = collect();
         $totalHomeScore = 0;
         $totalAwayScore = 0;
@@ -892,6 +954,17 @@ class MatchSimulator
         $totalAwayXG += $finalResult->awayXG;
 
         $allEvents = $allEvents->sortBy('minute')->values();
+
+        // Final cross-period reassignment pass: catches any event whose target
+        // player was taken off the pitch by a sub that fired outside the
+        // event's period (red-card reactive sub, AI tactical sub at a split
+        // minute). Without this, a yellow card in period K can stick to a
+        // player who was reactively subbed between periods K-1 and K.
+        $allHomePlayers = $this->buildAllPlayersSeen($initialHomePlayers, $initialHomeBench, $allEvents, $homeTeam->id);
+        $allAwayPlayers = $this->buildAllPlayersSeen($initialAwayPlayers, $initialAwayBench, $allEvents, $awayTeam->id);
+        $allEvents = $this->reassignEventsFromUnavailablePlayers(
+            $allEvents, $allHomePlayers, $allAwayPlayers, $homeTeam->id, $awayTeam->id
+        );
 
         // Apply xG adjustment using accumulated totals from all periods
         // Use total scores including pre-resimulation goals for correct win/loss determination
