@@ -911,12 +911,25 @@ class MatchSimulator
     }
 
     /**
-     * Reassign goal/assist events from players who were removed from the match
-     * (via injury or red card) to available teammates.
+     * Reassign goal/assist/card events from players who were removed from the match
+     * (via substitution or red card) to available teammates.
+     *
+     * Cards and goals are generated up-front for a whole period before injury
+     * substitutions are processed, so a player can end up with a card minute that
+     * falls after their sub minute. Without this reassignment, the user sees
+     * nonsensical events like "yellow card for player X at minute 70" when X was
+     * subbed off for injury at minute 40.
      *
      * For red cards, the first red card per team triggers a full xG recalculation
      * via simulateGoalsWithRedCardSplit(). This method handles any remaining cases
      * (injuries, or a second red card in the same match) by reassigning WHO scored.
+     *
+     * A player is considered removed only when they actually left the pitch:
+     *   - substitution (tactical, reactive, or injury auto-sub) — they left at the sub minute
+     *   - red card — they left at the red card minute
+     * An injury without a sub (e.g. when the bench is exhausted) does NOT remove
+     * the player: they stay on the pitch and can legitimately appear in later
+     * events of the same period.
      *
      * @return Collection<MatchEventData>
      */
@@ -927,38 +940,73 @@ class MatchSimulator
         string $homeTeamId,
         string $awayTeamId,
     ): Collection {
-        // Build map of player_id => minute they were removed
-        $removedAt = [];
+        // Track sub-outs and red cards separately so that a red_card event doesn't
+        // treat itself as the reason to reassign itself. Red cards still exclude
+        // the carded player from LATER events via the combined removedAt map
+        // used for availability below.
+        $subRemovedAt = [];
+        $redRemovedAt = [];
         // Build map of player_id => minute they entered (substituted in)
         $enteredAt = [];
 
         foreach ($events as $event) {
-            if (in_array($event->type, ['injury', 'red_card', 'substitution']) && ! isset($removedAt[$event->gamePlayerId])) {
-                $removedAt[$event->gamePlayerId] = $event->minute;
-            }
-            if ($event->type === 'substitution' && isset($event->metadata['player_in_id'])) {
-                $enteredAt[$event->metadata['player_in_id']] = $event->minute;
+            if ($event->type === 'substitution') {
+                $outId = $event->gamePlayerId;
+                if (! isset($subRemovedAt[$outId]) || $event->minute < $subRemovedAt[$outId]) {
+                    $subRemovedAt[$outId] = $event->minute;
+                }
+                $playerInId = $event->metadata['player_in_id'] ?? null;
+                if ($playerInId !== null) {
+                    $enteredAt[$playerInId] = $event->minute;
+                }
+            } elseif ($event->type === 'red_card') {
+                $playerId = $event->gamePlayerId;
+                if (! isset($redRemovedAt[$playerId]) || $event->minute < $redRemovedAt[$playerId]) {
+                    $redRemovedAt[$playerId] = $event->minute;
+                }
             }
         }
 
-        if (empty($removedAt) && empty($enteredAt)) {
+        if (empty($subRemovedAt) && empty($redRemovedAt) && empty($enteredAt)) {
             return $events;
         }
 
-        return $events->map(function (MatchEventData $event) use ($removedAt, $enteredAt, $homePlayers, $awayPlayers, $homeTeamId, $awayTeamId) {
-            if (! in_array($event->type, ['goal', 'assist'])) {
+        // Combined map used when filtering which teammates are on the pitch at a
+        // given minute. For availability we treat either a sub-out or a red card
+        // as a removal.
+        $removedAt = $subRemovedAt;
+        foreach ($redRemovedAt as $playerId => $minute) {
+            if (! isset($removedAt[$playerId]) || $minute < $removedAt[$playerId]) {
+                $removedAt[$playerId] = $minute;
+            }
+        }
+
+        $reassignableTypes = ['goal', 'assist', 'yellow_card', 'red_card', 'own_goal', 'penalty_missed'];
+
+        return $events->map(function (MatchEventData $event) use ($subRemovedAt, $redRemovedAt, $removedAt, $enteredAt, $homePlayers, $awayPlayers, $homeTeamId, $awayTeamId, $reassignableTypes) {
+            if (! in_array($event->type, $reassignableTypes)) {
                 return $event;
             }
 
             $needsReassignment = false;
+            $playerId = $event->gamePlayerId;
 
-            // Player was removed (injury/red card/sub out) at or before this event
-            if (isset($removedAt[$event->gamePlayerId]) && $event->minute >= $removedAt[$event->gamePlayerId]) {
+            // Player was subbed off at or before this event — events after the
+            // sub minute can never belong to them. This is the main fix for the
+            // "yellow card after injury substitution" bug.
+            if (isset($subRemovedAt[$playerId]) && $event->minute >= $subRemovedAt[$playerId]) {
+                $needsReassignment = true;
+            }
+
+            // Player was sent off BEFORE this event (strictly earlier). A red
+            // card event at the same minute as its own entry is the cause of
+            // the removal, not a symptom — don't reassign it to a teammate.
+            if (isset($redRemovedAt[$playerId]) && $event->minute > $redRemovedAt[$playerId]) {
                 $needsReassignment = true;
             }
 
             // Player hadn't entered the match yet (sub in after this event)
-            if (isset($enteredAt[$event->gamePlayerId]) && $event->minute < $enteredAt[$event->gamePlayerId]) {
+            if (isset($enteredAt[$playerId]) && $event->minute < $enteredAt[$playerId]) {
                 $needsReassignment = true;
             }
 
@@ -987,18 +1035,39 @@ class MatchSimulator
                 return false;
             });
 
-            $replacement = $event->type === 'goal'
-                ? $this->pickGoalScorer($availablePlayers)
-                : $this->pickPlayerByPosition($availablePlayers, self::ASSIST_WEIGHTS);
+            $replacement = match ($event->type) {
+                'goal' => $this->pickGoalScorer($availablePlayers),
+                'assist' => $this->pickPlayerByPosition($availablePlayers, self::ASSIST_WEIGHTS),
+                'yellow_card', 'red_card' => $this->pickPlayerByPosition($availablePlayers, self::CARD_WEIGHTS),
+                'own_goal' => $this->pickPlayerByPosition($availablePlayers, [
+                    'Centre-Back' => 40,
+                    'Left-Back' => 20,
+                    'Right-Back' => 20,
+                    'Defensive Midfield' => 15,
+                    'Goalkeeper' => 5,
+                ]),
+                'penalty_missed' => $this->pickPlayerByPosition($availablePlayers, self::GOAL_SCORING_WEIGHTS),
+            };
 
             if (! $replacement) {
-                return $event;
+                // No replacement available — drop the event rather than leave it
+                // attributed to a player who wasn't on the pitch. Returning null
+                // is filtered out after the map.
+                return null;
             }
 
-            return $event->type === 'goal'
-                ? MatchEventData::goal($event->teamId, $replacement->id, $event->minute)
-                : MatchEventData::assist($event->teamId, $replacement->id, $event->minute);
-        });
+            return match ($event->type) {
+                'goal' => MatchEventData::goal($event->teamId, $replacement->id, $event->minute),
+                'assist' => MatchEventData::assist($event->teamId, $replacement->id, $event->minute),
+                'yellow_card' => MatchEventData::yellowCard($event->teamId, $replacement->id, $event->minute),
+                // Reassigned reds can't carry a "second yellow" narrative because
+                // the replacement player didn't have a first yellow — log as a
+                // direct red instead.
+                'red_card' => MatchEventData::redCard($event->teamId, $replacement->id, $event->minute, false),
+                'own_goal' => MatchEventData::ownGoal($event->teamId, $replacement->id, $event->minute),
+                'penalty_missed' => MatchEventData::penaltyMissed($event->teamId, $replacement->id, $event->minute),
+            };
+        })->filter()->values();
     }
 
     /**
