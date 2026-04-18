@@ -177,14 +177,12 @@ class SquadReplenishmentProcessor implements SeasonProcessor
             GamePlayer::whereIn('id', $releaseIds)->update(['team_id' => null]);
         }
 
-        // Avoids per-team cache-miss queries during createBulk()
-        foreach ($playersByTeam as $teamId => $players) {
-            $this->playerGenerator->seedCaches(
-                $game->id,
-                $teamId,
-                $players->pluck('player_name')->toArray(),
-            );
-        }
+        // Preseed the generator's game-wide name cache from data we already
+        // loaded above, so createBulk() doesn't re-query for it.
+        $this->playerGenerator->seedCaches(
+            $game->id,
+            $playersByTeam->flatten(1)->pluck('player_name')->toArray(),
+        );
         unset($playersByTeam);
 
         // Bulk insert all generated players

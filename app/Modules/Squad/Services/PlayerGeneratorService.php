@@ -29,35 +29,35 @@ use App\Modules\Player\Services\PlayerValuationService;
  */
 class PlayerGeneratorService
 {
-    /** @var array<array{name: string, nationality: string}> Cached identity pool */
-    private ?array $identityPool = null;
-
-
-    /** @var array<string, string[]> Cached team player names by "gameId:teamId" */
-    private array $teamNamesCache = [];
-
-    /** @var array<string, string[]> Cached free agent names by gameId */
-    private array $freeAgentNamesCache = [];
+    /**
+     * Names in use across the entire game, keyed by gameId. Populated lazily
+     * on first call (all teams + free agents in one query) and extended as new
+     * players are generated. Cross-team scope is what prevents the issue where
+     * two teams' generated players end up with the same name (issue #819).
+     *
+     * @var array<string, string[]>
+     */
+    private array $gameNamesCache = [];
 
     public function __construct(
         private readonly ContractService $contractService,
         private readonly PlayerDevelopmentService $developmentService,
         private readonly PlayerValuationService $valuationService,
         private readonly PlayerAttributeSampler $sampler,
+        private readonly PlayerNameGenerator $nameGenerator,
     ) {}
 
     /**
-     * Seed name cache for a specific team from already-loaded data.
+     * Seed game-wide name cache from already-loaded data.
      *
      * Allows callers that already have the data (e.g. from a bulk query) to
-     * populate caches without triggering any additional database queries.
+     * populate the cache without triggering an additional database query.
      *
      * @param  string[]  $playerNames
      */
-    public function seedCaches(string $gameId, string $teamId, array $playerNames): void
+    public function seedCaches(string $gameId, array $playerNames): void
     {
-        $key = "{$gameId}:{$teamId}";
-        $this->teamNamesCache[$key] = $playerNames;
+        $this->gameNamesCache[$gameId] = array_values(array_unique($playerNames));
     }
 
     /**
@@ -72,11 +72,8 @@ class PlayerGeneratorService
      */
     public function create(Game $game, GeneratedPlayerData $data): GamePlayer
     {
-        $excludedNames = ($data->name === null)
-            ? array_merge(
-                $data->teamId ? $this->getOrLoadTeamPlayerNames($game->id, $data->teamId) : [],
-                $this->getOrLoadFreeAgentNames($game->id)
-            )
+        $excludedNames = $data->name === null
+            ? $this->getOrLoadGameNames($game->id)
             : [];
         $identity = $this->pickRandomIdentity(excludedNames: $excludedNames);
         $name = $data->name ?? $identity['name'];
@@ -151,9 +148,9 @@ class PlayerGeneratorService
         $gamePlayer->setRelation('player', $player);
         $gamePlayer->setRelation('matchState', $matchState);
 
-        // Update cache with the newly created player
-        $teamKey = "{$game->id}:{$data->teamId}";
-        $this->teamNamesCache[$teamKey][] = $name;
+        // Update cache with the newly created player so subsequent generations in the
+        // same request don't collide with it.
+        $this->gameNamesCache[$game->id][] = $name;
 
         return $gamePlayer;
     }
@@ -185,11 +182,8 @@ class PlayerGeneratorService
         $batchNames = [];
 
         foreach ($dataItems as $data) {
-            $excludedNames = ($data->name === null)
-                ? array_merge(
-                    $this->getOrLoadTeamPlayerNames($game->id, $data->teamId),
-                    $batchNames,
-                )
+            $excludedNames = $data->name === null
+                ? array_merge($this->getOrLoadGameNames($game->id), $batchNames)
                 : [];
             $identity = $this->pickRandomIdentity(excludedNames: $excludedNames);
             $name = $data->name ?? $identity['name'];
@@ -256,9 +250,8 @@ class PlayerGeneratorService
                 'morale' => mt_rand($data->moraleMin, $data->moraleMax),
             ];
 
-            // Update caches for subsequent iterations
-            $teamKey = "{$game->id}:{$data->teamId}";
-            $this->teamNamesCache[$teamKey][] = $name;
+            // Update caches for subsequent iterations in the same batch.
+            $this->gameNamesCache[$game->id][] = $name;
             $batchNames[] = $name;
 
             $results[] = [
@@ -442,61 +435,92 @@ class PlayerGeneratorService
     }
 
     /**
-     * Pick a random identity (name + nationality + height + foot) from the pool.
+     * Domestic-nationality share for weighted name selection: 75% domestic, 25% any.
+     */
+    private const DOMESTIC_NATIONALITY_WEIGHT = 75;
+
+    /**
+     * Countries from which the "any" 25% branch picks when no explicit nationality
+     * is supplied. A small curated set of footballing nations keeps generated
+     * foreigners believable rather than drawing from every locale Faker supports.
+     */
+    private const FOREIGN_NATIONALITY_POOL = [
+        'Spain', 'England', 'France', 'Germany', 'Italy', 'Portugal', 'Brazil',
+        'Argentina', 'Netherlands', 'Belgium', 'Poland', 'Denmark', 'Sweden',
+        'Norway', 'Croatia', 'Serbia', 'Switzerland', 'Austria', 'Greece',
+        'Türkiye', 'Morocco', 'Senegal', "Cote d'Ivoire", 'Nigeria', 'Ghana',
+        'Cameroon', 'Colombia', 'Uruguay', 'Chile', 'Mexico', 'Japan',
+        'Korea, South', 'United States',
+    ];
+
+    /**
+     * Maximum attempts to draw a non-colliding name before giving up and
+     * accepting the last candidate. With Faker's per-locale name space
+     * (tens of thousands of combinations) this almost never loops more
+     * than once in practice.
+     */
+    private const NAME_RETRY_ATTEMPTS = 10;
+
+    /**
+     * Pick a random identity (name + nationality + height + foot) for a generated player.
      *
      * @param  string|null  $nationality    Exact nationality filter (100% match, e.g. for Athletic Bilbao)
      * @param  string|null  $teamCountry    Country code for weighted selection (75% domestic / 25% any)
-     * @param  string[]     $excludedNames  Names to exclude (e.g. existing squad/academy names)
+     * @param  string[]     $excludedNames  Names to exclude (game-wide player + academy names)
      */
     public function pickRandomIdentity(?string $nationality = null, ?string $teamCountry = null, array $excludedNames = []): array
     {
-        $pool = $this->getIdentityPool();
+        $chosenNationality = $this->pickNationality($nationality, $teamCountry);
+        $name = $this->generateUniqueName($chosenNationality, $excludedNames);
 
-        // Remove names already used in the squad to prevent duplicates
-        if (! empty($excludedNames)) {
-            $excludedSet = array_flip($excludedNames);
-            $filtered = array_values(array_filter($pool, fn (array $entry) => ! isset($excludedSet[$entry['name']])));
-
-            if (! empty($filtered)) {
-                $pool = $filtered;
-            }
-        }
-
-        // Exact nationality filter takes priority (e.g. Athletic Bilbao → 100% Spanish)
-        if ($nationality !== null) {
-            $filtered = array_filter($pool, fn (array $entry) => $entry['nationality'] === $nationality);
-
-            if (! empty($filtered)) {
-                return $this->withGeneratedAttributes($filtered[array_rand($filtered)]);
-            }
-        }
-
-        // Weighted selection: 75% domestic, 25% any
-        if ($teamCountry !== null && isset(self::COUNTRY_TO_NATIONALITY[$teamCountry])) {
-            $domesticNationality = self::COUNTRY_TO_NATIONALITY[$teamCountry];
-
-            if (rand(1, 100) <= 75) {
-                $filtered = array_filter($pool, fn (array $entry) => $entry['nationality'] === $domesticNationality);
-
-                if (! empty($filtered)) {
-                    return $this->withGeneratedAttributes($filtered[array_rand($filtered)]);
-                }
-            }
-        }
-
-        return $this->withGeneratedAttributes($pool[array_rand($pool)]);
+        return [
+            'name' => $name,
+            'nationality' => [$chosenNationality],
+            'height' => $this->generateHeight(),
+            'foot' => $this->generateFoot(),
+        ];
     }
 
     /**
-     * Add randomly generated height and foot, and wrap nationality as array for DB storage.
+     * Pick a nationality honouring the exact filter first, then the 75/25 domestic
+     * weighting when a team country is known, and finally a random footballing
+     * nationality as a fallback.
      */
-    private function withGeneratedAttributes(array $entry): array
+    private function pickNationality(?string $nationality, ?string $teamCountry): string
     {
-        $entry['nationality'] = (array) $entry['nationality'];
-        $entry['height'] = $entry['height'] ?? $this->generateHeight();
-        $entry['foot'] = $entry['foot'] ?? $this->generateFoot();
+        if ($nationality !== null) {
+            return $nationality;
+        }
 
-        return $entry;
+        if ($teamCountry !== null && isset(self::COUNTRY_TO_NATIONALITY[$teamCountry])) {
+            if (rand(1, 100) <= self::DOMESTIC_NATIONALITY_WEIGHT) {
+                return self::COUNTRY_TO_NATIONALITY[$teamCountry];
+            }
+        }
+
+        return self::FOREIGN_NATIONALITY_POOL[array_rand(self::FOREIGN_NATIONALITY_POOL)];
+    }
+
+    /**
+     * Generate a name for the given nationality, retrying a small number of times
+     * if Faker happens to return one that collides with an existing name.
+     *
+     * @param  string[]  $excludedNames
+     */
+    private function generateUniqueName(string $nationality, array $excludedNames): string
+    {
+        if (empty($excludedNames)) {
+            return $this->nameGenerator->generate($nationality);
+        }
+
+        $excludedSet = array_flip($excludedNames);
+        $candidate = $this->nameGenerator->generate($nationality);
+
+        for ($attempt = 1; $attempt < self::NAME_RETRY_ATTEMPTS && isset($excludedSet[$candidate]); $attempt++) {
+            $candidate = $this->nameGenerator->generate($nationality);
+        }
+
+        return $candidate;
     }
 
     /**
@@ -521,54 +545,22 @@ class PlayerGeneratorService
     }
 
     /**
-     * Get cached team player names, loading from DB on first access per team.
+     * Get cached game-wide player names (every team + free agents), loading
+     * from DB on first access. Cross-team scope prevents generated academy
+     * prospects from colliding with players on other teams (issue #819).
      *
      * @return string[]
      */
-    private function getOrLoadTeamPlayerNames(string $gameId, string $teamId): array
+    private function getOrLoadGameNames(string $gameId): array
     {
-        $key = "{$gameId}:{$teamId}";
-
-        if (!isset($this->teamNamesCache[$key])) {
-            $this->teamNamesCache[$key] = GamePlayer::where('game_id', $gameId)
-                ->where('team_id', $teamId)
+        if (! isset($this->gameNamesCache[$gameId])) {
+            $this->gameNamesCache[$gameId] = GamePlayer::where('game_players.game_id', $gameId)
                 ->join('players', 'game_players.player_id', '=', 'players.id')
                 ->pluck('players.name')
                 ->toArray();
         }
 
-        return $this->teamNamesCache[$key];
-    }
-
-    /**
-     * Get cached free agent names, loading from DB on first access per game.
-     *
-     * @return string[]
-     */
-    private function getOrLoadFreeAgentNames(string $gameId): array
-    {
-        if (!isset($this->freeAgentNamesCache[$gameId])) {
-            $this->freeAgentNamesCache[$gameId] = GamePlayer::where('game_id', $gameId)
-                ->whereNull('team_id')
-                ->join('players', 'game_players.player_id', '=', 'players.id')
-                ->pluck('players.name')
-                ->toArray();
-        }
-
-        return $this->freeAgentNamesCache[$gameId];
-    }
-
-    /**
-     * Load and cache the identity pool from the data file.
-     */
-    private function getIdentityPool(): array
-    {
-        if ($this->identityPool === null) {
-            $path = base_path('data/academy/players.json');
-            $this->identityPool = json_decode(file_get_contents($path), true);
-        }
-
-        return $this->identityPool;
+        return $this->gameNamesCache[$gameId];
     }
 
     /**
