@@ -275,4 +275,52 @@ class PlayerGeneratorServiceTest extends TestCase
             $this->assertNotSame('Diego García Pérez', $identity['name']);
         }
     }
+
+    public function test_basque_region_produces_basque_names_with_spanish_nationality(): void
+    {
+        $service = app(PlayerGeneratorService::class);
+
+        $basqueSurnames = $this->reflectPool(
+            \App\Support\Faker\Provider\eu_ES\Person::class,
+            'lastName',
+        );
+
+        for ($i = 0; $i < 20; $i++) {
+            $identity = $service->pickRandomIdentity(region: 'basque');
+
+            [, $lastName] = explode(' ', $identity['name'], 2);
+            $this->assertContains($lastName, $basqueSurnames);
+            // Region flag forces Spanish nationality on the data layer.
+            $this->assertSame(['Spain'], $identity['nationality']);
+        }
+    }
+
+    public function test_catalan_region_produces_catalan_names_with_spanish_nationality(): void
+    {
+        $service = app(PlayerGeneratorService::class);
+
+        $catalanSurnames = $this->reflectPool(
+            \App\Support\Faker\Provider\ca_ES\Person::class,
+            'lastName',
+        );
+
+        for ($i = 0; $i < 20; $i++) {
+            $identity = $service->pickRandomIdentity(region: 'catalan');
+
+            [, $lastName] = explode(' ', $identity['name'], 2);
+            $this->assertContains($lastName, $catalanSurnames);
+            $this->assertSame(['Spain'], $identity['nationality']);
+        }
+    }
+
+    /**
+     * @return string[]
+     */
+    private function reflectPool(string $providerClass, string $property): array
+    {
+        $prop = new \ReflectionProperty($providerClass, $property);
+        $prop->setAccessible(true);
+
+        return $prop->getValue();
+    }
 }

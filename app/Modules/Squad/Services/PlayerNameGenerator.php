@@ -180,6 +180,17 @@ class PlayerNameGenerator
     private const FALLBACK_LOCALE = 'en_US';
 
     /**
+     * Regional naming overrides. These codes correspond to
+     * {@see \App\Modules\Squad\Configs\TeamRegionalOrigins} values and are
+     * served by custom Faker Person providers shipped with the app (Faker
+     * has no native eu_ES or ca_ES locale).
+     */
+    private const REGION_PROVIDERS = [
+        'basque' => \App\Support\Faker\Provider\eu_ES\Person::class,
+        'catalan' => \App\Support\Faker\Provider\ca_ES\Person::class,
+    ];
+
+    /**
      * Cache of Faker generators keyed by locale. Faker\Factory::create() loads
      * locale providers via reflection, so reusing generators across calls keeps
      * bulk generation (season start, youth batches) cheap.
@@ -190,10 +201,17 @@ class PlayerNameGenerator
 
     /**
      * Generate a full name (first + last) appropriate for the given nationality.
+     *
+     * When $region is supplied (Basque/Catalan club), the region's custom Faker
+     * provider generates the name instead of the nationality-derived locale.
+     * Data-layer nationality stays whatever the caller chose — only the name
+     * source changes.
      */
-    public function generate(string $nationality): string
+    public function generate(string $nationality, ?string $region = null): string
     {
-        $faker = $this->fakerFor($nationality);
+        $faker = $region !== null && isset(self::REGION_PROVIDERS[$region])
+            ? $this->fakerForRegion($region)
+            : $this->fakerFor($nationality);
 
         return $faker->firstNameMale() . ' ' . $faker->lastName();
     }
@@ -211,5 +229,26 @@ class PlayerNameGenerator
         $locale = $this->localeFor($nationality);
 
         return $this->generators[$locale] ??= Factory::create($locale);
+    }
+
+    /**
+     * Build (and cache) a Faker Generator backed by one of our custom regional
+     * Person providers. Faker\Factory::create() can't find these because they
+     * live outside the Faker\Provider namespace, so we assemble the Generator
+     * directly and inject only the Person provider — the only provider needed
+     * for firstNameMale() and lastName().
+     */
+    private function fakerForRegion(string $region): Generator
+    {
+        $cacheKey = 'region:' . $region;
+
+        if (! isset($this->generators[$cacheKey])) {
+            $providerClass = self::REGION_PROVIDERS[$region];
+            $generator = new Generator();
+            $generator->addProvider(new $providerClass($generator));
+            $this->generators[$cacheKey] = $generator;
+        }
+
+        return $this->generators[$cacheKey];
     }
 }

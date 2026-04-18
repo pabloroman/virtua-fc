@@ -2,11 +2,13 @@
 
 namespace App\Modules\Squad\Services;
 
+use App\Modules\Squad\Configs\TeamRegionalOrigins;
 use App\Modules\Squad\DTOs\GeneratedPlayerData;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\GamePlayerMatchState;
 use App\Models\Player;
+use App\Models\Team;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use App\Models\ClubProfile;
@@ -75,7 +77,11 @@ class PlayerGeneratorService
         $excludedNames = $data->name === null
             ? $this->getOrLoadGameNames($game->id)
             : [];
-        $identity = $this->pickRandomIdentity(excludedNames: $excludedNames);
+        $region = $this->resolveTeamRegion($data->teamId);
+        $identity = $this->pickRandomIdentity(
+            excludedNames: $excludedNames,
+            region: $region,
+        );
         $name = $data->name ?? $identity['name'];
         $nationality = $data->nationality ?? $identity['nationality'];
         $age = (int) $data->dateOfBirth->diffInYears($game->current_date ?? now());
@@ -181,11 +187,22 @@ class PlayerGeneratorService
         $results = [];
         $batchNames = [];
 
+        // One query resolves every team's regional-naming flag for the batch,
+        // so Basque / Catalan clubs get appropriate names without per-player
+        // team lookups inside the hot loop.
+        $teamRegions = $this->resolveTeamRegions(
+            array_unique(array_filter(array_map(fn ($d) => $d->teamId, $dataItems)))
+        );
+
         foreach ($dataItems as $data) {
             $excludedNames = $data->name === null
                 ? array_merge($this->getOrLoadGameNames($game->id), $batchNames)
                 : [];
-            $identity = $this->pickRandomIdentity(excludedNames: $excludedNames);
+            $region = $teamRegions[$data->teamId] ?? null;
+            $identity = $this->pickRandomIdentity(
+                excludedNames: $excludedNames,
+                region: $region,
+            );
             $name = $data->name ?? $identity['name'];
             $nationality = $data->nationality ?? $identity['nationality'];
             $age = (int) $data->dateOfBirth->diffInYears($currentDate);
@@ -467,11 +484,25 @@ class PlayerGeneratorService
      * @param  string|null  $nationality    Exact nationality filter (100% match, e.g. for Athletic Bilbao)
      * @param  string|null  $teamCountry    Country code for weighted selection (75% domestic / 25% any)
      * @param  string[]     $excludedNames  Names to exclude (game-wide player + academy names)
+     * @param  string|null  $region         Regional naming override for Basque/Catalan clubs
+     *                                      ({@see TeamRegionalOrigins}). Forces nationality to
+     *                                      Spain (if not explicitly set) and uses a custom
+     *                                      Faker provider instead of es_ES.
      */
-    public function pickRandomIdentity(?string $nationality = null, ?string $teamCountry = null, array $excludedNames = []): array
-    {
+    public function pickRandomIdentity(
+        ?string $nationality = null,
+        ?string $teamCountry = null,
+        array $excludedNames = [],
+        ?string $region = null,
+    ): array {
+        // A Basque/Catalan club always produces Spanish-nationality players —
+        // the region flag only overrides the *name* source, not the passport.
+        if ($region !== null && $nationality === null) {
+            $nationality = 'Spain';
+        }
+
         $chosenNationality = $this->pickNationality($nationality, $teamCountry);
-        $name = $this->generateUniqueName($chosenNationality, $excludedNames);
+        $name = $this->generateUniqueName($chosenNationality, $excludedNames, $region);
 
         return [
             'name' => $name,
@@ -505,22 +536,59 @@ class PlayerGeneratorService
      * Generate a name for the given nationality, retrying a small number of times
      * if Faker happens to return one that collides with an existing name.
      *
-     * @param  string[]  $excludedNames
+     * @param  string[]    $excludedNames
+     * @param  string|null $region  Regional override for Basque/Catalan clubs.
      */
-    private function generateUniqueName(string $nationality, array $excludedNames): string
+    private function generateUniqueName(string $nationality, array $excludedNames, ?string $region = null): string
     {
         if (empty($excludedNames)) {
-            return $this->nameGenerator->generate($nationality);
+            return $this->nameGenerator->generate($nationality, $region);
         }
 
         $excludedSet = array_flip($excludedNames);
-        $candidate = $this->nameGenerator->generate($nationality);
+        $candidate = $this->nameGenerator->generate($nationality, $region);
 
         for ($attempt = 1; $attempt < self::NAME_RETRY_ATTEMPTS && isset($excludedSet[$candidate]); $attempt++) {
-            $candidate = $this->nameGenerator->generate($nationality);
+            $candidate = $this->nameGenerator->generate($nationality, $region);
         }
 
         return $candidate;
+    }
+
+    /**
+     * Look up a single team's regional-naming flag from {@see TeamRegionalOrigins}.
+     */
+    private function resolveTeamRegion(?string $teamId): ?string
+    {
+        if ($teamId === null) {
+            return null;
+        }
+
+        $name = Team::whereKey($teamId)->value('name');
+
+        return TeamRegionalOrigins::regionFor($name);
+    }
+
+    /**
+     * Bulk-resolve regional-naming flags for a set of teamIds in a single query.
+     *
+     * @param  string[]  $teamIds
+     * @return array<string, string|null>  Map of teamId → region code (or null).
+     */
+    private function resolveTeamRegions(array $teamIds): array
+    {
+        if (empty($teamIds)) {
+            return [];
+        }
+
+        $names = Team::whereIn('id', $teamIds)->pluck('name', 'id')->all();
+
+        $regions = [];
+        foreach ($names as $teamId => $teamName) {
+            $regions[$teamId] = TeamRegionalOrigins::regionFor($teamName);
+        }
+
+        return $regions;
     }
 
     /**

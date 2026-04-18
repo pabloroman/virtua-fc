@@ -2,6 +2,7 @@
 
 namespace App\Modules\Academy\Services;
 
+use App\Modules\Squad\Configs\TeamRegionalOrigins;
 use App\Modules\Squad\DTOs\GeneratedPlayerData;
 use App\Models\AcademyPlayer;
 use App\Models\Game;
@@ -435,7 +436,15 @@ class YouthAcademyService
         $teamName = $game->team->name;
         $nationalityFilter = self::CANTERA_TEAMS[$teamName] ?? null;
         $teamCountry = $nationalityFilter ? null : $game->team->country;
-        $identity = $this->playerGenerator->pickRandomIdentity($nationalityFilter, $teamCountry, $excludedNames);
+        // Basque / Catalan clubs draw on custom Faker providers instead of es_ES
+        // so their canteranos get regional names (Etxeberria, Fàbregas, …).
+        $region = TeamRegionalOrigins::regionFor($teamName);
+        $identity = $this->playerGenerator->pickRandomIdentity(
+            $nationalityFilter,
+            $teamCountry,
+            $excludedNames,
+            $region,
+        );
 
         return AcademyPlayer::create([
             'id' => Str::uuid()->toString(),

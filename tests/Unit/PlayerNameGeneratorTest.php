@@ -54,4 +54,60 @@ class PlayerNameGeneratorTest extends TestCase
         $unique = array_unique($names);
         $this->assertGreaterThan(180, count($unique));
     }
+
+    public function test_basque_region_draws_from_basque_pools(): void
+    {
+        $this->assertRegionUsesPools(
+            region: 'basque',
+            providerClass: \App\Support\Faker\Provider\eu_ES\Person::class,
+        );
+    }
+
+    public function test_catalan_region_draws_from_catalan_pools(): void
+    {
+        $this->assertRegionUsesPools(
+            region: 'catalan',
+            providerClass: \App\Support\Faker\Provider\ca_ES\Person::class,
+        );
+    }
+
+    public function test_unknown_region_falls_back_to_nationality_locale(): void
+    {
+        // A bogus region code should not break generation — the nationality
+        // mapping takes over instead.
+        $name = $this->generator->generate('Spain', 'atlantean');
+        $this->assertNotEmpty($name);
+        $this->assertMatchesRegularExpression('/\S+ \S+/', $name);
+    }
+
+    /**
+     * Pull the protected static first/last name arrays from a Person provider
+     * class and assert that 50 generated names fall entirely within those pools.
+     * This is how we verify the region override routes to the right provider
+     * without coupling to specific random names.
+     */
+    private function assertRegionUsesPools(string $region, string $providerClass): void
+    {
+        $firstNames = $this->poolFor($providerClass, 'firstNameMale');
+        $lastNames = $this->poolFor($providerClass, 'lastName');
+
+        for ($i = 0; $i < 50; $i++) {
+            $name = $this->generator->generate('Spain', $region);
+            [$first, $last] = explode(' ', $name, 2);
+
+            $this->assertContains($first, $firstNames, "First name '{$first}' not in {$region} pool");
+            $this->assertContains($last, $lastNames, "Surname '{$last}' not in {$region} pool");
+        }
+    }
+
+    /**
+     * @return string[]
+     */
+    private function poolFor(string $providerClass, string $property): array
+    {
+        $prop = new \ReflectionProperty($providerClass, $property);
+        $prop->setAccessible(true);
+
+        return $prop->getValue();
+    }
 }
