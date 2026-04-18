@@ -457,20 +457,6 @@ class PlayerGeneratorService
     private const DOMESTIC_NATIONALITY_WEIGHT = 75;
 
     /**
-     * Countries from which the "any" 25% branch picks when no explicit nationality
-     * is supplied. A small curated set of footballing nations keeps generated
-     * foreigners believable rather than drawing from every locale Faker supports.
-     */
-    private const FOREIGN_NATIONALITY_POOL = [
-        'Spain', 'England', 'France', 'Germany', 'Italy', 'Portugal', 'Brazil',
-        'Argentina', 'Netherlands', 'Belgium', 'Poland', 'Denmark', 'Sweden',
-        'Norway', 'Croatia', 'Serbia', 'Switzerland', 'Austria', 'Greece',
-        'Türkiye', 'Morocco', 'Senegal', "Cote d'Ivoire", 'Nigeria', 'Ghana',
-        'Cameroon', 'Colombia', 'Uruguay', 'Chile', 'Mexico', 'Japan',
-        'Korea, South', 'United States',
-    ];
-
-    /**
      * Maximum attempts to draw a non-colliding name before giving up and
      * accepting the last candidate. With Faker's per-locale name space
      * (tens of thousands of combinations) this almost never loops more
@@ -529,7 +515,9 @@ class PlayerGeneratorService
             }
         }
 
-        return self::FOREIGN_NATIONALITY_POOL[array_rand(self::FOREIGN_NATIONALITY_POOL)];
+        $pool = PlayerNameGenerator::supportedNationalities();
+
+        return $pool[array_rand($pool)];
     }
 
     /**

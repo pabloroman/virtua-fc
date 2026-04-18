@@ -31,7 +31,6 @@ class PlayerNameGeneratorTest extends TestCase
         $this->assertSame('de_DE', $this->generator->localeFor('Germany'));
         $this->assertSame('it_IT', $this->generator->localeFor('Italy'));
         $this->assertSame('pt_BR', $this->generator->localeFor('Brazil'));
-        $this->assertSame('ja_JP', $this->generator->localeFor('Japan'));
     }
 
     public function test_unknown_nationality_falls_back_to_en_us(): void
@@ -78,6 +77,55 @@ class PlayerNameGeneratorTest extends TestCase
         $name = $this->generator->generate('Spain', 'atlantean');
         $this->assertNotEmpty($name);
         $this->assertMatchesRegularExpression('/\S+ \S+/', $name);
+    }
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function nonLatinNationalityProvider(): iterable
+    {
+        yield 'Greek' => ['Greece'];
+        yield 'Russian (Cyrillic)' => ['Russia'];
+        yield 'Ukrainian (Cyrillic)' => ['Ukraine'];
+        yield 'Bulgarian (Cyrillic)' => ['Bulgaria'];
+        yield 'Serbian (Cyrillic)' => ['Serbia'];
+        yield 'Arabic' => ['Morocco'];
+    }
+
+    /**
+     * @dataProvider nonLatinNationalityProvider
+     */
+    public function test_non_latin_script_nationality_produces_latin_only_name(string $nationality): void
+    {
+        for ($i = 0; $i < 30; $i++) {
+            $name = $this->generator->generate($nationality);
+
+            $this->assertNotEmpty($name);
+            // Only Latin-script codepoints (plus whitespace, hyphens, apostrophes,
+            // periods) — no Greek, Cyrillic, Arabic, CJK, etc. should leak through.
+            $this->assertMatchesRegularExpression(
+                "/^[\p{Latin}\s\-'.]+$/u",
+                $name,
+                "Name '{$name}' for {$nationality} contains non-Latin characters",
+            );
+        }
+    }
+
+    public function test_latin_diacritics_are_preserved_for_latin_script_locales(): void
+    {
+        // Spanish names regularly include ñ, á, é, í, ó, ú. Over 200 draws we
+        // expect at least one accented character — proving transliteration only
+        // strips non-Latin scripts, not Latin diacritics.
+        $combined = '';
+        for ($i = 0; $i < 200; $i++) {
+            $combined .= $this->generator->generate('Spain') . ' ';
+        }
+
+        $this->assertMatchesRegularExpression(
+            '/[áéíóúñÁÉÍÓÚÑ]/u',
+            $combined,
+            'Expected at least one Latin diacritic across 200 Spanish names',
+        );
     }
 
     /**
