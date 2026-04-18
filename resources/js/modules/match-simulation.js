@@ -753,9 +753,23 @@ export function createMatchSimulation(ctx) {
         animateClockToEnd(fromMinute, () => enterFullTime());
 
         // Generate match summary after the resimulation resolves (or
-        // no-ops). Both paths produce correct summaries: resimulation
-        // merges fresh events/scores first; no-op keeps the originals.
-        skipPromise.then(() => {
+        // no-ops). When autoSubs are applied the backend rebuilds
+        // events/scores; when it no-ops (no bench, sub budget spent,
+        // endpoint missing, network failure) nobody has populated them
+        // yet — enterFullTime skipped the reveal because _skippingToEnd
+        // was set. Fall back to the pre-computed events here so the
+        // feed and scoreline aren't left empty.
+        skipPromise.then((autoSubsApplied) => {
+            if (!autoSubsApplied) {
+                state.homeScore = state.finalHomeScore;
+                state.awayScore = state.finalAwayScore;
+                for (let i = state.lastRevealedIndex + 1; i < state.events.length; i++) {
+                    const event = state.events[i];
+                    state.revealedEvents.unshift(event);
+                    trackSubstitutionIfNeeded(event);
+                }
+                state.lastRevealedIndex = state.events.length - 1;
+            }
             if (typeof state._generateMatchSummary === 'function') {
                 state.matchSummary = state._generateMatchSummary();
             }
