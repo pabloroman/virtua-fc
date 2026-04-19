@@ -33,33 +33,13 @@ class ContractExpirationProcessor implements SeasonProcessor
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
-        $t0 = microtime(true);
-
         // Clean up any stale renewal negotiations
         app(ContractService::class)->expireStaleNegotiations($game);
-        $t1 = microtime(true);
-
-        // Snapshot what is about to be deleted so we can correlate the DELETE
-        // cost with its cascade footprint. The subqueries are indexed by
-        // (game_id, team_id) on game_players and (game_player_id) on
-        // match_events, so counting is cheap.
-        $staleFreeAgentCount = GamePlayer::where('game_id', $game->id)
-            ->whereNull('team_id')
-            ->count();
-        $cascadedMatchEventCount = DB::table('match_events')
-            ->whereIn('game_player_id', function ($q) use ($game) {
-                $q->select('id')->from('game_players')
-                    ->where('game_id', $game->id)
-                    ->whereNull('team_id');
-            })
-            ->count();
-        $t2 = microtime(true);
 
         // Clean up unsigned free agents from the previous season
         GamePlayer::where('game_id', $game->id)
             ->whereNull('team_id')
             ->delete();
-        $t3 = microtime(true);
 
         // Season ends on June 30 of the season year
         $seasonYear = (int) $data->oldSeason;
@@ -92,7 +72,6 @@ class ContractExpirationProcessor implements SeasonProcessor
                 $veteranCutoff->toDateString(),
             ]
         );
-        $t4 = microtime(true);
 
         // AI veterans: narrow SELECT of just the IDs, then 50% coin flip in
         // PHP. Typically <30 rows — no hydration, no wide JOIN.
@@ -116,7 +95,6 @@ class ContractExpirationProcessor implements SeasonProcessor
                 $veteranAutoRenewedIds[] = $id;
             }
         }
-        $t5 = microtime(true);
 
         // User team expirations: no JOIN — age isn't used for the user's
         // own players. Just a narrow SELECT filtered by team_id.
@@ -144,7 +122,6 @@ class ContractExpirationProcessor implements SeasonProcessor
         $userTeamFreeAgentIds = $userTeamExpiredIds
             ->reject(fn ($id) => isset($preContractPlayerIds[$id]))
             ->all();
-        $t6 = microtime(true);
 
         // Bulk operations
         $freeAgentIds = array_merge($userTeamFreeAgentIds, $veteranFreeAgentIds);
@@ -154,25 +131,9 @@ class ContractExpirationProcessor implements SeasonProcessor
         if (!empty($veteranAutoRenewedIds)) {
             GamePlayer::whereIn('id', $veteranAutoRenewedIds)->update(['contract_until' => $newContractEnd]);
         }
-        $t7 = microtime(true);
 
-        $ms = fn ($a, $b) => (int) round(($b - $a) * 1000);
-        Log::info('[ContractExpiration] Timings', [
-            'expireStaleNegotiations_ms' => $ms($t0, $t1),
-            'countCascadeFootprint_ms' => $ms($t1, $t2),
-            'deleteFreeAgents_ms' => $ms($t2, $t3),
-            'aiNonVeteranAutoRenew_ms' => $ms($t3, $t4),
-            'aiVeteransSelectAndCoin_ms' => $ms($t4, $t5),
-            'userTeamSelectAndFilter_ms' => $ms($t5, $t6),
-            'bulkUpdates_ms' => $ms($t6, $t7),
-            'stale_free_agents' => $staleFreeAgentCount,
-            'cascaded_match_events' => $cascadedMatchEventCount,
-            'ai_non_veterans_auto_renewed' => $aiAutoRenewedCount,
-            'ai_veterans' => $aiVeteranIds->count(),
-            'user_team_expirations' => $userTeamExpiredIds->count(),
-            'free_agents_created' => count($freeAgentIds),
-            'auto_renewed_total' => $aiAutoRenewedCount + count($veteranAutoRenewedIds),
-        ]);
+        Log::info('[ContractExpiration] Free agents created: ' . count($freeAgentIds)
+            . ', auto-renewed: ' . ($aiAutoRenewedCount + count($veteranAutoRenewedIds)));
 
         return $data;
     }
