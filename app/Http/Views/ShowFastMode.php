@@ -78,8 +78,7 @@ class ShowFastMode
 
     private function loadLastPlayerMatch(Game $game): ?GameMatch
     {
-        /** @var GameMatch|null $match */
-        $match = GameMatch::with([
+        $query = GameMatch::with([
             'homeTeam',
             'awayTeam',
             'competition',
@@ -88,11 +87,18 @@ class ShowFastMode
             ->where('game_id', $game->id)
             ->where('played', true)
             ->where(fn ($q) => $q->where('home_team_id', $game->team_id)
-                ->orWhere('away_team_id', $game->team_id))
-            ->orderByDesc('scheduled_date')
-            ->first();
+                ->orWhere('away_team_id', $game->team_id));
 
-        return $match;
+        // Only surface matches actually simulated in the current fast-mode
+        // session — i.e. on or after the calendar date when the user entered
+        // fast mode. This prevents the panel from resurrecting the last
+        // manually-played match the first time the user lands on the view.
+        if ($game->fast_mode_entered_on) {
+            $query->where('scheduled_date', '>=', $game->fast_mode_entered_on->toDateString());
+        }
+
+        /** @var GameMatch|null */
+        return $query->orderByDesc('scheduled_date')->first();
     }
 
     private function loadNextPlayerMatch(Game $game): ?GameMatch

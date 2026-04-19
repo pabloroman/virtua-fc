@@ -11,7 +11,10 @@ class ExitFastMode
         $game = Game::findOrFail($gameId);
 
         if ($game->isFastMode()) {
-            $game->update(['fast_mode' => false]);
+            $game->update([
+                'fast_mode' => false,
+                'fast_mode_entered_on' => null,
+            ]);
         }
 
         return redirect()->route('show-game', $gameId)

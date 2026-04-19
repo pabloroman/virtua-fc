@@ -500,7 +500,7 @@ return [
     'fast_mode_exit' => 'Exit fast mode',
     'fast_mode_simulate_next' => 'Simulate next match',
     'fast_mode_active_badge' => 'Fast mode · tap to exit',
-    'fast_mode_no_last_match' => 'No matches played yet. Simulate the first match to see the result.',
+    'fast_mode_no_last_match' => 'Simulate your next match to see the result here.',
     'fast_mode_menu_title' => 'Delegate to assistant coach',
     'last_result' => 'Last result',
 

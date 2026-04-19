@@ -500,7 +500,7 @@ return [
     'fast_mode_exit' => 'Salir del modo rápido',
     'fast_mode_simulate_next' => 'Simular próximo partido',
     'fast_mode_active_badge' => 'Modo rápido · toca para salir',
-    'fast_mode_no_last_match' => 'Todavía no se ha jugado ningún partido. Simula el primero para ver el resultado.',
+    'fast_mode_no_last_match' => 'Simula tu próximo partido para ver el resultado aquí.',
     'fast_mode_menu_title' => 'Delegar en el entrenador asistente',
     'last_result' => 'Último resultado',
 
