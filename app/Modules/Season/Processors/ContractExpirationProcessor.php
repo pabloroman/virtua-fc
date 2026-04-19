@@ -10,6 +10,7 @@ use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\TransferOffer;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -32,13 +33,33 @@ class ContractExpirationProcessor implements SeasonProcessor
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
+        $t0 = microtime(true);
+
         // Clean up any stale renewal negotiations
         app(ContractService::class)->expireStaleNegotiations($game);
+        $t1 = microtime(true);
+
+        // Snapshot what is about to be deleted so we can correlate the DELETE
+        // cost with its cascade footprint. The subqueries are indexed by
+        // (game_id, team_id) on game_players and (game_player_id) on
+        // match_events, so counting is cheap.
+        $staleFreeAgentCount = GamePlayer::where('game_id', $game->id)
+            ->whereNull('team_id')
+            ->count();
+        $cascadedMatchEventCount = DB::table('match_events')
+            ->whereIn('game_player_id', function ($q) use ($game) {
+                $q->select('id')->from('game_players')
+                    ->where('game_id', $game->id)
+                    ->whereNull('team_id');
+            })
+            ->count();
+        $t2 = microtime(true);
 
         // Clean up unsigned free agents from the previous season
         GamePlayer::where('game_id', $game->id)
             ->whereNull('team_id')
             ->delete();
+        $t3 = microtime(true);
 
         // Season ends on June 30 of the season year
         $seasonYear = (int) $data->oldSeason;
@@ -59,6 +80,7 @@ class ContractExpirationProcessor implements SeasonProcessor
                 'players.date_of_birth',
             ])
             ->get();
+        $t4 = microtime(true);
 
         // Players with agreed outgoing pre-contracts — use keyed array for O(1) lookup
         $preContractPlayerIds = TransferOffer::where('game_id', $game->id)
@@ -71,6 +93,7 @@ class ContractExpirationProcessor implements SeasonProcessor
             ->pluck('game_player_id')
             ->flip()
             ->all();
+        $t5 = microtime(true);
 
         $freeAgentIds = [];
         $autoRenewedIds = [];
@@ -92,6 +115,7 @@ class ContractExpirationProcessor implements SeasonProcessor
                 }
             }
         }
+        $t6 = microtime(true);
 
         // Batch operations
         if (!empty($freeAgentIds)) {
@@ -100,8 +124,23 @@ class ContractExpirationProcessor implements SeasonProcessor
         if (!empty($autoRenewedIds)) {
             GamePlayer::whereIn('id', $autoRenewedIds)->update(['contract_until' => $newContractEnd]);
         }
+        $t7 = microtime(true);
 
-        Log::info('[ContractExpiration] Free agents created: ' . count($freeAgentIds) . ', auto-renewed: ' . count($autoRenewedIds));
+        $ms = fn ($a, $b) => (int) round(($b - $a) * 1000);
+        Log::info('[ContractExpiration] Timings', [
+            'expireStaleNegotiations_ms' => $ms($t0, $t1),
+            'countCascadeFootprint_ms' => $ms($t1, $t2),
+            'deleteFreeAgents_ms' => $ms($t2, $t3),
+            'selectExpired_ms' => $ms($t3, $t4),
+            'selectPreContracts_ms' => $ms($t4, $t5),
+            'classifyLoop_ms' => $ms($t5, $t6),
+            'bulkUpdates_ms' => $ms($t6, $t7),
+            'stale_free_agents' => $staleFreeAgentCount,
+            'cascaded_match_events' => $cascadedMatchEventCount,
+            'expired_players_found' => $expiredPlayers->count(),
+            'free_agents_created' => count($freeAgentIds),
+            'auto_renewed' => count($autoRenewedIds),
+        ]);
 
         return $data;
     }
