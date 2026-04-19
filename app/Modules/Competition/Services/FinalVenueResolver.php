@@ -16,7 +16,7 @@ class FinalVenueResolver
 {
     private const ESPCUP_VENUE = [
         'name' => 'La Cartuja',
-        'capacity' => 60000,
+        'capacity' => 70000,
     ];
 
     private const EUROPEAN_COMPETITIONS = ['UCL', 'UEL', 'UECL'];
