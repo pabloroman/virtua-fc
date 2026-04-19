@@ -19,7 +19,7 @@ abstract class CupCompetitionHandler implements CompetitionHandler
     public function __construct(
         protected readonly CupTieResolver $tieResolver,
         protected readonly EligibilityService $eligibilityService,
-        protected readonly FinalVenueResolver $finalVenueResolver,
+        protected readonly ?FinalVenueResolver $finalVenueResolver = null,
     ) {}
 
     public function getRedirectRoute(Game $game, Collection $matches, int $matchday): string
@@ -121,7 +121,7 @@ abstract class CupCompetitionHandler implements CompetitionHandler
 
         $tie->update(['first_leg_match_id' => $firstLeg->id]);
 
-        if ($config->name === 'cup.final' && $game->isCareerMode()) {
+        if ($this->finalVenueResolver && $config->name === 'cup.final' && $game->isCareerMode()) {
             $venue = $this->finalVenueResolver->resolve($competitionId, $homeTeamId, $awayTeamId);
             if ($venue) {
                 $firstLeg->update([
