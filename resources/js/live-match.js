@@ -926,16 +926,25 @@ export default function liveMatch(config) {
         },
 
         /**
-         * True when the staged substitution(s) would leave at least one
-         * player in a slot with compatibility < 80 under the currently
-         * pending (or active) formation. Used to gate the confirmation
-         * step so a sub that doesn't fit the shape prompts an explicit
-         * formation choice instead of silently applying the 25% penalty.
+         * True when the staged change(s) would leave at least one player
+         * in a slot with compatibility < 80 under the currently pending
+         * (or active) formation. Used to gate the confirmation step so
+         * any change — substitution OR formation-only switch — that
+         * leaves a player out of position prompts an explicit formation
+         * choice instead of silently applying the 25% penalty.
+         *
+         * Triggered by a staged sub OR a staged formation change. A
+         * formation-only switch (e.g. 3-4-3 → 4-1-4-1) can leave a
+         * forward forced into a fullback slot when the original 11
+         * doesn't include a natural fit for the new shape — the user
+         * deserves the same prompt as the sub case.
          */
         _shouldPromptFormationPicker() {
             const hasStagedSubs = this.pendingSubs.length > 0
                 || (this.selectedPlayerOut && this.selectedPlayerIn);
-            if (!hasStagedSubs) return false;
+            const hasStagedFormationChange = this.pendingFormation !== null
+                && this.pendingFormation !== this.activeFormation;
+            if (!hasStagedSubs && !hasStagedFormationChange) return false;
 
             const assignments = this.slotAssignments;
             const offenders = assignments.filter(a =>
