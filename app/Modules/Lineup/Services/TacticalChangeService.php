@@ -38,7 +38,7 @@ class TacticalChangeService
         ?string $pressing = null,
         ?string $defensiveLine = null,
         bool $isExtraTime = false,
-        ?array $pitchPositions = null,
+        bool $reoptimizeRoles = false,
         bool $autoSubUserTeam = false,
     ): array {
         $isUserHome = $match->isHomeTeam($game->team_id);
@@ -57,9 +57,7 @@ class TacticalChangeService
                 // Slot IDs map to different positions per formation, so the
                 // old map is meaningless. We'll compute a fresh one below
                 // once the substitutions have been reconciled.
-                $matchUpdates["{$prefix}_pitch_positions"] = $pitchPositions;
                 $matchUpdates["{$prefix}_slot_assignments"] = null;
-                $pitchPositions = null; // already queued
                 $formationChanged = true;
             }
         }
@@ -74,11 +72,6 @@ class TacticalChangeService
         }
         if ($defensiveLine !== null) {
             $matchUpdates["{$prefix}_defensive_line"] = $defensiveLine;
-        }
-
-        // Persist pitch positions on the match (if not already queued during formation change)
-        if ($pitchPositions !== null) {
-            $matchUpdates["{$prefix}_pitch_positions"] = $pitchPositions;
         }
 
         if (! empty($matchUpdates)) {
@@ -106,15 +99,19 @@ class TacticalChangeService
         $effectiveFormation = $match->{"{$prefix}_formation"};
         $effectiveMentality = $match->{"{$prefix}_mentality"};
 
-        // If the user committed a formation change, compute a fresh slot map
-        // for the new formation using the current on-pitch 11 (which already
-        // reflects all confirmed substitutions via $userLineup), and persist
-        // it to the match row. This is the same authoritative algorithm the
-        // lineup page and the live-match preview call — one source of truth.
+        // Compute a fresh slot map whenever the formation changed or the user
+        // explicitly asked to re-optimize roles (e.g. after a substitution left
+        // someone stranded in a mismatched slot). Uses the current on-pitch 11
+        // (which already reflects confirmed substitutions via $userLineup) and
+        // the same authoritative algorithm the lineup page calls — one source
+        // of truth.
         $newSlotAssignments = null;
-        if ($formationChanged) {
+        if ($formationChanged || $reoptimizeRoles) {
             $userPlayers = $isUserHome ? $homePlayers : $awayPlayers;
-            $formationEnum = Formation::tryFrom($formation);
+            $targetFormationValue = $formationChanged
+                ? $formation
+                : $match->{"{$prefix}_formation"};
+            $formationEnum = Formation::tryFrom($targetFormationValue);
             if ($formationEnum !== null && $userPlayers->isNotEmpty()) {
                 $newSlotAssignments = $this->lineupService->computeSlotAssignments(
                     $formationEnum,

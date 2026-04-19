@@ -15,7 +15,6 @@ import {
     isValidGridCell as _isValidGridCell,
     getZoneColorClass as _getZoneColorClass,
 } from './modules/pitch-renderer.js';
-import { createPitchGrid } from './modules/pitch-grid.js';
 import {
     applySubstitution,
     buildSlotView,
@@ -182,28 +181,28 @@ export default function liveMatch(config) {
         // Pitch interaction state (for tap-to-substitute)
         livePitchSelectedOutId: null,
 
-        // Pitch drag-and-drop state (for repositioning players)
+        // Kept as inert properties so the shared pitch-display blade (which is
+        // also used by the lineup page's drag-and-drop UI) can reference them
+        // without errors. They stay null throughout the live match — drag is
+        // a pre-match-only concept.
         draggingSlotId: null,
         dragPosition: null,
         positioningSlotId: null,
-        livePitchPositions: config.pitchPositions || {},
-        _pitchPositionsFormation: config.activeFormation || '4-3-3',
+
         // Authoritative slot map for the starting XI, seeded from the server.
         // Confirmed substitutions are replayed on top of this in the
         // slotAssignments getter, so we never mutate it directly except
-        // when the formation changes mid-match.
+        // when the formation changes or the user re-optimizes roles.
         startingSlotMap: config.slotAssignments || {},
 
         // Slot map for the currently-previewed (but not yet committed)
-        // formation. Populated by `refreshFormationPreview()` when the user
-        // clicks a formation button in the tactical panel. Null means
-        // either "not previewing" or "fetch in flight" — the getter falls
-        // back to a local placement in that window so the pitch isn't empty.
+        // formation or re-optimize action. Populated by `refreshFormationPreview()`
+        // or `requestReoptimize()`. Null means either "not previewing" or
+        // "fetch in flight" — the getter falls back to a local placement in
+        // that window so the pitch isn't empty.
         previewSlotMap: null,
         computeSlotsUrl: config.computeSlotsUrl || '',
         _previewFetchId: 0,
-        _savedPitchPositions: config.pitchPositions ? { ...config.pitchPositions } : {},
-        _positionJustApplied: false,
 
         // Tactical change state
         pendingFormation: null,
@@ -211,6 +210,7 @@ export default function liveMatch(config) {
         pendingPlayingStyle: null,
         pendingPressing: null,
         pendingDefLine: null,
+        pendingReoptimize: false,
         applyingChanges: false,
         showingConfirmation: false,
         tacticalError: null,
@@ -292,29 +292,6 @@ export default function liveMatch(config) {
             // Bind the deferred context so all module functions can access
             // the Alpine component instance from this point forward.
             _self = this;
-
-            // Integrate shared pitch grid module (positioning + drag-and-drop).
-            // Created here because its options reference `this` for callbacks.
-            const grid = createPitchGrid(() => this, {
-                allowGkDrag: false,
-                allowGkReposition: false,
-                allowGkSwap: false,
-                dragThreshold: 5,
-                onTapFallback: (slot) => this.handlePitchPlayerClick(slot),
-                onPositionChanged: (positions) => {
-                    this._pitchPositionsFormation = this.pendingFormation ?? this.activeFormation;
-                    this._savedPitchPositions = JSON.parse(JSON.stringify(positions));
-                    this._positionJustApplied = true;
-                },
-                pitchElementId: 'live-pitch-field',
-                getPositions: () => this.livePitchPositions,
-                setPositions: (p) => { this.livePitchPositions = p },
-                getFormationGuard: () => ({
-                    effective: this.pendingFormation ?? this.activeFormation,
-                    tracked: this._pitchPositionsFormation,
-                }),
-            });
-            Object.assign(this, grid);
 
             // Start polling for career actions completion
             this.startProcessingPoll();
@@ -629,6 +606,7 @@ export default function liveMatch(config) {
             this.pendingSubs = [];
             this.pendingFormation = null;
             this.pendingMentality = null;
+            this.pendingReoptimize = false;
             this.previewSlotMap = null;
             if (!keepInjuryAlert) {
                 this.injuryAlertPlayer = null;
@@ -644,12 +622,9 @@ export default function liveMatch(config) {
             this.pendingSubs = [];
             this.pendingFormation = null;
             this.pendingMentality = null;
+            this.pendingReoptimize = false;
             this.previewSlotMap = null;
-            this.draggingSlotId = null;
-            this.dragPosition = null;
-            this.positioningSlotId = null;
             this.injuryAlertPlayer = null;
-            this._positionJustApplied = false;
             this.showingConfirmation = false;
             document.body.classList.remove('overflow-y-hidden');
         },
@@ -682,7 +657,8 @@ export default function liveMatch(config) {
                 || (this.pendingMentality !== null && this.pendingMentality !== this.activeMentality)
                 || (this.pendingPlayingStyle !== null && this.pendingPlayingStyle !== this.activePlayingStyle)
                 || (this.pendingPressing !== null && this.pendingPressing !== this.activePressing)
-                || (this.pendingDefLine !== null && this.pendingDefLine !== this.activeDefLine);
+                || (this.pendingDefLine !== null && this.pendingDefLine !== this.activeDefLine)
+                || this.pendingReoptimize;
         },
 
         getMentalityLabel(value) {
@@ -707,6 +683,7 @@ export default function liveMatch(config) {
             this.pendingPlayingStyle = null;
             this.pendingPressing = null;
             this.pendingDefLine = null;
+            this.pendingReoptimize = false;
             this.previewSlotMap = null;
         },
 
@@ -775,6 +752,51 @@ export default function liveMatch(config) {
                 this.previewSlotMap = data.slot_assignments ?? {};
             } catch (e) {
                 console.error('Failed to compute formation preview', e);
+            }
+        },
+
+        /**
+         * Manually re-run the backend placement recommender against the
+         * current on-pitch 11 and the currently selected formation. The
+         * resulting map is stored in `previewSlotMap` so the pitch shows a
+         * preview before the user taps Apply — the authoritative map is
+         * recomputed server-side when `reoptimize_roles: true` is sent with
+         * the tactical payload.
+         */
+        async requestReoptimize() {
+            if (!this.computeSlotsUrl) return;
+
+            this.pendingReoptimize = true;
+            this.previewSlotMap = null;
+
+            const fetchId = ++this._previewFetchId;
+            const targetFormation = this.pendingFormation ?? this.activeFormation;
+            const playerIds = this.getActiveLineupPlayers().map(p => p.id);
+
+            if (playerIds.length === 0) return;
+
+            try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? this.csrfToken ?? '';
+                const response = await fetch(this.computeSlotsUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        formation: targetFormation,
+                        player_ids: playerIds,
+                        manual_assignments: {},
+                    }),
+                });
+                if (!response.ok) return;
+                if (fetchId !== this._previewFetchId) return;
+
+                const data = await response.json();
+                this.previewSlotMap = data.slot_assignments ?? {};
+            } catch (e) {
+                console.error('Failed to compute role re-optimization preview', e);
             }
         },
 
@@ -858,6 +880,13 @@ export default function liveMatch(config) {
                     to: this.getOptionLabel(this.availableDefLine, this.pendingDefLine),
                 });
             }
+            if (this.pendingReoptimize) {
+                summary.tactics.push({
+                    label: this.translations.confirmReoptimize ?? 'Re-optimize roles',
+                    from: '',
+                    to: this.translations.reoptimizeRoles ?? 'Re-optimize roles',
+                });
+            }
 
             return summary;
         },
@@ -924,13 +953,11 @@ export default function liveMatch(config) {
                     }));
                 }
 
-                // Include pitch positions if any were customized
-                if (Object.keys(this.livePitchPositions).length > 0) {
-                    payload.pitch_positions = this.livePitchPositions;
-                }
-
                 // Include tactical changes if any
                 if (this.hasTacticalChanges) {
+                    if (this.pendingReoptimize) {
+                        payload.reoptimize_roles = true;
+                    }
                     if (this.pendingFormation !== null && this.pendingFormation !== this.activeFormation) {
                         payload.formation = this.pendingFormation;
                     }
@@ -998,28 +1025,18 @@ export default function liveMatch(config) {
 
                 // Update active tactics
                 if (result.formation) {
-                    const formationChanged = result.formation !== this.activeFormation;
                     this.activeFormation = result.formation;
-                    if (formationChanged) {
-                        // Only clear positions if they belong to the old formation —
-                        // the user may have already dragged players during preview.
-                        if (this._pitchPositionsFormation !== result.formation) {
-                            this.livePitchPositions = {};
-                            this._savedPitchPositions = {};
-                        }
-                        this._pitchPositionsFormation = result.formation;
-                        // Promote the preview map (computed by the backend
-                        // during refreshFormationPreview) to the new
-                        // authoritative starting map. If we didn't preview,
-                        // use whatever the server returned, falling back to
-                        // empty — the next page refresh will re-resolve.
-                        this.startingSlotMap = result.slot_assignments
-                            ?? this.previewSlotMap
-                            ?? {};
-                    }
                 }
-                // Pending-state reset includes the preview map.
+                // Whenever the backend returns a fresh slot map (formation
+                // change or re-optimize), promote it to the authoritative
+                // starting map so the pitch keeps rendering the correct
+                // placement after apply.
+                if (result.slot_assignments) {
+                    this.startingSlotMap = result.slot_assignments;
+                }
+                // Pending-state reset includes the preview map and flag.
                 this.previewSlotMap = null;
+                this.pendingReoptimize = false;
                 if (result.mentality) {
                     this.activeMentality = result.mentality;
                 }
@@ -1638,35 +1655,29 @@ export default function liveMatch(config) {
         /**
          * Computed slot assignments for the pitch display.
          *
-         * Normal case (current formation): start from the authoritative
-         * starting-XI map and replay confirmed substitutions on top. No
-         * algorithm, no reshuffling.
+         * Normal case: start from the authoritative starting-XI map and
+         * replay confirmed substitutions on top. No algorithm, no
+         * reshuffling.
          *
-         * Formation-preview case: the user is previewing a different shape
-         * from the tactical panel and hasn't committed yet. Slot IDs change
-         * between formations so the saved map is useless. We do a quick
-         * local placement — walk the current on-pitch 11 and drop each into
-         * the first empty slot of the new formation that matches their
-         * primary position. It's not as smart as the backend algorithm,
-         * but it's instant, and the user can drag-drop to fix anything
-         * before committing. The real map is computed server-side when the
-         * change is applied.
+         * Preview case (formation change or re-optimize roles): show the
+         * backend-computed preview map so the pitch reflects what the user
+         * is about to commit. While the fetch is in flight, fall back to a
+         * naive local primary-match placement so the pitch isn't empty.
          */
         get slotAssignments() {
-            const effectiveFormation = this.pendingFormation ?? this.activeFormation;
-            const isFormationPreview = effectiveFormation !== this._pitchPositionsFormation;
+            const formationChanging = this.pendingFormation !== null
+                && this.pendingFormation !== this.activeFormation;
+            const isPreview = formationChanging || this.pendingReoptimize;
 
             let map;
-            if (isFormationPreview) {
+            if (isPreview) {
                 if (this.previewSlotMap) {
-                    // Authoritative preview map from the backend — same
-                    // algorithm the lineup page uses. Use it as-is.
                     map = { ...this.previewSlotMap };
                 } else {
                     // Fetch in flight (or not started yet). Fall back to a
                     // naive local primary-match placement so the pitch isn't
-                    // empty. The correct placement will snap in once
-                    // refreshFormationPreview() resolves.
+                    // empty. The correct placement snaps in once the preview
+                    // request resolves.
                     map = {};
                     const active = this.getActiveLineupPlayers();
                     for (const player of active) {
@@ -1750,11 +1761,10 @@ export default function liveMatch(config) {
         getEffectivePosition(slotId) {
             const gc = this.gridConfig;
             if (!gc) return null;
-            // Only apply custom positions when the formation matches — slot IDs
-            // map to different grid cells per formation.
-            const effectiveFormation = this.pendingFormation ?? this.activeFormation;
-            const positions = (effectiveFormation === this._pitchPositionsFormation) ? this.livePitchPositions : {};
-            return _getEffectivePosition(slotId, positions, this.currentPitchSlots, gc.cols, gc.rows);
+            // Live match always uses the formation's default cells — the
+            // pre-match drag-to-reposition flow is the only path that stored
+            // custom positions, and we no longer expose it mid-game.
+            return _getEffectivePosition(slotId, {}, this.currentPitchSlots, gc.cols, gc.rows);
         },
 
         getShirtStyle(role) {
@@ -1852,23 +1862,12 @@ export default function liveMatch(config) {
             return 'rating-poor';
         },
 
-        // =====================================================================
-        // Pitch Drag & Repositioning — provided by pitch-grid module via Object.assign in init()
-        // Methods: getSlotCell, isCellOccupied, selectForRepositioning,
-        //          setSlotGridPosition, handleGridCellClick, getGridCellState,
-        //          startDrag, _findSlotAtCell, _getPitchElement, _wasDragging
-        // =====================================================================
-
         isValidGridCell(slotLabel, col, row) {
             return _isValidGridCell(slotLabel, col, row, this.gridConfig);
         },
 
         getZoneColorClass(role) {
             return _getZoneColorClass(role);
-        },
-
-        confirmPositionChange() {
-            this._positionJustApplied = false;
         },
 
         getStatCount(type, side) {

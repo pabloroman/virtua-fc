@@ -282,8 +282,6 @@ class ShowLiveMatch
             'teamColors' => $teamColorsHex,
             'slotCompatibility' => $slotCompatibility,
             'gridConfig' => $gridConfig,
-            'pitchPositions' => $playerMatch->{"{$prefix}_pitch_positions"}
-                ?? $game->tactics?->default_pitch_positions ?? [],
             // Authoritative slot map: persisted value on the match if present,
             // otherwise lazy-computed via LineupService, with a final fallback
             // to the team's default_slot_assignments for brand-new installs.

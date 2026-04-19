@@ -98,9 +98,9 @@
                         </div>
 
                         {{-- Pitch interaction hints --}}
-                        <p x-show="canSubstitute && hasWindowsLeft && tacticalTab === 'substitutions' && positioningSlotId === null"
+                        <p x-show="canSubstitute && hasWindowsLeft && tacticalTab === 'substitutions'"
                            class="text-center text-[10px] text-text-secondary mt-1">
-                            {{ __('game.pitch_tap_or_drag') }}
+                            {{ __('game.pitch_tap_to_sub') }}
                         </p>
                     </div>
 
@@ -376,6 +376,25 @@
                                         </h4>
                                         <x-tactical-lever model="(pendingFormation ?? activeFormation)" set="pendingFormation" options="availableFormations" :columns="4" callback="refreshFormationPreview()" />
                                         <p class="mt-2 text-xs text-text-secondary italic min-h-5" x-text="getFormationTooltip()"></p>
+
+                                        {{-- Re-optimize roles: re-runs the backend recommender against the on-pitch 11.
+                                             Shown so users can recover from bad placements after a formation change re-runs
+                                             picked a weird slot, or after substitutions inherited a mismatched slot. --}}
+                                        <div class="mt-3 flex flex-col sm:flex-row sm:items-start sm:gap-3">
+                                            <button
+                                                type="button"
+                                                @click="requestReoptimize()"
+                                                x-bind:disabled="pendingReoptimize || applyingChanges || getActiveLineupPlayers().length === 0"
+                                                class="inline-flex items-center justify-center gap-1.5 rounded-md border border-border-strong bg-surface-700 px-3 py-2 text-xs font-semibold text-text-body hover:border-accent-blue hover:text-accent-blue transition-colors min-h-[36px] disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+                                            >
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0114.85-3.36L20 7M20 15a9 9 0 01-14.85 3.36L4 17"/>
+                                                </svg>
+                                                <span x-show="!pendingReoptimize">{{ __('game.tactical_reoptimize_roles') }}</span>
+                                                <span x-show="pendingReoptimize">{{ __('game.tactical_reoptimize_queued') }}</span>
+                                            </button>
+                                            <p class="mt-2 sm:mt-0 text-xs text-text-secondary italic">{{ __('game.tactical_reoptimize_hint') }}</p>
+                                        </div>
                                     </div>
 
                                     {{-- Mentality picker --}}
@@ -466,10 +485,14 @@
                                                 <div class="flex items-center gap-2 px-3 py-2 bg-surface-700 rounded-md text-sm">
                                                     <span class="text-text-secondary font-medium shrink-0" x-text="change.label"></span>
                                                     <span class="ml-auto flex items-center gap-1.5 text-xs">
-                                                        <span class="text-text-muted line-through" x-text="change.from"></span>
-                                                        <svg class="w-3 h-3 text-text-muted shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                                                        </svg>
+                                                        <template x-if="change.from">
+                                                            <span class="flex items-center gap-1.5">
+                                                                <span class="text-text-muted line-through" x-text="change.from"></span>
+                                                                <svg class="w-3 h-3 text-text-muted shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                                                </svg>
+                                                            </span>
+                                                        </template>
                                                         <span class="text-accent-blue font-semibold" x-text="change.to"></span>
                                                     </span>
                                                 </div>
@@ -504,12 +527,10 @@
                 </div>
             </div>
 
-            {{-- Sticky footer: one action row max --}}
-            <div x-show="hasPendingChanges || _positionJustApplied"
+            {{-- Sticky footer: primary action row --}}
+            <div x-show="hasPendingChanges"
                  class="border-t border-border-strong bg-surface-900 px-4 py-3 sm:px-6 shrink-0">
-
-                {{-- Subs/tactics pending: primary action --}}
-                <div x-show="hasPendingChanges" class="flex items-center gap-2">
+                <div class="flex items-center gap-2">
                     <x-secondary-button @click="showingConfirmation ? cancelConfirmation() : resetAllChanges()" class="gap-1.5">
                         <span x-show="!showingConfirmation">{{ __('game.tactical_reset_all') }}</span>
                         <span x-show="showingConfirmation">{{ __('game.confirm_back') }}</span>
@@ -537,13 +558,6 @@
                             <span x-show="applyingChanges">{{ __('game.sub_processing') }}</span>
                         </x-primary-button>
                     </div>
-                </div>
-
-                {{-- Position just changed: noop confirm (only when no subs/tactics pending) --}}
-                <div x-show="!hasPendingChanges && _positionJustApplied" class="flex justify-end">
-                    <x-primary-button color="emerald" type="button" @click="confirmPositionChange()">
-                        {{ __('game.positions_apply') }}
-                    </x-primary-button>
                 </div>
             </div>
         </div>
