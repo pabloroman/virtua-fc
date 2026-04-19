@@ -79,7 +79,12 @@ class ShowFastMode
     private function loadLastPlayerMatch(Game $game): ?GameMatch
     {
         /** @var GameMatch|null $match */
-        $match = GameMatch::with(['homeTeam', 'awayTeam', 'competition'])
+        $match = GameMatch::with([
+            'homeTeam',
+            'awayTeam',
+            'competition',
+            'goalEvents.gamePlayer.player',
+        ])
             ->where('game_id', $game->id)
             ->where('played', true)
             ->where(fn ($q) => $q->where('home_team_id', $game->team_id)
