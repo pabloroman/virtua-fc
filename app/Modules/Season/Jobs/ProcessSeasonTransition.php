@@ -5,6 +5,9 @@ namespace App\Modules\Season\Jobs;
 use App\Events\SeasonStarted;
 use App\Models\Game;
 use App\Models\SeasonArchive;
+use App\Modules\Competition\Enums\PlayoffState;
+use App\Modules\Competition\Exceptions\PlayoffInProgressException;
+use App\Modules\Competition\Playoffs\PlayoffGeneratorFactory;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Services\SeasonClosingPipeline;
 use App\Modules\Season\Services\SeasonSetupPipeline;
@@ -40,11 +43,27 @@ class ProcessSeasonTransition implements ShouldQueue, ShouldBeUnique
     public function handle(
         SeasonClosingPipeline $closingPipeline,
         SeasonSetupPipeline $setupPipeline,
+        PlayoffGeneratorFactory $playoffFactory,
     ): void {
         $game = Game::find($this->gameId);
 
         if (!$game || !$game->isTransitioningSeason()) {
             return;
+        }
+
+        // Guard: a playoff may have been generated between the StartNewSeason
+        // action's check and this job running (race against the last league
+        // match finalising and auto-generating the semifinals). Bail cleanly
+        // if any playoff is still in progress.
+        foreach ($playoffFactory->all() as $generator) {
+            if ($generator->state($game) === PlayoffState::InProgress) {
+                Log::warning('Aborting season transition: playoff still in progress', [
+                    'game_id' => $game->id,
+                    'competition_id' => $generator->getCompetitionId(),
+                ]);
+                $game->update(['season_transitioning_at' => null]);
+                return;
+            }
         }
 
         // Restore checkpoint state for crash recovery
@@ -54,7 +73,19 @@ class ProcessSeasonTransition implements ShouldQueue, ShouldBeUnique
 
         // Phase 1: Close old season (skip if fully completed in a previous run)
         if ($lastStep < $closingProcessorCount - 1) {
-            $data = $closingPipeline->run($game, $lastStep, $restoredData);
+            try {
+                $data = $closingPipeline->run($game, $lastStep, $restoredData);
+            } catch (PlayoffInProgressException $e) {
+                // Secondary defence — the pre-flight above should have caught
+                // this, but if a rule detects it mid-loop we still want to
+                // bail cleanly rather than leave the flag set forever.
+                Log::warning('Season closing aborted: playoff still in progress', [
+                    'game_id' => $game->id,
+                    'error' => $e->getMessage(),
+                ]);
+                $game->update(['season_transitioning_at' => null]);
+                return;
+            }
 
             $game->refresh()->setRelations([]);
         } else {

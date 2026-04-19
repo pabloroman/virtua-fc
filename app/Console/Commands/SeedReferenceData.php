@@ -543,8 +543,16 @@ class SeedReferenceData extends Command
 
             if ($existingTeam) {
                 $teamId = $existingTeam->id;
-                // Update colors for existing teams
+                // Update mutable fields for existing teams so reference
+                // refreshes pick up new data (stadium info, images, etc.).
+                $stadiumSeats = isset($club['stadiumSeats'])
+                    ? (int) str_replace(['.', ','], '', $club['stadiumSeats'])
+                    : 0;
+
                 DB::table('teams')->where('id', $teamId)->update([
+                    'image' => $club['image'] ?? $existingTeam->image,
+                    'stadium_name' => $club['stadiumName'] ?? $existingTeam->stadium_name,
+                    'stadium_seats' => $stadiumSeats ?: $existingTeam->stadium_seats,
                     'colors' => json_encode($colors),
                 ]);
             } else {

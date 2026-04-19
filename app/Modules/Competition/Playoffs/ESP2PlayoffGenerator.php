@@ -4,6 +4,7 @@ namespace App\Modules\Competition\Playoffs;
 
 use App\Modules\Competition\Contracts\PlayoffGenerator;
 use App\Modules\Competition\DTOs\PlayoffRoundConfig;
+use App\Modules\Competition\Enums\PlayoffState;
 use App\Modules\Competition\Services\LeagueFixtureGenerator;
 use App\Modules\Competition\Services\ReserveTeamFilter;
 use App\Models\Competition;
@@ -151,6 +152,19 @@ class ESP2PlayoffGenerator implements PlayoffGenerator
             ->where('round_number', $this->getTotalRounds())
             ->first();
 
-        return $finalTie->completed ?? false;
+        return $finalTie !== null && $finalTie->completed === true && $finalTie->winner_id !== null;
+    }
+
+    public function state(Game $game): PlayoffState
+    {
+        if ($this->isComplete($game)) {
+            return PlayoffState::Completed;
+        }
+
+        $anyTieExists = CupTie::where('game_id', $game->id)
+            ->where('competition_id', $this->competitionId)
+            ->exists();
+
+        return $anyTieExists ? PlayoffState::InProgress : PlayoffState::NotStarted;
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Modules\Competition\Contracts;
 
 use App\Modules\Competition\DTOs\PlayoffRoundConfig;
+use App\Modules\Competition\Enums\PlayoffState;
 use App\Models\Game;
 
 interface PlayoffGenerator
@@ -45,6 +46,14 @@ interface PlayoffGenerator
      * Check if all playoff rounds are complete
      */
     public function isComplete(Game $game): bool;
+
+    /**
+     * Lifecycle state of this playoff for the given game. Promotion logic
+     * MUST branch on this rather than merely checking isComplete(), to avoid
+     * conflating "never started" with "in progress" — a conflation that
+     * historically caused playoff losers to be incorrectly promoted.
+     */
+    public function state(Game $game): PlayoffState;
 
     /**
      * Get the competition ID this generator is for

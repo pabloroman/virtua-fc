@@ -13,8 +13,10 @@ use App\Models\GameStanding;
 use App\Models\SimulatedSeason;
 use App\Models\Team;
 use App\Models\TeamReputation;
+use App\Modules\Competition\Exceptions\PlayoffInProgressException;
 use App\Modules\Competition\Promotions\PromotionRelegationFactory;
 use App\Modules\Season\Services\SeasonGoalService;
+use Illuminate\Support\Facades\Log;
 
 class SeasonSummaryService
 {
@@ -133,7 +135,19 @@ class SeasonSummaryService
         try {
             $promoted = $rule->getPromotedTeams($game);
             $relegated = $rule->getRelegatedTeams($game);
-        } catch (\RuntimeException) {
+        } catch (PlayoffInProgressException $e) {
+            // Expected: user viewing the season-end page while a playoff is
+            // still in progress. Hide the promotion panel rather than show
+            // data that would diverge from the eventual actual swap.
+            return null;
+        } catch (\RuntimeException $e) {
+            // Data invariant violation — log so we know. Hide the panel
+            // rather than show garbage.
+            Log::warning('SeasonSummaryService: promotion rule threw', [
+                'game_id' => $game->id,
+                'competition_id' => $competition->id,
+                'error' => $e->getMessage(),
+            ]);
             return null;
         }
 
