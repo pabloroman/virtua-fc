@@ -349,10 +349,13 @@ class SeasonArchiveProcessor implements SeasonProcessor
                     ->delete();
             });
 
-        // Delete played matches (keep unplayed fixtures for potential reference)
-        GameMatch::where('game_id', $game->id)
-            ->where('played', true)
-            ->delete();
+        // GameMatch rows are intentionally left in place here. SeasonSettlement
+        // (priority 60) iterates this season's home matches to compute matchday
+        // revenue from MatchAttendance (whose FK cascades on game_match_id), so
+        // deleting them here would wipe the per-fixture attendance data before
+        // settlement sees it. LeagueFixtureProcessor (priority 30 in the setup
+        // pipeline) purges all GameMatches for this game_id immediately after
+        // the closing pipeline finishes, which does the cleanup.
 
         // Delete transfer records for this season
         GameTransfer::where('game_id', $game->id)

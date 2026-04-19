@@ -290,7 +290,7 @@ class FrontendSmokeTest extends TestCase
     public function test_finances_page_loads(): void
     {
         $this->actingAs($this->user)
-            ->get("/game/{$this->game->id}/finances")
+            ->get("/game/{$this->game->id}/club/finances")
             ->assertOk();
     }
 

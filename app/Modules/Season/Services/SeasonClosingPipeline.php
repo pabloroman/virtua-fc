@@ -25,6 +25,7 @@ use App\Modules\Season\Processors\SupercupQualificationProcessor;
 use App\Modules\Season\Processors\TransferMarketResetProcessor;
 use App\Modules\Season\Processors\UefaQualificationProcessor;
 use App\Modules\Season\Processors\YouthAcademyClosingProcessor;
+use App\Modules\Stadium\Processors\FanLoyaltyUpdateProcessor;
 use App\Models\Game;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -58,6 +59,7 @@ class SeasonClosingPipeline
         SupercupQualificationProcessor $supercupQualification,
         PromotionRelegationProcessor $promotionRelegation,
         ReputationUpdateProcessor $reputationUpdate,
+        FanLoyaltyUpdateProcessor $fanLoyaltyUpdate,
         YouthAcademyClosingProcessor $youthAcademyClosing,
         UefaQualificationProcessor $uefaQualification,
     ) {
@@ -81,6 +83,7 @@ class SeasonClosingPipeline
             $supercupQualification,
             $promotionRelegation,
             $reputationUpdate,
+            $fanLoyaltyUpdate,
             $youthAcademyClosing,
             $uefaQualification,
         ];

@@ -37,7 +37,7 @@ class MatchAttendanceService
             return $existing;
         }
 
-        if ($match->neutral_venue_name !== null && $match->neutral_venue_capacity !== null) {
+        if ($match->isNeutralVenue() && $match->neutral_venue_capacity !== null) {
             $capacity = (int) $match->neutral_venue_capacity;
             return MatchAttendance::create([
                 'game_id' => $game->id,
@@ -45,6 +45,33 @@ class MatchAttendanceService
                 'attendance' => $capacity,
                 'capacity_at_match' => $capacity,
             ]);
+        }
+
+        $projection = $this->projectForMatch($match, $game);
+        if ($projection === null) {
+            return null;
+        }
+
+        return MatchAttendance::create([
+            'game_id' => $game->id,
+            'game_match_id' => $match->id,
+            'attendance' => $projection['attendance'],
+            'capacity_at_match' => $projection['capacity'],
+        ]);
+    }
+
+    /**
+     * Compute the projected attendance for a fixture without persisting it.
+     * Used by BudgetProjectionService to sum pre-season matchday revenue
+     * across the upcoming schedule. Returns null for neutral-venue fixtures
+     * and for matches whose home team can't be resolved.
+     *
+     * @return array{attendance: int, capacity: int}|null
+     */
+    public function projectForMatch(GameMatch $match, Game $game): ?array
+    {
+        if ($match->isNeutralVenue()) {
+            return null;
         }
 
         $home = Team::find($match->home_team_id);
@@ -74,12 +101,10 @@ class MatchAttendanceService
             $homePosition,
         );
 
-        return MatchAttendance::create([
-            'game_id' => $game->id,
-            'game_match_id' => $match->id,
+        return [
             'attendance' => $attendance,
-            'capacity_at_match' => (int) ($home->stadium_seats ?? 0),
-        ]);
+            'capacity' => (int) ($home->stadium_seats ?? 0),
+        ];
     }
 
     /**

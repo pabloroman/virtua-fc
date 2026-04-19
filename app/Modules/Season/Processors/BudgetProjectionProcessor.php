@@ -11,7 +11,11 @@ use App\Models\Game;
 
 /**
  * Generates budget projections for the new season.
- * Runs after all other processors so we have the new squad and standings.
+ *
+ * Runs after ContinentalAndCupInitProcessor (106) so that cup round-1 draws
+ * and Swiss-format fixtures are in place — BudgetProjectionService walks
+ * scheduled home fixtures for the demand-curve projection, and it needs the
+ * full schedule (league + Swiss + round-1 cup) to be visible.
  */
 class BudgetProjectionProcessor implements SeasonProcessor
 {
@@ -22,7 +26,7 @@ class BudgetProjectionProcessor implements SeasonProcessor
 
     public function priority(): int
     {
-        return 50; // After everything else, right before pre-season starts
+        return 107; // After ContinentalAndCupInit (106), before PreSeasonFixture (108)
     }
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData

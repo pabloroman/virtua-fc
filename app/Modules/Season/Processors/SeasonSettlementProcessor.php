@@ -5,11 +5,13 @@ namespace App\Modules\Season\Processors;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Finance\Services\BudgetLoanService;
+use App\Modules\Stadium\Services\MatchAttendanceService;
 use App\Models\BudgetLoan;
 use App\Models\FinancialTransaction;
 use App\Models\TeamReputation;
 use App\Models\Game;
 use App\Models\GameInvestment;
+use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\GameStanding;
 use App\Models\Loan;
@@ -23,6 +25,9 @@ use Carbon\Carbon;
  */
 class SeasonSettlementProcessor implements SeasonProcessor
 {
+    public function __construct(
+        private readonly MatchAttendanceService $matchAttendanceService,
+    ) {}
 
     public function priority(): int
     {
@@ -47,7 +52,7 @@ class SeasonSettlementProcessor implements SeasonProcessor
 
         // Calculate actual revenues
         $actualTvRevenue = $this->calculateTvRevenue($actualPosition, $game);
-        $actualMatchdayRevenue = $this->calculateMatchdayRevenue($game, $actualPosition);
+        $actualMatchdayRevenue = $this->calculateMatchdayRevenue($game);
         $actualCommercialRevenue = $this->calculateCommercialRevenue(
             $finances->projected_commercial_revenue, $actualPosition
         );
@@ -129,26 +134,57 @@ class SeasonSettlementProcessor implements SeasonProcessor
         return $config->getTvRevenue($position);
     }
 
-    private function calculateMatchdayRevenue(Game $game, int $position): int
+    /**
+     * Sum actual matchday revenue across every played home fixture of the
+     * season, using the per-fixture MatchAttendance row. Rows that are missing
+     * (saves that span the Phase 1a upgrade) are backfilled in place via the
+     * idempotent MatchAttendanceService, so the formula sees uniform coverage.
+     *
+     * `revenue_per_seat` is a per-seat per-SEASON rate. To spread it across
+     * the fixture list we divide by the count of league home games — cup and
+     * European home ties then add bonus revenue on top at the same seat rate,
+     * which lines up with the demand curve already weighting those fixtures.
+     */
+    private function calculateMatchdayRevenue(Game $game): int
     {
         $team = $game->team;
         $reputation = TeamReputation::resolveLevel($game->id, $team->id);
-
         $league = $game->competition;
 
-        $base = $team->stadium_seats * config("finances.revenue_per_seat.{$reputation}", 15_000);
+        $leagueHomeMatchCount = GameMatch::where('game_id', $game->id)
+            ->where('competition_id', $league->id)
+            ->where('home_team_id', $team->id)
+            ->where('played', true)
+            ->count();
 
-        // Get facilities multiplier
+        if ($leagueHomeMatchCount === 0) {
+            return 0;
+        }
+
+        $perSeatSeasonRate = (int) config("finances.revenue_per_seat.{$reputation}", 15_000);
+        $perSeatMatchRate = $perSeatSeasonRate / $leagueHomeMatchCount;
+
+        $homeMatches = GameMatch::where('game_id', $game->id)
+            ->where('home_team_id', $team->id)
+            ->where('played', true)
+            ->get();
+
+        $total = 0.0;
+        foreach ($homeMatches as $match) {
+            $attendance = $this->matchAttendanceService->resolveForMatch($match, $game);
+            if ($attendance === null) {
+                // Neutral-venue finals don't feed the home club's matchday revenue.
+                continue;
+            }
+            $total += $attendance->attendance * $perSeatMatchRate;
+        }
+
         $investment = $game->currentInvestment;
         $facilitiesMultiplier = $investment
             ? GameInvestment::FACILITIES_MULTIPLIER[$investment->facilities_tier] ?? 1.0
             : 1.0;
 
-        // Position factor from competition config
-        $config = $league->getConfig();
-        $positionFactor = $config->getPositionFactor($position);
-
-        return (int) ($base * $facilitiesMultiplier * $positionFactor);
+        return (int) ($total * $facilitiesMultiplier);
     }
 
     /**

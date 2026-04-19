@@ -8,16 +8,19 @@ use App\Models\FinancialTransaction;
 use App\Models\Game;
 use App\Models\GameFinances;
 use App\Models\GameInvestment;
+use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\Team;
 use App\Models\TeamReputation;
 use App\Modules\Squad\Services\SquadService;
+use App\Modules\Stadium\Services\MatchAttendanceService;
 use Carbon\Carbon;
 
 class BudgetProjectionService
 {
     public function __construct(
         private readonly SquadService $squadService,
+        private readonly MatchAttendanceService $matchAttendanceService,
     ) {}
     /**
      * UEFA and RFEF solidarity funds (€250K)
@@ -125,23 +128,56 @@ class BudgetProjectionService
     }
 
     /**
-     * Calculate matchday revenue.
-     * Formula: Base (stadium_seats × revenue_per_seat) × Facilities Multiplier
+     * Project matchday revenue by walking the scheduled home fixtures for
+     * the upcoming season and summing per-fixture attendance from the demand
+     * curve. Cup and European home ties add bonus revenue on top of the
+     * league baseline at the same per-seat rate.
+     *
+     * `revenue_per_seat` is a per-seat per-SEASON rate, so we divide by the
+     * league home-game count to derive a per-match rate before summing.
+     *
+     * Runs at SeasonSetupPipeline priority 107 — after LeagueFixtureProcessor
+     * (30) and ContinentalAndCupInitProcessor (106), so the fixture list for
+     * the user's team is populated for leagues, Swiss-format competitions,
+     * and round-1 cup ties. Later cup rounds are drawn dynamically as the
+     * season progresses; treating them as upside rather than baseline mirrors
+     * how real clubs project revenue conservatively.
      */
     public function calculateMatchdayRevenue(Team $team, Game $game): int
     {
         $reputation = TeamReputation::resolveLevel($game->id, $team->id);
 
-        // Base matchday revenue from stadium size and competition config rates
-        $base = $team->stadium_seats * config("finances.revenue_per_seat.{$reputation}", 15_000);
+        $leagueHomeMatchCount = GameMatch::where('game_id', $game->id)
+            ->where('competition_id', $game->competition_id)
+            ->where('home_team_id', $team->id)
+            ->count();
 
-        // Get facilities multiplier from current investment (default to Tier 1 = 1.0)
+        if ($leagueHomeMatchCount === 0) {
+            return 0;
+        }
+
+        $perSeatSeasonRate = (int) config("finances.revenue_per_seat.{$reputation}", 15_000);
+        $perSeatMatchRate = $perSeatSeasonRate / $leagueHomeMatchCount;
+
+        $homeMatches = GameMatch::where('game_id', $game->id)
+            ->where('home_team_id', $team->id)
+            ->get();
+
+        $total = 0.0;
+        foreach ($homeMatches as $match) {
+            $projection = $this->matchAttendanceService->projectForMatch($match, $game);
+            if ($projection === null) {
+                continue;
+            }
+            $total += $projection['attendance'] * $perSeatMatchRate;
+        }
+
         $investment = $game->currentInvestment;
         $facilitiesMultiplier = $investment
             ? GameInvestment::FACILITIES_MULTIPLIER[$investment->facilities_tier] ?? 1.0
             : 1.0;
 
-        return (int) ($base * $facilitiesMultiplier);
+        return (int) ($total * $facilitiesMultiplier);
     }
 
     /**
