@@ -2,6 +2,8 @@
     /** @var App\Models\GamePlayer $gp */
     /** @var App\Models\Game $game */
     $isCareerMode = $game->isCareerMode();
+    $playerFlags = $playerFlags ?? [];
+    $flags = $playerFlags[$gp->id] ?? ['stature_gap' => false, 'wage_gap' => false];
 @endphp
 
 @if($isCareerMode)
@@ -37,13 +39,9 @@
         <svg x-data="" x-tooltip.raw="{{ __('squad.listed') }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" class="w-4 h-4 text-amber-500 shrink-0 cursor-help" fill="currentColor">
             <path fill-rule="evenodd" d="M3.396 6.093a2 2 0 0 0 0 3.814 2 2 0 0 0 2.697 2.697 2 2 0 0 0 3.814 0 2.001 2.001 0 0 0 2.698-2.697 2 2 0 0 0-.001-3.814 2.001 2.001 0 0 0-2.697-2.698 2 2 0 0 0-3.814.001 2 2 0 0 0-2.697 2.697ZM6 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm3.47-1.53a.75.75 0 1 1 1.06 1.06l-4 4a.75.75 0 1 1-1.06-1.06l4-4ZM11 10a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z" clip-rule="evenodd" />
         </svg>
-    @elseif(($playerFlags[$gp->id]['stature_gap'] ?? false))
-        <svg x-data="" x-tooltip.raw="{{ __('transfers.player_wont_renew') }}" class="w-4 h-4 shrink-0 cursor-help text-accent-red" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-        </svg>
-    @elseif(($playerFlags[$gp->id]['wage_gap'] ?? false))
-        <svg x-data="" x-tooltip.raw="{{ __('transfers.player_wants_raise') }}" class="w-4 h-4 shrink-0 cursor-help text-accent-gold" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-        </svg>
+    @elseif($flags['stature_gap'])
+        <x-warning-triangle :tooltip="__('transfers.player_wont_renew')" class="text-accent-red" />
+    @elseif($flags['wage_gap'])
+        <x-warning-triangle :tooltip="__('transfers.player_wants_raise')" class="text-accent-gold" />
     @endif
 @endif

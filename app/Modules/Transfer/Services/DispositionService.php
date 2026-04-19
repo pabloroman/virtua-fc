@@ -62,6 +62,27 @@ class DispositionService
      */
     public const RENEWAL_CONTENT_MORALE_THRESHOLD = 60;
 
+    /**
+     * Fraction of peer-median wage at which a player starts to feel underpaid.
+     * Below this threshold, they push for renewal and demand the peer median.
+     */
+    public const WAGE_GAP_RATIO = 0.60;
+
+    /**
+     * Minimum reputation-tier gap (player-tier floor minus team reputation)
+     * required to flag a stature gap. A gap of 1 is normal stretch; only a
+     * 2-tier gap indicates the player has materially outgrown the club.
+     */
+    public const STATURE_GAP_MIN_REPUTATION_GAP = 2;
+
+    /** Monthly morale loss for unaddressed wage-gap players. */
+    public const WAGE_GAP_MORALE_DRIP = 5;
+    /** Floor below which the wage-gap drip stops applying. */
+    public const WAGE_GAP_MORALE_FLOOR = 60;
+    /** Morale boost when a renewal actually closes the wage gap. */
+    public const WAGE_GAP_RENEWAL_BOOST = 10;
+    public const MAX_MORALE = 100;
+
     // =========================================
     // PLAYER IMPORTANCE
     // =========================================
@@ -733,12 +754,6 @@ class DispositionService
     // =========================================
 
     /**
-     * Fraction of peer-median wage at which a player starts to feel underpaid.
-     * Below this threshold, they push for renewal and demand the peer median.
-     */
-    public const WAGE_GAP_RATIO = 0.80;
-
-    /**
      * True when the player's tier requires a higher-reputation club than the
      * one they currently belong to. Such a player has outgrown the club: no
      * wage or contract length can retain them — their next move is upward.
@@ -761,7 +776,7 @@ class DispositionService
             return false;
         }
 
-        return $this->tierReputationGap($player, $player->game_id, $teamId) > 0;
+        return $this->tierReputationGap($player, $player->game_id, $teamId) >= self::STATURE_GAP_MIN_REPUTATION_GAP;
     }
 
     /**
@@ -831,26 +846,22 @@ class DispositionService
     /**
      * Apply the monthly morale drip for wage-gap players. Pure action: the
      * caller decides when to invoke (typically the month-boundary listener).
-     * Drops morale by 1 for every wage-gap squad player whose morale is above
-     * the floor. Returns the number of players affected.
+     * Returns the number of players affected.
      */
-    public const WAGE_GAP_MORALE_DRIP = 5;
-    public const WAGE_GAP_MORALE_FLOOR = 60;
-    public const WAGE_GAP_RENEWAL_BOOST = 10;
-    public const MAX_MORALE = 100;
-
     public function applyWageGapMoraleDrip(Game $game): int
     {
-        $squad = GamePlayer::with('matchState')
+        $squad = GamePlayer::with(['matchState', 'activeLoan'])
             ->joinMatchState()
             ->where('game_players.game_id', $game->id)
             ->where('game_players.team_id', $game->team_id)
             ->whereMatchStat('morale', '>', self::WAGE_GAP_MORALE_FLOOR)
             ->get();
 
+        $mediansByTier = $this->peerMedianWagesByTier($squad);
+
         $affected = 0;
         foreach ($squad as $player) {
-            if (!$this->hasWageGap($player)) {
+            if (!$this->hasWageGapAgainst($player, $mediansByTier[$player->tier] ?? 0)) {
                 continue;
             }
             $player->matchState->update([
@@ -871,16 +882,86 @@ class DispositionService
      */
     public function buildSquadFlags(Game $game): Collection
     {
-        $squad = GamePlayer::where('game_id', $game->id)
+        $squad = GamePlayer::with('activeLoan')
+            ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->get();
 
+        $mediansByTier = $this->peerMedianWagesByTier($squad);
+        // Resolve once: stature is evaluated against the current team for every
+        // player in the squad, so the per-player tierReputationGap call would
+        // re-resolve the same team reputation N times otherwise.
+        $teamReputation = $game->team_id
+            ? TeamReputation::resolveLevel($game->id, $game->team_id)
+            : null;
+        $teamIndex = $teamReputation ? ClubProfile::getReputationTierIndex($teamReputation) : null;
+
         return $squad->mapWithKeys(fn (GamePlayer $p) => [
             $p->id => [
-                'stature_gap' => $this->hasStatureGap($p),
-                'wage_gap' => $this->hasWageGap($p),
+                'stature_gap' => $teamIndex !== null && $this->hasStatureGapAgainst($p, $teamIndex),
+                'wage_gap' => $this->hasWageGapAgainst($p, $mediansByTier[$p->tier] ?? 0),
             ],
         ]);
+    }
+
+    /**
+     * Compute median annual wage per tier from an already-loaded squad collection.
+     * Excludes zero-wage entries; a player is excluded from their own tier median
+     * by the caller (hasWageGapAgainst handles the comparison vs $effectiveWage).
+     *
+     * @param Collection<int, GamePlayer> $squad
+     * @return array<int|string, int> tier => median wage
+     */
+    private function peerMedianWagesByTier(Collection $squad): array
+    {
+        $medians = [];
+        foreach ($squad->groupBy('tier') as $tier => $group) {
+            $wages = $group->pluck('annual_wage')
+                ->filter(fn ($w) => $w > 0)
+                ->sort()
+                ->values();
+            if ($wages->isEmpty()) {
+                continue;
+            }
+            $count = $wages->count();
+            $medians[$tier] = $count % 2 === 1
+                ? (int) $wages[intdiv($count, 2)]
+                : (int) (($wages[$count / 2 - 1] + $wages[$count / 2]) / 2);
+        }
+        return $medians;
+    }
+
+    /**
+     * Wage-gap check against a precomputed peer median. Mirrors hasWageGap
+     * without re-querying the squad. The median includes the player's own
+     * wage; for typical squad sizes (>3 same-tier peers) self-inclusion shifts
+     * the median by less than one slot and does not change the gap outcome.
+     */
+    private function hasWageGapAgainst(GamePlayer $player, int $peerMedian): bool
+    {
+        if (!$player->team_id || $peerMedian <= 0 || $player->isOnLoan()) {
+            return false;
+        }
+        $effectiveWage = $player->pending_annual_wage ?: $player->annual_wage;
+        if ($effectiveWage <= 0) {
+            return false;
+        }
+        return $effectiveWage < (int) ($peerMedian * self::WAGE_GAP_RATIO);
+    }
+
+    /**
+     * Stature-gap check against a precomputed team reputation tier index.
+     * Mirrors hasStatureGap without re-resolving team reputation per call.
+     */
+    private function hasStatureGapAgainst(GamePlayer $player, int $teamIndex): bool
+    {
+        if (!$player->team_id || $player->isOnLoan()) {
+            return false;
+        }
+        $playerTier = $player->tier ?? PlayerTierService::tierFromMarketValue($player->market_value_cents);
+        $minReputation = self::MIN_REPUTATION_BY_PLAYER_TIER[$playerTier] ?? ClubProfile::REPUTATION_LOCAL;
+        $minIndex = ClubProfile::getReputationTierIndex($minReputation);
+        return ($minIndex - $teamIndex) >= self::STATURE_GAP_MIN_REPUTATION_GAP;
     }
 
     // =========================================
