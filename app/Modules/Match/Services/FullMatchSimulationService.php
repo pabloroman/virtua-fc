@@ -32,13 +32,18 @@ class FullMatchSimulationService
      *
      * Handles lineup generation, forfeit checks, and full match simulation.
      *
+     * When $fastForward is true the user's team is treated like any AI-
+     * controlled team for in-match decisions (AISubstitutionService also
+     * runs their subs). Tactics, formation and lineup still come from the
+     * user's saved defaults via LineupService::ensureLineupsForMatches.
+     *
      * @param  Collection<GameMatch>  $matches
      * @param  Game  $game
      * @param  Collection  $allPlayers  Players grouped by team_id
      * @param  array<string, array<string>>  $suspendedByCompetition
      * @return array{matchResults: array, playerMatch: ?GameMatch}
      */
-    public function resolveMatches(Collection $matches, Game $game, $allPlayers, array $suspendedByCompetition): array
+    public function resolveMatches(Collection $matches, Game $game, $allPlayers, array $suspendedByCompetition, bool $fastForward = false): array
     {
         $teamIds = $matches->pluck('home_team_id')
             ->merge($matches->pluck('away_team_id'))
@@ -89,7 +94,7 @@ class FullMatchSimulationService
 
         $matchResults = [];
         foreach ($matchesToSimulate as $match) {
-            $matchResults[] = $this->simulateMatch($match, $allPlayers, $game);
+            $matchResults[] = $this->simulateMatch($match, $allPlayers, $game, $fastForward);
         }
 
         if ($forfeitResult) {
@@ -101,7 +106,7 @@ class FullMatchSimulationService
         return ['matchResults' => $matchResults, 'playerMatch' => $playerMatch];
     }
 
-    private function simulateMatch(GameMatch $match, $allPlayers, Game $game): array
+    private function simulateMatch(GameMatch $match, $allPlayers, Game $game, bool $fastForward = false): array
     {
         $homePlayers = $this->getLineupPlayers($match, $allPlayers, 'home');
         $awayPlayers = $this->getLineupPlayers($match, $allPlayers, 'away');
@@ -123,6 +128,12 @@ class FullMatchSimulationService
         $homePlayerSlots = $match->playerSlotMap('home');
         $awayPlayerSlots = $match->playerSlotMap('away');
 
+        // In fast mode the assistant coach also makes the user's in-match
+        // substitutions — pass userTeamId = null so the AI sub helper covers
+        // both teams, same as if the user had clicked "Skip to end" from
+        // minute 0. Tactics stay intact above.
+        $simulatorUserTeamId = ($isUserMatch && ! $fastForward) ? $game->team_id : null;
+
         $output = $this->matchSimulator->simulate(
             $match->homeTeam,
             $match->awayTeam,
@@ -143,7 +154,7 @@ class FullMatchSimulationService
             $awayBenchPlayers,
             matchSeed: $match->id,
             neutralVenue: $match->isNeutralVenue(),
-            userTeamId: $isUserMatch ? $game->team_id : null,
+            userTeamId: $simulatorUserTeamId,
             homePlayerSlots: $homePlayerSlots,
             awayPlayerSlots: $awayPlayerSlots,
         );

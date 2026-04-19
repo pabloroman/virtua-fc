@@ -179,10 +179,8 @@ class MatchdayOrchestrator
             $this->matchAttendanceService->resolveForMatch($match, $game);
         }
 
-        // Determine if this batch should use the fast AI resolution path.
-        // Fast mode forces it unconditionally (no live UI for the user's match).
-        $isAIOnlyBatch = $fastForward
-            || (! $playerMatch && config('match_simulation.ai_resolver_enabled', false));
+        // Determine if this is a pure AI-only batch eligible for fast resolution
+        $isAIOnlyBatch = ! $playerMatch && config('match_simulation.ai_resolver_enabled', false);
 
         // --- Load players ---
         $teamIds = $matches->pluck('home_team_id')
@@ -259,7 +257,10 @@ class MatchdayOrchestrator
             $matchResults = $this->aiMatchResolver->resolveMatches($matches, $allPlayers, $game, $suspendedByCompetition);
         } else {
             // --- Full simulation path (player-involved batches) ---
-            $resolution = $this->fullMatchSimulation->resolveMatches($matches, $game, $allPlayers, $suspendedByCompetition);
+            // Fast mode rides this same path — the live-match engine — but
+            // delegates the user's in-match substitutions to the assistant
+            // coach (AISubstitutionService) since there is no live UI.
+            $resolution = $this->fullMatchSimulation->resolveMatches($matches, $game, $allPlayers, $suspendedByCompetition, $fastForward);
             $matchResults = $resolution['matchResults'];
             $playerMatch = $resolution['playerMatch'];
         }

@@ -495,7 +495,7 @@ return [
     // Fast mode (assistant coach)
     'fast_mode' => 'Fast mode',
     'fast_mode_title' => 'Enable fast mode?',
-    'fast_mode_explanation' => 'You\'ll delegate all tactical decisions to your assistant coach. They\'ll manage fitness and pick the lineup before every match. You can regain control at any time.',
+    'fast_mode_explanation' => 'Your assistant coach will pick the lineup and handle in-match substitutions for you, using your saved formation and tactical instructions. You can regain control at any time.',
     'fast_mode_enter' => 'Enter fast mode',
     'fast_mode_exit' => 'Exit fast mode',
     'fast_mode_simulate_next' => 'Simulate next match',
