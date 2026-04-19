@@ -102,7 +102,7 @@ class ShowFinances
         $canRequestLoan = $this->loanService->canRequestLoan($game);
         $maxLoanAmount = $this->loanService->maxLoanAmount($game);
 
-        return view('finances', [
+        return view('club.finances', [
             'game' => $game,
             'finances' => $finances,
             'investment' => $investment,

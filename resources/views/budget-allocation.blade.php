@@ -19,7 +19,7 @@
                 <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">{{ __('finances.budget_allocation') }}</h2>
                 <p class="text-sm text-text-muted mt-0.5">{{ __('finances.season_budget', ['season' => $game->formatted_season]) }}</p>
             </div>
-            <a href="{{ route('game.finances', $game->id) }}" class="text-sm text-text-muted hover:text-text-primary transition-colors">
+            <a href="{{ route('game.club.finances', $game->id) }}" class="text-sm text-text-muted hover:text-text-primary transition-colors">
                 &larr; {{ __('app.back') }}
             </a>
         </div>

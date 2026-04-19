@@ -24,11 +24,11 @@ class UpgradeInfrastructure
         try {
             $this->upgradeService->upgrade($game, $validated['area'], (int) $validated['target_tier']);
         } catch (\InvalidArgumentException $e) {
-            return redirect()->route('game.finances', $gameId)
+            return redirect()->route('game.club.finances', $gameId)
                 ->with('error', $e->getMessage());
         }
 
-        return redirect()->route('game.finances', $gameId)
+        return redirect()->route('game.club.finances', $gameId)
             ->with('success', __('messages.infrastructure_upgraded', [
                 'area' => __("finances.{$validated['area']}"),
                 'tier' => $validated['target_tier'],

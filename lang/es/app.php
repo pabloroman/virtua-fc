@@ -6,6 +6,7 @@ return [
     'squad' => 'Plantilla',
     'starting_xi' => 'Alineación',
     'finances' => 'Finanzas',
+    'club' => 'Club',
     'transfers' => 'Fichajes',
     'calendar' => 'Calendario',
     'competitions' => 'Competiciones',

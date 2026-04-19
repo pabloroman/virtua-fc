@@ -37,7 +37,7 @@ class SaveBudgetAllocation
                 ->with('error', __($e->getMessage()));
         }
 
-        return redirect()->route('game.finances', $gameId)
+        return redirect()->route('game.club.finances', $gameId)
             ->with('success', __('messages.budget_saved'));
     }
 }

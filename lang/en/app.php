@@ -6,6 +6,7 @@ return [
     'squad' => 'Squad',
     'starting_xi' => 'Starting XI',
     'finances' => 'Finances',
+    'club' => 'Club',
     'transfers' => 'Transfers',
     'calendar' => 'Calendar',
     'competitions' => 'Competitions',

@@ -25,11 +25,11 @@ class RequestBudgetLoan
         try {
             $loan = $this->loanService->requestLoan($game, $amountInCents);
         } catch (\InvalidArgumentException $e) {
-            return redirect()->route('game.finances', $gameId)
+            return redirect()->route('game.club.finances', $gameId)
                 ->with('error', __($e->getMessage()));
         }
 
-        return redirect()->route('game.finances', $gameId)
+        return redirect()->route('game.club.finances', $gameId)
             ->with('success', __('messages.budget_loan_approved', [
                 'amount' => $loan->formatted_amount,
             ]));

@@ -21,12 +21,14 @@
 
     <div class="max-w-7xl mx-auto px-4 pb-8">
 
-        @if($finances)
-
-        {{-- Page Title --}}
-        <div class="mt-6 mb-6">
-            <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">{{ __('finances.finances') }}</h2>
+        {{-- Club hub title + subnav --}}
+        <div class="mt-6 mb-4">
+            <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">{{ __('club.hub_title') }}</h2>
         </div>
+        <x-club-section-nav :game="$game" active="finances" />
+
+        @if($finances)
+        <div class="mt-6"></div>
 
         {{-- Post-season results banner --}}
         @if($finances->actual_total_revenue > 0)

@@ -79,7 +79,7 @@ class NegotiateTransfer
                 'max_rounds' => self::MAX_ROUNDS,
                 'available_budget' => (int) (($this->transferService->availableBudget($game) + $existing->transfer_fee) / 100),
                 'budget_loan_available' => $this->budgetLoanService->canRequestLoan($game),
-                'budget_loan_url' => route('game.finances', $game->id),
+                'budget_loan_url' => route('game.club.finances', $game->id),
                 'messages' => [
                     $this->agentMessage('counter', [
                         'text' => __('transfers.chat_club_counter_resume', [
@@ -161,7 +161,7 @@ class NegotiateTransfer
             'max_rounds' => self::MAX_ROUNDS,
             'available_budget' => (int) ($this->transferService->availableBudget($game) / 100),
             'budget_loan_available' => $this->budgetLoanService->canRequestLoan($game),
-            'budget_loan_url' => route('game.finances', $game->id),
+            'budget_loan_url' => route('game.club.finances', $game->id),
             'messages' => [
                 $this->agentMessage('demand', [
                     'text' => __('transfers.chat_club_demand', [

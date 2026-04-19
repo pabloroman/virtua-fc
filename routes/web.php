@@ -85,6 +85,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Views\Dashboard;
 use App\Http\Views\SelectTeam;
 use App\Http\Views\ShowCalendar;
+use App\Http\Views\ShowClubReputation;
+use App\Http\Views\ShowClubStadium;
 use App\Http\Views\ShowFinances;
 use App\Http\Views\ShowFastMode;
 use App\Http\Views\ShowGame;
@@ -166,7 +168,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/game/{gameId}/academy/{playerId}/promote', PromoteAcademyPlayer::class)->name('game.academy.promote');
         Route::post('/game/{gameId}/academy/{playerId}/loan', LoanAcademyPlayer::class)->name('game.academy.loan');
         Route::post('/game/{gameId}/academy/{playerId}/dismiss', DismissAcademyPlayer::class)->name('game.academy.dismiss');
-        Route::get('/game/{gameId}/finances', ShowFinances::class)->name('game.finances');
+        // Club hub — Finances, Stadium, Reputation (and future non-sporting tenants)
+        Route::get('/game/{gameId}/club', fn (string $gameId) => redirect()->route('game.club.finances', $gameId))->name('game.club');
+        Route::get('/game/{gameId}/club/finances', ShowFinances::class)->name('game.club.finances');
+        Route::get('/game/{gameId}/club/stadium', ShowClubStadium::class)->name('game.club.stadium');
+        Route::get('/game/{gameId}/club/reputation', ShowClubReputation::class)->name('game.club.reputation');
         Route::get('/game/{gameId}/transfers', ShowIncomingTransfers::class)->name('game.transfers');
         Route::get('/game/{gameId}/transfers/outgoing', ShowOutgoingTransfers::class)->name('game.transfers.outgoing');
         Route::get('/game/{gameId}/transfers/market', ShowTransferMarket::class)->name('game.transfers.market');
