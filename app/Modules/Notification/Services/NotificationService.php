@@ -545,6 +545,24 @@ class NotificationService
     }
 
     /**
+     * Create a trophy won notification (cup final won).
+     */
+    public function notifyTrophyWon(
+        Game $game, string $competitionId, string $competitionName
+    ): GameNotification {
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_COMPETITION_ADVANCEMENT,
+            title: __('notifications.trophy_won_title', ['competition' => __($competitionName)]),
+            message: __('cup.champion_message', ['competition' => __($competitionName)]),
+            priority: GameNotification::PRIORITY_MILESTONE,
+            metadata: [
+                'competition_id' => $competitionId,
+            ],
+        );
+    }
+
+    /**
      * Create a competition elimination notification.
      */
     public function notifyCompetitionElimination(

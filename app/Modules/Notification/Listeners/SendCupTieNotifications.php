@@ -25,12 +25,20 @@ class SendCupTieNotifications
         $competitionName = $event->competition->name ?? 'Cup';
 
         if ($event->winnerId === $game->team_id) {
-            $this->notificationService->notifyCompetitionAdvancement(
-                $game,
-                $event->competition->id,
-                $competitionName,
-                __('cup.advanced_past_round', ['round' => __($roundName)]),
-            );
+            if ($roundName === 'cup.final') {
+                $this->notificationService->notifyTrophyWon(
+                    $game,
+                    $event->competition->id,
+                    $competitionName,
+                );
+            } else {
+                $this->notificationService->notifyCompetitionAdvancement(
+                    $game,
+                    $event->competition->id,
+                    $competitionName,
+                    __('cup.advanced_past_round', ['round' => __($roundName)]),
+                );
+            }
         } else {
             $this->notificationService->notifyCompetitionElimination(
                 $game,
