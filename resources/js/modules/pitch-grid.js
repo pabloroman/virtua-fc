@@ -20,6 +20,9 @@
  * @param {Function|null} options.getFormationGuard - Returns {effective, tracked} for formation mismatch checks (live only)
  * @param {Function|null} options.onSwap - Called with (draggedSlot, occupyingSlot) when dropping onto an occupied cell.
  *        If provided, the swap is handled by the caller (e.g. swap player assignments) instead of swapping grid positions.
+ * @param {boolean} [options.swapOnly] - When true, drops onto empty cells are rejected. Drag becomes a pure swap between
+ *        two occupied slots. Used by the live match where grid-cell repositioning has been removed — the formation is the
+ *        single source of truth for each slot's position on the pitch.
  */
 
 import {
@@ -151,15 +154,23 @@ export function createPitchGrid(ctx, options) {
         // Block swap with GK if not allowed
         if (occupying && !options.allowGkSwap && occupying.role === 'Goalkeeper') return;
 
-        // Start with current positions (respecting formation guard)
-        const newPositions = { ..._getGuardedPositions() };
-
         if (occupying && options.onSwap) {
             // Caller handles the swap (e.g. swap player assignments, not grid positions)
             options.onSwap(slot, occupying);
             state.positioningSlotId = null;
             return;
         }
+
+        // In swap-only mode, drops onto empty cells (no occupying slot) are
+        // rejected. The formation dictates where each slot sits on the pitch;
+        // drag is purely a player-to-player swap within the current shape.
+        if (options.swapOnly) {
+            state.positioningSlotId = null;
+            return;
+        }
+
+        // Start with current positions (respecting formation guard)
+        const newPositions = { ..._getGuardedPositions() };
 
         if (occupying) {
             // Move occupying slot to dragged slot's old cell (validate reverse direction)
@@ -207,6 +218,12 @@ export function createPitchGrid(ctx, options) {
             if (!options.allowGkSwap && occupying.role === 'Goalkeeper') return 'occupied';
             if (options.allowGkSwap && occupying.role === 'Goalkeeper') return 'valid-gk';
         }
+
+        // In swap-only mode (live match), only occupied cells are drop
+        // targets — drops onto empty cells are rejected by setSlotGridPosition.
+        // Paint empty cells as neutral so the user doesn't get a misleading
+        // "valid drop zone" highlight.
+        if (options.swapOnly && !occupying) return 'neutral';
 
         // GK repositioning hints
         if (slot.role === 'Goalkeeper') {

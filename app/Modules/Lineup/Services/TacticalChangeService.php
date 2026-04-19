@@ -38,30 +38,20 @@ class TacticalChangeService
         ?string $pressing = null,
         ?string $defensiveLine = null,
         bool $isExtraTime = false,
-        ?array $pitchPositions = null,
         bool $autoSubUserTeam = false,
+        array $manualSlotPins = [],
     ): array {
         $isUserHome = $match->isHomeTeam($game->team_id);
         $prefix = $isUserHome ? 'home' : 'away';
 
-        // Apply tactical changes to the match record
+        // Apply tactical (non-slot) changes to the match record. Slot
+        // assignments are recomputed below via LineupService against the
+        // post-sub active XI — always, regardless of whether the formation
+        // changed — so we never leave the old map stale.
         $matchUpdates = [];
 
-        // Track whether the formation is actually changing so we can
-        // recompute the slot map later (after the active lineup is built).
-        $formationChanged = false;
         if ($formation !== null) {
             $matchUpdates["{$prefix}_formation"] = $formation;
-
-            if ($formation !== $match->{"{$prefix}_formation"}) {
-                // Slot IDs map to different positions per formation, so the
-                // old map is meaningless. We'll compute a fresh one below
-                // once the substitutions have been reconciled.
-                $matchUpdates["{$prefix}_pitch_positions"] = $pitchPositions;
-                $matchUpdates["{$prefix}_slot_assignments"] = null;
-                $pitchPositions = null; // already queued
-                $formationChanged = true;
-            }
         }
         if ($mentality !== null) {
             $matchUpdates["{$prefix}_mentality"] = $mentality;
@@ -74,11 +64,6 @@ class TacticalChangeService
         }
         if ($defensiveLine !== null) {
             $matchUpdates["{$prefix}_defensive_line"] = $defensiveLine;
-        }
-
-        // Persist pitch positions on the match (if not already queued during formation change)
-        if ($pitchPositions !== null) {
-            $matchUpdates["{$prefix}_pitch_positions"] = $pitchPositions;
         }
 
         if (! empty($matchUpdates)) {
@@ -106,22 +91,35 @@ class TacticalChangeService
         $effectiveFormation = $match->{"{$prefix}_formation"};
         $effectiveMentality = $match->{"{$prefix}_mentality"};
 
-        // If the user committed a formation change, compute a fresh slot map
-        // for the new formation using the current on-pitch 11 (which already
-        // reflects all confirmed substitutions via $userLineup), and persist
-        // it to the match row. This is the same authoritative algorithm the
-        // lineup page and the live-match preview call — one source of truth.
+        // Always recompute the user-side slot map against the effective
+        // formation + post-sub active XI (10 players if a red card has
+        // already been served). This is the fix for the silent
+        // out-of-position penalty that used to happen when a sub inherited
+        // the outgoing player's slot regardless of position. The same
+        // authoritative algorithm runs for every tactical action — subs,
+        // formation changes, and red-card reshuffles all flow through
+        // LineupService::computeSlotAssignments.
+        //
+        // $manualSlotPins lets the frontend lock specific slots (populated
+        // by in-match drag-swaps — the only way the user can express "this
+        // player plays here" without going through the formation selector).
+        // We filter pins against the active XI so stale ids don't leak into
+        // the placement algorithm.
         $newSlotAssignments = null;
-        if ($formationChanged) {
-            $userPlayers = $isUserHome ? $homePlayers : $awayPlayers;
-            $formationEnum = Formation::tryFrom($formation);
-            if ($formationEnum !== null && $userPlayers->isNotEmpty()) {
-                $newSlotAssignments = $this->lineupService->computeSlotAssignments(
-                    $formationEnum,
-                    $userPlayers,
-                );
-                $match->update(["{$prefix}_slot_assignments" => $newSlotAssignments]);
-            }
+        $formationEnum = Formation::tryFrom($effectiveFormation ?? '');
+        $userPlayers = $isUserHome ? $homePlayers : $awayPlayers;
+        if ($formationEnum !== null && $userPlayers->isNotEmpty()) {
+            $activeIds = $userPlayers->pluck('id')->all();
+            $validPins = array_filter(
+                $manualSlotPins,
+                fn ($playerId) => in_array($playerId, $activeIds, true),
+            );
+            $newSlotAssignments = $this->lineupService->computeSlotAssignments(
+                $formationEnum,
+                $userPlayers,
+                $validPins,
+            );
+            $match->update(["{$prefix}_slot_assignments" => $newSlotAssignments]);
         }
 
         // Single re-simulation with all changes applied
@@ -248,9 +246,10 @@ class TacticalChangeService
             'playerPerformances' => $result->performances,
             'mvpPlayerName' => $mvpPlayerName,
             'mvpPlayerTeamId' => $mvpPlayerTeamId,
-            // Only included when the formation actually changed; the
-            // frontend promotes this to `startingSlotMap` so the pitch
-            // keeps rendering the correct placement after apply.
+            // Authoritative slot map after this round-trip — reflects the
+            // post-sub, post-formation reshuffle. The frontend promotes it
+            // to `startingSlotMap` so subsequent renders don't replay the
+            // now-persisted subs on top of a stale map.
             'slot_assignments' => $newSlotAssignments,
         ];
 

@@ -17,10 +17,11 @@ import {
 } from './modules/pitch-renderer.js';
 import { createPitchGrid } from './modules/pitch-grid.js';
 import {
-    applySubstitution,
+    bestFitPlacement,
     buildSlotView,
+    findOutOfPositionAssignments,
     getPlayerCompatibility,
-    placeInFirstMatchingSlot,
+    swapSlots,
 } from './modules/slot-map.js';
 import { createPenaltyShootout } from './modules/penalty-shootout.js';
 import { createSubstitutionManager } from './modules/substitution-manager.js';
@@ -202,8 +203,20 @@ export default function liveMatch(config) {
         previewSlotMap: null,
         computeSlotsUrl: config.computeSlotsUrl || '',
         _previewFetchId: 0,
-        _savedPitchPositions: config.pitchPositions ? { ...config.pitchPositions } : {},
-        _positionJustApplied: false,
+        // Set of slot ids whose assignment was set by an in-match drag swap.
+        // These are preserved when the best-fit placement reshuffles around
+        // pending subs, so the user's manual intent isn't silently undone.
+        _manualSwapSlotIds: new Set(),
+
+        // Formation-picker prompt state. When a staged substitution leaves a
+        // player out of position in the current formation, showConfirmation()
+        // opens this prompt instead of the normal confirm overlay. The user
+        // either picks a better-fitting formation or explicitly accepts the
+        // out-of-position penalty.
+        formationPickerOpen: false,
+        formationPickerOffenders: [],
+        formationPickerSuggested: null,
+        formationPickerLoading: false,
 
         // Tactical change state
         pendingFormation: null,
@@ -301,14 +314,27 @@ export default function liveMatch(config) {
                 allowGkSwap: false,
                 dragThreshold: 5,
                 onTapFallback: (slot) => this.handlePitchPlayerClick(slot),
-                onPositionChanged: (positions) => {
-                    this._pitchPositionsFormation = this.pendingFormation ?? this.activeFormation;
-                    this._savedPitchPositions = JSON.parse(JSON.stringify(positions));
-                    this._positionJustApplied = true;
+                onPositionChanged: null,
+                // Live match: drag = player-to-player swap within the
+                // current formation. Grid-cell repositioning was removed
+                // because it created an inconsistent mental model where
+                // the pitch and the simulated role diverged (e.g. dragging
+                // a striker to the defence "looked" right but kept the CB
+                // slot compat penalty behind the scenes). The formation is
+                // now the single source of truth for each player's role.
+                onSwap: (draggedSlot, occupyingSlot) => {
+                    this.startingSlotMap = swapSlots(
+                        this.startingSlotMap,
+                        draggedSlot.id,
+                        occupyingSlot.id,
+                    );
+                    this._manualSwapSlotIds.add(String(draggedSlot.id));
+                    this._manualSwapSlotIds.add(String(occupyingSlot.id));
                 },
+                swapOnly: true,
                 pitchElementId: 'live-pitch-field',
                 getPositions: () => this.livePitchPositions,
-                setPositions: (p) => { this.livePitchPositions = p },
+                setPositions: () => {},
                 getFormationGuard: () => ({
                     effective: this.pendingFormation ?? this.activeFormation,
                     tracked: this._pitchPositionsFormation,
@@ -630,6 +656,7 @@ export default function liveMatch(config) {
             this.pendingFormation = null;
             this.pendingMentality = null;
             this.previewSlotMap = null;
+            this.closeFormationPicker();
             if (!keepInjuryAlert) {
                 this.injuryAlertPlayer = null;
             }
@@ -649,8 +676,8 @@ export default function liveMatch(config) {
             this.dragPosition = null;
             this.positioningSlotId = null;
             this.injuryAlertPlayer = null;
-            this._positionJustApplied = false;
             this.showingConfirmation = false;
+            this.closeFormationPicker();
             document.body.classList.remove('overflow-y-hidden');
         },
 
@@ -682,7 +709,8 @@ export default function liveMatch(config) {
                 || (this.pendingMentality !== null && this.pendingMentality !== this.activeMentality)
                 || (this.pendingPlayingStyle !== null && this.pendingPlayingStyle !== this.activePlayingStyle)
                 || (this.pendingPressing !== null && this.pendingPressing !== this.activePressing)
-                || (this.pendingDefLine !== null && this.pendingDefLine !== this.activeDefLine);
+                || (this.pendingDefLine !== null && this.pendingDefLine !== this.activeDefLine)
+                || this._manualSwapSlotIds.size > 0;
         },
 
         getMentalityLabel(value) {
@@ -782,6 +810,7 @@ export default function liveMatch(config) {
             this.resetSubstitutions();
             this.resetTactics();
             this.showingConfirmation = false;
+            this.closeFormationPicker();
             this.tacticalError = null;
         },
 
@@ -864,6 +893,18 @@ export default function liveMatch(config) {
 
         showConfirmation() {
             this.tacticalError = null;
+
+            // Gate: if the pending subs (combined with the current formation)
+            // leave a player in a slot where their compat falls below 80,
+            // open the formation picker instead of the plain confirmation.
+            // The user must then either pick a formation that fits or
+            // explicitly accept the out-of-position penalty. Formation-only
+            // changes skip this gate — the user already chose their shape.
+            if (this._shouldPromptFormationPicker()) {
+                this.openFormationPicker();
+                return;
+            }
+
             this.showingConfirmation = true;
             // On mobile the pitch and controls stack vertically in a single
             // scroll container, and the confirmation overlay is positioned
@@ -882,6 +923,155 @@ export default function liveMatch(config) {
 
         cancelConfirmation() {
             this.showingConfirmation = false;
+        },
+
+        /**
+         * True when the staged substitution(s) would leave at least one
+         * player in a slot with compatibility < 80 under the currently
+         * pending (or active) formation. Used to gate the confirmation
+         * step so a sub that doesn't fit the shape prompts an explicit
+         * formation choice instead of silently applying the 25% penalty.
+         */
+        _shouldPromptFormationPicker() {
+            const hasStagedSubs = this.pendingSubs.length > 0
+                || (this.selectedPlayerOut && this.selectedPlayerIn);
+            if (!hasStagedSubs) return false;
+
+            const assignments = this.slotAssignments;
+            const offenders = assignments.filter(a =>
+                a.player && a.compatibility < 80 && !this.redCardedPlayerIds.includes(a.player.id),
+            );
+            return offenders.length > 0;
+        },
+
+        /**
+         * Open the formation picker prompt. Stores the current offenders
+         * and fires a server call to fetch the suggested best-fit
+         * formation for the post-sub active XI.
+         */
+        async openFormationPicker() {
+            const assignments = this.slotAssignments;
+            this.formationPickerOffenders = assignments
+                .filter(a => a.player && a.compatibility < 80 && !this.redCardedPlayerIds.includes(a.player.id))
+                .map(a => ({
+                    slotLabel: a.label,
+                    displayLabel: a.displayLabel,
+                    playerName: a.player.name,
+                    playerPosition: a.player.position,
+                    compatibility: a.compatibility,
+                }));
+            this.formationPickerOpen = true;
+            this.formationPickerSuggested = null;
+            this.formationPickerLoading = true;
+
+            if (!this.computeSlotsUrl) {
+                this.formationPickerLoading = false;
+                return;
+            }
+
+            const currentFormation = this.pendingFormation ?? this.activeFormation;
+            const playerIds = this._postSubActivePlayerIds();
+            if (playerIds.length === 0) {
+                this.formationPickerLoading = false;
+                return;
+            }
+
+            try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? this.csrfToken ?? '';
+                const response = await fetch(this.computeSlotsUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        formation: currentFormation,
+                        player_ids: playerIds,
+                        include_suggested_formation: true,
+                    }),
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.suggested_formation && data.suggested_formation !== currentFormation) {
+                        this.formationPickerSuggested = data.suggested_formation;
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to fetch suggested formation', e);
+            } finally {
+                this.formationPickerLoading = false;
+            }
+        },
+
+        /**
+         * List of player ids that will be on the pitch after the currently
+         * staged subs are committed. Sent to the server when fetching a
+         * suggested formation so the recommender evaluates against the
+         * same XI the user is about to commit.
+         */
+        _postSubActivePlayerIds() {
+            const allPending = [...this.pendingSubs];
+            if (this.selectedPlayerOut && this.selectedPlayerIn) {
+                const alreadyPending = allPending.some(
+                    s => s.playerOut.id === this.selectedPlayerOut.id,
+                );
+                if (!alreadyPending) {
+                    allPending.push({
+                        playerOut: this.selectedPlayerOut,
+                        playerIn: this.selectedPlayerIn,
+                    });
+                }
+            }
+            const pendingOutIds = new Set(allPending.map(s => s.playerOut.id));
+            const active = this.getActiveLineupPlayers()
+                .filter(p => !pendingOutIds.has(p.id))
+                .map(p => p.id);
+            for (const sub of allPending) active.push(sub.playerIn.id);
+            return active;
+        },
+
+        closeFormationPicker() {
+            this.formationPickerOpen = false;
+            this.formationPickerOffenders = [];
+            this.formationPickerSuggested = null;
+            this.formationPickerLoading = false;
+        },
+
+        /**
+         * User picked a formation from the prompt (or the suggested one).
+         * Queue it as a pending formation change so confirmAllChanges()
+         * applies the sub and the formation in the same round trip, and
+         * then advance to the normal confirmation overlay.
+         */
+        acceptFormationPickerChoice(formationValue) {
+            if (!formationValue) return;
+            if (formationValue !== this.activeFormation) {
+                this.pendingFormation = formationValue;
+                this.refreshFormationPreview();
+            } else {
+                this.pendingFormation = null;
+            }
+            this.closeFormationPicker();
+            this.showingConfirmation = true;
+            this.$nextTick(() => {
+                const scrollContainer = this.$refs.tacticalScrollContainer;
+                if (scrollContainer) scrollContainer.scrollTop = 0;
+            });
+        },
+
+        /**
+         * User explicitly chose to keep the current formation and accept
+         * the out-of-position penalty. Skip the picker and show the
+         * normal confirmation overlay.
+         */
+        keepFormationWithPenalty() {
+            this.closeFormationPicker();
+            this.showingConfirmation = true;
+            this.$nextTick(() => {
+                const scrollContainer = this.$refs.tacticalScrollContainer;
+                if (scrollContainer) scrollContainer.scrollTop = 0;
+            });
         },
 
         async confirmAllChanges() {
@@ -924,11 +1114,6 @@ export default function liveMatch(config) {
                     }));
                 }
 
-                // Include pitch positions if any were customized
-                if (Object.keys(this.livePitchPositions).length > 0) {
-                    payload.pitch_positions = this.livePitchPositions;
-                }
-
                 // Include tactical changes if any
                 if (this.hasTacticalChanges) {
                     if (this.pendingFormation !== null && this.pendingFormation !== this.activeFormation) {
@@ -945,6 +1130,16 @@ export default function liveMatch(config) {
                     }
                     if (this.pendingDefLine !== null && this.pendingDefLine !== this.activeDefLine) {
                         payload.defensive_line = this.pendingDefLine;
+                    }
+                    // In-match drag swaps → server-side manual pins so
+                    // the user's explicit slot intent survives the
+                    // post-sub reshuffle.
+                    if (this._manualSwapSlotIds.size > 0) {
+                        payload.manual_slot_pins = {};
+                        for (const slotId of this._manualSwapSlotIds) {
+                            const playerId = this.startingSlotMap[slotId];
+                            if (playerId) payload.manual_slot_pins[slotId] = playerId;
+                        }
                     }
                 }
 
@@ -998,25 +1193,18 @@ export default function liveMatch(config) {
 
                 // Update active tactics
                 if (result.formation) {
-                    const formationChanged = result.formation !== this.activeFormation;
                     this.activeFormation = result.formation;
-                    if (formationChanged) {
-                        // Only clear positions if they belong to the old formation —
-                        // the user may have already dragged players during preview.
-                        if (this._pitchPositionsFormation !== result.formation) {
-                            this.livePitchPositions = {};
-                            this._savedPitchPositions = {};
-                        }
-                        this._pitchPositionsFormation = result.formation;
-                        // Promote the preview map (computed by the backend
-                        // during refreshFormationPreview) to the new
-                        // authoritative starting map. If we didn't preview,
-                        // use whatever the server returned, falling back to
-                        // empty — the next page refresh will re-resolve.
-                        this.startingSlotMap = result.slot_assignments
-                            ?? this.previewSlotMap
-                            ?? {};
-                    }
+                    this._pitchPositionsFormation = result.formation;
+                }
+                // Promote the authoritative post-apply slot map returned by
+                // the server. TacticalChangeService recomputes it on every
+                // tactical action (subs, formation change, red-card
+                // reshuffle), so we replace startingSlotMap unconditionally.
+                // Drag-swap intent is consumed: the server's reshuffle is
+                // the new baseline, and any future manual swaps start fresh.
+                if (result.slot_assignments) {
+                    this.startingSlotMap = result.slot_assignments;
+                    this._manualSwapSlotIds = new Set();
                 }
                 // Pending-state reset includes the preview map.
                 this.previewSlotMap = null;
@@ -1638,55 +1826,36 @@ export default function liveMatch(config) {
         /**
          * Computed slot assignments for the pitch display.
          *
-         * Normal case (current formation): start from the authoritative
-         * starting-XI map and replay confirmed substitutions on top. No
-         * algorithm, no reshuffling.
+         * The server is the source of truth for the slot map (`startingSlotMap`
+         * is replaced with the authoritative response after each Apply). When
+         * there are pending subs not yet committed, we reshuffle locally via
+         * the JS best-fit mirror so the pitch preview is roughly correct
+         * without a round trip. The server runs the full placement algorithm
+         * on commit and returns the canonical map.
          *
          * Formation-preview case: the user is previewing a different shape
-         * from the tactical panel and hasn't committed yet. Slot IDs change
-         * between formations so the saved map is useless. We do a quick
-         * local placement — walk the current on-pitch 11 and drop each into
-         * the first empty slot of the new formation that matches their
-         * primary position. It's not as smart as the backend algorithm,
-         * but it's instant, and the user can drag-drop to fix anything
-         * before committing. The real map is computed server-side when the
-         * change is applied.
+         * from the tactical panel. Slot ids map to different pitch cells
+         * per formation, so the saved map is useless. We use the backend's
+         * `previewSlotMap` (fetched by refreshFormationPreview) and fall
+         * back to a local best-fit in the fetch window.
          */
         get slotAssignments() {
             const effectiveFormation = this.pendingFormation ?? this.activeFormation;
             const isFormationPreview = effectiveFormation !== this._pitchPositionsFormation;
+            const slots = this.currentPitchSlots;
 
-            let map;
-            if (isFormationPreview) {
-                if (this.previewSlotMap) {
-                    // Authoritative preview map from the backend — same
-                    // algorithm the lineup page uses. Use it as-is.
-                    map = { ...this.previewSlotMap };
-                } else {
-                    // Fetch in flight (or not started yet). Fall back to a
-                    // naive local primary-match placement so the pitch isn't
-                    // empty. The correct placement will snap in once
-                    // refreshFormationPreview() resolves.
-                    map = {};
-                    const active = this.getActiveLineupPlayers();
-                    for (const player of active) {
-                        map = placeInFirstMatchingSlot(map, this.currentPitchSlots, player);
-                    }
-                }
-            } else {
-                // Start from the saved slot map and replay confirmed subs on top.
-                map = { ...this.startingSlotMap };
-                const confirmedSubs = this.substitutionsMade || [];
-                for (const sub of confirmedSubs) {
-                    map = applySubstitution(map, sub.playerOutId, sub.playerInId);
-                }
-            }
+            // Index players by id once for this getter invocation.
+            const playersById = {};
+            for (const p of this.lineupPlayers || []) playersById[p.id] = p;
+            for (const p of this.benchPlayers || []) playersById[p.id] = p;
 
-            // Layer pending subs on top (in-memory preview only — not committed).
+            // Compose the effective active XI: current on-pitch players
+            // plus any pending (selected or queued) incoming subs, minus
+            // their outgoing counterparts.
             const allPendingSubs = [...this.pendingSubs];
             if (this.selectedPlayerOut && this.selectedPlayerIn) {
                 const alreadyPending = allPendingSubs.some(
-                    s => s.playerOut.id === this.selectedPlayerOut.id
+                    s => s.playerOut.id === this.selectedPlayerOut.id,
                 );
                 if (!alreadyPending) {
                     allPendingSubs.push({
@@ -1695,20 +1864,47 @@ export default function liveMatch(config) {
                     });
                 }
             }
+            const pendingOutIds = new Set(allPendingSubs.map(s => s.playerOut.id));
+            const pendingInIds = new Set(allPendingSubs.map(s => s.playerIn.id));
 
-            const pendingInIds = new Set();
+            const activePlayers = this.getActiveLineupPlayers().filter(p => !pendingOutIds.has(p.id));
             for (const sub of allPendingSubs) {
-                map = applySubstitution(map, sub.playerOut.id, sub.playerIn.id);
-                pendingInIds.add(sub.playerIn.id);
+                const inPlayer = playersById[sub.playerIn.id] ?? sub.playerIn;
+                if (inPlayer) activePlayers.push(inPlayer);
             }
 
-            // Index players by id for the pitch view. Includes both the
-            // starting XI and the full bench so subbed-in players render.
-            const playersById = {};
-            for (const p of this.lineupPlayers || []) playersById[p.id] = p;
-            for (const p of this.benchPlayers || []) playersById[p.id] = p;
+            let map;
+            if (isFormationPreview) {
+                if (this.previewSlotMap) {
+                    map = { ...this.previewSlotMap };
+                } else {
+                    // Backend fetch in flight — best-fit locally so the pitch
+                    // isn't empty. The authoritative map snaps in once
+                    // refreshFormationPreview() resolves.
+                    map = bestFitPlacement(activePlayers, slots, this.slotCompatibility);
+                }
+            } else if (allPendingSubs.length === 0) {
+                // No pending subs — the saved startingSlotMap IS the
+                // authoritative map (the server rebuilt it on the last
+                // Apply). Just honor it, including any in-match drag swaps
+                // the user has applied on top.
+                map = { ...this.startingSlotMap };
+            } else {
+                // Pending subs present — reshuffle against the active XI
+                // within the current formation, preserving the user's
+                // manual drag-swap intent on specific slots.
+                const manualPins = {};
+                for (const slotId of this._manualSwapSlotIds) {
+                    const playerId = this.startingSlotMap[slotId];
+                    if (!playerId) continue;
+                    if (pendingOutIds.has(playerId)) continue;
+                    if (!activePlayers.some(p => p.id === playerId)) continue;
+                    manualPins[slotId] = playerId;
+                }
+                map = bestFitPlacement(activePlayers, slots, this.slotCompatibility, manualPins);
+            }
 
-            const assignments = buildSlotView(map, this.currentPitchSlots, playersById, this.slotCompatibility);
+            const assignments = buildSlotView(map, slots, playersById, this.slotCompatibility);
 
             // Mark pending-sub players with isPendingSub so the pitch can
             // style them (dashed border, muted colors, etc.) without
@@ -1720,10 +1916,11 @@ export default function liveMatch(config) {
             }
 
             // Post-process: ensure a non-red-carded Goalkeeper occupies the
-            // GK slot. When a GK is sent off and a reserve GK comes on as a
-            // direct swap, the reserve ends up in the GK slot automatically.
-            // This block only matters in edge cases where the reserve GK was
-            // subbed into a different slot (rare, old data paths).
+            // GK slot. When a GK is sent off and a reserve GK comes on, the
+            // reshuffle normally places the reserve GK in the GK slot via
+            // Pass 1. This block only covers the edge case where the
+            // reshuffle left a non-GK in the GK slot (e.g. no reserve GK
+            // on the bench).
             const redCarded = this.redCardedPlayerIds;
             const gkSlot = assignments.find(s => s.role === 'Goalkeeper');
             if (gkSlot?.player && redCarded.includes(gkSlot.player.id)) {
@@ -1865,10 +2062,6 @@ export default function liveMatch(config) {
 
         getZoneColorClass(role) {
             return _getZoneColorClass(role);
-        },
-
-        confirmPositionChange() {
-            this._positionJustApplied = false;
         },
 
         getStatCount(type, side) {

@@ -48,8 +48,8 @@ class ProcessTacticalActions
             'playing_style' => ['nullable', 'string', Rule::enum(PlayingStyle::class)],
             'pressing' => ['nullable', 'string', Rule::enum(PressingIntensity::class)],
             'defensive_line' => ['nullable', 'string', Rule::enum(DefensiveLineHeight::class)],
-            'pitch_positions' => 'nullable|array',
-            'pitch_positions.*' => 'array|size:2',
+            'manual_slot_pins' => 'nullable|array',
+            'manual_slot_pins.*' => 'string',
             'previousSubstitutions' => 'array',
             'previousSubstitutions.*.playerOutId' => 'required|string',
             'previousSubstitutions.*.playerInId' => 'required|string',
@@ -62,7 +62,7 @@ class ProcessTacticalActions
             || ! empty($validated['playing_style'])
             || ! empty($validated['pressing'])
             || ! empty($validated['defensive_line'])
-            || ! empty($validated['pitch_positions']);
+            || ! empty($validated['manual_slot_pins']);
 
         if (! $hasSubs && ! $hasTactics) {
             return response()->json(['error' => __('game.tactical_no_changes')], 422);
@@ -99,7 +99,7 @@ class ProcessTacticalActions
                 $validated['pressing'] ?? null,
                 $validated['defensive_line'] ?? null,
                 isExtraTime: $isExtraTime,
-                pitchPositions: $validated['pitch_positions'] ?? null,
+                manualSlotPins: $validated['manual_slot_pins'] ?? [],
             );
         } catch (\Throwable $e) {
             Log::error('ProcessTacticalActions failed', [

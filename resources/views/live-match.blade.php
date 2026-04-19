@@ -269,6 +269,20 @@
                         <template x-if="phase === 'full_time' && hasExtraTime && !penaltyResult">
                             <div class="text-xs text-text-secondary mt-1">({{ __('game.live_aet') }})</div>
                         </template>
+
+                        {{-- Formation badge — always visible during play so
+                             the user never loses sight of the current shape.
+                             This matters because the formation is now the
+                             single source of truth for each player's role
+                             (drag is a swap within the shape, not a free
+                             reposition), so users must be able to read it
+                             at a glance. --}}
+                        <template x-if="phase !== 'pre_match'">
+                            <div class="mt-1.5 flex items-center justify-center gap-1.5 text-[10px] font-medium text-text-secondary">
+                                <span class="uppercase tracking-wider text-text-muted">{{ __('game.tactical_formation') }}</span>
+                                <span class="font-heading font-bold text-text-primary" x-text="activeFormation"></span>
+                            </div>
+                        </template>
                     </div>
 
                     {{-- Timeline Bar --}}

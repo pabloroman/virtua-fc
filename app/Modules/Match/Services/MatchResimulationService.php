@@ -17,7 +17,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use App\Modules\Squad\Services\EligibilityService;
-use App\Support\PositionSlotMapper;
 
 class MatchResimulationService
 {
@@ -221,8 +220,12 @@ class MatchResimulationService
             default => false,
         };
 
-        $homePlayerSlots = $isUserHome ? $this->playerSlotMapWithSubs($match, 'home', $allSubstitutions) : $match->playerSlotMap('home');
-        $awayPlayerSlots = $isUserHome ? $match->playerSlotMap('away') : $this->playerSlotMapWithSubs($match, 'away', $allSubstitutions);
+        // Slot maps come straight from the persisted {side}_slot_assignments,
+        // which TacticalChangeService recomputes via LineupService after every
+        // substitution or formation change. No mid-stream sub replay is
+        // needed — the authoritative map already reflects the active XI.
+        $homePlayerSlots = $match->playerSlotMap('home');
+        $awayPlayerSlots = $match->playerSlotMap('away');
 
         // Seed the simulator with previously rolled performance modifiers so a
         // player's "form on the day" persists across the full match. Without
@@ -458,9 +461,12 @@ class MatchResimulationService
                 }
             }
 
-            // 7. Re-simulate extra time remainder
-            $homePlayerSlots = $isUserHome ? $this->playerSlotMapWithSubs($match, 'home', $allSubstitutions) : $match->playerSlotMap('home');
-            $awayPlayerSlots = $isUserHome ? $match->playerSlotMap('away') : $this->playerSlotMapWithSubs($match, 'away', $allSubstitutions);
+            // 7. Re-simulate extra time remainder.
+            // Slot maps come from the persisted {side}_slot_assignments —
+            // always current thanks to TacticalChangeService's post-sub
+            // recompute via LineupService.
+            $homePlayerSlots = $match->playerSlotMap('home');
+            $awayPlayerSlots = $match->playerSlotMap('away');
 
             // Seed the simulator with previously rolled performance modifiers so
             // players keep their "form on the day" into extra time instead of
@@ -891,34 +897,4 @@ class MatchResimulationService
         }, $formatted);
     }
 
-    /**
-     * Build a {playerId => slotCode} map with completed substitutions applied.
-     *
-     * Used for the user's side during resimulation, where manual subs have
-     * changed who occupies each slot since the match started.
-     */
-    private function playerSlotMapWithSubs(GameMatch $match, string $side, array $substitutions): array
-    {
-        $slotAssignments = $match->{"{$side}_slot_assignments"} ?? [];
-        $formationValue = $match->{"{$side}_formation"} ?? null;
-
-        if (empty($slotAssignments) || empty($formationValue)) {
-            return [];
-        }
-
-        foreach ($substitutions as $sub) {
-            foreach ($slotAssignments as $slotId => $playerId) {
-                if ($playerId === $sub['playerOutId']) {
-                    $slotAssignments[$slotId] = $sub['playerInId'];
-                    break;
-                }
-            }
-        }
-
-        $formation = \App\Modules\Lineup\Enums\Formation::tryFrom($formationValue);
-
-        return $formation
-            ? PositionSlotMapper::buildPlayerSlotMap($slotAssignments, $formation->pitchSlots())
-            : [];
-    }
 }

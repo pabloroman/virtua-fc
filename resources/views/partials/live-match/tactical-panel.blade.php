@@ -420,6 +420,86 @@
                           </div>{{-- /grid --}}
                         </div>
 
+                        {{-- Formation picker prompt — opens when a staged sub would
+                             leave a player out of position in the current formation.
+                             The user must either pick a fitting formation or explicitly
+                             accept the 25% out-of-position penalty. --}}
+                        <div x-show="formationPickerOpen"
+                             x-transition:enter="ease-out duration-200"
+                             x-transition:enter-start="opacity-0"
+                             x-transition:enter-end="opacity-100"
+                             x-transition:leave="ease-in duration-150"
+                             x-transition:leave-start="opacity-100"
+                             x-transition:leave-end="opacity-0"
+                             class="absolute inset-0 z-30 bg-surface-800 overflow-y-auto"
+                        >
+                            <div class="p-4 sm:p-5">
+                                <h3 class="text-sm font-heading font-semibold uppercase tracking-wider text-text-primary mb-2">
+                                    {{ __('game.sub_formation_prompt_title') }}
+                                </h3>
+                                <p class="text-xs text-text-secondary mb-4">
+                                    {{ __('game.sub_formation_prompt_body') }}
+                                </p>
+
+                                {{-- Out-of-position offenders --}}
+                                <template x-if="formationPickerOffenders.length > 0">
+                                    <div class="mb-4 space-y-1.5">
+                                        <template x-for="(off, idx) in formationPickerOffenders" :key="idx">
+                                            <div class="flex items-center gap-2 px-3 py-2 bg-accent-red/10 border border-accent-red/20 rounded-md text-sm">
+                                                <svg class="w-4 h-4 text-accent-red shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                                </svg>
+                                                <span class="font-medium text-accent-red truncate" x-text="off.playerName"></span>
+                                                <span class="text-[10px] text-text-muted shrink-0"
+                                                      x-text="'(' + off.playerPosition + ' → ' + off.slotLabel + ')'"></span>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </template>
+
+                                {{-- Formation buttons --}}
+                                <h4 class="text-xs font-semibold text-text-muted uppercase mb-2">
+                                    {{ __('game.sub_formation_prompt_pick') }}
+                                </h4>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4">
+                                    <template x-for="f in availableFormations" :key="f.value">
+                                        <button
+                                            type="button"
+                                            @click="acceptFormationPickerChoice(f.value)"
+                                            class="relative flex flex-col items-center justify-center px-3 py-2 rounded-md text-sm font-semibold transition-colors min-h-[44px]"
+                                            :class="f.value === formationPickerSuggested
+                                                ? 'bg-accent-green/10 border border-accent-green/40 text-accent-green'
+                                                : 'bg-surface-700 border border-border-strong text-text-body hover:border-border-default'"
+                                        >
+                                            <span x-text="f.label"></span>
+                                            <span x-show="f.value === formationPickerSuggested"
+                                                  class="text-[9px] font-normal uppercase tracking-wider text-accent-green mt-0.5">
+                                                {{ __('game.sub_formation_suggested') }}
+                                            </span>
+                                        </button>
+                                    </template>
+                                </div>
+
+                                <div x-show="formationPickerLoading" class="text-xs text-text-muted mb-3">
+                                    {{ __('game.sub_formation_loading') }}
+                                </div>
+
+                                {{-- Actions: keep current with penalty, or cancel --}}
+                                <div class="flex flex-col sm:flex-row gap-2 pt-3 border-t border-border-default">
+                                    <x-secondary-button
+                                        @click="closeFormationPicker()"
+                                        class="gap-1.5 sm:w-auto">
+                                        {{ __('game.confirm_back') }}
+                                    </x-secondary-button>
+                                    <x-secondary-button
+                                        @click="keepFormationWithPenalty()"
+                                        class="gap-1.5 sm:ml-auto !border-amber-500/40 !text-amber-300 hover:!bg-amber-500/10">
+                                        {{ __('game.sub_formation_keep_with_penalty') }}
+                                    </x-secondary-button>
+                                </div>
+                            </div>
+                        </div>
+
                         {{-- Confirmation overlay --}}
                         <div x-show="showingConfirmation"
                              x-transition:enter="ease-out duration-200"
@@ -509,11 +589,10 @@
             </div>
 
             {{-- Sticky footer: one action row max --}}
-            <div x-show="hasPendingChanges || _positionJustApplied"
+            <div x-show="hasPendingChanges && !formationPickerOpen"
                  class="border-t border-border-strong bg-surface-900 px-4 py-3 sm:px-6 shrink-0">
 
-                {{-- Subs/tactics pending: primary action --}}
-                <div x-show="hasPendingChanges" class="flex items-center gap-2">
+                <div class="flex items-center gap-2">
                     <x-secondary-button @click="showingConfirmation ? cancelConfirmation() : resetAllChanges()" class="gap-1.5">
                         <span x-show="!showingConfirmation">{{ __('game.tactical_reset_all') }}</span>
                         <span x-show="showingConfirmation">{{ __('game.confirm_back') }}</span>
@@ -541,13 +620,6 @@
                             <span x-show="applyingChanges">{{ __('game.sub_processing') }}</span>
                         </x-primary-button>
                     </div>
-                </div>
-
-                {{-- Position just changed: noop confirm (only when no subs/tactics pending) --}}
-                <div x-show="!hasPendingChanges && _positionJustApplied" class="flex justify-end">
-                    <x-primary-button color="emerald" type="button" @click="confirmPositionChange()">
-                        {{ __('game.positions_apply') }}
-                    </x-primary-button>
                 </div>
             </div>
         </div>

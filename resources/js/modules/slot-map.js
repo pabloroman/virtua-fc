@@ -107,18 +107,124 @@ export function removePlayer(map, playerId) {
 }
 
 /**
- * Apply a substitution: the incoming player takes the outgoing player's slot.
- * Used by the live-match view when a sub is confirmed. Returns a new map.
+ * Best-fit placement of an on-pitch XI against a formation's slots.
+ *
+ * JS mirror of the first two passes of FormationRecommender: place players
+ * whose primary position is a 100-compat match (Pass 1), then place players
+ * whose secondary position is a 100-compat match (Pass 2). Players that
+ * neither pass places are dropped into the first remaining empty slot
+ * (Pass 3, a cheap force-fill so the pitch never loses a selected player).
+ *
+ * This is intentionally NOT a full re-implementation of the server
+ * algorithm — Pass 3 "swap" (from FormationRecommender::trySwapFill) and
+ * the weighted fallback are skipped. The backend runs the full algorithm
+ * on commit via LineupService::computeSlotAssignments and returns the
+ * authoritative map, which the client promotes to startingSlotMap. This
+ * helper exists so the pitch preview during a pending sub is instant and
+ * roughly correct without a round trip.
+ *
+ * `manualPinnedPlayerIds` lists players whose current slot the caller
+ * explicitly pinned (via drag-swap). Those assignments are preserved; the
+ * rest of the XI is re-solved from scratch against the formation's slots.
+ *
+ * @param {Array} players - Current on-pitch players: { id, position, positions, secondary_positions }
+ * @param {Array} slots - Formation slots: { id, label }
+ * @param {Object} slotCompatibility - SLOT_COMPATIBILITY matrix (label -> position -> score)
+ * @param {Object} [manualPins] - Optional { slotId: playerId } assignments to lock in place
+ * @returns {Object} { slotId: playerId }
  */
-export function applySubstitution(map, outgoingPlayerId, incomingPlayerId) {
-    const next = { ...map };
-    for (const slotId of Object.keys(next)) {
-        if (next[slotId] === outgoingPlayerId) {
-            next[slotId] = incomingPlayerId;
-            return next;
+export function bestFitPlacement(players, slots, slotCompatibility, manualPins = {}) {
+    const map = {};
+    const used = new Set();
+
+    const playerPositions = (p) => {
+        if (Array.isArray(p.positions) && p.positions.length > 0) return p.positions;
+        const out = [];
+        if (p.position) out.push(p.position);
+        for (const sec of (p.secondary_positions ?? p.secondaryPositions ?? [])) {
+            if (sec && !out.includes(sec)) out.push(sec);
+        }
+        return out;
+    };
+
+    // Honor manual pins first — user drag-swaps are intent, not suggestions.
+    for (const [slotId, playerId] of Object.entries(manualPins)) {
+        if (!playerId) continue;
+        const player = players.find(p => p.id === playerId);
+        if (!player) continue;
+        map[slotId] = playerId;
+        used.add(playerId);
+    }
+
+    // Pass 1 — primary position matches slot at 100 compat.
+    for (const slot of slots) {
+        if (map[slot.id]) continue;
+        for (const player of players) {
+            if (used.has(player.id)) continue;
+            if ((slotCompatibility[slot.label]?.[player.position] ?? 0) === 100) {
+                map[slot.id] = player.id;
+                used.add(player.id);
+                break;
+            }
         }
     }
-    return next;
+
+    // Pass 2 — secondary position matches slot at 100 compat.
+    for (const slot of slots) {
+        if (map[slot.id]) continue;
+        for (const player of players) {
+            if (used.has(player.id)) continue;
+            const positions = playerPositions(player).slice(1); // skip primary
+            const fits = positions.some(pos => (slotCompatibility[slot.label]?.[pos] ?? 0) === 100);
+            if (fits) {
+                map[slot.id] = player.id;
+                used.add(player.id);
+                break;
+            }
+        }
+    }
+
+    // Pass 3 — force-fill: any remaining unused player into any remaining
+    // empty slot. Mirrors FormationRecommender::fillByForceAssignment so
+    // the pitch never loses a selected player to an algorithmic gap.
+    for (const slot of slots) {
+        if (map[slot.id]) continue;
+        for (const player of players) {
+            if (used.has(player.id)) continue;
+            map[slot.id] = player.id;
+            used.add(player.id);
+            break;
+        }
+    }
+
+    return map;
+}
+
+/**
+ * Scan a slot map and report any assignments whose compatibility falls below
+ * the "natural position" threshold (80). Returns the list of problematic
+ * assignments so the caller can decide whether to block a commit (e.g. show
+ * the formation picker prompt).
+ *
+ * @param {Object} map - { slotId: playerId }
+ * @param {Array} slots - [{ id, label, role }]
+ * @param {Object} playersById - lookup keyed by player id
+ * @param {Object} slotCompatibility - SLOT_COMPATIBILITY matrix
+ * @returns {Array<{slotId, slotLabel, player, compatibility}>}
+ */
+export function findOutOfPositionAssignments(map, slots, playersById, slotCompatibility) {
+    const out = [];
+    for (const slot of slots) {
+        const playerId = map[slot.id];
+        if (!playerId) continue;
+        const player = playersById[playerId];
+        if (!player) continue;
+        const compat = getPlayerCompatibility(player, slot.label, slotCompatibility);
+        if (compat < 80) {
+            out.push({ slotId: slot.id, slotLabel: slot.label, player, compatibility: compat });
+        }
+    }
+    return out;
 }
 
 /**
