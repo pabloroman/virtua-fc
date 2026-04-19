@@ -3,6 +3,7 @@
 namespace App\Http\Views;
 
 use App\Modules\Competition\Services\CalendarService;
+use App\Modules\Competition\Services\CompetitionViewService;
 use App\Modules\Match\DTOs\MatchdayAdvanceResult;
 use App\Modules\Match\Services\MatchdayService;
 use App\Modules\Match\Services\MatchNarrativeService;
@@ -20,6 +21,7 @@ class ShowGame
         private readonly MatchdayService $matchdayService,
         private readonly MatchNarrativeService $narrativeService,
         private readonly NotificationService $notificationService,
+        private readonly CompetitionViewService $competitionViewService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -138,7 +140,7 @@ class ShowGame
         $notifications = $this->notificationService->getNotifications($game->id, true, 15);
         $groupedNotifications = $notifications->groupBy(fn ($n) => $n->game_date?->format('Y-m-d') ?? 'unknown');
 
-        $leagueStandings = $this->getLeagueStandings($game);
+        $leagueStandings = $this->competitionViewService->getAbridgedLeagueStandings($game);
 
         $viewData = [
             'game' => $game,
@@ -213,47 +215,6 @@ class ShowGame
             : $nextMatch->home_team_id;
 
         return $this->calendarService->getTeamForm($game->id, $opponentId);
-    }
-
-    private function getLeagueStandings(Game $game): \Illuminate\Support\Collection
-    {
-        $query = GameStanding::with('team')
-            ->where('game_id', $game->id)
-            ->where('competition_id', $game->competition_id);
-
-        // For tournament mode, only show the player's group
-        if ($game->isTournamentMode()) {
-            $playerGroupLabel = GameStanding::where('game_id', $game->id)
-                ->where('competition_id', $game->competition_id)
-                ->where('team_id', $game->team_id)
-                ->value('group_label');
-
-            if ($playerGroupLabel) {
-                $query->where('group_label', $playerGroupLabel);
-            }
-        }
-
-        $standings = $query->orderBy('position')->get();
-
-        if ($standings->isEmpty()) {
-            return collect();
-        }
-
-        // For tournament mode, show all teams in the group (typically 4)
-        if ($game->isTournamentMode()) {
-            return $standings;
-        }
-
-        // For leagues, show a window around the player's team + top of table
-        $playerPosition = $standings->firstWhere('team_id', $game->team_id)?->position ?? 1;
-        $windowStart = max(1, $playerPosition - 2);
-        $windowEnd = min($standings->count(), $playerPosition + 2);
-
-        $topIds = $standings->where('position', '<=', 3)->pluck('team_id');
-        $windowIds = $standings->whereBetween('position', [$windowStart, $windowEnd])->pluck('team_id');
-        $visibleIds = $topIds->merge($windowIds)->unique();
-
-        return $standings->filter(fn ($s) => $visibleIds->contains($s->team_id));
     }
 
     private function getPlayerTournamentTie(Game $game): ?CupTie

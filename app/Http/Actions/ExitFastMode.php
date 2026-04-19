@@ -3,18 +3,20 @@
 namespace App\Http\Actions;
 
 use App\Models\Game;
+use App\Modules\Match\Services\FastModeService;
 
 class ExitFastMode
 {
+    public function __construct(
+        private readonly FastModeService $fastModeService,
+    ) {}
+
     public function __invoke(string $gameId)
     {
         $game = Game::findOrFail($gameId);
 
         if ($game->isFastMode()) {
-            $game->update([
-                'fast_mode' => false,
-                'fast_mode_entered_on' => null,
-            ]);
+            $this->fastModeService->exit($game);
         }
 
         return redirect()->route('show-game', $gameId)

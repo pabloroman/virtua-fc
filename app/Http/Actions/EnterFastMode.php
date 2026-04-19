@@ -3,10 +3,12 @@
 namespace App\Http\Actions;
 
 use App\Models\Game;
+use App\Modules\Match\Services\FastModeService;
 
 class EnterFastMode
 {
     public function __construct(
+        private readonly FastModeService $fastModeService,
         private readonly AdvanceFastMatchday $advanceFastMatchday,
     ) {}
 
@@ -21,20 +23,11 @@ class EnterFastMode
                 ->with('warning', __('messages.fast_mode_blocked_live_match'));
         }
 
-        // Record the calendar date at entry so the view can hide the "last
-        // result" panel when a re-entry happens but the immediate advance
-        // below can't play (e.g. a pending action blocks it). Always refresh
-        // on (re-)entry so stepping out and back in resets the marker.
-        $game->update([
-            'fast_mode' => true,
-            'fast_mode_entered_on' => $game->current_date?->toDateString(),
-        ]);
+        $this->fastModeService->enter($game);
 
         // Simulate the first match immediately so the user lands on a
         // populated view (last result + updated standings) instead of an
-        // empty "simulate your first match" screen. The advance action
-        // redirects to the fast-mode view itself, handling blocked/
-        // season-complete/error flows along the way.
+        // empty "simulate your first match" screen.
         return ($this->advanceFastMatchday)($gameId);
     }
 }

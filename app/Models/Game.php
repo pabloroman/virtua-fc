@@ -121,7 +121,6 @@ class Game extends Model
         'needs_welcome',
         'pre_season',
         'squad_registration_enabled',
-        'fast_mode',
         'fast_mode_entered_on',
         'pending_actions',
         'setup_completed_at',
@@ -143,7 +142,6 @@ class Game extends Model
         'needs_welcome' => 'boolean',
         'pre_season' => 'boolean',
         'squad_registration_enabled' => 'boolean',
-        'fast_mode' => 'boolean',
         'fast_mode_entered_on' => 'date',
         'pending_actions' => 'array',
         'setup_completed_at' => 'datetime',
@@ -763,6 +761,6 @@ class Game extends Model
 
     public function isFastMode(): bool
     {
-        return $this->fast_mode ?? false;
+        return $this->fast_mode_entered_on !== null;
     }
 }

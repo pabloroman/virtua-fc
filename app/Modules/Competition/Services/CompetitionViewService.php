@@ -24,6 +24,49 @@ class CompetitionViewService
             ->get();
     }
 
+    /**
+     * Standings for the user's primary competition, abridged for dashboard
+     * widgets: top 3 plus a 5-team window centered on the player's position.
+     * For tournament mode, returns the player's full group instead.
+     */
+    public function getAbridgedLeagueStandings(Game $game): Collection
+    {
+        $query = GameStanding::with('team')
+            ->where('game_id', $game->id)
+            ->where('competition_id', $game->competition_id);
+
+        if ($game->isTournamentMode()) {
+            $playerGroupLabel = GameStanding::where('game_id', $game->id)
+                ->where('competition_id', $game->competition_id)
+                ->where('team_id', $game->team_id)
+                ->value('group_label');
+
+            if ($playerGroupLabel) {
+                $query->where('group_label', $playerGroupLabel);
+            }
+        }
+
+        $standings = $query->orderBy('position')->get();
+
+        if ($standings->isEmpty()) {
+            return collect();
+        }
+
+        if ($game->isTournamentMode()) {
+            return $standings;
+        }
+
+        $playerPosition = $standings->firstWhere('team_id', $game->team_id)?->position ?? 1;
+        $windowStart = max(1, $playerPosition - 2);
+        $windowEnd = min($standings->count(), $playerPosition + 2);
+
+        $topIds = $standings->where('position', '<=', 3)->pluck('team_id');
+        $windowIds = $standings->whereBetween('position', [$windowStart, $windowEnd])->pluck('team_id');
+        $visibleIds = $topIds->merge($windowIds)->unique();
+
+        return $standings->filter(fn ($s) => $visibleIds->contains($s->team_id))->values();
+    }
+
     public function getTeamForms(Collection $standings): array
     {
         $this->backfillMissingForms($standings);

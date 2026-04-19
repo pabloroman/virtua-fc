@@ -2,17 +2,18 @@
 
 namespace App\Http\Views;
 
+use App\Modules\Competition\Services\CompetitionViewService;
+use App\Modules\Match\Services\FastModeService;
 use App\Modules\Match\Services\MatchdayService;
-use App\Modules\Notification\Services\NotificationService;
 use App\Models\Game;
 use App\Models\GameMatch;
-use App\Models\GameStanding;
 
 class ShowFastMode
 {
     public function __construct(
         private readonly MatchdayService $matchdayService,
-        private readonly NotificationService $notificationService,
+        private readonly FastModeService $fastModeService,
+        private readonly CompetitionViewService $competitionViewService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -49,7 +50,7 @@ class ShowFastMode
             return redirect()->route('show-game', $gameId);
         }
 
-        $lastMatch = $this->loadLastPlayerMatch($game);
+        $lastMatch = $this->fastModeService->getLastPlayerMatch($game);
         $nextMatch = $this->loadNextPlayerMatch($game);
 
         // No more matches — send the user to the season/tournament end screen.
@@ -59,11 +60,8 @@ class ShowFastMode
                 : redirect()->route('game.season-end', $gameId);
         }
 
-        $leagueStandings = $this->getLeagueStandings($game);
+        $leagueStandings = $this->competitionViewService->getAbridgedLeagueStandings($game);
         $playerStanding = $leagueStandings->firstWhere('team_id', $game->team_id);
-
-        $unreadNotificationCount = $this->notificationService->getUnreadCount($game->id);
-        $pendingAction = $game->getFirstPendingAction();
 
         return view('fast-mode', [
             'game' => $game,
@@ -71,34 +69,8 @@ class ShowFastMode
             'nextMatch' => $nextMatch,
             'leagueStandings' => $leagueStandings,
             'playerStanding' => $playerStanding,
-            'unreadNotificationCount' => $unreadNotificationCount,
-            'pendingAction' => $pendingAction,
+            'pendingAction' => $game->getFirstPendingAction(),
         ]);
-    }
-
-    private function loadLastPlayerMatch(Game $game): ?GameMatch
-    {
-        $query = GameMatch::with([
-            'homeTeam',
-            'awayTeam',
-            'competition',
-            'goalEvents.gamePlayer.player',
-        ])
-            ->where('game_id', $game->id)
-            ->where('played', true)
-            ->where(fn ($q) => $q->where('home_team_id', $game->team_id)
-                ->orWhere('away_team_id', $game->team_id));
-
-        // Only surface matches actually simulated in the current fast-mode
-        // session — i.e. on or after the calendar date when the user entered
-        // fast mode. This prevents the panel from resurrecting the last
-        // manually-played match the first time the user lands on the view.
-        if ($game->fast_mode_entered_on) {
-            $query->where('scheduled_date', '>=', $game->fast_mode_entered_on->toDateString());
-        }
-
-        /** @var GameMatch|null */
-        return $query->orderByDesc('scheduled_date')->first();
     }
 
     private function loadNextPlayerMatch(Game $game): ?GameMatch
@@ -110,47 +82,5 @@ class ShowFastMode
         }
 
         return $match;
-    }
-
-    /**
-     * Window around the player's position plus the top 3 — matches the ShowGame
-     * abridged standings logic so the user sees familiar context.
-     */
-    private function getLeagueStandings(Game $game): \Illuminate\Support\Collection
-    {
-        $query = GameStanding::with('team')
-            ->where('game_id', $game->id)
-            ->where('competition_id', $game->competition_id);
-
-        if ($game->isTournamentMode()) {
-            $playerGroupLabel = GameStanding::where('game_id', $game->id)
-                ->where('competition_id', $game->competition_id)
-                ->where('team_id', $game->team_id)
-                ->value('group_label');
-
-            if ($playerGroupLabel) {
-                $query->where('group_label', $playerGroupLabel);
-            }
-        }
-
-        $standings = $query->orderBy('position')->get();
-
-        if ($standings->isEmpty()) {
-            return collect();
-        }
-
-        if ($game->isTournamentMode()) {
-            return $standings;
-        }
-
-        $playerPosition = $standings->firstWhere('team_id', $game->team_id)?->position ?? 1;
-        $windowStart = max(1, $playerPosition - 2);
-        $windowEnd = min($standings->count(), $playerPosition + 2);
-
-        $topIds = $standings->where('position', '<=', 3)->pluck('team_id');
-        $windowIds = $standings->whereBetween('position', [$windowStart, $windowEnd])->pluck('team_id');
-        $visibleIds = $topIds->merge($windowIds)->unique();
-
-        return $standings->filter(fn ($s) => $visibleIds->contains($s->team_id))->values();
     }
 }
