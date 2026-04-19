@@ -34,6 +34,14 @@ return [
     'evaluation_met_message' => 'Una temporada sólida que cumplió con nuestros objetivos. La directiva está satisfecha con tu trabajo y espera más progreso la próxima temporada.',
     'evaluation_below_message' => 'Una campaña decepcionante. Esperábamos mejores resultados y la directiva estará monitoreando de cerca el rendimiento la próxima temporada.',
     'evaluation_disaster_message' => 'Esta temporada ha sido un desastre. La directiva esperaba terminar alrededor de la posición :target, pero la :actual es inaceptable. Se requiere una mejora significativa.',
+    'evaluation_exceptional_message_with_trophies' => 'Una campaña histórica. No solo terminaste :diff puestos por encima de lo esperado, sino que además conquistaste :trophies. La directiva no podría estar más contenta.',
+    'evaluation_exceeded_message_with_trophies' => 'Una temporada sobresaliente. Has superado la posición proyectada en la liga y, además, :trophies han aportado aún más gloria al club. La directiva está encantada.',
+    'evaluation_met_message_with_trophies' => 'Una temporada satisfactoria. Se cumplieron los objetivos de liga y :trophies han hecho la campaña aún más memorable. La directiva espera que construyas sobre esto el próximo año.',
+    'evaluation_below_message_with_trophies' => 'La campaña en la liga se quedó corta respecto a las expectativas, pero :trophies han suavizado el golpe, tanto en prestigio como en ingresos. Aun así, la directiva espera un mejor rendimiento liguero la próxima temporada.',
+    'evaluation_disaster_message_with_trophies' => 'Una temporada caótica. La posición :actual en la liga queda muy lejos de la esperada :target, y solo :trophies han evitado una catástrofe total. La directiva exige un giro radical.',
+    'achievement_winner' => 'campeón de :competition',
+    'achievement_runner_up' => 'subcampeón de :competition',
+    'achievement_and' => 'y',
 
     // Individual awards
     'individual_awards' => 'Premios Individuales',

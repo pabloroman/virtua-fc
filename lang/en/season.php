@@ -34,6 +34,14 @@ return [
     'evaluation_met_message' => 'A solid season that met our objectives. The board is satisfied with your work and expects further progress next season.',
     'evaluation_below_message' => 'A disappointing campaign. We expected better results and the board will be monitoring performance closely next season.',
     'evaluation_disaster_message' => 'This season has been a disaster. The board expected a finish around position :target, but :actual is unacceptable. Significant improvement is required.',
+    'evaluation_exceptional_message_with_trophies' => 'A historic campaign. Not only did you finish :diff places above expectations, but you also delivered :trophies. The board could not be happier.',
+    'evaluation_exceeded_message_with_trophies' => 'An outstanding season. You exceeded the projected league position and, on top of that, :trophies brought further glory to the club. The board is thrilled.',
+    'evaluation_met_message_with_trophies' => 'A satisfying season. League objectives were met and :trophies made the campaign even more memorable. The board expects you to build on this next year.',
+    'evaluation_below_message_with_trophies' => 'The league campaign fell short of expectations, but :trophies softened the blow in terms of both prestige and revenue. The board still expects a stronger league effort next season.',
+    'evaluation_disaster_message_with_trophies' => 'A chaotic season. The league finish around position :actual was far below the expected :target, and only :trophies prevented an outright catastrophe. The board demands a major turnaround.',
+    'achievement_winner' => ':competition winner',
+    'achievement_runner_up' => ':competition runner-up',
+    'achievement_and' => 'and',
 
     // Individual awards
     'individual_awards' => 'Individual Awards',
