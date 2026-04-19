@@ -5,6 +5,7 @@ namespace App\Modules\Season\Processors;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Models\ClubProfile;
+use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\Team;
@@ -69,10 +70,17 @@ class PreSeasonFixtureProcessor implements SeasonProcessor
     /**
      * Select foreign teams of similar reputation as pre-season opponents.
      *
+     * Primera RFEF sides (ESP3A/ESP3B) wouldn't realistically tour against
+     * foreign clubs, so they instead draw random Segunda (ESP2) opponents.
+     *
      * @return \Illuminate\Support\Collection<Team>
      */
     private function selectOpponents(Game $game): \Illuminate\Support\Collection
     {
+        if (in_array($game->competition_id, ['ESP3A', 'ESP3B'], true)) {
+            return $this->selectSegundaOpponents($game);
+        }
+
         $userProfile = ClubProfile::where('team_id', $game->team_id)->first();
         $userTierIndex = $userProfile
             ? ClubProfile::getReputationTierIndex($userProfile->reputation_level)
@@ -93,6 +101,22 @@ class PreSeasonFixtureProcessor implements SeasonProcessor
             ->whereHas('clubProfile', function ($query) use ($validLevels) {
                 $query->whereIn('reputation_level', $validLevels);
             })
+            ->inRandomOrder()
+            ->limit(self::NUM_MATCHES)
+            ->get();
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection<Team>
+     */
+    private function selectSegundaOpponents(Game $game): \Illuminate\Support\Collection
+    {
+        $segundaTeamIds = CompetitionEntry::where('game_id', $game->id)
+            ->where('competition_id', 'ESP2')
+            ->where('team_id', '!=', $game->team_id)
+            ->pluck('team_id');
+
+        return Team::whereIn('id', $segundaTeamIds)
             ->inRandomOrder()
             ->limit(self::NUM_MATCHES)
             ->get();
