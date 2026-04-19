@@ -147,7 +147,10 @@
                 </div>
             @endif
 
-            {{-- Standings — reuses the exact pattern from the dashboard sidebar --}}
+            {{-- Compact standings — position / crest / name / GD / Pts.
+                 Drops W/D/L columns and column headers versus the dashboard
+                 sidebar so the block stays light; the "Full table" link
+                 leads to the full view for deeper inspection. --}}
             @if($leagueStandings->isNotEmpty())
                 <x-section-card :title="$standingsTitle">
                     <x-slot name="badge">
@@ -156,24 +159,22 @@
                         </a>
                     </x-slot>
 
-                    <div class="grid grid-cols-[24px_1fr_28px_28px_28px_32px_36px] gap-1 px-4 py-2 text-[9px] text-text-faint uppercase tracking-wider border-b border-border-default">
-                        <span>#</span>
-                        <span>{{ __('game.team') }}</span>
-                        <span class="text-center">{{ __('game.won_abbr') }}</span>
-                        <span class="text-center">{{ __('game.drawn_abbr') }}</span>
-                        <span class="text-center">{{ __('game.lost_abbr') }}</span>
-                        <span class="text-center">{{ __('game.goal_diff_abbr') }}</span>
-                        <span class="text-right">{{ __('game.pts_abbr') }}</span>
-                    </div>
-
                     <div class="divide-y divide-border-default">
                         @php $prevPosition = 0; @endphp
                         @foreach($leagueStandings as $standing)
-                            <x-standing-row
-                                :standing="$standing"
-                                :is-player="$standing->team_id === $game->team_id"
-                                :show-gap="$standing->position > $prevPosition + 1"
-                            />
+                            @if($standing->position > $prevPosition + 1)
+                                <div class="px-4 py-0.5 text-center text-text-faint text-[10px]">&middot;&middot;&middot;</div>
+                            @endif
+                            @php $isPlayer = $standing->team_id === $game->team_id; @endphp
+                            <div class="grid grid-cols-[20px_1fr_32px_32px] gap-2 items-center px-4 py-1.5 {{ $isPlayer ? 'bg-accent-blue/[0.06] border-l-2 border-l-accent-blue' : '' }}">
+                                <span class="text-[11px] font-heading font-semibold {{ $isPlayer ? 'text-accent-blue' : 'text-text-muted' }} tabular-nums">{{ $standing->position }}</span>
+                                <div class="flex items-center gap-2 min-w-0">
+                                    <x-team-crest :team="$standing->team" class="w-4 h-4 shrink-0" />
+                                    <span class="text-xs truncate {{ $isPlayer ? 'text-text-primary font-semibold' : 'text-text-body' }}">{{ $standing->team->short_name ?? $standing->team->name }}</span>
+                                </div>
+                                <span class="text-[11px] text-right tabular-nums {{ $isPlayer ? 'text-text-primary' : 'text-text-muted' }}">{{ $standing->goal_difference >= 0 ? '+' : '' }}{{ $standing->goal_difference }}</span>
+                                <span class="text-xs text-right font-semibold tabular-nums {{ $isPlayer ? 'text-accent-blue font-bold' : 'text-text-primary' }}">{{ $standing->points }}</span>
+                            </div>
                             @php $prevPosition = $standing->position; @endphp
                         @endforeach
                     </div>
