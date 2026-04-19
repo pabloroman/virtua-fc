@@ -62,8 +62,13 @@ class MatchdayOrchestrator
                 return MatchdayAdvanceResult::blocked(null);
             }
 
-            // Block advancement if there are pending actions the user must resolve
-            if ($game->hasPendingActions()) {
+            // Block advancement on pending actions in the normal flow — the
+            // user must resolve them before the season calendar ticks. Fast
+            // mode opts out: each click plays a single match, and the
+            // fast-mode view itself surfaces pending actions via an inline
+            // banner so the user can resolve them between clicks or ignore
+            // them and keep simulating.
+            if (! $fastForward && $game->hasPendingActions()) {
                 return MatchdayAdvanceResult::blocked($game->getFirstPendingAction());
             }
 

@@ -71,8 +71,10 @@ class AdvanceFastMatchday
                     $game->isTournamentMode() ? 'game.tournament-end' : 'game.season-end',
                     $gameId,
                 ),
-                'blocked' => redirect()->route('game.fast-mode', $gameId)
-                    ->with('warning', __('messages.fast_mode_action_required')),
+                // Reaches here only on the transient career-actions-in-
+                // progress race; ShowFastMode bounces to the loading screen
+                // on next render. No flash needed.
+                'blocked' => redirect()->route('game.fast-mode', $gameId),
             };
         } catch (\Throwable $e) {
             Game::where('id', $gameId)->update([
