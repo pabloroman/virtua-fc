@@ -30,10 +30,12 @@ return [
     ],
 
     // Operating expense multiplier by competition tier.
-    // Tier 1 (La Liga) = full cost, Tier 2 (Segunda) = reduced.
+    // Tier 1 (La Liga) = full cost, lower tiers scale down to match their
+    // much smaller revenue footprint (Primera RFEF TV tops out ~€1.5M).
     'operating_expense_tier_multiplier' => [
         1 => 1.0,   // La Liga: full operating expenses
         2 => 0.70,  // Segunda: 70% of base operating expenses
+        3 => 0.35,  // Primera RFEF: ~1/3 of base, keeps floors under typical revenue
     ],
 
     // Budget loan configuration.
