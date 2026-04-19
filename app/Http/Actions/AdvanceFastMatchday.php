@@ -63,8 +63,9 @@ class AdvanceFastMatchday
             $game->update(['matchday_advancing_at' => null]);
 
             return match ($result->type) {
-                // 'live_match' should not occur in fast-forward — the orchestrator
-                // finalizes the user's match inline. Treat defensively as done.
+                // Fast mode never returns live_match (the orchestrator
+                // finalizes the user's match inline) — included only to
+                // satisfy match exhaustiveness.
                 'live_match', 'done' => redirect()->route('game.fast-mode', $gameId),
                 'season_complete' => redirect()->route(
                     $game->isTournamentMode() ? 'game.tournament-end' : 'game.season-end',
