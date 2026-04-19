@@ -91,9 +91,9 @@
 
                     @if($nextMatch)
                         <div class="hidden sm:flex items-center gap-2 bg-surface-700/50 rounded-lg px-2.5 py-1">
-                            <x-team-crest :team="$nextMatch->homeTeam" class="w-6 h-6" />
+                            <x-team-crest :team="$nextMatch->homeTeam" class="w-6 h-6 cursor-help" x-data x-tooltip.raw="{{ $nextMatch->homeTeam->name }}" />
                             <span class="text-xs font-semibold text-text-muted font-heading tracking-wide">vs</span>
-                            <x-team-crest :team="$nextMatch->awayTeam" class="w-6 h-6" />
+                            <x-team-crest :team="$nextMatch->awayTeam" class="w-6 h-6 cursor-help" x-data x-tooltip.raw="{{ $nextMatch->awayTeam->name }}" />
                         </div>
                         @if($game->hasPendingActions())
                             @php $pendingAction = $game->getFirstPendingAction(); @endphp
