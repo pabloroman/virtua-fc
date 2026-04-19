@@ -5,9 +5,10 @@
     /** @var \Illuminate\Support\Collection $leagueStandings */
     /** @var App\Models\GameStanding|null $playerStanding */
 
-    // Last-result summary (compact one-line view)
+    // Last-result summary
     $lastResultLabel = null;
-    $lastResultClass = null;
+    $lastResultColor = null;
+    $lastResultBg = null;
     $lastOpponent = null;
     $homeScorers = collect();
     $awayScorers = collect();
@@ -17,8 +18,9 @@
         $oppScore = $isHome ? $lastMatch->away_score : $lastMatch->home_score;
         $lastOpponent = $isHome ? $lastMatch->awayTeam : $lastMatch->homeTeam;
         $result = $yourScore > $oppScore ? 'W' : ($yourScore < $oppScore ? 'L' : 'D');
-        $lastResultClass = $result === 'W' ? 'text-accent-green' : ($result === 'L' ? 'text-accent-red' : 'text-text-secondary');
-        $lastResultLabel = $result . ' ' . $yourScore . '-' . $oppScore;
+        $lastResultLabel = $result === 'W' ? __('game.live_result_win') : ($result === 'L' ? __('game.live_result_loss') : __('game.live_result_draw'));
+        $lastResultColor = $result === 'W' ? 'text-accent-green' : ($result === 'L' ? 'text-accent-red' : 'text-text-secondary');
+        $lastResultBg = $result === 'W' ? 'bg-accent-green/10 border-accent-green/20' : ($result === 'L' ? 'bg-accent-red/10 border-accent-red/20' : 'bg-surface-700 border-border-default');
 
         // Group goal events by team, then by player, preserving first-occurrence
         // order so the list reads chronologically.
@@ -45,11 +47,15 @@
             $lastMatch->goalEvents->filter(fn ($e) => $e->team_id === $lastMatch->away_team_id)
         );
     }
+
+    $standingsTitle = ($game->isTournamentMode() && $leagueStandings->first()?->group_label)
+        ? __('game.group') . ' ' . $leagueStandings->first()->group_label
+        : __('game.standings');
 @endphp
 
 <x-app-layout :hide-footer="true">
     <div class="min-h-[100dvh] flex flex-col">
-        {{-- Top bar: fast-mode badge + exit shortcut (subtle, always reachable) --}}
+        {{-- Top bar: fast-mode badge + season link --}}
         <div class="shrink-0 flex items-center justify-between px-4 pt-4 md:pt-6 max-w-3xl w-full mx-auto">
             <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent-blue/10 text-accent-blue border border-accent-blue/20">
                 <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
@@ -80,84 +86,126 @@
             </div>
         @endif
 
-        {{-- Main content: scrollable if necessary, centered on larger viewports --}}
-        <div class="flex-1 flex flex-col justify-center px-4 py-6 md:py-10 max-w-3xl w-full mx-auto">
-            {{-- Last result panel with goal scorers + inline league position --}}
-            <div class="rounded-xl border border-border-default bg-surface-800/60 px-3 py-3 md:px-4 md:py-4 mb-6 md:mb-10">
-                <div class="flex items-center justify-between gap-3 mb-2">
-                    <div class="text-[9px] md:text-[10px] text-text-faint uppercase tracking-widest">{{ __('game.last_result') }}</div>
-                    @if($playerStanding)
-                        <div class="flex items-baseline gap-1 text-[10px] md:text-xs">
-                            <span class="text-text-faint uppercase tracking-wider">{{ __('game.standings') }}</span>
-                            <span class="font-heading font-bold text-accent-blue tabular-nums">
-                                {{ $playerStanding->position }}{{ $playerStanding->position == 1 ? 'st' : ($playerStanding->position == 2 ? 'nd' : ($playerStanding->position == 3 ? 'rd' : 'th')) }}
+        {{-- Main content: stacks top-to-bottom, scrolls when tall --}}
+        <div class="flex-1 px-4 py-5 md:py-8 max-w-3xl w-full mx-auto space-y-5 md:space-y-6">
+            {{-- Last result — the focal card --}}
+            @if($lastMatch)
+                <div class="rounded-xl border border-border-default bg-surface-800 overflow-hidden">
+                    {{-- Header row: label + result badge + competition --}}
+                    <div class="flex items-center justify-between gap-2 px-4 py-2.5 border-b border-border-default bg-surface-800/60">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <span class="text-[10px] text-text-faint uppercase tracking-widest">{{ __('game.last_result') }}</span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border {{ $lastResultBg }} {{ $lastResultColor }}">
+                                {{ $lastResultLabel }}
                             </span>
-                            <span class="text-text-muted">· {{ $playerStanding->points }} {{ __('game.pts') }}</span>
                         </div>
-                    @endif
-                </div>
-
-                @if($lastMatch)
-                    <div class="flex items-center gap-2 min-w-0 mb-2">
-                        <span class="text-base md:text-lg font-heading font-bold {{ $lastResultClass }} tabular-nums shrink-0">{{ $lastResultLabel }}</span>
-                        <span class="text-[11px] md:text-xs text-text-muted truncate">{{ __('game.vs') }} {{ $lastOpponent->short_name ?? $lastOpponent->name }}</span>
+                        <x-competition-pill :competition="$lastMatch->competition" :round-name="$lastMatch->round_name" :round-number="$lastMatch->round_number" :short="true" class="scale-90 origin-right" />
                     </div>
 
-                    @if($homeScorers->isNotEmpty() || $awayScorers->isNotEmpty())
-                        <div class="space-y-1 mt-2 pt-2 border-t border-border-default">
-                            @foreach([['team' => $lastMatch->homeTeam, 'scorers' => $homeScorers], ['team' => $lastMatch->awayTeam, 'scorers' => $awayScorers]] as $side)
-                                @if($side['scorers']->isNotEmpty())
-                                    <div class="flex items-start gap-2 text-[11px] md:text-xs">
-                                        <x-team-crest :team="$side['team']" class="w-4 h-4 shrink-0 mt-0.5" />
-                                        <div class="flex-1 min-w-0 flex flex-wrap gap-x-2 gap-y-0.5 text-text-body">
-                                            @foreach($side['scorers'] as $scorer)
-                                                <span class="whitespace-nowrap">
-                                                    <span class="font-medium">{{ $scorer['name'] }}</span>
-                                                    <span class="text-text-muted tabular-nums">{{ $scorer['minutes'] }}</span>
-                                                </span>
-                                            @endforeach
-                                        </div>
+                    {{-- Face-off: crests, names, big score --}}
+                    <div class="px-4 py-4 md:py-5">
+                        <div class="flex items-center justify-center gap-3 md:gap-5">
+                            <div class="flex-1 flex items-center justify-end gap-2 md:gap-3 min-w-0">
+                                <span class="text-sm md:text-base font-semibold text-text-primary truncate text-right">
+                                    {{ $lastMatch->homeTeam->short_name ?? $lastMatch->homeTeam->name }}
+                                </span>
+                                <x-team-crest :team="$lastMatch->homeTeam" class="w-10 h-10 md:w-14 md:h-14 shrink-0" />
+                            </div>
+                            <div class="px-3 py-1.5 md:px-4 md:py-2 rounded-lg bg-surface-700 text-xl md:text-3xl font-heading font-bold text-text-primary tabular-nums shrink-0">
+                                {{ $lastMatch->home_score }} - {{ $lastMatch->away_score }}
+                            </div>
+                            <div class="flex-1 flex items-center gap-2 md:gap-3 min-w-0">
+                                <x-team-crest :team="$lastMatch->awayTeam" class="w-10 h-10 md:w-14 md:h-14 shrink-0" />
+                                <span class="text-sm md:text-base font-semibold text-text-primary truncate">
+                                    {{ $lastMatch->awayTeam->short_name ?? $lastMatch->awayTeam->name }}
+                                </span>
+                            </div>
+                        </div>
+
+                        {{-- Goal scorers --}}
+                        @if($homeScorers->isNotEmpty() || $awayScorers->isNotEmpty())
+                            <div class="grid grid-cols-2 gap-3 md:gap-6 mt-4 pt-3 border-t border-border-default">
+                                @foreach([['scorers' => $homeScorers, 'align' => 'right'], ['scorers' => $awayScorers, 'align' => 'left']] as $side)
+                                    <div class="text-[11px] md:text-xs {{ $side['align'] === 'right' ? 'text-right' : 'text-left' }}">
+                                        @forelse($side['scorers'] as $scorer)
+                                            <div class="truncate">
+                                                <span class="font-medium text-text-body">{{ $scorer['name'] }}</span>
+                                                <span class="text-text-muted tabular-nums">{{ $scorer['minutes'] }}</span>
+                                            </div>
+                                        @empty
+                                            <div class="text-text-faint">&mdash;</div>
+                                        @endforelse
                                     </div>
-                                @endif
-                            @endforeach
-                        </div>
-                    @endif
-                @else
-                    <div class="text-[11px] md:text-xs text-text-muted">{{ __('game.fast_mode_no_last_match') }}</div>
-                @endif
-            </div>
-
-            @if($nextMatch)
-                {{-- Big face-off for the upcoming match (inspired by game-loading-matchday) --}}
-                <div class="text-center mb-6">
-                    <x-competition-pill :competition="$nextMatch->competition" class="justify-center mb-2" />
-                    <h1 class="text-base md:text-xl font-heading font-bold text-text-primary">
-                        @if($nextMatch->round_name)
-                            {{ __($nextMatch->round_name) }}
-                        @elseif($nextMatch->round_number)
-                            {{ __('game.matchday_n', ['number' => $nextMatch->round_number]) }}
+                                @endforeach
+                            </div>
                         @endif
-                    </h1>
-                    <p class="text-[11px] md:text-xs text-text-muted mt-1">
-                        {{ $nextMatch->homeTeam->stadium_name ?? '' }} &middot; {{ $nextMatch->scheduled_date->locale(app()->getLocale())->translatedFormat('d M Y') }}
-                    </p>
-                </div>
-
-                <div class="flex items-center justify-center gap-4 md:gap-10">
-                    <div class="flex-1 flex flex-col items-center text-center min-w-0">
-                        <x-team-crest :team="$nextMatch->homeTeam" class="w-16 h-16 md:w-28 md:h-28 mb-2" />
-                        <h4 class="text-sm md:text-lg font-bold text-text-primary truncate max-w-full">{{ $nextMatch->homeTeam->short_name ?? $nextMatch->homeTeam->name }}</h4>
-                    </div>
-                    <span class="text-xl md:text-3xl font-black font-heading text-text-muted tracking-tight shrink-0">{{ __('game.vs') }}</span>
-                    <div class="flex-1 flex flex-col items-center text-center min-w-0">
-                        <x-team-crest :team="$nextMatch->awayTeam" class="w-16 h-16 md:w-28 md:h-28 mb-2" />
-                        <h4 class="text-sm md:text-lg font-bold text-text-primary truncate max-w-full">{{ $nextMatch->awayTeam->short_name ?? $nextMatch->awayTeam->name }}</h4>
                     </div>
                 </div>
             @else
-                {{-- Rare case: fast mode active but no next match (season just ended between clicks) --}}
-                <div class="text-center py-10">
-                    <p class="text-text-secondary">{{ __('game.season_complete') }}</p>
+                <div class="rounded-xl border border-border-default bg-surface-800/60 px-4 py-6 text-center text-xs text-text-muted">
+                    {{ __('game.fast_mode_no_last_match') }}
+                </div>
+            @endif
+
+            {{-- Standings — reuses the exact pattern from the dashboard sidebar --}}
+            @if($leagueStandings->isNotEmpty())
+                <x-section-card :title="$standingsTitle">
+                    <x-slot name="badge">
+                        <a href="{{ route('game.competition', [$game->id, $game->competition_id]) }}" class="text-[10px] text-accent-blue hover:text-blue-400 transition-colors">
+                            {{ __('game.full_table') }} &rarr;
+                        </a>
+                    </x-slot>
+
+                    <div class="grid grid-cols-[24px_1fr_28px_28px_28px_32px_36px] gap-1 px-4 py-2 text-[9px] text-text-faint uppercase tracking-wider border-b border-border-default">
+                        <span>#</span>
+                        <span>{{ __('game.team') }}</span>
+                        <span class="text-center">{{ __('game.won_abbr') }}</span>
+                        <span class="text-center">{{ __('game.drawn_abbr') }}</span>
+                        <span class="text-center">{{ __('game.lost_abbr') }}</span>
+                        <span class="text-center">{{ __('game.goal_diff_abbr') }}</span>
+                        <span class="text-right">{{ __('game.pts_abbr') }}</span>
+                    </div>
+
+                    <div class="divide-y divide-border-default">
+                        @php $prevPosition = 0; @endphp
+                        @foreach($leagueStandings as $standing)
+                            <x-standing-row
+                                :standing="$standing"
+                                :is-player="$standing->team_id === $game->team_id"
+                                :show-gap="$standing->position > $prevPosition + 1"
+                            />
+                            @php $prevPosition = $standing->position; @endphp
+                        @endforeach
+                    </div>
+                </x-section-card>
+            @endif
+
+            {{-- Next match — compact row, low visual weight. Exists to confirm
+                 what the Simulate button is about to play. --}}
+            @if($nextMatch)
+                <div class="rounded-lg border border-border-default bg-surface-800/40">
+                    <div class="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-default">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <span class="text-[10px] text-text-faint uppercase tracking-widest">{{ __('game.next_match') }}</span>
+                            <span class="text-[10px] text-text-muted">· {{ $nextMatch->scheduled_date->locale(app()->getLocale())->translatedFormat('d M Y') }}</span>
+                        </div>
+                        <x-competition-pill :competition="$nextMatch->competition" :round-name="$nextMatch->round_name" :round-number="$nextMatch->round_number" :short="true" class="scale-90 origin-right" />
+                    </div>
+                    <div class="flex items-center justify-center gap-3 px-4 py-2.5">
+                        <div class="flex-1 flex items-center justify-end gap-2 min-w-0">
+                            <span class="text-xs md:text-sm font-medium text-text-body truncate text-right">{{ $nextMatch->homeTeam->short_name ?? $nextMatch->homeTeam->name }}</span>
+                            <x-team-crest :team="$nextMatch->homeTeam" class="w-5 h-5 shrink-0" />
+                        </div>
+                        <span class="text-[10px] text-text-faint uppercase tracking-wider shrink-0">{{ __('game.vs') }}</span>
+                        <div class="flex-1 flex items-center gap-2 min-w-0">
+                            <x-team-crest :team="$nextMatch->awayTeam" class="w-5 h-5 shrink-0" />
+                            <span class="text-xs md:text-sm font-medium text-text-body truncate">{{ $nextMatch->awayTeam->short_name ?? $nextMatch->awayTeam->name }}</span>
+                        </div>
+                    </div>
+                </div>
+            @else
+                <div class="rounded-lg border border-border-default bg-surface-800/40 px-4 py-3 text-center text-xs text-text-muted">
+                    {{ __('game.season_complete') }}
                 </div>
             @endif
         </div>
