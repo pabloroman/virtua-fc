@@ -387,6 +387,15 @@ class PrimeraRFEFPromotionTest extends TestCase
     {
         $esp2Teams = $this->createStandings('ESP2', 22);
 
+        // Rule is a no-op for games with no ESP3 activity; seed a single
+        // ESP3A entry to satisfy isActiveForGame so relegation logic runs.
+        CompetitionEntry::create([
+            'game_id' => $this->game->id,
+            'competition_id' => 'ESP3A',
+            'team_id' => Team::factory()->create()->id,
+            'entry_round' => 1,
+        ]);
+
         $rule = new PrimeraRFEFPromotionRule();
         $relegated = $rule->getRelegatedTeams($this->game);
 
