@@ -270,9 +270,7 @@
                                                 <div class="flex items-center gap-1.5">
                                                     <span class="text-sm font-medium text-text-primary truncate">{{ $gp->player->name }}</span>
                                                     @include('partials.squad.player-status-icon', ['gp' => $gp, 'game' => $game, 'seasonEndDate' => $seasonEndDate, 'playerFlags' => $playerFlags ?? []])
-                                                    @if($unavailReason)
-                                                        <span class="text-[8px] px-1 py-0.5 rounded-sm bg-red-500/10 text-accent-red font-medium shrink-0">{{ $unavailReason }}</span>
-                                                    @endif
+                                                    <x-player-unavailable-icon :player="$gp" :reason="$unavailReason" />
                                                 </div>
                                                 <div class="flex items-center gap-2 mt-0.5">
                                                     <div class="flex items-center gap-0.5 shrink-0">
@@ -360,16 +358,11 @@
                                                 <div class="flex items-center gap-2">
                                                     <span class="text-sm font-medium text-text-primary truncate">{{ $gp->player->name }}</span>
                                                     @include('partials.squad.player-status-icon', ['gp' => $gp, 'game' => $game, 'seasonEndDate' => $seasonEndDate, 'playerFlags' => $playerFlags ?? []])
+                                                    <x-player-unavailable-icon :player="$gp" :reason="$unavailReason" />
                                                 </div>
                                                 @if($gp->nationality_flag)
                                                 <div class="flex items-center gap-1 mt-0.5">
                                                     <img src="{{ Storage::disk('assets')->url('flags/' . $gp->nationality_flag['code'] . '.svg') }}" class="w-4 h-3 rounded-xs shadow-xs" title="{{ $gp->nationality_flag['name'] }}">
-                                                    @if($unavailReason)
-                                                        <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-sm bg-orange-500/10 text-[9px] text-accent-orange font-medium shrink-0">
-                                                            <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>
-                                                            {{ $unavailReason }}
-                                                        </span>
-                                                    @endif
                                                 </div>
                                                 @endif
                                             </div>

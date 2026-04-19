@@ -295,9 +295,7 @@
                                                     <div class="flex-1 min-w-0">
                                                         <div class="flex items-center gap-1.5">
                                                             <span class="text-xs font-medium text-text-primary truncate">{{ $player->name }}</span>
-                                                            @if($unavailabilityReason)
-                                                                <span class="text-[8px] px-1 py-0.5 rounded-sm bg-red-500/10 text-accent-red font-medium shrink-0">{{ $unavailabilityReason }}</span>
-                                                            @endif
+                                                            <x-player-unavailable-icon :player="$player" :match-date="$matchDate" :competition-id="$competitionId" :reason="$unavailabilityReason" />
                                                         </div>
                                                         <div class="flex items-center gap-2 mt-0.5">
                                                             <div class="flex items-center gap-0.5">
