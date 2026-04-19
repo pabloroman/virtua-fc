@@ -493,7 +493,7 @@
                                     </x-secondary-button>
                                     <x-secondary-button
                                         @click="keepFormationWithPenalty()"
-                                        class="gap-1.5 sm:ml-auto !border-amber-500/40 !text-amber-300 hover:!bg-amber-500/10">
+                                        class="gap-1.5 sm:ml-auto !border-accent-gold/40 !text-accent-gold hover:!bg-accent-gold/10">
                                         {{ __('game.sub_formation_keep_with_penalty') }}
                                     </x-secondary-button>
                                 </div>

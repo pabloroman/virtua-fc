@@ -49,7 +49,7 @@ class ProcessTacticalActions
             'pressing' => ['nullable', 'string', Rule::enum(PressingIntensity::class)],
             'defensive_line' => ['nullable', 'string', Rule::enum(DefensiveLineHeight::class)],
             'manual_slot_pins' => 'nullable|array',
-            'manual_slot_pins.*' => 'string',
+            'manual_slot_pins.*' => ['string', 'uuid'],
             'previousSubstitutions' => 'array',
             'previousSubstitutions.*.playerOutId' => 'required|string',
             'previousSubstitutions.*.playerInId' => 'required|string',

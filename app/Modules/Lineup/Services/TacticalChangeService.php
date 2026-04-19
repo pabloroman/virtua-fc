@@ -91,14 +91,19 @@ class TacticalChangeService
         $effectiveFormation = $match->{"{$prefix}_formation"};
         $effectiveMentality = $match->{"{$prefix}_mentality"};
 
-        // Always recompute the user-side slot map against the effective
-        // formation + post-sub active XI (10 players if a red card has
-        // already been served). This is the fix for the silent
-        // out-of-position penalty that used to happen when a sub inherited
-        // the outgoing player's slot regardless of position. The same
-        // authoritative algorithm runs for every tactical action — subs,
-        // formation changes, and red-card reshuffles all flow through
+        // Recompute the user-side slot map against the effective formation +
+        // post-sub active XI (10 players if a red card has already been
+        // served) whenever the XI or the shape could have changed. This is
+        // the fix for the silent out-of-position penalty that used to
+        // happen when a sub inherited the outgoing player's slot regardless
+        // of position. The same authoritative algorithm runs for every
+        // XI-shaping action — subs, formation changes, auto-subs, and
+        // drag-pinned placements all flow through
         // LineupService::computeSlotAssignments.
+        //
+        // Pure tactical changes (mentality / pressing / playing style /
+        // defensive line) don't reshape the XI, so the persisted map stays
+        // valid and we skip the recompute.
         //
         // $manualSlotPins lets the frontend lock specific slots (populated
         // by in-match drag-swaps — the only way the user can express "this
@@ -106,13 +111,17 @@ class TacticalChangeService
         // We filter pins against the active XI so stale ids don't leak into
         // the placement algorithm.
         $newSlotAssignments = null;
+        $shapeChanged = ! empty($newSubstitutions)
+            || $formation !== null
+            || ! empty($manualSlotPins)
+            || $autoSubUserTeam;
         $formationEnum = Formation::tryFrom($effectiveFormation ?? '');
         $userPlayers = $isUserHome ? $homePlayers : $awayPlayers;
-        if ($formationEnum !== null && $userPlayers->isNotEmpty()) {
-            $activeIds = $userPlayers->pluck('id')->all();
+        if ($shapeChanged && $formationEnum !== null && $userPlayers->isNotEmpty()) {
+            $activeIds = array_flip($userPlayers->pluck('id')->all());
             $validPins = array_filter(
                 $manualSlotPins,
-                fn ($playerId) => in_array($playerId, $activeIds, true),
+                fn ($playerId) => isset($activeIds[$playerId]),
             );
             $newSlotAssignments = $this->lineupService->computeSlotAssignments(
                 $formationEnum,

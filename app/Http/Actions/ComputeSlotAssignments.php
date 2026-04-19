@@ -21,9 +21,10 @@ use Illuminate\Validation\Rules\Enum;
  * trip — because they only mutate already-owned slot map state.
  *
  * When `include_suggested_formation` is set, the response also carries the
- * best-fit alternative formation for the same player set and its slot map.
- * Used by the live-match sub flow to offer a "switch formation" option when
- * the current shape leaves a player out of position after the reshuffle.
+ * name of the best-fit alternative formation for the same player set.
+ * Used by the live-match sub flow to offer a "switch formation" option
+ * when the current shape leaves a player out of position after the
+ * reshuffle.
  */
 class ComputeSlotAssignments
 {
@@ -70,11 +71,9 @@ class ComputeSlotAssignments
         ];
 
         if ($includeSuggested) {
-            $suggested = $this->formationRecommender->getBestFormation($players);
-            $response['suggested_formation'] = $suggested->value;
-            $response['suggested_slot_assignments'] = $suggested === $formation
-                ? $slotAssignments
-                : $this->lineupService->computeSlotAssignments($suggested, $players);
+            $response['suggested_formation'] = $this->formationRecommender
+                ->getBestFormation($players)
+                ->value;
         }
 
         return response()->json($response);
