@@ -18,7 +18,7 @@ $comp = $nextMatch->competition;
                     @endif
                 </h1>
                 <p class="text-sm text-text-muted mt-1">
-                    {{ $nextMatch->homeTeam->stadium_name ?? '' }} &middot; {{ $nextMatch->scheduled_date->locale(app()->getLocale())->translatedFormat('d M Y') }}
+                    {{ $nextMatch->venueName() ?? '' }} &middot; {{ $nextMatch->scheduled_date->locale(app()->getLocale())->translatedFormat('d M Y') }}
                 </p>
             </div>
 

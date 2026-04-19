@@ -77,10 +77,10 @@
                 mvpPlayerTeamId: {!! $mvpPlayerTeamId ? "'" . $mvpPlayerTeamId . "'" : 'null' !!},
                 homeLineupRoster: {{ Js::from($homeLineupDisplay) }},
                 awayLineupRoster: {{ Js::from($awayLineupDisplay) }},
-                venueName: {{ Js::from($match->homeTeam->stadium_name ?? '') }},
-                venueEnPhrase: {{ Js::from(\App\Support\StadiumGrammar::withEn($match->homeTeam->stadium_name ?? '')) }},
-                venueElPhrase: {{ Js::from(\App\Support\StadiumGrammar::withEl($match->homeTeam->stadium_name ?? '')) }},
-                venueDePhrase: {{ Js::from(\App\Support\StadiumGrammar::withDe($match->homeTeam->stadium_name ?? '')) }},
+                venueName: {{ Js::from($match->venueName() ?? '') }},
+                venueEnPhrase: {{ Js::from(\App\Support\StadiumGrammar::withEn($match->venueName() ?? '')) }},
+                venueElPhrase: {{ Js::from(\App\Support\StadiumGrammar::withEl($match->venueName() ?? '')) }},
+                venueDePhrase: {{ Js::from(\App\Support\StadiumGrammar::withDe($match->venueName() ?? '')) }},
                 attendance: @js($attendance ?? null),
                 attendanceCapacity: @js($attendanceCapacity ?? null),
                 attendancePercent: @js($attendancePercent ?? null),
@@ -164,9 +164,9 @@
                             <div class="text-[10px] text-text-secondary font-medium uppercase tracking-wider truncate">
                                 {{ $match->round_name ? __($match->round_name) : __('game.matchday_n', ['number' => $match->round_number]) }}
                             </div>
-                            @if($match->homeTeam->stadium_name)
+                            @if($match->venueName())
                                 <div class="text-[10px] sm:text-xs text-text-secondary font-normal tracking-wide truncate">
-                                    {{ $match->homeTeam->stadium_name }}
+                                    {{ $match->venueName() }}
                                     @if(!empty($attendance))
                                         <span class="text-text-muted"> · {{ number_format($attendance) }} <span class="hidden sm:inline">{{ __('game.spectators') }} </span>({{ $attendancePercent }}%)</span>
                                     @endif

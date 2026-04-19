@@ -4,6 +4,7 @@ namespace App\Modules\Match\Handlers;
 
 use App\Modules\Competition\Contracts\CompetitionHandler;
 use App\Modules\Competition\DTOs\PlayoffRoundConfig;
+use App\Modules\Competition\Services\FinalVenueResolver;
 use App\Modules\Match\Events\CupTieResolved;
 use App\Modules\Match\Services\CupTieResolver;
 use App\Modules\Squad\Services\EligibilityService;
@@ -18,6 +19,7 @@ abstract class CupCompetitionHandler implements CompetitionHandler
     public function __construct(
         protected readonly CupTieResolver $tieResolver,
         protected readonly EligibilityService $eligibilityService,
+        protected readonly FinalVenueResolver $finalVenueResolver,
     ) {}
 
     public function getRedirectRoute(Game $game, Collection $matches, int $matchday): string
@@ -118,6 +120,16 @@ abstract class CupCompetitionHandler implements CompetitionHandler
         ]);
 
         $tie->update(['first_leg_match_id' => $firstLeg->id]);
+
+        if ($config->name === 'cup.final' && $game->isCareerMode()) {
+            $venue = $this->finalVenueResolver->resolve($competitionId, $homeTeamId, $awayTeamId);
+            if ($venue) {
+                $firstLeg->update([
+                    'neutral_venue_name' => $venue['name'],
+                    'neutral_venue_capacity' => $venue['capacity'],
+                ]);
+            }
+        }
 
         if ($config->twoLegged && $config->secondLegDate) {
             $secondLeg = GameMatch::create([

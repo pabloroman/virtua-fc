@@ -42,6 +42,8 @@ use App\Support\PositionSlotMapper;
  * @property array<array-key, mixed>|null $home_slot_assignments
  * @property array<array-key, mixed>|null $away_slot_assignments
  * @property array<array-key, mixed>|null $substitutions
+ * @property string|null $neutral_venue_name
+ * @property int|null $neutral_venue_capacity
  * @property-read \App\Models\Team $awayTeam
  * @property-read \App\Models\GamePlayer|null $mvpPlayer
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MatchEvent> $cardEvents
@@ -128,6 +130,8 @@ class GameMatch extends Model
         'mvp_player_id',
         'substitutions',
         'standings_applied',
+        'neutral_venue_name',
+        'neutral_venue_capacity',
     ];
 
     protected $casts = [
@@ -161,6 +165,7 @@ class GameMatch extends Model
         'away_possession' => 'integer',
         'substitutions' => 'array',
         'standings_applied' => 'boolean',
+        'neutral_venue_capacity' => 'integer',
     ];
 
     public function game(): BelongsTo
@@ -221,7 +226,23 @@ class GameMatch extends Model
 
     public function isNeutralVenue(): bool
     {
-        return $this->competition_id === 'WC2026';
+        return $this->competition_id === 'WC2026'
+            || $this->neutral_venue_name !== null;
+    }
+
+    public function venueName(): ?string
+    {
+        return $this->neutral_venue_name ?? $this->homeTeam?->stadium_name;
+    }
+
+    public function venueCapacity(): ?int
+    {
+        if ($this->neutral_venue_capacity !== null) {
+            return (int) $this->neutral_venue_capacity;
+        }
+
+        $seats = $this->homeTeam?->stadium_seats;
+        return $seats !== null ? (int) $seats : null;
     }
 
     public function involvesTeam(string $teamId): bool

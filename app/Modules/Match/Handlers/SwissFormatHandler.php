@@ -3,6 +3,7 @@
 namespace App\Modules\Match\Handlers;
 
 use App\Models\Competition;
+use App\Modules\Competition\Services\FinalVenueResolver;
 use App\Modules\Competition\Services\SwissKnockoutGenerator;
 use App\Modules\Match\Services\CupTieResolver;
 use App\Modules\Squad\Services\EligibilityService;
@@ -29,9 +30,10 @@ class SwissFormatHandler extends CupCompetitionHandler
     public function __construct(
         CupTieResolver $tieResolver,
         EligibilityService $eligibilityService,
+        FinalVenueResolver $finalVenueResolver,
         private readonly SwissKnockoutGenerator $knockoutGenerator,
     ) {
-        parent::__construct($tieResolver, $eligibilityService);
+        parent::__construct($tieResolver, $eligibilityService, $finalVenueResolver);
     }
 
     public function getType(): string

@@ -8,7 +8,7 @@
         <x-competition-pill :competition="$match->competition" :round-name="$match->round_name" :round-number="$match->round_number" :short="true" />
     @endif
     <span class="text-xs text-text-muted">
-        {{ $match->homeTeam->stadium_name ?? '' }}
+        {{ $match->venueName() ?? '' }}
         @if(!empty($attendance ?? null))
             &middot; {{ __('game.attendance') }}: {{ number_format($attendance) }} ({{ $attendancePercent }}%)
         @endif

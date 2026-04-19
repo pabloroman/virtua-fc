@@ -25,9 +25,10 @@ class MatchAttendanceService
 
     /**
      * Return the MatchAttendance for this fixture, computing and persisting
-     * it on first call. Returns null only when the match is at a neutral
-     * venue (cup/European finals) — those don't generate matchday revenue
-     * for the nominal home club, so we don't fabricate a row.
+     * it on first call. For matches at a designated neutral venue (cup
+     * finals in career mode, World Cup fixtures without a venue override,
+     * etc.) we record a sold-out house against the match's neutral
+     * capacity instead of running the home club's demand curve.
      */
     public function resolveForMatch(GameMatch $match, Game $game): ?MatchAttendance
     {
@@ -36,15 +37,22 @@ class MatchAttendanceService
             return $existing;
         }
 
-        $competition = $match->competition ?? Competition::find($match->competition_id);
-        if ($competition && $this->isNeutralVenue($match, $competition)) {
-            return null;
+        if ($match->neutral_venue_name !== null && $match->neutral_venue_capacity !== null) {
+            $capacity = (int) $match->neutral_venue_capacity;
+            return MatchAttendance::create([
+                'game_id' => $game->id,
+                'game_match_id' => $match->id,
+                'attendance' => $capacity,
+                'capacity_at_match' => $capacity,
+            ]);
         }
 
         $home = Team::find($match->home_team_id);
         if (!$home) {
             return null;
         }
+
+        $competition = $match->competition ?? Competition::find($match->competition_id);
 
         $homeRep = $this->loadReputation($game->id, $home->id);
         $awayRep = $this->loadReputation($game->id, $match->away_team_id);
@@ -72,21 +80,6 @@ class MatchAttendanceService
             'attendance' => $attendance,
             'capacity_at_match' => (int) ($home->stadium_seats ?? 0),
         ]);
-    }
-
-    /**
-     * Cup and European finals are played at neutral venues — recording
-     * attendance against the nominal home club would be misleading and
-     * those matches don't feed the home club's matchday revenue anyway.
-     */
-    private function isNeutralVenue(GameMatch $match, Competition $competition): bool
-    {
-        if ($competition->role !== Competition::ROLE_DOMESTIC_CUP
-            && $competition->role !== Competition::ROLE_EUROPEAN) {
-            return false;
-        }
-
-        return $match->round_name === 'final';
     }
 
     /**

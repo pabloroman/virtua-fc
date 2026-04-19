@@ -4,6 +4,7 @@ namespace App\Modules\Match\Handlers;
 
 use App\Modules\Competition\Contracts\PlayoffGenerator;
 use App\Modules\Competition\Playoffs\PlayoffGeneratorFactory;
+use App\Modules\Competition\Services\FinalVenueResolver;
 use App\Modules\Match\Services\CupTieResolver;
 use App\Modules\Squad\Services\EligibilityService;
 use App\Models\CupTie;
@@ -22,9 +23,10 @@ class LeagueWithPlayoffHandler extends CupCompetitionHandler
     public function __construct(
         CupTieResolver $tieResolver,
         EligibilityService $eligibilityService,
+        FinalVenueResolver $finalVenueResolver,
         private readonly PlayoffGeneratorFactory $playoffFactory,
     ) {
-        parent::__construct($tieResolver, $eligibilityService);
+        parent::__construct($tieResolver, $eligibilityService, $finalVenueResolver);
     }
 
     public function getType(): string

@@ -21,7 +21,7 @@
                 <x-competition-pill :competition="$comp" :round-name="$nextMatch->round_name" :round-number="$nextMatch->round_number" />
             @endif
             <span class="text-xs text-text-muted truncate">
-                {{ $nextMatch->homeTeam->stadium_name ?? '' }} &middot; {{ $nextMatch->scheduled_date->locale(app()->getLocale())->translatedFormat('d M Y') }}
+                {{ $nextMatch->venueName() ?? '' }} &middot; {{ $nextMatch->scheduled_date->locale(app()->getLocale())->translatedFormat('d M Y') }}
             </span>
         </div>
     </div>

@@ -9,6 +9,7 @@ use App\Models\GameMatch;
 use App\Models\GameStanding;
 use App\Models\Team;
 use App\Models\User;
+use App\Modules\Competition\Services\FinalVenueResolver;
 use App\Modules\Competition\Services\WorldCupKnockoutGenerator;
 use App\Modules\Match\Handlers\GroupStageCupHandler;
 use App\Modules\Match\Services\CupTieResolver;
@@ -62,6 +63,7 @@ class GroupStageCupHandlerTest extends TestCase
         $this->handler = new GroupStageCupHandler(
             Mockery::mock(CupTieResolver::class),
             new EligibilityService(),
+            new FinalVenueResolver(),
             app(WorldCupKnockoutGenerator::class),
         );
     }
