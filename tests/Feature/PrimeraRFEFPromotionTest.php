@@ -232,8 +232,9 @@ class PrimeraRFEFPromotionTest extends TestCase
         $this->assertEquals($groupA[5]->id, $matchups[0][0]); // A5
         $this->assertEquals($groupA[2]->id, $matchups[0][1]); // A2
 
-        // Group B positions should come from simulated results (index-based)
-        $this->assertEquals($simulatedBTeams[4]->id, $matchups[1][0]); // B5 (index 4)
+        // Group B positions should come from simulated results (index-based).
+        // matchups[1] is the [B4, B3] tie from Bracket A.
+        $this->assertEquals($simulatedBTeams[3]->id, $matchups[1][0]); // B4 (index 3)
         $this->assertEquals($simulatedBTeams[2]->id, $matchups[1][1]); // B3 (index 2)
     }
 

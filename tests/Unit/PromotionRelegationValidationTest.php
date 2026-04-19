@@ -750,10 +750,10 @@ class PromotionRelegationValidationTest extends TestCase
 
     public function test_reserve_team_filtered_from_playoff_qualifying_positions_too(): void
     {
-        // Set up a reserve team at ESP2 position 4 whose parent is in ESP1.
+        // Set up a reserve team at ESP2 position 3 whose parent is in ESP1.
         // Under the NotStarted stand-in path (which picks the next eligible
         // position after direct promotions), this reserve must be skipped
-        // and position 5 promoted instead.
+        // and position 4 promoted instead.
         $parent = Team::factory()->create();
         CompetitionEntry::create([
             'game_id' => $this->game->id,
@@ -764,9 +764,9 @@ class PromotionRelegationValidationTest extends TestCase
 
         $reserve = Team::factory()->create(['parent_team_id' => $parent->id]);
 
-        // Positions 1-3 regular, position 4 reserve-blocked, 5+ regular.
+        // Positions 1-2 regular, position 3 reserve-blocked, 4+ regular.
         for ($i = 1; $i <= 22; $i++) {
-            if ($i === 4) {
+            if ($i === 3) {
                 $teamId = $reserve->id;
             } else {
                 $teamId = Team::factory()->create()->id;
@@ -794,10 +794,10 @@ class PromotionRelegationValidationTest extends TestCase
         $promotedIds = array_column($promoted, 'teamId');
 
         $this->assertCount(3, $promoted);
-        $this->assertNotContains($reserve->id, $promotedIds, 'Reserve at pos 4 must be skipped');
-        // The third promotion (stand-in) should be pos 5 — the next eligible
-        // after the two direct promotions, skipping the blocked pos 4.
+        $this->assertNotContains($reserve->id, $promotedIds, 'Reserve at pos 3 must be skipped');
+        // The third promotion (stand-in) should be pos 4 — the next eligible
+        // after the two direct promotions, skipping the blocked pos 3.
         $positions = array_column($promoted, 'position');
-        $this->assertContains(5, $positions);
+        $this->assertContains(4, $positions);
     }
 }
