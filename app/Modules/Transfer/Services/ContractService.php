@@ -2,6 +2,7 @@
 
 namespace App\Modules\Transfer\Services;
 
+use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Modules\Player\PlayerAge;
 use App\Modules\Transfer\Enums\NegotiationScenario;
@@ -26,11 +27,30 @@ class ContractService
      * Based on Spanish labor regulations for professional football.
      */
     private const MINIMUM_WAGES = [
-        1 => 20_000_000, // €200K - La Liga
-        2 => 10_000_000, // €100K - La Liga 2
+        1 => 20_000_000, // €200K - La Liga (collective-bargaining floor)
+        2 => 10_000_000, // €100K - La Liga 2 (collective-bargaining floor)
+        3 => 2_000_000,  // €20K - Primera RFEF (real league minimum for LOCAL clubs)
     ];
 
     private const DEFAULT_MINIMUM_WAGE = 10_000_000; // €100K
+
+    /**
+     * Club reputation multiplier on top of the competition tier baseline.
+     * Applied only at tier 3+ because La Liga and La Liga 2 have sector-wide
+     * minimums that don't meaningfully vary by club ambition — tier-3 wages,
+     * by contrast, span a wide range between historic ex-top-flight clubs
+     * and small regional sides. The tier-3 baseline is the real league
+     * minimum (€20K); multipliers lift the floor for higher-reputation
+     * clubs, while top earners still come from the market-value-based
+     * wage formula, not the floor.
+     */
+    private const REPUTATION_WAGE_MULTIPLIERS = [
+        ClubProfile::REPUTATION_ELITE => 3.0,
+        ClubProfile::REPUTATION_CONTINENTAL => 2.5,
+        ClubProfile::REPUTATION_ESTABLISHED => 2.0,
+        ClubProfile::REPUTATION_MODEST => 1.5,
+        ClubProfile::REPUTATION_LOCAL => 1.0,
+    ];
 
     private array $minimumWageCache = [];
 
@@ -165,20 +185,48 @@ class ContractService
             ->where('role', Competition::ROLE_LEAGUE)
             ->first();
 
-        return $this->minimumWageCache[$team->id] = self::MINIMUM_WAGES[$league?->tier] ?? self::DEFAULT_MINIMUM_WAGE;
+        $reputation = $team->clubProfile?->reputation_level;
+
+        return $this->minimumWageCache[$team->id] = $this->getMinimumWageForClub($league?->tier, $reputation);
     }
 
     /**
-     * Get the minimum annual wage for a competition.
+     * Get the minimum annual wage for a competition, optionally scaled by
+     * the reputation of a specific team within that competition.
+     *
+     * Passing $teamId is required to get reputation-aware scaling at tier 3+;
+     * otherwise the competition-tier baseline is returned.
      *
      * @param string $competitionId
+     * @param string|null $teamId
      * @return int Minimum wage in cents
      */
-    public function getMinimumWageForCompetition(string $competitionId): int
+    public function getMinimumWageForCompetition(string $competitionId, ?string $teamId = null): int
     {
         $competition = Competition::find($competitionId);
 
-        return self::MINIMUM_WAGES[$competition?->tier] ?? self::DEFAULT_MINIMUM_WAGE;
+        $reputation = $teamId
+            ? ClubProfile::where('team_id', $teamId)->value('reputation_level')
+            : null;
+
+        return $this->getMinimumWageForClub($competition?->tier, $reputation);
+    }
+
+    /**
+     * Resolve the minimum annual wage for a club given its competition tier
+     * and reputation. Reputation scaling only applies at tier 3+ — see the
+     * REPUTATION_WAGE_MULTIPLIERS docblock for rationale.
+     */
+    public function getMinimumWageForClub(?int $tier, ?string $reputation): int
+    {
+        $base = self::MINIMUM_WAGES[$tier] ?? self::DEFAULT_MINIMUM_WAGE;
+
+        if ($tier !== null && $tier >= 3 && $reputation !== null) {
+            $multiplier = self::REPUTATION_WAGE_MULTIPLIERS[$reputation] ?? 1.0;
+            return (int) round($base * $multiplier);
+        }
+
+        return $base;
     }
 
     /**

@@ -247,7 +247,6 @@ class GamePlayerTemplateService
             return [];
         }
 
-        $minimumWage = $this->contractService->getMinimumWageForCompetition($competitionId);
         $rows = [];
 
         foreach ($clubs as $club) {
@@ -265,6 +264,8 @@ class GamePlayerTemplateService
             if (isset($processedTeamIds[$teamId])) {
                 continue;
             }
+
+            $minimumWage = $this->contractService->getMinimumWageForCompetition($competitionId, $teamId);
 
             foreach ($club['players'] ?? [] as $playerData) {
                 $row = $this->prepareTemplateRow($season, $teamId, $playerData, $minimumWage, $allPlayers);
@@ -296,7 +297,6 @@ class GamePlayerTemplateService
 
         $teamsData = json_decode(file_get_contents($teamsFilePath), true);
         $clubs = $teamsData['clubs'] ?? [];
-        $minimumWage = $this->contractService->getMinimumWageForCompetition($competitionId);
         $rows = [];
 
         foreach ($clubs as $club) {
@@ -314,6 +314,8 @@ class GamePlayerTemplateService
             if (isset($processedTeamIds[$teamId])) {
                 continue;
             }
+
+            $minimumWage = $this->contractService->getMinimumWageForCompetition($competitionId, $teamId);
 
             foreach ($club['players'] ?? [] as $playerData) {
                 $row = $this->prepareTemplateRow($season, $teamId, $playerData, $minimumWage, $allPlayers);

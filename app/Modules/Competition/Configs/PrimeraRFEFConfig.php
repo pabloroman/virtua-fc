@@ -67,8 +67,8 @@ class PrimeraRFEFConfig implements CompetitionConfig, HasSeasonGoals
         ClubProfile::REPUTATION_ELITE => Game::GOAL_PROMOTION,
         ClubProfile::REPUTATION_CONTINENTAL => Game::GOAL_PROMOTION,
         ClubProfile::REPUTATION_ESTABLISHED => Game::GOAL_PLAYOFF,
-        ClubProfile::REPUTATION_MODEST => Game::GOAL_TOP_HALF,
-        ClubProfile::REPUTATION_LOCAL => Game::GOAL_SURVIVAL,
+        ClubProfile::REPUTATION_MODEST => Game::GOAL_PLAYOFF,
+        ClubProfile::REPUTATION_LOCAL => Game::GOAL_TOP_HALF,
     ];
 
     public function getTvRevenue(int $position): int

@@ -80,6 +80,58 @@ class ClubProfilesSeeder extends Seeder
         'Real Sociedad B' => ClubProfile::REPUTATION_LOCAL,
 
         // =============================================
+        // Spain - Primera RFEF (ESP3A + ESP3B)
+        // =============================================
+
+        // Modest (mid-profile, recently in La Liga 2 or solid tier-3 veterans) - Objetivo: Top 10
+        'CD Tenerife' => ClubProfile::REPUTATION_MODEST,
+        'Real Murcia CF' => ClubProfile::REPUTATION_MODEST,
+        'Hércules CF' => ClubProfile::REPUTATION_MODEST,
+        'Racing Ferrol' => ClubProfile::REPUTATION_MODEST,
+        'SD Ponferradina' => ClubProfile::REPUTATION_MODEST,
+        'CD Lugo' => ClubProfile::REPUTATION_MODEST,
+        'FC Cartagena' => ClubProfile::REPUTATION_MODEST,
+        'Gimnàstic de Tarragona' => ClubProfile::REPUTATION_MODEST,
+        'CE Sabadell FC' => ClubProfile::REPUTATION_MODEST,
+        'Algeciras CF' => ClubProfile::REPUTATION_MODEST,
+        'UD Ibiza' => ClubProfile::REPUTATION_MODEST,
+        'CD Eldense' => ClubProfile::REPUTATION_MODEST,
+        'AD Alcorcón' => ClubProfile::REPUTATION_MODEST,
+
+        // Local (small regional clubs and B-teams) - Objetivo: No descender.
+        // B-teams (Castilla, Bilbao Athletic, Villarreal B, Sevilla Atlético,
+        // Atlético Madrileño, Celta Fortuna, Betis Deportivo, Osasuna Promesas)
+        // stay LOCAL since they cannot promote to La Liga 2 — their ambition
+        // is developmental, not sporting.
+        'Mérida AD' => ClubProfile::REPUTATION_LOCAL,
+        'Pontevedra CF' => ClubProfile::REPUTATION_LOCAL,
+        'Real Madrid Castilla' => ClubProfile::REPUTATION_LOCAL,
+        'Barakaldo CF' => ClubProfile::REPUTATION_LOCAL,
+        'Zamora CF' => ClubProfile::REPUTATION_LOCAL,
+        'CD Guadalajara' => ClubProfile::REPUTATION_LOCAL,
+        'CP Cacereño' => ClubProfile::REPUTATION_LOCAL,
+        'Ourense CF' => ClubProfile::REPUTATION_LOCAL,
+        'Real Avilés Industrial' => ClubProfile::REPUTATION_LOCAL,
+        'Unionistas CF' => ClubProfile::REPUTATION_LOCAL,
+        'CD Arenteiro' => ClubProfile::REPUTATION_LOCAL,
+        'CF Talavera de la Reina' => ClubProfile::REPUTATION_LOCAL,
+        'CA Osasuna Promesas' => ClubProfile::REPUTATION_LOCAL,
+        'Bilbao Athletic' => ClubProfile::REPUTATION_LOCAL,
+        'Arenas Club' => ClubProfile::REPUTATION_LOCAL,
+        'RC Celta Fortuna' => ClubProfile::REPUTATION_LOCAL,
+        'Villarreal CF B' => ClubProfile::REPUTATION_LOCAL,
+        'Marbella FC' => ClubProfile::REPUTATION_LOCAL,
+        'Sevilla Atlético' => ClubProfile::REPUTATION_LOCAL,
+        'Antequera CF' => ClubProfile::REPUTATION_LOCAL,
+        'CD Teruel' => ClubProfile::REPUTATION_LOCAL,
+        'Atlético Sanluqueño CF' => ClubProfile::REPUTATION_LOCAL,
+        'CE Europa' => ClubProfile::REPUTATION_LOCAL,
+        'Atlético Madrileño' => ClubProfile::REPUTATION_LOCAL,
+        'Juventud Torremolinos CF' => ClubProfile::REPUTATION_LOCAL,
+        'SD Tarazona' => ClubProfile::REPUTATION_LOCAL,
+        'Betis Deportivo Balompié' => ClubProfile::REPUTATION_LOCAL,
+
+        // =============================================
         // England - Premier League (ENG1)
         // =============================================
 
