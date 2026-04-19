@@ -90,13 +90,10 @@
                     </button>
 
                     @if($nextMatch)
-                        <div class="hidden sm:flex items-center gap-2 bg-surface-700/50 rounded-lg px-3 py-1.5">
-                            <span class="text-[10px] text-text-muted uppercase tracking-wider">{{ __('game.next_match') }}</span>
-                            <div class="flex items-center gap-1">
-                                <x-team-crest :team="$nextMatch->homeTeam" class="w-4 h-4" />
-                                <span class="text-xs font-semibold text-text-primary font-heading tracking-wide">vs</span>
-                                <x-team-crest :team="$nextMatch->awayTeam" class="w-4 h-4" />
-                            </div>
+                        <div class="hidden sm:flex items-center gap-2 bg-surface-700/50 rounded-lg px-2.5 py-1">
+                            <x-team-crest :team="$nextMatch->homeTeam" class="w-6 h-6" />
+                            <span class="text-xs font-semibold text-text-muted font-heading tracking-wide">vs</span>
+                            <x-team-crest :team="$nextMatch->awayTeam" class="w-6 h-6" />
                         </div>
                         @if($game->hasPendingActions())
                             @php $pendingAction = $game->getFirstPendingAction(); @endphp
@@ -122,15 +119,15 @@
                                         x-data="{ clicked: false }"
                                         @click="if (clicked) return; clicked = true; $dispatch('show-pre-match', '{{ route('game.pre-match-data', $game->id) }}')"
                                         x-bind:disabled="clicked"
-                                        class="inline-flex items-center justify-center px-4 py-2 min-h-[44px] text-sm rounded-l-lg bg-accent-blue hover:bg-blue-600 active:bg-blue-700 border border-transparent font-semibold text-white uppercase tracking-wider focus:outline-hidden focus:ring-2 focus:ring-accent-blue focus:ring-offset-2 focus:ring-offset-surface-900 disabled:opacity-50 disabled:cursor-not-allowed transition ease-in-out duration-150">
+                                        class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] text-xs rounded-l-lg bg-accent-blue hover:bg-blue-600 active:bg-blue-700 border border-transparent font-semibold text-white uppercase tracking-wider focus:outline-hidden focus:ring-2 focus:ring-accent-blue focus:ring-offset-2 focus:ring-offset-surface-900 disabled:opacity-50 disabled:cursor-not-allowed transition ease-in-out duration-150">
                                     {{ __('app.continue') }}
                                 </button>
                                 <button type="button"
                                         @click="$dispatch('open-modal', 'fast-mode-info')"
                                         aria-label="{{ __('game.fast_mode_enter') }}"
-                                        class="inline-flex items-center justify-center px-2 min-h-[44px] rounded-r-lg bg-accent-blue hover:bg-blue-600 active:bg-blue-700 border border-transparent border-l border-l-blue-700/60 text-white focus:outline-hidden focus:ring-2 focus:ring-accent-blue focus:ring-offset-2 focus:ring-offset-surface-900 transition ease-in-out duration-150">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                        class="inline-flex items-center justify-center px-2 min-h-[36px] rounded-r-lg bg-accent-blue hover:bg-blue-600 active:bg-blue-700 border border-transparent border-l border-l-blue-700/60 text-white focus:outline-hidden focus:ring-2 focus:ring-accent-blue focus:ring-offset-2 focus:ring-offset-surface-900 transition ease-in-out duration-150">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
+                                        <path fill-rule="evenodd" d="M9.58 1.077a.75.75 0 0 1 .405.82L9.165 6h4.085a.75.75 0 0 1 .567 1.241l-6.5 7.5a.75.75 0 0 1-1.302-.638L6.835 10H2.75a.75.75 0 0 1-.567-1.241l6.5-7.5a.75.75 0 0 1 .897-.182Z" clip-rule="evenodd" />
                                     </svg>
                                 </button>
                             </div>
