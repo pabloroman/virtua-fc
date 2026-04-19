@@ -10,7 +10,7 @@ use App\Modules\Match\Services\MatchdayOrchestrator;
 use App\Modules\Season\Services\ActivationTracker;
 use Illuminate\Support\Facades\Log;
 
-class AdvanceMatchday
+class AdvanceFastMatchday
 {
     public function __construct(
         private readonly MatchdayOrchestrator $orchestrator,
@@ -19,36 +19,28 @@ class AdvanceMatchday
 
     public function __invoke(string $gameId)
     {
-        // If the user is in fast mode, the normal advance path is disabled —
-        // they must explicitly exit fast mode (or use the fast-mode advance
-        // route) to play matches.
-        $currentGame = Game::findOrFail($gameId);
-        if ($currentGame->isFastMode()) {
-            return redirect()->route('game.fast-mode', $gameId);
-        }
-
-        // Atomic check-and-set to prevent concurrent advances
+        // Atomic check-and-set — same pattern as AdvanceMatchday, prevents
+        // concurrent advances if the user double-clicks "Simulate next match".
         $updated = Game::where('id', $gameId)
+            ->where('fast_mode', true)
             ->whereNull('matchday_advancing_at')
             ->whereNull('career_actions_processing_at')
             ->update(['matchday_advancing_at' => now(), 'matchday_advance_result' => null]);
 
         if (! $updated) {
-            return redirect()->route('show-game', $gameId);
+            return redirect()->route('game.fast-mode', $gameId);
         }
 
         $game = Game::findOrFail($gameId);
 
         try {
-            $result = $this->orchestrator->advance($game);
+            $result = $this->orchestrator->advance($game, fastForward: true);
 
-            // Dispatch SeasonCompleted event for season_complete/done results
             if (in_array($result->type, ['season_complete', 'done'])) {
                 $game->refresh();
                 event(new SeasonCompleted($game));
             }
 
-            // Record activation events
             $game->refresh();
             $this->activationTracker->record($game->user_id, ActivationEvent::EVENT_FIRST_MATCH_PLAYED, $game->id, $game->game_mode);
 
@@ -68,22 +60,18 @@ class AdvanceMatchday
                 }
             }
 
-            // Clear advancing flag
             $game->update(['matchday_advancing_at' => null]);
 
-            // Redirect based on result type
             return match ($result->type) {
-                'live_match' => redirect()->route('game.live-match', [
-                    'gameId' => $gameId,
-                    'matchId' => $result->matchId,
-                ]),
-                'season_complete' => redirect()->route($game->isTournamentMode() ? 'game.tournament-end' : 'game.season-end', $gameId),
-                'done' => redirect()->route('show-game', $gameId),
-                'blocked' => $result->pendingAction && $result->pendingAction['route']
-                    ? redirect()->route($result->pendingAction['route'], $gameId)
-                        ->with('warning', __('messages.action_required'))
-                    : redirect()->route('show-game', $gameId)
-                        ->with('warning', __('messages.action_required')),
+                // 'live_match' should not occur in fast-forward — the orchestrator
+                // finalizes the user's match inline. Treat defensively as done.
+                'live_match', 'done' => redirect()->route('game.fast-mode', $gameId),
+                'season_complete' => redirect()->route(
+                    $game->isTournamentMode() ? 'game.tournament-end' : 'game.season-end',
+                    $gameId,
+                ),
+                'blocked' => redirect()->route('game.fast-mode', $gameId)
+                    ->with('warning', __('messages.fast_mode_action_required')),
             };
         } catch (\Throwable $e) {
             Game::where('id', $gameId)->update([
@@ -91,13 +79,13 @@ class AdvanceMatchday
                 'matchday_advance_result' => null,
             ]);
 
-            Log::error('Matchday advance failed', [
+            Log::error('Fast-mode matchday advance failed', [
                 'game_id' => $gameId,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return redirect()->route('show-game', $gameId)
+            return redirect()->route('game.fast-mode', $gameId)
                 ->with('error', __('messages.advance_failed'));
         }
     }

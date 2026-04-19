@@ -43,12 +43,12 @@ class MatchdayOrchestrator
         private readonly AIMatchResolver $aiMatchResolver = new AIMatchResolver,
     ) {}
 
-    public function advance(Game $game): MatchdayAdvanceResult
+    public function advance(Game $game, bool $fastForward = false): MatchdayAdvanceResult
     {
         $this->careerActionTicks = 0;
         $this->ensuredTeamIds = [];
 
-        $result = DB::transaction(function () use ($game) {
+        $result = DB::transaction(function () use ($game, $fastForward) {
             // Lock the game row to prevent concurrent matchday advancement
             $game = Game::where('id', $game->id)->lockForUpdate()->first();
 
@@ -77,11 +77,29 @@ class MatchdayOrchestrator
                     fn ($m) => $m->involvesTeam($game->team_id)
                 );
 
-                // When the player's match is in the batch, only simulate their match
-                // — sibling AI matches are deferred to background processing
-                $result = $this->processBatch($game, $batch, $batchHasPlayerMatch);
+                // Normal flow: defer sibling AI matches when the user's match is
+                // present (they run in the background while the user plays live).
+                // Fast mode: simulate all matches in the batch inline — there is
+                // no live UI to wait for, so deferral would leave dangling work.
+                $playerMatchOnly = $batchHasPlayerMatch && ! $fastForward;
+
+                $result = $this->processBatch($game, $batch, $playerMatchOnly, $fastForward);
 
                 if ($result['playerMatch']) {
+                    if ($fastForward) {
+                        // Finalize the user's match in-place — no live-UI handoff.
+                        // This advances current_date forward and fires
+                        // GameDateAdvanced listeners (transfer windows, squad
+                        // enrollment, wage-gap drip, etc.) exactly as in the
+                        // normal flow.
+                        $playerMatch = GameMatch::find($result['playerMatch']->id);
+                        if ($playerMatch) {
+                            $this->finalizationService->finalize($playerMatch, $game->refresh());
+                        }
+
+                        return MatchdayAdvanceResult::done();
+                    }
+
                     return MatchdayAdvanceResult::liveMatch($result['playerMatch']->id);
                 }
 
@@ -135,7 +153,7 @@ class MatchdayOrchestrator
      *
      * @return array{playerMatch: ?GameMatch}
      */
-    private function processBatch(Game $game, array $batch, bool $playerMatchOnly = false): array
+    private function processBatch(Game $game, array $batch, bool $playerMatchOnly = false, bool $fastForward = false): array
     {
         $matches = $batch['matches'];
         $handlers = $batch['handlers'];
@@ -161,8 +179,10 @@ class MatchdayOrchestrator
             $this->matchAttendanceService->resolveForMatch($match, $game);
         }
 
-        // Determine if this is a pure AI-only batch eligible for fast resolution
-        $isAIOnlyBatch = ! $playerMatch && config('match_simulation.ai_resolver_enabled', false);
+        // Determine if this batch should use the fast AI resolution path.
+        // Fast mode forces it unconditionally (no live UI for the user's match).
+        $isAIOnlyBatch = $fastForward
+            || (! $playerMatch && config('match_simulation.ai_resolver_enabled', false));
 
         // --- Load players ---
         $teamIds = $matches->pluck('home_team_id')

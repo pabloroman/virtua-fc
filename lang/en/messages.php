@@ -142,6 +142,12 @@ return [
     // Matchday advance
     'advance_failed' => 'Something went wrong advancing the matchday. Please try again.',
 
+    // Fast mode
+    'fast_mode_enabled' => 'Fast mode is on. Your assistant coach will run the team.',
+    'fast_mode_disabled' => 'Fast mode is off. You are back in full control.',
+    'fast_mode_action_required' => 'An action requires your attention. Exit fast mode to resolve it.',
+    'fast_mode_blocked_live_match' => 'Finish the current match before enabling fast mode.',
+
     // Budget loan messages
     'budget_loan_approved' => 'Loan of :amount approved and added to your transfer budget.',
     'loan_not_available' => 'A budget loan is not available right now.',

@@ -110,6 +110,15 @@ class ShowGame
             ]);
         }
 
+        // Fast mode takes over the dashboard — redirect only after all
+        // transient-state checks (transition/processing/advance) have been
+        // handled above, to avoid redirect loops with ShowFastMode.
+        // Live-match finalization still happens in the normal flow, so this
+        // redirect is skipped when a match is pending finalization.
+        if ($game->isFastMode() && ! $game->pending_finalization_match_id) {
+            return redirect()->route('game.fast-mode', $gameId);
+        }
+
         $nextMatch = $this->loadNextMatch($game);
         $hasRemainingMatches = !$nextMatch && $game->matches()->where('played', false)->exists();
 

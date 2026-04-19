@@ -33,7 +33,10 @@ use App\Http\Actions\AcceptTransferOffer;
 use App\Http\Actions\SignFreeAgent;
 use App\Http\Actions\DeclineRenewal;
 use App\Http\Actions\ReconsiderRenewal;
+use App\Http\Actions\AdvanceFastMatchday;
 use App\Http\Actions\AdvanceMatchday;
+use App\Http\Actions\EnterFastMode;
+use App\Http\Actions\ExitFastMode;
 use App\Http\Actions\SimulateTournament;
 use App\Http\Actions\CancelLoanSearch;
 use App\Http\Actions\CancelScoutSearch;
@@ -83,6 +86,7 @@ use App\Http\Views\Dashboard;
 use App\Http\Views\SelectTeam;
 use App\Http\Views\ShowCalendar;
 use App\Http\Views\ShowFinances;
+use App\Http\Views\ShowFastMode;
 use App\Http\Views\ShowGame;
 use App\Http\Views\ShowNewSeason;
 use App\Http\Views\ShowWelcome;
@@ -177,6 +181,12 @@ Route::middleware('auth')->group(function () {
         // Game Actions
         Route::post('/game/{gameId}/advance', AdvanceMatchday::class)->name('game.advance');
         Route::post('/game/{gameId}/skip-pre-season', SkipPreSeason::class)->name('game.skip-pre-season');
+
+        // Fast mode (assistant coach)
+        Route::get('/game/{gameId}/fast-mode', ShowFastMode::class)->name('game.fast-mode');
+        Route::post('/game/{gameId}/fast-mode/enter', EnterFastMode::class)->name('game.fast-mode.enter');
+        Route::post('/game/{gameId}/fast-mode/exit', ExitFastMode::class)->name('game.fast-mode.exit');
+        Route::post('/game/{gameId}/fast-mode/advance', AdvanceFastMatchday::class)->name('game.fast-mode.advance');
         Route::post('/game/{gameId}/lineup', SaveLineup::class)->name('game.lineup.save');
         Route::get('/game/{gameId}/lineup/auto', GetAutoLineup::class)->name('game.lineup.auto');
         Route::post('/game/{gameId}/lineup/compute-slots', ComputeSlotAssignments::class)->name('game.lineup.computeSlots');

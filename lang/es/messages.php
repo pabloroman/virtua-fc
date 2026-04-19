@@ -142,6 +142,12 @@ return [
     // Matchday advance
     'advance_failed' => 'Error al avanzar la jornada. Inténtalo de nuevo.',
 
+    // Fast mode
+    'fast_mode_enabled' => 'Modo rápido activado. Tu entrenador asistente dirigirá al equipo.',
+    'fast_mode_disabled' => 'Modo rápido desactivado. Vuelves a tener el control.',
+    'fast_mode_action_required' => 'Una acción requiere tu atención. Sal del modo rápido para resolverla.',
+    'fast_mode_blocked_live_match' => 'Termina el partido actual antes de activar el modo rápido.',
+
     // Budget loan messages
     'budget_loan_approved' => 'Préstamo de :amount aprobado y añadido a tu presupuesto de fichajes.',
     'loan_not_available' => 'Un préstamo presupuestario no está disponible ahora mismo.',

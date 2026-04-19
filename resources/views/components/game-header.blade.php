@@ -108,10 +108,32 @@
                             </x-primary-button-link>
                         @elseif($continueToHome)
                             <x-primary-button-link :href="route('show-game', $game->id)">{{ __('app.continue') }}</x-primary-button-link>
+                        @elseif($game->isFastMode())
+                            <a href="{{ route('game.fast-mode', $game->id) }}" class="inline-flex items-center gap-1.5 px-3 py-2 min-h-[44px] text-xs font-semibold uppercase tracking-wider rounded-lg bg-accent-blue/10 text-accent-blue border border-accent-blue/30 hover:bg-accent-blue/20 transition-colors">
+                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                </svg>
+                                <span>{{ __('game.fast_mode') }}</span>
+                            </a>
                         @else
-                            <x-primary-button type="button" x-data="{ clicked: false }" @click="if (clicked) return; clicked = true; $dispatch('show-pre-match', '{{ route('game.pre-match-data', $game->id) }}')" x-bind:disabled="clicked">
-                                {{ __('app.continue') }}
-                            </x-primary-button>
+                            {{-- Split button: left half = Continue (pre-match flow), right half = open fast-mode info modal --}}
+                            <div class="inline-flex items-stretch">
+                                <button type="button"
+                                        x-data="{ clicked: false }"
+                                        @click="if (clicked) return; clicked = true; $dispatch('show-pre-match', '{{ route('game.pre-match-data', $game->id) }}')"
+                                        x-bind:disabled="clicked"
+                                        class="inline-flex items-center justify-center px-4 py-2 min-h-[44px] text-sm rounded-l-lg bg-accent-blue hover:bg-blue-600 active:bg-blue-700 border border-transparent font-semibold text-white uppercase tracking-wider focus:outline-hidden focus:ring-2 focus:ring-accent-blue focus:ring-offset-2 focus:ring-offset-surface-900 disabled:opacity-50 disabled:cursor-not-allowed transition ease-in-out duration-150">
+                                    {{ __('app.continue') }}
+                                </button>
+                                <button type="button"
+                                        @click="$dispatch('open-modal', 'fast-mode-info')"
+                                        aria-label="{{ __('game.fast_mode_enter') }}"
+                                        class="inline-flex items-center justify-center px-2 min-h-[44px] rounded-r-lg bg-accent-blue hover:bg-blue-600 active:bg-blue-700 border border-transparent border-l border-l-blue-700/60 text-white focus:outline-hidden focus:ring-2 focus:ring-accent-blue focus:ring-offset-2 focus:ring-offset-surface-900 transition ease-in-out duration-150">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                            </div>
                         @endif
                     @else
                         <div class="flex items-center gap-3">
@@ -125,6 +147,11 @@
             </div>
         </div>
     </header>
+
+    {{-- Fast Mode Info Modal (opened by split-button chevron) --}}
+    @if($nextMatch && !$game->hasPendingActions() && !$continueToHome && !$game->isFastMode())
+        @include('partials.fast-mode-info-modal')
+    @endif
 
     {{-- Pre-Match Confirmation Modal --}}
     @if($nextMatch && !$game->hasPendingActions() && !$continueToHome)

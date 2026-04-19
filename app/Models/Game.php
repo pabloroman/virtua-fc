@@ -121,6 +121,7 @@ class Game extends Model
         'needs_welcome',
         'pre_season',
         'squad_registration_enabled',
+        'fast_mode',
         'pending_actions',
         'setup_completed_at',
         'season_transitioning_at',
@@ -141,6 +142,7 @@ class Game extends Model
         'needs_welcome' => 'boolean',
         'pre_season' => 'boolean',
         'squad_registration_enabled' => 'boolean',
+        'fast_mode' => 'boolean',
         'pending_actions' => 'array',
         'setup_completed_at' => 'datetime',
         'season_transitioning_at' => 'datetime',
@@ -751,5 +753,14 @@ class Game extends Model
     public function endPreSeason(): void
     {
         $this->update(['pre_season' => false]);
+    }
+
+    // ==========================================
+    // Fast Mode
+    // ==========================================
+
+    public function isFastMode(): bool
+    {
+        return $this->fast_mode ?? false;
     }
 }
