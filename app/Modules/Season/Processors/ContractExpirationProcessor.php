@@ -10,7 +10,6 @@ use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\TransferOffer;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -36,23 +35,10 @@ class ContractExpirationProcessor implements SeasonProcessor
         // Clean up any stale renewal negotiations
         app(ContractService::class)->expireStaleNegotiations($game);
 
-        // Clean up unsigned free agents from the previous season.
-        // Bulk-delete children before parents to avoid per-row FK cascade
-        // amplification — a single set-based DELETE per child table runs in
-        // milliseconds, while relying on ON DELETE CASCADE forces PostgreSQL
-        // to issue one DELETE per parent row per child table (tens of
-        // thousands of cascades for match_events alone).
-        $staleFreeAgentIds = GamePlayer::where('game_id', $game->id)
+        // Clean up unsigned free agents from the previous season
+        GamePlayer::where('game_id', $game->id)
             ->whereNull('team_id')
-            ->pluck('id');
-
-        if ($staleFreeAgentIds->isNotEmpty()) {
-            DB::table('match_events')
-                ->whereIn('game_player_id', $staleFreeAgentIds)
-                ->delete();
-
-            GamePlayer::whereIn('id', $staleFreeAgentIds)->delete();
-        }
+            ->delete();
 
         // Season ends on June 30 of the season year
         $seasonYear = (int) $data->oldSeason;
