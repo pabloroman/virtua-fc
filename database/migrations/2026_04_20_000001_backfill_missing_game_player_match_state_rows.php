@@ -61,7 +61,7 @@ return new class extends Migration
                     ON CONFLICT (game_player_id) DO NOTHING
                     RETURNING 1
                 )
-                SELECT MAX(id) FROM batch
+                SELECT id FROM batch ORDER BY id DESC LIMIT 1
             SQL, [$lastId, self::BATCH_SIZE]);
 
             if ($nextId === null) {
