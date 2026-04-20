@@ -116,10 +116,10 @@
                             <x-ghost-button color="slate" @click="clearSelection()">
                                 {{ __('app.clear') }}
                             </x-ghost-button>
-                            <x-secondary-button type="button" @click="quickSelect(); $dispatch('open-modal', 'auto-lineup')">
+                            <x-secondary-button type="button" size="sm" @click="quickSelect(); $dispatch('open-modal', 'auto-lineup')">
                                 {{ __('squad.auto_select') }}
                             </x-secondary-button>
-                            <x-primary-button x-bind:disabled="selectedCount !== 11">
+                            <x-primary-button size="sm" x-bind:disabled="selectedCount !== 11">
                                 {{ __('app.confirm') }}
                             </x-primary-button>
                         </div>
