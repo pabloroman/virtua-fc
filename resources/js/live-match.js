@@ -16,55 +16,30 @@ import {
     getZoneColorClass as _getZoneColorClass,
 } from './modules/pitch-renderer.js';
 import { createPitchGrid } from './modules/pitch-grid.js';
-import {
-    bestFitPlacement,
-    buildSlotView,
-    getPlayerCompatibility,
-    swapSlots,
-} from './modules/slot-map.js';
+import { swapSlots } from './modules/slot-map.js';
 import { createPenaltyShootout } from './modules/penalty-shootout.js';
 import { createSubstitutionManager } from './modules/substitution-manager.js';
 import { createMatchSimulation } from './modules/match-simulation.js';
 import { createMatchStats } from './modules/match-stats.js';
-import { generateRegularTimeAtmosphere, generateExtraTimeAtmosphere, generateTacticalNarratives, addGoalNarratives, regenerateShots, regenerateNarratives } from './modules/atmosphere-generator.js';
-import { calculatePlayerRatings, ratingColor as _ratingColor, updateRosterPerformances, countEvents, buildSubstitutionMap, performanceToBaseRating } from './modules/player-ratings.js';
-import { generateMatchSummary } from './modules/match-summary-generator.js';
+import { createAtmosphereGlue } from './modules/atmosphere-glue.js';
+import { createTacticalPanel } from './modules/tactical-panel.js';
+import { createTacticalSubmission } from './modules/tactical-submission.js';
+import { createPitchLayout } from './modules/pitch-layout.js';
+import { mixinModule } from './modules/_mixin.js';
+import {
+    PHASE,
+    MINUTE,
+    isExtraTimePhase,
+    isPlayingPhase,
+    resolveMinuteForTacticalChange,
+} from './modules/match-phases.js';
+import { createKnockoutOutcome } from './modules/knockout-outcome.js';
+import { createRatingsGlue } from './modules/ratings-glue.js';
+import { createEventFeed } from './modules/event-feed.js';
+import { createEventCache } from './modules/event-cache.js';
 
-/**
- * Copy all own properties from source to target. Regular properties are
- * assigned normally (compatible with Alpine's reactive proxy), while
- * getter/setter descriptors are defined via Object.defineProperty so
- * they remain live computed properties instead of being evaluated once.
- */
-function mixinModule(target, source) {
-    for (const key of Object.keys(source)) {
-        const desc = Object.getOwnPropertyDescriptor(source, key);
-        if (desc.get || desc.set) {
-            Object.defineProperty(target, key, desc);
-        } else {
-            target[key] = desc.value;
-        }
-    }
-}
-
-/**
- * Determine the minute value to send to the backend for a tactical change.
- * During ET-related phases, the currentMinute may be 90 (set by
- * enterRegularTimeEnd), which the backend would interpret as regular time.
- * Clamp to 93 so the backend routes to resimulateExtraTime and doesn't
- * delete stoppage-time goal events.
- */
-export function resolveMinuteForTacticalChange(currentMinute, phase) {
-    const minute = Math.floor(currentMinute);
-    const isETPhase = phase === 'going_to_extra_time'
-        || phase === 'extra_time_first_half'
-        || phase === 'extra_time_second_half'
-        || phase === 'extra_time_half_time';
-    if (isETPhase && minute <= 93) {
-        return Math.max(minute, 93);
-    }
-    return minute;
-}
+// Re-export for any consumers that imported it from this module.
+export { resolveMinuteForTacticalChange };
 
 export default function liveMatch(config) {
     // Create modules early with a deferred context reference so their
@@ -76,6 +51,14 @@ export default function liveMatch(config) {
     const penalties = createPenaltyShootout(ctx);
     const sim = createMatchSimulation(ctx);
     const stats = createMatchStats(ctx);
+    const knockoutOutcome = createKnockoutOutcome(ctx);
+    const ratings = createRatingsGlue(ctx);
+    const eventFeed = createEventFeed(ctx);
+    const eventCache = createEventCache({ matchId: config.matchId || '' });
+    const atmosphere = createAtmosphereGlue(ctx);
+    const tacticalPanel = createTacticalPanel(ctx);
+    const tacticalSubmission = createTacticalSubmission(ctx);
+    const pitchLayout = createPitchLayout(ctx);
 
     const component = {
         // Config (from server)
@@ -380,7 +363,7 @@ export default function liveMatch(config) {
 
             // Compute initial player ratings from cached performance data
             // (only if match is already at full time, e.g. page refresh)
-            if (this.phase === 'full_time') {
+            if (this.phase === PHASE.FULL_TIME) {
                 this.recalculatePlayerRatings();
             }
 
@@ -397,7 +380,7 @@ export default function liveMatch(config) {
             // clock and event list stay in sync (requestAnimationFrame stops
             // firing while the tab is hidden, causing a large time jump on return).
             this._onVisibilityChange = () => {
-                if (document.hidden && !this.userPaused && this.phase !== 'full_time' && this.phase !== 'pre_match') {
+                if (document.hidden && !this.userPaused && this.phase !== PHASE.FULL_TIME && this.phase !== PHASE.PRE_MATCH) {
                     this.userPaused = true;
                 }
             };
@@ -477,9 +460,9 @@ export default function liveMatch(config) {
                 }
                 this.homeScore = this.finalHomeScore + this.etHomeScore;
                 this.awayScore = this.finalAwayScore + this.etAwayScore;
-                this.currentMinute = 120;
+                this.currentMinute = MINUTE.ET_END;
             } else {
-                this.currentMinute = 90;
+                this.currentMinute = MINUTE.REGULAR_TIME_END;
             }
 
             // Set other match scores to final values
@@ -495,7 +478,7 @@ export default function liveMatch(config) {
             this.awayPossession = 100 - this._basePossession;
 
             // Set phase to full_time and calculate player ratings
-            this.phase = 'full_time';
+            this.phase = PHASE.FULL_TIME;
             this.recalculatePlayerRatings();
 
             // Generate match summary if not restored from cache
@@ -504,45 +487,25 @@ export default function liveMatch(config) {
             }
         },
 
-        /**
-         * Cache the current events arrays to localStorage so page refreshes
-         * show the exact same event feed the user saw during live simulation.
-         */
         _cacheEvents() {
-            if (!this.matchId) return;
-            try {
-                const payload = {
-                    events: this.events,
-                    extraTimeEvents: this.extraTimeEvents,
-                    matchSummary: this.matchSummary,
-                };
-                localStorage.setItem(`live_match_events:${this.matchId}`, JSON.stringify(payload));
-            } catch (_) { /* quota exceeded — silently skip */ }
+            eventCache.save({
+                events: this.events,
+                extraTimeEvents: this.extraTimeEvents,
+                matchSummary: this.matchSummary,
+            });
         },
 
-        /**
-         * Restore cached events from localStorage. Returns true if cache was
-         * found and applied, false otherwise.
-         */
         _restoreEventsFromCache() {
-            if (!this.matchId) return false;
-            try {
-                const raw = localStorage.getItem(`live_match_events:${this.matchId}`);
-                if (!raw) return false;
-                const cached = JSON.parse(raw);
-                if (cached.events) this.events = cached.events;
-                if (cached.extraTimeEvents) this.extraTimeEvents = cached.extraTimeEvents;
-                if (cached.matchSummary) this.matchSummary = cached.matchSummary;
-                return true;
-            } catch (_) { return false; }
+            const cached = eventCache.restore();
+            if (!cached) return false;
+            if (cached.events) this.events = cached.events;
+            if (cached.extraTimeEvents) this.extraTimeEvents = cached.extraTimeEvents;
+            if (cached.matchSummary) this.matchSummary = cached.matchSummary;
+            return true;
         },
 
-        /**
-         * Remove the cached events entry for this match.
-         */
         _clearEventsCache() {
-            if (!this.matchId) return;
-            localStorage.removeItem(`live_match_events:${this.matchId}`);
+            eventCache.clear();
         },
 
         // =====================================================================
@@ -570,988 +533,38 @@ export default function liveMatch(config) {
         },
 
         get isInExtraTime() {
-            return this.phase === 'going_to_extra_time'
-                || this.phase === 'extra_time_first_half'
-                || this.phase === 'extra_time_half_time'
-                || this.phase === 'extra_time_second_half';
+            return isExtraTimePhase(this.phase);
         },
 
         get totalMinutes() {
-            return this.hasExtraTime || this.isInExtraTime ? 120 : 90;
+            return this.hasExtraTime || this.isInExtraTime ? MINUTE.ET_END : MINUTE.REGULAR_TIME_END;
         },
 
-        get etFirstHalfEvents() {
-            return this.groupSubstitutions(this.revealedEvents.filter(e => e.minute > 90 && e.minute <= 105));
-        },
-
-        get etSecondHalfEvents() {
-            return this.groupSubstitutions(this.revealedEvents.filter(e => e.minute > 105));
-        },
-
-        get showETHalfTimeSeparator() {
-            return this.phase === 'extra_time_half_time'
-                || this.phase === 'extra_time_second_half'
-                || ((this.phase === 'penalties' || this.phase === 'full_time') && this.hasExtraTime);
-        },
-
-        get showExtraTimeSeparator() {
-            return this.isInExtraTime || this.phase === 'penalties'
-                || (this.phase === 'full_time' && this.hasExtraTime);
-        },
+        // etFirstHalfEvents, etSecondHalfEvents, showETHalfTimeSeparator,
+        // showExtraTimeSeparator — provided by event-feed module via mixin.
 
         // penaltyHomeScore, penaltyAwayScore, penaltyWinner — provided by penalty-shootout module
 
-        // =============================
-        // Knockout outcome (works for all knockout matches, not just tournament)
-        // Returns 'win', 'loss', or null (for non-knockout / league draws)
-        get knockoutOutcome() {
-            if (!this.isKnockout) return null;
-
-            // Penalties decide the winner
-            if (this.penaltyResult) {
-                const penHome = this.penaltyResult.home;
-                const penAway = this.penaltyResult.away;
-                const homeWon = penHome > penAway;
-                const userWon = this.userTeamId === this.homeTeamId ? homeWon : !homeWon;
-                return userWon ? 'win' : 'loss';
-            }
-
-            // ET or regular time
-            if (this.homeScore === this.awayScore) return null;
-            const homeWon = this.homeScore > this.awayScore;
-            const userWon = this.userTeamId === this.homeTeamId ? homeWon : !homeWon;
-            return userWon ? 'win' : 'loss';
-        },
-
-        // Tournament result helpers
-        // =============================
-
-        get playerWon() {
-            if (!this.isTournamentKnockout) return null;
-            // Penalties decide the winner if they were played
-            if (this.penaltyResult) {
-                const penHome = this.penaltyResult.home;
-                const penAway = this.penaltyResult.away;
-                const homeWon = penHome > penAway;
-                return this.userTeamId === this.homeTeamId ? homeWon : !homeWon;
-            }
-            // ET or regular time: compare displayed scores at full time
-            const home = this.homeScore;
-            const away = this.awayScore;
-            if (home === away) return null; // shouldn't happen in knockout without pens
-            const homeWon = home > away;
-            return this.userTeamId === this.homeTeamId ? homeWon : !homeWon;
-        },
-
-        get tournamentResultType() {
-            if (!this.isTournamentKnockout || this.playerWon === null) return null;
-            const round = this.knockoutRoundNumber;
-            const won = this.playerWon;
-
-            // Round 6 = Final
-            if (round === 6) return won ? 'champion' : 'runner_up';
-            // Round 5 = Third-place match
-            if (round === 5) return won ? 'third' : 'fourth';
-            // Round 4 = Semi-final
-            if (round === 4) return won ? 'to_final' : 'to_third_place';
-            // Rounds 1-3 = R32/R16/QF
-            return won ? 'advance' : 'eliminated';
-        },
-
-        get isTournamentDecisive() {
-            const type = this.tournamentResultType;
-            if (!type) return false;
-            // Decisive = tournament is over for the player (no more matches after this)
-            return ['champion', 'runner_up', 'third', 'fourth', 'eliminated'].includes(type);
-        },
-
-        get isChampion() {
-            return this.tournamentResultType === 'champion';
-        },
+        // Knockout + tournament outcome getters — provided by knockout-outcome
+        // module via Object.assign below: knockoutOutcome, playerWon,
+        // tournamentResultType, isTournamentDecisive, isChampion.
 
         // =============================
-        // Tactical panel methods
+        // Tactical panel methods — provided by tactical-panel module via mixin.
+        // openTacticalPanel, closeTacticalPanel, safeCloseTacticalPanel,
+        // hasSubPendingChanges, hasPendingChanges, hasTacticalChanges,
+        // mentalityLabel, getMentalityLabel, getFormationTooltip,
+        // getMentalityTooltip, resetTactics, refreshFormationPreview,
+        // _postComputeSlots, resetAllChanges, getOptionLabel,
+        // confirmationSummary, showConfirmation, cancelConfirmation,
+        // _scrollTacticalToTop, _computePickerOffenders,
+        // openFormationPicker, _postSubActivePlayerIds,
+        // closeFormationPicker, acceptFormationPickerChoice,
+        // keepFormationWithPenalty, _advanceToConfirmation.
+        //
+        // confirmAllChanges, autoSubUserTeamBeforeSkip — provided by
+        // tactical-submission module via mixin.
         // =============================
-
-        openTacticalPanel(tab = 'substitutions', keepInjuryAlert = false) {
-            this.tacticalTab = tab;
-            this.tacticalPanelOpen = true;
-            this.selectedPlayerOut = null;
-            this.selectedPlayerIn = null;
-            this.livePitchSelectedOutId = null;
-            this.pendingSubs = [];
-            this.pendingFormation = null;
-            this.pendingMentality = null;
-            this.previewSlotMap = null;
-            this.closeFormationPicker();
-            if (!keepInjuryAlert) {
-                this.injuryAlertPlayer = null;
-            }
-            document.body.classList.add('overflow-y-hidden');
-        },
-
-        closeTacticalPanel() {
-            this.tacticalPanelOpen = false;
-            this.selectedPlayerOut = null;
-            this.selectedPlayerIn = null;
-            this.livePitchSelectedOutId = null;
-            this.pendingSubs = [];
-            this.pendingFormation = null;
-            this.pendingMentality = null;
-            this.previewSlotMap = null;
-            this.draggingSlotId = null;
-            this.dragPosition = null;
-            this.positioningSlotId = null;
-            this.injuryAlertPlayer = null;
-            this.showingConfirmation = false;
-            this.closeFormationPicker();
-            document.body.classList.remove('overflow-y-hidden');
-        },
-
-        get hasSubPendingChanges() {
-            return this.pendingSubs.length > 0
-                || (this.selectedPlayerOut !== null && this.selectedPlayerIn !== null);
-        },
-
-        get hasPendingChanges() {
-            return this.hasSubPendingChanges || this.hasTacticalChanges;
-        },
-
-        safeCloseTacticalPanel() {
-            if (this.hasPendingChanges) {
-                if (!confirm(this.translations?.unsavedTacticalChanges ?? 'You have unsubmitted changes. Close anyway?')) {
-                    return;
-                }
-            }
-            this.closeTacticalPanel();
-        },
-
-        get mentalityLabel() {
-            const m = this.availableMentalities.find(m => m.value === this.activeMentality);
-            return m ? m.label : this.activeMentality;
-        },
-
-        get hasTacticalChanges() {
-            return (this.pendingFormation !== null && this.pendingFormation !== this.activeFormation)
-                || (this.pendingMentality !== null && this.pendingMentality !== this.activeMentality)
-                || (this.pendingPlayingStyle !== null && this.pendingPlayingStyle !== this.activePlayingStyle)
-                || (this.pendingPressing !== null && this.pendingPressing !== this.activePressing)
-                || (this.pendingDefLine !== null && this.pendingDefLine !== this.activeDefLine)
-                || Object.keys(this._manualSlotPins).length > 0;
-        },
-
-        getMentalityLabel(value) {
-            const m = this.availableMentalities.find(m => m.value === value);
-            return m ? m.label : value;
-        },
-
-        getFormationTooltip() {
-            const selected = this.pendingFormation ?? this.activeFormation;
-            const f = this.availableFormations.find(f => f.value === selected);
-            return f ? f.tooltip : '';
-        },
-
-        getMentalityTooltip(value) {
-            const m = this.availableMentalities.find(m => m.value === value);
-            return m ? m.tooltip : '';
-        },
-
-        resetTactics() {
-            this.pendingFormation = null;
-            this.pendingMentality = null;
-            this.pendingPlayingStyle = null;
-            this.pendingPressing = null;
-            this.pendingDefLine = null;
-            this.previewSlotMap = null;
-        },
-
-        /**
-         * Fired by the tactical-lever callback whenever the user clicks a
-         * formation button in the tactical panel. Hits the backend's
-         * compute-slots endpoint with the current on-pitch 11 + the new
-         * formation, and stores the resulting slot map in `previewSlotMap`.
-         * The `slotAssignments` getter then renders the pitch from it.
-         *
-         * Uses the same endpoint as the lineup page's formation change, so
-         * the placement algorithm is exactly one thing in exactly one place.
-         * Previous live-match previews used a naive client-side heuristic
-         * that mis-handled players whose primary position had no matching
-         * slot in the new formation (e.g. a Defensive Midfielder in a 4-3-3,
-         * which has no DM slot).
-         *
-         * Uses a monotonic `_previewFetchId` to ignore stale responses when
-         * the user clicks multiple formations in quick succession.
-         */
-        async refreshFormationPreview() {
-            // If the pending formation matches the active one, we're not
-            // previewing anything — drop any cached preview.
-            if (this.pendingFormation === null || this.pendingFormation === this.activeFormation) {
-                this.previewSlotMap = null;
-                return;
-            }
-            if (!this.computeSlotsUrl) {
-                return;
-            }
-
-            // Clear the previous preview so the getter falls back to the
-            // local placeholder during the fetch window.
-            this.previewSlotMap = null;
-
-            const fetchId = ++this._previewFetchId;
-            const targetFormation = this.pendingFormation;
-            // Preview the XI the user is about to commit, not the current
-            // on-pitch 11: pending subs must be reflected so the incoming
-            // bench players are placed into the new formation instead of
-            // the players they're replacing.
-            const playerIds = this._postSubActivePlayerIds();
-
-            if (playerIds.length === 0) {
-                return;
-            }
-
-            try {
-                const data = await this._postComputeSlots({
-                    formation: targetFormation,
-                    player_ids: playerIds,
-                    manual_assignments: {},
-                });
-                // Ignore stale responses from superseded clicks.
-                if (fetchId !== this._previewFetchId) return;
-                // Ignore responses for a formation the user already moved off.
-                if (this.pendingFormation !== targetFormation) return;
-                if (data) this.previewSlotMap = data.slot_assignments ?? {};
-            } catch (e) {
-                console.error('Failed to compute formation preview', e);
-            }
-        },
-
-        /**
-         * POST to the compute-slots endpoint. Returns the parsed JSON body
-         * on 2xx, or null otherwise. Throws on network/parse error so
-         * callers can decide whether to log. Shared by the formation-
-         * preview flow and the formation-picker suggestion lookup.
-         */
-        async _postComputeSlots(body) {
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? this.csrfToken ?? '';
-            const response = await fetch(this.computeSlotsUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify(body),
-            });
-            if (!response.ok) return null;
-            return response.json();
-        },
-
-        resetAllChanges() {
-            this.resetSubstitutions();
-            this.resetTactics();
-            this.showingConfirmation = false;
-            this.closeFormationPicker();
-            this.tacticalError = null;
-        },
-
-        getOptionLabel(options, value) {
-            const opt = options.find(o => o.value === value);
-            return opt ? opt.label : value;
-        },
-
-        get confirmationSummary() {
-            const summary = { subs: [], tactics: [] };
-
-            // Pending subs
-            for (const sub of this.pendingSubs) {
-                summary.subs.push({
-                    playerOut: sub.playerOut.name,
-                    playerOutAbbr: sub.playerOut.positionAbbr,
-                    playerOutGroup: sub.playerOut.positionGroup,
-                    playerIn: sub.playerIn.name,
-                    playerInAbbr: sub.playerIn.positionAbbr,
-                    playerInGroup: sub.playerIn.positionGroup,
-                });
-            }
-
-            // Also include auto-added pair if present
-            if (this.selectedPlayerOut && this.selectedPlayerIn) {
-                const alreadyPending = summary.subs.some(
-                    s => s.playerOut === this.selectedPlayerOut.name && s.playerIn === this.selectedPlayerIn.name
-                );
-                if (!alreadyPending) {
-                    summary.subs.push({
-                        playerOut: this.selectedPlayerOut.name,
-                        playerOutAbbr: this.selectedPlayerOut.positionAbbr,
-                        playerOutGroup: this.selectedPlayerOut.positionGroup,
-                        playerIn: this.selectedPlayerIn.name,
-                        playerInAbbr: this.selectedPlayerIn.positionAbbr,
-                        playerInGroup: this.selectedPlayerIn.positionGroup,
-                    });
-                }
-            }
-
-            // Tactical changes
-            if (this.pendingFormation !== null && this.pendingFormation !== this.activeFormation) {
-                summary.tactics.push({
-                    label: this.translations.confirmFormation ?? 'Formation',
-                    from: this.activeFormation,
-                    to: this.pendingFormation,
-                });
-            }
-            if (this.pendingMentality !== null && this.pendingMentality !== this.activeMentality) {
-                summary.tactics.push({
-                    label: this.translations.confirmMentality ?? 'Mentality',
-                    from: this.getOptionLabel(this.availableMentalities, this.activeMentality),
-                    to: this.getOptionLabel(this.availableMentalities, this.pendingMentality),
-                });
-            }
-            if (this.pendingPlayingStyle !== null && this.pendingPlayingStyle !== this.activePlayingStyle) {
-                summary.tactics.push({
-                    label: this.translations.confirmPlayingStyle ?? 'Playing style',
-                    from: this.getOptionLabel(this.availablePlayingStyles, this.activePlayingStyle),
-                    to: this.getOptionLabel(this.availablePlayingStyles, this.pendingPlayingStyle),
-                });
-            }
-            if (this.pendingPressing !== null && this.pendingPressing !== this.activePressing) {
-                summary.tactics.push({
-                    label: this.translations.confirmPressing ?? 'Pressing',
-                    from: this.getOptionLabel(this.availablePressing, this.activePressing),
-                    to: this.getOptionLabel(this.availablePressing, this.pendingPressing),
-                });
-            }
-            if (this.pendingDefLine !== null && this.pendingDefLine !== this.activeDefLine) {
-                summary.tactics.push({
-                    label: this.translations.confirmDefLine ?? 'Defensive line',
-                    from: this.getOptionLabel(this.availableDefLine, this.activeDefLine),
-                    to: this.getOptionLabel(this.availableDefLine, this.pendingDefLine),
-                });
-            }
-
-            return summary;
-        },
-
-        showConfirmation() {
-            this.tacticalError = null;
-
-            // Gate: if the pending subs (combined with the current formation)
-            // leave a player in a slot where their compat falls below 80,
-            // open the formation picker instead of the plain confirmation.
-            // The user must then either pick a formation that fits or
-            // explicitly accept the out-of-position penalty. Formation-only
-            // changes skip this gate — the user already chose their shape.
-            const offenders = this._computePickerOffenders();
-            if (offenders.length > 0) {
-                this.openFormationPicker(offenders);
-                return;
-            }
-
-            this.showingConfirmation = true;
-            this._scrollTacticalToTop();
-        },
-
-        cancelConfirmation() {
-            this.showingConfirmation = false;
-        },
-
-        // On mobile the pitch and controls stack vertically in a single
-        // scroll container and the confirmation/picker overlays are
-        // absolutely positioned. Reset scroll so overlay content lands
-        // inside the viewport when it opens.
-        _scrollTacticalToTop() {
-            this.$nextTick(() => {
-                const scrollContainer = this.$refs.tacticalScrollContainer;
-                if (scrollContainer) scrollContainer.scrollTop = 0;
-            });
-        },
-
-        /**
-         * Return assignments whose player sits in a slot with compatibility
-         * below the natural-position threshold (80), under the pending or
-         * active formation. Used to gate the confirmation step so any
-         * change — substitution OR formation-only switch — that leaves a
-         * player out of position prompts an explicit formation choice
-         * instead of silently applying the 25% penalty.
-         *
-         * Returns `[]` when no change is staged so a plain cancel-then-
-         * reopen doesn't trip the gate.
-         */
-        _computePickerOffenders() {
-            const hasStagedSubs = this.pendingSubs.length > 0
-                || (this.selectedPlayerOut && this.selectedPlayerIn);
-            const hasStagedFormationChange = this.pendingFormation !== null
-                && this.pendingFormation !== this.activeFormation;
-            if (!hasStagedSubs && !hasStagedFormationChange) return [];
-
-            return this.slotAssignments.filter(a =>
-                a.player
-                && a.compatibility < 80
-                && !this.redCardedPlayerIds.includes(a.player.id),
-            );
-        },
-
-        /**
-         * Open the formation picker prompt. Callers that already computed
-         * the offenders (e.g. `showConfirmation`) can pass them in to avoid
-         * re-running the heavy `slotAssignments` getter.
-         */
-        async openFormationPicker(offenders = null) {
-            const items = offenders ?? this._computePickerOffenders();
-            this.formationPickerOffenders = items.map(a => ({
-                slotLabel: a.label,
-                displayLabel: a.displayLabel,
-                playerName: a.player.name,
-                playerPosition: a.player.position,
-                compatibility: a.compatibility,
-            }));
-            this.formationPickerOpen = true;
-            this.formationPickerSuggested = null;
-            this.formationPickerLoading = true;
-
-            if (!this.computeSlotsUrl) {
-                this.formationPickerLoading = false;
-                return;
-            }
-
-            const currentFormation = this.pendingFormation ?? this.activeFormation;
-            const playerIds = this._postSubActivePlayerIds();
-            if (playerIds.length === 0) {
-                this.formationPickerLoading = false;
-                return;
-            }
-
-            try {
-                const data = await this._postComputeSlots({
-                    formation: currentFormation,
-                    player_ids: playerIds,
-                    include_suggested_formation: true,
-                });
-                if (data?.suggested_formation && data.suggested_formation !== currentFormation) {
-                    this.formationPickerSuggested = data.suggested_formation;
-                }
-            } catch (e) {
-                console.error('Failed to fetch suggested formation', e);
-            } finally {
-                this.formationPickerLoading = false;
-            }
-        },
-
-        /**
-         * List of player ids that will be on the pitch after the currently
-         * staged subs are committed. Sent to the server when fetching a
-         * suggested formation so the recommender evaluates against the
-         * same XI the user is about to commit.
-         */
-        _postSubActivePlayerIds() {
-            const allPending = [...this.pendingSubs];
-            if (this.selectedPlayerOut && this.selectedPlayerIn) {
-                const alreadyPending = allPending.some(
-                    s => s.playerOut.id === this.selectedPlayerOut.id,
-                );
-                if (!alreadyPending) {
-                    allPending.push({
-                        playerOut: this.selectedPlayerOut,
-                        playerIn: this.selectedPlayerIn,
-                    });
-                }
-            }
-            const pendingOutIds = new Set(allPending.map(s => s.playerOut.id));
-            const active = this.getActiveLineupPlayers()
-                .filter(p => !pendingOutIds.has(p.id))
-                .map(p => p.id);
-            for (const sub of allPending) active.push(sub.playerIn.id);
-            return active;
-        },
-
-        closeFormationPicker() {
-            this.formationPickerOpen = false;
-            this.formationPickerOffenders = [];
-            this.formationPickerSuggested = null;
-            this.formationPickerLoading = false;
-        },
-
-        /**
-         * User picked a formation from the prompt (or the suggested one).
-         * Queue it as a pending formation change so confirmAllChanges()
-         * applies the sub and the formation in the same round trip, and
-         * then advance to the normal confirmation overlay.
-         */
-        acceptFormationPickerChoice(formationValue) {
-            if (!formationValue) return;
-            if (formationValue !== this.activeFormation) {
-                this.pendingFormation = formationValue;
-                this.refreshFormationPreview();
-            } else {
-                this.pendingFormation = null;
-            }
-            this._advanceToConfirmation();
-        },
-
-        /**
-         * User explicitly chose to keep the current formation and accept
-         * the out-of-position penalty. Skip the picker and show the
-         * normal confirmation overlay.
-         */
-        keepFormationWithPenalty() {
-            this._advanceToConfirmation();
-        },
-
-        // Close the picker (if open), reveal the confirmation overlay, and
-        // reset scroll so the overlay content is visible.
-        _advanceToConfirmation() {
-            this.closeFormationPicker();
-            this.showingConfirmation = true;
-            this._scrollTacticalToTop();
-        },
-
-        async confirmAllChanges() {
-            // Auto-add selected pair to pending if present
-            if (this.selectedPlayerOut && this.selectedPlayerIn) {
-                this.addPendingSub();
-            }
-
-            if (this.applyingChanges) return;
-
-            if (!this.hasPendingChanges) {
-                if (this.showingConfirmation) {
-                    this.tacticalError = this.translations.tacticalErrorNoPending
-                        || 'No changes to apply.';
-                    this.showingConfirmation = false;
-                }
-                return;
-            }
-
-            this.tacticalError = null;
-            this.applyingChanges = true;
-
-            const minute = resolveMinuteForTacticalChange(this.currentMinute, this.phase);
-
-            try {
-                const payload = {
-                    minute,
-                    previousSubstitutions: this.substitutionsMade.map(s => ({
-                        playerOutId: s.playerOutId,
-                        playerInId: s.playerInId,
-                        minute: s.minute,
-                    })),
-                };
-
-                // Include subs if any
-                if (this.pendingSubs.length > 0) {
-                    payload.substitutions = this.pendingSubs.map(s => ({
-                        playerOutId: s.playerOut.id,
-                        playerInId: s.playerIn.id,
-                    }));
-                }
-
-                // Include tactical changes if any
-                if (this.hasTacticalChanges) {
-                    if (this.pendingFormation !== null && this.pendingFormation !== this.activeFormation) {
-                        payload.formation = this.pendingFormation;
-                    }
-                    if (this.pendingMentality !== null && this.pendingMentality !== this.activeMentality) {
-                        payload.mentality = this.pendingMentality;
-                    }
-                    if (this.pendingPlayingStyle !== null && this.pendingPlayingStyle !== this.activePlayingStyle) {
-                        payload.playing_style = this.pendingPlayingStyle;
-                    }
-                    if (this.pendingPressing !== null && this.pendingPressing !== this.activePressing) {
-                        payload.pressing = this.pendingPressing;
-                    }
-                    if (this.pendingDefLine !== null && this.pendingDefLine !== this.activeDefLine) {
-                        payload.defensive_line = this.pendingDefLine;
-                    }
-                    // In-match drag swaps → server-side manual pins so
-                    // the user's explicit slot intent survives the
-                    // post-sub reshuffle.
-                    if (Object.keys(this._manualSlotPins).length > 0) {
-                        payload.manual_slot_pins = { ...this._manualSlotPins };
-                    }
-                }
-
-                const response = await fetch(this.tacticalActionsUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': this.csrfToken,
-                        'Accept': 'application/json',
-                    },
-                    body: JSON.stringify(payload),
-                });
-
-                if (!response.ok) {
-                    let errorMessage = this.translations.tacticalErrorGeneric
-                        || 'Something went wrong. Please try again.';
-                    try {
-                        const errorData = await response.json();
-                        console.error('Tactical actions failed:', errorData);
-                        if (errorData.error) {
-                            errorMessage = errorData.error;
-                        }
-                    } catch (parseErr) {
-                        console.error('Tactical actions failed (non-JSON response):', response.status);
-                    }
-                    this.tacticalError = errorMessage;
-                    this.applyingChanges = false;
-                    return;
-                }
-
-                const result = await response.json();
-                const isET = result.isExtraTime || false;
-
-                // Record substitutions if any
-                if (result.substitutions && result.substitutions.length > 0) {
-                    for (const sub of result.substitutions) {
-                        this.substitutionsMade.push({
-                            playerOutId: sub.playerOutId,
-                            playerInId: sub.playerInId,
-                            playerOutName: sub.playerOutName,
-                            playerInName: sub.playerInName,
-                            minute,
-                        });
-
-                        const benchPlayer = this.benchPlayers.find(p => p.id === sub.playerInId);
-                        if (benchPlayer) {
-                            benchPlayer.minuteEntered = minute;
-                        }
-                    }
-                }
-
-                // Update active tactics
-                if (result.formation) {
-                    this.activeFormation = result.formation;
-                    this._pitchPositionsFormation = result.formation;
-                }
-                // Promote the authoritative post-apply slot map returned by
-                // the server. TacticalChangeService recomputes it on every
-                // tactical action (subs, formation change, red-card
-                // reshuffle), so we replace startingSlotMap unconditionally.
-                // Drag-swap intent is consumed: the server's reshuffle is
-                // the new baseline, and any future manual swaps start fresh.
-                if (result.slot_assignments) {
-                    this.startingSlotMap = result.slot_assignments;
-                    this._manualSlotPins = {};
-                }
-                // Pending-state reset includes the preview map.
-                this.previewSlotMap = null;
-                if (result.mentality) {
-                    this.activeMentality = result.mentality;
-                }
-                if (result.playingStyle) {
-                    this.activePlayingStyle = result.playingStyle;
-                }
-                if (result.pressing) {
-                    this.activePressing = result.pressing;
-                }
-                if (result.defensiveLine) {
-                    this.activeDefLine = result.defensiveLine;
-                }
-
-                // Filter server events up to current minute. Atmosphere events
-                // (shots/fouls) beyond this minute are discarded and regenerated
-                // below so they reflect substitutions and tactical changes.
-                if (isET) {
-                    this.extraTimeEvents = this.extraTimeEvents.filter(e => e.minute <= minute);
-                } else {
-                    this.events = this.events.filter(e => e.minute <= minute);
-                    // Remove contextual narratives — they'll be freshly regenerated
-                    // below to reflect the post-resimulation score.
-                    this.events = this.events.filter(e => e.type !== 'contextual');
-                }
-                this.revealedEvents = this.revealedEvents.filter(e => e.minute <= minute && e.type !== 'contextual');
-
-                if (result.substitutions) {
-                    for (const sub of result.substitutions) {
-                        this.revealedEvents.unshift({
-                            minute,
-                            type: 'substitution',
-                            playerName: sub.playerOutName,
-                            playerInName: sub.playerInName,
-                            teamId: sub.teamId,
-                        });
-                    }
-
-                    // Also add substitution events to the main events array so
-                    // the atmosphere generator can track who is on/off the pitch.
-                    const subEvents = result.substitutions.map(sub => ({
-                        minute,
-                        type: 'substitution',
-                        playerName: sub.playerOutName,
-                        playerInName: sub.playerInName,
-                        teamId: sub.teamId,
-                        gamePlayerId: sub.playerOutId,
-                        metadata: { player_in_id: sub.playerInId },
-                    }));
-
-                    if (isET) {
-                        this.extraTimeEvents.push(...subEvents);
-                    } else {
-                        this.events.push(...subEvents);
-                    }
-                }
-
-                // Regenerate atmosphere shot events for the remaining match
-                // period, now aware of substitutions.
-                const atmCfg = this._atmosphereConfig();
-                regenerateShots({
-                    config: atmCfg,
-                    target: isET ? this.extraTimeEvents : this.events,
-                    availabilityEvents: isET ? [...this.events, ...this.extraTimeEvents] : this.events,
-                    minMinute: minute + 1,
-                    maxMinute: isET ? 120 : 90,
-                });
-
-                // Append new events and update scores
-                if (isET) {
-                    if (result.newEvents && result.newEvents.length > 0) {
-                        this.extraTimeEvents.push(...result.newEvents);
-                        this.extraTimeEvents.sort((a, b) => a.minute - b.minute);
-                    }
-
-                    regenerateNarratives({
-                        config: this._atmosphereConfig(),
-                        target: this.extraTimeEvents,
-                        availabilityEvents: [...this.events, ...this.extraTimeEvents],
-                        minMinute: minute + 1,
-                    });
-
-                    this.lastRevealedETIndex = -1;
-                    for (let i = 0; i < this.extraTimeEvents.length; i++) {
-                        if (this.extraTimeEvents[i].minute <= this.currentMinute) {
-                            this.lastRevealedETIndex = i;
-                        } else {
-                            break;
-                        }
-                    }
-
-                    this.etHomeScore = result.newScore.home;
-                    this.etAwayScore = result.newScore.away;
-                    this._needsPenalties = result.needsPenalties || false;
-                } else {
-                    if (result.newEvents && result.newEvents.length > 0) {
-                        this.events.push(...result.newEvents);
-                        this.events.sort((a, b) => a.minute - b.minute);
-                    }
-
-                    this.finalHomeScore = result.newScore.home;
-                    this.finalAwayScore = result.newScore.away;
-
-                    this.events = this.synthesizeGoalsIfNeeded(this.events);
-
-                    // Regenerate narratives: goal text for new server goals + contextual
-                    // commentary for checkpoints after the tactical minute (old ones were
-                    // removed because they reflected the pre-resimulation score).
-                    regenerateNarratives({
-                        config: this._atmosphereConfig(),
-                        target: this.events,
-                        availabilityEvents: this.events,
-                        minMinute: minute + 1,
-                        includeContextual: true,
-                    });
-
-                    // Recalculate after all event modifications (synthesize, narratives)
-                    // to avoid stale indices from array insertions and re-sorts.
-                    this.lastRevealedIndex = -1;
-                    for (let i = 0; i < this.events.length; i++) {
-                        if (this.events[i].minute <= this.currentMinute) {
-                            this.lastRevealedIndex = i;
-                        } else {
-                            break;
-                        }
-                    }
-                }
-
-                this.recalculateScore();
-
-                // Update possession
-                if (result.homePossession !== undefined) {
-                    this._basePossession = result.homePossession;
-                    this._possessionDisplay = result.homePossession;
-                    this.homePossession = result.homePossession;
-                    this.awayPossession = result.awayPossession;
-                    this.resetPossessionTarget();
-                }
-
-                // Update player performances and recalculate ratings
-                if (result.playerPerformances) {
-                    updateRosterPerformances(
-                        [this.homeLineupRoster, this.awayLineupRoster, this.benchPlayers, this.opponentBenchPlayers],
-                        result.playerPerformances,
-                    );
-                    this.recalculatePlayerRatings();
-                }
-
-                // Update MVP after resimulation
-                if (result.mvpPlayerName !== undefined) {
-                    this.mvpPlayerName = result.mvpPlayerName;
-                    this.mvpPlayerTeamId = result.mvpPlayerTeamId;
-                }
-
-                // Close the panel and resume
-                this.closeTacticalPanel();
-            } catch (err) {
-                console.error('Tactical actions request failed:', err);
-                this.tacticalError = this.translations.tacticalErrorGeneric
-                    || 'Something went wrong. Please try again.';
-            } finally {
-                this.applyingChanges = false;
-            }
-        },
-
-        /**
-         * Called by skipToEnd() before the client-only fast-forward.
-         * Asks the backend to re-simulate the remainder of the regular-time
-         * match with AI substitutions enabled for the user's team — so
-         * players who fast-forward don't finish with the tired starting 11.
-         *
-         * Returns true if the backend produced new events (caller should
-         * use the updated state.events), false if the call was skipped,
-         * no-op'd, or failed (caller falls through to the pure client-side
-         * fast-forward with the original pre-computed events).
-         */
-        async autoSubUserTeamBeforeSkip(minute) {
-            // Guard: endpoint, phase, bench, sub budget.
-            if (!this.skipToEndUrl) return false;
-            if (minute >= 90) return false;
-            if (!this.benchPlayers || this.benchPlayers.length === 0) return false;
-            if (this.substitutionsMade.length >= this.maxSubstitutions) return false;
-
-            // Windows-used check (mirrors getWindowsUsed in substitution-manager).
-            const freeMinutes = this.freeSubWindowMinutes || [45, 90, 105];
-            const usedWindowMinutes = new Set(this.substitutionsMade.map(s => s.minute));
-            freeMinutes.forEach(m => usedWindowMinutes.delete(m));
-            if (usedWindowMinutes.size >= this.maxWindows) return false;
-
-            let result;
-            try {
-                const response = await fetch(this.skipToEndUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': this.csrfToken,
-                        'Accept': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        minute,
-                        previousSubstitutions: this.substitutionsMade.map(s => ({
-                            playerOutId: s.playerOutId,
-                            playerInId: s.playerInId,
-                            minute: s.minute,
-                        })),
-                    }),
-                });
-
-                if (!response.ok) {
-                    console.warn('Skip-to-end auto-sub request returned', response.status);
-                    return false;
-                }
-
-                result = await response.json();
-            } catch (err) {
-                console.warn('Skip-to-end auto-sub request failed, falling back:', err);
-                return false;
-            }
-
-            if (!result || !result.autoSubsApplied) {
-                return false;
-            }
-
-            // Merge: drop pre-computed events after the skip minute and
-            // replace them with the freshly-simulated remainder. The existing
-            // trackSubstitutionIfNeeded picks up any new user-team sub events
-            // as the fast-forward reveals them.
-            this.events = this.events.filter(e => e.minute <= minute);
-
-            // Regenerate shots for the skipped-over window BEFORE merging the
-            // server's resimulated events, matching the tactical-change
-            // ordering (fresh shots aren't skewed by just-merged goals).
-            // Skip-to-end is bounded to minute < 90 (guard above), so extra-time
-            // atmosphere is out of scope here.
-            const atmCfg = this._atmosphereConfig();
-            regenerateShots({
-                config: atmCfg,
-                target: this.events,
-                availabilityEvents: this.events,
-                minMinute: minute + 1,
-                maxMinute: 90,
-            });
-
-            if (result.newEvents && result.newEvents.length > 0) {
-                this.events.push(...result.newEvents);
-                this.events.sort((a, b) => a.minute - b.minute);
-            }
-
-            // Update final score (the resimulation may have changed it).
-            if (result.newScore) {
-                this.finalHomeScore = result.newScore.home;
-                this.finalAwayScore = result.newScore.away;
-            }
-
-            // Regenerate narratives AFTER the newEvents merge so goal narratives
-            // attach to the fresh server goals, plus contextual + tactical
-            // commentary for post-skip checkpoints.
-            regenerateNarratives({
-                config: atmCfg,
-                target: this.events,
-                availabilityEvents: this.events,
-                minMinute: minute + 1,
-                includeContextual: true,
-                includeTactical: true,
-            });
-
-            // Reset the revealed-events feed and substitution tracking,
-            // then re-reveal ALL events in one synchronous pass so Alpine
-            // batches the update into a single render (no flash/jitter).
-            this.revealedEvents = [];
-            this.substitutionsMade = [];
-            this.lastRevealedIndex = -1;
-            for (let i = 0; i < this.events.length; i++) {
-                const event = this.events[i];
-                this.revealedEvents.unshift(event);
-                this.lastRevealedIndex = i;
-                if (event.type === 'substitution' && event.teamId === this.userTeamId) {
-                    this.substitutionsMade.push({
-                        playerOutId: event.gamePlayerId,
-                        playerInId: event.metadata?.player_in_id ?? '',
-                        minute: event.minute,
-                        playerOutName: event.playerName ?? '',
-                        playerInName: event.playerInName ?? '',
-                    });
-                }
-            }
-            this.homeScore = this.finalHomeScore;
-            this.awayScore = this.finalAwayScore;
-
-            // Update possession bar.
-            if (result.homePossession !== undefined) {
-                this._basePossession = result.homePossession;
-                this._possessionDisplay = result.homePossession;
-                this.homePossession = result.homePossession;
-                this.awayPossession = result.awayPossession;
-                if (typeof this.resetPossessionTarget === 'function') {
-                    this.resetPossessionTarget();
-                }
-            }
-
-            // Update player performances and post-match ratings.
-            if (result.playerPerformances) {
-                updateRosterPerformances(
-                    [this.homeLineupRoster, this.awayLineupRoster, this.benchPlayers, this.opponentBenchPlayers],
-                    result.playerPerformances,
-                );
-                if (typeof this.recalculatePlayerRatings === 'function') {
-                    this.recalculatePlayerRatings();
-                }
-            }
-
-            // Update MVP (may have changed after resimulation).
-            if (result.mvpPlayerName !== undefined) {
-                this.mvpPlayerName = result.mvpPlayerName;
-                this.mvpPlayerTeamId = result.mvpPlayerTeamId;
-            }
-
-            return true;
-        },
 
         // =============================
         // Substitution methods — provided by substitution-manager module via Object.assign in init()
@@ -1567,404 +580,40 @@ export default function liveMatch(config) {
         // recalculateScore — provided by match-simulation module
 
         // =============================
-        // Player ratings
+        // Player ratings — provided by ratings-glue module via mixinModule
+        // Methods: recalculatePlayerRatings, ratingColor, getBaseRating,
+        //          getEventIcons, getSubMap
         // =============================
-
-        recalculatePlayerRatings() {
-            const allEvents = [...this.events, ...(this.extraTimeEvents || [])];
-            const subMap = buildSubstitutionMap(allEvents);
-
-            // Build sub-in player list for rating calculation: any bench player
-            // (user or opponent) who came on and has cached performance data.
-            const subsIn = [];
-            for (const bp of this.benchPlayers) {
-                if (bp.performance != null && subMap.subbedIn[bp.id]) {
-                    subsIn.push({
-                        id: bp.id,
-                        performance: bp.performance,
-                        positionGroup: bp.positionGroup,
-                        teamId: this.userTeamId,
-                    });
-                }
-            }
-            for (const bp of this.opponentBenchPlayers) {
-                if (bp.performance != null && subMap.subbedIn[bp.id]) {
-                    subsIn.push({
-                        id: bp.id,
-                        performance: bp.performance,
-                        positionGroup: bp.positionGroup,
-                        teamId: bp.teamId,
-                    });
-                }
-            }
-
-            this.playerRatings = calculatePlayerRatings(
-                this.homeLineupRoster,
-                this.awayLineupRoster,
-                allEvents,
-                this.finalHomeScore,
-                this.finalAwayScore,
-                this.homeTeamId,
-                this.awayTeamId,
-                subsIn,
-            );
-        },
-
-        ratingColor(rating) {
-            return _ratingColor(rating);
-        },
-
-        /**
-         * Live (pre-full-time) rating for a player, derived solely from the
-         * cached performance modifier — no event, score, or card bonuses.
-         *
-         * Only exposed during the half-time (and ET half-time) substitution
-         * window. Outside those windows the rating has no actionable value —
-         * showing it during live play would just be noise, and showing it at
-         * full time would compete with the proper event-weighted rating.
-         *
-         * Returns null when not in a half-time window or when no performance
-         * data is available for the player.
-         */
-        getBaseRating(playerId) {
-            if (!playerId) return null;
-            if (this.phase !== 'half_time' && this.phase !== 'extra_time_half_time') {
-                return null;
-            }
-            const player = this.homeLineupRoster.find(p => p.id === playerId)
-                || this.awayLineupRoster.find(p => p.id === playerId)
-                || (this.benchPlayers || []).find(p => p.id === playerId);
-            if (!player) return null;
-            return performanceToBaseRating(player.performance);
-        },
-
-        getEventIcons() {
-            const allEvents = [...this.events, ...(this.extraTimeEvents || [])];
-            return countEvents(allEvents);
-        },
-
-        getSubMap() {
-            const allEvents = [...this.events, ...(this.extraTimeEvents || [])];
-            return buildSubstitutionMap(allEvents);
-        },
 
         // =============================
         // Display helpers
         // =============================
 
-        get displayMinute() {
-            const m = Math.floor(this.currentMinute);
-            if (this.phase === 'pre_match') return '0';
-            if (this.phase === 'half_time') return '45';
-            if (this.phase === 'going_to_extra_time') return '90';
-            if (this.phase === 'extra_time_half_time') return '105';
-            if (this.phase === 'penalties') return '120';
-            if (this.phase === 'full_time') {
-                return this.hasExtraTime ? '120' : '90';
-            }
-            if (this.phase === 'extra_time_first_half' || this.phase === 'extra_time_second_half') {
-                return String(Math.min(m, 120));
-            }
-            return String(Math.min(m, 90));
-        },
-
-        get timelineProgress() {
-            const total = this.totalMinutes;
-            return Math.min((this.currentMinute / total) * 100, 100);
-        },
-
-        get timelineHalfMarker() {
-            return this.totalMinutes === 120 ? (45 / 120) * 100 : 50;
-        },
-
-        get timelineETMarker() {
-            return (90 / 120) * 100;
-        },
-
-        get timelineETHalfMarker() {
-            return (105 / 120) * 100;
-        },
+        // displayMinute, timelineProgress, timelineHalfMarker, timelineETMarker,
+        // timelineETHalfMarker, getTimelineMarkers, getEventIcon, getEventSide,
+        // isGoalEvent, isAtmosphereEvent — provided by event-feed module.
 
         get isRunning() {
-            return (this.phase === 'first_half' || this.phase === 'second_half'
-                || this.phase === 'extra_time_first_half' || this.phase === 'extra_time_second_half')
-                && !this.tacticalPanelOpen;
+            return isPlayingPhase(this.phase) && !this.tacticalPanelOpen;
         },
 
         get phaseLabel() {
             switch (this.phase) {
-                case 'going_to_extra_time': return this.translations.extraTime || 'Extra Time';
-                case 'extra_time_half_time': return this.translations.etHalfTime || 'ET Half Time';
-                case 'penalties': return this.translations.penalties || 'Penalties';
+                case PHASE.GOING_TO_EXTRA_TIME: return this.translations.extraTime || 'Extra Time';
+                case PHASE.EXTRA_TIME_HALF_TIME: return this.translations.etHalfTime || 'ET Half Time';
+                case PHASE.PENALTIES: return this.translations.penalties || 'Penalties';
                 default: return '';
             }
         },
 
-        getEventIcon(type) {
-            switch (type) {
-                case 'goal': return '\u26BD';
-                case 'own_goal': return '\u26BD';
-                case 'yellow_card': return '\uD83D\uDFE8';
-                case 'red_card': return '\uD83D\uDFE5';
-                case 'injury': return '\uD83C\uDFE5';
-                case 'substitution': return '\uD83D\uDD04';
-                default: return '\u2022';
-            }
-        },
-
-        getEventSide(event) {
-            if (event.type === 'own_goal') {
-                return event.teamId === this.homeTeamId ? 'away' : 'home';
-            }
-            return event.teamId === this.homeTeamId ? 'home' : 'away';
-        },
-
-        isGoalEvent(event) {
-            return event.type === 'goal' || event.type === 'own_goal';
-        },
-
-        isAtmosphereEvent(event) {
-            // Atmosphere events are tagged at creation by the atmosphere generator.
-            // Using the flag (not a hardcoded type list) keeps this in sync automatically
-            // when new atmosphere event types are added.
-            return !!event.atmosphere;
-        },
-
-        /**
-         * Build the atmosphere config object from component state.
-         * Used by both regular time and extra time generation.
-         */
-        _atmosphereConfig() {
-            return {
-                homeTeamId: this.homeTeamId,
-                awayTeamId: this.awayTeamId,
-                homeTeamName: this.homeTeamName,
-                awayTeamName: this.awayTeamName,
-                homePlayers: this.homeLineupRoster,
-                awayPlayers: this.awayLineupRoster,
-                homeScore: this.finalHomeScore,
-                awayScore: this.finalAwayScore,
-                venueName: this.venueName,
-                venueEnPhrase: this.venueEnPhrase,
-                venueElPhrase: this.venueElPhrase,
-                venueDePhrase: this.venueDePhrase,
-                homeArticle: this.homeArticle,
-                awayArticle: this.awayArticle,
-                narrativeTemplates: this.narrativeTemplates,
-                userTeamId: this.userTeamId,
-                isKnockout: this.isKnockout,
-                isTwoLeggedTie: this.isTwoLeggedTie,
-                tactics: {
-                    userPlayingStyle: this.activePlayingStyle,
-                    userPressing: this.activePressing,
-                    userDefLine: this.activeDefLine,
-                    userMentality: this.activeMentality,
-                    opponentPlayingStyle: this.opponentPlayingStyle,
-                    opponentPressing: this.opponentPressing,
-                    opponentDefLine: this.opponentDefLine,
-                    opponentMentality: this.opponentMentality,
-                },
-            };
-        },
-
-        /**
-         * Generate atmosphere events and narratives for regular time,
-         * merging them into the events array.
-         */
-        _injectAtmosphere() {
-            const cfg = this._atmosphereConfig();
-            addGoalNarratives(this.events, cfg);
-            const atmosphere = generateRegularTimeAtmosphere({
-                ...cfg,
-                allEvents: this.events,
-            });
-            const tactical = generateTacticalNarratives({
-                ...cfg,
-                allEvents: this.events,
-            });
-            const allAtmosphere = [...atmosphere, ...tactical];
-            if (allAtmosphere.length) {
-                this.events = [...this.events, ...allAtmosphere].sort((a, b) => a.minute - b.minute);
-            }
-        },
-
-        /**
-         * Generate atmosphere events and narratives for extra time,
-         * merging them into the extraTimeEvents array.
-         * Called after ET events are loaded (fetch or preloaded).
-         */
-        _injectETAtmosphere() {
-            const cfg = this._atmosphereConfig();
-            addGoalNarratives(this.extraTimeEvents, cfg);
-            // Include regular-time events for player availability checks
-            const allEvents = [...this.events, ...this.extraTimeEvents];
-            const atmosphere = generateExtraTimeAtmosphere({
-                ...cfg,
-                allEvents,
-            });
-            if (atmosphere.length) {
-                this.extraTimeEvents = [...this.extraTimeEvents, ...atmosphere].sort((a, b) => a.minute - b.minute);
-            }
-        },
-
-        // =====================================================================
-        // Match Summary (generated at full time)
-        // =====================================================================
-
-        _generateMatchSummary() {
-            return generateMatchSummary({
-                ...this._atmosphereConfig(),
-                mvpPlayerName: this.mvpPlayerName,
-                mvpPlayerTeamId: this.mvpPlayerTeamId,
-                hasExtraTime: this.hasExtraTime,
-                etHomeScore: this.etHomeScore,
-                etAwayScore: this.etAwayScore,
-                penaltyResult: this.penaltyResult,
-                allEvents: [...this.events, ...this.extraTimeEvents],
-                isKnockout: this.isKnockout,
-                isTwoLeggedTie: this.isTwoLeggedTie,
-                isSecondLeg: this.twoLeggedInfo !== null,
-                knockoutRoundNumber: this.knockoutRoundNumber,
-                competitionRole: this.competitionRole,
-                competitionName: this.competitionName,
-                homeForm: this.homeForm,
-                awayForm: this.awayForm,
-                homePosition: this.homePosition,
-                awayPosition: this.awayPosition,
-                tournamentResultType: this.tournamentResultType,
-            });
-        },
+        // _atmosphereConfig, _injectAtmosphere, _injectETAtmosphere,
+        // _generateMatchSummary — provided by atmosphere-glue module.
 
         // =====================================================================
         // Pitch Visualization (shared with lineup page)
+        // currentPitchSlots, currentSlots, slotAssignments — provided by
+        // pitch-layout module via mixin.
         // =====================================================================
-
-        get currentPitchSlots() {
-            const formation = this.pendingFormation ?? this.activeFormation;
-            return this.formationSlots[formation] || [];
-        },
-
-        // Alias for pitch-display component compatibility (lineup uses currentSlots)
-        get currentSlots() {
-            return this.currentPitchSlots;
-        },
-
-        /**
-         * Computed slot assignments for the pitch display.
-         *
-         * The server is the source of truth for the slot map (`startingSlotMap`
-         * is replaced with the authoritative response after each Apply). When
-         * there are pending subs not yet committed, we reshuffle locally via
-         * the JS best-fit mirror so the pitch preview is roughly correct
-         * without a round trip. The server runs the full placement algorithm
-         * on commit and returns the canonical map.
-         *
-         * Formation-preview case: the user is previewing a different shape
-         * from the tactical panel. Slot ids map to different pitch cells
-         * per formation, so the saved map is useless. We use the backend's
-         * `previewSlotMap` (fetched by refreshFormationPreview) and fall
-         * back to a local best-fit in the fetch window.
-         */
-        get slotAssignments() {
-            const effectiveFormation = this.pendingFormation ?? this.activeFormation;
-            const isFormationPreview = effectiveFormation !== this._pitchPositionsFormation;
-            const slots = this.currentPitchSlots;
-
-            // Index players by id once for this getter invocation.
-            const playersById = {};
-            for (const p of this.lineupPlayers || []) playersById[p.id] = p;
-            for (const p of this.benchPlayers || []) playersById[p.id] = p;
-
-            // Compose the effective active XI: current on-pitch players
-            // plus any pending (selected or queued) incoming subs, minus
-            // their outgoing counterparts.
-            const allPendingSubs = [...this.pendingSubs];
-            if (this.selectedPlayerOut && this.selectedPlayerIn) {
-                const alreadyPending = allPendingSubs.some(
-                    s => s.playerOut.id === this.selectedPlayerOut.id,
-                );
-                if (!alreadyPending) {
-                    allPendingSubs.push({
-                        playerOut: this.selectedPlayerOut,
-                        playerIn: this.selectedPlayerIn,
-                    });
-                }
-            }
-            const pendingOutIds = new Set(allPendingSubs.map(s => s.playerOut.id));
-            const pendingInIds = new Set(allPendingSubs.map(s => s.playerIn.id));
-
-            const activePlayers = this.getActiveLineupPlayers().filter(p => !pendingOutIds.has(p.id));
-            for (const sub of allPendingSubs) {
-                const inPlayer = playersById[sub.playerIn.id] ?? sub.playerIn;
-                if (inPlayer) activePlayers.push(inPlayer);
-            }
-
-            let map;
-            if (isFormationPreview) {
-                if (this.previewSlotMap) {
-                    map = { ...this.previewSlotMap };
-                } else {
-                    // Backend fetch in flight — best-fit locally so the pitch
-                    // isn't empty. The authoritative map snaps in once
-                    // refreshFormationPreview() resolves.
-                    map = bestFitPlacement(activePlayers, slots, this.slotCompatibility);
-                }
-            } else if (allPendingSubs.length === 0) {
-                // No pending subs — the saved startingSlotMap IS the
-                // authoritative map (the server rebuilt it on the last
-                // Apply). Just honor it, including any in-match drag swaps
-                // the user has applied on top.
-                map = { ...this.startingSlotMap };
-            } else {
-                // Pending subs present — reshuffle against the active XI
-                // within the current formation, preserving the user's
-                // manual drag-swap intent on specific slots.
-                const manualPins = {};
-                for (const [slotId, playerId] of Object.entries(this._manualSlotPins)) {
-                    if (pendingOutIds.has(playerId)) continue;
-                    if (!activePlayers.some(p => p.id === playerId)) continue;
-                    manualPins[slotId] = playerId;
-                }
-                map = bestFitPlacement(activePlayers, slots, this.slotCompatibility, manualPins);
-            }
-
-            const assignments = buildSlotView(map, slots, playersById, this.slotCompatibility);
-
-            // Mark pending-sub players with isPendingSub so the pitch can
-            // style them (dashed border, muted colors, etc.) without
-            // committing the sub.
-            for (const row of assignments) {
-                if (row.player && pendingInIds.has(row.player.id)) {
-                    row.player = { ...row.player, isPendingSub: true };
-                }
-            }
-
-            // Post-process: ensure a non-red-carded Goalkeeper occupies the
-            // GK slot. When a GK is sent off and a reserve GK comes on, the
-            // reshuffle normally places the reserve GK in the GK slot via
-            // Pass 1. This block only covers the edge case where the
-            // reshuffle left a non-GK in the GK slot (e.g. no reserve GK
-            // on the bench).
-            const redCarded = this.redCardedPlayerIds;
-            const gkSlot = assignments.find(s => s.role === 'Goalkeeper');
-            if (gkSlot?.player && redCarded.includes(gkSlot.player.id)) {
-                const reserveGkSlot = assignments.find(s =>
-                    s !== gkSlot &&
-                    s.player &&
-                    s.player.position === 'Goalkeeper' &&
-                    !redCarded.includes(s.player.id)
-                );
-                if (reserveGkSlot) {
-                    const temp = gkSlot.player;
-                    gkSlot.player = reserveGkSlot.player;
-                    reserveGkSlot.player = temp;
-                    gkSlot.compatibility = getPlayerCompatibility(gkSlot.player, gkSlot.label, this.slotCompatibility);
-                    reserveGkSlot.compatibility = getPlayerCompatibility(reserveGkSlot.player, reserveGkSlot.label, this.slotCompatibility);
-                }
-            }
-
-            return assignments;
-        },
 
         // getActiveLineupPlayers — provided by substitution-manager module
 
@@ -2088,15 +737,7 @@ export default function liveMatch(config) {
             return _getZoneColorClass(role);
         },
 
-        getStatCount(type, side) {
-            const allEvents = [...this.revealedEvents, ...this.extraTimeEvents.filter(e => this.revealedEvents.length >= this.events.length)];
-            return allEvents.filter(event => {
-                if (event.type !== type) return false;
-                const eventSide = this.getEventSide(event);
-                return eventSide === side;
-            }).length;
-        },
-
+        // getStatCount — provided by event-feed module.
         // Synthetic stats (passes, corners, offsides, fouls) live in
         // `modules/match-stats.js` and are mixed into the component below.
 
@@ -2124,58 +765,8 @@ export default function liveMatch(config) {
             return _getEnergyTextColor(energy);
         },
 
-        get secondHalfEvents() {
-            return this.groupSubstitutions(this.revealedEvents.filter(e => e.minute > 45 && e.minute <= 90));
-        },
-
-        get firstHalfEvents() {
-            return this.groupSubstitutions(this.revealedEvents.filter(e => e.minute <= 45));
-        },
-
-        get showHalfTimeSeparator() {
-            return this.phase === 'half_time' || this.phase === 'second_half' || this.phase === 'full_time'
-                || this.isInExtraTime || this.phase === 'going_to_extra_time' || this.phase === 'penalties';
-        },
-
-        groupSubstitutions(events) {
-            const result = [];
-            for (const event of events) {
-                if (event.type === 'substitution') {
-                    const prev = result[result.length - 1];
-                    if (prev && prev.type === 'substitution_group' && prev.minute === event.minute && prev.teamId === event.teamId) {
-                        prev.substitutions.push({ playerInName: event.playerInName, playerName: event.playerName });
-                        continue;
-                    }
-                    const prevSingle = result[result.length - 1];
-                    if (prevSingle && prevSingle.type === 'substitution' && prevSingle.minute === event.minute && prevSingle.teamId === event.teamId) {
-                        result[result.length - 1] = {
-                            type: 'substitution_group',
-                            minute: prevSingle.minute,
-                            teamId: prevSingle.teamId,
-                            substitutions: [
-                                { playerInName: prevSingle.playerInName, playerName: prevSingle.playerName },
-                                { playerInName: event.playerInName, playerName: event.playerName },
-                            ],
-                        };
-                        continue;
-                    }
-                }
-                result.push(event);
-            }
-            return result;
-        },
-
-        getTimelineMarkers() {
-            const total = this.totalMinutes;
-            return this.revealedEvents
-                .filter(e => e.type !== 'assist')
-                .map((e, index) => ({
-                    position: Math.min((e.minute / total) * 100, 100),
-                    type: e.type,
-                    minute: e.minute,
-                    index,
-                }));
-        },
+        // firstHalfEvents, secondHalfEvents, showHalfTimeSeparator,
+        // groupSubstitutions, getTimelineMarkers — provided by event-feed.
 
         startProcessingPoll() {
             if (!this.processingStatusUrl) {
@@ -2220,10 +811,22 @@ export default function liveMatch(config) {
 
     // Mix module members (including getters) into the raw component object
     // BEFORE Alpine wraps it, so Alpine's reactivity sees them natively.
+    //
+    // Composition order: earlier entries are overwritten by later ones when
+    // names collide. Current layout has no intentional overrides — module
+    // APIs are disjoint. If a future collision is intentional, document it
+    // alongside the call.
     mixinModule(component, subs);
     mixinModule(component, penalties);
     mixinModule(component, sim);
     mixinModule(component, stats);
+    mixinModule(component, knockoutOutcome);
+    mixinModule(component, ratings);
+    mixinModule(component, eventFeed);
+    mixinModule(component, atmosphere);
+    mixinModule(component, tacticalPanel);
+    mixinModule(component, tacticalSubmission);
+    mixinModule(component, pitchLayout);
 
     return component;
 }
