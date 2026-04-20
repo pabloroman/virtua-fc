@@ -20,25 +20,56 @@ return new class extends Migration
      * creation time. This migration brings existing games up to the new
      * invariant so the matchday-time ensure path can be retired.
      *
-     * Idempotent: the LEFT JOIN filters out players that already have a row,
-     * so re-running on an up-to-date database is a no-op.
+     * Idempotent: ON CONFLICT (game_player_id) DO NOTHING skips rows that
+     * already exist, so re-running on an up-to-date database is a no-op.
+     *
+     * Chunked via keyset pagination on gp.id so each batch commits
+     * independently. A single INSERT ... SELECT over the full table generated
+     * too much WAL and held locks long enough to time out deploys.
      */
+
+    /**
+     * Disable the migration transaction so each chunk commits on its own.
+     * Otherwise every chunk would accumulate in a single transaction,
+     * defeating the point of batching (WAL, lock duration, memory).
+     */
+    public $withinTransaction = false;
+
+    private const BATCH_SIZE = 10_000;
+
     public function up(): void
     {
-        DB::statement(<<<'SQL'
-            INSERT INTO game_player_match_state (
-                game_player_id, game_id, fitness, morale, injury_until, injury_type,
-                appearances, season_appearances, goals, own_goals, assists,
-                yellow_cards, red_cards, goals_conceded, clean_sheets
-            )
-            SELECT gp.id, gp.game_id, 80, 80, NULL, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0
-            FROM game_players gp
-            LEFT JOIN game_player_match_state gpms
-                ON gpms.game_player_id = gp.id
-            WHERE gpms.game_player_id IS NULL
-            ORDER BY gp.id
-            ON CONFLICT (game_player_id) DO NOTHING
-        SQL);
+        // UUIDs sort lexicographically; start below the minimum possible value.
+        $lastId = '00000000-0000-0000-0000-000000000000';
+
+        while (true) {
+            $nextId = DB::scalar(<<<'SQL'
+                WITH batch AS MATERIALIZED (
+                    SELECT gp.id, gp.game_id
+                    FROM game_players gp
+                    WHERE gp.id > ?
+                    ORDER BY gp.id
+                    LIMIT ?
+                ), inserted AS (
+                    INSERT INTO game_player_match_state (
+                        game_player_id, game_id, fitness, morale, injury_until, injury_type,
+                        appearances, season_appearances, goals, own_goals, assists,
+                        yellow_cards, red_cards, goals_conceded, clean_sheets
+                    )
+                    SELECT id, game_id, 80, 80, NULL, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                    FROM batch
+                    ON CONFLICT (game_player_id) DO NOTHING
+                    RETURNING 1
+                )
+                SELECT MAX(id) FROM batch
+            SQL, [$lastId, self::BATCH_SIZE]);
+
+            if ($nextId === null) {
+                break;
+            }
+
+            $lastId = $nextId;
+        }
     }
 
     public function down(): void
