@@ -2632,8 +2632,12 @@ class MatchSimulator
 
         $baseYellowCards = config('match_simulation.yellow_cards_per_team', 1.5);
 
-        // Scale by match fraction
-        $yellowCardsPerTeam = max(0.1, $baseYellowCards * $matchFraction);
+        // Scale by match fraction, with a 0.1 lambda floor so short periods
+        // still have some chance of a yellow. Skip the floor when yellows are
+        // fully disabled in config (e.g. in tests that need no cards at all).
+        $yellowCardsPerTeam = $baseYellowCards > 0
+            ? max(0.1, $baseYellowCards * $matchFraction)
+            : 0.0;
         $yellowCount = $this->poissonRandom($yellowCardsPerTeam);
 
         $usedMinutes = [];

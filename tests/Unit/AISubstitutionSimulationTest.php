@@ -340,14 +340,14 @@ class AISubstitutionSimulationTest extends TestCase
         $homeBench = $this->createBenchPlayers($game, $homeTeam, 7, 72);
         $awayBench = $this->createBenchPlayers($game, $awayTeam, 7, 72);
 
-        // Disable injuries and direct red cards. Yellows have a hard floor of
-        // Poisson(0.1) so a second-yellow red card can still occur very rarely,
-        // which triggers a reactive sub (same category as injury auto-subs).
-        // Tactical AI subs would produce 3-5 per match — we check that the user
-        // team never exceeds 1 sub per iteration (at most a forced reactive sub).
+        // Disable every source of forced reactive subs: injuries, direct reds,
+        // and yellow cards (which can otherwise produce second-yellow reds).
+        // With all three off, the user team should receive zero substitutions —
+        // tactical AI subs would produce 3-5 per match.
         config([
             'match_simulation.injury_chance' => 0,
             'match_simulation.direct_red_chance' => 0,
+            'match_simulation.yellow_cards_per_team' => 0,
         ]);
 
         $totalUserSubs = 0;
@@ -369,23 +369,20 @@ class AISubstitutionSimulationTest extends TestCase
                 ->filter(fn ($e) => $e->teamId === $homeTeam->id)
                 ->count();
 
-            // At most 1 forced reactive sub (red card) per match.
-            // Tactical AI subs would give 3-5.
-            $this->assertLessThanOrEqual(
-                1,
+            $this->assertSame(
+                0,
                 $homeSubCount,
-                "User team should have at most 1 forced reactive sub, got $homeSubCount (iteration $i)",
+                "User team should receive no tactical AI subs in pre-simulation, got $homeSubCount (iteration $i)",
             );
 
             $totalUserSubs += $homeSubCount;
         }
 
         // Across 10 simulations, tactical AI subs would give 30-50 total.
-        // We should see close to 0 (only the rare second-yellow reactive sub).
-        $this->assertLessThanOrEqual(
-            3,
+        $this->assertSame(
+            0,
             $totalUserSubs,
-            "User team total subs across $iterations iterations should be near-zero (forced reactive only), got $totalUserSubs",
+            "User team total subs across $iterations iterations should be zero, got $totalUserSubs",
         );
     }
 }
