@@ -39,8 +39,7 @@ class ProcessCareerActions implements ShouldQueue, ShouldBeUnique
         // This serializes career actions against matchday advancement, the
         // ProcessRemainingBatches job, and FinalizeMatch — all of which write
         // to the same game_player_match_state / game_players rows and would
-        // otherwise deadlock at the PK/FK index level (e.g. AI transfer UPDATEs
-        // on game_players vs. ensureExistForGamePlayers INSERTs).
+        // otherwise deadlock at the PK/FK index level.
         //
         // Per-tick (rather than whole-job) locking keeps the critical section
         // short so a user advancing to the next matchday is only ever blocked

@@ -27,9 +27,6 @@ class MatchdayOrchestrator
 {
     private int $careerActionTicks = 0;
 
-    /** @var string[] Team IDs whose satellite rows have been ensured this run */
-    private array $ensuredTeamIds = [];
-
     public function __construct(
         private readonly MatchdayService $matchdayService,
         private readonly FullMatchSimulationService $fullMatchSimulation,
@@ -46,7 +43,6 @@ class MatchdayOrchestrator
     public function advance(Game $game, bool $fastForward = false): MatchdayAdvanceResult
     {
         $this->careerActionTicks = 0;
-        $this->ensuredTeamIds = [];
 
         $result = DB::transaction(function () use ($game, $fastForward) {
             // Lock the game row to prevent concurrent matchday advancement
@@ -213,36 +209,6 @@ class MatchdayOrchestrator
             $player->setRelation('game', $game);
         }
 
-        // Ensure satellite rows exist for teams not yet ensured this run.
-        // Skips the INSERT...ON CONFLICT for teams whose rows were already
-        // guaranteed in a prior batch (same orchestrator instance).
-        $newTeamIds = $teamIds->diff($this->ensuredTeamIds)->values()->all();
-
-        if (! empty($newTeamIds)) {
-            GamePlayerMatchState::ensureExistForGamePlayers($game->id, $newTeamIds);
-            $this->ensuredTeamIds = array_merge($this->ensuredTeamIds, $newTeamIds);
-        }
-
-        // Batch re-load matchState for players whose satellite row was
-        // missing at eager-load time (just created by ensureExist, or
-        // recently transferred). Single query instead of N individual loads.
-        $missingIds = $allPlayers
-            ->filter(fn ($p) => ! $p->relationLoaded('matchState') || $p->matchState === null)
-            ->pluck('id')
-            ->all();
-
-        if (! empty($missingIds)) {
-            $freshStates = GamePlayerMatchState::whereIn('game_player_id', $missingIds)
-                ->get()
-                ->keyBy('game_player_id');
-
-            foreach ($allPlayers as $player) {
-                if (isset($freshStates[$player->id])) {
-                    $player->setRelation('matchState', $freshStates[$player->id]);
-                }
-            }
-        }
-
         $allPlayers = $allPlayers->groupBy('team_id');
 
         $competitionIds = $matches->pluck('competition_id')->unique()->toArray();
@@ -401,7 +367,6 @@ class MatchdayOrchestrator
     public function processRemainingBatches(Game $game, int $priorCareerActionTicks): void
     {
         $this->careerActionTicks = 0;
-        $this->ensuredTeamIds = [];
         $gameId = $game->id;
 
         while ($nextBatch = $this->matchdayService->getNextMatchBatch($game)) {

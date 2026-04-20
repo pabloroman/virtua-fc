@@ -345,9 +345,9 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
 
                     // Every game_player gets a satellite row. Pool players
                     // (foreign leagues) carry template defaults they never read
-                    // in practice, but keeping the invariant "every game_player
-                    // has a matchState row" removes the need for the lazy
-                    // ensureExistForGamePlayers path at matchday time.
+                    // in practice, but the invariant "every game_player has a
+                    // matchState row" lets simulation code assume presence
+                    // without a lazy-ensure fallback at matchday time.
                     $matchStateRows[] = [
                         'game_player_id' => $gamePlayerId,
                         'game_id' => $gameId,

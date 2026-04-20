@@ -6,15 +6,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 /**
- * Sparse satellite of GamePlayer holding the per-matchday hot-write state:
+ * Satellite of GamePlayer holding the per-matchday hot-write state:
  * fitness, morale, injuries, appearances, goals, assists, cards, GK stats.
  *
- * Only populated for "active" players (teams in the user's competition
- * footprint or European opponents for a season the user qualifies for).
- * Pure transfer-pool foreign players have no row here.
+ * Every game_player has exactly one row here, created in the same
+ * transaction that inserts the parent. Foreign transfer-pool players carry
+ * defaults that never get updated in practice, but the invariant "every
+ * game_player has a matchState row" lets simulation code assume presence
+ * without a lazy-ensure fallback.
  *
  * Read paths go through the {@see GamePlayer} accessor delegates so existing
  * call sites that read `$player->fitness`, `$player->goals` etc. keep working.
@@ -163,74 +164,6 @@ class GamePlayerMatchState extends Model
                 'morale' => $morale,
             ]),
         );
-    }
-
-    /**
-     * Bulk-insert default satellite rows for every player on every team
-     * in the given set that doesn't already have one. Idempotent.
-     *
-     * Phase A of the eager-materialization rollout guarantees every
-     * game_player gets a satellite row at creation time, so this method is
-     * expected to be a no-op in steady state. Any row it does create is a
-     * signal that some GamePlayer::insert site skipped its satellite row —
-     * we log a warning with the offending game_player_id / team_id so the
-     * missed path can be identified and fixed. Once logs are silent for a
-     * release cycle the whole method can be deleted (Phase C).
-     *
-     * ORDER BY gp.id ensures concurrent inserts acquire PK / FK index
-     * locks in a deterministic order. Without it, two sessions running
-     * this statement on overlapping player sets can lock rows in opposite
-     * order and deadlock on the PK index (40P01).
-     */
-    public static function ensureExistForGamePlayers(string $gameId, array $teamIds): void
-    {
-        if (empty($teamIds)) {
-            return;
-        }
-
-        $idList = '{' . implode(',', $teamIds) . '}';
-
-        $created = DB::select(<<<'SQL'
-            INSERT INTO game_player_match_state (
-                game_player_id, game_id, fitness, morale, injury_until, injury_type,
-                appearances, season_appearances, goals, own_goals, assists,
-                yellow_cards, red_cards, goals_conceded, clean_sheets
-            )
-            SELECT gp.id, gp.game_id, 80, 80, NULL, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0
-            FROM game_players gp
-            WHERE gp.game_id = ?
-              AND gp.team_id IN (SELECT unnest(?::uuid[]))
-            ORDER BY gp.id
-            ON CONFLICT (game_player_id) DO NOTHING
-            RETURNING game_player_id
-        SQL, [$gameId, $idList]);
-
-        if (empty($created)) {
-            return;
-        }
-
-        $missingIds = array_map(fn ($row) => $row->game_player_id, $created);
-
-        // Resolve team_id per missing player so the log points at the
-        // creation path that needs fixing.
-        $teamByPlayerId = GamePlayer::whereIn('id', $missingIds)
-            ->pluck('team_id', 'id')
-            ->all();
-
-        // Cap the logged sample to keep payloads bounded in the (should-
-        // never-happen-in-steady-state) mass-miss case. Count stays accurate.
-        $sampleLimit = 50;
-        $sampled = array_slice($missingIds, 0, $sampleLimit);
-
-        Log::warning('GamePlayerMatchState: satellite row was missing and backfilled inline', [
-            'game_id' => $gameId,
-            'count' => count($missingIds),
-            'truncated' => count($missingIds) > $sampleLimit,
-            'missing' => array_map(fn ($id) => [
-                'game_player_id' => $id,
-                'team_id' => $teamByPlayerId[$id] ?? null,
-            ], $sampled),
-        ]);
     }
 
     /**

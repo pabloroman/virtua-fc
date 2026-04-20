@@ -15,9 +15,7 @@ return new class extends Migration
      *     php artisan app:backfill-match-states
      *
      * The command iterates games one at a time with progress output and is
-     * idempotent (NOT EXISTS filter). It is safe to run at any time; until it
-     * does, {@see \App\Models\GamePlayerMatchState::ensureExistForGamePlayers}
-     * fills any remaining gaps at matchday time.
+     * idempotent (NOT EXISTS filter). It is safe to run at any time.
      *
      * The file remains so environments that already recorded this migration
      * don't see it as "pending" — removing it would break the migrations

@@ -609,9 +609,8 @@ class TransferService
     public function completeAgreedTransfers(Game $game): Collection
     {
         // Sorted by game_player_id so the per-player UPDATE locks are
-        // acquired in PK order — matches the ORDER BY used by
-        // GamePlayerMatchState::ensureExistForGamePlayers and keeps
-        // lock acquisition deterministic across concurrent writers.
+        // acquired in PK order, keeping lock acquisition deterministic
+        // across concurrent writers and avoiding cross-session deadlocks.
         $agreedOffers = TransferOffer::with(['gamePlayer.player', 'offeringTeam'])
             ->where('game_id', $game->id)
             ->where('status', TransferOffer::STATUS_AGREED)

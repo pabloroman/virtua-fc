@@ -1445,8 +1445,7 @@ class AITransferMarketService
     {
         // Sort by id so the PK / FK locks inside each upsert chunk are
         // acquired in a deterministic order — prevents cross-session
-        // deadlocks with other writers that follow the same ordering
-        // (e.g. GamePlayerMatchState::ensureExistForGamePlayers).
+        // deadlocks with other writers that follow the same ordering.
         usort($playerUpdates, fn ($a, $b) => strcmp($a['id'], $b['id']));
 
         foreach (array_chunk($playerUpdates, 100) as $chunk) {
