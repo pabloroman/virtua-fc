@@ -156,7 +156,8 @@ class SeasonInitializationService
     }
 
     /**
-     * Conduct cup draws for all knockout cups in a country.
+     * Conduct cup draws for every knockout cup this game participates in
+     * — domestic (ESPCUP, ESPSUP) and continental (UEFASUP).
      * Also updates ESPCUP entry_rounds for supercup-qualifying teams.
      */
     public function conductCupDraws(string $gameId, string $countryCode): void
@@ -164,15 +165,16 @@ class SeasonInitializationService
         // Update ESPCUP entry_rounds based on supercup qualifiers
         $this->updateCupEntryRoundsForSupercupTeams($gameId, $countryCode);
 
-        // Draw round 1 for all domestic knockout cups (ESPCUP, ESPSUP)
-        $cupIds = $this->countryConfig->domesticCupIds($countryCode);
+        $cupIds = array_merge(
+            $this->countryConfig->domesticCupIds($countryCode),
+            Competition::query()
+                ->where('handler_type', 'knockout_cup')
+                ->where('scope', Competition::SCOPE_CONTINENTAL)
+                ->pluck('id')
+                ->all(),
+        );
 
         foreach ($cupIds as $cupId) {
-            $competition = Competition::find($cupId);
-            if (!$competition || $competition->handler_type !== 'knockout_cup') {
-                continue;
-            }
-
             if ($this->cupDrawService->needsDrawForRound($gameId, $cupId, 1)) {
                 $this->cupDrawService->conductDraw($gameId, $cupId, 1);
             }

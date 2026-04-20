@@ -4,140 +4,61 @@ namespace App\Modules\Season\Processors;
 
 use App\Models\Competition;
 use App\Models\CompetitionEntry;
-use App\Models\CupTie;
 use App\Models\Game;
-use App\Models\GameMatch;
 use App\Models\Team;
-use App\Modules\Competition\Services\FinalVenueResolver;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 /**
- * Schedules the UEFA Super Cup: a single-leg final on August 13 at a
- * neutral European venue between the previous season's Champions League
- * winner and Europa League winner.
+ * Writes the UEFA Super Cup CompetitionEntry rows for the new season.
+ * Mirrors the role of SupercupQualificationProcessor for ESPSUP: the
+ * actual match is drawn afterwards by ContinentalAndCupInitProcessor →
+ * SeasonInitializationService::conductCupDraws → CupDrawService.
  *
- * Winner metadata is captured by SeasonArchiveProcessor during the
- * closing pipeline. For the initial season (no prior results), we fall
- * back to the 2024/25 real-world winners: PSG (UCL) vs Tottenham (UEL).
+ * The finalists are the previous season's Champions League and Europa
+ * League winners, captured by SeasonArchiveProcessor during the closing
+ * pipeline as META_UCL_WINNER / META_UEL_WINNER. On the initial season
+ * we fall back to the real 2024/25 winners: PSG (UCL) and Tottenham (UEL).
  *
- * Priority: 107 (runs after ContinentalAndCupInitProcessor at 106 and
- * before PreSeasonFixtureProcessor at 108).
+ * Priority 85: runs next to SupercupQualificationProcessor (80) and well
+ * before ContinentalAndCupInitProcessor (106) so the entries are in place
+ * by the time the draw runs.
  */
 class UefaSuperCupQualificationProcessor implements SeasonProcessor
 {
     public const COMPETITION_ID = 'UEFASUP';
-    public const MATCH_MONTH = 8;
-    public const MATCH_DAY = 13;
 
-    // Real-world 2024/25 UCL and UEL winners used as seeds for the very first season.
+    // Real 2024/25 UCL and UEL winners — used as seeds on the initial season.
     private const INITIAL_UCL_WINNER_TRANSFERMARKT_ID = 583;   // Paris Saint-Germain
     private const INITIAL_UEL_WINNER_TRANSFERMARKT_ID = 148;   // Tottenham Hotspur
 
-    public function __construct(
-        private FinalVenueResolver $venueResolver,
-    ) {}
-
     public function priority(): int
     {
-        return 107;
+        return 85;
     }
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
         if (!Competition::where('id', self::COMPETITION_ID)->exists()) {
-            Log::warning('[UefaSuperCup] Competition UEFASUP not seeded — skipping', [
-                'game_id' => $game->id,
-            ]);
-
             return $data;
         }
 
-        [$homeTeamId, $awayTeamId] = $this->resolveFinalists($data);
+        [$uclWinnerId, $uelWinnerId] = $this->resolveFinalists($data);
 
-        if (!$homeTeamId || !$awayTeamId || $homeTeamId === $awayTeamId) {
+        if (!$uclWinnerId || !$uelWinnerId || $uclWinnerId === $uelWinnerId) {
             Log::warning('[UefaSuperCup] Could not resolve both finalists — skipping', [
                 'game_id' => $game->id,
                 'season' => $data->newSeason,
                 'is_initial_season' => $data->isInitialSeason,
-                'ucl_winner_id' => $homeTeamId,
-                'uel_winner_id' => $awayTeamId,
+                'ucl_winner_id' => $uclWinnerId,
+                'uel_winner_id' => $uelWinnerId,
             ]);
 
             return $data;
         }
 
-        // Idempotency: if a UEFASUP match already exists for this game/season,
-        // the processor already ran (e.g. crash-recovery checkpoint replay).
-        $seasonYear = (int) $data->newSeason;
-        $matchDate = Carbon::createFromDate($seasonYear, self::MATCH_MONTH, self::MATCH_DAY);
-
-        $existing = GameMatch::where('game_id', $game->id)
-            ->where('competition_id', self::COMPETITION_ID)
-            ->whereDate('scheduled_date', $matchDate->toDateString())
-            ->first();
-
-        if ($existing) {
-            return $data;
-        }
-
-        // Clear prior-season finalists. UEFASUP uses country='EU' and is not
-        // touched by UefaQualificationProcessor's country-scoped cleanup, so
-        // it's this processor's responsibility to wipe last year's entries
-        // before seeding the new pair.
-        CompetitionEntry::where('game_id', $game->id)
-            ->where('competition_id', self::COMPETITION_ID)
-            ->delete();
-
-        // Participants for this season's tie
-        foreach ([$homeTeamId, $awayTeamId] as $teamId) {
-            CompetitionEntry::create([
-                'game_id' => $game->id,
-                'competition_id' => self::COMPETITION_ID,
-                'team_id' => $teamId,
-                'entry_round' => 1,
-            ]);
-        }
-
-        $venue = $this->venueResolver->resolve(self::COMPETITION_ID, $homeTeamId, $awayTeamId);
-
-        $match = GameMatch::create([
-            'game_id' => $game->id,
-            'competition_id' => self::COMPETITION_ID,
-            'round_number' => 1,
-            'round_name' => 'cup.final',
-            'home_team_id' => $homeTeamId,
-            'away_team_id' => $awayTeamId,
-            'scheduled_date' => $matchDate->toDateString(),
-            'played' => false,
-            'neutral_venue_name' => $venue['name'] ?? null,
-            'neutral_venue_capacity' => $venue['capacity'] ?? null,
-        ]);
-
-        $cupTie = CupTie::create([
-            'game_id' => $game->id,
-            'competition_id' => self::COMPETITION_ID,
-            'round_number' => 1,
-            'bracket_position' => 1,
-            'home_team_id' => $homeTeamId,
-            'away_team_id' => $awayTeamId,
-            'first_leg_match_id' => $match->id,
-            'completed' => false,
-        ]);
-
-        $match->update(['cup_tie_id' => $cupTie->id]);
-
-        Log::info('[UefaSuperCup] Scheduled final', [
-            'game_id' => $game->id,
-            'season' => $data->newSeason,
-            'match_id' => $match->id,
-            'date' => $matchDate->toDateString(),
-            'home_team_id' => $homeTeamId,
-            'away_team_id' => $awayTeamId,
-            'venue' => $venue['name'] ?? null,
-        ]);
+        $this->writeEntries($game->id, [$uclWinnerId, $uelWinnerId]);
 
         return $data;
     }
@@ -150,7 +71,7 @@ class UefaSuperCupQualificationProcessor implements SeasonProcessor
      * straddled an upgrade of this code), we skip the fixture for that
      * year rather than seed an incorrect pairing.
      *
-     * @return array{0: ?string, 1: ?string} [homeTeamId (UCL winner), awayTeamId (UEL winner)]
+     * @return array{0: ?string, 1: ?string} [uclWinnerId, uelWinnerId]
      */
     private function resolveFinalists(SeasonTransitionData $data): array
     {
@@ -163,5 +84,26 @@ class UefaSuperCupQualificationProcessor implements SeasonProcessor
         }
 
         return [$uclWinnerId, $uelWinnerId];
+    }
+
+    /**
+     * Rewrite this game's CompetitionEntry rows for UEFASUP. Mirrors the
+     * pattern used by SupercupQualificationProcessor: hard-delete prior
+     * finalists, bulk-insert the new pair at entry_round = 1.
+     *
+     * @param  array<int, string>  $teamIds
+     */
+    private function writeEntries(string $gameId, array $teamIds): void
+    {
+        CompetitionEntry::where('game_id', $gameId)
+            ->where('competition_id', self::COMPETITION_ID)
+            ->delete();
+
+        CompetitionEntry::insert(array_map(fn (string $teamId) => [
+            'game_id' => $gameId,
+            'competition_id' => self::COMPETITION_ID,
+            'team_id' => $teamId,
+            'entry_round' => 1,
+        ], $teamIds));
     }
 }

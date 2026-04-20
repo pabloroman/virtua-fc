@@ -13,12 +13,14 @@ use App\Models\GameMatch;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use App\Modules\Competition\Services\FinalVenueResolver;
 use App\Modules\Competition\Services\LeagueFixtureGenerator;
 
 class CupDrawService
 {
     public function __construct(
         private readonly CountryConfig $countryConfig,
+        private readonly ?FinalVenueResolver $finalVenueResolver = null,
     ) {}
 
     /**
@@ -140,11 +142,51 @@ class CupDrawService
             }
         }
 
+        // Single-round cups draw their final directly in conductDraw; multi-round
+        // cups rely on CupCompetitionHandler::createTie to set the venue when
+        // the final is drawn later. Keep these two paths symmetric.
+        $this->maybeAssignFinalVenues($gameId, $roundConfig, $firstLegRows);
+
         // Return loaded ties
         return CupTie::where('game_id', $gameId)
             ->where('competition_id', $competitionId)
             ->where('round_number', $roundNumber)
             ->get();
+    }
+
+    /**
+     * Assign a neutral venue to every match in the just-drawn final round.
+     * Only applies to career-mode games; no-op otherwise.
+     *
+     * @param  array<int, array<string, mixed>>  $firstLegRows
+     */
+    private function maybeAssignFinalVenues(string $gameId, PlayoffRoundConfig $roundConfig, array $firstLegRows): void
+    {
+        if (!$this->finalVenueResolver || $roundConfig->name !== 'cup.final') {
+            return;
+        }
+
+        $game = Game::find($gameId);
+        if (!$game?->isCareerMode()) {
+            return;
+        }
+
+        foreach ($firstLegRows as $row) {
+            $venue = $this->finalVenueResolver->resolve(
+                $row['competition_id'],
+                $row['home_team_id'],
+                $row['away_team_id'],
+            );
+
+            if (!$venue) {
+                continue;
+            }
+
+            GameMatch::where('id', $row['id'])->update([
+                'neutral_venue_name' => $venue['name'],
+                'neutral_venue_capacity' => $venue['capacity'],
+            ]);
+        }
     }
 
     /**
