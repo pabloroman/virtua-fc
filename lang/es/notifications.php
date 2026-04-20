@@ -80,7 +80,7 @@ return [
     'competition_advancement_message' => ':stage',
     'competition_elimination_title' => 'Eliminación de :competition',
     'competition_elimination_message' => ':stage',
-    'trophy_won_title' => '¡Campeón de :competition!',
+    'trophy_won_title' => '¡Campeón de la :competition!',
 
     // Academy
     'academy_batch_title' => 'Nuevos canteranos',

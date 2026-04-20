@@ -4,7 +4,7 @@ return [
     // Status
     'eliminated' => 'Eliminado',
     'champion' => 'Campeón',
-    'champion_message' => '¡Has ganado :competition!',
+    'champion_message' => '¡Has ganado la :competition!',
     'round_n' => 'Ronda :round',
     'not_yet_entered' => 'Aún no participa',
 

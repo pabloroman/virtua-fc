@@ -2,8 +2,8 @@
 
 return [
     // Season end
-    'league_champion' => 'Campeón de :league',
-    'cup_winner' => 'Campeón de Copa',
+    'league_champion' => 'Campeón de la :league',
+    'cup_winner' => 'Campeón de la Copa',
     'beat' => 'Venció :team_a',
     'competition_in_progress' => 'Competición en curso',
     'other_league_results' => 'Otras Ligas',
@@ -39,8 +39,8 @@ return [
     'evaluation_met_message_with_trophies' => 'Una temporada satisfactoria. Se cumplieron los objetivos de liga y :trophies han hecho la campaña aún más memorable. La directiva espera que construyas sobre esto el próximo año.',
     'evaluation_below_message_with_trophies' => 'La campaña en la liga se quedó corta respecto a las expectativas, pero :trophies han suavizado el golpe, tanto en prestigio como en ingresos. Aun así, la directiva espera un mejor rendimiento liguero la próxima temporada.',
     'evaluation_disaster_message_with_trophies' => 'Una temporada caótica. La posición :actual en la liga queda muy lejos de la esperada :target, y solo :trophies han evitado una catástrofe total. La directiva exige un giro radical.',
-    'achievement_winner' => 'campeón de :competition',
-    'achievement_runner_up' => 'subcampeón de :competition',
+    'achievement_winner' => 'campeón de la :competition',
+    'achievement_runner_up' => 'subcampeón de la :competition',
     'achievement_and' => 'y',
 
     // Individual awards
