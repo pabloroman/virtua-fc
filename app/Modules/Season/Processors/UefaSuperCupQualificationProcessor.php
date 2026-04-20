@@ -120,8 +120,12 @@ class UefaSuperCupQualificationProcessor implements SeasonProcessor
     }
 
     /**
-     * Resolve the two finalists from season transition metadata, falling back
-     * to the initial-season seeds when no prior winner was captured.
+     * Resolve the two finalists from season transition metadata. On the
+     * initial season there's no prior competition to capture winners from,
+     * so we fall back to the real 2024/25 winners. On later seasons we
+     * trust the metadata; if it's missing (e.g. a partial rollover that
+     * straddled an upgrade of this code), we skip the fixture for that
+     * year rather than seed an incorrect pairing.
      *
      * @return array{0: ?string, 1: ?string} [homeTeamId (UCL winner), awayTeamId (UEL winner)]
      */
@@ -130,12 +134,9 @@ class UefaSuperCupQualificationProcessor implements SeasonProcessor
         $uclWinnerId = $data->getMetadata(SeasonTransitionData::META_UCL_WINNER);
         $uelWinnerId = $data->getMetadata(SeasonTransitionData::META_UEL_WINNER);
 
-        if (!$uclWinnerId) {
-            $uclWinnerId = Team::where('transfermarkt_id', self::INITIAL_UCL_WINNER_TRANSFERMARKT_ID)->value('id');
-        }
-
-        if (!$uelWinnerId) {
-            $uelWinnerId = Team::where('transfermarkt_id', self::INITIAL_UEL_WINNER_TRANSFERMARKT_ID)->value('id');
+        if ($data->isInitialSeason) {
+            $uclWinnerId ??= Team::where('transfermarkt_id', self::INITIAL_UCL_WINNER_TRANSFERMARKT_ID)->value('id');
+            $uelWinnerId ??= Team::where('transfermarkt_id', self::INITIAL_UEL_WINNER_TRANSFERMARKT_ID)->value('id');
         }
 
         return [$uclWinnerId, $uelWinnerId];
