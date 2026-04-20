@@ -94,6 +94,9 @@ return [
             'UECL' => [
                 'config_class' => \App\Modules\Competition\Configs\ConferenceLeagueConfig::class,
             ],
+            'UEFASUP' => [
+                'config_class' => \App\Modules\Competition\Configs\UefaSuperCupConfig::class,
+            ],
         ],
 
         /*
@@ -124,6 +127,8 @@ return [
                 'UCL' => ['handler' => 'swiss_format', 'country' => 'EU'],
                 'UEL' => ['handler' => 'swiss_format', 'country' => 'EU'],
                 'UECL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                // One-off knockout: prior UCL winner vs prior UEL winner, single leg with ET+penalties
+                'UEFASUP' => ['handler' => 'knockout_cup', 'country' => 'EU'],
             ],
         ],
     ],
@@ -163,6 +168,9 @@ return [
             'UECL' => [
                 'config_class' => \App\Modules\Competition\Configs\ConferenceLeagueConfig::class,
             ],
+            'UEFASUP' => [
+                'config_class' => \App\Modules\Competition\Configs\UefaSuperCupConfig::class,
+            ],
         ],
 
         'support' => [
@@ -177,6 +185,7 @@ return [
                 'UCL' => ['handler' => 'swiss_format', 'country' => 'EU'],
                 'UEL' => ['handler' => 'swiss_format', 'country' => 'EU'],
                 'UECL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                'UEFASUP' => ['handler' => 'knockout_cup', 'country' => 'EU'],
             ],
         ],
     ],
@@ -216,6 +225,9 @@ return [
             'UECL' => [
                 'config_class' => \App\Modules\Competition\Configs\ConferenceLeagueConfig::class,
             ],
+            'UEFASUP' => [
+                'config_class' => \App\Modules\Competition\Configs\UefaSuperCupConfig::class,
+            ],
         ],
 
         'support' => [
@@ -230,6 +242,7 @@ return [
                 'UCL' => ['handler' => 'swiss_format', 'country' => 'EU'],
                 'UEL' => ['handler' => 'swiss_format', 'country' => 'EU'],
                 'UECL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                'UEFASUP' => ['handler' => 'knockout_cup', 'country' => 'EU'],
             ],
         ],
     ],
@@ -269,6 +282,9 @@ return [
             'UECL' => [
                 'config_class' => \App\Modules\Competition\Configs\ConferenceLeagueConfig::class,
             ],
+            'UEFASUP' => [
+                'config_class' => \App\Modules\Competition\Configs\UefaSuperCupConfig::class,
+            ],
         ],
 
         'support' => [
@@ -283,6 +299,7 @@ return [
                 'UCL' => ['handler' => 'swiss_format', 'country' => 'EU'],
                 'UEL' => ['handler' => 'swiss_format', 'country' => 'EU'],
                 'UECL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                'UEFASUP' => ['handler' => 'knockout_cup', 'country' => 'EU'],
             ],
         ],
     ],
@@ -322,6 +339,9 @@ return [
             'UECL' => [
                 'config_class' => \App\Modules\Competition\Configs\ConferenceLeagueConfig::class,
             ],
+            'UEFASUP' => [
+                'config_class' => \App\Modules\Competition\Configs\UefaSuperCupConfig::class,
+            ],
         ],
 
         'support' => [
@@ -336,6 +356,7 @@ return [
                 'UCL' => ['handler' => 'swiss_format', 'country' => 'EU'],
                 'UEL' => ['handler' => 'swiss_format', 'country' => 'EU'],
                 'UECL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                'UEFASUP' => ['handler' => 'knockout_cup', 'country' => 'EU'],
             ],
         ],
     ],

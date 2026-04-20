@@ -73,6 +73,7 @@ class Competition extends Model
         'UCL'     => 'UCL',
         'UEL'     => 'UEL',
         'UECL'    => 'UECL',
+        'UEFASUP' => 'Super Cup',
         'WC2026'  => 'Mundial',
         'PRESEASON' => 'Amistoso',
     ];

@@ -93,7 +93,9 @@ class TrophyRecordingProcessor implements SeasonProcessor
 
     private function determineTrophyType(Competition $competition, array $supercupIds): string
     {
-        if (in_array($competition->id, $supercupIds)) {
+        // UEFA Super Cup is a continental supercup — no country-level
+        // supercup config entry maps to it, so tag it explicitly.
+        if ($competition->id === 'UEFASUP' || in_array($competition->id, $supercupIds)) {
             return 'supercup';
         }
 

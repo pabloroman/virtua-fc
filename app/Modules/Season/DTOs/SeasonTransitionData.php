@@ -8,6 +8,7 @@ namespace App\Modules\Season\DTOs;
 final class SeasonTransitionData implements \JsonSerializable
 {
     public const META_SWISS_POT_DATA = 'swissPotData';
+    public const META_UCL_WINNER = 'uclWinner';
     public const META_UEL_WINNER = 'uelWinner';
 
     public function __construct(

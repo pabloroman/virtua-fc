@@ -87,34 +87,45 @@ class SeasonArchiveProcessor implements SeasonProcessor
     }
 
     /**
-     * Capture UEL winner before cup tie data is deleted by later processors.
+     * Capture UCL and UEL winners before cup tie data is deleted by later
+     * processors. These feed next season's UEFA Super Cup (and UCL
+     * qualification cascade for the UEL winner).
      *
-     * If the player participated in UEL, find the final winner.
-     * Otherwise, randomly pick from UEL CompetitionEntry records.
+     * If the player participated, take the final's winner. Otherwise pick
+     * a random team from that competition's entries as a stand-in.
      */
     private function captureEuropeanWinners(Game $game, SeasonTransitionData $data): void
     {
-        // Check if the UEL final was played (player participated in UEL)
-        $uelFinal = CupTie::where('game_id', $game->id)
-            ->where('competition_id', 'UEL')
+        $data->setMetadata(
+            SeasonTransitionData::META_UCL_WINNER,
+            $this->resolveCompetitionWinner($game, 'UCL'),
+        );
+
+        $data->setMetadata(
+            SeasonTransitionData::META_UEL_WINNER,
+            $this->resolveCompetitionWinner($game, 'UEL'),
+        );
+    }
+
+    private function resolveCompetitionWinner(Game $game, string $competitionId): ?string
+    {
+        $final = CupTie::where('game_id', $game->id)
+            ->where('competition_id', $competitionId)
             ->where('round_number', SwissKnockoutGenerator::ROUND_FINAL)
             ->where('completed', true)
             ->first();
 
-        if ($uelFinal && $uelFinal->winner_id) {
-            $data->setMetadata(SeasonTransitionData::META_UEL_WINNER, $uelFinal->winner_id);
-            return;
+        if ($final && $final->winner_id) {
+            return $final->winner_id;
         }
 
-        // UEL wasn't played by the user — pick a random team from UEL entries
-        $uelEntry = CompetitionEntry::where('game_id', $game->id)
-            ->where('competition_id', 'UEL')
+        // Competition wasn't played by the user — pick a random entry as stand-in
+        $entry = CompetitionEntry::where('game_id', $game->id)
+            ->where('competition_id', $competitionId)
             ->inRandomOrder()
             ->first();
 
-        if ($uelEntry) {
-            $data->setMetadata(SeasonTransitionData::META_UEL_WINNER, $uelEntry->team_id);
-        }
+        return $entry?->team_id;
     }
 
     /**

@@ -1,0 +1,15 @@
+{
+    "id": "UEFASUP",
+    "name": "UEFA Super Cup",
+    "seasonID": "2025",
+    "clubs": [
+        {
+            "id": "583",
+            "name": "Paris Saint-Germain"
+        },
+        {
+            "id": "148",
+            "name": "Tottenham Hotspur"
+        }
+    ]
+}

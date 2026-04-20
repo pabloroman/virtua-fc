@@ -19,7 +19,7 @@ class FinalVenueResolver
         'capacity' => 70000,
     ];
 
-    private const EUROPEAN_COMPETITIONS = ['UCL', 'UEL', 'UECL'];
+    private const EUROPEAN_COMPETITIONS = ['UCL', 'UEL', 'UECL', 'UEFASUP'];
     private const MIN_CAPACITY = 50000;
 
     /**
