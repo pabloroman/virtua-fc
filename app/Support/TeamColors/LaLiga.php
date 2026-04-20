@@ -25,7 +25,7 @@ final class LaLiga implements TeamColorProvider
                 'secondary' => 'white',
                 'number' => 'blue-700',
             ],
-            'Athletic Bilbao' => [
+            'Athletic Club' => [
                 'pattern' => 'stripes',
                 'primary' => 'red-600',
                 'secondary' => 'white',

@@ -48,7 +48,7 @@ class ClubProfile extends Model
      * not a measurement. A club's cultural tendency to fill its stadium
      * regardless of competitive tier. Calibration:
      *
-     *   10 — iconic / cult loyalty (Athletic Bilbao, St. Pauli, Celtic)
+     *   10 — iconic / cult loyalty (Athletic Club, St. Pauli, Celtic)
      *    9 — huge, passionate followings (Red Star, Dortmund, Marseille)
      *    8 — strong loyal support (Real Madrid, Union Berlin, PAOK)
      *    7 — good loyal support (Real Sociedad, Leeds, Benfica)

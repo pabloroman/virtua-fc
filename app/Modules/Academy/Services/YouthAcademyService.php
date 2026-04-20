@@ -389,7 +389,7 @@ class YouthAcademyService
      * Maps team name → exact nationality filter (overrides weighted selection).
      */
     private const CANTERA_TEAMS = [
-        'Athletic Bilbao' => 'Spain',
+        'Athletic Club' => 'Spain',
     ];
 
     /**

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 /**
  * Curated per-club fan_loyalty anchor on a coarse 0-10 editorial scale.
  * Captures a club's cultural stadium-filling power independent of its
- * competitive tier. 10 = iconic (Athletic, St. Pauli, Celtic); 5 = average
+ * competitive tier. 10 = iconic (Athletic Club, St. Pauli, Celtic); 5 = average
  * (the default for any club not explicitly curated); 4 and below =
  * notably low-following. See ClubProfile::FAN_LOYALTY_* constants for the
  * full rubric.

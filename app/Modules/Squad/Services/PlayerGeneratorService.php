@@ -467,7 +467,7 @@ class PlayerGeneratorService
     /**
      * Pick a random identity (name + nationality + height + foot) for a generated player.
      *
-     * @param  string|null  $nationality    Exact nationality filter (100% match, e.g. for Athletic Bilbao)
+     * @param  string|null  $nationality    Exact nationality filter (100% match, e.g. for Athletic Club)
      * @param  string|null  $teamCountry    Country code for weighted selection (75% domestic / 25% any)
      * @param  string[]     $excludedNames  Names to exclude (game-wide player + academy names)
      * @param  string|null  $region         Regional naming override for Basque/Catalan clubs

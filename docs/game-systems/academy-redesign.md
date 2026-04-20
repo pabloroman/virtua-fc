@@ -36,7 +36,7 @@ Academy tier (from budget allocation) determines batch size, base quality mean, 
 
 Team context adjusts the ability mean by -3 to +4 based on first-team median tier.
 
-"Cantera" teams (e.g., Athletic Bilbao) only generate Spanish nationality prospects.
+"Cantera" teams (e.g., Athletic Club) only generate Spanish nationality prospects.
 
 ## Development
 

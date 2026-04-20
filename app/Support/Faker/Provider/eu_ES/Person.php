@@ -8,7 +8,7 @@ use Faker\Provider\Person as BasePerson;
  * Basque (Euskara) Person provider for Faker.
  *
  * Used for youth academy and replenishment name generation at Basque clubs
- * (Athletic Bilbao, Real Sociedad, Alavés, Osasuna, Eibar — see
+ * (Athletic Club, Real Sociedad, Alavés, Osasuna, Eibar — see
  * {@see \App\Modules\Squad\Configs\TeamRegionalOrigins}). Faker ships no
  * native eu_ES locale, so this provider fills that gap. Nationality stays
  * "Spain" at the data layer; only the name source changes.

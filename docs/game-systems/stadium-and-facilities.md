@@ -29,7 +29,7 @@ Per-match attendance replaces annualized matchday revenue. Each fixture computes
 
 **Fan loyalty** is the stadium-occupancy stat. Its storage is split across two scales to separate editorial curation from in-game math:
 
-- **`ClubProfile.fan_loyalty`** — the curated real-world anchor on a coarse 0–10 editorial scale. 10 = iconic/cult (Athletic Bilbao, St. Pauli, Celtic), 8 = strong (Real Madrid, Union Berlin), 5 = average (the default), 4 and below = notably low-following. Deliberately low-resolution: the number is an editorial judgment, not a measurement.
+- **`ClubProfile.fan_loyalty`** — the curated real-world anchor on a coarse 0–10 editorial scale. 10 = iconic/cult (Athletic Club, St. Pauli, Celtic), 8 = strong (Real Madrid, Union Berlin), 5 = average (the default), 4 and below = notably low-following. Deliberately low-resolution: the number is an editorial judgment, not a measurement.
 - **`TeamReputation.base_loyalty`** — the seeded anchor on the 0–100 internal scale (copied from `fan_loyalty × 10` at game start). Never moves during the game. Captures cultural identity.
 - **`TeamReputation.loyalty_points`** — the current value (0–100). Starts equal to `base_loyalty` and drifts with outcomes: trophies, European nights, homegrown stars, and promotion push it up; relegation, scandals, and long-term overpricing pull it down. The finer 0–100 resolution lets small season-end nudges accumulate meaningfully. Clamped so it can't fall more than 15 points below `base_loyalty` — the "Newcastle doesn't lose its fans in the Championship" floor.
 

@@ -25,7 +25,7 @@ class TeamRegionalOrigins
      */
     private const TEAMS = [
         // Basque clubs (Euskadi / País Vasco + Navarre via Osasuna).
-        'Athletic Bilbao' => self::REGION_BASQUE,
+        'Athletic Club' => self::REGION_BASQUE,
         'Real Sociedad' => self::REGION_BASQUE,
         'Real Sociedad B' => self::REGION_BASQUE,
         'Deportivo Alavés' => self::REGION_BASQUE,

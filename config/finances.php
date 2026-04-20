@@ -130,6 +130,6 @@ return [
     // synthetic youth academy for squad replenishment. They can still sell
     // players, but cannot buy, sign free agents, or receive loan moves.
     'ai_excluded_from_signing' => [
-        'athletic-bilbao',
+        'athletic-club',
     ],
 ];

@@ -25,7 +25,7 @@ class ClubProfilesSeeder extends Seeder
         'Atlético de Madrid' => ClubProfile::REPUTATION_ELITE,
 
         // Continental - Objetivo: Europa League
-        'Athletic Bilbao' => ClubProfile::REPUTATION_CONTINENTAL,
+        'Athletic Club' => ClubProfile::REPUTATION_CONTINENTAL,
         'Villarreal CF' => ClubProfile::REPUTATION_CONTINENTAL,
         'Real Betis Balompié' => ClubProfile::REPUTATION_CONTINENTAL,
         'Sevilla FC' => ClubProfile::REPUTATION_CONTINENTAL,
@@ -281,7 +281,7 @@ class ClubProfilesSeeder extends Seeder
         'Real Madrid' => 8,              // 87.5%
         'FC Barcelona' => 6,             // 67.7%
         'Atlético de Madrid' => 8,       // 87.2%
-        'Athletic Bilbao' => 9,          // 89.8%
+        'Athletic Club' => 9,            // 89.8%
         'Real Betis Balompié' => 7,      // 84.1%
         'Villarreal CF' => 5,            // 77.1%
         'Sevilla FC' => 7,              // 79.4%
