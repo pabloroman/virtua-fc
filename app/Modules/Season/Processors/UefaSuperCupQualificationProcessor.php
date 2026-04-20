@@ -12,6 +12,7 @@ use App\Modules\Competition\Services\FinalVenueResolver;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Schedules the UEFA Super Cup: a single-leg final on August 13 at a
@@ -47,12 +48,24 @@ class UefaSuperCupQualificationProcessor implements SeasonProcessor
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
         if (!Competition::where('id', self::COMPETITION_ID)->exists()) {
+            Log::warning('[UefaSuperCup] Competition UEFASUP not seeded — skipping', [
+                'game_id' => $game->id,
+            ]);
+
             return $data;
         }
 
         [$homeTeamId, $awayTeamId] = $this->resolveFinalists($data);
 
         if (!$homeTeamId || !$awayTeamId || $homeTeamId === $awayTeamId) {
+            Log::warning('[UefaSuperCup] Could not resolve both finalists — skipping', [
+                'game_id' => $game->id,
+                'season' => $data->newSeason,
+                'is_initial_season' => $data->isInitialSeason,
+                'ucl_winner_id' => $homeTeamId,
+                'uel_winner_id' => $awayTeamId,
+            ]);
+
             return $data;
         }
 
@@ -115,6 +128,16 @@ class UefaSuperCupQualificationProcessor implements SeasonProcessor
         ]);
 
         $match->update(['cup_tie_id' => $cupTie->id]);
+
+        Log::info('[UefaSuperCup] Scheduled final', [
+            'game_id' => $game->id,
+            'season' => $data->newSeason,
+            'match_id' => $match->id,
+            'date' => $matchDate->toDateString(),
+            'home_team_id' => $homeTeamId,
+            'away_team_id' => $awayTeamId,
+            'venue' => $venue['name'] ?? null,
+        ]);
 
         return $data;
     }
