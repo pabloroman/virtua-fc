@@ -30,6 +30,9 @@ class ReputationSummaryService
      *   tier_thresholds: array<string,int>,
      *   direction: 'rising'|'stable'|'declining',
      *   direction_detail: array{points_delta:int,gravity:int,net:int,position:?int},
+     *   loyalty_points: int,
+     *   base_loyalty: int,
+     *   loyalty_direction: 'rising'|'stable'|'declining',
      * }
      */
     public function build(Game $game): array
@@ -41,6 +44,13 @@ class ReputationSummaryService
         $currentLevel = $reputation?->reputation_level ?? ClubProfile::REPUTATION_LOCAL;
         $currentPoints = (int) ($reputation?->reputation_points ?? 0);
         $baseLevel = $reputation?->base_reputation_level ?? $currentLevel;
+
+        $loyaltyPoints = (int) ($reputation?->loyalty_points ?? 0);
+        $baseLoyalty = (int) ($reputation?->base_loyalty ?? 0);
+        // Match the 5-point band used by the reputation-direction hint; small
+        // cosmetic drifts stay "stable" for a consistent Club-hub feel.
+        $loyaltyDelta = $loyaltyPoints - $baseLoyalty;
+        $loyaltyDirection = $loyaltyDelta > 5 ? 'rising' : ($loyaltyDelta < -5 ? 'declining' : 'stable');
 
         $thresholds = TeamReputation::TIER_THRESHOLDS;
         $tierIndex = ClubProfile::getReputationTierIndex($currentLevel);
@@ -72,6 +82,9 @@ class ReputationSummaryService
             'tier_thresholds' => $thresholds,
             'direction' => $direction,
             'direction_detail' => $detail,
+            'loyalty_points' => $loyaltyPoints,
+            'base_loyalty' => $baseLoyalty,
+            'loyalty_direction' => $loyaltyDirection,
         ];
     }
 
