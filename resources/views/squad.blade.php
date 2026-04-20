@@ -282,41 +282,24 @@
                                                     {{-- Tactical: fitness + morale --}}
                                                     <template x-if="viewMode === 'tactical'">
                                                         <div class="flex items-center gap-2 min-w-0">
-                                                            @if(!$isUnavailable)
-                                                                <div class="flex items-center gap-1 shrink-0">
-                                                                    <div class="w-8 h-1 rounded-full bg-surface-600 overflow-hidden">
-                                                                        <div class="h-full rounded-full fitness-bar @if($gp->fitness >= 80) bg-accent-green @elseif($gp->fitness >= 60) bg-accent-gold @elseif($gp->fitness >= 40) bg-accent-orange @else bg-accent-red @endif" style="width: {{ $gp->fitness }}%"></div>
-                                                                    </div>
-                                                                    <span class="text-[8px] text-text-faint">{{ $gp->fitness }}%</span>
+                                                            <div class="flex items-center gap-1 shrink-0">
+                                                                <div class="w-8 h-1 rounded-full bg-surface-600 overflow-hidden">
+                                                                    <div class="h-full rounded-full fitness-bar @if($gp->fitness >= 80) bg-accent-green @elseif($gp->fitness >= 60) bg-accent-gold @elseif($gp->fitness >= 40) bg-accent-orange @else bg-accent-red @endif" style="width: {{ $gp->fitness }}%"></div>
                                                                 </div>
-                                                                <x-morale-indicator :value="$gp->morale" class="shrink-0" />
-                                                            @endif
+                                                                <span class="text-[8px] text-text-faint">{{ $gp->fitness }}%</span>
+                                                            </div>
+                                                            <x-morale-indicator :value="$gp->morale" class="shrink-0" />
                                                         </div>
                                                     </template>
 
                                                     @if($isCareerMode)
-                                                    {{-- Planning: potential + contract year + dev status --}}
+                                                    {{-- Planning: age + contract year --}}
                                                     <template x-if="viewMode === 'planning'">
-                                                        <div class="flex items-center gap-1.5 min-w-0 grow">
-                                                            <x-potential-bar
-                                                                :current-ability="$gp->overall_score"
-                                                                :potential-low="$gp->potential_low"
-                                                                :potential-high="$gp->potential_high"
-                                                                size="sm"
-                                                            />
+                                                        <div class="flex items-center gap-2 min-w-0 grow text-[10px]">
+                                                            <span class="tabular-nums shrink-0"><span class="text-text-faint">{{ __('app.age') }}:</span> <span class="text-text-muted">{{ $gp->age($game->current_date) }}</span></span>
                                                             @if($gp->contract_expiry_year)
-                                                                <span class="text-[10px] tabular-nums shrink-0 @if($gp->isContractExpiring($seasonEndDate)) text-accent-red font-medium @else text-text-muted @endif">{{ $gp->contract_expiry_year }}</span>
+                                                                <span class="tabular-nums shrink-0"><span class="text-text-faint">{{ __('app.contract') }}:</span> <span class="@if($gp->isContractExpiring($seasonEndDate)) text-accent-red font-medium @else text-text-muted @endif">{{ $gp->contract_expiry_year }}</span></span>
                                                             @endif
-                                                            @php $ds = $gp->dev_status; @endphp
-                                                            <span class="shrink-0 @if($ds === 'growing') text-accent-green @elseif($ds === 'peak') text-accent-blue @else text-orange-600 @endif">
-                                                                @if($ds === 'growing')
-                                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
-                                                                @elseif($ds === 'declining')
-                                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                                                                @else
-                                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"/></svg>
-                                                                @endif
-                                                            </span>
                                                         </div>
                                                     </template>
                                                     @endif
