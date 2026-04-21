@@ -22,6 +22,11 @@ class FormationRecommender
      *                         original slot for a less versatile unused player.
      *   Pass 4 — Weighted:    best-available fallback for slots that no natural
      *                         fit can cover.
+     *   Pass 6 — Improve:     after all slots are filled, swap any placed player
+     *                         for a higher-rated bench player who is a natural
+     *                         (compat 100) fit for that slot — catches cases
+     *                         where a high-rated versatile player was benched
+     *                         because their primary slots were saturated.
      *
      * This is the single public entry point other services should use to
      * resolve "given these players and this formation, where does each go?".
@@ -128,6 +133,7 @@ class FormationRecommender
         $this->trySwapFill($sortedSlots, $sortedPlayers, $assigned, $usedPlayerIds);
         $this->fillByWeighted($sortedSlots, $sortedPlayers, $assigned, $usedPlayerIds);
         $this->fillByForceAssignment($sortedSlots, $sortedPlayers, $assigned, $usedPlayerIds);
+        $this->improveByRating($sortedPlayers, $assigned, $usedPlayerIds);
 
         // Strip internal-only `pass` field and return sorted by original slot id.
         $result = [];
@@ -375,6 +381,71 @@ class FormationRecommender
                 $this->assignPlayer($assigned, $slot, $player, $compat, 'force');
                 $usedPlayerIds[] = $player['id'];
                 break;
+            }
+        }
+    }
+
+    /**
+     * Final pass — swap a placed player for a higher-rated bench player who is
+     * a natural (compat 100) fit for that slot. The earlier passes lock in
+     * primary-position specialists slot-by-slot, which can leave a higher-rated
+     * player on the bench when their primary slots are saturated but they
+     * would be a natural fit elsewhere via a secondary position. This pass
+     * corrects that by evicting a weaker occupant whenever a stronger natural
+     * fit is available.
+     *
+     * Manual pins are never evicted — they are the caller's explicit intent.
+     * The loop is monotonic: each swap strictly increases the sum of placed
+     * ratings, so it always terminates.
+     */
+    private function improveByRating(array $sortedPlayers, array &$assigned, array &$usedPlayerIds): void
+    {
+        $maxIterations = 22;
+        while ($maxIterations-- > 0) {
+            $swapped = false;
+
+            foreach ($assigned as $slotId => $row) {
+                if ($row['player'] === null || $row['pass'] === 'manual') {
+                    continue;
+                }
+
+                $slot = $row['slot'];
+                $occupantId = $row['player']['id'];
+                $occupantRating = $row['player']['overallScore'];
+
+                // sortedPlayers is rating-desc, so the first compat-100 candidate
+                // with a higher rating is necessarily the best swap target.
+                foreach ($sortedPlayers as $candidate) {
+                    if ($candidate['overall_score'] <= $occupantRating) {
+                        break;
+                    }
+                    if (in_array($candidate['id'], $usedPlayerIds, true)) {
+                        continue;
+                    }
+                    $compat = PositionSlotMapper::getPlayerCompatibilityScore(
+                        $candidate['position'],
+                        $candidate['secondary_positions'] ?? null,
+                        $slot['label']
+                    );
+                    if ($compat !== 100) {
+                        continue;
+                    }
+
+                    // Evict occupant, place candidate.
+                    $usedPlayerIds = array_values(array_diff($usedPlayerIds, [$occupantId]));
+                    $this->assignPlayer($assigned, $slot, $candidate, 100, 'improved');
+                    $usedPlayerIds[] = $candidate['id'];
+                    $swapped = true;
+                    break;
+                }
+
+                if ($swapped) {
+                    break;
+                }
+            }
+
+            if (! $swapped) {
+                return;
             }
         }
     }

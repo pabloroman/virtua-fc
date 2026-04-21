@@ -364,6 +364,74 @@ class FormationRecommenderTest extends TestCase
         $this->assertNotSame('CF', $orphanRow['slot']['label'], 'CF slots are already taken by higher-rated forwards');
     }
 
+    public function test_improve_pass_swaps_weaker_primary_for_stronger_secondary(): void
+    {
+        // 4-3-3: 3 CM slots, 2 CB slots.
+        //
+        // Midfielders with CB secondary (84/83) can't reach a CM slot in Pass 1
+        // because three higher-rated CM-primary players (87/86/85) saturate the
+        // midfield. CB slots get the two CB-primary players (82/80). Without
+        // the improve pass, 84 and 83 end up benched even though they'd be a
+        // natural compat-100 fit in CB and outrate the occupants.
+        $players = collect([
+            $this->player('gk', 'Goalkeeper', 75),
+            $this->player('lb', 'Left-Back', 75),
+            $this->player('rb', 'Right-Back', 75),
+            $this->player('lw', 'Left Winger', 75),
+            $this->player('rw', 'Right Winger', 75),
+            $this->player('cf', 'Centre-Forward', 75),
+            $this->player('cm1', 'Central Midfield', 87),
+            $this->player('cm2', 'Central Midfield', 86),
+            $this->player('cm3', 'Central Midfield', 85),
+            $this->player('cmCb1', 'Central Midfield', 84, ['Centre-Back']),
+            $this->player('cmCb2', 'Central Midfield', 83, ['Centre-Back']),
+            $this->player('cbWeak1', 'Centre-Back', 82),
+            $this->player('cbWeak2', 'Centre-Back', 80),
+        ]);
+
+        $bestXI = $this->recommender->bestXIFor(Formation::F_4_3_3, $players);
+        $map = $this->slotMap($bestXI);
+
+        // CB slots (ids 2, 3) must go to the higher-rated secondary-CB players.
+        $this->assertContains('cmCb1', [$map[2], $map[3]]);
+        $this->assertContains('cmCb2', [$map[2], $map[3]]);
+        $this->assertNotContains('cbWeak1', [$map[2], $map[3]]);
+        $this->assertNotContains('cbWeak2', [$map[2], $map[3]]);
+
+        // All CB placements are at compatibility 100 (via secondary).
+        foreach ($bestXI as $row) {
+            if ($row['slot']['label'] === 'CB') {
+                $this->assertSame(100, $row['compatibility']);
+            }
+        }
+    }
+
+    public function test_improve_pass_never_evicts_manual_pin(): void
+    {
+        // User pins a weaker player; improve pass must not overrule that.
+        $players = collect([
+            $this->player('gk', 'Goalkeeper', 75),
+            $this->player('lb', 'Left-Back', 75),
+            $this->player('cb1', 'Centre-Back', 75),
+            $this->player('cb2', 'Centre-Back', 75),
+            $this->player('rb', 'Right-Back', 75),
+            $this->player('cm1', 'Central Midfield', 75),
+            $this->player('cm2', 'Central Midfield', 75),
+            $this->player('cm3', 'Central Midfield', 75),
+            $this->player('lwPinned', 'Left Winger', 60),
+            $this->player('cf', 'Centre-Forward', 75),
+            $this->player('rw', 'Right Winger', 75),
+            // Bench: a far better LW that improve pass would normally swap in.
+            $this->player('lwStar', 'Left Winger', 90),
+        ]);
+
+        // Slot 8 is LW in F_4_3_3.
+        $bestXI = $this->recommender->bestXIFor(Formation::F_4_3_3, $players, [8 => 'lwPinned']);
+        $map = $this->slotMap($bestXI);
+
+        $this->assertSame('lwPinned', $map[8], 'Manual pin must survive the improve pass');
+    }
+
     public function test_getBestFormation_still_returns_a_formation_enum(): void
     {
         // Sanity: the legacy public method must keep working for its current
