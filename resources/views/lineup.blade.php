@@ -258,7 +258,38 @@
                             </div>
 
                             {{-- Player list --}}
-                            <div :class="{ 'select-none': listDragPlayerId }">
+                            <div class="flex flex-col" :class="{ 'select-none': listDragPlayerId }">
+                                {{-- Starting XI section header --}}
+                                <div :style="`order: -1`" class="px-3 py-2 bg-surface-700/40 border-b border-border-default">
+                                    <h4 class="text-[10px] font-semibold uppercase tracking-widest text-text-secondary">
+                                        {{ __('squad.starting_xi') }}
+                                        <span class="text-text-faint normal-case tracking-normal ml-1" x-text="`(${selectedCount}/11)`"></span>
+                                    </h4>
+                                </div>
+
+                                {{-- Empty starter slot placeholders (one per unfilled slot in current formation) --}}
+                                <template x-for="slot in currentSlots" :key="slot.id">
+                                    <div
+                                        x-show="slotMapIsConsistent() && !slotMap[slot.id] && (posTab === 'all' || posTab === slotLabelToGroup(slot.label))"
+                                        :style="`order: ${slotLabelSortOrder(slot.label)}`"
+                                        @click="assigningSlotId = slot.id"
+                                        :class="assigningSlotId === slot.id ? 'ring-2 ring-accent-blue ring-inset' : ''"
+                                        class="px-3 py-2.5 border-b border-dashed border-border-default cursor-pointer hover:bg-surface-700/30 transition-colors"
+                                    >
+                                        <div class="flex items-center gap-2.5">
+                                            <div class="w-8 h-8 rounded-full border-2 border-dashed border-border-strong flex items-center justify-center text-[10px] font-semibold text-text-faint" x-text="slot.label"></div>
+                                            <span class="text-xs text-text-muted">{{ __('squad.empty_slot') }}</span>
+                                        </div>
+                                    </div>
+                                </template>
+
+                                {{-- Substitutes section header (sits between starter region order 0-99 and bench region 1000+) --}}
+                                <div :style="`order: 999`" class="px-3 py-2 bg-surface-700/40 border-b border-t border-border-default">
+                                    <h4 class="text-[10px] font-semibold uppercase tracking-widest text-text-secondary">
+                                        {{ __('squad.substitutes') }}
+                                    </h4>
+                                </div>
+
                                 @foreach([
                                     ['name' => __('squad.goalkeepers'), 'players' => $goalkeepers, 'role' => 'Goalkeeper'],
                                     ['name' => __('squad.defenders'), 'players' => $defenders, 'role' => 'Defender'],
@@ -277,6 +308,7 @@
                                             @endphp
                                             <div
                                                 x-show="posTab === 'all' || posTab === '{{ $posGroup }}'"
+                                                :style="`order: ${listSortOrder('{{ $player->id }}')}`"
                                                 @click="toggle('{{ $player->id }}', {{ $isUnavailable ? 'true' : 'false' }})"
                                                 @mousedown="startListDrag('{{ $player->id }}', $event)"
                                                 @mouseenter="hoveredPlayerId = '{{ $player->id }}'"
