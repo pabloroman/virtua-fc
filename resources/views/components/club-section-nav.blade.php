@@ -20,4 +20,6 @@
     ];
 @endphp
 
-<x-section-nav :items="$items" />
+<x-section-nav :items="$items">
+    {{ $slot }}
+</x-section-nav>

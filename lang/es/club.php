@@ -16,13 +16,9 @@ return [
         'capacity_help' => 'El aforo se registra en cada partido para calcular la asistencia. La ampliación del estadio se convertirá en una decisión del entrenador en una fase posterior.',
 
         'fan_base' => 'Afición',
-        'fan_base_help' => 'La lealtad de la afición cambia cada temporada según los resultados. Impulsa la ocupación del estadio junto con la reputación, que marca el precio de las entradas. La marca indica el valor inicial del club.',
+        'fan_base_help' => 'La lealtad sube con títulos y buenas campañas y baja tras temporadas flojas. Junto a la reputación, determina cuánto se llena el estadio los días de partido.',
         'fan_base_trend' => 'Tendencia',
-        'current_loyalty' => 'Lealtad actual',
-        'anchor' => 'Ancla',
-        'loyalty_rising' => 'Al alza',
-        'loyalty_stable' => 'Estable',
-        'loyalty_declining' => 'A la baja',
+        'current_loyalty' => 'Apoyo de la afición',
 
         'last_attendance' => 'Último partido en casa',
         'fill_rate' => 'Ocupación',
@@ -35,27 +31,62 @@ return [
 
     'reputation' => [
         'current_tier' => 'Nivel actual',
-        'points' => 'Puntos de reputación',
-        'trend' => 'Tendencia prevista',
 
         'tiers' => 'Niveles de reputación',
-        'ladder_help' => 'Los clubes suben de nivel terminando arriba en la liga; los clubes élite y continentales tienen que compensar la gravedad de su nivel cada temporada o bajarán. Un club nunca cae más de dos niveles por debajo de su ancla.',
+        'tiers_help_toggle' => '¿Cómo funcionan los niveles de reputación?',
+        'ladder_help' => 'Los clubes suben de nivel terminando arriba en la liga. En los niveles más altos, la reputación se desgasta cada temporada si no se respalda con resultados.',
 
         'current' => 'Actual',
-        'anchor' => 'Ancla',
-        'floor' => 'Suelo',
-        'threshold' => 'Umbral',
 
-        'progress' => 'Progreso de nivel',
-        'points_to_next' => ':points puntos para :tier',
-        'at_top_tier' => 'Cima de la escalera — no hay nivel superior.',
+        'qualitative_distance' => [
+            'one_strong_season' => 'Una buena temporada bastaría para llegar a :tier.',
+            'two_strong_seasons' => 'Un par de buenas temporadas te separan de :tier.',
+            'several_seasons' => 'Varias temporadas sólidas te separan de :tier.',
+            'long_road' => 'Queda un largo camino hasta :tier.',
+        ],
 
-        'season_projection' => 'Proyección de fin de temporada',
-        'current_position' => 'Posición actual',
-        'position_points' => 'Puntos por posición',
-        'gravity' => 'Gravedad de nivel',
-        'net_change' => 'Cambio neto',
-        'projection_help' => 'Supone que la temporada termina con el club en su posición actual. Los títulos y rachas de copa suman encima al cierre de la temporada.',
-        'no_standing_yet' => 'La clasificación aparecerá cuando la temporada esté en marcha.',
+        'tier_descriptors' => [
+            'local' => 'Un club modesto con una afición local fiel.',
+            'modest' => 'Un club pequeño que aspira a llegar o mantenerse en primera.',
+            'established' => 'Un club histórico, con años de experiencia en primera.',
+            'continental' => 'Habitual en competiciones europeas.',
+            'elite' => 'Referente del fútbol europeo.',
+        ],
+
+        'career' => [
+            'title' => 'Trayectoria',
+            'seasons_managed' => 'Temporadas dirigidas',
+            'starting_tier' => 'Nivel inicial',
+            'matches_managed' => 'Partidos dirigidos',
+            'trophies' => 'Títulos',
+        ],
+
+        'path_title' => 'Camino al siguiente nivel',
+        'path_also' => 'Los títulos de copa y las rachas europeas también suman al cierre de la temporada.',
+        'maintenance_note' => 'En este nivel, la reputación se desgasta cada temporada si no la respaldas con resultados.',
+        'projected' => 'Proyectado',
+
+        'legend' => [
+            'forward' => 'Avance',
+            'flat' => 'Sin avance',
+            'setback' => 'Retroceso',
+        ],
+
+        'impact' => [
+            'major_leap' => 'Gran salto adelante',
+            'solid_step' => 'Paso sólido adelante',
+            'small_step' => 'Pequeño avance',
+            'stalls' => 'Sin avance',
+            'setback' => 'Retroceso',
+        ],
+
+        'impact_title' => 'Qué aporta la reputación a tu club',
+        'impact_signings_title' => 'Atraer fichajes',
+        'impact_signings_body' => 'Los jugadores de mayor nivel se inclinan por clubes con más reputación. Agentes libres, objetivos de traspaso y clubes rivales valoran tu nivel antes de sentarse a negociar.',
+        'impact_retain_title' => 'Retener talento',
+        'impact_retain_body' => 'Tu propia plantilla también reacciona a la reputación. Un club en crecimiento retiene mejor a sus piezas clave; cuando se cae de nivel, aparecen los depredadores y las renovaciones se complican.',
+        'impact_economy_title' => 'Oportunidades económicas',
+        'impact_economy_body' => 'La asistencia al estadio, el precio de las entradas y los ingresos comerciales escalan con la reputación. Subir desbloquea mayores ingresos en todos los frentes; bajar aprieta el presupuesto.',
+
     ],
 ];

@@ -10,29 +10,21 @@ use App\Models\TeamReputation;
 
 /**
  * Shapes the data shown on the Club > Reputation page: current tier,
- * progression within tier, the seeded anchor the club can't fall more than
- * two tiers below, and a directional hint projecting how the season's
- * current standing would move reputation at season end. Read-side only.
+ * progression within tier, loyalty, and a ladder of season-end outcomes
+ * derived from the same config the closing pipeline consumes. Read-side only.
  */
 class ReputationSummaryService
 {
     /**
      * @return array{
      *   current_level: string,
-     *   current_points: int,
-     *   base_level: string,
-     *   tier_floor: string,
      *   tier_index: int,
-     *   base_tier_index: int,
      *   points_in_tier: int,
      *   tier_span: int,
-     *   points_to_next_tier: ?int,
-     *   tier_thresholds: array<string,int>,
-     *   direction: 'rising'|'stable'|'declining',
-     *   direction_detail: array{points_delta:int,gravity:int,net:int,position:?int},
      *   loyalty_points: int,
-     *   base_loyalty: int,
-     *   loyalty_direction: 'rising'|'stable'|'declining',
+     *   qualitative_distance: ?string,
+     *   outcome_ladder: list<array{position_range:string,impact_key:string,is_current:bool,size:int}>,
+     *   tier_maintenance_applies: bool,
      * }
      */
     public function build(Game $game): array
@@ -43,18 +35,10 @@ class ReputationSummaryService
 
         $currentLevel = $reputation?->reputation_level ?? ClubProfile::REPUTATION_LOCAL;
         $currentPoints = (int) ($reputation?->reputation_points ?? 0);
-        $baseLevel = $reputation?->base_reputation_level ?? $currentLevel;
-
         $loyaltyPoints = (int) ($reputation?->loyalty_points ?? 0);
-        $baseLoyalty = (int) ($reputation?->base_loyalty ?? 0);
-        // Match the 5-point band used by the reputation-direction hint; small
-        // cosmetic drifts stay "stable" for a consistent Club-hub feel.
-        $loyaltyDelta = $loyaltyPoints - $baseLoyalty;
-        $loyaltyDirection = $loyaltyDelta > 5 ? 'rising' : ($loyaltyDelta < -5 ? 'declining' : 'stable');
 
         $thresholds = TeamReputation::TIER_THRESHOLDS;
         $tierIndex = ClubProfile::getReputationTierIndex($currentLevel);
-        $baseTierIndex = ClubProfile::getReputationTierIndex($baseLevel);
 
         $currentThreshold = $thresholds[$currentLevel] ?? 0;
         $nextLevel = ClubProfile::REPUTATION_TIERS[$tierIndex + 1] ?? null;
@@ -64,78 +48,101 @@ class ReputationSummaryService
         $tierSpan = $nextThreshold !== null ? $nextThreshold - $currentThreshold : 0;
         $pointsToNextTier = $nextThreshold !== null ? max(0, $nextThreshold - $currentPoints) : null;
 
-        $floorIndex = max(0, $baseTierIndex - TeamReputation::MAX_TIER_DROP_BELOW_BASE);
-        $tierFloor = ClubProfile::REPUTATION_TIERS[$floorIndex];
-
-        [$direction, $detail] = $this->projectDirection($game, $currentLevel);
+        $position = $this->currentLeaguePosition($game);
+        $outcomeLadder = $this->buildOutcomeLadder($game, $position);
+        $qualitativeDistance = $this->qualitativeDistance($pointsToNextTier);
+        $tierMaintenanceApplies = (int) (config('reputation.gravity', [])[$currentLevel] ?? 0) > 0;
 
         return [
             'current_level' => $currentLevel,
-            'current_points' => $currentPoints,
-            'base_level' => $baseLevel,
-            'tier_floor' => $tierFloor,
             'tier_index' => $tierIndex,
-            'base_tier_index' => $baseTierIndex,
             'points_in_tier' => $pointsInTier,
             'tier_span' => $tierSpan,
-            'points_to_next_tier' => $pointsToNextTier,
-            'tier_thresholds' => $thresholds,
-            'direction' => $direction,
-            'direction_detail' => $detail,
             'loyalty_points' => $loyaltyPoints,
-            'base_loyalty' => $baseLoyalty,
-            'loyalty_direction' => $loyaltyDirection,
+            'qualitative_distance' => $qualitativeDistance,
+            'outcome_ladder' => $outcomeLadder,
+            'tier_maintenance_applies' => $tierMaintenanceApplies,
         ];
     }
 
-    /**
-     * Project how reputation would move at season end if the league ended
-     * with the team at its current standings position — same formula the
-     * SeasonClosingPipeline's ReputationUpdateProcessor uses, so the hint
-     * stays calibrated against the actual mechanic.
-     *
-     * @return array{0: 'rising'|'stable'|'declining', 1: array{points_delta:int,gravity:int,net:int,position:?int}}
-     */
-    private function projectDirection(Game $game, string $level): array
+    private function currentLeaguePosition(Game $game): ?int
     {
         $position = GameStanding::where('game_id', $game->id)
             ->where('competition_id', $game->competition_id)
             ->where('team_id', $game->team_id)
             ->value('position');
 
-        $position = $position !== null ? (int) $position : null;
+        return $position !== null ? (int) $position : null;
+    }
 
-        $detail = ['points_delta' => 0, 'gravity' => 0, 'net' => 0, 'position' => $position];
-
-        if ($position === null) {
-            return ['stable', $detail];
-        }
-
+    /**
+     * Derive an always-visible ladder of season-end outcomes from the same
+     * position-delta config the season-close processor consumes. The player
+     * sees the decision landscape — what each finish is worth — whether or
+     * not a standing exists yet, and the current projected band is marked
+     * once a standing is recorded.
+     *
+     * Impact keys are qualitative buckets: the UI never prints raw points.
+     *
+     * @return list<array{position_range:string,impact_key:string,is_current:bool,size:int}>
+     */
+    private function buildOutcomeLadder(Game $game, ?int $position): array
+    {
         $competition = Competition::find($game->competition_id);
         $tier = $competition?->tier ?? 1;
         $deltas = config("reputation.position_deltas.{$tier}", config('reputation.position_deltas.1'));
 
-        $pointsDelta = 0;
+        $ladder = [];
+        $previousMax = 0;
         foreach ($deltas as $maxPosition => $delta) {
-            if ($position <= $maxPosition) {
-                $pointsDelta = $delta;
-                break;
-            }
+            $low = $previousMax + 1;
+            $high = (int) $maxPosition;
+            $range = $high >= 99 ? $low . '+' : ($low === $high ? (string) $low : $low . '–' . $high);
+            $isCurrent = $position !== null && $position >= $low && $position <= $high;
+            // Catchall (99) represents the relegation zone; cap it at a plausible
+            // tail width so the horizontal bar reads proportionally to league size.
+            $size = $high >= 99 ? 3 : max(1, $high - $low + 1);
+
+            $ladder[] = [
+                'position_range' => $range,
+                'impact_key' => $this->impactKey((int) $delta),
+                'is_current' => $isCurrent,
+                'size' => $size,
+            ];
+
+            $previousMax = $high;
         }
-        if ($pointsDelta === 0 && !empty($deltas)) {
-            $pointsDelta = end($deltas);
+
+        return $ladder;
+    }
+
+    private function impactKey(int $delta): string
+    {
+        return match (true) {
+            $delta >= 30 => 'major_leap',
+            $delta >= 15 => 'solid_step',
+            $delta >= 5 => 'small_step',
+            $delta === 0 => 'stalls',
+            default => 'setback',
+        };
+    }
+
+    /**
+     * Translate the points-to-next-tier gap into a felt distance the player
+     * can reason about in terms of seasons, not raw points. Buckets are tuned
+     * against a strong-season league reward of ~+30.
+     */
+    private function qualitativeDistance(?int $pointsToNextTier): ?string
+    {
+        if ($pointsToNextTier === null) {
+            return null;
         }
 
-        $gravity = (int) (config('reputation.gravity', [])[$level] ?? 0);
-        $net = $pointsDelta - $gravity;
-
-        $direction = $net > 5 ? 'rising' : ($net < -5 ? 'declining' : 'stable');
-
-        return [$direction, [
-            'points_delta' => $pointsDelta,
-            'gravity' => $gravity,
-            'net' => $net,
-            'position' => $position,
-        ]];
+        return match (true) {
+            $pointsToNextTier <= 30 => 'one_strong_season',
+            $pointsToNextTier <= 60 => 'two_strong_seasons',
+            $pointsToNextTier <= 100 => 'several_seasons',
+            default => 'long_road',
+        };
     }
 }
