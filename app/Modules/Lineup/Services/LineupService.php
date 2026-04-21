@@ -263,6 +263,17 @@ class LineupService
     }
 
     /**
+     * True when a player's fitness is below the rotation threshold and they
+     * should be swapped out in favour of a rested alternative when possible.
+     */
+    private function isTired(GamePlayer $player): bool
+    {
+        $threshold = (int) config('player.condition.ai_rotation_threshold', 80);
+
+        return $player->fitness < $threshold;
+    }
+
+    /**
      * Select the best formation for an AI team based on squad composition.
      * Uses FormationRecommender to evaluate all formations and pick the best fit.
      */
@@ -833,7 +844,10 @@ class LineupService
         }
 
         if ($isPlayerTeam && !empty($playerPreferredLineup)) {
-            // Select lineup with preferences using pre-loaded data
+            // Select lineup with preferences using pre-loaded data. Applies
+            // fitness rotation so tired preferred starters get swapped for
+            // rested same-position subs during automated (e.g. fast-mode) runs,
+            // matching AI behaviour and preventing squad exhaustion.
             $availableIds = $availablePlayers->pluck('id')->toArray();
             $allTeamPlayers = $allPlayersGrouped !== null
                 ? $allPlayersGrouped->get($teamId, collect())
@@ -843,11 +857,13 @@ class LineupService
                 $allTeamPlayers,
                 $playerFormation,
                 $playerPreferredLineup,
-                $availableIds
+                $availableIds,
+                applyFitnessRotation: true,
             );
         } elseif ($isPlayerTeam) {
-            // Player team without preferred lineup — auto-select without fitness rotation
-            $lineup = $this->selectBestXI($availablePlayers, $playerFormation)->pluck('id')->toArray();
+            // Player team without preferred lineup — auto-select with fitness
+            // rotation so automated matchday prep doesn't burn out the squad.
+            $lineup = $this->selectBestXI($availablePlayers, $playerFormation, applyFitnessRotation: true)->pluck('id')->toArray();
         } else {
             // AI team: use squad-fitted formation with fitness rotation
             $aiFormation = $this->selectAIFormation($availablePlayers);
@@ -921,6 +937,12 @@ class LineupService
     /**
      * Select lineup using preferred players from a pre-loaded collection (no DB queries).
      *
+     * When $applyFitnessRotation is true, tired preferred starters are treated
+     * like unavailable players and swapped for rested same-position subs where
+     * possible. If the entire position group is tired, the preferred tired
+     * player is kept rather than forcing an out-of-position replacement —
+     * a tired specialist outperforms a rested player in the wrong role.
+     *
      * @param Collection $availablePlayers Players available for selection (not injured/suspended)
      * @param Collection $allTeamPlayers All team players (including unavailable) for position lookups
      */
@@ -929,31 +951,43 @@ class LineupService
         Collection $allTeamPlayers,
         ?Formation $formation,
         array $preferredLineup,
-        array $availableIds
+        array $availableIds,
+        bool $applyFitnessRotation = false,
     ): array {
         $formation = $formation ?? Formation::F_4_3_3;
-        $requirements = $formation->requirements();
 
         // Separate preferred players into available and unavailable
         $availablePreferred = [];
-        $unavailablePositionGroups = [];
+        // Each replacement slot is [positionGroup, fallbackId|null]. The fallback
+        // is the preferred player kept in reserve for the tired-but-no-sub case;
+        // it is null when the preferred player is injured/suspended (no fallback
+        // is viable in that case).
+        $replacementSlots = [];
 
         // Use all team players for lookups so we can find position groups of unavailable players
         $allPlayersById = $allTeamPlayers->keyBy('id');
 
         foreach ($preferredLineup as $playerId) {
-            if (in_array($playerId, $availableIds)) {
-                $availablePreferred[] = $playerId;
-            } else {
-                // Find the player to determine their position group for replacement
+            if (!in_array($playerId, $availableIds)) {
+                // Injured/suspended — must be replaced, no fallback available.
                 $player = $allPlayersById->get($playerId);
                 if ($player) {
-                    $unavailablePositionGroups[] = $player->position_group;
+                    $replacementSlots[] = [$player->position_group, null];
                 }
+                continue;
             }
+
+            $player = $allPlayersById->get($playerId);
+            if ($applyFitnessRotation && $player && $this->isTired($player)) {
+                // Tired — try to find a rested same-group sub, keep as fallback.
+                $replacementSlots[] = [$player->position_group, $playerId];
+                continue;
+            }
+
+            $availablePreferred[] = $playerId;
         }
 
-        // If all preferred players are available, use them
+        // If all preferred players are available and fresh, use them as-is.
         if (count($availablePreferred) === 11) {
             return $availablePreferred;
         }
@@ -965,27 +999,51 @@ class LineupService
         $remainingAvailable = $availablePlayers->filter(fn ($p) => !in_array($p->id, $lineup));
         $grouped = $remainingAvailable->groupBy(fn ($p) => $p->position_group);
 
-        // Fill gaps with best available from each missing position group
-        foreach ($unavailablePositionGroups as $positionGroup) {
+        // Sort helper — when rotating, rank by fitness-adjusted effective score
+        // so rested high-raters float to the top of the fallback lists.
+        $rankScore = $applyFitnessRotation
+            ? fn ($p) => $this->effectiveScore($p)
+            : fn ($p) => $p->overall_score;
+
+        // Fill replacement slots: prefer a rested same-position sub; fall back
+        // to the tired preferred player if no rested sub exists in that group.
+        foreach ($replacementSlots as [$positionGroup, $fallbackId]) {
             if (count($lineup) >= 11) {
                 break;
             }
 
-            $candidates = ($grouped->get($positionGroup) ?? collect())
-                ->filter(fn ($p) => !in_array($p->id, $lineup))
-                ->sortByDesc('overall_score');
+            $groupCandidates = ($grouped->get($positionGroup) ?? collect())
+                ->filter(fn ($p) => !in_array($p->id, $lineup));
 
-            $replacement = $candidates->first();
+            if ($applyFitnessRotation) {
+                // Prefer rested players in the same position group.
+                $rested = $groupCandidates->filter(fn ($p) => !$this->isTired($p))->sortByDesc($rankScore);
+                $replacement = $rested->first();
+
+                // No rested same-group sub: keep the tired preferred starter
+                // rather than pulling an out-of-position player in.
+                if (!$replacement && $fallbackId !== null && !in_array($fallbackId, $lineup)) {
+                    $lineup[] = $fallbackId;
+                    continue;
+                }
+            } else {
+                $replacement = $groupCandidates->sortByDesc($rankScore)->first();
+            }
+
             if ($replacement) {
                 $lineup[] = $replacement->id;
+            } elseif ($fallbackId !== null && !in_array($fallbackId, $lineup)) {
+                // Last-ditch: preserve the preferred player even without rotation
+                // when no same-group sub exists.
+                $lineup[] = $fallbackId;
             }
         }
 
-        // If still not 11, fill with best available from any position
+        // If still not 11, fill with best available from any position.
         if (count($lineup) < 11) {
             $remaining = $availablePlayers
                 ->filter(fn ($p) => !in_array($p->id, $lineup))
-                ->sortByDesc('overall_score');
+                ->sortByDesc($rankScore);
 
             foreach ($remaining as $player) {
                 if (count($lineup) >= 11) {
