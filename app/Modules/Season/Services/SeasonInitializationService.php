@@ -4,6 +4,7 @@ namespace App\Modules\Season\Services;
 
 use App\Models\Competition;
 use App\Models\CompetitionEntry;
+use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\Team;
@@ -174,7 +175,22 @@ class SeasonInitializationService
                 ->all(),
         );
 
+        $userTeamId = Game::where('id', $gameId)->value('team_id');
+
         foreach ($cupIds as $cupId) {
+            // Mirror initializeSwissCompetition: skip cups the user's team
+            // isn't in. No entries → no draw → no orphaned background work.
+            // Downstream reporting (season summary, trophies) already handles
+            // the "did not compete" case.
+            $userParticipates = CompetitionEntry::where('game_id', $gameId)
+                ->where('competition_id', $cupId)
+                ->where('team_id', $userTeamId)
+                ->exists();
+
+            if (!$userParticipates) {
+                continue;
+            }
+
             if ($this->cupDrawService->needsDrawForRound($gameId, $cupId, 1)) {
                 $this->cupDrawService->conductDraw($gameId, $cupId, 1);
             }
