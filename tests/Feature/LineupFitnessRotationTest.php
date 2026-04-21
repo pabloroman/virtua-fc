@@ -6,6 +6,7 @@ use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Models\GamePlayerMatchState;
 use App\Models\GameTactics;
 use App\Models\Team;
 use App\Models\User;
@@ -166,10 +167,9 @@ class LineupFitnessRotationTest extends TestCase
         $seed = $this->seedSquadWithTiredMidfielder();
 
         // Exhaust every MC we created so no rested same-position sub exists.
-        foreach ($seed['freshSubs'] as $sub) {
-            $sub->fitness = 45;
-            $sub->save();
-        }
+        // Fitness lives on the GamePlayerMatchState satellite table, not game_players.
+        GamePlayerMatchState::whereIn('game_player_id', $seed['freshSubs']->pluck('id'))
+            ->update(['fitness' => 45]);
 
         $preferred = $seed['starters']->pluck('id')->all();
         $this->setPreferredLineup($preferred);
