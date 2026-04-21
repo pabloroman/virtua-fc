@@ -6,6 +6,8 @@ How players develop (or decline) over seasons.
 
 At the end of each season, players' technical and physical abilities change based on age, playing time, and distance from potential. Development is calculated separately for technical and physical — physical ability peaks earlier and declines faster than technical.
 
+Development runs across **every** `game_player` in the game, including pool-scope foreign-league players. Pool players accrue zero appearances and therefore get no playing-time bonus — their curves reduce to pure age-driven drift. See [Player Data Model](player-data-model.md) for the active/pool scope distinction.
+
 ## Development Curve
 
 Development uses per-age multipliers applied to a base development constant. Multipliers above 1.0 mean growth; below 1.0 mean decline. Technical and physical have separate curves. The multiplier table and base constants are in `DevelopmentCurve`.

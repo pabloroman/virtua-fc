@@ -17,6 +17,8 @@ The transfer market has six interconnected parts:
 
 Scouting tier (from budget allocation) determines geographic scope, search speed, number of results, and ability estimation accuracy. Higher tiers unlock international searches and reduce the fuzz on reported abilities. Search duration depends on scope breadth and tier. See `ScoutingService`.
 
+International scouting and the Explore feature both query across **every** `game_player` in the game, including pool-scope foreign-league players who never actually play matches. See [Player Data Model](player-data-model.md) for what the pool is and when pool players transition to active scope (transfer completion, European draw).
+
 ## Buying
 
 When bidding on a player, the selling club calculates an **asking price** based on market value, the player's importance to their team, contract length, and age. Bids are evaluated relative to the asking price — key players require higher bids. Responses are: accept, counter-offer (midpoint of bid and asking price), or reject. See `ScoutingService::evaluateBid()`.

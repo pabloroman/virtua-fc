@@ -6,6 +6,7 @@ High-level documentation of the game systems that power VirtuaFC. These document
 
 | Document | Description |
 |----------|-------------|
+| [Player Data Model](player-data-model.md) | How player records split across `players`, `game_players`, `game_player_match_state`, and `game_player_templates`; active vs pool scope |
 | [Player Abilities](player-abilities.md) | How abilities are derived from market value with age adjustments |
 | [Player Potential](player-potential.md) | How potential is generated and influences development |
 | [Player Development](player-development.md) | How players grow and decline over seasons |
