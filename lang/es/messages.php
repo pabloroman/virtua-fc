@@ -147,6 +147,7 @@ return [
     'fast_mode_disabled' => 'Modo rápido desactivado. Vuelves a tener el control.',
     'fast_mode_action_required' => 'Una acción requiere tu atención. Sal del modo rápido para resolverla.',
     'fast_mode_blocked_live_match' => 'Termina el partido actual antes de activar el modo rápido.',
+    'fast_mode_blocked_tournament' => 'El modo rápido no está disponible en el modo torneo.',
 
     // Budget loan messages
     'budget_loan_approved' => 'Préstamo de :amount aprobado y añadido a tu presupuesto de fichajes.',

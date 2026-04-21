@@ -147,6 +147,7 @@ return [
     'fast_mode_disabled' => 'Fast mode is off. You are back in full control.',
     'fast_mode_action_required' => 'An action requires your attention. Exit fast mode to resolve it.',
     'fast_mode_blocked_live_match' => 'Finish the current match before enabling fast mode.',
+    'fast_mode_blocked_tournament' => 'Fast mode is not available in tournament mode.',
 
     // Budget loan messages
     'budget_loan_approved' => 'Loan of :amount approved and added to your transfer budget.',

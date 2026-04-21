@@ -16,6 +16,13 @@ class EnterFastMode
     {
         $game = Game::findOrFail($gameId);
 
+        // Fast mode is disabled in tournament mode — the whole point of
+        // tournament mode is to play every match manually.
+        if ($game->isTournamentMode()) {
+            return redirect()->route('show-game', $gameId)
+                ->with('warning', __('messages.fast_mode_blocked_tournament'));
+        }
+
         // Can't enter fast mode while a live match is pending finalization —
         // the user still needs to dismiss that screen first.
         if ($game->pending_finalization_match_id) {

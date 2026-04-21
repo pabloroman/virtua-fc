@@ -112,6 +112,15 @@
                                 </svg>
                                 <span>{{ __('game.fast_mode') }}</span>
                             </a>
+                        @elseif($game->isTournamentMode())
+                            {{-- Fast mode is disabled in tournament mode — show a plain Continue button. --}}
+                            <button type="button"
+                                    x-data="{ clicked: false }"
+                                    @click="if (clicked) return; clicked = true; $dispatch('show-pre-match', '{{ route('game.pre-match-data', $game->id) }}')"
+                                    x-bind:disabled="clicked"
+                                    class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] text-xs rounded-lg bg-accent-blue hover:bg-blue-600 active:bg-blue-700 border border-transparent font-semibold text-white uppercase tracking-wider focus:outline-hidden focus:ring-2 focus:ring-accent-blue focus:ring-offset-2 focus:ring-offset-surface-900 disabled:opacity-50 disabled:cursor-not-allowed transition ease-in-out duration-150">
+                                {{ __('app.continue') }}
+                            </button>
                         @else
                             {{-- Split button: left half = Continue (pre-match flow), right half = open fast-mode info modal --}}
                             <div class="inline-flex items-stretch">
@@ -146,7 +155,7 @@
     </header>
 
     {{-- Fast Mode Info Modal (opened by split-button chevron) --}}
-    @if($nextMatch && !$game->hasPendingActions() && !$continueToHome && !$game->isFastMode())
+    @if($nextMatch && !$game->hasPendingActions() && !$continueToHome && !$game->isFastMode() && !$game->isTournamentMode())
         @include('partials.fast-mode-info-modal')
     @endif
 
