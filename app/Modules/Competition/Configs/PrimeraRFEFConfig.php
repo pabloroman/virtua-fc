@@ -17,31 +17,10 @@ use App\Models\Game;
 class PrimeraRFEFConfig implements CompetitionConfig, HasSeasonGoals
 {
     /**
-     * Primera RFEF TV revenue by position within a 20-team group (in cents).
-     * Values are provisional and scaled well below La Liga 2.
+     * Primera RFEF TV revenue — flat €100K per club, regardless of finishing position.
+     * The tier-3 centralised pool is small and not position-weighted in-game.
      */
-    private const TV_REVENUE = [
-        1 => 150_000_000,  // €1.5M
-        2 => 140_000_000,
-        3 => 130_000_000,
-        4 => 120_000_000,
-        5 => 110_000_000,
-        6 => 100_000_000,
-        7 => 95_000_000,
-        8 => 90_000_000,
-        9 => 85_000_000,
-        10 => 80_000_000,
-        11 => 75_000_000,
-        12 => 70_000_000,
-        13 => 65_000_000,
-        14 => 60_000_000,
-        15 => 55_000_000,
-        16 => 55_000_000,
-        17 => 50_000_000,
-        18 => 50_000_000,
-        19 => 50_000_000,
-        20 => 50_000_000,
-    ];
+    private const TV_REVENUE_FLAT = 10_000_000; // €100K in cents
 
     private const POSITION_FACTORS = [
         'top' => 1.05,      // 1st-5th (promotion zone)
@@ -73,7 +52,7 @@ class PrimeraRFEFConfig implements CompetitionConfig, HasSeasonGoals
 
     public function getTvRevenue(int $position): int
     {
-        return self::TV_REVENUE[$position] ?? self::TV_REVENUE[20];
+        return self::TV_REVENUE_FLAT;
     }
 
     public function getPositionFactor(int $position): float

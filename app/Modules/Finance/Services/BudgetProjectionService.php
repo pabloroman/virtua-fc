@@ -29,9 +29,16 @@ class BudgetProjectionService
     private const SOLIDARITY_FUNDS = 100_000_000; // €1M in cents
 
     /**
-     * Minimum transfer budget guaranteed after mandatory infrastructure.
+     * Minimum transfer budget guaranteed after mandatory infrastructure, by competition tier (in cents).
+     * Primera RFEF (tier 3) operates on a tighter floor that matches the division's cash reality.
      */
-    private const MINIMUM_TRANSFER_BUDGET = 100_000_000; // €1M in cents
+    private const MINIMUM_TRANSFER_BUDGET_BY_TIER = [
+        1 => 100_000_000, // €1M — La Liga
+        2 => 100_000_000, // €1M — Segunda
+        3 =>  20_000_000, // €200K — Primera RFEF
+    ];
+
+    private const MINIMUM_TRANSFER_BUDGET_DEFAULT = 100_000_000; // €1M in cents
 
     /**
      * Maximum stadium seats used for commercial revenue calculation.
@@ -85,7 +92,7 @@ class BudgetProjectionService
 
         // Calculate public subsidy if needed to guarantee minimum viable budget
         $projectedSubsidyRevenue = $this->calculateSubsidy(
-            $projectedSurplus, $carriedDebt, $carriedSurplus, $previousLoanRepayment
+            $projectedSurplus, $carriedDebt, $carriedSurplus, $previousLoanRepayment, $league->tier
         );
         if ($projectedSubsidyRevenue > 0) {
             $projectedTotalRevenue += $projectedSubsidyRevenue;
@@ -317,9 +324,10 @@ class BudgetProjectionService
      * Calculate public subsidy (Subvenciones Públicas) to guarantee a minimum viable budget.
      * Ensures every team can cover mandatory infrastructure + a minimum transfer budget.
      */
-    private function calculateSubsidy(int $projectedSurplus, int $carriedDebt, int $carriedSurplus, int $loanRepayment = 0): int
+    private function calculateSubsidy(int $projectedSurplus, int $carriedDebt, int $carriedSurplus, int $loanRepayment = 0, int $tier = 1): int
     {
-        $minimumAvailable = GameInvestment::MINIMUM_TOTAL_INVESTMENT + self::MINIMUM_TRANSFER_BUDGET;
+        $minimumTransferBudget = self::MINIMUM_TRANSFER_BUDGET_BY_TIER[$tier] ?? self::MINIMUM_TRANSFER_BUDGET_DEFAULT;
+        $minimumAvailable = GameInvestment::MINIMUM_TOTAL_INVESTMENT + $minimumTransferBudget;
         $rawAvailable = $projectedSurplus + $carriedSurplus - $carriedDebt - $loanRepayment;
 
         if ($rawAvailable >= $minimumAvailable) {

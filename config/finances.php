@@ -35,7 +35,7 @@ return [
     'operating_expense_tier_multiplier' => [
         1 => 1.0,   // La Liga: full operating expenses
         2 => 0.70,  // Segunda: 70% of base operating expenses
-        3 => 0.35,  // Primera RFEF: ~1/3 of base, keeps floors under typical revenue
+        3 => 0.25,  // Primera RFEF: ~1/4 of base, keeps floors under typical revenue
     ],
 
     // Budget loan configuration.
