@@ -36,6 +36,9 @@ class UefaSuperCupTest extends TestCase
     {
         parent::setUp();
 
+        // The Game's competition_id FK requires ESP1 to exist.
+        Competition::factory()->league()->create(['id' => 'ESP1', 'country' => 'ES', 'tier' => 1]);
+
         // UEFA Super Cup — single-leg continental knockout.
         Competition::factory()->create([
             'id' => 'UEFASUP',
