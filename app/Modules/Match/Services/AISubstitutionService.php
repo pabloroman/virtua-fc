@@ -35,9 +35,11 @@ class AISubstitutionService
 
         $minutes = [];
 
-        // Possibly add a halftime sub (minute 46)
-        if ($fromMinute < 46 && rand(1, 100) <= $halftimeChance && $totalSubs > 0) {
-            $minutes[] = 46;
+        // Possibly add a halftime sub (minute 45). Minute 45 is a free window
+        // (see match_simulation.free_sub_window_minutes) so it doesn't consume
+        // one of the 3 tactical substitution windows.
+        if ($fromMinute < 45 && rand(1, 100) <= $halftimeChance && $totalSubs > 0) {
+            $minutes[] = 45;
             $totalSubs--;
         }
 

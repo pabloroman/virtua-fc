@@ -310,7 +310,7 @@ class AISubstitutionSimulationTest extends TestCase
 
                 // The sub should be at injury minute + 1, not at a tactical
                 // window (60-85). Injury auto-subs fire within the first half
-                // too, so some may be well before minute 46.
+                // too, so some may be well before halftime.
                 $injuryEvents = $output->result->events
                     ->filter(fn ($e) => $e->type === 'injury' && $e->teamId === $homeTeam->id);
                 if ($injuryEvents->isNotEmpty()) {

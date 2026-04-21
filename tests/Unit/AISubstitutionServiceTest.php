@@ -70,10 +70,10 @@ class AISubstitutionServiceTest extends TestCase
             $windows = $this->service->generateSubstitutionWindows(4);
 
             foreach (array_keys($windows) as $minute) {
-                // Halftime (46) or within configured range
+                // Halftime (45) or within configured range
                 $this->assertTrue(
-                    $minute === 46 || ($minute >= $config['min_minute'] && $minute <= $config['max_minute']),
-                    "Sub minute $minute should be 46 (halftime) or within [{$config['min_minute']}, {$config['max_minute']}]"
+                    $minute === 45 || ($minute >= $config['min_minute'] && $minute <= $config['max_minute']),
+                    "Sub minute $minute should be 45 (halftime) or within [{$config['min_minute']}, {$config['max_minute']}]"
                 );
             }
         }

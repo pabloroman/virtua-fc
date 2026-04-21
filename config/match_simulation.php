@@ -419,7 +419,7 @@ return [
         'poisson_lambda' => 10,             // Poisson λ for timing offset (peak at min_minute + λ)
         'min_minute' => 60,                 // earliest normal sub minute
         'max_minute' => 85,                 // latest sub minute
-        'halftime_sub_chance' => 25,        // % chance of making a sub at halftime (minute 46)
+        'halftime_sub_chance' => 10,        // % chance of making a sub at halftime (minute 45, free window)
         'window_grouping_minutes' => 3,     // subs within this many minutes = same window
         'energy_threshold' => 40,           // energy below this = strong sub candidate
         'yellow_card_weight' => 0.30,       // extra urgency score for yellowed players
