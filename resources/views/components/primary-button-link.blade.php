@@ -11,6 +11,7 @@ $colorClasses = $colors[$color] ?? $colors['blue'];
 
 $sizeClasses = match($size) {
     'xs' => 'px-2.5 py-1 text-xs rounded-md',
+    'sm' => 'px-3 py-1.5 min-h-[36px] text-xs rounded-lg',
     default => 'px-4 py-2 min-h-[44px] text-sm rounded-lg',
 };
 @endphp

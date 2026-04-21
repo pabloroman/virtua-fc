@@ -140,7 +140,7 @@ Every feature must work at 375px (phone) and 768px (tablet). Mobile-first Tailwi
 - Hide critical game actions on mobile
 - Use hover-only interactions — `:hover` must also work via tap/click
 
-**Data tables:** Wrap in `overflow-x-auto`, hide non-essential columns with `hidden md:table-cell`, ensure 44px touch targets.
+**Data tables:** Wrap in `overflow-x-auto`, hide non-essential columns with `hidden md:table-cell`.
 
 **Navigation:** Slide-out drawer on mobile (`game-header.blade.php`). New nav items must be added to **both** desktop nav and mobile drawer.
 
