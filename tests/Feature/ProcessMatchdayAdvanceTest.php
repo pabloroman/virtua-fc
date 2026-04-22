@@ -146,7 +146,7 @@ class ProcessMatchdayAdvanceTest extends TestCase
         $orchestrator = Mockery::mock(MatchdayOrchestrator::class);
         $orchestrator->shouldReceive('advance')
             ->once()
-            ->with(Mockery::type(Game::class), fastForward: true)
+            ->with(Mockery::type(Game::class), true)
             ->andReturn(MatchdayAdvanceResult::done());
         $this->app->instance(MatchdayOrchestrator::class, $orchestrator);
 
