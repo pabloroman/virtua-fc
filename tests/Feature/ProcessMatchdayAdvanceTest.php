@@ -12,7 +12,6 @@ use App\Modules\Match\DTOs\MatchdayAdvanceResult;
 use App\Modules\Match\Jobs\ProcessMatchdayAdvance;
 use App\Modules\Match\Services\MatchdayOrchestrator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
 use Mockery;
 use Tests\TestCase;
@@ -108,7 +107,7 @@ class ProcessMatchdayAdvanceTest extends TestCase
 
         $this->game->update(['matchday_advancing_at' => null]);
 
-        $this->assertNull(Bus::dispatchSync(new ProcessMatchdayAdvance($this->game->id)));
+        $this->assertNull($this->runHandle());
     }
 
     public function test_clears_advancing_flag_when_orchestrator_throws(): void
@@ -120,7 +119,7 @@ class ProcessMatchdayAdvanceTest extends TestCase
         $this->game->update(['matchday_advancing_at' => now()]);
 
         try {
-            Bus::dispatchSync(new ProcessMatchdayAdvance($this->game->id));
+            $this->runHandle();
             $this->fail('expected RuntimeException to propagate');
         } catch (\RuntimeException) {
             // expected
@@ -133,7 +132,8 @@ class ProcessMatchdayAdvanceTest extends TestCase
     {
         $this->mockOrchestrator(MatchdayAdvanceResult::liveMatch('match-id'));
 
-        $this->runSync();
+        $this->game->update(['matchday_advancing_at' => now()]);
+        $this->runHandle();
 
         $this->game->refresh();
         $this->assertSame('live_match', $this->game->matchday_advance_result['type']);
@@ -152,14 +152,31 @@ class ProcessMatchdayAdvanceTest extends TestCase
 
         $this->game->update(['matchday_advancing_at' => now()]);
 
-        Bus::dispatchSync(new ProcessMatchdayAdvance($this->game->id, fastForward: true));
+        $this->runHandle(fastForward: true);
+
+        // Mockery's ->once() is the assertion; add an explicit one so PHPUnit
+        // doesn't flag this as a risky test with no assertions.
+        $this->assertTrue(true);
+    }
+
+    /**
+     * Invoke the job's handle() directly, letting the container resolve its
+     * dependencies. Going through Bus::dispatchSync routes through Laravel's
+     * sync queue adapter which returns 0 instead of the handle() value and
+     * leaves an error handler registered — neither of which we want here.
+     */
+    private function runHandle(bool $fastForward = false): ?MatchdayAdvanceResult
+    {
+        $job = new ProcessMatchdayAdvance($this->game->id, $fastForward);
+
+        return $this->app->call([$job, 'handle']);
     }
 
     private function runSync(): ?MatchdayAdvanceResult
     {
         $this->game->update(['matchday_advancing_at' => now()]);
 
-        return Bus::dispatchSync(new ProcessMatchdayAdvance($this->game->id));
+        return $this->runHandle();
     }
 
     private function mockOrchestrator(MatchdayAdvanceResult $result): void

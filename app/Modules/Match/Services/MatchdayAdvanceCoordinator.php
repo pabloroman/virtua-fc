@@ -5,7 +5,6 @@ namespace App\Modules\Match\Services;
 use App\Models\Game;
 use App\Modules\Match\DTOs\MatchdayAdvanceResult;
 use App\Modules\Match\Jobs\ProcessMatchdayAdvance;
-use Illuminate\Support\Facades\Bus;
 
 /**
  * Owns the atomic "claim the advancing flag + dispatch the job" dance. Every
@@ -38,6 +37,11 @@ class MatchdayAdvanceCoordinator
      * Claim the flag and run the job inline in the current process. Used by
      * fast mode (no live UI to defer to) and console commands (no queue
      * worker assumed). Returns null when the flag couldn't be claimed.
+     *
+     * We invoke handle() directly instead of Bus::dispatchSync because the
+     * latter routes through the sync queue adapter, which returns 0 (the
+     * sync-queue "pushed count") instead of the handle() return value and
+     * leaves a PHP error handler registered in the process.
      */
     public function runSync(string $gameId, bool $fastForward = false): ?MatchdayAdvanceResult
     {
@@ -45,7 +49,9 @@ class MatchdayAdvanceCoordinator
             return null;
         }
 
-        return Bus::dispatchSync(new ProcessMatchdayAdvance($gameId, $fastForward));
+        $job = new ProcessMatchdayAdvance($gameId, $fastForward);
+
+        return app()->call([$job, 'handle']);
     }
 
     /**

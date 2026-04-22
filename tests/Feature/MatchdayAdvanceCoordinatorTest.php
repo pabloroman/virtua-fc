@@ -103,6 +103,10 @@ class MatchdayAdvanceCoordinatorTest extends TestCase
         $this->app->instance(MatchdayOrchestrator::class, $orchestrator);
 
         $this->coordinator()->runSync($this->game->id, fastForward: true);
+
+        // Mockery's ->once() is the assertion; add an explicit one so PHPUnit
+        // doesn't flag this as a risky test with no assertions.
+        $this->assertTrue(true);
     }
 
     private function coordinator(): MatchdayAdvanceCoordinator
