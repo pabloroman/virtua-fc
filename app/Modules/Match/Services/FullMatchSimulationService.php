@@ -94,7 +94,8 @@ class FullMatchSimulationService
 
         $matchResults = [];
         foreach ($matchesToSimulate as $match) {
-            $matchResults[] = $this->simulateMatch($match, $allPlayers, $game, $fastForward);
+            $suspendedForCompetition = $suspendedByCompetition[$match->competition_id] ?? [];
+            $matchResults[] = $this->simulateMatch($match, $allPlayers, $game, $fastForward, $suspendedForCompetition);
         }
 
         if ($forfeitResult) {
@@ -106,7 +107,10 @@ class FullMatchSimulationService
         return ['matchResults' => $matchResults, 'playerMatch' => $playerMatch];
     }
 
-    private function simulateMatch(GameMatch $match, $allPlayers, Game $game, bool $fastForward = false): array
+    /**
+     * @param  array<int, string>  $suspendedPlayerIds  Players suspended for this match's competition
+     */
+    private function simulateMatch(GameMatch $match, $allPlayers, Game $game, bool $fastForward = false, array $suspendedPlayerIds = []): array
     {
         $homePlayers = $this->getLineupPlayers($match, $allPlayers, 'home');
         $awayPlayers = $this->getLineupPlayers($match, $allPlayers, 'away');
@@ -117,8 +121,8 @@ class FullMatchSimulationService
         // simulateWithAISubstitutions() in MatchSimulator.
         $isUserMatch = $match->involvesTeam($game->team_id);
 
-        $homeBenchPlayers = $this->getBenchPlayers($match, $allPlayers, 'home', $game);
-        $awayBenchPlayers = $this->getBenchPlayers($match, $allPlayers, 'away', $game);
+        $homeBenchPlayers = $this->getBenchPlayers($match, $allPlayers, 'home', $game, $suspendedPlayerIds);
+        $awayBenchPlayers = $this->getBenchPlayers($match, $allPlayers, 'away', $game, $suspendedPlayerIds);
 
         $tc = TacticalConfig::fromMatch($match);
         if (! $isUserMatch) {
@@ -187,7 +191,20 @@ class FullMatchSimulationService
         ];
     }
 
-    private function getBenchPlayers(GameMatch $match, $allPlayers, string $side, Game $game): Collection
+    /**
+     * Build the bench for one side of a match.
+     *
+     * Excludes lineup players, injured players, and players suspended for the
+     * match's competition. The suspension filter matters because injury subs
+     * and AI tactical subs draw from this collection — letting a suspended
+     * player enter the match would both circumvent the ban and, on
+     * finalization, cause their own suspension not to be served (the
+     * serve-suspensions query excludes any player who received a card in the
+     * match).
+     *
+     * @param  array<int, string>  $suspendedPlayerIds
+     */
+    private function getBenchPlayers(GameMatch $match, $allPlayers, string $side, Game $game, array $suspendedPlayerIds = []): Collection
     {
         $lineupField = $side . '_lineup';
         $teamIdField = $side . '_team_id';
@@ -198,6 +215,7 @@ class FullMatchSimulationService
         return $teamPlayers
             ->reject(fn ($player) => in_array($player->id, $lineupIds))
             ->reject(fn ($player) => $player->isInjured($game->current_date))
+            ->reject(fn ($player) => in_array($player->id, $suspendedPlayerIds))
             ->values();
     }
 
