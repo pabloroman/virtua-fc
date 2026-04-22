@@ -75,6 +75,9 @@ class MatchdayOrchestrator
             while ($batch = $this->matchdayService->getNextMatchBatch($game)) {
                 // Simulate every match in the batch inline so the live-match
                 // "other scores" ticker has real sibling events to reveal.
+                // FullMatchSimulationService routes siblings through the fast
+                // statistical AIMatchResolver so only the user's match pays the
+                // full MatchSimulator cost.
                 $result = $this->processBatch($game, $batch, $fastForward);
 
                 if ($result['playerMatch']) {

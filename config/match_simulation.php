@@ -31,6 +31,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Sibling AI Matches on Player-Involved Batches
+    |--------------------------------------------------------------------------
+    |
+    | When the user's team is in a matchday batch, only the user's match needs
+    | the full minute-by-minute MatchSimulator pipeline. Sibling AI matches in
+    | the same batch can be resolved statistically (same model as
+    | ai_resolver_enabled) while still emitting the goal/card events that the
+    | live-match "other scores" ticker consumes.
+    |
+    | Turn off to revert to fully simulating every match in the batch inline.
+    |
+    */
+    'ai_resolver_for_sibling_matches' => true,
+
+    /*
+    |--------------------------------------------------------------------------
     | Expected Goals (Ratio-Based Formula)
     |--------------------------------------------------------------------------
     |

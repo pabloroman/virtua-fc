@@ -25,6 +25,7 @@ class FullMatchSimulationService
         private readonly MatchSimulator $matchSimulator,
         private readonly LineupService $lineupService,
         private readonly NotificationService $notificationService,
+        private readonly AIMatchResolver $aiMatchResolver = new AIMatchResolver,
     ) {}
 
     /**
@@ -54,10 +55,17 @@ class FullMatchSimulationService
         $clubProfiles = TeamReputation::where('game_id', $game->id)
             ->whereIn('team_id', $teamIds)->get()->keyBy('team_id');
 
-        $this->lineupService->ensureLineupsForMatches($matches, $game, $allPlayers, $suspendedByCompetition, $clubProfiles);
+        $playerMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
+        // Only the user's match pays the full minute-by-minute MatchSimulator
+        // cost; sibling AI matches in the same batch go through the fast
+        // statistical AIMatchResolver (still emits goal/card events so the
+        // live-match "other scores" ticker has real data).
+        $useSplit = $playerMatch && config('match_simulation.ai_resolver_for_sibling_matches', true);
+
+        $lineupMatches = $useSplit ? collect([$playerMatch]) : $matches;
+        $this->lineupService->ensureLineupsForMatches($lineupMatches, $game, $allPlayers, $suspendedByCompetition, $clubProfiles);
 
         // --- Check for forfeit (user's team has < 7 available players) ---
-        $playerMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
         $forfeitResult = null;
 
         if ($playerMatch) {
@@ -93,9 +101,26 @@ class FullMatchSimulationService
             : $matches;
 
         $matchResults = [];
-        foreach ($matchesToSimulate as $match) {
-            $suspendedForCompetition = $suspendedByCompetition[$match->competition_id] ?? [];
-            $matchResults[] = $this->simulateMatch($match, $allPlayers, $game, $fastForward, $suspendedForCompetition);
+        if ($useSplit) {
+            $userMatchToSimulate = $matchesToSimulate->first(fn ($m) => $m->id === $playerMatch->id);
+            $siblingMatches = $matchesToSimulate->reject(fn ($m) => $m->id === $playerMatch->id);
+
+            if ($userMatchToSimulate) {
+                $suspendedForCompetition = $suspendedByCompetition[$userMatchToSimulate->competition_id] ?? [];
+                $matchResults[] = $this->simulateMatch($userMatchToSimulate, $allPlayers, $game, $fastForward, $suspendedForCompetition);
+            }
+
+            if ($siblingMatches->isNotEmpty()) {
+                $matchResults = array_merge(
+                    $matchResults,
+                    $this->aiMatchResolver->resolveMatches($siblingMatches, $allPlayers, $game, $suspendedByCompetition)
+                );
+            }
+        } else {
+            foreach ($matchesToSimulate as $match) {
+                $suspendedForCompetition = $suspendedByCompetition[$match->competition_id] ?? [];
+                $matchResults[] = $this->simulateMatch($match, $allPlayers, $game, $fastForward, $suspendedForCompetition);
+            }
         }
 
         if ($forfeitResult) {
