@@ -23,6 +23,7 @@ class ShowExplore
         $competitions = $this->exploreService->getCompetitionsWithTeamCounts($gameId);
         $freeAgentCount = $this->exploreService->getFreeAgentCount($gameId);
         $europeTeamCount = $this->exploreService->getEuropeanTeamCount($gameId);
+        $nationalities = $this->exploreService->getDistinctNationalities($gameId);
 
         // Shortlisted player IDs for star toggle state
         $shortlistedIds = ShortlistedPlayer::where('game_id', $gameId)
@@ -34,6 +35,7 @@ class ShowExplore
             'competitions' => $competitions,
             'freeAgentCount' => $freeAgentCount,
             'europeTeamCount' => $europeTeamCount,
+            'nationalities' => $nationalities,
             'shortlistedIds' => $shortlistedIds,
             ...$this->headerService->getHeaderData($game),
         ]);

@@ -191,7 +191,7 @@ class ExploreService
      * Advanced player search across the full game database.
      *
      * Exposes only publicly observable data filters (name, position, age,
-     * nationality, league, team, market value, contract year, foot). Ability,
+     * nationality, league, team, market value, contract year). Ability,
      * wage, and willingness intentionally stay behind scouting — exposing them
      * here would erode the value of the scouting tier.
      *
@@ -209,7 +209,6 @@ class ExploreService
      *     min_value?: int,        // euros
      *     max_value?: int,        // euros
      *     max_contract_year?: int,
-     *     foot?: string,          // left|right|both
      * } $filters
      * @return array{players: Collection<int, GamePlayer>, total: int, truncated: bool}
      */
@@ -226,7 +225,11 @@ class ExploreService
         }
 
         if (!empty($filters['position'])) {
-            $positions = PositionMapper::getPositionsForGroupFilter($filters['position']);
+            // Accepts both group keys (gk|def|mid|fwd) and scout-style filter
+            // codes (GK, CB, any_defender, …). Groups map to their canonical
+            // positions; specific codes resolve to a single position.
+            $positions = PositionMapper::getPositionsForGroupFilter($filters['position'])
+                ?? PositionMapper::getPositionsForFilter($filters['position']);
             if ($positions !== null) {
                 $query->whereIn('position', $positions);
             }
@@ -281,10 +284,6 @@ class ExploreService
             });
         }
 
-        if (!empty($filters['foot']) && in_array($filters['foot'], ['left', 'right', 'both'], true)) {
-            $query->whereHas('player', fn ($q) => $q->where('foot', $filters['foot']));
-        }
-
         $total = (clone $query)->count();
 
         $players = $query->limit(self::ADVANCED_SEARCH_LIMIT)->get();
@@ -312,13 +311,37 @@ class ExploreService
      */
     public static function hasAdvancedFilters(array $filters): bool
     {
-        foreach (['position', 'min_age', 'max_age', 'nationality', 'competition_id', 'team_id', 'min_value', 'max_value', 'max_contract_year', 'foot'] as $key) {
+        foreach (['position', 'min_age', 'max_age', 'nationality', 'competition_id', 'team_id', 'min_value', 'max_value', 'max_contract_year'] as $key) {
             if (!empty($filters[$key])) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * Distinct primary nationalities present among players in this game,
+     * sorted alphabetically. Used to populate the nationality dropdown so the
+     * list never contains options that would return zero results.
+     *
+     * @return array<int, string>
+     */
+    public function getDistinctNationalities(string $gameId): array
+    {
+        $rows = GamePlayer::where('game_id', $gameId)
+            ->join('players', 'players.id', '=', 'game_players.player_id')
+            ->whereRaw("jsonb_typeof(players.nationality::jsonb) = 'array'")
+            ->selectRaw("DISTINCT players.nationality::jsonb->>0 AS nationality")
+            ->pluck('nationality')
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        sort($rows, SORT_NATURAL | SORT_FLAG_CASE);
+
+        return $rows;
     }
 
     /**

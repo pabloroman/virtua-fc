@@ -317,11 +317,6 @@ return [
     'explore_value_range_millions' => 'Valor de mercado (€ millones)',
     'explore_contract_expires_by' => 'Contrato expira antes de (año)',
     'explore_nationality' => 'Nacionalidad',
-    'explore_nationality_placeholder' => 'Ej. España, Francia',
-    'explore_foot' => 'Pie preferido',
-    'explore_foot_left' => 'Izquierdo',
-    'explore_foot_right' => 'Derecho',
-    'explore_foot_both' => 'Ambidiestro',
     'explore_search_showing_first' => 'mostrando los primeros :count',
     'explore_search_refine_hint' => 'Demasiadas coincidencias — ajusta los filtros para acotar la lista.',
 

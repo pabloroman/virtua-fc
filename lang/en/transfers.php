@@ -312,11 +312,6 @@ return [
     'explore_value_range_millions' => 'Market value (€ millions)',
     'explore_contract_expires_by' => 'Contract expires by (year)',
     'explore_nationality' => 'Nationality',
-    'explore_nationality_placeholder' => 'e.g. Spain, France',
-    'explore_foot' => 'Preferred foot',
-    'explore_foot_left' => 'Left',
-    'explore_foot_right' => 'Right',
-    'explore_foot_both' => 'Both',
     'explore_search_showing_first' => 'showing first :count',
     'explore_search_refine_hint' => 'Too many matches — refine your filters to narrow the list.',
 

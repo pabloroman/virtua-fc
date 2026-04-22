@@ -76,16 +76,23 @@
                         {{-- Advanced filter panel --}}
                         <div x-show="filtersOpen" x-cloak x-transition class="mb-5 p-4 rounded-lg bg-surface-800 border border-border-default">
                             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                                {{-- Position --}}
+                                {{-- Position (specific + group) --}}
                                 <label class="flex flex-col gap-1">
                                     <span class="text-xs font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.position_required', ['*' => '']) }}</span>
                                     <select x-model="filters.position" @change="searchPlayers()"
                                             class="bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
                                         <option value="">{{ __('transfers.explore_filter_all') }}</option>
-                                        <option value="gk">{{ __('transfers.explore_goalkeepers') }}</option>
-                                        <option value="def">{{ __('transfers.explore_defenders') }}</option>
-                                        <option value="mid">{{ __('transfers.explore_midfielders') }}</option>
-                                        <option value="fwd">{{ __('transfers.explore_forwards') }}</option>
+                                        <optgroup label="{{ __('transfers.position_groups') }}">
+                                            <option value="gk">{{ __('transfers.explore_goalkeepers') }}</option>
+                                            <option value="def">{{ __('transfers.explore_defenders') }}</option>
+                                            <option value="mid">{{ __('transfers.explore_midfielders') }}</option>
+                                            <option value="fwd">{{ __('transfers.explore_forwards') }}</option>
+                                        </optgroup>
+                                        <optgroup label="{{ __('transfers.specific_positions') }}">
+                                            @foreach(\App\Support\PositionMapper::getFilterOptions() as $code => $key)
+                                                <option value="{{ $code }}">{{ __("positions.{$key}_label") }}</option>
+                                            @endforeach
+                                        </optgroup>
                                     </select>
                                 </label>
 
@@ -140,20 +147,12 @@
                                 {{-- Nationality --}}
                                 <label class="flex flex-col gap-1">
                                     <span class="text-xs font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.explore_nationality') }}</span>
-                                    <input type="text" x-model="filters.nationality" @input.debounce.400ms="searchPlayers()"
-                                           :placeholder="@js(__('transfers.explore_nationality_placeholder'))"
-                                           class="bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
-                                </label>
-
-                                {{-- Foot --}}
-                                <label class="flex flex-col gap-1">
-                                    <span class="text-xs font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.explore_foot') }}</span>
-                                    <select x-model="filters.foot" @change="searchPlayers()"
+                                    <select x-model="filters.nationality" @change="searchPlayers()"
                                             class="bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
                                         <option value="">{{ __('transfers.explore_filter_all') }}</option>
-                                        <option value="left">{{ __('transfers.explore_foot_left') }}</option>
-                                        <option value="right">{{ __('transfers.explore_foot_right') }}</option>
-                                        <option value="both">{{ __('transfers.explore_foot_both') }}</option>
+                                        @foreach($nationalities as $nat)
+                                            <option value="{{ $nat }}">{{ __("countries.{$nat}") }}</option>
+                                        @endforeach
                                     </select>
                                 </label>
                             </div>
@@ -510,19 +509,17 @@
                     min_value_m: null,
                     max_value_m: null,
                     max_contract_year: null,
-                    foot: '',
                 },
                 get activeFilterCount() {
                     let n = 0;
                     if (this.filters.position) n++;
                     if (this.filters.min_age) n++;
                     if (this.filters.max_age) n++;
-                    if (this.filters.nationality && this.filters.nationality.trim().length > 0) n++;
+                    if (this.filters.nationality) n++;
                     if (this.filters.competition_id) n++;
                     if (this.filters.min_value_m) n++;
                     if (this.filters.max_value_m) n++;
                     if (this.filters.max_contract_year) n++;
-                    if (this.filters.foot) n++;
                     return n;
                 },
                 get hasAnyCriteria() {
@@ -652,13 +649,12 @@
                     if (f.position) params.set('position', f.position);
                     if (f.min_age) params.set('min_age', f.min_age);
                     if (f.max_age) params.set('max_age', f.max_age);
-                    if (f.nationality && f.nationality.trim().length > 0) params.set('nationality', f.nationality.trim());
+                    if (f.nationality) params.set('nationality', f.nationality);
                     if (f.competition_id) params.set('competition_id', f.competition_id);
                     // UI uses millions of euros; backend expects euros
                     if (f.min_value_m) params.set('min_value', Math.round(f.min_value_m * 1_000_000));
                     if (f.max_value_m) params.set('max_value', Math.round(f.max_value_m * 1_000_000));
                     if (f.max_contract_year) params.set('max_contract_year', f.max_contract_year);
-                    if (f.foot) params.set('foot', f.foot);
 
                     try {
                         const response = await fetch(`/game/${this.gameId}/explore/search?${params.toString()}`);
@@ -696,7 +692,6 @@
                         min_value_m: null,
                         max_value_m: null,
                         max_contract_year: null,
-                        foot: '',
                     };
                     this.searchPlayers();
                 },
