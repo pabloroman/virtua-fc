@@ -128,6 +128,7 @@ class Game extends Model
         'season_transition_step',
         'season_transition_data',
         'career_actions_processing_at',
+        'pending_career_action_ticks',
         'pending_finalization_match_id',
         'matchday_advancing_at',
         'matchday_advance_result',
@@ -149,6 +150,7 @@ class Game extends Model
         'season_transition_step' => 'integer',
         'season_transition_data' => 'json',
         'career_actions_processing_at' => 'datetime',
+        'pending_career_action_ticks' => 'integer',
         'matchday_advancing_at' => 'datetime',
         'matchday_advance_result' => 'array',
         'remaining_batches_processing_at' => 'datetime',
@@ -220,7 +222,7 @@ class Game extends Model
      */
     public function clearStuckMatchdayAdvance(): bool
     {
-        return $this->clearStuckFlag('matchday_advancing_at', ['matchday_advance_result']);
+        return $this->clearStuckFlag('matchday_advancing_at', ['matchday_advance_result' => null]);
     }
 
     public function isProcessingRemainingBatches(): bool
@@ -237,15 +239,21 @@ class Game extends Model
     }
 
     /**
-     * Clear a stuck career actions flag (> 2 minutes old).
+     * Clear a stuck career actions flag (> 2 minutes old). Also resets the
+     * pending ticks counter so the stuck state doesn't leave orphaned work
+     * that the next dispatch would rediscover and re-run against a stale
+     * context.
      */
     public function clearStuckCareerActions(): bool
     {
-        return $this->clearStuckFlag('career_actions_processing_at');
+        return $this->clearStuckFlag('career_actions_processing_at', [
+            'pending_career_action_ticks' => 0,
+        ]);
     }
 
     /**
-     * Clear a stuck processing flag if it's older than 2 minutes.
+     * Clear a stuck processing flag if it's older than 2 minutes. The
+     * $extraColumns map is applied alongside setting the flag to null.
      */
     private function clearStuckFlag(string $column, array $extraColumns = []): bool
     {
@@ -257,10 +265,7 @@ class Game extends Model
             return false;
         }
 
-        $this->update(array_merge(
-            [$column => null],
-            array_fill_keys($extraColumns, null),
-        ));
+        $this->update([$column => null] + $extraColumns);
 
         return true;
     }

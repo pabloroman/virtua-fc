@@ -52,12 +52,6 @@ class MatchdayOrchestrator
             // (e.g. user closed browser without clicking "Continue")
             $this->finalizePendingMatch($game);
 
-            // Block advancement if career actions from a previous advance are still processing
-            $game->clearStuckCareerActions();
-            if ($game->isProcessingCareerActions()) {
-                return MatchdayAdvanceResult::blocked(null);
-            }
-
             // Block advancement on pending actions in the normal flow — the
             // user must resolve them before the season calendar ticks. Fast
             // mode opts out: each click plays a single match, and the
@@ -139,7 +133,7 @@ class MatchdayOrchestrator
             // Career actions are dispatched by processRemainingBatches() after all batches complete.
             $this->deferRemainingBatches($game);
         } elseif ($this->careerActionTicks > 0) {
-            $this->dispatchCareerActions($game->id, $this->careerActionTicks);
+            ProcessCareerActions::enqueue($game->id, $this->careerActionTicks);
         }
 
         return $result;
@@ -307,28 +301,6 @@ class MatchdayOrchestrator
     }
 
     /**
-     * Atomically set a processing flag and dispatch a career actions job.
-     */
-    private function dispatchCareerActions(string $gameId, int $ticks): void
-    {
-        if ($ticks <= 0) {
-            return;
-        }
-
-        $updated = Game::where('id', $gameId)
-            ->whereNull('career_actions_processing_at')
-            ->update(['career_actions_processing_at' => now()]);
-
-        if ($updated) {
-            try {
-                ProcessCareerActions::dispatch($gameId, $ticks);
-            } catch (\Throwable $e) {
-                Game::where('id', $gameId)->update(['career_actions_processing_at' => null]);
-            }
-        }
-    }
-
-    /**
      * Set flag and dispatch background job to process remaining batches.
      * Called after the transaction commits in advance().
      */
@@ -383,8 +355,7 @@ class MatchdayOrchestrator
         // Clear the remaining batches flag
         Game::where('id', $gameId)->update(['remaining_batches_processing_at' => null]);
 
-        // Dispatch career actions if any ticks accumulated
-        $this->dispatchCareerActions($gameId, $totalTicks);
+        ProcessCareerActions::enqueue($gameId, $totalTicks);
     }
 
     private function recalculateLeaguePositions(string $gameId, $matches): void

@@ -39,10 +39,16 @@ class ShowFastMode
         // screens or redirect to live-match UI as appropriate. Safe from
         // redirect loops: ShowGame only redirects back to fast-mode after
         // those transient states have cleared.
+        //
+        // Career actions are intentionally NOT bounced: ticks drain in the
+        // background while the user keeps advancing, and the drain job
+        // serializes with matchday advance via per-tick row locking (see
+        // ProcessCareerActions). When the user exits fast mode, the ShowGame
+        // loading screen will wait for the drain to finish before rendering
+        // the normal UI.
         if (
             $game->isTransitioningSeason()
             || $game->isProcessingRemainingBatches()
-            || $game->isProcessingCareerActions()
             || $game->isAdvancingMatchday()
             || $game->matchday_advance_result
             || $game->pending_finalization_match_id

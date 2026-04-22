@@ -62,9 +62,12 @@ class MatchdayAdvanceCoordinator
      */
     private function claim(string $gameId, bool $fastForward): bool
     {
+        // No gate on career_actions_processing_at — ticks accumulate on the
+        // game row (see ProcessCareerActions::enqueue) and the per-tick game
+        // row lock inside ProcessCareerActions serializes writes against the
+        // matchday advance's own row-locked transaction.
         return (bool) Game::where('id', $gameId)
             ->whereNull('matchday_advancing_at')
-            ->whereNull('career_actions_processing_at')
             ->when($fastForward, fn ($q) => $q->whereNotNull('fast_mode_entered_on'))
             ->update(['matchday_advancing_at' => now(), 'matchday_advance_result' => null]);
     }

@@ -91,6 +91,19 @@ class MatchdayAdvanceCoordinatorTest extends TestCase
         $this->assertNull($this->coordinator()->runSync($this->game->id, fastForward: true));
     }
 
+    public function test_dispatch_async_is_not_blocked_by_in_flight_career_actions(): void
+    {
+        // Advance and career-action processing are designed to interleave via
+        // per-tick row locking; the claim must not gate on the flag.
+        Queue::fake();
+        $this->game->update([
+            'career_actions_processing_at' => now(),
+            'pending_career_action_ticks' => 2,
+        ]);
+
+        $this->assertTrue($this->coordinator()->dispatchAsync($this->game->id));
+    }
+
     private function coordinator(): MatchdayAdvanceCoordinator
     {
         return app(MatchdayAdvanceCoordinator::class);
