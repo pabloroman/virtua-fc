@@ -315,6 +315,7 @@ return [
     'explore_min' => 'Mín',
     'explore_max' => 'Máx',
     'explore_value_range_millions' => 'Valor de mercado (€ millones)',
+    'explore_overall_range' => 'Media (1–99)',
     'explore_contract_expires_by' => 'Contrato expira antes de (año)',
     'explore_nationality' => 'Nacionalidad',
     'explore_search_showing_first' => 'mostrando los primeros :count',

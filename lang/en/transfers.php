@@ -310,6 +310,7 @@ return [
     'explore_min' => 'Min',
     'explore_max' => 'Max',
     'explore_value_range_millions' => 'Market value (€ millions)',
+    'explore_overall_range' => 'Overall (1–99)',
     'explore_contract_expires_by' => 'Contract expires by (year)',
     'explore_nationality' => 'Nationality',
     'explore_search_showing_first' => 'showing first :count',

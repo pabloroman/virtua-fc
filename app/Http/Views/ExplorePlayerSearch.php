@@ -28,6 +28,8 @@ class ExplorePlayerSearch
             'min_value' => $request->query('min_value'),
             'max_value' => $request->query('max_value'),
             'max_contract_year' => $request->query('max_contract_year'),
+            'min_overall' => $request->query('min_overall'),
+            'max_overall' => $request->query('max_overall'),
         ];
 
         $hasName = mb_strlen($filters['name']) >= 2;

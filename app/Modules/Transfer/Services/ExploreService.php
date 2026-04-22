@@ -209,6 +209,8 @@ class ExploreService
      *     min_value?: int,        // euros
      *     max_value?: int,        // euros
      *     max_contract_year?: int,
+     *     min_overall?: int,      // 0-99, average of technical + physical
+     *     max_overall?: int,
      * } $filters
      * @return array{players: Collection<int, GamePlayer>, total: int, truncated: bool}
      */
@@ -284,6 +286,19 @@ class ExploreService
             });
         }
 
+        if (!empty($filters['min_overall']) || !empty($filters['max_overall'])) {
+            // Use pure ability (tech + phys) / 2 to match the scout-search
+            // convention — excludes fitness/morale so filter results stay
+            // stable across matchdays instead of shifting with daily form.
+            $overallExpr = '(COALESCE(game_players.game_technical_ability, (SELECT technical_ability FROM players WHERE players.id = game_players.player_id)) + COALESCE(game_players.game_physical_ability, (SELECT physical_ability FROM players WHERE players.id = game_players.player_id))) / 2';
+            if (!empty($filters['min_overall'])) {
+                $query->whereRaw("($overallExpr) >= ?", [(int) $filters['min_overall']]);
+            }
+            if (!empty($filters['max_overall'])) {
+                $query->whereRaw("($overallExpr) <= ?", [(int) $filters['max_overall']]);
+            }
+        }
+
         $total = (clone $query)->count();
 
         $players = $query->limit(self::ADVANCED_SEARCH_LIMIT)->get();
@@ -311,7 +326,7 @@ class ExploreService
      */
     public static function hasAdvancedFilters(array $filters): bool
     {
-        foreach (['position', 'min_age', 'max_age', 'nationality', 'competition_id', 'team_id', 'min_value', 'max_value', 'max_contract_year'] as $key) {
+        foreach (['position', 'min_age', 'max_age', 'nationality', 'competition_id', 'team_id', 'min_value', 'max_value', 'max_contract_year', 'min_overall', 'max_overall'] as $key) {
             if (!empty($filters[$key])) {
                 return true;
             }

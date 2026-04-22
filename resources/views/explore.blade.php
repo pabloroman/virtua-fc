@@ -136,6 +136,20 @@
                                     </div>
                                 </div>
 
+                                {{-- Overall range (average of technical + physical) --}}
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-xs font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.explore_overall_range') }}</span>
+                                    <div class="flex items-center gap-2">
+                                        <input type="number" min="1" max="99" x-model.number="filters.min_overall" @input.debounce.400ms="searchPlayers()"
+                                               :placeholder="@js(__('transfers.explore_min'))"
+                                               class="w-full bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
+                                        <span class="text-text-muted text-sm">—</span>
+                                        <input type="number" min="1" max="99" x-model.number="filters.max_overall" @input.debounce.400ms="searchPlayers()"
+                                               :placeholder="@js(__('transfers.explore_max'))"
+                                               class="w-full bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
+                                    </div>
+                                </div>
+
                                 {{-- Max contract year --}}
                                 <label class="flex flex-col gap-1">
                                     <span class="text-xs font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.explore_contract_expires_by') }}</span>
@@ -509,6 +523,8 @@
                     min_value_m: null,
                     max_value_m: null,
                     max_contract_year: null,
+                    min_overall: null,
+                    max_overall: null,
                 },
                 get activeFilterCount() {
                     let n = 0;
@@ -520,6 +536,8 @@
                     if (this.filters.min_value_m) n++;
                     if (this.filters.max_value_m) n++;
                     if (this.filters.max_contract_year) n++;
+                    if (this.filters.min_overall) n++;
+                    if (this.filters.max_overall) n++;
                     return n;
                 },
                 get hasAnyCriteria() {
@@ -655,6 +673,8 @@
                     if (f.min_value_m) params.set('min_value', Math.round(f.min_value_m * 1_000_000));
                     if (f.max_value_m) params.set('max_value', Math.round(f.max_value_m * 1_000_000));
                     if (f.max_contract_year) params.set('max_contract_year', f.max_contract_year);
+                    if (f.min_overall) params.set('min_overall', f.min_overall);
+                    if (f.max_overall) params.set('max_overall', f.max_overall);
 
                     try {
                         const response = await fetch(`/game/${this.gameId}/explore/search?${params.toString()}`);
@@ -692,6 +712,8 @@
                         min_value_m: null,
                         max_value_m: null,
                         max_contract_year: null,
+                        min_overall: null,
+                        max_overall: null,
                     };
                     this.searchPlayers();
                 },
