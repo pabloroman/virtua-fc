@@ -60,7 +60,7 @@ class FullMatchSimulationService
         // cost; sibling AI matches in the same batch go through the fast
         // statistical AIMatchResolver (still emits goal/card events so the
         // live-match "other scores" ticker has real data).
-        $useSplit = $playerMatch && config('match_simulation.ai_resolver_for_sibling_matches', true);
+        $useSplit = $playerMatch && config('match_simulation.ai_resolver_enabled', false);
 
         $lineupMatches = $useSplit ? collect([$playerMatch]) : $matches;
         $this->lineupService->ensureLineupsForMatches($lineupMatches, $game, $allPlayers, $suspendedByCompetition, $clubProfiles);

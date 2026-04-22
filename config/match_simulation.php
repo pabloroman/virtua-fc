@@ -16,7 +16,10 @@ return [
     |
     | When enabled, AI-vs-AI matches use a lightweight statistical resolver
     | instead of the full MatchSimulator pipeline. This dramatically reduces
-    | CPU, memory, and database load for background batch processing.
+    | CPU, memory, and database load for background batch processing. It also
+    | applies to sibling AI matches in a player-involved batch — only the
+    | user's match runs the full simulator, siblings fast-resolve while still
+    | emitting the goal/card events the live-match ticker consumes.
     |
     | The resolver uses the same Dixon-Coles model and xG formula but skips:
     | - Full lineup generation (FormationRecommender, tactical instructions)
@@ -28,22 +31,6 @@ return [
     |
     */
     'ai_resolver_enabled' => true,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Sibling AI Matches on Player-Involved Batches
-    |--------------------------------------------------------------------------
-    |
-    | When the user's team is in a matchday batch, only the user's match needs
-    | the full minute-by-minute MatchSimulator pipeline. Sibling AI matches in
-    | the same batch can be resolved statistically (same model as
-    | ai_resolver_enabled) while still emitting the goal/card events that the
-    | live-match "other scores" ticker consumes.
-    |
-    | Turn off to revert to fully simulating every match in the batch inline.
-    |
-    */
-    'ai_resolver_for_sibling_matches' => true,
 
     /*
     |--------------------------------------------------------------------------
