@@ -15,6 +15,7 @@ class CupTieResolver
 {
     public function __construct(
         private readonly MatchSimulator $matchSimulator,
+        private readonly MatchEventRepository $matchEventRepository,
     ) {}
 
     /**
@@ -89,6 +90,14 @@ class CupTieResolver
                 'home_possession' => $extraTimeResult->homePossession,
                 'away_possession' => $extraTimeResult->awayPossession,
             ]);
+
+            // Persist ET goal/card/etc. events so scorer lists stay consistent
+            // with the ET-inclusive totals reported by the match views.
+            $this->matchEventRepository->bulkInsert(
+                $extraTimeResult->events,
+                $match->game_id,
+                $match->id,
+            );
         }
 
         $totalHome = $homeScore + $homeScoreEt;
@@ -186,6 +195,14 @@ class CupTieResolver
                 'home_possession' => $extraTimeResult->homePossession,
                 'away_possession' => $extraTimeResult->awayPossession,
             ]);
+
+            // Persist ET events so scorer lists stay consistent with the
+            // ET-inclusive totals reported by the match views.
+            $this->matchEventRepository->bulkInsert(
+                $extraTimeResult->events,
+                $secondLeg->game_id,
+                $secondLeg->id,
+            );
         }
 
         // Extra time goals affect aggregate

@@ -12,12 +12,29 @@
     $lastOpponent = null;
     $homeScorers = collect();
     $awayScorers = collect();
+    $lastHomeTotal = null;
+    $lastAwayTotal = null;
     if ($lastMatch) {
         $isHome = $lastMatch->home_team_id === $game->team_id;
-        $yourScore = $isHome ? $lastMatch->home_score : $lastMatch->away_score;
-        $oppScore = $isHome ? $lastMatch->away_score : $lastMatch->home_score;
+        // ET-inclusive totals: home_score/away_score are the 90-minute score;
+        // goals scored in extra time are stored separately in home_score_et/away_score_et.
+        $lastHomeTotal = (int) $lastMatch->home_score + (int) ($lastMatch->home_score_et ?? 0);
+        $lastAwayTotal = (int) $lastMatch->away_score + (int) ($lastMatch->away_score_et ?? 0);
+        $yourTotal = $isHome ? $lastHomeTotal : $lastAwayTotal;
+        $oppTotal = $isHome ? $lastAwayTotal : $lastHomeTotal;
         $lastOpponent = $isHome ? $lastMatch->awayTeam : $lastMatch->homeTeam;
-        $result = $yourScore > $oppScore ? 'W' : ($yourScore < $oppScore ? 'L' : 'D');
+
+        if ($yourTotal !== $oppTotal) {
+            $result = $yourTotal > $oppTotal ? 'W' : 'L';
+        } elseif ($lastMatch->home_score_penalties !== null) {
+            // Tied after ET — penalty shootout decides the outcome.
+            $yourPens = $isHome ? $lastMatch->home_score_penalties : $lastMatch->away_score_penalties;
+            $oppPens = $isHome ? $lastMatch->away_score_penalties : $lastMatch->home_score_penalties;
+            $result = $yourPens > $oppPens ? 'W' : 'L';
+        } else {
+            $result = 'D';
+        }
+
         $lastResultLabel = $result === 'W' ? __('game.live_result_win') : ($result === 'L' ? __('game.live_result_loss') : __('game.live_result_draw'));
         $lastResultColor = $result === 'W' ? 'text-accent-green' : ($result === 'L' ? 'text-accent-red' : 'text-text-secondary');
         $lastResultBg = $result === 'W' ? 'bg-accent-green/10 border-accent-green/20' : ($result === 'L' ? 'bg-accent-red/10 border-accent-red/20' : 'bg-surface-700 border-border-default');
@@ -40,11 +57,22 @@
                 ->values();
         };
 
+        // Own goals are stored with team_id = the scoring player's own team (the conceding side).
+        // They should display under the team that benefits — i.e. the opponent.
+        $scoringTeamId = function ($event) use ($lastMatch) {
+            if ($event->event_type === \App\Models\MatchEvent::TYPE_OWN_GOAL) {
+                return $event->team_id === $lastMatch->home_team_id
+                    ? $lastMatch->away_team_id
+                    : $lastMatch->home_team_id;
+            }
+            return $event->team_id;
+        };
+
         $homeScorers = $formatScorers(
-            $lastMatch->goalEvents->filter(fn ($e) => $e->team_id === $lastMatch->home_team_id)
+            $lastMatch->goalEvents->filter(fn ($e) => $scoringTeamId($e) === $lastMatch->home_team_id)
         );
         $awayScorers = $formatScorers(
-            $lastMatch->goalEvents->filter(fn ($e) => $e->team_id === $lastMatch->away_team_id)
+            $lastMatch->goalEvents->filter(fn ($e) => $scoringTeamId($e) === $lastMatch->away_team_id)
         );
     }
 
@@ -111,8 +139,19 @@
                                 </span>
                                 <x-team-crest :team="$lastMatch->homeTeam" class="w-10 h-10 md:w-14 md:h-14 shrink-0" />
                             </div>
-                            <div class="px-3 py-1.5 md:px-4 md:py-2 rounded-lg bg-surface-700 text-xl md:text-3xl font-heading font-bold text-text-primary tabular-nums shrink-0">
-                                {{ $lastMatch->home_score }} - {{ $lastMatch->away_score }}
+                            <div class="shrink-0 flex flex-col items-center gap-1">
+                                <div class="px-3 py-1.5 md:px-4 md:py-2 rounded-lg bg-surface-700 text-xl md:text-3xl font-heading font-bold text-text-primary tabular-nums">
+                                    {{ $lastHomeTotal }} - {{ $lastAwayTotal }}
+                                </div>
+                                @if($lastMatch->is_extra_time)
+                                    <div class="text-[9px] md:text-[10px] text-text-muted uppercase tracking-widest tabular-nums">
+                                        @if($lastMatch->home_score_penalties !== null)
+                                            {{ __('season.aet_abbr') }} &middot; {{ __('season.pens_abbr') }} {{ $lastMatch->home_score_penalties }}-{{ $lastMatch->away_score_penalties }}
+                                        @else
+                                            {{ __('season.aet_abbr') }}
+                                        @endif
+                                    </div>
+                                @endif
                             </div>
                             <div class="flex-1 flex items-center gap-2 md:gap-3 min-w-0">
                                 <x-team-crest :team="$lastMatch->awayTeam" class="w-10 h-10 md:w-14 md:h-14 shrink-0" />

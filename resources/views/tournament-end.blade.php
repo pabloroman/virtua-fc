@@ -182,9 +182,14 @@ foreach ($positionGroupOrder as $group) {
                         </div>
 
                         {{-- Score --}}
+                        @php
+                            // home_score/away_score are the 90-minute score; add ET goals for the total.
+                            $finalHomeTotal = (int) $finalMatch->home_score + (int) ($finalMatch->home_score_et ?? 0);
+                            $finalAwayTotal = (int) $finalMatch->away_score + (int) ($finalMatch->away_score_et ?? 0);
+                        @endphp
                         <div class="shrink-0 text-center px-2 md:px-4">
                             <div class="font-heading text-2xl md:text-3xl font-bold text-white">
-                                {{ $finalMatch->home_score }} - {{ $finalMatch->away_score }}
+                                {{ $finalHomeTotal }} - {{ $finalAwayTotal }}
                             </div>
                             @if($finalMatch->is_extra_time)
                             <div class="text-[10px] text-white/50 mt-0.5">
@@ -337,8 +342,8 @@ foreach ($positionGroupOrder as $group) {
                                         @foreach($ties as $tie)
                                         @php
                                             $match = $tie->firstLegMatch;
-                                            $homeScore = $match?->home_score ?? 0;
-                                            $awayScore = $match?->away_score ?? 0;
+                                            $homeScore = ($match?->home_score ?? 0) + ($match?->home_score_et ?? 0);
+                                            $awayScore = ($match?->away_score ?? 0) + ($match?->away_score_et ?? 0);
                                             $involvesPlayer = $tie->home_team_id === $game->team_id || $tie->away_team_id === $game->team_id;
                                             $isHomeWinner = $tie->winner_id === $tie->home_team_id;
                                             $isAwayWinner = $tie->winner_id === $tie->away_team_id;
@@ -443,10 +448,18 @@ foreach ($positionGroupOrder as $group) {
                                     @php
                                         $isHome = $match->home_team_id === $game->team_id;
                                         $opponent = $isHome ? $match->awayTeam : $match->homeTeam;
-                                        $scored = $isHome ? $match->home_score : $match->away_score;
-                                        $conceded = $isHome ? $match->away_score : $match->home_score;
-                                        $resultClass = $scored > $conceded ? 'bg-accent-green' : ($scored < $conceded ? 'bg-accent-red' : 'bg-surface-600');
-                                        $resultLetter = $scored > $conceded ? 'W' : ($scored < $conceded ? 'L' : 'D');
+                                        $scored = ($isHome ? $match->home_score : $match->away_score) + ($isHome ? ($match->home_score_et ?? 0) : ($match->away_score_et ?? 0));
+                                        $conceded = ($isHome ? $match->away_score : $match->home_score) + ($isHome ? ($match->away_score_et ?? 0) : ($match->home_score_et ?? 0));
+                                        if ($scored !== $conceded) {
+                                            $resultLetter = $scored > $conceded ? 'W' : 'L';
+                                        } elseif ($match->home_score_penalties !== null) {
+                                            $yourPens = $isHome ? $match->home_score_penalties : $match->away_score_penalties;
+                                            $oppPens = $isHome ? $match->away_score_penalties : $match->home_score_penalties;
+                                            $resultLetter = $yourPens > $oppPens ? 'W' : 'L';
+                                        } else {
+                                            $resultLetter = 'D';
+                                        }
+                                        $resultClass = $resultLetter === 'W' ? 'bg-accent-green' : ($resultLetter === 'L' ? 'bg-accent-red' : 'bg-surface-600');
                                     @endphp
                                     <div class="flex items-center gap-2.5 py-2 px-2.5 rounded-lg {{ $loop->even ? 'bg-surface-700/50' : '' }}">
                                         <span class="shrink-0 w-6 h-6 rounded-sm text-[10px] font-bold flex items-center justify-center text-white {{ $resultClass }}">
