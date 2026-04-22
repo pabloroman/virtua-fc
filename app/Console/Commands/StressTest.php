@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Modules\Match\Services\MatchdayAdvanceCoordinator;
+use App\Modules\Match\Jobs\ProcessMatchdayAdvance;
 use App\Modules\Season\Services\GameCreationService;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -12,6 +12,7 @@ use App\Models\SeasonArchive;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -80,13 +81,11 @@ class StressTest extends Command
         // Phase 2: Simulate seasons
         $this->info("--- Phase 2: Simulating {$seasonCount} season(s) per game ---");
 
-        $coordinator = app(MatchdayAdvanceCoordinator::class);
-
         for ($season = 1; $season <= $seasonCount; $season++) {
             $this->info("  Season {$season}/{$seasonCount}:");
 
             foreach ($games as $gameIndex => $game) {
-                $this->simulateOneSeason($game, $coordinator, $season, $gameIndex + 1, $gameCount);
+                $this->simulateOneSeason($game, $season, $gameIndex + 1, $gameCount);
             }
 
             $this->reportDbStats("AFTER SEASON {$season}");
@@ -162,7 +161,7 @@ class StressTest extends Command
         return $games;
     }
 
-    private function simulateOneSeason(Game $game, MatchdayAdvanceCoordinator $coordinator, int $seasonNumber, int $gameNumber, int $totalGames): void
+    private function simulateOneSeason(Game $game, int $seasonNumber, int $gameNumber, int $totalGames): void
     {
         $game->refresh();
 
@@ -186,8 +185,18 @@ class StressTest extends Command
             $t0 = microtime(true);
             $mem0 = memory_get_usage(true);
 
+            $claimed = Game::where('id', $game->id)
+                ->whereNull('matchday_advancing_at')
+                ->whereNull('career_actions_processing_at')
+                ->update(['matchday_advancing_at' => now(), 'matchday_advance_result' => null]);
+
+            if (! $claimed) {
+                $this->warn("  Could not claim advancing flag for game {$game->id} — skipping.");
+                break;
+            }
+
             DB::enableQueryLog();
-            $coordinator->advance($game->id);
+            Bus::dispatchSync(new ProcessMatchdayAdvance($game->id));
             $queryCount = count(DB::getQueryLog());
             DB::disableQueryLog();
             DB::flushQueryLog();

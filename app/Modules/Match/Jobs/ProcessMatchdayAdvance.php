@@ -6,6 +6,7 @@ use App\Events\SeasonCompleted;
 use App\Models\ActivationEvent;
 use App\Models\Game;
 use App\Models\GameMatch;
+use App\Modules\Match\DTOs\MatchdayAdvanceResult;
 use App\Modules\Match\Services\MatchdayOrchestrator;
 use App\Modules\Season\Services\ActivationTracker;
 use Illuminate\Bus\Queueable;
@@ -16,6 +17,17 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Runs a single matchday advance. The only entrypoint for advancing:
+ *   - Async via dispatch() from AdvanceMatchday (interactive mode) — the UI
+ *     polls game.setup-status and consumes matchday_advance_result.
+ *   - Sync via Bus::dispatchSync() from AdvanceFastMatchday and console
+ *     commands — the caller gets the MatchdayAdvanceResult back directly.
+ *
+ * Callers must claim matchday_advancing_at atomically before dispatching so
+ * the loading UI is visible during the async path; the job bails if the flag
+ * is not set.
+ */
 class ProcessMatchdayAdvance implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -26,6 +38,7 @@ class ProcessMatchdayAdvance implements ShouldQueue, ShouldBeUnique
 
     public function __construct(
         public string $gameId,
+        public bool $fastForward = false,
     ) {
         $this->onQueue('gameplay');
     }
@@ -35,49 +48,35 @@ class ProcessMatchdayAdvance implements ShouldQueue, ShouldBeUnique
         return $this->gameId;
     }
 
-    public function handle(MatchdayOrchestrator $orchestrator, ActivationTracker $activationTracker): void
+    public function handle(MatchdayOrchestrator $orchestrator, ActivationTracker $activationTracker): ?MatchdayAdvanceResult
     {
         $game = Game::find($this->gameId);
 
         if (! $game || ! $game->isAdvancingMatchday()) {
-            return;
+            return null;
         }
 
-        $result = $orchestrator->advance($game);
+        try {
+            $result = $orchestrator->advance($game, fastForward: $this->fastForward);
 
-        // Dispatch SeasonCompleted event for season_complete/done results (career mode only)
-        if (! $game->isTournamentMode() && in_array($result->type, ['season_complete', 'done'])) {
             $game->refresh();
-            event(new SeasonCompleted($game));
+            $this->dispatchSeasonCompletedIfDone($game, $result);
+            $this->recordActivationEvents($game, $activationTracker);
+
+            $game->update([
+                'matchday_advance_result' => $result->toArray(),
+                'matchday_advancing_at' => null,
+            ]);
+
+            return $result;
+        } catch (\Throwable $e) {
+            Game::where('id', $this->gameId)->update([
+                'matchday_advancing_at' => null,
+                'matchday_advance_result' => null,
+            ]);
+
+            throw $e;
         }
-
-        // Record activation events
-        $game->refresh();
-        $activationTracker->record($game->user_id, ActivationEvent::EVENT_FIRST_MATCH_PLAYED, $game->id, $game->game_mode);
-
-        if (! $game->isTournamentMode()) {
-            $alreadyRecorded = ActivationEvent::where('user_id', $game->user_id)
-                ->where('game_id', $game->id)
-                ->where('event', ActivationEvent::EVENT_5_MATCHES_PLAYED)
-                ->exists();
-
-            if (! $alreadyRecorded) {
-                $matchesPlayed = GameMatch::where('game_id', $game->id)
-                    ->where('played', true)
-                    ->where(fn ($q) => $q->where('home_team_id', $game->team_id)->orWhere('away_team_id', $game->team_id))
-                    ->count();
-
-                if ($matchesPlayed >= 5) {
-                    $activationTracker->record($game->user_id, ActivationEvent::EVENT_5_MATCHES_PLAYED, $game->id, $game->game_mode);
-                }
-            }
-        }
-
-        // Store result and clear processing flag
-        $game->update([
-            'matchday_advance_result' => $result->toArray(),
-            'matchday_advancing_at' => null,
-        ]);
     }
 
     public function failed(?\Throwable $exception): void
@@ -92,5 +91,59 @@ class ProcessMatchdayAdvance implements ShouldQueue, ShouldBeUnique
             'error' => $exception?->getMessage(),
             'trace' => $exception?->getTraceAsString(),
         ]);
+    }
+
+    /**
+     * The orchestrator returns `done` whenever the user has no more matches
+     * this matchday — including every fast-mode click and mid-season cup
+     * eliminations. Guard the event behind an "actually no matches left"
+     * check so listeners (other-leagues sim, activation analytics) only run
+     * once per season.
+     */
+    private function dispatchSeasonCompletedIfDone(Game $game, MatchdayAdvanceResult $result): void
+    {
+        if ($result->type !== 'season_complete' && $result->type !== 'done') {
+            return;
+        }
+
+        if ($result->type === 'done' && $game->matches()->where('played', false)->exists()) {
+            return;
+        }
+
+        event(new SeasonCompleted($game));
+    }
+
+    private function recordActivationEvents(Game $game, ActivationTracker $activationTracker): void
+    {
+        $activationTracker->record(
+            $game->user_id,
+            ActivationEvent::EVENT_FIRST_MATCH_PLAYED,
+            $game->id,
+            $game->game_mode,
+        );
+
+        $alreadyRecorded = ActivationEvent::where('user_id', $game->user_id)
+            ->where('game_id', $game->id)
+            ->where('event', ActivationEvent::EVENT_5_MATCHES_PLAYED)
+            ->exists();
+
+        if ($alreadyRecorded) {
+            return;
+        }
+
+        $matchesPlayed = GameMatch::where('game_id', $game->id)
+            ->where('played', true)
+            ->where(fn ($q) => $q->where('home_team_id', $game->team_id)
+                ->orWhere('away_team_id', $game->team_id))
+            ->count();
+
+        if ($matchesPlayed >= 5) {
+            $activationTracker->record(
+                $game->user_id,
+                ActivationEvent::EVENT_5_MATCHES_PLAYED,
+                $game->id,
+                $game->game_mode,
+            );
+        }
     }
 }

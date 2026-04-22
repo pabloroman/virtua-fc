@@ -9,14 +9,15 @@ use App\Models\GameMatch;
 use App\Models\Team;
 use App\Models\User;
 use App\Modules\Match\DTOs\MatchdayAdvanceResult;
-use App\Modules\Match\Services\MatchdayAdvanceCoordinator;
+use App\Modules\Match\Jobs\ProcessMatchdayAdvance;
 use App\Modules\Match\Services\MatchdayOrchestrator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
 use Mockery;
 use Tests\TestCase;
 
-class MatchdayAdvanceCoordinatorTest extends TestCase
+class ProcessMatchdayAdvanceTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -45,7 +46,7 @@ class MatchdayAdvanceCoordinatorTest extends TestCase
         $this->mockOrchestrator(MatchdayAdvanceResult::seasonComplete());
         Event::fake([SeasonCompleted::class]);
 
-        $this->coordinator()->advance($this->game->id);
+        $this->runSync();
 
         Event::assertDispatched(SeasonCompleted::class);
     }
@@ -56,7 +57,7 @@ class MatchdayAdvanceCoordinatorTest extends TestCase
         $this->mockOrchestrator(MatchdayAdvanceResult::done());
         Event::fake([SeasonCompleted::class]);
 
-        $this->coordinator()->advance($this->game->id);
+        $this->runSync();
 
         Event::assertDispatched(SeasonCompleted::class);
     }
@@ -71,7 +72,7 @@ class MatchdayAdvanceCoordinatorTest extends TestCase
         $this->mockOrchestrator(MatchdayAdvanceResult::done());
         Event::fake([SeasonCompleted::class]);
 
-        $this->coordinator()->advance($this->game->id);
+        $this->runSync();
 
         Event::assertNotDispatched(SeasonCompleted::class);
     }
@@ -81,7 +82,7 @@ class MatchdayAdvanceCoordinatorTest extends TestCase
         $this->mockOrchestrator(MatchdayAdvanceResult::liveMatch('match-id'));
         Event::fake([SeasonCompleted::class]);
 
-        $this->coordinator()->advance($this->game->id);
+        $this->runSync();
 
         Event::assertNotDispatched(SeasonCompleted::class);
     }
@@ -91,32 +92,23 @@ class MatchdayAdvanceCoordinatorTest extends TestCase
         $this->mockOrchestrator(MatchdayAdvanceResult::blocked(null));
         Event::fake([SeasonCompleted::class]);
 
-        $this->coordinator()->advance($this->game->id);
+        $this->runSync();
 
         Event::assertNotDispatched(SeasonCompleted::class);
     }
 
-    public function test_returns_null_when_advancing_flag_already_held(): void
+    public function test_returns_null_when_advancing_flag_not_set(): void
     {
-        $this->game->update(['matchday_advancing_at' => now()]);
-
-        // Orchestrator must not be called when the check-and-set fails.
+        // Job bails immediately if the caller didn't claim the flag first —
+        // protects against jobs dispatched out of band from running the
+        // orchestrator on a game that isn't meant to advance.
         $orchestrator = Mockery::mock(MatchdayOrchestrator::class);
         $orchestrator->shouldNotReceive('advance');
         $this->app->instance(MatchdayOrchestrator::class, $orchestrator);
 
-        $this->assertNull($this->coordinator()->advance($this->game->id));
-    }
+        $this->game->update(['matchday_advancing_at' => null]);
 
-    public function test_fast_forward_requires_fast_mode_entered_on_to_be_set(): void
-    {
-        // Game is not in fast mode, so the conditional whereNotNull guard
-        // prevents the check-and-set from succeeding.
-        $orchestrator = Mockery::mock(MatchdayOrchestrator::class);
-        $orchestrator->shouldNotReceive('advance');
-        $this->app->instance(MatchdayOrchestrator::class, $orchestrator);
-
-        $this->assertNull($this->coordinator()->advance($this->game->id, fastForward: true));
+        $this->assertNull(Bus::dispatchSync(new ProcessMatchdayAdvance($this->game->id)));
     }
 
     public function test_clears_advancing_flag_when_orchestrator_throws(): void
@@ -125,8 +117,10 @@ class MatchdayAdvanceCoordinatorTest extends TestCase
         $orchestrator->shouldReceive('advance')->andThrow(new \RuntimeException('boom'));
         $this->app->instance(MatchdayOrchestrator::class, $orchestrator);
 
+        $this->game->update(['matchday_advancing_at' => now()]);
+
         try {
-            $this->coordinator()->advance($this->game->id);
+            Bus::dispatchSync(new ProcessMatchdayAdvance($this->game->id));
             $this->fail('expected RuntimeException to propagate');
         } catch (\RuntimeException) {
             // expected
@@ -135,9 +129,37 @@ class MatchdayAdvanceCoordinatorTest extends TestCase
         $this->assertNull($this->game->refresh()->matchday_advancing_at);
     }
 
-    private function coordinator(): MatchdayAdvanceCoordinator
+    public function test_stores_result_on_game_for_show_game_to_consume(): void
     {
-        return app(MatchdayAdvanceCoordinator::class);
+        $this->mockOrchestrator(MatchdayAdvanceResult::liveMatch('match-id'));
+
+        $this->runSync();
+
+        $this->game->refresh();
+        $this->assertSame('live_match', $this->game->matchday_advance_result['type']);
+        $this->assertSame('match-id', $this->game->matchday_advance_result['matchId']);
+        $this->assertNull($this->game->matchday_advancing_at);
+    }
+
+    public function test_passes_fast_forward_flag_to_orchestrator(): void
+    {
+        $orchestrator = Mockery::mock(MatchdayOrchestrator::class);
+        $orchestrator->shouldReceive('advance')
+            ->once()
+            ->with(Mockery::type(Game::class), fastForward: true)
+            ->andReturn(MatchdayAdvanceResult::done());
+        $this->app->instance(MatchdayOrchestrator::class, $orchestrator);
+
+        $this->game->update(['matchday_advancing_at' => now()]);
+
+        Bus::dispatchSync(new ProcessMatchdayAdvance($this->game->id, fastForward: true));
+    }
+
+    private function runSync(): ?MatchdayAdvanceResult
+    {
+        $this->game->update(['matchday_advancing_at' => now()]);
+
+        return Bus::dispatchSync(new ProcessMatchdayAdvance($this->game->id));
     }
 
     private function mockOrchestrator(MatchdayAdvanceResult $result): void
