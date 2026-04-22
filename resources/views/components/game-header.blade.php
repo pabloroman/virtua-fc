@@ -186,6 +186,7 @@
             if (this.submitting) return;
             if (localStorage.getItem('autoLineup') === '1') {
                 this.submitting = true;
+                window.dispatchEvent(new CustomEvent('matchday-advance-starting'));
                 this.$refs.autoAdvanceForm.submit();
                 return;
             }
@@ -198,6 +199,7 @@
                         return r.json().then(data => {
                             if (data.lineupReady && !this.submitting) {
                                 this.submitting = true;
+                                window.dispatchEvent(new CustomEvent('matchday-advance-starting'));
                                 this.$refs.autoAdvanceForm.submit();
                             }
                         });
@@ -270,4 +272,61 @@
 
     {{-- Mobile Bottom Tab Bar --}}
     <x-bottom-tab-bar :game="$game" :next-match="$nextMatch" :team-competitions="$teamCompetitions" />
+
+    {{-- Matchday-advance overlay. Shown instantly (client-side) on submit of any
+         form that POSTs to game.advance so the user sees the branded loading
+         screen while the HTTP request runs the advance inline. Listens for a
+         window-level "matchday-advance-starting" event dispatched by those
+         forms. If the request fails or the browser is refreshed mid-flight,
+         ShowGame still renders game-loading-matchday as the server-side
+         fallback. --}}
+    <div x-data="{ visible: false }"
+         x-show="visible"
+         x-on:matchday-advance-starting.window="visible = true"
+         x-cloak
+         style="display: none"
+         class="fixed inset-0 z-[100] bg-surface-900 flex items-start md:items-center justify-center pt-24 md:pt-0 pb-8">
+        <div class="w-full max-w-md px-4">
+            @if($nextMatch)
+                @php($comp = $nextMatch->competition)
+                <div class="text-center mb-8">
+                    <x-competition-pill :competition="$comp" class="justify-center mb-2" />
+                    <h1 class="text-lg md:text-2xl font-bold text-text-primary">
+                        @if($nextMatch->round_name)
+                            {{ __($nextMatch->round_name) }}
+                        @elseif($nextMatch->round_number)
+                            {{ __('game.matchday_n', ['number' => $nextMatch->round_number]) }}
+                        @endif
+                    </h1>
+                    <p class="text-sm text-text-muted mt-1">
+                        {{ $nextMatch->venueName() ?? '' }} &middot; {{ $nextMatch->scheduled_date->locale(app()->getLocale())->translatedFormat('d M Y') }}
+                    </p>
+                </div>
+
+                <div class="flex items-center justify-center gap-4 md:gap-8 mb-8">
+                    <div class="flex-1 flex flex-col items-center text-center min-w-0">
+                        <x-team-crest :team="$nextMatch->homeTeam" class="w-16 h-16 md:w-24 md:h-24 mb-2" />
+                        <h4 class="text-sm md:text-base font-bold text-text-primary truncate max-w-full">{{ $nextMatch->homeTeam->short_name ?? $nextMatch->homeTeam->name }}</h4>
+                    </div>
+                    <div class="shrink-0">
+                        <span class="text-lg md:text-2xl font-black text-text-body tracking-tight">{{ __('game.vs') }}</span>
+                    </div>
+                    <div class="flex-1 flex flex-col items-center text-center min-w-0">
+                        <x-team-crest :team="$nextMatch->awayTeam" class="w-16 h-16 md:w-24 md:h-24 mb-2" />
+                        <h4 class="text-sm md:text-base font-bold text-text-primary truncate max-w-full">{{ $nextMatch->awayTeam->short_name ?? $nextMatch->awayTeam->name }}</h4>
+                    </div>
+                </div>
+            @endif
+
+            <div class="text-center">
+                <div class="flex justify-center mb-3">
+                    <svg class="animate-spin h-6 w-6 text-accent-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
+                <p class="text-sm text-text-secondary">{{ __('game.simulating_matches_message') }}</p>
+            </div>
+        </div>
+    </div>
 </div>

@@ -56,7 +56,7 @@
        class="flex-1 md:flex-none inline-flex items-center justify-center px-4 py-2 min-h-[44px] text-sm rounded-lg border border-border-strong font-semibold text-text-body uppercase tracking-wider hover:bg-surface-700 transition ease-in-out duration-150">
         {{ __('messages.pre_match_edit_lineup') }}
     </a>
-    <form method="post" action="{{ route('game.advance', $game->id) }}" x-data="{ loading: false }" @submit="if (loading) { $event.preventDefault(); return; } loading = true" class="flex-1 md:flex-none">
+    <form method="post" action="{{ route('game.advance', $game->id) }}" x-data="{ loading: false }" @submit="if (loading) { $event.preventDefault(); return; } loading = true; $dispatch('matchday-advance-starting')" class="flex-1 md:flex-none">
         @csrf
         <x-primary-button-spin color="blue" class="w-full md:w-auto">
             {{ __('messages.pre_match_continue') }}
