@@ -73,18 +73,12 @@ class MatchdayOrchestrator
 
             // Process batches until one involves the player's team or the season ends
             while ($batch = $this->matchdayService->getNextMatchBatch($game)) {
-                // Check if this batch contains the player's match
-                $batchHasPlayerMatch = $batch['matches']->contains(
-                    fn ($m) => $m->involvesTeam($game->team_id)
-                );
-
-                // Normal flow: defer sibling AI matches when the user's match is
-                // present (they run in the background while the user plays live).
-                // Fast mode: simulate all matches in the batch inline — there is
-                // no live UI to wait for, so deferral would leave dangling work.
-                $playerMatchOnly = $batchHasPlayerMatch && ! $fastForward;
-
-                $result = $this->processBatch($game, $batch, $playerMatchOnly, $fastForward);
+                // Simulate every match in the batch inline — including sibling AI
+                // matches when the user's match is present — so that by the time
+                // the live-match screen loads, the "other scores" ticker has real
+                // events to reveal. The caller (ProcessMatchdayAdvance job) runs
+                // this in the background while the UI shows the loading screen.
+                $result = $this->processBatch($game, $batch, $fastForward);
 
                 if ($result['playerMatch']) {
                     if ($fastForward) {
@@ -139,7 +133,9 @@ class MatchdayOrchestrator
 
         // Dispatch post-transaction work now that all DB changes are committed
         if ($result->type === 'live_match') {
-            // Defer remaining batches to background — user sees live match immediately.
+            // Defer future AI-only batches (e.g. cup rounds that don't involve
+            // the player) to background. The current batch is already simulated
+            // inline, so the live-match ticker has complete sibling data.
             // Career actions are dispatched by processRemainingBatches() after all batches complete.
             $this->deferRemainingBatches($game);
         } elseif ($this->careerActionTicks > 0) {
@@ -154,7 +150,7 @@ class MatchdayOrchestrator
      *
      * @return array{playerMatch: ?GameMatch}
      */
-    private function processBatch(Game $game, array $batch, bool $playerMatchOnly = false, bool $fastForward = false): array
+    private function processBatch(Game $game, array $batch, bool $fastForward = false): array
     {
         $matches = $batch['matches'];
         $handlers = $batch['handlers'];
@@ -164,13 +160,7 @@ class MatchdayOrchestrator
         // Clear cached match dates from prior batches (played matches changed)
         InjuryService::clearMatchDateCache();
 
-        // When playerMatchOnly is true, filter batch to only the player's match
-        // (sibling AI matches in the same batch are deferred to background processing)
         $playerMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
-        if ($playerMatchOnly && $playerMatch) {
-            $matches = collect([$playerMatch]);
-            $handlers = array_intersect_key($handlers, [$playerMatch->competition_id => true]);
-        }
 
         // Persist a MatchAttendance row for every fixture in this batch *before*
         // simulation runs, so the live-match screen can display the figure and

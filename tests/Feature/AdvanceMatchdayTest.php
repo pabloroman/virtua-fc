@@ -336,7 +336,7 @@ class AdvanceMatchdayTest extends TestCase
         }
     }
 
-    public function test_remaining_batches_flag_set_when_player_match_found(): void
+    public function test_sibling_ai_matches_are_simulated_inline_with_player_match(): void
     {
         Queue::fake([ProcessRemainingBatches::class]);
 
@@ -347,7 +347,9 @@ class AdvanceMatchdayTest extends TestCase
 
         $this->assertEquals('live_match', $result->type);
 
-        // Player's match should be played, AI match should NOT (deferred to background)
+        // Both the player's match and the sibling AI match should be played
+        // in the same batch so the live-match "other scores" ticker has real
+        // events to reveal when the UI loads.
         $this->assertDatabaseHas('game_matches', [
             'game_id' => $this->game->id,
             'home_team_id' => $this->playerTeam->id,
@@ -356,54 +358,8 @@ class AdvanceMatchdayTest extends TestCase
         $this->assertDatabaseHas('game_matches', [
             'game_id' => $this->game->id,
             'home_team_id' => $team3->id,
-            'played' => false,
-        ]);
-
-        // remaining_batches_processing_at flag should be set
-        $this->game->refresh();
-        $this->assertTrue($this->game->isProcessingRemainingBatches());
-
-        // The job should have been dispatched
-        Queue::assertPushed(ProcessRemainingBatches::class, function ($job) {
-            return $job->gameId === $this->game->id;
-        });
-    }
-
-    public function test_process_remaining_batches_simulates_all_and_clears_flag(): void
-    {
-        [$team3] = $this->createMatchdayWithAiSibling();
-
-        // Fake the queue to prevent ProcessRemainingBatches from auto-running
-        Queue::fake([ProcessRemainingBatches::class]);
-
-        $orchestrator = app(MatchdayOrchestrator::class);
-        $result = $orchestrator->advance($this->game);
-
-        $this->assertEquals('live_match', $result->type);
-
-        // AI match not yet played
-        $this->assertDatabaseHas('game_matches', [
-            'game_id' => $this->game->id,
-            'home_team_id' => $team3->id,
-            'played' => false,
-        ]);
-
-        // Now manually call processRemainingBatches (simulating the job running)
-        Queue::fake([]); // Stop faking so career actions can dispatch if needed
-        $this->game->refresh();
-        $orchestrator = app(MatchdayOrchestrator::class);
-        $orchestrator->processRemainingBatches($this->game, 0);
-
-        // AI match should now be played
-        $this->assertDatabaseHas('game_matches', [
-            'game_id' => $this->game->id,
-            'home_team_id' => $team3->id,
             'played' => true,
         ]);
-
-        // Flag should be cleared
-        $this->game->refresh();
-        $this->assertFalse($this->game->isProcessingRemainingBatches());
     }
 
     public function test_returns_season_complete_when_no_matches(): void

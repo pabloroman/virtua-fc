@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Http\Actions\AdvanceMatchday;
 use App\Models\Game;
 use App\Models\GameMatch;
+use App\Modules\Match\Services\MatchdayAdvanceCoordinator;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -59,10 +59,10 @@ class SimulateSeason extends Command
                 break;
             }
 
-            // Resolve a fresh action instance each iteration to avoid
-            // stale references in long-running service singletons.
-            $advanceAction = app(AdvanceMatchday::class);
-            $advanceAction($game->id);
+            // Advance synchronously via the coordinator. The HTTP AdvanceMatchday
+            // action dispatches to a background job so the UI can show a loading
+            // screen, but console commands need inline completion.
+            app(MatchdayAdvanceCoordinator::class)->advance($game->id);
             $advances++;
 
             // Force PHP to collect circular references (Eloquent models
