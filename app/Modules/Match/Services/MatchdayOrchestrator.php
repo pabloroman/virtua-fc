@@ -126,11 +126,12 @@ class MatchdayOrchestrator
         });
 
         // Dispatch post-transaction work now that all DB changes are committed
-        if ($result->type === 'live_match') {
+        if ($result->type === 'live_match' && $this->hasAiOnlyRemainingBatches($game)) {
             // Defer future AI-only batches (e.g. cup rounds that don't involve
             // the player) to background. The current batch is already simulated
             // inline, so the live-match ticker has complete sibling data.
-            // Career actions are dispatched by processRemainingBatches() after all batches complete.
+            // Career actions are dispatched by processRemainingBatches() after
+            // all batches complete.
             $this->deferRemainingBatches($game);
         } elseif ($this->careerActionTicks > 0) {
             ProcessCareerActions::enqueue($game->id, $this->careerActionTicks);
@@ -298,6 +299,33 @@ class MatchdayOrchestrator
             $this->processBatch($game, $nextBatch);
             $game->refresh()->setRelations([]);
         }
+    }
+
+    /**
+     * Cheap precheck to avoid dispatching ProcessRemainingBatches when its
+     * drain loop would immediately break. The job loops getNextMatchBatch()
+     * until it hits a batch that involves the user — so if the earliest
+     * unplayed batch already involves them, there's nothing AI-only for the
+     * job to do (pending cup-draw generation would be picked up by the next
+     * user advance anyway). Skipping the dispatch keeps Horizon quiet on
+     * ordinary matchdays where the next fixture is the user's own.
+     */
+    private function hasAiOnlyRemainingBatches(Game $game): bool
+    {
+        $earliestUnplayed = GameMatch::where('game_id', $game->id)
+            ->where('played', false)
+            ->min('scheduled_date');
+
+        if (! $earliestUnplayed) {
+            return false;
+        }
+
+        return ! GameMatch::where('game_id', $game->id)
+            ->where('played', false)
+            ->whereDate('scheduled_date', Carbon::parse($earliestUnplayed)->toDateString())
+            ->where(fn ($q) => $q->where('home_team_id', $game->team_id)
+                ->orWhere('away_team_id', $game->team_id))
+            ->exists();
     }
 
     /**
