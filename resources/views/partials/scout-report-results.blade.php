@@ -25,14 +25,25 @@
         </x-icon-button>
     </div>
 
+    {{-- Scout filter explainer — helps the manager read the list correctly --}}
+    <div class="mt-4 px-4 md:px-6 text-xs text-text-muted">
+        {{ __('transfers.scout_filtered_by_willingness_hint') }}
+    </div>
+
     {{-- Players List --}}
     @if($players->isEmpty())
-        <div class="text-center py-10 text-text-secondary">
-            <svg class="w-10 h-10 mx-auto mb-2 text-text-body" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="flex flex-col items-center py-10 text-center gap-3 text-text-secondary">
+            <svg class="w-10 h-10 text-text-body" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
             </svg>
             <p class="font-medium">{{ __('transfers.no_players_found') }}</p>
-            <p class="text-sm mt-1">{{ __('transfers.try_broadening') }}</p>
+            <p class="text-sm">{{ __('transfers.try_broadening') }}</p>
+            <a href="{{ route('game.explore', $game->id) }}" class="inline-flex items-center gap-1.5 text-sm text-accent-blue hover:text-accent-blue/80 font-medium">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                {{ __('transfers.scouting_empty_explore_cta') }}
+            </a>
         </div>
     @else
         <div class="divide-y divide-border-default -mx-4 md:-mx-6">
@@ -56,6 +67,8 @@
                     $onCooldown = $detail['on_cooldown'] ?? false;
                     $techRange = $detail['tech_range'] ?? [0, 0];
                     $physRange = $detail['phys_range'] ?? [0, 0];
+                    $willingnessLabel = $detail['willingness_label'] ?? null;
+                    $isStretchTarget = $detail['is_stretch_target'] ?? false;
                     $isExpiring = !$isFreeAgent && $player->contract_until && $player->contract_until <= $game->getSeasonEndDate();
                     $isShortlisted = in_array($player->id, $shortlistedPlayerIds ?? []);
                 @endphp
@@ -77,6 +90,16 @@
                                         <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-medium bg-accent-green/10 text-accent-green">{{ __('transfers.free_agent') }}</span>
                                     @elseif($isExpiring)
                                         <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-medium bg-accent-gold/10 text-accent-gold">{{ __('transfers.expiring_contract') }}</span>
+                                    @endif
+                                    @if($isStretchTarget)
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-medium bg-accent-red/10 text-accent-red border border-accent-red/20"
+                                              title="{{ __('transfers.scouting_stretch_target_tooltip') }}">
+                                            {{ __('transfers.scouting_stretch_target_badge') }}
+                                        </span>
+                                    @elseif($willingnessLabel)
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-medium bg-accent-blue/10 text-accent-blue">
+                                            {{ __('transfers.willingness_' . $willingnessLabel) }}
+                                        </span>
                                     @endif
                                 </div>
                                 <div class="flex items-center gap-2 text-xs text-text-muted mt-0.5">

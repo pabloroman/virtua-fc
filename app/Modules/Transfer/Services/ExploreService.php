@@ -184,27 +184,141 @@ class ExploreService
         })->sortByDesc('market_value_cents')->values();
     }
 
+    /** Hard ceiling on how many rows Explore returns in one response. */
+    public const ADVANCED_SEARCH_LIMIT = 100;
+
     /**
-     * Search players by name across the entire game.
-     * Returns up to 30 results sorted by position group then market value.
+     * Advanced player search across the full game database.
+     *
+     * Exposes only publicly observable data filters (name, position, age,
+     * nationality, league, team, market value, contract year, foot). Ability,
+     * wage, and willingness intentionally stay behind scouting — exposing them
+     * here would erode the value of the scouting tier.
+     *
+     * Returns a fixed-size window plus a `total` count so the UI can surface
+     * a "refine to see more" hint when the result set is truncated.
+     *
+     * @param array{
+     *     name?: string,
+     *     position?: string,      // Group filter key: gk|def|mid|fwd
+     *     min_age?: int,
+     *     max_age?: int,
+     *     nationality?: string,   // Country name as stored in players.nationality JSON
+     *     competition_id?: string,
+     *     team_id?: string,       // 'free_agents' for no team
+     *     min_value?: int,        // euros
+     *     max_value?: int,        // euros
+     *     max_contract_year?: int,
+     *     foot?: string,          // left|right|both
+     * } $filters
+     * @return array{players: Collection<int, GamePlayer>, total: int, truncated: bool}
      */
-    public function searchPlayersByName(Game $game, string $query): Collection
+    public function advancedSearch(Game $game, array $filters): array
     {
-        $players = GamePlayer::where('game_id', $game->id)
-            ->whereHas('player', function ($q) use ($query) {
-                $q->whereRaw('LOWER(name) LIKE ?', ['%' . mb_strtolower($query) . '%']);
-            })
-            ->with(['player', 'team'])
-            ->limit(30)
-            ->get();
+        $query = GamePlayer::where('game_id', $game->id)
+            ->with(['player', 'team']);
+
+        if (!empty($filters['name']) && mb_strlen($filters['name']) >= 2) {
+            $needle = mb_strtolower($filters['name']);
+            $query->whereHas('player', function ($q) use ($needle) {
+                $q->whereRaw('LOWER(name) LIKE ?', ['%' . $needle . '%']);
+            });
+        }
+
+        if (!empty($filters['position'])) {
+            $positions = PositionMapper::getPositionsForGroupFilter($filters['position']);
+            if ($positions !== null) {
+                $query->whereIn('position', $positions);
+            }
+        }
+
+        if (!empty($filters['min_age']) || !empty($filters['max_age'])) {
+            $gameDate = $game->current_date->toDateString();
+            $ageExpr = 'EXTRACT(YEAR FROM AGE(?::date, (SELECT date_of_birth FROM players WHERE players.id = game_players.player_id)))';
+            if (!empty($filters['min_age'])) {
+                $query->whereRaw("($ageExpr) >= ?", [$gameDate, (int) $filters['min_age']]);
+            }
+            if (!empty($filters['max_age'])) {
+                $query->whereRaw("($ageExpr) <= ?", [$gameDate, (int) $filters['max_age']]);
+            }
+        }
+
+        if (!empty($filters['nationality'])) {
+            // players.nationality is stored as a JSON array of country names
+            // (["France", "Spain"]). ?::jsonb matches if the array contains the value.
+            $query->whereHas('player', function ($q) use ($filters) {
+                $q->whereRaw('nationality::jsonb @> ?::jsonb', [json_encode([$filters['nationality']])]);
+            });
+        }
+
+        if (!empty($filters['competition_id'])) {
+            $teamIds = CompetitionEntry::where('game_id', $game->id)
+                ->where('competition_id', $filters['competition_id'])
+                ->pluck('team_id');
+            $query->whereIn('team_id', $teamIds);
+        }
+
+        if (!empty($filters['team_id'])) {
+            if ($filters['team_id'] === 'free_agents') {
+                $query->whereNull('team_id');
+            } else {
+                $query->where('team_id', $filters['team_id']);
+            }
+        }
+
+        if (!empty($filters['min_value'])) {
+            $query->where('market_value_cents', '>=', (int) $filters['min_value'] * 100);
+        }
+        if (!empty($filters['max_value'])) {
+            $query->where('market_value_cents', '<=', (int) $filters['max_value'] * 100);
+        }
+
+        if (!empty($filters['max_contract_year'])) {
+            // Players whose contract ends on or before Dec 31 of the given year.
+            $query->where(function ($q) use ($filters) {
+                $q->whereNull('contract_until')
+                    ->orWhereYear('contract_until', '<=', (int) $filters['max_contract_year']);
+            });
+        }
+
+        if (!empty($filters['foot']) && in_array($filters['foot'], ['left', 'right', 'both'], true)) {
+            $query->whereHas('player', fn ($q) => $q->where('foot', $filters['foot']));
+        }
+
+        $total = (clone $query)->count();
+
+        $players = $query->limit(self::ADVANCED_SEARCH_LIMIT)->get();
 
         $shortlistedIds = $this->getShortlistedIds($game->id, $players->pluck('id')->toArray());
 
-        return $players->map(function ($gp) use ($shortlistedIds) {
-            $gp->is_shortlisted = in_array($gp->id, $shortlistedIds);
+        $players = $players
+            ->map(function ($gp) use ($shortlistedIds) {
+                $gp->is_shortlisted = in_array($gp->id, $shortlistedIds);
 
-            return $gp;
-        })->sort(fn ($a, $b) => $this->sortByPositionThenValue($a, $b))->values();
+                return $gp;
+            })
+            ->sort(fn ($a, $b) => $this->sortByPositionThenValue($a, $b))
+            ->values();
+
+        return [
+            'players' => $players,
+            'total' => $total,
+            'truncated' => $total > self::ADVANCED_SEARCH_LIMIT,
+        ];
+    }
+
+    /**
+     * True when any advanced-search filter is set (beyond just a name).
+     */
+    public static function hasAdvancedFilters(array $filters): bool
+    {
+        foreach (['position', 'min_age', 'max_age', 'nationality', 'competition_id', 'team_id', 'min_value', 'max_value', 'max_contract_year', 'foot'] as $key) {
+            if (!empty($filters[$key])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

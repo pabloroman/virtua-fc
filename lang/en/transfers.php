@@ -303,6 +303,34 @@ return [
     'explore_negotiate' => 'Negotiate',
     'explore_offer_hint' => 'Make offers directly or shortlist players for scouting. Without a scout report, you\'ll negotiate blind.',
 
+    // Advanced Explore search
+    'explore_advanced_filters' => 'Advanced filters',
+    'explore_advanced_criteria_hint' => 'Type a name or set filters to search the full player database.',
+    'explore_clear_filters' => 'Clear filters',
+    'explore_min' => 'Min',
+    'explore_max' => 'Max',
+    'explore_value_range_millions' => 'Market value (€ millions)',
+    'explore_contract_expires_by' => 'Contract expires by (year)',
+    'explore_nationality' => 'Nationality',
+    'explore_nationality_placeholder' => 'e.g. Spain, France',
+    'explore_foot' => 'Preferred foot',
+    'explore_foot_left' => 'Left',
+    'explore_foot_right' => 'Right',
+    'explore_foot_both' => 'Both',
+    'explore_search_showing_first' => 'showing first :count',
+    'explore_search_refine_hint' => 'Too many matches — refine your filters to narrow the list.',
+
+    // Cross-discoverability (Explore ↔ Scouting)
+    'explore_header_explainer' => 'Browse the full player database. Public data only: position, age, value, contract. For ability, wage and willingness-to-join, use :scouting.',
+    'explore_link_to_scouting' => 'Scouting',
+    'explore_empty_scout_cta' => 'Send your scouts to look for this profile',
+    'scouting_header_explainer' => 'Your scouts return players likely to join your club. For a broader view of the market, use :explore.',
+    'scouting_link_to_explore' => 'Explore',
+    'scouting_empty_explore_cta' => 'Browse the full market in Explore',
+    'scouting_stretch_target_badge' => 'Long shot',
+    'scouting_stretch_target_tooltip' => 'An ambitious target outside your usual reach. Your scouts flagged them despite low willingness to join.',
+    'scout_filtered_by_willingness_hint' => 'Your scouts pre-filter for candidates with a high chance of joining your club.',
+
     // Free agent negotiation chat
     'chat_free_agent_title' => 'Free Agent Negotiation',
     'chat_free_agent_demand' => ':player\'s agent wants :wage/year for :years years.',

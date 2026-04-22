@@ -29,26 +29,142 @@
                          x-data="exploreApp()"
                          x-init="init()">
 
-                        {{-- Search bar --}}
-                        <div class="relative mb-5">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="w-4 h-4 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
+                        {{-- Cross-link explainer: what Explore does vs Scouting --}}
+                        <div class="mb-5 p-3 rounded-lg bg-accent-blue/5 border border-accent-blue/15 text-sm text-text-secondary">
+                            {!! __('transfers.explore_header_explainer', [
+                                'scouting' => '<a href="' . route('game.scouting', $game->id) . '" class="text-accent-blue hover:text-accent-blue/80 font-medium underline-offset-2 hover:underline">' . __('transfers.explore_link_to_scouting') . '</a>',
+                            ]) !!}
+                        </div>
+
+                        {{-- Search bar + Advanced-filter toggle --}}
+                        <div class="flex flex-col sm:flex-row gap-2 mb-3">
+                            <div class="relative flex-1">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="w-4 h-4 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <input type="text"
+                                       x-model="searchQuery"
+                                       @input.debounce.350ms="searchPlayers()"
+                                       @keydown.escape="clearSearch()"
+                                       :placeholder="@js(__('transfers.explore_search_placeholder'))"
+                                       class="w-full pl-10 pr-10 py-2.5 bg-surface-700 border border-border-default rounded-lg text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent-blue/50 focus:ring-1 focus:ring-accent-blue/30 min-h-[44px]">
+                                <button x-show="searchQuery.length > 0"
+                                        @click="clearSearch()"
+                                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-text-muted hover:text-text-primary">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
                             </div>
-                            <input type="text"
-                                   x-model="searchQuery"
-                                   @input.debounce.350ms="searchPlayers()"
-                                   @keydown.escape="clearSearch()"
-                                   :placeholder="@js(__('transfers.explore_search_placeholder'))"
-                                   class="w-full pl-10 pr-10 py-2.5 bg-surface-700 border border-border-default rounded-lg text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent-blue/50 focus:ring-1 focus:ring-accent-blue/30 min-h-[44px]">
-                            <button x-show="searchQuery.length > 0"
-                                    @click="clearSearch()"
-                                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-text-muted hover:text-text-primary">
+                            <button @click="filtersOpen = !filtersOpen"
+                                    :class="activeFilterCount > 0 || filtersOpen ? 'bg-accent-blue/10 border-accent-blue/30 text-accent-blue' : 'bg-surface-700 border-border-default text-text-body hover:border-border-strong'"
+                                    class="shrink-0 inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border text-sm font-medium min-h-[44px] transition-colors">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                                </svg>
+                                <span>{{ __('transfers.explore_advanced_filters') }}</span>
+                                <span x-show="activeFilterCount > 0" x-text="activeFilterCount"
+                                      class="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full bg-accent-blue/20 text-[10px] font-semibold"></span>
+                                <svg class="w-4 h-4 transition-transform" :class="filtersOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                 </svg>
                             </button>
+                        </div>
+
+                        {{-- Advanced filter panel --}}
+                        <div x-show="filtersOpen" x-cloak x-transition class="mb-5 p-4 rounded-lg bg-surface-800 border border-border-default">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                                {{-- Position --}}
+                                <label class="flex flex-col gap-1">
+                                    <span class="text-xs font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.position_required', ['*' => '']) }}</span>
+                                    <select x-model="filters.position" @change="searchPlayers()"
+                                            class="bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
+                                        <option value="">{{ __('transfers.explore_filter_all') }}</option>
+                                        <option value="gk">{{ __('transfers.explore_goalkeepers') }}</option>
+                                        <option value="def">{{ __('transfers.explore_defenders') }}</option>
+                                        <option value="mid">{{ __('transfers.explore_midfielders') }}</option>
+                                        <option value="fwd">{{ __('transfers.explore_forwards') }}</option>
+                                    </select>
+                                </label>
+
+                                {{-- Age range --}}
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-xs font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.age_range') }}</span>
+                                    <div class="flex items-center gap-2">
+                                        <input type="number" min="15" max="50" x-model.number="filters.min_age" @input.debounce.400ms="searchPlayers()"
+                                               :placeholder="@js(__('transfers.explore_min'))"
+                                               class="w-full bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
+                                        <span class="text-text-muted text-sm">—</span>
+                                        <input type="number" min="15" max="50" x-model.number="filters.max_age" @input.debounce.400ms="searchPlayers()"
+                                               :placeholder="@js(__('transfers.explore_max'))"
+                                               class="w-full bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
+                                    </div>
+                                </div>
+
+                                {{-- Competition --}}
+                                <label class="flex flex-col gap-1">
+                                    <span class="text-xs font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.league') }}</span>
+                                    <select x-model="filters.competition_id" @change="searchPlayers()"
+                                            class="bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
+                                        <option value="">{{ __('transfers.explore_filter_all') }}</option>
+                                        <template x-for="comp in competitions" :key="comp.id">
+                                            <option :value="comp.id" x-text="comp.name"></option>
+                                        </template>
+                                    </select>
+                                </label>
+
+                                {{-- Market value range (millions €) --}}
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-xs font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.explore_value_range_millions') }}</span>
+                                    <div class="flex items-center gap-2">
+                                        <input type="number" min="0" step="0.5" x-model.number="filters.min_value_m" @input.debounce.400ms="searchPlayers()"
+                                               :placeholder="@js(__('transfers.explore_min'))"
+                                               class="w-full bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
+                                        <span class="text-text-muted text-sm">—</span>
+                                        <input type="number" min="0" step="0.5" x-model.number="filters.max_value_m" @input.debounce.400ms="searchPlayers()"
+                                               :placeholder="@js(__('transfers.explore_max'))"
+                                               class="w-full bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
+                                    </div>
+                                </div>
+
+                                {{-- Max contract year --}}
+                                <label class="flex flex-col gap-1">
+                                    <span class="text-xs font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.explore_contract_expires_by') }}</span>
+                                    <input type="number" min="{{ (int) $game->current_date->year }}" max="{{ (int) $game->current_date->year + 10 }}" x-model.number="filters.max_contract_year" @input.debounce.400ms="searchPlayers()"
+                                           placeholder="{{ (int) $game->current_date->year + 1 }}"
+                                           class="bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
+                                </label>
+
+                                {{-- Nationality --}}
+                                <label class="flex flex-col gap-1">
+                                    <span class="text-xs font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.explore_nationality') }}</span>
+                                    <input type="text" x-model="filters.nationality" @input.debounce.400ms="searchPlayers()"
+                                           :placeholder="@js(__('transfers.explore_nationality_placeholder'))"
+                                           class="bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
+                                </label>
+
+                                {{-- Foot --}}
+                                <label class="flex flex-col gap-1">
+                                    <span class="text-xs font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.explore_foot') }}</span>
+                                    <select x-model="filters.foot" @change="searchPlayers()"
+                                            class="bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
+                                        <option value="">{{ __('transfers.explore_filter_all') }}</option>
+                                        <option value="left">{{ __('transfers.explore_foot_left') }}</option>
+                                        <option value="right">{{ __('transfers.explore_foot_right') }}</option>
+                                        <option value="both">{{ __('transfers.explore_foot_both') }}</option>
+                                    </select>
+                                </label>
+                            </div>
+
+                            {{-- Clear filters --}}
+                            <div class="mt-3 flex justify-end">
+                                <button x-show="activeFilterCount > 0" @click="clearFilters()"
+                                        class="text-xs text-text-muted hover:text-text-body underline-offset-2 hover:underline">
+                                    {{ __('transfers.explore_clear_filters') }}
+                                </button>
+                            </div>
                         </div>
 
                         {{-- Hint --}}
@@ -384,6 +500,34 @@
                     { key: 'mid', label: @js(__('transfers.explore_midfielders')) },
                     { key: 'fwd', label: @js(__('transfers.explore_forwards')) },
                 ],
+                filtersOpen: false,
+                filters: {
+                    position: '',
+                    min_age: null,
+                    max_age: null,
+                    nationality: '',
+                    competition_id: '',
+                    min_value_m: null,
+                    max_value_m: null,
+                    max_contract_year: null,
+                    foot: '',
+                },
+                get activeFilterCount() {
+                    let n = 0;
+                    if (this.filters.position) n++;
+                    if (this.filters.min_age) n++;
+                    if (this.filters.max_age) n++;
+                    if (this.filters.nationality && this.filters.nationality.trim().length > 0) n++;
+                    if (this.filters.competition_id) n++;
+                    if (this.filters.min_value_m) n++;
+                    if (this.filters.max_value_m) n++;
+                    if (this.filters.max_contract_year) n++;
+                    if (this.filters.foot) n++;
+                    return n;
+                },
+                get hasAnyCriteria() {
+                    return this.searchQuery.trim().length >= 2 || this.activeFilterCount > 0;
+                },
 
                 init() {
                     if (this.competitions.length > 0) {
@@ -485,7 +629,10 @@
 
                 async searchPlayers() {
                     const query = this.searchQuery.trim();
-                    if (query.length < 2) {
+                    const hasFilters = this.activeFilterCount > 0;
+                    const hasName = query.length >= 2;
+
+                    if (!hasName && !hasFilters) {
                         if (this.viewMode === 'search') {
                             this.viewMode = this.previousViewMode;
                         }
@@ -499,8 +646,22 @@
                     }
                     this.loadingSearch = true;
 
+                    const params = new URLSearchParams();
+                    if (hasName) params.set('query', query);
+                    const f = this.filters;
+                    if (f.position) params.set('position', f.position);
+                    if (f.min_age) params.set('min_age', f.min_age);
+                    if (f.max_age) params.set('max_age', f.max_age);
+                    if (f.nationality && f.nationality.trim().length > 0) params.set('nationality', f.nationality.trim());
+                    if (f.competition_id) params.set('competition_id', f.competition_id);
+                    // UI uses millions of euros; backend expects euros
+                    if (f.min_value_m) params.set('min_value', Math.round(f.min_value_m * 1_000_000));
+                    if (f.max_value_m) params.set('max_value', Math.round(f.max_value_m * 1_000_000));
+                    if (f.max_contract_year) params.set('max_contract_year', f.max_contract_year);
+                    if (f.foot) params.set('foot', f.foot);
+
                     try {
-                        const response = await fetch(`/game/${this.gameId}/explore/search?query=${encodeURIComponent(query)}`);
+                        const response = await fetch(`/game/${this.gameId}/explore/search?${params.toString()}`);
                         const html = await response.text();
                         this.$refs.searchPanel.innerHTML = html;
                         this.$nextTick(() => Alpine.initTree(this.$refs.searchPanel));
@@ -513,10 +674,31 @@
 
                 clearSearch() {
                     this.searchQuery = '';
+                    // If only the name was driving the search, fall back to the previous
+                    // view; if filters are still active, re-run so the user keeps their work.
+                    if (this.activeFilterCount > 0) {
+                        this.searchPlayers();
+                        return;
+                    }
                     if (this.$refs.searchPanel) this.$refs.searchPanel.innerHTML = '';
                     if (this.viewMode === 'search') {
                         this.viewMode = this.previousViewMode;
                     }
+                },
+
+                clearFilters() {
+                    this.filters = {
+                        position: '',
+                        min_age: null,
+                        max_age: null,
+                        nationality: '',
+                        competition_id: '',
+                        min_value_m: null,
+                        max_value_m: null,
+                        max_contract_year: null,
+                        foot: '',
+                    };
+                    this.searchPlayers();
                 },
 
             };

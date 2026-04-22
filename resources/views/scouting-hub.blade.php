@@ -64,6 +64,13 @@
                         </div>
                     </x-help-disclosure>
 
+                    {{-- Cross-link explainer: what Scouting does vs Explore --}}
+                    <div class="mt-3 p-3 rounded-lg bg-accent-blue/5 border border-accent-blue/15 text-sm text-text-secondary">
+                        {!! __('transfers.scouting_header_explainer', [
+                            'explore' => '<a href="' . route('game.explore', $game->id) . '" class="text-accent-blue hover:text-accent-blue/80 font-medium underline-offset-2 hover:underline">' . __('transfers.scouting_link_to_explore') . '</a>',
+                        ]) !!}
+                    </div>
+
                     <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
 
                         {{-- ============================== --}}

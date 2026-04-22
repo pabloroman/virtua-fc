@@ -35,6 +35,17 @@ class ScoutingService
     private const INTERNATIONAL_SEARCH_MIN_TIER = 3;
 
     /**
+     * Flat willingness threshold (0-100) for a candidate to count as
+     * "gettable". Scouts return candidates at or above this bar; anything
+     * below only appears as a capped number of stretch targets, flagged as
+     * long shots in the UI. Tier controls scope and intel depth, not this.
+     */
+    public const WILLINGNESS_THRESHOLD = 60;
+
+    /** Maximum stretch targets (low-willingness long shots) per scout report. */
+    private const MAX_STRETCH_TARGETS = 2;
+
+    /**
      * Tracking tier configuration.
      * [max_concurrent_slots, matchdays_to_level_1, matchdays_to_level_2]
      */
@@ -179,6 +190,13 @@ class ScoutingService
 
     /**
      * Generate scout results for a completed search.
+     *
+     * Scouts act as a curator: the main list is filtered to candidates whose
+     * willingness-to-join the user's club is ≥ WILLINGNESS_THRESHOLD. A small
+     * capped set of high-ability long shots (below the threshold) is appended
+     * as "stretch targets" so upward mobility remains possible for lower-rep
+     * clubs. Stretch-target ids are persisted alongside `player_ids` so the UI
+     * can flag them.
      */
     private function generateResults(Game $game, ScoutReport $report): void
     {
@@ -197,58 +215,66 @@ class ScoutingService
             $report->update([
                 'status' => ScoutReport::STATUS_COMPLETED,
                 'player_ids' => [],
+                'filters' => array_merge($report->filters, ['stretch_player_ids' => []]),
             ]);
 
             return;
         }
 
-        // Pre-load all team rosters for candidates to avoid N+1 queries
+        // Pre-load all team rosters for candidates to avoid N+1 queries when
+        // computing importance and willingness.
         $candidateTeamIds = $candidates->pluck('team_id')->unique();
         $teamRosters = GamePlayer::where('game_id', $game->id)
             ->whereIn('team_id', $candidateTeamIds)
             ->get()
             ->groupBy('team_id');
 
-        // Score each player by availability (lower importance = more available)
-        $scored = $candidates->map(function ($player) use ($teamRosters) {
+        // Score each candidate by willingness to join this specific club.
+        // Willingness already folds in importance, reputation gap, age, and
+        // contract — it's the single best signal for "will they come?".
+        $scored = $candidates->map(function ($player) use ($game, $teamRosters) {
             $teammates = $teamRosters->get($player->team_id, collect());
             $importance = $this->calculatePlayerImportance($player, $teammates);
+            $willingness = $this->dispositionService->playerTransferWillingness($player, $game, $importance);
 
             return [
                 'player' => $player,
                 'importance' => $importance,
-                'availability_score' => 1.0 - $importance + (mt_rand(0, 100) / 200), // Add randomness
+                'willingness_score' => $willingness['score'],
             ];
         });
 
-        // Sort by availability (highest = most available)
-        $sorted = $scored->sortByDesc('availability_score');
-
-        // Base result count: 5-8 players
+        // Base result count: 5-8 players plus tier bonus
         $baseCount = rand(5, 8);
-
-        // Apply scouting tier bonus for extra results
         $tier = $game->currentInvestment->scouting_tier ?? 1;
         $extraResults = self::SCOUTING_TIER_EFFECTS[$tier][1] ?? 0;
+        $targetCount = $baseCount + $extraResults;
 
-        // Take players, biased toward available ones but include 1-2 stretch targets
-        $count = min($candidates->count(), $baseCount + $extraResults);
+        // Primary pool: willing candidates, sorted by willingness descending
+        // with a small random perturbation so repeat searches vary.
+        [$willing, $unwilling] = $scored->partition(
+            fn ($s) => $s['willingness_score'] >= self::WILLINGNESS_THRESHOLD
+        );
 
-        // Get the most available ones
-        $available = $sorted->take(max($count - 2, 3));
+        $mainResults = $willing
+            ->sortByDesc(fn ($s) => $s['willingness_score'] + mt_rand(0, 10) / 100)
+            ->take($targetCount);
 
-        // Add 1-2 stretch targets (high importance but good stats)
-        $stretchTargets = $sorted->filter(fn ($s) => $s['importance'] > 0.6)
-            ->sortByDesc(fn ($s) => $s['player']->overall_score)
-            ->take(min(2, $count - $available->count()));
+        // Stretch targets: ambitious long shots below the threshold, picked for
+        // quality. Capped at MAX_STRETCH_TARGETS regardless of how many slots
+        // the main pool left unfilled — "only gettable players" is the core
+        // pitch; long shots are seasoning, not the main course.
+        $stretchTargets = $unwilling
+            ->sortByDesc(fn ($s) => ($s['player']->current_technical_ability + $s['player']->current_physical_ability) / 2)
+            ->take(self::MAX_STRETCH_TARGETS);
 
-        $selected = $available->merge($stretchTargets)->unique(fn ($s) => $s['player']->id)->take($count);
-
-        $playerIds = $selected->pluck('player.id')->values()->toArray();
+        $playerIds = $mainResults->pluck('player.id')->values()->toArray();
+        $stretchIds = $stretchTargets->pluck('player.id')->values()->toArray();
 
         $report->update([
             'status' => ScoutReport::STATUS_COMPLETED,
-            'player_ids' => $playerIds,
+            'player_ids' => array_values(array_unique(array_merge($playerIds, $stretchIds))),
+            'filters' => array_merge($report->filters, ['stretch_player_ids' => $stretchIds]),
         ]);
     }
 

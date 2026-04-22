@@ -308,6 +308,34 @@ return [
     'explore_negotiate' => 'Negociar',
     'explore_offer_hint' => 'Haz ofertas directas o añade jugadores a tu lista de seguimiento. Sin informe de ojeador, negociarás a ciegas.',
 
+    // Búsqueda avanzada en Explorar
+    'explore_advanced_filters' => 'Filtros avanzados',
+    'explore_advanced_criteria_hint' => 'Escribe un nombre o ajusta los filtros para buscar en toda la base de datos de jugadores.',
+    'explore_clear_filters' => 'Limpiar filtros',
+    'explore_min' => 'Mín',
+    'explore_max' => 'Máx',
+    'explore_value_range_millions' => 'Valor de mercado (€ millones)',
+    'explore_contract_expires_by' => 'Contrato expira antes de (año)',
+    'explore_nationality' => 'Nacionalidad',
+    'explore_nationality_placeholder' => 'Ej. España, Francia',
+    'explore_foot' => 'Pie preferido',
+    'explore_foot_left' => 'Izquierdo',
+    'explore_foot_right' => 'Derecho',
+    'explore_foot_both' => 'Ambidiestro',
+    'explore_search_showing_first' => 'mostrando los primeros :count',
+    'explore_search_refine_hint' => 'Demasiadas coincidencias — ajusta los filtros para acotar la lista.',
+
+    // Enlaces cruzados (Explorar ↔ Ojeadores)
+    'explore_header_explainer' => 'Explora toda la base de datos de jugadores. Solo datos públicos: posición, edad, valor, contrato. Para habilidad, salario y disposición a fichar, usa :scouting.',
+    'explore_link_to_scouting' => 'Ojeadores',
+    'explore_empty_scout_cta' => 'Envía a tus ojeadores a buscar este perfil',
+    'scouting_header_explainer' => 'Tus ojeadores devuelven jugadores con alta probabilidad de fichar por tu club. Para una visión más amplia del mercado, usa :explore.',
+    'scouting_link_to_explore' => 'Explorar',
+    'scouting_empty_explore_cta' => 'Explora todo el mercado en Explorar',
+    'scouting_stretch_target_badge' => 'Objetivo ambicioso',
+    'scouting_stretch_target_tooltip' => 'Un objetivo ambicioso fuera de tu alcance habitual. Tus ojeadores lo señalaron pese a su baja disposición a firmar.',
+    'scout_filtered_by_willingness_hint' => 'Tus ojeadores filtran jugadores con alta probabilidad de fichar por tu club.',
+
     // Free agent negotiation chat
     'chat_free_agent_title' => 'Negociación con Agente Libre',
     'chat_free_agent_demand' => 'El agente de :player pide :wage/año durante :years años.',
