@@ -12,6 +12,7 @@ use App\Models\Team;
 use App\Support\CountryCodeMapper;
 use App\Support\PositionMapper;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class ExploreService
 {
@@ -340,15 +341,21 @@ class ExploreService
      * sorted alphabetically. Used to populate the nationality dropdown so the
      * list never contains options that would return zero results.
      *
+     * Uses the DB facade rather than Eloquent because selecting a column
+     * aliased `nationality` through GamePlayer::... triggers the model's
+     * magic getNationalityAttribute() accessor on pluck, which then fails
+     * when the unloaded player relation is null.
+     *
      * @return array<int, string>
      */
     public function getDistinctNationalities(string $gameId): array
     {
-        $rows = GamePlayer::where('game_id', $gameId)
+        $rows = DB::table('game_players')
             ->join('players', 'players.id', '=', 'game_players.player_id')
+            ->where('game_players.game_id', $gameId)
             ->whereRaw("jsonb_typeof(players.nationality::jsonb) = 'array'")
-            ->selectRaw("DISTINCT players.nationality::jsonb->>0 AS nationality")
-            ->pluck('nationality')
+            ->selectRaw("DISTINCT players.nationality::jsonb->>0 AS nat")
+            ->pluck('nat')
             ->filter()
             ->unique()
             ->values()
