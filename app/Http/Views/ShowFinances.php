@@ -112,7 +112,7 @@ class ShowFinances
             'totalIncome' => $totalIncome,
             'totalExpenses' => $totalExpenses,
             'wageRevenueRatio' => $wageRevenueRatio,
-            'tierThresholds' => GameInvestment::TIER_THRESHOLDS,
+            'tierThresholds' => GameInvestment::thresholdsForCompetitionTier((int) ($game->competition->tier ?? 1)),
             'availableBudget' => $availableBudget,
             'initialTransferBudget' => $initialTransferBudget,
             'salesRevenue' => $salesRevenue,

@@ -20,13 +20,13 @@ class PrimeraRFEFConfig implements CompetitionConfig, HasSeasonGoals
      * Primera RFEF TV revenue — flat €100K per club, regardless of finishing position.
      * The tier-3 centralised pool is small and not position-weighted in-game.
      */
-    private const TV_REVENUE_FLAT = 10_000_000; // €100K in cents
+    private const TV_REVENUE_FLAT = 15_000_000; // €150K in cents
 
     private const POSITION_FACTORS = [
         'top' => 1.05,      // 1st-5th (promotion zone)
         'mid_high' => 1.0,  // 6th-10th
         'mid_low' => 0.95,  // 11th-15th
-        'bottom' => 0.85,   // 16th-20th
+        'bottom' => 0.85,   // 16th-20thnever
     ];
 
     /**

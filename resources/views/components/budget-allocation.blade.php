@@ -2,6 +2,7 @@
     'availableSurplus',
     'tiers',
     'tierThresholds',
+    'minimumTier' => 1,
     'isLocked' => false,
     'formAction',
     'submitLabel' => null,
@@ -15,14 +16,15 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
 <div x-data="{
     availableSurplus: {{ $availableSurplus }},
     thresholds: {{ json_encode($tierThresholds) }},
+    minimumTier: {{ (int) $minimumTier }},
     youth_academy_tier: {{ $tiers['youth_academy'] }},
     medical_tier: {{ $tiers['medical'] }},
     scouting_tier: {{ $tiers['scouting'] }},
     facilities_tier: {{ $tiers['facilities'] }},
 
     getAmount(area, tier) {
-        if (tier === 0) return 0;
-        return this.thresholds[area][tier] || 0;
+        const areaThresholds = this.thresholds[area] || {};
+        return areaThresholds[tier] ?? 0;
     },
 
     get youth_academy_amount() { return this.getAmount('youth_academy', parseInt(this.youth_academy_tier)); },
@@ -43,7 +45,16 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
     },
 
     get meetsMinimumRequirements() {
-        return this.youth_academy_tier >= 1 && this.medical_tier >= 1 && this.scouting_tier >= 1 && this.facilities_tier >= 1;
+        return parseInt(this.youth_academy_tier) >= this.minimumTier
+            && parseInt(this.medical_tier) >= this.minimumTier
+            && parseInt(this.scouting_tier) >= this.minimumTier
+            && parseInt(this.facilities_tier) >= this.minimumTier;
+    },
+
+    fillPercent(tier) {
+        const span = 4 - this.minimumTier;
+        if (span <= 0) return 0;
+        return ((parseInt(tier) - this.minimumTier) / span) * 100;
     },
 
     formatMoney(cents) {
@@ -108,11 +119,12 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
                 </div>
                 <div class="tier-range">
                     <div class="track"></div>
-                    <div class="track-fill" :style="'width:' + (youth_academy_tier / 4 * 100) + '%'"></div>
-                    <input type="range" x-model="youth_academy_tier" min="0" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
+                    <div class="track-fill" :style="'width:' + fillPercent(youth_academy_tier) + '%'"></div>
+                    <input type="range" x-model="youth_academy_tier" min="{{ (int) $minimumTier }}" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
                 </div>
                 <div class="flex justify-between text-[10px] text-text-faint mt-1">
-                    <span>T0</span><span>T1</span><span>T2</span><span>T3</span><span>T4</span>
+                    @if((int) $minimumTier === 0)<span>T0</span>@endif
+                    <span>T1</span><span>T2</span><span>T3</span><span>T4</span>
                 </div>
                 <input type="hidden" name="youth_academy" :value="youth_academy_amount / 100">
             </div>
@@ -133,11 +145,12 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
                 </div>
                 <div class="tier-range">
                     <div class="track"></div>
-                    <div class="track-fill" :style="'width:' + (medical_tier / 4 * 100) + '%'"></div>
-                    <input type="range" x-model="medical_tier" min="0" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
+                    <div class="track-fill" :style="'width:' + fillPercent(medical_tier) + '%'"></div>
+                    <input type="range" x-model="medical_tier" min="{{ (int) $minimumTier }}" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
                 </div>
                 <div class="flex justify-between text-[10px] text-text-faint mt-1">
-                    <span>T0</span><span>T1</span><span>T2</span><span>T3</span><span>T4</span>
+                    @if((int) $minimumTier === 0)<span>T0</span>@endif
+                    <span>T1</span><span>T2</span><span>T3</span><span>T4</span>
                 </div>
                 <input type="hidden" name="medical" :value="medical_amount / 100">
             </div>
@@ -158,11 +171,12 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
                 </div>
                 <div class="tier-range">
                     <div class="track"></div>
-                    <div class="track-fill" :style="'width:' + (scouting_tier / 4 * 100) + '%'"></div>
-                    <input type="range" x-model="scouting_tier" min="0" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
+                    <div class="track-fill" :style="'width:' + fillPercent(scouting_tier) + '%'"></div>
+                    <input type="range" x-model="scouting_tier" min="{{ (int) $minimumTier }}" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
                 </div>
                 <div class="flex justify-between text-[10px] text-text-faint mt-1">
-                    <span>T0</span><span>T1</span><span>T2</span><span>T3</span><span>T4</span>
+                    @if((int) $minimumTier === 0)<span>T0</span>@endif
+                    <span>T1</span><span>T2</span><span>T3</span><span>T4</span>
                 </div>
                 <input type="hidden" name="scouting" :value="scouting_amount / 100">
             </div>
@@ -183,11 +197,12 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
                 </div>
                 <div class="tier-range">
                     <div class="track"></div>
-                    <div class="track-fill" :style="'width:' + (facilities_tier / 4 * 100) + '%'"></div>
-                    <input type="range" x-model="facilities_tier" min="0" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
+                    <div class="track-fill" :style="'width:' + fillPercent(facilities_tier) + '%'"></div>
+                    <input type="range" x-model="facilities_tier" min="{{ (int) $minimumTier }}" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
                 </div>
                 <div class="flex justify-between text-[10px] text-text-faint mt-1">
-                    <span>T0</span><span>T1</span><span>T2</span><span>T3</span><span>T4</span>
+                    @if((int) $minimumTier === 0)<span>T0</span>@endif
+                    <span>T1</span><span>T2</span><span>T3</span><span>T4</span>
                 </div>
                 <input type="hidden" name="facilities" :value="facilities_amount / 100">
             </div>

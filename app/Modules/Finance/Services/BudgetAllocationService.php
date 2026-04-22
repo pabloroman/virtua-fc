@@ -15,7 +15,7 @@ class BudgetAllocationService
     /**
      * Prepare budget allocation data for display (finances, tiers, minimums).
      *
-     * @return array{finances: \App\Models\GameFinances, investment: ?GameInvestment, availableSurplus: int, tiers: array, reputationLevel: string}
+     * @return array{finances: \App\Models\GameFinances, investment: ?GameInvestment, availableSurplus: int, tiers: array, reputationLevel: string, tierThresholds: array, minimumTier: int}
      */
     public function prepareBudgetData(Game $game): array
     {
@@ -28,6 +28,8 @@ class BudgetAllocationService
         $availableSurplus = $finances->available_surplus ?? 0;
         $reputationLevel = TeamReputation::resolveLevel($game->id, $game->team_id);
         $previousInvestment = $game->previousSeasonInvestment();
+        $competitionTier = (int) ($game->competition->tier ?? 1);
+        $minimumTier = GameInvestment::minimumTierForCompetitionTier($competitionTier);
 
         if ($investment) {
             $tiers = [
@@ -37,14 +39,17 @@ class BudgetAllocationService
                 'facilities' => $investment->facilities_tier,
             ];
         } elseif ($previousInvestment) {
+            // When promoting out of Primera RFEF, last season's tier-0 picks would
+            // be below the new division's minimum tier — clamp up so the preselected
+            // tiers don't render below the slider floor.
             $tiers = [
-                'youth_academy' => $previousInvestment->youth_academy_tier,
-                'medical' => $previousInvestment->medical_tier,
-                'scouting' => $previousInvestment->scouting_tier,
-                'facilities' => $previousInvestment->facilities_tier,
+                'youth_academy' => max($minimumTier, $previousInvestment->youth_academy_tier),
+                'medical' => max($minimumTier, $previousInvestment->medical_tier),
+                'scouting' => max($minimumTier, $previousInvestment->scouting_tier),
+                'facilities' => max($minimumTier, $previousInvestment->facilities_tier),
             ];
         } else {
-            $tiers = GameInvestment::defaultTiersForReputation($reputationLevel, $availableSurplus);
+            $tiers = GameInvestment::defaultTiersForReputation($reputationLevel, $availableSurplus, $minimumTier);
         }
 
         return [
@@ -53,6 +58,8 @@ class BudgetAllocationService
             'availableSurplus' => $availableSurplus,
             'tiers' => $tiers,
             'reputationLevel' => $reputationLevel,
+            'tierThresholds' => GameInvestment::thresholdsForCompetitionTier($competitionTier),
+            'minimumTier' => $minimumTier,
         ];
     }
 
@@ -80,14 +87,22 @@ class BudgetAllocationService
             throw new \InvalidArgumentException('messages.budget_exceeds_surplus');
         }
 
+        $competitionTier = (int) ($game->competition->tier ?? 1);
+        $minimumAmounts = GameInvestment::minimumAmountsForCompetitionTier($competitionTier);
+
+        if (
+            $youthAcademy < $minimumAmounts['youth_academy']
+            || $medical < $minimumAmounts['medical']
+            || $scouting < $minimumAmounts['scouting']
+            || $facilities < $minimumAmounts['facilities']
+        ) {
+            throw new \InvalidArgumentException('messages.budget_minimum_tier');
+        }
+
         $youthTier = GameInvestment::calculateTier('youth_academy', $youthAcademy);
         $medicalTier = GameInvestment::calculateTier('medical', $medical);
         $scoutingTier = GameInvestment::calculateTier('scouting', $scouting);
         $facilitiesTier = GameInvestment::calculateTier('facilities', $facilities);
-
-        if ($youthTier < 1 || $medicalTier < 1 || $scoutingTier < 1 || $facilitiesTier < 1) {
-            throw new \InvalidArgumentException('messages.budget_minimum_tier');
-        }
 
         return GameInvestment::updateOrCreate(
             [

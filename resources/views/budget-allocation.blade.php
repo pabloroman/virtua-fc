@@ -4,6 +4,7 @@
 /** @var int $availableSurplus */
 /** @var array $tiers */
 /** @var array $tierThresholds */
+/** @var int $minimumTier */
 /** @var bool $isLocked */
 @endphp
 
@@ -49,6 +50,7 @@
                 :available-surplus="$availableSurplus"
                 :tiers="$tiers"
                 :tier-thresholds="$tierThresholds"
+                :minimum-tier="$minimumTier"
                 :is-locked="$isLocked"
                 :form-action="route('game.budget.save', $game->id)"
                 :submit-label="__('finances.confirm_budget_allocation')"

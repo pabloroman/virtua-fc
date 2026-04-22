@@ -6,7 +6,6 @@ use App\Modules\Finance\Services\BudgetAllocationService;
 use App\Modules\Season\Services\SeasonGoalService;
 use App\Models\Competition;
 use App\Models\Game;
-use App\Models\GameInvestment;
 use App\Models\GamePlayer;
 use App\Models\SeasonArchive;
 use App\Support\PositionMapper;
@@ -73,7 +72,6 @@ class ShowNewSeason
         return view('new-season', [
             ...$budgetData,
             'game' => $game,
-            'tierThresholds' => GameInvestment::TIER_THRESHOLDS,
             'seasonGoal' => $seasonGoal,
             'seasonGoalLabel' => $seasonGoalLabel,
             'seasonGoalTarget' => $seasonGoalTarget,

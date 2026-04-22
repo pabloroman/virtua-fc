@@ -7,7 +7,7 @@ return [
         'elite'        =>  9_500_000_000, // €95M
         'continental'  =>  5_500_000_000, // €55M
         'established'  =>  2_700_000_000, // €27M
-        'modest'       =>  1_500_000_000, // €15M
+        'modest'       =>  1_000_000_000, // €10M
         'local'        =>    600_000_000, // €6M
     ],
 
@@ -36,6 +36,16 @@ return [
         1 => 1.0,   // La Liga: full operating expenses
         2 => 0.70,  // Segunda: 70% of base operating expenses
         3 => 0.25,  // Primera RFEF: ~1/4 of base, keeps floors under typical revenue
+    ],
+
+    // Commercial revenue multiplier by competition tier (season 1 only).
+    // Reflects the sharp drop in sponsor/merchandising deals the further a club
+    // sits from La Liga. Real-world Primera RFEF commercial income is typically
+    // €200K–€800K, a fraction of what Segunda clubs pull in.
+    'commercial_tier_multiplier' => [
+        1 => 1.0,   // La Liga: full commercial rate
+        2 => 0.75,  // Segunda: 75%
+        3 => 0.25,  // Primera RFEF: 25%
     ],
 
     // Budget loan configuration.

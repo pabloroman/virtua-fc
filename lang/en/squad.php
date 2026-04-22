@@ -214,7 +214,7 @@ return [
     'academy_help_dismiss' => 'Dismiss - leaves the club permanently',
     'academy_help_age_rule' => 'Players who turn 21 will be automatically promoted to the first team at the start of the season.',
 
-    'academy_tier_0' => 'No Academy',
+    'academy_tier_0' => 'Minimal Academy',
     'academy_tier_1' => 'Basic Academy',
     'academy_tier_2' => 'Good Academy',
     'academy_tier_3' => 'Elite Academy',

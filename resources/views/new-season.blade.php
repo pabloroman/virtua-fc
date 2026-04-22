@@ -4,6 +4,7 @@
 /** @var int $availableSurplus */
 /** @var array $tiers */
 /** @var array $tierThresholds */
+/** @var int $minimumTier */
 /** @var string|null $seasonGoal */
 /** @var string|null $seasonGoalLabel */
 /** @var int|null $seasonGoalTarget */
@@ -244,6 +245,7 @@
                     :available-surplus="$availableSurplus"
                     :tiers="$tiers"
                     :tier-thresholds="$tierThresholds"
+                    :minimum-tier="$minimumTier"
                     :form-action="route('game.new-season.complete', $game->id)"
                     :submit-label="__('game.begin_season')"
                 />

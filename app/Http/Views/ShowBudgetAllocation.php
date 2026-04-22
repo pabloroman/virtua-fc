@@ -3,7 +3,6 @@
 namespace App\Http\Views;
 
 use App\Models\Game;
-use App\Models\GameInvestment;
 use App\Modules\Finance\Services\BudgetAllocationService;
 
 class ShowBudgetAllocation
@@ -22,7 +21,6 @@ class ShowBudgetAllocation
         return view('budget-allocation', [
             ...$budgetData,
             'game' => $game,
-            'tierThresholds' => GameInvestment::TIER_THRESHOLDS,
             'isLocked' => false,
         ]);
     }

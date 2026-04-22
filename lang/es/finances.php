@@ -44,21 +44,21 @@ return [
     'youth_academy' => 'Cantera',
 
     'medical' => 'Médico',
-    'medical_tier_0' => 'Sin personal médico',
+    'medical_tier_0' => 'Personal mínimo - recuperación básica',
     'medical_tier_1' => 'Atención básica - recuperación estándar',
     'medical_tier_2' => 'Buenas instalaciones - 15% más rápido',
     'medical_tier_3' => 'Personal de élite - 30% más rápido, menos lesiones',
     'medical_tier_4' => 'Clase mundial - 50% más rápido, prevención',
 
     'scouting' => 'Ojeadores',
-    'scouting_tier_0' => 'Sin red de ojeadores',
+    'scouting_tier_0' => 'Ojeadores mínimos - alcance limitado',
     'scouting_tier_1' => 'Red básica - solo mercado nacional',
     'scouting_tier_2' => 'Red ampliada - nacional, más resultados y precisión',
     'scouting_tier_3' => 'Alcance internacional - búsquedas rápidas y precisas',
     'scouting_tier_4' => 'Red global - máxima velocidad, resultados y precisión',
 
     'facilities' => 'Instalaciones',
-    'facilities_tier_0' => 'Sin inversión - ingresos base de partido',
+    'facilities_tier_0' => 'Mantenimiento mínimo - ingresos base de partido',
     'facilities_tier_1' => 'Mejoras básicas - 1.0x ingresos',
     'facilities_tier_2' => 'Instalaciones modernas - 1.15x ingresos',
     'facilities_tier_3' => 'Experiencia premium - 1.35x ingresos',
@@ -130,31 +130,31 @@ return [
     'remainder_after_infrastructure' => 'Restante tras infraestructura',
     'available_remaining' => 'Disponible:',
     'budget_exceeds_surplus' => 'La inversión en infraestructura supera el superávit disponible. Reduce el nivel de alguna área para continuar.',
-    'tier_minimum_warning' => 'Todas las áreas de infraestructura deben ser al menos Nivel 1 para mantener el estatus profesional.',
+    'tier_minimum_warning' => 'Todas las áreas de infraestructura deben alcanzar el nivel mínimo que exige tu división.',
 
     // Youth academy tier descriptions
-    'youth_academy_tier_0' => 'Sin programa de desarrollo juvenil',
+    'youth_academy_tier_0' => 'Estructura mínima - promesas con bajo potencial',
     'youth_academy_tier_1' => 'Academia básica - promesas ocasionales',
     'youth_academy_tier_2' => 'Buena academia - cantera regular',
     'youth_academy_tier_3' => 'Academia de élite - jóvenes de alto potencial',
     'youth_academy_tier_4' => 'Clase mundial - estrellas de la casa',
 
     // Medical tier descriptions
-    'medical_tier_0' => 'Sin personal médico',
+    'medical_tier_0' => 'Personal mínimo - recuperación básica',
     'medical_tier_1' => 'Atención básica - recuperación estándar',
     'medical_tier_2' => 'Buenas instalaciones - 15% más rápido',
     'medical_tier_3' => 'Personal de élite - 30% más rápido, menos lesiones',
     'medical_tier_4' => 'Clase mundial - 50% más rápido, prevención',
 
     // Scouting tier descriptions
-    'scouting_tier_0' => 'Sin red de ojeadores',
+    'scouting_tier_0' => 'Ojeadores mínimos - alcance limitado',
     'scouting_tier_1' => 'Red básica - solo mercado nacional',
     'scouting_tier_2' => 'Red ampliada - nacional, más resultados y precisión',
     'scouting_tier_3' => 'Alcance internacional - búsquedas rápidas y precisas',
     'scouting_tier_4' => 'Red global - máxima velocidad, resultados y precisión',
 
     // Facilities tier descriptions
-    'facilities_tier_0' => 'Sin inversión - ingresos base de partido',
+    'facilities_tier_0' => 'Mantenimiento mínimo - ingresos base de partido',
     'facilities_tier_1' => 'Mejoras básicas - 1.0x ingresos',
     'facilities_tier_2' => 'Instalaciones modernas - 1.15x ingresos',
     'facilities_tier_3' => 'Experiencia premium - 1.35x ingresos',

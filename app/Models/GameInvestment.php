@@ -101,6 +101,24 @@ class GameInvestment extends Model
     ];
 
     /**
+     * Tier-0 baseline thresholds (in cents). Only available to clubs competing
+     * in Primera RFEF (competition tier 3). These represent the minimum
+     * operational spend a third-tier club realistically shoulders — dropping
+     * the infrastructure floor from €1.5M to €500K without letting it hit zero.
+     */
+    public const TIER_0_THRESHOLDS = [
+        'youth_academy' => 17_000_000,  // €170K
+        'medical'       =>  9_000_000,  // €90K
+        'scouting'      =>  5_000_000,  // €50K
+        'facilities'    => 19_000_000,  // €190K
+    ];
+
+    /**
+     * Competition tiers where tier 0 is an accepted investment floor.
+     */
+    public const TIER_0_COMPETITION_TIERS = [3];
+
+    /**
      * Default investment tiers by club reputation level.
      */
     public const DEFAULT_TIERS_BY_REPUTATION = [
@@ -110,11 +128,6 @@ class GameInvestment extends Model
         'modest' => ['youth_academy' => 1, 'medical' => 2, 'scouting' => 2, 'facilities' => 2],
         'local' => ['youth_academy' => 1, 'medical' => 1, 'scouting' => 1, 'facilities' => 1],
     ];
-
-    /**
-     * Minimum required investment for professional leagues (Tier 1 in all areas).
-     */
-    public const MINIMUM_TOTAL_INVESTMENT = 150_000_000; // €1.5M in cents
 
     /**
      * Maximum investment ceilings per area (Tier 4 threshold - no benefit beyond this).
@@ -168,7 +181,73 @@ class GameInvestment extends Model
             }
         }
 
-        return 0; // Below minimum
+        return 0; // Below tier 1 — may still be a valid tier-0 allocation for Primera RFEF
+    }
+
+    /**
+     * Whether tier 0 is an accepted investment floor for the given competition tier.
+     */
+    public static function allowsTierZero(int $competitionTier): bool
+    {
+        return in_array($competitionTier, self::TIER_0_COMPETITION_TIERS, true);
+    }
+
+    /**
+     * Minimum tier users can allocate at for the given competition tier.
+     */
+    public static function minimumTierForCompetitionTier(int $competitionTier): int
+    {
+        return self::allowsTierZero($competitionTier) ? 0 : 1;
+    }
+
+    /**
+     * Minimum per-area amount users must allocate for the given competition tier.
+     *
+     * @return array<string, int>
+     */
+    public static function minimumAmountsForCompetitionTier(int $competitionTier): array
+    {
+        if (self::allowsTierZero($competitionTier)) {
+            return self::TIER_0_THRESHOLDS;
+        }
+
+        return [
+            'youth_academy' => self::TIER_THRESHOLDS['youth_academy'][1],
+            'medical'       => self::TIER_THRESHOLDS['medical'][1],
+            'scouting'      => self::TIER_THRESHOLDS['scouting'][1],
+            'facilities'    => self::TIER_THRESHOLDS['facilities'][1],
+        ];
+    }
+
+    /**
+     * Minimum total infrastructure spend guaranteed for the given competition tier.
+     * Used by the subsidy calculation to size the floor below which public
+     * subsidies kick in.
+     */
+    public static function minimumInfrastructureForCompetitionTier(int $competitionTier): int
+    {
+        return array_sum(self::minimumAmountsForCompetitionTier($competitionTier));
+    }
+
+    /**
+     * Tier threshold map for the given competition tier. Primera RFEF (tier 3)
+     * merges in the tier-0 baseline so the UI can render T0 as a selectable
+     * rung alongside T1–T4.
+     *
+     * @return array<string, array<int, int>>
+     */
+    public static function thresholdsForCompetitionTier(int $competitionTier): array
+    {
+        if (! self::allowsTierZero($competitionTier)) {
+            return self::TIER_THRESHOLDS;
+        }
+
+        $merged = [];
+        foreach (self::TIER_THRESHOLDS as $area => $tiers) {
+            $merged[$area] = [0 => self::TIER_0_THRESHOLDS[$area]] + $tiers;
+        }
+
+        return $merged;
     }
 
     /**
@@ -203,16 +282,27 @@ class GameInvestment extends Model
 
     /**
      * Get default investment tiers for a reputation level, reduced if surplus is insufficient.
+     *
+     * When $minTier is 0 (Primera RFEF), reduction can bottom out at tier 0
+     * using the tier-0 baseline thresholds.
      */
-    public static function defaultTiersForReputation(string $reputation, int $availableSurplus): array
+    public static function defaultTiersForReputation(string $reputation, int $availableSurplus, int $minTier = 1): array
     {
         $tiers = self::DEFAULT_TIERS_BY_REPUTATION[$reputation]
             ?? self::DEFAULT_TIERS_BY_REPUTATION['modest'];
 
+        $costFor = static function (string $area, int $tier): int {
+            if ($tier === 0) {
+                return self::TIER_0_THRESHOLDS[$area];
+            }
+
+            return self::TIER_THRESHOLDS[$area][$tier];
+        };
+
         while (true) {
             $totalCost = 0;
             foreach ($tiers as $area => $tier) {
-                $totalCost += self::TIER_THRESHOLDS[$area][$tier];
+                $totalCost += $costFor($area, $tier);
             }
 
             if ($totalCost <= $availableSurplus) {
@@ -220,12 +310,12 @@ class GameInvestment extends Model
             }
 
             // All already at minimum — can't reduce further
-            if (max($tiers) <= 1) {
+            if (max($tiers) <= $minTier) {
                 return $tiers;
             }
 
-            // Uniformly reduce all tiers by 1 (minimum 1)
-            $tiers = array_map(fn (int $t) => max(1, $t - 1), $tiers);
+            // Uniformly reduce all tiers by 1 (minimum = $minTier)
+            $tiers = array_map(fn (int $t) => max($minTier, $t - 1), $tiers);
         }
     }
 

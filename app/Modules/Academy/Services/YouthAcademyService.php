@@ -20,7 +20,7 @@ class YouthAcademyService
      * Tier configuration: [min_arrivals, max_arrivals]
      */
     private const TIER_CONFIG = [
-        0 => [0, 0],
+        0 => [1, 1],
         1 => [2, 3],
         2 => [3, 5],
         3 => [4, 6],
@@ -32,7 +32,7 @@ class YouthAcademyService
      * Higher tiers produce better players on average.
      */
     private const ACADEMY_BASE_QUALITY = [
-        0 => 0,
+        0 => 38,   // Minimum: raw, unpolished prospect
         1 => 45,   // Basic: developing players
         2 => 52,   // Good: slightly above developing
         3 => 62,   // Elite: average-to-good
@@ -61,7 +61,7 @@ class YouthAcademyService
      * Average potential upside (points above current ability) per academy tier.
      */
     private const POTENTIAL_UPSIDE_MEAN = [
-        0 => 0,
+        0 => 12,
         1 => 15,
         2 => 15,
         3 => 10,
@@ -77,7 +77,7 @@ class YouthAcademyService
      * Absolute minimum potential guaranteed by academy tier, regardless of team level.
      */
     private const POTENTIAL_FLOOR = [
-        0 => 0,
+        0 => 40,
         1 => 45,
         2 => 50,
         3 => 55,
@@ -118,10 +118,6 @@ class YouthAcademyService
     public function generateSeasonBatch(Game $game): Collection
     {
         $tier = $game->currentInvestment->youth_academy_tier ?? 0;
-
-        if ($tier === 0) {
-            return collect();
-        }
 
         $config = self::TIER_CONFIG[$tier];
         [$minArrivals, $maxArrivals] = $config;

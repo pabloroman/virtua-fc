@@ -44,21 +44,21 @@ return [
     'youth_academy' => 'Youth Academy',
 
     'medical' => 'Medical',
-    'medical_tier_0' => 'No medical staff',
+    'medical_tier_0' => 'Minimum staff - baseline recovery only',
     'medical_tier_1' => 'Basic care - standard recovery',
     'medical_tier_2' => 'Good facilities - 15% faster',
     'medical_tier_3' => 'Elite staff - 30% faster, fewer injuries',
     'medical_tier_4' => 'World class - 50% faster, prevention',
 
     'scouting' => 'Scouting',
-    'scouting_tier_0' => 'No scouting network',
+    'scouting_tier_0' => 'Minimal scouting - limited pipeline',
     'scouting_tier_1' => 'Basic network - domestic market only',
     'scouting_tier_2' => 'Expanded network - domestic, more results and accuracy',
     'scouting_tier_3' => 'International reach - fast and accurate searches',
     'scouting_tier_4' => 'Global network - maximum speed, results and accuracy',
 
     'facilities' => 'Facilities',
-    'facilities_tier_0' => 'No investment - base matchday revenue',
+    'facilities_tier_0' => 'Minimum upkeep - base matchday revenue',
     'facilities_tier_1' => 'Basic upgrades - 1.0x revenue',
     'facilities_tier_2' => 'Modern facilities - 1.15x revenue',
     'facilities_tier_3' => 'Premium experience - 1.35x revenue',
@@ -130,31 +130,31 @@ return [
     'remainder_after_infrastructure' => 'Remainder after infrastructure',
     'available_remaining' => 'Available:',
     'budget_exceeds_surplus' => 'Infrastructure investment exceeds the available surplus. Lower the tier of an area to continue.',
-    'tier_minimum_warning' => 'All infrastructure areas must be at least Tier 1 to maintain professional status.',
+    'tier_minimum_warning' => 'All infrastructure areas must meet the minimum tier required by your division.',
 
     // Youth academy tier descriptions
-    'youth_academy_tier_0' => 'No youth development programme',
+    'youth_academy_tier_0' => 'Bare-bones setup - low-potential prospects',
     'youth_academy_tier_1' => 'Basic academy - occasional prospects',
     'youth_academy_tier_2' => 'Good academy - regular youth pipeline',
     'youth_academy_tier_3' => 'Elite academy - high-potential youngsters',
     'youth_academy_tier_4' => 'World class - homegrown stars',
 
     // Medical tier descriptions
-    'medical_tier_0' => 'No medical staff',
+    'medical_tier_0' => 'Minimum staff - baseline recovery only',
     'medical_tier_1' => 'Basic care - standard recovery',
     'medical_tier_2' => 'Good facilities - 15% faster',
     'medical_tier_3' => 'Elite staff - 30% faster, fewer injuries',
     'medical_tier_4' => 'World class - 50% faster, prevention',
 
     // Scouting tier descriptions
-    'scouting_tier_0' => 'No scouting network',
+    'scouting_tier_0' => 'Minimal scouting - limited pipeline',
     'scouting_tier_1' => 'Basic network - domestic market only',
     'scouting_tier_2' => 'Expanded network - domestic, more results and accuracy',
     'scouting_tier_3' => 'International reach - fast and accurate searches',
     'scouting_tier_4' => 'Global network - maximum speed, results and accuracy',
 
     // Facilities tier descriptions
-    'facilities_tier_0' => 'No investment - base matchday revenue',
+    'facilities_tier_0' => 'Minimum upkeep - base matchday revenue',
     'facilities_tier_1' => 'Basic upgrades - 1.0x revenue',
     'facilities_tier_2' => 'Modern facilities - 1.15x revenue',
     'facilities_tier_3' => 'Premium experience - 1.35x revenue',

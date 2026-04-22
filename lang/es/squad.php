@@ -214,7 +214,7 @@ return [
     'academy_help_dismiss' => 'Despedir — abandona el club de forma permanente',
     'academy_help_age_rule' => 'Los jugadores que cumplan 21 años serán promocionados automáticamente al primer equipo al inicio de temporada.',
 
-    'academy_tier_0' => 'Sin Cantera',
+    'academy_tier_0' => 'Cantera Mínima',
     'academy_tier_1' => 'Cantera Básica',
     'academy_tier_2' => 'Buena Cantera',
     'academy_tier_3' => 'Cantera de Élite',
