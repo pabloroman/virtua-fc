@@ -152,19 +152,13 @@ class ProcessMatchdayAdvanceTest extends TestCase
 
         $this->game->update(['matchday_advancing_at' => now()]);
 
-        $this->runHandle(fastForward: true);
+        $result = $this->runHandle(fastForward: true);
 
-        // Mockery's ->once() is the assertion; add an explicit one so PHPUnit
-        // doesn't flag this as a risky test with no assertions.
-        $this->assertTrue(true);
+        $this->assertSame('done', $result?->type);
     }
 
-    /**
-     * Invoke the job's handle() directly, letting the container resolve its
-     * dependencies. Going through Bus::dispatchSync routes through Laravel's
-     * sync queue adapter which returns 0 instead of the handle() value and
-     * leaves an error handler registered — neither of which we want here.
-     */
+    // See MatchdayAdvanceCoordinator::runSync for why handle() is invoked
+    // directly instead of via Bus::dispatchSync.
     private function runHandle(bool $fastForward = false): ?MatchdayAdvanceResult
     {
         $job = new ProcessMatchdayAdvance($this->game->id, $fastForward);

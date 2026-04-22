@@ -347,9 +347,6 @@ class AdvanceMatchdayTest extends TestCase
 
         $this->assertEquals('live_match', $result->type);
 
-        // Both the player's match and the sibling AI match should be played
-        // in the same batch so the live-match "other scores" ticker has real
-        // events to reveal when the UI loads.
         $this->assertDatabaseHas('game_matches', [
             'game_id' => $this->game->id,
             'home_team_id' => $this->playerTeam->id,

@@ -91,24 +91,6 @@ class MatchdayAdvanceCoordinatorTest extends TestCase
         $this->assertNull($this->coordinator()->runSync($this->game->id, fastForward: true));
     }
 
-    public function test_run_sync_threads_fast_forward_flag_to_orchestrator(): void
-    {
-        $this->game->update(['fast_mode_entered_on' => $this->game->current_date]);
-
-        $orchestrator = Mockery::mock(MatchdayOrchestrator::class);
-        $orchestrator->shouldReceive('advance')
-            ->once()
-            ->with(Mockery::type(Game::class), true)
-            ->andReturn(MatchdayAdvanceResult::done());
-        $this->app->instance(MatchdayOrchestrator::class, $orchestrator);
-
-        $this->coordinator()->runSync($this->game->id, fastForward: true);
-
-        // Mockery's ->once() is the assertion; add an explicit one so PHPUnit
-        // doesn't flag this as a risky test with no assertions.
-        $this->assertTrue(true);
-    }
-
     private function coordinator(): MatchdayAdvanceCoordinator
     {
         return app(MatchdayAdvanceCoordinator::class);

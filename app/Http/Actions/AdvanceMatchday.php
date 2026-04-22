@@ -24,11 +24,9 @@ class AdvanceMatchday
 
         $this->coordinator->dispatchAsync($gameId);
 
-        // ShowGame renders the game-loading-matchday view while the job runs,
-        // then consumes matchday_advance_result and redirects to the live-match
-        // screen (or season-end / pending action) once the job completes. If
-        // the claim failed because another request already holds the flag,
-        // the same loading screen is what the user wants to see anyway.
+        // ShowGame polls matchday_advance_result and routes onward once the
+        // job finishes. A failed claim means another request already holds
+        // the flag, which lands on the same loading screen anyway.
         return redirect()->route('show-game', $gameId);
     }
 }

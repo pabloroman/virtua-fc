@@ -18,15 +18,10 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
 /**
- * Runs a single matchday advance. The only entrypoint for advancing:
- *   - Async via dispatch() from AdvanceMatchday (interactive mode) — the UI
- *     polls game.setup-status and consumes matchday_advance_result.
- *   - Sync via Bus::dispatchSync() from AdvanceFastMatchday and console
- *     commands — the caller gets the MatchdayAdvanceResult back directly.
- *
- * Callers must claim matchday_advancing_at atomically before dispatching so
- * the loading UI is visible during the async path; the job bails if the flag
- * is not set.
+ * Runs a single matchday advance. Dispatched via MatchdayAdvanceCoordinator —
+ * async (queued) from AdvanceMatchday, or sync (handle() invoked directly via
+ * the container) from AdvanceFastMatchday and console commands. Callers must
+ * claim matchday_advancing_at first; the job bails if the flag is not set.
  */
 class ProcessMatchdayAdvance implements ShouldQueue, ShouldBeUnique
 {

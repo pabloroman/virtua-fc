@@ -73,11 +73,8 @@ class MatchdayOrchestrator
 
             // Process batches until one involves the player's team or the season ends
             while ($batch = $this->matchdayService->getNextMatchBatch($game)) {
-                // Simulate every match in the batch inline — including sibling AI
-                // matches when the user's match is present — so that by the time
-                // the live-match screen loads, the "other scores" ticker has real
-                // events to reveal. The caller (ProcessMatchdayAdvance job) runs
-                // this in the background while the UI shows the loading screen.
+                // Simulate every match in the batch inline so the live-match
+                // "other scores" ticker has real sibling events to reveal.
                 $result = $this->processBatch($game, $batch, $fastForward);
 
                 if ($result['playerMatch']) {

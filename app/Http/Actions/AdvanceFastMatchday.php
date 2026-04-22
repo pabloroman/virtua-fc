@@ -31,8 +31,8 @@ class AdvanceFastMatchday
             return redirect()->route('game.fast-mode', $gameId);
         }
 
-        // Consume the stored result so a later visit to ShowGame (e.g. if the
-        // user exits fast mode) doesn't react to a stale advance outcome.
+        // Clear the stored result so ShowFastMode (which treats a non-null
+        // result as a "busy" signal) doesn't bounce the next poll.
         $game = Game::findOrFail($gameId);
         $game->update(['matchday_advance_result' => null]);
 
