@@ -54,6 +54,31 @@ class ShowGame
             ]);
         }
 
+        // Consume a completed matchday advance before any background-job
+        // loading screens. When the user just advanced into a live match,
+        // remaining AI batches and career actions often process in the
+        // background — the live-match view has its own polling for those
+        // (processingStatusUrl), so the user can watch the match while the
+        // background work continues. Gating entry into the live match on
+        // those flags would show an unwanted "just the user's crest"
+        // loading screen after the advance overlay.
+        if ($advanceResult = $game->matchday_advance_result) {
+            $game->update(['matchday_advance_result' => null]);
+            $result = MatchdayAdvanceResult::fromArray($advanceResult);
+
+            return match ($result->type) {
+                'live_match' => redirect()->route('game.live-match', [
+                    'gameId' => $gameId,
+                    'matchId' => $result->matchId,
+                ]),
+                'season_complete' => redirect()->route($game->isTournamentMode() ? 'game.tournament-end' : 'game.season-end', $gameId),
+                'done' => redirect()->route('show-game', $gameId),
+                'blocked' => $result->pendingAction && $result->pendingAction['route']
+                    ? redirect()->route($result->pendingAction['route'], $gameId)->with('warning', __('messages.action_required'))
+                    : redirect()->route('show-game', $gameId)->with('warning', __('messages.action_required')),
+            };
+        }
+
         // Show loading screen while remaining batches are processing in background
         $game->clearStuckRemainingBatches();
         if ($game->isProcessingRemainingBatches()) {
@@ -73,24 +98,6 @@ class ShowGame
                 'title' => __('game.processing_career_actions'),
                 'message' => __('game.processing_career_actions_message'),
             ]);
-        }
-
-        // Matchday advance completed — consume result and redirect
-        if ($advanceResult = $game->matchday_advance_result) {
-            $game->update(['matchday_advance_result' => null]);
-            $result = MatchdayAdvanceResult::fromArray($advanceResult);
-
-            return match ($result->type) {
-                'live_match' => redirect()->route('game.live-match', [
-                    'gameId' => $gameId,
-                    'matchId' => $result->matchId,
-                ]),
-                'season_complete' => redirect()->route($game->isTournamentMode() ? 'game.tournament-end' : 'game.season-end', $gameId),
-                'done' => redirect()->route('show-game', $gameId),
-                'blocked' => $result->pendingAction && $result->pendingAction['route']
-                    ? redirect()->route($result->pendingAction['route'], $gameId)->with('warning', __('messages.action_required'))
-                    : redirect()->route('show-game', $gameId)->with('warning', __('messages.action_required')),
-            };
         }
 
         // Show loading screen while matchday advance runs in background
