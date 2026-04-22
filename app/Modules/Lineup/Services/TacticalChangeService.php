@@ -123,6 +123,33 @@ class TacticalChangeService
                 $manualSlotPins,
                 fn ($playerId) => isset($activeIds[$playerId]),
             );
+
+            // When the formation isn't changing, the persisted slot map is
+            // the user's current intent — prior drag-swaps have already been
+            // baked into it. Pin every player still on the pitch to their
+            // current slot so a straight substitution only rewrites the
+            // slot of the outgoing player. Without this, the recomputation
+            // runs from scratch and can silently undo earlier drag-swaps
+            // (e.g. a natural-RB sub enters the RB slot but FormationRecommender
+            // re-places a versatile RB/CM back at his primary RB, displacing
+            // the incoming player into a non-natural slot with a penalty).
+            // A formation change should reshape the XI, so we skip this step
+            // in that case. Explicit user pins always win.
+            if ($formation === null) {
+                $currentAssignments = $match->{"{$prefix}_slot_assignments"} ?? [];
+                if (is_array($currentAssignments)) {
+                    foreach ($currentAssignments as $slotId => $playerId) {
+                        if (! isset($activeIds[$playerId])) {
+                            continue;
+                        }
+                        if (isset($validPins[$slotId])) {
+                            continue;
+                        }
+                        $validPins[$slotId] = $playerId;
+                    }
+                }
+            }
+
             $newSlotAssignments = $this->lineupService->computeSlotAssignments(
                 $formationEnum,
                 $userPlayers,
