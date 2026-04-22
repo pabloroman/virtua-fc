@@ -22,11 +22,15 @@ class AdvanceMatchday
             return redirect()->route('game.fast-mode', $gameId);
         }
 
-        $this->coordinator->dispatchAsync($gameId);
+        // Run inline: with sibling matches on the AIMatchResolver fast path,
+        // a full matchday advance completes sub-second, so the queue hop +
+        // 2s polling cycle cost more than the work itself. A client-side
+        // overlay in game-header shows the branded loading screen while this
+        // request is in flight. runSync returning null (another request
+        // already holds the flag) falls through to ShowGame, which renders
+        // game-loading-matchday and polls — the existing safety net.
+        $this->coordinator->runSync($gameId);
 
-        // ShowGame polls matchday_advance_result and routes onward once the
-        // job finishes. A failed claim means another request already holds
-        // the flag, which lands on the same loading screen anyway.
         return redirect()->route('show-game', $gameId);
     }
 }
