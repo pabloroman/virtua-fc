@@ -4,9 +4,8 @@ namespace App\Console\Commands;
 
 use App\Models\Game;
 use App\Models\GameMatch;
-use App\Modules\Match\Jobs\ProcessMatchdayAdvance;
+use App\Modules\Match\Services\MatchdayAdvanceCoordinator;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 
 class SimulateSeason extends Command
@@ -61,19 +60,12 @@ class SimulateSeason extends Command
             }
 
             // Advance synchronously. The HTTP AdvanceMatchday action dispatches
-            // this same job to the queue so the UI can show a loading screen;
-            // console commands need inline completion, so dispatchSync it.
-            $claimed = Game::where('id', $game->id)
-                ->whereNull('matchday_advancing_at')
-                ->whereNull('career_actions_processing_at')
-                ->update(['matchday_advancing_at' => now(), 'matchday_advance_result' => null]);
-
-            if (! $claimed) {
+            // to the queue so the UI can show a loading screen; console commands
+            // need inline completion, so runSync it.
+            if (! app(MatchdayAdvanceCoordinator::class)->runSync($game->id)) {
                 $this->warn('Could not claim advancing flag — another process may be running.');
                 break;
             }
-
-            Bus::dispatchSync(new ProcessMatchdayAdvance($game->id));
             $advances++;
 
             // Force PHP to collect circular references (Eloquent models

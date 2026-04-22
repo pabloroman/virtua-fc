@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Modules\Match\Jobs\ProcessMatchdayAdvance;
+use App\Modules\Match\Services\MatchdayAdvanceCoordinator;
 use App\Modules\Season\Services\GameCreationService;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -12,7 +12,6 @@ use App\Models\SeasonArchive;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -185,19 +184,16 @@ class StressTest extends Command
             $t0 = microtime(true);
             $mem0 = memory_get_usage(true);
 
-            $claimed = Game::where('id', $game->id)
-                ->whereNull('matchday_advancing_at')
-                ->whereNull('career_actions_processing_at')
-                ->update(['matchday_advancing_at' => now(), 'matchday_advance_result' => null]);
+            DB::enableQueryLog();
+            $result = app(MatchdayAdvanceCoordinator::class)->runSync($game->id);
+            $queryCount = count(DB::getQueryLog());
 
-            if (! $claimed) {
+            if (! $result) {
                 $this->warn("  Could not claim advancing flag for game {$game->id} — skipping.");
+                DB::disableQueryLog();
+                DB::flushQueryLog();
                 break;
             }
-
-            DB::enableQueryLog();
-            Bus::dispatchSync(new ProcessMatchdayAdvance($game->id));
-            $queryCount = count(DB::getQueryLog());
             DB::disableQueryLog();
             DB::flushQueryLog();
 
