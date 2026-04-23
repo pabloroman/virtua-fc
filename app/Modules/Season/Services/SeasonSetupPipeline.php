@@ -11,6 +11,7 @@ use App\Modules\Season\Processors\NewSeasonResetProcessor;
 use App\Modules\Season\Processors\PreSeasonFixtureProcessor;
 use App\Modules\Season\Processors\SquadRegistrationEnforcementProcessor;
 use App\Modules\Season\Processors\StandingsResetProcessor;
+use App\Modules\Season\Processors\TransferMarketSeedProcessor;
 use App\Modules\Season\Processors\UefaSuperCupQualificationProcessor;
 use App\Modules\Season\Processors\YouthAcademyPromotionProcessor;
 use App\Models\Game;
@@ -36,6 +37,7 @@ class SeasonSetupPipeline
         SquadRegistrationEnforcementProcessor $squadRegistration,
         PreSeasonFixtureProcessor $preSeasonFixture,
         NewSeasonResetProcessor $newSeasonReset,
+        TransferMarketSeedProcessor $transferMarketSeed,
     ) {
         $this->processors = [
             $academyPromotion,
@@ -47,6 +49,7 @@ class SeasonSetupPipeline
             $squadRegistration,
             $preSeasonFixture,
             $newSeasonReset,
+            $transferMarketSeed,
         ];
 
         usort($this->processors, fn ($a, $b) => $a->priority() <=> $b->priority());
