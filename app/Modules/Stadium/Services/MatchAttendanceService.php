@@ -19,6 +19,15 @@ use App\Models\TeamReputation;
  */
 class MatchAttendanceService
 {
+    // Rounds that always sell out, regardless of venue. The first leg of a
+    // two-legged semi-final is `cup.semi_finals`; the return leg is suffixed
+    // `_return` in CupCompetitionHandler::createTie. Finals are single-leg.
+    private const SOLD_OUT_ROUNDS = [
+        'cup.final',
+        'cup.semi_finals',
+        'cup.semi_finals_return',
+    ];
+
     public function __construct(
         private readonly DemandCurveService $demandCurve,
     ) {}
@@ -35,6 +44,18 @@ class MatchAttendanceService
         $existing = MatchAttendance::where('game_match_id', $match->id)->first();
         if ($existing) {
             return $existing;
+        }
+
+        if ($this->isSoldOutRound($match)) {
+            $capacity = $this->soldOutCapacity($match);
+            if ($capacity > 0) {
+                return MatchAttendance::create([
+                    'game_id' => $game->id,
+                    'game_match_id' => $match->id,
+                    'attendance' => $capacity,
+                    'capacity_at_match' => $capacity,
+                ]);
+            }
         }
 
         if ($match->isNeutralVenue() && $match->neutral_venue_capacity !== null) {
@@ -70,6 +91,13 @@ class MatchAttendanceService
      */
     public function projectForMatch(GameMatch $match, Game $game): ?array
     {
+        if ($this->isSoldOutRound($match)) {
+            $capacity = $this->soldOutCapacity($match);
+            if ($capacity > 0) {
+                return ['attendance' => $capacity, 'capacity' => $capacity];
+            }
+        }
+
         if ($match->isNeutralVenue()) {
             return null;
         }
@@ -105,6 +133,24 @@ class MatchAttendanceService
             'attendance' => $attendance,
             'capacity' => (int) ($home->stadium_seats ?? 0),
         ];
+    }
+
+    private function isSoldOutRound(GameMatch $match): bool
+    {
+        return in_array($match->round_name, self::SOLD_OUT_ROUNDS, true);
+    }
+
+    /**
+     * Capacity a final/semi-final plays to: the designated neutral venue
+     * when one is set, otherwise the home club's own stadium.
+     */
+    private function soldOutCapacity(GameMatch $match): int
+    {
+        if ($match->neutral_venue_capacity !== null) {
+            return (int) $match->neutral_venue_capacity;
+        }
+
+        return (int) (Team::find($match->home_team_id)?->stadium_seats ?? 0);
     }
 
     /**

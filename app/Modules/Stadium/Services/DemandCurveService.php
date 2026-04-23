@@ -29,7 +29,7 @@ use App\Models\TeamReputation;
 class DemandCurveService
 {
     private const MODIFIER_MIN = 0.85;
-    private const MODIFIER_MAX = 1.20;
+    private const MODIFIER_MAX = 1.40;
 
     // base_fill = FILL_FLOOR + (loyalty_points / 100) × FILL_RANGE
     // Loyalty 0 → 50%; loyalty 100 → 95%.
@@ -90,8 +90,9 @@ class DemandCurveService
 
     /**
      * Bigger visiting clubs draw bigger crowds. Away tier index minus home
-     * tier index, scaled and capped so a marquee visit can't single-handedly
-     * dominate the modifier chain.
+     * tier index, scaled and capped. Asymmetric caps: a marquee visitor
+     * can lift occupancy meaningfully (up to +25%), while hosting a minnow
+     * only trims a few points off the top since locals mostly still show up.
      */
     private function opponentDelta(TeamReputation $homeRep, TeamReputation $awayRep): float
     {
@@ -100,7 +101,7 @@ class DemandCurveService
 
         $diff = $awayTier - $homeTier;
 
-        return max(-0.05, min(0.10, $diff * 0.025));
+        return max(-0.05, min(0.25, $diff * 0.075));
     }
 
     /**
