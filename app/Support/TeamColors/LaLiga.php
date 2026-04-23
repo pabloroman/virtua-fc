@@ -61,7 +61,7 @@ final class LaLiga implements TeamColorProvider
                 'secondary' => 'yellow-400',
                 'number' => 'blue-900',
             ],
-            'Celta de Vigo' => [
+            'RC Celta' => [
                 'pattern' => 'solid',
                 'primary' => 'sky-400',
                 'secondary' => 'sky-400',

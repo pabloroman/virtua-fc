@@ -124,7 +124,7 @@ return [
             6767 => 418,   // Real Madrid Castilla → Real Madrid
             8516 => 331,   // CA Osasuna Promesas → CA Osasuna
             6688 => 621,   // Bilbao Athletic → Athletic Bilbao
-            8733 => 940,   // RC Celta Fortuna → Celta de Vigo
+            8733 => 940,   // RC Celta Fortuna → RC Celta
             11972 => 1050, // Villarreal CF B → Villarreal CF
             8519 => 368,   // Sevilla Atlético → Sevilla FC
             3679 => 13,    // Atlético Madrileño → Atlético de Madrid

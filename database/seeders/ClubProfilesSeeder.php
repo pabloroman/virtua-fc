@@ -34,7 +34,7 @@ class ClubProfilesSeeder extends Seeder
         // Established - Objetivo: Top 10
         'Valencia CF' => ClubProfile::REPUTATION_ESTABLISHED,
         'RCD Espanyol Barcelona' => ClubProfile::REPUTATION_ESTABLISHED,
-        'Celta de Vigo' => ClubProfile::REPUTATION_ESTABLISHED,
+        'RC Celta' => ClubProfile::REPUTATION_ESTABLISHED,
         'RCD Mallorca' => ClubProfile::REPUTATION_ESTABLISHED,
         'CA Osasuna' => ClubProfile::REPUTATION_ESTABLISHED,
         'Getafe CF' => ClubProfile::REPUTATION_ESTABLISHED,
@@ -340,7 +340,7 @@ class ClubProfilesSeeder extends Seeder
         'Real Sociedad' => 7,            // 78.7%
         'Valencia CF' => 9,              // 89.9%
         'RCD Espanyol Barcelona' => 7,   // 75.7%
-        'Celta de Vigo' => 9,            // 89.0%
+        'RC Celta' => 9,                 // 89.0%
         'RCD Mallorca' => 5,             // 66.8%
         'CA Osasuna' => 8,              // 87.0%
         'Getafe CF' => 3,               // 48.7%

@@ -10,7 +10,7 @@ Five tiers, ordered lowest to highest:
 |-------|------|---------------------|
 | 0 | Local | Small/unknown clubs |
 | 1 | Modest | Rayo Vallecano, Girona FC |
-| 2 | Established | Espanyol, Celta de Vigo |
+| 2 | Established | Espanyol, RC Celta |
 | 3 | Continental | Real Betis, Sevilla FC, Atletico |
 | 4 | Elite | Real Madrid, FC Barcelona |
 
