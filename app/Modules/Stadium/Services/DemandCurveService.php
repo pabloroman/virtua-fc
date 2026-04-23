@@ -29,7 +29,7 @@ use App\Models\TeamReputation;
 class DemandCurveService
 {
     private const MODIFIER_MIN = 0.85;
-    private const MODIFIER_MAX = 1.40;
+    private const MODIFIER_MAX = 1.20;
 
     // base_fill = FILL_FLOOR + (loyalty_points / 100) × FILL_RANGE
     // Loyalty 0 → 50%; loyalty 100 → 95%.
@@ -38,6 +38,13 @@ class DemandCurveService
 
     private const ATTENDANCE_FLOOR_RATIO = 0.10;
     private const ATTENDANCE_FLOOR_ABSOLUTE = 500;
+
+    // Opponent-reputation floors. Hosting a marquee visitor draws near-full
+    // stadiums regardless of home-side loyalty or form.
+    private const OPPONENT_FLOOR_RATIO = [
+        ClubProfile::REPUTATION_ELITE => 0.90,
+        ClubProfile::REPUTATION_CONTINENTAL => 0.80,
+    ];
 
     public function project(
         Team $home,
@@ -63,7 +70,22 @@ class DemandCurveService
         $attendance = (int) round($capacity * $baseFill * $modifier);
 
         $floor = (int) max(self::ATTENDANCE_FLOOR_ABSOLUTE, $capacity * self::ATTENDANCE_FLOOR_RATIO);
-        return max($floor, min($capacity, $attendance));
+        $opponentFloor = $this->opponentFloor($awayRep, $capacity);
+
+        return max($floor, $opponentFloor, min($capacity, $attendance));
+    }
+
+    /**
+     * Minimum attendance when hosting a top-tier visitor. Elite visitors
+     * (Real/Barça/etc.) floor the gate at 90% capacity, continental visitors
+     * at 80%. Lower-tier visitors don't trigger a floor — the normal
+     * loyalty-driven demand curve applies.
+     */
+    private function opponentFloor(TeamReputation $awayRep, int $capacity): int
+    {
+        $ratio = self::OPPONENT_FLOOR_RATIO[$awayRep->reputation_level] ?? 0.0;
+
+        return (int) round($capacity * $ratio);
     }
 
     /**
@@ -90,9 +112,8 @@ class DemandCurveService
 
     /**
      * Bigger visiting clubs draw bigger crowds. Away tier index minus home
-     * tier index, scaled and capped. Asymmetric caps: a marquee visitor
-     * can lift occupancy meaningfully (up to +25%), while hosting a minnow
-     * only trims a few points off the top since locals mostly still show up.
+     * tier index, scaled and capped so a marquee visit can't single-handedly
+     * dominate the modifier chain.
      */
     private function opponentDelta(TeamReputation $homeRep, TeamReputation $awayRep): float
     {
@@ -101,7 +122,7 @@ class DemandCurveService
 
         $diff = $awayTier - $homeTier;
 
-        return max(-0.05, min(0.25, $diff * 0.075));
+        return max(-0.05, min(0.10, $diff * 0.025));
     }
 
     /**
