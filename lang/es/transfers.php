@@ -116,7 +116,6 @@ return [
     'scout_results' => 'Resultados de búsqueda',
     'all_ages' => 'Todas',
     'no_players_found' => 'No se encontraron jugadores con tus criterios.',
-    'try_broadening' => 'Intenta ampliar tu búsqueda.',
     'ability' => 'Habilidad',
 
     // Scouting player page
@@ -329,9 +328,14 @@ return [
     'scouting_header_explainer' => 'Tus ojeadores devuelven jugadores con alta probabilidad de fichar por tu club. Para una visión más amplia del mercado, usa :explore.',
     'scouting_link_to_explore' => 'Explorar',
     'scouting_empty_explore_cta' => 'Explora todo el mercado en Explorar',
-    'scouting_stretch_target_badge' => 'Objetivo ambicioso',
-    'scouting_stretch_target_tooltip' => 'Un objetivo ambicioso fuera de tu alcance habitual. Tus ojeadores lo señalaron pese a su baja disposición a firmar.',
-    'scout_filtered_by_willingness_hint' => 'Tus ojeadores filtran jugadores con alta probabilidad de fichar por tu club.',
+    'scout_filtered_by_three_pass_hint' => 'Tus ojeadores sólo muestran jugadores que mejorarían la plantilla, agrupados por lo realista del fichaje.',
+    'scouting_empty_three_pass_hint' => 'Ningún jugador cumple los criterios importantes: mejorar la plantilla, encajar en el presupuesto (o acercarse) y estar dispuesto a fichar. Prueba a ampliar la búsqueda.',
+    'scout_bucket_primary_title' => 'Objetivos realistas',
+    'scout_bucket_primary_description' => 'Mejoran la plantilla, entran en tu presupuesto y están dispuestos a fichar.',
+    'scout_bucket_ambitious_title' => 'Objetivos ambiciosos',
+    'scout_bucket_ambitious_description' => 'Mejoran la plantilla y quieren cambiar de aires, pero cuestan más de lo que tienes. Haz caja o negocia a la baja.',
+    'scout_bucket_persuasion_title' => 'Requieren convencimiento',
+    'scout_bucket_persuasion_description' => 'Mejoran la plantilla y entran en el presupuesto, pero todavía no están convencidos de fichar.',
 
     // Free agent negotiation chat
     'chat_free_agent_title' => 'Negociación con Agente Libre',

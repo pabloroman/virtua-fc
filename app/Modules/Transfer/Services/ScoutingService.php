@@ -36,14 +36,30 @@ class ScoutingService
 
     /**
      * Flat willingness threshold (0-100) for a candidate to count as
-     * "gettable". Scouts return candidates at or above this bar; anything
-     * below only appears as a capped number of stretch targets, flagged as
-     * long shots in the UI. Tier controls scope and intel depth, not this.
+     * "willing" — the willingness axis of the three-pass selection. Anything
+     * at or above this bar is classed as willing; anything between
+     * PERSUASION_WILLINGNESS_MIN and this bar is classed as persuadable.
      */
     public const WILLINGNESS_THRESHOLD = 60;
 
-    /** Maximum stretch targets (low-willingness long shots) per scout report. */
-    private const MAX_STRETCH_TARGETS = 2;
+    /**
+     * Lower bound of the persuasion bucket. Candidates below this score are
+     * too uninterested to be worth chasing and are dropped entirely rather
+     * than presented as long shots — the "not_interested" / lower "reluctant"
+     * band is a waste of the user's time.
+     */
+    private const PERSUASION_WILLINGNESS_MIN = 30;
+
+    /**
+     * Max asking-price-to-available-budget ratio for the ambitious bucket.
+     * A candidate whose asking price is over budget but within this multiple
+     * is shown as "close to affordable". Anything more expensive is dropped,
+     * keeping bigger-league stars out of lower-tier scouting results.
+     */
+    private const AMBITIOUS_BUDGET_MULTIPLIER = 2.0;
+
+    /** Per-bucket cap on scout results. Primary bucket also gets the tier bonus. */
+    private const BUCKET_CAP = 5;
 
     /**
      * Tracking tier configuration.
@@ -191,19 +207,25 @@ class ScoutingService
     /**
      * Generate scout results for a completed search.
      *
-     * Scouts act as a curator: the main list is filtered to candidates whose
-     * willingness-to-join the user's club is ≥ WILLINGNESS_THRESHOLD. A small
-     * capped set of high-ability long shots (below the threshold) is appended
-     * as "stretch targets" so upward mobility remains possible for lower-rep
-     * clubs. Stretch-target ids are persisted alongside `player_ids` so the UI
-     * can flag them.
+     * Every SQL-filtered candidate is evaluated against three binary axes:
+     *   - improves:   candidate's overall ability beats our squad average at
+     *                 the searched position (trivially true if we have no one
+     *                 who plays there — positional gap).
+     *   - affordable: asking price fits within available transfer budget.
+     *   - willing:    willingness score ≥ WILLINGNESS_THRESHOLD.
+     *
+     * Candidates who don't improve us are dropped regardless of the other
+     * axes. The remaining candidates fall into one of three labelled buckets:
+     *   - primary    — all three axes met.
+     *   - ambitious  — improves + willing, price ≤ AMBITIOUS_BUDGET_MULTIPLIER × budget.
+     *   - persuasion — improves + affordable, willingness ∈ [PERSUASION_WILLINGNESS_MIN, threshold).
+     * Candidates that fit no bucket are dropped.
      */
     private function generateResults(Game $game, ScoutReport $report): void
     {
         $filters = $report->filters;
         $positions = PositionMapper::getPositionsForFilter($filters['position']) ?? [];
 
-        // Enforce international search tier restriction
         if (!$this->canSearchInternationally($game)) {
             $filters['scope'] = ['domestic'];
         }
@@ -212,70 +234,203 @@ class ScoutingService
         $candidates = $queryBuilder->buildCandidateQuery($game, $filters, $positions)->get();
 
         if ($candidates->isEmpty()) {
-            $report->update([
-                'status' => ScoutReport::STATUS_COMPLETED,
-                'player_ids' => [],
-                'filters' => array_merge($report->filters, ['stretch_player_ids' => []]),
-            ]);
+            $this->persistEmptyResults($report);
 
             return;
         }
 
-        // Pre-load all team rosters for candidates to avoid N+1 queries when
-        // computing importance and willingness.
+        // Pre-load candidate team rosters once so importance can be computed
+        // without N+1 queries inside the candidate loop.
         $candidateTeamIds = $candidates->pluck('team_id')->unique();
         $teamRosters = GamePlayer::where('game_id', $game->id)
             ->whereIn('team_id', $candidateTeamIds)
             ->get()
             ->groupBy('team_id');
 
-        // Score each candidate by willingness to join this specific club.
-        // Willingness already folds in importance, reputation gap, age, and
-        // contract — it's the single best signal for "will they come?".
-        $scored = $candidates->map(function ($player) use ($game, $teamRosters) {
-            $teammates = $teamRosters->get($player->team_id, collect());
-            $importance = $this->calculatePlayerImportance($player, $teammates);
-            $willingness = $this->dispositionService->playerTransferWillingness($player, $game, $importance);
+        $squadAverage = $this->calculateOwnSquadAverageForPositions($game, $positions);
+        $availableBudget = $this->availableTransferBudget($game);
 
-            return [
-                'player' => $player,
-                'importance' => $importance,
-                'willingness_score' => $willingness['score'],
-            ];
-        });
+        $primary = collect();
+        $ambitious = collect();
+        $persuasion = collect();
 
-        // Base result count: 5-8 players plus tier bonus
-        $baseCount = rand(5, 8);
+        foreach ($candidates as $candidate) {
+            $evaluation = $this->evaluateCandidate(
+                $candidate,
+                $game,
+                $teamRosters->get($candidate->team_id, collect()),
+                $squadAverage,
+                $availableBudget,
+            );
+
+            if (!$evaluation['improves']) {
+                continue;
+            }
+
+            if ($evaluation['affordable'] && $evaluation['willing']) {
+                $primary->push($evaluation);
+            } elseif ($evaluation['willing']
+                && $availableBudget > 0
+                && $evaluation['asking_price'] <= $availableBudget * self::AMBITIOUS_BUDGET_MULTIPLIER
+            ) {
+                $ambitious->push($evaluation);
+            } elseif ($evaluation['affordable']
+                && !$evaluation['willing']
+                && $evaluation['willingness_score'] >= self::PERSUASION_WILLINGNESS_MIN
+            ) {
+                $persuasion->push($evaluation);
+            }
+        }
+
         $tier = $game->currentInvestment->scouting_tier ?? 1;
-        $extraResults = self::SCOUTING_TIER_EFFECTS[$tier][1] ?? 0;
-        $targetCount = $baseCount + $extraResults;
+        $primaryCap = self::BUCKET_CAP + (self::SCOUTING_TIER_EFFECTS[$tier][1] ?? 0);
 
-        // Primary pool: willing candidates, sorted by willingness descending
-        // with a small random perturbation so repeat searches vary.
-        [$willing, $unwilling] = $scored->partition(
-            fn ($s) => $s['willingness_score'] >= self::WILLINGNESS_THRESHOLD
-        );
+        $primaryIds = $primary
+            ->sortByDesc(fn ($e) => $e['overall_ability'] * 1000 + $e['willingness_score'])
+            ->take($primaryCap)
+            ->pluck('player.id')->values()->toArray();
 
-        $mainResults = $willing
-            ->sortByDesc(fn ($s) => $s['willingness_score'] + mt_rand(0, 10) / 100)
-            ->take($targetCount);
+        $ambitiousIds = $ambitious
+            ->sortByDesc(fn ($e) => $e['overall_ability'])
+            ->take(self::BUCKET_CAP)
+            ->pluck('player.id')->values()->toArray();
 
-        // Stretch targets: ambitious long shots below the threshold, picked for
-        // quality. Capped at MAX_STRETCH_TARGETS regardless of how many slots
-        // the main pool left unfilled — "only gettable players" is the core
-        // pitch; long shots are seasoning, not the main course.
-        $stretchTargets = $unwilling
-            ->sortByDesc(fn ($s) => ($s['player']->current_technical_ability + $s['player']->current_physical_ability) / 2)
-            ->take(self::MAX_STRETCH_TARGETS);
+        $persuasionIds = $persuasion
+            ->sortByDesc(fn ($e) => $e['willingness_score'] * 1000 + $e['overall_ability'])
+            ->take(self::BUCKET_CAP)
+            ->pluck('player.id')->values()->toArray();
 
-        $playerIds = $mainResults->pluck('player.id')->values()->toArray();
-        $stretchIds = $stretchTargets->pluck('player.id')->values()->toArray();
+        $allIds = array_values(array_unique(array_merge($primaryIds, $ambitiousIds, $persuasionIds)));
 
         $report->update([
             'status' => ScoutReport::STATUS_COMPLETED,
-            'player_ids' => array_values(array_unique(array_merge($playerIds, $stretchIds))),
-            'filters' => array_merge($report->filters, ['stretch_player_ids' => $stretchIds]),
+            'player_ids' => $allIds,
+            'filters' => array_merge($report->filters, [
+                'primary_player_ids' => $primaryIds,
+                'ambitious_player_ids' => $ambitiousIds,
+                'persuasion_player_ids' => $persuasionIds,
+            ]),
         ]);
+    }
+
+    /**
+     * Persist an empty scout report. Used when no candidate clears the SQL
+     * pre-filter or no candidate passes the three-pass evaluation — either
+     * way the UI renders the "no realistic candidates" empty state.
+     */
+    private function persistEmptyResults(ScoutReport $report): void
+    {
+        $report->update([
+            'status' => ScoutReport::STATUS_COMPLETED,
+            'player_ids' => [],
+            'filters' => array_merge($report->filters, [
+                'primary_player_ids' => [],
+                'ambitious_player_ids' => [],
+                'persuasion_player_ids' => [],
+            ]),
+        ]);
+    }
+
+    /**
+     * Evaluate a candidate on the three selection axes and compute the
+     * supporting numbers the ranker needs.
+     *
+     * @param  Collection<int, GamePlayer>  $teammates
+     * @return array{
+     *     player: GamePlayer,
+     *     overall_ability: float,
+     *     asking_price: int,
+     *     willingness_score: int,
+     *     improves: bool,
+     *     affordable: bool,
+     *     willing: bool,
+     * }
+     */
+    private function evaluateCandidate(
+        GamePlayer $candidate,
+        Game $game,
+        Collection $teammates,
+        ?float $squadAverage,
+        int $availableBudget,
+    ): array {
+        $overallAbility = ($candidate->current_technical_ability + $candidate->current_physical_ability) / 2;
+        $importance = $this->calculatePlayerImportance($candidate, $teammates);
+        $askingPrice = $this->calculateAskingPrice($candidate, $game->current_date);
+        $willingness = $this->dispositionService->playerTransferWillingness($candidate, $game, $importance)['score'];
+
+        // If we have no one at this position, any candidate fills the gap.
+        // Otherwise require the candidate to beat our average at the position.
+        $improves = $squadAverage === null || $overallAbility > $squadAverage;
+        $affordable = $askingPrice <= $availableBudget;
+        $willing = $willingness >= self::WILLINGNESS_THRESHOLD;
+
+        return [
+            'player' => $candidate,
+            'overall_ability' => $overallAbility,
+            'asking_price' => $askingPrice,
+            'willingness_score' => $willingness,
+            'improves' => $improves,
+            'affordable' => $affordable,
+            'willing' => $willing,
+        ];
+    }
+
+    /**
+     * Average overall ability of our current players who can play any of the
+     * requested positions (primary OR secondary). Returns null if we have no
+     * such player — the caller treats that as "positional gap, any candidate
+     * improves us".
+     *
+     * @param  string[]  $positions
+     */
+    private function calculateOwnSquadAverageForPositions(Game $game, array $positions): ?float
+    {
+        if (empty($positions)) {
+            return null;
+        }
+
+        $positionSet = array_flip($positions);
+
+        $squad = GamePlayer::with('player')
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->get();
+
+        $matching = $squad->filter(function (GamePlayer $player) use ($positionSet) {
+            if (isset($positionSet[$player->position])) {
+                return true;
+            }
+
+            foreach ($player->secondary_positions ?? [] as $secondary) {
+                if (isset($positionSet[$secondary])) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+
+        if ($matching->isEmpty()) {
+            return null;
+        }
+
+        return $matching->avg(fn (GamePlayer $p) => (
+            $p->current_technical_ability + $p->current_physical_ability
+        ) / 2);
+    }
+
+    /**
+     * Current available transfer budget: the season's transfer_budget minus
+     * the fees already committed in outstanding TransferOffers. Extracted so
+     * scouting result selection and per-player scouting detail share one
+     * source of truth.
+     */
+    private function availableTransferBudget(Game $game): int
+    {
+        $investment = $game->currentInvestment;
+        $committed = TransferOffer::committedBudget($game->id);
+
+        return ($investment->transfer_budget ?? 0) - $committed;
     }
 
     // =========================================
@@ -638,8 +793,7 @@ class ScoutingService
             : null;
 
         $investment = $game->currentInvestment;
-        $committedBudget = TransferOffer::committedBudget($game->id);
-        $availableBudget = ($investment->transfer_budget ?? 0) - $committedBudget;
+        $availableBudget = $this->availableTransferBudget($game);
         $canAffordFee = $askingPrice <= $availableBudget;
         $canAffordLoan = $isFreeAgent || $wageDemand <= $availableBudget;
 

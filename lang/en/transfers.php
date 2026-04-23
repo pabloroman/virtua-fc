@@ -115,7 +115,6 @@ return [
     'scout_results' => 'Search Results',
     'all_ages' => 'All',
     'no_players_found' => 'No players found matching your criteria.',
-    'try_broadening' => 'Try broadening your search.',
     'ability' => 'Ability',
 
     // Scouting player page
@@ -324,9 +323,14 @@ return [
     'scouting_header_explainer' => 'Your scouts return players likely to join your club. For a broader view of the market, use :explore.',
     'scouting_link_to_explore' => 'Explore',
     'scouting_empty_explore_cta' => 'Browse the full market in Explore',
-    'scouting_stretch_target_badge' => 'Long shot',
-    'scouting_stretch_target_tooltip' => 'An ambitious target outside your usual reach. Your scouts flagged them despite low willingness to join.',
-    'scout_filtered_by_willingness_hint' => 'Your scouts pre-filter for candidates with a high chance of joining your club.',
+    'scout_filtered_by_three_pass_hint' => 'Your scouts only surface players who would improve the squad, grouped by how realistic a move is.',
+    'scouting_empty_three_pass_hint' => 'No player matched your search on all the important axes: upgrading the squad, being within budget (or close to it), and willing to move. Try widening the criteria.',
+    'scout_bucket_primary_title' => 'Realistic targets',
+    'scout_bucket_primary_description' => 'Would improve the squad, fit within your budget, and are willing to join.',
+    'scout_bucket_ambitious_title' => 'Ambitious targets',
+    'scout_bucket_ambitious_description' => 'Would improve the squad and want to move, but cost more than you currently have. Raise funds or negotiate down.',
+    'scout_bucket_persuasion_title' => 'Need persuasion',
+    'scout_bucket_persuasion_description' => 'Would improve the squad and fit the budget, but aren\'t sold on the move yet.',
 
     // Free agent negotiation chat
     'chat_free_agent_title' => 'Free Agent Negotiation',

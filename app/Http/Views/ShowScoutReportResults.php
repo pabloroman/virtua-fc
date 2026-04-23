@@ -9,6 +9,7 @@ use App\Models\ScoutReport;
 use App\Models\ShortlistedPlayer;
 use App\Models\TransferOffer;
 use App\Support\PositionMapper;
+use Illuminate\Support\Collection;
 
 class ShowScoutReportResults
 {
@@ -23,9 +24,13 @@ class ShowScoutReportResults
             ->where('status', ScoutReport::STATUS_COMPLETED)
             ->findOrFail($reportId);
 
-        $players = collect();
         $playerDetails = [];
-        $stretchIds = $report->filters['stretch_player_ids'] ?? [];
+        $buckets = [
+            'primary' => collect(),
+            'ambitious' => collect(),
+            'persuasion' => collect(),
+            'legacy' => collect(),
+        ];
 
         if (!empty($report->player_ids)) {
             $players = GamePlayer::with(['player', 'team'])
@@ -33,7 +38,8 @@ class ShowScoutReportResults
                 ->where(fn ($q) => $q
                     ->whereNull('team_id')
                     ->orWhere('team_id', '!=', $game->team_id))
-                ->get();
+                ->get()
+                ->keyBy('id');
 
             // Pre-load rosters for every candidate's team so importance /
             // willingness lookups below don't fire one query per player.
@@ -63,22 +69,11 @@ class ShowScoutReportResults
                 $importance = $this->scoutingService->calculatePlayerImportance($player, $teammates);
                 $willingness = $this->scoutingService->calculateWillingness($player, $game, $importance);
                 $detail['willingness_label'] = $willingness['label'];
-                $detail['is_stretch_target'] = in_array($player->id, $stretchIds, true);
 
                 $playerDetails[$player->id] = $detail;
             }
 
-            // Order: willing candidates first (by willingness desc), then stretch
-            // targets at the bottom. Keeps the "who you can actually sign" pitch
-            // visible at the top of the list.
-            $players = $players->sortBy(function (GamePlayer $p) use ($playerDetails) {
-                $detail = $playerDetails[$p->id];
-                // Stretch targets sink to the bottom; within each bucket, sort
-                // by overall ability so the highest-quality names lead.
-                $stretchRank = $detail['is_stretch_target'] ? 1 : 0;
-                $ability = ($p->current_technical_ability + $p->current_physical_ability) / 2;
-                return sprintf('%d_%05d', $stretchRank, 999 - (int) $ability);
-            })->values();
+            $buckets = $this->splitIntoBuckets($report, $players, $game->current_date);
         }
 
         $filters = $report->filters;
@@ -93,10 +88,16 @@ class ShowScoutReportResults
             ->pluck('game_player_id')
             ->toArray();
 
+        $totalResults = $buckets['primary']->count()
+            + $buckets['ambitious']->count()
+            + $buckets['persuasion']->count()
+            + $buckets['legacy']->count();
+
         return view('partials.scout-report-results', [
             'game' => $game,
             'report' => $report,
-            'players' => $players,
+            'buckets' => $buckets,
+            'totalResults' => $totalResults,
             'playerDetails' => $playerDetails,
             'positionLabel' => $positionLabel,
             'scopeLabel' => $scopeLabel,
@@ -104,5 +105,61 @@ class ShowScoutReportResults
             'isPreContractPeriod' => $game->isPreContractPeriod(),
             'shortlistedPlayerIds' => $shortlistedPlayerIds,
         ]);
+    }
+
+    /**
+     * Split returned players into the three labelled buckets stored on the
+     * report. Reports written before the three-bucket format fall back to a
+     * single "legacy" bucket so pre-existing searches still render.
+     *
+     * @param  Collection<string, GamePlayer>  $playersById
+     * @return array{primary: Collection, ambitious: Collection, persuasion: Collection, legacy: Collection}
+     */
+    private function splitIntoBuckets(ScoutReport $report, Collection $playersById, $currentDate): array
+    {
+        $filters = $report->filters ?? [];
+        $primaryIds = $filters['primary_player_ids'] ?? null;
+        $ambitiousIds = $filters['ambitious_player_ids'] ?? null;
+        $persuasionIds = $filters['persuasion_player_ids'] ?? null;
+
+        if ($primaryIds === null && $ambitiousIds === null && $persuasionIds === null) {
+            return [
+                'primary' => collect(),
+                'ambitious' => collect(),
+                'persuasion' => collect(),
+                'legacy' => $this->orderByAbility($playersById->values()),
+            ];
+        }
+
+        return [
+            'primary' => $this->orderByAbility($this->pickPlayers($playersById, $primaryIds ?? [])),
+            'ambitious' => $this->orderByAbility($this->pickPlayers($playersById, $ambitiousIds ?? [])),
+            'persuasion' => $this->orderByAbility($this->pickPlayers($playersById, $persuasionIds ?? [])),
+            'legacy' => collect(),
+        ];
+    }
+
+    /**
+     * @param  Collection<string, GamePlayer>  $playersById
+     * @param  string[]  $ids
+     * @return Collection<int, GamePlayer>
+     */
+    private function pickPlayers(Collection $playersById, array $ids): Collection
+    {
+        return collect($ids)
+            ->map(fn (string $id) => $playersById->get($id))
+            ->filter()
+            ->values();
+    }
+
+    /**
+     * @param  Collection<int, GamePlayer>  $players
+     * @return Collection<int, GamePlayer>
+     */
+    private function orderByAbility(Collection $players): Collection
+    {
+        return $players
+            ->sortByDesc(fn (GamePlayer $p) => ($p->current_technical_ability + $p->current_physical_ability) / 2)
+            ->values();
     }
 }

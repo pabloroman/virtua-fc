@@ -27,8 +27,9 @@ class ScoutSearchQueryBuilder
         $query = GamePlayer::with(['player', 'team'])
             ->where('game_id', $game->id)
             ->whereNotNull('team_id')
-            ->where('team_id', '!=', $game->team_id)
-            ->whereIn('position', $positions);
+            ->where('team_id', '!=', $game->team_id);
+
+        $this->applyPositionFilter($query, $positions);
 
         $this->applyScopeFilter($query, $game, $filters);
         $this->applyAgeFilter($query, $game, $filters);
@@ -39,6 +40,31 @@ class ScoutSearchQueryBuilder
         $this->excludeAgreed($query, $game);
 
         return $query;
+    }
+
+    /**
+     * Match candidates whose primary position is in $positions OR whose
+     * secondary_positions JSON array contains any of $positions.
+     *
+     * Uses PostgreSQL jsonb_exists_any for the secondary match.
+     */
+    private function applyPositionFilter(Builder $query, array $positions): void
+    {
+        if (empty($positions)) {
+            $query->whereRaw('1 = 0');
+
+            return;
+        }
+
+        $placeholders = implode(',', array_fill(0, count($positions), '?'));
+
+        $query->where(function (Builder $inner) use ($positions, $placeholders) {
+            $inner->whereIn('position', $positions)
+                ->orWhereRaw(
+                    "(secondary_positions IS NOT NULL AND jsonb_exists_any(secondary_positions::jsonb, ARRAY[$placeholders]::text[]))",
+                    $positions
+                );
+        });
     }
 
     private function applyScopeFilter(Builder $query, Game $game, array $filters): void
