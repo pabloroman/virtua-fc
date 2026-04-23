@@ -29,6 +29,7 @@
                 <th class="py-2.5 pl-4 w-12"></th>
                 <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider"></th>
                 <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider text-center hidden md:table-cell">{{ __('transfers.explore_age') }}</th>
+                <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider text-center hidden md:table-cell">{{ __('transfers.explore_overall') }}</th>
                 <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider hidden md:table-cell">{{ __('transfers.explore_value') }}</th>
                 <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider text-center hidden md:table-cell">{{ __('transfers.explore_contract_year') }}</th>
                 <th class="py-2.5 w-10"></th>
@@ -37,7 +38,7 @@
         </thead>
         <tbody>
             @foreach($players as $player)
-            <x-explore-player-row :player="$player" :game="$game" :is-own-team="$isOwnTeam" />
+            <x-explore-player-row :player="$player" :game="$game" :show-ovr="true" :is-own-team="$isOwnTeam" />
             @endforeach
         </tbody>
     </table>
