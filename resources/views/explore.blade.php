@@ -36,149 +36,166 @@
                             ]) !!}
                         </div>
 
-                        {{-- Search bar + Advanced-filter toggle --}}
-                        <div class="flex flex-col sm:flex-row gap-2 mb-3">
-                            <div class="relative flex-1">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <svg class="w-4 h-4 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                    </svg>
+                        <form method="GET" action="{{ route('game.explore', $game->id) }}">
+                            {{-- Search bar + Advanced-filter toggle --}}
+                            <div class="flex flex-col sm:flex-row gap-2 mb-3">
+                                <div class="relative flex-1">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg class="w-4 h-4 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                        </svg>
+                                    </div>
+                                    <input type="text"
+                                           name="query"
+                                           x-model="searchQuery"
+                                           :placeholder="@js(__('transfers.explore_search_placeholder'))"
+                                           class="w-full pl-10 pr-10 py-2.5 bg-surface-700 border border-border-default rounded-lg text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent-blue/50 focus:ring-1 focus:ring-accent-blue/30 min-h-[44px]">
+                                    <button type="button" x-show="searchQuery.length > 0"
+                                            @click="searchQuery = ''"
+                                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-text-muted hover:text-text-primary">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
                                 </div>
-                                <input type="text"
-                                       x-model="searchQuery"
-                                       @input.debounce.350ms="searchPlayers()"
-                                       @keydown.escape="clearSearch()"
-                                       :placeholder="@js(__('transfers.explore_search_placeholder'))"
-                                       class="w-full pl-10 pr-10 py-2.5 bg-surface-700 border border-border-default rounded-lg text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent-blue/50 focus:ring-1 focus:ring-accent-blue/30 min-h-[44px]">
-                                <button x-show="searchQuery.length > 0"
-                                        @click="clearSearch()"
-                                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-text-muted hover:text-text-primary">
+                                <button type="button" @click="filtersOpen = !filtersOpen"
+                                        :class="activeFilterCount > 0 || filtersOpen ? 'bg-accent-blue/10 border-accent-blue/30 text-accent-blue' : 'bg-surface-700 border-border-default text-text-body hover:border-border-strong'"
+                                        class="shrink-0 inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border text-sm font-medium min-h-[44px] transition-colors">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                                    </svg>
+                                    <span>{{ __('transfers.explore_advanced_filters') }}</span>
+                                    <span x-show="activeFilterCount > 0" x-text="activeFilterCount"
+                                          class="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full bg-accent-blue/20 text-[10px] font-semibold"></span>
+                                    <svg class="w-4 h-4 transition-transform" :class="filtersOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                     </svg>
                                 </button>
                             </div>
-                            <button @click="filtersOpen = !filtersOpen"
-                                    :class="activeFilterCount > 0 || filtersOpen ? 'bg-accent-blue/10 border-accent-blue/30 text-accent-blue' : 'bg-surface-700 border-border-default text-text-body hover:border-border-strong'"
-                                    class="shrink-0 inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border text-sm font-medium min-h-[44px] transition-colors">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
-                                </svg>
-                                <span>{{ __('transfers.explore_advanced_filters') }}</span>
-                                <span x-show="activeFilterCount > 0" x-text="activeFilterCount"
-                                      class="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full bg-accent-blue/20 text-[10px] font-semibold"></span>
-                                <svg class="w-4 h-4 transition-transform" :class="filtersOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                </svg>
-                            </button>
-                        </div>
 
-                        {{-- Advanced filter panel --}}
-                        <div x-show="filtersOpen" x-cloak x-transition class="mb-5 p-4 rounded-lg bg-surface-800 border border-border-default">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                                {{-- Position (specific + group) --}}
-                                <label class="flex flex-col gap-1">
-                                    <span class="text-xs font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.position_required', ['*' => '']) }}</span>
-                                    <select x-model="filters.position" @change="searchPlayers()"
-                                            class="bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
-                                        <option value="">{{ __('transfers.explore_filter_all') }}</option>
-                                        <optgroup label="{{ __('transfers.position_groups') }}">
-                                            <option value="gk">{{ __('transfers.explore_goalkeepers') }}</option>
-                                            <option value="def">{{ __('transfers.explore_defenders') }}</option>
-                                            <option value="mid">{{ __('transfers.explore_midfielders') }}</option>
-                                            <option value="fwd">{{ __('transfers.explore_forwards') }}</option>
-                                        </optgroup>
-                                        <optgroup label="{{ __('transfers.specific_positions') }}">
-                                            @foreach(\App\Support\PositionMapper::getFilterOptions() as $code => $key)
-                                                <option value="{{ $code }}">{{ __("positions.{$key}_label") }}</option>
+                            {{-- Advanced filter panel --}}
+                            <div x-show="filtersOpen" x-cloak x-transition class="mb-5 p-4 rounded-lg bg-surface-800 border border-border-default">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-5">
+                                    {{-- Position (specific + group) --}}
+                                    <label class="flex flex-col gap-1">
+                                        <span class="text-xs font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.position_required', ['*' => '']) }}</span>
+                                        <select name="position" x-model="filters.position"
+                                                class="bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
+                                            <option value="">{{ __('transfers.explore_filter_all') }}</option>
+                                            <optgroup label="{{ __('transfers.position_groups') }}">
+                                                <option value="gk">{{ __('transfers.explore_goalkeepers') }}</option>
+                                                <option value="def">{{ __('transfers.explore_defenders') }}</option>
+                                                <option value="mid">{{ __('transfers.explore_midfielders') }}</option>
+                                                <option value="fwd">{{ __('transfers.explore_forwards') }}</option>
+                                            </optgroup>
+                                            <optgroup label="{{ __('transfers.specific_positions') }}">
+                                                @foreach(\App\Support\PositionMapper::getFilterOptions() as $code => $key)
+                                                    <option value="{{ $code }}">{{ __("positions.{$key}_label") }}</option>
+                                                @endforeach
+                                            </optgroup>
+                                        </select>
+                                    </label>
+
+                                    {{-- Competition --}}
+                                    <label class="flex flex-col gap-1">
+                                        <span class="text-xs font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.league') }}</span>
+                                        <select name="competition_id" x-model="filters.competition_id"
+                                                class="bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
+                                            <option value="">{{ __('transfers.explore_filter_all') }}</option>
+                                            <template x-for="comp in competitions" :key="comp.id">
+                                                <option :value="comp.id" x-text="comp.name"></option>
+                                            </template>
+                                        </select>
+                                    </label>
+
+                                    {{-- Nationality --}}
+                                    <label class="flex flex-col gap-1">
+                                        <span class="text-xs font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.explore_nationality') }}</span>
+                                        <select name="nationality" x-model="filters.nationality"
+                                                class="bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
+                                            <option value="">{{ __('transfers.explore_filter_all') }}</option>
+                                            @foreach($nationalities as $nat)
+                                                <option value="{{ $nat }}">{{ __("countries.{$nat}") }}</option>
                                             @endforeach
-                                        </optgroup>
-                                    </select>
-                                </label>
+                                        </select>
+                                    </label>
 
-                                {{-- Age range --}}
-                                <div class="flex flex-col gap-1">
-                                    <span class="text-xs font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.age_range') }}</span>
-                                    <div class="flex items-center gap-2">
-                                        <input type="number" min="15" max="50" x-model.number="filters.min_age" @input.debounce.400ms="searchPlayers()"
-                                               :placeholder="@js(__('transfers.explore_min'))"
-                                               class="w-full bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
-                                        <span class="text-text-muted text-sm">—</span>
-                                        <input type="number" min="15" max="50" x-model.number="filters.max_age" @input.debounce.400ms="searchPlayers()"
-                                               :placeholder="@js(__('transfers.explore_max'))"
-                                               class="w-full bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
+                                    {{-- Age range (dual slider) --}}
+                                    <div class="flex flex-col gap-1">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-xs font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.age_range') }}</span>
+                                            <span class="text-xs font-semibold text-text-primary" x-text="ageMin + ' – ' + ageMax"></span>
+                                        </div>
+                                        <div class="dual-range">
+                                            <div class="track"></div>
+                                            <div class="track-fill" :style="'left:' + ageTrackLeft() + ';width:' + ageTrackWidth()"></div>
+                                            <input type="range" :min="AGE_MIN_BOUND" :max="AGE_MAX_BOUND" step="1" x-model.number="ageMin" @input="enforceAgeMin()">
+                                            <input type="range" :min="AGE_MIN_BOUND" :max="AGE_MAX_BOUND" step="1" x-model.number="ageMax" @input="enforceAgeMax()">
+                                        </div>
+                                        <input type="hidden" name="min_age" :value="ageMin > AGE_MIN_BOUND ? ageMin : ''">
+                                        <input type="hidden" name="max_age" :value="ageMax < AGE_MAX_BOUND ? ageMax : ''">
                                     </div>
+
+                                    {{-- Overall range (dual slider) --}}
+                                    <div class="flex flex-col gap-1">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-xs font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.explore_overall_range') }}</span>
+                                            <span class="text-xs font-semibold text-text-primary" x-text="overallMin + ' – ' + overallMax"></span>
+                                        </div>
+                                        <div class="dual-range">
+                                            <div class="track"></div>
+                                            <div class="track-fill" :style="'left:' + overallTrackLeft() + ';width:' + overallTrackWidth()"></div>
+                                            <input type="range" :min="OVERALL_MIN_BOUND" :max="OVERALL_MAX_BOUND" step="1" x-model.number="overallMin" @input="enforceOverallMin()">
+                                            <input type="range" :min="OVERALL_MIN_BOUND" :max="OVERALL_MAX_BOUND" step="1" x-model.number="overallMax" @input="enforceOverallMax()">
+                                        </div>
+                                        <input type="hidden" name="min_overall" :value="overallMin > OVERALL_MIN_BOUND ? overallMin : ''">
+                                        <input type="hidden" name="max_overall" :value="overallMax < OVERALL_MAX_BOUND ? overallMax : ''">
+                                    </div>
+
+                                    {{-- Market value range (stepped dual slider) --}}
+                                    <div class="flex flex-col gap-1">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-xs font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.value_range') }}</span>
+                                            <span class="text-xs font-semibold text-text-primary" x-text="formatValue(valueMin()) + ' – ' + formatValue(valueMax())"></span>
+                                        </div>
+                                        <div class="dual-range">
+                                            <div class="track"></div>
+                                            <div class="track-fill" :style="'left:' + valueTrackLeft() + ';width:' + valueTrackWidth()"></div>
+                                            <input type="range" min="0" :max="valueSteps.length - 1" step="1" x-model.number="valueStepMin" @input="enforceValueMin()">
+                                            <input type="range" min="0" :max="valueSteps.length - 1" step="1" x-model.number="valueStepMax" @input="enforceValueMax()">
+                                        </div>
+                                        <input type="hidden" name="min_value" :value="valueStepMin > 0 ? valueMin() : ''">
+                                        <input type="hidden" name="max_value" :value="valueStepMax < valueSteps.length - 1 ? valueMax() : ''">
+                                    </div>
+
+                                    {{-- Max contract year --}}
+                                    <label class="flex flex-col gap-1">
+                                        <span class="text-xs font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.explore_contract_expires_by') }}</span>
+                                        <input type="number" name="max_contract_year"
+                                               min="{{ (int) $game->current_date->year }}" max="{{ (int) $game->current_date->year + 10 }}"
+                                               x-model.number="filters.max_contract_year"
+                                               placeholder="{{ (int) $game->current_date->year + 1 }}"
+                                               class="bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
+                                    </label>
                                 </div>
 
-                                {{-- Competition --}}
-                                <label class="flex flex-col gap-1">
-                                    <span class="text-xs font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.league') }}</span>
-                                    <select x-model="filters.competition_id" @change="searchPlayers()"
-                                            class="bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
-                                        <option value="">{{ __('transfers.explore_filter_all') }}</option>
-                                        <template x-for="comp in competitions" :key="comp.id">
-                                            <option :value="comp.id" x-text="comp.name"></option>
-                                        </template>
-                                    </select>
-                                </label>
-
-                                {{-- Market value range (millions €) --}}
-                                <div class="flex flex-col gap-1">
-                                    <span class="text-xs font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.explore_value_range_millions') }}</span>
-                                    <div class="flex items-center gap-2">
-                                        <input type="number" min="0" step="0.5" x-model.number="filters.min_value_m" @input.debounce.400ms="searchPlayers()"
-                                               :placeholder="@js(__('transfers.explore_min'))"
-                                               class="w-full bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
-                                        <span class="text-text-muted text-sm">—</span>
-                                        <input type="number" min="0" step="0.5" x-model.number="filters.max_value_m" @input.debounce.400ms="searchPlayers()"
-                                               :placeholder="@js(__('transfers.explore_max'))"
-                                               class="w-full bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
-                                    </div>
+                                {{-- Actions --}}
+                                <div class="mt-4 flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-3">
+                                    <a href="{{ route('game.explore', $game->id) }}"
+                                       x-show="activeFilterCount > 0 || searchQuery.length > 0"
+                                       class="text-xs text-text-muted hover:text-text-body underline-offset-2 hover:underline text-center sm:text-left">
+                                        {{ __('transfers.explore_clear_filters') }}
+                                    </a>
+                                    <button type="submit"
+                                            class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-accent-blue/15 border border-accent-blue/30 text-accent-blue font-semibold text-sm hover:bg-accent-blue/20 min-h-[44px] sm:ml-auto">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                        </svg>
+                                        {{ __('transfers.explore_search_submit') }}
+                                    </button>
                                 </div>
-
-                                {{-- Overall range (average of technical + physical) --}}
-                                <div class="flex flex-col gap-1">
-                                    <span class="text-xs font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.explore_overall_range') }}</span>
-                                    <div class="flex items-center gap-2">
-                                        <input type="number" min="1" max="99" x-model.number="filters.min_overall" @input.debounce.400ms="searchPlayers()"
-                                               :placeholder="@js(__('transfers.explore_min'))"
-                                               class="w-full bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
-                                        <span class="text-text-muted text-sm">—</span>
-                                        <input type="number" min="1" max="99" x-model.number="filters.max_overall" @input.debounce.400ms="searchPlayers()"
-                                               :placeholder="@js(__('transfers.explore_max'))"
-                                               class="w-full bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
-                                    </div>
-                                </div>
-
-                                {{-- Max contract year --}}
-                                <label class="flex flex-col gap-1">
-                                    <span class="text-xs font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.explore_contract_expires_by') }}</span>
-                                    <input type="number" min="{{ (int) $game->current_date->year }}" max="{{ (int) $game->current_date->year + 10 }}" x-model.number="filters.max_contract_year" @input.debounce.400ms="searchPlayers()"
-                                           placeholder="{{ (int) $game->current_date->year + 1 }}"
-                                           class="bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
-                                </label>
-
-                                {{-- Nationality --}}
-                                <label class="flex flex-col gap-1">
-                                    <span class="text-xs font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.explore_nationality') }}</span>
-                                    <select x-model="filters.nationality" @change="searchPlayers()"
-                                            class="bg-surface-700 border border-border-default rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue/50 min-h-[40px]">
-                                        <option value="">{{ __('transfers.explore_filter_all') }}</option>
-                                        @foreach($nationalities as $nat)
-                                            <option value="{{ $nat }}">{{ __("countries.{$nat}") }}</option>
-                                        @endforeach
-                                    </select>
-                                </label>
                             </div>
-
-                            {{-- Clear filters --}}
-                            <div class="mt-3 flex justify-end">
-                                <button x-show="activeFilterCount > 0" @click="clearFilters()"
-                                        class="text-xs text-text-muted hover:text-text-body underline-offset-2 hover:underline">
-                                    {{ __('transfers.explore_clear_filters') }}
-                                </button>
-                            </div>
-                        </div>
+                        </form>
 
                         {{-- Hint --}}
                         <p class="text-sm text-text-muted mb-5" x-show="viewMode === 'competition'">{{ __('transfers.explore_hint') }}</p>
@@ -413,21 +430,19 @@
                             </div>
                         </div>
 
-                        {{-- Search results mode --}}
-                        <div x-show="viewMode === 'search'">
-                            {{-- Loading state --}}
-                            <template x-if="loadingSearch">
-                                <div class="flex items-center justify-center py-12">
-                                    <svg class="animate-spin h-6 w-6 text-text-secondary" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                </div>
-                            </template>
-
-                            {{-- Search results content (server-rendered HTML) --}}
-                            <div x-show="!loadingSearch" x-ref="searchPanel"></div>
-                        </div>
+                        {{-- Search results (server-rendered when query params present) --}}
+                        @if($searchMode && $searchResults !== null)
+                            <div x-show="viewMode === 'search'">
+                                @include('partials.explore-search-results', [
+                                    'players' => $searchResults['players'],
+                                    'game' => $game,
+                                    'query' => $searchResults['query'],
+                                    'total' => $searchResults['total'],
+                                    'truncated' => $searchResults['truncated'],
+                                    'hasCriteria' => $searchResults['hasCriteria'],
+                                ])
+                            </div>
+                        @endif
 
                         {{-- Free Agents mode: Two-column layout with position filters --}}
                         <div x-show="viewMode === 'freeAgents'" class="flex flex-col md:flex-row gap-6">
@@ -487,10 +502,13 @@
 
     <script>
         function exploreApp() {
+            const initialFilters = @js($initialFilters);
+            const searchMode = @js((bool) $searchMode);
+
             return {
                 competitions: @json($competitions),
                 assetUrl: '{{ rtrim(Storage::disk('assets')->url(''), '/') }}',
-                viewMode: 'competition',
+                viewMode: searchMode ? 'search' : 'competition',
                 selectedCompetition: null,
                 teams: [],
                 selectedTeam: null,
@@ -499,10 +517,8 @@
                 loadingSquad: false,
                 loadingFreeAgents: false,
                 loadingEurope: false,
-                loadingSearch: false,
                 europeGroups: [],
-                searchQuery: '',
-                previousViewMode: 'competition',
+                searchQuery: initialFilters.name || '',
                 mobileView: 'teams',
                 gameId: '{{ $game->id }}',
                 selectedPositionFilter: 'all',
@@ -513,31 +529,64 @@
                     { key: 'mid', label: @js(__('transfers.explore_midfielders')) },
                     { key: 'fwd', label: @js(__('transfers.explore_forwards')) },
                 ],
-                filtersOpen: false,
+                filtersOpen: searchMode,
                 filters: {
-                    position: '',
-                    min_age: null,
-                    max_age: null,
-                    nationality: '',
-                    competition_id: '',
-                    min_value_m: null,
-                    max_value_m: null,
-                    max_contract_year: null,
-                    min_overall: null,
-                    max_overall: null,
+                    position: initialFilters.position || '',
+                    nationality: initialFilters.nationality || '',
+                    competition_id: initialFilters.competition_id || '',
+                    max_contract_year: initialFilters.max_contract_year || null,
                 },
+
+                // Dual-range bounds (mirrors scout-search-modal pattern)
+                AGE_MIN_BOUND: 15,
+                AGE_MAX_BOUND: 50,
+                OVERALL_MIN_BOUND: 40,
+                OVERALL_MAX_BOUND: 99,
+                valueSteps: [0, 500000, 1000000, 2000000, 5000000, 10000000, 20000000, 50000000, 100000000, 200000000],
+
+                ageMin: null,
+                ageMax: null,
+                overallMin: null,
+                overallMax: null,
+                valueStepMin: null,
+                valueStepMax: null,
+
+                enforceAgeMin() { if (this.ageMin > this.ageMax) this.ageMax = this.ageMin; },
+                enforceAgeMax() { if (this.ageMax < this.ageMin) this.ageMin = this.ageMax; },
+                enforceOverallMin() { if (this.overallMin > this.overallMax) this.overallMax = this.overallMin; },
+                enforceOverallMax() { if (this.overallMax < this.overallMin) this.overallMin = this.overallMax; },
+                enforceValueMin() { if (this.valueStepMin > this.valueStepMax) this.valueStepMax = this.valueStepMin; },
+                enforceValueMax() { if (this.valueStepMax < this.valueStepMin) this.valueStepMin = this.valueStepMax; },
+
+                ageTrackLeft() { return ((this.ageMin - this.AGE_MIN_BOUND) / (this.AGE_MAX_BOUND - this.AGE_MIN_BOUND)) * 100 + '%'; },
+                ageTrackWidth() { return ((this.ageMax - this.ageMin) / (this.AGE_MAX_BOUND - this.AGE_MIN_BOUND)) * 100 + '%'; },
+                overallTrackLeft() { return ((this.overallMin - this.OVERALL_MIN_BOUND) / (this.OVERALL_MAX_BOUND - this.OVERALL_MIN_BOUND)) * 100 + '%'; },
+                overallTrackWidth() { return ((this.overallMax - this.overallMin) / (this.OVERALL_MAX_BOUND - this.OVERALL_MIN_BOUND)) * 100 + '%'; },
+                valueTrackLeft() { return (this.valueStepMin / (this.valueSteps.length - 1)) * 100 + '%'; },
+                valueTrackWidth() { return ((this.valueStepMax - this.valueStepMin) / (this.valueSteps.length - 1)) * 100 + '%'; },
+
+                valueMin() { return this.valueSteps[this.valueStepMin]; },
+                valueMax() { return this.valueSteps[this.valueStepMax]; },
+                formatValue(val) {
+                    if (val === 0) return '€0';
+                    if (val >= 1000000) return '€' + (val / 1000000) + 'M';
+                    if (val >= 1000) return '€' + (val / 1000) + 'K';
+                    return '€' + val;
+                },
+
+                get ageActive() { return this.ageMin > this.AGE_MIN_BOUND || this.ageMax < this.AGE_MAX_BOUND; },
+                get overallActive() { return this.overallMin > this.OVERALL_MIN_BOUND || this.overallMax < this.OVERALL_MAX_BOUND; },
+                get valueActive() { return this.valueStepMin > 0 || this.valueStepMax < this.valueSteps.length - 1; },
+
                 get activeFilterCount() {
                     let n = 0;
                     if (this.filters.position) n++;
-                    if (this.filters.min_age) n++;
-                    if (this.filters.max_age) n++;
                     if (this.filters.nationality) n++;
                     if (this.filters.competition_id) n++;
-                    if (this.filters.min_value_m) n++;
-                    if (this.filters.max_value_m) n++;
                     if (this.filters.max_contract_year) n++;
-                    if (this.filters.min_overall) n++;
-                    if (this.filters.max_overall) n++;
+                    if (this.ageActive) n++;
+                    if (this.overallActive) n++;
+                    if (this.valueActive) n++;
                     return n;
                 },
                 get hasAnyCriteria() {
@@ -545,9 +594,25 @@
                 },
 
                 init() {
-                    if (this.competitions.length > 0) {
+                    this.initRangesFromFilters();
+                    if (!searchMode && this.competitions.length > 0) {
                         this.selectCompetition(this.competitions[0]);
                     }
+                },
+
+                initRangesFromFilters() {
+                    const f = initialFilters;
+                    this.ageMin = f.min_age ? Number(f.min_age) : this.AGE_MIN_BOUND;
+                    this.ageMax = f.max_age ? Number(f.max_age) : this.AGE_MAX_BOUND;
+                    this.overallMin = f.min_overall ? Number(f.min_overall) : this.OVERALL_MIN_BOUND;
+                    this.overallMax = f.max_overall ? Number(f.max_overall) : this.OVERALL_MAX_BOUND;
+                    this.valueStepMin = f.min_value ? this.stepForValue(Number(f.min_value), 0) : 0;
+                    this.valueStepMax = f.max_value ? this.stepForValue(Number(f.max_value), this.valueSteps.length - 1) : this.valueSteps.length - 1;
+                },
+
+                stepForValue(value, fallback) {
+                    const idx = this.valueSteps.indexOf(value);
+                    return idx >= 0 ? idx : fallback;
                 },
 
                 async selectCompetition(comp) {
@@ -640,82 +705,6 @@
                     } finally {
                         this.loadingFreeAgents = false;
                     }
-                },
-
-                async searchPlayers() {
-                    const query = this.searchQuery.trim();
-                    const hasFilters = this.activeFilterCount > 0;
-                    const hasName = query.length >= 2;
-
-                    if (!hasName && !hasFilters) {
-                        if (this.viewMode === 'search') {
-                            this.viewMode = this.previousViewMode;
-                        }
-                        if (this.$refs.searchPanel) this.$refs.searchPanel.innerHTML = '';
-                        return;
-                    }
-
-                    if (this.viewMode !== 'search') {
-                        this.previousViewMode = this.viewMode;
-                        this.viewMode = 'search';
-                    }
-                    this.loadingSearch = true;
-
-                    const params = new URLSearchParams();
-                    if (hasName) params.set('query', query);
-                    const f = this.filters;
-                    if (f.position) params.set('position', f.position);
-                    if (f.min_age) params.set('min_age', f.min_age);
-                    if (f.max_age) params.set('max_age', f.max_age);
-                    if (f.nationality) params.set('nationality', f.nationality);
-                    if (f.competition_id) params.set('competition_id', f.competition_id);
-                    // UI uses millions of euros; backend expects euros
-                    if (f.min_value_m) params.set('min_value', Math.round(f.min_value_m * 1_000_000));
-                    if (f.max_value_m) params.set('max_value', Math.round(f.max_value_m * 1_000_000));
-                    if (f.max_contract_year) params.set('max_contract_year', f.max_contract_year);
-                    if (f.min_overall) params.set('min_overall', f.min_overall);
-                    if (f.max_overall) params.set('max_overall', f.max_overall);
-
-                    try {
-                        const response = await fetch(`/game/${this.gameId}/explore/search?${params.toString()}`);
-                        const html = await response.text();
-                        this.$refs.searchPanel.innerHTML = html;
-                        this.$nextTick(() => Alpine.initTree(this.$refs.searchPanel));
-                    } catch (e) {
-                        if (this.$refs.searchPanel) this.$refs.searchPanel.innerHTML = '';
-                    } finally {
-                        this.loadingSearch = false;
-                    }
-                },
-
-                clearSearch() {
-                    this.searchQuery = '';
-                    // If only the name was driving the search, fall back to the previous
-                    // view; if filters are still active, re-run so the user keeps their work.
-                    if (this.activeFilterCount > 0) {
-                        this.searchPlayers();
-                        return;
-                    }
-                    if (this.$refs.searchPanel) this.$refs.searchPanel.innerHTML = '';
-                    if (this.viewMode === 'search') {
-                        this.viewMode = this.previousViewMode;
-                    }
-                },
-
-                clearFilters() {
-                    this.filters = {
-                        position: '',
-                        min_age: null,
-                        max_age: null,
-                        nationality: '',
-                        competition_id: '',
-                        min_value_m: null,
-                        max_value_m: null,
-                        max_contract_year: null,
-                        min_overall: null,
-                        max_overall: null,
-                    };
-                    this.searchPlayers();
                 },
 
             };
