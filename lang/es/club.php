@@ -80,6 +80,17 @@ return [
             'setback' => 'Retroceso',
         ],
 
+        'history' => [
+            'title' => 'Historial de rendimiento',
+            'empty' => 'Tu historial aparecerá al final de la primera temporada.',
+            'current_suffix' => '(en curso)',
+            'promoted' => 'Ascenso',
+            'relegated' => 'Descenso',
+            'legend' => [
+                'same_tier' => 'Misma categoría',
+            ],
+        ],
+
         'impact_title' => 'Qué aporta la reputación a tu club',
         'impact_signings_title' => 'Atraer fichajes',
         'impact_signings_body' => 'Los jugadores de mayor nivel se inclinan por clubes con más reputación. Agentes libres, objetivos de traspaso y clubes rivales valoran tu nivel antes de sentarse a negociar.',

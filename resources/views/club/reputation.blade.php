@@ -2,6 +2,7 @@
 /** @var App\Models\Game $game */
 /** @var array $summary */
 /** @var array $career */
+/** @var array $history */
 
 $currentLevel = $summary['current_level'];
 $tierIndex = $summary['tier_index'];
@@ -107,6 +108,27 @@ $tierMaintenanceApplies = $summary['tier_maintenance_applies'] ?? false;
                         <p class="text-xs text-text-muted mt-3 leading-relaxed">{{ __('club.reputation.path_also') }}</p>
                         @if($tierMaintenanceApplies)
                             <p class="text-xs text-text-muted mt-1 leading-relaxed">{{ __('club.reputation.maintenance_note') }}</p>
+                        @endif
+                    </div>
+                </x-section-card>
+
+                {{-- Performance history: final league position per season, with tier bands
+                     so promotions and relegations are visually distinct. --}}
+                <x-section-card :title="__('club.reputation.history.title')">
+                    <div class="px-5 py-4">
+                        @if (empty($history['seasons']))
+                            <p class="text-sm text-text-muted leading-relaxed">{{ __('club.reputation.history.empty') }}</p>
+                        @else
+                            <x-performance-history-chart
+                                :seasons="$history['seasons']"
+                                :tiers-present="$history['tiers_present']"
+                            />
+
+                            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-3 text-[11px] text-text-muted">
+                                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-accent-blue"></span>{{ __('club.reputation.history.legend.same_tier') }}</span>
+                                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-accent-green"></span>{{ __('club.reputation.history.promoted') }}</span>
+                                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-accent-red"></span>{{ __('club.reputation.history.relegated') }}</span>
+                            </div>
                         @endif
                     </div>
                 </x-section-card>

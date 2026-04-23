@@ -4,6 +4,7 @@ namespace App\Http\Views;
 
 use App\Models\Game;
 use App\Modules\Manager\Services\CareerSummaryService;
+use App\Modules\Manager\Services\PerformanceHistoryService;
 use App\Modules\Reputation\Services\ReputationSummaryService;
 
 class ShowClubReputation
@@ -11,6 +12,7 @@ class ShowClubReputation
     public function __construct(
         private readonly ReputationSummaryService $reputationSummaryService,
         private readonly CareerSummaryService $careerSummaryService,
+        private readonly PerformanceHistoryService $performanceHistoryService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -22,6 +24,7 @@ class ShowClubReputation
             'game' => $game,
             'summary' => $this->reputationSummaryService->build($game),
             'career' => $this->careerSummaryService->build($game, (int) auth()->id()),
+            'history' => $this->performanceHistoryService->build($game),
         ]);
     }
 }

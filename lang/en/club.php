@@ -80,6 +80,17 @@ return [
             'setback' => 'Setback',
         ],
 
+        'history' => [
+            'title' => 'Performance history',
+            'empty' => 'Your performance history will appear at the end of your first season.',
+            'current_suffix' => '(so far)',
+            'promoted' => 'Promotion',
+            'relegated' => 'Relegation',
+            'legend' => [
+                'same_tier' => 'Same tier',
+            ],
+        ],
+
         'impact_title' => 'What reputation means for your club',
         'impact_signings_title' => 'Attracting signings',
         'impact_signings_body' => 'Higher-profile players are more willing to join more reputable clubs. Free agents, transfer targets and rival sellers all weigh your standing before sitting down to negotiate.',
