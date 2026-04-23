@@ -3,12 +3,9 @@
 namespace App\Http\Actions;
 
 use App\Events\SeasonCompleted;
-use App\Models\ActivationEvent;
+use App\Models\TournamentSummary;
 use App\Modules\Match\Services\MatchdayOrchestrator;
 use App\Modules\Match\Services\MatchFinalizationService;
-use App\Modules\Report\Services\TournamentSnapshotService;
-use App\Modules\Season\Services\ActivationTracker;
-use App\Modules\Season\Services\GameDeletionService;
 use App\Models\Game;
 use App\Models\GameMatch;
 use Illuminate\Http\Request;
@@ -19,9 +16,6 @@ class FinalizeMatch
     public function __construct(
         private readonly MatchFinalizationService $finalizationService,
         private readonly MatchdayOrchestrator $orchestrator,
-        private readonly ActivationTracker $activationTracker,
-        private readonly TournamentSnapshotService $snapshotService,
-        private readonly GameDeletionService $deletionService,
     ) {}
 
     public function __invoke(Request $request, string $gameId)
@@ -63,13 +57,15 @@ class FinalizeMatch
         // This covers the case where the player's match is the last match of the
         // season (e.g. promotion playoff final) — ShowGame would redirect straight
         // to season-end, bypassing AdvanceMatchday which normally fires this event.
+        // Tournament mode is handled by the TournamentEnded event chain dispatched
+        // from the DetectTournamentEnded listener on MatchFinalized.
         $hasRemainingMatches = GameMatch::where('game_id', $game->id)
             ->where('played', false)
             ->exists();
 
         if (! $hasRemainingMatches) {
             if ($game->isTournamentMode()) {
-                return $this->completeTournament($game);
+                return $this->redirectToTournamentSummary($game);
             }
 
             event(new SeasonCompleted($game));
@@ -110,15 +106,19 @@ class FinalizeMatch
             $game->refresh()->setRelations([]);
         }
 
-        return $this->completeTournament($game);
+        return $this->redirectToTournamentSummary($game);
     }
 
-    private function completeTournament(Game $game)
+    private function redirectToTournamentSummary(Game $game)
     {
-        $this->activationTracker->record($game->user_id, ActivationEvent::EVENT_TOURNAMENT_COMPLETED, $game->id, Game::MODE_TOURNAMENT);
+        $summary = TournamentSummary::where('original_game_id', $game->id)->first();
 
-        $summary = $this->snapshotService->createSnapshot($game);
-        $this->deletionService->delete($game);
+        if (! $summary) {
+            // Should not happen: the TournamentEnded listener chain persists the
+            // summary synchronously before this method runs. Fall back to the game
+            // view rather than hard-failing.
+            return redirect()->route('show-game', $game->id);
+        }
 
         return redirect()->route('tournament-summary.show', $summary->id);
     }

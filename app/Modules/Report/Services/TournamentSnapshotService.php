@@ -25,6 +25,7 @@ class TournamentSnapshotService
             'user_id' => $game->user_id,
             'team_id' => $game->team_id,
             'competition_id' => $game->competition_id,
+            'original_game_id' => $game->id,
             'result_label' => $data['resultLabel'],
             'your_record' => $record,
             'summary_data' => $summaryData,

@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Events\SeasonCompleted;
 use App\Events\SeasonStarted;
 use App\Events\TournamentCompleted;
+use App\Events\TournamentEnded;
 use App\Models\User;
 use App\Modules\Academy\Listeners\GenerateInitialAcademyBatch;
 use App\Modules\Match\Events\CupTieResolved;
@@ -28,7 +29,11 @@ use App\Modules\Notification\Listeners\SendMatchNotifications;
 use App\Modules\Match\Listeners\UpdateGoalkeeperStats;
 use App\Modules\Match\Listeners\UpdateLeagueStandings;
 use App\Modules\Match\Listeners\UpdateManagerStats;
+use App\Modules\Report\Listeners\CreateTournamentSnapshot;
+use App\Modules\Season\Listeners\DetectTournamentEnded;
 use App\Modules\Season\Listeners\GrantCareerAccessToChampion;
+use App\Modules\Season\Listeners\RecordTournamentCompletedActivation;
+use App\Modules\Season\Listeners\SoftDeleteCompletedTournamentGame;
 use App\Modules\Squad\Listeners\CheckRecoveredPlayers;
 use App\Modules\Squad\Listeners\EnforceSquadRegistration;
 use App\Modules\Transfer\Listeners\ApplyWageGapMoraleDrip;
@@ -96,6 +101,9 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(MatchFinalized::class, SendCompetitionProgressNotifications::class);
         Event::listen(MatchFinalized::class, UpdateManagerStats::class);
         Event::listen(MatchFinalized::class, EnsureMatchAttendance::class);
+        // Must run after standings/stats listeners above: the tournament snapshot
+        // it eventually triggers reads final standings and manager stats.
+        Event::listen(MatchFinalized::class, DetectTournamentEnded::class);
 
         Event::listen(CupTieResolved::class, AwardCupPrizeMoney::class);
         Event::listen(CupTieResolved::class, ConductNextCupRoundDraw::class);
@@ -105,6 +113,13 @@ class AppServiceProvider extends ServiceProvider
 
         Event::listen(SeasonCompleted::class, SimulateOtherLeagues::class);
         Event::listen(SeasonCompleted::class, RecordSeasonCompleted::class);
+
+        // Order matters: snapshot must run BEFORE soft-delete (snapshot reads many
+        // game relations). Activation is first so the analytics row exists even
+        // if the snapshot build throws.
+        Event::listen(TournamentEnded::class, RecordTournamentCompletedActivation::class);
+        Event::listen(TournamentEnded::class, CreateTournamentSnapshot::class);
+        Event::listen(TournamentEnded::class, SoftDeleteCompletedTournamentGame::class);
 
         Event::listen(TournamentCompleted::class, GrantCareerAccessToChampion::class);
 

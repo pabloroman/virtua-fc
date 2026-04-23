@@ -96,6 +96,20 @@ class ProcessMatchdayAdvanceTest extends TestCase
         Event::assertNotDispatched(SeasonCompleted::class);
     }
 
+    public function test_does_not_dispatch_season_completed_for_tournament_mode(): void
+    {
+        // Tournament mode has its own end-of-run event chain (TournamentEnded).
+        // SeasonCompleted must be suppressed for tournaments in the fast path
+        // to match FinalizeMatch's live-path behavior.
+        $this->game->update(['game_mode' => Game::MODE_TOURNAMENT]);
+        $this->mockOrchestrator(MatchdayAdvanceResult::seasonComplete());
+        Event::fake([SeasonCompleted::class]);
+
+        $this->runSync();
+
+        Event::assertNotDispatched(SeasonCompleted::class);
+    }
+
     public function test_returns_null_when_advancing_flag_not_set(): void
     {
         // Job bails immediately if the caller didn't claim the flag first —

@@ -105,6 +105,13 @@ class ProcessMatchdayAdvance implements ShouldQueue, ShouldBeUnique
             return;
         }
 
+        // Tournament mode has its own end-of-run event chain (TournamentEnded →
+        // snapshot/soft-delete listeners). Suppressing SeasonCompleted here keeps
+        // behavior consistent with the live path (FinalizeMatch does the same).
+        if ($game->isTournamentMode()) {
+            return;
+        }
+
         event(new SeasonCompleted($game));
     }
 

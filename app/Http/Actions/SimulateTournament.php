@@ -2,20 +2,14 @@
 
 namespace App\Http\Actions;
 
-use App\Models\ActivationEvent;
+use App\Models\TournamentSummary;
 use App\Modules\Match\Services\MatchdayOrchestrator;
-use App\Modules\Report\Services\TournamentSnapshotService;
-use App\Modules\Season\Services\ActivationTracker;
-use App\Modules\Season\Services\GameDeletionService;
 use App\Models\Game;
 
 class SimulateTournament
 {
     public function __construct(
         private readonly MatchdayOrchestrator $orchestrator,
-        private readonly ActivationTracker $activationTracker,
-        private readonly TournamentSnapshotService $snapshotService,
-        private readonly GameDeletionService $deletionService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -49,10 +43,14 @@ class SimulateTournament
             $game->refresh()->setRelations([]);
         }
 
-        $this->activationTracker->record($game->user_id, ActivationEvent::EVENT_TOURNAMENT_COMPLETED, $game->id, Game::MODE_TOURNAMENT);
+        // Finalization (snapshot, soft-delete, activation) happens via the
+        // TournamentEnded listener chain fired from DetectTournamentEnded on
+        // the final match's MatchFinalized event inside the orchestrator loop.
+        $summary = TournamentSummary::where('original_game_id', $game->id)->first();
 
-        $summary = $this->snapshotService->createSnapshot($game);
-        $this->deletionService->delete($game);
+        if (! $summary) {
+            return redirect()->route('show-game', $game->id);
+        }
 
         return redirect()->route('tournament-summary.show', $summary->id);
     }
