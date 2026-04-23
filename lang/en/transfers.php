@@ -283,7 +283,6 @@ return [
     'explore_midfielders' => 'Midfielders',
     'explore_forwards' => 'Forwards',
     'explore_age' => 'Age',
-    'explore_rating' => 'Rating',
     'explore_overall' => 'Overall',
     'explore_value' => 'Value',
     'explore_free_agents' => 'Free Agents',

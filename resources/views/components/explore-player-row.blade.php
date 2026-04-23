@@ -4,6 +4,7 @@
     'showTeam' => false,
     'isOwnTeam' => false,
     'showOvr' => false,
+    'showContract' => null,
     'askingPrice' => null,
     'teamPlacement' => 'column', // 'column' | 'inline'
 ])
@@ -14,6 +15,8 @@
 $canOffer = !$isOwnTeam && $player->team_id !== null;
 $isFreeAgent = $player->team_id === null;
 $canNegotiateFreeAgent = $isFreeAgent && !$isOwnTeam;
+// Default: contract column shown when the team column isn't rendered.
+$showContract = $showContract ?? !$showTeam;
 @endphp
 
 <tr class="border-b border-border-default transition-colors hover:bg-[rgba(59,130,246,0.05)]">
@@ -61,7 +64,7 @@ $canNegotiateFreeAgent = $isFreeAgent && !$isOwnTeam;
                 <span>&middot;</span>
                 <span class="font-medium text-text-primary">{{ \App\Support\Money::format($askingPrice) }}</span>
             @endif
-            @if(!$showTeam)
+            @if($showContract)
                 <span>&middot;</span>
                 <span>{{ $player->contract_until?->year ?? '—' }}</span>
             @endif
@@ -92,13 +95,13 @@ $canNegotiateFreeAgent = $isFreeAgent && !$isOwnTeam;
     @endif
     {{-- Market value --}}
     <td class="py-2 pr-3 hidden md:table-cell text-text-secondary tabular-nums">{{ \App\Support\Money::format($player->market_value_cents) }}</td>
+    @if($showContract)
+    {{-- Contract --}}
+    <td class="py-2 pr-3 hidden md:table-cell text-center text-text-muted tabular-nums">{{ $player->contract_until?->year ?? '—' }}</td>
+    @endif
     @if($askingPrice !== null)
     {{-- Asking price --}}
     <td class="py-2 pr-3 hidden md:table-cell text-right font-semibold text-text-primary tabular-nums">{{ \App\Support\Money::format($askingPrice) }}</td>
-    @endif
-    @if(!$showTeam)
-    {{-- Contract --}}
-    <td class="py-2 pr-3 hidden md:table-cell text-center text-text-muted tabular-nums">{{ $player->contract_until?->year ?? '—' }}</td>
     @endif
     {{-- Offer button --}}
     <td class="py-2 pr-1 text-center">

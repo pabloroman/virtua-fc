@@ -317,7 +317,6 @@ return [
     // Column headers (new design)
     'player' => 'Jugador',
     'pos' => 'Pos',
-    'rating' => 'Nota',
     'key_stats' => 'Estadísticas',
     'players_count' => 'jugadores',
     'dev_status_label' => 'Estado',

@@ -288,7 +288,6 @@ return [
     'explore_midfielders' => 'Centrocampistas',
     'explore_forwards' => 'Delanteros',
     'explore_age' => 'Edad',
-    'explore_rating' => 'Nota',
     'explore_overall' => 'Media',
     'explore_value' => 'Valor',
     'explore_free_agents' => 'Agentes Libres',

@@ -52,8 +52,9 @@
                                 <th class="py-2.5 pl-4 w-12"></th>
                                 <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider"></th>
                                 <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider text-center hidden md:table-cell">{{ __('transfers.explore_age') }}</th>
-                                <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider text-center hidden md:table-cell">{{ __('transfers.explore_rating') }}</th>
+                                <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider text-center hidden md:table-cell">{{ __('transfers.explore_overall') }}</th>
                                 <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider hidden md:table-cell">{{ __('transfers.explore_value') }}</th>
+                                <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider text-center hidden md:table-cell">{{ __('transfers.explore_contract_year') }}</th>
                                 <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider text-right hidden md:table-cell">{{ __('transfers.market_asking_price') }}</th>
                                 <th class="py-2.5 w-10"></th>
                                 <th class="py-2.5 pr-4 w-10"></th>
@@ -67,6 +68,7 @@
                                     :show-team="true"
                                     team-placement="inline"
                                     :show-ovr="true"
+                                    :show-contract="true"
                                     :asking-price="$listing->asking_price" />
                             @endforeach
                         </tbody>

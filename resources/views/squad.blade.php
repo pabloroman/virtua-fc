@@ -156,7 +156,7 @@
                                 <span>{{ __('squad.player') }}</span>
                                 <span class="text-center">{{ __('squad.pos') }}</span>
                                 <span class="text-center">{{ __('app.age') }}</span>
-                                <span class="text-center">{{ __('squad.rating') }}</span>
+                                <span class="text-center">{{ __('transfers.explore_overall') }}</span>
 
                                 {{-- Tactical headers --}}
                                 <template x-if="viewMode === 'tactical'">
