@@ -89,7 +89,7 @@ return [
     'recent_signings' => 'Entradas Recientes',
 
     // Scouting
-    'scout_search_desc' => 'Tu ojeador buscará jugadores y te presentará una lista corta de candidatos que mejor se adapten a tu equipo. Cuanto más específicos sean los criterios, mejores serán los resultados.',
+    'scout_search_desc' => 'Tus ojeadores devuelven jugadores con alta probabilidad de fichar por tu club. Para una visión más amplia del mercado, usa :explore.',
     'position_required' => 'Posición *',
     'select_position' => 'Seleccionar posición...',
     'specific_positions' => 'Posiciones Específicas',
@@ -270,7 +270,7 @@ return [
     // Explorer
     'explore_tab' => 'Explorar',
     'explore_title' => 'Explorar equipos',
-    'explore_hint' => 'Explora las plantillas de otros equipos. Para información detallada de habilidades y precios, usa los ojeadores.',
+    'explore_hint' => 'Explora las plantillas de otros equipos. Para información detallada de habilidades y precios, usa los :scouting.',
     'explore_select_competition' => 'Selecciona una competición',
     'explore_select_team' => 'Selecciona un equipo para ver su plantilla',
     'explore_teams_count' => ':count equipos',
@@ -322,10 +322,8 @@ return [
     'explore_search_refine_hint' => 'Demasiadas coincidencias — ajusta los filtros para acotar la lista.',
 
     // Enlaces cruzados (Explorar ↔ Ojeadores)
-    'explore_header_explainer' => 'Explora toda la base de datos de jugadores. Solo datos públicos: posición, edad, valor, contrato. Para habilidad, salario y disposición a fichar, usa :scouting.',
-    'explore_link_to_scouting' => 'Ojeadores',
+    'explore_link_to_scouting' => 'ojeadores',
     'explore_empty_scout_cta' => 'Envía a tus ojeadores a buscar este perfil',
-    'scouting_header_explainer' => 'Tus ojeadores devuelven jugadores con alta probabilidad de fichar por tu club. Para una visión más amplia del mercado, usa :explore.',
     'scouting_link_to_explore' => 'Explorar',
     'scouting_empty_explore_cta' => 'Explora todo el mercado en Explorar',
     'scout_filtered_by_three_pass_hint' => 'Tus ojeadores sólo muestran jugadores que mejorarían la plantilla, agrupados por lo realista del fichaje.',

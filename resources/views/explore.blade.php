@@ -29,13 +29,6 @@
                          x-data="exploreApp()"
                          x-init="init()">
 
-                        {{-- Cross-link explainer: what Explore does vs Scouting --}}
-                        <div class="mb-5 p-3 rounded-lg bg-accent-blue/5 border border-accent-blue/15 text-sm text-text-secondary">
-                            {!! __('transfers.explore_header_explainer', [
-                                'scouting' => '<a href="' . route('game.scouting', $game->id) . '" class="text-accent-blue hover:text-accent-blue/80 font-medium underline-offset-2 hover:underline">' . __('transfers.explore_link_to_scouting') . '</a>',
-                            ]) !!}
-                        </div>
-
                         <form method="GET" action="{{ route('game.explore', $game->id) }}">
                             {{-- Search bar + Advanced-filter toggle --}}
                             <div class="flex flex-col sm:flex-row gap-2 mb-3">
@@ -198,7 +191,9 @@
                         </form>
 
                         {{-- Hint --}}
-                        <p class="text-sm text-text-muted mb-5" x-show="viewMode === 'competition'">{{ __('transfers.explore_hint') }}</p>
+                        <p class="text-sm text-text-muted mb-5" x-show="viewMode === 'competition'">{!! __('transfers.explore_hint', [
+                            'scouting' => '<a href="' . route('game.scouting', $game->id) . '" class="text-accent-blue hover:text-accent-blue/80 font-medium underline-offset-2 hover:underline">' . __('transfers.explore_link_to_scouting') . '</a>',
+                        ]) !!}</p>
                         <p class="text-sm text-text-muted mb-5" x-show="viewMode === 'europe'">{{ __('transfers.explore_europe_hint') }}</p>
 
                         {{-- Competition Selector + Free Agents pill --}}

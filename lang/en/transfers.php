@@ -89,7 +89,7 @@ return [
     'recent_signings' => 'Recent Signings',
 
     // Scouting
-    'scout_search_desc' => 'Your scout will search for players and present a shortlist of candidates that best fit your team. The more specific your criteria, the better the results.',
+    'scout_search_desc' => 'Your scouts return players likely to join your club. For a broader view of the market, use :explore.',
     'position_required' => 'Position *',
     'select_position' => 'Select position...',
     'specific_positions' => 'Specific Positions',
@@ -265,7 +265,7 @@ return [
     // Explorer
     'explore_tab' => 'Explore',
     'explore_title' => 'Explore teams',
-    'explore_hint' => 'Browse other teams\' squads. For detailed ability and pricing info, use scouting.',
+    'explore_hint' => 'Browse other teams\' squads. For detailed ability and pricing info, use :scouting.',
     'explore_select_competition' => 'Select a competition',
     'explore_select_team' => 'Select a team to view their squad',
     'explore_teams_count' => ':count teams',
@@ -317,10 +317,8 @@ return [
     'explore_search_refine_hint' => 'Too many matches — refine your filters to narrow the list.',
 
     // Cross-discoverability (Explore ↔ Scouting)
-    'explore_header_explainer' => 'Browse the full player database. Public data only: position, age, value, contract. For ability, wage and willingness-to-join, use :scouting.',
-    'explore_link_to_scouting' => 'Scouting',
+    'explore_link_to_scouting' => 'scouting',
     'explore_empty_scout_cta' => 'Send your scouts to look for this profile',
-    'scouting_header_explainer' => 'Your scouts return players likely to join your club. For a broader view of the market, use :explore.',
     'scouting_link_to_explore' => 'Explore',
     'scouting_empty_explore_cta' => 'Browse the full market in Explore',
     'scout_filtered_by_three_pass_hint' => 'Your scouts only surface players who would improve the squad, grouped by how realistic a move is.',

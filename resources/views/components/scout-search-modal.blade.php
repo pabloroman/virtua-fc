@@ -36,7 +36,9 @@
             enforceAbilityMax() { if (this.abilityMax < this.abilityMin) this.abilityMin = this.abilityMax; },
         }">
 
-        <p class="text-sm text-text-secondary mb-6">{{ __('transfers.scout_search_desc') }}</p>
+        <p class="text-sm text-text-secondary mb-6">{!! __('transfers.scout_search_desc', [
+            'explore' => '<a href="' . route('game.explore', $game->id) . '" class="text-accent-blue hover:text-accent-blue/80 font-medium underline-offset-2 hover:underline">' . __('transfers.scouting_link_to_explore') . '</a>',
+        ]) !!}</p>
 
         <form method="post" action="{{ route('game.scouting.search', $game->id) }}">
             @csrf
