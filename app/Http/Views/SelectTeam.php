@@ -21,14 +21,7 @@ final class SelectTeam
         // Tiers may declare sibling competitions (e.g. Primera RFEF's ESP3A and
         // ESP3B both live at tier 3), so the tiers list is keyed by competition
         // ID rather than tier number to keep every league selectable.
-        //
-        // Tier-3 competitions (Primera RFEF) are gated behind is_admin until
-        // the feature has been validated in production. Remove this gate once
-        // the staged rollout is complete.
-        $isAdmin = $request->user()->is_admin;
-
-        $cacheKey = $isAdmin ? 'career_mode_countries:admin' : 'career_mode_countries';
-        $countries = Cache::remember($cacheKey, 3600, function () use ($countryConfig, $isAdmin) {
+        $countries = Cache::remember('career_mode_countries:v2', 3600, function () use ($countryConfig) {
             $countries = [];
 
             foreach ($countryConfig->playableCountryCodes() as $code) {
@@ -36,11 +29,6 @@ final class SelectTeam
                 $tiers = [];
 
                 foreach ($config['tiers'] as $tier => $tierConfig) {
-                    // Gate tier 3 behind isAdmin for staged rollout
-                    if ($tier >= 3 && !$isAdmin) {
-                        continue;
-                    }
-
                     $entries = [$tierConfig];
                     foreach ($tierConfig['siblings'] ?? [] as $sibling) {
                         $entries[] = $sibling;

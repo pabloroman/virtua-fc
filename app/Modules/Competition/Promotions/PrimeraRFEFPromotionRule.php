@@ -501,11 +501,10 @@ class PrimeraRFEFPromotionRule implements SelfSwappingPromotionRule
     }
 
     /**
-     * Primera RFEF is currently gated to admin-started careers. Games whose
-     * setup skipped tier-3 rosters have no ESP3 CompetitionEntry rows, so this
-     * rule must no-op for them — otherwise ESP2 relegations would have no
-     * matching ESP3 promotions and the processor would error out on the
-     * count-imbalance check. Remove once the gate is lifted globally.
+     * Legacy games created before Primera RFEF was enabled globally may have
+     * no ESP3 CompetitionEntry rows. This rule must no-op for them —
+     * otherwise ESP2 relegations would have no matching ESP3 promotions and
+     * the processor would error out on the count-imbalance check.
      */
     private function isActiveForGame(Game $game): bool
     {

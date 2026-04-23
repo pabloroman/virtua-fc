@@ -125,21 +125,7 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
             return;
         }
 
-        // Primera RFEF (tier 3) is behind an admin gate in team selection. Only
-        // copy tier-3 competitions into games whose selected team is itself in
-        // tier 3 — i.e. admin-started ESP3 careers. Non-admin games never see
-        // the tier-3 roster in Explore/Transfer/scouting. Remove this filter
-        // once the staged rollout is lifted.
-        $selectedTier = Competition::where('id', $this->competitionId)->value('tier');
-        $excludedCompetitionIds = $selectedTier === 3
-            ? []
-            : Competition::where('tier', 3)->pluck('id')->all();
-
         $rows = CompetitionTeam::where('season', $this->season)
-            ->when(
-                !empty($excludedCompetitionIds),
-                fn ($q) => $q->whereNotIn('competition_id', $excludedCompetitionIds),
-            )
             ->whereNotIn('team_id', function ($query) {
                 $query->select('id')->from('teams')->where('type', 'national');
             })
