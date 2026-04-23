@@ -36,10 +36,17 @@ class PerformanceHistoryService
             ->orderBy('season')
             ->get();
 
-        // Collect every competition id referenced by any archive's match_results,
-        // plus the game's current competition, so we can resolve tiers in a single query.
+        // Collect every competition id referenced by any archive (final_standings
+        // carries it on backfilled archives; match_results is the fallback for
+        // legacy archives), plus the game's current competition, so we can
+        // resolve tiers in a single query.
         $competitionIds = [];
         foreach ($archives as $archive) {
+            foreach ($archive->final_standings ?? [] as $row) {
+                if (!empty($row['competition_id'])) {
+                    $competitionIds[$row['competition_id']] = true;
+                }
+            }
             foreach ($archive->match_results ?? [] as $match) {
                 if (!empty($match['competition_id'])) {
                     $competitionIds[$match['competition_id']] = true;
@@ -62,7 +69,7 @@ class PerformanceHistoryService
                 continue;
             }
 
-            $leagueCompetition = $this->resolveLeagueCompetition($archive, $competitions);
+            $leagueCompetition = $this->resolveLeagueCompetition($archive, $teamRow, $competitions);
             if (!$leagueCompetition) {
                 continue;
             }
@@ -121,19 +128,32 @@ class PerformanceHistoryService
     }
 
     /**
-     * Find the league competition for a given archive by scanning its
-     * match_results for the first competition_id that resolves to a league.
-     * GameStanding (and therefore final_standings) only exists for the
-     * league tier the user's team played in that season, so any league id
-     * appearing in match_results is the right one.
+     * Resolve the league Competition for a season archive.
      *
+     * Newer archives denormalize `competition_id` onto every final_standings
+     * row (see SeasonArchiveProcessor::captureStandings), so we use the user
+     * team's row directly when available. For legacy archives written before
+     * that change, we fall back to scanning match_results for the first
+     * competition_id that resolves to a league — GameStanding only exists
+     * for the league tier the user's team played, so any league id present
+     * in their match history is the correct one.
+     *
+     * @param  array<string, mixed>  $teamRow
      * @param  \Illuminate\Support\Collection<string, Competition>  $competitions
      */
-    private function resolveLeagueCompetition(SeasonArchive $archive, $competitions): ?Competition
+    private function resolveLeagueCompetition(SeasonArchive $archive, array $teamRow, $competitions): ?Competition
     {
+        $directId = $teamRow['competition_id'] ?? null;
+        if ($directId) {
+            $competition = $competitions->get($directId);
+            if ($competition && $competition->role === Competition::ROLE_LEAGUE) {
+                return $competition;
+            }
+        }
+
         foreach ($archive->match_results ?? [] as $match) {
             $competition = $competitions->get($match['competition_id'] ?? null);
-            if ($competition && $competition->isLeague() && $competition->role === Competition::ROLE_LEAGUE) {
+            if ($competition && $competition->role === Competition::ROLE_LEAGUE) {
                 return $competition;
             }
         }

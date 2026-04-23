@@ -141,6 +141,7 @@ class SeasonArchiveProcessor implements SeasonProcessor
                 return [
                     'team_id' => $standing->team_id,
                     'team_name' => $standing->team->name ?? 'Unknown',
+                    'competition_id' => $standing->competition_id,
                     'position' => $standing->position,
                     'played' => $standing->played,
                     'won' => $standing->won,
