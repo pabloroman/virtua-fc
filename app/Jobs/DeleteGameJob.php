@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Game;
+use App\Modules\Manager\Services\PerformanceHistoryService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -33,6 +34,7 @@ class DeleteGameJob implements ShouldQueue
         }
 
         Cache::forget("game_owner:{$this->gameId}");
+        PerformanceHistoryService::forget($this->gameId);
 
         // Collect generated player IDs before we delete game_players
         $generatedPlayerIds = DB::table('game_players')

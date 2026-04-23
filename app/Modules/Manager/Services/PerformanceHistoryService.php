@@ -6,15 +6,26 @@ use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GameStanding;
 use App\Models\SeasonArchive;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Builds the "performance history" strip shown on the Reputation page:
  * one final league position per completed season plus the current season
  * "so far", with the league tier captured so promotion/relegation
  * transitions can be rendered correctly.
+ *
+ * Caching: the archived-seasons portion reads every SeasonArchive row for
+ * the game, which holds large JSON blobs. That portion only changes when
+ * SeasonArchiveProcessor writes a new row at season close, so it is
+ * cached per-game with a long TTL and invalidated explicitly from the
+ * processor (see self::forget). The current in-progress season is
+ * resolved fresh on every call from GameStanding, which is cheap.
  */
 class PerformanceHistoryService
 {
+    /** Long TTL acts as a safety net — primary invalidation is explicit. */
+    private const CACHE_TTL = 604800; // 7 days
+
     /**
      * @return array{
      *   seasons: array<int, array{
@@ -32,14 +43,77 @@ class PerformanceHistoryService
      */
     public function build(Game $game): array
     {
+        $archivedSeasons = $this->getArchivedSeasons($game);
+        $currentSeason = $this->buildCurrentSeason($game);
+
+        $seasons = $currentSeason !== null
+            ? [...$archivedSeasons, $currentSeason]
+            : $archivedSeasons;
+
+        $this->markTierTransitions($seasons);
+
+        $tiersPresent = array_values(array_unique(array_map(
+            fn (array $row) => $row['tier'],
+            $seasons,
+        )));
+        sort($tiersPresent);
+
+        return [
+            'seasons' => $seasons,
+            'tiers_present' => $tiersPresent,
+        ];
+    }
+
+    public static function cacheKey(string $gameId): string
+    {
+        return "performance_history:archived:{$gameId}";
+    }
+
+    /**
+     * Drop the cached archived-seasons shape for a game. Call this after
+     * any write to season_archives for the game (season close, admin
+     * corrections). New archives trigger this from SeasonArchiveProcessor.
+     */
+    public static function forget(string $gameId): void
+    {
+        Cache::forget(self::cacheKey($gameId));
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function getArchivedSeasons(Game $game): array
+    {
+        return Cache::remember(
+            self::cacheKey($game->id),
+            self::CACHE_TTL,
+            fn () => $this->buildArchivedSeasons($game),
+        );
+    }
+
+    /**
+     * Heavy path: reads every SeasonArchive row for the game, shapes one
+     * entry per archived season. Only runs on cache miss.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    private function buildArchivedSeasons(Game $game): array
+    {
+        // Skip the heavy JSON columns we don't need here
+        // (player_season_stats, season_awards, transfer_activity,
+        // transition_log) so cache misses stay memory-light.
         $archives = SeasonArchive::where('game_id', $game->id)
+            ->select(['id', 'season', 'final_standings', 'match_results'])
             ->orderBy('season')
             ->get();
 
+        if ($archives->isEmpty()) {
+            return [];
+        }
+
         // Collect every competition id referenced by any archive (final_standings
         // carries it on backfilled archives; match_results is the fallback for
-        // legacy archives), plus the game's current competition, so we can
-        // resolve tiers in a single query.
+        // legacy archives) so we can resolve tiers in a single query.
         $competitionIds = [];
         foreach ($archives as $archive) {
             foreach ($archive->final_standings ?? [] as $row) {
@@ -53,14 +127,12 @@ class PerformanceHistoryService
                 }
             }
         }
-        $competitionIds[$game->competition_id] = true;
 
         $competitions = Competition::whereIn('id', array_keys($competitionIds))
             ->get()
             ->keyBy('id');
 
         $seasons = [];
-
         foreach ($archives as $archive) {
             $teamRow = collect($archive->final_standings ?? [])
                 ->firstWhere('team_id', $game->team_id);
@@ -86,44 +158,44 @@ class PerformanceHistoryService
             ];
         }
 
-        // Trailing in-progress season: only include if the current league has
-        // seen a standing row for the user's team (i.e. at least one matchday
-        // has been played — otherwise the point would read as "1st" on day 1).
+        return $seasons;
+    }
+
+    /**
+     * Trailing in-progress season. Cheap (two GameStanding queries + one
+     * Competition lookup), recomputed every call so the point updates as
+     * the user plays matches. Returns null before the first match of the
+     * season is played — otherwise the point would read as "1st" on day 1.
+     */
+    private function buildCurrentSeason(Game $game): ?array
+    {
         $currentStanding = GameStanding::where('game_id', $game->id)
             ->where('competition_id', $game->competition_id)
             ->where('team_id', $game->team_id)
             ->first();
 
-        $currentCompetition = $competitions->get($game->competition_id);
-
-        if ($currentStanding && $currentStanding->played > 0 && $currentCompetition) {
-            $currentTeamCount = GameStanding::where('game_id', $game->id)
-                ->where('competition_id', $game->competition_id)
-                ->count();
-
-            $seasons[] = [
-                'season' => $game->season,
-                'position' => (int) $currentStanding->position,
-                'tier' => (int) $currentCompetition->tier,
-                'team_count' => $currentTeamCount,
-                'league_short_name' => $currentCompetition->shortName(),
-                'promoted' => false,
-                'relegated' => false,
-                'is_current' => true,
-            ];
+        if (!$currentStanding || $currentStanding->played <= 0) {
+            return null;
         }
 
-        $this->markTierTransitions($seasons);
+        $currentCompetition = Competition::find($game->competition_id);
+        if (!$currentCompetition) {
+            return null;
+        }
 
-        $tiersPresent = array_values(array_unique(array_map(
-            fn (array $row) => $row['tier'],
-            $seasons,
-        )));
-        sort($tiersPresent);
+        $currentTeamCount = GameStanding::where('game_id', $game->id)
+            ->where('competition_id', $game->competition_id)
+            ->count();
 
         return [
-            'seasons' => $seasons,
-            'tiers_present' => $tiersPresent,
+            'season' => $game->season,
+            'position' => (int) $currentStanding->position,
+            'tier' => (int) $currentCompetition->tier,
+            'team_count' => $currentTeamCount,
+            'league_short_name' => $currentCompetition->shortName(),
+            'promoted' => false,
+            'relegated' => false,
+            'is_current' => true,
         ];
     }
 

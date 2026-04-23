@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Models\Competition;
 use App\Models\SeasonArchive;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Writes `competition_id` onto every row in `season_archives.final_standings`
