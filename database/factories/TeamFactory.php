@@ -13,12 +13,16 @@ class TeamFactory extends Factory
     public function definition(): array
     {
         $name = $this->faker->unique()->city() . ' FC';
+        $transfermarktId = $this->faker->unique()->numberBetween(1000, 99999);
 
         return [
             'id' => Str::uuid()->toString(),
-            'transfermarkt_id' => $this->faker->unique()->numberBetween(1000, 99999),
+            'transfermarkt_id' => $transfermarktId,
             'name' => $name,
-            'slug' => Str::slug($name),
+            // Append the unique transfermarkt_id so slugs never collide even
+            // when faker's city pool produces near-duplicates (e.g. "St. Louis"
+            // vs "St Louis" both slug to "st-louis") across large test setups.
+            'slug' => Str::slug($name) . '-' . $transfermarktId,
             'country' => 'ES',
             'image' => null,
             'stadium_name' => $this->faker->city() . ' Stadium',

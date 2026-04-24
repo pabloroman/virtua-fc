@@ -52,20 +52,4 @@ class PlayerTierService
         ");
     }
 
-    /**
-     * Recompute tiers for ALL players in a game.
-     */
-    public function recomputeAllTiersForGame(string $gameId): void
-    {
-        DB::statement("
-            UPDATE game_players SET tier = CASE
-                WHEN market_value_cents >= " . self::TIER_5_MIN . " THEN 5
-                WHEN market_value_cents >= " . self::TIER_4_MIN . " THEN 4
-                WHEN market_value_cents >= " . self::TIER_3_MIN . " THEN 3
-                WHEN market_value_cents >= " . self::TIER_2_MIN . " THEN 2
-                ELSE 1
-            END
-            WHERE game_id = ?
-        ", [$gameId]);
-    }
 }
