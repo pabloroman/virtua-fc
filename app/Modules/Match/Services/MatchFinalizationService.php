@@ -2,6 +2,7 @@
 
 namespace App\Modules\Match\Services;
 
+use App\Events\SeasonCompleted;
 use App\Modules\Competition\Services\CompetitionHandlerResolver;
 use App\Modules\Match\Events\CupTieResolved;
 use App\Modules\Match\Events\GameDateAdvanced;
@@ -26,6 +27,60 @@ class MatchFinalizationService
         private readonly PlayerConditionService $conditionService,
         private readonly DetectTournamentEnded $tournamentEndDetector,
     ) {}
+
+    /**
+     * Finalize the game's pending match if one is outstanding.
+     *
+     * Safety net for HTTP entry points (ShowGame, ShowSeasonEnd, StartNewSeason)
+     * that can be reached without traversing the FinalizeMatch action — most
+     * commonly when the user abandons the live-match screen right before
+     * end-of-season. The MatchdayOrchestrator's own safety net only catches
+     * this on the next advance(), which never happens once the season is over.
+     *
+     * Mirrors FinalizeMatch: locks the game row, finalizes if pending, and
+     * fires SeasonCompleted when this was the last outstanding match. Safe to
+     * call on every request — no-ops when pending_finalization_match_id is null.
+     */
+    public function finalizePendingIfAny(string $gameId): bool
+    {
+        $finalizedGame = DB::transaction(function () use ($gameId) {
+            $game = Game::where('id', $gameId)->lockForUpdate()->first();
+
+            if (! $game || ! $game->pending_finalization_match_id) {
+                return null;
+            }
+
+            $match = GameMatch::find($game->pending_finalization_match_id);
+
+            if (! $match || ! $match->played) {
+                $game->update(['pending_finalization_match_id' => null]);
+
+                return null;
+            }
+
+            $this->finalize($match, $game);
+
+            return $game;
+        });
+
+        if (! $finalizedGame) {
+            return false;
+        }
+
+        // Mirror FinalizeMatch: when no unplayed matches remain after the
+        // finalize, fire SeasonCompleted so downstream listeners (other-league
+        // simulation, activation records) run. Tournament mode has its own
+        // TournamentEnded chain dispatched from inside finalize().
+        $hasRemainingMatches = GameMatch::where('game_id', $finalizedGame->id)
+            ->where('played', false)
+            ->exists();
+
+        if (! $hasRemainingMatches && ! $finalizedGame->isTournamentMode()) {
+            event(new SeasonCompleted($finalizedGame));
+        }
+
+        return true;
+    }
 
     /**
      * Apply all deferred score-dependent side effects for a match.

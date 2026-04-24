@@ -6,6 +6,7 @@ use App\Modules\Competition\Services\CalendarService;
 use App\Modules\Competition\Services\CompetitionViewService;
 use App\Modules\Match\DTOs\MatchdayAdvanceResult;
 use App\Modules\Match\Services\MatchdayService;
+use App\Modules\Match\Services\MatchFinalizationService;
 use App\Modules\Match\Services\MatchNarrativeService;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Season\Jobs\ProcessSeasonTransition;
@@ -22,6 +23,7 @@ class ShowGame
         private readonly MatchNarrativeService $narrativeService,
         private readonly NotificationService $notificationService,
         private readonly CompetitionViewService $competitionViewService,
+        private readonly MatchFinalizationService $finalizationService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -77,6 +79,18 @@ class ShowGame
                     ? redirect()->route($result->pendingAction['route'], $gameId)->with('warning', __('messages.action_required'))
                     : redirect()->route('show-game', $gameId)->with('warning', __('messages.action_required')),
             };
+        }
+
+        // Safety net: if the user abandoned a live match without clicking
+        // Continue (back button, browser close, etc.) and never triggered
+        // another advance, the match stays played=true with standings
+        // unapplied. MatchdayOrchestrator's own finalizePendingMatch only
+        // fires on the next advance(), which never happens at end-of-season.
+        // Refresh $game afterward because finalize() may advance current_date
+        // and generate new matches.
+        if ($game->pending_finalization_match_id) {
+            $this->finalizationService->finalizePendingIfAny($gameId);
+            $game = $game->refresh();
         }
 
         // Show loading screen while remaining batches are processing in background
