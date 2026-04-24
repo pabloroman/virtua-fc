@@ -26,7 +26,7 @@ Season transitions run two pipelines sequentially. Each processor implements `Se
 
 **Phase 2 — Squad management** (priority 8-20): Replenish AI squads to minimum roster sizes, apply player development changes, settle finances (actual vs projected), reset stats and transfer market.
 
-**Phase 3 — League simulation & structure** (priority 24-55): Simulate non-played leagues, determine Supercup qualifiers, handle promotion/relegation, update team reputations based on final positions, develop and return academy loans.
+**Phase 3 — League simulation & structure** (priority 24-55): Simulate non-played leagues, determine Supercup qualifiers, rebuild domestic cup participants for the following season (Copa del Rey: all top-two-tier teams plus the top 5 of each Primera Federación group, never reserve teams), handle promotion/relegation, update team reputations based on final positions, develop and return academy loans.
 
 **Phase 4 — Qualification** (priority 105): Determine UEFA competition qualifiers.
 

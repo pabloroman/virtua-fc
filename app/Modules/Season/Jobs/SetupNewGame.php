@@ -125,10 +125,32 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
             return;
         }
 
-        $rows = CompetitionTeam::where('season', $this->season)
+        // Reserve teams (e.g. Real Madrid Castilla, Barcelona Atlètic) never
+        // play in domestic cups. Drop them from those competitions at the
+        // point where per-game entries are first written so no downstream
+        // draw/fixture step can resurface them.
+        $domesticCupIds = [];
+        foreach (app(CountryConfig::class)->allCountryCodes() as $countryCode) {
+            foreach (app(CountryConfig::class)->domesticCupIds($countryCode) as $cupId) {
+                $domesticCupIds[] = $cupId;
+            }
+        }
+
+        $query = CompetitionTeam::where('season', $this->season)
             ->whereNotIn('team_id', function ($query) {
                 $query->select('id')->from('teams')->where('type', 'national');
-            })
+            });
+
+        if (!empty($domesticCupIds)) {
+            $query->where(function ($q) use ($domesticCupIds) {
+                $q->whereNotIn('competition_id', $domesticCupIds)
+                    ->orWhereNotIn('team_id', function ($inner) {
+                        $inner->select('id')->from('teams')->whereNotNull('parent_team_id');
+                    });
+            });
+        }
+
+        $rows = $query
             ->get()
             ->map(fn ($ct) => [
                 'game_id' => $this->gameId,

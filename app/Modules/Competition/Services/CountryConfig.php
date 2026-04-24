@@ -251,6 +251,19 @@ class CountryConfig
     }
 
     /**
+     * Get the cup qualification rule for a specific domestic cup, if defined.
+     *
+     * Describes which teams from the playable tiers qualify for the cup at
+     * the start of the following season. See config/countries.php for shape.
+     *
+     * @return array{auto_qualify_tiers?: int[], top_per_group?: array<int, int>}|null
+     */
+    public function cupQualification(string $countryCode, string $cupId): ?array
+    {
+        return $this->get($countryCode)['cup_qualification'][$cupId] ?? null;
+    }
+
+    /**
      * Get the CompetitionConfig class for a competition ID, checking country configs.
      *
      * @return class-string<CompetitionConfig>|null

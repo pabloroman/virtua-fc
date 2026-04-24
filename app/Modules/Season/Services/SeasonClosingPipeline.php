@@ -9,6 +9,7 @@ use App\Modules\Season\Processors\AgreedTransferCompletionProcessor;
 use App\Modules\Season\Processors\AIFreeAgentSigningProcessor;
 use App\Modules\Season\Processors\ContractExpirationProcessor;
 use App\Modules\Season\Processors\ContractRenewalProcessor;
+use App\Modules\Season\Processors\CopaQualificationProcessor;
 use App\Modules\Season\Processors\LeaderboardStatsProcessor;
 use App\Modules\Season\Processors\LoanReturnProcessor;
 use App\Modules\Season\Processors\PlayerDevelopmentProcessor;
@@ -57,6 +58,7 @@ class SeasonClosingPipeline
         TransferMarketResetProcessor $transferMarketReset,
         SeasonSimulationProcessor $seasonSimulation,
         SupercupQualificationProcessor $supercupQualification,
+        CopaQualificationProcessor $copaQualification,
         PromotionRelegationProcessor $promotionRelegation,
         ReputationUpdateProcessor $reputationUpdate,
         FanLoyaltyUpdateProcessor $fanLoyaltyUpdate,
@@ -81,6 +83,7 @@ class SeasonClosingPipeline
             $transferMarketReset,
             $seasonSimulation,
             $supercupQualification,
+            $copaQualification,
             $promotionRelegation,
             $reputationUpdate,
             $fanLoyaltyUpdate,
