@@ -211,6 +211,38 @@ class CountryConfig
     }
 
     /**
+     * For a competition that hosts promotion-playoff CupTies, return the
+     * feeder league competition IDs whose regular-season standings decide
+     * tiebreakers when a two-legged tie is level after extra time (higher
+     * finisher wins instead of going to penalties).
+     *
+     * Returns an empty array for competitions that aren't promotion playoffs
+     * (domestic cups, UEFA knockouts, etc.), signalling the default penalty
+     * tiebreaker still applies.
+     *
+     * @return string[]
+     */
+    public function playoffTiebreakerSources(string $competitionId): array
+    {
+        foreach ($this->allCountries() as $config) {
+            foreach ($config['promotions'] ?? [] as $rule) {
+                if (empty($rule['playoff_generator'])) {
+                    continue;
+                }
+
+                $target = $rule['playoff_competition'] ?? $rule['bottom_division'];
+                if ($target !== $competitionId) {
+                    continue;
+                }
+
+                return $rule['playoff_source_divisions'] ?? [$rule['bottom_division']];
+            }
+        }
+
+        return [];
+    }
+
+    /**
      * Get continental qualification slots for a country.
      *
      * @return array<string, array<string, int[]>>

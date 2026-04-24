@@ -28,6 +28,7 @@ return [
     'pens' => 'Pens:',
     'aet' => 'AET',
     'agg' => 'Agg:',
+    'higher_seed' => 'Higher league finish',
 
     // Legend
     'your_matches' => 'Your matches',

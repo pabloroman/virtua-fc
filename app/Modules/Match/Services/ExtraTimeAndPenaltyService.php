@@ -7,6 +7,7 @@ use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\MatchEvent;
+use App\Modules\Competition\Services\PlayoffTiebreakerService;
 use App\Modules\Match\DTOs\ExtraTimeProcessResult;
 use App\Modules\Match\DTOs\PenaltyProcessResult;
 use App\Modules\Match\DTOs\TacticalConfig;
@@ -17,6 +18,7 @@ class ExtraTimeAndPenaltyService
     public function __construct(
         private readonly MatchSimulator $matchSimulator,
         private readonly MatchEventRepository $matchEventRepository,
+        private readonly PlayoffTiebreakerService $playoffTiebreakerService,
     ) {}
 
     /**
@@ -203,6 +205,7 @@ class ExtraTimeAndPenaltyService
         $totalHome = $match->home_score + $homeScoreET;
         $totalAway = $match->away_score + $awayScoreET;
 
+        $cupTie = null;
         if ($match->cup_tie_id) {
             $cupTie = CupTie::with('firstLegMatch')->find($match->cup_tie_id);
 
@@ -216,7 +219,17 @@ class ExtraTimeAndPenaltyService
             }
         }
 
-        return $totalHome === $totalAway;
+        if ($totalHome !== $totalAway) {
+            return false;
+        }
+
+        // Promotion-playoff ties are decided by regular-season position when
+        // level after extra time — no penalty shootout.
+        if ($cupTie && $this->playoffTiebreakerService->appliesTo($cupTie)) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

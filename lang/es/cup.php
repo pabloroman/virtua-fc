@@ -28,6 +28,7 @@ return [
     'pens' => 'Pen:',
     'aet' => 'Prórroga',
     'agg' => 'Agg:',
+    'higher_seed' => 'Mejor clasificación liguera',
 
     // Legend
     'your_matches' => 'Tus partidos',

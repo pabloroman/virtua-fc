@@ -119,17 +119,18 @@ class PrimeraRFEFPromotionTest extends TestCase
 
     private function createCompletedSemifinals(array $groupATeams, array $groupBTeams): void
     {
-        // Bracket A: A5 vs A2, B4 vs B3
-        // Bracket B: B5 vs B2, A4 vs A3
+        // Cross-group semifinals: 2nd vs 5th and 3rd vs 4th from opposite groups.
+        // Bracket A: B5 vs A2, B4 vs A3
+        // Bracket B: A5 vs B2, A4 vs B3
         // Index: 2nd=pos2, 3rd=pos3, 4th=pos4, 5th=pos5
 
         $bracketASemiTies = [
-            [$groupATeams[5], $groupATeams[2], PrimeraRFEFPlayoffGenerator::BRACKET_A],
-            [$groupBTeams[4], $groupBTeams[3], PrimeraRFEFPlayoffGenerator::BRACKET_A],
+            [$groupBTeams[5], $groupATeams[2], PrimeraRFEFPlayoffGenerator::BRACKET_A],
+            [$groupBTeams[4], $groupATeams[3], PrimeraRFEFPlayoffGenerator::BRACKET_A],
         ];
         $bracketBSemiTies = [
-            [$groupBTeams[5], $groupBTeams[2], PrimeraRFEFPlayoffGenerator::BRACKET_B],
-            [$groupATeams[4], $groupATeams[3], PrimeraRFEFPlayoffGenerator::BRACKET_B],
+            [$groupATeams[5], $groupBTeams[2], PrimeraRFEFPlayoffGenerator::BRACKET_B],
+            [$groupATeams[4], $groupBTeams[3], PrimeraRFEFPlayoffGenerator::BRACKET_B],
         ];
 
         foreach (array_merge($bracketASemiTies, $bracketBSemiTies) as [$home, $away, $bracket]) {
@@ -182,22 +183,22 @@ class PrimeraRFEFPromotionTest extends TestCase
 
         $this->assertCount(4, $matchups);
 
-        // Bracket A: [A5, A2, 1] and [B4, B3, 1]
-        $this->assertEquals($groupA[5]->id, $matchups[0][0]);
+        // Bracket A: [B5, A2, 1] and [B4, A3, 1] — cross-group
+        $this->assertEquals($groupB[5]->id, $matchups[0][0]);
         $this->assertEquals($groupA[2]->id, $matchups[0][1]);
         $this->assertEquals(PrimeraRFEFPlayoffGenerator::BRACKET_A, $matchups[0][2]);
 
         $this->assertEquals($groupB[4]->id, $matchups[1][0]);
-        $this->assertEquals($groupB[3]->id, $matchups[1][1]);
+        $this->assertEquals($groupA[3]->id, $matchups[1][1]);
         $this->assertEquals(PrimeraRFEFPlayoffGenerator::BRACKET_A, $matchups[1][2]);
 
-        // Bracket B: [B5, B2, 2] and [A4, A3, 2]
-        $this->assertEquals($groupB[5]->id, $matchups[2][0]);
+        // Bracket B: [A5, B2, 2] and [A4, B3, 2] — cross-group
+        $this->assertEquals($groupA[5]->id, $matchups[2][0]);
         $this->assertEquals($groupB[2]->id, $matchups[2][1]);
         $this->assertEquals(PrimeraRFEFPlayoffGenerator::BRACKET_B, $matchups[2][2]);
 
         $this->assertEquals($groupA[4]->id, $matchups[3][0]);
-        $this->assertEquals($groupA[3]->id, $matchups[3][1]);
+        $this->assertEquals($groupB[3]->id, $matchups[3][1]);
         $this->assertEquals(PrimeraRFEFPlayoffGenerator::BRACKET_B, $matchups[3][2]);
     }
 
@@ -228,14 +229,14 @@ class PrimeraRFEFPromotionTest extends TestCase
 
         $this->assertCount(4, $matchups);
 
-        // Group A positions should come from real standings
-        $this->assertEquals($groupA[5]->id, $matchups[0][0]); // A5
-        $this->assertEquals($groupA[2]->id, $matchups[0][1]); // A2
+        // Bracket A semis are cross-group — [B5, A2] and [B4, A3].
+        // B team ids come from the simulated results (index-based),
+        // A team ids come from real standings.
+        $this->assertEquals($simulatedBTeams[4]->id, $matchups[0][0]); // B5 (index 4)
+        $this->assertEquals($groupA[2]->id, $matchups[0][1]);          // A2
 
-        // Group B positions should come from simulated results (index-based).
-        // matchups[1] is the [B4, B3] tie from Bracket A.
         $this->assertEquals($simulatedBTeams[3]->id, $matchups[1][0]); // B4 (index 3)
-        $this->assertEquals($simulatedBTeams[2]->id, $matchups[1][1]); // B3 (index 2)
+        $this->assertEquals($groupA[3]->id, $matchups[1][1]);          // A3
     }
 
     public function test_round_1_skips_reserve_team_and_slides_next_eligible(): void
@@ -285,15 +286,16 @@ class PrimeraRFEFPromotionTest extends TestCase
         $this->assertEquals(PrimeraRFEFPlayoffGenerator::BRACKET_A, $matchups[0][2]);
         $this->assertEquals(PrimeraRFEFPlayoffGenerator::BRACKET_B, $matchups[1][2]);
 
-        // Bracket A winners: A2 (beat A5) and B3 (beat B4)
+        // Bracket A winners: A2 (beat B5) and A3 (beat B4) — cross-group semis
+        // completed via createCompletedSemifinals have away-side teams win.
         $bracketATeamIds = [$matchups[0][0], $matchups[0][1]];
         $this->assertContains($groupA[2]->id, $bracketATeamIds);
-        $this->assertContains($groupB[3]->id, $bracketATeamIds);
+        $this->assertContains($groupA[3]->id, $bracketATeamIds);
 
-        // Bracket B winners: B2 (beat B5) and A3 (beat A4)
+        // Bracket B winners: B2 (beat A5) and B3 (beat A4)
         $bracketBTeamIds = [$matchups[1][0], $matchups[1][1]];
         $this->assertContains($groupB[2]->id, $bracketBTeamIds);
-        $this->assertContains($groupA[3]->id, $bracketBTeamIds);
+        $this->assertContains($groupB[3]->id, $bracketBTeamIds);
     }
 
     // ──────────────────────────────────────────────────

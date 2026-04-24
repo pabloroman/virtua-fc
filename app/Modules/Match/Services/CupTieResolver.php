@@ -4,6 +4,7 @@ namespace App\Modules\Match\Services;
 
 use App\Modules\Match\DTOs\MatchResult;
 use App\Modules\Competition\DTOs\PlayoffRoundConfig;
+use App\Modules\Competition\Services\PlayoffTiebreakerService;
 use App\Models\CupTie;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
@@ -16,6 +17,7 @@ class CupTieResolver
     public function __construct(
         private readonly MatchSimulator $matchSimulator,
         private readonly MatchEventRepository $matchEventRepository,
+        private readonly PlayoffTiebreakerService $playoffTiebreakerService,
     ) {}
 
     /**
@@ -217,6 +219,18 @@ class CupTieResolver
                 'aggregate' => "{$homeTotal}-{$awayTotal}",
             ]);
             return $winnerId;
+        }
+
+        // Promotion playoffs (La Liga 2 → La Liga and Primera Federación → La
+        // Liga 2) skip penalties when level after extra time — the side that
+        // finished higher in the regular season goes through instead.
+        $higherSeedWinner = $this->playoffTiebreakerService->resolveWinner($tie, $tie->game);
+        if ($higherSeedWinner !== null) {
+            $this->completeTie($tie, $higherSeedWinner, [
+                'type' => 'higher_seed',
+                'aggregate' => "{$homeTotal}-{$awayTotal}",
+            ]);
+            return $higherSeedWinner;
         }
 
         // Check if penalties were already simulated during the live match

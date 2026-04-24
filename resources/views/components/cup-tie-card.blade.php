@@ -51,6 +51,8 @@
                 {{ __('cup.pens') }} {{ $tie->resolution['penalties'] }}
             @elseif($tie->resolution['type'] === 'extra_time')
                 {{ __('cup.aet') }}
+            @elseif($tie->resolution['type'] === 'higher_seed')
+                {{ __('cup.higher_seed') }}
             @elseif($tie->resolution['type'] === 'aggregate')
                 {{ __('cup.agg') }} {{ $tie->resolution['aggregate'] }}
             @endif

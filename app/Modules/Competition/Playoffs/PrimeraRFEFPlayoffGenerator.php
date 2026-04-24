@@ -26,9 +26,10 @@ use Illuminate\Support\Collection;
  *
  * Format:
  * - 8 qualifying teams: positions 2, 3, 4, 5 from each group.
- * - Two fixed brackets:
- *     Bracket 1 → [A2 vs A5] and [B3 vs B4]
- *     Bracket 2 → [B2 vs B5] and [A3 vs A4]
+ * - Semifinals pair teams from opposite groups: 2nd vs 5th and 3rd vs 4th,
+ *   with each half of the bracket tree hosted by one group's lower seeds.
+ *     Bracket 1 → [B5 vs A2] and [B4 vs A3]
+ *     Bracket 2 → [A5 vs B2] and [A4 vs B3]
  * - Round 1 (Semifinals): 4 two-legged ties, lower seed hosts first leg.
  * - Round 2 (Bracket Finals): the two semifinal winners in each bracket play
  *   a two-legged final. Both bracket winners are promoted to La Liga 2.
@@ -152,9 +153,10 @@ class PrimeraRFEFPlayoffGenerator implements PlayoffGenerator
      * skips reserve teams whose parent already plays in ESP2, populates
      * ESP3PO::CompetitionEntry with the 8 qualified teams, and returns 4 matchups.
      *
-     * Two brackets:
-     *   Bracket 1: (A2 vs A5) and (B3 vs B4)
-     *   Bracket 2: (B2 vs B5) and (A3 vs A4)
+     * Semifinals always pair teams from opposite groups (2nd of one group vs
+     * 5th of the other, 3rd of one vs 4th of the other):
+     *   Bracket 1: (B5 vs A2) and (B4 vs A3)
+     *   Bracket 2: (A5 vs B2) and (A4 vs B3)
      * Lower-seeded team hosts the first leg (matches ESP2PlayoffGenerator's
      * convention so two-leg home/away ordering is consistent across playoffs).
      *
@@ -189,12 +191,13 @@ class PrimeraRFEFPlayoffGenerator implements PlayoffGenerator
         // Lower seed hosts first leg — so the 5th-place team is listed as "home"
         // in the matchup, and the 4th-place team is listed as "home" in the second
         // ESP3PO tie within each bracket. See createTie() which treats the first
-        // slot as first-leg home.
+        // slot as first-leg home. Each semifinal crosses groups so a 2nd-place
+        // team never meets a same-group rival until a bracket final at earliest.
         return [
-            [$a5, $a2, self::BRACKET_A],
-            [$b4, $b3, self::BRACKET_A],
-            [$b5, $b2, self::BRACKET_B],
-            [$a4, $a3, self::BRACKET_B],
+            [$b5, $a2, self::BRACKET_A],
+            [$b4, $a3, self::BRACKET_A],
+            [$a5, $b2, self::BRACKET_B],
+            [$a4, $b3, self::BRACKET_B],
         ];
     }
 
