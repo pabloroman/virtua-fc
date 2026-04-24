@@ -315,7 +315,7 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
                 $query->select('id')->from('teams')->where('type', 'national');
             })
             ->orderBy('player_id')
-            ->chunk(200, function ($templates) use ($gameId) {
+            ->chunk(1000, function ($templates) use ($gameId) {
                 $rows = [];
                 $matchStateRows = [];
 
