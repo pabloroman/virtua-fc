@@ -54,9 +54,24 @@ export function createPitchLayout(ctx) {
             return { ...c.startingSlotMap };
         }
 
-        // Pending subs present — reshuffle against the active XI within the
-        // current formation, preserving the user's manual drag-swap intent.
+        // Pending subs present — rebuild against the active XI. Pin every
+        // staying player to their current slot so the preview mirrors the
+        // server's behavior (see TacticalChangeService::processLiveMatchChanges):
+        // a natural sub only rewrites the outgoing player's slot and leaves
+        // unrelated players where they are. Without this pinning, the preview
+        // re-ran bestFitPlacement from scratch and visibly shuffled players
+        // unrelated to the substitution during the staging step.
         const manualPins = {};
+        for (const [slotId, playerId] of Object.entries(c.startingSlotMap || {})) {
+            if (!playerId) continue;
+            if (pendingOutIds.has(playerId)) continue;
+            if (!activePlayers.some(p => p.id === playerId)) continue;
+            manualPins[slotId] = playerId;
+        }
+        // Drag-swap pins win over startingSlotMap — they ARE the user's
+        // explicit slot intent. (In practice both maps stay in sync because
+        // the drag-swap handler updates startingSlotMap too, but preserve
+        // the precedence rule defensively.)
         for (const [slotId, playerId] of Object.entries(c._manualSlotPins)) {
             if (pendingOutIds.has(playerId)) continue;
             if (!activePlayers.some(p => p.id === playerId)) continue;
