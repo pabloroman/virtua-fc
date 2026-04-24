@@ -137,17 +137,7 @@ class GamePlayerMatchState extends Model
         }, $rows);
 
         foreach (array_chunk($prepared, 500) as $chunk) {
-            // Filter to only game_player_ids that actually exist, to avoid
-            // FK violations when a parent insert was partially skipped.
-            $candidateIds = array_column($chunk, 'game_player_id');
-            $existingIds = GamePlayer::whereIn('id', $candidateIds)->pluck('id')->all();
-            $existingSet = array_flip($existingIds);
-
-            $validChunk = array_filter($chunk, fn ($row) => isset($existingSet[$row['game_player_id']]));
-
-            if (! empty($validChunk)) {
-                static::insertOrIgnore(array_values($validChunk));
-            }
+            static::insertOrIgnore($chunk);
         }
     }
 
