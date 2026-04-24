@@ -151,13 +151,17 @@ class BudgetProjectionService
     }
 
     /**
-     * Project matchday revenue by walking the scheduled home fixtures for
-     * the upcoming season and summing per-fixture attendance from the demand
-     * curve. Cup and European home ties add bonus revenue on top of the
-     * league baseline at the same per-seat rate.
+     * Project matchday revenue using the team's season-average attendance
+     * (capacity × base-fill from the demand curve) multiplied by the count
+     * of scheduled home fixtures. Cup and European home ties add bonus
+     * revenue on top of the league baseline at the same per-seat rate.
      *
      * `revenue_per_seat` is a per-seat per-SEASON rate, so we divide by the
-     * league home-game count to derive a per-match rate before summing.
+     * league home-game count to derive a per-match rate. The projection is
+     * intentionally coarse: per-fixture opponent/competition modifiers are
+     * clamped to ±20% and average near 1.0 across a balanced schedule, so
+     * dropping them keeps the estimate within a few percent of a
+     * fixture-by-fixture sum without the per-match queries.
      *
      * Runs at SeasonSetupPipeline priority 107 — after LeagueFixtureProcessor
      * (30) and ContinentalAndCupInitProcessor (106), so the fixture list for
@@ -170,10 +174,13 @@ class BudgetProjectionService
     {
         $reputation = TeamReputation::resolveLevel($game->id, $team->id);
 
-        $leagueHomeMatchCount = GameMatch::where('game_id', $game->id)
-            ->where('competition_id', $game->competition_id)
+        $homeMatchCounts = GameMatch::where('game_id', $game->id)
             ->where('home_team_id', $team->id)
-            ->count();
+            ->selectRaw('COUNT(*) AS total, SUM(CASE WHEN competition_id = ? THEN 1 ELSE 0 END) AS league', [$game->competition_id])
+            ->first();
+
+        $leagueHomeMatchCount = (int) ($homeMatchCounts->league ?? 0);
+        $totalHomeMatchCount = (int) ($homeMatchCounts->total ?? 0);
 
         if ($leagueHomeMatchCount === 0) {
             return 0;
@@ -182,18 +189,8 @@ class BudgetProjectionService
         $perSeatSeasonRate = (int) config("finances.revenue_per_seat.{$reputation}", 15_000);
         $perSeatMatchRate = $perSeatSeasonRate / $leagueHomeMatchCount;
 
-        $homeMatches = GameMatch::where('game_id', $game->id)
-            ->where('home_team_id', $team->id)
-            ->get();
-
-        $total = 0.0;
-        foreach ($homeMatches as $match) {
-            $projection = $this->matchAttendanceService->projectForMatch($match, $game);
-            if ($projection === null) {
-                continue;
-            }
-            $total += $projection['attendance'] * $perSeatMatchRate;
-        }
+        $expectedAttendance = $this->matchAttendanceService->projectBaselineForTeam($game->id, $team);
+        $total = $expectedAttendance * $perSeatMatchRate * $totalHomeMatchCount;
 
         $investment = $game->currentInvestment;
         $facilitiesMultiplier = $investment

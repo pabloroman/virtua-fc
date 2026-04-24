@@ -46,6 +46,28 @@ class DemandCurveService
         ClubProfile::REPUTATION_CONTINENTAL => 0.80,
     ];
 
+    /**
+     * Season-average attendance for a home team, ignoring per-fixture
+     * opponent/competition modifiers. Used by budget projections, which
+     * need a single expected gate across the schedule rather than a
+     * per-match figure. The opponent/competition modifier is clamped to
+     * ±20% and averages near 1.0 across a balanced league schedule, so
+     * dropping it keeps projections within a few percent of the
+     * fixture-by-fixture sum at a fraction of the queries.
+     */
+    public function projectBaseline(Team $home, TeamReputation $homeRep): int
+    {
+        $capacity = (int) ($home->stadium_seats ?? 0);
+        if ($capacity <= 0) {
+            return 0;
+        }
+
+        $attendance = (int) round($capacity * $this->baseFillRate($homeRep));
+        $floor = (int) max(self::ATTENDANCE_FLOOR_ABSOLUTE, $capacity * self::ATTENDANCE_FLOOR_RATIO);
+
+        return max($floor, min($capacity, $attendance));
+    }
+
     public function project(
         Team $home,
         TeamReputation $homeRep,

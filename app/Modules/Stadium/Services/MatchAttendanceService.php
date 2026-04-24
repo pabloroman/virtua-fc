@@ -137,6 +137,18 @@ class MatchAttendanceService
         ];
     }
 
+    /**
+     * Season-average attendance for a team's home fixtures. Skips the
+     * per-fixture queries that projectForMatch() performs — BudgetProjectionService
+     * only needs an expected gate to multiply by the home-match count.
+     */
+    public function projectBaselineForTeam(string $gameId, Team $home): int
+    {
+        $homeRep = $this->loadReputation($gameId, $home->id);
+
+        return $this->demandCurve->projectBaseline($home, $homeRep);
+    }
+
     private function isSoldOutRound(GameMatch $match): bool
     {
         return in_array($match->round_name, self::SOLD_OUT_ROUNDS, true);
