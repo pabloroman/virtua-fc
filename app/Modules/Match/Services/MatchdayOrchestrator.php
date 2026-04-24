@@ -10,6 +10,7 @@ use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Squad\Services\EligibilityService;
 use App\Modules\Player\PlayerAge;
 use App\Modules\Player\Services\InjuryService;
+use App\Modules\Stadium\Services\MatchAttendanceService;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -35,6 +36,7 @@ class MatchdayOrchestrator
         private readonly NotificationService $notificationService,
         private readonly EligibilityService $eligibilityService,
         private readonly InjuryService $injuryService,
+        private readonly MatchAttendanceService $matchAttendanceService,
         private readonly AIMatchResolver $aiMatchResolver = new AIMatchResolver,
     ) {}
 
@@ -157,6 +159,15 @@ class MatchdayOrchestrator
 
         // Clear cached match dates from prior batches (played matches changed)
         InjuryService::clearMatchDateCache();
+
+        // Persist MatchAttendance rows for every fixture in the batch before
+        // simulation so the live-match screen and downstream consumers read a
+        // stable figure instead of re-computing (and potentially drifting from)
+        // the demand curve at view time. Idempotent — matches that already
+        // have a row from an earlier path are a no-op.
+        foreach ($matches as $match) {
+            $this->matchAttendanceService->resolveForMatch($match, $game);
+        }
 
         $playerMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
 

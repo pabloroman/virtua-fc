@@ -46,39 +46,47 @@ class MatchAttendanceService
             return $existing;
         }
 
-        if ($this->isSoldOutRound($match)) {
-            $capacity = $this->soldOutCapacity($match);
-            if ($capacity > 0) {
-                return MatchAttendance::create([
-                    'game_id' => $game->id,
-                    'game_match_id' => $match->id,
-                    'attendance' => $capacity,
-                    'capacity_at_match' => $capacity,
-                ]);
-            }
-        }
-
-        if ($match->isNeutralVenue() && $match->neutral_venue_capacity !== null) {
-            $capacity = (int) $match->neutral_venue_capacity;
-            return MatchAttendance::create([
-                'game_id' => $game->id,
-                'game_match_id' => $match->id,
-                'attendance' => $capacity,
-                'capacity_at_match' => $capacity,
-            ]);
-        }
-
-        $projection = $this->projectForMatch($match, $game);
-        if ($projection === null) {
+        $computed = $this->describeForMatch($match, $game);
+        if ($computed === null) {
             return null;
         }
 
         return MatchAttendance::create([
             'game_id' => $game->id,
             'game_match_id' => $match->id,
-            'attendance' => $projection['attendance'],
-            'capacity_at_match' => $projection['capacity'],
+            'attendance' => $computed['attendance'],
+            'capacity_at_match' => $computed['capacity'],
         ]);
+    }
+
+    /**
+     * Compute the attendance figure for a fixture without persisting it.
+     * Used by views that need to show the number before the orchestrator
+     * has written the row (e.g. the pre-match modal, which renders before
+     * MatchdayOrchestrator::processBatch runs). Covers the same branches
+     * as resolveForMatch: sold-out rounds, explicit neutral venues, and
+     * the general demand-curve projection.
+     *
+     * Differs from projectForMatch(), which intentionally returns null for
+     * neutral venues because BudgetProjectionService doesn't need them.
+     *
+     * @return array{attendance: int, capacity: int}|null
+     */
+    public function describeForMatch(GameMatch $match, Game $game): ?array
+    {
+        if ($this->isSoldOutRound($match)) {
+            $capacity = $this->soldOutCapacity($match);
+            if ($capacity > 0) {
+                return ['attendance' => $capacity, 'capacity' => $capacity];
+            }
+        }
+
+        if ($match->isNeutralVenue() && $match->neutral_venue_capacity !== null) {
+            $capacity = (int) $match->neutral_venue_capacity;
+            return ['attendance' => $capacity, 'capacity' => $capacity];
+        }
+
+        return $this->projectForMatch($match, $game);
     }
 
     /**

@@ -7,11 +7,11 @@ use App\Modules\Stadium\Services\MatchAttendanceService;
 
 /**
  * Safety-net listener that guarantees every finalized match has a
- * MatchAttendance row. The MatchdayOrchestrator pre-match hook normally
- * writes the row before simulation, so under typical flow this is a no-op
- * (the service short-circuits on existing rows). It exists to cover edge
- * paths like MatchFinalizationService::finalizePendingMatch where a match
- * may be finalized without going through the orchestrator batch.
+ * MatchAttendance row. MatchdayOrchestrator::processBatch is the primary
+ * writer (called before simulation for every fixture in the batch), so
+ * under normal flow this is a no-op — resolveForMatch short-circuits on
+ * the existing row. It exists to cover any future path that finalizes a
+ * match without having gone through the orchestrator batch.
  */
 class EnsureMatchAttendance
 {

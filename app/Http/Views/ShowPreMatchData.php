@@ -6,7 +6,6 @@ use App\Modules\Lineup\Services\LineupService;
 use App\Modules\Stadium\Services\MatchAttendanceService;
 use App\Models\Game;
 use App\Models\GamePlayer;
-use App\Models\MatchAttendance;
 use App\Models\PlayerSuspension;
 
 class ShowPreMatchData
@@ -81,20 +80,25 @@ class ShowPreMatchData
             return response()->json(['lineupReady' => true]);
         }
 
-        // Resolve attendance ahead of the modal so the user sees the figure
-        // alongside the venue. resolveForMatch is idempotent — the orchestrator
-        // pre-match hook usually wrote the row already.
-        $attendanceRow = MatchAttendance::where('game_match_id', $match->id)->first()
-            ?? $this->matchAttendanceService->resolveForMatch($match, $game);
+        // Show a projected attendance alongside the venue. The modal renders
+        // before advance() runs, so no MatchAttendance row exists yet — the
+        // orchestrator will persist the row (using the same demand curve) at
+        // the start of processBatch when the user commits to the match.
+        $attendance = $this->matchAttendanceService->describeForMatch($match, $game);
+        $attendanceFigure = $attendance['attendance'] ?? null;
+        $attendanceCapacity = $attendance['capacity'] ?? null;
+        $attendancePercent = $attendanceFigure !== null && $attendanceCapacity
+            ? (int) round(($attendanceFigure / $attendanceCapacity) * 100)
+            : null;
 
         return view('partials.pre-match-modal-content', [
             'game' => $game,
             'match' => $match,
             'issueMessage' => $issueMessage,
             'hasIssues' => $hasIssues,
-            'attendance' => $attendanceRow?->attendance,
-            'attendanceCapacity' => $attendanceRow?->capacity_at_match,
-            'attendancePercent' => $attendanceRow?->fillRatePercent(),
+            'attendance' => $attendanceFigure,
+            'attendanceCapacity' => $attendanceCapacity,
+            'attendancePercent' => $attendancePercent,
         ]);
     }
 }

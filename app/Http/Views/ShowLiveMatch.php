@@ -17,7 +17,6 @@ use App\Models\MatchAttendance;
 use App\Models\PlayerSuspension;
 use App\Modules\Match\Services\ExtraTimeAndPenaltyService;
 use App\Modules\Match\Services\MatchResimulationService;
-use App\Modules\Stadium\Services\MatchAttendanceService;
 use App\Support\LiveMatchLineupPresenter;
 use App\Support\LiveMatchNarrativeTemplates;
 use App\Support\PitchGrid;
@@ -29,7 +28,6 @@ class ShowLiveMatch
     public function __construct(
         private readonly LineupService $lineupService,
         private readonly ExtraTimeAndPenaltyService $extraTimeService,
-        private readonly MatchAttendanceService $matchAttendanceService,
     ) {}
 
     public function __invoke(string $gameId, string $matchId)
@@ -220,11 +218,9 @@ class ShowLiveMatch
 
         $narrativeTemplates = LiveMatchNarrativeTemplates::build();
 
-        // Resolve attendance for the live-match HUD. The orchestrator's pre-match
-        // hook normally writes the row before this view loads; the defensive
-        // resolveForMatch call covers deep-links and replays (idempotent).
-        $attendanceRow = MatchAttendance::where('game_match_id', $playerMatch->id)->first()
-            ?? $this->matchAttendanceService->resolveForMatch($playerMatch, $game);
+        // MatchdayOrchestrator::processBatch persists the attendance row before
+        // simulating the match, so it's always present when this view loads.
+        $attendanceRow = MatchAttendance::where('game_match_id', $playerMatch->id)->first();
         $attendance = $attendanceRow?->attendance;
         $attendanceCapacity = $attendanceRow?->capacity_at_match;
         $attendancePercent = $attendanceRow?->fillRatePercent();
