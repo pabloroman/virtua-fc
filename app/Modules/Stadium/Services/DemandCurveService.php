@@ -9,8 +9,8 @@ use App\Models\TeamReputation;
 
 /**
  * Pure deterministic demand curve. Given the home team's identity and the
- * match context (opponent reputation, competition, league position),
- * returns an attendance number capped at stadium capacity.
+ * match context (opponent reputation, competition), returns an attendance
+ * number capped at stadium capacity.
  *
  * Loyalty primary, reputation as secondary floor:
  *  - base_fill = FILL_FLOOR + (loyalty_points / 100) × FILL_RANGE.
@@ -18,8 +18,8 @@ use App\Models\TeamReputation;
  *    loyalty-zero club doesn't play to an empty stadium. On top of that,
  *    reputation provides a higher secondary floor for elite/continental
  *    clubs so a marquee brand with crashed loyalty still draws walk-ups.
- *  - Context modifier (opponent reputation, competition weight, home
- *    league position) multiplies on top, clamped to [0.85, 1.20].
+ *  - Context modifier (opponent reputation, competition weight)
+ *    multiplies on top, clamped to [0.85, 1.20].
  *
  * Calibrated against real La Liga / La Liga 2 occupancy data. With
  * average modifiers (~1.0 for mid-table), the formula produces:
@@ -51,7 +51,6 @@ class DemandCurveService
         TeamReputation $homeRep,
         TeamReputation $awayRep,
         Competition $competition,
-        ?int $homePosition = null,
     ): int {
         $capacity = (int) ($home->stadium_seats ?? 0);
         if ($capacity <= 0) {
@@ -62,8 +61,7 @@ class DemandCurveService
 
         $modifier = 1.0
             + $this->opponentDelta($homeRep, $awayRep)
-            + $this->competitionWeight($competition)
-            + $this->positionBoost($competition, $homePosition);
+            + $this->competitionWeight($competition);
 
         $modifier = max(self::MODIFIER_MIN, min(self::MODIFIER_MAX, $modifier));
 
@@ -141,29 +139,5 @@ class DemandCurveService
         }
 
         return 0.0; // ROLE_LEAGUE
-    }
-
-    /**
-     * Top-4 league position pulls a small attendance bump (title/CL chase);
-     * relegation zone drags it down. Only applies in league competitions
-     * where the position number is meaningful.
-     */
-    private function positionBoost(Competition $competition, ?int $homePosition): float
-    {
-        if ($homePosition === null || $competition->role !== Competition::ROLE_LEAGUE) {
-            return 0.0;
-        }
-
-        if ($homePosition <= 4) {
-            return 0.05;
-        }
-
-        // Loose relegation-zone heuristic that works for both 20-team
-        // (La Liga) and 22-team (Segunda) leagues.
-        if ($homePosition >= 18) {
-            return -0.05;
-        }
-
-        return 0.0;
     }
 }

@@ -6,7 +6,6 @@ use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GameMatch;
-use App\Models\GameStanding;
 use App\Models\MatchAttendance;
 use App\Models\Team;
 use App\Models\TeamReputation;
@@ -36,7 +35,6 @@ class MatchAttendanceService
     private array $reputationCache = [];
     private array $clubProfileCache = [];
     private array $teamCache = [];
-    private array $standingPositionCache = [];
 
     /**
      * Return the MatchAttendance for this fixture, computing and persisting
@@ -126,17 +124,11 @@ class MatchAttendanceService
         $homeRep = $this->loadReputation($game->id, $home->id);
         $awayRep = $this->loadReputation($game->id, $match->away_team_id);
 
-        $homePosition = null;
-        if ($competition && $competition->role === Competition::ROLE_LEAGUE) {
-            $homePosition = $this->loadStandingPosition($game->id, $competition->id, $home->id);
-        }
-
         $attendance = $this->demandCurve->project(
             $home,
             $homeRep,
             $awayRep,
             $competition,
-            $homePosition,
         );
 
         return [
@@ -170,20 +162,6 @@ class MatchAttendanceService
         }
 
         return $this->teamCache[$teamId];
-    }
-
-    private function loadStandingPosition(string $gameId, string $competitionId, string $teamId): ?int
-    {
-        $key = "$gameId|$competitionId|$teamId";
-        if (! array_key_exists($key, $this->standingPositionCache)) {
-            $pos = GameStanding::where('game_id', $gameId)
-                ->where('competition_id', $competitionId)
-                ->where('team_id', $teamId)
-                ->value('position');
-            $this->standingPositionCache[$key] = $pos !== null ? (int) $pos : null;
-        }
-
-        return $this->standingPositionCache[$key];
     }
 
     /**
