@@ -27,9 +27,14 @@ use Illuminate\Support\Facades\Log;
  *    (including siblings — e.g. ESP3A and ESP3B) qualify.
  *
  * Reserve teams (Team::parent_team_id is set) never qualify, regardless of
- * finishing position. Teams currently in the cup that are not registered in
- * any playable tier (lower-division seed teams) are left untouched so
- * regional qualifiers keep their cup place.
+ * finishing position. When a reserve occupies a slot in an auto_qualify
+ * tier, its seat cascades to top_per_group: for each ineligible reserve,
+ * one additional pick is made from the groups (distributed round-robin),
+ * so the cup stays at its expected size even as reserves climb divisions.
+ *
+ * Teams currently in the cup that are not registered in any playable tier
+ * (lower-division seed teams) are left untouched so regional qualifiers
+ * keep their cup place.
  */
 class CopaQualificationProcessor implements SeasonProcessor
 {
@@ -81,11 +86,16 @@ class CopaQualificationProcessor implements SeasonProcessor
 
         $reserveLookup = array_flip($reserveTeamIdsForCountry);
         $qualifiers = [];
+        $shortage = 0;
 
         foreach ($rule['auto_qualify_tiers'] ?? [] as $tier) {
             foreach ($this->countryConfig->tierCompetitionIds($countryCode, $tier) as $competitionId) {
                 foreach ($this->teamsInCompetition($game->id, $competitionId) as $teamId) {
                     if (isset($reserveLookup[$teamId])) {
+                        // Reserve team occupies a league slot but can't play
+                        // in the cup — its seat cascades down to the next
+                        // top_per_group pick so the bracket stays full.
+                        $shortage++;
                         continue;
                     }
                     $qualifiers[$teamId] = true;
@@ -93,21 +103,34 @@ class CopaQualificationProcessor implements SeasonProcessor
             }
         }
 
-        // For each group (including siblings), qualify the top N non-reserve
-        // teams — skipping any reserves in higher positions so the group
-        // always contributes exactly N qualifiers when enough are eligible.
+        // Gather every group (primary + siblings) with its base quota so we
+        // can distribute any cascaded seats round-robin across groups.
+        $groups = [];
         foreach ($rule['top_per_group'] ?? [] as $tier => $topN) {
             foreach ($this->countryConfig->tierCompetitionIds($countryCode, $tier) as $competitionId) {
-                $picked = 0;
-                foreach ($this->rankedTeams($game, $competitionId) as $teamId) {
-                    if (isset($reserveLookup[$teamId])) {
-                        continue;
-                    }
-                    $qualifiers[$teamId] = true;
-                    $picked++;
-                    if ($picked >= $topN) {
-                        break;
-                    }
+                $groups[] = ['competition' => $competitionId, 'topN' => $topN];
+            }
+        }
+
+        if (!empty($groups) && $shortage > 0) {
+            for ($i = 0; $i < $shortage; $i++) {
+                $groups[$i % count($groups)]['topN']++;
+            }
+        }
+
+        // For each group, qualify the top N non-reserve teams — skipping any
+        // reserves in higher positions so the group always contributes
+        // exactly N qualifiers when enough are eligible.
+        foreach ($groups as $group) {
+            $picked = 0;
+            foreach ($this->rankedTeams($game, $group['competition']) as $teamId) {
+                if (isset($reserveLookup[$teamId])) {
+                    continue;
+                }
+                $qualifiers[$teamId] = true;
+                $picked++;
+                if ($picked >= $group['topN']) {
+                    break;
                 }
             }
         }

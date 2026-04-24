@@ -92,6 +92,11 @@ return [
         // - top_per_group: top N teams in each competition at this tier
         //   (including siblings — e.g. ESP3A and ESP3B) qualify.
         //
+        // Reserves occupying auto-qualify slots cascade down: for each
+        // ineligible reserve in an auto_qualify tier, one extra seat is
+        // added to top_per_group, distributed round-robin across groups so
+        // the cup keeps its expected size even as reserves climb divisions.
+        //
         // Teams in ESPCUP that are not registered in any playable tier (the
         // lower-division teams seeded from the data/<season>/ESPCUP/ pool) are
         // left untouched, so regional qualifiers keep their cup place.
