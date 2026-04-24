@@ -37,10 +37,9 @@ class LeagueFixtureProcessorTest extends TestCase
         $oldTie = CupTie::create([
             'game_id' => $game->id,
             'competition_id' => $game->competition_id,
-            'round' => 1,
+            'round_number' => 1,
             'home_team_id' => $home->id,
             'away_team_id' => $away->id,
-            'season' => '2025',
         ]);
 
         // Same shapes for another game (should NOT be touched)

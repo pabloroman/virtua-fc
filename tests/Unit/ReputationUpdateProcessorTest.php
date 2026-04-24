@@ -14,10 +14,12 @@ use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Processors\ReputationUpdateProcessor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Tests\TestCase;
 
 class ReputationUpdateProcessorTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
     use RefreshDatabase;
 
     private NotificationService $notificationService;
