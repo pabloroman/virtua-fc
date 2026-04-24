@@ -309,16 +309,16 @@ class PlayoffTiebreakerTest extends TestCase
         $this->createStanding('ESP3A', $a2->id, position: 2);
         $this->createStanding('ESP3B', $b5->id, position: 5);
 
-        // B5 hosts the first leg (lower seed convention), so B5 is tie home
-        // team and A2 is tie away team.
+        // Both legs 1-1 → aggregate 2-2 after ET, so the tie reaches the
+        // regular-season tiebreaker rather than being decided on aggregate.
         [$tie, $secondLeg] = $this->makeTwoLeggedTie(
             'ESP3PO',
             tieHomeTeam: $b5,
             tieAwayTeam: $a2,
-            firstLegHome: 2,
+            firstLegHome: 1,
             firstLegAway: 1,
             secondLegHome: 1,
-            secondLegAway: 2,
+            secondLegAway: 1,
             withExtraTime: true,
         );
 
