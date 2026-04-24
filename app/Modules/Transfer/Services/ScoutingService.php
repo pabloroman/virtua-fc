@@ -442,10 +442,10 @@ class ScoutingService
     /**
      * Calculate the AI's asking price for a player.
      */
-    public function calculateAskingPrice(GamePlayer $player, Carbon $currentDate): int
+    public function calculateAskingPrice(GamePlayer $player, Carbon $currentDate, ?Collection $teammates = null): int
     {
         $base = $player->market_value_cents;
-        $importance = $this->calculatePlayerImportance($player);
+        $importance = $this->calculatePlayerImportance($player, $teammates);
 
         // Contract leverage: a club can only charge an importance premium if
         // it has leverage to refuse bids. As the contract runs down that

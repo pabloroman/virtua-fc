@@ -115,18 +115,25 @@ class TransferMarketService
         // Shuffle for cross-team variety, then take available slots
         $selected = $candidates->shuffle()->take($slotsAvailable);
 
+        $rows = [];
         foreach ($selected as $candidate) {
             $player = $candidate['player'];
-            $askingPrice = $this->scoutingService->calculateAskingPrice($player, $game->current_date);
+            $teammates = $teamRosters->get($player->team_id);
+            $askingPrice = $this->scoutingService->calculateAskingPrice($player, $game->current_date, $teammates);
 
-            TransferListing::create([
+            $rows[] = [
+                'id' => (string) \Illuminate\Support\Str::uuid(),
                 'game_id' => $game->id,
                 'game_player_id' => $player->id,
                 'team_id' => $player->team_id,
                 'status' => TransferListing::STATUS_LISTED,
-                'listed_at' => $game->current_date,
+                'listed_at' => $game->current_date->toDateString(),
                 'asking_price' => $askingPrice,
-            ]);
+            ];
+        }
+
+        if (! empty($rows)) {
+            TransferListing::insert($rows);
         }
     }
 

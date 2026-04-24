@@ -32,6 +32,12 @@ class MatchAttendanceService
         private readonly DemandCurveService $demandCurve,
     ) {}
 
+    /** Per-request caches — MatchAttendanceService is resolved fresh per request. */
+    private array $reputationCache = [];
+    private array $clubProfileCache = [];
+    private array $teamCache = [];
+    private array $standingPositionCache = [];
+
     /**
      * Return the MatchAttendance for this fixture, computing and persisting
      * it on first call. For matches at a designated neutral venue (cup
@@ -110,7 +116,7 @@ class MatchAttendanceService
             return null;
         }
 
-        $home = Team::find($match->home_team_id);
+        $home = $this->loadTeam($match->home_team_id);
         if (!$home) {
             return null;
         }
@@ -122,11 +128,7 @@ class MatchAttendanceService
 
         $homePosition = null;
         if ($competition && $competition->role === Competition::ROLE_LEAGUE) {
-            $homePosition = GameStanding::where('game_id', $game->id)
-                ->where('competition_id', $competition->id)
-                ->where('team_id', $home->id)
-                ->value('position');
-            $homePosition = $homePosition !== null ? (int) $homePosition : null;
+            $homePosition = $this->loadStandingPosition($game->id, $competition->id, $home->id);
         }
 
         $attendance = $this->demandCurve->project(
@@ -158,7 +160,30 @@ class MatchAttendanceService
             return (int) $match->neutral_venue_capacity;
         }
 
-        return (int) (Team::find($match->home_team_id)?->stadium_seats ?? 0);
+        return (int) ($this->loadTeam($match->home_team_id)?->stadium_seats ?? 0);
+    }
+
+    private function loadTeam(string $teamId): ?Team
+    {
+        if (! array_key_exists($teamId, $this->teamCache)) {
+            $this->teamCache[$teamId] = Team::find($teamId);
+        }
+
+        return $this->teamCache[$teamId];
+    }
+
+    private function loadStandingPosition(string $gameId, string $competitionId, string $teamId): ?int
+    {
+        $key = "$gameId|$competitionId|$teamId";
+        if (! array_key_exists($key, $this->standingPositionCache)) {
+            $pos = GameStanding::where('game_id', $gameId)
+                ->where('competition_id', $competitionId)
+                ->where('team_id', $teamId)
+                ->value('position');
+            $this->standingPositionCache[$key] = $pos !== null ? (int) $pos : null;
+        }
+
+        return $this->standingPositionCache[$key];
     }
 
     /**
@@ -168,15 +193,23 @@ class MatchAttendanceService
      */
     private function loadReputation(string $gameId, string $teamId): TeamReputation
     {
+        $key = "$gameId|$teamId";
+        if (array_key_exists($key, $this->reputationCache)) {
+            return $this->reputationCache[$key];
+        }
+
         $rep = TeamReputation::where('game_id', $gameId)
             ->where('team_id', $teamId)
             ->first();
 
         if ($rep) {
-            return $rep;
+            return $this->reputationCache[$key] = $rep;
         }
 
-        $profile = ClubProfile::where('team_id', $teamId)->first();
+        if (! array_key_exists($teamId, $this->clubProfileCache)) {
+            $this->clubProfileCache[$teamId] = ClubProfile::where('team_id', $teamId)->first();
+        }
+        $profile = $this->clubProfileCache[$teamId];
         $level = $profile->reputation_level ?? ClubProfile::REPUTATION_LOCAL;
         $anchor = (int) ($profile->fan_loyalty ?? ClubProfile::FAN_LOYALTY_DEFAULT);
         $loyalty = $anchor * 10;
@@ -190,6 +223,6 @@ class MatchAttendanceService
         $synthetic->base_loyalty = $loyalty;
         $synthetic->loyalty_points = $loyalty;
 
-        return $synthetic;
+        return $this->reputationCache[$key] = $synthetic;
     }
 }

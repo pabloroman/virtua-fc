@@ -414,8 +414,14 @@ class CupDrawService
             return [];
         }
 
-        $gameSeason = Game::where('id', $gameId)->value('season');
+        if (! array_key_exists($gameId, $this->gameSeasonCache)) {
+            $this->gameSeasonCache[$gameId] = Game::where('id', $gameId)->value('season');
+        }
+        $gameSeason = $this->gameSeasonCache[$gameId];
 
         return LeagueFixtureGenerator::loadKnockoutRounds($competitionId, $competition->season, $gameSeason);
     }
+
+    /** @var array<string, ?string> */
+    private array $gameSeasonCache = [];
 }

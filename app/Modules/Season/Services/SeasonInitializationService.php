@@ -34,12 +34,24 @@ class SeasonInitializationService
         private CountryConfig $countryConfig,
     ) {}
 
+    /** @var array<string, ?Competition> */
+    private array $competitionCache = [];
+
+    private function findCompetition(string $competitionId): ?Competition
+    {
+        if (! array_key_exists($competitionId, $this->competitionCache)) {
+            $this->competitionCache[$competitionId] = Competition::find($competitionId);
+        }
+
+        return $this->competitionCache[$competitionId];
+    }
+
     /**
      * Generate league fixtures from schedule.json, adjusted for season year.
      */
     public function generateLeagueFixtures(string $gameId, string $competitionId, string $season): void
     {
-        $competition = Competition::find($competitionId);
+        $competition = $this->findCompetition($competitionId);
         if (!$competition || !$competition->isLeague()) {
             return;
         }
@@ -98,7 +110,7 @@ class SeasonInitializationService
             return;
         }
 
-        $competition = Competition::find($competitionId);
+        $competition = $this->findCompetition($competitionId);
         if (!$competition) {
             Log::warning("[SeasonInit] Competition {$competitionId} not found, skipping Swiss init");
 

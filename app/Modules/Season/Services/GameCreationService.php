@@ -27,17 +27,16 @@ class GameCreationService
                 ->first()
             ?? CompetitionTeam::where('team_id', $teamId)->first();
 
+        $team = Team::find($teamId);
+
         // Resolve competition ID: use competition_team lookup, fall back to
         // tier 1 of the team's country from config
         $competitionId = $competitionTeam?->competition_id;
         if (!$competitionId) {
-            $team = Team::find($teamId);
             $countryConfig = app(CountryConfig::class);
             $competitionId = $countryConfig->competitionForTier($team->country ?? 'ES', 1);
         }
         $season = $competitionTeam->season ?? '2025';
-
-        $team = Team::find($teamId);
 
         // Create game record (setup not yet complete)
         // current_date and season_goal are set by processors during SetupNewGame
