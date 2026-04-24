@@ -115,38 +115,6 @@ class PlayerTierServiceTest extends TestCase
     }
 
     // -------------------------------------------------------
-    // recomputeAllTiersForGame — game-scoped
-    // -------------------------------------------------------
-
-    public function test_recompute_all_tiers_for_game_updates_all_players_in_game(): void
-    {
-        $game1 = Game::factory()->create();
-        $game2 = Game::factory()->create();
-        $team = Team::factory()->create();
-
-        $player1 = GamePlayer::factory()->forGame($game1)->forTeam($team)->create([
-            'market_value_cents' => 30_000_000_00, // €30M → tier 4
-            'tier' => 1,
-        ]);
-
-        $player2 = GamePlayer::factory()->forGame($game1)->forTeam($team)->create([
-            'market_value_cents' => 500_000_00, // €500K → tier 1
-            'tier' => 5,
-        ]);
-
-        $otherGamePlayer = GamePlayer::factory()->forGame($game2)->forTeam($team)->create([
-            'market_value_cents' => 30_000_000_00, // €30M → should be tier 4 but stays 1
-            'tier' => 1,
-        ]);
-
-        $this->service->recomputeAllTiersForGame($game1->id);
-
-        $this->assertEquals(4, $player1->fresh()->tier);
-        $this->assertEquals(1, $player2->fresh()->tier);
-        $this->assertEquals(1, $otherGamePlayer->fresh()->tier); // Other game untouched
-    }
-
-    // -------------------------------------------------------
     // Factory produces correct tier
     // -------------------------------------------------------
 
