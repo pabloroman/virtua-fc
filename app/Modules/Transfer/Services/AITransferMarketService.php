@@ -557,7 +557,7 @@ class AITransferMarketService
                     $foreignIndex++;
                     $assignedNumber = $this->allocateSquadNumber($takenNumbers, $foreignTeam->id);
 
-                    $this->prepareTransfer($game, $player, $sellerTeamId, $foreignTeam->id, $foreignTeam, $window, $assignedNumber, $playerUpdates, $transferInserts, maxContractYears: 4, buyerReputationIndex: 1);
+                    $this->prepareTransfer($game, $player, $sellerTeamId, $foreignTeam->id, $window, $assignedNumber, $playerUpdates, $transferInserts, maxContractYears: 4, buyerReputationIndex: 1);
                     $count++;
                     $transferredPlayerIds[$player->id] = true;
                     $this->incrementBudget($teamBudgets, $sellerTeamId, 'sells');
