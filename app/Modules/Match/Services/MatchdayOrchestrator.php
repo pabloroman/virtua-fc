@@ -5,7 +5,6 @@ namespace App\Modules\Match\Services;
 use App\Modules\Competition\Services\StandingsCalculator;
 use App\Modules\Match\DTOs\MatchdayAdvanceResult;
 use App\Modules\Match\Jobs\ProcessCareerActions;
-use App\Modules\Match\Jobs\ProcessRemainingBatches;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Squad\Services\EligibilityService;
 use App\Modules\Player\PlayerAge;
@@ -22,6 +21,7 @@ use App\Models\PlayerSuspension;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MatchdayOrchestrator
 {
@@ -43,14 +43,20 @@ class MatchdayOrchestrator
     public function advance(Game $game, bool $fastForward = false): MatchdayAdvanceResult
     {
         $this->careerActionTicks = 0;
+        $advanceStart = microtime(true);
+        $batchIndex = 0;
 
-        $result = DB::transaction(function () use ($game, $fastForward) {
+        $result = DB::transaction(function () use ($game, $fastForward, &$batchIndex) {
             // Lock the game row to prevent concurrent matchday advancement
+            $t0 = microtime(true);
             $game = Game::where('id', $game->id)->lockForUpdate()->first();
+            Log::info('[MatchdayAdvance] lockForUpdate completed in '.(int) round((microtime(true) - $t0) * 1000).'ms');
 
             // Safety net: finalize any pending match from a previous matchday
             // (e.g. user closed browser without clicking "Continue")
+            $t0 = microtime(true);
             $this->finalizePendingMatch($game);
+            Log::info('[MatchdayAdvance] finalizePendingMatch completed in '.(int) round((microtime(true) - $t0) * 1000).'ms');
 
             // Block advancement if career actions from a previous advance are still processing
             $game->clearStuckCareerActions();
@@ -69,16 +75,34 @@ class MatchdayOrchestrator
             }
 
             // Mark all existing notifications as read before processing new matchday
+            $t0 = microtime(true);
             $this->notificationService->markAllAsRead($game->id);
+            Log::info('[MatchdayAdvance] markAllAsRead completed in '.(int) round((microtime(true) - $t0) * 1000).'ms');
 
             // Process batches until one involves the player's team or the season ends
-            while ($batch = $this->matchdayService->getNextMatchBatch($game)) {
+            while (true) {
+                $t0 = microtime(true);
+                $batch = $this->matchdayService->getNextMatchBatch($game);
+                Log::info('[MatchdayAdvance] getNextMatchBatch completed in '.(int) round((microtime(true) - $t0) * 1000).'ms');
+                if (! $batch) {
+                    break;
+                }
+                $batchIndex++;
                 // Simulate every match in the batch inline so the live-match
                 // "other scores" ticker has real sibling events to reveal.
                 // FullMatchSimulationService routes siblings through the fast
                 // statistical AIMatchResolver so only the user's match pays the
                 // full MatchSimulator cost.
+                $batchStart = microtime(true);
                 $result = $this->processBatch($game, $batch, $fastForward);
+                $batchMs = (int) round((microtime(true) - $batchStart) * 1000);
+                Log::info(sprintf(
+                    '[MatchdayAdvance] batch #%d (%d matches, player=%s) completed in %dms',
+                    $batchIndex,
+                    $batch['matches']->count(),
+                    $result['playerMatch'] ? 'yes' : 'no',
+                    $batchMs,
+                ));
 
                 if ($result['playerMatch']) {
                     if ($fastForward) {
@@ -89,7 +113,9 @@ class MatchdayOrchestrator
                         // normal flow.
                         $playerMatch = GameMatch::find($result['playerMatch']->id);
                         if ($playerMatch) {
+                            $t0 = microtime(true);
                             $this->finalizationService->finalize($playerMatch, $game->refresh());
+                            Log::info('[MatchdayAdvance] finalize (fastForward) completed in '.(int) round((microtime(true) - $t0) * 1000).'ms');
                         }
 
                         return MatchdayAdvanceResult::done();
@@ -106,7 +132,9 @@ class MatchdayOrchestrator
                     ->exists();
 
                 if (! $playerHasMoreMatches) {
+                    $t0 = microtime(true);
                     $this->autoSimulateRemainingBatches($game);
+                    Log::info('[MatchdayAdvance] autoSimulateRemainingBatches completed in '.(int) round((microtime(true) - $t0) * 1000).'ms');
 
                     // Re-check: new matches (e.g. playoffs) may have been generated
                     $playerNowHasMatches = GameMatch::where('game_id', $game->id)
@@ -131,16 +159,32 @@ class MatchdayOrchestrator
             return MatchdayAdvanceResult::seasonComplete();
         });
 
-        // Dispatch post-transaction work now that all DB changes are committed
+        // Run any future AI-only batches (e.g. mid-week cup nights between
+        // the user's just-played match and their next one) inline now that
+        // the live-match transaction is committed. In ~99% of matchdays this
+        // is a no-op — getNextMatchBatch returns the player's next match and
+        // the loop exits immediately. The 1% that does work (heavy European
+        // weeks) stays sub-second on the AI fast path. Running synchronously
+        // serializes batch processing per game, so we no longer need the
+        // 40P01 deadlock retry that the previous queued path had to carry.
         if ($result->type === 'live_match') {
-            // Defer future AI-only batches (e.g. cup rounds that don't involve
-            // the player) to background. The current batch is already simulated
-            // inline, so the live-match ticker has complete sibling data.
-            // Career actions are dispatched by processRemainingBatches() after all batches complete.
-            $this->deferRemainingBatches($game);
+            $t0 = microtime(true);
+            $this->processRemainingBatches($game, $this->careerActionTicks);
+            Log::info('[MatchdayAdvance] processRemainingBatches (inline) completed in '.(int) round((microtime(true) - $t0) * 1000).'ms');
         } elseif ($this->careerActionTicks > 0) {
+            $t0 = microtime(true);
             $this->dispatchCareerActions($game->id, $this->careerActionTicks);
+            Log::info('[MatchdayAdvance] dispatchCareerActions completed in '.(int) round((microtime(true) - $t0) * 1000).'ms');
         }
+
+        $totalMs = (int) round((microtime(true) - $advanceStart) * 1000);
+        Log::info(sprintf(
+            '[MatchdayAdvance] advance() total %dms (game %s, type %s, batches %d)',
+            $totalMs,
+            $game->id,
+            $result->type,
+            $batchIndex,
+        ));
 
         return $result;
     }
@@ -165,9 +209,11 @@ class MatchdayOrchestrator
         // stable figure instead of re-computing (and potentially drifting from)
         // the demand curve at view time. Idempotent — matches that already
         // have a row from an earlier path are a no-op.
+        $t0 = microtime(true);
         foreach ($matches as $match) {
             $this->matchAttendanceService->resolveForMatch($match, $game);
         }
+        $attendanceMs = (microtime(true) - $t0) * 1000;
 
         $playerMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
 
@@ -175,6 +221,7 @@ class MatchdayOrchestrator
         $isAIOnlyBatch = ! $playerMatch && config('match_simulation.ai_resolver_enabled', false);
 
         // --- Load players ---
+        $t0 = microtime(true);
         $teamIds = $matches->pluck('home_team_id')
             ->merge($matches->pluck('away_team_id'))
             ->push($game->team_id)
@@ -209,7 +256,9 @@ class MatchdayOrchestrator
             ->groupBy('competition_id')
             ->map(fn ($group) => $group->pluck('game_player_id')->toArray())
             ->toArray();
+        $loadMs = (microtime(true) - $t0) * 1000;
 
+        $t0 = microtime(true);
         if ($isAIOnlyBatch) {
             // --- Fast AI resolution path ---
             // Skips: FormationRecommender, full LineupService, MatchSimulator,
@@ -217,6 +266,7 @@ class MatchdayOrchestrator
             // The AIMatchResolver handles lineup selection (with rotation) and
             // statistical result generation in a single lightweight pass.
             $matchResults = $this->aiMatchResolver->resolveMatches($matches, $allPlayers, $game, $suspendedByCompetition);
+            $simPath = 'ai';
         } else {
             // --- Full simulation path (player-involved batches) ---
             // Fast mode rides this same path — the live-match engine — but
@@ -225,18 +275,24 @@ class MatchdayOrchestrator
             $resolution = $this->fullMatchSimulation->resolveMatches($matches, $game, $allPlayers, $suspendedByCompetition, $fastForward);
             $matchResults = $resolution['matchResults'];
             $playerMatch = $resolution['playerMatch'];
+            $simPath = 'full';
         }
+        $simulateMs = (microtime(true) - $t0) * 1000;
 
         // Identify user's match — its score-dependent effects are deferred to finalization
         $deferMatchId = $playerMatch?->id;
 
         // --- Process results ---
+        $t0 = microtime(true);
         // Derive competitions from already-loaded match relations to avoid re-querying
         $competitions = $matches->pluck('competition')->filter()->unique('id')->keyBy('id');
         $this->matchResultProcessor->processAll($game, $currentDate, $matchResults, $deferMatchId, $allPlayers, $matches, $competitions);
+        $processMs = (microtime(true) - $t0) * 1000;
 
         // --- Recalculate positions ---
+        $t0 = microtime(true);
         $this->recalculateLeaguePositions($game->id, $matches);
+        $positionsMs = (microtime(true) - $t0) * 1000;
 
         // Mark user's match as pending finalization BEFORE post-match actions
         if ($playerMatch) {
@@ -280,8 +336,21 @@ class MatchdayOrchestrator
         }
 
         // --- Post-match actions ---
+        $t0 = microtime(true);
         $game->refresh()->setRelations([]);
         $this->processPostMatchActions($game, $matches, $handlers, $allPlayers, $deferMatchId);
+        $postMs = (microtime(true) - $t0) * 1000;
+
+        Log::info(sprintf(
+            '[MatchdayAdvance]   processBatch breakdown: path=%s | attendance %dms | load %dms | simulate %dms | process %dms | positions %dms | post %dms',
+            $simPath,
+            (int) round($attendanceMs),
+            (int) round($loadMs),
+            (int) round($simulateMs),
+            (int) round($processMs),
+            (int) round($positionsMs),
+            (int) round($postMs),
+        ));
 
         return ['playerMatch' => $playerMatch];
     }
@@ -330,32 +399,17 @@ class MatchdayOrchestrator
     }
 
     /**
-     * Set flag and dispatch background job to process remaining batches.
-     * Called after the transaction commits in advance().
-     */
-    private function deferRemainingBatches(Game $game): void
-    {
-        $updated = Game::where('id', $game->id)
-            ->whereNull('remaining_batches_processing_at')
-            ->update(['remaining_batches_processing_at' => now()]);
-
-        if ($updated) {
-            try {
-                ProcessRemainingBatches::dispatch($game->id, $this->careerActionTicks);
-            } catch (\Throwable $e) {
-                Game::where('id', $game->id)->update(['remaining_batches_processing_at' => null]);
-            }
-        }
-    }
-
-    /**
-     * Process remaining batches in the background (called by ProcessRemainingBatches job).
-     * Simulates all unplayed batches and dispatches career actions when done.
+     * Process remaining AI-only batches between the user's just-played match
+     * and their next match. Called inline by advance() after the live-match
+     * transaction commits — typically a no-op (no other unplayed matches yet
+     * for the calendar), occasionally simulates a midweek European night.
      *
-     * Each batch runs in its own transaction to limit lock duration, WAL
-     * accumulation, and allow per-batch garbage collection of player collections.
+     * Each batch runs in its own transaction to limit lock duration and WAL
+     * accumulation. Inline execution serializes per game, so the cross-process
+     * concurrency that previously needed a 40P01 deadlock retry can no longer
+     * happen.
      */
-    public function processRemainingBatches(Game $game, int $priorCareerActionTicks): void
+    private function processRemainingBatches(Game $game, int $priorCareerActionTicks): void
     {
         $this->careerActionTicks = 0;
         $gameId = $game->id;
@@ -369,25 +423,17 @@ class MatchdayOrchestrator
                 break;
             }
 
-            // Retry on 40P01 (deadlock) — the bulk UPDATE … IN (…) pattern in
-            // GamePlayerMatchState locks rows in heap-scan order, so even a single
-            // unaudited concurrent writer can collide. Deadlock is safely retriable.
             DB::transaction(function () use ($gameId, $nextBatch) {
                 $lockedGame = Game::where('id', $gameId)->lockForUpdate()->first();
                 $this->processBatch($lockedGame, $nextBatch);
-            }, attempts: 3);
+            });
 
-            // Reload fresh game for next iteration (outside transaction scope)
             $game = Game::find($gameId);
         }
 
-        // Total career action ticks = prior (from advance's synchronous batches) + new (from background batches)
+        // Total ticks = prior (from advance's synchronous batches) + new (from this loop)
         $totalTicks = $priorCareerActionTicks + $this->careerActionTicks;
 
-        // Clear the remaining batches flag
-        Game::where('id', $gameId)->update(['remaining_batches_processing_at' => null]);
-
-        // Dispatch career actions if any ticks accumulated
         $this->dispatchCareerActions($gameId, $totalTicks);
     }
 

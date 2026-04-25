@@ -41,7 +41,6 @@ class ShowFastMode
         // those transient states have cleared.
         if (
             $game->isTransitioningSeason()
-            || $game->isProcessingRemainingBatches()
             || $game->isProcessingCareerActions()
             || $game->isAdvancingMatchday()
             || $game->matchday_advance_result

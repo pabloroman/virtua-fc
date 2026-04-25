@@ -86,9 +86,9 @@ class SkipMatchToEnd
         }
 
         try {
-            // Serialize against ProcessRemainingBatches / FinalizeMatch / ProcessCareerActions,
-            // which all take Game::lockForUpdate. See ProcessTacticalActions for the deadlock
-            // rationale — resimulation touches opponent rows that the background job also writes.
+            // Serialize against FinalizeMatch / ProcessCareerActions, which all take
+            // Game::lockForUpdate. See ProcessTacticalActions for the deadlock rationale —
+            // resimulation touches opponent rows that the background job also writes.
             $result = DB::transaction(function () use ($match, $game, $minute, $previousSubstitutions) {
                 Game::where('id', $game->id)->lockForUpdate()->first();
 

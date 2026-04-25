@@ -93,17 +93,6 @@ class ShowGame
             $game = $game->refresh();
         }
 
-        // Show loading screen while remaining batches are processing in background
-        $game->clearStuckRemainingBatches();
-        if ($game->isProcessingRemainingBatches()) {
-            return view('game-loading', [
-                'game' => $game,
-                'title' => __('game.simulating_matches'),
-                'message' => __('game.simulating_matches_message'),
-                'showCrest' => true,
-            ]);
-        }
-
         // Show loading screen while career actions are processing in background
         $game->clearStuckCareerActions();
         if ($game->isProcessingCareerActions()) {

@@ -131,7 +131,6 @@ class Game extends Model
         'pending_finalization_match_id',
         'matchday_advancing_at',
         'matchday_advance_result',
-        'remaining_batches_processing_at',
         'deleting_at',
     ];
 
@@ -151,7 +150,6 @@ class Game extends Model
         'career_actions_processing_at' => 'datetime',
         'matchday_advancing_at' => 'datetime',
         'matchday_advance_result' => 'array',
-        'remaining_batches_processing_at' => 'datetime',
         'deleting_at' => 'datetime',
     ];
 
@@ -221,19 +219,6 @@ class Game extends Model
     public function clearStuckMatchdayAdvance(): bool
     {
         return $this->clearStuckFlag('matchday_advancing_at', ['matchday_advance_result']);
-    }
-
-    public function isProcessingRemainingBatches(): bool
-    {
-        return $this->remaining_batches_processing_at !== null;
-    }
-
-    /**
-     * Clear a stuck remaining batches flag (> 2 minutes old).
-     */
-    public function clearStuckRemainingBatches(): bool
-    {
-        return $this->clearStuckFlag('remaining_batches_processing_at');
     }
 
     /**

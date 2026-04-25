@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Http\Actions\AdvanceMatchday;
-use App\Modules\Match\Jobs\ProcessRemainingBatches;
 use App\Modules\Match\Services\MatchdayOrchestrator;
 use App\Modules\Match\Services\MatchFinalizationService;
 use App\Models\Competition;
@@ -15,7 +14,6 @@ use App\Models\Team;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class AdvanceMatchdayTest extends TestCase
@@ -338,8 +336,6 @@ class AdvanceMatchdayTest extends TestCase
 
     public function test_sibling_ai_matches_are_simulated_inline_with_player_match(): void
     {
-        Queue::fake([ProcessRemainingBatches::class]);
-
         [$team3] = $this->createMatchdayWithAiSibling();
 
         $orchestrator = app(MatchdayOrchestrator::class);

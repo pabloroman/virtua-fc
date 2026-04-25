@@ -88,11 +88,11 @@ class ProcessTacticalActions
         }
 
         try {
-            // Serialize against ProcessRemainingBatches / FinalizeMatch / ProcessCareerActions,
-            // which all take Game::lockForUpdate. Resimulation writes to game_player_match_state
-            // rows for both teams in this match, and those rows overlap with the opponent's
-            // rows touched by the background AI-only batch job — concurrent bulk UPDATEs with
-            // IN-lists lock in heap-scan order and deadlock.
+            // Serialize against FinalizeMatch / ProcessCareerActions, which all take
+            // Game::lockForUpdate. Resimulation writes to game_player_match_state rows
+            // for both teams in this match, and those rows overlap with rows touched
+            // by ProcessCareerActions — concurrent bulk UPDATEs with IN-lists lock in
+            // heap-scan order and deadlock.
             $result = DB::transaction(function () use ($match, $game, $validated, $isExtraTime) {
                 Game::where('id', $game->id)->lockForUpdate()->first();
 
