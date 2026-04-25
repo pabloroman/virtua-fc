@@ -408,6 +408,13 @@ class MatchdayOrchestrator
      * accumulation. Inline execution serializes per game, so the cross-process
      * concurrency that previously needed a 40P01 deadlock retry can no longer
      * happen.
+     *
+     * Best-effort by design: a per-batch failure is logged and the loop stops
+     * rather than propagating up. The user's just-played match has already
+     * committed, so failing here would otherwise turn a transient DB blip
+     * into a user-visible error on the live-match handoff. The unplayed
+     * batches get picked up by getNextMatchBatch on the user's next Advance
+     * click, so game state self-heals.
      */
     private function processRemainingBatches(Game $game, int $priorCareerActionTicks): void
     {
@@ -423,15 +430,24 @@ class MatchdayOrchestrator
                 break;
             }
 
-            DB::transaction(function () use ($gameId, $nextBatch) {
-                $lockedGame = Game::where('id', $gameId)->lockForUpdate()->first();
-                $this->processBatch($lockedGame, $nextBatch);
-            });
+            try {
+                DB::transaction(function () use ($gameId, $nextBatch) {
+                    $lockedGame = Game::where('id', $gameId)->lockForUpdate()->first();
+                    $this->processBatch($lockedGame, $nextBatch);
+                });
+            } catch (\Throwable $e) {
+                Log::warning('[MatchdayAdvance] inline remaining-batch failed; deferring to next click', [
+                    'game_id' => $gameId,
+                    'error' => $e->getMessage(),
+                ]);
+                break;
+            }
 
             $game = Game::find($gameId);
         }
 
-        // Total ticks = prior (from advance's synchronous batches) + new (from this loop)
+        // Total ticks = prior (from advance's synchronous batches) + new (from this loop,
+        // including any partial accumulation if a later batch failed).
         $totalTicks = $priorCareerActionTicks + $this->careerActionTicks;
 
         $this->dispatchCareerActions($gameId, $totalTicks);
