@@ -146,6 +146,17 @@ class SwissKnockoutGenerator
             $bracketWinners[$bracketIndex][] = $tie->winner_id;
         }
 
+        // Legacy safety net: if natural bracket assignment didn't yield the
+        // canonical 4 buckets × 2 winners (e.g. legacy ties with NULL
+        // bracket_position whose teams drifted across bracket boundaries on
+        // a non-deterministic standings re-sort), fall back to a
+        // deterministic round-robin distribution. The seeding intent is
+        // already lost for these games — completing the tournament beats
+        // throwing on every page load.
+        if (count($playoffTies) === 8 && !$this->hasCanonicalDistribution($bracketWinners)) {
+            $bracketWinners = $this->redistributeLegacyWinners($playoffTies);
+        }
+
         $matchups = [];
 
         foreach (self::R16_BRACKETS as [$topPositions, $bracketIndex]) {
@@ -243,6 +254,47 @@ class SwissKnockoutGenerator
             ->orderBy('position')
             ->pluck('team_id', 'position')
             ->toArray();
+    }
+
+    /**
+     * Check whether the bracket assignment produced exactly 4 buckets, each
+     * with exactly 2 winners — the only shape generateR16Matchups can pair
+     * into 8 matchups.
+     */
+    private function hasCanonicalDistribution(array $bracketWinners): bool
+    {
+        for ($i = 0; $i < 4; $i++) {
+            if (count($bracketWinners[$i] ?? []) !== 2) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Distribute 8 playoff winners across the 4 R16 brackets in a stable,
+     * deterministic order. Used only when the canonical bracket-aware
+     * assignment fails (legacy ties + standings drift). The 8 winners are
+     * sorted by tie ID so repeated calls produce the same pairing.
+     *
+     * @param  \Illuminate\Support\Collection<int, CupTie>  $playoffTies
+     * @return array<int, array<int, string>>
+     */
+    private function redistributeLegacyWinners($playoffTies): array
+    {
+        $winners = $playoffTies
+            ->sortBy('id')
+            ->pluck('winner_id')
+            ->values()
+            ->all();
+
+        return [
+            0 => [$winners[0], $winners[1]],
+            1 => [$winners[2], $winners[3]],
+            2 => [$winners[4], $winners[5]],
+            3 => [$winners[6], $winners[7]],
+        ];
     }
 
     /**

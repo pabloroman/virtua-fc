@@ -166,6 +166,38 @@ class SwissKnockoutGeneratorTest extends TestCase
         $this->assertCount(8, $r16);
     }
 
+    /**
+     * Cross-bracket drift (e.g. a tied team at position 22 swapping with the
+     * team at position 23) puts a tie's two teams in different brackets'
+     * position sets, defeating disjoint-set membership in the legacy fallback
+     * and starving the affected brackets. The deterministic redistribution
+     * safety net guarantees R16 still generates 8 matchups so legacy games
+     * can complete the tournament.
+     */
+    public function test_r16_succeeds_for_legacy_ties_with_cross_bracket_drift(): void
+    {
+        foreach ($this->canonicalPlayoffPairings() as [$lowerPos, $higherPos]) {
+            $this->createTie(
+                round: 1,
+                home: $this->teamsByPosition[$lowerPos]->id,
+                away: $this->teamsByPosition[$higherPos]->id,
+                bracketPosition: null,
+                winnerId: $this->teamsByPosition[$higherPos]->id,
+                completed: true,
+            );
+        }
+
+        // Position 22 (bracket 1) and 23 (bracket 0) swap on a re-sort —
+        // the bracket-0 tie's lower-seed team now sits at position 22 and
+        // the bracket-1 tie's lower-seed team at position 23. Neither
+        // bracket's position set contains both teams of either tie.
+        $this->swapStandingsPositions(22, 23);
+
+        $r16 = $this->generator->generateMatchups($this->game, $this->competition->id, 2);
+
+        $this->assertCount(8, $r16);
+    }
+
     private function seedStandings(): void
     {
         for ($pos = 1; $pos <= 36; $pos++) {
