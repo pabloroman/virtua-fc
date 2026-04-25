@@ -221,6 +221,23 @@ return [
     'academy_tier_4' => 'Cantera de Clase Mundial',
     'academy_tier_unknown' => 'Desconocido',
 
+    // Reserve team (filial)
+    'reserve_team' => 'Filial',
+    'reserve_squad' => 'Plantilla del filial',
+    'no_reserve_players' => 'No hay jugadores en el filial.',
+    'call_up' => 'Subir',
+    'call_up_to_first_team' => 'Subir al primer equipo',
+    'send_back' => 'Bajar',
+    'send_back_to_reserve' => 'Bajar al filial',
+    'called_up_indicator' => 'En el primer equipo',
+    'actions' => 'Acciones',
+    'reserve_help_toggle' => '¿Cómo funciona el filial?',
+    'reserve_help_development' => 'Tu filial es la cantera oficial — los jugadores pertenecen al filial, no al primer equipo. Cada temporada llegan nuevos canteranos según tu inversión en la cantera, que se desarrollan junto con el resto del filial.',
+    'reserve_help_age_rule' => 'Los jugadores que cumplen 24 años pasan automáticamente al primer equipo al final de la temporada. El primer equipo puede subir jugadores del filial en cualquier momento.',
+    'reserve_help_actions_title' => 'Acciones disponibles',
+    'reserve_help_call_up' => 'Subir - el jugador se incorpora al primer equipo en cesión y puede disputar partidos con el primer equipo',
+    'reserve_help_send_back' => 'Bajar - devuelve al jugador subido al filial',
+
     // Lineup help text
     'lineup_help_toggle' => '¿Cómo funciona la alineación?',
     'lineup_help_intro' => 'Elige 11 jugadores para cada partido. Tu formación, la energía y la compatibilidad posicional afectan al rendimiento.',

@@ -178,14 +178,18 @@ class TransferMarketService
             ->where('status', TransferOffer::STATUS_AGREED)
             ->pluck('game_player_id');
 
-        return TransferListing::with(['gamePlayer.player', 'gamePlayer.team'])
+        $query = TransferListing::with(['gamePlayer.player', 'gamePlayer.team'])
             ->where('game_id', $game->id)
             ->where('team_id', '!=', $game->team_id)
             ->where('status', TransferListing::STATUS_LISTED)
             ->whereNotNull('asking_price')
-            ->whereNotIn('game_player_id', $alreadyAgreedIds)
-            ->orderByDesc('asking_price')
-            ->get();
+            ->whereNotIn('game_player_id', $alreadyAgreedIds);
+
+        if ($game->reserve_team_id) {
+            $query->where('team_id', '!=', $game->reserve_team_id);
+        }
+
+        return $query->orderByDesc('asking_price')->get();
     }
 
     // ── Private helpers ─────────────────────────────────────────────────
@@ -355,11 +359,17 @@ class TransferMarketService
      */
     private function sampleAITeams(Game $game, int $sampleSize): array
     {
-        $teamIds = DB::table('competition_entries')
-            ->where('game_id', $game->id)
-            ->where('team_id', '!=', $game->team_id)
+        $query = DB::table('competition_entries')
+            ->where('competition_entries.game_id', $game->id)
+            ->where('competition_entries.team_id', '!=', $game->team_id);
+
+        if ($game->reserve_team_id) {
+            $query->where('competition_entries.team_id', '!=', $game->reserve_team_id);
+        }
+
+        $teamIds = $query
             ->distinct()
-            ->pluck('team_id')
+            ->pluck('competition_entries.team_id')
             ->all();
 
         if (empty($teamIds)) {

@@ -8,9 +8,14 @@
     <div class="max-w-7xl mx-auto px-4 pb-8">
 
         {{-- Sub-navigation --}}
+        @php
+            $secondaryItem = $game->isFilial()
+                ? ['href' => route('game.squad.reserve', $game->id), 'label' => __('squad.reserve_team'), 'active' => false]
+                : ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => true];
+        @endphp
         <x-section-nav :items="[
             ['href' => route('game.squad', $game->id), 'label' => __('squad.first_team'), 'active' => false],
-            ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => true],
+            $secondaryItem,
             ['href' => route('game.squad.registration', $game->id), 'label' => __('squad.registration'), 'active' => false],
         ]" />
 

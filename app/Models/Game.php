@@ -113,6 +113,7 @@ class Game extends Model
         'country',
         'player_name',
         'team_id',
+        'reserve_team_id',
         'competition_id',
         'season',
         'current_date',
@@ -331,6 +332,16 @@ class Game extends Model
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);
+    }
+
+    public function reserveTeam(): BelongsTo
+    {
+        return $this->belongsTo(Team::class, 'reserve_team_id');
+    }
+
+    public function isFilial(): bool
+    {
+        return $this->reserve_team_id !== null;
     }
 
     public function tactics(): HasOne

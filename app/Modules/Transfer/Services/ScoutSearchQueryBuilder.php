@@ -29,6 +29,10 @@ class ScoutSearchQueryBuilder
             ->whereNotNull('team_id')
             ->where('team_id', '!=', $game->team_id);
 
+        if ($game->reserve_team_id) {
+            $query->where('team_id', '!=', $game->reserve_team_id);
+        }
+
         $this->applyPositionFilter($query, $positions);
 
         $this->applyScopeFilter($query, $game, $filters);

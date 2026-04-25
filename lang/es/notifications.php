@@ -89,6 +89,8 @@ return [
     'academy_overage_promoted_message' => ':count canteranos de 21+ años han sido promocionados al primer equipo.',
     'academy_gap_promoted_title' => 'Canteranos promocionados',
     'academy_gap_promoted_message' => ':count canteranos han sido promocionados para cubrir huecos en la plantilla.',
+    'reserve_overage_promoted_title' => 'Graduado del filial',
+    'reserve_overage_promoted_message' => ':player ha superado la edad del filial y se incorpora al primer equipo de forma permanente.',
     // Loan request results
     'loan_accepted_title' => 'Cesión de :player aceptada',
     'loan_accepted' => ':team ha aceptado tu solicitud de cesión por :player.',

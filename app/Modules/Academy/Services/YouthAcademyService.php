@@ -113,7 +113,11 @@ class YouthAcademyService
     /**
      * Generate a batch of new academy prospects at season start.
      *
-     * @return Collection<int, AcademyPlayer>
+     * For filial games (clubs with a reserve team), prospects are created as
+     * full GamePlayers on the reserve squad — no AcademyPlayer rows. For
+     * non-filial games, prospects land in the AcademyPlayer pool as before.
+     *
+     * @return Collection<int, AcademyPlayer|GamePlayer>
      */
     public function generateSeasonBatch(Game $game): Collection
     {
@@ -127,10 +131,15 @@ class YouthAcademyService
         $excludedNames = $this->getExistingPlayerNames($game);
 
         $prospects = collect();
+        $isFilial = $game->reserve_team_id !== null;
 
         for ($i = 0; $i < $count; $i++) {
-            $prospect = $this->createAcademyProspect($game, $tier, $teamMedianTier, $excludedNames);
-            $excludedNames[] = $prospect->name;
+            $prospect = $isFilial
+                ? $this->createReserveProspect($game, $tier, $teamMedianTier, $excludedNames)
+                : $this->createAcademyProspect($game, $tier, $teamMedianTier, $excludedNames);
+
+            $name = $isFilial ? $prospect->player->name : $prospect->name;
+            $excludedNames[] = $name;
             $prospects->push($prospect);
         }
 
@@ -461,6 +470,71 @@ class YouthAcademyService
             'initial_technical' => $technical,
             'initial_physical' => $physical,
         ]);
+    }
+
+    /**
+     * Create a reserve-team prospect for filial games. Mirrors the academy
+     * prospect generation (same quality + potential distributions), but
+     * produces a full GamePlayer on the reserve squad instead of an
+     * AcademyPlayer pool entry.
+     */
+    private function createReserveProspect(
+        Game $game,
+        int $academyTier,
+        int $teamMedianTier,
+        array $excludedNames,
+    ): GamePlayer {
+        $position = $this->selectPosition();
+
+        $abilityMean = self::ACADEMY_BASE_QUALITY[$academyTier] + self::TEAM_CONTEXT_BONUS[$teamMedianTier];
+        $age = rand(17, 19);
+        $ageCap = match ($age) {
+            17 => 72,
+            18 => 74,
+            19 => 76,
+            default => 78,
+        };
+        $technical = $this->sampler->sampleAbility($abilityMean, self::ABILITY_STD_DEV, 50, $ageCap);
+        $physical = $this->sampler->sampleAbility($abilityMean, self::ABILITY_STD_DEV, 50, $ageCap);
+
+        $currentBest = max($technical, $physical);
+        $potentialData = $this->sampler->generatePotentialFromAbility(
+            $currentBest,
+            self::POTENTIAL_UPSIDE_MEAN[$academyTier],
+            self::POTENTIAL_UPSIDE_STD_DEV,
+            self::POTENTIAL_FLOOR[$academyTier],
+        );
+
+        $dateOfBirth = $game->current_date->copy()->subYears($age)->subDays(rand(0, 364));
+
+        $teamName = $game->team->name;
+        $nationalityFilter = self::CANTERA_TEAMS[$teamName] ?? null;
+        $teamCountry = $nationalityFilter ? null : $game->team->country;
+        $region = TeamRegionalOrigins::regionFor($teamName);
+        $identity = $this->playerGenerator->pickRandomIdentity(
+            $nationalityFilter,
+            $teamCountry,
+            $excludedNames,
+            $region,
+        );
+
+        return $this->playerGenerator->create($game, new GeneratedPlayerData(
+            teamId: $game->reserve_team_id,
+            position: $position,
+            technical: $technical,
+            physical: $physical,
+            dateOfBirth: $dateOfBirth,
+            contractYears: 2,
+            name: $identity['name'],
+            nationality: $identity['nationality'],
+            potential: $potentialData['potential'],
+            potentialLow: $potentialData['potentialLow'],
+            potentialHigh: $potentialData['potentialHigh'],
+            fitnessMin: 85,
+            fitnessMax: 100,
+            moraleMin: 70,
+            moraleMax: 90,
+        ));
     }
 
     /**

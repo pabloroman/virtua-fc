@@ -89,6 +89,13 @@ return [
     'academy_player_loaned' => ':player ha sido cedido.',
     'academy_must_decide_21' => 'Los jugadores de 21+ años serán promocionados automáticamente al primer equipo.',
 
+    // Reserve team (filial)
+    'reserve_player_called_up' => ':player ha sido convocado al primer equipo.',
+    'reserve_player_sent_back' => ':player ha vuelto al filial.',
+    'reserve_player_call_up_blocked_full' => 'La plantilla del primer equipo está completa. Libera un dorsal antes de subir más jugadores.',
+    'reserve_player_promoted' => ':player ha subido al primer equipo.',
+    'shortlist_reserve_blocked' => 'Los jugadores del filial pertenecen al club matriz y no son transferibles.',
+
     // Player release messages
     'player_released' => ':player ha sido liberado. Indemnización pagada: :severance.',
     'release_not_your_player' => 'Solo puedes liberar jugadores de tu propio equipo.',

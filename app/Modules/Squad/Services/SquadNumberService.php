@@ -41,8 +41,12 @@ class SquadNumberService
      * Over-23 players get slots 1-25 (bumping the youngest under-23 if needed).
      * Under-23 players get slots 1-25 if available, otherwise 26-99.
      * Returns null only when there are already 25+ over-23 players (unresolvable).
+     *
+     * When $forceAboveFirstTeamMax is true (e.g. reserve-team call-ups, which
+     * are temporary loans), the player is assigned a 26-99 slot directly and
+     * never claims a permanent first-team number.
      */
-    public function assignNumberForNewPlayer(Game $game, GamePlayer $player): ?int
+    public function assignNumberForNewPlayer(Game $game, GamePlayer $player, bool $forceAboveFirstTeamMax = false): ?int
     {
         $age = $player->age($game->current_date);
         $isYoung = $age <= PlayerAge::YOUNG_END;
@@ -55,6 +59,10 @@ class SquadNumberService
             ->get();
 
         $takenNumbers = $teamPlayers->pluck('number')->flip();
+
+        if ($forceAboveFirstTeamMax) {
+            return $this->firstAvailable(self::FIRST_TEAM_MAX + 1, 99, $takenNumbers);
+        }
 
         if ($isYoung) {
             // Under-23: try preferred numbers in 1-25, then any 1-25, then 26-99

@@ -21,6 +21,19 @@ class ToggleShortlist
         $game = Game::findOrFail($gameId);
         $gamePlayer = GamePlayer::where('game_id', $gameId)->findOrFail($playerId);
 
+        // Players on the user's own reserve team move via call-up / promotion,
+        // not the transfer market — block shortlisting them. Other clubs'
+        // reserve players are fair game (signable like any other prospect).
+        if ($game->reserve_team_id && $gamePlayer->team_id === $game->reserve_team_id) {
+            $message = __('messages.shortlist_reserve_blocked');
+
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => $message], 422);
+            }
+
+            return redirect()->back()->with('error', $message);
+        }
+
         $existing = ShortlistedPlayer::where('game_id', $gameId)
             ->where('game_player_id', $playerId)
             ->first();

@@ -55,9 +55,12 @@
             {{-- Sub-navigation --}}
             @if($isCareerMode)
                 @php
+                    $secondaryItem = $game->isFilial()
+                        ? ['href' => route('game.squad.reserve', $game->id), 'label' => __('squad.reserve_team'), 'active' => false]
+                        : ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => false];
                     $squadNavItems = [
                         ['href' => route('game.squad', $game->id), 'label' => __('squad.first_team'), 'active' => true],
-                        ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => false],
+                        $secondaryItem,
                         ['href' => route('game.squad.registration', $game->id), 'label' => __('squad.registration'), 'active' => false],
                     ];
                 @endphp

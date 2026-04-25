@@ -125,6 +125,9 @@ use App\Http\Views\ShowTournamentLeaderboard;
 use App\Http\Views\ShowTournamentSummary;
 use App\Http\Actions\ProcessTacticalActions;
 use App\Http\Actions\PromoteAcademyPlayer;
+use App\Http\Actions\CallUpReservePlayer;
+use App\Http\Actions\SendBackReservePlayer;
+use App\Http\Views\ShowReserveTeam;
 use App\Http\Actions\SkipMatchToEnd;
 use App\Http\Actions\StartNewSeason;
 use Illuminate\Support\Facades\Route;
@@ -167,6 +170,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/game/{gameId}/academy/{playerId}/promote', PromoteAcademyPlayer::class)->name('game.academy.promote');
         Route::post('/game/{gameId}/academy/{playerId}/loan', LoanAcademyPlayer::class)->name('game.academy.loan');
         Route::post('/game/{gameId}/academy/{playerId}/dismiss', DismissAcademyPlayer::class)->name('game.academy.dismiss');
+        // Reserve team (filial games)
+        Route::get('/game/{gameId}/squad/reserve', ShowReserveTeam::class)->name('game.squad.reserve');
+        Route::post('/game/{gameId}/reserve/{playerId}/call-up', CallUpReservePlayer::class)->name('game.reserve.call-up');
+        Route::post('/game/{gameId}/reserve/{playerId}/send-back', SendBackReservePlayer::class)->name('game.reserve.send-back');
         // Club hub — Finances, Stadium, Reputation (and future non-sporting tenants)
         Route::get('/game/{gameId}/club', fn (string $gameId) => redirect()->route('game.club.finances', $gameId))->name('game.club');
         Route::get('/game/{gameId}/club/finances', ShowFinances::class)->name('game.club.finances');

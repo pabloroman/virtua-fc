@@ -17,6 +17,7 @@ use App\Modules\Season\Processors\PlayerRetirementProcessor;
 use App\Modules\Season\Processors\PreContractTransferProcessor;
 use App\Modules\Season\Processors\PromotionRelegationProcessor;
 use App\Modules\Season\Processors\ReputationUpdateProcessor;
+use App\Modules\Season\Processors\ReserveOveragePromotionProcessor;
 use App\Modules\Season\Processors\SeasonArchiveProcessor;
 use App\Modules\Season\Processors\SeasonSettlementProcessor;
 use App\Modules\Season\Processors\SeasonSimulationProcessor;
@@ -41,6 +42,7 @@ class SeasonClosingPipeline
     private array $processors = [];
 
     public function __construct(
+        ReserveOveragePromotionProcessor $reserveOveragePromotion,
         LoanReturnProcessor $loanReturn,
         TrophyRecordingProcessor $trophyRecording,
         LeaderboardStatsProcessor $leaderboardStats,
@@ -66,6 +68,7 @@ class SeasonClosingPipeline
         UefaQualificationProcessor $uefaQualification,
     ) {
         $this->processors = [
+            $reserveOveragePromotion,
             $loanReturn,
             $trophyRecording,
             $leaderboardStats,
