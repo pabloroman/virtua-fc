@@ -163,7 +163,7 @@ class SwissKnockoutGenerator
         }
 
         if (count($matchups) !== 8) {
-            $distribution = collect($bracketWinners)->map->count()->all();
+            $distribution = array_map('count', $bracketWinners);
             throw new \RuntimeException(
                 "R16 generation failed: expected 8 matchups, got " . count($matchups)
                 . ". Completed playoff ties: " . $playoffTies->count()
