@@ -221,6 +221,23 @@ return [
     'academy_tier_4' => 'World-Class Academy',
     'academy_tier_unknown' => 'Unknown',
 
+    // Reserve team (filial)
+    'reserve_team' => 'Reserve Team',
+    'reserve_squad' => 'Reserve squad',
+    'no_reserve_players' => 'No reserve-team players.',
+    'call_up' => 'Call up',
+    'call_up_to_first_team' => 'Call up to first team',
+    'send_back' => 'Send back',
+    'send_back_to_reserve' => 'Send back to reserve',
+    'called_up_indicator' => 'Called up',
+    'actions' => 'Actions',
+    'reserve_help_toggle' => 'How does the reserve team work?',
+    'reserve_help_development' => 'Your reserve team is your filial — its squad belongs to the reserve, not the first team. New academy prospects arrive here each season based on your academy investment, and develop alongside the existing reserve roster.',
+    'reserve_help_age_rule' => 'Players over 23 are automatically promoted to the first team at season close. The first team can call up reserve players any time during the season.',
+    'reserve_help_actions_title' => 'Available actions',
+    'reserve_help_call_up' => 'Call up - the player joins the first team on a temporary loan and can play first-team matches',
+    'reserve_help_send_back' => 'Send back - returns the called-up player to the reserve squad',
+
     // Lineup help text
     'lineup_help_toggle' => 'How does lineup selection work?',
     'lineup_help_intro' => 'Choose 11 players for each match. Your formation, player energy, and positional compatibility all affect performance.',

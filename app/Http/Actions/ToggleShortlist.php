@@ -19,7 +19,21 @@ class ToggleShortlist
     public function __invoke(Request $request, string $gameId, string $playerId)
     {
         $game = Game::findOrFail($gameId);
-        $gamePlayer = GamePlayer::where('game_id', $gameId)->findOrFail($playerId);
+        $gamePlayer = GamePlayer::where('game_id', $gameId)->with('team')->findOrFail($playerId);
+
+        // Reserve-team (filial) players are not transferable through normal
+        // channels — they belong to the parent club and move only via
+        // call-up / promotion. Block adding them to the shortlist regardless
+        // of which game the user is in.
+        if ($gamePlayer->team && $gamePlayer->team->parent_team_id !== null) {
+            $message = __('messages.shortlist_reserve_blocked');
+
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => $message], 422);
+            }
+
+            return redirect()->back()->with('error', $message);
+        }
 
         $existing = ShortlistedPlayer::where('game_id', $gameId)
             ->where('game_player_id', $playerId)

@@ -89,6 +89,13 @@ return [
     'academy_player_loaned' => ':player has been loaned out.',
     'academy_must_decide_21' => 'Players aged 21+ will be automatically promoted to the first team.',
 
+    // Reserve team (filial)
+    'reserve_player_called_up' => ':player has been called up to the first team.',
+    'reserve_player_sent_back' => ':player has been sent back to the reserve team.',
+    'reserve_player_call_up_blocked_full' => 'First-team squad is full. Release a player before calling up another.',
+    'reserve_player_promoted' => ':player has been promoted to the first team.',
+    'shortlist_reserve_blocked' => "Reserve-team players belong to their parent club and aren't transferable.",
+
     // Player release messages
     'player_released' => ':player has been released. Severance paid: :severance.',
     'release_not_your_player' => 'You can only release players from your own team.',

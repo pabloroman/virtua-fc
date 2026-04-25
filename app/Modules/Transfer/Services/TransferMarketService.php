@@ -181,6 +181,7 @@ class TransferMarketService
         return TransferListing::with(['gamePlayer.player', 'gamePlayer.team'])
             ->where('game_id', $game->id)
             ->where('team_id', '!=', $game->team_id)
+            ->whereHas('team', fn ($q) => $q->whereNull('parent_team_id'))
             ->where('status', TransferListing::STATUS_LISTED)
             ->whereNotNull('asking_price')
             ->whereNotIn('game_player_id', $alreadyAgreedIds)
@@ -356,10 +357,12 @@ class TransferMarketService
     private function sampleAITeams(Game $game, int $sampleSize): array
     {
         $teamIds = DB::table('competition_entries')
-            ->where('game_id', $game->id)
-            ->where('team_id', '!=', $game->team_id)
+            ->join('teams', 'teams.id', '=', 'competition_entries.team_id')
+            ->where('competition_entries.game_id', $game->id)
+            ->where('competition_entries.team_id', '!=', $game->team_id)
+            ->whereNull('teams.parent_team_id')
             ->distinct()
-            ->pluck('team_id')
+            ->pluck('competition_entries.team_id')
             ->all();
 
         if (empty($teamIds)) {
@@ -395,6 +398,7 @@ class TransferMarketService
             ])
             ->where('game_id', $game->id)
             ->whereIn('team_id', $teamIds)
+            ->whereHas('team', fn ($q) => $q->whereNull('parent_team_id'))
             ->get()
             ->groupBy('team_id');
     }

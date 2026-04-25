@@ -89,6 +89,8 @@ return [
     'academy_overage_promoted_message' => ':count academy players aged 21+ have been promoted to the first team.',
     'academy_gap_promoted_title' => 'Academy players promoted',
     'academy_gap_promoted_message' => ':count academy players have been promoted to fill squad gaps.',
+    'reserve_overage_promoted_title' => 'Reserve graduate',
+    'reserve_overage_promoted_message' => ':player has aged out of the reserve team and joined the first team permanently.',
     // Loan request results
     'loan_accepted_title' => 'Loan request for :player accepted',
     'loan_accepted' => ':team have accepted your loan request for :player.',

@@ -17,9 +17,11 @@ class ShowPlayerDetail
     {
         $game = Game::findOrFail($gameId);
 
+        $allowedTeamIds = array_filter([$game->team_id, $game->reserve_team_id]);
+
         $gamePlayer = GamePlayer::with('player')
             ->where('game_id', $gameId)
-            ->where('team_id', $game->team_id)
+            ->whereIn('team_id', $allowedTeamIds)
             ->findOrFail($playerId);
 
         $canRenew = $gamePlayer->canBeOfferedRenewal(currentDate: $game->current_date);

@@ -394,7 +394,7 @@ class LoanService
     /**
      * Return a single loan - player goes back to parent team.
      */
-    private function returnLoan(Loan $loan): void
+    public function returnLoan(Loan $loan): void
     {
         $gamePlayer = $loan->gamePlayer;
         $isUserTeam = $loan->parent_team_id === $gamePlayer->game->team_id;
