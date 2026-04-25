@@ -178,12 +178,14 @@ class MatchdayOrchestrator
         }
 
         $totalMs = (int) round((microtime(true) - $advanceStart) * 1000);
+        $peakMb = (int) round(memory_get_peak_usage(true) / 1024 / 1024);
         Log::info(sprintf(
-            '[MatchdayAdvance] advance() total %dms (game %s, type %s, batches %d)',
+            '[MatchdayAdvance] advance() total %dms (game %s, type %s, batches %d, peak %dMB)',
             $totalMs,
             $game->id,
             $result->type,
             $batchIndex,
+            $peakMb,
         ));
 
         return $result;
