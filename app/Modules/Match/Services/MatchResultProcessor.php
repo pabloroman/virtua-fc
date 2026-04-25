@@ -301,7 +301,7 @@ class MatchResultProcessor
     }
 
     /**
-     * Bulk insert all match events across ALL matches in one chunked insert.
+     * Bulk insert all match events across ALL matches in a single statement.
      */
     private function bulkInsertMatchEvents(string $gameId, array $matchResults): void
     {
@@ -324,9 +324,11 @@ class MatchResultProcessor
             }
         }
 
-        foreach (array_chunk($allRows, 100) as $chunk) {
-            MatchEvent::insert($chunk);
+        if (empty($allRows)) {
+            return;
         }
+
+        MatchEvent::insert($allRows);
     }
 
     /**
