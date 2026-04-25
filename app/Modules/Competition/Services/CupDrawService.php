@@ -20,7 +20,7 @@ class CupDrawService
 {
     public function __construct(
         private readonly CountryConfig $countryConfig,
-        private readonly ?FinalVenueResolver $finalVenueResolver = null,
+        private readonly FinalVenueResolver $finalVenueResolver,
     ) {}
 
     /**
@@ -142,9 +142,6 @@ class CupDrawService
             }
         }
 
-        // Single-round cups draw their final directly in conductDraw; multi-round
-        // cups rely on CupCompetitionHandler::createTie to set the venue when
-        // the final is drawn later. Keep these two paths symmetric.
         $this->maybeAssignFinalVenues($gameId, $roundConfig, $firstLegRows);
 
         // Return loaded ties
@@ -162,7 +159,7 @@ class CupDrawService
      */
     private function maybeAssignFinalVenues(string $gameId, PlayoffRoundConfig $roundConfig, array $firstLegRows): void
     {
-        if (!$this->finalVenueResolver || $roundConfig->name !== 'cup.final') {
+        if ($roundConfig->name !== 'cup.final') {
             return;
         }
 
