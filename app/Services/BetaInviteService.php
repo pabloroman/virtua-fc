@@ -13,16 +13,14 @@ class BetaInviteService
     public function invite(
         WaitlistEntry $entry,
         ?string $expiresAt = null,
-        bool $grantsCareer = false,
-        bool $grantsTournament = true,
     ): InviteCode {
         $invite = InviteCode::create([
             'code' => $this->generateCode(),
             'email' => strtolower($entry->email),
             'max_uses' => 1,
             'expires_at' => $expiresAt,
-            'grants_career' => $grantsCareer,
-            'grants_tournament' => $grantsTournament,
+            'grants_career' => $entry->wants_career,
+            'grants_tournament' => $entry->wants_tournament,
         ]);
 
         Mail::to($entry->email)->send(new BetaInvite($invite));
