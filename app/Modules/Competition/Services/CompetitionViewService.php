@@ -27,23 +27,43 @@ class CompetitionViewService
     /**
      * Standings for the user's primary competition, abridged for dashboard
      * widgets: top 3 plus a 5-team window centered on the player's position.
-     * For tournament mode, returns the player's full group instead.
+     * For tournament mode, returns the player's full table (group or flat)
+     * instead of abridging.
      */
     public function getAbridgedLeagueStandings(Game $game): Collection
     {
+        if ($game->isTournamentMode()) {
+            $standings = $this->getStandings($game, $game->competition);
+            $playerGroup = $standings->firstWhere('team_id', $game->team_id)?->group_label;
+
+            return $playerGroup
+                ? $standings->where('group_label', $playerGroup)->values()
+                : $standings;
+        }
+
+        return $this->getAbridgedStandings($game, $game->competition);
+    }
+
+    /**
+     * Abridged standings for any competition the player participates in.
+     * Returns the player's group when standings are grouped (e.g.
+     * group-stage cups); otherwise top 3 + a 5-team window centered on the
+     * player. When the player isn't in this competition, the window centers
+     * on position 1.
+     */
+    public function getAbridgedStandings(Game $game, Competition $competition): Collection
+    {
+        $playerGroupLabel = GameStanding::where('game_id', $game->id)
+            ->where('competition_id', $competition->id)
+            ->where('team_id', $game->team_id)
+            ->value('group_label');
+
         $query = GameStanding::with('team')
             ->where('game_id', $game->id)
-            ->where('competition_id', $game->competition_id);
+            ->where('competition_id', $competition->id);
 
-        if ($game->isTournamentMode()) {
-            $playerGroupLabel = GameStanding::where('game_id', $game->id)
-                ->where('competition_id', $game->competition_id)
-                ->where('team_id', $game->team_id)
-                ->value('group_label');
-
-            if ($playerGroupLabel) {
-                $query->where('group_label', $playerGroupLabel);
-            }
+        if ($playerGroupLabel) {
+            $query->where('group_label', $playerGroupLabel);
         }
 
         $standings = $query->orderBy('position')->get();
@@ -52,7 +72,9 @@ class CompetitionViewService
             return collect();
         }
 
-        if ($game->isTournamentMode()) {
+        // Grouped standings (e.g. World Cup group, or any future grouped
+        // format): show the player's full group rather than abridging.
+        if ($playerGroupLabel) {
             return $standings;
         }
 

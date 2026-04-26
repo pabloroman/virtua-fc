@@ -2,8 +2,13 @@
     /** @var App\Models\Game $game */
     /** @var App\Models\GameMatch|null $lastMatch */
     /** @var App\Models\GameMatch|null $nextMatch */
-    /** @var \Illuminate\Support\Collection $leagueStandings */
+    /** @var App\Models\Competition $focalCompetition */
+    /** @var string $displayMode */
+    /** @var \Illuminate\Support\Collection|null $standings */
     /** @var App\Models\GameStanding|null $playerStanding */
+    /** @var \Illuminate\Support\Collection|null $rounds */
+    /** @var \Illuminate\Support\Collection|null $tiesByRound */
+    /** @var int|null $currentRoundNumber */
 
     // Last-result summary
     $lastResultLabel = null;
@@ -76,9 +81,25 @@
         );
     }
 
-    $standingsTitle = ($game->isTournamentMode() && $leagueStandings->first()?->group_label)
-        ? __('game.group') . ' ' . $leagueStandings->first()->group_label
-        : __('game.standings');
+    // Title: when the focal competition isn't the player's primary league,
+    // show its name (e.g. "Champions League") so the panel reads in context
+    // with the result above. For grouped standings, append the group label.
+    $isPrimary = $focalCompetition->id === $game->competition_id;
+    if ($displayMode === 'standings' && $standings && $standings->first()?->group_label) {
+        $standingsTitle = $focalCompetition->shortName() . ' · ' . __('game.group') . ' ' . $standings->first()->group_label;
+    } elseif ($isPrimary) {
+        $standingsTitle = __('game.standings');
+    } else {
+        $standingsTitle = $focalCompetition->shortName();
+    }
+
+    // Condensed bracket: the round just played plus the next one.
+    $bracketRounds = collect();
+    if ($displayMode === 'bracket' && $rounds && $currentRoundNumber !== null) {
+        $bracketRounds = $rounds
+            ->filter(fn ($r) => $r->round === $currentRoundNumber || $r->round === $currentRoundNumber + 1)
+            ->values();
+    }
 @endphp
 
 <x-app-layout :hide-footer="true">
@@ -186,21 +207,21 @@
                 </div>
             @endif
 
-            {{-- Compact standings — position / crest / name / GD / Pts.
-                 Drops W/D/L columns and column headers versus the dashboard
-                 sidebar so the block stays light; the "Full table" link
-                 leads to the full view for deeper inspection. --}}
-            @if($leagueStandings->isNotEmpty())
+            {{-- Standings or condensed bracket for the just-played competition.
+                 Standings: top 3 + 5-team window centered on the player (or
+                 full group for grouped formats). Bracket: the round just
+                 played and the next round. --}}
+            @if($displayMode === 'standings' && $standings && $standings->isNotEmpty())
                 <x-section-card :title="$standingsTitle">
                     <x-slot name="badge">
-                        <a href="{{ route('game.competition', [$game->id, $game->competition_id]) }}" class="text-[10px] text-accent-blue hover:text-blue-400 transition-colors">
+                        <a href="{{ route('game.competition', [$game->id, $focalCompetition->id]) }}" class="text-[10px] text-accent-blue hover:text-blue-400 transition-colors">
                             {{ __('game.full_table') }} &rarr;
                         </a>
                     </x-slot>
 
                     <div class="divide-y divide-border-default">
                         @php $prevPosition = 0; @endphp
-                        @foreach($leagueStandings as $standing)
+                        @foreach($standings as $standing)
                             @if($standing->position > $prevPosition + 1)
                                 <div class="px-4 py-0.5 text-center text-text-faint text-[10px]">&middot;&middot;&middot;</div>
                             @endif
@@ -216,6 +237,45 @@
                             </div>
                             @php $prevPosition = $standing->position; @endphp
                         @endforeach
+                    </div>
+                </x-section-card>
+            @elseif($displayMode === 'bracket' && $bracketRounds->isNotEmpty())
+                <x-section-card :title="$standingsTitle">
+                    <x-slot name="badge">
+                        <a href="{{ route('game.competition', [$game->id, $focalCompetition->id]) }}" class="text-[10px] text-accent-blue hover:text-blue-400 transition-colors">
+                            {{ __('cup.bracket') }} &rarr;
+                        </a>
+                    </x-slot>
+
+                    <div class="overflow-x-auto p-3 md:p-4">
+                        <div class="flex gap-3 md:gap-4" style="min-width: fit-content;">
+                            @foreach($bracketRounds as $round)
+                                @php $ties = $tiesByRound->get($round->round, collect()); @endphp
+                                <div class="shrink-0 w-60 md:w-64">
+                                    <div class="text-center mb-3">
+                                        <h4 class="font-heading text-xs font-semibold uppercase tracking-wide text-text-body">{{ __($round->name) }}</h4>
+                                        <div class="text-[10px] text-text-muted mt-0.5">
+                                            {{ $round->firstLegDate->format('d M') }}
+                                            @if($round->twoLegged)
+                                                / {{ $round->secondLegDate->format('d M') }}
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    @if($ties->isEmpty())
+                                        <div class="p-3 text-center border border-dashed border-border-strong rounded-lg">
+                                            <div class="text-text-muted text-xs">{{ __('cup.draw_pending') }}</div>
+                                        </div>
+                                    @else
+                                        <div class="space-y-2">
+                                            @foreach($ties as $tie)
+                                                <x-cup-tie-card :tie="$tie" :player-team-id="$game->team_id" />
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 </x-section-card>
             @endif
