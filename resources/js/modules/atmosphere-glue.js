@@ -97,13 +97,13 @@ export function createAtmosphereGlue(ctx) {
                 isTwoLeggedTie: c.isTwoLeggedTie,
                 isSecondLeg: c.twoLeggedInfo !== null,
                 knockoutRoundNumber: c.knockoutRoundNumber,
+                isFinal: c.isFinal,
                 competitionRole: c.competitionRole,
                 competitionName: c.competitionName,
                 homeForm: c.homeForm,
                 awayForm: c.awayForm,
                 homePosition: c.homePosition,
                 awayPosition: c.awayPosition,
-                tournamentResultType: c.tournamentResultType,
             });
         },
     };

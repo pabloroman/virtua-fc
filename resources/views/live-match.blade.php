@@ -63,6 +63,7 @@
                 isTournamentKnockout: {{ $isTournamentKnockout ? 'true' : 'false' }},
                 knockoutRoundNumber: {{ $knockoutRoundNumber ?? 'null' }},
                 knockoutRoundName: '{{ $knockoutRoundName ?? '' }}',
+                isFinal: {{ $isFinal ? 'true' : 'false' }},
                 processingStatusUrl: {!! $processingStatusUrl ? "'" . $processingStatusUrl . "'" : 'null' !!},
                 homePossession: {{ $homePossession }},
                 awayPossession: {{ $awayPossession }},

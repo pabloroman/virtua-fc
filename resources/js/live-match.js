@@ -123,6 +123,7 @@ export default function liveMatch(config) {
         isTournamentKnockout: config.isTournamentKnockout || false,
         knockoutRoundNumber: config.knockoutRoundNumber || null,
         knockoutRoundName: config.knockoutRoundName || '',
+        isFinal: config.isFinal || false,
 
         // Animation state (server-side flag to skip animation on page refresh)
         matchId: config.matchId || '',
