@@ -106,14 +106,19 @@ class ShowFastMode
         if ($playedKnockoutTie || $isPureKnockout) {
             $rounds = $this->competitionViewService->getKnockoutRounds($competition, $game->season);
             $tiesByRound = $this->competitionViewService->getKnockoutTies($game, $competition);
-            $playerTie = $this->competitionViewService->findPlayerTie($rounds, $tiesByRound, $game->team_id);
 
-            // Anchor on the player's most recent tie when available; else
-            // the lowest round_number that already has any ties drawn; else
-            // the first round (draw still pending everywhere).
-            $currentRoundNumber = $playerTie?->round_number
-                ?? $rounds->first(fn ($r) => $tiesByRound->has($r->round))?->round
-                ?? $rounds->first()?->round;
+            // Anchor on the round of the just-played match when available.
+            // findPlayerTie() returns the player's *latest* tie in the
+            // competition, which is already the next round if the draw for
+            // it has happened — that would skip the round just played.
+            if ($playedKnockoutTie) {
+                $currentRoundNumber = $lastMatch->round_number;
+            } else {
+                $playerTie = $this->competitionViewService->findPlayerTie($rounds, $tiesByRound, $game->team_id);
+                $currentRoundNumber = $playerTie?->round_number
+                    ?? $rounds->first(fn ($r) => $tiesByRound->has($r->round))?->round
+                    ?? $rounds->first()?->round;
+            }
 
             return [
                 'displayMode' => 'bracket',
