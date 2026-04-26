@@ -190,7 +190,7 @@ return [
     'discovered' => 'Descubierto',
     'origin' => 'Procedencia',
     'joined' => 'Incorporación',
-    'origin_academy' => 'Cantera',
+    'origin_academy' => 'Nuevo',
     'career_history' => 'Trayectoria',
     'no_career_history' => 'Aún no hay temporadas completadas.',
 
@@ -235,6 +235,7 @@ return [
     'send_back' => 'Bajar',
     'send_back_to_reserve' => 'Bajar al filial',
     'called_up_indicator' => 'En el primer equipo',
+    'homegrown_indicator' => 'Canterano',
     'actions' => 'Acciones',
     'reserve_help_toggle' => '¿Cómo funciona el filial?',
     'reserve_help_development' => 'Tu filial es la cantera oficial — los jugadores pertenecen al filial, no al primer equipo. Cada temporada llegan nuevos canteranos según tu inversión en la cantera, que se desarrollan junto con el resto del filial.',

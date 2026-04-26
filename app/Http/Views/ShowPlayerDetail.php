@@ -19,10 +19,20 @@ class ShowPlayerDetail
 
         $allowedTeamIds = array_filter([$game->team_id, $game->reserve_team_id]);
 
-        $gamePlayer = GamePlayer::with(['player', 'careerRecord'])
+        $gamePlayer = GamePlayer::with(['player', 'careerRecord', 'activeLoan'])
             ->where('game_id', $gameId)
             ->whereIn('team_id', $allowedTeamIds)
             ->findOrFail($playerId);
+
+        // Player is "called up" from the filial: currently registered to the
+        // first team via a Loan whose parent is the reserve team. For action
+        // purposes we treat them like a normal first-team player and offer
+        // an additional "send back to filial" button.
+        $isCalledUpFromReserve = $game->reserve_team_id !== null
+            && $gamePlayer->team_id === $game->team_id
+            && $gamePlayer->activeLoan
+            && $gamePlayer->activeLoan->parent_team_id === $game->reserve_team_id
+            && $gamePlayer->activeLoan->loan_team_id === $game->team_id;
 
         $canRenew = $gamePlayer->canBeOfferedRenewal(currentDate: $game->current_date);
         $renewalNegotiation = null;
@@ -38,11 +48,17 @@ class ShowPlayerDetail
             }
         }
 
-        // Release data
+        $isOnReserve = $game->reserve_team_id !== null
+            && $gamePlayer->team_id === $game->reserve_team_id;
+
+        // Release data — allowed for first-team and reserve-team players,
+        // including filial players currently called up via internal loan
+        // (which technically appears as "loaned in" but is treated as
+        // user-owned for management purposes).
         $canRelease = $game->isCareerMode()
-            && $gamePlayer->team_id === $game->team_id
+            && in_array($gamePlayer->team_id, [$game->team_id, $game->reserve_team_id], true)
             && !$gamePlayer->isRetiring()
-            && !$gamePlayer->isLoanedIn($game->team_id)
+            && ($isCalledUpFromReserve || !$gamePlayer->isLoanedIn($game->team_id))
             && !$gamePlayer->isLoanedOut($game->team_id)
             && !$gamePlayer->hasPreContractAgreement()
             && !$gamePlayer->hasRenewalAgreed()
@@ -59,6 +75,8 @@ class ShowPlayerDetail
             'renewalCooldown' => $renewalCooldown,
             'canRelease' => $canRelease,
             'severance' => $severance,
+            'isOnReserve' => $isOnReserve,
+            'isCalledUpFromReserve' => $isCalledUpFromReserve,
         ]);
     }
 }

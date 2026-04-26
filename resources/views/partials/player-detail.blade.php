@@ -4,9 +4,10 @@
 
     $isCareerMode = $game->isCareerMode();
     $isListed = $gamePlayer->isTransferListed();
+    $isCalledUpFromReserve = $isCalledUpFromReserve ?? false;
     $canManage = $isCareerMode
         && !$gamePlayer->isRetiring()
-        && !$gamePlayer->isLoanedIn($game->team_id)
+        && ($isCalledUpFromReserve || !$gamePlayer->isLoanedIn($game->team_id))
         && !$gamePlayer->isLoanedOut($game->team_id)
         && !$gamePlayer->hasPreContractAgreement()
         && !$gamePlayer->hasAgreedTransfer()
@@ -279,9 +280,31 @@
 @endif
 
 {{-- Actions --}}
-@if($showActions || $canRenew || $renewalNegotiation || $renewalCooldown)
+@if($showActions || $canRenew || $renewalNegotiation || $renewalCooldown || ($isOnReserve ?? false) || $isCalledUpFromReserve)
     <div class="px-5 py-4 border-t border-border-default flex flex-wrap items-center gap-2">
-        @if(!$isListed && $canSell)
+        @if(($isOnReserve ?? false) && $isCareerMode)
+            <form method="POST" action="{{ route('game.reserve.call-up', [$game->id, $gamePlayer->id]) }}">
+                @csrf
+                <x-action-button color="blue">
+                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8 14a.75.75 0 0 1-.75-.75V4.56L4.03 7.78a.75.75 0 0 1-1.06-1.06l4.5-4.5a.75.75 0 0 1 1.06 0l4.5 4.5a.75.75 0 0 1-1.06 1.06L8.75 4.56v8.69A.75.75 0 0 1 8 14Z" clip-rule="evenodd" />
+                    </svg>
+                    {{ __('squad.call_up_to_first_team') }}
+                </x-action-button>
+            </form>
+        @endif
+        @if($isCalledUpFromReserve && $isCareerMode)
+            <form method="POST" action="{{ route('game.reserve.send-back', [$game->id, $gamePlayer->id]) }}">
+                @csrf
+                <x-action-button color="violet">
+                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8 2a.75.75 0 0 1 .75.75v8.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-1.06 0l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.22 3.22V2.75A.75.75 0 0 1 8 2Z" clip-rule="evenodd" />
+                    </svg>
+                    {{ __('squad.send_back_to_reserve') }}
+                </x-action-button>
+            </form>
+        @endif
+        @if(!$isListed && $canSell && !($isOnReserve ?? false))
             <form method="POST" action="{{ route('game.transfers.list', [$game->id, $gamePlayer->id]) }}">
                 @csrf
                 <x-action-button color="blue">

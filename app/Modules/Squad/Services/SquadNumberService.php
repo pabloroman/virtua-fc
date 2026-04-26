@@ -91,6 +91,23 @@ class SquadNumberService
     }
 
     /**
+     * Assign the first available academy slot (26-99) for a player joining
+     * the user's team. Used when promoting a reserve-team player up: they
+     * always get a 26+ shirt regardless of age, leaving 1-25 untouched.
+     */
+    public function assignAcademyNumberForNewPlayer(Game $game, GamePlayer $player): ?int
+    {
+        $takenNumbers = GamePlayer::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->where('id', '!=', $player->id)
+            ->whereNotNull('number')
+            ->pluck('number')
+            ->flip();
+
+        return $this->firstAvailable(self::FIRST_TEAM_MAX + 1, 99, $takenNumbers);
+    }
+
+    /**
      * Bulk reassign squad numbers for the user's team.
      *
      * Preserves existing numbers where valid. Only moves players when necessary:

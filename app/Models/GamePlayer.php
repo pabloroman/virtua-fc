@@ -539,9 +539,19 @@ class GamePlayer extends Model
         }
 
         // Loaned-in players belong to another club — we can't renew them.
+        // Exception: a player called up from the user's own reserve team
+        // appears as loaned-in to the first team but is still user-owned,
+        // so the user retains contract authority.
         // Loaned-out players (ours, playing elsewhere) can still be renewed.
         if ($this->isLoanedIn($this->game->team_id)) {
-            return false;
+            $reserveTeamId = $this->game->reserve_team_id;
+            $loanedFromOwnReserve = $reserveTeamId !== null
+                && $this->activeLoan
+                && $this->activeLoan->parent_team_id === $reserveTeamId;
+
+            if (!$loanedFromOwnReserve) {
+                return false;
+            }
         }
 
         // Retiring players won't renew

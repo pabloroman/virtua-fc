@@ -19,14 +19,8 @@
         <x-flash-message type="error" :message="session('error')" class="mt-4" />
 
         {{-- Page Title --}}
-        <div class="mt-6 mb-4 flex items-center gap-3">
-            @if($reserveTeam->image)
-                <img src="{{ $reserveTeam->image }}" alt="{{ $reserveTeam->name }}" class="w-10 h-10 object-contain shrink-0" />
-            @endif
-            <div>
-                <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">{{ $reserveTeam->name }}</h2>
-                <p class="text-xs text-text-muted">{{ __('squad.reserve_team') }}</p>
-            </div>
+        <div class="mt-6 mb-4">
+            <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">{{ $reserveTeam->name }}</h2>
         </div>
 
         {{-- Summary strip --}}
@@ -35,8 +29,6 @@
                 <div class="flex items-center gap-2.5 overflow-x-auto scrollbar-hide pb-1">
                     <x-summary-card :label="__('squad.squad_size')" :value="$reserveCount" />
                     <x-summary-card :label="__('squad.avg_age')" :value="$avgAge" />
-                    <x-summary-card :label="__('squad.fitness_full')" :value="$avgFitness . '%'" x-data x-tooltip.raw="{{ __('squad.tooltip_fitness') }}" :value-class="$avgFitness >= 85 ? 'text-accent-green' : ($avgFitness >= 70 ? 'text-text-primary' : 'text-amber-500')" />
-                    <x-summary-card :label="__('squad.morale_full')" :value="$avgMorale" x-data x-tooltip.raw="{{ __('squad.tooltip_morale') }}" :value-class="$avgMorale >= 80 ? 'text-accent-green' : ($avgMorale >= 65 ? 'text-text-primary' : 'text-amber-500')" />
                     <x-summary-card :label="__('squad.avg_ovr')" :value="$avgOverall" x-data x-tooltip.raw="{{ __('squad.tooltip_avg_overall') }}" :value-class="$avgOverall >= 75 ? 'text-accent-green' : ($avgOverall >= 65 ? 'text-text-primary' : 'text-amber-500')" />
                     <div class="ml-auto shrink-0">
                         <x-help-toggle :label="__('squad.reserve_help_toggle')" />
@@ -77,15 +69,15 @@
             <div x-data class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
                 {{-- Table header --}}
                 <div class="hidden md:block">
-                    <div class="grid grid-cols-[40px_1fr_48px_48px_48px_56px_56px_120px] gap-1.5 items-center px-4 py-2 bg-surface-700/30 border-b border-border-default text-[10px] text-text-muted uppercase tracking-widest font-semibold">
+                    <div class="grid grid-cols-[40px_1fr_48px_56px_48px_48px_56px_56px] gap-1.5 items-center px-4 py-2 bg-surface-700/30 border-b border-border-default text-[10px] text-text-muted uppercase tracking-widest font-semibold">
                         <span></span>
                         <span>{{ __('app.name') }}</span>
                         <span class="text-center">{{ __('app.age') }}</span>
+                        <span class="text-center">{{ __('app.contract') }}</span>
                         <span class="text-center">{{ __('squad.technical') }}</span>
                         <span class="text-center">{{ __('squad.physical') }}</span>
                         <span class="text-center">{{ __('squad.pot') }}</span>
                         <span class="text-center">{{ __('squad.overall') }}</span>
-                        <span class="text-right">{{ __('squad.actions') }}</span>
                     </div>
                 </div>
 
@@ -110,15 +102,18 @@
                             @endphp
 
                             {{-- Mobile row --}}
-                            <div class="md:hidden px-4 py-3 border-b border-border-default">
+                            <div class="md:hidden px-4 py-3 border-b border-border-default {{ $isCalledUp ? 'opacity-60' : '' }}">
                                 <div class="flex items-center gap-3">
                                     <div class="cursor-pointer flex-1 flex items-center gap-3 min-w-0" @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $player->id]) }}')">
                                         <x-player-avatar :name="$player->player->name" :position-group="\App\Support\PositionMapper::getPositionGroup($player->position)" :position-abbrev="\App\Support\PositionMapper::toAbbreviation($player->position)" />
                                         <div class="flex-1 min-w-0">
                                             <div class="flex items-center gap-2">
                                                 <span class="text-sm font-medium text-text-primary truncate">{{ $player->player->name }}</span>
-                                                <x-origin-badge :player="$player" />
+                                                <x-origin-badge :player="$player" :current-season="$game->season" />
                                                 <span class="text-[10px] text-text-faint">{{ $age }}</span>
+                                                @if($player->contract_expiry_year)
+                                                    <span class="text-[10px] tabular-nums @if($player->isContractExpiring($game->getSeasonEndDate())) text-accent-red font-medium @else text-text-faint @endif">{{ __('app.contract') }}: {{ $player->contract_expiry_year }}</span>
+                                                @endif
                                                 @if($isCalledUp)
                                                     <span class="text-[10px] font-semibold bg-accent-blue/10 text-accent-blue px-1.5 py-0.5 rounded-full">{{ __('squad.called_up_indicator') }}</span>
                                                 @endif
@@ -141,21 +136,25 @@
                             </div>
 
                             {{-- Desktop row --}}
-                            <div class="hidden md:grid grid-cols-[40px_1fr_48px_48px_48px_56px_56px_120px] gap-1.5 items-center px-4 py-2.5 border-b border-border-default hover:bg-surface-700/30 transition-colors">
-                                <div class="flex justify-center cursor-pointer" @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $player->id]) }}')">
+                            <div class="hidden md:grid grid-cols-[40px_1fr_48px_56px_48px_48px_56px_56px] gap-1.5 items-center px-4 py-2.5 border-b border-border-default hover:bg-surface-700/30 transition-colors cursor-pointer {{ $isCalledUp ? 'opacity-60' : '' }}"
+                                 @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $player->id]) }}')">
+                                <div class="flex justify-center">
                                     <x-position-badge :position="$player->position" size="sm" :tooltip="\App\Support\PositionMapper::toDisplayName($player->position)" class="cursor-help" />
                                 </div>
-                                <div class="flex items-center gap-2 min-w-0 cursor-pointer" @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $player->id]) }}')">
+                                <div class="flex items-center gap-2 min-w-0">
                                     @if($player->nationality_flag)
                                         <img src="{{ Storage::disk('assets')->url('flags/' . $player->nationality_flag['code'] . '.svg') }}" class="w-4 h-3 rounded-xs shadow-xs shrink-0" title="{{ $player->nationality_flag['name'] }}">
                                     @endif
                                     <span class="text-sm font-medium text-text-primary truncate">{{ $player->player->name }}</span>
-                                    <x-origin-badge :player="$player" />
+                                    <x-origin-badge :player="$player" :current-season="$game->season" />
                                     @if($isCalledUp)
                                         <span class="text-[10px] font-semibold bg-accent-blue/10 text-accent-blue px-1.5 py-0.5 rounded-full">{{ __('squad.called_up_indicator') }}</span>
                                     @endif
                                 </div>
                                 <span class="text-xs text-text-secondary text-center tabular-nums">{{ $age }}</span>
+                                <span class="text-[11px] text-center tabular-nums @if($player->isContractExpiring($game->getSeasonEndDate())) text-accent-red font-medium @else text-text-muted @endif">
+                                    {{ $player->contract_expiry_year ?? '—' }}
+                                </span>
                                 <div class="flex justify-center">
                                     <span class="text-xs font-medium tabular-nums @if($player->current_technical_ability >= 80) text-accent-green @elseif($player->current_technical_ability >= 70) text-lime-500 @elseif($player->current_technical_ability >= 60) text-text-body @else text-text-secondary @endif">{{ $player->current_technical_ability }}</span>
                                 </div>
@@ -165,23 +164,6 @@
                                 <span class="text-xs text-center tabular-nums text-text-muted">{{ $player->potential_range }}</span>
                                 <div class="flex justify-center">
                                     <x-rating-badge :value="$player->overall_score" size="sm" />
-                                </div>
-                                <div class="flex justify-end">
-                                    @if($isCalledUp)
-                                        <form method="POST" action="{{ route('game.reserve.send-back', [$game->id, $player->id]) }}" onsubmit="return confirm('{{ __('squad.send_back_to_reserve') }}?')">
-                                            @csrf
-                                            <x-ghost-button color="slate" size="xs" type="submit" title="{{ __('squad.send_back_to_reserve') }}">
-                                                ↓ {{ __('squad.send_back') }}
-                                            </x-ghost-button>
-                                        </form>
-                                    @else
-                                        <form method="POST" action="{{ route('game.reserve.call-up', [$game->id, $player->id]) }}" onsubmit="return confirm('{{ __('squad.call_up_to_first_team') }}?')">
-                                            @csrf
-                                            <x-ghost-button color="green" size="xs" type="submit" title="{{ __('squad.call_up_to_first_team') }}">
-                                                ↑ {{ __('squad.call_up') }}
-                                            </x-ghost-button>
-                                        </form>
-                                    @endif
                                 </div>
                             </div>
                         @endforeach
@@ -193,4 +175,5 @@
     </div>
 
     <x-player-detail-modal />
+    <x-negotiation-chat-modal />
 </x-app-layout>

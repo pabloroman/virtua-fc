@@ -190,7 +190,7 @@ return [
     'discovered' => 'Discovered',
     'origin' => 'Origin',
     'joined' => 'Joined',
-    'origin_academy' => 'Academy',
+    'origin_academy' => 'New',
     'career_history' => 'Career history',
     'no_career_history' => 'No completed seasons yet.',
 
@@ -235,6 +235,7 @@ return [
     'send_back' => 'Send back',
     'send_back_to_reserve' => 'Send back to reserve',
     'called_up_indicator' => 'Called up',
+    'homegrown_indicator' => 'Homegrown',
     'actions' => 'Actions',
     'reserve_help_toggle' => 'How does the reserve team work?',
     'reserve_help_development' => 'Your reserve team is your filial — its squad belongs to the reserve, not the first team. New academy prospects arrive here each season based on your academy investment, and develop alongside the existing reserve roster.',

@@ -18,8 +18,10 @@ class RequestLoan
         $game = Game::with(['team', 'finances'])->findOrFail($gameId);
         $player = GamePlayer::where('game_id', $gameId)->with(['player', 'team'])->findOrFail($playerId);
 
-        // Determine if this is loan-in (from scouting) or loan-out (from squad)
-        $isLoanOut = $player->team_id === $game->team_id;
+        // Determine if this is loan-in (from scouting) or loan-out (from squad).
+        // Reserve-team players also belong to the user's club, so loan-out applies.
+        $isLoanOut = $player->team_id === $game->team_id
+            || ($game->reserve_team_id !== null && $player->team_id === $game->reserve_team_id);
 
         if ($isLoanOut) {
             return $this->handleLoanOut($game, $player);

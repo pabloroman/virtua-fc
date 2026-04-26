@@ -78,15 +78,17 @@ class ReserveTeamService
             'status' => Loan::STATUS_ACTIVE,
         ]);
 
-        // Move into first team first so SquadNumberService sees the player
-        // among the user's squad while picking a free number.
-        $player->update(['team_id' => $game->team_id]);
+        // Null the reserve number first so flipping team_id can't violate the
+        // (game_id, team_id, number) unique constraint when a first-team
+        // player already wears the same shirt.
+        $previousNumber = $player->number;
+        $player->update(['number' => null, 'team_id' => $game->team_id]);
 
-        $number = $this->squadNumberService->assignNumberForNewPlayer($game, $player);
+        $number = $this->squadNumberService->assignAcademyNumberForNewPlayer($game, $player);
 
         if ($number === null) {
-            // Roll back the move and the loan.
-            $player->update(['team_id' => $game->reserve_team_id]);
+            // Roll back the move, restore previous number, and drop the loan.
+            $player->update(['team_id' => $game->reserve_team_id, 'number' => $previousNumber]);
             Loan::where('game_player_id', $player->id)
                 ->where('status', Loan::STATUS_ACTIVE)
                 ->delete();
@@ -167,14 +169,86 @@ class ReserveTeamService
                 $player->activeLoan->update(['status' => Loan::STATUS_COMPLETED]);
             }
 
-            // Permanent move to first team.
+            // Permanent move to first team. Null the reserve number first so
+            // the (game_id, team_id, number) unique constraint can't fire on
+            // the team_id flip.
             $reserveTeamName = $game->reserveTeam?->name;
-            $player->update(['team_id' => $game->team_id]);
+            $player->update(['number' => null, 'team_id' => $game->team_id]);
             $number = $this->squadNumberService->assignNumberForNewPlayer($game, $player);
             if ($number !== null) {
                 $player->update(['number' => $number]);
             }
 
+            \App\Models\UserSquadCareerRecord::updateOrCreate(
+                ['game_player_id' => $player->id],
+                [
+                    'game_id' => $game->id,
+                    'team_id' => $game->team_id,
+                    'joined_season' => (int) $game->season,
+                    'joined_from' => $reserveTeamName ?? \App\Models\UserSquadCareerRecord::ORIGIN_ACADEMY,
+                ],
+            );
+
+            GameTransfer::record(
+                gameId: $game->id,
+                gamePlayerId: $player->id,
+                fromTeamId: $game->reserve_team_id,
+                toTeamId: $game->team_id,
+                transferFee: 0,
+                type: GameTransfer::TYPE_INTERNAL_PROMOTION,
+                season: $game->season,
+                window: TransferWindowType::currentValue($game->current_date),
+            );
+
+            $this->notificationService->create(
+                game: $game,
+                type: \App\Models\GameNotification::TYPE_ACADEMY_PROSPECT,
+                title: __('notifications.reserve_overage_promoted_title'),
+                message: __('notifications.reserve_overage_promoted_message', [
+                    'player' => $player->player->name ?? '',
+                ]),
+                priority: \App\Models\GameNotification::PRIORITY_INFO,
+            );
+
+            $promoted->push($player);
+        }
+
+        return $promoted;
+    }
+
+    /**
+     * At season close, permanently promote any reserve player still on a
+     * call-up loan to the first team. The active call-up loan is closed and
+     * the move is recorded as TYPE_INTERNAL_PROMOTION so the player no longer
+     * snaps back to the reserve team in subsequent seasons. The player keeps
+     * their existing first-team shirt number (assigned on call-up).
+     *
+     * @return Collection<int, GamePlayer>
+     */
+    public function permanentlyPromoteCalledUpPlayers(Game $game): Collection
+    {
+        if ($game->reserve_team_id === null) {
+            return collect();
+        }
+
+        $callUpLoans = Loan::with(['gamePlayer.player'])
+            ->where('game_id', $game->id)
+            ->where('status', Loan::STATUS_ACTIVE)
+            ->where('parent_team_id', $game->reserve_team_id)
+            ->where('loan_team_id', $game->team_id)
+            ->get();
+
+        $promoted = collect();
+
+        foreach ($callUpLoans as $loan) {
+            $player = $loan->gamePlayer;
+            if ($player === null) {
+                continue;
+            }
+
+            $loan->update(['status' => Loan::STATUS_COMPLETED]);
+
+            $reserveTeamName = $game->reserveTeam?->name;
             \App\Models\UserSquadCareerRecord::updateOrCreate(
                 ['game_player_id' => $player->id],
                 [

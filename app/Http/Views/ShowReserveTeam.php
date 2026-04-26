@@ -26,8 +26,6 @@ class ShowReserveTeam
 
         $count = $squad->count();
         $avgAge = $count > 0 ? round($squad->avg(fn ($p) => $p->age($game->current_date)), 1) : 0;
-        $avgFitness = $count > 0 ? (int) round($squad->avg('fitness')) : 0;
-        $avgMorale = $count > 0 ? (int) round($squad->avg('morale')) : 0;
         $avgOverall = $count > 0 ? (int) round($squad->avg('overall_score')) : 0;
 
         return view('squad-reserve', [
@@ -39,8 +37,6 @@ class ShowReserveTeam
             'forwards' => $grouped->get('Forward', collect()),
             'reserveCount' => $count,
             'avgAge' => $avgAge,
-            'avgFitness' => $avgFitness,
-            'avgMorale' => $avgMorale,
             'avgOverall' => $avgOverall,
         ]);
     }

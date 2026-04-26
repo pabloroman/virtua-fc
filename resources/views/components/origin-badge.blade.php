@@ -1,14 +1,16 @@
-@props(['player'])
+@props(['player', 'currentSeason' => null])
 
 @php
     $record = $player->careerRecord ?? null;
+    $currentSeason = $currentSeason ?? $player->game?->season;
 @endphp
 
 @if($record)
     @php
         $isAcademy = $record->joined_from === \App\Models\UserSquadCareerRecord::ORIGIN_ACADEMY;
+        $isCurrentSeason = $currentSeason !== null && (string) $record->joined_season === (string) $currentSeason;
         $label = $isAcademy
-            ? __('squad.origin_academy')
+            ? ($isCurrentSeason ? __('squad.origin_academy') : '')
             : ($record->joined_from ?? '');
         $title = trim(($label !== '' ? $label . ' · ' : '') . __('squad.joined') . ' ' . \App\Models\Game::formatSeason((string) $record->joined_season));
         $classes = $isAcademy

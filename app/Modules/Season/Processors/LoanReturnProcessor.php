@@ -2,6 +2,7 @@
 
 namespace App\Modules\Season\Processors;
 
+use App\Modules\ReserveTeam\Services\ReserveTeamService;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Transfer\Services\LoanService;
@@ -17,6 +18,7 @@ class LoanReturnProcessor implements SeasonProcessor
     public function __construct(
         private readonly LoanService $loanService,
         private readonly NotificationService $notificationService,
+        private readonly ReserveTeamService $reserveTeamService,
     ) {}
 
     public function priority(): int
@@ -26,6 +28,15 @@ class LoanReturnProcessor implements SeasonProcessor
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
+        // Reserve players still called up to the first team at season close
+        // are kept up permanently — closes their call-up loans before the
+        // generic return sweep runs, so they aren't sent back to the filial.
+        $promotedFromReserve = $this->reserveTeamService->permanentlyPromoteCalledUpPlayers($game);
+
+        if ($promotedFromReserve->isNotEmpty()) {
+            $data->setMetadata('reserve_called_up_promoted', $promotedFromReserve->count());
+        }
+
         $returnedLoans = $this->loanService->returnAllLoans($game);
 
         $loanReturns = $returnedLoans->map(fn ($loan) => [
