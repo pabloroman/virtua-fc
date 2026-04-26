@@ -7,6 +7,7 @@ return [
     'bid_exceeds_budget' => 'The bid exceeds your transfer budget.',
     'player_listed' => ':player listed for sale. Offers may arrive after the next matchday.',
     'player_unlisted' => ':player removed from the transfer list.',
+    'cannot_sell_same_window' => 'Cannot sell :player — they joined your team in the current transfer window.',
     'offer_rejected' => ':team_de offer rejected.',
     'offer_accepted_sale' => ':player sold :team_a for :fee.',
     'offer_accepted_pre_contract' => 'Deal agreed! :player will sign for :team for :fee when the :window window opens.',

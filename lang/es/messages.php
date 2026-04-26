@@ -7,6 +7,7 @@ return [
     'bid_exceeds_budget' => 'La oferta supera tu presupuesto de fichajes.',
     'player_listed' => ':player puesto a la venta. Las ofertas pueden llegar tras la próxima jornada.',
     'player_unlisted' => ':player retirado de la lista de fichajes.',
+    'cannot_sell_same_window' => 'No se puede vender a :player — se unió a tu equipo en la ventana de fichajes actual.',
     'offer_rejected' => 'Oferta :team_de rechazada.',
     'offer_accepted_sale' => ':player vendido :team_a por :fee.',
     'offer_accepted_pre_contract' => '¡Acuerdo cerrado! :player fichará por :team por :fee cuando abra la ventana de :window.',

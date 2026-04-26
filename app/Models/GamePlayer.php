@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Modules\Player\PlayerAge;
 use App\Modules\Player\Services\InjuryService;
+use App\Modules\Transfer\Enums\TransferWindowType;
 use App\Support\CountryCodeMapper;
 use App\Support\Money;
 use App\Support\PositionMapper;
@@ -334,6 +335,28 @@ class GamePlayer extends Model
         return Loan::where('game_player_id', $this->id)
             ->where('loan_team_id', $userTeamId)
             ->where('status', Loan::STATUS_ACTIVE)
+            ->exists();
+    }
+
+    /**
+     * True if the player joined their current team during the currently-open
+     * transfer window. Used to prevent flipping a player in the same window
+     * they were acquired.
+     */
+    public function joinedInCurrentWindow(?Game $game = null): bool
+    {
+        $game = $game ?? $this->game;
+
+        if (! $game?->current_date || ! $game->isTransferWindowOpen()) {
+            return false;
+        }
+
+        $currentWindow = TransferWindowType::currentValue($game->current_date);
+
+        return GameTransfer::where('game_player_id', $this->id)
+            ->where('to_team_id', $this->team_id)
+            ->where('window', $currentWindow)
+            ->where('season', $game->season)
             ->exists();
     }
 
