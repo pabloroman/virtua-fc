@@ -9,6 +9,7 @@ use App\Models\GamePlayer;
 use App\Models\GamePlayerMatchState;
 use App\Models\Player;
 use App\Models\Team;
+use App\Models\UserSquadCareerRecord;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use App\Models\ClubProfile;
@@ -153,6 +154,17 @@ class PlayerGeneratorService
         // attributes via the GamePlayer accessor delegates.
         $gamePlayer->setRelation('player', $player);
         $gamePlayer->setRelation('matchState', $matchState);
+
+        if ($data->joinedFrom !== null && $game->ownsTeam($data->teamId)) {
+            UserSquadCareerRecord::create([
+                'game_player_id' => $gamePlayer->id,
+                'game_id' => $game->id,
+                'team_id' => $data->teamId,
+                'joined_season' => (int) $game->season,
+                'joined_from' => $data->joinedFrom,
+                'season_stats' => [],
+            ]);
+        }
 
         // Update cache with the newly created player so subsequent generations in the
         // same request don't collide with it.

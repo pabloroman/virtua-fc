@@ -23,6 +23,7 @@ use App\Modules\Season\Processors\SeasonSettlementProcessor;
 use App\Modules\Season\Processors\SeasonSimulationProcessor;
 use App\Modules\Season\Processors\SquadReplenishmentProcessor;
 use App\Modules\Season\Processors\StatsResetProcessor;
+use App\Modules\Season\Processors\UserSquadCareerSnapshotProcessor;
 use App\Modules\Season\Processors\SupercupQualificationProcessor;
 use App\Modules\Season\Processors\TransferMarketResetProcessor;
 use App\Modules\Season\Processors\UefaQualificationProcessor;
@@ -57,6 +58,7 @@ class SeasonClosingPipeline
         PlayerDevelopmentProcessor $playerDevelopment,
         SeasonSettlementProcessor $seasonSettlement,
         StatsResetProcessor $statsReset,
+        UserSquadCareerSnapshotProcessor $userSquadCareerSnapshot,
         TransferMarketResetProcessor $transferMarketReset,
         SeasonSimulationProcessor $seasonSimulation,
         SupercupQualificationProcessor $supercupQualification,
@@ -82,6 +84,7 @@ class SeasonClosingPipeline
             $aiFreeAgentSigning,
             $playerDevelopment,
             $seasonSettlement,
+            $userSquadCareerSnapshot,
             $statsReset,
             $transferMarketReset,
             $seasonSimulation,

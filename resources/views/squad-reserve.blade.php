@@ -117,6 +117,7 @@
                                         <div class="flex-1 min-w-0">
                                             <div class="flex items-center gap-2">
                                                 <span class="text-sm font-medium text-text-primary truncate">{{ $player->player->name }}</span>
+                                                <x-origin-badge :player="$player" />
                                                 <span class="text-[10px] text-text-faint">{{ $age }}</span>
                                                 @if($isCalledUp)
                                                     <span class="text-[10px] font-semibold bg-accent-blue/10 text-accent-blue px-1.5 py-0.5 rounded-full">{{ __('squad.called_up_indicator') }}</span>
@@ -149,6 +150,7 @@
                                         <img src="{{ Storage::disk('assets')->url('flags/' . $player->nationality_flag['code'] . '.svg') }}" class="w-4 h-3 rounded-xs shadow-xs shrink-0" title="{{ $player->nationality_flag['name'] }}">
                                     @endif
                                     <span class="text-sm font-medium text-text-primary truncate">{{ $player->player->name }}</span>
+                                    <x-origin-badge :player="$player" />
                                     @if($isCalledUp)
                                         <span class="text-[10px] font-semibold bg-accent-blue/10 text-accent-blue px-1.5 py-0.5 rounded-full">{{ __('squad.called_up_indicator') }}</span>
                                     @endif

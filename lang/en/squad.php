@@ -188,6 +188,11 @@ return [
     'clean_sheets_full' => 'Clean Sheets',
     'goals_conceded_full' => 'Goals Conceded',
     'discovered' => 'Discovered',
+    'origin' => 'Origin',
+    'joined' => 'Joined',
+    'origin_academy' => 'Academy',
+    'career_history' => 'Career history',
+    'no_career_history' => 'No completed seasons yet.',
 
     // Academy
     'academy' => 'Academy',

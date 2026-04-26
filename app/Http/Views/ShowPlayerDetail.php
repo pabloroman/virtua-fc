@@ -19,7 +19,7 @@ class ShowPlayerDetail
 
         $allowedTeamIds = array_filter([$game->team_id, $game->reserve_team_id]);
 
-        $gamePlayer = GamePlayer::with('player')
+        $gamePlayer = GamePlayer::with(['player', 'careerRecord'])
             ->where('game_id', $gameId)
             ->whereIn('team_id', $allowedTeamIds)
             ->findOrFail($playerId);

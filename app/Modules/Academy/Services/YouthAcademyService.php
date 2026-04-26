@@ -306,6 +306,7 @@ class YouthAcademyService
             fitnessMax: 100,
             moraleMin: 70,
             moraleMax: 90,
+            joinedFrom: \App\Models\UserSquadCareerRecord::ORIGIN_ACADEMY,
         ));
 
         $gamePlayer->update([
@@ -534,6 +535,7 @@ class YouthAcademyService
             fitnessMax: 100,
             moraleMin: 70,
             moraleMax: 90,
+            joinedFrom: \App\Models\UserSquadCareerRecord::ORIGIN_ACADEMY,
         ));
     }
 

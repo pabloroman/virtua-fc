@@ -10,6 +10,7 @@ use App\Models\Loan;
 use App\Models\ShortlistedPlayer;
 use App\Models\TransferListing;
 use App\Models\TransferOffer;
+use App\Models\UserSquadCareerRecord;
 use App\Modules\Player\PlayerAge;
 use App\Modules\Squad\Services\SquadNumberService;
 use App\Modules\Transfer\Enums\TransferWindowType;
@@ -94,6 +95,11 @@ class TransferCompletionService
         // Remove from shortlist to free up scouting slot
         ShortlistedPlayer::removeForPlayer($game->id, $player->id);
 
+        // Player has left user's club permanently — drop career record.
+        // Loans preserve ownership so the record is left intact.
+        if (! $isLoan) {
+            UserSquadCareerRecord::where('game_player_id', $player->id)->delete();
+        }
     }
 
     /**
@@ -106,6 +112,7 @@ class TransferCompletionService
         $buyerName = $offer->offeringTeam->name;
         $game = $player->game;
         $fromTeamId = $player->team_id;
+        $fromTeamName = $player->team->name ?? null;
 
         // Transfer player to the buying team
         TransferListing::where('game_player_id', $player->id)->delete();
@@ -115,6 +122,13 @@ class TransferCompletionService
             // Extend their contract with the new team
             'contract_until' => Carbon::createFromDate((int) $game->season + rand(2, 4) + 1, 6, 30),
         ]);
+
+        $this->syncCareerRecordOnOwnershipChange(
+            game: $game,
+            player: $player,
+            previousTeamId: $fromTeamId,
+            previousTeamName: $fromTeamName,
+        );
 
         GameTransfer::record(
             gameId: $game->id,
@@ -166,12 +180,20 @@ class TransferCompletionService
         $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
 
         TransferListing::where('game_player_id', $player->id)->delete();
+        $previousTeamId = $player->team_id;
         $player->update([
             'team_id' => $game->team_id,
             'number' => $this->squadNumberService->assignNumberForNewPlayer($game, $player),
             'contract_until' => $newContractEnd,
             'annual_wage' => $offer->offered_wage ?? $player->annual_wage,
         ]);
+
+        $this->syncCareerRecordOnOwnershipChange(
+            game: $game,
+            player: $player,
+            previousTeamId: $previousTeamId,
+            previousTeamName: $sellerName,
+        );
 
         GameTransfer::record(
             gameId: $game->id,
@@ -219,12 +241,22 @@ class TransferCompletionService
         $contractYears = $offer->offered_years ?? ($player->age($game->current_date) >= 32 ? 1 : 3);
         $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
 
+        $previousTeamId = $player->team_id;
+        $previousTeamName = $player->team->name ?? null;
+
         $player->update([
             'team_id' => $game->team_id,
             'number' => $this->squadNumberService->assignNumberForNewPlayer($game, $player),
             'contract_until' => $newContractEnd,
             'annual_wage' => $offer->offered_wage,
         ]);
+
+        $this->syncCareerRecordOnOwnershipChange(
+            game: $game,
+            player: $player,
+            previousTeamId: $previousTeamId,
+            previousTeamName: $previousTeamName,
+        );
 
         $offer->update([
             'status' => TransferOffer::STATUS_COMPLETED,
@@ -245,4 +277,45 @@ class TransferCompletionService
         ShortlistedPlayer::removeForPlayer($game->id, $player->id);
     }
 
+    /**
+     * Reconcile the user-squad career record after a player's team_id changes.
+     *
+     * - Player moves into a user-owned team and wasn't already user-owned:
+     *   create a record. `joined_from` snapshots the previous team's name.
+     * - Player moves out of a user-owned team to a non-user-owned team:
+     *   delete the record. (We do not retain history for ex-players.)
+     * - Both old and new team are user-owned (e.g., filial → first team):
+     *   update in place; preserve accumulated season_stats.
+     * - Neither side is user-owned: no-op (AI-vs-AI move).
+     */
+    public function syncCareerRecordOnOwnershipChange(
+        Game $game,
+        GamePlayer $player,
+        ?string $previousTeamId,
+        ?string $previousTeamName,
+    ): void {
+        $wasOwned = $game->ownsTeam($previousTeamId);
+        $isOwned = $game->ownsTeam($player->team_id);
+
+        if (! $wasOwned && ! $isOwned) {
+            return;
+        }
+
+        if ($wasOwned && ! $isOwned) {
+            UserSquadCareerRecord::where('game_player_id', $player->id)->delete();
+            return;
+        }
+
+        $origin = $previousTeamName ?? UserSquadCareerRecord::ORIGIN_ACADEMY;
+
+        UserSquadCareerRecord::updateOrCreate(
+            ['game_player_id' => $player->id],
+            [
+                'game_id' => $game->id,
+                'team_id' => $player->team_id,
+                'joined_season' => (int) $game->season,
+                'joined_from' => $origin,
+            ],
+        );
+    }
 }

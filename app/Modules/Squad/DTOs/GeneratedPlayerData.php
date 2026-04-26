@@ -30,5 +30,9 @@ final class GeneratedPlayerData
         public readonly int $fitnessMax = 95,
         public readonly int $moraleMin = 65,
         public readonly int $moraleMax = 80,
+        // Origin label persisted on the user-squad career record. Either the
+        // 'Academy' sentinel or the previous team's name. Null skips the record
+        // creation (legacy initial-squad seeding path).
+        public readonly ?string $joinedFrom = null,
     ) {}
 }

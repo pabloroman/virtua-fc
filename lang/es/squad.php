@@ -188,6 +188,11 @@ return [
     'clean_sheets_full' => 'Porterías a Cero',
     'goals_conceded_full' => 'Goles Encajados',
     'discovered' => 'Descubierto',
+    'origin' => 'Procedencia',
+    'joined' => 'Incorporación',
+    'origin_academy' => 'Cantera',
+    'career_history' => 'Trayectoria',
+    'no_career_history' => 'Aún no hay temporadas completadas.',
 
     // Academy
     'academy' => 'Cantera',

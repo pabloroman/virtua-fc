@@ -339,6 +339,19 @@ class Game extends Model
         return $this->belongsTo(Team::class, 'reserve_team_id');
     }
 
+    /**
+     * Whether the given team is owned by the user in this game (first team
+     * or, for parent clubs, the filial reserve team).
+     */
+    public function ownsTeam(?string $teamId): bool
+    {
+        if ($teamId === null) {
+            return false;
+        }
+
+        return $teamId === $this->team_id || $teamId === $this->reserve_team_id;
+    }
+
     public function isFilial(): bool
     {
         return $this->reserve_team_id !== null;

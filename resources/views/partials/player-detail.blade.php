@@ -161,6 +161,24 @@
                         <span class="text-xs font-semibold text-text-primary">{{ $gamePlayer->contract_expiry_year }}</span>
                     </div>
                 @endif
+                @if($gamePlayer->careerRecord)
+                    @php
+                        $cr = $gamePlayer->careerRecord;
+                        $originLabel = $cr->joined_from === \App\Models\UserSquadCareerRecord::ORIGIN_ACADEMY
+                            ? __('squad.origin_academy')
+                            : ($cr->joined_from ?? '');
+                    @endphp
+                    @if($originLabel !== '')
+                        <div class="flex items-center justify-between">
+                            <span class="text-[11px] text-text-muted uppercase tracking-wide">{{ __('squad.origin') }}</span>
+                            <span class="text-xs font-semibold text-text-primary">{{ $originLabel }}</span>
+                        </div>
+                    @endif
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] text-text-muted uppercase tracking-wide">{{ __('squad.joined') }}</span>
+                        <span class="text-xs font-semibold text-text-primary">{{ \App\Models\Game::formatSeason((string) $cr->joined_season) }}</span>
+                    </div>
+                @endif
             @endif
         </div>
     </div>
@@ -204,6 +222,61 @@
         </div>
     </div>
 </div>
+
+{{-- Career history --}}
+@if($gamePlayer->careerRecord && !empty($gamePlayer->careerRecord->season_stats))
+    @php
+        $history = collect($gamePlayer->careerRecord->season_stats)
+            ->map(fn ($stats, $season) => array_merge(['season' => $season], (array) $stats))
+            ->sortBy('season')
+            ->values();
+        $isGk = $gamePlayer->position_group === 'Goalkeeper';
+    @endphp
+    <div class="px-5 py-4 border-t border-border-default">
+        <h4 class="font-heading text-[11px] font-semibold uppercase tracking-widest text-text-secondary mb-3">{{ __('squad.career_history') }}</h4>
+        <div class="overflow-x-auto">
+            <table class="w-full text-xs">
+                <thead>
+                    <tr class="text-text-muted uppercase tracking-wide text-[10px]">
+                        <th class="text-left font-semibold py-1.5 pr-3">{{ __('game.season') }}</th>
+                        <th class="text-right font-semibold py-1.5 px-2">{{ __('squad.appearances') }}</th>
+                        @if($isGk)
+                            <th class="text-right font-semibold py-1.5 px-2">{{ __('squad.clean_sheets_full') }}</th>
+                            <th class="text-right font-semibold py-1.5 px-2">{{ __('squad.goals_conceded_full') }}</th>
+                        @else
+                            <th class="text-right font-semibold py-1.5 px-2">{{ __('squad.legend_goals') }}</th>
+                            <th class="text-right font-semibold py-1.5 px-2">{{ __('squad.legend_assists') }}</th>
+                        @endif
+                        <th class="text-right font-semibold py-1.5 pl-2">{{ __('squad.bookings') }}</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-border-default">
+                    @foreach($history as $row)
+                        <tr>
+                            <td class="py-1.5 pr-3 text-text-primary font-semibold">{{ \App\Models\Game::formatSeason((string) $row['season']) }}</td>
+                            <td class="py-1.5 px-2 text-right text-text-body">{{ $row['appearances'] ?? 0 }}</td>
+                            @if($isGk)
+                                <td class="py-1.5 px-2 text-right text-text-body">{{ $row['clean_sheets'] ?? 0 }}</td>
+                                <td class="py-1.5 px-2 text-right text-text-body">{{ $row['goals_conceded'] ?? 0 }}</td>
+                            @else
+                                <td class="py-1.5 px-2 text-right text-text-body">{{ $row['goals'] ?? 0 }}</td>
+                                <td class="py-1.5 px-2 text-right text-text-body">{{ $row['assists'] ?? 0 }}</td>
+                            @endif
+                            <td class="py-1.5 pl-2 text-right">
+                                <span class="inline-flex items-center gap-1">
+                                    <span class="w-1.5 h-2.5 bg-yellow-400 rounded-xs"></span>
+                                    <span class="text-text-body">{{ $row['yellow_cards'] ?? 0 }}</span>
+                                    <span class="w-1.5 h-2.5 bg-accent-red rounded-xs ml-1"></span>
+                                    <span class="text-text-body">{{ $row['red_cards'] ?? 0 }}</span>
+                                </span>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+@endif
 
 {{-- Actions --}}
 @if($showActions || $canRenew || $renewalNegotiation || $renewalCooldown)

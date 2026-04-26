@@ -238,6 +238,11 @@ class GamePlayer extends Model
         return $this->hasOne(TransferListing::class);
     }
 
+    public function careerRecord(): HasOne
+    {
+        return $this->hasOne(UserSquadCareerRecord::class);
+    }
+
     /**
      * Get the active loan for this player (if any).
      */
