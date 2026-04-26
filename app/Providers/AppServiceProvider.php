@@ -6,7 +6,6 @@ use App\Events\SeasonCompleted;
 use App\Events\SeasonStarted;
 use App\Events\TournamentCompleted;
 use App\Events\TournamentEnded;
-use App\Models\User;
 use App\Modules\Academy\Listeners\GenerateInitialAcademyBatch;
 use App\Modules\Match\Events\CupTieResolved;
 use App\Modules\Match\Events\GameDateAdvanced;
@@ -50,7 +49,6 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
