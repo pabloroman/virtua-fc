@@ -185,6 +185,12 @@ class ShowLiveMatch
             }
         }
 
+        // Final detection works for both career and tournament modes: every cup
+        // schedule labels the title-deciding round 'cup.final'. The summary
+        // generator uses this to fire champion commentary regardless of how
+        // the final was decided (regular time, extra time, penalties).
+        $isFinal = $playerMatch->round_name === 'cup.final';
+
         // User's current instructions
         $prefix = $isUserHome ? 'home' : 'away';
         $userPlayingStyle = $playerMatch->{"{$prefix}_playing_style"} ?? 'balanced';
@@ -263,6 +269,7 @@ class ShowLiveMatch
             'isTournamentKnockout' => $isTournamentKnockout,
             'knockoutRoundNumber' => $knockoutRoundNumber,
             'knockoutRoundName' => $knockoutRoundName,
+            'isFinal' => $isFinal,
             'processingStatusUrl' => $game->isCareerMode()
                 ? route('game.setup-status', $game->id)
                 : null,

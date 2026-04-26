@@ -162,11 +162,11 @@ export function generateMatchSummary(config) {
         isTwoLeggedTie,
         isSecondLeg,
         knockoutRoundNumber,
+        isFinal,
         competitionRole,
         competitionName,
         homeForm, awayForm,
         homePosition, awayPosition,
-        tournamentResultType,
     } = config;
 
     const homeForms = buildTeamForms(homeTeamName, homeArticle);
@@ -206,8 +206,10 @@ export function generateMatchSummary(config) {
     // A knockout match decides progression (single-leg tie, or second leg of
     // a two-legged tie). First legs and Swiss league-phase matches don't.
     const isKnockoutDecisive = !!isKnockout && (!isTwoLeggedTie || !!isSecondLeg);
-    const isHighStakes = isKnockoutDecisive && knockoutRoundNumber && knockoutRoundNumber >= 5;
-    const isChampion = tournamentResultType === 'champion';
+    // High-stakes "advance" wording is reserved for non-final knockout rounds
+    // where progression is the actual outcome. Finals crown a champion, so we
+    // exclude them here and route them to the champion opening below.
+    const isHighStakes = isKnockoutDecisive && knockoutRoundNumber && knockoutRoundNumber >= 5 && !isFinal;
 
     const hatTrick = detectHatTrick(allEvents);
     const lastMinuteGoal = detectLastMinuteGoal(allEvents, homeTeamId);
@@ -259,7 +261,7 @@ export function generateMatchSummary(config) {
 
     sentences.push(buildOpening(t, replacements, {
         isDraw, isGoalless, isBlowout, isNarrowWin,
-        isKnockoutDecisive, isHighStakes, isChampion,
+        isKnockoutDecisive, isHighStakes, isFinal,
         hasExtraTime, penaltyResult,
         winnerId, homeTeamId,
     }));
@@ -325,10 +327,18 @@ export function generateMatchSummary(config) {
 function buildOpening(t, replacements, ctx) {
     const {
         isDraw, isGoalless, isBlowout, isNarrowWin,
-        isKnockoutDecisive, isHighStakes, isChampion,
+        isKnockoutDecisive, isHighStakes, isFinal,
         hasExtraTime, penaltyResult,
         winnerId, homeTeamId,
     } = ctx;
+
+    // Crowning a champion is the headline of a final regardless of how it
+    // was decided (regular time, extra time, penalties), so this check runs
+    // before the penalty/ET openings. The :winner placeholder resolves to
+    // whichever side actually lifted the trophy.
+    if (isFinal && winnerId && t.summaryOpeningHighStakesChampion) {
+        return pickTemplate(t.summaryOpeningHighStakesChampion, replacements);
+    }
 
     if (penaltyResult) {
         return pickTemplate(t.summaryOpeningPenalties, replacements);
@@ -336,10 +346,6 @@ function buildOpening(t, replacements, ctx) {
 
     if (hasExtraTime && winnerId) {
         return pickTemplate(t.summaryOpeningExtraTime, replacements);
-    }
-
-    if (isChampion && t.summaryOpeningHighStakesChampion) {
-        return pickTemplate(t.summaryOpeningHighStakesChampion, replacements);
     }
 
     if (isHighStakes && winnerId && t.summaryOpeningHighStakesWin) {
