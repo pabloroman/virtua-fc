@@ -139,10 +139,9 @@ class SwissKnockoutGeneratorTest extends TestCase
 
     /**
      * Production data created before this fix has bracket_position = NULL on
-     * its playoff ties. The hardened findPlayoffBracket fallback uses
-     * disjoint-set membership across each bracket's full position list
-     * (higher + lower) so it tolerates within-bracket drift that the old
-     * min-based check did not.
+     * its playoff ties. The rank-based balanced fallback ranks the 16 playoff
+     * teams by current standings position and assigns ties to brackets in
+     * order, so within-bracket drift (16↔17 swap) is recovered cleanly.
      */
     public function test_r16_succeeds_for_legacy_ties_with_drifted_standings(): void
     {
@@ -160,6 +159,39 @@ class SwissKnockoutGeneratorTest extends TestCase
         // Same drift as the persisted-bracket test, but here the fallback
         // legacy classifier is what has to absorb it.
         $this->swapStandingsPositions(16, 17);
+
+        $r16 = $this->generator->generateMatchups($this->game, $this->competition->id, 2);
+
+        $this->assertCount(8, $r16);
+    }
+
+    /**
+     * Reproduces the production failure where two legacy ties drifted across
+     * bracket boundaries (positions 16↔19 swap moves teams between bracket 3
+     * and bracket 2) and the disjoint-set position classifier could not match
+     * them to either bracket, dumping them into bracket 0 — yielding the
+     * "[4,2,1,1] / got 6" distribution. The rank-based balanced fallback sorts
+     * ties by their higher-seed rank within the 16-team field and assigns 2
+     * ties to each bracket in order, recovering R16 generation regardless of
+     * how the standings drifted.
+     */
+    public function test_r16_succeeds_for_legacy_ties_with_cross_bracket_drift(): void
+    {
+        foreach ($this->canonicalPlayoffPairings() as [$lowerPos, $higherPos]) {
+            $this->createTie(
+                round: 1,
+                home: $this->teamsByPosition[$lowerPos]->id,
+                away: $this->teamsByPosition[$higherPos]->id,
+                bracketPosition: null,
+                winnerId: $this->teamsByPosition[$higherPos]->id,
+                completed: true,
+            );
+        }
+
+        // Cross-bracket drift: position 16 (originally bracket 3 high) and
+        // position 19 (originally bracket 2 low) swap. The position-based
+        // disjoint-set classifier would route both affected ties to bracket 0.
+        $this->swapStandingsPositions(16, 19);
 
         $r16 = $this->generator->generateMatchups($this->game, $this->competition->id, 2);
 

@@ -8,6 +8,7 @@ use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameStanding;
 use App\Modules\Competition\Services\LeagueFixtureGenerator;
+use Illuminate\Support\Collection;
 
 /**
  * Generates knockout bracket matchups for Swiss format competitions.
@@ -135,16 +136,13 @@ class SwissKnockoutGenerator
             ->where('completed', true)
             ->get();
 
-        // Map playoff winners back to their brackets. Prefer the persisted
-        // bracket_position (canonical, set at playoff creation); fall back to
-        // findPlayoffBracket for legacy ties created before this column was
-        // populated.
-        $bracketWinners = [];
-        foreach ($playoffTies as $tie) {
-            $bracketIndex = $tie->bracket_position
-                ?? $this->findPlayoffBracket($tie, $standings);
-            $bracketWinners[$bracketIndex][] = $tie->winner_id;
-        }
+        // Prefer the persisted bracket_position; fall back to rank-based
+        // grouping for legacy ties created before that column was populated.
+        $bracketWinners = $playoffTies->every(fn ($tie) => $tie->bracket_position !== null)
+            ? $playoffTies->groupBy('bracket_position')
+                ->map(fn ($ties) => $ties->pluck('winner_id')->all())
+                ->all()
+            : $this->groupWinnersByPlayoffRank($playoffTies, $standings);
 
         $matchups = [];
 
@@ -246,30 +244,36 @@ class SwissKnockoutGenerator
     }
 
     /**
-     * Determine which playoff bracket a tie belongs to, based on the teams' league positions.
+     * Sequentially assign the 8 playoff ties to 4 brackets, ordered by each
+     * tie's higher-seed rank within the 16-team playoff field. Rank-within-
+     * field is invariant to global standings drift, and sequential assignment
+     * guarantees a 2-2-2-2 layout — unlike position-based classification,
+     * which silently routes drifted ties to a default bracket.
      *
-     * Legacy fallback used only for ties created before bracket_position was
-     * persisted at playoff generation. Uses disjoint-set membership across the
-     * bracket's full position list (higher + lower) rather than min() against
-     * higherPositions only — that earlier approach silently fell through to
-     * bracket 0 whenever standings re-sorts shifted a tied team's position
-     * outside its original higherPositions slot.
+     * @return array<int, array<int, string>> bracketIndex => [winnerId, ...]
      */
-    private function findPlayoffBracket(CupTie $tie, array $standings): int
+    private function groupWinnersByPlayoffRank(Collection $playoffTies, array $standings): array
     {
         $positions = array_flip($standings);
-        $homePos = $positions[$tie->home_team_id] ?? null;
-        $awayPos = $positions[$tie->away_team_id] ?? null;
 
-        foreach (self::PLAYOFF_BRACKETS as $index => $bracket) {
-            [$higherPositions, $lowerPositions] = $bracket;
-            $allPositions = array_merge($higherPositions, $lowerPositions);
+        $teamRanks = $playoffTies
+            ->flatMap(fn ($tie) => [$tie->home_team_id, $tie->away_team_id])
+            ->unique()
+            ->sortBy(fn ($teamId) => $positions[$teamId] ?? PHP_INT_MAX)
+            ->values()
+            ->flip()
+            ->all();
 
-            if (in_array($homePos, $allPositions, true) && in_array($awayPos, $allPositions, true)) {
-                return $index;
-            }
+        $sortedTies = $playoffTies->sortBy(fn ($tie) => min(
+            $teamRanks[$tie->home_team_id] ?? PHP_INT_MAX,
+            $teamRanks[$tie->away_team_id] ?? PHP_INT_MAX,
+        ))->values();
+
+        $bracketWinners = [];
+        foreach ($sortedTies as $i => $tie) {
+            $bracketWinners[intdiv($i, 2)][] = $tie->winner_id;
         }
 
-        return 0;
+        return $bracketWinners;
     }
 }
