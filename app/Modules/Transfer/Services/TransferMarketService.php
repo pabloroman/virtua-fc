@@ -2,14 +2,19 @@
 
 namespace App\Modules\Transfer\Services;
 
+use App\Models\ClubProfile;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\GameTransfer;
+use App\Models\TeamReputation;
 use App\Models\TransferListing;
 use App\Models\TransferOffer;
 use App\Modules\Player\PlayerAge;
+use App\Support\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 /**
  * Manages AI-generated transfer market listings.
@@ -17,6 +22,9 @@ use Illuminate\Support\Collection;
  * AI teams list players for sale on the public market during transfer windows.
  * The user can browse these listings and bid on players via the existing
  * negotiation flow.
+ *
+ * Listing prices on this surface are showcase numbers — the negotiation flow
+ * recomputes the full importance/leverage price the moment the user bids.
  */
 class TransferMarketService
 {
@@ -44,12 +52,23 @@ class TransferMarketService
     /** Minimum squad size below which a team will not list */
     private const MIN_SQUAD_SIZE = 20;
 
-    /** Max listings contributed by any single AI team per refresh */
-    private const MAX_PICKS_PER_TEAM = 3;
+    /**
+     * One listing per sampled team. Forces variety (every listing comes
+     * from a different club) and means the team-sample size equals the
+     * slot count — no overshoot or per-team cap math needed.
+     */
+    private const MAX_PICKS_PER_TEAM = 1;
 
-    public function __construct(
-        private readonly ScoutingService $scoutingService,
-    ) {}
+    /** Listing-price multiplier per step of tier-vs-reputation gap. */
+    private const LISTING_PRICE_TIER_GAP_STEP = 0.07;
+
+    /** ±jitter applied to the listing-price multiplier so identical profiles diverge. */
+    private const LISTING_PRICE_JITTER = 0.075;
+
+    /** Hard floor and ceiling on the listing-price multiplier. */
+    private const LISTING_PRICE_MIN_MULTIPLIER = 0.8;
+
+    private const LISTING_PRICE_MAX_MULTIPLIER = 1.25;
 
     /**
      * Refresh AI market listings. Called every matchday, year-round.
@@ -82,9 +101,18 @@ class TransferMarketService
 
         $slotsAvailable = self::MAX_LISTINGS - $currentCount;
 
-        // Load context
-        $teamRosters = $this->loadAIRosters($game);
-        $teamAverages = $teamRosters->map(fn ($players) => $this->calculateTeamAverage($players));
+        $teamRepIndices = $this->sampleAITeams($game, $slotsAvailable);
+
+        if (empty($teamRepIndices)) {
+            return;
+        }
+
+        $teamRosters = $this->loadRostersFor($game, array_keys($teamRepIndices));
+
+        if ($teamRosters->isEmpty()) {
+            return;
+        }
+
         $groupCounts = $teamRosters->map(function ($players) {
             return $players->groupBy(fn (GamePlayer $p) => $p->position_group)
                 ->map->count();
@@ -106,7 +134,7 @@ class TransferMarketService
 
         $candidates = $this->buildListingCandidates(
             $teamRosters,
-            $teamAverages,
+            $teamRepIndices,
             $groupCounts,
             $excludedIds,
             $game->current_date,
@@ -118,17 +146,16 @@ class TransferMarketService
         $rows = [];
         foreach ($selected as $candidate) {
             $player = $candidate['player'];
-            $teammates = $teamRosters->get($player->team_id);
-            $askingPrice = $this->scoutingService->calculateAskingPrice($player, $game->current_date, $teammates);
+            $repIndex = $teamRepIndices[$player->team_id] ?? 0;
 
             $rows[] = [
-                'id' => (string) \Illuminate\Support\Str::uuid(),
+                'id' => (string) Str::uuid(),
                 'game_id' => $game->id,
                 'game_player_id' => $player->id,
                 'team_id' => $player->team_id,
                 'status' => TransferListing::STATUS_LISTED,
                 'listed_at' => $game->current_date->toDateString(),
-                'asking_price' => $askingPrice,
+                'asking_price' => $this->listingAskingPrice($player, $repIndex),
             ];
         }
 
@@ -164,12 +191,15 @@ class TransferMarketService
     // ── Private helpers ─────────────────────────────────────────────────
 
     /**
-     * Score each eligible player from each team and return up to
+     * Score each eligible player from each sampled team and return up to
      * MAX_PICKS_PER_TEAM candidates per team.
+     *
+     * @param  array<string, int>  $teamRepIndices  team_id => reputation index (0-4)
+     * @param  array<string, true>  $excludedIds  set of game_player_ids to skip
      */
     private function buildListingCandidates(
         Collection $teamRosters,
-        Collection $teamAverages,
+        array $teamRepIndices,
         Collection $groupCounts,
         array $excludedIds,
         Carbon $currentDate,
@@ -181,26 +211,16 @@ class TransferMarketService
                 continue;
             }
 
-            $teamAvg = $teamAverages[$teamId] ?? 55;
+            $repIndex = $teamRepIndices[$teamId] ?? 0;
             $teamGroupCounts = $groupCounts->get($teamId, collect());
 
-            // Top 11 players by ability ≈ core XI. Used as a hard filter so
-            // clubs don't put their starters on the open market.
-            $coreIds = $players
-                ->sortByDesc(fn (GamePlayer $p) => $this->getPlayerAbility($p))
-                ->take(11)
-                ->pluck('id')
-                ->flip()
-                ->all();
-
             $teamPicks = $players
-                ->filter(fn (GamePlayer $p) => !$p->retiring_at_season && !isset($excludedIds[$p->id]))
+                ->filter(fn (GamePlayer $p) => ! $p->retiring_at_season && ! isset($excludedIds[$p->id]))
                 ->map(fn (GamePlayer $p) => $this->scoreListable(
                     $p,
-                    $teamAvg,
+                    $repIndex,
                     $teamGroupCounts,
                     $currentDate,
-                    isset($coreIds[$p->id]),
                 ))
                 ->filter()
                 ->sortByDesc('score')
@@ -216,18 +236,20 @@ class TransferMarketService
     /**
      * Score a player as a listing candidate. Returns null if unlistable.
      *
-     * One scoring pool: both "clearing surplus depth" and "selling a player
-     * above team average" earn score here. Core players (top-11 by ability)
-     * are protected unless their contract is running out.
+     * Saleability uses the player's tier vs the team's reputation index:
+     * "selling upward" (player tier above team's reputation) and "clearing
+     * fringe" (player tier below team's reputation) both count as listing
+     * signals. Players whose tier matches or exceeds the club's reputation
+     * are protected unless their contract is running out — clubs only let
+     * starter-level players go when free-departure leverage is gone.
      *
      * @return array{player: GamePlayer, score: int}|null
      */
     private function scoreListable(
         GamePlayer $player,
-        int $teamAvg,
+        int $teamRepIndex,
         Collection $teamGroupCounts,
         Carbon $currentDate,
-        bool $isCorePlayer,
     ): ?array {
         $group = $player->position_group;
         $groupFloor = self::MIN_GROUP_COUNTS[$group] ?? 4;
@@ -241,14 +263,13 @@ class TransferMarketService
             ? (int) $currentDate->diffInYears($player->contract_until)
             : 0;
 
-        // Protect starters unless their contract is running down — a club
-        // will only sell a core player when renewal has failed and free
-        // departure is the alternative.
-        if ($isCorePlayer && $yearsLeft > 1) {
+        // Tier gap: positive ⇒ player above team level, negative ⇒ below.
+        $tierGap = $this->tierGap($player, $teamRepIndex);
+
+        if ($tierGap >= 0 && $yearsLeft > 1) {
             return null;
         }
 
-        $ability = $this->getPlayerAbility($player);
         $score = 0;
 
         // Surplus at position
@@ -257,15 +278,15 @@ class TransferMarketService
             $score += min(5, $surplus * 2);
         }
 
-        // Ability gap vs team average — both directions are a listing signal.
-        // Below average ⇒ clearing weak depth. Above average ⇒ selling upward.
-        $gap = abs($ability - $teamAvg);
-        if ($gap > 15) {
-            $score += 5;
-        } elseif ($gap > 5) {
-            $score += 3;
-        } elseif ($gap > 0) {
-            $score += 1;
+        // Tier-vs-reputation signal — both directions count.
+        if ($tierGap >= 2) {
+            $score += 6;       // selling upward — strong
+        } elseif ($tierGap >= 1) {
+            $score += 3;       // mild upward
+        } elseif ($tierGap <= -2) {
+            $score += 3;       // clearing fringe
+        } elseif ($tierGap === -1) {
+            $score += 1;       // weak clearing signal
         }
 
         // Past-prime age is a classic clearing signal
@@ -295,37 +316,86 @@ class TransferMarketService
         return ['player' => $player, 'score' => $score];
     }
 
-    private function loadAIRosters(Game $game): Collection
+    /**
+     * Showcase listing price = market_value × tier-gap-driven multiplier.
+     *
+     * Cheap on purpose — the negotiation flow recomputes the full
+     * importance/leverage price the moment the user bids.
+     */
+    private function listingAskingPrice(GamePlayer $player, int $teamRepIndex): int
     {
+        $tierGap = $this->tierGap($player, $teamRepIndex);
+        $jitter = mt_rand(
+            -(int) (self::LISTING_PRICE_JITTER * 1000),
+            (int) (self::LISTING_PRICE_JITTER * 1000),
+        ) / 1000.0;
+
+        $multiplier = 1.0 + ($tierGap * self::LISTING_PRICE_TIER_GAP_STEP) + $jitter;
+        $multiplier = max(self::LISTING_PRICE_MIN_MULTIPLIER, min(self::LISTING_PRICE_MAX_MULTIPLIER, $multiplier));
+
+        return Money::roundPrice((int) round($player->market_value_cents * $multiplier));
+    }
+
+    private function tierGap(GamePlayer $player, int $teamRepIndex): int
+    {
+        $playerTierIndex = ($player->tier ?? 1) - 1;
+
+        return $playerTierIndex - $teamRepIndex;
+    }
+
+    /**
+     * Pick K random AI teams from this game's competition entries — that
+     * source spans every country in the game (team_reputations is seeded
+     * domestic-only, so sampling from it would silently scope listings
+     * to the user's country). Reputation resolves via TeamReputation,
+     * which falls back to ClubProfile for foreign clubs that have no
+     * game-scoped rep row.
+     *
+     * @return array<string, int>  team_id => reputation index (0-4)
+     */
+    private function sampleAITeams(Game $game, int $sampleSize): array
+    {
+        $teamIds = DB::table('competition_entries')
+            ->where('game_id', $game->id)
+            ->where('team_id', '!=', $game->team_id)
+            ->distinct()
+            ->pluck('team_id')
+            ->all();
+
+        if (empty($teamIds)) {
+            return [];
+        }
+
+        shuffle($teamIds);
+        $sampled = array_slice($teamIds, 0, $sampleSize);
+
+        return TeamReputation::resolveLevels($game->id, $sampled)
+            ->mapWithKeys(fn (string $level, string $teamId) => [
+                $teamId => ClubProfile::getReputationTierIndex($level),
+            ])
+            ->all();
+    }
+
+    /**
+     * Load rosters for a fixed set of team_ids, grouped by team_id.
+     *
+     * @param  array<string>  $teamIds
+     */
+    private function loadRostersFor(Game $game, array $teamIds): Collection
+    {
+        if (empty($teamIds)) {
+            return collect();
+        }
+
         return GamePlayer::with(['player:id,date_of_birth'])
             ->select([
                 'id', 'game_id', 'player_id', 'team_id', 'position',
-                'market_value_cents', 'game_technical_ability', 'game_physical_ability',
+                'market_value_cents', 'tier',
                 'retiring_at_season', 'contract_until', 'annual_wage',
             ])
             ->where('game_id', $game->id)
-            ->whereNotNull('team_id')
-            ->where('team_id', '!=', $game->team_id)
+            ->whereIn('team_id', $teamIds)
             ->get()
             ->groupBy('team_id');
-    }
-
-    private function calculateTeamAverage(Collection $players): int
-    {
-        if ($players->isEmpty()) {
-            return 55;
-        }
-
-        $total = $players->sum(fn (GamePlayer $p) => $this->getPlayerAbility($p));
-
-        return (int) round($total / $players->count());
-    }
-
-    private function getPlayerAbility(GamePlayer $player): int
-    {
-        $tech = $player->game_technical_ability ?? 50;
-        $phys = $player->game_physical_ability ?? 50;
-
-        return (int) round(($tech + $phys) / 2);
     }
 }
