@@ -99,8 +99,8 @@ class PromotionRelegationFactory
 
                     $playoffGenerator = new ($promotion['playoff_generator'])(
                         competitionId: $competitionId,
-                        qualifyingPositions: $promotion['playoff_positions'] ?? [],
-                        directPromotionPositions: $promotion['direct_promotion_positions'],
+                        directCount: $promotion['direct_count'],
+                        playoffCount: $promotion['playoff_count'] ?? 0,
                         triggerMatchday: ($teamCount - 1) * 2,
                     );
                 }
@@ -109,7 +109,8 @@ class PromotionRelegationFactory
                     topDivision: $promotion['top_division'],
                     bottomDivision: $promotion['bottom_division'],
                     relegatedPositions: $promotion['relegated_positions'],
-                    directPromotionPositions: $promotion['direct_promotion_positions'],
+                    directCount: $promotion['direct_count'],
+                    playoffCount: $promotion['playoff_count'] ?? 0,
                     playoffGenerator: $playoffGenerator,
                     reserveTeamFilter: $this->reserveTeamFilter,
                 );

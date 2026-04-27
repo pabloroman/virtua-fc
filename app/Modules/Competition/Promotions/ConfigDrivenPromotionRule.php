@@ -7,19 +7,25 @@ use App\Modules\Competition\Contracts\PromotionRelegationRule;
 use App\Modules\Competition\Enums\PlayoffState;
 use App\Modules\Competition\Exceptions\PlayoffInProgressException;
 use App\Modules\Competition\Services\ReserveTeamFilter;
+use App\Models\CompetitionEntry;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameStanding;
 use App\Models\SimulatedSeason;
 use App\Models\Team;
-use Illuminate\Support\Collection;
 
 /**
  * A config-driven promotion/relegation rule.
  *
- * Takes its parameters (divisions, positions, playoff generator) from
+ * Takes its parameters (divisions, slot counts, playoff generator) from
  * config/countries.php rather than hardcoding them. The actual promotion
  * and relegation logic is generic and works for any two-division pair.
+ *
+ * Slot allocation (which teams are direct promotions vs playoff seeds)
+ * is delegated to PromotionSlotAllocator so the bracket generator can
+ * consult the same allocation. This is what prevents a team from appearing
+ * in both lists when reserve filtering shifts the direct-promotion range
+ * down into the bracket's range.
  *
  * This rule branches on PlayoffState to avoid the historical "playoff loser
  * promoted" class of bug — the old implementation conflated "no playoff
@@ -28,20 +34,15 @@ use Illuminate\Support\Collection;
  */
 class ConfigDrivenPromotionRule implements PromotionRelegationRule
 {
-    /**
-     * Extra positions to check beyond the required count when skipping
-     * blocked reserve teams. Covers the unlikely case of multiple
-     * reserve teams clustered at the top of the standings.
-     */
-    private const RESERVE_TEAM_BUFFER = 3;
-
     public function __construct(
         private string $topDivision,
         private string $bottomDivision,
         private array $relegatedPositions,
-        private array $directPromotionPositions,
+        private int $directCount,
+        private int $playoffCount = 0,
         private ?PlayoffGenerator $playoffGenerator = null,
         private ?ReserveTeamFilter $reserveTeamFilter = null,
+        private ?PromotionSlotAllocator $slotAllocator = null,
     ) {}
 
     public function getTopDivision(): string
@@ -59,9 +60,17 @@ class ConfigDrivenPromotionRule implements PromotionRelegationRule
         return $this->relegatedPositions;
     }
 
+    /**
+     * Notional direct-promotion positions, derived from the slot count.
+     * Used by in-season UI/notification code (LeaguePlayoffProgressResolver,
+     * standings-zone coloring) to colour the table by zone. The actual
+     * end-of-season allocation can drift from these positions when reserve
+     * teams hold top-of-table slots — that drift is handled by the slot
+     * allocator, not here.
+     */
     public function getDirectPromotionPositions(): array
     {
-        return $this->directPromotionPositions;
+        return $this->directCount > 0 ? range(1, $this->directCount) : [];
     }
 
     public function getPlayoffGenerator(): ?PlayoffGenerator
@@ -75,12 +84,21 @@ class ConfigDrivenPromotionRule implements PromotionRelegationRule
             return [];
         }
 
-        $expectedCount = count($this->relegatedPositions);
-        $filter = $this->getFilter();
-        $topDivisionTeamIds = $filter->getTopDivisionTeamIds($game, $this->bottomDivision);
-        $this->assertTopDivisionPopulated($topDivisionTeamIds);
+        // Reserve-team filtering needs to know who's in the top division. An
+        // unpopulated top division silently disables the filter, which can
+        // promote a reserve team into the same division as its parent. Fail
+        // loudly upfront rather than producing a corrupt swap.
+        $this->assertTopDivisionPopulated($game);
 
-        $promoted = $this->getDirectPromotions($game, $filter, $topDivisionTeamIds);
+        $expectedCount = count($this->relegatedPositions);
+        $allocation = $this->getAllocator()->allocate(
+            $game,
+            $this->bottomDivision,
+            $this->directCount,
+            $this->playoffCount,
+        );
+
+        $promoted = $allocation->directPromotions;
 
         // With a playoff generator, branch on the playoff's lifecycle state.
         // Without one, direct promotions are all there is.
@@ -90,10 +108,7 @@ class ConfigDrivenPromotionRule implements PromotionRelegationRule
             $promoted = match ($state) {
                 PlayoffState::Completed => array_merge($promoted, [$this->requirePlayoffWinner($game)]),
                 PlayoffState::InProgress => throw PlayoffInProgressException::forCompetition($this->bottomDivision),
-                PlayoffState::NotStarted => array_merge(
-                    $promoted,
-                    $this->playoffStandIn($game, $promoted, $filter, $topDivisionTeamIds),
-                ),
+                PlayoffState::NotStarted => array_merge($promoted, $this->playoffStandIn($allocation)),
             };
         }
 
@@ -153,21 +168,28 @@ class ConfigDrivenPromotionRule implements PromotionRelegationRule
     }
 
     /**
-     * Reserve-team filtering depends on knowing who's currently in the top
-     * division. An empty list means either a config error (no mapping for
-     * this bottom division) or missing CompetitionEntry rows — in either
-     * case, proceeding would silently bypass the filter and could promote
-     * a reserve team whose parent is already in the top division. Fail loudly.
+     * Reserve filtering needs the top division's roster as a reference set —
+     * a team is "blocked" only if its parent club is currently in the top
+     * division. With an empty top-division roster, every reserve team would
+     * pass the filter, and one could end up promoted into its parent's
+     * division. Throwing here catches setup/config problems (missing
+     * CompetitionEntry rows for the top division) before they corrupt swaps.
      */
-    private function assertTopDivisionPopulated(Collection $topDivisionTeamIds): void
+    private function assertTopDivisionPopulated(Game $game): void
     {
-        if ($topDivisionTeamIds->isEmpty()) {
-            throw new \RuntimeException(
-                "Top division {$this->topDivision} has no CompetitionEntry rows for this game. "
-                . "Cannot resolve promotion from {$this->bottomDivision}: reserve-team filtering "
-                . 'requires the top division roster to be populated. This indicates a setup/config problem.'
-            );
+        $populated = CompetitionEntry::where('game_id', $game->id)
+            ->where('competition_id', $this->topDivision)
+            ->exists();
+
+        if ($populated) {
+            return;
         }
+
+        throw new \RuntimeException(
+            "Top division {$this->topDivision} has no CompetitionEntry rows for this game. "
+            . "Cannot resolve promotion from {$this->bottomDivision}: reserve-team filtering "
+            . 'requires the top division roster to be populated. This indicates a setup/config problem.'
+        );
     }
 
     /**
@@ -198,157 +220,18 @@ class ConfigDrivenPromotionRule implements PromotionRelegationRule
     }
 
     /**
-     * Get direct-promotion teams from the bottom division, preferring real
-     * standings and falling back to simulated. Reserve teams whose parent is
-     * in the top division are filtered out; the next eligible team slides in.
-     *
-     * @return array<array{teamId: string, position: int, teamName: string}>
-     */
-    private function getDirectPromotions(Game $game, ReserveTeamFilter $filter, Collection $topDivisionTeamIds): array
-    {
-        $requiredCount = count($this->directPromotionPositions);
-
-        // Real standings path.
-        $maxPosition = max($this->directPromotionPositions) + $requiredCount + self::RESERVE_TEAM_BUFFER;
-        $standings = GameStanding::where('game_id', $game->id)
-            ->where('competition_id', $this->bottomDivision)
-            ->whereBetween('position', [min($this->directPromotionPositions), $maxPosition])
-            ->with('team')
-            ->orderBy('position')
-            ->get();
-
-        if ($standings->isNotEmpty()) {
-            return $this->filterEligibleFromStandings($standings, $filter, $topDivisionTeamIds, $requiredCount);
-        }
-
-        // Simulated path — pull top N + buffer and filter.
-        return $this->filterEligibleFromSimulated(
-            $game,
-            range(1, $requiredCount + self::RESERVE_TEAM_BUFFER),
-            $filter,
-            $topDivisionTeamIds,
-            $requiredCount,
-        );
-    }
-
-    /**
      * Playoff is NotStarted — e.g. simulated non-player league that never ran
      * mid-season brackets. Stand in one team to keep the promoted count balanced:
-     * the next eligible position after the direct promotions.
+     * the highest-seeded entry from the allocator's playoff slots, which is
+     * guaranteed disjoint from the direct promotions.
      *
-     * @param array<array{teamId: string, position: int|string, teamName: string}> $alreadyPromoted
      * @return array<array{teamId: string, position: int|string, teamName: string}>
      */
-    private function playoffStandIn(Game $game, array $alreadyPromoted, ReserveTeamFilter $filter, Collection $topDivisionTeamIds): array
+    private function playoffStandIn(\App\Modules\Competition\DTOs\PromotionSlotAllocation $allocation): array
     {
-        $promotedIds = array_column($alreadyPromoted, 'teamId');
+        $first = $allocation->playoffQualifiers[0] ?? null;
 
-        $nextPosition = max($this->directPromotionPositions) + 1;
-        $maxPosition = $nextPosition + self::RESERVE_TEAM_BUFFER + 1;
-
-        // Real standings path.
-        $standings = GameStanding::where('game_id', $game->id)
-            ->where('competition_id', $this->bottomDivision)
-            ->whereBetween('position', [$nextPosition, $maxPosition])
-            ->with('team')
-            ->orderBy('position')
-            ->get();
-
-        if ($standings->isNotEmpty()) {
-            $teamIds = $standings->pluck('team_id')->all();
-            $parentMap = $filter->loadParentTeamIds($teamIds);
-
-            $eligible = $standings
-                ->filter(fn ($s) => !in_array($s->team_id, $promotedIds, true))
-                ->filter(fn ($s) => !$filter->isBlockedReserveTeam($s->team_id, $topDivisionTeamIds, $parentMap))
-                ->first();
-
-            if (!$eligible) {
-                return [];
-            }
-
-            return [[
-                'teamId' => $eligible->team_id,
-                'position' => $eligible->position,
-                'teamName' => $eligible->team->name ?? 'Unknown',
-            ]];
-        }
-
-        // Simulated path — take the next eligible position after the already-promoted set.
-        $simulated = $this->getSimulatedTeamsByPosition(
-            $game,
-            $this->bottomDivision,
-            range($nextPosition, $maxPosition),
-        );
-
-        $candidateIds = array_column($simulated, 'teamId');
-        $parentMap = $filter->loadParentTeamIds($candidateIds);
-
-        foreach ($simulated as $candidate) {
-            if (in_array($candidate['teamId'], $promotedIds, true)) {
-                continue;
-            }
-            if ($filter->isBlockedReserveTeam($candidate['teamId'], $topDivisionTeamIds, $parentMap)) {
-                continue;
-            }
-            return [$candidate];
-        }
-
-        return [];
-    }
-
-    /**
-     * Filter a collection of GameStanding rows through the reserve-team
-     * filter and return $requiredCount entries in standard shape.
-     *
-     * @param  \Illuminate\Support\Collection<int, GameStanding>  $standings
-     * @return array<array{teamId: string, position: int, teamName: string}>
-     */
-    private function filterEligibleFromStandings(Collection $standings, ReserveTeamFilter $filter, Collection $topDivisionTeamIds, int $requiredCount): array
-    {
-        $teamIds = $standings->pluck('team_id')->all();
-        $parentMap = $filter->loadParentTeamIds($teamIds);
-
-        $eligible = $standings->filter(
-            fn ($s) => !$filter->isBlockedReserveTeam($s->team_id, $topDivisionTeamIds, $parentMap)
-        )->take($requiredCount);
-
-        return $eligible->map(fn ($standing) => [
-            'teamId' => $standing->team_id,
-            'position' => $standing->position,
-            'teamName' => $standing->team->name ?? 'Unknown',
-        ])->values()->toArray();
-    }
-
-    /**
-     * Filter simulated standings through the reserve-team filter and return
-     * $requiredCount entries in standard shape.
-     *
-     * @param  int[]  $positions
-     * @return array<array{teamId: string, position: int, teamName: string}>
-     */
-    private function filterEligibleFromSimulated(Game $game, array $positions, ReserveTeamFilter $filter, Collection $topDivisionTeamIds, int $requiredCount): array
-    {
-        $candidates = $this->getSimulatedTeamsByPosition($game, $this->bottomDivision, $positions);
-        if (empty($candidates)) {
-            return [];
-        }
-
-        $candidateTeamIds = array_column($candidates, 'teamId');
-        $parentMap = $filter->loadParentTeamIds($candidateTeamIds);
-
-        $eligible = [];
-        foreach ($candidates as $candidate) {
-            if ($filter->isBlockedReserveTeam($candidate['teamId'], $topDivisionTeamIds, $parentMap)) {
-                continue;
-            }
-            $eligible[] = $candidate;
-            if (count($eligible) >= $requiredCount) {
-                break;
-            }
-        }
-
-        return $eligible;
+        return $first ? [$first] : [];
     }
 
     /**
@@ -437,8 +320,10 @@ class ConfigDrivenPromotionRule implements PromotionRelegationRule
         ];
     }
 
-    private function getFilter(): ReserveTeamFilter
+    private function getAllocator(): PromotionSlotAllocator
     {
-        return $this->reserveTeamFilter ?? app(ReserveTeamFilter::class);
+        return $this->slotAllocator ??= new PromotionSlotAllocator(
+            $this->reserveTeamFilter ?? app(ReserveTeamFilter::class),
+        );
     }
 }

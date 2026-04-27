@@ -114,8 +114,15 @@ return [
                 'top_division' => 'ESP1',
                 'bottom_division' => 'ESP2',
                 'relegated_positions' => [18, 19, 20],
-                'direct_promotion_positions' => [1, 2],
-                'playoff_positions' => [3, 4, 5, 6],
+                // Slot counts (not positions) — PromotionSlotAllocator walks
+                // standings in order, skipping reserve teams whose parent club
+                // is in the top division, and assigns the first $direct_count
+                // eligible teams to direct promotion before handing the next
+                // $playoff_count to the bracket. This guarantees the two
+                // lists are disjoint even when reserves cluster at the top
+                // and shift the actual filling past the notional positions.
+                'direct_count' => 2,
+                'playoff_count' => 4,
                 'playoff_generator' => \App\Modules\Competition\Playoffs\ESP2PlayoffGenerator::class,
             ],
             [
@@ -128,8 +135,11 @@ return [
                 'top_division' => 'ESP2',
                 'bottom_division' => 'ESP3A',
                 'relegated_positions' => [19, 20, 21, 22],
-                'direct_promotion_positions' => [1],
-                'playoff_positions' => [2, 3, 4, 5],
+                // Per-group counts (1 direct + 4 playoff per ESP3 group);
+                // PrimeraRFEFPlayoffGenerator's bracket walks each group's
+                // standings independently using these counts.
+                'direct_count' => 1,
+                'playoff_count' => 4,
                 'rule_class' => \App\Modules\Competition\Promotions\PrimeraRFEFPromotionRule::class,
                 'playoff_generator' => \App\Modules\Competition\Playoffs\PrimeraRFEFPlayoffGenerator::class,
                 // Register the same playoff generator under both groups so

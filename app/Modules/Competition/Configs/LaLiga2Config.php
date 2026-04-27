@@ -121,20 +121,28 @@ class LaLiga2Config implements CompetitionConfig, HasSeasonGoals
 
         $zones = [];
 
-        if ($rule && !empty($rule['direct_promotion_positions'])) {
+        // Zones reflect the *notional* (config-declared) positions a team
+        // would occupy for direct promotion / playoff qualification. The
+        // end-of-season allocator may shift the actual filling down when
+        // reserves cluster at the top, but the standings UI shows the
+        // pristine zone layout — that's what users expect to see.
+        $directCount = (int) ($rule['direct_count'] ?? 0);
+        $playoffCount = (int) ($rule['playoff_count'] ?? 0);
+
+        if ($rule && $directCount > 0) {
             $zones[] = [
-                'minPosition' => min($rule['direct_promotion_positions']),
-                'maxPosition' => max($rule['direct_promotion_positions']),
+                'minPosition' => 1,
+                'maxPosition' => $directCount,
                 'borderColor' => 'green-500',
                 'bgColor' => 'bg-green-500',
                 'label' => 'game.direct_promotion',
             ];
         }
 
-        if ($rule && !empty($rule['playoff_positions'])) {
+        if ($rule && $playoffCount > 0) {
             $zones[] = [
-                'minPosition' => min($rule['playoff_positions']),
-                'maxPosition' => max($rule['playoff_positions']),
+                'minPosition' => $directCount + 1,
+                'maxPosition' => $directCount + $playoffCount,
                 'borderColor' => 'green-300',
                 'bgColor' => 'bg-green-300',
                 'label' => 'game.promotion_playoff',

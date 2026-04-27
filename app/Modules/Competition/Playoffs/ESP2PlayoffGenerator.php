@@ -5,12 +5,11 @@ namespace App\Modules\Competition\Playoffs;
 use App\Modules\Competition\Contracts\PlayoffGenerator;
 use App\Modules\Competition\DTOs\PlayoffRoundConfig;
 use App\Modules\Competition\Enums\PlayoffState;
+use App\Modules\Competition\Promotions\PromotionSlotAllocator;
 use App\Modules\Competition\Services\LeagueFixtureGenerator;
-use App\Modules\Competition\Services\ReserveTeamFilter;
 use App\Models\Competition;
 use App\Models\CupTie;
 use App\Models\Game;
-use App\Models\GameStanding;
 
 /**
  * Playoff generator for a two-round promotion playoff (semifinal + final).
@@ -23,14 +22,22 @@ use App\Models\GameStanding;
  *
  * Originally built for Spanish Segunda División, but parameterized via constructor
  * to support any league with the same playoff format.
+ *
+ * Bracket seeding consults PromotionSlotAllocator so the seeded teams are
+ * guaranteed disjoint from the direct-promotion list. Without this, a reserve
+ * team holding a top-of-table position would push a direct-promotion claimant
+ * down into the bracket's range — and that team would end up both directly
+ * promoted (via standings) and the playoff winner (via the bracket they were
+ * mistakenly seeded into). See PromotionSlotAllocator's class doc for context.
  */
 class ESP2PlayoffGenerator implements PlayoffGenerator
 {
     public function __construct(
         private readonly string $competitionId,
-        private readonly array $qualifyingPositions = [3, 4, 5, 6],
-        private readonly array $directPromotionPositions = [1, 2],
+        private readonly int $directCount = 2,
+        private readonly int $playoffCount = 4,
         private readonly int $triggerMatchday = 42,
+        private readonly ?PromotionSlotAllocator $slotAllocator = null,
     ) {}
 
     public function getCompetitionId(): string
@@ -38,14 +45,23 @@ class ESP2PlayoffGenerator implements PlayoffGenerator
         return $this->competitionId;
     }
 
+    /**
+     * Notional qualifying positions, derived from the slot counts. Used by
+     * in-season UI/notification code (LeaguePlayoffProgressResolver) to show
+     * a user at, say, position 4 a "playoff" notification mid-season. The
+     * actual end-of-season seeding is computed by the allocator and may
+     * include later positions when reserve teams shift slots down.
+     */
     public function getQualifyingPositions(): array
     {
-        return $this->qualifyingPositions;
+        return $this->playoffCount > 0
+            ? range($this->directCount + 1, $this->directCount + $this->playoffCount)
+            : [];
     }
 
     public function getDirectPromotionPositions(): array
     {
-        return $this->directPromotionPositions;
+        return $this->directCount > 0 ? range(1, $this->directCount) : [];
     }
 
     public function getTriggerMatchday(): int
@@ -85,36 +101,33 @@ class ESP2PlayoffGenerator implements PlayoffGenerator
      * Semifinal matchups: highest seed vs lowest, 2nd vs 3rd.
      * Lower-seeded team hosts the first leg.
      *
-     * Reserve teams whose parent club is in the top division are excluded
-     * from playoffs. The next-placed eligible team slides into their spot.
+     * Bracket teams come from PromotionSlotAllocator, which walks standings
+     * once and assigns the first $directCount eligible teams to direct
+     * promotion before handing the next $playoffCount to the bracket. Reserve
+     * teams whose parent club is in the top division are filtered there, so
+     * this method doesn't re-apply the reserve filter.
      */
     private function generateSemifinalMatchups(Game $game): array
     {
-        $requiredCount = count($this->qualifyingPositions);
-        $filter = app(ReserveTeamFilter::class);
+        $allocation = $this->getAllocator()->allocate(
+            $game,
+            $this->competitionId,
+            $this->directCount,
+            $this->playoffCount,
+        );
 
-        // Fetch more standings than needed in case we need to skip reserve teams
-        $maxPosition = max($this->qualifyingPositions) + $requiredCount;
-        $standings = GameStanding::where('game_id', $game->id)
-            ->where('competition_id', $this->competitionId)
-            ->whereBetween('position', [min($this->qualifyingPositions), $maxPosition])
-            ->orderBy('position')
-            ->get();
+        $bracket = $allocation->playoffQualifiers;
 
-        // Filter out ineligible reserve teams
-        $topDivisionTeamIds = $filter->getTopDivisionTeamIds($game, $this->competitionId);
-        $eligible = $standings->filter(
-            fn ($s) => !$filter->isBlockedReserveTeam($s->team_id, $topDivisionTeamIds)
-        )->take($requiredCount);
-
-        if ($eligible->count() < $requiredCount) {
+        if (count($bracket) < $this->playoffCount) {
             throw new \RuntimeException(
-                "Not enough eligible teams for playoffs in {$this->competitionId}: " .
-                "need {$requiredCount}, found {$eligible->count()}"
+                "Not enough eligible teams for playoffs in {$this->competitionId}: "
+                . "need {$this->playoffCount}, found " . count($bracket)
+                . ' (after reserve filtering and direct promotions). Direct promotions '
+                . 'consumed ' . count($allocation->directPromotions) . ' slots.'
             );
         }
 
-        $teamIds = $eligible->pluck('team_id')->values()->toArray();
+        $teamIds = array_column($bracket, 'teamId');
 
         // Last vs first, second-to-last vs second
         return [
@@ -166,5 +179,10 @@ class ESP2PlayoffGenerator implements PlayoffGenerator
             ->exists();
 
         return $anyTieExists ? PlayoffState::InProgress : PlayoffState::NotStarted;
+    }
+
+    private function getAllocator(): PromotionSlotAllocator
+    {
+        return $this->slotAllocator ?? app(PromotionSlotAllocator::class);
     }
 }

@@ -203,7 +203,7 @@ class CountryConfig
     /**
      * Get promotion/relegation rules for a country.
      *
-     * @return array<array{top_division: string, bottom_division: string, relegated_positions: int[], direct_promotion_positions: int[], playoff_positions?: int[], playoff_generator?: class-string}>
+     * @return array<array{top_division: string, bottom_division: string, relegated_positions: int[], direct_count: int, playoff_count?: int, playoff_generator?: class-string}>
      */
     public function promotions(string $countryCode): array
     {

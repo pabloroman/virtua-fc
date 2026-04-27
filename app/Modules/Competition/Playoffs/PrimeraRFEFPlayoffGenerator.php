@@ -56,8 +56,8 @@ class PrimeraRFEFPlayoffGenerator implements PlayoffGenerator
 
     public function __construct(
         private readonly string $competitionId = self::PLAYOFF_ID,
-        private readonly array $qualifyingPositions = [2, 3, 4, 5],
-        private readonly array $directPromotionPositions = [1],
+        private readonly int $directCount = 1,
+        private readonly int $playoffCount = 4,
         private readonly int $triggerMatchday = 38,
     ) {}
 
@@ -66,14 +66,23 @@ class PrimeraRFEFPlayoffGenerator implements PlayoffGenerator
         return $this->competitionId;
     }
 
+    /**
+     * Notional qualifying positions per group, derived from the slot counts.
+     * The actual bracket-eligibility logic in eligibleTopTeams() walks each
+     * group's standings sequentially and skips reserve teams; these positions
+     * are exposed only for in-season UI/notification code that highlights
+     * "you'd qualify for the playoff if the season ended now".
+     */
     public function getQualifyingPositions(): array
     {
-        return $this->qualifyingPositions;
+        return $this->playoffCount > 0
+            ? range($this->directCount + 1, $this->directCount + $this->playoffCount)
+            : [];
     }
 
     public function getDirectPromotionPositions(): array
     {
-        return $this->directPromotionPositions;
+        return $this->directCount > 0 ? range(1, $this->directCount) : [];
     }
 
     public function getTriggerMatchday(): int

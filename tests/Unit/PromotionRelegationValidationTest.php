@@ -137,7 +137,8 @@ class PromotionRelegationValidationTest extends TestCase
             topDivision: 'ESP1',
             bottomDivision: 'ESP2',
             relegatedPositions: [18, 19, 20],
-            directPromotionPositions: [1, 2],
+            directCount: 2,
+            playoffCount: 4,
             playoffGenerator: null,
         );
 
@@ -153,12 +154,13 @@ class PromotionRelegationValidationTest extends TestCase
     {
         $this->createStandings('ESP2', 22);
 
-        // No playoff generator, but relegatedPositions matches directPromotionPositions count
+        // No playoff generator, but relegatedPositions matches directCount
         $rule = new ConfigDrivenPromotionRule(
             topDivision: 'ESP1',
             bottomDivision: 'ESP2',
             relegatedPositions: [1, 2],
-            directPromotionPositions: [1, 2],
+            directCount: 2,
+            playoffCount: 4,
             playoffGenerator: null,
         );
 
@@ -183,7 +185,8 @@ class PromotionRelegationValidationTest extends TestCase
             topDivision: 'ESP1',
             bottomDivision: 'ESP2',
             relegatedPositions: [18, 19, 20],
-            directPromotionPositions: [1, 2],
+            directCount: 2,
+            playoffCount: 4,
             playoffGenerator: null,
         );
 
@@ -207,7 +210,8 @@ class PromotionRelegationValidationTest extends TestCase
             topDivision: 'ESP1',
             bottomDivision: 'ESP2',
             relegatedPositions: [18, 19, 20],
-            directPromotionPositions: [1, 2],
+            directCount: 2,
+            playoffCount: 4,
         );
 
         $relegated = $rule->getRelegatedTeams($this->game);
@@ -223,7 +227,8 @@ class PromotionRelegationValidationTest extends TestCase
             topDivision: 'ESP1',
             bottomDivision: 'ESP2',
             relegatedPositions: [18, 19, 20],
-            directPromotionPositions: [1, 2],
+            directCount: 2,
+            playoffCount: 4,
         );
 
         // Real standings exist but positions 18-20 are missing
@@ -252,7 +257,8 @@ class PromotionRelegationValidationTest extends TestCase
             topDivision: 'ESP1',
             bottomDivision: 'ESP2',
             relegatedPositions: [18, 19, 20],
-            directPromotionPositions: [1, 2],
+            directCount: 2,
+            playoffCount: 4,
         );
 
         $relegated = $rule->getRelegatedTeams($this->game);
@@ -273,7 +279,8 @@ class PromotionRelegationValidationTest extends TestCase
             topDivision: 'ESP1',
             bottomDivision: 'ESP2',
             relegatedPositions: [18, 19, 20],
-            directPromotionPositions: [1, 2],
+            directCount: 2,
+            playoffCount: 4,
         );
 
         $promoted = $rule->getPromotedTeams($this->game);
@@ -287,7 +294,8 @@ class PromotionRelegationValidationTest extends TestCase
             topDivision: 'ESP1',
             bottomDivision: 'ESP2',
             relegatedPositions: [18, 19, 20],
-            directPromotionPositions: [1, 2],
+            directCount: 2,
+            playoffCount: 4,
         );
 
         $relegated = $rule->getRelegatedTeams($this->game);
@@ -390,7 +398,8 @@ class PromotionRelegationValidationTest extends TestCase
             topDivision: 'ESP1',
             bottomDivision: 'ESP2',
             relegatedPositions: [19, 20],
-            directPromotionPositions: [1, 2],
+            directCount: 2,
+            playoffCount: 4,
         );
 
         $promoted = $rule->getPromotedTeams($this->game);
@@ -640,7 +649,8 @@ class PromotionRelegationValidationTest extends TestCase
             topDivision: 'ESP1',
             bottomDivision: 'ESP2',
             relegatedPositions: [18, 19, 20],
-            directPromotionPositions: [1, 2],
+            directCount: 2,
+            playoffCount: 4,
             playoffGenerator: new FakePlayoffGenerator(PlayoffState::InProgress),
         );
 
@@ -658,7 +668,8 @@ class PromotionRelegationValidationTest extends TestCase
             topDivision: 'ESP1',
             bottomDivision: 'ESP2',
             relegatedPositions: [18, 19, 20],
-            directPromotionPositions: [1, 2],
+            directCount: 2,
+            playoffCount: 4,
             playoffGenerator: new FakePlayoffGenerator(PlayoffState::Completed),
         );
 
@@ -677,7 +688,8 @@ class PromotionRelegationValidationTest extends TestCase
             topDivision: 'ESP1',
             bottomDivision: 'ESP2',
             relegatedPositions: [18, 19, 20],
-            directPromotionPositions: [1, 2],
+            directCount: 2,
+            playoffCount: 4,
             playoffGenerator: new FakePlayoffGenerator(PlayoffState::NotStarted),
         );
 
@@ -710,7 +722,8 @@ class PromotionRelegationValidationTest extends TestCase
             topDivision: 'ESP1',
             bottomDivision: 'ESP2',
             relegatedPositions: [18, 19, 20],
-            directPromotionPositions: [1, 2],
+            directCount: 2,
+            playoffCount: 4,
             playoffGenerator: new FakePlayoffGenerator(PlayoffState::Completed),
         );
 
@@ -740,7 +753,8 @@ class PromotionRelegationValidationTest extends TestCase
             topDivision: 'ESP1',
             bottomDivision: 'ESP2',
             relegatedPositions: [18, 19, 20],
-            directPromotionPositions: [1, 2],
+            directCount: 2,
+            playoffCount: 4,
         );
 
         $this->expectException(\RuntimeException::class);
@@ -786,7 +800,8 @@ class PromotionRelegationValidationTest extends TestCase
             topDivision: 'ESP1',
             bottomDivision: 'ESP2',
             relegatedPositions: [1, 2, 3],
-            directPromotionPositions: [1, 2],
+            directCount: 2,
+            playoffCount: 4,
             playoffGenerator: new FakePlayoffGenerator(PlayoffState::NotStarted),
         );
 
