@@ -115,7 +115,7 @@ class PlayerConditionService
      * - Weekly matches: full recovery to 100
      * - Congested periods (3 days): stabilize around 75-80 starting energy
      *
-     * Formula: recoveryRate = base × physicalMod × (1 + scaling × (100 − postMatchEnergy) / 100)
+     * Formula: recoveryRate = base × (1 + scaling × (100 − postMatchEnergy) / 100)
      */
     private function calculateFitnessChange(GamePlayer $player, bool $playedMatch, int $daysSinceLastMatch, Carbon $currentDate): int
     {
@@ -126,8 +126,6 @@ class PlayerConditionService
         $baseRecovery = $config['base_recovery_per_day'];
         $scaling = $config['recovery_scaling'];
         $maxRecoveryDays = $config['max_recovery_days'];
-        $physicalModifier = $this->getPhysicalRecoveryModifier($player, $config);
-        $effectiveBase = $baseRecovery * $physicalModifier;
 
         $recoveryDays = min($daysSinceLastMatch, $maxRecoveryDays);
 
@@ -156,14 +154,14 @@ class PlayerConditionService
             // After playing, the player is at low energy and recovers faster from there.
             // This correctly models: play match → drop to ~60% → recover over N days.
             $estimatedPostMatch = max(self::MIN_FITNESS, $currentFitness - $loss);
-            $recoveryRate = $effectiveBase * (1 + $scaling * (self::MAX_FITNESS - $estimatedPostMatch) / 100);
+            $recoveryRate = $baseRecovery * (1 + $scaling * (self::MAX_FITNESS - $estimatedPostMatch) / 100);
             $recovery = (int) round($recoveryRate * $recoveryDays);
 
             return $recovery - $loss;
         }
 
         // Non-playing players: recovery only, based on current fitness
-        $recoveryRate = $effectiveBase * (1 + $scaling * (self::MAX_FITNESS - $currentFitness) / 100);
+        $recoveryRate = $baseRecovery * (1 + $scaling * (self::MAX_FITNESS - $currentFitness) / 100);
         $recovery = (int) round($recoveryRate * $recoveryDays);
 
         return $recovery;
@@ -181,21 +179,6 @@ class PlayerConditionService
             $age <= PlayerAge::YOUNG_END => $ageMod['young'],
             $age < PlayerAge::MIN_RETIREMENT_OUTFIELD => $ageMod['prime'],
             default => $ageMod['veteran'],
-        };
-    }
-
-    /**
-     * Get physical ability modifier for recovery rate (fitter players recover faster).
-     */
-    private function getPhysicalRecoveryModifier(GamePlayer $player, array $config): float
-    {
-        $physical = $player->current_physical_ability;
-        $physMod = $config['physical_recovery_modifier'];
-
-        return match (true) {
-            $physical >= $physMod['high_threshold'] => $physMod['high'],
-            $physical >= $physMod['low_threshold'] => $physMod['medium'],
-            default => $physMod['low'],
         };
     }
 

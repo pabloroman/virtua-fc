@@ -197,21 +197,6 @@ class PlayerConditionServiceTest extends TestCase
     }
 
     // -------------------------------------------------------
-    // Physical ability modifiers
-    // -------------------------------------------------------
-
-    public function test_high_physical_players_recover_faster(): void
-    {
-        $highPhys = $this->createPlayer(['fitness' => 60, 'game_physical_ability' => 85]);
-        $lowPhys = $this->createPlayer(['fitness' => 60, 'game_physical_ability' => 50]);
-
-        $recoveryHigh = $this->calculateFitnessChange->invoke($this->service, $highPhys, false, 5, $this->currentDate);
-        $recoveryLow = $this->calculateFitnessChange->invoke($this->service, $lowPhys, false, 5, $this->currentDate);
-
-        $this->assertGreaterThan($recoveryLow, $recoveryHigh, 'High physical player should recover faster');
-    }
-
-    // -------------------------------------------------------
     // Proportional drain (unified energy model)
     // -------------------------------------------------------
 

@@ -15,7 +15,7 @@ return [
     | A typical outfielder at fitness 100 ends a match at ~60 energy.
     |
     | Recovery formula:
-    |   recoveryRate = base × physicalMod × (1 + scaling × (100 − fitness) / 100)
+    |   recoveryRate = base × (1 + scaling × (100 − fitness) / 100)
     |
     | Weekly matches: stabilize around 88-92 starting energy (not full 100),
     | so even normal schedules reward rotation.
@@ -23,7 +23,8 @@ return [
     | forcing squad rotation for optimal performance.
     |
     | Age modifies energy loss per match (veterans lose more).
-    | Physical ability modifies both drain rate AND recovery speed.
+    | Physical ability modifies drain rate during the match only; recovery
+    | between matches is the same for all players.
     |
     */
     'condition' => [
@@ -35,14 +36,6 @@ return [
             'young' => 0.92,                    // <= YOUNG_END: less fatigue per match
             'prime' => 1.0,                     // YOUNG_END+1 to MIN_RETIREMENT_OUTFIELD-1: baseline
             'veteran' => 1.12,                  // >= MIN_RETIREMENT_OUTFIELD: noticeably more
-        ],
-
-        'physical_recovery_modifier' => [       // multiplier on base recovery rate
-            'high_threshold' => 80,
-            'low_threshold' => 60,
-            'high' => 1.05,                     // physical >= 80: faster recovery
-            'medium' => 1.0,                    // 60-79: baseline
-            'low' => 0.95,                      // < 60: slower recovery
         ],
 
         'ai_rotation_threshold' => 70,          // AI benches players below this energy
