@@ -352,6 +352,17 @@ class Game extends Model
         return $teamId === $this->team_id || $teamId === $this->reserve_team_id;
     }
 
+    /**
+     * IDs of all teams the user manages in this game (first team, plus the
+     * reserve team for parent clubs). Null entries are filtered out.
+     *
+     * @return array<int, string>
+     */
+    public function userTeamIds(): array
+    {
+        return array_values(array_filter([$this->team_id, $this->reserve_team_id]));
+    }
+
     public function isFilial(): bool
     {
         return $this->reserve_team_id !== null;

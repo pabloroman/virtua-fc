@@ -388,6 +388,77 @@ class GamePlayer extends Model
     }
 
     /**
+     * Limit a query to players owned by the user in the given game — i.e.,
+     * by the first team or the reserve team. Generalizes scopeOwnedByTeam
+     * across the user's whole organization, including filial call-ups (which
+     * appear loaned-in to the first team but are still user-owned through
+     * the reserve as parent).
+     */
+    public function scopeUserOwned($query, Game $game)
+    {
+        $teamIds = $game->userTeamIds();
+
+        if (empty($teamIds)) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->where(function ($q) use ($teamIds) {
+            $q->where(function ($present) use ($teamIds) {
+                $present->whereIn('team_id', $teamIds)
+                    ->whereDoesntHave('activeLoan');
+            })->orWhereHas('activeLoan', fn ($loanQuery) => $loanQuery->whereIn('parent_team_id', $teamIds));
+        });
+    }
+
+    /**
+     * Whether this player is part of the user's organization in the given
+     * game — owned by the first team or the reserve team, including filial
+     * call-ups loaned internally between them.
+     *
+     * Loaned-out players (gone elsewhere but parent-owned by the user) count.
+     * Loaned-in players from a third-party club do not.
+     */
+    public function isUserOwned(Game $game): bool
+    {
+        $teamIds = $game->userTeamIds();
+
+        if (empty($teamIds)) {
+            return false;
+        }
+
+        $loan = $this->relationLoaded('activeLoan')
+            ? $this->activeLoan
+            : $this->activeLoan()->first();
+
+        if ($loan) {
+            return in_array($loan->parent_team_id, $teamIds, true);
+        }
+
+        return in_array($this->team_id, $teamIds, true);
+    }
+
+    /**
+     * Whether this player is currently called up from the user's reserve team
+     * to the first team via internal loan. The player physically sits on the
+     * first-team roster but is owned by the reserve, so flows like contract
+     * renewal and release must treat them as user-owned.
+     */
+    public function isCalledUpFromReserve(Game $game): bool
+    {
+        if ($game->reserve_team_id === null) {
+            return false;
+        }
+
+        $loan = $this->relationLoaded('activeLoan')
+            ? $this->activeLoan
+            : $this->activeLoan()->first();
+
+        return $loan !== null
+            && $loan->parent_team_id === $game->reserve_team_id
+            && $loan->loan_team_id === $game->team_id;
+    }
+
+    /**
      * Check if player is transfer listed.
      */
     public function isTransferListed(): bool
@@ -538,20 +609,12 @@ class GamePlayer extends Model
             return false;
         }
 
-        // Loaned-in players belong to another club — we can't renew them.
-        // Exception: a player called up from the user's own reserve team
-        // appears as loaned-in to the first team but is still user-owned,
-        // so the user retains contract authority.
-        // Loaned-out players (ours, playing elsewhere) can still be renewed.
-        if ($this->isLoanedIn($this->game->team_id)) {
-            $reserveTeamId = $this->game->reserve_team_id;
-            $loanedFromOwnReserve = $reserveTeamId !== null
-                && $this->activeLoan
-                && $this->activeLoan->parent_team_id === $reserveTeamId;
-
-            if (!$loanedFromOwnReserve) {
-                return false;
-            }
+        // Renewal authority follows ownership: any user-owned player counts,
+        // including loaned-out players (parent club retains authority) and
+        // filial call-ups (owned via the reserve team). Players loaned in
+        // from a third-party club are not user-owned and cannot be renewed.
+        if (!$this->isUserOwned($this->game)) {
+            return false;
         }
 
         // Retiring players won't renew

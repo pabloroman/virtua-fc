@@ -779,15 +779,24 @@ class ContractService
      */
     private function validateRelease(Game $game, GamePlayer $player): ?string
     {
-        // Must belong to the user's team
-        if ($player->team_id !== $game->team_id) {
+        // Must be a user-owned player physically on a user roster. The roster
+        // check rejects players loaned out to a third-party club; the
+        // ownership check rejects players loaned in from a third-party club.
+        if (!in_array($player->team_id, $game->userTeamIds(), true)) {
             return __('messages.release_not_your_player');
         }
 
-        // Cannot release players on loan
-        if ($player->isLoanedOut($game->team_id) || $player->isLoanedIn($game->team_id)) {
+        if (!$player->isUserOwned($game)) {
             return __('messages.release_on_loan');
         }
+
+        // Squad-size and position-group minimums apply to the roster the
+        // player effectively occupies. Filial call-ups sit on the first team
+        // physically but their parent club (and the roster they belong to
+        // for these checks) is the reserve team.
+        $rosterTeamId = $player->isCalledUpFromReserve($game)
+            ? $game->reserve_team_id
+            : $player->team_id;
 
         // Cannot release players with agreed transfers
         if ($player->hasAgreedTransfer()) {
@@ -801,7 +810,7 @@ class ContractService
 
         // Squad size check
         $currentSquadSize = GamePlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
+            ->where('team_id', $rosterTeamId)
             ->count();
 
         if ($currentSquadSize <= self::MIN_SQUAD_SIZE) {
@@ -814,7 +823,7 @@ class ContractService
 
         if ($groupMinimum > 0) {
             $groupCount = GamePlayer::where('game_id', $game->id)
-                ->where('team_id', $game->team_id)
+                ->where('team_id', $rosterTeamId)
                 ->get()
                 ->filter(fn ($p) => $p->position_group === $positionGroup)
                 ->count();

@@ -17,22 +17,12 @@ class ShowPlayerDetail
     {
         $game = Game::findOrFail($gameId);
 
-        $allowedTeamIds = array_filter([$game->team_id, $game->reserve_team_id]);
-
         $gamePlayer = GamePlayer::with(['player', 'careerRecord', 'activeLoan'])
             ->where('game_id', $gameId)
-            ->whereIn('team_id', $allowedTeamIds)
+            ->userOwned($game)
             ->findOrFail($playerId);
 
-        // Player is "called up" from the filial: currently registered to the
-        // first team via a Loan whose parent is the reserve team. For action
-        // purposes we treat them like a normal first-team player and offer
-        // an additional "send back to filial" button.
-        $isCalledUpFromReserve = $game->reserve_team_id !== null
-            && $gamePlayer->team_id === $game->team_id
-            && $gamePlayer->activeLoan
-            && $gamePlayer->activeLoan->parent_team_id === $game->reserve_team_id
-            && $gamePlayer->activeLoan->loan_team_id === $game->team_id;
+        $isCalledUpFromReserve = $gamePlayer->isCalledUpFromReserve($game);
 
         $canRenew = $gamePlayer->canBeOfferedRenewal(currentDate: $game->current_date);
         $renewalNegotiation = null;
@@ -51,15 +41,15 @@ class ShowPlayerDetail
         $isOnReserve = $game->reserve_team_id !== null
             && $gamePlayer->team_id === $game->reserve_team_id;
 
-        // Release data — allowed for first-team and reserve-team players,
-        // including filial players currently called up via internal loan
-        // (which technically appears as "loaned in" but is treated as
-        // user-owned for management purposes).
+        // Release is permitted for any user-owned player physically present
+        // on a user roster (first team or reserve, including filial call-ups
+        // who sit on the first team via internal loan). The team_id check
+        // excludes players currently loaned out to a third-party club —
+        // those must wait for the loan to end before they can be released.
         $canRelease = $game->isCareerMode()
-            && in_array($gamePlayer->team_id, [$game->team_id, $game->reserve_team_id], true)
+            && $gamePlayer->isUserOwned($game)
+            && in_array($gamePlayer->team_id, $game->userTeamIds(), true)
             && !$gamePlayer->isRetiring()
-            && ($isCalledUpFromReserve || !$gamePlayer->isLoanedIn($game->team_id))
-            && !$gamePlayer->isLoanedOut($game->team_id)
             && !$gamePlayer->hasPreContractAgreement()
             && !$gamePlayer->hasRenewalAgreed()
             && !$gamePlayer->hasAgreedTransfer()

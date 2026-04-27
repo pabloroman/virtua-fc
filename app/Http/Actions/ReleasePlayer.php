@@ -17,10 +17,9 @@ class ReleasePlayer
     public function __invoke(Request $request, string $gameId, string $playerId): RedirectResponse
     {
         $game = Game::findOrFail($gameId);
-        $allowedTeamIds = array_filter([$game->team_id, $game->reserve_team_id]);
         $player = GamePlayer::where('id', $playerId)
             ->where('game_id', $gameId)
-            ->whereIn('team_id', $allowedTeamIds)
+            ->whereIn('team_id', $game->userTeamIds())
             ->firstOrFail();
 
         $wasOnReserve = $game->reserve_team_id !== null && $player->team_id === $game->reserve_team_id;
