@@ -2,6 +2,7 @@
 
 namespace App\Http\Actions;
 
+use App\Modules\Transfer\Exceptions\SquadMinimumException;
 use App\Modules\Transfer\Services\LoanService;
 use App\Models\Game;
 use App\Models\GamePlayer;
@@ -64,9 +65,25 @@ class RequestLoan
                 ->with('error', __('messages.already_on_loan', ['player' => $player->name]));
         }
 
-        $this->loanService->startLoanSearch($game, $player);
+        try {
+            $this->loanService->startLoanSearch($game, $player);
+        } catch (SquadMinimumException $e) {
+            return redirect()->back()->with('error', $this->formatBreachMessage($e));
+        }
 
         return redirect()->back()
             ->with('success', __('messages.loan_search_started', ['player' => $player->name]));
+    }
+
+    private function formatBreachMessage(SquadMinimumException $e): string
+    {
+        if ($e->type() === 'too_small') {
+            return __('messages.list_for_loan_squad_too_small', ['min' => $e->min()]);
+        }
+
+        return __('messages.list_for_loan_position_minimum', [
+            'group' => __('squad.' . strtolower($e->group()) . 's'),
+            'min'   => $e->min(),
+        ]);
     }
 }

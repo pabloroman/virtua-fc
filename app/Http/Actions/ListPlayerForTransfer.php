@@ -2,6 +2,7 @@
 
 namespace App\Http\Actions;
 
+use App\Modules\Transfer\Exceptions\SquadMinimumException;
 use App\Modules\Transfer\Services\TransferService;
 use App\Models\Game;
 use App\Models\GamePlayer;
@@ -32,11 +33,26 @@ class ListPlayerForTransfer
             ]));
         }
 
-        // List the player
-        $this->transferService->listPlayer($player);
+        try {
+            $this->transferService->listPlayer($player);
+        } catch (SquadMinimumException $e) {
+            return redirect()->back()->with('error', $this->formatBreachMessage($e));
+        }
 
         return redirect()
             ->back()
             ->with('success', __('messages.player_listed', ['player' => $player->player->name]));
+    }
+
+    private function formatBreachMessage(SquadMinimumException $e): string
+    {
+        if ($e->type() === 'too_small') {
+            return __('messages.list_for_sale_squad_too_small', ['min' => $e->min()]);
+        }
+
+        return __('messages.list_for_sale_position_minimum', [
+            'group' => __('squad.' . strtolower($e->group()) . 's'),
+            'min'   => $e->min(),
+        ]);
     }
 }

@@ -7,7 +7,7 @@ use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Academy\Services\YouthAcademyService;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Squad\Services\PlayerGeneratorService;
-use App\Modules\Transfer\Services\ContractService;
+use App\Modules\Squad\Services\SquadMinimumService;
 use App\Models\Game;
 use App\Models\GameNotification;
 use App\Models\GamePlayer;
@@ -37,6 +37,7 @@ class YouthAcademyPromotionProcessor implements SeasonProcessor
         private readonly YouthAcademyService $youthAcademyService,
         private readonly NotificationService $notificationService,
         private readonly PlayerGeneratorService $playerGenerator,
+        private readonly SquadMinimumService $squadMinimumService,
     ) {}
 
     public function priority(): int
@@ -68,8 +69,8 @@ class YouthAcademyPromotionProcessor implements SeasonProcessor
         }
 
         // Phase 2: If squad is under minimum, promote best academy players to fill
-        $squadCount = ContractService::squadCount($game);
-        $deficit = ContractService::MIN_SQUAD_SIZE - $squadCount;
+        $squadCount = $this->squadMinimumService->squadCount($game, $game->team_id);
+        $deficit = SquadMinimumService::MIN_SQUAD_SIZE - $squadCount;
 
         $gapPromoted = $this->youthAcademyService->promoteBestPlayers($game, $deficit);
 
@@ -86,8 +87,8 @@ class YouthAcademyPromotionProcessor implements SeasonProcessor
         }
 
         // Phase 3: If still under minimum, generate synthetic players
-        $squadCount = ContractService::squadCount($game);
-        $remaining = ContractService::MIN_SQUAD_SIZE - $squadCount;
+        $squadCount = $this->squadMinimumService->squadCount($game, $game->team_id);
+        $remaining = SquadMinimumService::MIN_SQUAD_SIZE - $squadCount;
 
         if ($remaining > 0) {
             $this->generateSyntheticPlayers($game, $remaining, $data);

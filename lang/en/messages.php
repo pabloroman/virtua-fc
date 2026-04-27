@@ -105,6 +105,20 @@ return [
     'release_squad_too_small' => 'Cannot release — your squad must have at least :min players.',
     'release_position_minimum' => 'Cannot release — you need at least :min :group.',
 
+    // Squad-minimum guards on promote / demote / list / accept
+    'promote_squad_too_small' => 'Cannot call up — the reserve squad must have at least :min players.',
+    'promote_position_minimum' => 'Cannot call up — the reserve squad needs at least :min :group.',
+    'demote_squad_too_small' => 'Cannot send back — the first team must have at least :min players.',
+    'demote_position_minimum' => 'Cannot send back — the first team needs at least :min :group.',
+    'list_for_sale_squad_too_small' => 'Cannot list for sale — your squad must have at least :min players.',
+    'list_for_sale_position_minimum' => 'Cannot list for sale — you need at least :min :group.',
+    'list_for_loan_squad_too_small' => 'Cannot loan out — your squad must have at least :min players.',
+    'list_for_loan_position_minimum' => 'Cannot loan out — you need at least :min :group.',
+    'accept_offer_squad_too_small' => 'Cannot accept the offer — your squad must have at least :min players.',
+    'accept_offer_position_minimum' => 'Cannot accept the offer — you need at least :min :group.',
+    'accept_loan_squad_too_small' => 'Cannot accept the loan — your squad must have at least :min players.',
+    'accept_loan_position_minimum' => 'Cannot accept the loan — you need at least :min :group.',
+
     'cannot_loan_free_agent' => 'Cannot loan a free agent. Sign them directly instead.',
 
     // Pending actions

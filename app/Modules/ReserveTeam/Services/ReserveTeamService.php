@@ -9,6 +9,9 @@ use App\Models\Loan;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Player\PlayerAge;
 use App\Modules\ReserveTeam\Exceptions\FirstTeamSquadFullException;
+use App\Modules\ReserveTeam\Exceptions\FirstTeamSquadMinimumException;
+use App\Modules\ReserveTeam\Exceptions\ReserveSquadMinimumException;
+use App\Modules\Squad\Services\SquadMinimumService;
 use App\Modules\Squad\Services\SquadNumberService;
 use App\Modules\Transfer\Enums\TransferWindowType;
 use App\Modules\Transfer\Services\LoanService;
@@ -30,6 +33,7 @@ class ReserveTeamService
         private readonly LoanService $loanService,
         private readonly SquadNumberService $squadNumberService,
         private readonly NotificationService $notificationService,
+        private readonly SquadMinimumService $squadMinimumService,
     ) {}
 
     /**
@@ -56,6 +60,8 @@ class ReserveTeamService
      * (parent=reserve, loan=first), flips team_id, assigns squad number.
      *
      * @throws FirstTeamSquadFullException when no squad number is available
+     * @throws ReserveSquadMinimumException when the reserve would fall below
+     *         its squad-composition minimum after the call-up
      */
     public function callUpToFirstTeam(GamePlayer $player, Game $game): void
     {
@@ -63,6 +69,12 @@ class ReserveTeamService
 
         if ($player->team_id !== $game->reserve_team_id) {
             throw new \DomainException('Player is not currently registered to the reserve team.');
+        }
+
+        // Reserve must keep enough players to field a squad after the call-up.
+        $breach = $this->squadMinimumService->validateRemoval($game, $player, $game->reserve_team_id);
+        if ($breach !== null) {
+            throw new ReserveSquadMinimumException($breach);
         }
 
         $effectiveStart = $game->getLoanEffectiveStartDate();
@@ -115,6 +127,9 @@ class ReserveTeamService
     /**
      * Send a called-up player back to the reserve team. Ends the active
      * call-up loan, flips team_id back, nulls squad number.
+     *
+     * @throws FirstTeamSquadMinimumException when the first team would fall
+     *         below its squad-composition minimum after the move
      */
     public function sendBackToReserve(GamePlayer $player, Game $game): void
     {
@@ -128,6 +143,12 @@ class ReserveTeamService
 
         if ($loan === null) {
             throw new \DomainException('Player is not currently called up from the reserve team.');
+        }
+
+        // First team must keep enough players to field a squad after send-back.
+        $breach = $this->squadMinimumService->validateRemoval($game, $player, $game->team_id);
+        if ($breach !== null) {
+            throw new FirstTeamSquadMinimumException($breach);
         }
 
         // returnLoan handles team_id flip and number reassignment. For loans

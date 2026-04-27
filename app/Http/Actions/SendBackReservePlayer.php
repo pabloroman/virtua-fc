@@ -4,6 +4,7 @@ namespace App\Http\Actions;
 
 use App\Models\Game;
 use App\Models\GamePlayer;
+use App\Modules\ReserveTeam\Exceptions\FirstTeamSquadMinimumException;
 use App\Modules\ReserveTeam\Services\ReserveTeamService;
 
 class SendBackReservePlayer
@@ -26,9 +27,26 @@ class SendBackReservePlayer
 
         $playerName = $player->player->name ?? '';
 
-        $this->reserveTeamService->sendBackToReserve($player, $game);
+        try {
+            $this->reserveTeamService->sendBackToReserve($player, $game);
+        } catch (FirstTeamSquadMinimumException $e) {
+            return redirect()->route('game.squad.reserve', $gameId)
+                ->with('error', $this->formatBreachMessage($e));
+        }
 
         return redirect()->route('game.squad.reserve', $gameId)
             ->with('success', __('messages.reserve_player_sent_back', ['player' => $playerName]));
+    }
+
+    private function formatBreachMessage(FirstTeamSquadMinimumException $e): string
+    {
+        if ($e->type() === 'too_small') {
+            return __('messages.demote_squad_too_small', ['min' => $e->min()]);
+        }
+
+        return __('messages.demote_position_minimum', [
+            'group' => __('squad.' . strtolower($e->group()) . 's'),
+            'min'   => $e->min(),
+        ]);
     }
 }

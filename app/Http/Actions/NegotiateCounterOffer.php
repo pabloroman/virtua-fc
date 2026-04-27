@@ -5,6 +5,7 @@ namespace App\Http\Actions;
 use App\Models\Game;
 use App\Models\TransferOffer;
 use App\Modules\Notification\Services\NotificationService;
+use App\Modules\Transfer\Exceptions\SquadMinimumException;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\ScoutingService;
 use App\Modules\Transfer\Services\TransferService;
@@ -202,7 +203,14 @@ class NegotiateCounterOffer
 
     private function completeSale(TransferOffer $offer, Game $game, $player, string $buyerName): JsonResponse
     {
-        $completedImmediately = $this->transferService->acceptOffer($offer);
+        try {
+            $completedImmediately = $this->transferService->acceptOffer($offer);
+        } catch (SquadMinimumException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $this->formatBreachMessage($e),
+            ], 422);
+        }
 
         if ($completedImmediately) {
             $this->notificationService->notifyTransferComplete($game, $offer->refresh());
@@ -256,5 +264,17 @@ class NegotiateCounterOffer
     private function calculateMidpointInEuros(int $centsA, int $centsB): int
     {
         return (int) (ceil(($centsA + $centsB) / 2 / 100 / 10000) * 10000);
+    }
+
+    private function formatBreachMessage(SquadMinimumException $e): string
+    {
+        if ($e->type() === 'too_small') {
+            return __('messages.accept_offer_squad_too_small', ['min' => $e->min()]);
+        }
+
+        return __('messages.accept_offer_position_minimum', [
+            'group' => __('squad.' . strtolower($e->group()) . 's'),
+            'min'   => $e->min(),
+        ]);
     }
 }

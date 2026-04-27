@@ -2,6 +2,7 @@
 
 namespace App\Http\Actions;
 
+use App\Modules\Transfer\Exceptions\SquadMinimumException;
 use App\Modules\Transfer\Services\LoanService;
 use App\Models\Game;
 use App\Models\TransferOffer;
@@ -39,7 +40,11 @@ class AcceptLoanOffer
         $team = $offer->offeringTeam;
         $windowOpen = $game->isTransferWindowOpen();
 
-        $this->loanService->acceptLoanOffer($offer, $game);
+        try {
+            $this->loanService->acceptLoanOffer($offer, $game);
+        } catch (SquadMinimumException $e) {
+            return redirect()->back()->with('error', $this->formatBreachMessage($e));
+        }
 
         if ($windowOpen) {
             $message = __('messages.loan_offer_accepted', [
@@ -57,5 +62,17 @@ class AcceptLoanOffer
         return redirect()
             ->route('game.transfers.outgoing', $gameId)
             ->with('success', $message);
+    }
+
+    private function formatBreachMessage(SquadMinimumException $e): string
+    {
+        if ($e->type() === 'too_small') {
+            return __('messages.accept_loan_squad_too_small', ['min' => $e->min()]);
+        }
+
+        return __('messages.accept_loan_position_minimum', [
+            'group' => __('squad.' . strtolower($e->group()) . 's'),
+            'min'   => $e->min(),
+        ]);
     }
 }

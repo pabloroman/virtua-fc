@@ -15,6 +15,7 @@ use App\Models\Team;
 use App\Models\TransferListing;
 use App\Models\TransferOffer;
 use App\Modules\Notification\Services\NotificationService;
+use App\Modules\Squad\Services\SquadMinimumService;
 use App\Support\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -57,6 +58,7 @@ class ContractService
     public function __construct(
         private readonly WageNegotiationEvaluator $wageNegotiationEvaluator,
         private readonly DispositionService $dispositionService,
+        private readonly SquadMinimumService $squadMinimumService,
     ) {}
 
     /**
@@ -689,31 +691,6 @@ class ContractService
     private const SEVERANCE_RATE = 0.50;
 
     /**
-     * Minimum squad size — cannot release if it would drop below this.
-     */
-    public const MIN_SQUAD_SIZE = 20;
-
-    /**
-     * Count first-team players in the user's squad.
-     */
-    public static function squadCount(Game $game): int
-    {
-        return GamePlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->count();
-    }
-
-    /**
-     * Minimum players per position group — mirrors SquadReplenishmentProcessor.
-     */
-    private const POSITION_GROUP_MINIMUMS = [
-        'Goalkeeper' => 3,
-        'Defender' => 6,
-        'Midfielder' => 6,
-        'Forward' => 4,
-    ];
-
-    /**
      * Release a player from the user's squad (unilateral contract termination).
      *
      * The player becomes a free agent (team_id = null) and the club pays
@@ -808,32 +785,18 @@ class ContractService
             return __('messages.release_has_pre_contract');
         }
 
-        // Squad size check
-        $currentSquadSize = GamePlayer::where('game_id', $game->id)
-            ->where('team_id', $rosterTeamId)
-            ->count();
-
-        if ($currentSquadSize <= self::MIN_SQUAD_SIZE) {
-            return __('messages.release_squad_too_small', ['min' => self::MIN_SQUAD_SIZE]);
-        }
-
-        // Position group minimum check
-        $positionGroup = $player->position_group;
-        $groupMinimum = self::POSITION_GROUP_MINIMUMS[$positionGroup] ?? 0;
-
-        if ($groupMinimum > 0) {
-            $groupCount = GamePlayer::where('game_id', $game->id)
-                ->where('team_id', $rosterTeamId)
-                ->get()
-                ->filter(fn ($p) => $p->position_group === $positionGroup)
-                ->count();
-
-            if ($groupCount <= $groupMinimum) {
-                return __('messages.release_position_minimum', [
-                    'group' => __('squad.' . strtolower($positionGroup) . 's'),
-                    'min' => $groupMinimum,
-                ]);
+        // Squad-composition guard: total roster size and per-position-group
+        // minimums on the team that would lose the player.
+        $breach = $this->squadMinimumService->validateRemoval($game, $player, $rosterTeamId);
+        if ($breach !== null) {
+            if ($breach['type'] === 'too_small') {
+                return __('messages.release_squad_too_small', ['min' => $breach['min']]);
             }
+
+            return __('messages.release_position_minimum', [
+                'group' => __('squad.' . strtolower($breach['group']) . 's'),
+                'min'   => $breach['min'],
+            ]);
         }
 
         return null;
