@@ -17,9 +17,18 @@ class ShowPlayerDetail
     {
         $game = Game::findOrFail($gameId);
 
+        // The modal is reachable from any squad page that lists a player on
+        // the user's roster, including loaned-in players (physically present
+        // but owned by another club). userOwned() would 404 on those, so we
+        // accept "physically here" as well as "owned via active loan-out".
+        $userTeamIds = $game->userTeamIds();
+
         $gamePlayer = GamePlayer::with(['player', 'careerRecord', 'activeLoan'])
             ->where('game_id', $gameId)
-            ->userOwned($game)
+            ->where(function ($q) use ($userTeamIds) {
+                $q->whereIn('team_id', $userTeamIds)
+                    ->orWhereHas('activeLoan', fn ($loan) => $loan->whereIn('parent_team_id', $userTeamIds));
+            })
             ->findOrFail($playerId);
 
         $isCalledUpFromReserve = $gamePlayer->isCalledUpFromReserve($game);

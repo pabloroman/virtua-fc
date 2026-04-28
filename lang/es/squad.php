@@ -190,7 +190,7 @@ return [
     'discovered' => 'Descubierto',
     'origin' => 'Procedencia',
     'joined' => 'Incorporación',
-    'origin_academy' => 'Nuevo',
+    'origin_academy' => 'Filial',
     'career_history' => 'Trayectoria',
     'no_career_history' => 'Aún no hay temporadas completadas.',
 

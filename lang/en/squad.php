@@ -190,7 +190,7 @@ return [
     'discovered' => 'Discovered',
     'origin' => 'Origin',
     'joined' => 'Joined',
-    'origin_academy' => 'New',
+    'origin_academy' => 'Academy',
     'career_history' => 'Career history',
     'no_career_history' => 'No completed seasons yet.',
 

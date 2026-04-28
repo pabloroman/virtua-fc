@@ -272,7 +272,6 @@
                                             <div class="flex-1 min-w-0">
                                                 <div class="flex items-center gap-1.5">
                                                     <span class="text-sm font-medium text-text-primary truncate">{{ $gp->player->name }}</span>
-                                                    <x-origin-badge :player="$gp" :current-season="$game->season" />
                                                     @include('partials.squad.player-status-icon', ['gp' => $gp, 'game' => $game, 'seasonEndDate' => $seasonEndDate, 'playerFlags' => $playerFlags ?? []])
                                                     <x-player-unavailable-icon :player="$gp" :reason="$unavailReason" />
                                                 </div>
@@ -344,7 +343,6 @@
                                             <div class="min-w-0">
                                                 <div class="flex items-center gap-2">
                                                     <span class="text-sm font-medium text-text-primary truncate">{{ $gp->player->name }}</span>
-                                                    <x-origin-badge :player="$gp" :current-season="$game->season" />
                                                     @include('partials.squad.player-status-icon', ['gp' => $gp, 'game' => $game, 'seasonEndDate' => $seasonEndDate, 'playerFlags' => $playerFlags ?? []])
                                                     <x-player-unavailable-icon :player="$gp" :reason="$unavailReason" />
                                                 </div>
