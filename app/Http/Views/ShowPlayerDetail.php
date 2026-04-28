@@ -17,9 +17,9 @@ class ShowPlayerDetail
     {
         $game = Game::findOrFail($gameId);
 
-        $gamePlayer = GamePlayer::with('player')
+        $gamePlayer = GamePlayer::with(['player', 'activeLoan'])
             ->where('game_id', $gameId)
-            ->where('team_id', $game->team_id)
+            ->userOwned($game)
             ->findOrFail($playerId);
 
         $canRenew = $gamePlayer->canBeOfferedRenewal(currentDate: $game->current_date);
@@ -36,12 +36,15 @@ class ShowPlayerDetail
             }
         }
 
-        // Release data
+        // Release is permitted for any user-owned player physically present
+        // on a user roster (first team or reserve, including filial call-ups
+        // who sit on the first team via internal loan). The team_id check
+        // excludes players currently loaned out to a third-party club —
+        // those must wait for the loan to end before they can be released.
         $canRelease = $game->isCareerMode()
-            && $gamePlayer->team_id === $game->team_id
+            && $gamePlayer->isUserOwned($game)
+            && in_array($gamePlayer->team_id, $game->userTeamIds(), true)
             && !$gamePlayer->isRetiring()
-            && !$gamePlayer->isLoanedIn($game->team_id)
-            && !$gamePlayer->isLoanedOut($game->team_id)
             && !$gamePlayer->hasPreContractAgreement()
             && !$gamePlayer->hasRenewalAgreed()
             && !$gamePlayer->hasAgreedTransfer()

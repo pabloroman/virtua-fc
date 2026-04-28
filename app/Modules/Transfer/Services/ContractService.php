@@ -756,15 +756,24 @@ class ContractService
      */
     private function validateRelease(Game $game, GamePlayer $player): ?string
     {
-        // Must belong to the user's team
-        if ($player->team_id !== $game->team_id) {
+        // Must be a user-owned player physically on a user roster. The roster
+        // check rejects players loaned out to a third-party club; the
+        // ownership check rejects players loaned in from a third-party club.
+        if (!in_array($player->team_id, $game->userTeamIds(), true)) {
             return __('messages.release_not_your_player');
         }
 
-        // Cannot release players on loan
-        if ($player->isLoanedOut($game->team_id) || $player->isLoanedIn($game->team_id)) {
+        if (!$player->isUserOwned($game)) {
             return __('messages.release_on_loan');
         }
+
+        // Squad-size and position-group minimums apply to the roster the
+        // player effectively occupies. Filial call-ups sit on the first team
+        // physically but their parent club (and the roster they belong to
+        // for these checks) is the reserve team.
+        $rosterTeamId = $player->isCalledUpFromReserve($game)
+            ? $game->reserve_team_id
+            : $player->team_id;
 
         // Cannot release players with agreed transfers
         if ($player->hasAgreedTransfer()) {
@@ -776,9 +785,9 @@ class ContractService
             return __('messages.release_has_pre_contract');
         }
 
-        // Squad-composition guard: total squad size and per-position-group
+        // Squad-composition guard: total roster size and per-position-group
         // minimums on the team that would lose the player.
-        $breach = $this->squadMinimumService->validateRemoval($game, $player, $game->team_id);
+        $breach = $this->squadMinimumService->validateRemoval($game, $player, $rosterTeamId);
         if ($breach !== null) {
             if ($breach['type'] === 'too_small') {
                 return __('messages.release_squad_too_small', ['min' => $breach['min']]);

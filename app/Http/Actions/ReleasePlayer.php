@@ -19,7 +19,7 @@ class ReleasePlayer
         $game = Game::findOrFail($gameId);
         $player = GamePlayer::where('id', $playerId)
             ->where('game_id', $gameId)
-            ->where('team_id', $game->team_id)
+            ->whereIn('team_id', $game->userTeamIds())
             ->firstOrFail();
 
         $result = $this->contractService->releasePlayer($game, $player);
