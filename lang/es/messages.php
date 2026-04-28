@@ -89,6 +89,9 @@ return [
     'academy_player_loaned' => ':player ha sido cedido.',
     'academy_must_decide_21' => 'Los jugadores de 21+ años serán promocionados automáticamente al primer equipo.',
 
+    // Reserve team (filial)
+    'reserve_player_promoted' => ':player ha subido al primer equipo.',
+
     // Player release messages
     'player_released' => ':player ha sido liberado. Indemnización pagada: :severance.',
     'release_not_your_player' => 'Solo puedes liberar jugadores de tu propio equipo.',

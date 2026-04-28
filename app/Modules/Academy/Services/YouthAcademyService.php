@@ -113,7 +113,11 @@ class YouthAcademyService
     /**
      * Generate a batch of new academy prospects at season start.
      *
-     * @return Collection<int, AcademyPlayer>
+     * For filial games (clubs with a reserve team), prospects are created as
+     * full GamePlayers on the reserve squad — no AcademyPlayer rows. For
+     * non-filial games, prospects land in the AcademyPlayer pool as before.
+     *
+     * @return Collection<int, AcademyPlayer|GamePlayer>
      */
     public function generateSeasonBatch(Game $game): Collection
     {
@@ -127,10 +131,16 @@ class YouthAcademyService
         $excludedNames = $this->getExistingPlayerNames($game);
 
         $prospects = collect();
+        $isFilial = $game->reserve_team_id !== null;
 
         for ($i = 0; $i < $count; $i++) {
-            $prospect = $this->createAcademyProspect($game, $tier, $teamMedianTier, $excludedNames);
-            $excludedNames[] = $prospect->name;
+            $traits = $this->rollProspectTraits($game, $tier, $teamMedianTier, $excludedNames);
+
+            $prospect = $isFilial
+                ? $this->persistAsReservePlayer($game, $traits)
+                : $this->persistAsAcademyPlayer($game, $traits);
+
+            $excludedNames[] = $traits['name'];
             $prospects->push($prospect);
         }
 
@@ -389,24 +399,40 @@ class YouthAcademyService
     ];
 
     /**
-     * Create an academy prospect record.
-     * Quality follows a normal distribution centered on the academy tier's base quality,
-     * adjusted by team context. This produces realistic clustering around the mean
-     * with occasional gems and busts in the tails.
+     * Roll the shared traits for a youth prospect: position, age, abilities,
+     * potential and identity. Quality follows a normal distribution centered
+     * on the academy tier's base quality, adjusted by team context — this
+     * produces realistic clustering with occasional gems and busts in the tails.
+     *
+     * The persistence target (AcademyPlayer pool vs reserve-squad GamePlayer)
+     * is decided by the caller based on whether the game is filial.
+     *
+     * @param  array<int, string>  $excludedNames
+     * @return array{
+     *     position: string,
+     *     age: int,
+     *     dateOfBirth: \Carbon\Carbon,
+     *     technical: int,
+     *     physical: int,
+     *     potential: int,
+     *     potentialLow: int,
+     *     potentialHigh: int,
+     *     name: string,
+     *     nationality: string,
+     * }
      */
-    private function createAcademyProspect(
+    private function rollProspectTraits(
         Game $game,
         int $academyTier,
         int $teamMedianTier,
         array $excludedNames,
-    ): AcademyPlayer {
+    ): array {
         $position = $this->selectPosition();
 
         // Ability mean = academy base quality + team context bonus
         $abilityMean = self::ACADEMY_BASE_QUALITY[$academyTier] + self::TEAM_CONTEXT_BONUS[$teamMedianTier];
 
         $age = rand(17, 19);
-
         $ageCap = match ($age) {
             17 => 72,
             18 => 74,
@@ -423,9 +449,6 @@ class YouthAcademyService
             self::POTENTIAL_UPSIDE_STD_DEV,
             self::POTENTIAL_FLOOR[$academyTier],
         );
-        $potential = $potentialData['potential'];
-        $potentialLow = $potentialData['potentialLow'];
-        $potentialHigh = $potentialData['potentialHigh'];
 
         $dateOfBirth = $game->current_date->copy()->subYears($age)->subDays(rand(0, 364));
 
@@ -442,25 +465,74 @@ class YouthAcademyService
             $region,
         );
 
+        return [
+            'position' => $position,
+            'age' => $age,
+            'dateOfBirth' => $dateOfBirth,
+            'technical' => $technical,
+            'physical' => $physical,
+            'potential' => $potentialData['potential'],
+            'potentialLow' => $potentialData['potentialLow'],
+            'potentialHigh' => $potentialData['potentialHigh'],
+            'name' => $identity['name'],
+            'nationality' => $identity['nationality'],
+        ];
+    }
+
+    /**
+     * Persist a rolled prospect as an AcademyPlayer pool entry (non-filial games).
+     *
+     * @param  array<string, mixed>  $traits
+     */
+    private function persistAsAcademyPlayer(Game $game, array $traits): AcademyPlayer
+    {
         return AcademyPlayer::create([
             'id' => Str::uuid()->toString(),
             'game_id' => $game->id,
             'team_id' => $game->team_id,
-            'name' => $identity['name'],
-            'nationality' => $identity['nationality'],
-            'date_of_birth' => $dateOfBirth,
-            'position' => $position,
-            'technical_ability' => $technical,
-            'physical_ability' => $physical,
-            'potential' => $potential,
-            'potential_low' => $potentialLow,
-            'potential_high' => $potentialHigh,
+            'name' => $traits['name'],
+            'nationality' => $traits['nationality'],
+            'date_of_birth' => $traits['dateOfBirth'],
+            'position' => $traits['position'],
+            'technical_ability' => $traits['technical'],
+            'physical_ability' => $traits['physical'],
+            'potential' => $traits['potential'],
+            'potential_low' => $traits['potentialLow'],
+            'potential_high' => $traits['potentialHigh'],
             'appeared_at' => $game->current_date,
             'is_on_loan' => false,
             'joined_season' => (int) $game->season,
-            'initial_technical' => $technical,
-            'initial_physical' => $physical,
+            'initial_technical' => $traits['technical'],
+            'initial_physical' => $traits['physical'],
         ]);
+    }
+
+    /**
+     * Persist a rolled prospect as a full GamePlayer on the reserve squad
+     * (filial games). The reserve squad is the source of truth for filial
+     * players, so prospects skip the AcademyPlayer pool entirely.
+     *
+     * @param  array<string, mixed>  $traits
+     */
+    private function persistAsReservePlayer(Game $game, array $traits): GamePlayer
+    {
+        return $this->playerGenerator->create($game, new GeneratedPlayerData(
+            teamId: $game->reserve_team_id,
+            position: $traits['position'],
+            technical: $traits['technical'],
+            physical: $traits['physical'],
+            dateOfBirth: $traits['dateOfBirth'],
+            contractYears: 2,
+            name: $traits['name'],
+            nationality: $traits['nationality'],
+            potential: $traits['potential'],
+            potentialLow: $traits['potentialLow'],
+            potentialHigh: $traits['potentialHigh'],
+            fitnessMin: 85,
+            fitnessMax: 100,
+            moraleMin: 70,
+            moraleMax: 90,
+        ));
     }
 
     /**

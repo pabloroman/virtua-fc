@@ -113,6 +113,7 @@ class Game extends Model
         'country',
         'player_name',
         'team_id',
+        'reserve_team_id',
         'competition_id',
         'season',
         'current_date',
@@ -331,6 +332,40 @@ class Game extends Model
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);
+    }
+
+    public function reserveTeam(): BelongsTo
+    {
+        return $this->belongsTo(Team::class, 'reserve_team_id');
+    }
+
+    /**
+     * Whether the given team is owned by the user in this game (first team
+     * or, for parent clubs, the filial reserve team).
+     */
+    public function ownsTeam(?string $teamId): bool
+    {
+        if ($teamId === null) {
+            return false;
+        }
+
+        return $teamId === $this->team_id || $teamId === $this->reserve_team_id;
+    }
+
+    /**
+     * IDs of all teams the user manages in this game (first team, plus the
+     * reserve team for parent clubs). Null entries are filtered out.
+     *
+     * @return array<int, string>
+     */
+    public function userTeamIds(): array
+    {
+        return array_values(array_filter([$this->team_id, $this->reserve_team_id]));
+    }
+
+    public function isFilial(): bool
+    {
+        return $this->reserve_team_id !== null;
     }
 
     public function tactics(): HasOne

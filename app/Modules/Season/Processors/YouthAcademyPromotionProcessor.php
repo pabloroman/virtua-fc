@@ -47,6 +47,12 @@ class YouthAcademyPromotionProcessor implements SeasonProcessor
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
+        // Filial games don't use the AcademyPlayer pool — reserve squad
+        // age-out is handled by ReserveOveragePromotionProcessor instead.
+        if ($game->reserve_team_id !== null) {
+            return $data;
+        }
+
         // Phase 1: Promote overage academy players (mandatory — they must leave)
         $overagePromoted = $this->youthAcademyService->promoteOveragePlayers($game);
 

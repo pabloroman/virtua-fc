@@ -89,6 +89,9 @@ return [
     'academy_player_loaned' => ':player has been loaned out.',
     'academy_must_decide_21' => 'Players aged 21+ will be automatically promoted to the first team.',
 
+    // Reserve team (filial)
+    'reserve_player_promoted' => ':player has been promoted to the first team.',
+
     // Player release messages
     'player_released' => ':player has been released. Severance paid: :severance.',
     'release_not_your_player' => 'You can only release players from your own team.',
