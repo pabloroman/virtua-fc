@@ -55,9 +55,12 @@
             {{-- Sub-navigation --}}
             @if($isCareerMode)
                 @php
+                    $secondaryItem = $game->isFilial()
+                        ? ['href' => route('game.squad.reserve', $game->id), 'label' => __('squad.reserve_team'), 'active' => false]
+                        : ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => false];
                     $squadNavItems = [
                         ['href' => route('game.squad', $game->id), 'label' => __('squad.first_team'), 'active' => true],
-                        ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => false],
+                        $secondaryItem,
                         ['href' => route('game.squad.registration', $game->id), 'label' => __('squad.registration'), 'active' => false],
                     ];
                 @endphp
@@ -269,6 +272,7 @@
                                             <div class="flex-1 min-w-0">
                                                 <div class="flex items-center gap-1.5">
                                                     <span class="text-sm font-medium text-text-primary truncate">{{ $gp->player->name }}</span>
+                                                    <x-origin-badge :player="$gp" :current-season="$game->season" />
                                                     @include('partials.squad.player-status-icon', ['gp' => $gp, 'game' => $game, 'seasonEndDate' => $seasonEndDate, 'playerFlags' => $playerFlags ?? []])
                                                     <x-player-unavailable-icon :player="$gp" :reason="$unavailReason" />
                                                 </div>
@@ -340,6 +344,7 @@
                                             <div class="min-w-0">
                                                 <div class="flex items-center gap-2">
                                                     <span class="text-sm font-medium text-text-primary truncate">{{ $gp->player->name }}</span>
+                                                    <x-origin-badge :player="$gp" :current-season="$game->season" />
                                                     @include('partials.squad.player-status-icon', ['gp' => $gp, 'game' => $game, 'seasonEndDate' => $seasonEndDate, 'playerFlags' => $playerFlags ?? []])
                                                     <x-player-unavailable-icon :player="$gp" :reason="$unavailReason" />
                                                 </div>

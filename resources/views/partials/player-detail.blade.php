@@ -4,9 +4,10 @@
 
     $isCareerMode = $game->isCareerMode();
     $isListed = $gamePlayer->isTransferListed();
+    $isCalledUpFromReserve = $isCalledUpFromReserve ?? false;
     $canManage = $isCareerMode
         && !$gamePlayer->isRetiring()
-        && !$gamePlayer->isLoanedIn($game->team_id)
+        && ($isCalledUpFromReserve || !$gamePlayer->isLoanedIn($game->team_id))
         && !$gamePlayer->isLoanedOut($game->team_id)
         && !$gamePlayer->hasPreContractAgreement()
         && !$gamePlayer->hasAgreedTransfer()
@@ -161,6 +162,24 @@
                         <span class="text-xs font-semibold text-text-primary">{{ $gamePlayer->contract_expiry_year }}</span>
                     </div>
                 @endif
+                @if($gamePlayer->careerRecord)
+                    @php
+                        $cr = $gamePlayer->careerRecord;
+                        $originLabel = $cr->joined_from === \App\Models\UserSquadCareerRecord::ORIGIN_ACADEMY
+                            ? __('squad.origin_academy')
+                            : ($cr->joined_from ?? '');
+                    @endphp
+                    @if($originLabel !== '')
+                        <div class="flex items-center justify-between">
+                            <span class="text-[11px] text-text-muted uppercase tracking-wide">{{ __('squad.origin') }}</span>
+                            <span class="text-xs font-semibold text-text-primary">{{ $originLabel }}</span>
+                        </div>
+                    @endif
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] text-text-muted uppercase tracking-wide">{{ __('squad.joined') }}</span>
+                        <span class="text-xs font-semibold text-text-primary">{{ \App\Models\Game::formatSeason((string) $cr->joined_season) }}</span>
+                    </div>
+                @endif
             @endif
         </div>
     </div>
@@ -205,10 +224,87 @@
     </div>
 </div>
 
+{{-- Career history --}}
+@if($gamePlayer->careerRecord && !empty($gamePlayer->careerRecord->season_stats))
+    @php
+        $history = collect($gamePlayer->careerRecord->season_stats)
+            ->map(fn ($stats, $season) => array_merge(['season' => $season], (array) $stats))
+            ->sortBy('season')
+            ->values();
+        $isGk = $gamePlayer->position_group === 'Goalkeeper';
+    @endphp
+    <div class="px-5 py-4 border-t border-border-default">
+        <h4 class="font-heading text-[11px] font-semibold uppercase tracking-widest text-text-secondary mb-3">{{ __('squad.career_history') }}</h4>
+        <div class="overflow-x-auto">
+            <table class="w-full text-xs">
+                <thead>
+                    <tr class="text-text-muted uppercase tracking-wide text-[10px]">
+                        <th class="text-left font-semibold py-1.5 pr-3">{{ __('game.season') }}</th>
+                        <th class="text-right font-semibold py-1.5 px-2">{{ __('squad.appearances') }}</th>
+                        @if($isGk)
+                            <th class="text-right font-semibold py-1.5 px-2">{{ __('squad.clean_sheets_full') }}</th>
+                            <th class="text-right font-semibold py-1.5 px-2">{{ __('squad.goals_conceded_full') }}</th>
+                        @else
+                            <th class="text-right font-semibold py-1.5 px-2">{{ __('squad.legend_goals') }}</th>
+                            <th class="text-right font-semibold py-1.5 px-2">{{ __('squad.legend_assists') }}</th>
+                        @endif
+                        <th class="text-right font-semibold py-1.5 pl-2">{{ __('squad.bookings') }}</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-border-default">
+                    @foreach($history as $row)
+                        <tr>
+                            <td class="py-1.5 pr-3 text-text-primary font-semibold">{{ \App\Models\Game::formatSeason((string) $row['season']) }}</td>
+                            <td class="py-1.5 px-2 text-right text-text-body">{{ $row['appearances'] ?? 0 }}</td>
+                            @if($isGk)
+                                <td class="py-1.5 px-2 text-right text-text-body">{{ $row['clean_sheets'] ?? 0 }}</td>
+                                <td class="py-1.5 px-2 text-right text-text-body">{{ $row['goals_conceded'] ?? 0 }}</td>
+                            @else
+                                <td class="py-1.5 px-2 text-right text-text-body">{{ $row['goals'] ?? 0 }}</td>
+                                <td class="py-1.5 px-2 text-right text-text-body">{{ $row['assists'] ?? 0 }}</td>
+                            @endif
+                            <td class="py-1.5 pl-2 text-right">
+                                <span class="inline-flex items-center gap-1">
+                                    <span class="w-1.5 h-2.5 bg-yellow-400 rounded-xs"></span>
+                                    <span class="text-text-body">{{ $row['yellow_cards'] ?? 0 }}</span>
+                                    <span class="w-1.5 h-2.5 bg-accent-red rounded-xs ml-1"></span>
+                                    <span class="text-text-body">{{ $row['red_cards'] ?? 0 }}</span>
+                                </span>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+@endif
+
 {{-- Actions --}}
-@if($showActions || $canRenew || $renewalNegotiation || $renewalCooldown)
+@if($showActions || $canRenew || $renewalNegotiation || $renewalCooldown || ($isOnReserve ?? false) || $isCalledUpFromReserve)
     <div class="px-5 py-4 border-t border-border-default flex flex-wrap items-center gap-2">
-        @if(!$isListed && $canSell)
+        @if(($isOnReserve ?? false) && $isCareerMode)
+            <form method="POST" action="{{ route('game.reserve.call-up', [$game->id, $gamePlayer->id]) }}">
+                @csrf
+                <x-action-button color="blue">
+                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8 14a.75.75 0 0 1-.75-.75V4.56L4.03 7.78a.75.75 0 0 1-1.06-1.06l4.5-4.5a.75.75 0 0 1 1.06 0l4.5 4.5a.75.75 0 0 1-1.06 1.06L8.75 4.56v8.69A.75.75 0 0 1 8 14Z" clip-rule="evenodd" />
+                    </svg>
+                    {{ __('squad.call_up_to_first_team') }}
+                </x-action-button>
+            </form>
+        @endif
+        @if($isCalledUpFromReserve && $isCareerMode)
+            <form method="POST" action="{{ route('game.reserve.send-back', [$game->id, $gamePlayer->id]) }}">
+                @csrf
+                <x-action-button color="violet">
+                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8 2a.75.75 0 0 1 .75.75v8.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-1.06 0l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.22 3.22V2.75A.75.75 0 0 1 8 2Z" clip-rule="evenodd" />
+                    </svg>
+                    {{ __('squad.send_back_to_reserve') }}
+                </x-action-button>
+            </form>
+        @endif
+        @if(!$isListed && $canSell && !($isOnReserve ?? false))
             <form method="POST" action="{{ route('game.transfers.list', [$game->id, $gamePlayer->id]) }}">
                 @csrf
                 <x-action-button color="blue">

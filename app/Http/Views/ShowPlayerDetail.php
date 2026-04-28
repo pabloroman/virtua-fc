@@ -22,6 +22,8 @@ class ShowPlayerDetail
             ->userOwned($game)
             ->findOrFail($playerId);
 
+        $isCalledUpFromReserve = $gamePlayer->isCalledUpFromReserve($game);
+
         $canRenew = $gamePlayer->canBeOfferedRenewal(currentDate: $game->current_date);
         $renewalNegotiation = null;
         $renewalCooldown = false;
@@ -35,6 +37,9 @@ class ShowPlayerDetail
                 $renewalCooldown = RenewalNegotiation::hasRenewalCooldown($gamePlayer->id, $game->current_date);
             }
         }
+
+        $isOnReserve = $game->reserve_team_id !== null
+            && $gamePlayer->team_id === $game->reserve_team_id;
 
         // Release is permitted for any user-owned player physically present
         // on a user roster (first team or reserve, including filial call-ups
@@ -60,6 +65,8 @@ class ShowPlayerDetail
             'renewalCooldown' => $renewalCooldown,
             'canRelease' => $canRelease,
             'severance' => $severance,
+            'isOnReserve' => $isOnReserve,
+            'isCalledUpFromReserve' => $isCalledUpFromReserve,
         ]);
     }
 }

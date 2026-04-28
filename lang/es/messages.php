@@ -90,6 +90,9 @@ return [
     'academy_must_decide_21' => 'Los jugadores de 21+ años serán promocionados automáticamente al primer equipo.',
 
     // Reserve team (filial)
+    'reserve_player_called_up' => ':player ha sido convocado al primer equipo.',
+    'reserve_player_sent_back' => ':player ha vuelto al filial.',
+    'reserve_player_call_up_blocked_full' => 'La plantilla del primer equipo está completa. Libera un dorsal antes de subir más jugadores.',
     'reserve_player_promoted' => ':player ha subido al primer equipo.',
     'shortlist_reserve_blocked' => 'Los jugadores del filial pertenecen al club matriz y no son transferibles.',
 
@@ -102,7 +105,11 @@ return [
     'release_squad_too_small' => 'No se puede liberar — tu plantilla debe tener al menos :min jugadores.',
     'release_position_minimum' => 'No se puede liberar — necesitas al menos :min :group.',
 
-    // Squad-minimum guards on list / accept
+    // Squad-minimum guards on promote / demote / list / accept
+    'promote_squad_too_small' => 'No se puede subir — el filial debe tener al menos :min jugadores.',
+    'promote_position_minimum' => 'No se puede subir — el filial necesita al menos :min :group.',
+    'demote_squad_too_small' => 'No se puede bajar al filial — el primer equipo debe tener al menos :min jugadores.',
+    'demote_position_minimum' => 'No se puede bajar al filial — el primer equipo necesita al menos :min :group.',
     'list_for_sale_squad_too_small' => 'No se puede poner a la venta — tu plantilla debe tener al menos :min jugadores.',
     'list_for_sale_position_minimum' => 'No se puede poner a la venta — necesitas al menos :min :group.',
     'list_for_loan_squad_too_small' => 'No se puede ceder — tu plantilla debe tener al menos :min jugadores.',

@@ -90,6 +90,9 @@ return [
     'academy_must_decide_21' => 'Players aged 21+ will be automatically promoted to the first team.',
 
     // Reserve team (filial)
+    'reserve_player_called_up' => ':player has been called up to the first team.',
+    'reserve_player_sent_back' => ':player has been sent back to the reserve team.',
+    'reserve_player_call_up_blocked_full' => 'First-team squad is full. Release a player before calling up another.',
     'reserve_player_promoted' => ':player has been promoted to the first team.',
     'shortlist_reserve_blocked' => "Reserve-team players belong to their parent club and aren't transferable.",
 
@@ -102,7 +105,11 @@ return [
     'release_squad_too_small' => 'Cannot release — your squad must have at least :min players.',
     'release_position_minimum' => 'Cannot release — you need at least :min :group.',
 
-    // Squad-minimum guards on list / accept
+    // Squad-minimum guards on promote / demote / list / accept
+    'promote_squad_too_small' => 'Cannot call up — the reserve squad must have at least :min players.',
+    'promote_position_minimum' => 'Cannot call up — the reserve squad needs at least :min :group.',
+    'demote_squad_too_small' => 'Cannot send back — the first team must have at least :min players.',
+    'demote_position_minimum' => 'Cannot send back — the first team needs at least :min :group.',
     'list_for_sale_squad_too_small' => 'Cannot list for sale — your squad must have at least :min players.',
     'list_for_sale_position_minimum' => 'Cannot list for sale — you need at least :min :group.',
     'list_for_loan_squad_too_small' => 'Cannot loan out — your squad must have at least :min players.',
