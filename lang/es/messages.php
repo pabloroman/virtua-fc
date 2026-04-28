@@ -98,6 +98,16 @@ return [
     'release_squad_too_small' => 'No se puede liberar — tu plantilla debe tener al menos :min jugadores.',
     'release_position_minimum' => 'No se puede liberar — necesitas al menos :min :group.',
 
+    // Squad-minimum guards on list / accept
+    'list_for_sale_squad_too_small' => 'No se puede poner a la venta — tu plantilla debe tener al menos :min jugadores.',
+    'list_for_sale_position_minimum' => 'No se puede poner a la venta — necesitas al menos :min :group.',
+    'list_for_loan_squad_too_small' => 'No se puede ceder — tu plantilla debe tener al menos :min jugadores.',
+    'list_for_loan_position_minimum' => 'No se puede ceder — necesitas al menos :min :group.',
+    'accept_offer_squad_too_small' => 'No se puede aceptar la oferta — tu plantilla debe tener al menos :min jugadores.',
+    'accept_offer_position_minimum' => 'No se puede aceptar la oferta — necesitas al menos :min :group.',
+    'accept_loan_squad_too_small' => 'No se puede aceptar la cesión — tu plantilla debe tener al menos :min jugadores.',
+    'accept_loan_position_minimum' => 'No se puede aceptar la cesión — necesitas al menos :min :group.',
+
     'cannot_loan_free_agent' => 'No se puede ceder a un jugador libre. Fíchalo directamente.',
 
     // Pending actions

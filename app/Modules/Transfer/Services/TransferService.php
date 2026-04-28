@@ -3,8 +3,10 @@
 namespace App\Modules\Transfer\Services;
 
 use App\Modules\Player\PlayerAge;
+use App\Modules\Squad\Services\SquadMinimumService;
 use App\Modules\Squad\Services\SquadNumberService;
 use App\Modules\Transfer\Enums\NegotiationScenario;
+use App\Modules\Transfer\Exceptions\SquadMinimumException;
 use App\Modules\Transfer\Enums\TransferWindowType;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\LoanService;
@@ -32,6 +34,7 @@ class TransferService
         private readonly ContractService $contractService,
         private readonly DispositionService $dispositionService,
         private readonly SquadNumberService $squadNumberService,
+        private readonly SquadMinimumService $squadMinimumService,
     ) {}
 
     /**
@@ -127,11 +130,24 @@ class TransferService
 
     /**
      * List a player for transfer.
+     *
+     * @throws SquadMinimumException when listing this player would mean the
+     *         squad could fall below its composition minimum if the resulting
+     *         offer is accepted.
      */
     public function listPlayer(GamePlayer $player): void
     {
         if ($player->isOnLoan()) {
             return;
+        }
+
+        $breach = $this->squadMinimumService->validateRemoval(
+            $player->game,
+            $player,
+            $player->team_id,
+        );
+        if ($breach !== null) {
+            throw new SquadMinimumException($breach);
         }
 
         TransferListing::updateOrCreate(
@@ -578,6 +594,15 @@ class TransferService
     {
         $player = $offer->gamePlayer;
         $game = $offer->game;
+
+        // Squad-composition guard: this is the binding moment — once accepted
+        // (or marked agreed), the player is committed to leaving. Block here
+        // so the resulting transfer can't shrink the roster below minimums,
+        // even if the listing itself was OK at the time it was created.
+        $breach = $this->squadMinimumService->validateRemoval($game, $player, $player->team_id);
+        if ($breach !== null) {
+            throw new SquadMinimumException($breach);
+        }
 
         // Reject all other pending offers for this player
         TransferOffer::where('game_player_id', $player->id)

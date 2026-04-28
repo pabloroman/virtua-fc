@@ -56,6 +56,27 @@ class CounterOfferTest extends TestCase
             'contract_until' => '2027-06-30',
         ]);
 
+        // Pad the user roster so SquadMinimumService lets the negotiated
+        // sale proceed. Without this, acceptOffer() would refuse because
+        // the squad would drop below MIN_SQUAD_SIZE / per-position floors.
+        // The main player above (default Central Midfield) counts as the
+        // seventh midfielder.
+        $userSquadFiller = [
+            ['Goalkeeper', 4],
+            ['Centre-Back', 7],
+            ['Central Midfield', 6],
+            ['Centre-Forward', 5],
+        ];
+        foreach ($userSquadFiller as [$position, $count]) {
+            for ($i = 0; $i < $count; $i++) {
+                GamePlayer::factory()->create([
+                    'game_id' => $this->game->id,
+                    'team_id' => $this->userTeam->id,
+                    'position' => $position,
+                ]);
+            }
+        }
+
         // Create buyer team players to give them squad value (€100M total)
         for ($i = 0; $i < 10; $i++) {
             GamePlayer::factory()->create([

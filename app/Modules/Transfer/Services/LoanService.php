@@ -14,8 +14,10 @@ use App\Models\Team;
 use App\Models\TeamReputation;
 use App\Models\TransferListing;
 use App\Models\TransferOffer;
+use App\Modules\Squad\Services\SquadMinimumService;
 use App\Modules\Squad\Services\SquadNumberService;
 use App\Modules\Transfer\Enums\TransferWindowType;
+use App\Modules\Transfer\Exceptions\SquadMinimumException;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
@@ -28,13 +30,23 @@ class LoanService
         private readonly DispositionService $dispositionService,
         private readonly SquadNumberService $squadNumberService,
         private readonly AIExclusionList $exclusionList,
+        private readonly SquadMinimumService $squadMinimumService,
     ) {}
 
     /**
      * Start a loan search for a player.
+     *
+     * @throws SquadMinimumException when listing this player would mean the
+     *         squad could fall below its composition minimum if the resulting
+     *         loan offer is accepted.
      */
     public function startLoanSearch(Game $game, GamePlayer $player): void
     {
+        $breach = $this->squadMinimumService->validateRemoval($game, $player, $player->team_id);
+        if ($breach !== null) {
+            throw new SquadMinimumException($breach);
+        }
+
         TransferListing::updateOrCreate(
             ['game_player_id' => $player->id],
             [
@@ -647,6 +659,18 @@ class LoanService
      */
     public function acceptLoanOffer(TransferOffer $offer, Game $game): void
     {
+        // Squad-composition guard: this is the binding moment — once accepted
+        // (or marked agreed), the player is committed to leaving on loan. Block
+        // here so the resulting move can't shrink the squad below minimums,
+        // even if the loan listing itself was OK at the time it was created.
+        $player = $offer->gamePlayer;
+        if ($player !== null) {
+            $breach = $this->squadMinimumService->validateRemoval($game, $player, $player->team_id);
+            if ($breach !== null) {
+                throw new SquadMinimumException($breach);
+            }
+        }
+
         // Reject sibling offers for the same player
         TransferOffer::where('game_id', $game->id)
             ->where('game_player_id', $offer->game_player_id)

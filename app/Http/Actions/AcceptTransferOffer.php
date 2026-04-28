@@ -2,6 +2,7 @@
 
 namespace App\Http\Actions;
 
+use App\Modules\Transfer\Exceptions\SquadMinimumException;
 use App\Modules\Transfer\Services\TransferService;
 use App\Models\Game;
 use App\Models\TransferOffer;
@@ -43,7 +44,11 @@ class AcceptTransferOffer
         $team = $offer->offeringTeam;
         $fee = $offer->formatted_transfer_fee;
 
-        $completedImmediately = $this->transferService->acceptOffer($offer);
+        try {
+            $completedImmediately = $this->transferService->acceptOffer($offer);
+        } catch (SquadMinimumException $e) {
+            return redirect()->back()->with('error', $this->formatBreachMessage($e));
+        }
 
         if ($completedImmediately) {
             $message = __('messages.offer_accepted_sale', [
@@ -64,5 +69,17 @@ class AcceptTransferOffer
         return redirect()
             ->route('game.transfers.outgoing', $gameId)
             ->with('success', $message);
+    }
+
+    private function formatBreachMessage(SquadMinimumException $e): string
+    {
+        if ($e->type() === 'too_small') {
+            return __('messages.accept_offer_squad_too_small', ['min' => $e->min()]);
+        }
+
+        return __('messages.accept_offer_position_minimum', [
+            'group' => __('squad.' . strtolower($e->group()) . 's'),
+            'min'   => $e->min(),
+        ]);
     }
 }

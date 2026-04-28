@@ -236,6 +236,13 @@ class UnsolicitedRivalExclusionTest extends TestCase
             'contract_until' => '2027-06-30',
         ]);
 
+        // Pad the user roster so the squad-minimum guard (total >=21,
+        // per-position-group >= floor + 1) lets us list/accept offers on
+        // the main player. The distribution mirrors POSITION_GROUP_MINIMUMS
+        // + 1 each, with the Central Midfielder above counting as the
+        // seventh midfielder.
+        $this->createFillerSquad($game, $userTeam);
+
         // Give the AI team a fat squad so the 15% fee-to-squad-value ratio is
         // never the reason an offer fails to materialise (€400M total).
         for ($i = 0; $i < 10; $i++) {
@@ -247,6 +254,32 @@ class UnsolicitedRivalExclusionTest extends TestCase
         }
 
         return [$game, $player];
+    }
+
+    /**
+     * Build a filler roster that satisfies SquadMinimumService floors when
+     * combined with the test's main player. Every flow that removes a
+     * user-owned player checks this; without padding, listPlayer() and
+     * acceptOffer() would refuse before we can exercise the rival filter.
+     */
+    private function createFillerSquad(Game $game, Team $team): void
+    {
+        $positions = [
+            ['Goalkeeper', 4],
+            ['Centre-Back', 7],
+            ['Central Midfield', 6],
+            ['Centre-Forward', 5],
+        ];
+
+        foreach ($positions as [$position, $count]) {
+            for ($i = 0; $i < $count; $i++) {
+                GamePlayer::factory()->create([
+                    'game_id' => $game->id,
+                    'team_id' => $team->id,
+                    'position' => $position,
+                ]);
+            }
+        }
     }
 
     /**
