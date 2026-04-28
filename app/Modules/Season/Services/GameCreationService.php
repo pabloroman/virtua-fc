@@ -27,7 +27,7 @@ class GameCreationService
                 ->first()
             ?? CompetitionTeam::where('team_id', $teamId)->first();
 
-        $team = Team::with('reserveTeam')->find($teamId);
+        $team = Team::find($teamId);
 
         // Resolve competition ID: use competition_team lookup, fall back to
         // tier 1 of the team's country from config
@@ -38,10 +38,6 @@ class GameCreationService
         }
         $season = $competitionTeam->season ?? '2025';
 
-        // Resolve reserve team (filial) for managers of parent clubs.
-        // The user's club becomes filial if it has a reserve team and isn't itself one.
-        $reserveTeamId = $team->parent_team_id === null ? $team->reserveTeam?->id : null;
-
         // Create game record (setup not yet complete)
         // current_date and season_goal are set by processors during SetupNewGame
         $game = Game::create([
@@ -50,7 +46,6 @@ class GameCreationService
             'game_mode' => $gameMode,
             'country' => $team->country ?? 'ES',
             'team_id' => $teamId,
-            'reserve_team_id' => $reserveTeamId,
             'competition_id' => $competitionId,
             'season' => $season,
             'current_date' => null,
