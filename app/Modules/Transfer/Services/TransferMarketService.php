@@ -359,7 +359,7 @@ class TransferMarketService
             ->where('game_id', $game->id)
             ->whereNotIn('team_id', $game->userTeamIds())
             ->distinct()
-            ->pluck('team_id')
+            ->pluck('competition_entries.team_id')
             ->all();
 
         if (empty($teamIds)) {
@@ -395,6 +395,7 @@ class TransferMarketService
             ])
             ->where('game_id', $game->id)
             ->whereIn('team_id', $teamIds)
+            ->whereHas('team', fn ($q) => $q->whereNull('parent_team_id'))
             ->get()
             ->groupBy('team_id');
     }

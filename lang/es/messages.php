@@ -91,6 +91,7 @@ return [
 
     // Reserve team (filial)
     'reserve_player_promoted' => ':player ha subido al primer equipo.',
+    'shortlist_reserve_blocked' => 'Los jugadores del filial pertenecen al club matriz y no son transferibles.',
 
     // Player release messages
     'player_released' => ':player ha sido liberado. Indemnización pagada: :severance.',

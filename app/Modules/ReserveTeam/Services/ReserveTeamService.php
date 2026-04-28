@@ -210,6 +210,7 @@ class ReserveTeamService
                 ],
             );
 
+
             GameTransfer::record(
                 gameId: $game->id,
                 gamePlayerId: $player->id,
@@ -279,6 +280,7 @@ class ReserveTeamService
                     'joined_from' => $reserveTeamName ?? \App\Models\UserSquadCareerRecord::ORIGIN_ACADEMY,
                 ],
             );
+
 
             GameTransfer::record(
                 gameId: $game->id,

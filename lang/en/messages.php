@@ -91,6 +91,7 @@ return [
 
     // Reserve team (filial)
     'reserve_player_promoted' => ':player has been promoted to the first team.',
+    'shortlist_reserve_blocked' => "Reserve-team players belong to their parent club and aren't transferable.",
 
     // Player release messages
     'player_released' => ':player has been released. Severance paid: :severance.',
