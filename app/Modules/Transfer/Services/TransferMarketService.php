@@ -89,7 +89,7 @@ class TransferMarketService
 
         // Count current AI listings
         $currentCount = TransferListing::where('game_id', $game->id)
-            ->where('team_id', '!=', $game->team_id)
+            ->whereNotIn('team_id', $game->userTeamIds())
             ->where('status', TransferListing::STATUS_LISTED)
             ->whereNotNull('asking_price')
             ->count();
@@ -180,7 +180,7 @@ class TransferMarketService
 
         return TransferListing::with(['gamePlayer.player', 'gamePlayer.team'])
             ->where('game_id', $game->id)
-            ->where('team_id', '!=', $game->team_id)
+            ->whereNotIn('team_id', $game->userTeamIds())
             ->where('status', TransferListing::STATUS_LISTED)
             ->whereNotNull('asking_price')
             ->whereNotIn('game_player_id', $alreadyAgreedIds)
@@ -357,7 +357,7 @@ class TransferMarketService
     {
         $teamIds = DB::table('competition_entries')
             ->where('game_id', $game->id)
-            ->where('team_id', '!=', $game->team_id)
+            ->whereNotIn('team_id', $game->userTeamIds())
             ->distinct()
             ->pluck('team_id')
             ->all();

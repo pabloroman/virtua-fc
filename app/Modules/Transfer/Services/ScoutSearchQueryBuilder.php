@@ -27,7 +27,7 @@ class ScoutSearchQueryBuilder
         $query = GamePlayer::with(['player', 'team'])
             ->where('game_id', $game->id)
             ->whereNotNull('team_id')
-            ->where('team_id', '!=', $game->team_id);
+            ->whereNotIn('team_id', $game->userTeamIds());
 
         $this->applyPositionFilter($query, $positions);
 
