@@ -177,7 +177,14 @@ class NegotiateCounterOffer
         $player = $offer->gamePlayer;
         $buyerName = $offer->offeringTeam->name;
 
-        $completedImmediately = $this->transferService->acceptCounterOfferBid($offer);
+        try {
+            $completedImmediately = $this->transferService->acceptCounterOfferBid($offer);
+        } catch (SquadMinimumException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $this->formatBreachMessage($e),
+            ], 422);
+        }
 
         if ($completedImmediately) {
             $this->notificationService->notifyTransferComplete($game, $offer->refresh());
