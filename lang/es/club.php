@@ -25,8 +25,41 @@ return [
         'no_home_match_yet' => 'Aún no se ha jugado ningún partido en casa.',
 
         'matchday_revenue' => 'Ingresos por taquilla',
-        'matchday_revenue_help' => 'La proyección usa la fórmula presupuestaria de la temporada; los ingresos reales se liquidan al cierre. Empezarán a divergir cuando la asistencia determine directamente la taquilla.',
+        'matchday_revenue_help' => 'Solo entradas sueltas y consumo en el estadio — los abonados pagan aparte y aparecen en su propia línea. La proyección usa la fórmula presupuestaria de la temporada; los reales se liquidan al cierre.',
         'no_finances_yet' => 'Las finanzas de la temporada aparecerán cuando se generen las proyecciones.',
+
+        'season_tickets' => [
+            'title' => 'Abonos',
+            'subtitle' => 'Fija el precio de los abonos para cada zona del estadio. Los precios se bloquean en cuanto se juegue el primer partido de liga.',
+            'default_applied' => 'Precios por defecto aplicados — ajústalos antes del primer partido.',
+            'deadline_notice' => 'Plazo: los precios se bloquean al jugarse el primer partido de liga de la temporada.',
+            'locked_notice' => 'Los abonos están bloqueados esta temporada. Podrás fijar nuevos precios la próxima pretemporada.',
+            'tickets_sold' => 'Abonos vendidos',
+            'predicted_fill' => 'ocupación prevista',
+            'baseline_price' => 'Base',
+            'capacity' => 'Aforo',
+            'total_revenue' => 'Ingresos por abonos',
+            'revenue_help' => 'Cobrados por adelantado al inicio de la temporada.',
+            'revenue_card_title' => 'Ingresos por abonos',
+            'revenue_card_help' => 'Ingresos por la venta de abonos, cobrados por adelantado. Independientes de la taquilla del día de partido.',
+            'save_button' => 'Guardar precios',
+            'reset_defaults' => 'Restaurar valores por defecto',
+            'pitch' => 'Césped',
+
+            'area' => [
+                'general'       => 'General',
+                'lateral'       => 'Lateral',
+                'lateral_alta'  => 'Lateral alta',
+                'lateral_baja'  => 'Lateral baja',
+                'tribuna'       => 'Tribuna',
+                'tribuna_alta'  => 'Tribuna alta',
+                'tribuna_baja'  => 'Tribuna baja',
+                'fondo_norte'   => 'Fondo norte',
+                'fondo_sur'     => 'Fondo sur',
+                'vip'           => 'VIP',
+                'palco'         => 'Palco',
+            ],
+        ],
     ],
 
     'reputation' => [

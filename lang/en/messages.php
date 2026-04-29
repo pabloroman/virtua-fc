@@ -66,6 +66,10 @@ return [
     'budget_saved' => 'Budget allocation saved.',
     'budget_no_projections' => 'No financial projections found.',
 
+    // Stadium / season tickets
+    'season_tickets_saved' => 'Season ticket prices saved.',
+    'season_tickets_locked' => 'Season ticket prices are already locked for this season.',
+
     // Season messages
     'budget_exceeds_surplus' => 'Total allocation exceeds available surplus.',
     'budget_minimum_tier' => 'All infrastructure areas must be at least Tier 1.',

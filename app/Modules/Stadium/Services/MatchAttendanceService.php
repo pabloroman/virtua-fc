@@ -30,6 +30,7 @@ class MatchAttendanceService
 
     public function __construct(
         private readonly DemandCurveService $demandCurve,
+        private readonly SeasonTicketPricingService $seasonTicketPricingService,
     ) {}
 
     /** Per-request caches — MatchAttendanceService is resolved fresh per request. */
@@ -237,10 +238,40 @@ class MatchAttendanceService
             $competition,
         );
 
+        $capacity = (int) ($home->stadium_seats ?? 0);
+        $attendance = $this->applySeasonTicketFloor($match, $game, $attendance, $capacity);
+
         return [
             'attendance' => $attendance,
-            'capacity' => (int) ($home->stadium_seats ?? 0),
+            'capacity' => $capacity,
         ];
+    }
+
+    /**
+     * Bumps attendance up to a season-ticket-driven floor for the user's
+     * home games. Season ticket holders always show up (they paid up
+     * front), so the gate can never dip below that count. Adds a small
+     * walk-up jitter on top so consecutive matches don't read identically;
+     * jitter is deterministic per match so the figure is stable across
+     * page reloads.
+     */
+    private function applySeasonTicketFloor(GameMatch $match, Game $game, int $attendance, int $capacity): int
+    {
+        $holders = $this->seasonTicketPricingService->soldSeasonTicketsForMatch($game, $match);
+        if ($holders <= 0 || $capacity <= 0) {
+            return $attendance;
+        }
+
+        // Deterministic walk-up jitter: −1% to +5% of capacity. Seeded per
+        // match so the same fixture always reports the same number.
+        mt_srand((int) crc32($match->id));
+        $jitterPercent = mt_rand(-100, 500) / 10_000.0; // −0.01 to +0.05
+        $jitterSeats = (int) round($capacity * $jitterPercent);
+        mt_srand();
+
+        $floor = $holders + $jitterSeats;
+
+        return max($attendance, min($capacity, $floor));
     }
 
     /**

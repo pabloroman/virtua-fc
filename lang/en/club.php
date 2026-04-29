@@ -25,8 +25,41 @@ return [
         'no_home_match_yet' => 'No home match has been played yet.',
 
         'matchday_revenue' => 'Matchday revenue',
-        'matchday_revenue_help' => 'Projected figure uses the season budgeting formula; actuals land at season settlement. They will diverge once attendance drives matchday revenue directly.',
+        'matchday_revenue_help' => 'Walk-up tickets and concessions only — season ticket holders pay separately and appear in their own line. Projected figure uses the season budgeting formula; actuals land at season settlement.',
         'no_finances_yet' => 'Season finances will appear once projections are generated.',
+
+        'season_tickets' => [
+            'title' => 'Season tickets',
+            'subtitle' => 'Set your season ticket prices for each seating area. Pricing is locked once your first league match has been played.',
+            'default_applied' => 'Defaults applied — adjust before kick-off.',
+            'deadline_notice' => 'Deadline: prices lock once the first league match of the season has been played.',
+            'locked_notice' => 'Season tickets are locked for the season. New prices can be set in pre-season next year.',
+            'tickets_sold' => 'Tickets sold',
+            'predicted_fill' => 'predicted fill',
+            'baseline_price' => 'Baseline',
+            'capacity' => 'Capacity',
+            'total_revenue' => 'Season ticket revenue',
+            'revenue_help' => 'Locked at sale — pre-paid by fans before the season starts.',
+            'revenue_card_title' => 'Season ticket revenue',
+            'revenue_card_help' => 'Income from season ticket subscriptions, collected up front. Independent of matchday gate.',
+            'save_button' => 'Save prices',
+            'reset_defaults' => 'Reset to defaults',
+            'pitch' => 'Pitch',
+
+            'area' => [
+                'general'       => 'General',
+                'lateral'       => 'Lateral',
+                'lateral_alta'  => 'Lateral upper',
+                'lateral_baja'  => 'Lateral lower',
+                'tribuna'       => 'Main stand',
+                'tribuna_alta'  => 'Main stand upper',
+                'tribuna_baja'  => 'Main stand lower',
+                'fondo_norte'   => 'North end',
+                'fondo_sur'     => 'South end',
+                'vip'           => 'VIP',
+                'palco'         => 'Skybox',
+            ],
+        ],
     ],
 
     'reputation' => [

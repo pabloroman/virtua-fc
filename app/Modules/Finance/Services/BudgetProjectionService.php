@@ -15,6 +15,7 @@ use App\Models\Team;
 use App\Models\TeamReputation;
 use App\Modules\Squad\Services\SquadService;
 use App\Modules\Stadium\Services\MatchAttendanceService;
+use App\Modules\Stadium\Services\SeasonTicketPricingService;
 use Carbon\Carbon;
 
 class BudgetProjectionService
@@ -22,6 +23,7 @@ class BudgetProjectionService
     public function __construct(
         private readonly SquadService $squadService,
         private readonly MatchAttendanceService $matchAttendanceService,
+        private readonly SeasonTicketPricingService $seasonTicketPricingService,
     ) {}
     /**
      * UEFA / RFEF solidarity funds by competition tier (in cents).
@@ -82,11 +84,13 @@ class BudgetProjectionService
         $projectedMatchdayRevenue = $this->calculateMatchdayRevenue($team, $game);
         $projectedSolidarityFundsRevenue = self::SOLIDARITY_FUNDS_BY_TIER[$game->competition->tier] ?? 0;
         $projectedCommercialRevenue = $this->getBaseCommercialRevenue($game, $team, $league);
+        $projectedSeasonTicketRevenue = $this->seasonTicketPricingService->getCurrent($game)?->total_revenue ?? 0;
 
         $projectedTotalRevenue = $projectedTvRevenue
             + $projectedMatchdayRevenue
             + $projectedSolidarityFundsRevenue
-            + $projectedCommercialRevenue;
+            + $projectedCommercialRevenue
+            + $projectedSeasonTicketRevenue;
 
         // Calculate projected wages
         $projectedWages = $this->calculateProjectedWages($game);
@@ -125,6 +129,7 @@ class BudgetProjectionService
                 'projected_tv_revenue' => $projectedTvRevenue,
                 'projected_solidarity_funds_revenue' => $projectedSolidarityFundsRevenue,
                 'projected_matchday_revenue' => $projectedMatchdayRevenue,
+                'projected_season_ticket_revenue' => $projectedSeasonTicketRevenue,
                 'projected_commercial_revenue' => $projectedCommercialRevenue,
                 'projected_subsidy_revenue' => $projectedSubsidyRevenue,
                 'projected_total_revenue' => $projectedTotalRevenue,
@@ -151,17 +156,20 @@ class BudgetProjectionService
     }
 
     /**
-     * Project matchday revenue using the team's season-average attendance
-     * (capacity × base-fill from the demand curve) multiplied by the count
-     * of scheduled home fixtures. Cup and European home ties add bonus
-     * revenue on top of the league baseline at the same per-seat rate.
+     * Project matchday revenue from walk-up fans and concessions only.
+     * Season ticket holders are excluded so we don't double-count them — they
+     * already paid up front via the season ticket sale, which lives in its
+     * own revenue line.
      *
-     * `revenue_per_seat` is a per-seat per-SEASON rate, so we divide by the
-     * league home-game count to derive a per-match rate. The projection is
-     * intentionally coarse: per-fixture opponent/competition modifiers are
-     * clamped to ±20% and average near 1.0 across a balanced schedule, so
-     * dropping them keeps the estimate within a few percent of a
-     * fixture-by-fixture sum without the per-match queries.
+     * Formula:
+     *   walkup_attendance = max(0, baseline_attendance − season_ticket_holders)
+     *   revenue = walkup_attendance × perSeatMatchRate × totalHomeMatchCount
+     *           × facilities_multiplier
+     *
+     * The per-seat rate (`finances.revenue_per_seat.<reputation>`) stays
+     * calibrated against real-world matchday revenue. Selling more season
+     * tickets shifts revenue from this bucket to the season-ticket bucket
+     * — total roughly preserved.
      *
      * Runs at SeasonSetupPipeline priority 107 — after LeagueFixtureProcessor
      * (30) and ContinentalAndCupInitProcessor (106), so the fixture list for
@@ -190,7 +198,10 @@ class BudgetProjectionService
         $perSeatMatchRate = $perSeatSeasonRate / $leagueHomeMatchCount;
 
         $expectedAttendance = $this->matchAttendanceService->projectBaselineForTeam($game->id, $team);
-        $total = $expectedAttendance * $perSeatMatchRate * $totalHomeMatchCount;
+        $seasonTicketHolders = $this->seasonTicketPricingService->soldSeasonTicketsForGame($game);
+        $walkupAttendance = max(0, $expectedAttendance - $seasonTicketHolders);
+
+        $total = $walkupAttendance * $perSeatMatchRate * $totalHomeMatchCount;
 
         $investment = $game->currentInvestment;
         $facilitiesMultiplier = $investment

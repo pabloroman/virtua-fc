@@ -6,6 +6,7 @@ use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Finance\Services\BudgetLoanService;
 use App\Modules\Stadium\Services\MatchAttendanceService;
+use App\Modules\Stadium\Services\SeasonTicketPricingService;
 use App\Models\BudgetLoan;
 use App\Models\FinancialTransaction;
 use App\Models\TeamReputation;
@@ -27,6 +28,7 @@ class SeasonSettlementProcessor implements SeasonProcessor
 {
     public function __construct(
         private readonly MatchAttendanceService $matchAttendanceService,
+        private readonly SeasonTicketPricingService $seasonTicketPricingService,
     ) {}
 
     public function priority(): int
@@ -59,12 +61,16 @@ class SeasonSettlementProcessor implements SeasonProcessor
         $actualTransferIncome = $this->calculateTransferIncome($game);
         $actualCupBonusRevenue = $this->calculateCupBonusRevenue($game);
 
-        // Guaranteed income — same amount as projected
+        // Guaranteed income — same amount as projected. Season ticket
+        // revenue is collected up front at the season's start so it stays
+        // locked to the projected figure (no variance).
         $actualSubsidyRevenue = $finances->projected_subsidy_revenue;
         $actualSolidarityFundsRevenue = $finances->projected_solidarity_funds_revenue;
+        $actualSeasonTicketRevenue = $finances->projected_season_ticket_revenue;
 
         $actualTotalRevenue = $actualTvRevenue
             + $actualMatchdayRevenue
+            + $actualSeasonTicketRevenue
             + $actualCommercialRevenue
             + $actualSubsidyRevenue
             + $actualSolidarityFundsRevenue
@@ -89,6 +95,7 @@ class SeasonSettlementProcessor implements SeasonProcessor
             'actual_solidarity_funds_revenue' => $actualSolidarityFundsRevenue,
             'actual_cup_bonus_revenue' => $actualCupBonusRevenue,
             'actual_matchday_revenue' => $actualMatchdayRevenue,
+            'actual_season_ticket_revenue' => $actualSeasonTicketRevenue,
             'actual_commercial_revenue' => $actualCommercialRevenue,
             'actual_subsidy_revenue' => $actualSubsidyRevenue,
             'actual_transfer_income' => $actualTransferIncome,
@@ -140,6 +147,12 @@ class SeasonSettlementProcessor implements SeasonProcessor
      * (saves that span the Phase 1a upgrade) are backfilled in place via the
      * idempotent MatchAttendanceService, so the formula sees uniform coverage.
      *
+     * Season ticket holders are subtracted from each match's attendance
+     * before the per-seat rate applies — they already paid up front via the
+     * season ticket sale, so counting them again would inflate revenue. The
+     * remainder represents walk-up / single-ticket buyers and concessions,
+     * which is what `revenue_per_seat` is calibrated to capture.
+     *
      * `revenue_per_seat` is a per-seat per-SEASON rate. To spread it across
      * the fixture list we divide by the count of league home games — cup and
      * European home ties then add bonus revenue on top at the same seat rate,
@@ -164,6 +177,8 @@ class SeasonSettlementProcessor implements SeasonProcessor
         $perSeatSeasonRate = (int) config("finances.revenue_per_seat.{$reputation}", 15_000);
         $perSeatMatchRate = $perSeatSeasonRate / $leagueHomeMatchCount;
 
+        $seasonTicketHolders = $this->seasonTicketPricingService->soldSeasonTicketsForGame($game);
+
         $homeMatches = GameMatch::where('game_id', $game->id)
             ->where('home_team_id', $team->id)
             ->where('played', true)
@@ -176,7 +191,8 @@ class SeasonSettlementProcessor implements SeasonProcessor
                 // Neutral-venue finals don't feed the home club's matchday revenue.
                 continue;
             }
-            $total += $attendance->attendance * $perSeatMatchRate;
+            $walkup = max(0, $attendance->attendance - $seasonTicketHolders);
+            $total += $walkup * $perSeatMatchRate;
         }
 
         $investment = $game->currentInvestment;

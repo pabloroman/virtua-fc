@@ -42,7 +42,9 @@ use App\Http\Actions\CancelLoanSearch;
 use App\Http\Actions\CancelScoutSearch;
 use App\Http\Actions\MarkAllNotificationsRead;
 use App\Http\Actions\MarkNotificationRead;
+use App\Http\Actions\PreviewSeasonTicketPricing;
 use App\Http\Actions\SaveBudgetAllocation;
+use App\Http\Actions\SaveSeasonTicketPricing;
 use App\Http\Views\ShowBudgetAllocation;
 use App\Http\Actions\FinalizeMatch;
 use App\Http\Actions\GetAutoLineup;
@@ -178,6 +180,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/game/{gameId}/club', fn (string $gameId) => redirect()->route('game.club.finances', $gameId))->name('game.club');
         Route::get('/game/{gameId}/club/finances', ShowFinances::class)->name('game.club.finances');
         Route::get('/game/{gameId}/club/stadium', ShowClubStadium::class)->name('game.club.stadium');
+        Route::post('/game/{gameId}/club/stadium/season-tickets', SaveSeasonTicketPricing::class)->name('game.club.stadium.season-tickets.save');
+        Route::post('/game/{gameId}/club/stadium/season-tickets/preview', PreviewSeasonTicketPricing::class)->name('game.club.stadium.season-tickets.preview');
         Route::get('/game/{gameId}/club/reputation', ShowClubReputation::class)->name('game.club.reputation');
         Route::get('/game/{gameId}/transfers', ShowIncomingTransfers::class)->name('game.transfers');
         Route::get('/game/{gameId}/transfers/outgoing', ShowOutgoingTransfers::class)->name('game.transfers.outgoing');

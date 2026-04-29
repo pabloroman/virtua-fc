@@ -66,6 +66,10 @@ return [
     'budget_saved' => 'Asignación de presupuesto guardada.',
     'budget_no_projections' => 'No se encontraron proyecciones financieras.',
 
+    // Stadium / abonos
+    'season_tickets_saved' => 'Precios de abonos guardados.',
+    'season_tickets_locked' => 'Los precios de los abonos ya están bloqueados para esta temporada.',
+
     // Season messages
     'budget_exceeds_surplus' => 'La asignación total supera el superávit disponible.',
     'budget_minimum_tier' => 'Todas las áreas de infraestructura deben ser al menos Nivel 1.',
