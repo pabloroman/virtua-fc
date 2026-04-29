@@ -25,6 +25,11 @@ use Illuminate\Support\Facades\Log;
  *    season's cup.
  *  - top_per_group: the top N teams in each competition at this tier
  *    (including siblings — e.g. ESP3A and ESP3B) qualify.
+ *  - target_size (optional): total cup size to maintain. After the rule
+ *    pass, the processor pulls additional non-reserves from top_per_group
+ *    groups round-robin until qualifiers + untouched regional seed teams
+ *    equal this number. Without it the cup permanently shrinks each
+ *    season because the rule replaces seeded ESP3 teams with fewer.
  *
  * Reserve teams (Team::parent_team_id is set) never qualify, regardless of
  * finishing position. When a reserve occupies a slot in an auto_qualify
@@ -69,7 +74,7 @@ class CopaQualificationProcessor implements SeasonProcessor
     }
 
     /**
-     * @param  array{auto_qualify_tiers?: int[], top_per_group?: array<int, int>}  $rule
+     * @param  array{auto_qualify_tiers?: int[], top_per_group?: array<int, int>, target_size?: int}  $rule
      * @param  string[]  $reserveTeamIdsForCountry
      */
     private function rebuildCupEntries(
@@ -118,20 +123,89 @@ class CopaQualificationProcessor implements SeasonProcessor
             }
         }
 
-        // For each group, qualify the top N non-reserve teams — skipping any
-        // reserves in higher positions so the group always contributes
-        // exactly N qualifiers when enough are eligible.
-        foreach ($groups as $group) {
+        // Pre-load each group's ranked team list once, with a cursor so we
+        // can resume picking past the base topN during the target-size
+        // top-up phase below.
+        $groupRanked = array_map(
+            fn (array $g) => $this->rankedTeams($game, $g['competition']),
+            $groups,
+        );
+        $groupCursors = array_fill(0, count($groups), 0);
+
+        // Phase 1: respect each group's base topN (the long-standing
+        // semantics — exactly N non-reserve picks per group when possible).
+        foreach ($groups as $idx => $group) {
             $picked = 0;
-            foreach ($this->rankedTeams($game, $group['competition']) as $teamId) {
+            while (
+                $picked < $group['topN']
+                && $groupCursors[$idx] < count($groupRanked[$idx])
+            ) {
+                $teamId = $groupRanked[$idx][$groupCursors[$idx]++];
                 if (isset($reserveLookup[$teamId])) {
+                    continue;
+                }
+                if (isset($qualifiers[$teamId])) {
                     continue;
                 }
                 $qualifiers[$teamId] = true;
                 $picked++;
-                if ($picked >= $group['topN']) {
-                    break;
+            }
+        }
+
+        // Lower-tier seed teams (in the cup but not registered in any
+        // playable tier and not reserves) survive the rebuild, so they
+        // count toward the target_size invariant alongside qualifiers.
+        $playableTierTeamIds = CompetitionEntry::where('game_id', $game->id)
+            ->whereIn('competition_id', $playableTierCompetitions)
+            ->pluck('team_id')
+            ->unique()
+            ->all();
+
+        $untouchedCount = $this->countUntouchedCupTeams(
+            $game->id,
+            $cupId,
+            $playableTierTeamIds,
+            $reserveTeamIdsForCountry,
+        );
+
+        // Phase 2: top up to target_size by pulling next-ranked non-reserves
+        // round-robin across groups. Skips exhausted groups; stops when
+        // either the target is reached or every group is exhausted.
+        $targetSize = $rule['target_size'] ?? null;
+        if ($targetSize !== null && !empty($groups)) {
+            $deficit = $targetSize - count($qualifiers) - $untouchedCount;
+            $idx = 0;
+            $consecutiveExhausted = 0;
+            $groupCount = count($groups);
+
+            while ($deficit > 0 && $consecutiveExhausted < $groupCount) {
+                $teamId = $this->advanceCursor($groupRanked[$idx], $groupCursors, $idx, $reserveLookup, $qualifiers);
+
+                if ($teamId === null) {
+                    $consecutiveExhausted++;
+                } else {
+                    $qualifiers[$teamId] = true;
+                    $deficit--;
+                    $consecutiveExhausted = 0;
                 }
+
+                $idx = ($idx + 1) % $groupCount;
+            }
+
+            if ($deficit > 0) {
+                // Target size is the cup's parity invariant — odd
+                // shortfalls are exactly what produced the 93 broken
+                // Copa del Rey draws in production. Throw rather than
+                // log: silent shortfalls hide the bug we just fixed.
+                throw new \RuntimeException(sprintf(
+                    '[CopaQualification] %s: target_size %d unreachable for game %s '
+                    . '(short by %d, qualifier_pool exhausted across all top_per_group groups). '
+                    . 'Check cup_qualification rule, reserve filtering, or league sizes.',
+                    $cupId,
+                    $targetSize,
+                    $game->id,
+                    $deficit,
+                ));
             }
         }
 
@@ -139,12 +213,6 @@ class CopaQualificationProcessor implements SeasonProcessor
         // tier system — we're redeciding qualification for those. Also drop
         // any reserve teams that may have slipped in previously. Lower-tier
         // seed teams (not registered in any playable tier) are left alone.
-        $playableTierTeamIds = CompetitionEntry::where('game_id', $game->id)
-            ->whereIn('competition_id', $playableTierCompetitions)
-            ->pluck('team_id')
-            ->unique()
-            ->all();
-
         $teamIdsToClear = array_unique(array_merge($playableTierTeamIds, $reserveTeamIdsForCountry));
 
         if (!empty($teamIdsToClear)) {
@@ -174,6 +242,58 @@ class CopaQualificationProcessor implements SeasonProcessor
         );
 
         Log::info("[CopaQualification] {$cupId}: " . count($rows) . ' qualifiers from playable tiers');
+    }
+
+    /**
+     * Advance the cursor for one group past reserves and already-qualified
+     * teams, returning the next eligible team_id or null if exhausted.
+     *
+     * @param  array<int, string>  $ranked
+     * @param  array<int, int>  $cursors
+     * @param  array<string, int>  $reserveLookup
+     * @param  array<string, true>  $qualifiers
+     */
+    private function advanceCursor(array $ranked, array &$cursors, int $idx, array $reserveLookup, array $qualifiers): ?string
+    {
+        while ($cursors[$idx] < count($ranked)) {
+            $teamId = $ranked[$cursors[$idx]++];
+
+            if (isset($reserveLookup[$teamId])) {
+                continue;
+            }
+            if (isset($qualifiers[$teamId])) {
+                continue;
+            }
+
+            return $teamId;
+        }
+
+        return null;
+    }
+
+    /**
+     * Count cup entries that survive the rebuild — i.e. teams in the cup
+     * but not registered in any playable tier and not reserves.
+     *
+     * @param  string[]  $playableTierTeamIds
+     * @param  string[]  $reserveTeamIdsForCountry
+     */
+    private function countUntouchedCupTeams(
+        string $gameId,
+        string $cupId,
+        array $playableTierTeamIds,
+        array $reserveTeamIdsForCountry,
+    ): int {
+        $excluded = array_unique(array_merge($playableTierTeamIds, $reserveTeamIdsForCountry));
+
+        $query = CompetitionEntry::where('game_id', $gameId)
+            ->where('competition_id', $cupId);
+
+        if (!empty($excluded)) {
+            $query->whereNotIn('team_id', $excluded);
+        }
+
+        return $query->count();
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Modules\Competition\Services;
 
 use App\Modules\Competition\Contracts\CupDrawPairingStrategy;
 use App\Modules\Competition\DTOs\PlayoffRoundConfig;
+use App\Modules\Competition\Exceptions\OddCupDrawPoolException;
 use App\Modules\Competition\Services\Draw\RandomPairing;
 use App\Models\Competition;
 use App\Models\CompetitionEntry;
@@ -217,13 +218,8 @@ class CupDrawService
                 : [];
 
             $orderedTeams = $strategy->pairTeams($enteringTeams, $teamTierMap);
-            $pairs = collect();
 
-            for ($i = 0; $i + 1 < $orderedTeams->count(); $i += 2) {
-                $pairs->push([$orderedTeams[$i], $orderedTeams[$i + 1]]);
-            }
-
-            return $pairs;
+            return $this->chunkIntoPairs($orderedTeams, $competitionId, $roundNumber);
         }
 
         // Later rounds: combine previous-round winners with new entrants
@@ -244,9 +240,30 @@ class CupDrawService
 
         $orderedTeams = $strategy->pairTeams($allTeams, $teamTierMap);
 
+        return $this->chunkIntoPairs($orderedTeams, $competitionId, $roundNumber);
+    }
+
+    /**
+     * Walk an ordered team list 2-by-2 into pairs, raising if the count is
+     * odd. The earlier `for ($i + 1 < $count; $i += 2)` form silently
+     * dropped the trailing team and produced 93 broken Copa del Rey
+     * draws in production — better to fail loudly here so the upstream
+     * cause surfaces.
+     *
+     * @param  Collection<int, string>  $orderedTeams
+     * @return Collection<int, array{0: string, 1: string}>
+     */
+    private function chunkIntoPairs(Collection $orderedTeams, string $competitionId, int $roundNumber): Collection
+    {
+        $count = $orderedTeams->count();
+
+        if ($count % 2 !== 0) {
+            throw OddCupDrawPoolException::forRound($competitionId, $roundNumber, $count);
+        }
+
         $pairs = collect();
 
-        for ($i = 0; $i + 1 < $orderedTeams->count(); $i += 2) {
+        for ($i = 0; $i < $count; $i += 2) {
             $pairs->push([$orderedTeams[$i], $orderedTeams[$i + 1]]);
         }
 

@@ -106,6 +106,13 @@ return [
                 'top_per_group' => [
                     3 => 5,
                 ],
+                // Total cup size invariant. After auto_qualify + top_per_group +
+                // reserve cascade, the processor tops up by pulling additional
+                // non-reserves round-robin from top_per_group groups until the
+                // qualifier count + untouched regional seed teams equal this
+                // number. Without it, the cup permanently shrinks each season
+                // because the rule replaces 21 seeded ESP3 teams with 11.
+                'target_size' => 116,
             ],
         ],
 

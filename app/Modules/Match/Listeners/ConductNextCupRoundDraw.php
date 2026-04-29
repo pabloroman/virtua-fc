@@ -2,8 +2,8 @@
 
 namespace App\Modules\Match\Listeners;
 
-use App\Modules\Match\Events\CupTieResolved;
 use App\Modules\Competition\Services\CupDrawService;
+use App\Modules\Match\Events\CupTieResolved;
 
 class ConductNextCupRoundDraw
 {
@@ -26,12 +26,19 @@ class ConductNextCupRoundDraw
             $event->match->competition_id,
         );
 
-        if ($nextRound !== null) {
-            $this->cupDrawService->conductDraw(
-                $event->game->id,
-                $event->match->competition_id,
-                $nextRound,
-            );
+        if ($nextRound === null) {
+            return;
         }
+
+        // OddCupDrawPoolException from conductDraw is intentionally not
+        // caught here. Silent fallbacks are how the original 93-broken-
+        // games bug stayed hidden — we'd rather match finalization fail
+        // loudly so the upstream cause (parity violation in the team
+        // pool) surfaces immediately.
+        $this->cupDrawService->conductDraw(
+            $event->game->id,
+            $event->match->competition_id,
+            $nextRound,
+        );
     }
 }

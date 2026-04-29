@@ -10,15 +10,29 @@ use App\Models\Game;
 use App\Models\CompetitionEntry;
 use App\Models\GameStanding;
 use App\Models\SimulatedSeason;
+use RuntimeException;
 
 /**
- * Determines supercup qualifiers for the next season,
- * driven by country config.
+ * Determines supercup qualifiers for the next season, driven by country config.
  *
- * Qualification rules (per country's supercup config):
- * - The two domestic cup finalists
- * - League champion and runner-up
- * - If there's overlap, the next highest league team qualifies
+ * Qualification rules (RFEF for ESP, generalised for any country):
+ *  1. The two cup finalists always qualify (cup winner + cup runner-up).
+ *  2. The league champion qualifies, unless already in slot 1–2.
+ *  3. The league runner-up qualifies, unless already in slot 1–3.
+ *  4. If either cup finalist also finished league 1st or 2nd, the *league*
+ *     slot they would have taken cascades down to 3rd / 4th to fill the
+ *     four-team field. The cup-finalist slot itself is never displaced.
+ *
+ * RFEF wording (Copa del Rey → Supercopa de España):
+ *   "Si el campeón o subcampeón de Copa del Rey ya está clasificado entre
+ *    los dos primeros de Liga, la plaza de la Supercopa se otorga al 3º
+ *    (y 4º si fuera necesario) clasificado de la Liga para completar los
+ *    cuatro participantes."
+ *
+ * The "plaza" (spot) that advances is the league's, not the cup's — the
+ * cup finalists keep priority and the league simply fills whatever
+ * remains. Implementing this priority order also matters for downstream
+ * display: the persisted entry order labels each slot's role.
  *
  * Priority: 25 (runs after stats reset but before fixture generation)
  */
@@ -57,11 +71,30 @@ class SupercupQualificationProcessor implements SeasonProcessor
         // Get cup finalists
         $cupFinalists = $this->getCupFinalists($game->id, $cupId, $cupFinalRound);
 
-        // Get league top teams (enough to handle overlaps)
+        // Fetch league top 4 — enough to backfill 3rd/4th slots when both
+        // cup finalists overlap with the league champion/runner-up.
         $leagueTopTeams = $this->getLeagueTopTeams($game->id, $leagueId, 4);
 
         // Determine the 4 supercup qualifiers
         $qualifiers = $this->determineQualifiers($cupFinalists, $leagueTopTeams);
+
+        if (count($qualifiers) !== 4) {
+            // Source of Population A in the cup-draw incident: cup didn't
+            // run AND fewer than 4 league top teams are available, so the
+            // supercup ends up with < 4 entries and the downstream draw
+            // creates the wrong bracket. Surface this loudly — silent
+            // shortfalls are how the bug stayed hidden in the first place.
+            throw new RuntimeException(sprintf(
+                '[SupercupQualification] expected 4 qualifiers for %s in game %s, got %d. '
+                . 'cup_winner=%s cup_runnerup=%s league_top_teams=%d',
+                $supercupId,
+                $game->id,
+                count($qualifiers),
+                $cupFinalists['winner'] ?? 'null',
+                $cupFinalists['runnerUp'] ?? 'null',
+                count($leagueTopTeams),
+            ));
+        }
 
         // Update supercup competition_entries for this game
         $this->updateSupercupTeams($game->id, $supercupId, $qualifiers);
@@ -127,37 +160,50 @@ class SupercupQualificationProcessor implements SeasonProcessor
     }
 
     /**
-     * Determine the 4 supercup qualifiers, handling overlaps.
+     * Determine the 4 supercup qualifiers in RFEF priority order:
      *
-     * @return array<string> 4 team IDs
+     *   1. Cup winner.
+     *   2. Cup runner-up.
+     *   3. League champion (skipped if already in slot 1–2).
+     *   4. League runner-up (skipped if already in slot 1–3).
+     *   5. League 3rd, 4th, … to backfill whichever league slot was
+     *      displaced by a cup-finalist overlap.
+     *
+     * The cup finalists' slots are never displaced — when overlap
+     * occurs it's the league's "1st / 2nd" slot that cascades to 3rd
+     * or 4th, mirroring "la plaza de la Supercopa se otorga al 3º
+     * (y 4º si fuera necesario) clasificado de la Liga".
+     *
+     * @param  array{winner: string|null, runnerUp: string|null}  $cupFinalists
+     * @param  array<int, string>  $leagueTopTeams  league positions 1..N (1st first)
+     * @return array<string>  up to 4 team IDs
      */
     private function determineQualifiers(array $cupFinalists, array $leagueTopTeams): array
     {
         $qualifiers = [];
         $usedTeams = [];
 
-        // Add cup finalists first (if available)
-        if ($cupFinalists['winner']) {
-            $qualifiers[] = $cupFinalists['winner'];
-            $usedTeams[$cupFinalists['winner']] = true;
-        }
-        if ($cupFinalists['runnerUp']) {
-            $qualifiers[] = $cupFinalists['runnerUp'];
-            $usedTeams[$cupFinalists['runnerUp']] = true;
-        }
-
-        // Add league teams until we have 4 qualifiers
-        foreach ($leagueTopTeams as $teamId) {
-            if (count($qualifiers) >= 4) {
-                break;
+        $add = function (?string $teamId) use (&$qualifiers, &$usedTeams): void {
+            if ($teamId === null || isset($usedTeams[$teamId]) || count($qualifiers) >= 4) {
+                return;
             }
-
-            if (isset($usedTeams[$teamId])) {
-                continue;
-            }
-
             $qualifiers[] = $teamId;
             $usedTeams[$teamId] = true;
+        };
+
+        // 1–2. Cup finalists always qualify.
+        $add($cupFinalists['winner'] ?? null);
+        $add($cupFinalists['runnerUp'] ?? null);
+
+        // 3–4. League champion and runner-up. Skipped if they're already
+        // a cup finalist — that's where the "plaza advances" rule kicks
+        // in and the next loop picks up the slack from 3rd / 4th.
+        $add($leagueTopTeams[0] ?? null);
+        $add($leagueTopTeams[1] ?? null);
+
+        // 5. Cascade: fill any vacancy from 3rd, 4th, ...
+        foreach (array_slice($leagueTopTeams, 2) as $teamId) {
+            $add($teamId);
         }
 
         return $qualifiers;

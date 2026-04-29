@@ -8,6 +8,7 @@ use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\Team;
 use App\Models\User;
+use App\Modules\Competition\Exceptions\OddCupDrawPoolException;
 use App\Modules\Competition\Services\CupDrawService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -209,5 +210,115 @@ class CupDrawServiceTest extends TestCase
         $ties = $this->service->conductDraw($this->game->id, 'ESPSUP', 1);
 
         $this->assertCount(2, $ties);
+    }
+
+    // ---------------------------------------------------------------------
+    // Odd-pool guard (regression: silent team drop)
+    //
+    // Before this guard, an odd team pool was silently truncated by the
+    // `for ($i + 1 < $count; $i += 2)` loop and one team disappeared from
+    // the round. That cascaded across rounds and produced 93 broken Copa
+    // del Rey draws in production (semifinals with one tie, etc.). The
+    // service must now raise loudly so the upstream cause surfaces.
+    // ---------------------------------------------------------------------
+
+    public function test_draw_with_odd_team_pool_raises_in_round_one(): void
+    {
+        // 5 teams in the cup → odd pool. CrossCategoryPairing returns all 5
+        // (after its own fix); the service must refuse to chunk them.
+        $teams = Team::factory()->count(5)->create();
+
+        foreach ($teams as $team) {
+            CompetitionEntry::create([
+                'game_id' => $this->game->id,
+                'competition_id' => 'ESPCUP',
+                'team_id' => $team->id,
+                'entry_round' => 1,
+            ]);
+        }
+
+        $this->expectException(OddCupDrawPoolException::class);
+        $this->expectExceptionMessageMatches('/ESPCUP round 1.*5 teams.*odd/i');
+
+        $this->service->conductDraw($this->game->id, 'ESPCUP', 1);
+    }
+
+    public function test_draw_with_odd_team_pool_raises_in_later_round(): void
+    {
+        // Stage: round 1 had 6 ties (12 teams) → 6 winners drawn for round 2.
+        // To force an odd round-2 pool, we'll mark 5 of the 6 ties complete
+        // — leaving 5 winners → odd. The service must raise.
+        $teams = Team::factory()->count(12)->create();
+
+        foreach ($teams as $team) {
+            CompetitionEntry::create([
+                'game_id' => $this->game->id,
+                'competition_id' => 'ESPCUP',
+                'team_id' => $team->id,
+                'entry_round' => 1,
+            ]);
+        }
+
+        $round1Ties = $this->service->conductDraw($this->game->id, 'ESPCUP', 1);
+        $this->assertCount(6, $round1Ties);
+
+        // Complete 5 of the 6 ties so round 2 has 5 winners (odd).
+        foreach ($round1Ties->take(5) as $tie) {
+            $tie->update(['completed' => true, 'winner_id' => $tie->home_team_id]);
+        }
+
+        // The 6th tie is left incomplete on purpose. needsDrawForRound
+        // would normally block draws here, but conductDraw doesn't gate;
+        // we want to verify the chunking guard fires when reached.
+        $round1Ties->last()->update(['completed' => true, 'winner_id' => null]);
+
+        $this->expectException(OddCupDrawPoolException::class);
+        $this->expectExceptionMessageMatches('/ESPCUP round 2.*5 teams.*odd/i');
+
+        $this->service->conductDraw($this->game->id, 'ESPCUP', 2);
+    }
+
+    public function test_draw_with_even_pool_does_not_raise(): void
+    {
+        // 6 teams → 3 ties. Sanity check that the guard is parity-specific.
+        $teams = Team::factory()->count(6)->create();
+
+        foreach ($teams as $team) {
+            CompetitionEntry::create([
+                'game_id' => $this->game->id,
+                'competition_id' => 'ESPCUP',
+                'team_id' => $team->id,
+                'entry_round' => 1,
+            ]);
+        }
+
+        $ties = $this->service->conductDraw($this->game->id, 'ESPCUP', 1);
+
+        $this->assertCount(3, $ties);
+    }
+
+    public function test_odd_pool_message_names_competition_and_round(): void
+    {
+        $teams = Team::factory()->count(3)->create();
+
+        foreach ($teams as $team) {
+            CompetitionEntry::create([
+                'game_id' => $this->game->id,
+                'competition_id' => 'ESPCUP',
+                'team_id' => $team->id,
+                'entry_round' => 1,
+            ]);
+        }
+
+        try {
+            $this->service->conductDraw($this->game->id, 'ESPCUP', 1);
+            $this->fail('Expected OddCupDrawPoolException was not thrown');
+        } catch (OddCupDrawPoolException $e) {
+            // Message must surface the diagnostic dimensions: competition,
+            // round, and team count. These are what an operator needs.
+            $this->assertStringContainsString('ESPCUP', $e->getMessage());
+            $this->assertStringContainsString('round 1', $e->getMessage());
+            $this->assertStringContainsString('3 teams', $e->getMessage());
+        }
     }
 }
