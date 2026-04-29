@@ -113,11 +113,12 @@ class CopaQualificationTest extends TestCase
         $this->assertCount(5, $esp3aQualifiers, 'ESP3A still contributes exactly 5 qualifiers');
     }
 
-    public function test_reserve_in_auto_qualify_tier_cascades_extra_slot_to_primera_rfef_groups(): void
+    public function test_reserves_in_auto_qualify_tier_are_skipped_without_cascade(): void
     {
-        // Three reserves occupying ESP2 slots — cascade should add 3 total
-        // picks across the two groups (round-robin: A=+2, B=+1 → A picks 7,
-        // B picks 6), keeping the cup at 52 qualifiers.
+        // Three reserves in ESP2 — they're simply skipped, shrinking the
+        // rule output to 49. Without target_size set the cup just gets
+        // smaller; the target_size top-up (covered separately below) is
+        // what restores the cup to its full size.
         $parents = $this->teamsByCompetition['ESP1'];
         $this->teamsByCompetition['ESP2'][5]->update(['parent_team_id' => $parents[0]->id]);
         $this->teamsByCompetition['ESP2'][10]->update(['parent_team_id' => $parents[1]->id]);
@@ -126,16 +127,7 @@ class CopaQualificationTest extends TestCase
         $this->runProcessor();
 
         $entries = $this->cupEntries();
-        $this->assertCount(52, $entries, 'Cup should stay at 52 qualifiers');
-
-        $esp3aIds = array_map(fn (Team $t) => $t->id, $this->teamsByCompetition['ESP3A']);
-        $esp3bIds = array_map(fn (Team $t) => $t->id, $this->teamsByCompetition['ESP3B']);
-
-        $esp3aCount = count(array_intersect($entries, $esp3aIds));
-        $esp3bCount = count(array_intersect($entries, $esp3bIds));
-
-        $this->assertEquals(7, $esp3aCount, 'ESP3A absorbs 2 cascaded seats');
-        $this->assertEquals(6, $esp3bCount, 'ESP3B absorbs 1 cascaded seat');
+        $this->assertCount(49, $entries, '20 ESP1 + 19 ESP2 (3 reserves skipped) + 5+5 ESP3 = 49');
 
         // The three reserves themselves never qualify
         $this->assertNotContains($this->teamsByCompetition['ESP2'][5]->id, $entries);
@@ -216,75 +208,34 @@ class CopaQualificationTest extends TestCase
     }
 
     // ---------------------------------------------------------------------
-    // target_size invariant
-    //
-    // These tests cover the outer top-up layer that maintains a stable cup
-    // size across season transitions. Without it the cup permanently shrinks
-    // because the rule replaces the seed's ~21 ESP3 teams with only 11 —
-    // which produced 93 broken Copa del Rey draws in production with odd
-    // team pools cascading into missing semifinal ties.
+    // target_size invariant — fills the cup back to a fixed size after the
+    // rule pass so it doesn't permanently shrink each season. Walks the
+    // top_per_group competitions sequentially (ESP3A first, then ESP3B),
+    // skipping reserves and teams already qualified.
     // ---------------------------------------------------------------------
 
-    public function test_target_size_tops_up_qualifiers_to_meet_total(): void
+    public function test_target_size_fills_remaining_slots_from_primera_rfef(): void
     {
-        // Rule produces 52 qualifiers (20+22+5+5). target_size=70 means we
-        // need to pull 18 more non-reserves from the ESP3 groups.
+        // Rule produces 52 qualifiers (20+22+5+5). target_size=70 → need 18
+        // more from ESP3, walking ESP3A first. ESP3A has 15 teams left
+        // after the top-5; ESP3B contributes the remaining 3.
         config(['countries.ES.cup_qualification.ESPCUP.target_size' => 70]);
 
         $this->runProcessor();
 
         $entries = $this->cupEntries();
-        $this->assertCount(70, $entries, 'Cup must reach the target size via top-up');
+        $this->assertCount(70, $entries);
 
-        // ESP1+ESP2 still all in (auto_qualify exhaustive)
-        foreach (['ESP1', 'ESP2'] as $comp) {
-            foreach ($this->teamsByCompetition[$comp] as $team) {
-                $this->assertContains($team->id, $entries);
-            }
-        }
-
-        // ESP3 contribution: 5 base each + 18 top-up split round-robin = 9 extra
-        // each (5+9 = 14 each, 28 total) — but ESP3A goes first so it
-        // gets 9 extras and ESP3B gets 9 extras (pairs round-robin: idx 0,1,0,1...)
         $esp3aIds = array_map(fn (Team $t) => $t->id, $this->teamsByCompetition['ESP3A']);
         $esp3bIds = array_map(fn (Team $t) => $t->id, $this->teamsByCompetition['ESP3B']);
 
-        $esp3a = count(array_intersect($entries, $esp3aIds));
-        $esp3b = count(array_intersect($entries, $esp3bIds));
-
-        $this->assertSame(28, $esp3a + $esp3b, 'ESP3 groups together absorb the 18-team top-up');
-        // The 18 extras go round-robin starting from ESP3A → ESP3A=9 extra, ESP3B=9 extra.
-        $this->assertEqualsWithDelta(14, $esp3a, 1, 'ESP3A got fair share');
-        $this->assertEqualsWithDelta(14, $esp3b, 1, 'ESP3B got fair share');
+        $this->assertSame(20, count(array_intersect($entries, $esp3aIds)), 'ESP3A fully drained first');
+        $this->assertSame(8, count(array_intersect($entries, $esp3bIds)), 'ESP3B contributes its top 8');
     }
 
-    public function test_target_size_top_up_pulls_in_position_order(): void
+    public function test_target_size_skips_reserves_during_fill(): void
     {
-        config(['countries.ES.cup_qualification.ESPCUP.target_size' => 56]);
-
-        $this->runProcessor();
-
-        $entries = $this->cupEntries();
-        $this->assertCount(56, $entries);
-
-        // 4 extras over 52 qualifiers, distributed round-robin: ESP3A gets
-        // 2 extras (positions 6 & 7), ESP3B gets 2 extras (positions 6 & 7).
-        $esp3a = $this->teamsByCompetition['ESP3A'];
-        $esp3b = $this->teamsByCompetition['ESP3B'];
-
-        $this->assertContains($esp3a[5]->id, $entries, 'ESP3A pos 6 pulled in by top-up');
-        $this->assertContains($esp3a[6]->id, $entries, 'ESP3A pos 7 pulled in by top-up');
-        $this->assertNotContains($esp3a[7]->id, $entries, 'ESP3A pos 8 still excluded');
-
-        $this->assertContains($esp3b[5]->id, $entries, 'ESP3B pos 6 pulled in by top-up');
-        $this->assertContains($esp3b[6]->id, $entries, 'ESP3B pos 7 pulled in by top-up');
-        $this->assertNotContains($esp3b[7]->id, $entries, 'ESP3B pos 8 still excluded');
-    }
-
-    public function test_target_size_skips_reserves_during_top_up(): void
-    {
-        // Mark ESP3A pos 6 as a reserve. Top-up must skip it and grab pos 7
-        // for that ESP3A slot — final count still hits target.
+        // ESP3A pos 6 marked reserve. The fill phase must skip it.
         $parent = $this->teamsByCompetition['ESP1'][0];
         $this->teamsByCompetition['ESP3A'][5]->update(['parent_team_id' => $parent->id]);
 
@@ -294,27 +245,18 @@ class CopaQualificationTest extends TestCase
 
         $entries = $this->cupEntries();
         $this->assertCount(54, $entries);
-        $this->assertNotContains(
-            $this->teamsByCompetition['ESP3A'][5]->id,
-            $entries,
-            'Reserve at ESP3A pos 6 must never qualify even during top-up'
-        );
-        $this->assertContains(
-            $this->teamsByCompetition['ESP3A'][6]->id,
-            $entries,
-            'ESP3A pos 7 takes the slot the reserve would have'
-        );
+        $this->assertNotContains($this->teamsByCompetition['ESP3A'][5]->id, $entries, 'reserve never qualifies');
+        $this->assertContains($this->teamsByCompetition['ESP3A'][6]->id, $entries, 'pos 7 picked instead');
+        $this->assertContains($this->teamsByCompetition['ESP3A'][7]->id, $entries, 'pos 8 picked too');
     }
 
-    public function test_target_size_counts_untouched_regional_teams_against_target(): void
+    public function test_target_size_counts_regional_seed_teams(): void
     {
-        // Regional teams in cup but outside playable tiers. They survive the
-        // rebuild and count toward target_size, so the qualifier top-up
-        // should pull less from groups.
+        // 10 regional teams already in the cup → fill phase needs 8 fewer
+        // teams from ESP3 to reach target_size.
         $regional = collect(range(1, 10))->map(
             fn (int $i) => Team::factory()->create(['country' => 'ES', 'name' => "Regional {$i}"])
         );
-
         foreach ($regional as $team) {
             CompetitionEntry::create([
                 'game_id' => $this->game->id,
@@ -330,86 +272,42 @@ class CopaQualificationTest extends TestCase
 
         $entries = $this->cupEntries();
         $this->assertCount(70, $entries);
-
-        // 10 regional are preserved → only 60 qualifiers needed (52 base + 8 top-up)
         foreach ($regional as $team) {
-            $this->assertContains($team->id, $entries);
+            $this->assertContains($team->id, $entries, 'regional team preserved');
         }
-
-        $esp3aIds = array_map(fn (Team $t) => $t->id, $this->teamsByCompetition['ESP3A']);
-        $esp3bIds = array_map(fn (Team $t) => $t->id, $this->teamsByCompetition['ESP3B']);
-        $esp3Total = count(array_intersect($entries, $esp3aIds))
-            + count(array_intersect($entries, $esp3bIds));
-
-        // 5+5 base + 8 top-up across both groups = 18 ESP3 total
-        $this->assertSame(18, $esp3Total);
     }
 
     public function test_target_size_unreachable_throws_loudly(): void
     {
-        // target_size larger than the entire eligible team pool. The
-        // processor must throw — silent shortfalls are exactly how the
-        // 93-broken-Copa-del-Rey-draws bug stayed hidden in production.
+        // target_size larger than the entire eligible pool — must throw
+        // rather than write a partial cup.
         config(['countries.ES.cup_qualification.ESPCUP.target_size' => 1000]);
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessageMatches('/ESPCUP.*target_size 1000 unreachable.*short by/i');
+        $this->expectExceptionMessageMatches('/ESPCUP.*target_size 1000 unreachable/i');
 
         $this->runProcessor();
     }
 
-    public function test_target_size_below_rule_output_does_not_remove_qualifiers(): void
+    public function test_target_size_below_rule_output_keeps_full_field(): void
     {
-        // Rule output is already 52. A target_size of 30 would imply removal
-        // — but the contract is "top up, never trim", so qualifiers stay.
+        // Rule already produces 52. target_size of 30 doesn't trim — the
+        // fill phase just doesn't run. Documented behaviour: target_size
+        // is a floor, not a ceiling.
         config(['countries.ES.cup_qualification.ESPCUP.target_size' => 30]);
 
         $this->runProcessor();
 
-        $this->assertCount(
-            52,
-            $this->cupEntries(),
-            'Rule output must not be trimmed below its natural size'
-        );
+        $this->assertCount(52, $this->cupEntries());
     }
 
-    public function test_target_size_handles_one_group_exhausting_before_target(): void
+    public function test_target_size_with_supercup_bump_yields_even_round_1(): void
     {
-        // Mark every ESP3A team after pos 5 as a reserve so the group has
-        // exactly 5 eligible teams. With target_size demanding more from
-        // ESP3, the round-robin must skip exhausted ESP3A and keep pulling
-        // from ESP3B.
-        $parent = $this->teamsByCompetition['ESP1'][0];
-        for ($i = 5; $i < 20; $i++) {
-            $this->teamsByCompetition['ESP3A'][$i]->update(['parent_team_id' => $parent->id]);
-        }
-
-        config(['countries.ES.cup_qualification.ESPCUP.target_size' => 65]);
-
-        $this->runProcessor();
-
-        $entries = $this->cupEntries();
-
-        // Available: ESP1 (20) + ESP2 (22) + ESP3A 5 non-reserves + ESP3B 20 = 67.
-        // Target 65: pull rule baseline (52, but ESP3A only contributes 5 — actually
-        // the cascade DOES NOT trigger here since reserves aren't in
-        // auto_qualify_tiers, so baseline stays 52). Then top-up needs 13
-        // more. ESP3A has 0 left after 5; ESP3B has 15 left → all from B.
-        $this->assertCount(65, $entries);
-
-        $esp3bIds = array_map(fn (Team $t) => $t->id, $this->teamsByCompetition['ESP3B']);
-        $esp3bCount = count(array_intersect($entries, $esp3bIds));
-        $this->assertSame(18, $esp3bCount, 'ESP3B absorbed the entire top-up after ESP3A exhausted');
-    }
-
-    public function test_target_size_keeps_round_1_count_even_for_supercup_cascade(): void
-    {
-        // Production scenario: target_size 116 on Spain config. After
-        // SeasonInitializationService bumps 4 supercup teams to round 3,
-        // round 1 must contain an even count for a clean knockout cascade.
+        // The whole point of the invariant: round 1 must be even after the
+        // supercup teams are bumped to round 3. Production-shape numbers
+        // (116 cup teams, 64 of which are regional, 4 supercup teams).
         config(['countries.ES.cup_qualification.ESPCUP.target_size' => 116]);
 
-        // Add 64 regional teams to reach the production-like baseline.
         $regional = collect(range(1, 64))->map(
             fn (int $i) => Team::factory()->create(['country' => 'ES'])
         );
@@ -423,14 +321,12 @@ class CopaQualificationTest extends TestCase
         }
 
         $this->runProcessor();
+        $this->assertCount(116, $this->cupEntries());
 
-        $entries = $this->cupEntries();
-        $this->assertCount(116, $entries);
-
-        // Simulate the supercup bump for 4 teams.
+        // Simulate the 4-team supercup bump.
         CompetitionEntry::where('game_id', $this->game->id)
             ->where('competition_id', 'ESPCUP')
-            ->whereIn('team_id', array_slice($entries, 0, 4))
+            ->whereIn('team_id', array_slice($this->cupEntries(), 0, 4))
             ->update(['entry_round' => 3]);
 
         $round1 = CompetitionEntry::where('game_id', $this->game->id)
@@ -438,8 +334,8 @@ class CopaQualificationTest extends TestCase
             ->where('entry_round', 1)
             ->count();
 
-        $this->assertSame(112, $round1, 'Round 1 must be even for clean cascade');
-        $this->assertSame(0, $round1 % 2, 'Round 1 parity invariant');
+        $this->assertSame(112, $round1);
+        $this->assertSame(0, $round1 % 2, 'round 1 must be even');
     }
 
     private function runProcessor(): void

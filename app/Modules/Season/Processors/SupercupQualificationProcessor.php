@@ -68,6 +68,16 @@ class SupercupQualificationProcessor implements SeasonProcessor
         $supercupId = $config['competition'];
         $cupFinalRound = $config['cup_final_round'];
 
+        // Skip when this country isn't part of the game (no top-league
+        // entries). The 4-qualifier guard below catches partial-data bugs
+        // — wholly absent data is a different signal and shouldn't trip it.
+        $hasLeague = CompetitionEntry::where('game_id', $game->id)
+            ->where('competition_id', $leagueId)
+            ->exists();
+        if (!$hasLeague) {
+            return;
+        }
+
         // Get cup finalists
         $cupFinalists = $this->getCupFinalists($game->id, $cupId, $cupFinalRound);
 

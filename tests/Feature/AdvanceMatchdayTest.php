@@ -41,9 +41,12 @@ class AdvanceMatchdayTest extends TestCase
             'name' => 'LaLiga',
         ]);
 
+        // Use a cup ID with no schedule.json so resolving a single tie
+        // doesn't trigger a next-round draw on a 1-team pool. These tests
+        // cover advancement and tie resolution, not bracket drawing.
         $this->cupCompetition = Competition::factory()->knockoutCup()->create([
-            'id' => 'ESPCUP',
-            'name' => 'Copa del Rey',
+            'id' => 'TESTCUP',
+            'name' => 'Test Cup',
             'season' => '2025',
         ]);
 
