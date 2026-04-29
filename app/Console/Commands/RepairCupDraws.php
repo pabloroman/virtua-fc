@@ -90,24 +90,74 @@ class RepairCupDraws extends Command
     }
 
     /**
+     * Narrow at the SQL level to (game, competition) pairs whose next draw
+     * would have an odd team pool — i.e. the only games the prevention
+     * throw is about to bite. Excludes:
+     *  - cups whose latest round still has unresolved ties (no draw is
+     *    imminent anyway)
+     *  - cups whose next-round pool is even (no breakage to repair)
+     *
+     * The PHP layer filters out games whose next round doesn't exist in
+     * schedule.json (cup finished) — that case is rare and can't be
+     * computed in SQL without parsing the JSON files.
+     *
      * @return Collection<int, object{game_id: string, competition_id: string}>
      */
     private function findCandidateGames(?string $gameFilter, ?string $competitionFilter): Collection
     {
-        $query = DB::table('cup_ties')
-            ->join('competitions', 'competitions.id', '=', 'cup_ties.competition_id')
-            ->where('competitions.role', 'domestic_cup')
-            ->select('cup_ties.game_id', 'cup_ties.competition_id')
-            ->distinct();
+        $bindings = [];
+        $filter = '';
 
         if ($gameFilter) {
-            $query->where('cup_ties.game_id', $gameFilter);
+            $filter .= ' AND ct.game_id = ?';
+            $bindings[] = $gameFilter;
         }
         if ($competitionFilter) {
-            $query->where('cup_ties.competition_id', $competitionFilter);
+            $filter .= ' AND ct.competition_id = ?';
+            $bindings[] = $competitionFilter;
         }
 
-        return $query->get();
+        $sql = <<<SQL
+            WITH latest_round AS (
+                SELECT
+                    ct.game_id,
+                    ct.competition_id,
+                    MAX(ct.round_number) AS round_number
+                FROM cup_ties ct
+                JOIN competitions c ON c.id = ct.competition_id
+                WHERE c.role = 'domestic_cup'
+                {$filter}
+                GROUP BY ct.game_id, ct.competition_id
+            ),
+            ready_to_draw AS (
+                -- Latest round must have all ties resolved with a winner
+                -- before the next-round draw can fire.
+                SELECT
+                    lr.game_id,
+                    lr.competition_id,
+                    lr.round_number,
+                    COUNT(*) AS winners_count
+                FROM latest_round lr
+                JOIN cup_ties ct
+                    ON ct.game_id = lr.game_id
+                   AND ct.competition_id = lr.competition_id
+                   AND ct.round_number = lr.round_number
+                GROUP BY lr.game_id, lr.competition_id, lr.round_number
+                HAVING COUNT(*) FILTER (WHERE NOT ct.completed OR ct.winner_id IS NULL) = 0
+            )
+            SELECT
+                rtd.game_id,
+                rtd.competition_id
+            FROM ready_to_draw rtd
+            LEFT JOIN competition_entries ce
+                ON ce.game_id = rtd.game_id
+               AND ce.competition_id = rtd.competition_id
+               AND ce.entry_round = rtd.round_number + 1
+            GROUP BY rtd.game_id, rtd.competition_id, rtd.winners_count
+            HAVING (rtd.winners_count + COUNT(ce.team_id)) % 2 = 1
+        SQL;
+
+        return collect(DB::select($sql, $bindings));
     }
 
     /**
