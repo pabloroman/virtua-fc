@@ -197,7 +197,6 @@ class PlayerGeneratorService
         $gamePlayerRows = [];
         $matchStateRows = [];
         $results = [];
-        $batchNames = [];
 
         // One query resolves every team's regional-naming flag for the batch,
         // so Basque / Catalan clubs get appropriate names without per-player
@@ -206,13 +205,15 @@ class PlayerGeneratorService
             array_unique(array_filter(array_map(fn ($d) => $d->teamId, $dataItems)))
         );
 
+        // Build the excluded-names set once; pickRandomIdentity below mutates
+        // this hash directly via gameNamesCache, so subsequent iterations see
+        // names added earlier in the batch without re-flipping the whole list.
+        $excludedSet = array_flip($this->getOrLoadGameNames($game->id));
+
         foreach ($dataItems as $data) {
-            $excludedNames = $data->name === null
-                ? array_merge($this->getOrLoadGameNames($game->id), $batchNames)
-                : [];
             $region = $teamRegions[$data->teamId] ?? null;
             $identity = $this->pickRandomIdentity(
-                excludedNames: $excludedNames,
+                excludedNames: $data->name === null ? $excludedSet : [],
                 region: $region,
             );
             $name = $data->name ?? $identity['name'];
@@ -281,7 +282,7 @@ class PlayerGeneratorService
 
             // Update caches for subsequent iterations in the same batch.
             $this->gameNamesCache[$game->id][] = $name;
-            $batchNames[] = $name;
+            $excludedSet[$name] = true;
 
             $results[] = [
                 'playerId' => $gamePlayerId,
@@ -536,8 +537,12 @@ class PlayerGeneratorService
      * Generate a name for the given nationality, retrying a small number of times
      * if Faker happens to return one that collides with an existing name.
      *
-     * @param  string[]    $excludedNames
-     * @param  string|null $region  Regional override for Basque/Catalan clubs.
+     * Accepts $excludedNames as either a flat list of names or a pre-flipped
+     * `[name => true]` hash. The bulk path passes the hashed form so we don't
+     * re-flip the cache (~1500–2000 entries) on every call.
+     *
+     * @param  string[]|array<string,true>  $excludedNames
+     * @param  string|null                  $region  Regional override for Basque/Catalan clubs.
      */
     private function generateUniqueName(string $nationality, array $excludedNames, ?string $region = null): string
     {
@@ -545,7 +550,10 @@ class PlayerGeneratorService
             return $this->nameGenerator->generate($nationality, $region);
         }
 
-        $excludedSet = array_flip($excludedNames);
+        $excludedSet = array_is_list($excludedNames)
+            ? array_flip($excludedNames)
+            : $excludedNames;
+
         $candidate = $this->nameGenerator->generate($nationality, $region);
 
         for ($attempt = 1; $attempt < self::NAME_RETRY_ATTEMPTS && isset($excludedSet[$candidate]); $attempt++) {
