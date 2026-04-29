@@ -160,19 +160,12 @@ class SupercupQualificationProcessor implements SeasonProcessor
     }
 
     /**
-     * Determine the 4 supercup qualifiers in RFEF priority order:
-     *
-     *   1. Cup winner.
-     *   2. Cup runner-up.
-     *   3. League champion (skipped if already in slot 1–2).
-     *   4. League runner-up (skipped if already in slot 1–3).
-     *   5. League 3rd, 4th, … to backfill whichever league slot was
-     *      displaced by a cup-finalist overlap.
-     *
-     * The cup finalists' slots are never displaced — when overlap
-     * occurs it's the league's "1st / 2nd" slot that cascades to 3rd
-     * or 4th, mirroring "la plaza de la Supercopa se otorga al 3º
-     * (y 4º si fuera necesario) clasificado de la Liga".
+     * Determine the 4 supercup qualifiers in RFEF priority order: the two
+     * cup finalists hold their slots regardless of league finish, then
+     * league positions fill what remains, in order. When a cup finalist
+     * also happens to be league 1st/2nd, the league's slot is what
+     * cascades down to 3rd / 4th — mirroring "la plaza de la Supercopa
+     * se otorga al 3º (y 4º si fuera necesario) clasificado de la Liga".
      *
      * @param  array{winner: string|null, runnerUp: string|null}  $cupFinalists
      * @param  array<int, string>  $leagueTopTeams  league positions 1..N (1st first)
@@ -183,27 +176,26 @@ class SupercupQualificationProcessor implements SeasonProcessor
         $qualifiers = [];
         $usedTeams = [];
 
-        $add = function (?string $teamId) use (&$qualifiers, &$usedTeams): void {
-            if ($teamId === null || isset($usedTeams[$teamId]) || count($qualifiers) >= 4) {
-                return;
+        if ($cupFinalists['winner']) {
+            $qualifiers[] = $cupFinalists['winner'];
+            $usedTeams[$cupFinalists['winner']] = true;
+        }
+        if ($cupFinalists['runnerUp']) {
+            $qualifiers[] = $cupFinalists['runnerUp'];
+            $usedTeams[$cupFinalists['runnerUp']] = true;
+        }
+
+        foreach ($leagueTopTeams as $teamId) {
+            if (count($qualifiers) >= 4) {
+                break;
             }
+
+            if (isset($usedTeams[$teamId])) {
+                continue;
+            }
+
             $qualifiers[] = $teamId;
             $usedTeams[$teamId] = true;
-        };
-
-        // 1–2. Cup finalists always qualify.
-        $add($cupFinalists['winner'] ?? null);
-        $add($cupFinalists['runnerUp'] ?? null);
-
-        // 3–4. League champion and runner-up. Skipped if they're already
-        // a cup finalist — that's where the "plaza advances" rule kicks
-        // in and the next loop picks up the slack from 3rd / 4th.
-        $add($leagueTopTeams[0] ?? null);
-        $add($leagueTopTeams[1] ?? null);
-
-        // 5. Cascade: fill any vacancy from 3rd, 4th, ...
-        foreach (array_slice($leagueTopTeams, 2) as $teamId) {
-            $add($teamId);
         }
 
         return $qualifiers;
