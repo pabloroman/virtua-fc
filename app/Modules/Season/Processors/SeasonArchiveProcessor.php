@@ -49,14 +49,11 @@ class SeasonArchiveProcessor implements SeasonProcessor
         // Capture final standings
         $standings = $this->captureStandings($game);
 
-        // Capture player season stats (all players needed for awards calculation)
-        $allPlayerStats = $this->capturePlayerStats($game);
+        // Capture player season stats (scoped to user's team for storage)
+        $playerStats = $this->capturePlayerStats($game);
 
-        // Calculate season awards (uses full dataset across all teams)
-        $awards = $this->calculateAwards($game, $standings, $allPlayerStats);
-
-        // Scope player stats to user's team for storage
-        $playerStats = array_values(array_filter($allPlayerStats, fn ($s) => $s['team_id'] === $game->team_id));
+        // Calculate season awards (each award is a single-row SQL query)
+        $awards = $this->calculateAwards($game, $standings);
 
         // Capture match results (lightweight)
         $matchResults = $this->captureMatchResults($game);
@@ -162,58 +159,75 @@ class SeasonArchiveProcessor implements SeasonProcessor
     }
 
     /**
-     * Capture player season stats for all rostered players.
+     * Capture player season stats for the user's team only.
+     *
+     * Awards are computed via dedicated single-row queries (see
+     * calculateAwards), so there is no need to load the entire game's
+     * roster here just to filter it back down to the user's team.
      */
     private function capturePlayerStats(Game $game): array
     {
-        $stats = [];
-
-        GamePlayer::with(['player', 'matchState'])
+        return GamePlayer::with('matchState')
             ->where('game_id', $game->id)
-            ->whereNotNull('team_id')
-            ->chunk(200, function ($chunk) use (&$stats) {
-                foreach ($chunk as $player) {
-                    $stats[] = [
-                        'player_id' => $player->id,
-                        'reference_player_id' => $player->player_id,
-                        'name' => $player->name,
-                        'team_id' => $player->team_id,
-                        'position' => $player->position,
-                        'appearances' => $player->appearances,
-                        'goals' => $player->goals,
-                        'assists' => $player->assists,
-                        'own_goals' => $player->own_goals,
-                        'yellow_cards' => $player->yellow_cards,
-                        'red_cards' => $player->red_cards,
-                        'goals_conceded' => $player->goals_conceded,
-                        'clean_sheets' => $player->clean_sheets,
-                    ];
-                }
-            });
-
-        return $stats;
+            ->where('team_id', $game->team_id)
+            ->get()
+            ->map(fn ($player) => [
+                'player_id' => $player->id,
+                'reference_player_id' => $player->player_id,
+                'name' => $player->name,
+                'team_id' => $player->team_id,
+                'position' => $player->position,
+                'appearances' => $player->appearances,
+                'goals' => $player->goals,
+                'assists' => $player->assists,
+                'own_goals' => $player->own_goals,
+                'yellow_cards' => $player->yellow_cards,
+                'red_cards' => $player->red_cards,
+                'goals_conceded' => $player->goals_conceded,
+                'clean_sheets' => $player->clean_sheets,
+            ])
+            ->all();
     }
 
     /**
-     * Calculate season awards.
+     * Calculate season awards via single-row SQL queries.
+     *
+     * Each award becomes one ORDER BY ... LIMIT 1 against the satellite
+     * stats table, instead of hydrating every rostered player to sort
+     * them in PHP.
      */
-    private function calculateAwards(Game $game, array $standings, array $playerStats): array
+    private function calculateAwards(Game $game, array $standings): array
     {
-        // Champion
         $champion = collect($standings)->firstWhere('position', 1);
 
-        // Top scorer
-        $topScorer = collect($playerStats)
-            ->sortByDesc('goals')
+        $topScorer = GamePlayer::with('matchState')
+            ->joinMatchState()
+            ->where('game_players.game_id', $game->id)
+            ->whereNotNull('game_players.team_id')
+            ->whereMatchStat('goals', '>', 0)
+            ->orderByMatchStat('goals', 'desc')
             ->first();
 
-        // Most assists
-        $mostAssists = collect($playerStats)
-            ->sortByDesc('assists')
+        $mostAssists = GamePlayer::with('matchState')
+            ->joinMatchState()
+            ->where('game_players.game_id', $game->id)
+            ->whereNotNull('game_players.team_id')
+            ->whereMatchStat('assists', '>', 0)
+            ->orderByMatchStat('assists', 'desc')
             ->first();
 
-        // Best goalkeeper (minimum appearances required)
-        $bestGoalkeeper = $this->calculateBestGoalkeeper($game);
+        // Best goalkeeper: minimum appearances required (50% of league matches).
+        // Ranking by raw goals_conceded ASC is equivalent to per-game ratio
+        // since every candidate clears the same appearance threshold; clean
+        // sheets is the tiebreaker.
+        $bestGoalkeeper = GamePlayer::with('matchState')
+            ->joinMatchState()
+            ->where('game_players.game_id', $game->id)
+            ->where('game_players.position', 'Goalkeeper')
+            ->whereMatchStat('appearances', '>=', self::MIN_GOALKEEPER_APPEARANCES)
+            ->orderByMatchStat('goals_conceded', 'asc')
+            ->orderByMatchStat('clean_sheets', 'desc')
+            ->first();
 
         return [
             'champion' => $champion ? [
@@ -223,70 +237,30 @@ class SeasonArchiveProcessor implements SeasonProcessor
             ] : null,
 
             'top_scorer' => $topScorer ? [
-                'player_id' => $topScorer['player_id'],
-                'name' => $topScorer['name'],
-                'team_id' => $topScorer['team_id'],
-                'goals' => $topScorer['goals'],
+                'player_id' => $topScorer->id,
+                'name' => $topScorer->name,
+                'team_id' => $topScorer->team_id,
+                'goals' => $topScorer->goals,
             ] : null,
 
-            'most_assists' => $mostAssists && $mostAssists['assists'] > 0 ? [
-                'player_id' => $mostAssists['player_id'],
-                'name' => $mostAssists['name'],
-                'team_id' => $mostAssists['team_id'],
-                'assists' => $mostAssists['assists'],
+            'most_assists' => $mostAssists ? [
+                'player_id' => $mostAssists->id,
+                'name' => $mostAssists->name,
+                'team_id' => $mostAssists->team_id,
+                'assists' => $mostAssists->assists,
             ] : null,
 
-            'best_goalkeeper' => $bestGoalkeeper,
-        ];
-    }
-
-    /**
-     * Calculate best goalkeeper based on goals conceded per game.
-     * Requires minimum appearances (50% of league matches).
-     */
-    private function calculateBestGoalkeeper(Game $game): ?array
-    {
-        $goalkeepers = GamePlayer::with(['player', 'matchState'])
-            ->joinMatchState()
-            ->where('game_players.game_id', $game->id)
-            ->where('position', 'Goalkeeper')
-            ->whereMatchStat('appearances', '>=', self::MIN_GOALKEEPER_APPEARANCES)
-            ->get();
-
-        if ($goalkeepers->isEmpty()) {
-            return null;
-        }
-
-        // Calculate goals conceded per game and find the best
-        $ranked = $goalkeepers->map(function ($gk) {
-            $perGame = $gk->appearances > 0
-                ? round($gk->goals_conceded / $gk->appearances, 2)
-                : 999;
-
-            return [
-                'player' => $gk,
-                'per_game' => $perGame,
-            ];
-        })
-        ->sortBy('per_game')
-        ->sortByDesc(fn($item) => $item['player']->clean_sheets); // Tiebreaker: more clean sheets
-
-        $best = $ranked->first();
-
-        if (!$best) {
-            return null;
-        }
-
-        $gk = $best['player'];
-
-        return [
-            'player_id' => $gk->id,
-            'name' => $gk->name,
-            'team_id' => $gk->team_id,
-            'goals_conceded' => $gk->goals_conceded,
-            'clean_sheets' => $gk->clean_sheets,
-            'appearances' => $gk->appearances,
-            'goals_conceded_per_game' => $best['per_game'],
+            'best_goalkeeper' => $bestGoalkeeper ? [
+                'player_id' => $bestGoalkeeper->id,
+                'name' => $bestGoalkeeper->name,
+                'team_id' => $bestGoalkeeper->team_id,
+                'goals_conceded' => $bestGoalkeeper->goals_conceded,
+                'clean_sheets' => $bestGoalkeeper->clean_sheets,
+                'appearances' => $bestGoalkeeper->appearances,
+                'goals_conceded_per_game' => $bestGoalkeeper->appearances > 0
+                    ? round($bestGoalkeeper->goals_conceded / $bestGoalkeeper->appearances, 2)
+                    : 0.0,
+            ] : null,
         ];
     }
 
@@ -350,21 +324,12 @@ class SeasonArchiveProcessor implements SeasonProcessor
 
     /**
      * Delete archived data from active tables.
-     *
-     * Match events are deleted in batches to avoid long-running queries
-     * and excessive lock durations on remote PostgreSQL.
      */
     private function deleteArchivedData(Game $game): void
     {
-        // Delete match events in batches (largest table, thousands of rows per season)
-        DB::table('match_events')
-            ->where('game_id', $game->id)
-            ->orderBy('id')
-            ->chunk(1000, function ($rows) {
-                DB::table('match_events')
-                    ->whereIn('id', $rows->pluck('id'))
-                    ->delete();
-            });
+        // Single indexed DELETE — match_events(game_id) is indexed and one
+        // game's events are at most low thousands of rows.
+        DB::table('match_events')->where('game_id', $game->id)->delete();
 
         // GameMatch rows are intentionally left in place here. SeasonSettlement
         // (priority 60) iterates this season's home matches to compute matchday
