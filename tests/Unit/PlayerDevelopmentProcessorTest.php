@@ -8,7 +8,6 @@ use App\Models\GamePlayerMatchState;
 use App\Models\Player;
 use App\Models\Team;
 use App\Modules\Player\Services\PlayerTierService;
-use App\Modules\Player\Services\PlayerValuationService;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Processors\PlayerDevelopmentProcessor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -21,15 +20,13 @@ class PlayerDevelopmentProcessorTest extends TestCase
     private const SEASON_END = '2025-06-30';
 
     private PlayerDevelopmentProcessor $processor;
-    private PlayerValuationService $valuationService;
     private Game $game;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->valuationService = new PlayerValuationService();
-        $this->processor = new PlayerDevelopmentProcessor($this->valuationService);
+        $this->processor = new PlayerDevelopmentProcessor();
 
         $this->game = Game::factory()->atDate(self::SEASON_END)->create();
     }
@@ -126,9 +123,9 @@ class PlayerDevelopmentProcessorTest extends TestCase
         $this->processor->process($this->game, $this->transitionData());
 
         $player->refresh();
-        $newAvg = (int) round(($player->game_technical_ability + $player->game_physical_ability) / 2);
-        $oldAvg = 60;
-        $expectedMV = $this->valuationService->abilityToMarketValue($newAvg, 18, $oldAvg);
+        // After development: tech=63, phys=63, avg=63 (band 61-65 -> base €2.5M).
+        // Age 18 multiplier 1.30 -> €3.25M = 325_000_000 cents.
+        $expectedMV = 325_000_000;
 
         $this->assertSame($expectedMV, $player->market_value_cents);
         $this->assertSame(PlayerTierService::tierFromMarketValue($expectedMV), $player->tier);
