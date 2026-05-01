@@ -177,6 +177,47 @@ input[type="radio"]:checked {
   }
 }
 
+@utility season-ticket-slider {
+  /* Single-thumb price slider for season-ticket pricing. The track is painted
+     with a gradient driven by the inline `--fill` custom property so the
+     left-of-thumb portion shows the accent color. */
+  @apply appearance-none bg-transparent h-2 cursor-pointer;
+  --fill: 0%;
+  &::-webkit-slider-runnable-track {
+    @apply h-1.5 rounded-full;
+    background: linear-gradient(
+      to right,
+      var(--color-accent-blue) 0%,
+      var(--color-accent-blue) var(--fill),
+      var(--color-surface-600) var(--fill),
+      var(--color-surface-600) 100%
+    );
+  }
+  &::-moz-range-track {
+    @apply h-1.5 rounded-full;
+    background: linear-gradient(
+      to right,
+      var(--color-accent-blue) 0%,
+      var(--color-accent-blue) var(--fill),
+      var(--color-surface-600) var(--fill),
+      var(--color-surface-600) 100%
+    );
+  }
+  &::-webkit-slider-thumb {
+    @apply appearance-none w-4 h-4 rounded-full bg-accent-blue border-2 border-surface-800 shadow-sm cursor-pointer;
+    margin-top: -5px;
+  }
+  &::-moz-range-thumb {
+    @apply appearance-none w-4 h-4 rounded-full bg-accent-blue border-2 border-surface-800 shadow-sm cursor-pointer;
+  }
+  &:focus {
+    @apply outline-none;
+  }
+  &:focus::-webkit-slider-thumb {
+    @apply ring-2 ring-accent-blue/40;
+  }
+}
+
 @utility track {
   .dual-range & {
     @apply absolute w-full h-1.5 rounded-full bg-surface-600;

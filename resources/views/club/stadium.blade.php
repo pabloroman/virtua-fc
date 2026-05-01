@@ -95,35 +95,35 @@ foreach ($ticketAreas as $i => $area) {
                             <div class="mt-6 space-y-2">
                                 @foreach($ticketAreas as $i => $area)
                                     @php
-                                        $minPrice = (int) round(($baselineAreas[$i]['baseline_price_cents'] ?? $area['baseline_price_cents']) * $minMultiplier);
-                                        $maxPrice = (int) round(($baselineAreas[$i]['baseline_price_cents'] ?? $area['baseline_price_cents']) * $maxMultiplier);
+                                        $baselineCents = (int) ($baselineAreas[$i]['baseline_price_cents'] ?? $area['baseline_price_cents']);
+                                        $minPrice = (int) round($baselineCents * $minMultiplier);
+                                        $maxPrice = (int) round($baselineCents * $maxMultiplier);
                                     @endphp
-                                    <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_auto] items-center gap-3 px-3 py-2 bg-surface-700/50 border border-border-default rounded-lg">
-                                        <div>
-                                            <div class="text-xs font-semibold text-text-primary uppercase tracking-wide">{{ __('club.stadium.season_tickets.area.' . $area['slug']) }}</div>
-                                            <div class="text-[11px] text-text-muted">
-                                                {{ __('club.stadium.season_tickets.capacity') }}: {{ number_format($area['capacity']) }}
-                                                <span class="ml-2">{{ __('club.stadium.season_tickets.baseline_price') }}: € {{ number_format(($baselineAreas[$i]['baseline_price_cents'] ?? $area['baseline_price_cents']) / 100, 0, ',', '.') }}</span>
+                                    <div class="px-3.5 py-2.5 bg-surface-700/50 border border-border-default rounded-lg space-y-2">
+                                        <div class="flex items-baseline justify-between gap-4">
+                                            <div class="min-w-0">
+                                                <span class="text-xs font-semibold text-text-primary uppercase tracking-wide">{{ __('club.stadium.season_tickets.area.' . $area['slug']) }}</span>
+                                                <span class="text-[11px] text-text-muted ml-1.5">{{ number_format($area['capacity']) }}</span>
                                             </div>
+                                            <span class="font-heading text-2xl font-bold text-text-primary tabular-nums leading-none shrink-0">
+                                                € <span x-text="Math.round(prices[{{ $i }}] / 100).toLocaleString('es-ES')"></span>
+                                            </span>
                                         </div>
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-[11px] text-text-muted">€</span>
-                                            <input type="number"
-                                                   min="{{ (int) round($minPrice / 100) }}"
-                                                   max="{{ (int) round($maxPrice / 100) }}"
-                                                   step="5"
-                                                   class="w-24 bg-surface-800 border border-border-strong rounded px-2 py-1 text-sm text-text-primary focus:border-accent-blue focus:ring-0"
-                                                   :value="Math.round(prices[{{ $i }}] / 100)"
-                                                   @input.debounce.300ms="updatePrice({{ $i }}, $event.target.value)">
-                                        </div>
-                                        <div class="text-right text-[11px] min-w-[120px]">
-                                            <div class="text-text-secondary">
-                                                <span x-text="(areas[{{ $i }}]?.sold ?? 0).toLocaleString('es-ES')"></span> /
-                                                {{ number_format($area['capacity']) }}
-                                            </div>
-                                            <div class="text-text-muted">
-                                                <span x-text="Math.round((areas[{{ $i }}]?.fill_rate ?? 0) * 100)"></span>% {{ __('club.stadium.season_tickets.predicted_fill') }}
-                                            </div>
+
+                                        <input type="range"
+                                               min="{{ $minPrice }}"
+                                               max="{{ $maxPrice }}"
+                                               step="500"
+                                               :value="prices[{{ $i }}]"
+                                               :style="`--fill: ${sliderFill({{ $i }})}`"
+                                               @input="setPriceCents({{ $i }}, $event.target.value)"
+                                               class="season-ticket-slider w-full block">
+
+                                        <div class="text-[11px] tabular-nums flex items-baseline gap-1.5">
+                                            <span class="text-text-body font-semibold"><span x-text="Math.round((areas[{{ $i }}]?.fill_rate ?? 0) * 100)"></span>%</span>
+                                            <span class="text-text-muted">{{ __('club.stadium.season_tickets.predicted_fill') }}</span>
+                                            <span class="text-text-faint">·</span>
+                                            <span class="text-text-muted"><span x-text="(areas[{{ $i }}]?.sold ?? 0).toLocaleString('es-ES')"></span> / {{ number_format($area['capacity']) }}</span>
                                         </div>
                                     </div>
                                 @endforeach
@@ -303,13 +303,28 @@ foreach ($ticketAreas as $i => $area) {
                         return '€ ' + Math.round(euros);
                     },
                     updatePrice(index, raw) {
+                        const cents = Math.round(parseFloat(raw || '0') * 100);
+                        this.setPriceCents(index, cents);
+                    },
+                    setPriceCents(index, raw) {
                         const baseline = this.baselines[index] ?? 0;
-                        let cents = Math.round(parseFloat(raw || '0') * 100);
+                        let cents = parseInt(raw, 10);
+                        if (!Number.isFinite(cents)) cents = 0;
                         const min = Math.round(baseline * this.minMultiplier);
                         const max = Math.round(baseline * this.maxMultiplier);
                         cents = Math.max(min, Math.min(max, cents));
                         this.prices = { ...this.prices, [index]: cents };
                         this.refresh();
+                    },
+                    sliderFill(index) {
+                        const baseline = this.baselines[index] ?? 0;
+                        if (!baseline) return '0%';
+                        const min = Math.round(baseline * this.minMultiplier);
+                        const max = Math.round(baseline * this.maxMultiplier);
+                        if (max <= min) return '0%';
+                        const cents = this.prices[index] ?? min;
+                        const pct = Math.max(0, Math.min(100, ((cents - min) / (max - min)) * 100));
+                        return pct.toFixed(2) + '%';
                     },
                     resetToDefaults() {
                         this.prices = { ...this.baselines };

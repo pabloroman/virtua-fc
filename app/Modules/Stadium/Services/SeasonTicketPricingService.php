@@ -110,12 +110,12 @@ class SeasonTicketPricingService
 
     /**
      * Allowed price band, expressed as a multiplier of the baseline price.
-     * The user can bargain (down to 25%) or hike prices (up to 4x); extreme
-     * moves crater fill in the prediction model so the floor and ceiling
-     * exist mostly to keep inputs sane and prevent cents-level overflow.
+     * Bounded to the range where priceFactor() actually produces distinct
+     * demand outcomes — outside roughly [0.5x, 2.0x] the response is clamped
+     * (floor 0.20, ceiling 1.10) and the slider stops doing anything useful.
      */
-    public const MIN_PRICE_MULTIPLIER = 0.25;
-    public const MAX_PRICE_MULTIPLIER = 4.00;
+    public const MIN_PRICE_MULTIPLIER = 0.50;
+    public const MAX_PRICE_MULTIPLIER = 2.00;
 
     /**
      * Premium-tier multipliers respond less elastically to price moves —
