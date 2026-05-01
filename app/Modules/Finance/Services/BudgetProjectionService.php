@@ -180,6 +180,19 @@ class BudgetProjectionService
      */
     public function calculateMatchdayRevenue(Team $team, Game $game): int
     {
+        $seasonTicketHolders = $this->seasonTicketPricingService->soldSeasonTicketsForGame($game);
+
+        return $this->matchdayRevenueWithSeasonTicketHolders($team, $game, $seasonTicketHolders);
+    }
+
+    /**
+     * Same projection as calculateMatchdayRevenue() but with an explicit
+     * season-ticket-holder count instead of reading the persisted total.
+     * Lets the live pricing preview show the implied taquilla figure for
+     * candidate prices without persisting them first.
+     */
+    public function matchdayRevenueWithSeasonTicketHolders(Team $team, Game $game, int $seasonTicketHolders): int
+    {
         $reputation = TeamReputation::resolveLevel($game->id, $team->id);
 
         $homeMatchCounts = GameMatch::where('game_id', $game->id)
@@ -198,7 +211,6 @@ class BudgetProjectionService
         $perSeatMatchRate = $perSeatSeasonRate / $leagueHomeMatchCount;
 
         $expectedAttendance = $this->matchAttendanceService->projectBaselineForTeam($game->id, $team);
-        $seasonTicketHolders = $this->seasonTicketPricingService->soldSeasonTicketsForGame($game);
         $walkupAttendance = max(0, $expectedAttendance - $seasonTicketHolders);
 
         $total = $walkupAttendance * $perSeatMatchRate * $totalHomeMatchCount;

@@ -11,10 +11,7 @@ $finances = $summary['finances'];
 
 $projectedMatchday = (int) ($finances?->projected_matchday_revenue ?? 0);
 $actualMatchday = (int) ($finances?->actual_matchday_revenue ?? 0);
-$matchdayVariance = $actualMatchday - $projectedMatchday;
 $hasActualMatchday = $actualMatchday > 0;
-
-$projectedSeasonTicket = (int) ($finances?->projected_season_ticket_revenue ?? 0);
 
 $seasonTickets = $summary['season_tickets'];
 $canEditTickets = $seasonTickets['can_edit'];
@@ -22,7 +19,6 @@ $ticketAreas = $seasonTickets['areas'];
 $baselineAreas = $seasonTickets['baseline_areas'];
 $overallFill = $seasonTickets['overall_fill_rate'];
 $pricing = $seasonTickets['pricing'];
-$isDefault = $pricing?->is_default ?? true;
 
 // Initial Alpine seed: per-area current price + baseline. The component
 // re-fetches predictions from the server so this seed only needs to cover
@@ -68,7 +64,6 @@ foreach ($ticketAreas as $i => $area) {
                                 <div class="font-heading text-2xl font-bold text-text-primary">{{ number_format($capacity) }}</div>
                             </div>
                         </div>
-                        <p class="text-xs text-text-muted mt-4 leading-relaxed">{{ __('club.stadium.capacity_help') }}</p>
                     </div>
                 </x-section-card>
 
@@ -87,18 +82,14 @@ foreach ($ticketAreas as $i => $area) {
                                 initialFill: {{ $overallFill }},
                                 initialRevenue: @js((int) ($pricing->total_revenue ?? 0)),
                                 initialSold: @js((int) ($pricing->total_sold ?? 0)),
+                                initialMatchday: {{ $projectedMatchday }},
                                 totalCapacity: {{ $capacity }},
                                 csrf: @js(csrf_token()),
                              })">
 
                             <p class="text-xs text-text-muted leading-relaxed mb-4">
                                 {{ __('club.stadium.season_tickets.subtitle') }}
-                                @if($isDefault)
-                                    <span class="ml-1 text-accent-blue font-medium">{{ __('club.stadium.season_tickets.default_applied') }}</span>
-                                @endif
                             </p>
-
-                            <x-season-ticket-schematic :areas="$ticketAreas" alpine="$data" />
 
                             {{-- Per-area pricing rows --}}
                             <div class="mt-6 space-y-2">
@@ -141,7 +132,10 @@ foreach ($ticketAreas as $i => $area) {
                             {{-- Aggregates --}}
                             <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-3">
                                 <div class="bg-surface-700/50 border border-border-default rounded-lg px-4 py-3">
-                                    <div class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('club.stadium.season_tickets.predicted_fill') }}</div>
+                                    <div class="text-[10px] text-text-muted uppercase tracking-widest flex items-center gap-1.5">
+                                        {{ __('club.stadium.season_tickets.predicted_fill') }}
+                                        <svg x-data="" x-tooltip.raw="{{ __('club.stadium.season_tickets.predicted_fill_tooltip') }}" class="w-3.5 h-3.5 text-text-faint hover:text-text-secondary cursor-help shrink-0" fill="currentColor" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-336c-17.7 0-32 14.3-32 32 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-44.2 35.8-80 80-80s80 35.8 80 80c0 47.2-36 67.2-56 74.5l0 3.8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8.1c0-20.5 14.8-35.2 30.1-40.2 6.4-2.1 13.2-5.5 18.2-10.3 4.3-4.2 7.7-10 7.7-19.6 0-17.7-14.3-32-32-32zM224 368a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg>
+                                    </div>
                                     <div class="font-heading text-2xl font-bold text-text-primary">
                                         <span x-text="overallFill"></span>%
                                     </div>
@@ -153,13 +147,24 @@ foreach ($ticketAreas as $i => $area) {
                                     </div>
                                 </div>
                                 <div class="bg-surface-700/50 border border-border-default rounded-lg px-4 py-3">
-                                    <div class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('club.stadium.season_tickets.total_revenue') }}</div>
+                                    <div class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('club.stadium.stadium_revenue.title') }}</div>
                                     <div class="font-heading text-2xl font-bold text-accent-green">
-                                        <span x-text="formatRevenue(totalRevenue)"></span>
+                                        <span x-text="formatRevenue(totalRevenue + projectedMatchday)"></span>
                                     </div>
-                                    <div class="text-[11px] text-text-muted mt-1">{{ __('club.stadium.season_tickets.revenue_help') }}</div>
+                                    <div class="mt-2 space-y-1 text-[11px]">
+                                        <div class="flex justify-between gap-2">
+                                            <span class="text-text-muted">{{ __('club.stadium.stadium_revenue.season_tickets') }}</span>
+                                            <span class="text-text-body font-semibold" x-text="formatRevenue(totalRevenue)"></span>
+                                        </div>
+                                        <div class="flex justify-between gap-2">
+                                            <span class="text-text-muted">{{ __('club.stadium.stadium_revenue.matchday') }}</span>
+                                            <span class="text-text-body font-semibold" x-text="formatRevenue(projectedMatchday)"></span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+
+                            <p class="text-[11px] text-text-muted mt-3 leading-relaxed">{{ __('club.stadium.stadium_revenue.help') }}</p>
 
                             <p class="text-[11px] text-accent-gold mt-4">{{ __('club.stadium.season_tickets.deadline_notice') }}</p>
 
@@ -186,8 +191,11 @@ foreach ($ticketAreas as $i => $area) {
                         <div class="px-5 py-4">
                             <p class="text-xs text-accent-gold leading-relaxed mb-4">{{ __('club.stadium.season_tickets.locked_notice') }}</p>
 
-                            <x-season-ticket-schematic :areas="$ticketAreas" />
-
+                            @php
+                                $lockedSeasonTicketRevenue = (int) ($pricing->total_revenue ?? 0);
+                                $lockedTaquilla = $hasActualMatchday ? $actualMatchday : $projectedMatchday;
+                                $lockedTotalRevenue = $lockedSeasonTicketRevenue + $lockedTaquilla;
+                            @endphp
                             <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-3">
                                 <div class="bg-surface-700/50 border border-border-default rounded-lg px-4 py-3">
                                     <div class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('club.stadium.season_tickets.tickets_sold') }}</div>
@@ -195,15 +203,30 @@ foreach ($ticketAreas as $i => $area) {
                                     <div class="text-[11px] text-text-muted mt-1">{{ $overallFill }}% {{ __('club.stadium.season_tickets.predicted_fill') }}</div>
                                 </div>
                                 <div class="bg-surface-700/50 border border-border-default rounded-lg px-4 py-3">
-                                    <div class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('club.stadium.season_tickets.total_revenue') }}</div>
-                                    <div class="font-heading text-2xl font-bold text-accent-green">{{ Money::format((int) ($pricing->total_revenue ?? 0)) }}</div>
+                                    <div class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('club.stadium.stadium_revenue.title') }}</div>
+                                    <div class="font-heading text-2xl font-bold text-accent-green">{{ Money::format($lockedTotalRevenue) }}</div>
+                                    <div class="mt-2 space-y-1 text-[11px]">
+                                        <div class="flex justify-between gap-2">
+                                            <span class="text-text-muted">{{ __('club.stadium.stadium_revenue.season_tickets') }}</span>
+                                            <span class="text-text-body font-semibold">{{ Money::format($lockedSeasonTicketRevenue) }}</span>
+                                        </div>
+                                        <div class="flex justify-between gap-2">
+                                            <span class="text-text-muted">{{ __('club.stadium.stadium_revenue.matchday') }}</span>
+                                            <span class="text-text-body font-semibold">{{ Money::format($lockedTaquilla) }}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+
+                            <p class="text-[11px] text-text-muted mt-3 leading-relaxed">{{ __('club.stadium.stadium_revenue.help') }}</p>
                         </div>
                     @endif
                 </x-section-card>
 
-                {{-- Last home-match attendance --}}
+            </div>
+
+            {{-- RIGHT column (1/3): Last home-match attendance --}}
+            <div class="space-y-6">
                 <x-section-card :title="__('club.stadium.last_attendance')">
                     <div class="px-5 py-4">
                         @if($lastHomeMatch)
@@ -251,47 +274,6 @@ foreach ($ticketAreas as $i => $area) {
                     </div>
                 </x-section-card>
             </div>
-
-            {{-- RIGHT column (1/3): Matchday revenue + season ticket revenue --}}
-            <div class="space-y-6">
-                <x-section-card :title="__('club.stadium.season_tickets.revenue_card_title')">
-                    <div class="px-5 py-4">
-                        <div class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('finances.projected_revenue') }}</div>
-                        <div class="font-heading text-xl font-bold text-accent-green">{{ Money::format($projectedSeasonTicket) }}</div>
-                        <p class="text-xs text-text-muted mt-3 leading-relaxed">{{ __('club.stadium.season_tickets.revenue_card_help') }}</p>
-                    </div>
-                </x-section-card>
-
-                <x-section-card :title="__('club.stadium.matchday_revenue')">
-                    <div class="px-5 py-4">
-                        @if($finances)
-                            <div class="space-y-3">
-                                <div>
-                                    <div class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('finances.projected_revenue') }}</div>
-                                    <div class="font-heading text-lg font-bold text-text-body">{{ $finances->formatted_projected_matchday_revenue }}</div>
-                                </div>
-                                <div>
-                                    <div class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('finances.actual_revenue') }}</div>
-                                    <div class="font-heading text-lg font-bold {{ $hasActualMatchday ? 'text-text-primary' : 'text-text-muted' }}">
-                                        {{ $hasActualMatchday ? $finances->formatted_actual_matchday_revenue : '—' }}
-                                    </div>
-                                </div>
-                                @if($hasActualMatchday)
-                                    <div class="pt-3 border-t border-border-default">
-                                        <div class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('finances.variance') }}</div>
-                                        <div class="font-heading text-lg font-bold {{ $matchdayVariance >= 0 ? 'text-accent-green' : 'text-accent-red' }}">
-                                            {{ \App\Support\Money::formatSigned($matchdayVariance) }}
-                                        </div>
-                                    </div>
-                                @endif
-                            </div>
-                            <p class="text-xs text-text-muted mt-4 leading-relaxed">{{ __('club.stadium.matchday_revenue_help') }}</p>
-                        @else
-                            <p class="text-sm text-text-muted">{{ __('club.stadium.no_finances_yet') }}</p>
-                        @endif
-                    </div>
-                </x-section-card>
-            </div>
         </div>
     </div>
 
@@ -305,6 +287,7 @@ foreach ($ticketAreas as $i => $area) {
                     overallFill: config.initialFill,
                     totalRevenue: config.initialRevenue,
                     totalSold: config.initialSold,
+                    projectedMatchday: config.initialMatchday,
                     totalCapacity: config.totalCapacity,
                     minMultiplier: config.minMultiplier,
                     maxMultiplier: config.maxMultiplier,
@@ -351,6 +334,7 @@ foreach ($ticketAreas as $i => $area) {
                                 this.overallFill = data.overall_fill_rate ?? this.overallFill;
                                 this.totalRevenue = data.total_revenue ?? this.totalRevenue;
                                 this.totalSold = data.total_sold ?? this.totalSold;
+                                this.projectedMatchday = data.projected_matchday_revenue ?? this.projectedMatchday;
                             } catch (e) { /* network blip — keep last preview */ }
                         }, 250);
                     },

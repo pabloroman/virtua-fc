@@ -13,7 +13,6 @@ return [
         'home_ground' => 'Campo',
         'stadium_name' => 'Estadio',
         'capacity' => 'Aforo',
-        'capacity_help' => 'El aforo se registra en cada partido para calcular la asistencia. La ampliación del estadio se convertirá en una decisión del entrenador en una fase posterior.',
 
         'fan_base' => 'Afición',
         'fan_base_help' => 'La lealtad sube con títulos y buenas campañas y baja tras temporadas flojas. Junto a la reputación, determina cuánto se llena el estadio los días de partido.',
@@ -24,27 +23,27 @@ return [
         'fill_rate' => 'Ocupación',
         'no_home_match_yet' => 'Aún no se ha jugado ningún partido en casa.',
 
-        'matchday_revenue' => 'Ingresos por taquilla',
-        'matchday_revenue_help' => 'Solo entradas sueltas y consumo en el estadio — los abonados pagan aparte y aparecen en su propia línea. La proyección usa la fórmula presupuestaria de la temporada; los reales se liquidan al cierre.',
         'no_finances_yet' => 'Las finanzas de la temporada aparecerán cuando se generen las proyecciones.',
 
+        'stadium_revenue' => [
+            'title' => 'Ingresos del estadio',
+            'season_tickets' => 'Abonos',
+            'matchday' => 'Taquilla',
+            'help' => 'Los abonos se cobran por adelantado; la taquilla se acumula en cada partido en casa.',
+        ],
+
         'season_tickets' => [
-            'title' => 'Abonos',
+            'title' => 'Precios',
             'subtitle' => 'Fija el precio de los abonos para cada zona del estadio. Los precios se bloquean en cuanto se juegue el primer partido de liga.',
-            'default_applied' => 'Precios por defecto aplicados — ajústalos antes del primer partido.',
             'deadline_notice' => 'Plazo: los precios se bloquean al jugarse el primer partido de liga de la temporada.',
             'locked_notice' => 'Los abonos están bloqueados esta temporada. Podrás fijar nuevos precios la próxima pretemporada.',
             'tickets_sold' => 'Abonos vendidos',
             'predicted_fill' => 'ocupación prevista',
+            'predicted_fill_tooltip' => 'Los precios y el apoyo de tu afición influyen en la venta de abonos.',
             'baseline_price' => 'Base',
             'capacity' => 'Aforo',
-            'total_revenue' => 'Ingresos por abonos',
-            'revenue_help' => 'Cobrados por adelantado al inicio de la temporada.',
-            'revenue_card_title' => 'Ingresos por abonos',
-            'revenue_card_help' => 'Ingresos por la venta de abonos, cobrados por adelantado. Independientes de la taquilla del día de partido.',
             'save_button' => 'Guardar precios',
             'reset_defaults' => 'Restaurar valores por defecto',
-            'pitch' => 'Césped',
 
             'area' => [
                 'general'       => 'General',

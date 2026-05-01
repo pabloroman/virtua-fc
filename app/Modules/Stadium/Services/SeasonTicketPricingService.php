@@ -8,6 +8,7 @@ use App\Models\GameMatch;
 use App\Models\SeasonTicketPricing;
 use App\Models\Team;
 use App\Models\TeamReputation;
+use App\Modules\Finance\Services\BudgetProjectionService;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -232,6 +233,14 @@ class SeasonTicketPricingService
             ? (int) round(($payload['total_sold'] / $payload['total_capacity']) * 100)
             : 0;
 
+        // Selling more season tickets reduces walk-up matchday revenue
+        // (and vice versa). Project the implied taquilla figure for the
+        // candidate prices so the UI can keep the totals consistent —
+        // resolved lazily to avoid a circular dependency with
+        // BudgetProjectionService, which depends on this service.
+        $payload['projected_matchday_revenue'] = app(BudgetProjectionService::class)
+            ->matchdayRevenueWithSeasonTicketHolders($team, $game, $payload['total_sold']);
+
         return $payload;
     }
 
@@ -276,7 +285,7 @@ class SeasonTicketPricingService
                 ],
             );
 
-            $this->syncFinances($game, $pricing->total_revenue);
+            $this->syncFinances($game, $pricing->total_revenue, $pricing->total_sold);
 
             return $pricing;
         });
@@ -490,24 +499,39 @@ class SeasonTicketPricingService
      * Reflect season ticket revenue on the current season's GameFinances.
      * Season tickets are pre-paid at season start, so projected and actual
      * stay locked together — no variance row is generated.
+     *
+     * Also re-projects matchday revenue: changing the season-ticket holder
+     * count shifts walk-up demand, so the taquilla projection has to follow.
+     * Without this, the persisted projection would drift from reality every
+     * time the user adjusts prices, only correcting at season settlement.
      */
-    private function syncFinances(Game $game, int $revenue): void
+    private function syncFinances(Game $game, int $revenue, int $seasonTicketHolders): void
     {
         $finances = $game->currentFinances;
         if (! $finances) {
             return;
         }
 
-        $previous = (int) ($finances->projected_season_ticket_revenue ?? 0);
-        $delta = $revenue - $previous;
+        $previousSeasonTicket = (int) ($finances->projected_season_ticket_revenue ?? 0);
+        $seasonTicketDelta = $revenue - $previousSeasonTicket;
+
+        $previousMatchday = (int) ($finances->projected_matchday_revenue ?? 0);
+        $newMatchday = app(BudgetProjectionService::class)
+            ->matchdayRevenueWithSeasonTicketHolders($game->team, $game, $seasonTicketHolders);
+        $matchdayDelta = $newMatchday - $previousMatchday;
+
+        $totalDelta = $seasonTicketDelta + $matchdayDelta;
 
         $finances->projected_season_ticket_revenue = $revenue;
         $finances->actual_season_ticket_revenue = $revenue;
-        $finances->projected_total_revenue = (int) $finances->projected_total_revenue + $delta;
+        $finances->projected_matchday_revenue = $newMatchday;
+        $finances->projected_total_revenue = (int) $finances->projected_total_revenue + $totalDelta;
         if ((int) $finances->actual_total_revenue > 0) {
-            $finances->actual_total_revenue = (int) $finances->actual_total_revenue + $delta;
+            // Actuals only get the season-ticket delta — matchday actuals are
+            // computed match-by-match at settlement, so we don't pre-roll them.
+            $finances->actual_total_revenue = (int) $finances->actual_total_revenue + $seasonTicketDelta;
         }
-        $finances->projected_surplus = (int) $finances->projected_surplus + $delta;
+        $finances->projected_surplus = (int) $finances->projected_surplus + $totalDelta;
         $finances->save();
     }
 }

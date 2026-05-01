@@ -7,6 +7,7 @@ use App\Models\Team;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Processors\SeasonSettlementProcessor;
 use App\Modules\Stadium\Services\MatchAttendanceService;
+use App\Modules\Stadium\Services\SeasonTicketPricingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 use Tests\TestCase;
@@ -24,7 +25,10 @@ class SeasonSettlementProcessorTest extends TestCase
         // No attendance lookups should happen when there are no finances to settle.
         $attendanceService->shouldNotReceive('resolveForMatch');
 
-        $processor = new SeasonSettlementProcessor($attendanceService);
+        $seasonTicketPricingService = Mockery::mock(SeasonTicketPricingService::class);
+        $seasonTicketPricingService->shouldNotReceive('soldSeasonTicketsForGame');
+
+        $processor = new SeasonSettlementProcessor($attendanceService, $seasonTicketPricingService);
 
         $data = new SeasonTransitionData(
             oldSeason: '2025',
