@@ -15,6 +15,9 @@ use App\Modules\Transfer\Services\LoanService;
 use App\Modules\Transfer\Services\ScoutingService;
 use App\Modules\Transfer\Services\TransferMarketService;
 use App\Modules\Transfer\Services\TransferService;
+use App\Support\QueryProfiler;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CareerActionProcessor
 {
@@ -34,8 +37,25 @@ class CareerActionProcessor
 
     public function process(Game $game): void
     {
+        $profile = QueryProfiler::enabled();
+        $sections = [];
+        $sectionStart = microtime(true);
+        $sectionQueryCount = $profile ? count(DB::getQueryLog()) : 0;
+
+        $mark = function (string $name) use (&$sections, &$sectionStart, &$sectionQueryCount, $profile): void {
+            $now = microtime(true);
+            $queries = $profile ? count(DB::getQueryLog()) - $sectionQueryCount : 0;
+            $sections[$name] = [
+                'ms' => (int) round(($now - $sectionStart) * 1000),
+                'q' => $queries,
+            ];
+            $sectionStart = $now;
+            $sectionQueryCount = $profile ? count(DB::getQueryLog()) : 0;
+        };
+
         // Pre-load buyer pool once for all offer generation (avoids repeated team/squad queries)
         $buyerPool = $this->transferService->loadBuyerPool($game);
+        $mark('buyer_pool');
 
         // Process transfers when window is open
         if ($game->isTransferWindowOpen()) {
@@ -46,6 +66,7 @@ class CareerActionProcessor
                 $this->notificationService->notifyTransferComplete($game, $offer);
             }
         }
+        $mark('complete_transfers');
 
         // Generate offers for listed players (always, with reduced chance outside window)
         $listedOfferChance = $game->isTransferWindowOpen()
@@ -55,6 +76,7 @@ class CareerActionProcessor
         foreach ($listedOffers as $offer) {
             $this->notificationService->notifyTransferOffer($game, $offer);
         }
+        $mark('listed_offers');
 
         // Unsolicited offers only during open windows
         if ($game->isTransferWindowOpen()) {
@@ -63,36 +85,42 @@ class CareerActionProcessor
                 $this->notificationService->notifyTransferOffer($game, $offer);
             }
         }
+        $mark('unsolicited_offers');
 
         // Pre-contract offers (January onwards for expiring contracts)
         $preContractOffers = $this->transferService->generatePreContractOffers($game, buyerPool: $buyerPool);
         foreach ($preContractOffers as $offer) {
             $this->notificationService->notifyTransferOffer($game, $offer);
         }
+        $mark('pre_contract_offers');
 
         // Resolve pending incoming pre-contract offers (after response delay)
         $resolvedPreContracts = $this->transferService->resolveIncomingPreContractOffers($game, $this->scoutingService);
         foreach ($resolvedPreContracts as $result) {
             $this->notificationService->notifyPreContractResult($game, $result['offer']);
         }
+        $mark('resolve_pre_contracts');
 
         // Resolve pending incoming loan requests (deferred from user submission)
         $resolvedLoans = $this->loanService->resolveIncomingLoanRequests($game, $this->scoutingService);
         foreach ($resolvedLoans as $result) {
             $this->notificationService->notifyLoanRequestResult($game, $result['offer'], $result['result']);
         }
+        $mark('resolve_loans');
 
         // Tick scout search progress
         $scoutReport = $this->scoutingService->tickSearch($game);
         if ($scoutReport?->isCompleted()) {
             $this->notificationService->notifyScoutComplete($game, $scoutReport);
         }
+        $mark('scout_search');
 
         // Tick player tracking progress
         $leveledUpEntries = $this->scoutingService->tickTracking($game);
         foreach ($leveledUpEntries as $entry) {
             $this->notificationService->notifyTrackingIntelReady($game, $entry);
         }
+        $mark('player_tracking');
 
         // Process loan searches
         $loanResults = $this->loanService->processLoanSearches($game);
@@ -106,18 +134,30 @@ class CareerActionProcessor
         foreach ($loanResults['expired'] as $result) {
             $this->notificationService->notifyLoanSearchFailed($game, $result['player']);
         }
+        $mark('loan_searches');
 
         // Check for expiring transfer offers (2 days or less)
         $this->checkExpiringOffers($game);
+        $mark('expiring_offers');
 
         // Warn about expiring contracts (6 months and 3 months before expiry)
         $this->checkExpiringContracts($game);
+        $mark('expiring_contracts');
 
         // Develop academy players each matchday
         $this->youthAcademyService->developPlayers($game);
+        $mark('develop_academy');
 
         // AI transfer market: process batch during open window
         $this->processAITransferBatch($game);
+        $mark('ai_transfer_batch');
+
+        if ($profile) {
+            Log::info("[CareerActionProcessor {$game->id}] section breakdown", [
+                'window_open' => $game->isTransferWindowOpen(),
+                'sections' => $sections,
+            ]);
+        }
     }
 
     private function checkExpiringOffers(Game $game): void
