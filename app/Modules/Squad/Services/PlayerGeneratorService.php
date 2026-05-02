@@ -365,8 +365,8 @@ class PlayerGeneratorService
         0 => 45,   // local
         1 => 50,   // modest
         2 => 57,   // established
-        3 => 67,   // continental
-        4 => 74,   // elite
+        3 => 70,   // continental
+        4 => 78,   // elite
     ];
 
     private const ABILITY_STD_DEV = 6;
@@ -378,8 +378,8 @@ class PlayerGeneratorService
         0 => 12,
         1 => 12,
         2 => 10,
-        3 => 8,
-        4 => 8,
+        3 => 12,
+        4 => 14,
     ];
 
     private const POTENTIAL_UPSIDE_STD_DEV = 5;
@@ -393,6 +393,20 @@ class PlayerGeneratorService
         2 => 50,
         3 => 55,
         4 => 60,
+    ];
+
+    /**
+     * Maximum potential allowed for AI-generated replenishment players.
+     * Elite clubs can produce future world-class talent; lower tiers cannot.
+     * Without per-tier caps, every replacement player league-wide would clamp
+     * at 88 and erode the league ceiling over many seasons.
+     */
+    private const POTENTIAL_MAX = [
+        0 => 86,
+        1 => 88,
+        2 => 90,
+        3 => 93,
+        4 => 95,
     ];
 
     /**
@@ -420,6 +434,7 @@ class PlayerGeneratorService
             self::POTENTIAL_UPSIDE_MEAN[$reputationIndex],
             self::POTENTIAL_UPSIDE_STD_DEV,
             self::POTENTIAL_FLOOR[$reputationIndex],
+            self::POTENTIAL_MAX[$reputationIndex],
         );
         $potential = $potentialData['potential'];
         $potentialLow = $potentialData['potentialLow'];

@@ -35,8 +35,8 @@ class YouthAcademyService
         0 => 38,   // Minimum: raw, unpolished prospect
         1 => 45,   // Basic: developing players
         2 => 52,   // Good: slightly above developing
-        3 => 62,   // Elite: average-to-good
-        4 => 70,   // World-Class: good, ready to contribute
+        3 => 66,   // Elite: average-to-good
+        4 => 74,   // World-Class: good, ready to contribute
     ];
 
     /**
@@ -64,8 +64,8 @@ class YouthAcademyService
         0 => 12,
         1 => 15,
         2 => 15,
-        3 => 10,
-        4 => 10,
+        3 => 14,
+        4 => 16,
     ];
 
     /**
@@ -82,6 +82,20 @@ class YouthAcademyService
         2 => 50,
         3 => 55,
         4 => 60,
+    ];
+
+    /**
+     * Maximum potential allowed for academy prospects per tier.
+     * Without per-tier caps, world-class academies can never produce
+     * a future elite player above 88 — a ceiling that compounds league-wide
+     * as original-seed elites retire.
+     */
+    private const POTENTIAL_MAX = [
+        0 => 86,
+        1 => 88,
+        2 => 90,
+        3 => 93,
+        4 => 95,
     ];
 
     private const ESTIMATED_MATCHDAYS = 38;
@@ -449,6 +463,7 @@ class YouthAcademyService
             self::POTENTIAL_UPSIDE_MEAN[$academyTier],
             self::POTENTIAL_UPSIDE_STD_DEV,
             self::POTENTIAL_FLOOR[$academyTier],
+            self::POTENTIAL_MAX[$academyTier],
         );
 
         $dateOfBirth = $game->current_date->copy()->subYears($age)->subDays(rand(0, 364));

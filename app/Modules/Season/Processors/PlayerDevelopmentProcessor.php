@@ -27,8 +27,9 @@ use Illuminate\Support\Facades\DB;
  *
  * Everything else is preserved exactly: AGE_CURVES values, the
  * MIN_APPEARANCES_FOR_GROWTH=10 / FULL_BONUS_APPEARANCES=25 scaling, the
- * +1 quality-gap bonus for late bloomers, the potential cap, and the
- * 1..99 ability bounds.
+ * TRAINING_ONLY_GROWTH_FACTOR=0.5 fallback for bench players, the +1
+ * quality-gap bonus for late bloomers, the potential cap, and the 1..99
+ * ability bounds.
  */
 class PlayerDevelopmentProcessor implements SeasonProcessor
 {
@@ -85,14 +86,14 @@ class PlayerDevelopmentProcessor implements SeasonProcessor
                 SELECT
                     id, age, old_tech, old_phys, pot, old_avg,
                     CASE
-                        WHEN tech_base > 0 AND apps < 10 THEN 0
+                        WHEN tech_base > 0 AND apps < 10 THEN ROUND(tech_base * 0.5)::int
                         WHEN tech_base > 0 THEN ROUND(tech_base * LEAST(1.0, apps::numeric / 25))::int
                         WHEN tech_base < 0 AND apps >= 10 THEN ROUND(tech_base * 0.5)::int
                         WHEN tech_base < 0 THEN tech_base
                         ELSE 0
                     END AS tech_delta_raw,
                     CASE
-                        WHEN phys_base > 0 AND apps < 10 THEN 0
+                        WHEN phys_base > 0 AND apps < 10 THEN ROUND(phys_base * 0.5)::int
                         WHEN phys_base > 0 THEN ROUND(phys_base * LEAST(1.0, apps::numeric / 25))::int
                         WHEN phys_base < 0 AND apps >= 10 THEN ROUND(phys_base * 0.5)::int
                         WHEN phys_base < 0 THEN phys_base

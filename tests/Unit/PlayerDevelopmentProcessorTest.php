@@ -45,16 +45,18 @@ class PlayerDevelopmentProcessorTest extends TestCase
         $this->assertSame(63, $player->game_physical_ability);
     }
 
-    public function test_young_player_without_enough_appearances_does_not_grow(): void
+    public function test_young_player_without_enough_appearances_grows_at_training_rate(): void
     {
         // 18yo, 5 apps (below MIN_APPEARANCES_FOR_GROWTH=10).
+        // Curve at 18: tech +2, phys +2 → training-only halves it to +1 each.
+        // Gap bonus (+1) still applies when delta > 0 and pot - avg >= 15, age < 23.
         $player = $this->makePlayer(age: 18, tech: 60, phys: 60, potential: 85, appearances: 5);
 
         $this->processor->process($this->game, $this->transitionData());
 
         $player->refresh();
-        $this->assertSame(60, $player->game_technical_ability);
-        $this->assertSame(60, $player->game_physical_ability);
+        $this->assertSame(62, $player->game_technical_ability);
+        $this->assertSame(62, $player->game_physical_ability);
     }
 
     public function test_inactive_veteran_declines_at_full_rate(): void

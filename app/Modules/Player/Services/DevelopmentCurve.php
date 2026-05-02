@@ -7,13 +7,15 @@ namespace App\Modules\Player\Services;
  *
  * Uses direct signed change values per age instead of multipliers.
  * Positive = growth, zero = plateau, negative = decline.
- * Growth requires playing time — no appearances means no growth (stagnation).
+ * Match playing time accelerates growth, but training alone still develops
+ * young players at a reduced rate.
  */
 final class DevelopmentCurve
 {
     /**
-     * Minimum appearances to qualify for any growth at all.
-     * Below this threshold, positive development is zero (stagnation).
+     * Minimum appearances to qualify for full match-driven growth.
+     * Below this threshold, players still develop from training but at a
+     * reduced rate (TRAINING_ONLY_GROWTH_FACTOR).
      */
     public const MIN_APPEARANCES_FOR_GROWTH = 10;
 
@@ -22,6 +24,13 @@ final class DevelopmentCurve
      * Between MIN and this value, growth scales linearly.
      */
     public const FULL_BONUS_APPEARANCES = 25;
+
+    /**
+     * Fraction of base growth applied to bench players (no/few appearances).
+     * Models off-pitch training development. Without this, AI bench prospects
+     * stagnate forever once squads fill up, eroding league strength over time.
+     */
+    public const TRAINING_ONLY_GROWTH_FACTOR = 0.5;
 
     /**
      * Age-based development changes (points per season for a regular starter).
@@ -76,8 +85,8 @@ final class DevelopmentCurve
     /**
      * Calculate development change for a single ability.
      *
-     * Growth (positive baseChange) requires playing time:
-     * - Below MIN_APPEARANCES_FOR_GROWTH: zero growth (stagnation)
+     * Growth (positive baseChange) is driven by playing time:
+     * - Below MIN_APPEARANCES_FOR_GROWTH: training-only rate (TRAINING_ONLY_GROWTH_FACTOR)
      * - Between MIN and FULL_BONUS: scaled growth
      * - At FULL_BONUS+: full growth
      *
@@ -90,9 +99,8 @@ final class DevelopmentCurve
     public static function calculateChange(int $baseChange, int $seasonAppearances): int
     {
         if ($baseChange > 0) {
-            // Growth requires playing time — no play = no growth
             if ($seasonAppearances < self::MIN_APPEARANCES_FOR_GROWTH) {
-                return 0;
+                return (int) round($baseChange * self::TRAINING_ONLY_GROWTH_FACTOR);
             }
 
             $playFactor = min(1.0, $seasonAppearances / self::FULL_BONUS_APPEARANCES);

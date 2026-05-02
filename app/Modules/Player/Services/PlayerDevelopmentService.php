@@ -18,7 +18,7 @@ use App\Modules\Player\Services\DevelopmentCurve;
  * Key principles:
  * - Young players with high market value have proven higher potential
  * - Veterans with exceptional market value have proven their quality ceiling
- * - Growth requires playing time — bench players stagnate
+ * - Match playing time accelerates growth; bench players still develop in training at a reduced rate
  * - Physical abilities decline faster than technical abilities
  */
 class PlayerDevelopmentService
@@ -28,7 +28,7 @@ class PlayerDevelopmentService
      *
      * Development is influenced by:
      * - Age (young players grow, veterans decline)
-     * - Playing time (must play to grow; no appearances = stagnation)
+     * - Playing time (full growth at FULL_BONUS_APPEARANCES, training-only rate below MIN_APPEARANCES_FOR_GROWTH)
      * - Quality gap (young players far from potential get +1 bonus)
      * - Potential cap (players can't exceed their ceiling)
      *
