@@ -329,8 +329,14 @@ class RedCardSimulationTest extends TestCase
         $fwAwayGoals = 0;
 
         for ($i = 0; $i < $iterations; $i++) {
+            // Fresh simulator each iteration so per-player "form on the day"
+            // performance is re-rolled. Sharing one simulator across iterations
+            // freezes those rolls after the first call, which can collapse the
+            // 90-vs-55 rating gap if the CB rolls low and the FW rolls high.
+            $simulator = new MatchSimulator;
+
             [, $a] = $this->simulateGoalsWithRedCardSplit->invoke(
-                $this->simulator,
+                $simulator,
                 $homeTeam, $awayTeam,
                 $homePlayers, $awayPlayers,
                 Formation::F_4_3_3, Formation::F_4_3_3,
@@ -346,7 +352,7 @@ class RedCardSimulationTest extends TestCase
             $cbAwayGoals += $a;
 
             [, $a] = $this->simulateGoalsWithRedCardSplit->invoke(
-                $this->simulator,
+                $simulator,
                 $homeTeam, $awayTeam,
                 $homePlayers, $awayPlayers,
                 Formation::F_4_3_3, Formation::F_4_3_3,
