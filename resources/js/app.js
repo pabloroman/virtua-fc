@@ -11,6 +11,7 @@ import tournamentSummary from './tournament-summary';
 import seasonSummary from './season-summary';
 import squadRegistration from './squad-registration';
 import explore from './explore';
+import seasonTicketEditor from './season-ticket-editor';
 
 Alpine.plugin(Collapse);
 Alpine.plugin(Tooltip);
@@ -23,6 +24,7 @@ Alpine.data('squadRegistration', squadRegistration);
 Alpine.data('tournamentSummary', tournamentSummary);
 Alpine.data('seasonSummary', seasonSummary);
 Alpine.data('explore', explore);
+Alpine.data('seasonTicketEditor', seasonTicketEditor);
 
 window.Alpine = Alpine;
 

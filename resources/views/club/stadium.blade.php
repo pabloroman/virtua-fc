@@ -148,10 +148,14 @@ foreach ($ticketAreas as $i => $area) {
                                 </div>
                                 <div class="bg-surface-700/50 border border-border-default rounded-lg px-4 py-3">
                                     <div class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('club.stadium.stadium_revenue.title') }}</div>
-                                    <div class="font-heading text-2xl font-bold text-accent-green">
-                                        <span x-text="formatRevenue(totalRevenue + projectedMatchday)"></span>
+                                    <div class="font-heading text-2xl font-bold text-accent-green flex items-center gap-2">
+                                        <span class="transition-opacity duration-150" :class="isUpdating ? 'opacity-40' : 'opacity-100'" x-text="formatRevenue(totalRevenue + projectedMatchday)"></span>
+                                        <svg x-show="isUpdating" x-cloak class="animate-spin h-4 w-4 text-text-muted shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
                                     </div>
-                                    <div class="mt-2 space-y-1 text-[11px]">
+                                    <div class="mt-2 space-y-1 text-[11px]" :class="isUpdating ? 'opacity-60' : 'opacity-100'">
                                         <div class="flex justify-between gap-2">
                                             <span class="text-text-muted">{{ __('club.stadium.stadium_revenue.season_tickets') }}</span>
                                             <span class="text-text-body font-semibold" x-text="formatRevenue(totalRevenue)"></span>
@@ -277,84 +281,4 @@ foreach ($ticketAreas as $i => $area) {
         </div>
     </div>
 
-    @if($canEditTickets)
-        <script>
-            window.seasonTicketEditor = function (config) {
-                return {
-                    prices: { ...config.prices },
-                    baselines: { ...config.baselines },
-                    areas: config.initialAreas.map(a => ({ ...a })),
-                    overallFill: config.initialFill,
-                    totalRevenue: config.initialRevenue,
-                    totalSold: config.initialSold,
-                    projectedMatchday: config.initialMatchday,
-                    totalCapacity: config.totalCapacity,
-                    minMultiplier: config.minMultiplier,
-                    maxMultiplier: config.maxMultiplier,
-                    pendingFetch: null,
-
-                    formatPrice(cents) {
-                        return '€ ' + new Intl.NumberFormat('es-ES').format(Math.round(cents / 100));
-                    },
-                    formatRevenue(cents) {
-                        const euros = cents / 100;
-                        if (euros >= 1_000_000) return '€ ' + (euros / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
-                        if (euros >= 1_000) return '€ ' + Math.round(euros / 1_000) + 'K';
-                        return '€ ' + Math.round(euros);
-                    },
-                    updatePrice(index, raw) {
-                        const cents = Math.round(parseFloat(raw || '0') * 100);
-                        this.setPriceCents(index, cents);
-                    },
-                    setPriceCents(index, raw) {
-                        const baseline = this.baselines[index] ?? 0;
-                        let cents = parseInt(raw, 10);
-                        if (!Number.isFinite(cents)) cents = 0;
-                        const min = Math.round(baseline * this.minMultiplier);
-                        const max = Math.round(baseline * this.maxMultiplier);
-                        cents = Math.max(min, Math.min(max, cents));
-                        this.prices = { ...this.prices, [index]: cents };
-                        this.refresh();
-                    },
-                    sliderFill(index) {
-                        const baseline = this.baselines[index] ?? 0;
-                        if (!baseline) return '0%';
-                        const min = Math.round(baseline * this.minMultiplier);
-                        const max = Math.round(baseline * this.maxMultiplier);
-                        if (max <= min) return '0%';
-                        const cents = this.prices[index] ?? min;
-                        const pct = Math.max(0, Math.min(100, ((cents - min) / (max - min)) * 100));
-                        return pct.toFixed(2) + '%';
-                    },
-                    resetToDefaults() {
-                        this.prices = { ...this.baselines };
-                        this.refresh();
-                    },
-                    async refresh() {
-                        if (this.pendingFetch) clearTimeout(this.pendingFetch);
-                        this.pendingFetch = setTimeout(async () => {
-                            try {
-                                const res = await fetch(config.previewUrl, {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'Accept': 'application/json',
-                                        'X-CSRF-TOKEN': config.csrf,
-                                    },
-                                    body: JSON.stringify({ prices: this.prices }),
-                                });
-                                if (!res.ok) return;
-                                const data = await res.json();
-                                this.areas = data.areas ?? this.areas;
-                                this.overallFill = data.overall_fill_rate ?? this.overallFill;
-                                this.totalRevenue = data.total_revenue ?? this.totalRevenue;
-                                this.totalSold = data.total_sold ?? this.totalSold;
-                                this.projectedMatchday = data.projected_matchday_revenue ?? this.projectedMatchday;
-                            } catch (e) { /* network blip — keep last preview */ }
-                        }, 250);
-                    },
-                };
-            };
-        </script>
-    @endif
 </x-app-layout>

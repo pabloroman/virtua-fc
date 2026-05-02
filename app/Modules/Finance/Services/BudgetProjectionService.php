@@ -64,6 +64,16 @@ class BudgetProjectionService
     private const MAX_COMMERCIAL_SEATS = 80_000;
 
     /**
+     * Fraction of season-ticket holders gained or lost (versus baseline
+     * pricing) that converts to / from walk-up attendance. A pure 1.0
+     * substitution would mean every dropped holder still attends as
+     * walk-up, which is unrealistic and amplifies taquilla swings beyond
+     * what real-world fan behaviour produces. 0.4 reflects that most
+     * fans dropped after a hike disengage entirely.
+     */
+    private const WALKUP_SUBSTITUTION_RATE = 0.4;
+
+    /**
      * Generate season projections for a game.
      * Called at the start of each season during pre-season.
      */
@@ -180,18 +190,31 @@ class BudgetProjectionService
      */
     public function calculateMatchdayRevenue(Team $team, Game $game): int
     {
-        $seasonTicketHolders = $this->seasonTicketPricingService->soldSeasonTicketsForGame($game);
+        $walkupRelevantHolders = $this->seasonTicketPricingService->walkupRelevantSoldForGame($game);
 
-        return $this->matchdayRevenueWithSeasonTicketHolders($team, $game, $seasonTicketHolders);
+        return $this->matchdayRevenueWithSeasonTicketHolders($team, $game, $walkupRelevantHolders);
     }
 
     /**
      * Same projection as calculateMatchdayRevenue() but with an explicit
-     * season-ticket-holder count instead of reading the persisted total.
-     * Lets the live pricing preview show the implied taquilla figure for
-     * candidate prices without persisting them first.
+     * walkup-relevant holder count instead of reading the persisted
+     * value. Lets the live pricing preview show the implied taquilla
+     * figure for candidate prices without persisting them first.
+     *
+     * `$walkupRelevantHolders` excludes premium zones (VIP/palco) — those
+     * seats sell almost exclusively as season-long contracts and have no
+     * meaningful walk-up market, so changes in their holder count
+     * shouldn't ripple into matchday revenue.
+     *
+     * Walk-up attendance uses the baseline TOTAL holder count as the
+     * calibration anchor (at default prices walkup = expected − total
+     * holders, matching the per-seat rate's real-world calibration), but
+     * only the *non-premium* delta is multiplied by
+     * `WALKUP_SUBSTITUTION_RATE` to swing walkup. Premium price moves
+     * therefore leave taquilla flat, which matches how empty VIP boxes
+     * behave in real life.
      */
-    public function matchdayRevenueWithSeasonTicketHolders(Team $team, Game $game, int $seasonTicketHolders): int
+    public function matchdayRevenueWithSeasonTicketHolders(Team $team, Game $game, int $walkupRelevantHolders): int
     {
         $reputation = TeamReputation::resolveLevel($game->id, $team->id);
 
@@ -211,7 +234,12 @@ class BudgetProjectionService
         $perSeatMatchRate = $perSeatSeasonRate / $leagueHomeMatchCount;
 
         $expectedAttendance = $this->matchAttendanceService->projectBaselineForTeam($game->id, $team);
-        $walkupAttendance = max(0, $expectedAttendance - $seasonTicketHolders);
+        $baselineTotalHolders = $this->seasonTicketPricingService->baselineSoldForGame($game, $team);
+        $baselineWalkup = max(0, $expectedAttendance - $baselineTotalHolders);
+
+        $baselineWalkupHolders = $this->seasonTicketPricingService->baselineWalkupRelevantSoldForGame($game, $team);
+        $holderDelta = $walkupRelevantHolders - $baselineWalkupHolders;
+        $walkupAttendance = max(0, $baselineWalkup - $holderDelta * self::WALKUP_SUBSTITUTION_RATE);
 
         $total = $walkupAttendance * $perSeatMatchRate * $totalHomeMatchCount;
 

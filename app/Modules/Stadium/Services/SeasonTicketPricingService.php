@@ -239,7 +239,11 @@ class SeasonTicketPricingService
         // resolved lazily to avoid a circular dependency with
         // BudgetProjectionService, which depends on this service.
         $payload['projected_matchday_revenue'] = app(BudgetProjectionService::class)
-            ->matchdayRevenueWithSeasonTicketHolders($team, $game, $payload['total_sold']);
+            ->matchdayRevenueWithSeasonTicketHolders(
+                $team,
+                $game,
+                $this->walkupRelevantSoldFromAreas($payload['areas']),
+            );
 
         return $payload;
     }
@@ -285,7 +289,11 @@ class SeasonTicketPricingService
                 ],
             );
 
-            $this->syncFinances($game, $pricing->total_revenue, $pricing->total_sold);
+            $this->syncFinances(
+                $game,
+                $pricing->total_revenue,
+                $this->walkupRelevantSoldFromAreas($payload['areas']),
+            );
 
             return $pricing;
         });
@@ -314,6 +322,92 @@ class SeasonTicketPricingService
         return SeasonTicketPricing::where('game_id', $game->id)
             ->where('season', $game->season)
             ->first();
+    }
+
+    /**
+     * Predicted season-ticket holder count at the *default* (baseline)
+     * pricing for a given game. Used as the reference point for the
+     * matchday-revenue projection — only the delta between current and
+     * baseline holders flows into walk-up attendance, so price moves
+     * don't whipsaw taquilla 1:1 with season-ticket changes.
+     *
+     * Memoised per request to avoid re-running the demand model on every
+     * preview keystroke.
+     */
+    public function baselineSoldForGame(Game $game, Team $team): int
+    {
+        return (int) $this->defaultPricingForGame($game, $team)['total_sold'];
+    }
+
+    /**
+     * Predicted *non-premium* season-ticket holder count at default
+     * pricing. Premium zones (VIP/palco) sell almost exclusively as
+     * season-long contracts and don't have a meaningful walk-up market,
+     * so changes in their holder count shouldn't flow into the taquilla
+     * projection. The walk-up substitution model uses this number as
+     * its delta-base, leaving premium swings out of matchday revenue.
+     */
+    public function baselineWalkupRelevantSoldForGame(Game $game, Team $team): int
+    {
+        return $this->walkupRelevantSoldFromAreas(
+            $this->defaultPricingForGame($game, $team)['areas']
+        );
+    }
+
+    /**
+     * Sum the `sold` count across non-premium areas only. Areas with a
+     * baseline multiplier ≥ PREMIUM_MULTIPLIER_THRESHOLD (VIP/palco)
+     * are excluded — there's no walk-up market for those seats.
+     *
+     * @param  array<int, array<string, mixed>>  $areas  Composed area
+     *         shape with `sold` and `multiplier` keys (the format saved
+     *         on SeasonTicketPricing::areas and returned by predict()).
+     */
+    public function walkupRelevantSoldFromAreas(array $areas): int
+    {
+        $sum = 0;
+        foreach ($areas as $area) {
+            $multiplier = (float) ($area['multiplier'] ?? 0);
+            if ($multiplier < self::PREMIUM_MULTIPLIER_THRESHOLD) {
+                $sum += (int) ($area['sold'] ?? 0);
+            }
+        }
+
+        return $sum;
+    }
+
+    /**
+     * Persisted *non-premium* season-ticket holder count for the user's
+     * team in the current season — the figure that actually displaces
+     * walk-up demand. Returns 0 when no pricing row exists yet.
+     */
+    public function walkupRelevantSoldForGame(Game $game): int
+    {
+        $pricing = $this->getCurrent($game);
+        if (! $pricing) {
+            return 0;
+        }
+
+        return $this->walkupRelevantSoldFromAreas($pricing->areas ?? []);
+    }
+
+    /**
+     * Memoised default pricing payload for a game. Both baselineSold and
+     * baselineWalkupRelevantSold derive from this, so we only run the
+     * demand model once per (game, season) per request.
+     *
+     * @return array{areas: array<int, array<string, mixed>>, total_capacity: int, total_sold: int, total_revenue: int}
+     */
+    private function defaultPricingForGame(Game $game, Team $team): array
+    {
+        static $cache = [];
+        $key = $game->id . ':' . (int) $game->season;
+
+        if (! isset($cache[$key])) {
+            $cache[$key] = $this->buildDefaultPricing($game, $team);
+        }
+
+        return $cache[$key];
     }
 
     /**
@@ -505,7 +599,7 @@ class SeasonTicketPricingService
      * Without this, the persisted projection would drift from reality every
      * time the user adjusts prices, only correcting at season settlement.
      */
-    private function syncFinances(Game $game, int $revenue, int $seasonTicketHolders): void
+    private function syncFinances(Game $game, int $revenue, int $walkupRelevantHolders): void
     {
         $finances = $game->currentFinances;
         if (! $finances) {
@@ -517,7 +611,7 @@ class SeasonTicketPricingService
 
         $previousMatchday = (int) ($finances->projected_matchday_revenue ?? 0);
         $newMatchday = app(BudgetProjectionService::class)
-            ->matchdayRevenueWithSeasonTicketHolders($game->team, $game, $seasonTicketHolders);
+            ->matchdayRevenueWithSeasonTicketHolders($game->team, $game, $walkupRelevantHolders);
         $matchdayDelta = $newMatchday - $previousMatchday;
 
         $totalDelta = $seasonTicketDelta + $matchdayDelta;
