@@ -98,7 +98,7 @@
                         @foreach($revenueLines as $line)
                             @if($line['show'])
                             <div class="flex items-center justify-between py-2">
-                                <span class="text-text-muted pl-5 flex items-center gap-1.5">{{ $line['label'] }} <svg x-data="" x-tooltip.raw="{{ $line['tooltip'] }}" class="w-3.5 h-3.5 text-text-faint hover:text-text-secondary cursor-help shrink-0" fill="currentColor" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-336c-17.7 0-32 14.3-32 32 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-44.2 35.8-80 80-80s80 35.8 80 80c0 47.2-36 67.2-56 74.5l0 3.8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8.1c0-20.5 14.8-35.2 30.1-40.2 6.4-2.1 13.2-5.5 18.2-10.3 4.3-4.2 7.7-10 7.7-19.6 0-17.7-14.3-32-32-32zM224 368a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg></span>
+                                <span class="text-text-muted pl-5 flex items-center gap-1.5">{{ $line['label'] }} <x-info-icon :tooltip="$line['tooltip']" /></span>
                                 <span class="text-accent-green font-medium">+{{ $line['value'] }}</span>
                             </div>
                             @endif
@@ -121,7 +121,7 @@
                         @foreach($deductionLines as $line)
                             @if($line['show'])
                             <div class="flex items-center justify-between py-2">
-                                <span class="text-text-muted pl-5 flex items-center gap-1.5">{{ $line['label'] }} <svg x-data="" x-tooltip.raw="{{ $line['tooltip'] }}" class="w-3.5 h-3.5 text-text-faint hover:text-text-secondary cursor-help shrink-0" fill="currentColor" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-336c-17.7 0-32 14.3-32 32 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-44.2 35.8-80 80-80s80 35.8 80 80c0 47.2-36 67.2-56 74.5l0 3.8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8.1c0-20.5 14.8-35.2 30.1-40.2 6.4-2.1 13.2-5.5 18.2-10.3 4.3-4.2 7.7-10 7.7-19.6 0-17.7-14.3-32-32-32zM224 368a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg></span>
+                                <span class="text-text-muted pl-5 flex items-center gap-1.5">{{ $line['label'] }} <x-info-icon :tooltip="$line['tooltip']" /></span>
                                 <span class="text-accent-red font-medium">-{{ $line['value'] }}</span>
                             </div>
                             @endif
@@ -130,7 +130,7 @@
                         {{-- Surplus line --}}
                         <div class="border-t border-border-default pt-2 mt-1">
                             <div class="flex items-center justify-between py-1">
-                                <span class="font-semibold text-text-body pl-5 flex items-center gap-1.5">{{ __('finances.projected_surplus') }} <svg x-data="" x-tooltip.raw="{{ __('finances.tooltip_surplus') }}" class="w-3.5 h-3.5 text-text-faint hover:text-text-secondary cursor-help shrink-0" fill="currentColor" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-336c-17.7 0-32 14.3-32 32 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-44.2 35.8-80 80-80s80 35.8 80 80c0 47.2-36 67.2-56 74.5l0 3.8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8.1c0-20.5 14.8-35.2 30.1-40.2 6.4-2.1 13.2-5.5 18.2-10.3 4.3-4.2 7.7-10 7.7-19.6 0-17.7-14.3-32-32-32zM224 368a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg></span>
+                                <span class="font-semibold text-text-body pl-5 flex items-center gap-1.5">{{ __('finances.projected_surplus') }} <x-info-icon :tooltip="__('finances.tooltip_surplus')" /></span>
                                 <span class="font-semibold text-text-body">{{ $finances->formatted_projected_surplus }}</span>
                             </div>
                         </div>
@@ -138,7 +138,7 @@
                         {{-- Carried debt --}}
                         @if($finances->carried_debt > 0)
                         <div class="flex items-center justify-between py-2">
-                            <span class="text-text-muted pl-5 flex items-center gap-1.5">{{ __('finances.carried_debt') }} <svg x-data="" x-tooltip.raw="{{ __('finances.tooltip_carried_debt') }}" class="w-3.5 h-3.5 text-text-faint hover:text-text-secondary cursor-help shrink-0" fill="currentColor" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-336c-17.7 0-32 14.3-32 32 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-44.2 35.8-80 80-80s80 35.8 80 80c0 47.2-36 67.2-56 74.5l0 3.8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8.1c0-20.5 14.8-35.2 30.1-40.2 6.4-2.1 13.2-5.5 18.2-10.3 4.3-4.2 7.7-10 7.7-19.6 0-17.7-14.3-32-32-32zM224 368a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg></span>
+                            <span class="text-text-muted pl-5 flex items-center gap-1.5">{{ __('finances.carried_debt') }} <x-info-icon :tooltip="__('finances.tooltip_carried_debt')" /></span>
                             <span class="text-accent-red font-medium">-{{ $finances->formatted_carried_debt }}</span>
                         </div>
                         @endif
@@ -146,7 +146,7 @@
                         {{-- Carried surplus --}}
                         @if($finances->carried_surplus > 0)
                         <div class="flex items-center justify-between py-2">
-                            <span class="text-text-muted pl-5 flex items-center gap-1.5">{{ __('finances.carried_surplus') }} <svg x-data="" x-tooltip.raw="{{ __('finances.tooltip_carried_surplus') }}" class="w-3.5 h-3.5 text-text-faint hover:text-text-secondary cursor-help shrink-0" fill="currentColor" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-336c-17.7 0-32 14.3-32 32 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-44.2 35.8-80 80-80s80 35.8 80 80c0 47.2-36 67.2-56 74.5l0 3.8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8.1c0-20.5 14.8-35.2 30.1-40.2 6.4-2.1 13.2-5.5 18.2-10.3 4.3-4.2 7.7-10 7.7-19.6 0-17.7-14.3-32-32-32zM224 368a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg></span>
+                            <span class="text-text-muted pl-5 flex items-center gap-1.5">{{ __('finances.carried_surplus') }} <x-info-icon :tooltip="__('finances.tooltip_carried_surplus')" /></span>
                             <span class="text-accent-green font-medium">+{{ $finances->formatted_carried_surplus }}</span>
                         </div>
                         @endif
@@ -154,14 +154,14 @@
                         {{-- Loan repayment from previous season --}}
                         @if($finances->previous_loan_repayment > 0)
                         <div class="flex items-center justify-between py-2">
-                            <span class="text-text-muted pl-5 flex items-center gap-1.5">{{ __('finances.loan_repayment_deduction') }} <svg x-data="" x-tooltip.raw="{{ __('finances.tooltip_loan_repayment_deduction') }}" class="w-3.5 h-3.5 text-text-faint hover:text-text-secondary cursor-help shrink-0" fill="currentColor" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-336c-17.7 0-32 14.3-32 32 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-44.2 35.8-80 80-80s80 35.8 80 80c0 47.2-36 67.2-56 74.5l0 3.8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8.1c0-20.5 14.8-35.2 30.1-40.2 6.4-2.1 13.2-5.5 18.2-10.3 4.3-4.2 7.7-10 7.7-19.6 0-17.7-14.3-32-32-32zM224 368a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg></span>
+                            <span class="text-text-muted pl-5 flex items-center gap-1.5">{{ __('finances.loan_repayment_deduction') }} <x-info-icon :tooltip="__('finances.tooltip_loan_repayment_deduction')" /></span>
                             <span class="text-accent-red font-medium">-{{ $finances->formatted_previous_loan_repayment }}</span>
                         </div>
                         @endif
 
                         {{-- Infrastructure deduction --}}
                         <div class="flex items-center justify-between py-2">
-                            <span class="text-text-muted pl-5 flex items-center gap-1.5">{{ __('finances.infrastructure_investment') }} <svg x-data="" x-tooltip.raw="{{ __('finances.tooltip_infrastructure') }}" class="w-3.5 h-3.5 text-text-faint hover:text-text-secondary cursor-help shrink-0" fill="currentColor" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-336c-17.7 0-32 14.3-32 32 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-44.2 35.8-80 80-80s80 35.8 80 80c0 47.2-36 67.2-56 74.5l0 3.8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8.1c0-20.5 14.8-35.2 30.1-40.2 6.4-2.1 13.2-5.5 18.2-10.3 4.3-4.2 7.7-10 7.7-19.6 0-17.7-14.3-32-32-32zM224 368a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg></span>
+                            <span class="text-text-muted pl-5 flex items-center gap-1.5">{{ __('finances.infrastructure_investment') }} <x-info-icon :tooltip="__('finances.tooltip_infrastructure')" /></span>
                             <span class="text-accent-red font-medium">-{{ \App\Support\Money::format($investment->total_infrastructure - $infrastructureSpending) }}</span>
                         </div>
 
@@ -199,7 +199,7 @@
                             @endif
                             @if($activeLoan)
                             <div class="flex items-center justify-between py-1.5">
-                                <span class="text-text-muted pl-5 flex items-center gap-1.5">{{ __('finances.budget_loan') }} <svg x-data="" x-tooltip.raw="{{ __('finances.tooltip_loan_activity') }}" class="w-3.5 h-3.5 text-text-faint hover:text-text-secondary cursor-help shrink-0" fill="currentColor" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-336c-17.7 0-32 14.3-32 32 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-44.2 35.8-80 80-80s80 35.8 80 80c0 47.2-36 67.2-56 74.5l0 3.8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8.1c0-20.5 14.8-35.2 30.1-40.2 6.4-2.1 13.2-5.5 18.2-10.3 4.3-4.2 7.7-10 7.7-19.6 0-17.7-14.3-32-32-32zM224 368a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg></span>
+                                <span class="text-text-muted pl-5 flex items-center gap-1.5">{{ __('finances.budget_loan') }} <x-info-icon :tooltip="__('finances.tooltip_loan_activity')" /></span>
                                 <span class="text-accent-green font-medium">+{{ $activeLoan->formatted_amount }}</span>
                             </div>
                             @endif
@@ -208,7 +208,7 @@
                         {{-- Final: Current Transfer Budget --}}
                         <div class="border-t-2 border-border-strong pt-2 mt-1">
                             <div class="flex items-center justify-between py-1">
-                                <span class="font-heading font-semibold text-lg text-text-primary flex items-center gap-1.5">= {{ __('finances.current_transfer_budget') }} <svg x-data="" x-tooltip.raw="{{ __('finances.tooltip_transfer_budget') }}" class="w-3.5 h-3.5 text-text-muted hover:text-text-secondary cursor-help shrink-0" fill="currentColor" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-336c-17.7 0-32 14.3-32 32 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-44.2 35.8-80 80-80s80 35.8 80 80c0 47.2-36 67.2-56 74.5l0 3.8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8.1c0-20.5 14.8-35.2 30.1-40.2 6.4-2.1 13.2-5.5 18.2-10.3 4.3-4.2 7.7-10 7.7-19.6 0-17.7-14.3-32-32-32zM224 368a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg></span>
+                                <span class="font-heading font-semibold text-lg text-text-primary flex items-center gap-1.5">= {{ __('finances.current_transfer_budget') }} <x-info-icon :tooltip="__('finances.tooltip_transfer_budget')" class="text-text-muted" /></span>
                                 <span class="font-heading font-bold text-lg text-text-primary">{{ $investment->formatted_transfer_budget }}</span>
                             </div>
                         </div>
@@ -216,7 +216,7 @@
                         {{-- No transfer activity: simple Transfer Budget line --}}
                         <div class="border-t-2 border-border-strong pt-2 mt-1">
                             <div class="flex items-center justify-between py-1">
-                                <span class="font-heading font-semibold text-lg text-text-primary flex items-center gap-1.5">= {{ __('finances.transfer_budget') }} <svg x-data="" x-tooltip.raw="{{ __('finances.tooltip_transfer_budget') }}" class="w-3.5 h-3.5 text-text-muted hover:text-text-secondary cursor-help shrink-0" fill="currentColor" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-336c-17.7 0-32 14.3-32 32 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-44.2 35.8-80 80-80s80 35.8 80 80c0 47.2-36 67.2-56 74.5l0 3.8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8.1c0-20.5 14.8-35.2 30.1-40.2 6.4-2.1 13.2-5.5 18.2-10.3 4.3-4.2 7.7-10 7.7-19.6 0-17.7-14.3-32-32-32zM224 368a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg></span>
+                                <span class="font-heading font-semibold text-lg text-text-primary flex items-center gap-1.5">= {{ __('finances.transfer_budget') }} <x-info-icon :tooltip="__('finances.tooltip_transfer_budget')" class="text-text-muted" /></span>
                                 <span class="font-heading font-bold text-lg text-text-primary">{{ $investment->formatted_transfer_budget }}</span>
                             </div>
                         </div>
@@ -345,7 +345,7 @@
                             <div x-data="{ amount: {{ $loanMax }}, showForm: false, interestRate: {{ $loanInterestRate }} }">
                                 <p class="text-sm text-text-secondary mb-3">{{ __('finances.loan_description') }}</p>
                                 <div class="flex items-center justify-between mb-3">
-                                    <span class="text-[10px] text-text-muted uppercase tracking-widest flex items-center gap-1">{{ __('finances.loan_max_available') }} <svg x-data="" x-tooltip.raw="{{ __('finances.tooltip_loan_max') }}" class="w-3.5 h-3.5 text-text-faint hover:text-text-secondary cursor-help shrink-0" fill="currentColor" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-336c-17.7 0-32 14.3-32 32 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-44.2 35.8-80 80-80s80 35.8 80 80c0 47.2-36 67.2-56 74.5l0 3.8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8.1c0-20.5 14.8-35.2 30.1-40.2 6.4-2.1 13.2-5.5 18.2-10.3 4.3-4.2 7.7-10 7.7-19.6 0-17.7-14.3-32-32-32zM224 368a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg></span>
+                                    <span class="text-[10px] text-text-muted uppercase tracking-widest flex items-center gap-1">{{ __('finances.loan_max_available') }} <x-info-icon :tooltip="__('finances.tooltip_loan_max')" /></span>
                                     <span class="font-heading text-lg font-bold text-text-primary">{{ \App\Support\Money::format($maxLoanAmount) }}</span>
                                 </div>
 

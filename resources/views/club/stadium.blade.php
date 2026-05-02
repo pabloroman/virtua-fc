@@ -105,9 +105,8 @@ foreach ($ticketAreas as $i => $area) {
                                                 <span class="text-xs font-semibold text-text-primary uppercase tracking-wide">{{ __('club.stadium.season_tickets.area.' . $area['slug']) }}</span>
                                                 <span class="text-[11px] text-text-muted ml-1.5">{{ number_format($area['capacity']) }}</span>
                                             </div>
-                                            <span class="font-heading text-2xl font-bold text-text-primary tabular-nums leading-none shrink-0">
-                                                € <span x-text="Math.round(prices[{{ $i }}] / 100).toLocaleString('es-ES')"></span>
-                                            </span>
+                                            <span class="font-heading text-2xl font-bold text-text-primary tabular-nums leading-none shrink-0"
+                                                  x-text="formatPrice(prices[{{ $i }}])"></span>
                                         </div>
 
                                         <input type="range"
@@ -134,7 +133,7 @@ foreach ($ticketAreas as $i => $area) {
                                 <div class="bg-surface-700/50 border border-border-default rounded-lg px-4 py-3">
                                     <div class="text-[10px] text-text-muted uppercase tracking-widest flex items-center gap-1.5">
                                         {{ __('club.stadium.season_tickets.predicted_fill') }}
-                                        <svg x-data="" x-tooltip.raw="{{ __('club.stadium.season_tickets.predicted_fill_tooltip') }}" class="w-3.5 h-3.5 text-text-faint hover:text-text-secondary cursor-help shrink-0" fill="currentColor" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-336c-17.7 0-32 14.3-32 32 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-44.2 35.8-80 80-80s80 35.8 80 80c0 47.2-36 67.2-56 74.5l0 3.8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8.1c0-20.5 14.8-35.2 30.1-40.2 6.4-2.1 13.2-5.5 18.2-10.3 4.3-4.2 7.7-10 7.7-19.6 0-17.7-14.3-32-32-32zM224 368a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg>
+                                        <x-info-icon :tooltip="__('club.stadium.season_tickets.predicted_fill_tooltip')" />
                                     </div>
                                     <div class="font-heading text-2xl font-bold text-text-primary">
                                         <span x-text="overallFill"></span>%
@@ -179,15 +178,12 @@ foreach ($ticketAreas as $i => $area) {
                                 @foreach($ticketAreas as $i => $area)
                                     <input type="hidden" :name="`prices[{{ $i }}]`" :value="prices[{{ $i }}]">
                                 @endforeach
-                                <button type="submit"
-                                        class="px-4 py-2 bg-accent-blue text-white text-sm font-semibold rounded-lg hover:bg-accent-blue/90 transition-colors">
+                                <x-primary-button>
                                     {{ __('club.stadium.season_tickets.save_button') }}
-                                </button>
-                                <button type="button"
-                                        @click="resetToDefaults()"
-                                        class="px-4 py-2 bg-surface-700 text-text-body text-sm font-semibold rounded-lg hover:bg-surface-600 transition-colors">
+                                </x-primary-button>
+                                <x-secondary-button @click="resetToDefaults()">
                                     {{ __('club.stadium.season_tickets.reset_defaults') }}
-                                </button>
+                                </x-secondary-button>
                             </form>
                         </div>
                     @else

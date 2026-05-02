@@ -262,12 +262,12 @@ class MatchAttendanceService
             return $attendance;
         }
 
-        // Deterministic walk-up jitter: −1% to +5% of capacity. Seeded per
-        // match so the same fixture always reports the same number.
-        mt_srand((int) crc32($match->id));
-        $jitterPercent = mt_rand(-100, 500) / 10_000.0; // −0.01 to +0.05
+        // Deterministic walk-up jitter: −1% to +5% of capacity. Derived
+        // from the match id so the same fixture always reports the same
+        // number, without touching the global PRNG seed.
+        $bucket = crc32($match->id) % 601; // 0..600 inclusive
+        $jitterPercent = ($bucket - 100) / 10_000.0; // −0.01 to +0.05
         $jitterSeats = (int) round($capacity * $jitterPercent);
-        mt_srand();
 
         $floor = $holders + $jitterSeats;
 

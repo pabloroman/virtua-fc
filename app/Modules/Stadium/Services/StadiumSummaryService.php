@@ -134,9 +134,10 @@ class StadiumSummaryService
         } else {
             $defaults = $this->seasonTicketPricingService->buildDefaultPricing($game, $game->team);
             $areas = $defaults['areas'];
-            $overallFill = $defaults['total_capacity'] > 0
-                ? (int) round(($defaults['total_sold'] / $defaults['total_capacity']) * 100)
-                : 0;
+            $overallFill = SeasonTicketPricing::fillRateFor(
+                $defaults['total_sold'],
+                $defaults['total_capacity'],
+            );
         }
 
         return [

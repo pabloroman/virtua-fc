@@ -39,29 +39,29 @@ class SeasonTicketPricingService
         [
             'max_capacity' => 15_000,
             'areas' => [
-                ['slug' => 'general', 'share' => 0.75, 'multiplier' => 1.00],
-                ['slug' => 'tribuna', 'share' => 0.25, 'multiplier' => 2.00],
+                ['slug' => 'general', 'share' => 0.75, 'multiplier' => 1.00, 'premium' => false],
+                ['slug' => 'tribuna', 'share' => 0.25, 'multiplier' => 2.00, 'premium' => false],
             ],
         ],
         // Small ground — VIP first appears here.
         [
             'max_capacity' => 30_000,
             'areas' => [
-                ['slug' => 'general', 'share' => 0.45, 'multiplier' => 1.00],
-                ['slug' => 'lateral', 'share' => 0.28, 'multiplier' => 1.50],
-                ['slug' => 'tribuna', 'share' => 0.22, 'multiplier' => 2.10],
-                ['slug' => 'vip',     'share' => 0.05, 'multiplier' => 4.00],
+                ['slug' => 'general', 'share' => 0.45, 'multiplier' => 1.00, 'premium' => false],
+                ['slug' => 'lateral', 'share' => 0.28, 'multiplier' => 1.50, 'premium' => false],
+                ['slug' => 'tribuna', 'share' => 0.22, 'multiplier' => 2.10, 'premium' => false],
+                ['slug' => 'vip',     'share' => 0.05, 'multiplier' => 4.00, 'premium' => true],
             ],
         ],
         // Mid-size ground — split ends.
         [
             'max_capacity' => 50_000,
             'areas' => [
-                ['slug' => 'fondo_norte', 'share' => 0.23, 'multiplier' => 1.00],
-                ['slug' => 'fondo_sur',   'share' => 0.23, 'multiplier' => 1.00],
-                ['slug' => 'lateral',     'share' => 0.30, 'multiplier' => 1.55],
-                ['slug' => 'tribuna',     'share' => 0.19, 'multiplier' => 2.20],
-                ['slug' => 'vip',         'share' => 0.05, 'multiplier' => 4.30],
+                ['slug' => 'fondo_norte', 'share' => 0.23, 'multiplier' => 1.00, 'premium' => false],
+                ['slug' => 'fondo_sur',   'share' => 0.23, 'multiplier' => 1.00, 'premium' => false],
+                ['slug' => 'lateral',     'share' => 0.30, 'multiplier' => 1.55, 'premium' => false],
+                ['slug' => 'tribuna',     'share' => 0.19, 'multiplier' => 2.20, 'premium' => false],
+                ['slug' => 'vip',         'share' => 0.05, 'multiplier' => 4.30, 'premium' => true],
             ],
         ],
         // Large ground — stand levels (alta/baja) and palco appear.
@@ -70,28 +70,28 @@ class SeasonTicketPricingService
         [
             'max_capacity' => 70_000,
             'areas' => [
-                ['slug' => 'fondo_norte',  'share' => 0.20, 'multiplier' => 1.00],
-                ['slug' => 'fondo_sur',    'share' => 0.20, 'multiplier' => 1.00],
-                ['slug' => 'lateral_alta', 'share' => 0.15, 'multiplier' => 1.35],
-                ['slug' => 'lateral_baja', 'share' => 0.13, 'multiplier' => 1.85],
-                ['slug' => 'tribuna_alta', 'share' => 0.13, 'multiplier' => 1.95],
-                ['slug' => 'tribuna_baja', 'share' => 0.10, 'multiplier' => 2.60],
-                ['slug' => 'vip',          'share' => 0.06, 'multiplier' => 4.50],
-                ['slug' => 'palco',        'share' => 0.03, 'multiplier' => 8.00],
+                ['slug' => 'fondo_norte',  'share' => 0.20, 'multiplier' => 1.00, 'premium' => false],
+                ['slug' => 'fondo_sur',    'share' => 0.20, 'multiplier' => 1.00, 'premium' => false],
+                ['slug' => 'lateral_alta', 'share' => 0.15, 'multiplier' => 1.35, 'premium' => false],
+                ['slug' => 'lateral_baja', 'share' => 0.13, 'multiplier' => 1.85, 'premium' => false],
+                ['slug' => 'tribuna_alta', 'share' => 0.13, 'multiplier' => 1.95, 'premium' => false],
+                ['slug' => 'tribuna_baja', 'share' => 0.10, 'multiplier' => 2.60, 'premium' => false],
+                ['slug' => 'vip',          'share' => 0.06, 'multiplier' => 4.50, 'premium' => true],
+                ['slug' => 'palco',        'share' => 0.03, 'multiplier' => 8.00, 'premium' => true],
             ],
         ],
         // Iconic stadium (Bernabéu / Camp Nou).
         [
             'max_capacity' => PHP_INT_MAX,
             'areas' => [
-                ['slug' => 'fondo_norte',  'share' => 0.18, 'multiplier' => 1.00],
-                ['slug' => 'fondo_sur',    'share' => 0.18, 'multiplier' => 1.00],
-                ['slug' => 'lateral_alta', 'share' => 0.15, 'multiplier' => 1.40],
-                ['slug' => 'lateral_baja', 'share' => 0.13, 'multiplier' => 1.95],
-                ['slug' => 'tribuna_alta', 'share' => 0.13, 'multiplier' => 2.05],
-                ['slug' => 'tribuna_baja', 'share' => 0.11, 'multiplier' => 2.70],
-                ['slug' => 'vip',          'share' => 0.07, 'multiplier' => 4.80],
-                ['slug' => 'palco',        'share' => 0.05, 'multiplier' => 10.00],
+                ['slug' => 'fondo_norte',  'share' => 0.18, 'multiplier' => 1.00, 'premium' => false],
+                ['slug' => 'fondo_sur',    'share' => 0.18, 'multiplier' => 1.00, 'premium' => false],
+                ['slug' => 'lateral_alta', 'share' => 0.15, 'multiplier' => 1.40, 'premium' => false],
+                ['slug' => 'lateral_baja', 'share' => 0.13, 'multiplier' => 1.95, 'premium' => false],
+                ['slug' => 'tribuna_alta', 'share' => 0.13, 'multiplier' => 2.05, 'premium' => false],
+                ['slug' => 'tribuna_baja', 'share' => 0.11, 'multiplier' => 2.70, 'premium' => false],
+                ['slug' => 'vip',          'share' => 0.07, 'multiplier' => 4.80, 'premium' => true],
+                ['slug' => 'palco',        'share' => 0.05, 'multiplier' => 10.00, 'premium' => true],
             ],
         ],
     ];
@@ -117,18 +117,16 @@ class SeasonTicketPricingService
     public const MIN_PRICE_MULTIPLIER = 0.50;
     public const MAX_PRICE_MULTIPLIER = 2.00;
 
-    /**
-     * Premium-tier multipliers respond less elastically to price moves —
-     * VIP/palco buyers churn less when prices wobble.
-     */
-    private const PREMIUM_MULTIPLIER_THRESHOLD = 4.0;
+    /** Per-request memoisation of getCurrent() and buildDefaultPricing(). */
+    private array $currentCache = [];
+    private array $defaultPricingCache = [];
 
     /**
      * Build the seating layout for a stadium of the given capacity.
      * Returns a list of areas with absolute capacity (proportions of the
      * stadium total) and the default price per ticket in cents.
      *
-     * @return array<int, array{slug: string, capacity: int, baseline_price_cents: int, multiplier: float}>
+     * @return array<int, array{slug: string, capacity: int, baseline_price_cents: int, multiplier: float, is_premium: bool}>
      */
     public function buildAreas(int $capacity, string $reputationLevel): array
     {
@@ -148,6 +146,7 @@ class SeasonTicketPricingService
                 'capacity' => $areaCapacity,
                 'baseline_price_cents' => (int) round($baselinePrice * $def['multiplier']),
                 'multiplier' => (float) $def['multiplier'],
+                'is_premium' => (bool) ($def['premium'] ?? false),
             ];
             $assignedCapacity += $areaCapacity;
 
@@ -229,9 +228,10 @@ class SeasonTicketPricingService
     public function predict(Game $game, Team $team, array $userPricesByIndex): array
     {
         $payload = $this->buildFromUserPrices($game, $team, $userPricesByIndex);
-        $payload['overall_fill_rate'] = $payload['total_capacity'] > 0
-            ? (int) round(($payload['total_sold'] / $payload['total_capacity']) * 100)
-            : 0;
+        $payload['overall_fill_rate'] = SeasonTicketPricing::fillRateFor(
+            $payload['total_sold'],
+            $payload['total_capacity'],
+        );
 
         // Selling more season tickets reduces walk-up matchday revenue
         // (and vice versa). Project the implied taquilla figure for the
@@ -289,6 +289,8 @@ class SeasonTicketPricingService
                 ],
             );
 
+            $this->currentCache[$game->id . ':' . (int) $game->season] = $pricing;
+
             $this->syncFinances(
                 $game,
                 $pricing->total_revenue,
@@ -319,9 +321,15 @@ class SeasonTicketPricingService
 
     public function getCurrent(Game $game): ?SeasonTicketPricing
     {
-        return SeasonTicketPricing::where('game_id', $game->id)
-            ->where('season', $game->season)
-            ->first();
+        $key = $game->id . ':' . (int) $game->season;
+
+        if (! array_key_exists($key, $this->currentCache)) {
+            $this->currentCache[$key] = SeasonTicketPricing::where('game_id', $game->id)
+                ->where('season', $game->season)
+                ->first();
+        }
+
+        return $this->currentCache[$key];
     }
 
     /**
@@ -330,9 +338,6 @@ class SeasonTicketPricingService
      * matchday-revenue projection — only the delta between current and
      * baseline holders flows into walk-up attendance, so price moves
      * don't whipsaw taquilla 1:1 with season-ticket changes.
-     *
-     * Memoised per request to avoid re-running the demand model on every
-     * preview keystroke.
      */
     public function baselineSoldForGame(Game $game, Team $team): int
     {
@@ -355,20 +360,18 @@ class SeasonTicketPricingService
     }
 
     /**
-     * Sum the `sold` count across non-premium areas only. Areas with a
-     * baseline multiplier ≥ PREMIUM_MULTIPLIER_THRESHOLD (VIP/palco)
-     * are excluded — there's no walk-up market for those seats.
+     * Sum the `sold` count across non-premium areas only. Premium areas
+     * (VIP/palco) are excluded — there's no walk-up market for those seats.
      *
      * @param  array<int, array<string, mixed>>  $areas  Composed area
-     *         shape with `sold` and `multiplier` keys (the format saved
+     *         shape with `sold` and `is_premium` keys (the format saved
      *         on SeasonTicketPricing::areas and returned by predict()).
      */
     public function walkupRelevantSoldFromAreas(array $areas): int
     {
         $sum = 0;
         foreach ($areas as $area) {
-            $multiplier = (float) ($area['multiplier'] ?? 0);
-            if ($multiplier < self::PREMIUM_MULTIPLIER_THRESHOLD) {
+            if (! $this->isPremiumArea($area)) {
                 $sum += (int) ($area['sold'] ?? 0);
             }
         }
@@ -400,14 +403,13 @@ class SeasonTicketPricingService
      */
     private function defaultPricingForGame(Game $game, Team $team): array
     {
-        static $cache = [];
         $key = $game->id . ':' . (int) $game->season;
 
-        if (! isset($cache[$key])) {
-            $cache[$key] = $this->buildDefaultPricing($game, $team);
+        if (! isset($this->defaultPricingCache[$key])) {
+            $this->defaultPricingCache[$key] = $this->buildDefaultPricing($game, $team);
         }
 
-        return $cache[$key];
+        return $this->defaultPricingCache[$key];
     }
 
     /**
@@ -460,7 +462,7 @@ class SeasonTicketPricingService
             // Premium tiers (vip/palco) sell less elastically — they have a
             // smaller, more committed audience that doesn't churn over price
             // tweaks the same way the general terraces do.
-            $isPremium = $area['multiplier'] >= self::PREMIUM_MULTIPLIER_THRESHOLD;
+            $isPremium = $this->isPremiumArea($area);
             $baseFill = $isPremium ? max(0.55, $loyaltyFill - 0.10) : $loyaltyFill;
 
             $priceFactor = $this->priceFactor($priceRatio, $isPremium);
@@ -475,6 +477,7 @@ class SeasonTicketPricingService
                 'baseline_price_cents' => $baseline,
                 'price_cents' => $price,
                 'multiplier' => $area['multiplier'],
+                'is_premium' => $isPremium,
                 'sold' => $sold,
                 'fill_rate' => round($fillRate, 4),
                 'revenue' => $revenue,
@@ -517,6 +520,22 @@ class SeasonTicketPricingService
         $factor = 1.0 + ($sensitivity * (1.0 - $priceRatio));
 
         return max(0.20, min(1.10, $factor));
+    }
+
+    /**
+     * Whether an area is a premium tier (VIP/palco). Reads the persisted
+     * `is_premium` flag set at composition time. Falls back to checking
+     * the slug for legacy rows written before the flag existed.
+     *
+     * @param  array<string, mixed>  $area
+     */
+    private function isPremiumArea(array $area): bool
+    {
+        if (array_key_exists('is_premium', $area)) {
+            return (bool) $area['is_premium'];
+        }
+
+        return in_array($area['slug'] ?? null, ['vip', 'palco'], true);
     }
 
     private function clampPrice(int $baseline, int $proposed): int

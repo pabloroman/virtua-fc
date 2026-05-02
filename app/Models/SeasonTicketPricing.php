@@ -62,10 +62,20 @@ class SeasonTicketPricing extends Model
      */
     public function fillRatePercent(): int
     {
-        if ($this->total_capacity <= 0) {
+        return self::fillRateFor($this->total_sold, $this->total_capacity);
+    }
+
+    /**
+     * Fill-rate helper usable on raw sold/capacity totals (e.g. when the
+     * pricing row hasn't been persisted yet and we only have a default
+     * preview payload).
+     */
+    public static function fillRateFor(int $sold, int $capacity): int
+    {
+        if ($capacity <= 0) {
             return 0;
         }
 
-        return (int) round(($this->total_sold / $this->total_capacity) * 100);
+        return (int) round(($sold / $capacity) * 100);
     }
 }

@@ -195,9 +195,7 @@
         <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
             <div class="flex items-center gap-1.5">
                 <span class="text-sm text-text-secondary">TV Rights</span>
-                <svg x-data="" x-tooltip.raw="Revenue from television broadcasting rights based on league position" class="w-3.5 h-3.5 text-text-faint hover:text-text-secondary cursor-help shrink-0 transition-colors" fill="currentColor" viewBox="0 0 512 512">
-                    <path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-336c-17.7 0-32 14.3-32 32 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-44.2 35.8-80 80-80s80 35.8 80 80c0 47.2-36 67.2-56 74.5l0 3.8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8.1c0-20.5 14.8-35.2 30.1-40.2 6.4-2.1 13.2-5.5 18.2-10.3 4.3-4.2 7.7-10 7.7-19.6 0-17.7-14.3-32-32-32zM224 368a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/>
-                </svg>
+                <x-info-icon tooltip="Revenue from television broadcasting rights based on league position" />
             </div>
         </div>
 
@@ -209,11 +207,7 @@
             </button>
             <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="tooltipCode">&lt;span class="text-sm text-text-secondary flex items-center gap-1.5"&gt;
     Label
-    &lt;svg x-data="" x-tooltip.raw="Explanation text"
-         class="w-3.5 h-3.5 text-text-faint hover:text-text-secondary cursor-help shrink-0"
-         fill="currentColor" viewBox="0 0 512 512"&gt;
-        &lt;!-- question mark circle icon --&gt;
-    &lt;/svg&gt;
+    &lt;x-info-icon tooltip="Explanation text" /&gt;
 &lt;/span&gt;</code></pre>
         </div>
     </div>
