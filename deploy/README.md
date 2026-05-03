@@ -102,6 +102,52 @@ This will:
 2. Roll the `web` Deployment (zero downtime — `maxUnavailable: 0`).
 3. Recreate the `horizon` and `scheduler` Deployments (clean restart).
 
+## CI/CD (GitHub Actions)
+
+`.github/workflows/deploy.yml` builds and pushes the production image to
+GHCR on every push to `main`, then runs `helm upgrade` against your cluster.
+It can also be triggered manually (`workflow_dispatch`) for any branch.
+
+### One-time setup
+
+1. **Commit your `values-hetzner.yaml`** (it has no secrets — DB password
+   etc. live in the Kubernetes Secret).
+2. **Create a GitHub Environment** called `production`:
+   - Settings → Environments → New environment → `production`
+   - (Recommended) Add a required reviewer so deploys are gated.
+3. **Add the kubeconfig as a secret** on that environment:
+   ```bash
+   base64 -w0 ~/.kube/config | pbcopy   # macOS; use `xclip` or just paste
+   ```
+   Add as secret `KUBE_CONFIG`.
+4. **Add environment variables** on the `production` environment:
+   - `APP_HOST` — e.g. `virtua.fc` (used for the deploy URL link)
+   - `K8S_NAMESPACE` — optional, defaults to `virtua-fc`
+5. **Make sure the GHCR image is accessible** to the cluster. For private
+   GHCR repos, create an `imagePullSecret`:
+   ```bash
+   kubectl create secret docker-registry ghcr -n virtua-fc \
+     --docker-server=ghcr.io \
+     --docker-username=YOUR_GITHUB_USER \
+     --docker-password=YOUR_PAT_WITH_read:packages
+   ```
+   then add `imagePullSecrets: [{ name: ghcr }]` to `values-hetzner.yaml`.
+
+### How it works
+
+- **`build` job** — uses Docker Buildx with GHA cache. Tags the image with
+  the short SHA (and `latest` only on `main`). Cache layers persist across
+  runs so subsequent builds touch only changed layers.
+- **`deploy` job** — runs `helm upgrade --atomic --wait --timeout 10m`. With
+  `--atomic`, a failed rollout auto-rolls back to the previous revision.
+  The migrate Job runs as a Helm pre-upgrade hook, so a failed migration
+  blocks the rollout before any pods see the new image.
+
+### Manual deploy of a branch
+
+Actions tab → Deploy → Run workflow → choose ref. Useful for testing a
+branch in production-shaped infra without merging.
+
 ## Migration cutover from Laravel Cloud
 
 1. **Lower DNS TTL** to 60s, ~24h before cutover.
