@@ -44,7 +44,6 @@ return [
         'competitions',
         'competition_teams',
         'players',
-        'team_reputations',
         'club_profiles',
     ],
 

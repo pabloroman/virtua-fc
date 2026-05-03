@@ -26,6 +26,12 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  */
 class WaitlistEntry extends Model
 {
+    /**
+     * Onboarding lives on the control plane. See CLAUDE.md → "Control plane /
+     * tenant plane".
+     */
+    protected $connection = 'pgsql_control';
+
     protected $table = 'waitlist';
 
     protected $fillable = ['name', 'email', 'wants_career', 'wants_tournament'];

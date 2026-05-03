@@ -40,6 +40,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Competition extends Model
 {
     use HasFactory;
+
+    /**
+     * Reference data lives on the control plane. See CLAUDE.md → "Control
+     * plane / tenant plane".
+     */
+    protected $connection = 'pgsql_control';
+
     public $incrementing = false;
     protected $keyType = 'string';
     public $timestamps = false;

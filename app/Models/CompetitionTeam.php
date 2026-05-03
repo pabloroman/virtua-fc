@@ -23,6 +23,12 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
  */
 class CompetitionTeam extends Pivot
 {
+    /**
+     * Pivot for Team ↔ Competition; both sides live on the control plane.
+     * See CLAUDE.md → "Control plane / tenant plane".
+     */
+    protected $connection = 'pgsql_control';
+
     protected $table = 'competition_teams';
 
     public $timestamps = false;

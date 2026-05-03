@@ -6,8 +6,10 @@ use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Loan;
+use App\Models\Player;
 use App\Models\Team;
 use App\Models\TransferOffer;
+use App\Modules\Player\PlayerAge;
 use App\Support\PositionMapper;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -90,17 +92,30 @@ class ScoutSearchQueryBuilder
             return;
         }
 
-        $dobSubquery = '(SELECT date_of_birth FROM players WHERE players.id = game_players.player_id)';
-        $gameDate = $game->current_date->toDateString();
-
-        $ageExpr = "EXTRACT(YEAR FROM AGE(?::date, $dobSubquery))";
+        // Resolve qualifying biographical player ids on the control plane and
+        // intersect with the GamePlayer query via whereIn. Replaces a
+        // correlated subquery against the players table that would cross the
+        // control/tenant boundary.
+        $playerQuery = Player::query();
 
         if (! empty($filters['age_min'])) {
-            $query->whereRaw("($ageExpr) >= ?", [$gameDate, (int) $filters['age_min']]);
+            // age >= N → date_of_birth <= today − N years
+            $playerQuery->where(
+                'date_of_birth',
+                '<=',
+                PlayerAge::dateOfBirthCutoff((int) $filters['age_min'], $game->current_date),
+            );
         }
         if (! empty($filters['age_max'])) {
-            $query->whereRaw("($ageExpr) <= ?", [$gameDate, (int) $filters['age_max']]);
+            // age <= N → date_of_birth > today − (N+1) years
+            $playerQuery->where(
+                'date_of_birth',
+                '>',
+                PlayerAge::dateOfBirthCutoff((int) $filters['age_max'] + 1, $game->current_date),
+            );
         }
+
+        $query->whereIn('player_id', $playerQuery->pluck('id'));
     }
 
     private function applyAbilityFilter(Builder $query, array $filters): void

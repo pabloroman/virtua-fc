@@ -194,7 +194,24 @@ class SetupTournamentGame implements ShouldQueue
         // templates for season 2025 (e.g., league + national), we copy
         // fitness/morale from the template that matches the inserted
         // game_player's team.
-        DB::insert(<<<'SQL'
+        //
+        // Eligible national-team ids are resolved on the control plane up
+        // front so the raw INSERT below stays single-plane (tenant) —
+        // replaces an inline `IN (SELECT id FROM teams WHERE type = 'national'
+        // AND fifa_code IS NOT NULL)` that would cross the plane boundary
+        // post-split.
+        $eligibleNationalTeamIds = Team::where('type', 'national')
+            ->whereNotNull('fifa_code')
+            ->pluck('id')
+            ->all();
+
+        if ($eligibleNationalTeamIds === []) {
+            return;
+        }
+
+        $placeholders = implode(',', array_fill(0, count($eligibleNationalTeamIds), '?'));
+
+        DB::insert(<<<SQL
             INSERT INTO game_players (
                 id, game_id, player_id, team_id, number, position,
                 market_value, market_value_cents, contract_until, annual_wage, durability,
@@ -208,10 +225,10 @@ class SetupTournamentGame implements ShouldQueue
                 t.potential, t.potential_low, t.potential_high, t.tier
             FROM game_player_templates t
             WHERE t.season = '2025'
-              AND t.team_id IN (SELECT id FROM teams WHERE type = 'national' AND fifa_code IS NOT NULL)
+              AND t.team_id IN ($placeholders)
               AND t.team_id <> ?
             ON CONFLICT (game_id, player_id) DO NOTHING
-        SQL, [$this->gameId, $this->teamId]);
+        SQL, [$this->gameId, ...$eligibleNationalTeamIds, $this->teamId]);
 
         DB::insert(<<<'SQL'
             INSERT INTO game_player_match_state (game_player_id, game_id, fitness, morale)

@@ -31,8 +31,6 @@ use Illuminate\Support\Facades\Storage;
  * @property string|null $avatar
  * @property string|null $country
  * @property string|null $province
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Game> $games
- * @property-read int|null $games_count
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
@@ -55,6 +53,12 @@ class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
+
+    /**
+     * Identity is part of the control plane. See CLAUDE.md → "Control plane /
+     * tenant plane".
+     */
+    protected $connection = 'pgsql_control';
 
     public const AVATARS = ['blue', 'green', 'orange', 'pink', 'purple', 'red', 'sky', 'turquoise', 'wine', 'yellow'];
 
@@ -89,11 +93,6 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
-
-    public function games(): HasMany
-    {
-        return $this->hasMany(Game::class);
-    }
 
     public function managerStats(): HasOne
     {

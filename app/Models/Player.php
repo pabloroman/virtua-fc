@@ -37,6 +37,13 @@ class Player extends Model
 {
     use HasFactory, HasUuids;
 
+    /**
+     * The biographical player pool is reference data on the control plane.
+     * Per-game player rows live in `game_players` on the tenant plane. See
+     * CLAUDE.md → "Control plane / tenant plane".
+     */
+    protected $connection = 'pgsql_control';
+
     public $timestamps = false;
 
     protected $fillable = [

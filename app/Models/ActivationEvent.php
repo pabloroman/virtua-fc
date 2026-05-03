@@ -7,6 +7,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ActivationEvent extends Model
 {
+    /**
+     * Onboarding/activation analytics live on the control plane. See
+     * CLAUDE.md → "Control plane / tenant plane".
+     */
+    protected $connection = 'pgsql_control';
+
     public $timestamps = false;
 
     public const EVENT_REGISTERED = 'registered';

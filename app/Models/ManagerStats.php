@@ -25,6 +25,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class ManagerStats extends Model
 {
+    /**
+     * Cross-tenant aggregate; lives on the control plane. See CLAUDE.md →
+     * "Control plane / tenant plane".
+     */
+    protected $connection = 'pgsql_control';
+
     public const UPDATED_AT = 'updated_at';
     public const CREATED_AT = null;
 

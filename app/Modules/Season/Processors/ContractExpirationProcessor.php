@@ -8,6 +8,7 @@ use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Transfer\Services\ContractService;
 use App\Models\Game;
 use App\Models\GamePlayer;
+use App\Models\Player;
 use App\Models\TransferOffer;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -47,44 +48,47 @@ class ContractExpirationProcessor implements SeasonProcessor
         $veteranCutoff = PlayerAge::dateOfBirthCutoff(PlayerAge::PRIME_END + 1, $game->current_date);
         $newContractEnd = Carbon::createFromDate($seasonYear + 3, 6, 30);
 
+        // Resolve eligible biographical player ids on the control plane up
+        // front, then run the set-based UPDATE / SELECT entirely against the
+        // tenant plane. Replaces UPDATE … FROM players and an explicit
+        // ->join('players', …) that crossed the control/tenant boundary.
+        $nonVeteranPlayerIds = Player::where('date_of_birth', '>', $veteranCutoff->toDateString())
+            ->pluck('id')
+            ->all();
+        $veteranPlayerIds = Player::where('date_of_birth', '<=', $veteranCutoff->toDateString())
+            ->pluck('id')
+            ->all();
+
         // AI non-veterans: auto-renew in a single set-based UPDATE. This is
         // ~80% of expired contracts — handling them purely in SQL avoids
         // hydrating hundreds of Eloquent models just to set one column.
         // Filter mirrors the old PHP branch: not user team, contract expired,
-        // no pending wage, date_of_birth newer than the veteran cutoff.
-        $aiAutoRenewedCount = DB::update(
-            'UPDATE game_players gp
-             SET contract_until = ?
-             FROM players p
-             WHERE gp.player_id = p.id
-               AND gp.game_id = ?
-               AND gp.team_id IS NOT NULL
-               AND gp.team_id <> ?
-               AND gp.contract_until IS NOT NULL
-               AND gp.contract_until <= ?
-               AND gp.pending_annual_wage IS NULL
-               AND p.date_of_birth > ?',
-            [
-                $newContractEnd->toDateString(),
-                $game->id,
-                $game->team_id,
-                $expirationDate->toDateTimeString(),
-                $veteranCutoff->toDateString(),
-            ]
-        );
+        // no pending wage, player_id corresponds to a non-veteran.
+        $aiAutoRenewedCount = $nonVeteranPlayerIds === []
+            ? 0
+            : DB::table('game_players')
+                ->where('game_id', $game->id)
+                ->whereNotNull('team_id')
+                ->where('team_id', '<>', $game->team_id)
+                ->whereNotNull('contract_until')
+                ->where('contract_until', '<=', $expirationDate)
+                ->whereNull('pending_annual_wage')
+                ->whereIn('player_id', $nonVeteranPlayerIds)
+                ->update(['contract_until' => $newContractEnd->toDateString()]);
 
         // AI veterans: narrow SELECT of just the IDs, then 50% coin flip in
-        // PHP. Typically <30 rows — no hydration, no wide JOIN.
-        $aiVeteranIds = DB::table('game_players')
-            ->join('players', 'game_players.player_id', '=', 'players.id')
-            ->where('game_players.game_id', $game->id)
-            ->whereNotNull('game_players.team_id')
-            ->where('game_players.team_id', '<>', $game->team_id)
-            ->whereNotNull('game_players.contract_until')
-            ->where('game_players.contract_until', '<=', $expirationDate)
-            ->whereNull('game_players.pending_annual_wage')
-            ->where('players.date_of_birth', '<=', $veteranCutoff->toDateString())
-            ->pluck('game_players.id');
+        // PHP. Typically <30 rows — no hydration, no cross-plane JOIN.
+        $aiVeteranIds = $veteranPlayerIds === []
+            ? collect()
+            : DB::table('game_players')
+                ->where('game_id', $game->id)
+                ->whereNotNull('team_id')
+                ->where('team_id', '<>', $game->team_id)
+                ->whereNotNull('contract_until')
+                ->where('contract_until', '<=', $expirationDate)
+                ->whereNull('pending_annual_wage')
+                ->whereIn('player_id', $veteranPlayerIds)
+                ->pluck('id');
 
         $veteranFreeAgentIds = [];
         $veteranAutoRenewedIds = [];

@@ -10,6 +10,12 @@ class TournamentSummary extends Model
 {
     use HasUuids;
 
+    /**
+     * Cross-tenant tournament records live on the control plane. See
+     * CLAUDE.md → "Control plane / tenant plane".
+     */
+    protected $connection = 'pgsql_control';
+
     const UPDATED_AT = null;
 
     protected $guarded = [];

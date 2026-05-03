@@ -117,6 +117,21 @@ class RepairCupDraws extends Command
             $bindings[] = $competitionFilter;
         }
 
+        // Resolve domestic-cup competition ids on the control plane and
+        // inline them as an IN clause. Replaces a JOIN to the competitions
+        // table that would cross the control/tenant boundary post-split.
+        $domesticCupIds = Competition::where('role', Competition::ROLE_DOMESTIC_CUP)
+            ->pluck('id')
+            ->all();
+        if ($domesticCupIds === []) {
+            return collect();
+        }
+        $cupPlaceholders = implode(',', array_fill(0, count($domesticCupIds), '?'));
+        // Domestic-cup ids are bound first so they line up with the placeholders
+        // inside the latest_round CTE before the optional --game / --competition
+        // filters.
+        $bindings = [...$domesticCupIds, ...$bindings];
+
         $sql = <<<SQL
             WITH latest_round AS (
                 SELECT
@@ -124,8 +139,7 @@ class RepairCupDraws extends Command
                     ct.competition_id,
                     MAX(ct.round_number) AS round_number
                 FROM cup_ties ct
-                JOIN competitions c ON c.id = ct.competition_id
-                WHERE c.role = 'domestic_cup'
+                WHERE ct.competition_id IN ({$cupPlaceholders})
                 {$filter}
                 GROUP BY ct.game_id, ct.competition_id
             ),
