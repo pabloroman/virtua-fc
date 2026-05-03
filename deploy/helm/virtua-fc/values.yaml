@@ -1,0 +1,144 @@
+# Default values for virtua-fc.
+# Override in a values-<env>.yaml file or via --set.
+
+image:
+  repository: ghcr.io/pabloroman/virtua-fc
+  # tag defaults to .Chart.AppVersion when empty
+  tag: ""
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+# Global app config (non-secret). Secrets live in the Secret referenced by `secrets.name`.
+app:
+  url: https://virtua.fc
+  env: production
+  debug: false
+  locale: es
+  fallbackLocale: en
+  fakerLocale: es_ES
+  timezone: UTC
+  cdnUrl: ""
+  logChannel: stack
+  logStack: single
+  logLevel: info
+
+# Reference to an externally-created Secret holding sensitive env vars.
+# Required keys:
+#   APP_KEY              — php artisan key:generate --show
+#   DB_PASSWORD          — managed Postgres password
+#   REDIS_PASSWORD       — leave empty string if Redis has no auth
+#   RESEND_KEY           — Resend API key (or any mailer creds you use)
+# Optional:
+#   PULSE_DB_PASSWORD    — only if pulseDatabase.enabled=true and uses different creds
+secrets:
+  name: virtua-fc-app
+
+# External managed Postgres (Hetzner Managed Postgres, Neon, Supabase, etc.)
+database:
+  host: ""
+  port: 5432
+  name: virtua_fc
+  username: virtua_fc
+  sslmode: require
+
+# Pulse can share the main DB or use a separate one. If host is empty we reuse `database.host`.
+pulseDatabase:
+  enabled: true
+  host: ""
+  port: 5432
+  name: virtua_fc_pulse
+  username: virtua_fc
+  sslmode: require
+
+redis:
+  # In-cluster Redis StatefulSet with persistence. For production traffic this is fine;
+  # switch to external (Upstash, Hetzner-hosted, etc.) if you need HA.
+  internal:
+    enabled: true
+    image: redis:7-alpine
+    storage: 10Gi
+    storageClassName: hcloud-volumes
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    # AOF persistence — durability for in-flight queue jobs
+    appendonly: "yes"
+  external:
+    host: ""
+    port: 6379
+
+web:
+  replicaCount: 2
+  octaneServer: frankenphp
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
+    targetCPUUtilizationPercentage: 75
+  pdb:
+    enabled: true
+    minAvailable: 1
+
+# Single Horizon deployment runs all supervisor groups defined in config/horizon.php
+# (gameplay/setup/mail/cleanup). Memory limit must accommodate the worst-case sum of
+# spawned worker processes — adjust HORIZON_MAX_* in config/horizon.php to tune.
+horizon:
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 250m
+      memory: 1Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+  env:
+    HORIZON_MAX_GAMEPLAY: "15"
+    HORIZON_MAX_SETUP: "5"
+    HORIZON_MAX_MAIL: "2"
+
+scheduler:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+ingress:
+  enabled: true
+  className: traefik
+  host: virtua.fc
+  annotations: {}
+  tls:
+    enabled: true
+    secretName: virtua-fc-tls
+    # cert-manager ClusterIssuer that will issue the cert
+    clusterIssuer: letsencrypt-prod
+
+mail:
+  driver: resend
+  fromAddress: noreply@virtua.fc
+  fromName: VirtuaFC
+
+# Pod scheduling
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}

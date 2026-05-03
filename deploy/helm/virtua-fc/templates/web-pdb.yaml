@@ -1,0 +1,15 @@
+{{- if .Values.web.pdb.enabled -}}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "virtua-fc.fullname" . }}-web
+  labels:
+    {{- include "virtua-fc.labels" . | nindent 4 }}
+    app.kubernetes.io/component: web
+spec:
+  minAvailable: {{ .Values.web.pdb.minAvailable }}
+  selector:
+    matchLabels:
+      {{- include "virtua-fc.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: web
+{{- end -}}

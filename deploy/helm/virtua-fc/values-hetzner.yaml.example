@@ -1,0 +1,79 @@
+# Example overrides for a Hetzner Cloud + Hetzner Managed Kubernetes deployment.
+# Copy to values-hetzner.yaml (gitignored) and fill in the blanks.
+
+image:
+  repository: ghcr.io/pabloroman/virtua-fc
+  tag: ""  # set per-release in CI, e.g. the git SHA
+
+app:
+  url: https://virtua.fc
+  env: production
+  debug: false
+  cdnUrl: ""   # e.g. https://cdn.virtua.fc once Cloudflare/Bunny is in front
+
+# Managed Postgres on Hetzner (or Neon/Supabase for now)
+database:
+  host: db-postgres-pool.virtua-fc.hetzner.cloud  # replace
+  port: 5432
+  name: virtua_fc
+  username: virtua_fc
+  sslmode: require
+
+pulseDatabase:
+  enabled: true
+  # Same Postgres instance, separate logical database
+  host: ""  # falls back to database.host
+  name: virtua_fc_pulse
+  username: virtua_fc
+
+redis:
+  internal:
+    enabled: true
+    storage: 10Gi
+    storageClassName: hcloud-volumes  # default storage class on Hetzner k8s
+  external:
+    host: ""
+
+web:
+  replicaCount: 2
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+horizon:
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 250m
+      memory: 1Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+
+ingress:
+  enabled: true
+  # Hetzner clusters typically ship with the Hetzner Cloud Controller Manager
+  # which provisions a load balancer for the ingress controller. Use whichever
+  # ingress you installed: traefik, nginx, etc.
+  className: traefik
+  host: virtua.fc
+  tls:
+    enabled: true
+    secretName: virtua-fc-tls
+    clusterIssuer: letsencrypt-prod
+
+mail:
+  driver: resend
+  fromAddress: noreply@virtua.fc
+  fromName: VirtuaFC
+
+# Pin pods to a specific node pool if you have one
+nodeSelector: {}

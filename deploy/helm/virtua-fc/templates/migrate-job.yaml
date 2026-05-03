@@ -1,0 +1,56 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  # Unique name per release revision so Helm can re-run on every upgrade
+  name: {{ include "virtua-fc.fullname" . }}-migrate-{{ .Release.Revision }}
+  labels:
+    {{- include "virtua-fc.labels" . | nindent 4 }}
+    app.kubernetes.io/component: migrate
+  annotations:
+    # Run before web/horizon pods see the new image. `hook-succeeded` lets old jobs
+    # be cleaned up automatically; keep failed ones for debugging.
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 3600
+  template:
+    metadata:
+      labels:
+        {{- include "virtua-fc.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: migrate
+    spec:
+      restartPolicy: Never
+      serviceAccountName: {{ include "virtua-fc.serviceAccountName" . }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: migrate
+          image: {{ include "virtua-fc.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          # Run migrations and warm caches. The entrypoint waits for Postgres + Redis,
+          # then we explicitly call migrate ourselves rather than starting Octane.
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              php artisan migrate --force
+              php artisan config:cache
+              php artisan route:cache
+              php artisan view:cache
+              php artisan event:cache
+          env:
+            - name: SKIP_MIGRATIONS
+              value: "true"
+            {{- include "virtua-fc.appEnv" . | nindent 12 }}
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

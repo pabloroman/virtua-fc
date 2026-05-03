@@ -32,9 +32,13 @@ if [ ! -f .env ]; then
     fi
 fi
 
-# Run migrations
-echo "Running migrations..."
-php artisan migrate --force
+# Run migrations (skip in environments where a separate job handles them, e.g. Kubernetes)
+if [ "$SKIP_MIGRATIONS" = "true" ]; then
+    echo "Skipping migrations (SKIP_MIGRATIONS=true)."
+else
+    echo "Running migrations..."
+    php artisan migrate --force
+fi
 
 # Cache configuration in production
 if [ "$APP_ENV" = "production" ]; then

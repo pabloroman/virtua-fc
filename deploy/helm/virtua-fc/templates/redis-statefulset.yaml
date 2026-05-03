@@ -1,0 +1,62 @@
+{{- if .Values.redis.internal.enabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "virtua-fc.fullname" . }}-redis
+  labels:
+    {{- include "virtua-fc.labels" . | nindent 4 }}
+    app.kubernetes.io/component: redis
+spec:
+  serviceName: {{ include "virtua-fc.fullname" . }}-redis
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "virtua-fc.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: redis
+  template:
+    metadata:
+      labels:
+        {{- include "virtua-fc.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: redis
+    spec:
+      containers:
+        - name: redis
+          image: {{ .Values.redis.internal.image }}
+          imagePullPolicy: IfNotPresent
+          # AOF for durability — queue jobs survive restarts.
+          # `everysec` is the standard durability/perf tradeoff.
+          args:
+            - --appendonly
+            - {{ .Values.redis.internal.appendonly | quote }}
+            - --appendfsync
+            - everysec
+            - --maxmemory-policy
+            - noeviction
+          ports:
+            - name: redis
+              containerPort: 6379
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          readinessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            initialDelaySeconds: 15
+            periodSeconds: 15
+          resources:
+            {{- toYaml .Values.redis.internal.resources | nindent 12 }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: {{ .Values.redis.internal.storageClassName | quote }}
+        resources:
+          requests:
+            storage: {{ .Values.redis.internal.storage }}
+{{- end -}}

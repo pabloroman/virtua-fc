@@ -1,0 +1,23 @@
+VirtuaFC has been deployed (release {{ .Release.Name }}).
+
+Application URL:
+  {{- if .Values.ingress.tls.enabled }}
+  https://{{ .Values.ingress.host }}
+  {{- else }}
+  http://{{ .Values.ingress.host }}
+  {{- end }}
+
+Watch the rollout:
+  kubectl --namespace {{ .Release.Namespace }} get pods -l app.kubernetes.io/instance={{ .Release.Name }} -w
+
+Tail web logs:
+  kubectl --namespace {{ .Release.Namespace }} logs -f -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=web
+
+Tail Horizon logs:
+  kubectl --namespace {{ .Release.Namespace }} logs -f -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=horizon
+
+Run an artisan command in the cluster:
+  kubectl --namespace {{ .Release.Namespace }} exec -it deploy/{{ include "virtua-fc.fullname" . }}-web -- php artisan tinker
+
+Migrations run automatically as a Helm pre-upgrade Job. To re-run manually:
+  kubectl --namespace {{ .Release.Namespace }} create job --from=job/{{ include "virtua-fc.fullname" . }}-migrate-{{ .Release.Revision }} migrate-manual-$(date +%s)
