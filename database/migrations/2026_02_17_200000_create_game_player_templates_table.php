@@ -25,8 +25,7 @@ return new class extends Migration
             $table->unsignedTinyInteger('morale')->default(80);
             $table->unsignedTinyInteger('durability')->default(50);
 
-            $table->unsignedTinyInteger('game_technical_ability')->nullable();
-            $table->unsignedTinyInteger('game_physical_ability')->nullable();
+            $table->unsignedTinyInteger('overall_score')->nullable();
             $table->unsignedTinyInteger('potential')->nullable();
             $table->unsignedTinyInteger('potential_low')->nullable();
             $table->unsignedTinyInteger('potential_high')->nullable();

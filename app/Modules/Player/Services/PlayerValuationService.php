@@ -5,15 +5,15 @@ namespace App\Modules\Player\Services;
 use App\Modules\Player\PlayerAge;
 
 /**
- * Single source of truth for all ability <-> market value conversions.
+ * Single source of truth for all overall_score <-> market value conversions.
  *
  * Consolidates logic previously fragmented across:
- * - SeedReferenceData (market value -> abilities during seeding)
- * - PlayerDevelopmentService::calculateMarketValue() (abilities -> market value)
- * - PlayerGeneratorService::estimateMarketValue() (abilities -> market value for generated players)
+ * - SeedReferenceData (market value -> ability during seeding)
+ * - PlayerDevelopmentService::calculateMarketValue() (ability -> market value)
+ * - PlayerGeneratorService::estimateMarketValue() (ability -> market value for generated players)
  *
- * Uses pure ability average (technical + physical) / 2 — NOT overall_score.
- * Fitness and morale are transient and must not permanently affect valuation.
+ * Uses the player's stable overall_score column. Fitness and morale are
+ * transient and must not permanently affect valuation.
  */
 class PlayerValuationService
 {
@@ -32,63 +32,34 @@ class PlayerValuationService
     ];
 
     /**
-     * Convert market value to technical/physical abilities.
+     * Convert market value to a single overall_score.
      *
-     * Used during initial seeding to derive abilities from Transfermarkt data.
+     * Used during initial seeding to derive ability from Transfermarkt data.
      *
      * @param int $marketValueCents Market value in cents (e.g., 1_500_000_000 = €15M)
-     * @param string $position Player position (e.g., 'Centre-Forward', 'Goalkeeper')
      * @param int $age Player's current age
-     * @return array{0: int, 1: int} [technical, physical]
      */
-    public function marketValueToAbilities(int $marketValueCents, string $position, int $age): array
+    public function marketValueToOverallScore(int $marketValueCents, int $age): int
     {
         $rawAbility = $this->marketValueToRawAbility($marketValueCents);
-        $baseAbility = $this->adjustAbilityForAge($rawAbility, $marketValueCents, $age);
 
-        $technicalRatio = match ($position) {
-            'Goalkeeper' => 0.55,
-            'Centre-Back' => 0.35,
-            'Left-Back', 'Right-Back' => 0.45,
-            'Defensive Midfield' => 0.45,
-            'Central Midfield' => 0.55,
-            'Left Midfield', 'Right Midfield' => 0.55,
-            'Attacking Midfield' => 0.70,
-            'Left Winger', 'Right Winger' => 0.65,
-            'Second Striker' => 0.70,
-            'Centre-Forward' => 0.65,
-            default => 0.50,
-        };
-
-        $variance = rand(2, 5);
-        $technical = (int) round($baseAbility + ($technicalRatio - 0.5) * $variance * 2);
-        $physical = (int) round($baseAbility + (0.5 - $technicalRatio) * $variance * 2);
-
-        if ($age > PlayerAge::PRIME_END) {
-            $physical = (int) round($physical * 0.90);
-        }
-
-        $technical = max(30, min(99, $technical));
-        $physical = max(30, min(99, $physical));
-
-        return [$technical, $physical];
+        return $this->adjustAbilityForAge($rawAbility, $marketValueCents, $age);
     }
 
     /**
-     * Convert abilities to market value.
+     * Convert overall_score to market value.
      *
      * Used after season-end development, for generated players, etc.
-     * Uses pure ability average (tech+phys)/2 — NOT overall_score.
      *
-     * @param int $averageAbility (technical + physical) / 2
+     * @param int $overallScore Player's overall ability score
      * @param int $age Player's current age
-     * @param int|null $previousAbility Previous season's average ability (for performance trend). Only passed during season-end.
+     * @param int|null $previousOverall Previous season's overall_score (for performance trend). Only passed during season-end.
      * @return int Market value in cents
      */
-    public function abilityToMarketValue(int $averageAbility, int $age, ?int $previousAbility = null): int
+    public function overallScoreToMarketValue(int $overallScore, int $age, ?int $previousOverall = null): int
     {
         // Deterministic base value via log-linear interpolation of forward mapping anchors
-        $baseValue = $this->abilityToBaseValue($averageAbility);
+        $baseValue = $this->abilityToBaseValue($overallScore);
 
         // Age multiplier (reduced youth premiums for realistic valuations)
         $ageMultiplier = match (true) {
@@ -105,8 +76,8 @@ class PlayerValuationService
 
         // Performance trend multiplier (only during season-end)
         $trendMultiplier = 1.0;
-        if ($previousAbility !== null) {
-            $change = $averageAbility - $previousAbility;
+        if ($previousOverall !== null) {
+            $change = $overallScore - $previousOverall;
 
             if ($age <= PlayerAge::YOUNG_END && $change > 0) {
                 // Young players who improve get a modest boost (confirming potential)
@@ -226,7 +197,7 @@ class PlayerValuationService
      * in marketValueToRawAbility(), making this the mathematical inverse.
      * Interpolation in log-space produces smooth exponential growth between anchors.
      *
-     * @param int $ability Average ability (tech + phys) / 2
+     * @param int $ability Overall ability score
      * @return int Market value in cents
      */
     private function abilityToBaseValue(int $ability): int

@@ -12,8 +12,7 @@
             contract_until: '',
             annual_wage: 0,
             durability: 50,
-            game_technical_ability: 50,
-            game_physical_ability: 50,
+            overall_score: 50,
             potential: 50,
             potential_low: 40,
             potential_high: 60,
@@ -103,12 +102,8 @@
             <div class="text-[10px] text-text-muted uppercase tracking-wider font-semibold mb-2">{{ __('admin.section_game_params') }}</div>
             <div class="grid grid-cols-3 md:grid-cols-6 gap-2 mb-4">
                 <div>
-                    <x-input-label value="{{ __('admin.tpl_tech') }}" />
-                    <x-text-input type="number" name="game_technical_ability" x-model="form.game_technical_ability" min="1" max="99" class="w-full" />
-                </div>
-                <div>
-                    <x-input-label value="{{ __('admin.tpl_phys') }}" />
-                    <x-text-input type="number" name="game_physical_ability" x-model="form.game_physical_ability" min="1" max="99" class="w-full" />
+                    <x-input-label value="{{ __('admin.tpl_overall') }}" />
+                    <x-text-input type="number" name="overall_score" x-model="form.overall_score" min="1" max="99" class="w-full" />
                 </div>
                 <div>
                     <x-input-label value="{{ __('admin.tpl_potential') }}" />

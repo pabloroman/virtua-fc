@@ -125,8 +125,7 @@ class ReplaceWcPlaceholder extends Command
             };
 
             $marketValueCents = Money::parseMarketValue($player['marketValue'] ?? null);
-            $position = $player['position'] ?? 'Central Midfield';
-            [$technical, $physical] = $valuationService->marketValueToAbilities($marketValueCents, $position, $age ?? 25);
+            $overallScore = $valuationService->marketValueToOverallScore($marketValueCents, $age ?? 25);
 
             DB::table('players')->insert([
                 'id' => Str::uuid()->toString(),
@@ -136,8 +135,7 @@ class ReplaceWcPlaceholder extends Command
                 'nationality' => json_encode($player['nationality'] ?? []),
                 'height' => $player['height'] ?? null,
                 'foot' => $foot,
-                'technical_ability' => $technical,
-                'physical_ability' => $physical,
+                'overall_score' => $overallScore,
             ]);
 
             $count++;

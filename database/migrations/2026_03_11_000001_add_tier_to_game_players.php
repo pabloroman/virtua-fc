@@ -19,7 +19,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('game_players', function (Blueprint $table) {
-            $table->unsignedTinyInteger('tier')->default(1)->after('game_physical_ability');
+            $table->unsignedTinyInteger('tier')->default(1)->after('overall_score');
             $table->index(['game_id', 'tier']);
         });
 

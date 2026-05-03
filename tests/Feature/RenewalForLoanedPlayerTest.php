@@ -160,8 +160,7 @@ class RenewalForLoanedPlayerTest extends TestCase
     private function createExpiringPlayer(?Team $team = null): GamePlayer
     {
         $player = Player::factory()->age(28)->create([
-            'technical_ability' => 70,
-            'physical_ability' => 70,
+            'overall_score' => 70,
         ]);
 
         return GamePlayer::factory()->create([

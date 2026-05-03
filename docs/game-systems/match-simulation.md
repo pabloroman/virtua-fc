@@ -18,7 +18,7 @@ awayXG = ((1/strengthRatio) ^ exponent) × baseGoals
 
 The stronger team is always favored regardless of venue — home advantage is a modest additive bonus on top.
 
-**Team strength** is calculated from the 11-player lineup with ability-dominant weights (technical 57.5%, physical 37.5%, morale 5%), each modified by a per-player energy effectiveness modifier and a random daily performance variance (normal distribution, tight range). See `calculateTeamStrength()` in `MatchSimulator`.
+**Team strength** is calculated from the 11-player lineup with ability-dominant weights (overall_score 95%, morale 5%), each modified by a per-player energy effectiveness modifier and a random daily performance variance (normal distribution, tight range). See `calculateTeamStrength()` in `MatchSimulator`.
 
 All base values and exponents are configurable in `config/match_simulation.php`.
 
@@ -32,11 +32,11 @@ AI teams select mentality based on reputation tier (bold/mid/cautious) crossed w
 
 ## Unified Energy System
 
-Energy and fitness are unified into a **single energy bar**. Players start each match at their current energy level (not always 100%), and energy drains during the match based on physical ability, age, and tactical setup.
+Energy and fitness are unified into a **single energy bar**. Players start each match at their current energy level (not always 100%), and energy drains during the match based on overall ability, age, and tactical setup.
 
 **Proportional drain**: Drain scales with starting energy (`drain × startingEnergy / 100`), so fatigued players lose less absolute energy per minute — this prevents death spirals in congested periods.
 
-A typical outfielder (physical 70, age 25) starting at 100% ends a match at ~60%. Goalkeepers drain at half rate. High-physical players drain slower and recover faster.
+A typical outfielder (overall 70, age 25) starting at 100% ends a match at ~60%. Goalkeepers drain at half rate. High-rated players drain slower and recover faster.
 
 As energy drops, player effectiveness decreases (from 1.0x down to a configured minimum of 0.50x), making late-game substitutions and squad rotation meaningful.
 
@@ -47,17 +47,17 @@ Energy parameters are in `config/match_simulation.php` under the `energy` key.
 Players recover energy between matches using a **nonlinear formula** that makes it harder to reach peak energy. Near 100, recovery is slow; at lower energy, it accelerates. This creates natural equilibria based on how often a player plays:
 
 ```
-recoveryRate = baseRecovery × physicalModifier × (1 + scaling × (100 − energy) / 100)
+recoveryRate = baseRecovery × abilityModifier × (1 + scaling × (100 − energy) / 100)
 ```
 
 **Key dynamics:**
 - **Single-match weeks** (7-day gaps): Full recovery to 100. Players start every match fresh.
 - **Congested periods** (2+ matches/week): Energy equilibrium drops to 75–85 starting energy, forcing squad rotation.
-- **Physical ability matters more**: High-physical players (90+) maintain ~92 start in congestion, while low-physical (50) drop to ~65.
+- **Overall ability matters**: High-rated players (90+) maintain ~92 start in congestion, while low-rated (50) drop to ~65.
 
 **Modifiers:**
 - **Age** affects energy loss per match — veterans (32+) lose ~12% more, young players (<24) lose ~8% less.
-- **Physical ability** affects both drain rate AND recovery speed — high physical (≥80) recovers 10% faster, low physical (<60) recovers 10% slower.
+- **Overall ability** affects both drain rate AND recovery speed — high overall (≥80) recovers 10% faster, low overall (<60) recovers 10% slower.
 
 AI teams use an energy rotation threshold (configurable, default 70) to bench fatigued players. All parameters are in `config/player.php` under the `condition` key.
 
@@ -86,7 +86,7 @@ Position weights for all event types are defined in `MatchSimulator`.
 
 **Extra time** uses the same xG formula scaled to 30 minutes with a fatigue reduction factor.
 
-**Penalty shootouts** use a kicker-vs-goalkeeper duel: base conversion rate adjusted by kicker technical/morale bonus minus goalkeeper technical penalty, plus luck. Standard 5 kicks, then sudden death. Implementation guarantees resolution.
+**Penalty shootouts** use a kicker-vs-goalkeeper duel: base conversion rate adjusted by kicker overall/morale bonus minus goalkeeper overall penalty, plus luck. Standard 5 kicks, then sudden death. Implementation guarantees resolution.
 
 ## Live Match
 

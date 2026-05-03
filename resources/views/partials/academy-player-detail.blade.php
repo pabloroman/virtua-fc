@@ -6,9 +6,9 @@
     $nationalityFlag = $academyPlayer->nationality_flag;
 
     $overallColor = match(true) {
-        $academyPlayer->overall >= 80 => 'bg-accent-green',
-        $academyPlayer->overall >= 70 => 'bg-lime-500',
-        $academyPlayer->overall >= 60 => 'bg-accent-gold',
+        $academyPlayer->overall_score >= 80 => 'bg-accent-green',
+        $academyPlayer->overall_score >= 70 => 'bg-lime-500',
+        $academyPlayer->overall_score >= 60 => 'bg-accent-gold',
         default => 'bg-surface-600',
     };
 @endphp
@@ -49,7 +49,7 @@
         </div>
 
         <div class="w-14 h-14 md:w-16 md:h-16 rounded-xl {{ $overallColor }} flex items-center justify-center shrink-0">
-            <span class="text-xl md:text-2xl font-bold text-white">{{ $academyPlayer->overall }}</span>
+            <span class="text-xl md:text-2xl font-bold text-white">{{ $academyPlayer->overall_score }}</span>
         </div>
     </div>
 </div>
@@ -62,17 +62,16 @@
         <h4 class="font-heading text-[11px] font-semibold uppercase tracking-widest text-text-secondary mb-4">{{ __('squad.abilities') }}</h4>
 
         <div class="space-y-3">
-            <x-stat-bar :label="__('squad.technical_full')" :value="$academyPlayer->technical_ability" />
-            <x-stat-bar :label="__('squad.physical_full')" :value="$academyPlayer->physical_ability" />
+            <x-stat-bar :label="__('squad.overall_full')" :value="$academyPlayer->overall_score" />
 
             <div class="flex items-center justify-between pt-3 border-t border-border-default">
-                <span class="text-[11px] text-text-muted uppercase tracking-wide font-semibold">{{ __('squad.overall') }}</span>
+                <span class="text-[11px] text-text-muted uppercase tracking-wide font-semibold">{{ __('squad.overall_short') }}</span>
                 <span class="text-xs font-semibold tabular-nums
-                    @if($academyPlayer->overall >= 80) text-accent-green
-                    @elseif($academyPlayer->overall >= 70) text-lime-500
-                    @elseif($academyPlayer->overall >= 60) text-accent-gold
+                    @if($academyPlayer->overall_score >= 80) text-accent-green
+                    @elseif($academyPlayer->overall_score >= 70) text-lime-500
+                    @elseif($academyPlayer->overall_score >= 60) text-accent-gold
                     @else text-text-muted
-                    @endif">{{ $academyPlayer->overall }}</span>
+                    @endif">{{ $academyPlayer->overall_score }}</span>
             </div>
         </div>
     </div>

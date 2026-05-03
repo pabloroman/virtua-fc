@@ -140,11 +140,10 @@ class GamePlayerMatchStateTest extends TestCase
         $this->assertSame(10, GamePlayerMatchState::find($p2->id)->goals);
     }
 
-    public function test_overall_score_reads_through_satellite(): void
+    public function test_effective_rating_reads_through_satellite(): void
     {
         $player = GamePlayer::factory()->create([
-            'game_technical_ability' => 80,
-            'game_physical_ability' => 70,
+            'overall_score' => 75,
         ]);
         GamePlayerMatchState::where('game_player_id', $player->id)->update([
             'fitness' => 100,
@@ -152,7 +151,7 @@ class GamePlayerMatchStateTest extends TestCase
         ]);
         $player = $player->fresh(['matchState']);
 
-        // (80*0.35 + 70*0.35 + 100*0.15 + 100*0.15) = 28 + 24.5 + 15 + 15 = 82.5 → 83
-        $this->assertSame(83, $player->overall_score);
+        // (75*0.70 + 100*0.15 + 100*0.15) = 52.5 + 15 + 15 = 82.5 → 83
+        $this->assertSame(83, $player->getEffectiveRating());
     }
 }

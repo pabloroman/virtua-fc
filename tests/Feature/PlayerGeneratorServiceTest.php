@@ -45,8 +45,7 @@ class PlayerGeneratorServiceTest extends TestCase
         $gamePlayer = $service->create($this->game, new GeneratedPlayerData(
             teamId: $this->team->id,
             position: 'Centre-Back',
-            technical: 65,
-            physical: 70,
+            overallScore: 68,
             dateOfBirth: $dateOfBirth,
             contractYears: 3,
         ));
@@ -56,13 +55,11 @@ class PlayerGeneratorServiceTest extends TestCase
         $this->assertEquals('Centre-Back', $gamePlayer->position);
         $this->assertEquals($this->team->id, $gamePlayer->team_id);
         $this->assertEquals($this->game->id, $gamePlayer->game_id);
-        $this->assertEquals(65, $gamePlayer->game_technical_ability);
-        $this->assertEquals(70, $gamePlayer->game_physical_ability);
+        $this->assertEquals(68, $gamePlayer->overall_score);
         // Player reference record exists
         $this->assertDatabaseHas('players', ['id' => $gamePlayer->player_id]);
         $player = Player::find($gamePlayer->player_id);
-        $this->assertEquals(65, $player->technical_ability);
-        $this->assertEquals(70, $player->physical_ability);
+        $this->assertEquals(68, $player->overall_score);
         $this->assertEquals($dateOfBirth->toDateString(), $player->date_of_birth->toDateString());
 
         // Contract should be 3 years from season
@@ -77,8 +74,7 @@ class PlayerGeneratorServiceTest extends TestCase
         $gamePlayer = $service->create($this->game, new GeneratedPlayerData(
             teamId: $this->team->id,
             position: 'Central Midfield',
-            technical: 55,
-            physical: 50,
+            overallScore: 52,
             dateOfBirth: Carbon::createFromDate(2006, 3, 10),
             contractYears: 3,
         ));
@@ -96,8 +92,7 @@ class PlayerGeneratorServiceTest extends TestCase
         $gamePlayer = $service->create($this->game, new GeneratedPlayerData(
             teamId: $this->team->id,
             position: 'Centre-Forward',
-            technical: 60,
-            physical: 65,
+            overallScore: 62,
             dateOfBirth: Carbon::createFromDate(2000, 1, 1),
             contractYears: 2,
             name: 'Test Player',
@@ -116,8 +111,7 @@ class PlayerGeneratorServiceTest extends TestCase
         $gamePlayer = $service->create($this->game, new GeneratedPlayerData(
             teamId: $this->team->id,
             position: 'Central Midfield',
-            technical: 75,
-            physical: 75,
+            overallScore: 75,
             dateOfBirth: Carbon::createFromDate(1999, 5, 20),
             contractYears: 3,
         ));
@@ -133,8 +127,7 @@ class PlayerGeneratorServiceTest extends TestCase
         $gamePlayer = $service->create($this->game, new GeneratedPlayerData(
             teamId: $this->team->id,
             position: 'Goalkeeper',
-            technical: 50,
-            physical: 55,
+            overallScore: 52,
             dateOfBirth: Carbon::createFromDate(2005, 8, 12),
             contractYears: 3,
             marketValueCents: 500_000_00,
@@ -150,8 +143,7 @@ class PlayerGeneratorServiceTest extends TestCase
         $gamePlayer = $service->create($this->game, new GeneratedPlayerData(
             teamId: $this->team->id,
             position: 'Left Winger',
-            technical: 45,
-            physical: 50,
+            overallScore: 47,
             dateOfBirth: Carbon::createFromDate(2007, 2, 14),
             contractYears: 3,
             potential: 85,
@@ -171,8 +163,7 @@ class PlayerGeneratorServiceTest extends TestCase
         $gamePlayer = $service->create($this->game, new GeneratedPlayerData(
             teamId: $this->team->id,
             position: 'Central Midfield',
-            technical: 60,
-            physical: 65,
+            overallScore: 62,
             dateOfBirth: Carbon::createFromDate(2001, 9, 5),
             contractYears: 3,
         ));
@@ -190,8 +181,7 @@ class PlayerGeneratorServiceTest extends TestCase
         $gamePlayer = $service->create($this->game, new GeneratedPlayerData(
             teamId: $this->team->id,
             position: 'Right-Back',
-            technical: 50,
-            physical: 55,
+            overallScore: 52,
             dateOfBirth: Carbon::createFromDate(2006, 4, 1),
             contractYears: 3,
             fitnessMin: 90,
@@ -213,8 +203,7 @@ class PlayerGeneratorServiceTest extends TestCase
         $gamePlayer = $service->create($this->game, new GeneratedPlayerData(
             teamId: $this->team->id,
             position: 'Goalkeeper',
-            technical: 40,
-            physical: 45,
+            overallScore: 42,
             dateOfBirth: Carbon::createFromDate(2007, 7, 20),
             contractYears: 3,
         ));
@@ -242,8 +231,7 @@ class PlayerGeneratorServiceTest extends TestCase
             'name' => 'Diego García Pérez',
             'nationality' => ['Spain'],
             'date_of_birth' => '1998-03-14',
-            'technical_ability' => 70,
-            'physical_ability' => 70,
+            'overall_score' => 70,
         ]);
 
         GamePlayer::create([
@@ -256,8 +244,7 @@ class PlayerGeneratorServiceTest extends TestCase
             'contract_until' => Carbon::createFromDate(2026, 6, 30),
             'annual_wage' => 100_000_00,
             'durability' => 80,
-            'game_technical_ability' => 70,
-            'game_physical_ability' => 70,
+            'overall_score' => 70,
             'potential' => 75,
             'potential_low' => 70,
             'potential_high' => 80,

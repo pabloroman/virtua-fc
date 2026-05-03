@@ -308,13 +308,11 @@ class SquadService
 
     /**
      * Calculate squad strength as the average ability of the best 18 players.
-     * Uses only technical + physical ability (not volatile match state like fitness/morale).
+     * Uses the stable overall_score baseline (not volatile match state like fitness/morale).
      */
     public function calculateSquadStrength($players): float
     {
-        $scores = $players->map(function ($player) {
-            return (int) round(($player->current_technical_ability + $player->current_physical_ability) / 2);
-        })
+        $scores = $players->map(fn ($player) => (int) $player->overall_score)
             ->sortDesc()
             ->take(18);
 
@@ -341,16 +339,6 @@ class SquadService
 
         $query = GamePlayer::where('game_id', $game->id)
             ->whereIn('team_id', $teamIds);
-
-        // Only eager-load player relation when game abilities are null (mid-season fallback)
-        $needsPlayerRelation = GamePlayer::where('game_id', $game->id)
-            ->whereIn('team_id', $teamIds)
-            ->where(fn ($q) => $q->whereNull('game_technical_ability')->orWhereNull('game_physical_ability'))
-            ->exists();
-
-        if ($needsPlayerRelation) {
-            $query->with('player');
-        }
 
         $playersByTeam = $query->get()->groupBy('team_id');
 

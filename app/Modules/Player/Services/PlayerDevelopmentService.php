@@ -19,7 +19,6 @@ use App\Modules\Player\Services\DevelopmentCurve;
  * - Young players with high market value have proven higher potential
  * - Veterans with exceptional market value have proven their quality ceiling
  * - Match playing time accelerates growth; bench players still develop in training at a reduced rate
- * - Physical abilities decline faster than technical abilities
  */
 class PlayerDevelopmentService
 {
@@ -33,61 +32,43 @@ class PlayerDevelopmentService
      * - Potential cap (players can't exceed their ceiling)
      *
      * @return array{
-     *     techBefore: int,
-     *     techAfter: int,
-     *     techChange: int,
-     *     physBefore: int,
-     *     physAfter: int,
-     *     physChange: int
+     *     before: int,
+     *     after: int,
+     *     change: int,
      * }
      */
     public function calculateDevelopment(GamePlayer $player, ?int $precomputedAge = null): array
     {
         $age = $precomputedAge ?? $player->age($player->game->current_date);
-        $changes = DevelopmentCurve::getChanges($age);
         $appearances = $player->season_appearances;
 
-        $currentTech = $player->current_technical_ability;
-        $currentPhys = $player->current_physical_ability;
-        $currentOverall = (int) round(($currentTech + $currentPhys) / 2);
+        $current = $player->overall_score;
         $potential = $player->potential ?? 99;
 
-        // Base changes from curve + playing time
-        $techChange = DevelopmentCurve::calculateChange($changes['technical'], $appearances);
-        $physChange = DevelopmentCurve::calculateChange($changes['physical'], $appearances);
+        $baseChange = DevelopmentCurve::getChange($age);
+        $change = DevelopmentCurve::calculateChange($baseChange, $appearances);
 
         // Quality gap: flat +1 bonus for young players far from potential
-        $gapBonus = $this->calculateQualityGapBonus($currentOverall, $potential, $age);
-        if ($techChange > 0) {
-            $techChange += $gapBonus;
-        }
-        if ($physChange > 0) {
-            $physChange += $gapBonus;
+        $gapBonus = $this->calculateQualityGapBonus($current, $potential, $age);
+        if ($change > 0) {
+            $change += $gapBonus;
         }
 
-        // Calculate new abilities
-        $newTech = $currentTech + $techChange;
-        $newPhys = $currentPhys + $physChange;
+        // Calculate new ability
+        $newOverall = $current + $change;
 
         // Cap at potential (only for growth, not decline)
-        if ($techChange > 0) {
-            $newTech = min($newTech, $potential);
-        }
-        if ($physChange > 0) {
-            $newPhys = min($newPhys, $potential);
+        if ($change > 0) {
+            $newOverall = min($newOverall, $potential);
         }
 
-        // Ensure abilities stay within valid range (1-99)
-        $newTech = max(1, min(99, $newTech));
-        $newPhys = max(1, min(99, $newPhys));
+        // Ensure ability stays within valid range (1-99)
+        $newOverall = max(1, min(99, $newOverall));
 
         return [
-            'techBefore' => $currentTech,
-            'techAfter' => $newTech,
-            'techChange' => $newTech - $currentTech,
-            'physBefore' => $currentPhys,
-            'physAfter' => $newPhys,
-            'physChange' => $newPhys - $currentPhys,
+            'before' => $current,
+            'after' => $newOverall,
+            'change' => $newOverall - $current,
         ];
     }
 
@@ -242,8 +223,7 @@ class PlayerDevelopmentService
     public function projectDevelopment(GamePlayer $player, int $seasons = 3): array
     {
         $projections = [];
-        $currentTech = $player->current_technical_ability;
-        $currentPhys = $player->current_physical_ability;
+        $currentOverall = $player->overall_score;
         $currentAge = $player->age($player->game->current_date);
         $potential = $player->potential ?? 99;
 
@@ -252,46 +232,32 @@ class PlayerDevelopmentService
 
         for ($i = 1; $i <= $seasons; $i++) {
             $age = $currentAge + $i;
-            $changes = DevelopmentCurve::getChanges($age);
-            $currentOverall = (int) round(($currentTech + $currentPhys) / 2);
-
-            $techChange = DevelopmentCurve::calculateChange($changes['technical'], $assumedAppearances);
-            $physChange = DevelopmentCurve::calculateChange($changes['physical'], $assumedAppearances);
+            $baseChange = DevelopmentCurve::getChange($age);
+            $change = DevelopmentCurve::calculateChange($baseChange, $assumedAppearances);
 
             // Quality gap bonus
             $gapBonus = $this->calculateQualityGapBonus($currentOverall, $potential, $age);
-            if ($techChange > 0) {
-                $techChange += $gapBonus;
-            }
-            if ($physChange > 0) {
-                $physChange += $gapBonus;
+            if ($change > 0) {
+                $change += $gapBonus;
             }
 
-            $projectedTech = $currentTech + $techChange;
-            $projectedPhys = $currentPhys + $physChange;
+            $projectedOverall = $currentOverall + $change;
 
-            if ($techChange > 0) {
-                $projectedTech = min($projectedTech, $potential);
-            }
-            if ($physChange > 0) {
-                $projectedPhys = min($projectedPhys, $potential);
+            if ($change > 0) {
+                $projectedOverall = min($projectedOverall, $potential);
             }
 
-            $projectedTech = max(1, min(99, $projectedTech));
-            $projectedPhys = max(1, min(99, $projectedPhys));
+            $projectedOverall = max(1, min(99, $projectedOverall));
 
             $projections[] = [
                 'season' => $i,
                 'age' => $age,
-                'technical' => $projectedTech,
-                'physical' => $projectedPhys,
-                'overall' => (int) round(($projectedTech + $projectedPhys) / 2),
+                'overall' => $projectedOverall,
                 'status' => PlayerAge::developmentStatus($age),
             ];
 
-            // Use projected values for next iteration
-            $currentTech = $projectedTech;
-            $currentPhys = $projectedPhys;
+            // Use projected value for next iteration
+            $currentOverall = $projectedOverall;
         }
 
         return $projections;
@@ -310,27 +276,22 @@ class PlayerDevelopmentService
             return 0;
         }
 
-        $currentOverall = (int) round(
-            ($player->current_technical_ability + $player->current_physical_ability) / 2
-        );
-
-        return $projections[0]['overall'] - $currentOverall;
+        return $projections[0]['overall'] - $player->overall_score;
     }
 
     /**
      * Apply development changes to a player.
      *
-     * Splits the write between game_players (ability columns) and the
+     * Splits the write between game_players (ability column) and the
      * match-state satellite (season_appearances reset). Active-team players
      * always have a satellite row by the time development runs; the silent
      * no-op for missing rows is correct because pool players never accrue
      * appearances anyway.
      */
-    public function applyDevelopment(GamePlayer $player, int $newTech, int $newPhys): void
+    public function applyDevelopment(GamePlayer $player, int $newOverall): void
     {
         $player->update([
-            'game_technical_ability' => $newTech,
-            'game_physical_ability' => $newPhys,
+            'overall_score' => $newOverall,
         ]);
 
         GamePlayerMatchState::bulkSetValues([$player->id => ['season_appearances' => 0]]);
@@ -344,12 +305,8 @@ class PlayerDevelopmentService
      */
     public function recalculatePotential(GamePlayer $player): array
     {
-        $currentAbility = (int) round(
-            ($player->current_technical_ability + $player->current_physical_ability) / 2
-        );
-
         $marketValueCents = $player->market_value_cents ?? 0;
 
-        return $this->generatePotential($player->age($player->game->current_date), $currentAbility, $marketValueCents);
+        return $this->generatePotential($player->age($player->game->current_date), $player->overall_score, $marketValueCents);
     }
 }

@@ -19,9 +19,8 @@ return new class extends Migration
             $table->date('date_of_birth');
             $table->string('position');
 
-            // Abilities & potential
-            $table->unsignedTinyInteger('technical_ability');
-            $table->unsignedTinyInteger('physical_ability');
+            // Ability & potential
+            $table->unsignedTinyInteger('overall_score');
             $table->unsignedTinyInteger('potential');
             $table->unsignedTinyInteger('potential_low');
             $table->unsignedTinyInteger('potential_high');

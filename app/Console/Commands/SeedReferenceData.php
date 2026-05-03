@@ -777,7 +777,7 @@ class SeedReferenceData extends Command
                     default => null,
                 };
 
-                // Calculate abilities from market value, position, and age.
+                // Calculate overall_score from market value and age.
                 // Transfermarkt occasionally lists fringe / youth squad players with
                 // no quoted value — floor those at €100K so they still get a usable
                 // ability baseline and a non-zero transfer price.
@@ -785,8 +785,7 @@ class SeedReferenceData extends Command
                 if ($marketValueCents <= 0) {
                     $marketValueCents = 10_000_000;
                 }
-                $position = $player['position'] ?? 'Central Midfield';
-                [$technical, $physical] = $valuationService->marketValueToAbilities($marketValueCents, $position, $age ?? 25);
+                $overallScore = $valuationService->marketValueToOverallScore($marketValueCents, $age ?? 25);
 
                 // Insert or update player (never change the id on update)
                 $playerValues = [
@@ -795,8 +794,7 @@ class SeedReferenceData extends Command
                     'nationality' => json_encode($player['nationality'] ?? []),
                     'height' => $player['height'] ?? null,
                     'foot' => $foot,
-                    'technical_ability' => $technical,
-                    'physical_ability' => $physical,
+                    'overall_score' => $overallScore,
                 ];
 
                 $exists = DB::table('players')

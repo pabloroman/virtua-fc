@@ -139,7 +139,7 @@ class PlayerConditionService
             $ageModifier = $this->getAgeLossModifier($player, $config, $currentDate);
 
             $endingEnergy = EnergyCalculator::energyAtMinute(
-                $player->current_physical_ability,
+                $player->overall_score,
                 $age,
                 $isGK,
                 90,
@@ -221,7 +221,7 @@ class PlayerConditionService
         // regardless of team results. Offsets the win bonus for non-playing players.
         // Better players get more frustrated — star players have higher expectations.
         if (!$playedMatch) {
-            $ability = $player->current_technical_ability;
+            $ability = $player->overall_score;
             // Multiplier ranges from ~0.3x (ability 20) to ~1.0x (ability 100)
             $frustrationMultiplier = 0.3 + ($ability / 100.0) * 0.7;
             $baseFrustration = rand(self::MORALE_BENCH_FRUSTRATION[0], self::MORALE_BENCH_FRUSTRATION[1]);

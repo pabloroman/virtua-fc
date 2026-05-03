@@ -29,8 +29,7 @@ trait CreatesLineups
                 ->forTeam($team)
                 ->create([
                     'position' => $positions[$i] ?? 'Central Midfield',
-                    'game_technical_ability' => $ability,
-                    'game_physical_ability' => $ability,
+                    'overall_score' => $ability,
                     'fitness' => 95,
                     'morale' => 80,
                 ]);
@@ -60,8 +59,7 @@ trait CreatesLineups
                 ->forTeam($team)
                 ->create([
                     'position' => $positions[$i % count($positions)],
-                    'game_technical_ability' => $ability,
-                    'game_physical_ability' => $ability,
+                    'overall_score' => $ability,
                     'fitness' => 95,
                     'morale' => 80,
                 ]);

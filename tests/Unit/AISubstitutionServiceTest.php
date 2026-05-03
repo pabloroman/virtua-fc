@@ -149,8 +149,7 @@ class AISubstitutionServiceTest extends TestCase
         // Create a single outfield bench player (not GK — GKs are excluded from replacements)
         $benchPlayer = GamePlayer::factory()->forGame($game)->forTeam($team)->create([
             'position' => 'Central Midfield',
-            'game_technical_ability' => 75,
-            'game_physical_ability' => 75,
+            'overall_score' => 75,
             'fitness' => 95,
             'morale' => 80,
         ]);
@@ -173,29 +172,26 @@ class AISubstitutionServiceTest extends TestCase
         $lineup = collect();
         $lineup->push(GamePlayer::factory()->forGame($game)->forTeam($team)->create([
             'position' => 'Goalkeeper',
-            'game_technical_ability' => 70,
-            'game_physical_ability' => 70,
+            'overall_score' => 70,
             'fitness' => 95,
             'morale' => 80,
         ])->setRelation('game', $game));
 
-        // High physical = less tired
+        // High overall = less tired
         for ($i = 0; $i < 9; $i++) {
             $positions = ['Centre-Back', 'Centre-Back', 'Left-Back', 'Right-Back', 'Central Midfield', 'Central Midfield', 'Defensive Midfield', 'Right Winger', 'Left Winger'];
             $lineup->push(GamePlayer::factory()->forGame($game)->forTeam($team)->create([
                 'position' => $positions[$i],
-                'game_technical_ability' => 70,
-                'game_physical_ability' => 90,
+                'overall_score' => 90,
                 'fitness' => 95,
                 'morale' => 80,
             ])->setRelation('game', $game));
         }
 
-        // Low physical = very tired by minute 80
+        // Low overall = very tired by minute 80
         $tiredPlayer = GamePlayer::factory()->forGame($game)->forTeam($team)->create([
             'position' => 'Centre-Forward',
-            'game_technical_ability' => 70,
-            'game_physical_ability' => 30,
+            'overall_score' => 30,
             'fitness' => 95,
             'morale' => 80,
         ]);

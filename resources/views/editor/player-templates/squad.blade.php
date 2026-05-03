@@ -59,8 +59,7 @@
                             <th class="px-3 py-2 text-left text-[10px] text-text-muted uppercase tracking-wider">{{ __('admin.tpl_player') }}</th>
                             <th class="px-3 py-2 text-left text-[10px] text-text-muted uppercase tracking-wider hidden md:table-cell">{{ __('admin.tpl_position') }}</th>
                             <th class="px-3 py-2 text-right text-[10px] text-text-muted uppercase tracking-wider hidden md:table-cell">{{ __('admin.tpl_market_value') }}</th>
-                            <th class="px-3 py-2 text-center text-[10px] text-text-muted uppercase tracking-wider w-[60px]">{{ __('admin.tpl_tech') }}</th>
-                            <th class="px-3 py-2 text-center text-[10px] text-text-muted uppercase tracking-wider w-[60px]">{{ __('admin.tpl_phys') }}</th>
+                            <th class="px-3 py-2 text-center text-[10px] text-text-muted uppercase tracking-wider w-[60px]">{{ __('admin.tpl_overall') }}</th>
                             <th class="px-3 py-2 text-center text-[10px] text-text-muted uppercase tracking-wider hidden md:table-cell">{{ __('admin.tpl_potential') }}</th>
                             <th class="px-3 py-2 text-center text-[10px] text-text-muted uppercase tracking-wider hidden lg:table-cell w-10">{{ __('admin.tpl_tier') }}</th>
                             <th class="px-3 py-2 text-right text-[10px] text-text-muted uppercase tracking-wider">{{ __('admin.actions') }}</th>
@@ -127,8 +126,7 @@
                                 <td x-show="!editing" class="px-3 py-2.5 text-sm text-text-primary font-medium truncate">{{ $template->player?->name ?? '—' }}</td>
                                 <td x-show="!editing" class="px-3 py-2.5 text-xs text-text-muted hidden md:table-cell" x-text="original.position"></td>
                                 <td x-show="!editing" class="px-3 py-2.5 text-xs text-text-muted text-right hidden md:table-cell">{{ \App\Support\Money::format($template->market_value_cents) }}</td>
-                                <td x-show="!editing" class="px-3 py-2.5 text-sm text-text-primary text-center" x-text="original.game_technical_ability ?? '—'"></td>
-                                <td x-show="!editing" class="px-3 py-2.5 text-sm text-text-primary text-center" x-text="original.game_physical_ability ?? '—'"></td>
+                                <td x-show="!editing" class="px-3 py-2.5 text-sm text-text-primary text-center" x-text="original.overall_score ?? '—'"></td>
                                 <td x-show="!editing" class="px-3 py-2.5 text-xs text-text-muted text-center hidden md:table-cell">
                                     <span x-text="(original.potential_low ?? '?') + '-' + (original.potential_high ?? '?')"></span>
                                 </td>
@@ -152,7 +150,7 @@
                                 </td>
 
                                 {{-- Edit mode --}}
-                                <td x-show="editing" x-cloak colspan="9" class="p-0">
+                                <td x-show="editing" x-cloak colspan="8" class="p-0">
                                     <div class="p-4 bg-accent-blue/5 border-l-2 border-accent-blue space-y-4">
                                         <div class="text-sm font-medium text-text-primary">{{ $template->player?->name }}</div>
 
@@ -213,12 +211,8 @@
                                             <div class="text-[10px] text-text-muted uppercase tracking-wider font-semibold mb-2">{{ __('admin.section_game_params') }}</div>
                                             <div class="grid grid-cols-3 md:grid-cols-6 gap-2">
                                                 <div>
-                                                    <x-input-label value="{{ __('admin.tpl_tech') }}" />
-                                                    <x-text-input type="number" x-model="form.game_technical_ability" min="1" max="99" class="w-full" />
-                                                </div>
-                                                <div>
-                                                    <x-input-label value="{{ __('admin.tpl_phys') }}" />
-                                                    <x-text-input type="number" x-model="form.game_physical_ability" min="1" max="99" class="w-full" />
+                                                    <x-input-label value="{{ __('admin.tpl_overall') }}" />
+                                                    <x-text-input type="number" x-model="form.overall_score" min="1" max="99" class="w-full" />
                                                 </div>
                                                 <div>
                                                     <x-input-label value="{{ __('admin.tpl_potential') }}" />

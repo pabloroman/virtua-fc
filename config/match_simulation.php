@@ -100,8 +100,7 @@ return [
     | Must sum to 1.0. Used by both MatchSimulator and AIMatchResolver.
     |
     */
-    'strength_weight_technical' => 0.575,
-    'strength_weight_physical' => 0.375,
+    'strength_weight_overall' => 0.95,
     'strength_weight_morale' => 0.05,
 
     /*
@@ -175,11 +174,11 @@ return [
     | current fitness level (not always 100). Drain is proportional to
     | starting energy, preventing death spirals in congested schedules.
     |
-    | drain = (base_drain - (physicalAbility - 50) * physical_ability_factor
+    | drain = (base_drain - (overallScore - 50) * overall_score_factor
     |          + max(0, age - age_threshold) * age_penalty_per_year)
     |         × (startingEnergy / 100)
     |
-    | A typical player (physical 70, age 25) starting at 100 ends at ~60.
+    | A typical player (overall 70, age 25) starting at 100 ends at ~60.
     | Goalkeepers drain at gk_drain_multiplier rate.
     |
     | Energy modifies player strength via:
@@ -189,7 +188,7 @@ return [
     */
     'energy' => [
         'base_drain_per_minute' => 0.55,
-        'physical_ability_factor' => 0.004,
+        'overall_score_factor' => 0.004,
         'age_threshold' => 28,
         'age_penalty_per_year' => 0.015,
         'gk_drain_multiplier' => 0.5,

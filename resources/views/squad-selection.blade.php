@@ -109,16 +109,8 @@ $tabs = [
                             </div>
                         </div>
 
-                        {{-- Abilities --}}
+                        {{-- Overall ability --}}
                         <div class="shrink-0 flex items-center gap-2 md:gap-3">
-                            <div class="hidden md:flex items-center gap-1.5">
-                                <span class="text-xs text-text-secondary">{{ __('squad.technical_abbr') }}</span>
-                                <span class="text-xs font-semibold text-text-secondary">{{ $candidate['technical'] }}</span>
-                            </div>
-                            <div class="hidden md:flex items-center gap-1.5">
-                                <span class="text-xs text-text-secondary">{{ __('squad.physical_abbr') }}</span>
-                                <span class="text-xs font-semibold text-text-secondary">{{ $candidate['physical'] }}</span>
-                            </div>
                             <div class="flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-lg transition-colors"
                                  :class="isSelected('{{ $candidate['transfermarkt_id'] }}') ? 'bg-accent-green/10' : 'bg-surface-700'">
                                 <span class="text-sm md:text-base font-bold"

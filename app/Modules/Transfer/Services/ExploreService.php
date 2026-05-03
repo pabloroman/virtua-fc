@@ -299,15 +299,14 @@ class ExploreService
         }
 
         if (!empty($filters['min_overall']) || !empty($filters['max_overall'])) {
-            // Use pure ability (tech + phys) / 2 to match the scout-search
-            // convention — excludes fitness/morale so filter results stay
-            // stable across matchdays instead of shifting with daily form.
-            $overallExpr = '(COALESCE(game_players.game_technical_ability, (SELECT technical_ability FROM players WHERE players.id = game_players.player_id)) + COALESCE(game_players.game_physical_ability, (SELECT physical_ability FROM players WHERE players.id = game_players.player_id))) / 2';
+            // Use the stable overall_score baseline so filter results stay
+            // consistent across matchdays instead of shifting with daily form.
+            $overallExpr = 'COALESCE(game_players.overall_score, (SELECT overall_score FROM players WHERE players.id = game_players.player_id))';
             if (!empty($filters['min_overall'])) {
-                $query->whereRaw("($overallExpr) >= ?", [(int) $filters['min_overall']]);
+                $query->whereRaw("$overallExpr >= ?", [(int) $filters['min_overall']]);
             }
             if (!empty($filters['max_overall'])) {
-                $query->whereRaw("($overallExpr) <= ?", [(int) $filters['max_overall']]);
+                $query->whereRaw("$overallExpr <= ?", [(int) $filters['max_overall']]);
             }
         }
 

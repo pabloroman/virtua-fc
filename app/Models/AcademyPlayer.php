@@ -16,20 +16,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property array<array-key, mixed>|null $nationality
  * @property \Illuminate\Support\Carbon $date_of_birth
  * @property string $position
- * @property int $technical_ability
- * @property int $physical_ability
+ * @property int $overall_score
  * @property int $potential
  * @property int $potential_low
  * @property int $potential_high
  * @property \Illuminate\Support\Carbon $appeared_at
  * @property bool $is_on_loan
  * @property int|null $joined_season
- * @property int|null $initial_technical
- * @property int|null $initial_physical
+ * @property int|null $initial_overall
  * @property-read \App\Models\Game $game
  * @property-read int $age
  * @property-read array|null $nationality_flag
- * @property-read int $overall
  * @property-read array $position_display
  * @property-read string $position_group
  * @property-read string $potential_range
@@ -43,13 +40,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer whereNationality($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer wherePhysicalAbility($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer whereOverallScore($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer wherePosition($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer wherePotential($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer wherePotentialHigh($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer wherePotentialLow($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer whereTeamId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer whereTechnicalAbility($value)
  * @mixin \Eloquent
  */
 class AcademyPlayer extends Model
@@ -65,31 +61,27 @@ class AcademyPlayer extends Model
         'nationality',
         'date_of_birth',
         'position',
-        'technical_ability',
-        'physical_ability',
+        'overall_score',
         'potential',
         'potential_low',
         'potential_high',
         'appeared_at',
         'is_on_loan',
         'joined_season',
-        'initial_technical',
-        'initial_physical',
+        'initial_overall',
     ];
 
     protected $casts = [
         'nationality' => 'array',
         'date_of_birth' => 'date',
         'appeared_at' => 'date',
-        'technical_ability' => 'integer',
-        'physical_ability' => 'integer',
+        'overall_score' => 'integer',
         'potential' => 'integer',
         'potential_low' => 'integer',
         'potential_high' => 'integer',
         'is_on_loan' => 'boolean',
         'joined_season' => 'integer',
-        'initial_technical' => 'integer',
-        'initial_physical' => 'integer',
+        'initial_overall' => 'integer',
     ];
 
     public function game(): BelongsTo
@@ -120,11 +112,6 @@ class AcademyPlayer extends Model
         }
 
         return max(1, (int) $this->game->season - $this->joined_season + 1);
-    }
-
-    public function getOverallAttribute(): int
-    {
-        return (int) round(($this->technical_ability + $this->physical_ability) / 2);
     }
 
     public function getPotentialRangeAttribute(): string

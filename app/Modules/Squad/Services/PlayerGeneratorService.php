@@ -94,24 +94,22 @@ class PlayerGeneratorService
             'name' => $name,
             'nationality' => $nationality,
             'date_of_birth' => $data->dateOfBirth->format('Y-m-d'),
-            'technical_ability' => $data->technical,
-            'physical_ability' => $data->physical,
+            'overall_score' => $data->overallScore,
             'height' => $identity['height'] ?? null,
             'foot' => $identity['foot'] ?? null,
         ]);
 
         // Determine market value
-        $averageAbility = (int) round(($data->technical + $data->physical) / 2);
-        $marketValue = $data->marketValueCents ?? $this->valuationService->abilityToMarketValue($averageAbility, $age);
+        $marketValue = $data->marketValueCents ?? $this->valuationService->overallScoreToMarketValue($data->overallScore, $age);
         $marketValue = max(100_000_00, $marketValue);
 
         // Determine potential
         if ($data->potential !== null) {
             $potential = $data->potential;
-            $potentialLow = $data->potentialLow ?? max($potential - 5, $averageAbility);
+            $potentialLow = $data->potentialLow ?? max($potential - 5, $data->overallScore);
             $potentialHigh = $data->potentialHigh ?? min($potential + 5, 99);
         } else {
-            $potentialData = $this->developmentService->generatePotential($age, $averageAbility, $marketValue);
+            $potentialData = $this->developmentService->generatePotential($age, $data->overallScore, $marketValue);
             $potential = $potentialData['potential'];
             $potentialLow = $potentialData['low'];
             $potentialHigh = $potentialData['high'];
@@ -133,8 +131,7 @@ class PlayerGeneratorService
             'contract_until' => $contractUntil,
             'annual_wage' => $annualWage,
             'durability' => InjuryService::generateDurability(),
-            'game_technical_ability' => $data->technical,
-            'game_physical_ability' => $data->physical,
+            'overall_score' => $data->overallScore,
             'potential' => $potential,
             'potential_low' => $potentialLow,
             'potential_high' => $potentialHigh,
@@ -229,22 +226,20 @@ class PlayerGeneratorService
                 'name' => $name,
                 'nationality' => json_encode($nationality),
                 'date_of_birth' => $data->dateOfBirth->format('Y-m-d'),
-                'technical_ability' => $data->technical,
-                'physical_ability' => $data->physical,
+                'overall_score' => $data->overallScore,
                 'height' => $identity['height'] ?? null,
                 'foot' => $identity['foot'] ?? null,
             ];
 
-            $averageAbility = (int) round(($data->technical + $data->physical) / 2);
-            $marketValue = $data->marketValueCents ?? $this->valuationService->abilityToMarketValue($averageAbility, $age);
+            $marketValue = $data->marketValueCents ?? $this->valuationService->overallScoreToMarketValue($data->overallScore, $age);
             $marketValue = max(100_000_00, $marketValue);
 
             if ($data->potential !== null) {
                 $potential = $data->potential;
-                $potentialLow = $data->potentialLow ?? max($potential - 5, $averageAbility);
+                $potentialLow = $data->potentialLow ?? max($potential - 5, $data->overallScore);
                 $potentialHigh = $data->potentialHigh ?? min($potential + 5, 99);
             } else {
-                $potentialData = $this->developmentService->generatePotential($age, $averageAbility, $marketValue);
+                $potentialData = $this->developmentService->generatePotential($age, $data->overallScore, $marketValue);
                 $potential = $potentialData['potential'];
                 $potentialLow = $potentialData['low'];
                 $potentialHigh = $potentialData['high'];
@@ -263,8 +258,7 @@ class PlayerGeneratorService
                 'contract_until' => $contractUntil->format('Y-m-d'),
                 'annual_wage' => $annualWage,
                 'durability' => InjuryService::generateDurability(),
-                'game_technical_ability' => $data->technical,
-                'game_physical_ability' => $data->physical,
+                'overall_score' => $data->overallScore,
                 'potential' => $potential,
                 'potential_low' => $potentialLow,
                 'potential_high' => $potentialHigh,
@@ -329,11 +323,7 @@ class PlayerGeneratorService
         int $teamAvgAbility,
     ): GeneratedPlayerData {
         $variance = mt_rand(-10, 10);
-        $baseAbility = max(35, min(90, $teamAvgAbility + $variance));
-
-        $techBias = mt_rand(-5, 5);
-        $technical = max(30, min(95, $baseAbility + $techBias));
-        $physical = max(30, min(95, $baseAbility - $techBias));
+        $overallScore = max(30, min(95, $teamAvgAbility + $variance));
 
         $ageRoll = mt_rand(1, 100);
         $age = match (true) {
@@ -348,8 +338,7 @@ class PlayerGeneratorService
         return new GeneratedPlayerData(
             teamId: $teamId,
             position: $position,
-            technical: $technical,
-            physical: $physical,
+            overallScore: $overallScore,
             dateOfBirth: $dateOfBirth,
             contractYears: mt_rand(2, 4),
         );
@@ -425,12 +414,10 @@ class PlayerGeneratorService
         $reputationIndex = ClubProfile::getReputationTierIndex($reputationLevel);
         $abilityMean = self::REPUTATION_BASE_QUALITY[$reputationIndex];
 
-        $technical = $this->sampler->sampleAbility($abilityMean, self::ABILITY_STD_DEV, 30, 80);
-        $physical = $this->sampler->sampleAbility($abilityMean, self::ABILITY_STD_DEV, 30, 80);
+        $overallScore = $this->sampler->sampleAbility($abilityMean, self::ABILITY_STD_DEV, 30, 80);
 
-        $currentBest = max($technical, $physical);
         $potentialData = $this->sampler->generatePotentialFromAbility(
-            $currentBest,
+            $overallScore,
             self::POTENTIAL_UPSIDE_MEAN[$reputationIndex],
             self::POTENTIAL_UPSIDE_STD_DEV,
             self::POTENTIAL_FLOOR[$reputationIndex],
@@ -453,8 +440,7 @@ class PlayerGeneratorService
         return new GeneratedPlayerData(
             teamId: $teamId,
             position: $position,
-            technical: $technical,
-            physical: $physical,
+            overallScore: $overallScore,
             dateOfBirth: $dateOfBirth,
             contractYears: mt_rand(3, 5),
             potential: $potential,
@@ -466,7 +452,7 @@ class PlayerGeneratorService
     /**
      * Calculate the average ability across a collection of players.
      *
-     * Accepts any collection with `game_technical_ability` and `game_physical_ability` attributes.
+     * Accepts any collection of GamePlayer-shaped records with an `overall_score` attribute.
      */
     public function calculateTeamAverageAbility($players): int
     {
@@ -474,7 +460,7 @@ class PlayerGeneratorService
             return 55;
         }
 
-        $total = $players->sum(fn ($p) => (int) round(($p->game_technical_ability + $p->game_physical_ability) / 2));
+        $total = $players->sum(fn ($p) => (int) ($p->overall_score ?? 0));
 
         return (int) round($total / $players->count());
     }

@@ -311,11 +311,11 @@ class RedCardSimulationTest extends TestCase
         $awayPlayers = $this->createLineup($game, $awayTeam, 11, 75);
 
         $cbPlayer = $homePlayers->firstWhere('position', 'Centre-Back');
-        $cbPlayer->update(['game_technical_ability' => 90, 'game_physical_ability' => 90]);
+        $cbPlayer->update(['overall_score' => 90]);
         $cbPlayer->refresh()->setRelation('game', $game);
 
         $fwPlayer = $homePlayers->firstWhere('position', 'Centre-Forward');
-        $fwPlayer->update(['game_technical_ability' => 55, 'game_physical_ability' => 55]);
+        $fwPlayer->update(['overall_score' => 55]);
         $fwPlayer->refresh()->setRelation('game', $game);
 
         $homeStrength = $this->calculateTeamStrength->invoke($this->simulator, $homePlayers);

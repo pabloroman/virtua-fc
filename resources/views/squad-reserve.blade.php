@@ -69,15 +69,13 @@
             <div x-data class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
                 {{-- Table header --}}
                 <div class="hidden md:block">
-                    <div class="grid grid-cols-[40px_1fr_48px_56px_48px_48px_56px_56px] gap-1.5 items-center px-4 py-2 bg-surface-700/30 border-b border-border-default text-[10px] text-text-muted uppercase tracking-widest font-semibold">
+                    <div class="grid grid-cols-[40px_1fr_48px_56px_56px_56px] gap-1.5 items-center px-4 py-2 bg-surface-700/30 border-b border-border-default text-[10px] text-text-muted uppercase tracking-widest font-semibold">
                         <span></span>
                         <span>{{ __('app.name') }}</span>
                         <span class="text-center">{{ __('app.age') }}</span>
                         <span class="text-center">{{ __('app.contract') }}</span>
-                        <span class="text-center">{{ __('squad.technical') }}</span>
-                        <span class="text-center">{{ __('squad.physical') }}</span>
                         <span class="text-center">{{ __('squad.pot') }}</span>
-                        <span class="text-center">{{ __('squad.overall') }}</span>
+                        <span class="text-center">{{ __('squad.overall_short') }}</span>
                     </div>
                 </div>
 
@@ -136,7 +134,7 @@
                             </div>
 
                             {{-- Desktop row --}}
-                            <div class="hidden md:grid grid-cols-[40px_1fr_48px_56px_48px_48px_56px_56px] gap-1.5 items-center px-4 py-2.5 border-b border-border-default hover:bg-surface-700/30 transition-colors cursor-pointer {{ $isCalledUp ? 'opacity-60' : '' }}"
+                            <div class="hidden md:grid grid-cols-[40px_1fr_48px_56px_56px_56px] gap-1.5 items-center px-4 py-2.5 border-b border-border-default hover:bg-surface-700/30 transition-colors cursor-pointer {{ $isCalledUp ? 'opacity-60' : '' }}"
                                  @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $player->id]) }}')">
                                 <div class="flex justify-center">
                                     <x-position-badge :position="$player->position" size="sm" :tooltip="\App\Support\PositionMapper::toDisplayName($player->position)" class="cursor-help" />
@@ -155,12 +153,6 @@
                                 <span class="text-[11px] text-center tabular-nums @if($player->isContractExpiring($game->getSeasonEndDate())) text-accent-red font-medium @else text-text-muted @endif">
                                     {{ $player->contract_expiry_year ?? '—' }}
                                 </span>
-                                <div class="flex justify-center">
-                                    <span class="text-xs font-medium tabular-nums @if($player->current_technical_ability >= 80) text-accent-green @elseif($player->current_technical_ability >= 70) text-lime-500 @elseif($player->current_technical_ability >= 60) text-text-body @else text-text-secondary @endif">{{ $player->current_technical_ability }}</span>
-                                </div>
-                                <div class="flex justify-center">
-                                    <span class="text-xs font-medium tabular-nums @if($player->current_physical_ability >= 80) text-accent-green @elseif($player->current_physical_ability >= 70) text-lime-500 @elseif($player->current_physical_ability >= 60) text-text-body @else text-text-secondary @endif">{{ $player->current_physical_ability }}</span>
-                                </div>
                                 <span class="text-xs text-center tabular-nums text-text-muted">{{ $player->potential_range }}</span>
                                 <div class="flex justify-center">
                                     <x-rating-badge :value="$player->overall_score" size="sm" />

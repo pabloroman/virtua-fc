@@ -84,19 +84,11 @@
                         </span>
                     </template>
 
-                    {{-- TEC (exact) --}}
-                    <template x-if="playerInfo?.tec != null">
+                    {{-- Overall (exact) --}}
+                    <template x-if="playerInfo?.overall != null">
                         <span class="text-text-secondary">
-                            <span class="text-text-muted">{{ __('squad.technical_abbr') }}</span>
-                            <span class="font-semibold text-text-primary tabular-nums" x-text="playerInfo.tec"></span>
-                        </span>
-                    </template>
-
-                    {{-- FIS (exact, own players only) --}}
-                    <template x-if="playerInfo?.fis != null">
-                        <span class="text-text-secondary">
-                            <span class="text-text-muted">{{ __('squad.physical_abbr') }}</span>
-                            <span class="font-semibold text-text-primary tabular-nums" x-text="playerInfo.fis"></span>
+                            <span class="text-text-muted">{{ __('squad.overall_short') }}</span>
+                            <span class="font-semibold text-text-primary tabular-nums" x-text="playerInfo.overall"></span>
                         </span>
                     </template>
                 </div>

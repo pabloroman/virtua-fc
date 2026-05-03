@@ -137,8 +137,7 @@
                                                             'playerInfo' => [
                                                                 'age' => $gp->age($game->current_date),
                                                                 'wage' => $gp->formatted_wage,
-                                                                'tec' => $gp->technical_ability,
-                                                                'fis' => $gp->physical_ability,
+                                                                'overall' => $gp->overall_score,
                                                                 'position' => $posDisp['abbreviation'],
                                                                 'positionBg' => $posDisp['bg'],
                                                                 'positionText' => $posDisp['text'],
@@ -195,8 +194,7 @@
                                                                 'playerInfo' => [
                                                                     'age' => $offeredPlayer->age($game->current_date),
                                                                     'wage' => $offeredPlayer->formatted_wage,
-                                                                    'tec' => $offeredPlayer->technical_ability,
-                                                                    'fis' => $offeredPlayer->physical_ability,
+                                                                    'overall' => $offeredPlayer->overall_score,
                                                                     'position' => $posDisp['abbreviation'],
                                                                     'positionBg' => $posDisp['bg'],
                                                                     'positionText' => $posDisp['text'],
@@ -261,8 +259,7 @@
                                                             'playerInfo' => [
                                                                 'age' => $gp->age($game->current_date),
                                                                 'wage' => $gp->formatted_wage,
-                                                                'tec' => $gp->technical_ability,
-                                                                'fis' => $gp->physical_ability,
+                                                                'overall' => $gp->overall_score,
                                                                 'position' => $posDisp['abbreviation'],
                                                                 'positionBg' => $posDisp['bg'],
                                                                 'positionText' => $posDisp['text'],
@@ -524,8 +521,7 @@
                                                 'playerInfo' => [
                                                     'age' => $player->age($game->current_date),
                                                     'wage' => $player->formatted_wage,
-                                                    'tec' => $player->technical_ability,
-                                                    'fis' => $player->physical_ability,
+                                                    'overall' => $player->overall_score,
                                                     'position' => $posDisp['abbreviation'],
                                                     'positionBg' => $posDisp['bg'],
                                                     'positionText' => $posDisp['text'],

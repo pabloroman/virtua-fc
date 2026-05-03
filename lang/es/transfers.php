@@ -121,8 +121,6 @@ return [
     // Scouting player page
     'market_value' => 'Valor de Mercado',
     'contract_until' => 'Contrato hasta',
-    'technical' => 'Técnico',
-    'physical' => 'Físico',
     'submit_bid' => 'Enviar Oferta',
     'bid_pending' => 'Oferta Pendiente',
     'bid_awaiting_response' => 'Esperando Respuesta',

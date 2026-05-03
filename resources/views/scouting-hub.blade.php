@@ -94,8 +94,8 @@
                                             case 'age': return dir * (a.age - b.age);
                                             case 'position': return dir * a.positionAbbr.localeCompare(b.positionAbbr);
                                             case 'ability': {
-                                                const aVal = a.techRange ? (a.techRange[0] + a.techRange[1]) : 0;
-                                                const bVal = b.techRange ? (b.techRange[0] + b.techRange[1]) : 0;
+                                                const aVal = a.overallRange ? (a.overallRange[0] + a.overallRange[1]) : 0;
+                                                const bVal = b.overallRange ? (b.overallRange[0] + b.overallRange[1]) : 0;
                                                 return dir * (aVal - bVal);
                                             }
                                             case 'price': {
@@ -260,13 +260,13 @@
                                                     </div>
                                                     {{-- Ability range (locked if level 0) --}}
                                                     <div class="text-right hidden sm:block shrink-0">
-                                                        <template x-if="player.techRange">
+                                                        <template x-if="player.overallRange">
                                                             <div>
                                                                 <div class="text-xs text-text-secondary">{{ __('transfers.ability') }}</div>
-                                                                <div class="text-sm font-semibold text-text-body tabular-nums" x-text="player.techRange[0] + '-' + player.techRange[1]"></div>
+                                                                <div class="text-sm font-semibold text-text-body tabular-nums" x-text="player.overallRange[0] + '-' + player.overallRange[1]"></div>
                                                             </div>
                                                         </template>
-                                                        <template x-if="!player.techRange">
+                                                        <template x-if="!player.overallRange">
                                                             <div class="flex items-center gap-1 text-text-secondary text-xs">
                                                                 <span>{{ __('transfers.ability') }}</span>
                                                                 <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
@@ -385,35 +385,18 @@
                                                                 <h5 class="text-[10px] font-semibold text-text-muted uppercase tracking-wide mb-2">{{ __('transfers.scouting_assessment') }}</h5>
                                                                 <div class="space-y-1.5">
                                                                     <div class="flex items-center justify-between gap-3">
-                                                                        <span class="text-xs text-text-muted w-16 shrink-0">{{ __('transfers.technical') }}</span>
+                                                                        <span class="text-xs text-text-muted w-16 shrink-0">{{ __('squad.overall_full') }}</span>
                                                                         <div class="flex items-center gap-1.5">
-                                                                            <span class="text-xs font-semibold tabular-nums text-text-body" x-text="player.techRange[0] + '-' + player.techRange[1]"></span>
+                                                                            <span class="text-xs font-semibold tabular-nums text-text-body" x-text="player.overallRange[0] + '-' + player.overallRange[1]"></span>
                                                                             <div class="w-10 h-1.5 bg-surface-600 rounded-full overflow-hidden shrink-0">
                                                                                 <div class="h-1.5 rounded-full fitness-bar"
                                                                                     :class="{
-                                                                                        'bg-accent-green': Math.round((player.techRange[0] + player.techRange[1]) / 2) >= 80,
-                                                                                        'bg-lime-500': Math.round((player.techRange[0] + player.techRange[1]) / 2) >= 70 && Math.round((player.techRange[0] + player.techRange[1]) / 2) < 80,
-                                                                                        'bg-accent-gold': Math.round((player.techRange[0] + player.techRange[1]) / 2) >= 60 && Math.round((player.techRange[0] + player.techRange[1]) / 2) < 70,
-                                                                                        'bg-accent-orange': Math.round((player.techRange[0] + player.techRange[1]) / 2) < 60,
+                                                                                        'bg-accent-green': Math.round((player.overallRange[0] + player.overallRange[1]) / 2) >= 80,
+                                                                                        'bg-lime-500': Math.round((player.overallRange[0] + player.overallRange[1]) / 2) >= 70 && Math.round((player.overallRange[0] + player.overallRange[1]) / 2) < 80,
+                                                                                        'bg-accent-gold': Math.round((player.overallRange[0] + player.overallRange[1]) / 2) >= 60 && Math.round((player.overallRange[0] + player.overallRange[1]) / 2) < 70,
+                                                                                        'bg-accent-orange': Math.round((player.overallRange[0] + player.overallRange[1]) / 2) < 60,
                                                                                     }"
-                                                                                    :style="'width: ' + Math.min(100, Math.round((player.techRange[0] + player.techRange[1]) / 2) / 99 * 100) + '%'">
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="flex items-center justify-between gap-3">
-                                                                        <span class="text-xs text-text-muted w-16 shrink-0">{{ __('transfers.physical') }}</span>
-                                                                        <div class="flex items-center gap-1.5">
-                                                                            <span class="text-xs font-semibold tabular-nums text-text-body" x-text="player.physRange[0] + '-' + player.physRange[1]"></span>
-                                                                            <div class="w-10 h-1.5 bg-surface-600 rounded-full overflow-hidden shrink-0">
-                                                                                <div class="h-1.5 rounded-full fitness-bar"
-                                                                                    :class="{
-                                                                                        'bg-accent-green': Math.round((player.physRange[0] + player.physRange[1]) / 2) >= 80,
-                                                                                        'bg-lime-500': Math.round((player.physRange[0] + player.physRange[1]) / 2) >= 70 && Math.round((player.physRange[0] + player.physRange[1]) / 2) < 80,
-                                                                                        'bg-accent-gold': Math.round((player.physRange[0] + player.physRange[1]) / 2) >= 60 && Math.round((player.physRange[0] + player.physRange[1]) / 2) < 70,
-                                                                                        'bg-accent-orange': Math.round((player.physRange[0] + player.physRange[1]) / 2) < 60,
-                                                                                    }"
-                                                                                    :style="'width: ' + Math.min(100, Math.round((player.physRange[0] + player.physRange[1]) / 2) / 99 * 100) + '%'">
+                                                                                    :style="'width: ' + Math.min(100, Math.round((player.overallRange[0] + player.overallRange[1]) / 2) / 99 * 100) + '%'">
                                                                                 </div>
                                                                             </div>
                                                                         </div>

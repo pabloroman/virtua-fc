@@ -100,8 +100,7 @@
                 'attack' => __('squad.radar_att'),
                 'fitness' => __('squad.radar_fit'),
                 'morale' => __('squad.radar_mor'),
-                'technical' => __('squad.radar_tec'),
-                'physical' => __('squad.radar_phy'),
+                'overall' => __('squad.radar_overall'),
             ]"
         />
     </div>

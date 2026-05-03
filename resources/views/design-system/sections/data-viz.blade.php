@@ -61,10 +61,10 @@
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
             <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="code">&lt;!-- Single value --&gt;
-&lt;x-ability-bar :value="$player-&gt;technical_ability" size="sm" /&gt;
+&lt;x-ability-bar :value="$player-&gt;overall_score" size="sm" /&gt;
 
 &lt;!-- Range (scouting reports) --&gt;
-&lt;x-ability-bar :range="$techRange" size="sm" class="text-xs font-semibold tabular-nums text-text-body" /&gt;</code></pre>
+&lt;x-ability-bar :range="$overallRange" size="sm" class="text-xs font-semibold tabular-nums text-text-body" /&gt;</code></pre>
         </div>
 
         <div class="overflow-x-auto">

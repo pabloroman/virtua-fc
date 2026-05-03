@@ -16,8 +16,8 @@ Season end    → Mandatory evaluation: keep / promote / loan / dismiss
 Academy prospect quality follows a **normal distribution** (bell curve):
 
 1. **Ability mean** = `ACADEMY_BASE_QUALITY[academyTier] + TEAM_CONTEXT_BONUS[teamMedianTier]`
-2. **Technical & physical** — sampled independently from N(mean, σ=7), clamped to [35, 90]
-3. **Potential** — `max(technical, physical)` + normally distributed upside (mean per tier, σ=5)
+2. **Overall score** — sampled from N(mean, σ=7), clamped to [35, 90]
+3. **Potential** — current overall + normally distributed upside (mean per tier, σ=5)
 4. **Potential floor** — guaranteed minimum per academy tier (45/50/55/60)
 5. **Potential ceiling** — hard cap at 95
 

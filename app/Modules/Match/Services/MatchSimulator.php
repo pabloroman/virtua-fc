@@ -1252,26 +1252,20 @@ class MatchSimulator
         }
 
         // Calculate effective attributes with match performance modifier
-        $wTech = config('match_simulation.strength_weight_technical', 0.575);
-        $wPhys = config('match_simulation.strength_weight_physical', 0.375);
+        $wOverall = config('match_simulation.strength_weight_overall', 0.95);
         $wMorale = config('match_simulation.strength_weight_morale', 0.05);
 
         $totalStrength = 0;
         foreach ($lineup as $player) {
             $performance = $this->getMatchPerformance($player);
 
-            // Apply performance modifier to each attribute
-            // Technical ability is most affected by "form on the day"
-            $effectiveTechnical = $player->technical_ability * $performance;
-            // Physical attributes are more consistent
-            $effectivePhysical = $player->physical_ability * (0.5 + $performance * 0.5);
+            $effectiveOverall = $player->overall_score * $performance;
             $morale = $player->morale;
 
-            // Weighted contribution — ability-dominant so team quality differences are wide
-            // Fitness no longer has a separate weight — its impact comes entirely
-            // through the energy effectiveness modifier (fitness = starting energy)
-            $playerStrength = ($effectiveTechnical * $wTech) +
-                              ($effectivePhysical * $wPhys) +
+            // Weighted contribution — ability-dominant so team quality differences are wide.
+            // Fitness has no separate weight; it flows through the energy effectiveness
+            // modifier below (fitness = starting energy in the unified model).
+            $playerStrength = ($effectiveOverall * $wOverall) +
                               ($morale * $wMorale);
 
             // Apply out-of-position penalty (flat 25% reduction)
@@ -1285,7 +1279,7 @@ class MatchSimulator
             $entryMinute = $playerEntryMinutes[$player->id] ?? 0;
             $isGK = $player->position === 'Goalkeeper';
             $avgEnergy = EnergyCalculator::averageEnergy(
-                $player->physical_ability,
+                $player->overall_score,
                 $player->age($currentDate ?? now()),
                 $isGK,
                 $entryMinute,
@@ -1495,13 +1489,14 @@ class MatchSimulator
 
     /**
      * Get the effective overall score for a player in this match.
-     * Combines base ability with match-day performance.
+     * Combines form-modulated rating (overall + fitness + morale) with
+     * match-day performance variance.
      */
     private function getEffectiveScore(GamePlayer $player): float
     {
         $performance = $this->getMatchPerformance($player);
 
-        return $player->overall_score * $performance;
+        return $player->getEffectiveRating() * $performance;
     }
 
     /**
@@ -3075,7 +3070,7 @@ class MatchSimulator
 
             $remaining = $players
                 ->reject(fn ($p) => in_array($p->id, $order))
-                ->sortByDesc(fn ($p) => $p->technical_ability)
+                ->sortByDesc(fn ($p) => $p->overall_score)
                 ->values();
 
             return $ordered->merge($remaining)->all();
@@ -3090,7 +3085,7 @@ class MatchSimulator
                     return $aGk - $bGk;
                 }
 
-                return $b->technical_ability - $a->technical_ability;
+                return $b->overall_score - $a->overall_score;
             })
             ->values()
             ->all();
@@ -3105,12 +3100,12 @@ class MatchSimulator
         $base = 75;
 
         if ($kicker) {
-            $base += ($kicker->technical_ability - 50) * 0.15;
+            $base += ($kicker->overall_score - 50) * 0.15;
             $base += ($kicker->morale - 50) * 0.06;
         }
 
         if ($goalkeeper) {
-            $base -= ($goalkeeper->technical_ability - 50) * 0.10;
+            $base -= ($goalkeeper->overall_score - 50) * 0.10;
         }
 
         // Luck factor

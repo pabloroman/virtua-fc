@@ -54,8 +54,7 @@ class PlayerConditionServiceTest extends TestCase
                 'position' => 'Central Midfield',
                 'fitness' => 100,
                 'morale' => 80,
-                'game_physical_ability' => 70,
-                'game_technical_ability' => 70,
+                'overall_score' => 70,
             ], $overrides));
     }
 
@@ -70,7 +69,7 @@ class PlayerConditionServiceTest extends TestCase
         $player = $this->createPlayer([
             'position' => 'Central Midfield',
             'fitness' => 100,
-            'game_physical_ability' => 70,
+            'overall_score' => 70,
         ], [
             'date_of_birth' => Carbon::parse('2025-10-01')->subYears(27)->subMonths(6),
         ]);
@@ -88,7 +87,7 @@ class PlayerConditionServiceTest extends TestCase
         $player = $this->createPlayer([
             'position' => 'Central Midfield',
             'fitness' => 90,
-            'game_physical_ability' => 70,
+            'overall_score' => 70,
         ]);
 
         $change = $this->calculateFitnessChange->invoke($this->service, $player, true, 3, $this->currentDate);
@@ -103,7 +102,7 @@ class PlayerConditionServiceTest extends TestCase
     {
         $player = $this->createPlayer([
             'fitness' => 60,
-            'game_physical_ability' => 70,
+            'overall_score' => 70,
         ]);
 
         $change = $this->calculateFitnessChange->invoke($this->service, $player, false, 7, $this->currentDate);
@@ -116,7 +115,7 @@ class PlayerConditionServiceTest extends TestCase
     {
         $attrs = [
             'position' => 'Central Midfield',
-            'game_physical_ability' => 70,
+            'overall_score' => 70,
         ];
 
         $playerLow = $this->createPlayer(array_merge($attrs, ['fitness' => 50]));
@@ -132,7 +131,7 @@ class PlayerConditionServiceTest extends TestCase
     {
         $player = $this->createPlayer([
             'fitness' => 100,
-            'game_physical_ability' => 70,
+            'overall_score' => 70,
         ]);
 
         $recovery = $this->calculateFitnessChange->invoke($this->service, $player, false, 5, $this->currentDate);
@@ -150,13 +149,13 @@ class PlayerConditionServiceTest extends TestCase
         $gk = $this->createPlayer([
             'position' => 'Goalkeeper',
             'fitness' => 100,
-            'game_physical_ability' => 70,
+            'overall_score' => 70,
         ]);
 
         $mid = $this->createPlayer([
             'position' => 'Central Midfield',
             'fitness' => 100,
-            'game_physical_ability' => 70,
+            'overall_score' => 70,
         ]);
 
         // GK drain multiplier = 0.5x, so GK loses much less energy
@@ -167,17 +166,17 @@ class PlayerConditionServiceTest extends TestCase
             'GK should have better net fitness change than midfielder');
     }
 
-    public function test_high_physical_players_drain_less(): void
+    public function test_high_overall_players_drain_less(): void
     {
-        $highPhys = $this->createPlayer(['fitness' => 100, 'game_physical_ability' => 90]);
-        $lowPhys = $this->createPlayer(['fitness' => 100, 'game_physical_ability' => 40]);
+        $highOverall = $this->createPlayer(['fitness' => 100, 'overall_score' => 90]);
+        $lowOverall = $this->createPlayer(['fitness' => 100, 'overall_score' => 40]);
 
         // Same recovery period, different drain rates
-        $changeHigh = $this->calculateFitnessChange->invoke($this->service, $highPhys, true, 7, $this->currentDate);
-        $changeLow = $this->calculateFitnessChange->invoke($this->service, $lowPhys, true, 7, $this->currentDate);
+        $changeHigh = $this->calculateFitnessChange->invoke($this->service, $highOverall, true, 7, $this->currentDate);
+        $changeLow = $this->calculateFitnessChange->invoke($this->service, $lowOverall, true, 7, $this->currentDate);
 
         $this->assertGreaterThan($changeLow, $changeHigh,
-            'High physical player should lose less energy per match');
+            'High overall-rated player should lose less energy per match');
     }
 
     // -------------------------------------------------------
@@ -202,8 +201,8 @@ class PlayerConditionServiceTest extends TestCase
 
     public function test_lower_starting_fitness_means_less_absolute_drain(): void
     {
-        $highFit = $this->createPlayer(['fitness' => 100, 'game_physical_ability' => 70]);
-        $lowFit = $this->createPlayer(['fitness' => 60, 'game_physical_ability' => 70]);
+        $highFit = $this->createPlayer(['fitness' => 100, 'overall_score' => 70]);
+        $lowFit = $this->createPlayer(['fitness' => 60, 'overall_score' => 70]);
 
         // Same recovery period (1 day = minimal recovery, isolates the drain)
         $changeHigh = $this->calculateFitnessChange->invoke($this->service, $highFit, true, 1, $this->currentDate);
@@ -228,7 +227,7 @@ class PlayerConditionServiceTest extends TestCase
             'position' => 'Central Midfield',
             'fitness' => 99,
             'morale' => 80,
-            'game_physical_ability' => 70,
+            'overall_score' => 70,
         ]);
 
         $homeTeam = Team::factory()->create();
@@ -268,7 +267,7 @@ class PlayerConditionServiceTest extends TestCase
             'position' => 'Central Midfield',
             'fitness' => 42,
             'morale' => 80,
-            'game_physical_ability' => 70,
+            'overall_score' => 70,
         ]);
 
         $match = GameMatch::factory()->create([
@@ -306,7 +305,7 @@ class PlayerConditionServiceTest extends TestCase
         $player = $this->createPlayer([
             'position' => 'Central Midfield',
             'fitness' => 100,
-            'game_physical_ability' => 70,
+            'overall_score' => 70,
         ], [
             'date_of_birth' => Carbon::parse('2025-10-01')->subYears(27)->subMonths(6),
         ]);
@@ -333,7 +332,7 @@ class PlayerConditionServiceTest extends TestCase
         $player = $this->createPlayer([
             'position' => 'Central Midfield',
             'fitness' => 100,
-            'game_physical_ability' => 70,
+            'overall_score' => 70,
         ], [
             'date_of_birth' => Carbon::parse('2025-10-01')->subYears(27)->subMonths(6),
         ]);

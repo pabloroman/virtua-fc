@@ -374,13 +374,13 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
             INSERT INTO game_players (
                 id, game_id, player_id, team_id, number, position, secondary_positions,
                 market_value, market_value_cents, contract_until, annual_wage, durability,
-                game_technical_ability, game_physical_ability,
+                overall_score,
                 potential, potential_low, potential_high, tier
             )
             SELECT
                 gen_random_uuid(), ?, t.player_id, t.team_id, t.number, t.position, t.secondary_positions,
                 t.market_value, t.market_value_cents, t.contract_until, t.annual_wage, t.durability,
-                t.game_technical_ability, t.game_physical_ability,
+                t.overall_score,
                 t.potential, t.potential_low, t.potential_high, t.tier
             FROM game_player_templates t
             WHERE t.season = ?

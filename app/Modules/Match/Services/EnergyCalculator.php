@@ -9,18 +9,18 @@ class EnergyCalculator
      *
      * @param  float  $tacticalDrainMultiplier  Combined tactical drain (playing style × pressing)
      */
-    public static function drainPerMinute(int $physicalAbility, int $age, bool $isGoalkeeper, float $tacticalDrainMultiplier = 1.0): float
+    public static function drainPerMinute(int $overallScore, int $age, bool $isGoalkeeper, float $tacticalDrainMultiplier = 1.0): float
     {
         $baseDrain = config('match_simulation.energy.base_drain_per_minute', 0.55);
-        $physicalFactor = config('match_simulation.energy.physical_ability_factor', 0.005);
+        $overallFactor = config('match_simulation.energy.overall_score_factor', 0.005);
         $ageThreshold = config('match_simulation.energy.age_threshold', 28);
         $agePenalty = config('match_simulation.energy.age_penalty_per_year', 0.015);
         $gkMultiplier = config('match_simulation.energy.gk_drain_multiplier', 0.5);
 
-        $physicalBonus = ($physicalAbility - 50) * $physicalFactor;
+        $overallBonus = ($overallScore - 50) * $overallFactor;
         $ageExtra = max(0, $age - $ageThreshold) * $agePenalty;
 
-        $drain = $baseDrain - $physicalBonus + $ageExtra;
+        $drain = $baseDrain - $overallBonus + $ageExtra;
 
         if ($isGoalkeeper) {
             $drain *= $gkMultiplier;
@@ -40,10 +40,10 @@ class EnergyCalculator
      *
      * @param  float  $startingEnergy  Energy at match start (equals player fitness, 0-100)
      */
-    public static function energyAtMinute(int $physicalAbility, int $age, bool $isGoalkeeper, int $currentMinute, int $minuteEntered = 0, float $tacticalDrainMultiplier = 1.0, float $startingEnergy = 100.0): float
+    public static function energyAtMinute(int $overallScore, int $age, bool $isGoalkeeper, int $currentMinute, int $minuteEntered = 0, float $tacticalDrainMultiplier = 1.0, float $startingEnergy = 100.0): float
     {
         $minutesPlayed = max(0, $currentMinute - $minuteEntered);
-        $baseDrain = self::drainPerMinute($physicalAbility, $age, $isGoalkeeper, $tacticalDrainMultiplier);
+        $baseDrain = self::drainPerMinute($overallScore, $age, $isGoalkeeper, $tacticalDrainMultiplier);
 
         // Proportional drain: scale by starting energy so fatigued players
         // lose less absolute energy per minute, creating stable equilibria
@@ -57,7 +57,7 @@ class EnergyCalculator
      *
      * @param  float  $startingEnergy  Energy at match start (equals player fitness, 0-100)
      */
-    public static function averageEnergy(int $physicalAbility, int $age, bool $isGoalkeeper, int $entryMinute, int $fromMinute, int $toMinute = 93, float $tacticalDrainMultiplier = 1.0, float $startingEnergy = 100.0): float
+    public static function averageEnergy(int $overallScore, int $age, bool $isGoalkeeper, int $entryMinute, int $fromMinute, int $toMinute = 93, float $tacticalDrainMultiplier = 1.0, float $startingEnergy = 100.0): float
     {
         // Player hasn't entered yet — shouldn't happen but return starting energy
         if ($entryMinute > $toMinute) {
@@ -67,8 +67,8 @@ class EnergyCalculator
         // If player entered after fromMinute, only average from entry onward
         $effectiveFrom = max($fromMinute, $entryMinute);
 
-        $energyStart = self::energyAtMinute($physicalAbility, $age, $isGoalkeeper, $effectiveFrom, $entryMinute, $tacticalDrainMultiplier, $startingEnergy);
-        $energyEnd = self::energyAtMinute($physicalAbility, $age, $isGoalkeeper, $toMinute, $entryMinute, $tacticalDrainMultiplier, $startingEnergy);
+        $energyStart = self::energyAtMinute($overallScore, $age, $isGoalkeeper, $effectiveFrom, $entryMinute, $tacticalDrainMultiplier, $startingEnergy);
+        $energyEnd = self::energyAtMinute($overallScore, $age, $isGoalkeeper, $toMinute, $entryMinute, $tacticalDrainMultiplier, $startingEnergy);
 
         return ($energyStart + $energyEnd) / 2;
     }

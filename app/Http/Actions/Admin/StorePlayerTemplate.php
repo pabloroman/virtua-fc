@@ -38,8 +38,7 @@ class StorePlayerTemplate
             'contract_until' => ['nullable', 'date'],
             'annual_wage_euros' => ['required', 'integer', 'min:0'],
             'durability' => ['required', 'integer', 'min:0', 'max:100'],
-            'game_technical_ability' => ['nullable', 'integer', 'min:1', 'max:99'],
-            'game_physical_ability' => ['nullable', 'integer', 'min:1', 'max:99'],
+            'overall_score' => ['nullable', 'integer', 'min:1', 'max:99'],
             'potential' => ['nullable', 'integer', 'min:1', 'max:99'],
             'potential_low' => ['nullable', 'integer', 'min:1', 'max:99'],
             'potential_high' => ['nullable', 'integer', 'min:1', 'max:99'],
@@ -50,8 +49,7 @@ class StorePlayerTemplate
             'name' => $validated['name'],
             'date_of_birth' => $validated['date_of_birth'],
             'nationality' => array_filter([$validated['nationality'] ?? null]),
-            'technical_ability' => $validated['game_technical_ability'] ?? 50,
-            'physical_ability' => $validated['game_physical_ability'] ?? 50,
+            'overall_score' => $validated['overall_score'] ?? 50,
         ]);
 
         $teamId = $validated['team_id'] ?: null;

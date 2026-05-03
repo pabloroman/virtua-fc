@@ -110,10 +110,8 @@ class DispositionService
             return 0.5;
         }
 
-        // Rank by overall ability (technical + physical average)
-        $sorted = $teammates->sortByDesc(function ($p) {
-            return ($p->current_technical_ability + $p->current_physical_ability) / 2;
-        })->values();
+        // Rank by overall ability
+        $sorted = $teammates->sortByDesc(fn ($p) => $p->overall_score)->values();
 
         $rank = $sorted->search(fn ($p) => $p->id === $player->id);
 

@@ -104,8 +104,7 @@ class PlayerRetirementTest extends TestCase
                     position: 'Central Midfield',
                     fitness: 75,
                     appearances: 10,
-                    techAbility: 65,
-                    physAbility: 65,
+                    overall: 65,
                 );
                 if ($service->shouldRetire($player)) {
                     $count++;
@@ -134,8 +133,7 @@ class PlayerRetirementTest extends TestCase
                 position: 'Central Midfield',
                 fitness: 90,
                 appearances: 30,
-                techAbility: 80,
-                physAbility: 75,
+                overall: 77,
             );
             if ($service->shouldRetire($fitStarter)) {
                 $fitStarterRetirements++;
@@ -146,8 +144,7 @@ class PlayerRetirementTest extends TestCase
                 position: 'Central Midfield',
                 fitness: 50,
                 appearances: 2,
-                techAbility: 45,
-                physAbility: 40,
+                overall: 42,
             );
             if ($service->shouldRetire($unfitBench)) {
                 $unfitBenchRetirements++;
@@ -191,8 +188,7 @@ class PlayerRetirementTest extends TestCase
             age: 37,
             position: 'Centre-Back',
             team: $this->aiTeam,
-            techAbility: 75,
-            physAbility: 70,
+            overall: 72,
         );
         $player->update(['retiring_at_season' => '2024']);
 
@@ -240,8 +236,7 @@ class PlayerRetirementTest extends TestCase
         // team_id (e.g. contract expiration earlier in the same closing), must
         // still be removed — not linger as a free agent next season.
         $player = Player::factory()->age(36)->create([
-            'technical_ability' => 65,
-            'physical_ability' => 65,
+            'overall_score' => 65,
         ]);
         $gamePlayer = GamePlayer::factory()->create([
             'game_id' => $this->game->id,
@@ -250,8 +245,7 @@ class PlayerRetirementTest extends TestCase
             'position' => 'Central Midfield',
             'fitness' => 80,
             'season_appearances' => 15,
-            'game_technical_ability' => 65,
-            'game_physical_ability' => 65,
+            'overall_score' => 65,
             'retiring_at_season' => '2024',
         ]);
 
@@ -275,8 +269,7 @@ class PlayerRetirementTest extends TestCase
         // the same closing-cycle cadence as rostered players. Age 40 outfield
         // is MAX_CAREER_OUTFIELD, so shouldRetire() returns true deterministically.
         $player = Player::factory()->age(40)->create([
-            'technical_ability' => 65,
-            'physical_ability' => 65,
+            'overall_score' => 65,
         ]);
         $gamePlayer = GamePlayer::factory()->create([
             'game_id' => $this->game->id,
@@ -285,8 +278,7 @@ class PlayerRetirementTest extends TestCase
             'position' => 'Central Midfield',
             'fitness' => 80,
             'season_appearances' => 0,
-            'game_technical_ability' => 65,
-            'game_physical_ability' => 65,
+            'overall_score' => 65,
             'retiring_at_season' => null,
         ]);
 
@@ -388,12 +380,10 @@ class PlayerRetirementTest extends TestCase
         ?Team $team = null,
         int $fitness = 80,
         int $appearances = 15,
-        int $techAbility = 65,
-        int $physAbility = 65,
+        int $overall = 65,
     ): GamePlayer {
         $player = Player::factory()->age($age)->create([
-            'technical_ability' => $techAbility,
-            'physical_ability' => $physAbility,
+            'overall_score' => $overall,
         ]);
 
         return GamePlayer::factory()->create([
@@ -403,8 +393,7 @@ class PlayerRetirementTest extends TestCase
             'position' => $position,
             'fitness' => $fitness,
             'season_appearances' => $appearances,
-            'game_technical_ability' => $techAbility,
-            'game_physical_ability' => $physAbility,
+            'overall_score' => $overall,
         ]);
     }
 }

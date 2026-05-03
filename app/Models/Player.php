@@ -15,8 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property array<array-key, mixed>|null $nationality
  * @property string|null $height
  * @property string|null $foot
- * @property int $technical_ability
- * @property int $physical_ability
+ * @property int $overall_score
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\GamePlayer> $gamePlayers
  * @property-read int|null $game_players_count
  * @property-read int $age
@@ -30,8 +29,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Player whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Player whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Player whereNationality($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Player wherePhysicalAbility($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Player whereTechnicalAbility($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Player whereOverallScore($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Player whereTransfermarktId($value)
  * @mixin \Eloquent
  */
@@ -48,15 +46,13 @@ class Player extends Model
         'nationality',
         'height',
         'foot',
-        'technical_ability',
-        'physical_ability',
+        'overall_score',
     ];
 
     protected $casts = [
         'nationality' => 'array',
         'date_of_birth' => 'date',
-        'technical_ability' => 'integer',
-        'physical_ability' => 'integer',
+        'overall_score' => 'integer',
     ];
 
     public function gamePlayers(): HasMany

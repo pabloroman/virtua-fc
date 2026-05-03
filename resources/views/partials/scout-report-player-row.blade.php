@@ -18,8 +18,7 @@
     $canAffordLoan = $detail['can_afford_loan'] ?? false;
     $availableBudget = (int) (($detail['available_budget'] ?? 0) / 100);
     $onCooldown = $detail['on_cooldown'] ?? false;
-    $techRange = $detail['tech_range'] ?? [0, 0];
-    $physRange = $detail['phys_range'] ?? [0, 0];
+    $overallRange = $detail['overall_range'] ?? [0, 0];
     $willingnessLabel = $detail['willingness_label'] ?? null;
     $isExpiring = !$isFreeAgent && $player->contract_until && $player->contract_until <= $game->getSeasonEndDate();
     $isShortlisted = in_array($player->id, $shortlistedPlayerIds ?? []);
@@ -62,7 +61,7 @@
         <div class="flex items-center justify-between gap-4 md:justify-end md:shrink-0">
             <div class="text-right">
                 <div class="text-xs text-text-secondary">{{ __('transfers.ability') }}</div>
-                <div class="text-sm font-semibold text-text-body tabular-nums">{{ $techRange[0] }}-{{ $techRange[1] }}</div>
+                <div class="text-sm font-semibold text-text-body tabular-nums">{{ $overallRange[0] }}-{{ $overallRange[1] }}</div>
             </div>
             <div class="text-right">
                 <div class="text-xs text-text-secondary">{{ __('transfers.asking_price') }}</div>
@@ -99,15 +98,10 @@
                 <div>
                     <h5 class="text-xs font-semibold text-text-muted uppercase tracking-wide mb-3">{{ __('transfers.scouting_assessment') }}</h5>
                     <div class="space-y-2.5">
-                        {{-- Technical --}}
+                        {{-- Overall ability --}}
                         <div class="flex items-center justify-between gap-3">
-                            <span class="text-xs text-text-muted w-16 shrink-0">{{ __('transfers.technical') }}</span>
-                            <x-ability-bar :range="$techRange" size="sm" class="text-xs font-semibold tabular-nums text-text-body" />
-                        </div>
-                        {{-- Physical --}}
-                        <div class="flex items-center justify-between gap-3">
-                            <span class="text-xs text-text-muted w-16 shrink-0">{{ __('transfers.physical') }}</span>
-                            <x-ability-bar :range="$physRange" size="sm" class="text-xs font-semibold tabular-nums text-text-body" />
+                            <span class="text-xs text-text-muted w-16 shrink-0">{{ __('squad.overall_full') }}</span>
+                            <x-ability-bar :range="$overallRange" size="sm" class="text-xs font-semibold tabular-nums text-text-body" />
                         </div>
                         {{-- Market Value --}}
                         <div class="flex items-center justify-between pt-1">

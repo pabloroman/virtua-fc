@@ -96,9 +96,8 @@ class ShowLineup
                 'positionGroup' => $p->position_group,
                 'positionAbbr' => $p->position_abbreviation,
                 'positions' => $p->positions,
-                'overallScore' => $p->overall_score,
-                'technicalAbility' => $p->technical_ability,
-                'physicalAbility' => $p->physical_ability,
+                'overallScore' => $p->getEffectiveRating(),
+                'rawOverall' => $p->overall_score,
                 'fitness' => $p->fitness,
                 'morale' => $p->morale,
                 'isAvailable' => $isAvailable,
@@ -342,7 +341,7 @@ class ShowLineup
     private function calculateRadarValues(\Illuminate\Support\Collection $players): array
     {
         if ($players->isEmpty()) {
-            return array_fill_keys(['goalkeeper', 'defense', 'midfield', 'attack', 'fitness', 'morale', 'technical', 'physical'], 0);
+            return array_fill_keys(['goalkeeper', 'defense', 'midfield', 'attack', 'fitness', 'morale', 'overall'], 0);
         }
 
         $grouped = $players->groupBy(fn ($p) => $p->position_group);
@@ -358,8 +357,7 @@ class ShowLineup
             'attack' => $avgOverall('Forward'),
             'fitness' => (int) round($players->avg('fitness')),
             'morale' => (int) round($players->avg('morale')),
-            'technical' => (int) round($players->avg('technical_ability')),
-            'physical' => (int) round($players->avg('physical_ability')),
+            'overall' => (int) round($players->avg('overall_score')),
         ];
     }
 }

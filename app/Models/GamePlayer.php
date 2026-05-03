@@ -35,8 +35,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $assists
  * @property int $yellow_cards
  * @property int $red_cards
- * @property int|null $game_technical_ability
- * @property int|null $game_physical_ability
+ * @property int|null $overall_score
  * @property int $tier
  * @property int|null $potential
  * @property int|null $potential_low
@@ -55,22 +54,17 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property-read \App\Models\Game $game
  * @property-read int $annual_wage_euros
  * @property-read int|null $contract_expiry_year
- * @property-read int $current_physical_ability
- * @property-read int $current_technical_ability
  * @property-read string $formatted_market_value
  * @property-read string|null $formatted_pending_wage
  * @property-read string $formatted_wage
  * @property-read string $name
  * @property-read array|null $nationality
  * @property-read array{name: string, flag: string}|null $nationality_flag
- * @property-read int $overall_score
- * @property-read int $physical_ability
  * @property-read string $position_abbreviation
  * @property-read array{abbreviation: string, name: string}|null $position_display
  * @property-read string $position_group
  * @property-read string $position_name
  * @property-read string $potential_range
- * @property-read int $technical_ability
  * @property-read \App\Models\RenewalNegotiation|null $latestRenewalNegotiation
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MatchEvent> $matchEvents
  * @property-read int|null $match_events_count
@@ -92,8 +86,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereDurability($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereFitness($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereGameId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereGamePhysicalAbility($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereGameTechnicalAbility($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereOverallScore($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereGoals($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereGoalsConceded($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereId($value)
@@ -137,8 +130,7 @@ class GamePlayer extends Model
         'annual_wage',
         'pending_annual_wage',
         'durability',
-        'game_technical_ability',
-        'game_physical_ability',
+        'overall_score',
         'tier',
         'potential',
         'potential_low',
@@ -155,8 +147,7 @@ class GamePlayer extends Model
         'pending_annual_wage' => 'integer',
         'durability' => 'integer',
         // Development fields
-        'game_technical_ability' => 'integer',
-        'game_physical_ability' => 'integer',
+        'overall_score' => 'integer',
         'tier' => 'integer',
         'potential' => 'integer',
         'potential_low' => 'integer',
@@ -801,49 +792,19 @@ class GamePlayer extends Model
     }
 
     /**
-     * Calculate overall score from 4 attributes.
-     * Technical + Physical (game-specific) + Energy + Morale
+     * Form-modulated rating: blends the stable `overall_score` baseline with
+     * fitness and morale so callers (FormationRecommender sort order, goal
+     * scorer weighting) see day-to-day form effects without overwriting the
+     * raw rating itself. The 0.70 / 0.15 / 0.15 split matches the legacy
+     * computed `overall_score` accessor that this method replaces.
      */
-    public function getOverallScoreAttribute(): int
+    public function getEffectiveRating(): int
     {
         return (int) round(
-            $this->current_technical_ability * 0.35 +
-            $this->current_physical_ability * 0.35 +
+            $this->overall_score * 0.70 +
             $this->fitness * 0.15 +
             $this->morale * 0.15
         );
-    }
-
-    /**
-     * Get current technical ability (game-specific or fallback to Player reference).
-     */
-    public function getCurrentTechnicalAbilityAttribute(): int
-    {
-        return $this->game_technical_ability ?? $this->player->technical_ability;
-    }
-
-    /**
-     * Get current physical ability (game-specific or fallback to Player reference).
-     */
-    public function getCurrentPhysicalAbilityAttribute(): int
-    {
-        return $this->game_physical_ability ?? $this->player->physical_ability;
-    }
-
-    /**
-     * Get technical ability - uses game-specific value if set.
-     */
-    public function getTechnicalAbilityAttribute(): int
-    {
-        return $this->current_technical_ability;
-    }
-
-    /**
-     * Get physical ability - uses game-specific value if set.
-     */
-    public function getPhysicalAbilityAttribute(): int
-    {
-        return $this->current_physical_ability;
     }
 
     /**

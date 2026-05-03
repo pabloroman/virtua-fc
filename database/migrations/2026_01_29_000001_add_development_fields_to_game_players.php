@@ -17,12 +17,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('game_players', function (Blueprint $table) {
-            // Game-specific abilities (can deviate from Player reference over time)
-            $table->unsignedTinyInteger('game_technical_ability')->nullable()->after('morale');
-            $table->unsignedTinyInteger('game_physical_ability')->nullable()->after('game_technical_ability');
+            // Game-scoped overall ability (evolves per game from the Player reference)
+            $table->unsignedTinyInteger('overall_score')->nullable()->after('morale');
 
             // Potential (hidden true value + revealed range)
-            $table->unsignedTinyInteger('potential')->nullable()->after('game_physical_ability');
+            $table->unsignedTinyInteger('potential')->nullable()->after('overall_score');
             $table->unsignedTinyInteger('potential_low')->nullable()->after('potential');
             $table->unsignedTinyInteger('potential_high')->nullable()->after('potential_low');
 
@@ -38,8 +37,7 @@ return new class extends Migration
     {
         Schema::table('game_players', function (Blueprint $table) {
             $table->dropColumn([
-                'game_technical_ability',
-                'game_physical_ability',
+                'overall_score',
                 'potential',
                 'potential_low',
                 'potential_high',
