@@ -384,7 +384,7 @@ class SquadReplenishmentTest extends TestCase
         // Create a team with avg ability 70
         for ($i = 0; $i < 22; $i++) {
             $position = $i < 2 ? 'Goalkeeper' : ($i < 7 ? 'Centre-Back' : ($i < 12 ? 'Central Midfield' : 'Centre-Forward'));
-            $this->createGamePlayer($this->aiTeam, $position, techAbility: 70, physAbility: 70);
+            $this->createGamePlayer($this->aiTeam, $position, overall: 70);
         }
 
         $processor = app(SquadReplenishmentProcessor::class);
