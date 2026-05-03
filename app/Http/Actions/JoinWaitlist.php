@@ -3,13 +3,14 @@
 namespace App\Http\Actions;
 
 use App\Models\WaitlistEntry;
+use App\Services\BetaInviteService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class JoinWaitlist
 {
-    public function __invoke(Request $request): JsonResponse
+    public function __invoke(Request $request, BetaInviteService $inviteService): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
@@ -37,15 +38,34 @@ class JoinWaitlist
                 'wants_tournament' => $validated['wants_tournament'],
             ]);
 
+            if ($inviteService->hasAlreadyBeenInvited($existing->email)) {
+                return response()->json([
+                    'message' => __('waitlist.already_registered'),
+                ], 200);
+            }
+
+            $this->sendInviteIfBetaEnabled($inviteService, $existing->fresh());
+
             return response()->json([
-                'message' => __('waitlist.already_registered'),
+                'message' => __('waitlist.success'),
             ], 200);
         }
 
-        WaitlistEntry::create($validated);
+        $entry = WaitlistEntry::create($validated);
+
+        $this->sendInviteIfBetaEnabled($inviteService, $entry);
 
         return response()->json([
             'message' => __('waitlist.success'),
         ], 201);
+    }
+
+    private function sendInviteIfBetaEnabled(BetaInviteService $inviteService, WaitlistEntry $entry): void
+    {
+        if (! config('beta.enabled')) {
+            return;
+        }
+
+        $inviteService->invite($entry);
     }
 }

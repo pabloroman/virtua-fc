@@ -23,7 +23,7 @@ class BetaInviteService
             'grants_tournament' => $entry->wants_tournament,
         ]);
 
-        Mail::to($entry->email)->send(new BetaInvite($invite));
+        Mail::to($entry->email)->queue(new BetaInvite($invite));
 
         $invite->update([
             'invite_sent' => true,
