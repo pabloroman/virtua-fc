@@ -105,6 +105,25 @@ class AppServiceProvider extends ServiceProvider
             DB::listen(fn ($event) => $crossPlaneGuard($event));
         }
 
+        // Tests run against a single physical Postgres, but the control and
+        // tenant planes use distinct connection NAMES — and two PDO handles
+        // means two independent transactions, which breaks FK consistency
+        // between, say, `games.user_id` (tenant) and `users.id` (control)
+        // during a `RefreshDatabase` test where the user is inserted via
+        // pgsql_control before the game is inserted via pgsql.
+        //
+        // Alias pgsql_control to pgsql in the testing environment so both
+        // connection names resolve to the same Connection instance (one PDO
+        // handle, one transaction). Eloquent models still declare their
+        // logical connection — the alias is transparent — but transactional
+        // integrity is preserved. The runtime guard would obviously not work
+        // under this alias, which is fine because it's gated off by default.
+        if ($this->app->environment('testing')) {
+            $this->app['db']->extend('pgsql_control', function () {
+                return $this->app['db']->connection('pgsql');
+            });
+        }
+
         RateLimiter::for('game-creation', fn (Request $request) => Limit::perMinute(5)->by($request->user()?->id ?: $request->ip()));
         RateLimiter::for('tournament-simulation', fn (Request $request) => Limit::perMinute(3)->by($request->user()?->id ?: $request->ip()));
 
