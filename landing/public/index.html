@@ -390,7 +390,7 @@
                 const data = await res.json();
 
                 if (res.ok) {
-                    formMessage.textContent = '¡Estás en la lista! Te avisaremos pronto.';
+                    formMessage.textContent = data.message || '¡Estás en la lista! Tu invitación va de camino: revisa tu bandeja de entrada (y la carpeta de spam, por si acaso).';
                     formMessage.className = 'text-xs mt-3 text-green-400';
                     formMessage.classList.remove('hidden');
                     form.reset();

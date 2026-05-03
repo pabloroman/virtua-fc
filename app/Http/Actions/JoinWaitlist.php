@@ -2,6 +2,7 @@
 
 namespace App\Http\Actions;
 
+use App\Jobs\SendAutomaticWaitlistInvite;
 use App\Models\WaitlistEntry;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -42,7 +43,9 @@ class JoinWaitlist
             ], 200);
         }
 
-        WaitlistEntry::create($validated);
+        $entry = WaitlistEntry::create($validated);
+
+        SendAutomaticWaitlistInvite::dispatch($entry->id);
 
         return response()->json([
             'message' => __('waitlist.success'),
