@@ -91,6 +91,20 @@ These are non-obvious rules that prevent bugs. Read carefully.
 - **No `current_matchday` on Game.** The league matchday number is derived from match data (e.g., `round_number` on `GameMatch`). Use `$game->nextLeagueMatchday` accessor to get the next unplayed league round number.
 - **`currentFinances` and `currentInvestment`** relationships use `$this->season` internally. Always use lazy loading — never eager load with `with()`.
 
+### Control plane / tenant plane
+
+Two logical database planes share one physical Postgres today, with separate connections so they can be split onto separate instances later without code changes:
+
+- **Tenant plane** (`pgsql` connection, default): per-game state — every model with a `game_id`. Write-heavy, hot path. `Game`, `GameMatch`, `GamePlayer`, `GameStanding`, `GameFinances`, transfers, lineups, etc.
+- **Control plane** (`pgsql_control` connection): cross-tenant data — identity, leaderboards, reference data, game directory. Read-heavy, small. `User`, `ManagerStats`, `TournamentSummary`, `Team`, `Competition`, `Player` (biographical pool), reference templates, onboarding tables.
+
+**Rules:**
+- New cross-tenant models declare `protected $connection = 'pgsql_control'`.
+- New per-game models stay on the default connection.
+- **Never JOIN across planes.** Even though both connections currently resolve to the same physical DB, JOINs that cross the boundary will break the moment they're split. Use a service-layer call that issues separate queries on each connection.
+- **No Eloquent relationships across planes** (`belongsTo`/`hasMany` between models on different connections). Eloquent's eager loading does not work reliably across connections. Replace with explicit service calls.
+- Migrations target a specific plane; control-plane schema goes in `database/migrations/control/`, tenant in `database/migrations/tenant/` (paths are introduced in a later phase — until then, all migrations are on the default connection).
+
 ### Player Age Boundaries
 
 **Never hardcode age values in queries or business logic.** Use constants from `App\Modules\Player\PlayerAge` (e.g., `PlayerAge::MIN_RETIREMENT_OUTFIELD`, `PlayerAge::PRIME_END`). To convert an age constant to a date-of-birth cutoff for database queries, use `PlayerAge::dateOfBirthCutoff($age, $referenceDate)` instead of `$date->subYears($age)`. This keeps age boundaries in a single source of truth.
