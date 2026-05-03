@@ -8,6 +8,7 @@ use App\Modules\Player\PlayerAge;
 use App\Modules\Player\Services\PlayerRetirementService;
 use App\Models\Game;
 use App\Models\GamePlayer;
+use App\Models\Player;
 
 /**
  * Handles player retirements at the end of the season.
@@ -93,6 +94,11 @@ class PlayerRetirementProcessor implements SeasonProcessor
         // set from ~500 to ~20-40 before PHP-side probability evaluation.
         $minRetirementCutoff = PlayerAge::dateOfBirthCutoff(PlayerAge::MIN_RETIREMENT_OUTFIELD, $game->current_date);
 
+        // Resolve eligible biographical players first (control plane), then
+        // filter game-side rows by player_id. Replaces a whereHas('player', …)
+        // subquery that would cross the control/tenant plane boundary.
+        $eligiblePlayerIds = Player::where('date_of_birth', '<=', $minRetirementCutoff)->pluck('id');
+
         // matchState is eager-loaded because shouldRetire() reads
         // fitness/season_appearances via the GamePlayer accessor delegates.
         // Free agents (team_id IS NULL) are included so they also receive
@@ -100,7 +106,7 @@ class PlayerRetirementProcessor implements SeasonProcessor
         $candidates = GamePlayer::with(['player', 'team', 'game', 'matchState'])
             ->where('game_id', $game->id)
             ->whereNull('retiring_at_season')
-            ->whereHas('player', fn ($q) => $q->where('date_of_birth', '<=', $minRetirementCutoff))
+            ->whereIn('player_id', $eligiblePlayerIds)
             ->get()
             ->filter(fn (GamePlayer $player) => $this->retirementService->shouldRetire($player));
 

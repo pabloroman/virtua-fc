@@ -218,9 +218,13 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
         $game = Game::find($this->gameId);
         $countryCode = $game->country ?? 'ES';
 
-        // Load competition entries with their competition tier
+        // Resolve in-country competition ids on the control plane first, then
+        // filter game-side entries by competition_id. Avoids a cross-plane
+        // whereHas('competition', …) subquery.
+        $countryCompetitionIds = Competition::where('country', $countryCode)->pluck('id');
+
         $entries = CompetitionEntry::where('game_id', $this->gameId)
-            ->whereHas('competition', fn ($q) => $q->where('country', $countryCode))
+            ->whereIn('competition_id', $countryCompetitionIds)
             ->get();
 
         $teamIds = $entries->pluck('team_id')->unique();

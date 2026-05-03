@@ -3,6 +3,7 @@
 namespace App\Modules\Analytics\Services;
 
 use App\Models\Game;
+use App\Models\Team;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -10,8 +11,12 @@ class GameStatsService
 {
     public function getClubPopularity(int $limit = 15): Collection
     {
+        // Resolve club team ids on the control plane first, then count Game
+        // picks on the tenant plane. Avoids a cross-plane whereHas('team').
+        $clubTeamIds = Team::where('type', '!=', 'national')->pluck('id');
+
         return Game::select('team_id', DB::raw('COUNT(*) as picks'))
-            ->whereHas('team', fn ($q) => $q->where('type', '!=', 'national'))
+            ->whereIn('team_id', $clubTeamIds)
             ->groupBy('team_id')
             ->orderByDesc('picks')
             ->with('team:id,name,image,type,country')
@@ -21,8 +26,10 @@ class GameStatsService
 
     public function getNationalTeamPopularity(int $limit = 15): Collection
     {
+        $nationalTeamIds = Team::where('type', 'national')->pluck('id');
+
         return Game::select('team_id', DB::raw('COUNT(*) as picks'))
-            ->whereHas('team', fn ($q) => $q->where('type', 'national'))
+            ->whereIn('team_id', $nationalTeamIds)
             ->groupBy('team_id')
             ->orderByDesc('picks')
             ->with('team:id,name,image,type,country')

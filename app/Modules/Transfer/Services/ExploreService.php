@@ -7,8 +7,10 @@ use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Loan;
+use App\Models\Player;
 use App\Models\ShortlistedPlayer;
 use App\Models\Team;
+use App\Modules\Player\PlayerAge;
 use App\Support\CountryCodeMapper;
 use App\Support\PositionMapper;
 use Illuminate\Support\Collection;
@@ -222,11 +224,15 @@ class ExploreService
         $query = GamePlayer::where('game_id', $game->id)
             ->with(['player', 'team']);
 
+        // Filters that target the biographical Player table (control plane)
+        // are folded into a single Player query; the resulting player_id list
+        // is then applied to the GamePlayer query as a whereIn. This keeps
+        // the control/tenant plane boundary intact.
+        $playerConstraints = [];
+
         if (!empty($filters['name']) && mb_strlen($filters['name']) >= 2) {
             $needle = mb_strtolower($filters['name']);
-            $query->whereHas('player', function ($q) use ($needle) {
-                $q->whereRaw('LOWER(name) LIKE ?', ['%' . $needle . '%']);
-            });
+            $playerConstraints[] = fn ($q) => $q->whereRaw('LOWER(name) LIKE ?', ['%' . $needle . '%']);
         }
 
         if (!empty($filters['position'])) {
@@ -249,23 +255,32 @@ class ExploreService
             }
         }
 
-        if (!empty($filters['min_age']) || !empty($filters['max_age'])) {
-            $gameDate = $game->current_date->toDateString();
-            $ageExpr = 'EXTRACT(YEAR FROM AGE(?::date, (SELECT date_of_birth FROM players WHERE players.id = game_players.player_id)))';
-            if (!empty($filters['min_age'])) {
-                $query->whereRaw("($ageExpr) >= ?", [$gameDate, (int) $filters['min_age']]);
-            }
-            if (!empty($filters['max_age'])) {
-                $query->whereRaw("($ageExpr) <= ?", [$gameDate, (int) $filters['max_age']]);
-            }
+        if (!empty($filters['min_age'])) {
+            // age >= N → date_of_birth <= today − N years
+            $minAgeCutoff = PlayerAge::dateOfBirthCutoff((int) $filters['min_age'], $game->current_date);
+            $playerConstraints[] = fn ($q) => $q->where('date_of_birth', '<=', $minAgeCutoff);
+        }
+        if (!empty($filters['max_age'])) {
+            // age <= N → date_of_birth > today − (N+1) years
+            $maxAgeCutoff = PlayerAge::dateOfBirthCutoff((int) $filters['max_age'] + 1, $game->current_date);
+            $playerConstraints[] = fn ($q) => $q->where('date_of_birth', '>', $maxAgeCutoff);
         }
 
         if (!empty($filters['nationality'])) {
             // players.nationality is stored as a JSON array of country names
             // (["France", "Spain"]). ?::jsonb matches if the array contains the value.
-            $query->whereHas('player', function ($q) use ($filters) {
-                $q->whereRaw('nationality::jsonb @> ?::jsonb', [json_encode([$filters['nationality']])]);
-            });
+            $playerConstraints[] = fn ($q) => $q->whereRaw(
+                'nationality::jsonb @> ?::jsonb',
+                [json_encode([$filters['nationality']])],
+            );
+        }
+
+        if ($playerConstraints !== []) {
+            $playerQuery = Player::query();
+            foreach ($playerConstraints as $apply) {
+                $apply($playerQuery);
+            }
+            $query->whereIn('player_id', $playerQuery->pluck('id'));
         }
 
         if (!empty($filters['competition_id'])) {

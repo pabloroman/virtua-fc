@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Database\CrossPlaneQueryGuard;
 use App\Events\SeasonCompleted;
 use App\Events\SeasonStarted;
 use App\Events\TournamentCompleted;
@@ -47,6 +48,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\ServiceProvider;
@@ -87,6 +89,21 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('viewPulse', function ($user) {
             return $user->is_admin;
         });
+
+        // Runtime guard: fail loudly in non-production when a query crosses
+        // the control/tenant plane boundary. The guard is opt-in via
+        // `database_planes.guard_enabled` because it can only run after
+        // control-plane models have been annotated with the `pgsql_control`
+        // connection — enabling it earlier would false-positive every query
+        // touching a control-plane table on the default connection. See
+        // CLAUDE.md → "Control plane / tenant plane".
+        if (! $this->app->environment('production') && config('database_planes.guard_enabled', false)) {
+            $crossPlaneGuard = new CrossPlaneQueryGuard(
+                controlTables: config('database_planes.control', []),
+                ignoredConnections: ['pulse_pgsql'],
+            );
+            DB::listen(fn ($event) => $crossPlaneGuard($event));
+        }
 
         RateLimiter::for('game-creation', fn (Request $request) => Limit::perMinute(5)->by($request->user()?->id ?: $request->ip()));
         RateLimiter::for('tournament-simulation', fn (Request $request) => Limit::perMinute(3)->by($request->user()?->id ?: $request->ip()));

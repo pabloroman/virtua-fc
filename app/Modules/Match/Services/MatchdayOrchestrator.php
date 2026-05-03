@@ -17,6 +17,7 @@ use App\Models\GameNotification;
 use App\Models\GamePlayer;
 use App\Models\GamePlayerMatchState;
 use App\Models\GameStanding;
+use App\Models\Player;
 use App\Models\PlayerSuspension;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -278,12 +279,19 @@ class MatchdayOrchestrator
                 $game->endPreSeason();
 
                 if ($game->squad_registration_enabled) {
+                    // Two-step lookup keeps the control/tenant plane boundary intact:
+                    // first resolve qualifying biographical player ids on the control
+                    // plane, then filter game-side rows by player_id.
+                    $registrationEligiblePlayerIds = Player::where(
+                        'date_of_birth',
+                        '<=',
+                        PlayerAge::dateOfBirthCutoff(PlayerAge::YOUNG_END, $game->current_date),
+                    )->pluck('id');
+
                     $unenrolledCount = GamePlayer::where('game_id', $game->id)
                         ->where('team_id', $game->team_id)
                         ->whereNull('number')
-                        ->whereHas('player', fn ($q) => $q->where(
-                            'date_of_birth', '<=', PlayerAge::dateOfBirthCutoff(PlayerAge::YOUNG_END, $game->current_date)
-                        ))
+                        ->whereIn('player_id', $registrationEligiblePlayerIds)
                         ->count();
 
                     if ($unenrolledCount > 0) {
