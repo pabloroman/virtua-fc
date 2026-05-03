@@ -44,7 +44,7 @@ class JoinWaitlist
                 ], 200);
             }
 
-            $this->sendInviteIfBetaEnabled($inviteService, $existing->fresh());
+            $inviteService->invite($existing->fresh());
 
             return response()->json([
                 'message' => __('waitlist.success'),
@@ -53,19 +53,10 @@ class JoinWaitlist
 
         $entry = WaitlistEntry::create($validated);
 
-        $this->sendInviteIfBetaEnabled($inviteService, $entry);
+        $inviteService->invite($entry);
 
         return response()->json([
             'message' => __('waitlist.success'),
         ], 201);
-    }
-
-    private function sendInviteIfBetaEnabled(BetaInviteService $inviteService, WaitlistEntry $entry): void
-    {
-        if (! config('beta.enabled')) {
-            return;
-        }
-
-        $inviteService->invite($entry);
     }
 }
