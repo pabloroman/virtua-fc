@@ -335,7 +335,6 @@ return [
     // Column headers (new design)
     'player' => 'Player',
     'pos' => 'Pos',
-    'key_stats' => 'Key Stats',
     'players_count' => 'players',
     'dev_status_label' => 'Status',
 

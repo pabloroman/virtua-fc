@@ -149,9 +149,9 @@
                             <div class="grid items-center px-4 py-2 bg-surface-700/30 border-b border-border-default text-[10px] text-text-muted uppercase tracking-widest font-semibold"
                                  :class="{
                                     @if($isCareerMode)
-                                    'grid-cols-[1fr_48px_32px_52px_88px_88px_80px_64px_64px_56px] gap-1.5': viewMode === 'tactical',
+                                    'grid-cols-[1fr_48px_32px_52px_88px_88px_64px_64px_56px] gap-1.5': viewMode === 'tactical',
                                     @else
-                                    'grid-cols-[1fr_48px_32px_52px_88px_88px_80px] gap-1.5': viewMode === 'tactical',
+                                    'grid-cols-[1fr_48px_32px_52px_88px_88px] gap-1.5': viewMode === 'tactical',
                                     @endif
                                     'grid-cols-[1fr_48px_32px_52px_88px_64px_64px_56px_80px] gap-1.5': viewMode === 'planning',
                                     'grid-cols-[1fr_48px_32px_52px_48px_48px_48px_40px_48px_48px_48px_64px] gap-1.5': viewMode === 'stats',
@@ -167,9 +167,6 @@
                                 </template>
                                 <template x-if="viewMode === 'tactical'">
                                     <span class="text-center">{{ __('squad.morale_full') }}</span>
-                                </template>
-                                <template x-if="viewMode === 'tactical'">
-                                    <span class="text-center">{{ __('squad.key_stats') }}</span>
                                 </template>
                                 @if($isCareerMode)
                                 <template x-if="viewMode === 'tactical'">
@@ -329,9 +326,9 @@
                                          @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $gp->id]) }}')"
                                          :class="{
                                             @if($isCareerMode)
-                                            'grid-cols-[1fr_48px_32px_52px_88px_88px_80px_64px_64px_56px] gap-1.5': viewMode === 'tactical',
+                                            'grid-cols-[1fr_48px_32px_52px_88px_88px_64px_64px_56px] gap-1.5': viewMode === 'tactical',
                                             @else
-                                            'grid-cols-[1fr_48px_32px_52px_88px_88px_80px] gap-1.5': viewMode === 'tactical',
+                                            'grid-cols-[1fr_48px_32px_52px_88px_88px] gap-1.5': viewMode === 'tactical',
                                             @endif
                                             'grid-cols-[1fr_48px_32px_52px_88px_64px_64px_56px_80px] gap-1.5': viewMode === 'planning',
                                             'grid-cols-[1fr_48px_32px_52px_48px_48px_48px_40px_48px_48px_48px_64px] gap-1.5': viewMode === 'stats',
@@ -375,14 +372,6 @@
                                         </template>
                                         <template x-if="viewMode === 'tactical'">
                                             <x-morale-indicator :value="$gp->morale" class="justify-center" />
-                                        </template>
-                                        <template x-if="viewMode === 'tactical'">
-                                            <div class="flex items-center justify-center">
-                                                <div class="text-center">
-                                                    <span class="text-[9px] text-text-faint block">{{ __('squad.overall_short') }}</span>
-                                                    <span class="text-[11px] text-text-body font-medium">{{ $gp->overall_score }}</span>
-                                                </div>
-                                            </div>
                                         </template>
                                         @if($isCareerMode)
                                         <template x-if="viewMode === 'tactical'">
