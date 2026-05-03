@@ -86,7 +86,7 @@ class LineupFitnessRotationTest extends TestCase
             ['position' => 'Central Midfield', 'fitness' => 95],
             ['position' => 'Central Midfield', 'fitness' => 95],
             // The exhausted preferred MC the fast-mode loop must now bench.
-            ['position' => 'Central Midfield', 'fitness' => 50, 'game_technical_ability' => 75, 'game_physical_ability' => 75],
+            ['position' => 'Central Midfield', 'fitness' => 50, 'overall_score' => 75],
             ['position' => 'Left Winger', 'fitness' => 95],
             ['position' => 'Centre-Forward', 'fitness' => 95],
             ['position' => 'Right Winger', 'fitness' => 95],
@@ -103,15 +103,13 @@ class LineupFitnessRotationTest extends TestCase
             GamePlayer::factory()->forGame($this->game)->forTeam($this->playerTeam)->create([
                 'position' => 'Central Midfield',
                 'fitness' => 100,
-                'game_technical_ability' => 70,
-                'game_physical_ability' => 70,
+                'overall_score' => 70,
                 'morale' => 80,
             ]),
             GamePlayer::factory()->forGame($this->game)->forTeam($this->playerTeam)->create([
                 'position' => 'Central Midfield',
                 'fitness' => 100,
-                'game_technical_ability' => 68,
-                'game_physical_ability' => 68,
+                'overall_score' => 68,
                 'morale' => 80,
             ]),
         ]);

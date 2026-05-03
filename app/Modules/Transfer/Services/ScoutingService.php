@@ -353,7 +353,7 @@ class ScoutingService
         ?float $squadAverage,
         int $availableBudget,
     ): array {
-        $overallAbility = ($candidate->current_technical_ability + $candidate->current_physical_ability) / 2;
+        $overallAbility = (float) $candidate->overall_score;
         $importance = $this->calculatePlayerImportance($candidate, $teammates);
         $askingPrice = $this->calculateAskingPrice($candidate, $game->current_date);
         $willingness = $this->dispositionService->playerTransferWillingness($candidate, $game, $importance)['score'];
@@ -416,9 +416,7 @@ class ScoutingService
             return null;
         }
 
-        return $matching->avg(fn (GamePlayer $p) => (
-            $p->current_technical_ability + $p->current_physical_ability
-        ) / 2);
+        return $matching->avg(fn (GamePlayer $p) => $p->overall_score);
     }
 
     /**
@@ -800,8 +798,7 @@ class ScoutingService
         $canAffordLoan = $isFreeAgent || $wageDemand <= $availableBudget;
 
         // Fuzzy ability range - higher scouting tier = more accurate
-        $techAbility = $player->current_technical_ability;
-        $physAbility = $player->current_physical_ability;
+        $overallAbility = $player->overall_score;
 
         $tier = $game->currentInvestment->scouting_tier ?? 1;
         $fuzzReduction = self::SCOUTING_TIER_EFFECTS[$tier][2] ?? 0;
@@ -822,8 +819,7 @@ class ScoutingService
             'available_budget' => $availableBudget,
             'transfer_budget' => $investment->transfer_budget ?? 0,
             'formatted_transfer_budget' => $investment ? $investment->formatted_transfer_budget : '€ 0',
-            'tech_range' => [max(1, $techAbility - $fuzz), min(99, $techAbility + $fuzz)],
-            'phys_range' => [max(1, $physAbility - $fuzz), min(99, $physAbility + $fuzz)],
+            'overall_range' => [max(1, $overallAbility - $fuzz), min(99, $overallAbility + $fuzz)],
         ];
     }
 
@@ -956,7 +952,7 @@ class ScoutingService
      */
     public function calculateRivalInterest(GamePlayer $player, ?float $importance = null): bool
     {
-        $overallAbility = ($player->current_technical_ability + $player->current_physical_ability) / 2;
+        $overallAbility = $player->overall_score;
         $importance ??= $this->calculatePlayerImportance($player);
 
         // Higher ability + lower importance = more likely rivals want them

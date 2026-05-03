@@ -217,7 +217,7 @@ class AISubstitutionService
             ->filter(fn (GamePlayer $p) => $p->position !== 'Goalkeeper')
             ->map(function (GamePlayer $player) use ($minute, $yellowCardPlayerIds, $energyThreshold, $yellowCardWeight, $tacticalDrainMultiplier, $currentDate) {
                 $energy = EnergyCalculator::energyAtMinute(
-                    $player->physical_ability,
+                    $player->overall_score,
                     $player->age($currentDate),
                     false,
                     $minute,

@@ -82,8 +82,7 @@ class SaveSquadSelection
                 'contract_until' => null,
                 'annual_wage' => 0,
                 'durability' => InjuryService::generateDurability(),
-                'game_technical_ability' => $player->technical_ability,
-                'game_physical_ability' => $player->physical_ability,
+                'overall_score' => $player->overall_score,
             ];
 
             $matchStateRows[] = [

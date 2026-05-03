@@ -19,7 +19,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('game_player_templates', function (Blueprint $table) {
-            $table->unsignedTinyInteger('tier')->default(1)->after('game_physical_ability');
+            $table->unsignedTinyInteger('tier')->default(1)->after('overall_score');
         });
 
         // Backfill tiers for existing template rows

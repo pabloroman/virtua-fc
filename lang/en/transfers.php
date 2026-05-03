@@ -120,8 +120,6 @@ return [
     // Scouting player page
     'market_value' => 'Market Value',
     'contract_until' => 'Contract until',
-    'technical' => 'Technical',
-    'physical' => 'Physical',
     'submit_bid' => 'Submit Bid',
     'bid_pending' => 'Bid Pending',
     'bid_awaiting_response' => 'Awaiting Response',

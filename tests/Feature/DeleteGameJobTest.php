@@ -41,8 +41,7 @@ class DeleteGameJobTest extends TestCase
             'name' => 'Test Generated',
             'nationality' => ['Spain'],
             'date_of_birth' => '2000-01-01',
-            'technical_ability' => 60,
-            'physical_ability' => 60,
+            'overall_score' => 60,
         ]);
 
         GamePlayer::create([
@@ -57,8 +56,7 @@ class DeleteGameJobTest extends TestCase
             'fitness' => 90,
             'morale' => 70,
             'durability' => 80,
-            'game_technical_ability' => 60,
-            'game_physical_ability' => 60,
+            'overall_score' => 60,
             'potential' => 70,
             'potential_low' => 65,
             'potential_high' => 75,
@@ -78,8 +76,7 @@ class DeleteGameJobTest extends TestCase
             'name' => 'Real Player',
             'nationality' => ['Spain'],
             'date_of_birth' => '1995-03-10',
-            'technical_ability' => 80,
-            'physical_ability' => 75,
+            'overall_score' => 78,
         ]);
 
         GamePlayer::create([
@@ -94,8 +91,7 @@ class DeleteGameJobTest extends TestCase
             'fitness' => 95,
             'morale' => 80,
             'durability' => 85,
-            'game_technical_ability' => 80,
-            'game_physical_ability' => 75,
+            'overall_score' => 78,
             'potential' => 85,
             'potential_low' => 80,
             'potential_high' => 90,
@@ -156,8 +152,7 @@ class DeleteGameJobTest extends TestCase
             'fitness' => 90,
             'morale' => 70,
             'durability' => 80,
-            'game_technical_ability' => 60,
-            'game_physical_ability' => 60,
+            'overall_score' => 60,
             'potential' => 70,
             'potential_low' => 65,
             'potential_high' => 75,

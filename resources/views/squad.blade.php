@@ -377,14 +377,10 @@
                                             <x-morale-indicator :value="$gp->morale" class="justify-center" />
                                         </template>
                                         <template x-if="viewMode === 'tactical'">
-                                            <div class="flex items-center gap-1 justify-center">
+                                            <div class="flex items-center justify-center">
                                                 <div class="text-center">
-                                                    <span class="text-[9px] text-text-faint block">{{ __('squad.technical') }}</span>
-                                                    <span class="text-[11px] text-text-body font-medium">{{ $gp->technical_ability }}</span>
-                                                </div>
-                                                <div class="text-center">
-                                                    <span class="text-[9px] text-text-faint block">{{ __('squad.physical') }}</span>
-                                                    <span class="text-[11px] text-text-body font-medium">{{ $gp->physical_ability }}</span>
+                                                    <span class="text-[9px] text-text-faint block">{{ __('squad.overall_short') }}</span>
+                                                    <span class="text-[11px] text-text-body font-medium">{{ $gp->overall_score }}</span>
                                                 </div>
                                             </div>
                                         </template>

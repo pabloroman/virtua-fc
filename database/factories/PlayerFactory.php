@@ -19,8 +19,7 @@ class PlayerFactory extends Factory
             'name' => $this->faker->name(),
             'date_of_birth' => $this->faker->dateTimeBetween('-35 years', '-18 years'),
             'nationality' => ['ESP'],
-            'technical_ability' => $this->faker->numberBetween(40, 90),
-            'physical_ability' => $this->faker->numberBetween(40, 90),
+            'overall_score' => $this->faker->numberBetween(40, 90),
         ];
     }
 

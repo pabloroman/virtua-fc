@@ -143,9 +143,7 @@ class PlayerRetirementService
      */
     private function getAbilityFactor(GamePlayer $player): float
     {
-        $ability = (int) round(
-            ($player->current_technical_ability + $player->current_physical_ability) / 2
-        );
+        $ability = $player->overall_score;
 
         return match (true) {
             $ability >= 80 => 0.8,   // Elite players delay

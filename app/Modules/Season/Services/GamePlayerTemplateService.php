@@ -103,7 +103,7 @@ class GamePlayerTemplateService
 
         // Only load players that appear in roster files
         $allPlayers = DB::table('players')
-            ->select('id', 'transfermarkt_id', 'date_of_birth', 'technical_ability', 'physical_ability')
+            ->select('id', 'transfermarkt_id', 'date_of_birth', 'overall_score')
             ->whereIn('transfermarkt_id', array_unique($neededTmIds))
             ->get()
             ->keyBy('transfermarkt_id');
@@ -163,7 +163,7 @@ class GamePlayerTemplateService
 
         // Load only the players we actually need
         $players = DB::table('players')
-            ->select('id', 'transfermarkt_id', 'date_of_birth', 'technical_ability', 'physical_ability')
+            ->select('id', 'transfermarkt_id', 'date_of_birth', 'overall_score')
             ->whereIn('transfermarkt_id', array_unique($neededTmIds))
             ->get()
             ->keyBy('transfermarkt_id');
@@ -385,12 +385,9 @@ class GamePlayerTemplateService
         $marketValueCents = Money::parseMarketValue($playerData['marketValue'] ?? null);
         $annualWage = $this->contractService->calculateAnnualWage($marketValueCents, $minimumWage, $age);
 
-        $currentAbility = (int) round(
-            ($player->technical_ability + $player->physical_ability) / 2
-        );
         $potentialData = $this->developmentService->generatePotential(
             $age,
-            $currentAbility
+            (int) $player->overall_score
         );
 
         $secondaryPositions = $this->getSecondaryPositions($playerData['id']);
@@ -409,8 +406,7 @@ class GamePlayerTemplateService
             'fitness' => 80,
             'morale' => 80,
             'durability' => InjuryService::generateDurability(),
-            'game_technical_ability' => $player->technical_ability,
-            'game_physical_ability' => $player->physical_ability,
+            'overall_score' => $player->overall_score,
             'potential' => $potentialData['potential'],
             'potential_low' => $potentialData['low'],
             'potential_high' => $potentialData['high'],

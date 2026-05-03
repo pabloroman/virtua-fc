@@ -18,14 +18,11 @@ return [
     'forwards_short' => 'DEL',
 
     // Columns
-    'technical' => 'TEC',
-    'physical' => 'FIS',
-    'technical_abbr' => 'TEC',
-    'physical_abbr' => 'FIS',
     'years_abbr' => 'años',
     'fitness' => 'ENE',
     'morale' => 'MOR',
-    'overall' => 'MED',
+    'overall' => 'Media',
+    'overall_short' => 'MED',
 
     // Status labels
     'on_loan' => 'Cedido',
@@ -180,8 +177,7 @@ return [
 
     // Player detail modal
     'abilities' => 'Habilidades',
-    'technical_full' => 'Técnica',
-    'physical_full' => 'Físico',
+    'overall_full' => 'Media',
     'fitness_full' => 'Energía',
     'morale_full' => 'Moral',
     'season_stats' => 'Estadísticas de Temporada',
@@ -275,8 +271,7 @@ return [
     'radar_att' => 'Ataque',
     'radar_fit' => 'Energía',
     'radar_mor' => 'Moral',
-    'radar_tec' => 'Técnica',
-    'radar_phy' => 'Físico',
+    'radar_overall' => 'Media',
 
     // Registration
     'not_registered' => 'No inscrito',

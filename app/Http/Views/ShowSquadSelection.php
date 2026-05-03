@@ -82,9 +82,7 @@ class ShowSquadSelection
             $position = $jp['position'] ?? 'Central Midfield';
             $positionGroup = PositionMapper::getPositionGroup($position);
             $positionDisplay = PositionMapper::getPositionDisplay($position);
-            $technical = $player->technical_ability;
-            $physical = $player->physical_ability;
-            $overall = (int) round(($technical + $physical) / 2);
+            $overall = (int) $player->overall_score;
 
             $candidate = [
                 'transfermarkt_id' => (string) $tmId,
@@ -97,8 +95,6 @@ class ShowSquadSelection
                 'position_text' => $positionDisplay['text'],
                 'age' => $player->date_of_birth->age,
                 'height' => $jp['height'] ?? null,
-                'technical' => $technical,
-                'physical' => $physical,
                 'overall' => $overall,
             ];
 

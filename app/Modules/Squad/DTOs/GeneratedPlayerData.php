@@ -7,7 +7,7 @@ use Carbon\Carbon;
 /**
  * Configuration for generating a new computer-generated player.
  *
- * Callers provide the domain-specific values (position, abilities, age, team, etc.)
+ * Callers provide the domain-specific values (position, ability, age, team, etc.)
  * and PlayerGeneratorService handles the boilerplate (Player record, GamePlayer record,
  * market value estimation, potential generation, durability, etc.).
  */
@@ -16,8 +16,7 @@ final class GeneratedPlayerData
     public function __construct(
         public readonly string $teamId,
         public readonly string $position,
-        public readonly int $technical,
-        public readonly int $physical,
+        public readonly int $overallScore,
         public readonly Carbon $dateOfBirth,
         public readonly int $contractYears,
         public readonly ?string $name = null,

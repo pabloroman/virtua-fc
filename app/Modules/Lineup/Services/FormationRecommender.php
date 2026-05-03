@@ -80,13 +80,19 @@ class FormationRecommender
      */
     private function precomputePlayers(Collection $players): array
     {
-        return $players->map(fn ($p) => [
-            'id' => $p->id ?? $p['id'],
-            'name' => $p->name ?? $p['name'],
-            'position' => $p->position ?? $p['position'],
-            'secondary_positions' => $p->secondary_positions ?? $p['secondary_positions'] ?? null,
-            'overall_score' => $p->overall_score ?? $p['overall_score'] ?? 0,
-        ])->values()->all();
+        return $players->map(function ($p) {
+            $rating = is_object($p) && method_exists($p, 'getEffectiveRating')
+                ? $p->getEffectiveRating()
+                : ($p->overall_score ?? $p['overall_score'] ?? 0);
+
+            return [
+                'id' => $p->id ?? $p['id'],
+                'name' => $p->name ?? $p['name'],
+                'position' => $p->position ?? $p['position'],
+                'secondary_positions' => $p->secondary_positions ?? $p['secondary_positions'] ?? null,
+                'overall_score' => $rating,
+            ];
+        })->values()->all();
     }
 
     /**

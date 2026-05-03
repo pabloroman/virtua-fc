@@ -82,12 +82,10 @@
                 <div x-data class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
                     {{-- Table header --}}
                     <div class="hidden md:block">
-                        <div class="grid grid-cols-[40px_1fr_48px_48px_48px_56px_56px] gap-1.5 items-center px-4 py-2 bg-surface-700/30 border-b border-border-default text-[10px] text-text-muted uppercase tracking-widest font-semibold">
+                        <div class="grid grid-cols-[40px_1fr_48px_56px_56px] gap-1.5 items-center px-4 py-2 bg-surface-700/30 border-b border-border-default text-[10px] text-text-muted uppercase tracking-widest font-semibold">
                             <span></span>
                             <span>{{ __('app.name') }}</span>
                             <span class="text-center">{{ __('app.age') }}</span>
-                            <span class="text-center">{{ __('squad.technical') }}</span>
-                            <span class="text-center">{{ __('squad.physical') }}</span>
                             <span class="text-center">{{ __('squad.pot') }}</span>
                             <span class="text-center">{{ __('squad.overall') }}</span>
                         </div>
@@ -119,12 +117,12 @@
                                                 <span class="text-[10px] text-text-faint">{{ $prospect->age }}</span>
                                             </div>
                                         </div>
-                                        <x-rating-badge :value="$prospect->overall" class="shrink-0" />
+                                        <x-rating-badge :value="$prospect->overall_score" class="shrink-0" />
                                     </div>
                                 </div>
 
                                 {{-- Desktop row --}}
-                                <div class="hidden md:grid grid-cols-[40px_1fr_48px_48px_48px_56px_56px] gap-1.5 items-center px-4 py-2.5 border-b border-border-default hover:bg-surface-700/30 transition-colors cursor-pointer" @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')">
+                                <div class="hidden md:grid grid-cols-[40px_1fr_48px_56px_56px] gap-1.5 items-center px-4 py-2.5 border-b border-border-default hover:bg-surface-700/30 transition-colors cursor-pointer" @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')">
                                     {{-- Position --}}
                                     <div class="flex justify-center">
                                         <x-position-badge :position="$prospect->position" size="sm" :tooltip="\App\Support\PositionMapper::toDisplayName($prospect->position)" class="cursor-help" />
@@ -138,19 +136,11 @@
                                     </div>
                                     {{-- Age --}}
                                     <span class="text-xs text-text-secondary text-center tabular-nums">{{ $prospect->age }}</span>
-                                    {{-- Technical --}}
-                                    <div class="flex justify-center">
-                                        <span class="text-xs font-medium tabular-nums @if($prospect->technical_ability >= 80) text-accent-green @elseif($prospect->technical_ability >= 70) text-lime-500 @elseif($prospect->technical_ability >= 60) text-text-body @else text-text-secondary @endif">{{ $prospect->technical_ability }}</span>
-                                    </div>
-                                    {{-- Physical --}}
-                                    <div class="flex justify-center">
-                                        <span class="text-xs font-medium tabular-nums @if($prospect->physical_ability >= 80) text-accent-green @elseif($prospect->physical_ability >= 70) text-lime-500 @elseif($prospect->physical_ability >= 60) text-text-body @else text-text-secondary @endif">{{ $prospect->physical_ability }}</span>
-                                    </div>
                                     {{-- Potential range --}}
                                     <span class="text-xs text-center tabular-nums text-text-muted">{{ $prospect->potential_range }}</span>
                                     {{-- Overall --}}
                                     <div class="flex justify-center">
-                                        <x-rating-badge :value="$prospect->overall" size="sm" />
+                                        <x-rating-badge :value="$prospect->overall_score_score" size="sm" />
                                     </div>
                                 </div>
                             @endforeach

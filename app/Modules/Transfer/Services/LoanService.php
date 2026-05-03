@@ -262,7 +262,7 @@ class LoanService
      */
     private function getExpectedReputation(GamePlayer $player): string
     {
-        $avgAbility = (int) round(($player->current_technical_ability + $player->current_physical_ability) / 2);
+        $avgAbility = $player->overall_score;
 
         if ($avgAbility >= 82) {
             return ClubProfile::REPUTATION_ELITE;
@@ -326,7 +326,7 @@ class LoanService
     {
         $reputation = $teamReputations->get($team->id, ClubProfile::REPUTATION_LOCAL);
         $devStatus = $player->developmentStatus($player->game->current_date);
-        $avgAbility = (int) round(($player->current_technical_ability + $player->current_physical_ability) / 2);
+        $avgAbility = $player->overall_score;
 
         $isSmallClub = in_array($reputation, [
             ClubProfile::REPUTATION_MODEST,

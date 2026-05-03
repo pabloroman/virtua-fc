@@ -325,8 +325,7 @@ class SeedWorldCupData extends Command
                 };
 
                 $marketValueCents = Money::parseMarketValue($player['marketValue'] ?? null);
-                $position = $player['position'] ?? 'Central Midfield';
-                [$technical, $physical] = $valuationService->marketValueToAbilities($marketValueCents, $position, $age ?? 25);
+                $overallScore = $valuationService->marketValueToOverallScore($marketValueCents, $age ?? 25);
 
                 DB::table('players')->insert([
                     'id' => Str::uuid()->toString(),
@@ -336,8 +335,7 @@ class SeedWorldCupData extends Command
                     'nationality' => json_encode(!empty($player['nationality']) ? $player['nationality'] : [$data['name']]),
                     'height' => $player['height'] ?? null,
                     'foot' => $foot,
-                    'technical_ability' => $technical,
-                    'physical_ability' => $physical,
+                    'overall_score' => $overallScore,
                 ]);
 
                 $playerCount++;

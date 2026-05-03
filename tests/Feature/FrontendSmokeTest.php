@@ -376,15 +376,13 @@ class FrontendSmokeTest extends TestCase
             'nationality' => ['ESP'],
             'date_of_birth' => '2008-03-15',
             'position' => 'Central Midfield',
-            'technical_ability' => 45,
-            'physical_ability' => 40,
+            'overall_score' => 42,
             'potential' => 75,
             'potential_low' => 65,
             'potential_high' => 85,
             'appeared_at' => '2025-07-01',
             'joined_season' => '2025',
-            'initial_technical' => 45,
-            'initial_physical' => 40,
+            'initial_overall' => 42,
         ]);
 
         $this->actingAs($this->user)

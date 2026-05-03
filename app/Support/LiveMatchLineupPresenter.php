@@ -133,8 +133,6 @@ class LiveMatchLineupPresenter
             'positionGroup' => $p->position_group,
             'positionSort' => LineupService::positionSortOrder($p->position),
             'positions' => $p->positions,
-            'physicalAbility' => $p->physical_ability,
-            'technicalAbility' => $p->technical_ability,
             'age' => $p->age($currentDate),
             'overallScore' => $p->overall_score,
             'fitness' => $p->fitness,

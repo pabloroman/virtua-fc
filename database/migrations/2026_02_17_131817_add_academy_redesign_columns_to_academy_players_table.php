@@ -14,15 +14,14 @@ return new class extends Migration
         Schema::table('academy_players', function (Blueprint $table) {
             $table->boolean('is_on_loan')->default(false)->after('appeared_at');
             $table->integer('joined_season')->nullable()->after('is_on_loan');
-            $table->unsignedTinyInteger('initial_technical')->nullable()->after('joined_season');
-            $table->unsignedTinyInteger('initial_physical')->nullable()->after('initial_technical');
+            $table->unsignedTinyInteger('initial_overall')->nullable()->after('joined_season');
         });
     }
 
     public function down(): void
     {
         Schema::table('academy_players', function (Blueprint $table) {
-            $table->dropColumn(['is_on_loan', 'joined_season', 'initial_technical', 'initial_physical']);
+            $table->dropColumn(['is_on_loan', 'joined_season', 'initial_overall']);
         });
     }
 };

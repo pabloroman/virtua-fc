@@ -4,22 +4,22 @@ How players develop (or decline) over seasons.
 
 ## Overview
 
-At the end of each season, players' technical and physical abilities change based on age, playing time, and distance from potential. Development is calculated separately for technical and physical — physical ability peaks earlier and declines faster than technical.
+At the end of each season, a player's `overall_score` changes based on age, playing time, and distance from potential. The development curve is single-axis: a single signed change per age band rather than separate technical and physical trajectories.
 
 ## Development Curve
 
-Development uses per-age multipliers applied to a base development constant. Multipliers above 1.0 mean growth; below 1.0 mean decline. Technical and physical have separate curves. The multiplier table and base constants are in `DevelopmentCurve`.
+Development uses per-age signed change values. Positive values mean growth, zero means plateau, negative means decline. The age curve is in `DevelopmentCurve::AGE_CURVES`.
 
 ## Bonuses
 
 Two bonuses can accelerate growth (growing players only):
 
-- **Playing time bonus**: Players with enough appearances in a season develop faster. The threshold and multiplier are constants in `DevelopmentCurve`.
-- **Quality gap bonus**: Players far from their potential develop faster, using a continuous formula proportional to the gap (capped). Only applies under a certain age. See `calculateQualityGapBonus()` in `PlayerDevelopmentService`.
+- **Playing time bonus**: Players with enough appearances in a season develop faster. Below the floor (`MIN_APPEARANCES_FOR_GROWTH`) they still develop in training, but at a halved rate (`TRAINING_ONLY_GROWTH_FACTOR`).
+- **Quality gap bonus**: Young players far from their potential get a flat +1 bonus on top of curve growth. See `calculateQualityGapBonus()` in `PlayerDevelopmentService`.
 
 ## Potential Cap
 
-Players cannot exceed their potential through development. As they approach their ceiling, the quality gap bonus naturally diminishes.
+Players cannot exceed their potential through development.
 
 ## Market Value Update
 
@@ -29,5 +29,6 @@ After development changes are applied, market values are recalculated to reflect
 
 | File | Purpose |
 |------|---------|
-| `app/Modules/Squad/Services/PlayerDevelopmentService.php` | Season-end development processing, quality gap bonus, potential generation |
-| `app/Modules/Squad/Services/DevelopmentCurve.php` | Age multiplier table, base development constant, appearance bonus |
+| `app/Modules/Player/Services/PlayerDevelopmentService.php` | Season-end development processing, quality gap bonus, potential generation |
+| `app/Modules/Player/Services/DevelopmentCurve.php` | Age curve table, appearance scaling |
+| `app/Modules/Season/Processors/PlayerDevelopmentProcessor.php` | One-shot SQL pipeline that applies the curve plus a discretized market-value/tier recompute to every game player at season end |

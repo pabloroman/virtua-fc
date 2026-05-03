@@ -110,12 +110,12 @@ class ScoutSearchQueryBuilder
         }
 
         $query->where(function ($q) use ($filters) {
-            $abilityExpr = '(COALESCE(game_players.game_technical_ability, (SELECT technical_ability FROM players WHERE players.id = game_players.player_id)) + COALESCE(game_players.game_physical_ability, (SELECT physical_ability FROM players WHERE players.id = game_players.player_id))) / 2';
+            $abilityExpr = 'COALESCE(game_players.overall_score, (SELECT overall_score FROM players WHERE players.id = game_players.player_id))';
             if (! empty($filters['ability_min'])) {
-                $q->whereRaw("($abilityExpr) >= ?", [(int) $filters['ability_min']]);
+                $q->whereRaw("$abilityExpr >= ?", [(int) $filters['ability_min']]);
             }
             if (! empty($filters['ability_max'])) {
-                $q->whereRaw("($abilityExpr) <= ?", [(int) $filters['ability_max']]);
+                $q->whereRaw("$abilityExpr <= ?", [(int) $filters['ability_max']]);
             }
         });
     }

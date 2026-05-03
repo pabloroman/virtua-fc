@@ -18,14 +18,11 @@ return [
     'forwards_short' => 'FWD',
 
     // Columns
-    'technical' => 'TEC',
-    'physical' => 'PHY',
-    'technical_abbr' => 'TEC',
-    'physical_abbr' => 'PHY',
     'years_abbr' => 'yrs',
     'fitness' => 'ENE',
     'morale' => 'MOR',
-    'overall' => 'OVR',
+    'overall' => 'Overall',
+    'overall_short' => 'OVR',
 
     // Status labels
     'on_loan' => 'On Loan',
@@ -180,8 +177,7 @@ return [
 
     // Player detail modal
     'abilities' => 'Abilities',
-    'technical_full' => 'Technical',
-    'physical_full' => 'Physical',
+    'overall_full' => 'Overall',
     'fitness_full' => 'Energy',
     'morale_full' => 'Morale',
     'season_stats' => 'Season Stats',
@@ -275,8 +271,7 @@ return [
     'radar_att' => 'Attack',
     'radar_fit' => 'Energy',
     'radar_mor' => 'Morale',
-    'radar_tec' => 'Technical',
-    'radar_phy' => 'Physical',
+    'radar_overall' => 'Overall',
 
     // Registration
     'not_registered' => 'Not registered',

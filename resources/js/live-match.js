@@ -746,8 +746,8 @@ export default function liveMatch(config) {
         // Energy / Stamina — delegated to pitch-renderer
         // =============================
 
-        calculateDrainRate(physicalAbility, age, positionGroup) {
-            return _calculateDrainRate(physicalAbility, age, positionGroup);
+        calculateDrainRate(overallScore, age, positionGroup) {
+            return _calculateDrainRate(overallScore, age, positionGroup);
         },
 
         getPlayerEnergy(player) {

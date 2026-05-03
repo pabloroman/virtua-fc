@@ -241,8 +241,7 @@ class SquadReplenishmentTest extends TestCase
             $this->assertNotNull($player->player);
             $this->assertNotNull($player->contract_until);
             $this->assertNotNull($player->annual_wage);
-            $this->assertGreaterThan(0, $player->game_technical_ability);
-            $this->assertGreaterThan(0, $player->game_physical_ability);
+            $this->assertGreaterThan(0, $player->overall_score);
             $this->assertGreaterThan(0, $player->market_value_cents);
             $this->assertNotNull($player->position);
         }
@@ -260,7 +259,7 @@ class SquadReplenishmentTest extends TestCase
             'reputation_points' => 450,
         ]);
         for ($i = 0; $i < 18; $i++) {
-            $this->createGamePlayer($eliteTeam, 'Central Midfield', techAbility: 80, physAbility: 80);
+            $this->createGamePlayer($eliteTeam, 'Central Midfield', overall: 80);
         }
 
         // Create a modest team
@@ -273,7 +272,7 @@ class SquadReplenishmentTest extends TestCase
             'reputation_points' => 150,
         ]);
         for ($i = 0; $i < 18; $i++) {
-            $this->createGamePlayer($modestTeam, 'Central Midfield', techAbility: 45, physAbility: 45);
+            $this->createGamePlayer($modestTeam, 'Central Midfield', overall: 45);
         }
 
         $processor = app(SquadReplenishmentProcessor::class);
@@ -294,8 +293,8 @@ class SquadReplenishmentTest extends TestCase
             ->take(4)
             ->get();
 
-        $eliteAvg = $eliteNewPlayers->avg(fn ($p) => ($p->game_technical_ability + $p->game_physical_ability) / 2);
-        $modestAvg = $modestNewPlayers->avg(fn ($p) => ($p->game_technical_ability + $p->game_physical_ability) / 2);
+        $eliteAvg = $eliteNewPlayers->avg(fn ($p) => $p->overall_score);
+        $modestAvg = $modestNewPlayers->avg(fn ($p) => $p->overall_score);
 
         $this->assertGreaterThan($modestAvg, $eliteAvg);
     }
@@ -398,9 +397,8 @@ class SquadReplenishmentTest extends TestCase
 
         foreach ($youthEntries as $entry) {
             $gamePlayer = GamePlayer::find($entry['playerId']);
-            $avgAbility = ($gamePlayer->game_technical_ability + $gamePlayer->game_physical_ability) / 2;
             // Youth ability is reputation-based (established = base 57), below team avg of 70
-            $this->assertLessThan(70, $avgAbility, "Youth player ability should be below team average");
+            $this->assertLessThan(70, $gamePlayer->overall_score, "Youth player ability should be below team average");
         }
     }
 
@@ -409,23 +407,21 @@ class SquadReplenishmentTest extends TestCase
         // Create a team with 27 players — some old (age 32+), some young
         for ($i = 0; $i < 20; $i++) {
             $position = $i < 2 ? 'Goalkeeper' : ($i < 7 ? 'Centre-Back' : ($i < 12 ? 'Central Midfield' : 'Centre-Forward'));
-            $this->createGamePlayer($this->aiTeam, $position, techAbility: 65, physAbility: 65);
+            $this->createGamePlayer($this->aiTeam, $position, overall: 65);
         }
         // Add 7 old, weak players (age 33)
         $referenceDate = $this->game->current_date ?? now();
         for ($i = 0; $i < 7; $i++) {
             $player = Player::factory()->create([
                 'date_of_birth' => $referenceDate->copy()->subYears(33),
-                'technical_ability' => 35,
-                'physical_ability' => 35,
+                'overall_score' => 35,
             ]);
             GamePlayer::factory()->create([
                 'game_id' => $this->game->id,
                 'player_id' => $player->id,
                 'team_id' => $this->aiTeam->id,
                 'position' => 'Central Midfield',
-                'game_technical_ability' => 35,
-                'game_physical_ability' => 35,
+                'overall_score' => 35,
             ]);
         }
 
@@ -514,12 +510,10 @@ class SquadReplenishmentTest extends TestCase
     private function createGamePlayer(
         Team $team,
         string $position,
-        int $techAbility = 65,
-        int $physAbility = 65,
+        int $overall = 65,
     ): GamePlayer {
         $player = Player::factory()->create([
-            'technical_ability' => $techAbility,
-            'physical_ability' => $physAbility,
+            'overall_score' => $overall,
         ]);
 
         return GamePlayer::factory()->create([
@@ -527,8 +521,7 @@ class SquadReplenishmentTest extends TestCase
             'player_id' => $player->id,
             'team_id' => $team->id,
             'position' => $position,
-            'game_technical_ability' => $techAbility,
-            'game_physical_ability' => $physAbility,
+            'overall_score' => $overall,
         ]);
     }
 }

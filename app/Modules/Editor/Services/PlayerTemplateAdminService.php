@@ -150,7 +150,7 @@ class PlayerTemplateAdminService
             $editableKeys = [
                 'number', 'position', 'market_value', 'market_value_cents',
                 'contract_until', 'annual_wage', 'fitness', 'morale', 'durability',
-                'game_technical_ability', 'game_physical_ability',
+                'overall_score',
                 'potential', 'potential_low', 'potential_high', 'tier',
             ];
 

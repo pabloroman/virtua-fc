@@ -122,8 +122,7 @@ class SquadReplenishmentProcessor implements SeasonProcessor
                 'game_players.id',
                 'game_players.team_id',
                 'game_players.position',
-                'game_players.game_technical_ability',
-                'game_players.game_physical_ability',
+                'game_players.overall_score',
                 'game_players.number',
                 'players.date_of_birth',
                 'players.name as player_name',
@@ -350,7 +349,7 @@ class SquadReplenishmentProcessor implements SeasonProcessor
 
         return $players
             ->filter(fn ($gp) => $gp->date_of_birth && Carbon::parse($gp->date_of_birth)->lte($cutoff))
-            ->sortBy(fn ($gp) => ($gp->game_technical_ability ?? 0) + ($gp->game_physical_ability ?? 0))
+            ->sortBy(fn ($gp) => $gp->overall_score ?? 0)
             ->take($count)
             ->pluck('id')
             ->toArray();

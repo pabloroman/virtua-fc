@@ -178,10 +178,10 @@ class YouthAcademyService
         }
 
         // Compute growth in memory, batch update changed players in a single query
-        $updates = []; // [id => [technical_ability => N, physical_ability => N]]
+        $updates = []; // [id => overall_score]
         foreach ($players as $player) {
             $computed = $this->computeGrowth($player, self::GROWTH_RATE_ACADEMY);
-            if ($computed) {
+            if ($computed !== null) {
                 $updates[$player->id] = $computed;
             }
         }
@@ -194,49 +194,38 @@ class YouthAcademyService
     /**
      * Compute one matchday of growth for a player (pure calculation, no DB).
      *
-     * @return array{technical_ability: int, physical_ability: int}|null Null if no change
+     * @return int|null New overall_score, or null if unchanged
      */
-    private function computeGrowth(AcademyPlayer $player, float $seasonRate): ?array
+    private function computeGrowth(AcademyPlayer $player, float $seasonRate): ?int
     {
-        $growthPerMatchday = fn (int $current, int $potential) => max(0, ($potential - $current) * $seasonRate / self::ESTIMATED_MATCHDAYS);
+        $growth = max(0, ($player->potential - $player->overall_score) * $seasonRate / self::ESTIMATED_MATCHDAYS);
+        $newOverall = (int) round(min($player->potential, $player->overall_score + $growth));
 
-        $techGrowth = $growthPerMatchday($player->technical_ability, $player->potential);
-        $physGrowth = $growthPerMatchday($player->physical_ability, $player->potential);
-
-        $newTech = min($player->potential, $player->technical_ability + $techGrowth);
-        $newPhys = min($player->potential, $player->physical_ability + $physGrowth);
-
-        $techInt = (int) round($newTech);
-        $physInt = (int) round($newPhys);
-
-        if ($techInt === $player->technical_ability && $physInt === $player->physical_ability) {
+        if ($newOverall === $player->overall_score) {
             return null;
         }
 
-        return ['technical_ability' => $techInt, 'physical_ability' => $physInt];
+        return $newOverall;
     }
 
     /**
      * Bulk update abilities using CASE WHEN (1 query instead of N).
      *
-     * @param  array<string, array{technical_ability: int, physical_ability: int}>  $updates
+     * @param  array<string, int>  $updates  [id => new overall_score]
      */
     private function bulkUpdateAbilities(array $updates): void
     {
         $ids = array_keys($updates);
         $idList = "'" . implode("','", $ids) . "'";
 
-        $techCases = [];
-        $physCases = [];
-        foreach ($updates as $id => $values) {
-            $techCases[] = "WHEN id = '{$id}' THEN {$values['technical_ability']}";
-            $physCases[] = "WHEN id = '{$id}' THEN {$values['physical_ability']}";
+        $cases = [];
+        foreach ($updates as $id => $value) {
+            $cases[] = "WHEN id = '{$id}' THEN {$value}";
         }
 
         \Illuminate\Support\Facades\DB::statement("
             UPDATE academy_players
-            SET technical_ability = CASE " . implode(' ', $techCases) . " ELSE technical_ability END,
-                physical_ability = CASE " . implode(' ', $physCases) . " ELSE physical_ability END
+            SET overall_score = CASE " . implode(' ', $cases) . " ELSE overall_score END
             WHERE id IN ({$idList})
         ");
     }
@@ -254,12 +243,10 @@ class YouthAcademyService
 
         foreach ($loanedPlayers as $player) {
             // Apply full season growth at loan rate
-            $techGrowth = ($player->potential - $player->technical_ability) * self::GROWTH_RATE_LOAN;
-            $physGrowth = ($player->potential - $player->physical_ability) * self::GROWTH_RATE_LOAN;
+            $growth = ($player->potential - $player->overall_score) * self::GROWTH_RATE_LOAN;
 
             $player->update([
-                'technical_ability' => min($player->potential, (int) round($player->technical_ability + $techGrowth)),
-                'physical_ability' => min($player->potential, (int) round($player->physical_ability + $physGrowth)),
+                'overall_score' => min($player->potential, (int) round($player->overall_score + $growth)),
             ]);
         }
     }
@@ -308,8 +295,7 @@ class YouthAcademyService
         $gamePlayer = $this->playerGenerator->create($game, new GeneratedPlayerData(
             teamId: $academy->team_id,
             position: $academy->position,
-            technical: $academy->technical_ability,
-            physical: $academy->physical_ability,
+            overallScore: $academy->overall_score,
             dateOfBirth: $academy->date_of_birth,
             contractYears: 2,
             name: $academy->name,
@@ -454,12 +440,10 @@ class YouthAcademyService
             19 => 76,
             default => 78,
         };
-        $technical = $this->sampler->sampleAbility($abilityMean, self::ABILITY_STD_DEV, 50, $ageCap);
-        $physical = $this->sampler->sampleAbility($abilityMean, self::ABILITY_STD_DEV, 50, $ageCap);
+        $overallScore = $this->sampler->sampleAbility($abilityMean, self::ABILITY_STD_DEV, 50, $ageCap);
 
-        $currentBest = max($technical, $physical);
         $potentialData = $this->sampler->generatePotentialFromAbility(
-            $currentBest,
+            $overallScore,
             self::POTENTIAL_UPSIDE_MEAN[$academyTier],
             self::POTENTIAL_UPSIDE_STD_DEV,
             self::POTENTIAL_FLOOR[$academyTier],
@@ -485,8 +469,7 @@ class YouthAcademyService
             'position' => $position,
             'age' => $age,
             'dateOfBirth' => $dateOfBirth,
-            'technical' => $technical,
-            'physical' => $physical,
+            'overallScore' => $overallScore,
             'potential' => $potentialData['potential'],
             'potentialLow' => $potentialData['potentialLow'],
             'potentialHigh' => $potentialData['potentialHigh'],
@@ -510,16 +493,14 @@ class YouthAcademyService
             'nationality' => $traits['nationality'],
             'date_of_birth' => $traits['dateOfBirth'],
             'position' => $traits['position'],
-            'technical_ability' => $traits['technical'],
-            'physical_ability' => $traits['physical'],
+            'overall_score' => $traits['overallScore'],
             'potential' => $traits['potential'],
             'potential_low' => $traits['potentialLow'],
             'potential_high' => $traits['potentialHigh'],
             'appeared_at' => $game->current_date,
             'is_on_loan' => false,
             'joined_season' => (int) $game->season,
-            'initial_technical' => $traits['technical'],
-            'initial_physical' => $traits['physical'],
+            'initial_overall' => $traits['overallScore'],
         ]);
     }
 
@@ -535,8 +516,7 @@ class YouthAcademyService
         return $this->playerGenerator->create($game, new GeneratedPlayerData(
             teamId: $game->reserve_team_id,
             position: $traits['position'],
-            technical: $traits['technical'],
-            physical: $traits['physical'],
+            overallScore: $traits['overallScore'],
             dateOfBirth: $traits['dateOfBirth'],
             contractYears: 2,
             name: $traits['name'],

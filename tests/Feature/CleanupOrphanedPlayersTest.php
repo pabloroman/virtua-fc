@@ -24,8 +24,7 @@ class CleanupOrphanedPlayersTest extends TestCase
             'name' => 'Orphaned Generated',
             'nationality' => ['Spain'],
             'date_of_birth' => '2000-01-01',
-            'technical_ability' => 60,
-            'physical_ability' => 60,
+            'overall_score' => 60,
         ]);
     }
 
@@ -37,8 +36,7 @@ class CleanupOrphanedPlayersTest extends TestCase
             'name' => 'Orphaned Real',
             'nationality' => ['Spain'],
             'date_of_birth' => '1995-01-01',
-            'technical_ability' => 80,
-            'physical_ability' => 75,
+            'overall_score' => 78,
         ]);
     }
 
@@ -61,8 +59,7 @@ class CleanupOrphanedPlayersTest extends TestCase
             'name' => 'Active Generated',
             'nationality' => ['Spain'],
             'date_of_birth' => '2000-01-01',
-            'technical_ability' => 60,
-            'physical_ability' => 60,
+            'overall_score' => 60,
         ]);
 
         GamePlayer::create([
@@ -77,8 +74,7 @@ class CleanupOrphanedPlayersTest extends TestCase
             'fitness' => 90,
             'morale' => 70,
             'durability' => 80,
-            'game_technical_ability' => 60,
-            'game_physical_ability' => 60,
+            'overall_score' => 60,
             'potential' => 70,
             'potential_low' => 65,
             'potential_high' => 75,

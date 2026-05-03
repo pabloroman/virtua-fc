@@ -1,10 +1,10 @@
 # Player Abilities
 
-How player abilities are calculated from real-world market value data at game start.
+How a player's overall ability is calculated from real-world market value data at game start.
 
 ## Overview
 
-Players have two core attributes — **Technical Ability** and **Physical Ability** (both 30-99). The **Overall Score** is their average. These are derived from market value with age-based adjustments.
+Players have a single core attribute — **Overall Score** (30-99). This is derived from market value with age-based adjustments. Match performance is then modulated at simulation time by transient state (fitness, morale, daily form variance), but the stored `overall_score` is a stable baseline.
 
 ## Calculation Pipeline
 
@@ -22,14 +22,6 @@ Raw ability is adjusted because market value means different things at different
 
 See `adjustAbilityForAge()`.
 
-### 3. Position-Based Split
-
-The base ability is split into technical and physical based on position. Attackers and playmakers skew technical; defenders skew physical. A small random variance creates individual variation. Ratios per position are defined in `PlayerValuationService`.
-
-### 4. Veteran Physical Decline
-
-Veterans receive an additional physical ability reduction (age 31+ gets a smaller multiplier, 34+ a larger one), reflecting that physical attributes fade faster than technical ones.
-
 ## Key File
 
-`app/Modules/Squad/Services/PlayerValuationService.php` — All ability calculation logic: value-to-ability tiers, age adjustments, position splits, and the reverse conversion (`abilityToMarketValue()`).
+`app/Modules/Player/Services/PlayerValuationService.php` — All ability calculation logic: value-to-ability tiers, age adjustments, and the reverse conversion (`overallScoreToMarketValue()`).

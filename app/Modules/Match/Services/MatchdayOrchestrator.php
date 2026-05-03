@@ -195,10 +195,10 @@ class MatchdayOrchestrator
         $allPlayers = GamePlayer::select([
                 'id', 'game_id', 'player_id', 'team_id', 'number', 'position',
                 'durability',
-                'game_technical_ability', 'game_physical_ability',
+                'overall_score',
             ])
             ->with([
-                'player:id,name,date_of_birth,technical_ability,physical_ability',
+                'player:id,name,date_of_birth,overall_score',
                 'matchState',
             ])
             ->where('game_id', $game->id)

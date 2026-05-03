@@ -6,7 +6,7 @@
 
 Redesign the squad page from a flat data table into a layered, decision-oriented command center. The page should answer two fundamental questions at a glance: **"Who should play this weekend?"** (tactical, short-term) and **"What does my squad need?"** (strategic, long-term) — without overwhelming the user with all the information at once.
 
-**Current state:** A single table grouped by position showing all player attributes in uniform columns: position, number, name, flag, age, value, wage, contract, technical, physical, fitness, morale, overall. A flat summary footer shows total count, wage bill, position counts, avg fitness/morale. Development, stats, and academy live on separate tabs.
+**Current state:** A single table grouped by position showing all player attributes in uniform columns: position, number, name, flag, age, value, wage, contract, overall, fitness, morale. A flat summary footer shows total count, wage bill, position counts, avg fitness/morale. Development, stats, and academy live on separate tabs.
 
 **Problems with the current design:**
 1. **Information overload without hierarchy** — All 13 columns are given equal visual weight. The user cannot quickly distinguish match-ready context (fitness, morale, availability) from long-term planning context (contract, value, development).
@@ -259,7 +259,7 @@ Instead of table rows, each player renders as a card:
 - Position badge (left), overall score (right), name (prominent)
 - Second line shows key stats for the selected view mode:
   - Overview: nationality, age, fitness, morale
-  - Tactical: technical, physical, fitness, overall
+  - Tactical: overall, fitness, morale
   - Planning: value, wage, contract year, dev status
   - Stats: apps, goals, assists, cards
 - Availability status shown as a colored strip or inline badge below the name
@@ -294,7 +294,7 @@ Instead of table rows, each player renders as a card:
 
 All individual player attributes listed in the current `ShowSquad` view class are retained. The following data is already loaded and needs no new queries:
 - Player identity (name, nationality, age, height, position, number)
-- Abilities (technical, physical, fitness, morale, overall)
+- Abilities (overall, fitness, morale)
 - Contract data (value, wage, contract_until, pending_wage)
 - Status flags (injured, suspended, retiring, listed, loan, pre-contract, renewal)
 - Season stats (appearances, goals, assists, cards, clean sheets)

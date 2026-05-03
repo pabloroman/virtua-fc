@@ -1443,8 +1443,7 @@ class AITransferMarketService
             'game_players.position',
             'game_players.tier',
             'game_players.market_value_cents',
-            'game_players.game_technical_ability',
-            'game_players.game_physical_ability',
+            'game_players.overall_score',
             'game_players.retiring_at_season',
             'game_players.number',
             'game_players.contract_until',
@@ -1662,10 +1661,7 @@ class AITransferMarketService
 
     private function getPlayerAbility(GamePlayer $player): int
     {
-        $tech = $player->game_technical_ability ?? 50;
-        $phys = $player->game_physical_ability ?? 50;
-
-        return (int) round(($tech + $phys) / 2);
+        return $player->overall_score ?? 50;
     }
 
     private function getPositionGroup(string $position): string

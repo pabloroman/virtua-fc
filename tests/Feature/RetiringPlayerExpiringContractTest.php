@@ -110,8 +110,7 @@ class RetiringPlayerExpiringContractTest extends TestCase
     private function createExpiringPlayer(int $age, ?string $retiringAtSeason = null): GamePlayer
     {
         $player = Player::factory()->age($age)->create([
-            'technical_ability' => 65,
-            'physical_ability' => 65,
+            'overall_score' => 65,
         ]);
 
         return GamePlayer::factory()->create([
