@@ -208,7 +208,7 @@ class CareerActionProcessor
     private function checkExpiringOffers(Game $game): void
     {
         $currentDate = $game->current_date;
-        $expiringOffers = TransferOffer::with(['gamePlayer.player', 'offeringTeam'])
+        $expiringOffers = TransferOffer::with(['gamePlayer', 'offeringTeam'])
             ->where('game_id', $game->id)
             ->where('status', TransferOffer::STATUS_PENDING)
             ->whereHas('gamePlayer', fn ($q) => $q->where('team_id', $game->team_id))

@@ -34,7 +34,7 @@ class ShowTransferActivity
         $season = $metadata['season'] ?? $game->season;
 
         // Query all transfers for this window from the ledger
-        $transfers = GameTransfer::with(['gamePlayer.player', 'fromTeam', 'toTeam'])
+        $transfers = GameTransfer::with(['gamePlayer', 'fromTeam', 'toTeam'])
             ->where('game_id', $game->id)
             ->where('season', $season)
             ->where('window', $window)

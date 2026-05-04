@@ -68,7 +68,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property-read \App\Models\RenewalNegotiation|null $latestRenewalNegotiation
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MatchEvent> $matchEvents
  * @property-read int|null $match_events_count
- * @property-read \App\Models\Player $player
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\PlayerSuspension> $suspensions
  * @property-read int|null $suspensions_count
  * @property-read \App\Models\Team $team
@@ -189,11 +188,6 @@ class GamePlayer extends Model
     public function game(): BelongsTo
     {
         return $this->belongsTo(Game::class);
-    }
-
-    public function player(): BelongsTo
-    {
-        return $this->belongsTo(Player::class);
     }
 
     public function team(): BelongsTo

@@ -4,7 +4,6 @@ namespace Tests\Unit;
 
 use App\Models\Game;
 use App\Models\GamePlayer;
-use App\Models\Player;
 use App\Models\Team;
 use App\Modules\Squad\Services\SquadNumberService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -133,13 +132,11 @@ class SquadNumberServiceTest extends TestCase
 
     private function createPlayer(int $age, ?int $number, string $position = 'Central Midfield'): GamePlayer
     {
-        $player = Player::factory()->age($age, $this->game->current_date)->create();
-
         return GamePlayer::factory()
             ->forGame($this->game)
             ->forTeam($this->team)
+            ->age($age, $this->game->current_date)
             ->create([
-                'player_id' => $player->id,
                 'position' => $position,
                 'number' => $number,
             ]);

@@ -7,7 +7,6 @@ use App\Modules\Squad\Services\PlayerGeneratorService;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GamePlayer;
-use App\Models\Player;
 use App\Models\Team;
 use App\Models\User;
 use Carbon\Carbon;
@@ -37,7 +36,7 @@ class PlayerGeneratorServiceTest extends TestCase
         ]);
     }
 
-    public function test_creates_player_and_game_player_records(): void
+    public function test_creates_game_player_record_with_biography(): void
     {
         $service = app(PlayerGeneratorService::class);
         $dateOfBirth = Carbon::createFromDate(2002, 6, 15);
@@ -50,17 +49,12 @@ class PlayerGeneratorServiceTest extends TestCase
             contractYears: 3,
         ));
 
-        // GamePlayer record exists
         $this->assertDatabaseHas('game_players', ['id' => $gamePlayer->id]);
         $this->assertEquals('Centre-Back', $gamePlayer->position);
         $this->assertEquals($this->team->id, $gamePlayer->team_id);
         $this->assertEquals($this->game->id, $gamePlayer->game_id);
         $this->assertEquals(68, $gamePlayer->overall_score);
-        // Player reference record exists
-        $this->assertDatabaseHas('players', ['id' => $gamePlayer->player_id]);
-        $player = Player::find($gamePlayer->player_id);
-        $this->assertEquals(68, $player->overall_score);
-        $this->assertEquals($dateOfBirth->toDateString(), $player->date_of_birth->toDateString());
+        $this->assertEquals($dateOfBirth->toDateString(), $gamePlayer->date_of_birth->toDateString());
 
         // Contract should be 3 years from season
         $this->assertEquals(2027, $gamePlayer->contract_until->year);
@@ -79,10 +73,9 @@ class PlayerGeneratorServiceTest extends TestCase
             contractYears: 3,
         ));
 
-        $player = $gamePlayer->player;
-        $this->assertNotEmpty($player->name);
-        $this->assertNotEmpty($player->nationality);
-        $this->assertIsArray($player->nationality);
+        $this->assertNotEmpty($gamePlayer->name);
+        $this->assertNotEmpty($gamePlayer->nationality);
+        $this->assertIsArray($gamePlayer->nationality);
     }
 
     public function test_uses_provided_name_and_nationality(): void
@@ -99,9 +92,8 @@ class PlayerGeneratorServiceTest extends TestCase
             nationality: ['BRA'],
         ));
 
-        $player = $gamePlayer->player;
-        $this->assertEquals('Test Player', $player->name);
-        $this->assertEquals(['BRA'], $player->nationality);
+        $this->assertEquals('Test Player', $gamePlayer->name);
+        $this->assertEquals(['BRA'], $gamePlayer->nationality);
     }
 
     public function test_auto_estimates_market_value(): void
@@ -225,19 +217,14 @@ class PlayerGeneratorServiceTest extends TestCase
 
         $otherTeam = Team::factory()->create();
 
-        $conflictingPlayer = Player::create([
+        GamePlayer::create([
             'id' => \Illuminate\Support\Str::uuid()->toString(),
+            'game_id' => $this->game->id,
+            'player_id' => \Illuminate\Support\Str::uuid()->toString(),
             'transfermarkt_id' => 'tm-conflict-1',
             'name' => 'Diego García Pérez',
             'nationality' => ['Spain'],
             'date_of_birth' => '1998-03-14',
-            'overall_score' => 70,
-        ]);
-
-        GamePlayer::create([
-            'id' => \Illuminate\Support\Str::uuid()->toString(),
-            'game_id' => $this->game->id,
-            'player_id' => $conflictingPlayer->id,
             'team_id' => $otherTeam->id,
             'position' => 'Central Midfield',
             'market_value_cents' => 1_000_000_00,

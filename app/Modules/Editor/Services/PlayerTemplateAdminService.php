@@ -4,7 +4,6 @@ namespace App\Modules\Editor\Services;
 
 use App\Models\GamePlayerTemplate;
 use App\Models\GamePlayerTemplateAudit;
-use App\Models\Player;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Support\Collection;
@@ -197,10 +196,22 @@ class PlayerTemplateAdminService
 
     public function searchPlayers(string $query, int $limit = 20): Collection
     {
-        $builder = Player::query();
-        $builder->whereRaw('LOWER(name) LIKE ?', ['%' . mb_strtolower($query) . '%']);
-
-        return $builder->limit($limit)->get(['id', 'name', 'date_of_birth']);
+        // Templates carry the canonical real-world player roster. Distinct
+        // by transfermarkt_id so the same human doesn't appear once per
+        // (season, team) row in autocomplete.
+        return GamePlayerTemplate::query()
+            ->whereRaw('LOWER(name) LIKE ?', ['%' . mb_strtolower($query) . '%'])
+            ->orderBy('name')
+            ->limit($limit * 4)
+            ->get(['player_id', 'transfermarkt_id', 'name', 'date_of_birth'])
+            ->unique('transfermarkt_id')
+            ->take($limit)
+            ->map(fn ($t) => (object) [
+                'id' => $t->player_id,
+                'name' => $t->name,
+                'date_of_birth' => $t->date_of_birth,
+            ])
+            ->values();
     }
 
     public function searchTeams(string $query, int $limit = 20): Collection

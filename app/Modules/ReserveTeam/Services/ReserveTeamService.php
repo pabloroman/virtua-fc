@@ -252,7 +252,7 @@ class ReserveTeamService
             return collect();
         }
 
-        $callUpLoans = Loan::with(['gamePlayer.player'])
+        $callUpLoans = Loan::with(['gamePlayer'])
             ->where('game_id', $game->id)
             ->where('status', Loan::STATUS_ACTIVE)
             ->where('parent_team_id', $game->reserve_team_id)

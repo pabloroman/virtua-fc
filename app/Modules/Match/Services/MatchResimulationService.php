@@ -821,7 +821,7 @@ class MatchResimulationService
      */
     public function buildEventsResponse(GameMatch $match, int $minute): array
     {
-        $newEvents = MatchEvent::with('gamePlayer.player')
+        $newEvents = MatchEvent::with('gamePlayer')
             ->where('game_match_id', $match->id)
             ->where('minute', '>', $minute)
             ->orderBy('minute')

@@ -3,13 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Models\Team;
-use App\Modules\Player\Services\PlayerValuationService;
 use App\Support\CountryCodeMapper;
-use App\Support\Money;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Symfony\Component\Console\Command\Command as CommandAlias;
 
 class ReplaceWcPlaceholder extends Command
@@ -61,12 +57,15 @@ class ReplaceWcPlaceholder extends Command
         $team->update($updateData);
         $this->info("Updated team: {$oldName} → {$newName}");
 
-        // Seed players if roster JSON exists
+        // Regenerate templates for the replacement nation so its squad shows
+        // up in fresh games. Existing games retain their pre-replacement
+        // roster (templates are read at game-creation time only).
         if ($transfermarktId) {
             $jsonPath = base_path("data/2025/WC2026/teams/{$transfermarktId}.json");
             if (file_exists($jsonPath)) {
-                $playerCount = $this->seedPlayers($jsonPath);
-                $this->info("Seeded {$playerCount} players from {$transfermarktId}.json");
+                $service = app(\App\Modules\Season\Services\GamePlayerTemplateService::class);
+                $count = $service->generateForWorldCup('2025');
+                $this->info("Regenerated WC templates ({$count} rows)");
             } else {
                 $this->warn("No roster file found at data/2025/WC2026/teams/{$transfermarktId}.json");
             }
@@ -83,66 +82,6 @@ class ReplaceWcPlaceholder extends Command
         return CommandAlias::SUCCESS;
     }
 
-    private function seedPlayers(string $jsonPath): int
-    {
-        $data = json_decode(file_get_contents($jsonPath), true);
-        if (!$data || empty($data['players'])) {
-            return 0;
-        }
-
-        $valuationService = app(PlayerValuationService::class);
-        $count = 0;
-
-        foreach ($data['players'] as $player) {
-            $transfermarktId = $player['id'] ?? null;
-            if (!$transfermarktId) {
-                continue;
-            }
-
-            if (DB::connection('pgsql_control')->table('players')->where('transfermarkt_id', $transfermarktId)->exists()) {
-                $count++;
-                continue;
-            }
-
-            $dateOfBirth = null;
-            $age = null;
-
-            if (!empty($player['dateOfBirth'])) {
-                try {
-                    $dob = Carbon::parse($player['dateOfBirth']);
-                    $dateOfBirth = $dob->toDateString();
-                    $age = $dob->age;
-                } catch (\Exception $e) {
-                    // Ignore invalid dates
-                }
-            }
-
-            $foot = match (strtolower($player['foot'] ?? '')) {
-                'left' => 'left',
-                'right' => 'right',
-                'both' => 'both',
-                default => null,
-            };
-
-            $marketValueCents = Money::parseMarketValue($player['marketValue'] ?? null);
-            $overallScore = $valuationService->marketValueToOverallScore($marketValueCents, $age ?? 25);
-
-            DB::connection('pgsql_control')->table('players')->insert([
-                'id' => Str::uuid()->toString(),
-                'transfermarkt_id' => $transfermarktId,
-                'name' => $player['name'],
-                'date_of_birth' => $dateOfBirth,
-                'nationality' => json_encode($player['nationality'] ?? []),
-                'height' => $player['height'] ?? null,
-                'foot' => $foot,
-                'overall_score' => $overallScore,
-            ]);
-
-            $count++;
-        }
-
-        return $count;
-    }
 
     private function regenerateGroupsJson(string $oldCode, string $newCode): void
     {

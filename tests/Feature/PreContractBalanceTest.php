@@ -6,7 +6,6 @@ use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GamePlayer;
-use App\Models\Player;
 use App\Models\Team;
 use App\Models\User;
 use App\Modules\Transfer\Enums\NegotiationScenario;

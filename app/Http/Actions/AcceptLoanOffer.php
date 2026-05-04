@@ -19,7 +19,7 @@ class AcceptLoanOffer
     {
         $game = Game::findOrFail($gameId);
 
-        $offer = TransferOffer::with(['gamePlayer.player', 'offeringTeam'])
+        $offer = TransferOffer::with(['gamePlayer', 'offeringTeam'])
             ->where('id', $offerId)
             ->where('game_id', $gameId)
             ->where('offer_type', TransferOffer::TYPE_LOAN_OUT)

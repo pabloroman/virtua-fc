@@ -18,7 +18,7 @@ class RejectTransferOffer
     {
         $game = Game::findOrFail($gameId);
 
-        $offer = TransferOffer::with(['gamePlayer.player', 'offeringTeam'])
+        $offer = TransferOffer::with(['gamePlayer', 'offeringTeam'])
             ->where('id', $offerId)
             ->where('game_id', $gameId)
             ->where('status', TransferOffer::STATUS_PENDING)

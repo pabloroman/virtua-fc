@@ -6,7 +6,6 @@ use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Loan;
-use App\Models\Player;
 use App\Models\Team;
 use App\Models\User;
 use App\Modules\Transfer\Services\ContractService;
@@ -159,15 +158,13 @@ class RenewalForLoanedPlayerTest extends TestCase
 
     private function createExpiringPlayer(?Team $team = null): GamePlayer
     {
-        $player = Player::factory()->age(28)->create([
-            'overall_score' => 70,
-        ]);
-
-        return GamePlayer::factory()->create([
+        return GamePlayer::factory()
+            ->age(28)
+            ->create([
             'game_id' => $this->game->id,
-            'player_id' => $player->id,
             'team_id' => ($team ?? $this->userTeam)->id,
             'position' => 'Central Midfield',
+            'overall_score' => 70,
             // Contract expires before the season end (June 30) → "last year"
             'contract_until' => '2025-06-30',
             'annual_wage' => 200_000_00,

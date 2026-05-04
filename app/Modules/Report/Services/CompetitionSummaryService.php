@@ -61,7 +61,7 @@ class CompetitionSummaryService
 
         $finalMatch = $finalTie?->firstLegMatch;
         $finalGoalEvents = $finalMatch
-            ? MatchEvent::with(['gamePlayer.player'])
+            ? MatchEvent::with(['gamePlayer'])
                 ->where('game_match_id', $finalMatch->id)
                 ->whereIn('event_type', [MatchEvent::TYPE_GOAL, MatchEvent::TYPE_OWN_GOAL])
                 ->orderBy('minute')

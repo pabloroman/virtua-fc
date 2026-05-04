@@ -3,9 +3,9 @@
 namespace App\Http\Actions\Admin;
 
 use App\Models\GamePlayerTemplate;
-use App\Models\Player;
 use App\Modules\Editor\Services\PlayerTemplateAdminService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class StorePlayerTemplate
@@ -45,25 +45,15 @@ class StorePlayerTemplate
             'tier' => ['required', 'integer', 'min:1', 'max:5'],
         ]);
 
-        $player = Player::create([
-            'name' => $validated['name'],
-            'date_of_birth' => $validated['date_of_birth'],
-            'nationality' => array_filter([$validated['nationality'] ?? null]),
-            'overall_score' => $validated['overall_score'] ?? 50,
-        ]);
-
         $teamId = $validated['team_id'] ?: null;
 
         $templateData = collect($validated)
             ->except(['name', 'date_of_birth', 'nationality', 'market_value_euros', 'annual_wage_euros'])
             ->merge([
-                'player_id' => $player->id,
-                'transfermarkt_id' => $player->transfermarkt_id,
-                'name' => $player->name,
-                'date_of_birth' => $player->date_of_birth?->toDateString(),
-                'nationality' => $player->nationality,
-                'height' => $player->height,
-                'foot' => $player->foot,
+                'player_id' => Str::uuid()->toString(),
+                'name' => $validated['name'],
+                'date_of_birth' => $validated['date_of_birth'],
+                'nationality' => array_filter([$validated['nationality'] ?? null]),
                 'team_id' => $teamId,
                 'market_value_cents' => $validated['market_value_euros'] * 100,
                 'annual_wage' => $validated['annual_wage_euros'] * 100,

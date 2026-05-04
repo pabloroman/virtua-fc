@@ -38,8 +38,8 @@ class ShowLiveMatch
             'homeTeam',
             'awayTeam',
             'competition',
-            'events.gamePlayer.player',
-            'mvpPlayer.player',
+            'events.gamePlayer',
+            'mvpPlayer',
         ])->where('game_id', $gameId)->findOrFail($matchId);
 
         // Prevent viewing/interacting with matches that are not currently in play

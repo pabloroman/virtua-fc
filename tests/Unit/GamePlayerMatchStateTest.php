@@ -5,7 +5,6 @@ namespace Tests\Unit;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\GamePlayerMatchState;
-use App\Models\Player;
 use App\Models\Team;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;

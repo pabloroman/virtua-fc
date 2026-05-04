@@ -45,7 +45,7 @@ class ShowFinances
         $seasonStart = "{$seasonYear}-07-01";
         $seasonEnd = ($seasonYear + 1) . '-06-30';
 
-        $transactions = FinancialTransaction::with('relatedPlayer.player')
+        $transactions = FinancialTransaction::with('relatedPlayer')
             ->where('game_id', $gameId)
             ->whereBetween('transaction_date', [$seasonStart, $seasonEnd])
             ->orderByDesc('transaction_date')

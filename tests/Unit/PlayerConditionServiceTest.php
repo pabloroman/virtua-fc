@@ -5,7 +5,6 @@ namespace Tests\Unit;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
-use App\Models\Player;
 use App\Models\Team;
 use App\Modules\Player\Services\PlayerConditionService;
 use Carbon\Carbon;
@@ -41,21 +40,15 @@ class PlayerConditionServiceTest extends TestCase
         $game = Game::factory()->create(['current_date' => '2025-10-01']);
         $team = Team::factory()->create();
 
-        $playerFactory = Player::factory();
-        if (! empty($playerOverrides)) {
-            $playerFactory = $playerFactory->state($playerOverrides);
-        }
-
         return GamePlayer::factory()
             ->forGame($game)
             ->forTeam($team)
             ->create(array_merge([
-                'player_id' => $playerFactory,
                 'position' => 'Central Midfield',
                 'fitness' => 100,
                 'morale' => 80,
                 'overall_score' => 70,
-            ], $overrides));
+            ], $playerOverrides, $overrides));
     }
 
     // -------------------------------------------------------

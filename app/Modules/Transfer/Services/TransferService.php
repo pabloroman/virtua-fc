@@ -492,7 +492,7 @@ class TransferService
      */
     public function completePreContractTransfers(Game $game): Collection
     {
-        $agreedPreContracts = TransferOffer::with(['gamePlayer.player', 'offeringTeam'])
+        $agreedPreContracts = TransferOffer::with(['gamePlayer', 'offeringTeam'])
             ->where('game_id', $game->id)
             ->where('status', TransferOffer::STATUS_AGREED)
             ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
@@ -521,7 +521,7 @@ class TransferService
      */
     public function completeIncomingPreContracts(Game $game): Collection
     {
-        $agreedIncoming = TransferOffer::with(['gamePlayer.player', 'sellingTeam'])
+        $agreedIncoming = TransferOffer::with(['gamePlayer', 'sellingTeam'])
             ->where('game_id', $game->id)
             ->where('status', TransferOffer::STATUS_AGREED)
             ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
@@ -546,7 +546,7 @@ class TransferService
     {
         $responseDate = $game->current_date->subDays(TransferOffer::PRE_CONTRACT_RESPONSE_DAYS);
 
-        $pendingOffers = TransferOffer::with(['gamePlayer.player', 'offeringTeam'])
+        $pendingOffers = TransferOffer::with(['gamePlayer', 'offeringTeam'])
             ->where('game_id', $game->id)
             ->where('direction', TransferOffer::DIRECTION_INCOMING)
             ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
@@ -636,7 +636,7 @@ class TransferService
         // Sorted by game_player_id so the per-player UPDATE locks are
         // acquired in PK order, keeping lock acquisition deterministic
         // across concurrent writers and avoiding cross-session deadlocks.
-        $agreedOffers = TransferOffer::with(['gamePlayer.player', 'offeringTeam'])
+        $agreedOffers = TransferOffer::with(['gamePlayer', 'offeringTeam'])
             ->where('game_id', $game->id)
             ->where('status', TransferOffer::STATUS_AGREED)
             ->whereHas('gamePlayer', function ($query) use ($game) {
@@ -1008,7 +1008,7 @@ class TransferService
     {
         // orderBy('game_player_id') keeps the UPDATE locks deterministic
         // across concurrent writers — see completeAgreedTransfers().
-        $agreedIncoming = TransferOffer::with(['gamePlayer.player', 'sellingTeam'])
+        $agreedIncoming = TransferOffer::with(['gamePlayer', 'sellingTeam'])
             ->where('game_id', $game->id)
             ->where('status', TransferOffer::STATUS_AGREED)
             ->where('direction', TransferOffer::DIRECTION_INCOMING)
@@ -1017,7 +1017,7 @@ class TransferService
             ->get();
 
         // Also get loan-out agreements
-        $agreedLoanOuts = TransferOffer::with(['gamePlayer.player', 'offeringTeam'])
+        $agreedLoanOuts = TransferOffer::with(['gamePlayer', 'offeringTeam'])
             ->where('game_id', $game->id)
             ->where('status', TransferOffer::STATUS_AGREED)
             ->where('offer_type', TransferOffer::TYPE_LOAN_OUT)

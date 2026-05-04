@@ -27,8 +27,6 @@ use Illuminate\Support\Facades\DB;
 class PlayerDevelopmentProcessor implements SeasonProcessor
 {
     private const UPDATE_CHUNK_SIZE = 500;
-    private const CONTROL_PLANE_FETCH_CHUNK_SIZE = 2000;
-
     public function __construct(
         private readonly PlayerValuationService $valuationService,
     ) {}
@@ -45,20 +43,20 @@ class PlayerDevelopmentProcessor implements SeasonProcessor
             return $data;
         }
 
-        // 1. Read all inputs for this game in one tenant-side query.
-        // (game_id, game_player_id) on gpms makes the LEFT JOIN cheap; no
-        // CTE chain, no large CASE expressions, planner cost stays well
-        // below jit_above_cost.
+        // Read everything from game_players in one tenant-side query.
+        // date_of_birth and overall_score live on game_players directly
+        // (post-Phase-6), so no control-plane round-trip is needed.
         $inputs = DB::table('game_players AS gp')
             ->leftJoin('game_player_match_state AS gpms', function ($join) use ($game) {
                 $join->on('gpms.game_player_id', '=', 'gp.id')
                     ->where('gpms.game_id', '=', $game->id);
             })
             ->where('gp.game_id', $game->id)
+            ->whereNotNull('gp.date_of_birth')
             ->select([
                 'gp.id',
-                'gp.player_id',
-                'gp.overall_score AS gp_overall_score',
+                'gp.date_of_birth',
+                'gp.overall_score',
                 'gp.potential',
                 'gp.market_value_cents AS old_market_value',
                 'gp.tier AS old_tier',
@@ -70,41 +68,17 @@ class PlayerDevelopmentProcessor implements SeasonProcessor
             return $data;
         }
 
-        // 2. Resolve date_of_birth + control-plane overall_score (used as a
-        // fallback when gp.overall_score is null) for these players in
-        // chunked control-plane reads. Building a player_id → biographical
-        // map keeps memory bounded and avoids cross-plane JOINs.
-        $playerIds = $inputs->pluck('player_id')->unique()->values()->all();
-        $biographical = [];
-        foreach (array_chunk($playerIds, self::CONTROL_PLANE_FETCH_CHUNK_SIZE) as $idBatch) {
-            $rows = DB::connection('pgsql_control')
-                ->table('players')
-                ->whereIn('id', $idBatch)
-                ->whereNotNull('date_of_birth')
-                ->get(['id', 'date_of_birth', 'overall_score']);
-
-            foreach ($rows as $row) {
-                $biographical[$row->id] = [
-                    'date_of_birth' => $row->date_of_birth,
-                    'overall_score' => (int) $row->overall_score,
-                ];
-            }
-        }
-
-        // 3. Compute new values in PHP. Skip rows that don't change so we
+        // Compute new values in PHP. Skip rows that don't change so we
         // don't burn writes on no-ops (parity with the old IS DISTINCT FROM
         // guard).
         $updates = [];
         foreach ($inputs as $row) {
-            $bio = $biographical[$row->player_id] ?? null;
-            if ($bio === null) {
+            if ($row->overall_score === null) {
                 continue;
             }
 
-            $age = $this->ageOnDate($bio['date_of_birth'], $currentDate->toDateString());
-            $previousOverall = $row->gp_overall_score !== null
-                ? (int) $row->gp_overall_score
-                : $bio['overall_score'];
+            $age = $this->ageOnDate($row->date_of_birth, $currentDate->toDateString());
+            $previousOverall = (int) $row->overall_score;
             $potential = $row->potential !== null ? (int) $row->potential : 99;
             $appearances = (int) $row->season_appearances;
 

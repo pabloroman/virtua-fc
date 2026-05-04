@@ -121,7 +121,7 @@ class ResimulationBenchStateTest extends TestCase
             'metadata' => ['player_in_id' => $replacement->id],
         ]);
 
-        $userLineup = GamePlayer::with('player')->whereIn('id', $userLineupIds)->get();
+        $userLineup = GamePlayer::query()->whereIn('id', $userLineupIds)->get();
 
         $service = app(SubstitutionService::class);
 

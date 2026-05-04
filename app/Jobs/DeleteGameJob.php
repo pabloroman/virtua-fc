@@ -36,17 +36,6 @@ class DeleteGameJob implements ShouldQueue
         Cache::forget("game_owner:{$this->gameId}");
         PerformanceHistoryService::forget($this->gameId);
 
-        // PLANES-SEAM: cross-plane JOIN. game_players=tenant, players=control.
-        // Restored while both planes share one physical Postgres. Re-split
-        // before the planes are physically separated. See CLAUDE.md →
-        // "Control plane / tenant plane".
-        $generatedPlayerIds = DB::table('game_players')
-            ->join('players', 'players.id', '=', 'game_players.player_id')
-            ->where('game_players.game_id', $this->gameId)
-            ->where('players.transfermarkt_id', 'like', 'gen-%')
-            ->pluck('game_players.player_id')
-            ->all();
-
         // Explicit bottom-up deletion: children before parents. Large tables
         // are deleted in batches to reduce lock duration and WAL pressure.
 
@@ -86,25 +75,6 @@ class DeleteGameJob implements ShouldQueue
 
         // Root: game row itself (nothing left to cascade)
         $game->delete();
-
-        // Clean up generated players that are now orphaned.
-        //
-        // PLANES-SEAM: cross-plane correlated subquery. players=control,
-        // game_players=tenant. Restored while both planes share one physical
-        // Postgres. Re-split before the planes are physically separated.
-        // See CLAUDE.md → "Control plane / tenant plane".
-        if (! empty($generatedPlayerIds)) {
-            foreach (array_chunk($generatedPlayerIds, 500) as $chunk) {
-                DB::table('players')
-                    ->whereIn('id', $chunk)
-                    ->whereNotExists(function ($query) {
-                        $query->select(DB::raw(1))
-                            ->from('game_players')
-                            ->whereColumn('game_players.player_id', 'players.id');
-                    })
-                    ->delete();
-            }
-        }
     }
 
     /**

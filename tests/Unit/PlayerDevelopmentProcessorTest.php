@@ -5,7 +5,6 @@ namespace Tests\Unit;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\GamePlayerMatchState;
-use App\Models\Player;
 use App\Models\Team;
 use App\Modules\Player\Services\PlayerTierService;
 use App\Modules\Season\DTOs\SeasonTransitionData;
@@ -128,19 +127,16 @@ class PlayerDevelopmentProcessorTest extends TestCase
         $this->assertSame(PlayerTierService::tierFromMarketValue($expectedMV), $player->tier);
     }
 
-    public function test_falls_back_to_players_overall_when_game_overall_is_null(): void
+    public function test_skips_rows_with_null_overall(): void
     {
-        // Simulates a freshly-generated row where game_players.overall_score hasn't been set yet.
-        $player = Player::factory()->age(25, self::SEASON_END)->create([
-            'overall_score' => 70,
-        ]);
-
+        // Rows with NULL overall_score are skipped — there's no longer a
+        // control-plane fallback to draw from.
         $team = Team::factory()->create();
         $gamePlayer = GamePlayer::factory()
             ->forGame($this->game)
             ->forTeam($team)
+            ->age(25, self::SEASON_END)
             ->create([
-                'player_id' => $player->id,
                 'overall_score' => null,
                 'potential' => 80,
                 'season_appearances' => 25,
@@ -149,9 +145,9 @@ class PlayerDevelopmentProcessorTest extends TestCase
         $this->processor->process($this->game, $this->transitionData());
 
         $gamePlayer->refresh();
-        // Age 25 curve: -1, halved with apps >= 10 = -1 after PHP rounding (round(-0.5) = -1 with PHP_ROUND_HALF_AWAY_FROM_ZERO).
-        // Actually PHP round() default mode is HALF_AWAY_FROM_ZERO, so round(-0.5) = -1.
-        $this->assertSame(69, $gamePlayer->overall_score);
+        // Bypass the accessor (which substitutes 50 for null) so we can
+        // assert the underlying column is still NULL.
+        $this->assertNull($gamePlayer->getRawOriginal('overall_score'));
     }
 
     public function test_other_games_are_untouched(): void
@@ -191,14 +187,9 @@ class PlayerDevelopmentProcessorTest extends TestCase
         ?int $marketValueCents = null,
         ?Game $game = null,
     ): GamePlayer {
-        $player = Player::factory()->age($age, self::SEASON_END)->create([
-            'overall_score' => $overall,
-        ]);
-
         $team = Team::factory()->create();
 
         $attributes = [
-            'player_id' => $player->id,
             'overall_score' => $overall,
             'potential' => $potential,
             'season_appearances' => $appearances,
@@ -211,23 +202,20 @@ class PlayerDevelopmentProcessorTest extends TestCase
         return GamePlayer::factory()
             ->forGame($game ?? $this->game)
             ->forTeam($team)
+            ->age($age, self::SEASON_END)
             ->create($attributes);
     }
 
     private function makePoolPlayer(int $age, int $overall, int $potential): GamePlayer
     {
-        $player = Player::factory()->age($age, self::SEASON_END)->create([
-            'overall_score' => $overall,
-        ]);
-
         $team = Team::factory()->create();
 
         return GamePlayer::factory()
             ->forGame($this->game)
             ->forTeam($team)
             ->pool()
+            ->age($age, self::SEASON_END)
             ->create([
-                'player_id' => $player->id,
                 'overall_score' => $overall,
                 'potential' => $potential,
             ]);

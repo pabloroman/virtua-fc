@@ -9,7 +9,6 @@ use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\GameStanding;
-use App\Models\Player;
 use App\Models\Team;
 use App\Models\User;
 use App\Modules\Competition\Services\CountryConfig;
@@ -720,10 +719,8 @@ class UefaQualificationTest extends TestCase
 
     private function createPlayersForTeam(Team $team, int $marketValue): void
     {
-        $player = Player::factory()->create();
         GamePlayer::factory()->create([
             'game_id' => $this->game->id,
-            'player_id' => $player->id,
             'team_id' => $team->id,
             'market_value_cents' => $marketValue,
         ]);

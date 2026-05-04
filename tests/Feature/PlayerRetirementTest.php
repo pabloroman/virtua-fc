@@ -8,7 +8,6 @@ use App\Modules\Player\Services\PlayerRetirementService;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GamePlayer;
-use App\Models\Player;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -235,19 +234,17 @@ class PlayerRetirementTest extends TestCase
         // A player who announced retirement while on a team, then lost their
         // team_id (e.g. contract expiration earlier in the same closing), must
         // still be removed — not linger as a free agent next season.
-        $player = Player::factory()->age(36)->create([
-            'overall_score' => 65,
-        ]);
-        $gamePlayer = GamePlayer::factory()->create([
-            'game_id' => $this->game->id,
-            'player_id' => $player->id,
-            'team_id' => null,
-            'position' => 'Central Midfield',
-            'fitness' => 80,
-            'season_appearances' => 15,
-            'overall_score' => 65,
-            'retiring_at_season' => '2024',
-        ]);
+        $gamePlayer = GamePlayer::factory()
+            ->age(36)
+            ->create([
+                'game_id' => $this->game->id,
+                'team_id' => null,
+                'position' => 'Central Midfield',
+                'fitness' => 80,
+                'season_appearances' => 15,
+                'overall_score' => 65,
+                'retiring_at_season' => '2024',
+            ]);
 
         $processor = app(PlayerRetirementProcessor::class);
         $data = new SeasonTransitionData(oldSeason: '2024', newSeason: '2025', competitionId: 'ESP1');
@@ -268,18 +265,16 @@ class PlayerRetirementTest extends TestCase
         // Free agents aged past retirement should receive an announcement on
         // the same closing-cycle cadence as rostered players. Age 40 outfield
         // is MAX_CAREER_OUTFIELD, so shouldRetire() returns true deterministically.
-        $player = Player::factory()->age(40)->create([
-            'overall_score' => 65,
-        ]);
-        $gamePlayer = GamePlayer::factory()->create([
-            'game_id' => $this->game->id,
-            'player_id' => $player->id,
-            'team_id' => null,
-            'position' => 'Central Midfield',
-            'fitness' => 80,
-            'season_appearances' => 0,
-            'overall_score' => 65,
-            'retiring_at_season' => null,
+        $gamePlayer = GamePlayer::factory()
+            ->age(40)
+            ->create([
+                'game_id' => $this->game->id,
+                'team_id' => null,
+                'position' => 'Central Midfield',
+                'fitness' => 80,
+                'season_appearances' => 0,
+                'overall_score' => 65,
+                'retiring_at_season' => null,
         ]);
 
         $processor = app(PlayerRetirementProcessor::class);
@@ -382,18 +377,15 @@ class PlayerRetirementTest extends TestCase
         int $appearances = 15,
         int $overall = 65,
     ): GamePlayer {
-        $player = Player::factory()->age($age)->create([
-            'overall_score' => $overall,
-        ]);
-
-        return GamePlayer::factory()->create([
-            'game_id' => $this->game->id,
-            'player_id' => $player->id,
-            'team_id' => ($team ?? $this->userTeam)->id,
-            'position' => $position,
-            'fitness' => $fitness,
-            'season_appearances' => $appearances,
-            'overall_score' => $overall,
-        ]);
+        return GamePlayer::factory()
+            ->age($age)
+            ->create([
+                'game_id' => $this->game->id,
+                'team_id' => ($team ?? $this->userTeam)->id,
+                'position' => $position,
+                'fitness' => $fitness,
+                'season_appearances' => $appearances,
+                'overall_score' => $overall,
+            ]);
     }
 }

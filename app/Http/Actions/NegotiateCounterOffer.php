@@ -32,7 +32,7 @@ class NegotiateCounterOffer
 
         $game = Game::findOrFail($gameId);
 
-        $offer = TransferOffer::with(['gamePlayer.player', 'gamePlayer.team', 'offeringTeam'])
+        $offer = TransferOffer::with(['gamePlayer.team', 'offeringTeam'])
             ->where('id', $offerId)
             ->where('game_id', $gameId)
             ->whereIn('offer_type', [TransferOffer::TYPE_UNSOLICITED, TransferOffer::TYPE_LISTED])

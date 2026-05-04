@@ -7,7 +7,6 @@ use App\Modules\Squad\DTOs\GeneratedPlayerData;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\GamePlayerMatchState;
-use App\Models\Player;
 use App\Models\Team;
 use App\Models\UserSquadCareerRecord;
 use Carbon\Carbon;
@@ -86,18 +85,7 @@ class PlayerGeneratorService
         $name = $data->name ?? $identity['name'];
         $nationality = $data->nationality ?? $identity['nationality'];
         $age = (int) $data->dateOfBirth->diffInYears($game->current_date ?? now());
-
-        // Create the reference Player record
-        $player = Player::create([
-            'id' => Str::uuid()->toString(),
-            'transfermarkt_id' => 'gen-' . Str::uuid()->toString(),
-            'name' => $name,
-            'nationality' => $nationality,
-            'date_of_birth' => $data->dateOfBirth->format('Y-m-d'),
-            'overall_score' => $data->overallScore,
-            'height' => $identity['height'] ?? null,
-            'foot' => $identity['foot'] ?? null,
-        ]);
+        $transfermarktId = 'gen-' . Str::uuid()->toString();
 
         // Determine market value
         $marketValue = $data->marketValueCents ?? $this->valuationService->overallScoreToMarketValue($data->overallScore, $age);
@@ -123,8 +111,8 @@ class PlayerGeneratorService
         $gamePlayer = GamePlayer::create([
             'id' => Str::uuid()->toString(),
             'game_id' => $game->id,
-            'player_id' => $player->id,
-            'transfermarkt_id' => $player->transfermarkt_id,
+            'player_id' => Str::uuid()->toString(),
+            'transfermarkt_id' => $transfermarktId,
             'name' => $name,
             'date_of_birth' => $data->dateOfBirth->format('Y-m-d'),
             'nationality' => $nationality,
@@ -153,9 +141,6 @@ class PlayerGeneratorService
             mt_rand($data->moraleMin, $data->moraleMax),
         );
 
-        // Set relations to avoid lazy-load when caller accesses derived
-        // attributes via the GamePlayer accessor delegates.
-        $gamePlayer->setRelation('player', $player);
         $gamePlayer->setRelation('matchState', $matchState);
 
         if ($data->joinedFrom !== null && $game->ownsTeam($data->teamId)) {
@@ -196,7 +181,6 @@ class PlayerGeneratorService
         $seasonYear = (int) $game->season;
         $currentDate = $game->current_date ?? now();
 
-        $playerRows = [];
         $gamePlayerRows = [];
         $matchStateRows = [];
         $results = [];
@@ -226,17 +210,6 @@ class PlayerGeneratorService
             $playerId = Str::uuid()->toString();
             $gamePlayerId = Str::uuid()->toString();
             $transfermarktId = 'gen-' . Str::uuid()->toString();
-
-            $playerRows[] = [
-                'id' => $playerId,
-                'transfermarkt_id' => $transfermarktId,
-                'name' => $name,
-                'nationality' => json_encode($nationality),
-                'date_of_birth' => $data->dateOfBirth->format('Y-m-d'),
-                'overall_score' => $data->overallScore,
-                'height' => $identity['height'] ?? null,
-                'foot' => $identity['foot'] ?? null,
-            ];
 
             $marketValue = $data->marketValueCents ?? $this->valuationService->overallScoreToMarketValue($data->overallScore, $age);
             $marketValue = max(100_000_00, $marketValue);
@@ -297,11 +270,6 @@ class PlayerGeneratorService
                 'position' => $data->position,
                 'teamId' => $data->teamId,
             ];
-        }
-
-        // Bulk insert Player records
-        foreach (array_chunk($playerRows, 500) as $chunk) {
-            Player::insert($chunk);
         }
 
         // Bulk insert GamePlayer records

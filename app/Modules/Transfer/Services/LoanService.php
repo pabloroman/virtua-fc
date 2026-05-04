@@ -386,7 +386,7 @@ class LoanService
      */
     public function returnAllLoans(Game $game): Collection
     {
-        $activeLoans = Loan::with(['gamePlayer.player', 'parentTeam', 'loanTeam'])
+        $activeLoans = Loan::with(['gamePlayer', 'parentTeam', 'loanTeam'])
             ->where('game_id', $game->id)
             ->where('status', Loan::STATUS_ACTIVE)
             ->get();
@@ -450,7 +450,7 @@ class LoanService
      */
     public function getActiveLoans(Game $game): array
     {
-        $allLoans = Loan::with(['gamePlayer.player', 'parentTeam', 'loanTeam'])
+        $allLoans = Loan::with(['gamePlayer', 'parentTeam', 'loanTeam'])
             ->where('game_id', $game->id)
             ->where('status', Loan::STATUS_ACTIVE)
             ->get();
@@ -470,7 +470,7 @@ class LoanService
      */
     public function resolveIncomingLoanRequests(Game $game, ScoutingService $scoutingService): Collection
     {
-        $pendingLoans = TransferOffer::with(['gamePlayer.player', 'gamePlayer.team'])
+        $pendingLoans = TransferOffer::with(['gamePlayer.team'])
             ->where('game_id', $game->id)
             ->where('direction', TransferOffer::DIRECTION_INCOMING)
             ->where('offer_type', TransferOffer::TYPE_LOAN_IN)

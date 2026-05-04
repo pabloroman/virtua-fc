@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Modules\Competition\Services\CountryConfig;
-use App\Modules\Player\Services\PlayerValuationService;
 use App\Models\User;
 use App\Support\Money;
 use App\Support\TeamColors;
@@ -363,7 +362,6 @@ class SeedReferenceData extends Command
         // Clear reference tables
         DB::connection('pgsql_control')->table('game_player_templates')->delete();
         DB::connection('pgsql_control')->table('competition_teams')->delete();
-        DB::connection('pgsql_control')->table('players')->delete();
         DB::connection('pgsql_control')->table('teams')->delete();
         DB::connection('pgsql_control')->table('competitions')->delete();
 
@@ -434,11 +432,7 @@ class SeedReferenceData extends Command
         $this->seedCompetitionRecord($code, $normalizedData, $tier, 'league', $handler, $country, $flag, $role);
 
         // Build team ID mapping (transfermarktId -> UUID)
-        $teamIdMap = $this->seedTeams($teamsData['clubs'], $code, $seasonId, $country);
-
-        // Seed players (embedded in teams data)
-        $this->seedPlayersFromTeams($teamsData['clubs'], $teamIdMap);
-
+        $this->seedTeams($teamsData['clubs'], $code, $seasonId, $country);
     }
 
     private function seedCupCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $flag, string $role = 'domestic_cup'): void
@@ -464,10 +458,7 @@ class SeedReferenceData extends Command
         $this->seedCompetitionRecord($code, $teamsData, $tier, 'league', $handler, $country, $flag, $role);
 
         // Seed teams (links existing teams by transfermarkt_id, like cups)
-        $teamIdMap = $this->seedSwissFormatTeams($teamsData['clubs'], $code, $season);
-
-        // Seed embedded player data if present (clubs that have a 'players' array)
-        $this->seedPlayersFromTeams($teamsData['clubs'], $teamIdMap);
+        $this->seedSwissFormatTeams($teamsData['clubs'], $code, $season);
 
         // Swiss league phase fixtures are generated per-game by SetupNewGame
 
@@ -492,7 +483,6 @@ class SeedReferenceData extends Command
             ->toArray();
 
         $teamIdMap = [];
-        $clubs = [];
 
         foreach (glob("{$basePath}/*.json") as $filePath) {
             $data = $this->loadJson($filePath);
@@ -542,15 +532,9 @@ class SeedReferenceData extends Command
                 []
             );
 
-            // Normalize to clubs format for seedPlayersFromTeams
-            $clubs[] = [
-                'transfermarktId' => $transfermarktId,
-                'players' => $data['players'] ?? [],
-            ];
         }
 
         $this->line("  Teams: " . count($teamIdMap));
-        $this->seedPlayersFromTeams($clubs, $teamIdMap);
     }
 
     /**
@@ -739,86 +723,6 @@ class SeedReferenceData extends Command
         return $teamIdMap;
     }
 
-    /**
-     * Seed players from embedded team data.
-     */
-    private function seedPlayersFromTeams(array $clubs, array $teamIdMap): void
-    {
-        $count = 0;
-        $valuationService = app(PlayerValuationService::class);
-
-        foreach ($clubs as $club) {
-            $transfermarktId = $club['transfermarktId'] ?? $this->extractTransfermarktIdFromImage($club['image'] ?? '');
-            if (!$transfermarktId || !isset($teamIdMap[$transfermarktId])) {
-                continue;
-            }
-
-            $players = $club['players'] ?? [];
-
-            foreach ($players as $player) {
-                // Parse date of birth
-                $dateOfBirth = null;
-                $age = null;
-                if (!empty($player['dateOfBirth'])) {
-                    try {
-                        $dob = Carbon::parse($player['dateOfBirth']);
-                        $dateOfBirth = $dob->toDateString();
-                        $age = $dob->age;
-                    } catch (\Exception $e) {
-                        // Ignore invalid dates
-                    }
-                }
-
-                // Normalize foot value
-                $foot = match (strtolower($player['foot'] ?? '')) {
-                    'left' => 'left',
-                    'right' => 'right',
-                    'both' => 'both',
-                    default => null,
-                };
-
-                // Calculate overall_score from market value and age.
-                // Transfermarkt occasionally lists fringe / youth squad players with
-                // no quoted value — floor those at €100K so they still get a usable
-                // ability baseline and a non-zero transfer price.
-                $marketValueCents = Money::parseMarketValue($player['marketValue'] ?? null);
-                if ($marketValueCents <= 0) {
-                    $marketValueCents = 10_000_000;
-                }
-                $overallScore = $valuationService->marketValueToOverallScore($marketValueCents, $age ?? 25);
-
-                // Insert or update player (never change the id on update)
-                $playerValues = [
-                    'name' => $player['name'],
-                    'date_of_birth' => $dateOfBirth,
-                    'nationality' => json_encode($player['nationality'] ?? []),
-                    'height' => $player['height'] ?? null,
-                    'foot' => $foot,
-                    'overall_score' => $overallScore,
-                ];
-
-                $exists = DB::connection('pgsql_control')->table('players')
-                    ->where('transfermarkt_id', $player['id'])
-                    ->exists();
-
-                if ($exists) {
-                    DB::connection('pgsql_control')->table('players')
-                        ->where('transfermarkt_id', $player['id'])
-                        ->update($playerValues);
-                } else {
-                    DB::connection('pgsql_control')->table('players')->insert(array_merge(
-                        ['id' => Str::uuid()->toString(), 'transfermarkt_id' => $player['id']],
-                        $playerValues
-                    ));
-                }
-
-                $count++;
-            }
-        }
-
-        $this->line("  Players: {$count}");
-    }
-
     private function seedCupTeams(array $clubs, string $competitionId, string $season, string $country = 'ES'): void
     {
         $count = 0;
@@ -922,7 +826,6 @@ class SeedReferenceData extends Command
         $this->info('Summary:');
         $this->line('  Competitions: ' . DB::connection('pgsql_control')->table('competitions')->count());
         $this->line('  Teams: ' . DB::connection('pgsql_control')->table('teams')->count());
-        $this->line('  Players: ' . DB::connection('pgsql_control')->table('players')->count());
         $this->line('  Competition-Team links: ' . DB::connection('pgsql_control')->table('competition_teams')->count());
         $this->line('  Game player templates: ' . DB::connection('pgsql_control')->table('game_player_templates')->count());
         $this->newLine();
