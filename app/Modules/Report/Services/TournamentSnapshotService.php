@@ -172,7 +172,7 @@ class TournamentSnapshotService
         }
 
         $finalGoalEvents = $data['finalGoalEvents']->map(function ($event) {
-            $playerName = $event->gamePlayer?->player?->name ?? '?';
+            $playerName = $event->gamePlayer?->name ?? '?';
             $isOwnGoal = $event->event_type === \App\Models\MatchEvent::TYPE_OWN_GOAL;
 
             return [
@@ -185,7 +185,7 @@ class TournamentSnapshotService
 
         $serializePlayerList = fn ($collection, $fields) => $collection->map(function ($gp) use ($fields) {
             $item = ['team_id' => $gp->team_id];
-            $item['player_name'] = $gp->player->name;
+            $item['player_name'] = $gp->name;
             foreach ($fields as $field) {
                 $item[$field] = $gp->{$field};
             }
@@ -197,14 +197,14 @@ class TournamentSnapshotService
         $topGoalkeepers = $serializePlayerList($data['topGoalkeepers'], ['clean_sheets', 'appearances', 'goals_conceded']);
 
         $topMvps = $data['topMvps']->map(fn ($mvp) => [
-            'player_name' => $mvp->gamePlayer->player->name,
+            'player_name' => $mvp->gamePlayer->name,
             'team_id' => $mvp->gamePlayer->team_id,
             'count' => $mvp->count,
         ])->values()->all();
 
         $yourSquadStats = $data['yourSquadStats']->map(fn ($gp) => [
             'player_id' => $gp->player_id,
-            'player_name' => $gp->player->name,
+            'player_name' => $gp->name,
             'position' => $gp->position,
             'appearances' => $gp->appearances,
             'goals' => $gp->goals,

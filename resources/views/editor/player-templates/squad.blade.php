@@ -74,7 +74,7 @@
                                     original: @js($template->toArray()),
                                     form: {
                                         ...@js($template->toArray()),
-                                        nationality: @js(($template->player?->nationality ?? [])[0] ?? ''),
+                                        nationality: @js(($template->nationality ?? [])[0] ?? ''),
                                     },
                                     marketValueEuros: Math.round(@js($template->market_value_cents) / 100),
                                     annualWageEuros: Math.round(@js($template->annual_wage) / 100),
@@ -112,7 +112,7 @@
                                     },
                                     cancel() {
                                         this.form = { ...this.original };
-                                        this.form.nationality = @js(($template->player?->nationality ?? [])[0] ?? '');
+                                        this.form.nationality = @js(($template->nationality ?? [])[0] ?? '');
                                         this.marketValueEuros = Math.round(this.original.market_value_cents / 100);
                                         this.annualWageEuros = Math.round(this.original.annual_wage / 100);
                                         this.editing = false;
@@ -123,7 +123,7 @@
 
                                 {{-- Display mode: proper <td> elements --}}
                                 <td x-show="!editing" class="px-3 py-2.5 text-sm text-text-muted" x-text="original.number || '—'"></td>
-                                <td x-show="!editing" class="px-3 py-2.5 text-sm text-text-primary font-medium truncate">{{ $template->player?->name ?? '—' }}</td>
+                                <td x-show="!editing" class="px-3 py-2.5 text-sm text-text-primary font-medium truncate">{{ $template->name ?? '—' }}</td>
                                 <td x-show="!editing" class="px-3 py-2.5 text-xs text-text-muted hidden md:table-cell" x-text="original.position"></td>
                                 <td x-show="!editing" class="px-3 py-2.5 text-xs text-text-muted text-right hidden md:table-cell">{{ \App\Support\Money::format($template->market_value_cents) }}</td>
                                 <td x-show="!editing" class="px-3 py-2.5 text-sm text-text-primary text-center" x-text="original.overall_score ?? '—'"></td>
@@ -152,7 +152,7 @@
                                 {{-- Edit mode --}}
                                 <td x-show="editing" x-cloak colspan="8" class="p-0">
                                     <div class="p-4 bg-accent-blue/5 border-l-2 border-accent-blue space-y-4">
-                                        <div class="text-sm font-medium text-text-primary">{{ $template->player?->name }}</div>
+                                        <div class="text-sm font-medium text-text-primary">{{ $template->name }}</div>
 
                                         {{-- Error --}}
                                         <div x-show="error" x-text="error" class="text-xs text-accent-red bg-accent-red/10 rounded px-3 py-1.5"></div>

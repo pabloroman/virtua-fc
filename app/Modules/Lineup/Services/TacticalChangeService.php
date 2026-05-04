@@ -246,8 +246,8 @@ class TacticalChangeService
             $substitutionDetails = array_map(fn ($sub) => [
                 'playerOutId' => $sub['playerOutId'],
                 'playerInId' => $sub['playerInId'],
-                'playerOutName' => $players->get($sub['playerOutId'])?->player->name ?? '',
-                'playerInName' => $players->get($sub['playerInId'])?->player->name ?? '',
+                'playerOutName' => $players->get($sub['playerOutId'])?->name ?? '',
+                'playerInName' => $players->get($sub['playerInId'])?->name ?? '',
                 'minute' => $minute,
                 'teamId' => $game->team_id,
             ], $newSubstitutions);
@@ -259,7 +259,7 @@ class TacticalChangeService
         if ($result->mvpPlayerId) {
             $mvpPlayer = GamePlayer::with('player')->find($result->mvpPlayerId);
             if ($mvpPlayer) {
-                $mvpPlayerName = $mvpPlayer->player->name ?? null;
+                $mvpPlayerName = $mvpPlayer->name ?? null;
                 $mvpPlayerTeamId = $mvpPlayer->team_id;
             }
         }

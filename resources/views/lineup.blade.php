@@ -291,7 +291,7 @@
                                                 }"
                                             >
                                                 <div class="flex items-center gap-2.5">
-                                                    <x-player-avatar :name="$player->player->name ?? $player->name" :position-group="$posGroup" :number="$player->number" size="sm" />
+                                                    <x-player-avatar :name="$player->name ?? $player->name" :position-group="$posGroup" :number="$player->number" size="sm" />
                                                     <div class="flex-1 min-w-0">
                                                         <div class="flex items-center gap-1.5">
                                                             <span class="text-xs font-medium text-text-primary truncate">{{ $player->name }}</span>

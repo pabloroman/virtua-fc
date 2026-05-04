@@ -111,7 +111,7 @@
                                                 <x-team-crest :team="$offer->offeringTeam" class="w-10 h-10 shrink-0" />
                                                 <div>
                                                     <div class="font-semibold text-text-primary">
-                                                        {{ $offer->gamePlayer->player->name }} &larr; {{ $offer->offeringTeam->name }}
+                                                        {{ $offer->gamePlayer->name }} &larr; {{ $offer->offeringTeam->name }}
                                                     </div>
                                                     <div class="text-sm text-text-secondary">
                                                         {{ $offer->gamePlayer->position_name }} &middot; {{ $offer->gamePlayer->age($game->current_date) }} {{ __('app.years') }} &middot;
@@ -129,7 +129,7 @@
                                                         $gp = $offer->gamePlayer;
                                                         $posDisp = $gp->position_display;
                                                         $counterOfferDetail = \Illuminate\Support\Js::from([
-                                                            'playerName' => $gp->player->name,
+                                                            'playerName' => $gp->name,
                                                             'negotiateUrl' => route('game.negotiate.counter-offer', [$game->id, $offer->id]),
                                                             'mode' => 'transfer_fee',
                                                             'phase' => 'counter_offer',
@@ -169,7 +169,7 @@
                                                 <x-team-crest :team="$offer->offeringTeam" class="w-10 h-10 shrink-0" />
                                                 <div>
                                                     <div class="font-semibold text-text-primary">
-                                                        {{ $offer->gamePlayer->player->name }} &larr; {{ $offer->offeringTeam->name }}
+                                                        {{ $offer->gamePlayer->name }} &larr; {{ $offer->offeringTeam->name }}
                                                     </div>
                                                     <div class="text-sm text-text-secondary">
                                                         {{ $offer->gamePlayer->position_name }} &middot; {{ $offer->gamePlayer->age($game->current_date) }} {{ __('app.years') }} &middot;
@@ -233,7 +233,7 @@
                                                 <x-team-crest :team="$offer->offeringTeam" class="w-10 h-10 shrink-0" />
                                                 <div>
                                                     <div class="font-semibold text-text-primary">
-                                                        {{ $offer->gamePlayer->player->name }} &larr; {{ $offer->offeringTeam->name }}
+                                                        {{ $offer->gamePlayer->name }} &larr; {{ $offer->offeringTeam->name }}
                                                     </div>
                                                     <div class="text-sm text-text-secondary">
                                                         {{ $offer->gamePlayer->position_name }} &middot; {{ $offer->gamePlayer->age($game->current_date) }} {{ __('app.years') }} &middot;
@@ -251,7 +251,7 @@
                                                         $gp = $offer->gamePlayer;
                                                         $posDisp = $gp->position_display;
                                                         $counterOfferDetail = \Illuminate\Support\Js::from([
-                                                            'playerName' => $gp->player->name,
+                                                            'playerName' => $gp->name,
                                                             'negotiateUrl' => route('game.negotiate.counter-offer', [$game->id, $offer->id]),
                                                             'mode' => 'transfer_fee',
                                                             'phase' => 'counter_offer',
@@ -291,7 +291,7 @@
                                                 <x-team-crest :team="$transfer->offeringTeam" class="w-10 h-10 shrink-0" />
                                                 <div>
                                                     <div class="font-semibold text-text-primary">
-                                                        {{ $transfer->gamePlayer->player->name }} &rarr; {{ $transfer->offeringTeam->name }}
+                                                        {{ $transfer->gamePlayer->name }} &rarr; {{ $transfer->offeringTeam->name }}
                                                     </div>
                                                     <div class="text-sm text-text-secondary">
                                                         {{ $transfer->gamePlayer->position_name }} &middot; {{ $transfer->gamePlayer->age($game->current_date) }} {{ __('app.years') }}
@@ -322,7 +322,7 @@
                                                 <x-team-crest :team="$transfer->offeringTeam" class="w-10 h-10 shrink-0" />
                                                 <div>
                                                     <div class="font-semibold text-text-primary">
-                                                        {{ $transfer->gamePlayer->player->name }} &rarr; {{ $transfer->offeringTeam->name }}
+                                                        {{ $transfer->gamePlayer->name }} &rarr; {{ $transfer->offeringTeam->name }}
                                                     </div>
                                                     <div class="text-sm text-text-secondary">
                                                         {{ $transfer->gamePlayer->position_name }} &middot; {{ $transfer->gamePlayer->age($game->current_date) }} {{ __('app.years') }}
@@ -353,7 +353,7 @@
                                                 <x-team-crest :team="$offer->offeringTeam" class="w-10 h-10 shrink-0" />
                                                 <div>
                                                     <div class="font-semibold text-text-primary">
-                                                        {{ $offer->gamePlayer->player->name }} &larr; {{ $offer->offeringTeam->name }}
+                                                        {{ $offer->gamePlayer->name }} &larr; {{ $offer->offeringTeam->name }}
                                                     </div>
                                                     <div class="text-sm text-text-secondary">
                                                         {{ $offer->gamePlayer->position_name }} &middot; {{ $offer->gamePlayer->age($game->current_date) }} {{ __('app.years') }} &middot;
@@ -439,7 +439,7 @@
                                                     </svg>
                                                 </div>
                                                 <div>
-                                                    <div class="font-semibold text-text-primary">{{ $player->player->name }}</div>
+                                                    <div class="font-semibold text-text-primary">{{ $player->name }}</div>
                                                     <div class="text-sm text-text-secondary">
                                                         {{ $player->position_name }} &middot; {{ $player->age($game->current_date) }} {{ __('app.years') }} &middot;
                                                         {{ __('app.value') }}: {{ $player->formatted_market_value }}
@@ -470,7 +470,7 @@
                                             <div class="flex items-center gap-3">
                                                 <x-team-crest :team="$transfer->offeringTeam" class="w-6 h-6 shrink-0" />
                                                 <span class="text-text-secondary">
-                                                    {{ $transfer->gamePlayer->player->name }} &rarr; {{ $transfer->offeringTeam->name }}
+                                                    {{ $transfer->gamePlayer->name }} &rarr; {{ $transfer->offeringTeam->name }}
                                                 </span>
                                             </div>
                                             <span class="font-semibold text-accent-green">{{ $transfer->formatted_transfer_fee }}</span>
@@ -535,7 +535,7 @@
                                             </td>
                                             <td class="py-2.5 pl-2 pr-3">
                                                 <div class="flex items-center gap-1.5">
-                                                    <span class="font-medium text-text-primary truncate">{{ $player->player->name }}</span>
+                                                    <span class="font-medium text-text-primary truncate">{{ $player->name }}</span>
                                                     @if($player->contract_expiry_year)
                                                         <span class="text-[10px] tabular-nums shrink-0 {{ $isExpiring ? 'text-accent-red font-medium' : 'text-text-muted' }}">{{ $player->contract_expiry_year }}</span>
                                                     @endif
@@ -560,7 +560,7 @@
                                             </td>
                                             <td class="py-2.5 pl-2 pr-3">
                                                 <div>
-                                                    <span class="font-medium text-text-primary truncate">{{ $player->player->name }}</span>
+                                                    <span class="font-medium text-text-primary truncate">{{ $player->name }}</span>
                                                     <div class="inline-flex items-center gap-1 text-xs text-text-muted">
                                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                                         {{ __('transfers.renewal_cooldown_short') }}
@@ -592,7 +592,7 @@
                                         <div class="flex items-center justify-between gap-2">
                                             <div class="flex items-center gap-2 min-w-0">
                                                 <x-position-badge :position="$player->position" size="sm" />
-                                                <span class="text-sm text-text-muted truncate">{{ $player->player->name }}</span>
+                                                <span class="text-sm text-text-muted truncate">{{ $player->name }}</span>
                                             </div>
                                             <form method="post" action="{{ route('game.transfers.reconsider-renewal', [$game->id, $player->id]) }}">
                                                 @csrf
@@ -617,7 +617,7 @@
                                             <svg class="w-4 h-4 text-accent-green shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                             </svg>
-                                            <span class="font-medium text-sm text-text-primary truncate">{{ $player->player->name }}</span>
+                                            <span class="font-medium text-sm text-text-primary truncate">{{ $player->name }}</span>
                                         </div>
                                         <div class="text-xs text-text-muted">
                                             {{ $player->formatted_wage }} <span class="text-text-body">&rarr;</span>

@@ -105,7 +105,7 @@ class LiveMatchLineupPresenter
             ->get()
             ->map(fn ($p) => [
                 'id' => $p->id,
-                'name' => $p->player->name ?? '',
+                'name' => $p->name ?? '',
                 'positionAbbr' => PositionMapper::toAbbreviation($p->position),
                 'positionGroup' => $p->position_group,
                 'positionSort' => LineupService::positionSortOrder($p->position),
@@ -127,7 +127,7 @@ class LiveMatchLineupPresenter
     ): array {
         $card = [
             'id' => $p->id,
-            'name' => $p->player->name ?? '',
+            'name' => $p->name ?? '',
             'position' => $p->position,
             'positionAbbr' => PositionMapper::toAbbreviation($p->position),
             'positionGroup' => $p->position_group,

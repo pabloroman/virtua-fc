@@ -97,7 +97,7 @@
                                                 @endif
                                                 <div>
                                                     <div class="font-semibold text-text-primary">
-                                                        {{ $offer->gamePlayer->player->name }} &larr; {{ $offer->selling_team_name ?? 'Unknown' }}
+                                                        {{ $offer->gamePlayer->name }} &larr; {{ $offer->selling_team_name ?? 'Unknown' }}
                                                     </div>
                                                     <div class="text-sm text-text-secondary">
                                                         {{ $offer->gamePlayer->position_name }} &middot; {{ $offer->gamePlayer->age($game->current_date) }} {{ __('app.years') }}
@@ -128,7 +128,7 @@
                                                         $gp = $offer->gamePlayer;
                                                         $posDisp = $gp->position_display;
                                                         $negotiationDetail = \Illuminate\Support\Js::from([
-                                                            'playerName' => $gp->player->name,
+                                                            'playerName' => $gp->name,
                                                             'negotiateUrl' => route('game.negotiate.transfer', [$game->id, $gp->id]),
                                                             'mode' => 'transfer_fee',
                                                             'phase' => 'club_fee',
@@ -178,7 +178,7 @@
                                                 @endif
                                                 <div>
                                                     <div class="font-semibold text-text-primary">
-                                                        {{ $transfer->gamePlayer->player->name }} &larr; {{ $transfer->selling_team_name ?? 'Unknown' }}
+                                                        {{ $transfer->gamePlayer->name }} &larr; {{ $transfer->selling_team_name ?? 'Unknown' }}
                                                     </div>
                                                     <div class="text-sm text-text-secondary">
                                                         {{ $transfer->gamePlayer->position_name }} &middot; {{ $transfer->gamePlayer->age($game->current_date) }} {{ __('app.years') }}
@@ -251,7 +251,7 @@
                                                 <x-team-crest :team="$transfer->sellingTeam" class="w-6 h-6 shrink-0" />
                                                 @endif
                                                 <span class="text-text-secondary">
-                                                    {{ $transfer->gamePlayer->player->name }} &larr; {{ $transfer->sellingTeam?->name ?? __('squad.free_transfer') }}
+                                                    {{ $transfer->gamePlayer->name }} &larr; {{ $transfer->sellingTeam?->name ?? __('squad.free_transfer') }}
                                                 </span>
                                             </div>
                                             <div class="flex items-center gap-3 md:text-right">

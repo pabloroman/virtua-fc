@@ -25,7 +25,7 @@ class WithdrawTransferOffer
             abort(403);
         }
 
-        $playerName = $offer->gamePlayer->player->name;
+        $playerName = $offer->gamePlayer->name;
 
         $offer->update([
             'status' => TransferOffer::STATUS_REJECTED,

@@ -103,10 +103,10 @@
                             <div class="md:hidden px-4 py-3 border-b border-border-default {{ $isCalledUp ? 'opacity-60' : '' }}">
                                 <div class="flex items-center gap-3">
                                     <div class="cursor-pointer flex-1 flex items-center gap-3 min-w-0" @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $player->id]) }}')">
-                                        <x-player-avatar :name="$player->player->name" :position-group="\App\Support\PositionMapper::getPositionGroup($player->position)" :position-abbrev="\App\Support\PositionMapper::toAbbreviation($player->position)" />
+                                        <x-player-avatar :name="$player->name" :position-group="\App\Support\PositionMapper::getPositionGroup($player->position)" :position-abbrev="\App\Support\PositionMapper::toAbbreviation($player->position)" />
                                         <div class="flex-1 min-w-0">
                                             <div class="flex items-center gap-2">
-                                                <span class="text-sm font-medium text-text-primary truncate">{{ $player->player->name }}</span>
+                                                <span class="text-sm font-medium text-text-primary truncate">{{ $player->name }}</span>
                                                 <x-origin-badge :player="$player" :current-season="$game->season" />
                                                 <span class="text-[10px] text-text-faint">{{ $age }}</span>
                                                 @if($player->contract_expiry_year)
@@ -143,7 +143,7 @@
                                     @if($player->nationality_flag)
                                         <img src="{{ Storage::disk('assets')->url('flags/' . $player->nationality_flag['code'] . '.svg') }}" class="w-4 h-3 rounded-xs shadow-xs shrink-0" title="{{ $player->nationality_flag['name'] }}">
                                     @endif
-                                    <span class="text-sm font-medium text-text-primary truncate">{{ $player->player->name }}</span>
+                                    <span class="text-sm font-medium text-text-primary truncate">{{ $player->name }}</span>
                                     <x-origin-badge :player="$player" :current-season="$game->season" />
                                     @if($isCalledUp)
                                         <span class="text-[10px] font-semibold bg-accent-blue/10 text-accent-blue px-1.5 py-0.5 rounded-full">{{ __('squad.called_up_indicator') }}</span>

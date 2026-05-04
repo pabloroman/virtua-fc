@@ -1304,7 +1304,7 @@ class AITransferMarketService
 
         $signings[] = [
             'playerId' => $bestAgent->id,
-            'playerName' => $bestAgent->player?->name ?? 'Unknown',
+            'playerName' => $bestAgent->name ?? 'Unknown',
             'position' => $bestAgent->position,
             'teamId' => $teamId,
             'teamName' => $team?->name ?? 'Unknown',

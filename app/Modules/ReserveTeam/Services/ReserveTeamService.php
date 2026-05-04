@@ -232,7 +232,7 @@ class ReserveTeamService
                 type: \App\Models\GameNotification::TYPE_ACADEMY_PROSPECT,
                 title: __('notifications.reserve_overage_promoted_title'),
                 message: __('notifications.reserve_overage_promoted_message', [
-                    'player' => $player->player->name ?? '',
+                    'player' => $player->name ?? '',
                 ]),
                 priority: \App\Models\GameNotification::PRIORITY_INFO,
             );
@@ -344,7 +344,7 @@ class ReserveTeamService
             type: \App\Models\GameNotification::TYPE_ACADEMY_PROSPECT,
             title: __('notifications.reserve_overage_promoted_title'),
             message: __('notifications.reserve_overage_promoted_message', [
-                'player' => $player->player->name ?? '',
+                'player' => $player->name ?? '',
             ]),
             priority: \App\Models\GameNotification::PRIORITY_INFO,
         );

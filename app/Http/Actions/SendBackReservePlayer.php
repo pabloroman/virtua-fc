@@ -25,7 +25,7 @@ class SendBackReservePlayer
             ->with('player')
             ->firstOrFail();
 
-        $playerName = $player->player->name ?? '';
+        $playerName = $player->name ?? '';
 
         try {
             $this->reserveTeamService->sendBackToReserve($player, $game);

@@ -82,6 +82,18 @@ class GamePlayerFactory extends Factory
             $overrides = self::$pendingOverrides[$oid] ?? [];
             unset(self::$pendingOverrides[$oid]);
 
+            // Mirror biography from the linked Player onto the game_players
+            // row. Production paths set this at insert time (Phase 5);
+            // factories back-fill here so tests reflect the post-Phase-6
+            // schema reality where readers consume the local biography
+            // columns directly.
+            if ($player->name === null && $player->player) {
+                $player->forceFill($player->player->only([
+                    'transfermarkt_id', 'name', 'date_of_birth',
+                    'nationality', 'height', 'foot',
+                ]))->save();
+            }
+
             // Every test-created GamePlayer gets a satellite row by default
             // — tests historically assumed game_players carried fitness etc.,
             // and the cheapest fix is to mirror that assumption.

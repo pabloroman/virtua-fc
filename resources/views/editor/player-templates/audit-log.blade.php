@@ -50,7 +50,7 @@
                                 </span>
                             </td>
                             <td class="px-4 py-3 text-sm text-text-primary">
-                                {{ $audit->template?->player?->name ?? '—' }}
+                                {{ $audit->template?->name ?? '—' }}
                             </td>
                             <td class="px-4 py-3 text-sm text-text-muted hidden md:table-cell">
                                 {{ $audit->template?->team?->name ?? '—' }}

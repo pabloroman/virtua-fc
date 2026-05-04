@@ -62,7 +62,7 @@
                                 <div class="flex-1 text-right">
                                     @foreach($homeGoals->sortBy('minute') as $event)
                                         <div class="text-text-body">
-                                            {{ $event->gamePlayer->player->name }}
+                                            {{ $event->gamePlayer->name }}
                                             @if($event->event_type === 'own_goal')<span class="text-red-400">({{ __('game.og') }})</span>@endif
                                             <span class="text-text-muted">{{ $event->minute }}'</span>
                                         </div>
@@ -71,7 +71,7 @@
                                 <div class="flex-1">
                                     @foreach($awayGoals->sortBy('minute') as $event)
                                         <div class="text-text-body">
-                                            {{ $event->gamePlayer->player->name }}
+                                            {{ $event->gamePlayer->name }}
                                             @if($event->event_type === 'own_goal')<span class="text-red-400">({{ __('game.og') }})</span>@endif
                                             <span class="text-text-muted">{{ $event->minute }}'</span>
                                         </div>
@@ -92,7 +92,7 @@
                                 <div class="flex-1 text-right">
                                     @foreach($homeCards as $event)
                                         <div class="inline-flex items-center gap-1 justify-end">
-                                            {{ $event->gamePlayer->player->name }} {{ $event->minute }}'
+                                            {{ $event->gamePlayer->name }} {{ $event->minute }}'
                                             @if($event->event_type === 'yellow_card')
                                                 <span class="w-2 h-3 bg-yellow-400 rounded-xs"></span>
                                             @else
@@ -109,7 +109,7 @@
                                             @else
                                                 <span class="w-2 h-3 bg-accent-red rounded-xs"></span>
                                             @endif
-                                            {{ $event->gamePlayer->player->name }} {{ $event->minute }}'
+                                            {{ $event->gamePlayer->name }} {{ $event->minute }}'
                                         </div>
                                     @endforeach
                                 </div>
@@ -123,7 +123,7 @@
                             <div class="flex items-center justify-center gap-2 text-sm">
                                 <span class="text-accent-gold text-base">&#9733;</span>
                                 <span class="text-text-secondary">{{ __('game.mvp') }}</span>
-                                <span class="font-semibold text-text-primary">{{ $playerMatch->mvpPlayer->player->name }}</span>
+                                <span class="font-semibold text-text-primary">{{ $playerMatch->mvpPlayer->name }}</span>
                                 <span class="text-xs px-1.5 py-0.5 rounded bg-surface-700 text-text-muted">
                                     {{ $playerMatch->mvpPlayer->team_id === $playerMatch->home_team_id ? $playerMatch->homeTeam->name : $playerMatch->awayTeam->name }}
                                 </span>

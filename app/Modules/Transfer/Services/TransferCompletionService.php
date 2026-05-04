@@ -34,7 +34,7 @@ class TransferCompletionService
     public function completeOutgoingTransfer(TransferOffer $offer, Game $game): void
     {
         $player = $offer->gamePlayer;
-        $playerName = $player->player->name;
+        $playerName = $player->name;
         $buyerName = $offer->offeringTeam->name;
         $isLoan = $offer->offer_type === TransferOffer::TYPE_LOAN_OUT;
 
@@ -108,7 +108,7 @@ class TransferCompletionService
     public function completePreContractTransfer(TransferOffer $offer): void
     {
         $player = $offer->gamePlayer;
-        $playerName = $player->player->name;
+        $playerName = $player->name;
         $buyerName = $offer->offeringTeam->name;
         $game = $player->game;
         $fromTeamId = $player->team_id;
@@ -169,7 +169,7 @@ class TransferCompletionService
         }
 
         $player = $offer->gamePlayer;
-        $playerName = $player->player->name;
+        $playerName = $player->name;
         $sellerName = $offer->sellingTeam->name ?? $player->team->name ?? 'Unknown';
         $fromTeamId = $offer->selling_team_id ?? $player->team_id;
 

@@ -15,7 +15,7 @@
                 <div class="flex items-center gap-2.5 px-4 py-2 text-sm {{ $isPlayerTeam ? 'bg-accent-blue/[0.06] border-l-2 border-l-accent-blue' : '' }}">
                     <span class="w-5 text-[11px] font-heading font-semibold text-text-muted shrink-0">{{ $index + 1 }}</span>
                     <x-team-crest :team="$scorerTeam" class="w-4 h-4 shrink-0" title="{{ $scorerTeam?->name }}" />
-                    <span class="flex-1 truncate text-xs {{ $isPlayerTeam ? 'font-medium text-text-primary' : 'text-text-body' }}">{{ $scorer->player->name }}</span>
+                    <span class="flex-1 truncate text-xs {{ $isPlayerTeam ? 'font-medium text-text-primary' : 'text-text-body' }}">{{ $scorer->name }}</span>
                     <span class="text-[11px] font-semibold text-text-primary shrink-0">{{ $scorer->goals }}</span>
                 </div>
             @endforeach

@@ -570,7 +570,7 @@ class LoanService
             category: FinancialTransaction::CATEGORY_LOAN,
             amount: $player->annual_wage,
             description: __('finances.tx_loan_in', [
-                'player' => $player->player->name ?? $player->id,
+                'player' => $player->name ?? $player->id,
                 'team' => $parentTeam->name ?? '',
             ]),
             transactionDate: $game->current_date,

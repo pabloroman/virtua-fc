@@ -366,25 +366,14 @@ class ExploreService
      * sorted alphabetically. Used to populate the nationality dropdown so the
      * list never contains options that would return zero results.
      *
-     * Uses the DB facade rather than Eloquent because selecting a column
-     * aliased `nationality` through GamePlayer::... triggers the model's
-     * magic getNationalityAttribute() accessor on pluck, which then fails
-     * when the unloaded player relation is null.
-     *
      * @return array<int, string>
      */
     public function getDistinctNationalities(string $gameId): array
     {
-        // PLANES-SEAM: cross-plane JOIN. game_players=tenant, players=control.
-        // The two-step split (pluck player_ids on tenant → query control)
-        // shipped a large IN list per call. Restored while both planes share
-        // one physical Postgres. Re-split before the planes are physically
-        // separated. See CLAUDE.md → "Control plane / tenant plane".
         $rows = DB::table('game_players')
-            ->join('players', 'players.id', '=', 'game_players.player_id')
-            ->where('game_players.game_id', $gameId)
-            ->whereRaw("jsonb_typeof(players.nationality::jsonb) = 'array'")
-            ->selectRaw("DISTINCT players.nationality::jsonb->>0 AS nat")
+            ->where('game_id', $gameId)
+            ->whereRaw("jsonb_typeof(nationality::jsonb) = 'array'")
+            ->selectRaw("DISTINCT nationality::jsonb->>0 AS nat")
             ->pluck('nat')
             ->filter()
             ->unique()

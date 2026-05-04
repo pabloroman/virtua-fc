@@ -275,7 +275,7 @@ class ShowLiveMatch
                 : null,
             'homePossession' => $playerMatch->home_possession ?? 50,
             'awayPossession' => $playerMatch->away_possession ?? 50,
-            'mvpPlayerName' => $playerMatch->mvpPlayer?->player?->name,
+            'mvpPlayerName' => $playerMatch->mvpPlayer?->name,
             'mvpPlayerTeamId' => $playerMatch->mvpPlayer?->team_id,
             'homeLineupDisplay' => $homeLineupDisplay,
             'awayLineupDisplay' => $awayLineupDisplay,

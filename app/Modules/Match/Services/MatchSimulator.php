@@ -2953,7 +2953,7 @@ class MatchSimulator
                 'round' => $round,
                 'side' => 'home',
                 'playerId' => $homeKicker->id,
-                'playerName' => $homeKicker->player->name ?? '',
+                'playerName' => $homeKicker->name ?? '',
                 'scored' => $homeScored,
             ];
             $homeIdx++;
@@ -2971,7 +2971,7 @@ class MatchSimulator
                 'round' => $round,
                 'side' => 'away',
                 'playerId' => $awayKicker->id,
-                'playerName' => $awayKicker->player->name ?? '',
+                'playerName' => $awayKicker->name ?? '',
                 'scored' => $awayScored,
             ];
             $awayIdx++;

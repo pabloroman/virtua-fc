@@ -114,7 +114,7 @@ class YouthAcademyPromotionProcessor implements SeasonProcessor
         foreach ($positions as $position) {
             $playerData = $this->playerGenerator->buildReplenishmentPlayerData($game, $game->team_id, $position, $teamAvgAbility);
             $gamePlayer = $this->playerGenerator->create($game, $playerData);
-            $emergencyNames[] = $gamePlayer->player->name;
+            $emergencyNames[] = $gamePlayer->name;
         }
 
         if (! empty($emergencyNames)) {

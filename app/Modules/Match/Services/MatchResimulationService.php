@@ -852,7 +852,7 @@ class MatchResimulationService
             $playerInNames = GamePlayer::with('player')
                 ->whereIn('id', $playerInIds)
                 ->get()
-                ->mapWithKeys(fn ($gp) => [$gp->id => $gp->player->name ?? ''])
+                ->mapWithKeys(fn ($gp) => [$gp->id => $gp->name ?? ''])
                 ->all();
         }
 
@@ -862,7 +862,7 @@ class MatchResimulationService
                 $data = [
                     'minute' => $e->minute,
                     'type' => $e->event_type,
-                    'playerName' => $e->gamePlayer->player->name ?? '',
+                    'playerName' => $e->gamePlayer->name ?? '',
                     'teamId' => $e->team_id,
                     'gamePlayerId' => $e->game_player_id,
                     'metadata' => $e->metadata,
@@ -888,7 +888,7 @@ class MatchResimulationService
             if ($event['type'] === 'goal') {
                 $key = $event['minute'].':'.$event['teamId'];
                 if (isset($assists[$key])) {
-                    $event['assistPlayerName'] = $assists[$key]->gamePlayer->player->name ?? null;
+                    $event['assistPlayerName'] = $assists[$key]->gamePlayer->name ?? null;
                     $event['assistPlayerId'] = $assists[$key]->game_player_id;
                 }
             }

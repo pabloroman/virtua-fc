@@ -28,6 +28,6 @@ class CancelLoanSearch
 
         return redirect()
             ->route('game.transfers.outgoing', $gameId)
-            ->with('success', __('messages.loan_search_cancelled', ['player' => $player->player->name]));
+            ->with('success', __('messages.loan_search_cancelled', ['player' => $player->name]));
     }
 }

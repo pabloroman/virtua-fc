@@ -765,23 +765,7 @@ class GamePlayer extends Model
      */
     public function age(Carbon|\DateTimeInterface $currentDate): int
     {
-        return (int) $this->player->date_of_birth->diffInYears($currentDate);
-    }
-
-    /**
-     * Get player's name from the reference Player model.
-     */
-    public function getNameAttribute(): string
-    {
-        return $this->player->name;
-    }
-
-    /**
-     * Get player's nationality from the reference Player model.
-     */
-    public function getNationalityAttribute(): ?array
-    {
-        return $this->player->nationality;
+        return (int) $this->date_of_birth->diffInYears($currentDate);
     }
 
     /**

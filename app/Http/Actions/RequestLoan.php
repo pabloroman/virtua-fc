@@ -44,7 +44,7 @@ class RequestLoan
         $this->loanService->requestLoanIn($game, $player);
 
         return redirect()->back()
-            ->with('success', __('messages.loan_request_submitted', ['player' => $player->player->name]));
+            ->with('success', __('messages.loan_request_submitted', ['player' => $player->name]));
     }
 
     private function handleLoanOut(Game $game, GamePlayer $player)

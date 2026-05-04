@@ -36,7 +36,7 @@ class AcceptLoanOffer
             abort(403, 'Cannot accept loan offers for loaned players.');
         }
 
-        $playerName = $offer->gamePlayer->player->name;
+        $playerName = $offer->gamePlayer->name;
         $team = $offer->offeringTeam;
         $windowOpen = $game->isTransferWindowOpen();
 

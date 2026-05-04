@@ -36,7 +36,7 @@ $homeGoals = collect();
 $awayGoals = collect();
 if ($finalMatch && $finalGoalEvents->isNotEmpty()) {
     foreach ($finalGoalEvents as $event) {
-        $playerName = $event->gamePlayer?->player?->name ?? '?';
+        $playerName = $event->gamePlayer?->name ?? '?';
         $isOwnGoal = $event->event_type === \App\Models\MatchEvent::TYPE_OWN_GOAL;
 
         // For own goals, the scoring team is the OPPOSITE of the event's team
@@ -83,7 +83,7 @@ foreach ($positionGroupOrder as $group) {
     $players = $yourAppearances->filter(fn($gp) => $gp->position_group === $group);
     if ($players->isNotEmpty()) {
         $squadByGroup[$group] = $players->map(fn($gp) => [
-            'name' => $gp->player->name,
+            'name' => $gp->name,
             'appearances' => $gp->appearances,
             'goals' => $gp->goals,
             'assists' => $gp->assists,
@@ -512,7 +512,7 @@ foreach ($positionGroupOrder as $group) {
                                             @foreach($yourAppearances as $gp)
                                             <tr class="{{ $loop->even ? 'bg-surface-700/50' : '' }}">
                                                 <td class="py-1.5 pr-2"><x-position-badge :position="$gp->position" size="sm" /></td>
-                                                <td class="py-1.5 font-medium text-text-primary truncate max-w-[140px]">{{ $gp->player->name }}</td>
+                                                <td class="py-1.5 font-medium text-text-primary truncate max-w-[140px]">{{ $gp->name }}</td>
                                                 <td class="text-center py-1.5 font-semibold text-text-body">{{ $gp->appearances }}</td>
                                                 <td class="text-center py-1.5 {{ $gp->goals > 0 ? 'font-semibold text-text-body' : 'text-text-muted' }}">{{ $gp->goals }}</td>
                                                 <td class="text-center py-1.5 {{ $gp->assists > 0 ? 'font-semibold text-text-body' : 'text-text-muted' }}">{{ $gp->assists }}</td>
@@ -547,7 +547,7 @@ foreach ($positionGroupOrder as $group) {
                             <div class="flex items-center justify-between gap-3">
                                 <div class="flex items-center gap-2 min-w-0">
                                     <x-team-crest :team="$scorer->team" class="w-6 h-6 shrink-0" />
-                                    <span class="font-bold text-text-primary truncate">{{ $scorer->player->name }}</span>
+                                    <span class="font-bold text-text-primary truncate">{{ $scorer->name }}</span>
                                 </div>
                                 <div class="shrink-0 text-right">
                                     <span class="font-heading text-2xl md:text-3xl font-bold text-accent-gold">{{ $scorer->goals }}</span>
@@ -564,7 +564,7 @@ foreach ($positionGroupOrder as $group) {
                             <div class="flex items-center gap-2.5 {{ $scorer->team_id === $game->team_id ? 'bg-accent-gold/10 -mx-2 px-2 rounded-sm' : '' }}">
                                 <span class="w-5 text-center text-xs font-bold text-text-secondary">{{ $loop->iteration + 1 }}</span>
                                 <x-team-crest :team="$scorer->team" class="w-4 h-4 shrink-0" />
-                                <span class="flex-1 text-sm text-text-body truncate">{{ $scorer->player->name }}</span>
+                                <span class="flex-1 text-sm text-text-body truncate">{{ $scorer->name }}</span>
                                 <span class="font-heading text-xs font-semibold text-text-secondary w-10 text-right">{{ $scorer->goals }}</span>
                             </div>
                             @endforeach
@@ -584,7 +584,7 @@ foreach ($positionGroupOrder as $group) {
                             <div class="flex items-center justify-between gap-3">
                                 <div class="flex items-center gap-2 min-w-0">
                                     <x-team-crest :team="$gk->team" class="w-6 h-6 shrink-0" />
-                                    <span class="font-bold text-text-primary truncate">{{ $gk->player->name }}</span>
+                                    <span class="font-bold text-text-primary truncate">{{ $gk->name }}</span>
                                 </div>
                                 <div class="shrink-0 text-right">
                                     <span class="font-heading text-2xl md:text-3xl font-bold text-accent-blue">{{ $gk->clean_sheets }}</span>
@@ -601,7 +601,7 @@ foreach ($positionGroupOrder as $group) {
                             <div class="flex items-center gap-2.5 {{ $gk->team_id === $game->team_id ? 'bg-accent-blue/10 -mx-2 px-2 rounded-sm' : '' }}">
                                 <span class="w-5 text-center text-xs font-bold text-text-secondary">{{ $loop->iteration + 1 }}</span>
                                 <x-team-crest :team="$gk->team" class="w-4 h-4 shrink-0" />
-                                <span class="flex-1 text-sm text-text-body truncate">{{ $gk->player->name }}</span>
+                                <span class="flex-1 text-sm text-text-body truncate">{{ $gk->name }}</span>
                                 <span class="font-heading text-xs font-semibold text-text-secondary w-16 text-right">{{ $gk->clean_sheets }}</span>
                             </div>
                             @endforeach
@@ -621,7 +621,7 @@ foreach ($positionGroupOrder as $group) {
                             <div class="flex items-center justify-between gap-3">
                                 <div class="flex items-center gap-2 min-w-0">
                                     <x-team-crest :team="$assister->team" class="w-6 h-6 shrink-0" />
-                                    <span class="font-bold text-text-primary truncate">{{ $assister->player->name }}</span>
+                                    <span class="font-bold text-text-primary truncate">{{ $assister->name }}</span>
                                 </div>
                                 <div class="shrink-0 text-right">
                                     <span class="font-heading text-2xl md:text-3xl font-bold text-accent-green">{{ $assister->assists }}</span>
@@ -638,7 +638,7 @@ foreach ($positionGroupOrder as $group) {
                             <div class="flex items-center gap-2.5 {{ $assister->team_id === $game->team_id ? 'bg-accent-green/10 -mx-2 px-2 rounded-sm' : '' }}">
                                 <span class="w-5 text-center text-xs font-bold text-text-secondary">{{ $loop->iteration + 1 }}</span>
                                 <x-team-crest :team="$assister->team" class="w-4 h-4 shrink-0" />
-                                <span class="flex-1 text-sm text-text-body truncate">{{ $assister->player->name }}</span>
+                                <span class="flex-1 text-sm text-text-body truncate">{{ $assister->name }}</span>
                                 <span class="font-heading text-xs font-semibold text-text-secondary w-10 text-right">{{ $assister->assists }}</span>
                             </div>
                             @endforeach
@@ -658,7 +658,7 @@ foreach ($positionGroupOrder as $group) {
                             <div class="flex items-center justify-between gap-3">
                                 <div class="flex items-center gap-2 min-w-0">
                                     <x-team-crest :team="$mvpWinner->gamePlayer->team" class="w-6 h-6 shrink-0" />
-                                    <span class="font-bold text-text-primary truncate">{{ $mvpWinner->gamePlayer->player->name }}</span>
+                                    <span class="font-bold text-text-primary truncate">{{ $mvpWinner->gamePlayer->name }}</span>
                                 </div>
                                 <div class="shrink-0 text-right">
                                     <span class="font-heading text-2xl md:text-3xl font-bold text-accent-gold">{{ $mvpWinner->count }}</span>
@@ -675,7 +675,7 @@ foreach ($positionGroupOrder as $group) {
                             <div class="flex items-center gap-2.5 {{ $mvp->gamePlayer->team_id === $game->team_id ? 'bg-accent-gold/10 -mx-2 px-2 rounded-sm' : '' }}">
                                 <span class="w-5 text-center text-xs font-bold text-text-secondary">{{ $loop->iteration + 1 }}</span>
                                 <x-team-crest :team="$mvp->gamePlayer->team" class="w-4 h-4 shrink-0" />
-                                <span class="flex-1 text-sm text-text-body truncate">{{ $mvp->gamePlayer->player->name }}</span>
+                                <span class="flex-1 text-sm text-text-body truncate">{{ $mvp->gamePlayer->name }}</span>
                                 <span class="font-heading text-xs font-semibold text-text-secondary w-10 text-right">{{ $mvp->count }}</span>
                             </div>
                             @endforeach

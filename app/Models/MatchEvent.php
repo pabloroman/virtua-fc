@@ -109,7 +109,7 @@ class MatchEvent extends Model
      */
     public function getPlayerNameAttribute(): string
     {
-        return $this->gamePlayer->player->name;
+        return $this->gamePlayer->name;
     }
 
     /**

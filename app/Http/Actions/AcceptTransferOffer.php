@@ -36,11 +36,11 @@ class AcceptTransferOffer
 
         if ($offer->gamePlayer->joinedInCurrentWindow($game)) {
             return redirect()->back()->with('error', __('messages.cannot_sell_same_window', [
-                'player' => $offer->gamePlayer->player->name,
+                'player' => $offer->gamePlayer->name,
             ]));
         }
 
-        $playerName = $offer->gamePlayer->player->name;
+        $playerName = $offer->gamePlayer->name;
         $team = $offer->offeringTeam;
         $fee = $offer->formatted_transfer_fee;
 

@@ -29,7 +29,7 @@ class ListPlayerForTransfer
 
         if ($player->joinedInCurrentWindow($game)) {
             return redirect()->back()->with('error', __('messages.cannot_sell_same_window', [
-                'player' => $player->player->name,
+                'player' => $player->name,
             ]));
         }
 
@@ -41,7 +41,7 @@ class ListPlayerForTransfer
 
         return redirect()
             ->back()
-            ->with('success', __('messages.player_listed', ['player' => $player->player->name]));
+            ->with('success', __('messages.player_listed', ['player' => $player->name]));
     }
 
     private function formatBreachMessage(SquadMinimumException $e): string

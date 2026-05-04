@@ -59,7 +59,7 @@ class MatchEventFormattingTest extends TestCase
 
         $goalEvent = collect($result)->firstWhere('type', 'goal');
 
-        $this->assertEquals($assister->player->name, $goalEvent['assistPlayerName']);
+        $this->assertEquals($assister->name, $goalEvent['assistPlayerName']);
     }
 
     public function test_assist_not_paired_with_goal_from_different_team(): void
@@ -100,7 +100,7 @@ class MatchEventFormattingTest extends TestCase
         $teamAGoal = $goals->firstWhere('teamId', $teamA->id);
         $teamBGoal = $goals->firstWhere('teamId', $teamB->id);
 
-        $this->assertEquals($assisterA->player->name, $teamAGoal['assistPlayerName']);
+        $this->assertEquals($assisterA->name, $teamAGoal['assistPlayerName']);
         $this->assertArrayNotHasKey('assistPlayerName', $teamBGoal);
     }
 

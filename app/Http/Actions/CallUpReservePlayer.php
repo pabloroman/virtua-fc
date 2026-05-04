@@ -25,7 +25,7 @@ class CallUpReservePlayer
             ->with('player')
             ->firstOrFail();
 
-        $playerName = $player->player->name ?? '';
+        $playerName = $player->name ?? '';
 
         try {
             $this->reserveTeamService->callUpToFirstTeam($player, $game);

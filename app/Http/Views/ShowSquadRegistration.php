@@ -32,7 +32,7 @@ class ShowSquadRegistration
         foreach ($gamePlayers as $gp) {
             $dto = [
                 'id' => $gp->id,
-                'name' => $gp->player->name,
+                'name' => $gp->name,
                 'position' => $gp->position,
                 'position_group' => $gp->position_group,
                 'position_abbreviation' => PositionMapper::toAbbreviation($gp->position),

@@ -75,7 +75,7 @@
                         {{ $gamePlayer->team->name }}
                     </span>
                 @endif
-                <span>{{ $gamePlayer->age($game->current_date) }} {{ __('app.years') }}@if($gamePlayer->player->height) · {{ $gamePlayer->player->height }}@endif</span>
+                <span>{{ $gamePlayer->age($game->current_date) }} {{ __('app.years') }}@if($gamePlayer->height) · {{ $gamePlayer->height }}@endif</span>
             </div>
             <div class="text-[11px] text-text-faint mt-1">
                 @foreach($gamePlayer->positions as $pos)
