@@ -177,8 +177,16 @@ class SetupTournamentGame implements ShouldQueue
         }
     }
 
+    private const TEMPLATE_INSERT_CHUNK_SIZE = 500;
+
     /**
      * Copy pre-computed templates into game_players (mirrors SetupNewGame pattern).
+     *
+     * Cursor-streams templates from the control plane and bulk-inserts
+     * game_players + game_player_match_state on the tenant plane in chunks.
+     * Replaces the cross-plane INSERT…SELECT that was the last hot-path
+     * PLANES-SEAM. Tournament mode loads only national-team rosters, so the
+     * volume is bounded (~30 teams × ~25 players ≈ 750 rows).
      */
     private function createGamePlayersFromTemplates(): void
     {
@@ -186,27 +194,6 @@ class SetupTournamentGame implements ShouldQueue
             return;
         }
 
-        // PLANES-SEAM: cross-plane INSERT-SELECT and JOIN. game_players is
-        // tenant; game_player_templates is control. Works today because both
-        // planes share one physical Postgres. This is a hot setup path; the
-        // same OOM/timeout caveats documented on SetupNewGame apply, so the
-        // seam is left in place and must be re-split before the planes are
-        // physically separated. See CLAUDE.md → "Control plane / tenant
-        // plane".
-        //
-        // Tournament mode (WC2026) only loads teams the user actually faces,
-        // so every player here is "active" — they all need a match-state
-        // satellite row from the start. Two single INSERT...SELECT statements
-        // run entirely in Postgres; the match_state insert joins on player_id
-        // *and* team_id so that, if the same player_id appears in multiple
-        // templates for season 2025 (e.g., league + national), we copy
-        // fitness/morale from the template that matches the inserted
-        // game_player's team.
-        //
-        // Eligible national-team ids are resolved on the control plane up
-        // front so the raw INSERT below at least avoids an `IN (SELECT id
-        // FROM teams WHERE type = 'national' AND fifa_code IS NOT NULL)`
-        // cross-plane subquery on top of the JOIN.
         $eligibleNationalTeamIds = Team::where('type', 'national')
             ->whereNotNull('fifa_code')
             ->pluck('id')
@@ -216,41 +203,81 @@ class SetupTournamentGame implements ShouldQueue
             return;
         }
 
-        $placeholders = implode(',', array_fill(0, count($eligibleNationalTeamIds), '?'));
+        $templateQuery = DB::connection('pgsql_control')
+            ->table('game_player_templates')
+            ->where('season', '2025')
+            ->whereIn('team_id', $eligibleNationalTeamIds)
+            ->where('team_id', '<>', $this->teamId);
 
-        DB::insert(<<<SQL
-            INSERT INTO game_players (
-                id, game_id, player_id,
-                transfermarkt_id, name, date_of_birth, nationality, height, foot,
-                team_id, is_reserve_squad, number, position,
-                market_value, market_value_cents, contract_until, annual_wage, durability,
-                overall_score,
-                potential, potential_low, potential_high, tier
-            )
-            SELECT
-                gen_random_uuid(), ?, t.player_id,
-                t.transfermarkt_id, t.name, t.date_of_birth, t.nationality, t.height, t.foot,
-                t.team_id, FALSE, t.position,
-                t.market_value, t.market_value_cents, t.contract_until, t.annual_wage, t.durability,
-                t.overall_score,
-                t.potential, t.potential_low, t.potential_high, t.tier
-            FROM game_player_templates t
-            WHERE t.season = '2025'
-              AND t.team_id IN ($placeholders)
-              AND t.team_id <> ?
-            ON CONFLICT (game_id, player_id) DO NOTHING
-        SQL, [$this->gameId, ...$eligibleNationalTeamIds, $this->teamId]);
+        $playerBuffer = [];
+        $matchStateBuffer = [];
+        $seenPlayerIds = [];
 
-        DB::insert(<<<'SQL'
-            INSERT INTO game_player_match_state (game_player_id, game_id, fitness, morale)
-            SELECT gp.id, gp.game_id, t.fitness, t.morale
-            FROM game_players gp
-            JOIN game_player_templates t
-              ON t.player_id = gp.player_id
-             AND t.team_id = gp.team_id
-             AND t.season = '2025'
-            WHERE gp.game_id = ?
-            ON CONFLICT (game_player_id) DO NOTHING
-        SQL, [$this->gameId]);
+        foreach ($templateQuery->cursor() as $template) {
+            // Mirrors the ON CONFLICT (game_id, player_id) DO NOTHING the raw
+            // SQL used to enforce. Same player_id can appear under multiple
+            // (season, team) templates; first wins.
+            if (isset($seenPlayerIds[$template->player_id])) {
+                continue;
+            }
+            $seenPlayerIds[$template->player_id] = true;
+
+            $gamePlayerId = (string) Str::uuid();
+
+            $playerBuffer[] = [
+                'id' => $gamePlayerId,
+                'game_id' => $this->gameId,
+                'player_id' => $template->player_id,
+                'transfermarkt_id' => $template->transfermarkt_id,
+                'name' => $template->name,
+                'date_of_birth' => $template->date_of_birth,
+                'nationality' => $template->nationality,
+                'height' => $template->height,
+                'foot' => $template->foot,
+                'team_id' => $template->team_id,
+                'is_reserve_squad' => false,
+                'number' => null,
+                'position' => $template->position,
+                'market_value' => $template->market_value,
+                'market_value_cents' => $template->market_value_cents,
+                'contract_until' => $template->contract_until,
+                'annual_wage' => $template->annual_wage,
+                'durability' => $template->durability,
+                'overall_score' => $template->overall_score,
+                'potential' => $template->potential,
+                'potential_low' => $template->potential_low,
+                'potential_high' => $template->potential_high,
+                'tier' => $template->tier,
+            ];
+
+            $matchStateBuffer[] = [
+                'game_player_id' => $gamePlayerId,
+                'game_id' => $this->gameId,
+                'fitness' => $template->fitness,
+                'morale' => $template->morale,
+            ];
+
+            if (count($playerBuffer) >= self::TEMPLATE_INSERT_CHUNK_SIZE) {
+                $this->flushTemplateChunks($playerBuffer, $matchStateBuffer);
+                $playerBuffer = [];
+                $matchStateBuffer = [];
+            }
+        }
+
+        if (!empty($playerBuffer)) {
+            $this->flushTemplateChunks($playerBuffer, $matchStateBuffer);
+        }
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $players
+     * @param  list<array<string, mixed>>  $matchStates
+     */
+    private function flushTemplateChunks(array $players, array $matchStates): void
+    {
+        DB::transaction(function () use ($players, $matchStates) {
+            DB::table('game_players')->insert($players);
+            DB::table('game_player_match_state')->insert($matchStates);
+        });
     }
 }
