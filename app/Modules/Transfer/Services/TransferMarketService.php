@@ -6,7 +6,6 @@ use App\Models\ClubProfile;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\GameTransfer;
-use App\Models\Player;
 use App\Models\TeamReputation;
 use App\Models\TransferListing;
 use App\Models\TransferOffer;
@@ -394,14 +393,10 @@ class TransferMarketService
             return collect();
         }
 
-        // PLANES-SEAM: cross-plane JOIN. game_players=tenant, players & teams=control.
-        // The two-step split (Team::pluck → DB::table('game_players') → Player::pluck)
-        // caused timeouts/OOM in production because this is on the AI-transfer hot
-        // path and the JOIN is materially faster while both planes share one
-        // physical Postgres. Re-split before the planes are physically separated.
-        // See CLAUDE.md → "Control plane / tenant plane".
+        // PLANES-SEAM: cross-plane JOIN against teams (for parent_team_id).
+        // game_players biography is read locally post-Phase-6, so the players
+        // join is gone; the teams join remains until that seam is split.
         $rows = DB::table('game_players')
-            ->join('players', 'players.id', '=', 'game_players.player_id')
             ->join('teams', 'teams.id', '=', 'game_players.team_id')
             ->where('game_players.game_id', $game->id)
             ->whereIn('game_players.team_id', $teamIds)
@@ -417,29 +412,17 @@ class TransferMarketService
                 'game_players.retiring_at_season',
                 'game_players.contract_until',
                 'game_players.annual_wage',
-                'players.date_of_birth as _player_date_of_birth',
+                'game_players.date_of_birth',
             ]);
 
         if ($rows->isEmpty()) {
             return collect();
         }
 
-        $gpAttrs = [];
-        $playerAttrs = [];
-        foreach ($rows as $row) {
-            $arr = (array) $row;
-            $dob = $arr['_player_date_of_birth'];
-            unset($arr['_player_date_of_birth']);
-            $gpAttrs[] = $arr;
-            $playerAttrs[] = ['id' => $arr['player_id'], 'date_of_birth' => $dob];
-        }
-
-        $gamePlayers = GamePlayer::hydrate($gpAttrs);
-        $players = Player::hydrate($playerAttrs);
-
-        foreach ($gamePlayers as $i => $gp) {
-            $gp->setRelation('player', $players[$i]);
-        }
+        $gamePlayers = GamePlayer::hydrate(array_map(
+            fn ($row) => (array) $row,
+            $rows->all(),
+        ));
 
         return $gamePlayers->groupBy('team_id');
     }
