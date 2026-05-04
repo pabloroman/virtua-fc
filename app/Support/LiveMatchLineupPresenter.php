@@ -23,7 +23,7 @@ class LiveMatchLineupPresenter
      */
     public static function startingLineup(array $lineupIds, CarbonInterface $currentDate): array
     {
-        return GamePlayer::with(['player', 'matchState'])
+        return GamePlayer::with(['matchState'])
             ->whereIn('id', $lineupIds)
             ->get()
             ->map(fn ($p) => self::fullCard($p, $currentDate, null, 0))
@@ -49,7 +49,7 @@ class LiveMatchLineupPresenter
         CarbonInterface $currentDate,
         array $performances,
     ): array {
-        return GamePlayer::with(['player', 'matchState'])
+        return GamePlayer::with(['matchState'])
             ->where('game_players.game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->whereNotIn('id', $lineupIds)
@@ -100,7 +100,7 @@ class LiveMatchLineupPresenter
      */
     public static function displayRoster(array $lineupIds, array $performances): array
     {
-        return GamePlayer::with(['player', 'matchState'])
+        return GamePlayer::with(['matchState'])
             ->whereIn('id', $lineupIds)
             ->get()
             ->map(fn ($p) => [

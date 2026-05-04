@@ -4,7 +4,7 @@ namespace App\Http\Views;
 
 use App\Http\Actions\SaveSquadSelection;
 use App\Models\Game;
-use App\Models\Player;
+use App\Models\GamePlayerTemplate;
 use App\Support\PositionMapper;
 
 class ShowSquadSelection
@@ -62,9 +62,13 @@ class ShowSquadSelection
         $data = json_decode(file_get_contents($jsonPath), true);
         $jsonPlayers = $data['players'] ?? [];
 
-        // Get transfermarkt IDs and look up Player models for abilities
+        // Look up the matching templates for biography. Templates are the
+        // canonical roster source post-Phase-3, so abilities and date_of_birth
+        // are read off them instead of the deprecated Player table.
         $tmIds = array_column($jsonPlayers, 'id');
-        $playerModels = Player::whereIn('transfermarkt_id', $tmIds)->get()->keyBy('transfermarkt_id');
+        $templates = GamePlayerTemplate::whereIn('transfermarkt_id', $tmIds)
+            ->get()
+            ->keyBy('transfermarkt_id');
 
         $groups = ['goalkeepers' => [], 'defenders' => [], 'midfielders' => [], 'forwards' => []];
 
@@ -74,26 +78,26 @@ class ShowSquadSelection
                 continue;
             }
 
-            $player = $playerModels->get($tmId);
-            if (!$player) {
+            $template = $templates->get($tmId);
+            if (!$template) {
                 continue;
             }
 
             $position = $jp['position'] ?? 'Central Midfield';
             $positionGroup = PositionMapper::getPositionGroup($position);
             $positionDisplay = PositionMapper::getPositionDisplay($position);
-            $overall = (int) $player->overall_score;
+            $overall = (int) $template->overall_score;
 
             $candidate = [
                 'transfermarkt_id' => (string) $tmId,
-                'player_id' => $player->id,
-                'name' => $player->name,
+                'player_id' => $template->player_id,
+                'name' => $template->name,
                 'position' => $position,
                 'position_group' => $positionGroup,
                 'position_abbreviation' => $positionDisplay['abbreviation'],
                 'position_bg' => $positionDisplay['bg'],
                 'position_text' => $positionDisplay['text'],
-                'age' => $player->date_of_birth->age,
+                'age' => $template->date_of_birth->age,
                 'height' => $jp['height'] ?? null,
                 'overall' => $overall,
             ];

@@ -83,7 +83,7 @@ class ScoutReport extends Model
             return collect();
         }
 
-        return GamePlayer::with(['player', 'team'])
+        return GamePlayer::with(['team'])
             ->whereIn('id', $this->player_ids)
             ->where('team_id', '!=', $this->game->team_id) // Exclude players now on user's team
             ->get();

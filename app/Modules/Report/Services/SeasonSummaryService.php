@@ -72,7 +72,7 @@ class SeasonSummaryService
         // Team in numbers — eager-load matchState because every aggregation
         // below (top scorer, assists, appearances, cards, clean sheets) reads
         // through the satellite via the GamePlayer accessor delegates.
-        $teamPlayers = GamePlayer::with(['player', 'team', 'matchState'])
+        $teamPlayers = GamePlayer::with(['team', 'matchState'])
             ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->get();

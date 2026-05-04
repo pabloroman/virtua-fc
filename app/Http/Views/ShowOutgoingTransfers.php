@@ -81,7 +81,7 @@ class ShowOutgoingTransfers
 
         // Get listed players (even those without offers, excluding those with agreed deals)
         $agreedPlayerIds = $agreedTransfers->pluck('game_player_id')->toArray();
-        $listedPlayers = GamePlayer::with(['player'])
+        $listedPlayers = GamePlayer::query()
             ->where('game_id', $gameId)
             ->where('team_id', $game->team_id)
             ->whereHas('transferListing', fn ($q) => $q->where('status', TransferListing::STATUS_LISTED))
@@ -101,7 +101,7 @@ class ShowOutgoingTransfers
         $loans = $this->loanService->getActiveLoans($game);
         $loansOut = $loans['out'];
 
-        $loanSearches = GamePlayer::with(['player'])
+        $loanSearches = GamePlayer::query()
             ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->whereHas('transferListing', fn ($q) => $q->where('status', TransferListing::STATUS_LOAN_SEARCH))
@@ -140,7 +140,7 @@ class ShowOutgoingTransfers
                 || ($playerFlags[$p->id]['stature_gap'] ?? false)
                 || ($playerFlags[$p->id]['wage_gap'] ?? false)
         )->values();
-        $declinedRenewals = GamePlayer::with(['player', 'latestRenewalNegotiation'])
+        $declinedRenewals = GamePlayer::with(['latestRenewalNegotiation'])
             ->where('game_id', $gameId)
             ->ownedByTeam($game->team_id)
             ->whereHas('latestRenewalNegotiation', fn ($q) => $q->where('status', RenewalNegotiation::STATUS_CLUB_DECLINED))
@@ -156,7 +156,7 @@ class ShowOutgoingTransfers
 
         $cooldownRenewals = collect();
         if (!empty($cooldownPlayerIds)) {
-            $cooldownRenewals = GamePlayer::with(['player'])
+            $cooldownRenewals = GamePlayer::query()
                 ->where('game_id', $gameId)
                 ->ownedByTeam($game->team_id)
                 ->whereIn('id', $cooldownPlayerIds)

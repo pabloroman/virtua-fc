@@ -32,8 +32,8 @@ class NegotiateRenewal
 
         $action = $request->input('action');
         $eagerLoads = in_array($action, ['start', 'offer'])
-            ? ['player', 'game', 'transferOffers']
-            : ['player', 'game'];
+            ? ['game', 'transferOffers']
+            : ['game'];
 
         $player = GamePlayer::with($eagerLoads)
             ->where('game_id', $gameId)

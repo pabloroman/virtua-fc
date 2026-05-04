@@ -22,7 +22,7 @@ class CallUpReservePlayer
         $player = GamePlayer::where('id', $playerId)
             ->where('game_id', $gameId)
             ->where('team_id', $game->reserve_team_id)
-            ->with('player')
+            
             ->firstOrFail();
 
         $playerName = $player->name ?? '';

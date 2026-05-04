@@ -24,7 +24,7 @@ class ScoutSearchQueryBuilder
      */
     public function buildCandidateQuery(Game $game, array $filters, array $positions): Builder
     {
-        $query = GamePlayer::with(['player', 'team'])
+        $query = GamePlayer::with(['team'])
             ->where('game_id', $game->id)
             ->whereNotNull('team_id')
             ->whereNotIn('team_id', $game->userTeamIds());

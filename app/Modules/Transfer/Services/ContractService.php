@@ -426,7 +426,7 @@ class ContractService
     {
         $seasonEndDate = $game->getSeasonEndDate();
 
-        return GamePlayer::with(['player', 'team', 'game', 'transferOffers', 'latestRenewalNegotiation', 'activeRenewalNegotiation', 'activeLoan'])
+        return GamePlayer::with(['team', 'game', 'transferOffers', 'latestRenewalNegotiation', 'activeRenewalNegotiation', 'activeLoan'])
             ->where('game_id', $game->id)
             ->ownedByTeam($game->team_id)
             ->get()
@@ -442,7 +442,7 @@ class ContractService
      */
     public function getPlayersWithPendingRenewals(Game $game): Collection
     {
-        return GamePlayer::with('player')
+        return GamePlayer::query()
             ->where('game_id', $game->id)
             ->ownedByTeam($game->team_id)
             ->whereNotNull('pending_annual_wage')

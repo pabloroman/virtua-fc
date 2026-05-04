@@ -243,7 +243,7 @@ class CareerActionProcessor
         $currentDate = $game->current_date;
         $sixMonthsOut = $currentDate->copy()->addMonths(6);
 
-        $expiringPlayers = GamePlayer::with('player')
+        $expiringPlayers = GamePlayer::query()
             ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->whereNull('pending_annual_wage') // not already renewed

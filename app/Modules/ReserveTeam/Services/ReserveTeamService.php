@@ -6,7 +6,6 @@ use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\GameTransfer;
 use App\Models\Loan;
-use App\Models\Player;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Player\PlayerAge;
 use App\Modules\ReserveTeam\Exceptions\FirstTeamSquadFullException;
@@ -52,7 +51,7 @@ class ReserveTeamService
 
         return GamePlayer::ownedByTeam($game->reserve_team_id)
             ->where('game_id', $game->id)
-            ->with(['player', 'activeLoan', 'careerRecord'])
+            ->with(['activeLoan', 'careerRecord'])
             ->get();
     }
 
@@ -176,15 +175,10 @@ class ReserveTeamService
 
         $cutoff = PlayerAge::dateOfBirthCutoff(PlayerAge::YOUNG_END + 1, $game->current_date);
 
-        // Resolve overage biographical player ids on the control plane first,
-        // then filter game-side rows by player_id. Avoids a cross-plane
-        // whereHas('player', …) subquery.
-        $overagePlayerIds = Player::where('date_of_birth', '<=', $cutoff)->pluck('id');
-
         $candidates = GamePlayer::ownedByTeam($game->reserve_team_id)
             ->where('game_id', $game->id)
-            ->whereIn('player_id', $overagePlayerIds)
-            ->with(['player', 'activeLoan'])
+            ->where('date_of_birth', '<=', $cutoff)
+            ->with(['activeLoan'])
             ->get();
 
         $promoted = collect();

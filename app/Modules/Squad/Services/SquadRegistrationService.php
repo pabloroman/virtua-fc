@@ -4,7 +4,6 @@ namespace App\Modules\Squad\Services;
 
 use App\Models\Game;
 use App\Models\GamePlayer;
-use App\Models\Player;
 use App\Modules\Player\PlayerAge;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -80,19 +79,14 @@ class SquadRegistrationService
 
         $academyPlayerIds = $academyAssignments->pluck('player_id');
 
-        // Resolve overage biographical player ids on the control plane first,
-        // then filter game-side rows by player_id. Avoids a cross-plane
-        // whereHas('player', …) subquery.
-        $overagePlayerIds = Player::where(
-            'date_of_birth',
-            '<=',
-            PlayerAge::dateOfBirthCutoff(PlayerAge::YOUNG_END + 1, $game->current_date),
-        )->pluck('id');
-
         $overageCount = GamePlayer::where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->whereIn('id', $academyPlayerIds)
-            ->whereIn('player_id', $overagePlayerIds)
+            ->where(
+                'date_of_birth',
+                '<=',
+                PlayerAge::dateOfBirthCutoff(PlayerAge::YOUNG_END + 1, $game->current_date),
+            )
             ->count();
 
         if ($overageCount > 0) {

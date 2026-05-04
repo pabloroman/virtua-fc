@@ -51,7 +51,7 @@ class SquadNumberService
             ->where('team_id', $game->team_id)
             ->where('id', '!=', $player->id)
             ->whereNotNull('number')
-            ->with('player')
+            
             ->get();
 
         $takenNumbers = $teamPlayers->pluck('number')->flip();
@@ -123,7 +123,7 @@ class SquadNumberService
     {
         $players = GamePlayer::where('game_id', $game->id)
             ->where('team_id', $game->team_id)
-            ->with('player')
+            
             ->get();
 
         if ($players->isEmpty()) {

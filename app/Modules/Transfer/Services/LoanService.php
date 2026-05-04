@@ -74,7 +74,7 @@ class LoanService
      */
     public function processLoanSearches(Game $game): array
     {
-        $searching = GamePlayer::with(['player', 'transferListing'])
+        $searching = GamePlayer::with(['transferListing'])
             ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->whereHas('transferListing', fn ($q) => $q->where('status', TransferListing::STATUS_LOAN_SEARCH))

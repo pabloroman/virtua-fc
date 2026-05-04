@@ -58,7 +58,7 @@ class ShowNewSeason
         // Load squad data for snapshot
         $squad = GamePlayer::where('game_id', $game->id)
             ->where('team_id', $game->team_id)
-            ->with('player')
+            
             ->get();
 
         $squadSnapshot = $this->buildSquadSnapshot($squad, $game->current_date);

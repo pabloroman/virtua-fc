@@ -50,7 +50,7 @@ class PlayerTemplateAdminService
 
     public function squadForTeam(string $teamId, string $season): Collection
     {
-        $templates = GamePlayerTemplate::with(['player', 'audits.user'])
+        $templates = GamePlayerTemplate::with(['audits.user'])
             ->where('team_id', $teamId)
             ->where('season', $season)
             ->get();
@@ -77,7 +77,7 @@ class PlayerTemplateAdminService
 
     public function find(int $id): GamePlayerTemplate
     {
-        return GamePlayerTemplate::with(['player', 'team', 'audits.user'])->findOrFail($id);
+        return GamePlayerTemplate::with(['team', 'audits.user'])->findOrFail($id);
     }
 
     public function create(array $data, User $user): GamePlayerTemplate
@@ -173,7 +173,7 @@ class PlayerTemplateAdminService
 
     public function recentAudits(int $limit = 50): Collection
     {
-        return GamePlayerTemplateAudit::with(['template.player', 'template.team', 'user'])
+        return GamePlayerTemplateAudit::with(['template.team', 'user'])
             ->orderByDesc('created_at')
             ->limit($limit)
             ->get();

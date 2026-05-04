@@ -78,7 +78,7 @@ class ToggleShortlist
 
             if ($action === 'added') {
                 $entry->refresh();
-                $gamePlayer->load(['player', 'team']);
+                $gamePlayer->load(['team']);
                 $positionDisplay = PositionMapper::getPositionDisplay($gamePlayer->position);
 
                 $data['player'] = [

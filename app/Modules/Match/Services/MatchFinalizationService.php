@@ -199,7 +199,7 @@ class MatchFinalizationService
     private function updateConditionsForDeferredMatch(GameMatch $match): void
     {
         $teamIds = [$match->home_team_id, $match->away_team_id];
-        $players = GamePlayer::with(['player', 'matchState'])
+        $players = GamePlayer::with(['matchState'])
             ->where('game_id', $match->game_id)
             ->whereIn('team_id', $teamIds)
             ->get();
@@ -258,7 +258,7 @@ class MatchFinalizationService
 
         // Build players collection for extra time / penalty simulation
         $allLineupIds = array_merge($match->home_lineup ?? [], $match->away_lineup ?? []);
-        $players = GamePlayer::with(['player', 'matchState'])->whereIn('id', $allLineupIds)->get();
+        $players = GamePlayer::with(['matchState'])->whereIn('id', $allLineupIds)->get();
         $allPlayers = collect([
             $match->home_team_id => $players->filter(fn ($p) => $p->team_id === $match->home_team_id),
             $match->away_team_id => $players->filter(fn ($p) => $p->team_id === $match->away_team_id),

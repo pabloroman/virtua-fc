@@ -393,7 +393,7 @@ class ScoutingService
 
         $positionSet = array_flip($positions);
 
-        $squad = GamePlayer::with('player')
+        $squad = GamePlayer::query()
             ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->get();

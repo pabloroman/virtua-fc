@@ -21,7 +21,7 @@ class ShowSquadRegistration
 
         $gamePlayers = GamePlayer::where('game_id', $gameId)
             ->where('team_id', $game->team_id)
-            ->with('player')
+            
             ->get();
 
         $players = [];

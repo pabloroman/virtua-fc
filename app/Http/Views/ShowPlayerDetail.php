@@ -23,7 +23,7 @@ class ShowPlayerDetail
         // accept "physically here" as well as "owned via active loan-out".
         $userTeamIds = $game->userTeamIds();
 
-        $gamePlayer = GamePlayer::with(['player', 'careerRecord', 'activeLoan'])
+        $gamePlayer = GamePlayer::with(['careerRecord', 'activeLoan'])
             ->where('game_id', $gameId)
             ->where(function ($q) use ($userTeamIds) {
                 $q->whereIn('team_id', $userTeamIds)

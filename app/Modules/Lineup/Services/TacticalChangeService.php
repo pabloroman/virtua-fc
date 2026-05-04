@@ -242,7 +242,7 @@ class TacticalChangeService
             MatchEvent::insert($eventRows);
 
             // Load player names for response
-            $players = GamePlayer::with('player')->whereIn('id', $playerIds)->get()->keyBy('id');
+            $players = GamePlayer::query()->whereIn('id', $playerIds)->get()->keyBy('id');
             $substitutionDetails = array_map(fn ($sub) => [
                 'playerOutId' => $sub['playerOutId'],
                 'playerInId' => $sub['playerInId'],
@@ -257,7 +257,7 @@ class TacticalChangeService
         $mvpPlayerName = null;
         $mvpPlayerTeamId = null;
         if ($result->mvpPlayerId) {
-            $mvpPlayer = GamePlayer::with('player')->find($result->mvpPlayerId);
+            $mvpPlayer = GamePlayer::query()->find($result->mvpPlayerId);
             if ($mvpPlayer) {
                 $mvpPlayerName = $mvpPlayer->name ?? null;
                 $mvpPlayerTeamId = $mvpPlayer->team_id;

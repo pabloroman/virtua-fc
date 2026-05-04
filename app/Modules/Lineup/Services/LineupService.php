@@ -33,7 +33,7 @@ class LineupService
      */
     public function getAvailablePlayers(string $gameId, string $teamId, Carbon $matchDate, string $competitionId, bool $requireEnrollment = false): Collection
     {
-        $players = GamePlayer::with(['player', 'matchState'])
+        $players = GamePlayer::with(['matchState'])
             ->where('game_id', $gameId)
             ->where('team_id', $teamId)
             ->get();
@@ -64,7 +64,7 @@ class LineupService
      */
     public function getAllPlayers(string $gameId, string $teamId): Collection
     {
-        return GamePlayer::with(['player', 'matchState', 'suspensions', 'transferOffers', 'activeLoan'])
+        return GamePlayer::with(['matchState', 'suspensions', 'transferOffers', 'activeLoan'])
             ->where('game_id', $gameId)
             ->where('team_id', $teamId)
             ->get();
@@ -558,7 +558,7 @@ class LineupService
             return collect();
         }
 
-        return GamePlayer::with(['player', 'matchState'])
+        return GamePlayer::with(['matchState'])
             ->where('game_id', $gameId)
             ->where('team_id', $teamId)
             ->whereIn('id', $playerIds)
@@ -851,7 +851,7 @@ class LineupService
             $availableIds = $availablePlayers->pluck('id')->toArray();
             $allTeamPlayers = $allPlayersGrouped !== null
                 ? $allPlayersGrouped->get($teamId, collect())
-                : GamePlayer::with(['player', 'matchState'])->where('game_id', $game->id)->where('team_id', $teamId)->get();
+                : GamePlayer::with(['matchState'])->where('game_id', $game->id)->where('team_id', $teamId)->get();
             $lineup = $this->selectLineupWithPreferencesFromCollection(
                 $availablePlayers,
                 $allTeamPlayers,

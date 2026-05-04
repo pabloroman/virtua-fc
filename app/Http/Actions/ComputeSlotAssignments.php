@@ -53,7 +53,7 @@ class ComputeSlotAssignments
 
         // Load only the requested players, scoped to the user's team in this
         // game. Anything not found is silently dropped by the algorithm.
-        $players = GamePlayer::with('player')
+        $players = GamePlayer::query()
             ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->whereIn('id', $playerIds)

@@ -56,15 +56,8 @@ class UpdatePlayerTemplate
 
         $service->update($template, $validated, $request->user());
 
-        // Player still mirrors nationality until Phase 7 sunsets the redundant
-        // Player writes — readers haven't fully migrated to the template copy.
-        if ($nationality !== null && $template->player) {
-            $template->player->update(['nationality' => array_filter([$nationality])]);
-        }
-
         if ($request->wantsJson()) {
             $template->refresh();
-            $template->load('player');
             return response()->json([
                 'success' => true,
                 'message' => __('admin.template_updated'),

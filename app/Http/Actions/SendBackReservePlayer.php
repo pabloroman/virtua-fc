@@ -22,7 +22,7 @@ class SendBackReservePlayer
             ->where('game_id', $gameId)
             ->where('team_id', $game->team_id)
             ->whereHas('activeLoan', fn ($q) => $q->where('parent_team_id', $game->reserve_team_id))
-            ->with('player')
+            
             ->firstOrFail();
 
         $playerName = $player->name ?? '';

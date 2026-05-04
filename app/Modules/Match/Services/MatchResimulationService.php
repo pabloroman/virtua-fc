@@ -104,7 +104,7 @@ class MatchResimulationService
             ->all();
 
         if (! empty($autoSubPlayerInIds)) {
-            $autoSubPlayersIn = GamePlayer::with('player')
+            $autoSubPlayersIn = GamePlayer::query()
                 ->whereIn('id', $autoSubPlayerInIds)
                 ->get();
 
@@ -426,7 +426,7 @@ class MatchResimulationService
                 ->all();
 
             if (! empty($autoSubPlayerInIds)) {
-                $autoSubPlayersIn = GamePlayer::with('player')
+                $autoSubPlayersIn = GamePlayer::query()
                     ->whereIn('id', $autoSubPlayerInIds)
                     ->get();
 
@@ -849,7 +849,7 @@ class MatchResimulationService
 
         $playerInNames = [];
         if (! empty($playerInIds)) {
-            $playerInNames = GamePlayer::with('player')
+            $playerInNames = GamePlayer::query()
                 ->whereIn('id', $playerInIds)
                 ->get()
                 ->mapWithKeys(fn ($gp) => [$gp->id => $gp->name ?? ''])

@@ -135,7 +135,7 @@ class ExploreService
     {
         $players = GamePlayer::where('game_id', $game->id)
             ->where('team_id', $teamId)
-            ->with(['player', 'team'])
+            ->with(['team'])
             ->get();
 
         $playerIds = $players->pluck('id')->toArray();
@@ -166,7 +166,7 @@ class ExploreService
     {
         $query = GamePlayer::where('game_id', $game->id)
             ->whereNull('team_id')
-            ->with('player');
+            ;
 
         $positions = PositionMapper::getPositionsForGroupFilter($positionFilter);
         if ($positions !== null) {

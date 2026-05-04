@@ -16,7 +16,7 @@ class SubmitPreContractOffer
     public function __invoke(Request $request, string $gameId, string $playerId)
     {
         $game = Game::findOrFail($gameId);
-        $player = GamePlayer::where('game_id', $gameId)->with(['player', 'team'])->findOrFail($playerId);
+        $player = GamePlayer::where('game_id', $gameId)->with(['team'])->findOrFail($playerId);
 
         $validated = $request->validate([
             'offered_wage' => 'required|integer|min:0',

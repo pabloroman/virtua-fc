@@ -13,7 +13,7 @@ class AwardService
      */
     public function getTopScorers(string $gameId, Collection|array|null $teamIds = null, int $limit = 5): Collection
     {
-        return GamePlayer::with(['player', 'team', 'matchState'])
+        return GamePlayer::with(['team', 'matchState'])
             ->joinMatchState()
             ->where('game_players.game_id', $gameId)
             ->when($teamIds, fn ($q) => $q->whereIn('team_id', $teamIds))
@@ -30,7 +30,7 @@ class AwardService
      */
     public function getTopAssisters(string $gameId, Collection|array|null $teamIds = null, int $limit = 5): Collection
     {
-        return GamePlayer::with(['player', 'team', 'matchState'])
+        return GamePlayer::with(['team', 'matchState'])
             ->joinMatchState()
             ->where('game_players.game_id', $gameId)
             ->when($teamIds, fn ($q) => $q->whereIn('team_id', $teamIds))
@@ -46,7 +46,7 @@ class AwardService
      */
     public function getTopGoalkeepers(string $gameId, Collection|array|null $teamIds = null, int $minAppearances = 3, int $limit = 5): Collection
     {
-        return GamePlayer::with(['player', 'team', 'matchState'])
+        return GamePlayer::with(['team', 'matchState'])
             ->joinMatchState()
             ->where('game_players.game_id', $gameId)
             ->when($teamIds, fn ($q) => $q->whereIn('team_id', $teamIds))
@@ -74,7 +74,7 @@ class AwardService
             return [collect(), null, $mvpCounts];
         }
 
-        $players = GamePlayer::with(['player', 'team', 'matchState'])
+        $players = GamePlayer::with(['team', 'matchState'])
             ->whereIn('id', $mvpCounts->keys()->all())
             ->get()
             ->keyBy('id');
@@ -99,7 +99,7 @@ class AwardService
      */
     public function getTeamSquadStats(string $gameId, string $teamId): Collection
     {
-        return GamePlayer::with(['player', 'matchState'])
+        return GamePlayer::with(['matchState'])
             ->leftJoinMatchState()
             ->where('game_players.game_id', $gameId)
             ->where('team_id', $teamId)

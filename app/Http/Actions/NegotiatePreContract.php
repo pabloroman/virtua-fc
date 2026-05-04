@@ -34,7 +34,7 @@ class NegotiatePreContract
 
         $game = Game::findOrFail($gameId);
 
-        $player = GamePlayer::with(['player', 'game', 'team'])
+        $player = GamePlayer::with(['game', 'team'])
             ->where('game_id', $gameId)
             ->findOrFail($playerId);
 

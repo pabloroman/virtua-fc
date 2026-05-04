@@ -7,7 +7,7 @@ use App\Modules\Player\Services\PlayerDevelopmentService;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\GamePlayerMatchState;
-use App\Models\Player;
+use App\Models\GamePlayerTemplate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -58,13 +58,18 @@ class SaveSquadSelection
 
     public static function createTournamentGamePlayers(string $gameId, string $teamId, array $tmIds, array $positionByTmId): void
     {
-        $playerModels = Player::whereIn('transfermarkt_id', $tmIds)->get()->keyBy('transfermarkt_id');
+        // Templates carry biography directly post-Phase-5 and live on the
+        // control plane alongside the rest of the cross-tenant reference
+        // data. Read from there instead of the now-deprecated Player table.
+        $templates = GamePlayerTemplate::whereIn('transfermarkt_id', $tmIds)
+            ->get()
+            ->keyBy('transfermarkt_id');
 
         $playerRows = [];
         $matchStateRows = [];
         foreach ($tmIds as $tmId) {
-            $player = $playerModels->get($tmId);
-            if (!$player) {
+            $template = $templates->get($tmId);
+            if (!$template) {
                 continue;
             }
 
@@ -73,13 +78,13 @@ class SaveSquadSelection
             $playerRows[] = [
                 'id' => $gamePlayerId,
                 'game_id' => $gameId,
-                'player_id' => $player->id,
-                'transfermarkt_id' => $player->transfermarkt_id,
-                'name' => $player->name,
-                'date_of_birth' => $player->date_of_birth?->toDateString(),
-                'nationality' => $player->nationality !== null ? json_encode($player->nationality) : null,
-                'height' => $player->height,
-                'foot' => $player->foot,
+                'player_id' => $template->player_id,
+                'transfermarkt_id' => $template->transfermarkt_id,
+                'name' => $template->name,
+                'date_of_birth' => $template->date_of_birth?->toDateString(),
+                'nationality' => $template->nationality !== null ? json_encode($template->nationality) : null,
+                'height' => $template->height,
+                'foot' => $template->foot,
                 'team_id' => $teamId,
                 'number' => null,
                 'position' => $positionByTmId[$tmId] ?? 'Central Midfield',
@@ -88,7 +93,7 @@ class SaveSquadSelection
                 'contract_until' => null,
                 'annual_wage' => 0,
                 'durability' => InjuryService::generateDurability(),
-                'overall_score' => $player->overall_score,
+                'overall_score' => $template->overall_score,
             ];
 
             $matchStateRows[] = [

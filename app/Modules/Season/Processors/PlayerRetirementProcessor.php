@@ -8,7 +8,6 @@ use App\Modules\Player\PlayerAge;
 use App\Modules\Player\Services\PlayerRetirementService;
 use App\Models\Game;
 use App\Models\GamePlayer;
-use App\Models\Player;
 
 /**
  * Handles player retirements at the end of the season.
@@ -56,7 +55,7 @@ class PlayerRetirementProcessor implements SeasonProcessor
         // while on a team can have their contract expire in the same season closing
         // (ContractExpirationProcessor runs first), leaving team_id null. We still
         // want those players removed from the game.
-        $retiringPlayers = GamePlayer::with(['player', 'team', 'game'])
+        $retiringPlayers = GamePlayer::with(['team', 'game'])
             ->where('game_id', $game->id)
             ->where('retiring_at_season', $data->oldSeason)
             ->get();
@@ -94,19 +93,14 @@ class PlayerRetirementProcessor implements SeasonProcessor
         // set from ~500 to ~20-40 before PHP-side probability evaluation.
         $minRetirementCutoff = PlayerAge::dateOfBirthCutoff(PlayerAge::MIN_RETIREMENT_OUTFIELD, $game->current_date);
 
-        // Resolve eligible biographical players first (control plane), then
-        // filter game-side rows by player_id. Replaces a whereHas('player', …)
-        // subquery that would cross the control/tenant plane boundary.
-        $eligiblePlayerIds = Player::where('date_of_birth', '<=', $minRetirementCutoff)->pluck('id');
-
         // matchState is eager-loaded because shouldRetire() reads
         // fitness/season_appearances via the GamePlayer accessor delegates.
         // Free agents (team_id IS NULL) are included so they also receive
         // retirement announcements on the same cadence as rostered players.
-        $candidates = GamePlayer::with(['player', 'team', 'game', 'matchState'])
+        $candidates = GamePlayer::with(['team', 'game', 'matchState'])
             ->where('game_id', $game->id)
             ->whereNull('retiring_at_season')
-            ->whereIn('player_id', $eligiblePlayerIds)
+            ->where('date_of_birth', '<=', $minRetirementCutoff)
             ->get()
             ->filter(fn (GamePlayer $player) => $this->retirementService->shouldRetire($player));
 
