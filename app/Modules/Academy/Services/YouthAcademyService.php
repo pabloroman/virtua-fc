@@ -7,7 +7,6 @@ use App\Modules\Squad\DTOs\GeneratedPlayerData;
 use App\Models\AcademyPlayer;
 use App\Models\Game;
 use App\Models\GamePlayer;
-use App\Models\Player;
 use App\Modules\Player\PlayerAge;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -563,13 +562,8 @@ class YouthAcademyService
      */
     private function getExistingPlayerNames(Game $game): array
     {
-        // PLANES-SEAM: cross-plane JOIN. game_players=tenant, players=control.
-        // Restored while both planes share one physical Postgres. Re-split
-        // before the planes are physically separated. See CLAUDE.md →
-        // "Control plane / tenant plane".
-        $playerNames = GamePlayer::where('game_players.game_id', $game->id)
-            ->join('players', 'game_players.player_id', '=', 'players.id')
-            ->pluck('players.name')
+        $playerNames = GamePlayer::where('game_id', $game->id)
+            ->pluck('name')
             ->toArray();
 
         $academyNames = AcademyPlayer::where('game_id', $game->id)

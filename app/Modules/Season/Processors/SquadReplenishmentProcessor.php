@@ -115,21 +115,16 @@ class SquadReplenishmentProcessor implements SeasonProcessor
         $bulkMeta = [];
         $releaseIds = [];
 
-        // PLANES-SEAM: cross-plane JOIN. game_players=tenant, players=control.
-        // Restored while both planes share one physical Postgres. Re-split
-        // before the planes are physically separated. See CLAUDE.md →
-        // "Control plane / tenant plane".
-        $playersByTeam = GamePlayer::where('game_players.game_id', $game->id)
-            ->whereNotNull('game_players.team_id')
-            ->join('players', 'game_players.player_id', '=', 'players.id')
+        $playersByTeam = GamePlayer::where('game_id', $game->id)
+            ->whereNotNull('team_id')
             ->select([
-                'game_players.id',
-                'game_players.team_id',
-                'game_players.position',
-                'game_players.overall_score',
-                'game_players.number',
-                'players.date_of_birth',
-                'players.name as player_name',
+                'id',
+                'team_id',
+                'position',
+                'overall_score',
+                'number',
+                'date_of_birth',
+                'name as player_name',
             ])
             ->get()
             ->groupBy('team_id');

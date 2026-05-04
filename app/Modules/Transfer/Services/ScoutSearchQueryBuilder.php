@@ -90,16 +90,8 @@ class ScoutSearchQueryBuilder
             return;
         }
 
-        // PLANES-SEAM: cross-plane correlated subquery. game_players=tenant,
-        // players=control. The two-step split (Player::pluck → whereIn)
-        // shipped a list bounded only by the global player pool — the same
-        // OOM trap the ability filter hit. Restored while both planes share
-        // one physical Postgres. Re-split before the planes are physically
-        // separated. See CLAUDE.md → "Control plane / tenant plane".
-        $dobSubquery = '(SELECT date_of_birth FROM players WHERE players.id = game_players.player_id)';
         $gameDate = $game->current_date->toDateString();
-
-        $ageExpr = "EXTRACT(YEAR FROM AGE(?::date, $dobSubquery))";
+        $ageExpr = "EXTRACT(YEAR FROM AGE(?::date, game_players.date_of_birth))";
 
         if (! empty($filters['age_min'])) {
             $query->whereRaw("($ageExpr) >= ?", [$gameDate, (int) $filters['age_min']]);
@@ -115,21 +107,12 @@ class ScoutSearchQueryBuilder
             return;
         }
 
-        // PLANES-SEAM: cross-plane correlated subquery. game_players=tenant,
-        // players=control. The two-step split version OOMed when the
-        // bindings list grew with the global player pool. Restore the
-        // correlated subquery while both planes share one physical Postgres.
-        // Re-split before the planes are physically separated. See CLAUDE.md
-        // → "Control plane / tenant plane".
-        $query->where(function ($q) use ($filters) {
-            $abilityExpr = 'COALESCE(game_players.overall_score, (SELECT overall_score FROM players WHERE players.id = game_players.player_id))';
-            if (! empty($filters['ability_min'])) {
-                $q->whereRaw("$abilityExpr >= ?", [(int) $filters['ability_min']]);
-            }
-            if (! empty($filters['ability_max'])) {
-                $q->whereRaw("$abilityExpr <= ?", [(int) $filters['ability_max']]);
-            }
-        });
+        if (! empty($filters['ability_min'])) {
+            $query->where('overall_score', '>=', (int) $filters['ability_min']);
+        }
+        if (! empty($filters['ability_max'])) {
+            $query->where('overall_score', '<=', (int) $filters['ability_max']);
+        }
     }
 
     private function applyValueFilter(Builder $query, array $filters): void

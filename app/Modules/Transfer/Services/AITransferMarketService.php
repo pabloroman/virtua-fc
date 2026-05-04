@@ -6,7 +6,6 @@ use App\Models\ClubProfile;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\GameTransfer;
-use App\Models\Player;
 use App\Models\Team;
 use App\Models\TeamReputation;
 use App\Modules\Notification\Services\NotificationService;
@@ -1419,63 +1418,40 @@ class AITransferMarketService
     }
 
     /**
-     * Load game players matching the given filter, with the player's
-     * date_of_birth fetched via a JOIN instead of a separate eager-load
-     * round-trip. Hydrates GamePlayer models and pre-attaches a stub Player
-     * relation so callers using ->age($date) and ->player work unchanged.
-     *
-     * Production profiling showed the eager-load query
-     * `SELECT id, date_of_birth FROM players WHERE id IN (3000)` taking
-     * ~155ms by itself; folding it into a JOIN eliminates that round-trip.
+     * Load game players matching the given filter, hydrating only the
+     * subset of columns this service consumes. date_of_birth is read
+     * directly off game_players (Phase 6) — no Player relation needed.
      */
     private function loadGamePlayersWithPlayerDob(\Closure $applyWhere): Collection
     {
-        // PLANES-SEAM: cross-plane JOIN. game_players=tenant, players=control.
-        // The two-step split was reverted because production profiling already
-        // showed splitting these costs ~155ms per call, and this method is on
-        // multiple AI-transfer hot paths. Re-split before the planes are
-        // physically separated. See CLAUDE.md → "Control plane / tenant plane".
-        $query = DB::table('game_players')
-            ->join('players', 'players.id', '=', 'game_players.player_id');
+        $query = DB::table('game_players');
 
         $applyWhere($query);
 
         $rows = $query->get([
-            'game_players.id',
-            'game_players.game_id',
-            'game_players.player_id',
-            'game_players.team_id',
-            'game_players.position',
-            'game_players.tier',
-            'game_players.market_value_cents',
-            'game_players.overall_score',
-            'game_players.retiring_at_season',
-            'game_players.number',
-            'game_players.contract_until',
-            'game_players.annual_wage',
-            'players.date_of_birth as _player_date_of_birth',
+            'id',
+            'game_id',
+            'player_id',
+            'team_id',
+            'position',
+            'tier',
+            'market_value_cents',
+            'overall_score',
+            'retiring_at_season',
+            'number',
+            'contract_until',
+            'annual_wage',
+            'date_of_birth',
         ]);
 
         if ($rows->isEmpty()) {
             return new Collection();
         }
 
-        $gpAttrs = [];
-        $playerAttrs = [];
-        foreach ($rows as $row) {
-            $arr = (array) $row;
-            $dob = $arr['_player_date_of_birth'];
-            unset($arr['_player_date_of_birth']);
-            $gpAttrs[] = $arr;
-            $playerAttrs[] = ['id' => $arr['player_id'], 'date_of_birth' => $dob];
-        }
-
-        $gamePlayers = GamePlayer::hydrate($gpAttrs);
-        $players = Player::hydrate($playerAttrs);
-
-        foreach ($gamePlayers as $i => $gp) {
-            $gp->setRelation('player', $players[$i]);
-        }
+        $gamePlayers = GamePlayer::hydrate(array_map(
+            fn ($row) => (array) $row,
+            $rows->all(),
+        ));
 
         return $gamePlayers;
     }

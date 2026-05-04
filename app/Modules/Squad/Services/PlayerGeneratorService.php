@@ -644,13 +644,8 @@ class PlayerGeneratorService
     private function getOrLoadGameNames(string $gameId): array
     {
         if (! isset($this->gameNamesCache[$gameId])) {
-            // PLANES-SEAM: cross-plane JOIN. game_players=tenant, players=control.
-            // Restored while both planes share one physical Postgres. Re-split
-            // before the planes are physically separated. See CLAUDE.md →
-            // "Control plane / tenant plane".
-            $this->gameNamesCache[$gameId] = GamePlayer::where('game_players.game_id', $gameId)
-                ->join('players', 'game_players.player_id', '=', 'players.id')
-                ->pluck('players.name')
+            $this->gameNamesCache[$gameId] = GamePlayer::where('game_id', $gameId)
+                ->pluck('name')
                 ->toArray();
         }
 
