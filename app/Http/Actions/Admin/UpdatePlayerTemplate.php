@@ -50,8 +50,14 @@ class UpdatePlayerTemplate
         $nationality = $validated['nationality'] ?? null;
         unset($validated['nationality']);
 
+        if ($nationality !== null) {
+            $validated['nationality'] = array_filter([$nationality]);
+        }
+
         $service->update($template, $validated, $request->user());
 
+        // Player still mirrors nationality until Phase 7 sunsets the redundant
+        // Player writes — readers haven't fully migrated to the template copy.
         if ($nationality !== null && $template->player) {
             $template->player->update(['nationality' => array_filter([$nationality])]);
         }

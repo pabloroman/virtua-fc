@@ -124,6 +124,12 @@ class PlayerGeneratorService
             'id' => Str::uuid()->toString(),
             'game_id' => $game->id,
             'player_id' => $player->id,
+            'transfermarkt_id' => $player->transfermarkt_id,
+            'name' => $name,
+            'date_of_birth' => $data->dateOfBirth->format('Y-m-d'),
+            'nationality' => $nationality,
+            'height' => $identity['height'] ?? null,
+            'foot' => $identity['foot'] ?? null,
             'team_id' => $data->teamId,
             'position' => $data->position,
             'secondary_positions' => $this->generatePositions($data->position),
@@ -219,10 +225,11 @@ class PlayerGeneratorService
 
             $playerId = Str::uuid()->toString();
             $gamePlayerId = Str::uuid()->toString();
+            $transfermarktId = 'gen-' . Str::uuid()->toString();
 
             $playerRows[] = [
                 'id' => $playerId,
-                'transfermarkt_id' => 'gen-' . Str::uuid()->toString(),
+                'transfermarkt_id' => $transfermarktId,
                 'name' => $name,
                 'nationality' => json_encode($nationality),
                 'date_of_birth' => $data->dateOfBirth->format('Y-m-d'),
@@ -252,6 +259,12 @@ class PlayerGeneratorService
                 'id' => $gamePlayerId,
                 'game_id' => $game->id,
                 'player_id' => $playerId,
+                'transfermarkt_id' => $transfermarktId,
+                'name' => $name,
+                'date_of_birth' => $data->dateOfBirth->format('Y-m-d'),
+                'nationality' => json_encode($nationality),
+                'height' => $identity['height'] ?? null,
+                'foot' => $identity['foot'] ?? null,
                 'team_id' => $data->teamId,
                 'position' => $data->position,
                 'market_value_cents' => $marketValue,

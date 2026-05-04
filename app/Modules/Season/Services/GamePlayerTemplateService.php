@@ -105,7 +105,7 @@ class GamePlayerTemplateService
         // Only load players that appear in roster files
         $allPlayers = Player::query()
             ->whereIn('transfermarkt_id', array_unique($neededTmIds))
-            ->get(['id', 'transfermarkt_id', 'date_of_birth', 'overall_score'])
+            ->get(['id', 'transfermarkt_id', 'name', 'date_of_birth', 'nationality', 'height', 'foot', 'overall_score'])
             ->keyBy('transfermarkt_id');
 
         $processedPlayerIds = [];
@@ -163,7 +163,7 @@ class GamePlayerTemplateService
         // Load only the players we actually need
         $players = Player::query()
             ->whereIn('transfermarkt_id', array_unique($neededTmIds))
-            ->get(['id', 'transfermarkt_id', 'date_of_birth', 'overall_score'])
+            ->get(['id', 'transfermarkt_id', 'name', 'date_of_birth', 'nationality', 'height', 'foot', 'overall_score'])
             ->keyBy('transfermarkt_id');
 
         $totalCount = 0;
@@ -393,6 +393,12 @@ class GamePlayerTemplateService
         return [
             'season' => $season,
             'player_id' => $player->id,
+            'transfermarkt_id' => $player->transfermarkt_id,
+            'name' => $player->name,
+            'date_of_birth' => $player->date_of_birth?->toDateString(),
+            'nationality' => $player->nationality !== null ? json_encode($player->nationality) : null,
+            'height' => $player->height,
+            'foot' => $player->foot,
             'team_id' => $teamId,
             'number' => isset($playerData['number']) ? (int) $playerData['number'] : null,
             'position' => $playerData['position'] ?? 'Unknown',

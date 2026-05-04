@@ -58,6 +58,12 @@ class StorePlayerTemplate
             ->except(['name', 'date_of_birth', 'nationality', 'market_value_euros', 'annual_wage_euros'])
             ->merge([
                 'player_id' => $player->id,
+                'transfermarkt_id' => $player->transfermarkt_id,
+                'name' => $player->name,
+                'date_of_birth' => $player->date_of_birth?->toDateString(),
+                'nationality' => $player->nationality,
+                'height' => $player->height,
+                'foot' => $player->foot,
                 'team_id' => $teamId,
                 'market_value_cents' => $validated['market_value_euros'] * 100,
                 'annual_wage' => $validated['annual_wage_euros'] * 100,

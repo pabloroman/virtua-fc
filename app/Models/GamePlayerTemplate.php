@@ -20,6 +20,12 @@ class GamePlayerTemplate extends Model
     protected $fillable = [
         'season',
         'player_id',
+        'transfermarkt_id',
+        'name',
+        'date_of_birth',
+        'nationality',
+        'height',
+        'foot',
         'team_id',
         'number',
         'position',
@@ -39,6 +45,8 @@ class GamePlayerTemplate extends Model
 
     protected $casts = [
         'number' => 'integer',
+        'nationality' => 'array',
+        'date_of_birth' => 'date:Y-m-d',
         'market_value_cents' => 'integer',
         'contract_until' => 'date:Y-m-d',
         'annual_wage' => 'integer',
