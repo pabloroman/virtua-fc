@@ -34,6 +34,16 @@ class GamePlayerFactory extends Factory
             'id' => Str::uuid()->toString(),
             'game_id' => Game::factory(),
             'player_id' => Player::factory(),
+            // Biography lives on game_players directly post-Phase-6. Generate
+            // it inline so factory-built rows match the production reality
+            // where every game_players row carries its own biography copy,
+            // independent of the Player relationship being navigable.
+            'transfermarkt_id' => 'gen-' . Str::uuid()->toString(),
+            'name' => $this->faker->name,
+            'date_of_birth' => $this->faker->dateTimeBetween('-40 years', '-16 years')->format('Y-m-d'),
+            'nationality' => [$this->faker->country],
+            'height' => $this->faker->numberBetween(165, 200) . 'cm',
+            'foot' => $this->faker->randomElement(['left', 'right', 'both']),
             'team_id' => Team::factory(),
             'position' => 'Central Midfield',
             'secondary_positions' => [],
@@ -81,18 +91,6 @@ class GamePlayerFactory extends Factory
             $oid = spl_object_id($player);
             $overrides = self::$pendingOverrides[$oid] ?? [];
             unset(self::$pendingOverrides[$oid]);
-
-            // Mirror biography from the linked Player onto the game_players
-            // row. Production paths set this at insert time (Phase 5);
-            // factories back-fill here so tests reflect the post-Phase-6
-            // schema reality where readers consume the local biography
-            // columns directly.
-            if ($player->name === null && $player->player) {
-                $player->forceFill($player->player->only([
-                    'transfermarkt_id', 'name', 'date_of_birth',
-                    'nationality', 'height', 'foot',
-                ]))->save();
-            }
 
             // Every test-created GamePlayer gets a satellite row by default
             // — tests historically assumed game_players carried fitness etc.,
