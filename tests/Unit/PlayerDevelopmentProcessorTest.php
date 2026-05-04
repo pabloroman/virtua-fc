@@ -26,7 +26,7 @@ class PlayerDevelopmentProcessorTest extends TestCase
     {
         parent::setUp();
 
-        $this->processor = new PlayerDevelopmentProcessor();
+        $this->processor = app(PlayerDevelopmentProcessor::class);
 
         $this->game = Game::factory()->atDate(self::SEASON_END)->create();
     }
