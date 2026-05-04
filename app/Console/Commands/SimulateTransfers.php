@@ -61,7 +61,7 @@ class SimulateTransfers extends Command
                     $service->processWindowClose($game, $window);
 
                     // Read transfers from the ledger
-                    $transferRecords = GameTransfer::with(['gamePlayer.player', 'fromTeam', 'toTeam'])
+                    $transferRecords = GameTransfer::with(['gamePlayer', 'fromTeam', 'toTeam'])
                         ->where('game_id', $game->id)
                         ->where('season', $game->season)
                         ->where('window', $window)

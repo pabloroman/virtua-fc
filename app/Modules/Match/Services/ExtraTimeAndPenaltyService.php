@@ -245,7 +245,7 @@ class ExtraTimeAndPenaltyService
             return collect();
         }
 
-        return MatchEvent::with('gamePlayer.player')
+        return MatchEvent::with('gamePlayer')
             ->whereIn('id', $ids)
             ->orderBy('minute')
             ->get();

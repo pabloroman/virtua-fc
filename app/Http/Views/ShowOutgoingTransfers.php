@@ -32,7 +32,7 @@ class ShowOutgoingTransfers
         $this->transferService->expireOffers($game);
 
         // Get all pending offers for user's players
-        $pendingOffers = TransferOffer::with(['gamePlayer.player', 'gamePlayer.team', 'offeringTeam'])
+        $pendingOffers = TransferOffer::with(['gamePlayer.team', 'offeringTeam'])
             ->where('game_id', $gameId)
             ->where('status', TransferOffer::STATUS_PENDING)
             ->whereHas('gamePlayer', function ($query) use ($game) {
@@ -47,7 +47,7 @@ class ShowOutgoingTransfers
         $listedOffers = $pendingOffers->where('offer_type', TransferOffer::TYPE_LISTED);
 
         // Pre-contract offers (players being poached)
-        $preContractOffers = TransferOffer::with(['gamePlayer.player', 'offeringTeam'])
+        $preContractOffers = TransferOffer::with(['gamePlayer', 'offeringTeam'])
             ->where('game_id', $gameId)
             ->where('status', TransferOffer::STATUS_PENDING)
             ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
@@ -59,7 +59,7 @@ class ShowOutgoingTransfers
             ->get();
 
         // Agreed pre-contracts (players leaving at end of season)
-        $agreedPreContracts = TransferOffer::with(['gamePlayer.player', 'offeringTeam'])
+        $agreedPreContracts = TransferOffer::with(['gamePlayer', 'offeringTeam'])
             ->where('game_id', $gameId)
             ->where('status', TransferOffer::STATUS_AGREED)
             ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
@@ -69,7 +69,7 @@ class ShowOutgoingTransfers
             ->get();
 
         // Get agreed outgoing transfers (waiting for window) - exclude pre-contracts
-        $agreedTransfers = TransferOffer::with(['gamePlayer.player', 'offeringTeam'])
+        $agreedTransfers = TransferOffer::with(['gamePlayer', 'offeringTeam'])
             ->where('game_id', $gameId)
             ->where('status', TransferOffer::STATUS_AGREED)
             ->where('offer_type', '!=', TransferOffer::TYPE_PRE_CONTRACT)
@@ -90,7 +90,7 @@ class ShowOutgoingTransfers
             ->get();
 
         // Recent completed outgoing transfers (last 10)
-        $recentTransfers = TransferOffer::with(['gamePlayer.player', 'offeringTeam'])
+        $recentTransfers = TransferOffer::with(['gamePlayer', 'offeringTeam'])
             ->where('game_id', $gameId)
             ->where('status', TransferOffer::STATUS_COMPLETED)
             ->where('direction', '!=', TransferOffer::DIRECTION_INCOMING)
@@ -109,7 +109,7 @@ class ShowOutgoingTransfers
 
         // Pending loan-out offers for the "Loan Offers Received" section.
         // Each offer is a separate card, same UX as sale offers.
-        $loanOffers = TransferOffer::with(['offeringTeam', 'gamePlayer.player'])
+        $loanOffers = TransferOffer::with(['offeringTeam', 'gamePlayer'])
             ->where('game_id', $gameId)
             ->where('direction', TransferOffer::DIRECTION_OUTGOING)
             ->where('offer_type', TransferOffer::TYPE_LOAN_OUT)

@@ -35,7 +35,7 @@ class ShowScoutingHub
 
         // Shortlisted players with intel-gated data
         $shortlistedEntries = ShortlistedPlayer::where('game_id', $gameId)
-            ->with(['gamePlayer.player', 'gamePlayer.team'])
+            ->with(['gamePlayer.team'])
             ->get();
 
         $shortlistedPlayers = [];

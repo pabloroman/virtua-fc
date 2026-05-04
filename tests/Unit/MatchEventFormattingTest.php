@@ -54,7 +54,7 @@ class MatchEventFormattingTest extends TestCase
             'event_type' => 'assist',
         ]);
 
-        $events = MatchEvent::with('gamePlayer.player')->whereIn('id', [$goal->id, $assist->id])->get();
+        $events = MatchEvent::with('gamePlayer')->whereIn('id', [$goal->id, $assist->id])->get();
         $result = MatchResimulationService::formatMatchEvents($events);
 
         $goalEvent = collect($result)->firstWhere('type', 'goal');
@@ -91,7 +91,7 @@ class MatchEventFormattingTest extends TestCase
             'event_type' => 'assist',
         ]);
 
-        $events = MatchEvent::with('gamePlayer.player')
+        $events = MatchEvent::with('gamePlayer')
             ->whereIn('id', [$goalA->id, $goalB->id, $assistA->id])
             ->get();
         $result = MatchResimulationService::formatMatchEvents($events);
@@ -126,7 +126,7 @@ class MatchEventFormattingTest extends TestCase
             'event_type' => 'assist',
         ]);
 
-        $events = MatchEvent::with('gamePlayer.player')
+        $events = MatchEvent::with('gamePlayer')
             ->whereIn('id', [$ownGoal->id, $assist->id])
             ->get();
         $result = MatchResimulationService::formatMatchEvents($events);
@@ -148,7 +148,7 @@ class MatchEventFormattingTest extends TestCase
             'event_type' => 'goal',
         ]);
 
-        $events = MatchEvent::with('gamePlayer.player')->whereIn('id', [$goal->id])->get();
+        $events = MatchEvent::with('gamePlayer')->whereIn('id', [$goal->id])->get();
         $result = MatchResimulationService::formatMatchEvents($events);
 
         $goalEvent = collect($result)->firstWhere('type', 'goal');

@@ -145,7 +145,9 @@ class PlayerDevelopmentProcessorTest extends TestCase
         $this->processor->process($this->game, $this->transitionData());
 
         $gamePlayer->refresh();
-        $this->assertNull($gamePlayer->overall_score);
+        // Bypass the accessor (which substitutes 50 for null) so we can
+        // assert the underlying column is still NULL.
+        $this->assertNull($gamePlayer->getRawOriginal('overall_score'));
     }
 
     public function test_other_games_are_untouched(): void

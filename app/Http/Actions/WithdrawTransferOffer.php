@@ -13,7 +13,7 @@ class WithdrawTransferOffer
     {
         $game = Game::findOrFail($gameId);
 
-        $offer = TransferOffer::with(['gamePlayer.player'])
+        $offer = TransferOffer::with(['gamePlayer'])
             ->where('id', $offerId)
             ->where('game_id', $gameId)
             ->where('direction', TransferOffer::DIRECTION_INCOMING)

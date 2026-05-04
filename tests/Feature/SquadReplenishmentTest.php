@@ -237,7 +237,7 @@ class SquadReplenishmentTest extends TestCase
             ->get();
 
         foreach ($newPlayers as $player) {
-            $this->assertNotNull($player->player);
+            $this->assertNotNull($player->date_of_birth);
             $this->assertNotNull($player->contract_until);
             $this->assertNotNull($player->annual_wage);
             $this->assertGreaterThan(0, $player->overall_score);
