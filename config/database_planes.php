@@ -37,6 +37,7 @@ return [
 
         // Leaderboards / cross-tenant aggregates
         'manager_stats',
+        'manager_trophies',
         'tournament_summaries',
 
         // Reference data
