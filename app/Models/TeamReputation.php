@@ -5,12 +5,36 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Cache;
 
 class TeamReputation extends Model
 {
     use HasUuids;
 
     public $timestamps = false;
+
+    /**
+     * In-process memo for resolveLevel/resolveLevels keyed by "{gameId}|{teamId}".
+     * reputation_level is only mutated by ReputationUpdateProcessor (season
+     * closing) and SetupNewGame (game creation), so this is safe to cache for
+     * the life of the request. busted explicitly via flushCacheFor() so that
+     * long-lived workers (queue, octane) don't serve stale values after
+     * a season transition.
+     */
+    private static array $memo = [];
+
+    /** Persistent-cache key for a (game, team) reputation level. */
+    private static function cacheKey(string $gameId, string $teamId): string
+    {
+        return "team_rep:{$gameId}:{$teamId}";
+    }
+
+    /** Forget the cached reputation level for a (game, team) pair. */
+    public static function flushCacheFor(string $gameId, string $teamId): void
+    {
+        unset(self::$memo["{$gameId}|{$teamId}"]);
+        Cache::forget(self::cacheKey($gameId, $teamId));
+    }
 
     protected $fillable = [
         'game_id',
@@ -133,16 +157,25 @@ class TeamReputation extends Model
      */
     public static function resolveLevel(string $gameId, string $teamId): string
     {
-        $level = self::where('game_id', $gameId)
-            ->where('team_id', $teamId)
-            ->value('reputation_level');
-
-        if ($level) {
-            return $level;
+        $memoKey = "{$gameId}|{$teamId}";
+        if (isset(self::$memo[$memoKey])) {
+            return self::$memo[$memoKey];
         }
 
-        return ClubProfile::where('team_id', $teamId)
-            ->value('reputation_level') ?? ClubProfile::REPUTATION_LOCAL;
+        $level = Cache::rememberForever(self::cacheKey($gameId, $teamId), function () use ($gameId, $teamId) {
+            $value = self::where('game_id', $gameId)
+                ->where('team_id', $teamId)
+                ->value('reputation_level');
+
+            if ($value) {
+                return $value;
+            }
+
+            return ClubProfile::where('team_id', $teamId)
+                ->value('reputation_level') ?? ClubProfile::REPUTATION_LOCAL;
+        });
+
+        return self::$memo[$memoKey] = $level;
     }
 
     /**
@@ -152,18 +185,58 @@ class TeamReputation extends Model
      */
     public static function resolveLevels(string $gameId, array $teamIds): \Illuminate\Support\Collection
     {
-        $levels = self::where('game_id', $gameId)
-            ->whereIn('team_id', $teamIds)
-            ->pluck('reputation_level', 'team_id');
+        $resolved = collect();
+        $needLookup = [];
 
-        // Fill in any missing teams from ClubProfile
-        $missing = array_diff($teamIds, $levels->keys()->all());
-        if (!empty($missing)) {
-            $fallback = ClubProfile::whereIn('team_id', $missing)
-                ->pluck('reputation_level', 'team_id');
-            $levels = $levels->merge($fallback);
+        // Layer 1: in-process memo
+        foreach ($teamIds as $teamId) {
+            $memoKey = "{$gameId}|{$teamId}";
+            if (isset(self::$memo[$memoKey])) {
+                $resolved[$teamId] = self::$memo[$memoKey];
+            } else {
+                $needLookup[] = $teamId;
+            }
         }
 
-        return $levels;
+        if (empty($needLookup)) {
+            return $resolved;
+        }
+
+        // Layer 2: persistent cache (one Cache::many round-trip for all misses)
+        $cacheKeys = array_map(fn ($id) => self::cacheKey($gameId, $id), $needLookup);
+        $cached = Cache::many($cacheKeys);
+        $needDb = [];
+        foreach ($needLookup as $teamId) {
+            $cacheValue = $cached[self::cacheKey($gameId, $teamId)] ?? null;
+            if ($cacheValue !== null) {
+                $resolved[$teamId] = $cacheValue;
+                self::$memo["{$gameId}|{$teamId}"] = $cacheValue;
+            } else {
+                $needDb[] = $teamId;
+            }
+        }
+
+        if (empty($needDb)) {
+            return $resolved;
+        }
+
+        // Layer 3: DB
+        $fromGame = self::where('game_id', $gameId)
+            ->whereIn('team_id', $needDb)
+            ->pluck('reputation_level', 'team_id');
+
+        $stillMissing = array_diff($needDb, $fromGame->keys()->all());
+        $fromProfile = !empty($stillMissing)
+            ? ClubProfile::whereIn('team_id', $stillMissing)->pluck('reputation_level', 'team_id')
+            : collect();
+
+        foreach ($needDb as $teamId) {
+            $level = $fromGame[$teamId] ?? $fromProfile[$teamId] ?? ClubProfile::REPUTATION_LOCAL;
+            $resolved[$teamId] = $level;
+            self::$memo["{$gameId}|{$teamId}"] = $level;
+            Cache::forever(self::cacheKey($gameId, $teamId), $level);
+        }
+
+        return $resolved;
     }
 }

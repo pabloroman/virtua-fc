@@ -109,6 +109,9 @@ class ReputationUpdateProcessor implements SeasonProcessor
             $reputation->reputation_points = max(0, $reputation->reputation_points + $net);
             $reputation->recalculateTier();
             $reputation->save();
+
+            // Bust the resolveLevel cache so subsequent reads see the new tier.
+            TeamReputation::flushCacheFor($reputation->game_id, $reputation->team_id);
         }
     }
 
