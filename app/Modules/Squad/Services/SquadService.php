@@ -30,7 +30,7 @@ class SquadService
         $gameId = $game->id;
 
         // Get all players for user's team with relationships
-        $allPlayers = GamePlayer::with(['game', 'team', 'matchState', 'activeLoan', 'transferOffers', 'suspensions', 'activeRenewalNegotiation', 'latestRenewalNegotiation', 'careerRecord'])
+        $allPlayers = GamePlayer::with(['game', 'team', 'matchState', 'activeLoan', 'transferOffers', 'suspensions', 'activeRenewalNegotiation', 'latestRenewalNegotiation', 'careerRecord', 'transferListing'])
             ->where('game_id', $gameId)
             ->where('team_id', $game->team_id)
             ->get();
@@ -148,13 +148,25 @@ class SquadService
         // --- Squad Health Alerts ---
         $alerts = $this->buildAlerts($allPlayers, $game, $depthChart, $injuredCount, $lowFitnessCount, $lowMoraleCount, $isCareerMode, $windowCountdown);
 
+        // Compute peer-median wages per tier once for the whole squad — reused
+        // by the renewal loop and the squad-flags builder so both avoid the
+        // per-player `peerMedianWage()` query that would otherwise fire.
+        $mediansByTier = $isCareerMode
+            ? $this->dispositionService->peerMedianWagesByTier($allPlayers)
+            : [];
+
         // --- Renewal data (career mode) ---
         $renewalData = [];
         if ($isCareerMode) {
             $renewalEligible = $allPlayers->filter(fn ($p) => $p->canBeOfferedRenewal($seasonEndDate))
                 ->sortBy('contract_until');
             foreach ($renewalEligible as $player) {
-                $demand = $this->contractService->calculateWageDemand($player, NegotiationScenario::RENEWAL);
+                $peerMedian = $mediansByTier[$player->tier] ?? null;
+                $demand = $this->contractService->calculateWageDemand(
+                    $player,
+                    NegotiationScenario::RENEWAL,
+                    peerMedian: $peerMedian,
+                );
                 $midpoint = (int) (ceil(($player->annual_wage + $demand['wage']) / 2 / 100 / 10000) * 10000);
                 $disposition = $this->contractService->calculateDisposition($player, NegotiationScenario::RENEWAL);
                 $mood = $this->contractService->getMoodIndicator($disposition);
@@ -168,7 +180,7 @@ class SquadService
 
         // Per-player flags (stature/wage gap) used to drive squad indicators.
         $playerFlags = $isCareerMode
-            ? $this->dispositionService->buildSquadFlags($game)->toArray()
+            ? $this->dispositionService->buildSquadFlags($game, $allPlayers, $mediansByTier)->toArray()
             : [];
 
         // MVP counts for the user's team across all competitions

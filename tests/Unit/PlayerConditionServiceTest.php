@@ -161,8 +161,11 @@ class PlayerConditionServiceTest extends TestCase
 
     public function test_high_overall_players_drain_less(): void
     {
-        $highOverall = $this->createPlayer(['fitness' => 100, 'overall_score' => 90]);
-        $lowOverall = $this->createPlayer(['fitness' => 100, 'overall_score' => 40]);
+        // Pin both players to the same prime age (27) so the age_loss_modifier
+        // doesn't swamp the overall_score effect we're trying to isolate.
+        $primeDob = ['date_of_birth' => Carbon::parse('2025-10-01')->subYears(27)->subMonths(6)];
+        $highOverall = $this->createPlayer(['fitness' => 100, 'overall_score' => 90], $primeDob);
+        $lowOverall = $this->createPlayer(['fitness' => 100, 'overall_score' => 40], $primeDob);
 
         // Same recovery period, different drain rates
         $changeHigh = $this->calculateFitnessChange->invoke($this->service, $highOverall, true, 7, $this->currentDate);

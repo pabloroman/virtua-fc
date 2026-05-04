@@ -280,7 +280,7 @@ class ContractService
      *
      * @return array{wage: int, contractYears: int, formattedWage: string}
      */
-    public function calculateWageDemand(GamePlayer $player, NegotiationScenario $scenario, ?Team $buyingClub = null): array
+    public function calculateWageDemand(GamePlayer $player, NegotiationScenario $scenario, ?Team $buyingClub = null, ?int $peerMedian = null): array
     {
         $minimumWage = $this->resolveDemandMinimumWage($player, $buyingClub);
 
@@ -297,12 +297,18 @@ class ContractService
         $demandedWage = (int) ($baseWage * $premium);
 
         // Wage-gap renewals: the player knows same-tier teammates earn more
-        // and demands the peer median wage at minimum.
-        if ($scenario === NegotiationScenario::RENEWAL
-            && $this->dispositionService->hasWageGap($player)) {
-            $peerMedian = $this->dispositionService->peerMedianWage($player);
-            if ($peerMedian > $demandedWage) {
-                $demandedWage = $peerMedian;
+        // and demands the peer median wage at minimum. When the caller has
+        // already computed the peer median for the squad (e.g. squad page
+        // renewal loop), reuse it to avoid an N+1 of squad-wide queries.
+        if ($scenario === NegotiationScenario::RENEWAL) {
+            $hasGap = $peerMedian !== null
+                ? $this->dispositionService->hasWageGapAgainst($player, $peerMedian)
+                : $this->dispositionService->hasWageGap($player);
+            if ($hasGap) {
+                $resolvedMedian = $peerMedian ?? $this->dispositionService->peerMedianWage($player);
+                if ($resolvedMedian > $demandedWage) {
+                    $demandedWage = $resolvedMedian;
+                }
             }
         }
 
