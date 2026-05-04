@@ -878,14 +878,14 @@ class DispositionService
      *
      * @return Collection<string, array{stature_gap: bool, wage_gap: bool}>
      */
-    public function buildSquadFlags(Game $game): Collection
+    public function buildSquadFlags(Game $game, ?Collection $squad = null, ?array $mediansByTier = null): Collection
     {
-        $squad = GamePlayer::with('activeLoan')
+        $squad ??= GamePlayer::with('activeLoan')
             ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->get();
 
-        $mediansByTier = $this->peerMedianWagesByTier($squad);
+        $mediansByTier ??= $this->peerMedianWagesByTier($squad);
         // Resolve once: stature is evaluated against the current team for every
         // player in the squad, so the per-player tierReputationGap call would
         // re-resolve the same team reputation N times otherwise.
@@ -910,7 +910,7 @@ class DispositionService
      * @param Collection<int, GamePlayer> $squad
      * @return array<int|string, int> tier => median wage
      */
-    private function peerMedianWagesByTier(Collection $squad): array
+    public function peerMedianWagesByTier(Collection $squad): array
     {
         $medians = [];
         foreach ($squad->groupBy('tier') as $tier => $group) {
@@ -935,7 +935,7 @@ class DispositionService
      * wage; for typical squad sizes (>3 same-tier peers) self-inclusion shifts
      * the median by less than one slot and does not change the gap outcome.
      */
-    private function hasWageGapAgainst(GamePlayer $player, int $peerMedian): bool
+    public function hasWageGapAgainst(GamePlayer $player, int $peerMedian): bool
     {
         if (!$player->team_id || $peerMedian <= 0 || $player->isOnLoan()) {
             return false;
