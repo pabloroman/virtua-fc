@@ -36,13 +36,28 @@ class DeleteGameJob implements ShouldQueue
         Cache::forget("game_owner:{$this->gameId}");
         PerformanceHistoryService::forget($this->gameId);
 
-        // Collect generated player IDs before we delete game_players
-        $generatedPlayerIds = DB::table('game_players')
-            ->join('players', 'players.id', '=', 'game_players.player_id')
-            ->where('game_players.game_id', $this->gameId)
-            ->where('players.transfermarkt_id', 'like', 'gen-%')
-            ->pluck('game_players.player_id')
+        // Collect generated player IDs before we delete game_players. The
+        // join used to span planes (game_players → players); resolve in two
+        // steps instead: pull this game's player_ids from the tenant plane,
+        // then filter against the control-plane players table.
+        $playerIds = DB::table('game_players')
+            ->where('game_id', $this->gameId)
+            ->distinct()
+            ->pluck('player_id')
             ->all();
+
+        $generatedPlayerIds = [];
+        foreach (array_chunk($playerIds, 500) as $chunk) {
+            $generatedPlayerIds = array_merge(
+                $generatedPlayerIds,
+                DB::connection('pgsql_control')
+                    ->table('players')
+                    ->whereIn('id', $chunk)
+                    ->where('transfermarkt_id', 'like', 'gen-%')
+                    ->pluck('id')
+                    ->all(),
+            );
+        }
 
         // Explicit bottom-up deletion: children before parents. Large tables
         // are deleted in batches to reduce lock duration and WAL pressure.
@@ -84,16 +99,25 @@ class DeleteGameJob implements ShouldQueue
         // Root: game row itself (nothing left to cascade)
         $game->delete();
 
-        // Clean up generated players that are now orphaned
+        // Clean up generated players that are now orphaned. Splitting the
+        // existing whereNotExists into two queries keeps the delete on the
+        // control plane and the orphan-detection on the tenant plane.
         if (! empty($generatedPlayerIds)) {
             foreach (array_chunk($generatedPlayerIds, 500) as $chunk) {
-                DB::table('players')
-                    ->whereIn('id', $chunk)
-                    ->whereNotExists(function ($query) {
-                        $query->select(DB::raw(1))
-                            ->from('game_players')
-                            ->whereColumn('game_players.player_id', 'players.id');
-                    })
+                $stillReferenced = DB::table('game_players')
+                    ->whereIn('player_id', $chunk)
+                    ->distinct()
+                    ->pluck('player_id')
+                    ->all();
+
+                $orphanIds = array_values(array_diff($chunk, $stillReferenced));
+                if ($orphanIds === []) {
+                    continue;
+                }
+
+                DB::connection('pgsql_control')
+                    ->table('players')
+                    ->whereIn('id', $orphanIds)
                     ->delete();
             }
         }

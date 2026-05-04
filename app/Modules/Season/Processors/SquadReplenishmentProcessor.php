@@ -7,6 +7,7 @@ use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Squad\Services\PlayerGeneratorService;
 use App\Models\Game;
 use App\Models\GamePlayer;
+use App\Models\Player;
 use App\Models\TeamReputation;
 use App\Modules\Player\PlayerAge;
 use App\Support\PositionMapper;
@@ -115,19 +116,25 @@ class SquadReplenishmentProcessor implements SeasonProcessor
         $bulkMeta = [];
         $releaseIds = [];
 
-        $playersByTeam = GamePlayer::where('game_players.game_id', $game->id)
-            ->whereNotNull('game_players.team_id')
-            ->join('players', 'game_players.player_id', '=', 'players.id')
-            ->select([
-                'game_players.id',
-                'game_players.team_id',
-                'game_players.position',
-                'game_players.overall_score',
-                'game_players.number',
-                'players.date_of_birth',
-                'players.name as player_name',
-            ])
-            ->get()
+        // Tenant-side rows for the game's squads...
+        $gameRows = GamePlayer::where('game_id', $game->id)
+            ->whereNotNull('team_id')
+            ->select(['id', 'team_id', 'position', 'overall_score', 'number', 'player_id'])
+            ->get();
+
+        // ...joined to biographical fields fetched on the control plane.
+        // The previous JOIN spanned the plane boundary; resolving date_of_birth
+        // and name in a second query keeps each query single-plane.
+        $playerMeta = Player::whereIn('id', $gameRows->pluck('player_id')->unique()->all())
+            ->get(['id', 'date_of_birth', 'name'])
+            ->keyBy('id');
+
+        $playersByTeam = $gameRows
+            ->each(function ($gp) use ($playerMeta) {
+                $meta = $playerMeta->get($gp->player_id);
+                $gp->date_of_birth = $meta?->date_of_birth;
+                $gp->player_name = $meta?->name;
+            })
             ->groupBy('team_id');
 
         $aiTeamIds = $playersByTeam->keys()->reject(fn ($id) => $id === $game->team_id)->values();

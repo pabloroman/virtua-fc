@@ -224,7 +224,7 @@ class SeedReferenceData extends Command
         $this->line("  Step 4/4: Done.");
 
         // Seed the pre-season competition (used for pre-season matches)
-        DB::table('competitions')->updateOrInsert(
+        DB::connection('pgsql_control')->table('competitions')->updateOrInsert(
             ['id' => 'PRESEASON'],
             [
                 'name' => 'game.pre_season',
@@ -248,11 +248,11 @@ class SeedReferenceData extends Command
         }
 
         foreach ($reserveTeams as $childTransfermarktId => $parentTransfermarktId) {
-            $child = DB::table('teams')->where('transfermarkt_id', $childTransfermarktId)->first();
-            $parent = DB::table('teams')->where('transfermarkt_id', $parentTransfermarktId)->first();
+            $child = DB::connection('pgsql_control')->table('teams')->where('transfermarkt_id', $childTransfermarktId)->first();
+            $parent = DB::connection('pgsql_control')->table('teams')->where('transfermarkt_id', $parentTransfermarktId)->first();
 
             if ($child && $parent) {
-                DB::table('teams')->where('id', $child->id)->update([
+                DB::connection('pgsql_control')->table('teams')->where('id', $child->id)->update([
                     'parent_team_id' => $parent->id,
                 ]);
                 $this->line("  Linked reserve team: {$child->name} → {$parent->name}");
@@ -362,10 +362,10 @@ class SeedReferenceData extends Command
 
         // Clear reference tables
         DB::table('game_player_templates')->delete();
-        DB::table('competition_teams')->delete();
-        DB::table('players')->delete();
-        DB::table('teams')->delete();
-        DB::table('competitions')->delete();
+        DB::connection('pgsql_control')->table('competition_teams')->delete();
+        DB::connection('pgsql_control')->table('players')->delete();
+        DB::connection('pgsql_control')->table('teams')->delete();
+        DB::connection('pgsql_control')->table('competitions')->delete();
 
         $this->info('Cleared.');
     }
@@ -486,7 +486,7 @@ class SeedReferenceData extends Command
         $this->seedCompetitionRecord($code, ['name' => $configName ?? $code, 'seasonID' => $season], $tier, 'league', $handler, $country, $flag, $role);
 
         // Get existing teams by transfermarkt_id
-        $teamsByTransfermarktId = DB::table('teams')
+        $teamsByTransfermarktId = DB::connection('pgsql_control')->table('teams')
             ->whereNotNull('transfermarkt_id')
             ->pluck('id', 'transfermarkt_id')
             ->toArray();
@@ -510,7 +510,7 @@ class SeedReferenceData extends Command
 
             if (!$teamId) {
                 $teamId = Str::uuid()->toString();
-                DB::table('teams')->insert([
+                DB::connection('pgsql_control')->table('teams')->insert([
                     'id' => $teamId,
                     'transfermarkt_id' => $transfermarktId,
                     'name' => $data['name'] ?? "Unknown ({$transfermarktId})",
@@ -526,14 +526,14 @@ class SeedReferenceData extends Command
             } else {
                 // Update country if JSON provides a more specific one than the pool default
                 if (isset($data['country'])) {
-                    DB::table('teams')->where('id', $teamId)->update(['country' => $teamCountry]);
+                    DB::connection('pgsql_control')->table('teams')->where('id', $teamId)->update(['country' => $teamCountry]);
                 }
             }
 
             $teamIdMap[$transfermarktId] = $teamId;
 
             // Link team to competition
-            DB::table('competition_teams')->updateOrInsert(
+            DB::connection('pgsql_control')->table('competition_teams')->updateOrInsert(
                 [
                     'competition_id' => $code,
                     'team_id' => $teamId,
@@ -563,7 +563,7 @@ class SeedReferenceData extends Command
         $count = 0;
 
         // Get existing teams by transfermarkt_id
-        $teamsByTransfermarktId = DB::table('teams')
+        $teamsByTransfermarktId = DB::connection('pgsql_control')->table('teams')
             ->whereNotNull('transfermarkt_id')
             ->pluck('id', 'transfermarkt_id')
             ->toArray();
@@ -584,7 +584,7 @@ class SeedReferenceData extends Command
             $teamIdMap[$transfermarktId] = $teamId;
 
             // Link team to competition
-            DB::table('competition_teams')->updateOrInsert(
+            DB::connection('pgsql_control')->table('competition_teams')->updateOrInsert(
                 [
                     'competition_id' => $competitionId,
                     'team_id' => $teamId,
@@ -620,7 +620,7 @@ class SeedReferenceData extends Command
         }
         $this->seededCompetitions[$code] = true;
 
-        DB::table('competitions')->updateOrInsert(
+        DB::connection('pgsql_control')->table('competitions')->updateOrInsert(
             ['id' => $code],
             [
                 'name' => $code,
@@ -643,7 +643,7 @@ class SeedReferenceData extends Command
         $season = $data['seasonID'] ?? '2025';
         $scope = ($role === 'european') ? 'continental' : 'domestic';
 
-        DB::table('competitions')->updateOrInsert(
+        DB::connection('pgsql_control')->table('competitions')->updateOrInsert(
             ['id' => $code],
             [
                 'name' => $data['name'],
@@ -678,7 +678,7 @@ class SeedReferenceData extends Command
             }
 
             // Check if team already exists
-            $existingTeam = DB::table('teams')
+            $existingTeam = DB::connection('pgsql_control')->table('teams')
                 ->where('transfermarkt_id', $transfermarktId)
                 ->first();
 
@@ -692,7 +692,7 @@ class SeedReferenceData extends Command
                     ? (int) str_replace(['.', ','], '', $club['stadiumSeats'])
                     : 0;
 
-                DB::table('teams')->where('id', $teamId)->update([
+                DB::connection('pgsql_control')->table('teams')->where('id', $teamId)->update([
                     'image' => $club['image'] ?? $existingTeam->image,
                     'stadium_name' => $club['stadiumName'] ?? $existingTeam->stadium_name,
                     'stadium_seats' => $stadiumSeats ?: $existingTeam->stadium_seats,
@@ -706,7 +706,7 @@ class SeedReferenceData extends Command
                     ? (int) str_replace(['.', ','], '', $club['stadiumSeats'])
                     : 0;
 
-                DB::table('teams')->insert([
+                DB::connection('pgsql_control')->table('teams')->insert([
                     'id' => $teamId,
                     'transfermarkt_id' => $transfermarktId,
                     'name' => $club['name'],
@@ -722,7 +722,7 @@ class SeedReferenceData extends Command
             $teamIdMap[$transfermarktId] = $teamId;
 
             // Link team to competition
-            DB::table('competition_teams')->updateOrInsert(
+            DB::connection('pgsql_control')->table('competition_teams')->updateOrInsert(
                 [
                     'competition_id' => $competitionId,
                     'team_id' => $teamId,
@@ -797,16 +797,16 @@ class SeedReferenceData extends Command
                     'overall_score' => $overallScore,
                 ];
 
-                $exists = DB::table('players')
+                $exists = DB::connection('pgsql_control')->table('players')
                     ->where('transfermarkt_id', $player['id'])
                     ->exists();
 
                 if ($exists) {
-                    DB::table('players')
+                    DB::connection('pgsql_control')->table('players')
                         ->where('transfermarkt_id', $player['id'])
                         ->update($playerValues);
                 } else {
-                    DB::table('players')->insert(array_merge(
+                    DB::connection('pgsql_control')->table('players')->insert(array_merge(
                         ['id' => Str::uuid()->toString(), 'transfermarkt_id' => $player['id']],
                         $playerValues
                     ));
@@ -824,7 +824,7 @@ class SeedReferenceData extends Command
         $count = 0;
 
         // Get existing teams by transfermarkt_id
-        $teamsByTransfermarktId = DB::table('teams')
+        $teamsByTransfermarktId = DB::connection('pgsql_control')->table('teams')
             ->whereNotNull('transfermarkt_id')
             ->pluck('id', 'transfermarkt_id')
             ->toArray();
@@ -837,7 +837,7 @@ class SeedReferenceData extends Command
 
         if ($supercupConfig && $supercupConfig['cup'] === $competitionId) {
             $supercupEntryRound = $supercupConfig['cup_entry_round'] ?? 3;
-            $supercupTeamIds = DB::table('competition_teams')
+            $supercupTeamIds = DB::connection('pgsql_control')->table('competition_teams')
                 ->join('teams', 'competition_teams.team_id', '=', 'teams.id')
                 ->where('competition_teams.competition_id', $supercupConfig['competition'])
                 ->where('competition_teams.season', $season)
@@ -858,7 +858,7 @@ class SeedReferenceData extends Command
 
             if (!$teamId) {
                 $teamId = Str::uuid()->toString();
-                DB::table('teams')->insert([
+                DB::connection('pgsql_control')->table('teams')->insert([
                     'id' => $teamId,
                     'transfermarkt_id' => (int) $cupTeamId,
                     'name' => $club['name'],
@@ -870,7 +870,7 @@ class SeedReferenceData extends Command
             }
 
             // Link team to cup competition
-            DB::table('competition_teams')->updateOrInsert(
+            DB::connection('pgsql_control')->table('competition_teams')->updateOrInsert(
                 [
                     'competition_id' => $competitionId,
                     'team_id' => $teamId,
@@ -920,10 +920,10 @@ class SeedReferenceData extends Command
     {
         $this->newLine();
         $this->info('Summary:');
-        $this->line('  Competitions: ' . DB::table('competitions')->count());
-        $this->line('  Teams: ' . DB::table('teams')->count());
-        $this->line('  Players: ' . DB::table('players')->count());
-        $this->line('  Competition-Team links: ' . DB::table('competition_teams')->count());
+        $this->line('  Competitions: ' . DB::connection('pgsql_control')->table('competitions')->count());
+        $this->line('  Teams: ' . DB::connection('pgsql_control')->table('teams')->count());
+        $this->line('  Players: ' . DB::connection('pgsql_control')->table('players')->count());
+        $this->line('  Competition-Team links: ' . DB::connection('pgsql_control')->table('competition_teams')->count());
         $this->line('  Game player templates: ' . DB::table('game_player_templates')->count());
         $this->newLine();
         $this->info('Reference data seeded successfully!');

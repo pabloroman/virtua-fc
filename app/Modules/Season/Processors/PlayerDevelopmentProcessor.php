@@ -3,6 +3,7 @@
 namespace App\Modules\Season\Processors;
 
 use App\Models\Game;
+use App\Models\Player;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use Illuminate\Support\Facades\DB;
@@ -45,7 +46,46 @@ class PlayerDevelopmentProcessor implements SeasonProcessor
             return $data;
         }
 
-        DB::update(<<<'SQL'
+        // Resolve biographical fields (date_of_birth, overall_score) on the
+        // control plane up front, so the tenant-side UPDATE...FROM CTE below
+        // stays single-plane. Replaces a `JOIN players p ON …` that crossed
+        // the boundary. Players touched by the JOIN are exactly those
+        // referenced from this game's game_players, so the candidate set is
+        // bounded by squad size × team count for the game (a few thousand at
+        // most).
+        $playerIds = DB::table('game_players')
+            ->where('game_id', $game->id)
+            ->distinct()
+            ->pluck('player_id')
+            ->all();
+
+        if ($playerIds === []) {
+            return $data;
+        }
+
+        $players = Player::query()
+            ->whereIn('id', $playerIds)
+            ->whereNotNull('date_of_birth')
+            ->get(['id', 'date_of_birth', 'overall_score']);
+
+        if ($players->isEmpty()) {
+            return $data;
+        }
+
+        $valuesPlaceholders = [];
+        $playerBindings = [];
+        foreach ($players as $row) {
+            $valuesPlaceholders[] = '(?::uuid, ?::date, ?::int)';
+            $playerBindings[] = $row->id;
+            $playerBindings[] = $row->date_of_birth instanceof \DateTimeInterface
+                ? $row->date_of_birth->format('Y-m-d')
+                : (string) $row->date_of_birth;
+            $playerBindings[] = (int) $row->overall_score;
+        }
+        $valuesClause = implode(', ', $valuesPlaceholders);
+        $bindings = array_merge([$currentDate], $playerBindings, [$game->id]);
+
+        DB::update(<<<SQL
             WITH calc AS (
                 SELECT
                     gp.id,
@@ -54,10 +94,9 @@ class PlayerDevelopmentProcessor implements SeasonProcessor
                     COALESCE(gp.overall_score, p.overall_score)                 AS old_overall,
                     COALESCE(gp.potential, 99)                                  AS pot
                 FROM game_players gp
-                JOIN players p ON p.id = gp.player_id
+                JOIN (VALUES {$valuesClause}) AS p(id, date_of_birth, overall_score) ON p.id = gp.player_id
                 LEFT JOIN game_player_match_state gpms ON gpms.game_player_id = gp.id
                 WHERE gp.game_id = ?
-                  AND p.date_of_birth IS NOT NULL
             ),
             curves AS (
                 SELECT
@@ -149,7 +188,7 @@ class PlayerDevelopmentProcessor implements SeasonProcessor
                    game_players.overall_score      IS DISTINCT FROM priced.new_overall
                 OR game_players.market_value_cents IS DISTINCT FROM priced.new_mv
               )
-        SQL, [$currentDate, $game->id]);
+        SQL, $bindings);
 
         return $data;
     }

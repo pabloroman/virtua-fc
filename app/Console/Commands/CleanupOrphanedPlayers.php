@@ -19,7 +19,10 @@ class CleanupOrphanedPlayers extends Command
         $dryRun = $this->option('dry-run');
 
         if ($dryRun) {
-            $count = $this->orphanedQuery()->count();
+            $count = 0;
+            foreach ($this->iterateGeneratedPlayerIdChunks($chunkSize) as $chunk) {
+                $count += count($this->orphanIdsFromChunk($chunk));
+            }
             $this->info("[DRY RUN] Found {$count} orphaned generated player(s).");
 
             return Command::SUCCESS;
@@ -27,35 +30,80 @@ class CleanupOrphanedPlayers extends Command
 
         $totalDeleted = 0;
 
-        do {
-            $ids = $this->orphanedQuery()
-                ->limit($chunkSize)
-                ->pluck('id')
-                ->all();
-
-            if (empty($ids)) {
-                break;
+        foreach ($this->iterateGeneratedPlayerIdChunks($chunkSize) as $chunk) {
+            $orphanIds = $this->orphanIdsFromChunk($chunk);
+            if ($orphanIds === []) {
+                continue;
             }
 
-            $deleted = DB::table('players')->whereIn('id', $ids)->delete();
-            $totalDeleted += $deleted;
+            $deleted = DB::connection('pgsql_control')
+                ->table('players')
+                ->whereIn('id', $orphanIds)
+                ->delete();
 
+            $totalDeleted += $deleted;
             $this->line("  Deleted {$deleted} orphaned player(s) ({$totalDeleted} total).");
-        } while (count($ids) === $chunkSize);
+        }
 
         $this->info("Deleted {$totalDeleted} orphaned generated player(s).");
 
         return Command::SUCCESS;
     }
 
-    private function orphanedQuery()
+    /**
+     * Stream every chunk of `gen-%` player ids from the control plane.
+     *
+     * @return \Generator<int, list<string>>
+     */
+    private function iterateGeneratedPlayerIdChunks(int $chunkSize): \Generator
     {
-        return DB::table('players')
-            ->where('transfermarkt_id', 'like', 'gen-%')
-            ->whereNotExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('game_players')
-                    ->whereColumn('game_players.player_id', 'players.id');
-            });
+        $cursor = null;
+
+        while (true) {
+            $query = DB::connection('pgsql_control')
+                ->table('players')
+                ->where('transfermarkt_id', 'like', 'gen-%')
+                ->orderBy('id')
+                ->limit($chunkSize);
+
+            if ($cursor !== null) {
+                $query->where('id', '>', $cursor);
+            }
+
+            $ids = $query->pluck('id')->all();
+            if ($ids === []) {
+                return;
+            }
+
+            yield $ids;
+
+            if (count($ids) < $chunkSize) {
+                return;
+            }
+            $cursor = end($ids);
+        }
+    }
+
+    /**
+     * Of a candidate batch (control), return the ones with no game_players
+     * reference (tenant). Splitting the previous correlated whereNotExists
+     * keeps each query single-plane.
+     *
+     * @param  list<string>  $candidateIds
+     * @return list<string>
+     */
+    private function orphanIdsFromChunk(array $candidateIds): array
+    {
+        if ($candidateIds === []) {
+            return [];
+        }
+
+        $stillReferenced = DB::table('game_players')
+            ->whereIn('player_id', $candidateIds)
+            ->distinct()
+            ->pluck('player_id')
+            ->all();
+
+        return array_values(array_diff($candidateIds, $stillReferenced));
     }
 }

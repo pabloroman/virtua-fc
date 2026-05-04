@@ -99,7 +99,7 @@ class ReplaceWcPlaceholder extends Command
                 continue;
             }
 
-            if (DB::table('players')->where('transfermarkt_id', $transfermarktId)->exists()) {
+            if (DB::connection('pgsql_control')->table('players')->where('transfermarkt_id', $transfermarktId)->exists()) {
                 $count++;
                 continue;
             }
@@ -127,7 +127,7 @@ class ReplaceWcPlaceholder extends Command
             $marketValueCents = Money::parseMarketValue($player['marketValue'] ?? null);
             $overallScore = $valuationService->marketValueToOverallScore($marketValueCents, $age ?? 25);
 
-            DB::table('players')->insert([
+            DB::connection('pgsql_control')->table('players')->insert([
                 'id' => Str::uuid()->toString(),
                 'transfermarkt_id' => $transfermarktId,
                 'name' => $player['name'],

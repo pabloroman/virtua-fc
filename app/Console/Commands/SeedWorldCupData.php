@@ -61,7 +61,7 @@ class SeedWorldCupData extends Command
     {
         $this->info('Clearing existing World Cup data...');
 
-        $teamIds = DB::table('teams')->where('type', 'national')->pluck('id');
+        $teamIds = DB::connection('pgsql_control')->table('teams')->where('type', 'national')->pluck('id');
 
         if ($teamIds->isNotEmpty()) {
             // Delete from tables that reference both teams and competition
@@ -78,7 +78,7 @@ class SeedWorldCupData extends Command
                 ->orWhereIn('away_team_id', $teamIds)
                 ->delete();
             DB::table('competition_entries')->whereIn('team_id', $teamIds)->delete();
-            DB::table('competition_teams')->whereIn('team_id', $teamIds)->delete();
+            DB::connection('pgsql_control')->table('competition_teams')->whereIn('team_id', $teamIds)->delete();
         }
 
         // Delete remaining rows that reference the competition by competition_id
@@ -92,15 +92,15 @@ class SeedWorldCupData extends Command
         DB::table('game_standings')->where('competition_id', self::COMPETITION_ID)->delete();
         DB::table('cup_ties')->where('competition_id', self::COMPETITION_ID)->delete();
         DB::table('competition_entries')->where('competition_id', self::COMPETITION_ID)->delete();
-        DB::table('competition_teams')->where('competition_id', self::COMPETITION_ID)->delete();
+        DB::connection('pgsql_control')->table('competition_teams')->where('competition_id', self::COMPETITION_ID)->delete();
         DB::table('simulated_seasons')->where('competition_id', self::COMPETITION_ID)->delete();
         DB::table('games')->where('competition_id', self::COMPETITION_ID)->delete();
 
         if ($teamIds->isNotEmpty()) {
-            DB::table('teams')->where('type', 'national')->delete();
+            DB::connection('pgsql_control')->table('teams')->where('type', 'national')->delete();
         }
 
-        DB::table('competitions')->where('id', self::COMPETITION_ID)->delete();
+        DB::connection('pgsql_control')->table('competitions')->where('id', self::COMPETITION_ID)->delete();
 
         $this->info('Cleared.');
     }
@@ -176,7 +176,7 @@ class SeedWorldCupData extends Command
 
     private function seedCompetition(): void
     {
-        DB::table('competitions')->updateOrInsert(
+        DB::connection('pgsql_control')->table('competitions')->updateOrInsert(
             ['id' => self::COMPETITION_ID],
             [
                 'name' => 'game.wc2026_name',
@@ -210,7 +210,7 @@ class SeedWorldCupData extends Command
             // Check for existing team by country code (for non-placeholders)
             $existing = null;
             if ($countryCode && !$team['is_placeholder']) {
-                $existing = DB::table('teams')
+                $existing = DB::connection('pgsql_control')->table('teams')
                     ->where('type', 'national')
                     ->where('country', $countryCode)
                     ->first();
@@ -228,10 +228,10 @@ class SeedWorldCupData extends Command
                 if (!$existing->colors) {
                     $updateData['colors'] = json_encode(TeamColors::get($team['team_name']));
                 }
-                DB::table('teams')->where('id', $teamId)->update($updateData);
+                DB::connection('pgsql_control')->table('teams')->where('id', $teamId)->update($updateData);
             } else {
                 $teamId = Str::uuid()->toString();
-                DB::table('teams')->insert([
+                DB::connection('pgsql_control')->table('teams')->insert([
                     'id' => $teamId,
                     'transfermarkt_id' => $transfermarktId,
                     'type' => 'national',
@@ -247,7 +247,7 @@ class SeedWorldCupData extends Command
             }
 
             // Link to competition
-            DB::table('competition_teams')->updateOrInsert(
+            DB::connection('pgsql_control')->table('competition_teams')->updateOrInsert(
                 [
                     'competition_id' => self::COMPETITION_ID,
                     'team_id' => $teamId,
@@ -299,7 +299,7 @@ class SeedWorldCupData extends Command
                     continue;
                 }
 
-                if (DB::table('players')->where('transfermarkt_id', $transfermarktId)->exists()) {
+                if (DB::connection('pgsql_control')->table('players')->where('transfermarkt_id', $transfermarktId)->exists()) {
                     $playerCount++;
                     continue;
                 }
@@ -327,7 +327,7 @@ class SeedWorldCupData extends Command
                 $marketValueCents = Money::parseMarketValue($player['marketValue'] ?? null);
                 $overallScore = $valuationService->marketValueToOverallScore($marketValueCents, $age ?? 25);
 
-                DB::table('players')->insert([
+                DB::connection('pgsql_control')->table('players')->insert([
                     'id' => Str::uuid()->toString(),
                     'transfermarkt_id' => $transfermarktId,
                     'name' => $player['name'],

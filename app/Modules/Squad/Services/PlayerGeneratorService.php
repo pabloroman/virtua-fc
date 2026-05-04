@@ -631,10 +631,14 @@ class PlayerGeneratorService
     private function getOrLoadGameNames(string $gameId): array
     {
         if (! isset($this->gameNamesCache[$gameId])) {
-            $this->gameNamesCache[$gameId] = GamePlayer::where('game_players.game_id', $gameId)
-                ->join('players', 'game_players.player_id', '=', 'players.id')
-                ->pluck('players.name')
-                ->toArray();
+            $playerIds = GamePlayer::where('game_id', $gameId)
+                ->pluck('player_id')
+                ->unique()
+                ->all();
+
+            $this->gameNamesCache[$gameId] = $playerIds === []
+                ? []
+                : Player::whereIn('id', $playerIds)->pluck('name')->all();
         }
 
         return $this->gameNamesCache[$gameId];

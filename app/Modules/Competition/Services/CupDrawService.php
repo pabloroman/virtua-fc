@@ -371,18 +371,33 @@ class CupDrawService
      */
     private function getTeamTierMap(string $gameId, Collection $teamIds): array
     {
-        return DB::table('competition_entries')
-            ->join('competitions', 'competition_entries.competition_id', '=', 'competitions.id')
-            ->where('competition_entries.game_id', $gameId)
-            ->where('competitions.role', Competition::ROLE_LEAGUE)
-            ->where('competitions.tier', '>=', 1)
-            ->whereIn('competition_entries.team_id', $teamIds)
-            ->groupBy('competition_entries.team_id')
-            ->select('competition_entries.team_id', DB::raw('MIN(competitions.tier) as tier'))
-            ->get()
-            ->pluck('tier', 'team_id')
-            ->map(fn ($tier) => (int) $tier)
-            ->all();
+        // Resolve league competition tiers on the control plane up front,
+        // then aggregate per-team minimums from competition_entries on the
+        // tenant plane. Replaces a JOIN that crossed the boundary.
+        $tierByCompetitionId = Competition::where('role', Competition::ROLE_LEAGUE)
+            ->where('tier', '>=', 1)
+            ->pluck('tier', 'id');
+
+        if ($tierByCompetitionId->isEmpty()) {
+            return [];
+        }
+
+        $entries = DB::table('competition_entries')
+            ->where('game_id', $gameId)
+            ->whereIn('competition_id', $tierByCompetitionId->keys())
+            ->whereIn('team_id', $teamIds)
+            ->select('team_id', 'competition_id')
+            ->get();
+
+        $tierByTeam = [];
+        foreach ($entries as $entry) {
+            $tier = (int) $tierByCompetitionId[$entry->competition_id];
+            if (! isset($tierByTeam[$entry->team_id]) || $tier < $tierByTeam[$entry->team_id]) {
+                $tierByTeam[$entry->team_id] = $tier;
+            }
+        }
+
+        return $tierByTeam;
     }
 
     /**

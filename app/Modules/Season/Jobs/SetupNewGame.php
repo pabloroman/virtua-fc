@@ -289,10 +289,8 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
 
     private function loadTeamLookup(): Collection
     {
-        return DB::table('teams')
-            ->select('id', 'transfermarkt_id')
-            ->whereNotNull('transfermarkt_id')
-            ->get()
+        return Team::whereNotNull('transfermarkt_id')
+            ->get(['id', 'transfermarkt_id'])
             ->keyBy('transfermarkt_id');
     }
 

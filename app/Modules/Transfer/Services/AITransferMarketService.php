@@ -1419,20 +1419,18 @@ class AITransferMarketService
     }
 
     /**
-     * Load game players matching the given filter, with the player's
-     * date_of_birth fetched via a JOIN instead of a separate eager-load
-     * round-trip. Hydrates GamePlayer models and pre-attaches a stub Player
-     * relation so callers using ->age($date) and ->player work unchanged.
+     * Load game players matching the given filter, with each player's
+     * date_of_birth pre-fetched and attached as a stub Player relation so
+     * callers using ->age($date) and ->player work unchanged.
      *
-     * Production profiling showed the eager-load query
-     * `SELECT id, date_of_birth FROM players WHERE id IN (3000)` taking
-     * ~155ms by itself; folding it into a JOIN eliminates that round-trip.
+     * Two-step (game_players on tenant, then players on control) instead of
+     * a single JOIN, because the join would cross the plane boundary. The
+     * second query is a single round-trip with the same total payload as the
+     * old JOIN.
      */
     private function loadGamePlayersWithPlayerDob(\Closure $applyWhere): Collection
     {
-        $query = DB::table('game_players')
-            ->join('players', 'players.id', '=', 'game_players.player_id');
-
+        $query = DB::table('game_players');
         $applyWhere($query);
 
         $rows = $query->get([
@@ -1448,21 +1446,25 @@ class AITransferMarketService
             'game_players.number',
             'game_players.contract_until',
             'game_players.annual_wage',
-            'players.date_of_birth as _player_date_of_birth',
         ]);
 
         if ($rows->isEmpty()) {
             return new Collection();
         }
 
+        $playerIds = $rows->pluck('player_id')->unique()->all();
+        $dobByPlayerId = Player::whereIn('id', $playerIds)
+            ->pluck('date_of_birth', 'id');
+
         $gpAttrs = [];
         $playerAttrs = [];
         foreach ($rows as $row) {
             $arr = (array) $row;
-            $dob = $arr['_player_date_of_birth'];
-            unset($arr['_player_date_of_birth']);
             $gpAttrs[] = $arr;
-            $playerAttrs[] = ['id' => $arr['player_id'], 'date_of_birth' => $dob];
+            $playerAttrs[] = [
+                'id' => $arr['player_id'],
+                'date_of_birth' => $dobByPlayerId[$arr['player_id']] ?? null,
+            ];
         }
 
         $gamePlayers = GamePlayer::hydrate($gpAttrs);

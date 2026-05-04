@@ -2,6 +2,8 @@
 
 namespace App\Modules\Season\Services;
 
+use App\Models\Player;
+use App\Models\Team;
 use App\Modules\Competition\Services\CountryConfig;
 use App\Support\Money;
 use Carbon\Carbon;
@@ -27,12 +29,13 @@ class GamePlayerTemplateService
      */
     public function clearTemplates(string $season): void
     {
-        DB::table('game_player_templates')
-            ->where('season', $season)
-            ->whereNotIn('team_id', function ($query) {
-                $query->select('id')->from('teams')->where('type', 'national');
-            })
-            ->delete();
+        $nationalTeamIds = Team::where('type', 'national')->pluck('id')->all();
+
+        $query = DB::table('game_player_templates')->where('season', $season);
+        if ($nationalTeamIds !== []) {
+            $query->whereNotIn('team_id', $nationalTeamIds);
+        }
+        $query->delete();
     }
 
     /**
@@ -40,11 +43,14 @@ class GamePlayerTemplateService
      */
     public function clearTemplatesForCountry(string $season, string $countryCode): void
     {
+        $teamIds = Team::where('country', $countryCode)->pluck('id')->all();
+        if ($teamIds === []) {
+            return;
+        }
+
         DB::table('game_player_templates')
             ->where('season', $season)
-            ->whereIn('team_id', function ($query) use ($countryCode) {
-                $query->select('id')->from('teams')->where('country', $countryCode);
-            })
+            ->whereIn('team_id', $teamIds)
             ->delete();
     }
 
@@ -53,11 +59,14 @@ class GamePlayerTemplateService
      */
     public function clearTemplatesForNationalTeams(string $season): void
     {
+        $nationalTeamIds = Team::where('type', 'national')->pluck('id')->all();
+        if ($nationalTeamIds === []) {
+            return;
+        }
+
         DB::table('game_player_templates')
             ->where('season', $season)
-            ->whereIn('team_id', function ($query) {
-                $query->select('id')->from('teams')->where('type', 'national');
-            })
+            ->whereIn('team_id', $nationalTeamIds)
             ->delete();
     }
 
@@ -73,8 +82,7 @@ class GamePlayerTemplateService
         $basePath = base_path('data/2025/WC2026/teams');
 
         // Load national teams with roster files
-        $nationalTeams = DB::table('teams')
-            ->where('type', 'national')
+        $nationalTeams = Team::where('type', 'national')
             ->whereNotNull('transfermarkt_id')
             ->get(['id', 'transfermarkt_id']);
 
@@ -102,10 +110,9 @@ class GamePlayerTemplateService
         }
 
         // Only load players that appear in roster files
-        $allPlayers = DB::table('players')
-            ->select('id', 'transfermarkt_id', 'date_of_birth', 'overall_score')
+        $allPlayers = Player::query()
             ->whereIn('transfermarkt_id', array_unique($neededTmIds))
-            ->get()
+            ->get(['id', 'transfermarkt_id', 'date_of_birth', 'overall_score'])
             ->keyBy('transfermarkt_id');
 
         $processedPlayerIds = [];
@@ -137,8 +144,7 @@ class GamePlayerTemplateService
      */
     public function generateTemplates(string $season, string $countryCode): int
     {
-        $allTeamIds = DB::table('teams')
-            ->whereNotNull('transfermarkt_id')
+        $allTeamIds = Team::whereNotNull('transfermarkt_id')
             ->pluck('id', 'transfermarkt_id')
             ->toArray();
 
@@ -162,17 +168,16 @@ class GamePlayerTemplateService
         }
 
         // Load only the players we actually need
-        $players = DB::table('players')
-            ->select('id', 'transfermarkt_id', 'date_of_birth', 'overall_score')
+        $players = Player::query()
             ->whereIn('transfermarkt_id', array_unique($neededTmIds))
-            ->get()
+            ->get(['id', 'transfermarkt_id', 'date_of_birth', 'overall_score'])
             ->keyBy('transfermarkt_id');
 
         $totalCount = 0;
 
         // Track already-processed club teams (including from prior country runs)
         // Exclude national teams so their players can still get club templates
-        $nationalTeamIds = DB::table('teams')->where('type', 'national')->pluck('id');
+        $nationalTeamIds = Team::where('type', 'national')->pluck('id');
 
         $processedTeamIds = DB::table('game_player_templates')
             ->where('season', $season)
