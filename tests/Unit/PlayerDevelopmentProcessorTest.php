@@ -118,9 +118,11 @@ class PlayerDevelopmentProcessorTest extends TestCase
         $this->processor->process($this->game, $this->transitionData());
 
         $player->refresh();
-        // After development: overall=63 (band 61-65 -> base €2.5M).
-        // Age 18 multiplier 1.30 -> €3.25M = 325_000_000 cents.
-        $expectedMV = 325_000_000;
+        // After development: overall=63 (anchored at €2M base in
+        // PlayerValuationService::ABILITY_VALUE_ANCHORS).
+        // Age 18 multiplier 1.30, trend multiplier 1.10 (change=+3, young).
+        // 200M * 1.30 * 1.10 = 286M cents.
+        $expectedMV = 286_000_000;
 
         $this->assertSame($expectedMV, $player->market_value_cents);
         $this->assertSame(PlayerTierService::tierFromMarketValue($expectedMV), $player->tier);
