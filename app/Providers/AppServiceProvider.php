@@ -65,6 +65,13 @@ class AppServiceProvider extends ServiceProvider
             $this->app->register(TelescopeServiceProvider::class);
         }
 
+        // Pick up new migrations filed by plane. Historical migrations from
+        // before the split landed remain in the flat database/migrations/
+        // directory; new ones go into control/ or tenant/ per the convention
+        // documented in database/migrations/README.md.
+        $this->loadMigrationsFrom(database_path('migrations/control'));
+        $this->loadMigrationsFrom(database_path('migrations/tenant'));
+
         // Register competition handler resolver as singleton
         $this->app->singleton(CompetitionHandlerResolver::class, function ($app) {
             $resolver = new CompetitionHandlerResolver();
@@ -91,11 +98,10 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // Runtime guard: fail loudly in dev/staging when a query crosses
-        // the control/tenant plane boundary. Currently opt-in via
-        // `database_planes.guard_enabled` (default false) because several
-        // cross-plane sites are temporarily un-refactored — see the
-        // PLANES-SEAM comments. Flip it on locally when working on a seam.
-        // Skipped in production (overhead) and in testing (the alias below
+        // the control/tenant plane boundary. Opt-in via
+        // `database_planes.guard_enabled` (default false for runtime
+        // overhead — every previously-annotated PLANES-SEAM has been
+        // resolved). Skipped in production and in testing (the alias below
         // collapses both connection names onto the same Connection, so the
         // guard can't distinguish them). See CLAUDE.md → "Control plane /
         // tenant plane".

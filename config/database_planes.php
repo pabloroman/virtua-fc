@@ -57,13 +57,12 @@ return [
     | to verify the tables it touches all sit on the same plane as the
     | connection it ran on.
     |
-    | Currently OFF by default: a previous attempt to fully refactor every
-    | cross-plane query (see PLANES-SEAM comments in the codebase) caused
-    | OOM/timeout regressions because two-step queries were materially
-    | slower than the JOINs/correlated subqueries they replaced. Until each
-    | seam is rewritten in a way that doesn't regress performance, the
-    | guard stays opt-in. Flip it on locally when working on a seam, then
-    | flip it back off.
+    | Off by default for runtime overhead, not because of known violations:
+    | every PLANES-SEAM that previously kept the guard opt-in has been
+    | resolved (cold-path seams via two-step queries, hot-path seams via
+    | denormalization or cursor-streamed bulk insert). Flip the env var on
+    | locally when developing a feature that spans both planes to make sure
+    | your code stays single-plane.
     |
     */
     'guard_enabled' => env('DATABASE_PLANES_GUARD_ENABLED', false),
