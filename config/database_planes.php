@@ -47,32 +47,4 @@ return [
         'club_profiles',
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Connections
-    |--------------------------------------------------------------------------
-    |
-    | Maps each plane to the connection name registered in config/database.php.
-    |
-    */
-    'connections' => [
-        'control' => 'pgsql_control',
-        'tenant'  => 'pgsql',
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Runtime guard
-    |--------------------------------------------------------------------------
-    |
-    | When enabled (non-production only), every executed query is inspected
-    | to verify the tables it touches all sit on the same plane as the
-    | connection it ran on. Disabled until models are annotated with
-    | `protected $connection = 'pgsql_control'` (Phase 1B); enabling earlier
-    | would false-positive every query that touches a control-plane table
-    | on the default connection.
-    |
-    */
-    'guard_enabled' => env('DATABASE_PLANES_GUARD_ENABLED', false),
-
 ];

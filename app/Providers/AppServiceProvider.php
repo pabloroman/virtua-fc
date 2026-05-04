@@ -90,18 +90,14 @@ class AppServiceProvider extends ServiceProvider
             return $user->is_admin;
         });
 
-        // Runtime guard: fail loudly in non-production when a query crosses
-        // the control/tenant plane boundary. The guard is opt-in via
-        // `database_planes.guard_enabled` because it can only run after
-        // control-plane models have been annotated with the `pgsql_control`
-        // connection — enabling it earlier would false-positive every query
-        // touching a control-plane table on the default connection. See
+        // Runtime guard: fail loudly in dev/staging when a query crosses the
+        // control/tenant plane boundary, so violations surface before the
+        // planes are physically split. Skipped in production (overhead) and
+        // in testing (the alias below collapses both connection names onto
+        // the same Connection, so the guard can't distinguish them). See
         // CLAUDE.md → "Control plane / tenant plane".
-        if (! $this->app->environment('production') && config('database_planes.guard_enabled', false)) {
-            $crossPlaneGuard = new CrossPlaneQueryGuard(
-                controlTables: config('database_planes.control', []),
-                ignoredConnections: ['pulse_pgsql'],
-            );
+        if (! $this->app->environment(['production', 'testing'])) {
+            $crossPlaneGuard = new CrossPlaneQueryGuard(config('database_planes.control', []));
             DB::listen(fn ($event) => $crossPlaneGuard($event));
         }
 
@@ -116,8 +112,7 @@ class AppServiceProvider extends ServiceProvider
         // connection names resolve to the same Connection instance (one PDO
         // handle, one transaction). Eloquent models still declare their
         // logical connection — the alias is transparent — but transactional
-        // integrity is preserved. The runtime guard would obviously not work
-        // under this alias, which is fine because it's gated off by default.
+        // integrity is preserved.
         if ($this->app->environment('testing')) {
             $this->app['db']->extend('pgsql_control', function () {
                 return $this->app['db']->connection('pgsql');

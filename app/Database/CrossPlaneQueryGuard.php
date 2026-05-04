@@ -25,28 +25,19 @@ class CrossPlaneQueryGuard
     /** @var array<string, true> */
     private array $controlTables;
 
-    /** @var array<string, true> */
-    private array $ignoredConnections;
-
     /**
      * @param  array<int, string>  $controlTables  Tables that belong to the control plane.
-     * @param  array<int, string>  $ignoredConnections  Connections to skip (e.g. pulse, sqlite test stores).
      */
-    public function __construct(array $controlTables, array $ignoredConnections = [])
+    public function __construct(array $controlTables)
     {
         $this->controlTables = array_fill_keys(array_map('strtolower', $controlTables), true);
-        $this->ignoredConnections = array_fill_keys($ignoredConnections, true);
     }
 
     public function __invoke(QueryExecuted $event): void
     {
-        if (isset($this->ignoredConnections[$event->connectionName])) {
-            return;
-        }
-
         // Only the two split connections are subject to plane checks. Anything
-        // else (sqlite test stores, custom dynamically-bound tenant connections
-        // we add later, etc.) is out of scope for this guard.
+        // else (pulse, custom dynamically-bound tenant connections we add
+        // later, etc.) is out of scope for this guard.
         $isControlConnection = match ($event->connectionName) {
             'pgsql_control' => true,
             'pgsql'         => false,
