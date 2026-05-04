@@ -92,6 +92,30 @@ class GamePlayerFactory extends Factory
             $overrides = self::$pendingOverrides[$oid] ?? [];
             unset(self::$pendingOverrides[$oid]);
 
+            // Mirror biography from the linked Player onto the game_players
+            // row. Tests historically set `Player::factory()->age($n)` and
+            // expected `$gp->age()` to reflect it via the relationship;
+            // post-Phase-6 readers consume biography off game_players
+            // directly, so the link has to be carried into the local row.
+            // Any non-null biography column on the Player overrides the
+            // factory's random `definition()` fallback (which still applies
+            // when no Player is attached, or when Player has nulls).
+            $linkedPlayer = $player->player;
+            if ($linkedPlayer !== null) {
+                $bio = array_filter([
+                    'transfermarkt_id' => $linkedPlayer->transfermarkt_id,
+                    'name' => $linkedPlayer->name,
+                    'date_of_birth' => $linkedPlayer->date_of_birth?->toDateString(),
+                    'nationality' => $linkedPlayer->nationality,
+                    'height' => $linkedPlayer->height,
+                    'foot' => $linkedPlayer->foot,
+                ], fn ($v) => $v !== null);
+
+                if (! empty($bio)) {
+                    $player->forceFill($bio)->save();
+                }
+            }
+
             // Every test-created GamePlayer gets a satellite row by default
             // — tests historically assumed game_players carried fitness etc.,
             // and the cheapest fix is to mirror that assumption.
