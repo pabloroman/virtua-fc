@@ -8,6 +8,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class GamePlayerTemplate extends Model
 {
+    /**
+     * Templates are the canonical real-world roster source — cross-tenant
+     * reference data shared across every game. See CLAUDE.md → "Control
+     * plane / tenant plane".
+     */
+    protected $connection = 'pgsql_control';
+
     public $timestamps = false;
 
     protected $fillable = [

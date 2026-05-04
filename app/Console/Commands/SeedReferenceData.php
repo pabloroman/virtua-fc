@@ -361,7 +361,7 @@ class SeedReferenceData extends Command
         DB::table('games')->delete();
 
         // Clear reference tables
-        DB::table('game_player_templates')->delete();
+        DB::connection('pgsql_control')->table('game_player_templates')->delete();
         DB::connection('pgsql_control')->table('competition_teams')->delete();
         DB::connection('pgsql_control')->table('players')->delete();
         DB::connection('pgsql_control')->table('teams')->delete();
@@ -924,7 +924,7 @@ class SeedReferenceData extends Command
         $this->line('  Teams: ' . DB::connection('pgsql_control')->table('teams')->count());
         $this->line('  Players: ' . DB::connection('pgsql_control')->table('players')->count());
         $this->line('  Competition-Team links: ' . DB::connection('pgsql_control')->table('competition_teams')->count());
-        $this->line('  Game player templates: ' . DB::table('game_player_templates')->count());
+        $this->line('  Game player templates: ' . DB::connection('pgsql_control')->table('game_player_templates')->count());
         $this->newLine();
         $this->info('Reference data seeded successfully!');
     }

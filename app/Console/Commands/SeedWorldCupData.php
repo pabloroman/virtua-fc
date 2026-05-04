@@ -65,7 +65,7 @@ class SeedWorldCupData extends Command
 
         if ($teamIds->isNotEmpty()) {
             // Delete from tables that reference both teams and competition
-            DB::table('game_player_templates')->whereIn('team_id', $teamIds)->delete();
+            DB::connection('pgsql_control')->table('game_player_templates')->whereIn('team_id', $teamIds)->delete();
             DB::table('match_events')->whereIn('team_id', $teamIds)->delete();
             DB::table('game_players')->whereIn('team_id', $teamIds)->delete();
             DB::table('game_standings')->whereIn('team_id', $teamIds)->delete();

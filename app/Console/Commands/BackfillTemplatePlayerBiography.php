@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\DB;
  * the control-plane `players` table into the matching `game_player_templates`
  * rows added in Phase 1.
  *
- * Plane-safe: reads from `pgsql_control` (Player model) and writes to the
- * default tenant connection in separate queries — no cross-plane JOIN.
+ * Plane-safe: reads and writes both go through `pgsql_control` — Player and
+ * GamePlayerTemplate now both live on the control plane. No cross-plane JOIN.
  *
  * Idempotent: every write is filtered by `name IS NULL`, so re-running the
  * command after a partial run only touches rows still pending.
@@ -33,7 +33,7 @@ class BackfillTemplatePlayerBiography extends Command
         $limit = $this->option('limit') !== null ? (int) $this->option('limit') : null;
         $dryRun = (bool) $this->option('dry-run');
 
-        $query = DB::table('game_player_templates')
+        $query = DB::connection('pgsql_control')->table('game_player_templates')
             ->whereNull('name')
             ->whereNotNull('player_id')
             ->select('player_id')
@@ -71,7 +71,7 @@ class BackfillTemplatePlayerBiography extends Command
                     continue;
                 }
 
-                $affected = DB::table('game_player_templates')
+                $affected = DB::connection('pgsql_control')->table('game_player_templates')
                     ->where('player_id', $playerId)
                     ->whereNull('name')
                     ->update([
@@ -100,7 +100,7 @@ class BackfillTemplatePlayerBiography extends Command
             $this->warn("{$orphanedPlayerIds} template player_id(s) had no matching Player row — left untouched.");
         }
 
-        $remainingNull = DB::table('game_player_templates')->whereNull('name')->count();
+        $remainingNull = DB::connection('pgsql_control')->table('game_player_templates')->whereNull('name')->count();
         if ($remainingNull > 0) {
             $this->warn("{$remainingNull} template row(s) still have NULL name.");
         } else {

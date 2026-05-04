@@ -26,15 +26,10 @@ class GamePlayerTemplateService
 
     /**
      * Delete all templates for a season (call once before generating for multiple countries).
-     *
-     * PLANES-SEAM: cross-plane subquery. game_player_templates=tenant,
-     * teams=control. Restored while both planes share one physical Postgres.
-     * Re-split before the planes are physically separated. See CLAUDE.md →
-     * "Control plane / tenant plane".
      */
     public function clearTemplates(string $season): void
     {
-        DB::table('game_player_templates')
+        DB::connection('pgsql_control')->table('game_player_templates')
             ->where('season', $season)
             ->whereNotIn('team_id', function ($query) {
                 $query->select('id')->from('teams')->where('type', 'national');
@@ -44,13 +39,10 @@ class GamePlayerTemplateService
 
     /**
      * Delete templates for a specific country's teams only.
-     *
-     * PLANES-SEAM: cross-plane subquery. game_player_templates=tenant,
-     * teams=control. See sibling method.
      */
     public function clearTemplatesForCountry(string $season, string $countryCode): void
     {
-        DB::table('game_player_templates')
+        DB::connection('pgsql_control')->table('game_player_templates')
             ->where('season', $season)
             ->whereIn('team_id', function ($query) use ($countryCode) {
                 $query->select('id')->from('teams')->where('country', $countryCode);
@@ -60,13 +52,10 @@ class GamePlayerTemplateService
 
     /**
      * Delete templates for national teams (World Cup rosters).
-     *
-     * PLANES-SEAM: cross-plane subquery. game_player_templates=tenant,
-     * teams=control. See sibling method.
      */
     public function clearTemplatesForNationalTeams(string $season): void
     {
-        DB::table('game_player_templates')
+        DB::connection('pgsql_control')->table('game_player_templates')
             ->where('season', $season)
             ->whereIn('team_id', function ($query) {
                 $query->select('id')->from('teams')->where('type', 'national');
@@ -134,7 +123,7 @@ class GamePlayerTemplateService
         }
 
         foreach (array_chunk($rows, 500) as $chunk) {
-            DB::table('game_player_templates')->insert($chunk);
+            DB::connection('pgsql_control')->table('game_player_templates')->insert($chunk);
         }
 
         return count($rows);
@@ -183,7 +172,7 @@ class GamePlayerTemplateService
         // Exclude national teams so their players can still get club templates
         $nationalTeamIds = Team::where('type', 'national')->pluck('id');
 
-        $processedTeamIds = DB::table('game_player_templates')
+        $processedTeamIds = DB::connection('pgsql_control')->table('game_player_templates')
             ->where('season', $season)
             ->whereNotIn('team_id', $nationalTeamIds)
             ->distinct()
@@ -192,7 +181,7 @@ class GamePlayerTemplateService
             ->toArray();
 
         // Track already-processed players to avoid duplicates across club teams
-        $processedPlayerIds = DB::table('game_player_templates')
+        $processedPlayerIds = DB::connection('pgsql_control')->table('game_player_templates')
             ->where('season', $season)
             ->whereNotIn('team_id', $nationalTeamIds)
             ->distinct()
@@ -226,7 +215,7 @@ class GamePlayerTemplateService
         }
 
         foreach (array_chunk($rows, 500) as $chunk) {
-            DB::table('game_player_templates')->insert($chunk);
+            DB::connection('pgsql_control')->table('game_player_templates')->insert($chunk);
         }
 
         return count($rows);

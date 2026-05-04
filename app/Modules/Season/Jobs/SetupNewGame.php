@@ -355,7 +355,7 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
             return;
         }
 
-        $hasTemplates = DB::table('game_player_templates')
+        $hasTemplates = DB::connection('pgsql_control')->table('game_player_templates')
             ->where('season', $this->season)
             ->exists();
 
@@ -366,18 +366,24 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
             );
         }
 
-        // Bulk-insert directly from templates with a single round trip per table.
+        // PLANES-SEAM: cross-plane INSERT-SELECT and JOIN. game_players is
+        // tenant; game_player_templates is control. Works today because both
+        // planes share one physical Postgres. This is a hot setup path; prior
+        // attempts to split it (read templates into PHP, bulk-insert in two
+        // steps) hit OOM/timeout regressions, so the seam is left in place
+        // and must be re-split before the planes are physically separated.
+        // See CLAUDE.md → "Control plane / tenant plane".
+        //
         // The match_state insert joins the just-inserted game_players back to
-        // templates by player_id to copy fitness/morale. Every game_player gets
-        // a satellite row (Pool players carry template defaults they never read
-        // in practice, but the invariant "every game_player has a matchState
-        // row" lets simulation code assume presence without a lazy-ensure
-        // fallback at matchday time).
+        // templates by player_id to copy fitness/morale. Every game_player
+        // gets a satellite row (Pool players carry template defaults they
+        // never read in practice, but the invariant "every game_player has a
+        // matchState row" lets simulation code assume presence without a
+        // lazy-ensure fallback at matchday time).
         //
         // National team ids are resolved on the control plane up front so the
-        // raw INSERT below stays single-plane (tenant) — replaces an inline
-        // `NOT IN (SELECT id FROM teams WHERE type = 'national')` that would
-        // cross the plane boundary post-split.
+        // raw INSERT below at least avoids a `NOT IN (SELECT id FROM teams
+        // WHERE type = 'national')` cross-plane subquery on top of the JOIN.
         $nationalTeamIds = Team::where('type', 'national')->pluck('id')->all();
         $excludeNationalClause = '';
         $bindings = [$this->gameId, $this->season];

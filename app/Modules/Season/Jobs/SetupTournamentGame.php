@@ -186,6 +186,14 @@ class SetupTournamentGame implements ShouldQueue
             return;
         }
 
+        // PLANES-SEAM: cross-plane INSERT-SELECT and JOIN. game_players is
+        // tenant; game_player_templates is control. Works today because both
+        // planes share one physical Postgres. This is a hot setup path; the
+        // same OOM/timeout caveats documented on SetupNewGame apply, so the
+        // seam is left in place and must be re-split before the planes are
+        // physically separated. See CLAUDE.md → "Control plane / tenant
+        // plane".
+        //
         // Tournament mode (WC2026) only loads teams the user actually faces,
         // so every player here is "active" — they all need a match-state
         // satellite row from the start. Two single INSERT...SELECT statements
@@ -196,10 +204,9 @@ class SetupTournamentGame implements ShouldQueue
         // game_player's team.
         //
         // Eligible national-team ids are resolved on the control plane up
-        // front so the raw INSERT below stays single-plane (tenant) —
-        // replaces an inline `IN (SELECT id FROM teams WHERE type = 'national'
-        // AND fifa_code IS NOT NULL)` that would cross the plane boundary
-        // post-split.
+        // front so the raw INSERT below at least avoids an `IN (SELECT id
+        // FROM teams WHERE type = 'national' AND fifa_code IS NOT NULL)`
+        // cross-plane subquery on top of the JOIN.
         $eligibleNationalTeamIds = Team::where('type', 'national')
             ->whereNotNull('fifa_code')
             ->pluck('id')

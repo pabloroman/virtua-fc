@@ -96,7 +96,7 @@ These are non-obvious rules that prevent bugs. Read carefully.
 Two logical database planes share one physical Postgres today, with separate connections so they can be split onto separate instances later without code changes:
 
 - **Tenant plane** (`pgsql` connection, default): per-game state — every model with a `game_id`. Write-heavy, hot path. `Game`, `GameMatch`, `GamePlayer`, `GameStanding`, `GameFinances`, transfers, lineups, etc.
-- **Control plane** (`pgsql_control` connection): cross-tenant data — identity, leaderboards, reference data, game directory. Read-heavy, small. `User`, `ManagerStats`, `TournamentSummary`, `Team`, `Competition`, `Player` (biographical pool), reference templates, onboarding tables.
+- **Control plane** (`pgsql_control` connection): cross-tenant data — identity, leaderboards, reference data, game directory. Read-heavy, small. `User`, `ManagerStats`, `TournamentSummary`, `Team`, `Competition`, `Player` (biographical pool), `GamePlayerTemplate` (real-world roster source) and its audits, onboarding tables.
 
 **Rules:**
 - New cross-tenant models declare `protected $connection = 'pgsql_control'`.

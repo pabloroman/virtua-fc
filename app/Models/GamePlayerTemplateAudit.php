@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class GamePlayerTemplateAudit extends Model
 {
+    /**
+     * Audit rows live with the templates they describe (control plane).
+     */
+    protected $connection = 'pgsql_control';
+
     public $timestamps = false;
 
     protected $fillable = [
