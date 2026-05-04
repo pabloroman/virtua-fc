@@ -27,6 +27,7 @@ class GamePlayerTemplate extends Model
         'height',
         'foot',
         'team_id',
+        'is_reserve_squad',
         'number',
         'position',
         'market_value',
@@ -45,6 +46,7 @@ class GamePlayerTemplate extends Model
 
     protected $casts = [
         'number' => 'integer',
+        'is_reserve_squad' => 'bool',
         'nationality' => 'array',
         'date_of_birth' => 'date:Y-m-d',
         'market_value_cents' => 'integer',

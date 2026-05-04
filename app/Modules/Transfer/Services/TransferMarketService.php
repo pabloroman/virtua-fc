@@ -379,11 +379,10 @@ class TransferMarketService
     /**
      * Load rosters for a fixed set of team_ids, grouped by team_id.
      *
-     * Uses a single JOIN against players (for date_of_birth) and teams (to
-     * exclude reserve squads where parent_team_id is set), eliminating both
-     * the eager-load round-trip and the per-row EXISTS subquery the previous
-     * whereHas() generated. Models are hydrated with a stub Player relation
-     * pre-attached so consumers calling ->age($date) keep working.
+     * Reads game_players directly without crossing the tenant/control plane
+     * boundary: biography is denormalized post-Phase-6, and the reserve-squad
+     * flag is denormalized so we no longer need to JOIN teams to filter on
+     * parent_team_id.
      *
      * @param  array<string>  $teamIds
      */
@@ -393,26 +392,22 @@ class TransferMarketService
             return collect();
         }
 
-        // PLANES-SEAM: cross-plane JOIN against teams (for parent_team_id).
-        // game_players biography is read locally post-Phase-6, so the players
-        // join is gone; the teams join remains until that seam is split.
         $rows = DB::table('game_players')
-            ->join('teams', 'teams.id', '=', 'game_players.team_id')
-            ->where('game_players.game_id', $game->id)
-            ->whereIn('game_players.team_id', $teamIds)
-            ->whereNull('teams.parent_team_id')
+            ->where('game_id', $game->id)
+            ->whereIn('team_id', $teamIds)
+            ->where('is_reserve_squad', false)
             ->get([
-                'game_players.id',
-                'game_players.game_id',
-                'game_players.player_id',
-                'game_players.team_id',
-                'game_players.position',
-                'game_players.market_value_cents',
-                'game_players.tier',
-                'game_players.retiring_at_season',
-                'game_players.contract_until',
-                'game_players.annual_wage',
-                'game_players.date_of_birth',
+                'id',
+                'game_id',
+                'player_id',
+                'team_id',
+                'position',
+                'market_value_cents',
+                'tier',
+                'retiring_at_season',
+                'contract_until',
+                'annual_wage',
+                'date_of_birth',
             ]);
 
         if ($rows->isEmpty()) {

@@ -119,6 +119,7 @@ class PlayerGeneratorService
             'height' => $identity['height'] ?? null,
             'foot' => $identity['foot'] ?? null,
             'team_id' => $data->teamId,
+            'is_reserve_squad' => $this->resolveTeamReserveStatus($data->teamId),
             'position' => $data->position,
             'secondary_positions' => $this->generatePositions($data->position),
             'market_value_cents' => $marketValue,
@@ -188,9 +189,9 @@ class PlayerGeneratorService
         // One query resolves every team's regional-naming flag for the batch,
         // so Basque / Catalan clubs get appropriate names without per-player
         // team lookups inside the hot loop.
-        $teamRegions = $this->resolveTeamRegions(
-            array_unique(array_filter(array_map(fn ($d) => $d->teamId, $dataItems)))
-        );
+        $batchTeamIds = array_unique(array_filter(array_map(fn ($d) => $d->teamId, $dataItems)));
+        $teamRegions = $this->resolveTeamRegions($batchTeamIds);
+        $teamReserveStatuses = $this->resolveTeamReserveStatuses($batchTeamIds);
 
         // Build the excluded-names set once; pickRandomIdentity below mutates
         // this hash directly via gameNamesCache, so subsequent iterations see
@@ -239,6 +240,7 @@ class PlayerGeneratorService
                 'height' => $identity['height'] ?? null,
                 'foot' => $identity['foot'] ?? null,
                 'team_id' => $data->teamId,
+                'is_reserve_squad' => $teamReserveStatuses[$data->teamId] ?? false,
                 'position' => $data->position,
                 'market_value_cents' => $marketValue,
                 'contract_until' => $contractUntil->format('Y-m-d'),
@@ -579,6 +581,37 @@ class PlayerGeneratorService
         }
 
         return $regions;
+    }
+
+    private function resolveTeamReserveStatus(?string $teamId): bool
+    {
+        if ($teamId === null) {
+            return false;
+        }
+
+        return Team::whereKey($teamId)->value('parent_team_id') !== null;
+    }
+
+    /**
+     * Bulk-resolve reserve-squad flags for a set of teamIds in a single query.
+     *
+     * @param  string[]  $teamIds
+     * @return array<string, bool>  Map of teamId → is_reserve_squad.
+     */
+    private function resolveTeamReserveStatuses(array $teamIds): array
+    {
+        if (empty($teamIds)) {
+            return [];
+        }
+
+        $parents = Team::whereIn('id', $teamIds)->pluck('parent_team_id', 'id')->all();
+
+        $statuses = [];
+        foreach ($parents as $teamId => $parentTeamId) {
+            $statuses[$teamId] = $parentTeamId !== null;
+        }
+
+        return $statuses;
     }
 
     /**

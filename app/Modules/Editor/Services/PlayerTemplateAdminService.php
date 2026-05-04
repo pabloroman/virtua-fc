@@ -82,6 +82,9 @@ class PlayerTemplateAdminService
     public function create(array $data, User $user): GamePlayerTemplate
     {
         return DB::transaction(function () use ($data, $user) {
+            $data['is_reserve_squad'] = Team::whereKey($data['team_id'] ?? null)
+                ->value('parent_team_id') !== null;
+
             $template = GamePlayerTemplate::create($data);
 
             GamePlayerTemplateAudit::create([
@@ -101,6 +104,11 @@ class PlayerTemplateAdminService
     {
         return DB::transaction(function () use ($template, $data, $user) {
             $oldValues = $template->only($template->getFillable());
+
+            if (array_key_exists('team_id', $data)) {
+                $data['is_reserve_squad'] = Team::whereKey($data['team_id'])
+                    ->value('parent_team_id') !== null;
+            }
 
             $template->update($data);
             $template->refresh();
