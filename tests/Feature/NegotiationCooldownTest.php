@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GamePlayer;
-use App\Models\Player;
 use App\Models\Team;
 use App\Models\TransferOffer;
 use App\Models\User;
@@ -43,12 +42,10 @@ class NegotiationCooldownTest extends TestCase
             'current_date' => '2025-08-01',
         ]);
 
-        $player = Player::factory()->create(['date_of_birth' => '1998-01-01']);
-
         $this->targetPlayer = GamePlayer::factory()->create([
             'game_id' => $this->game->id,
-            'player_id' => $player->id,
             'team_id' => $this->sellerTeam->id,
+            'date_of_birth' => '1998-01-01',
             'market_value_cents' => 10_000_000_00,
             'contract_until' => '2027-06-30',
         ]);

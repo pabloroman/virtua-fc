@@ -60,11 +60,6 @@ class GamePlayerTemplate extends Model
         'tier' => 'integer',
     ];
 
-    public function player(): BelongsTo
-    {
-        return $this->belongsTo(Player::class);
-    }
-
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);

@@ -12,7 +12,6 @@ use App\Models\GameInvestment;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\GameStanding;
-use App\Models\Player;
 use App\Models\ScoutReport;
 use App\Models\Team;
 use App\Models\TeamReputation;
@@ -192,10 +191,8 @@ class FrontendSmokeTest extends TestCase
         ];
 
         foreach ($positions as $position) {
-            $player = Player::factory()->create();
             GamePlayer::factory()->create([
                 'game_id' => $gameId,
-                'player_id' => $player->id,
                 'team_id' => $team->id,
                 'position' => $position,
             ]);

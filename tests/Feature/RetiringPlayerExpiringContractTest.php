@@ -8,7 +8,6 @@ use App\Models\GameFinances;
 use App\Models\GameInvestment;
 use App\Models\GameNotification;
 use App\Models\GamePlayer;
-use App\Models\Player;
 use App\Models\Team;
 use App\Models\User;
 use App\Modules\Match\Services\CareerActionProcessor;
@@ -109,20 +108,18 @@ class RetiringPlayerExpiringContractTest extends TestCase
 
     private function createExpiringPlayer(int $age, ?string $retiringAtSeason = null): GamePlayer
     {
-        $player = Player::factory()->age($age)->create([
-            'overall_score' => 65,
-        ]);
-
-        return GamePlayer::factory()->create([
-            'game_id' => $this->game->id,
-            'player_id' => $player->id,
-            'team_id' => $this->userTeam->id,
-            'position' => 'Central Midfield',
-            // Contract ends at the end of the current season.
-            'contract_until' => '2025-06-30',
-            'annual_wage' => 200_000_00,
-            'retiring_at_season' => $retiringAtSeason,
-        ]);
+        return GamePlayer::factory()
+            ->age($age)
+            ->create([
+                'game_id' => $this->game->id,
+                'team_id' => $this->userTeam->id,
+                'position' => 'Central Midfield',
+                'overall_score' => 65,
+                // Contract ends at the end of the current season.
+                'contract_until' => '2025-06-30',
+                'annual_wage' => 200_000_00,
+                'retiring_at_season' => $retiringAtSeason,
+            ]);
     }
 
     private function invokeCheckExpiringContracts(): void

@@ -8,7 +8,6 @@ use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GamePlayer;
-use App\Models\Player;
 use App\Models\Team;
 use App\Models\TeamReputation;
 use App\Models\User;
@@ -412,15 +411,11 @@ class SquadReplenishmentTest extends TestCase
         // Add 7 old, weak players (age 33)
         $referenceDate = $this->game->current_date ?? now();
         for ($i = 0; $i < 7; $i++) {
-            $player = Player::factory()->create([
-                'date_of_birth' => $referenceDate->copy()->subYears(33),
-                'overall_score' => 35,
-            ]);
             GamePlayer::factory()->create([
                 'game_id' => $this->game->id,
-                'player_id' => $player->id,
                 'team_id' => $this->aiTeam->id,
                 'position' => 'Central Midfield',
+                'date_of_birth' => $referenceDate->copy()->subYears(33),
                 'overall_score' => 35,
             ]);
         }
@@ -512,13 +507,8 @@ class SquadReplenishmentTest extends TestCase
         string $position,
         int $overall = 65,
     ): GamePlayer {
-        $player = Player::factory()->create([
-            'overall_score' => $overall,
-        ]);
-
         return GamePlayer::factory()->create([
             'game_id' => $this->game->id,
-            'player_id' => $player->id,
             'team_id' => $team->id,
             'position' => $position,
             'overall_score' => $overall,

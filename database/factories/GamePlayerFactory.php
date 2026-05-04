@@ -5,9 +5,9 @@ namespace Database\Factories;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\GamePlayerMatchState;
-use App\Models\Player;
 use App\Models\Team;
 use App\Modules\Player\Services\PlayerTierService;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -33,11 +33,10 @@ class GamePlayerFactory extends Factory
         return [
             'id' => Str::uuid()->toString(),
             'game_id' => Game::factory(),
-            'player_id' => Player::factory(),
-            // Biography lives on game_players directly post-Phase-6. Generate
-            // it inline so factory-built rows match the production reality
-            // where every game_players row carries its own biography copy,
-            // independent of the Player relationship being navigable.
+            // player_id is a soft identity column post-Phase-7; it carries
+            // no FK and is just a stable UUID for the (game_id, player_id)
+            // unique constraint.
+            'player_id' => Str::uuid()->toString(),
             'transfermarkt_id' => 'gen-' . Str::uuid()->toString(),
             'name' => $this->faker->name,
             'date_of_birth' => $this->faker->dateTimeBetween('-40 years', '-16 years')->format('Y-m-d'),
@@ -91,30 +90,6 @@ class GamePlayerFactory extends Factory
             $oid = spl_object_id($player);
             $overrides = self::$pendingOverrides[$oid] ?? [];
             unset(self::$pendingOverrides[$oid]);
-
-            // Mirror biography from the linked Player onto the game_players
-            // row. Tests historically set `Player::factory()->age($n)` and
-            // expected `$gp->age()` to reflect it via the relationship;
-            // post-Phase-6 readers consume biography off game_players
-            // directly, so the link has to be carried into the local row.
-            // Any non-null biography column on the Player overrides the
-            // factory's random `definition()` fallback (which still applies
-            // when no Player is attached, or when Player has nulls).
-            $linkedPlayer = $player->player;
-            if ($linkedPlayer !== null) {
-                $bio = array_filter([
-                    'transfermarkt_id' => $linkedPlayer->transfermarkt_id,
-                    'name' => $linkedPlayer->name,
-                    'date_of_birth' => $linkedPlayer->date_of_birth?->toDateString(),
-                    'nationality' => $linkedPlayer->nationality,
-                    'height' => $linkedPlayer->height,
-                    'foot' => $linkedPlayer->foot,
-                ], fn ($v) => $v !== null);
-
-                if (! empty($bio)) {
-                    $player->forceFill($bio)->save();
-                }
-            }
 
             // Every test-created GamePlayer gets a satellite row by default
             // — tests historically assumed game_players carried fitness etc.,
@@ -170,6 +145,19 @@ class GamePlayerFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'retiring_at_season' => $season,
+        ]);
+    }
+
+    /**
+     * Set date_of_birth so the player is exactly $age years old (plus six
+     * months) on $referenceDate. Mirrors the old PlayerFactory::age() helper.
+     */
+    public function age(int $age, ?string $referenceDate = null): static
+    {
+        $reference = Carbon::parse($referenceDate ?? '2024-08-15');
+
+        return $this->state(fn (array $attributes) => [
+            'date_of_birth' => $reference->copy()->subYears($age)->subMonths(6),
         ]);
     }
 }

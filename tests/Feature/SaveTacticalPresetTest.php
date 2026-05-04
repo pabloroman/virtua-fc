@@ -6,7 +6,6 @@ use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\GameTacticalPreset;
-use App\Models\Player;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
@@ -47,10 +46,8 @@ class SaveTacticalPresetTest extends TestCase
 
         $this->elevenPlayerIds = [];
         for ($i = 0; $i < 11; $i++) {
-            $player = Player::factory()->create();
             $gp = GamePlayer::factory()->create([
                 'game_id' => $this->game->id,
-                'player_id' => $player->id,
                 'team_id' => $this->team->id,
                 'position' => $i === 0 ? 'Goalkeeper' : 'Central Midfield',
             ]);

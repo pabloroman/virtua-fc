@@ -11,7 +11,6 @@ use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\GameStanding;
 use App\Models\MatchEvent;
-use App\Models\Player;
 use App\Models\PlayerSuspension;
 use App\Models\Team;
 use App\Models\User;
@@ -406,7 +405,7 @@ class SuspensionDeferralTest extends TestCase
         ]);
 
         // Build the user lineup collection as loadTeamsForResimulation expects
-        $userLineup = GamePlayer::with('player')->whereIn('id', $lineup)->get();
+        $userLineup = GamePlayer::query()->whereIn('id', $lineup)->get();
 
         $service = app(SubstitutionService::class);
         $result = $service->loadTeamsForResimulation($match, $this->game, $userLineup, []);

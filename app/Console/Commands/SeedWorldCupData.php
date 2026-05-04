@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Modules\Player\Services\PlayerValuationService;
 use App\Support\CountryCodeMapper;
 use App\Support\TeamColors;
 use App\Support\Money;
@@ -46,13 +45,12 @@ class SeedWorldCupData extends Command
         $this->loadJsonTeamNames();
         $this->seedCompetition();
         $teamMapping = $this->seedTeams();
-        $playerCount = $this->seedPlayers();
-        $this->generatePlayerTemplates();
+        $templateCount = $this->generatePlayerTemplates();
 
         $this->generateGroupsJson($teamMapping);
         $this->generateScheduleJson();
         $this->generateBracketJson();
-        $this->displaySummary($teamMapping, $playerCount);
+        $this->displaySummary($teamMapping, $templateCount);
 
         return CommandAlias::SUCCESS;
     }
@@ -272,89 +270,15 @@ class SeedWorldCupData extends Command
     }
 
     /**
-     * Seed players for teams that have JSON roster files.
-     */
-    private function seedPlayers(): int
-    {
-        $this->info('Seeding players...');
-        $basePath = base_path('data/2025/WC2026/teams');
-
-        if (!is_dir($basePath)) {
-            $this->warn('No teams directory found — skipping player seeding.');
-            return 0;
-        }
-
-        $valuationService = app(PlayerValuationService::class);
-        $playerCount = 0;
-
-        foreach (glob("{$basePath}/*.json") as $filePath) {
-            $data = json_decode(file_get_contents($filePath), true);
-            if (!$data || empty($data['players'])) {
-                continue;
-            }
-
-            foreach ($data['players'] as $player) {
-                $transfermarktId = $player['id'] ?? null;
-                if (!$transfermarktId) {
-                    continue;
-                }
-
-                if (DB::connection('pgsql_control')->table('players')->where('transfermarkt_id', $transfermarktId)->exists()) {
-                    $playerCount++;
-                    continue;
-                }
-
-                $dateOfBirth = null;
-                $age = null;
-
-                if (!empty($player['dateOfBirth'])) {
-                    try {
-                        $dob = Carbon::parse($player['dateOfBirth']);
-                        $dateOfBirth = $dob->toDateString();
-                        $age = $dob->age;
-                    } catch (\Exception $e) {
-                        // Ignore invalid dates
-                    }
-                }
-
-                $foot = match (strtolower($player['foot'] ?? '')) {
-                    'left' => 'left',
-                    'right' => 'right',
-                    'both' => 'both',
-                    default => null,
-                };
-
-                $marketValueCents = Money::parseMarketValue($player['marketValue'] ?? null);
-                $overallScore = $valuationService->marketValueToOverallScore($marketValueCents, $age ?? 25);
-
-                DB::connection('pgsql_control')->table('players')->insert([
-                    'id' => Str::uuid()->toString(),
-                    'transfermarkt_id' => $transfermarktId,
-                    'name' => $player['name'],
-                    'date_of_birth' => $dateOfBirth,
-                    'nationality' => json_encode(!empty($player['nationality']) ? $player['nationality'] : [$data['name']]),
-                    'height' => $player['height'] ?? null,
-                    'foot' => $foot,
-                    'overall_score' => $overallScore,
-                ]);
-
-                $playerCount++;
-            }
-        }
-
-        $this->line("  Players seeded: {$playerCount}");
-
-        return $playerCount;
-    }
-
-    /**
      * Pre-compute game_player_templates for WC national team rosters.
      */
-    private function generatePlayerTemplates(): void
+    private function generatePlayerTemplates(): int
     {
         $service = app(\App\Modules\Season\Services\GamePlayerTemplateService::class);
         $count = $service->generateForWorldCup(self::SEASON);
         $this->info("Generated {$count} player templates for World Cup rosters");
+
+        return $count;
     }
 
     /**
@@ -513,7 +437,7 @@ class SeedWorldCupData extends Command
         $this->info("Generated: data/2025/WC2026/bracket.json ({$totalKnockout} knockout matches)");
     }
 
-    private function displaySummary(array $teamMapping, int $playerCount): void
+    private function displaySummary(array $teamMapping, int $templateCount): void
     {
         $realTeams = count(array_filter($teamMapping, fn ($t) => !$t['is_placeholder']));
         $placeholders = count(array_filter($teamMapping, fn ($t) => $t['is_placeholder']));
@@ -523,7 +447,7 @@ class SeedWorldCupData extends Command
         $this->info('Summary:');
         $this->line("  Total Teams: " . count($teamMapping) . " ({$realTeams} real, {$placeholders} placeholders)");
         $this->line("  Teams with rosters: {$withRosters}");
-        $this->line("  Total Players: {$playerCount}");
+        $this->line("  Player templates: {$templateCount}");
         $this->line("  Groups: " . count(array_unique(array_column($teamMapping, 'group'))));
         $this->newLine();
         $this->info('World Cup data seeded successfully!');

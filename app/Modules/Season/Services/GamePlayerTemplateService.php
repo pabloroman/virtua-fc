@@ -2,17 +2,17 @@
 
 namespace App\Modules\Season\Services;
 
-use App\Models\Player;
 use App\Models\Team;
 use App\Modules\Competition\Services\CountryConfig;
+use App\Modules\Player\Services\PlayerValuationService;
 use App\Support\Money;
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Player\Services\InjuryService;
 use App\Modules\Player\Services\PlayerDevelopmentService;
 use App\Modules\Player\Services\PlayerTierService;
+use Ramsey\Uuid\Uuid;
 
 class GamePlayerTemplateService
 {
@@ -22,6 +22,7 @@ class GamePlayerTemplateService
     public function __construct(
         private ContractService $contractService,
         private PlayerDevelopmentService $developmentService,
+        private PlayerValuationService $valuationService,
     ) {}
 
     /**
@@ -81,7 +82,6 @@ class GamePlayerTemplateService
 
         // Load roster data per team and collect needed transfermarkt IDs
         $teamRosters = [];
-        $neededTmIds = [];
 
         foreach ($nationalTeams as $team) {
             $filePath = "{$basePath}/{$team->transfermarkt_id}.json";
@@ -95,25 +95,14 @@ class GamePlayerTemplateService
             }
 
             $teamRosters[] = ['team_id' => $team->id, 'players' => $data['players']];
-            foreach ($data['players'] as $playerData) {
-                if (!empty($playerData['id'])) {
-                    $neededTmIds[] = $playerData['id'];
-                }
-            }
         }
-
-        // Only load players that appear in roster files
-        $allPlayers = Player::query()
-            ->whereIn('transfermarkt_id', array_unique($neededTmIds))
-            ->get(['id', 'transfermarkt_id', 'name', 'date_of_birth', 'nationality', 'height', 'foot', 'overall_score'])
-            ->keyBy('transfermarkt_id');
 
         $processedPlayerIds = [];
         $rows = [];
 
         foreach ($teamRosters as $roster) {
             foreach ($roster['players'] as $playerData) {
-                $row = $this->prepareTemplateRow($season, $roster['team_id'], $playerData, 0, $allPlayers);
+                $row = $this->prepareTemplateRow($season, $roster['team_id'], $playerData, 0);
                 if ($row && !isset($processedPlayerIds[$row['player_id']])) {
                     $row['number'] = null; // WC templates must not store squad numbers
                     $rows[] = $row;
@@ -146,26 +135,6 @@ class GamePlayerTemplateService
         $continentalIds = $countryConfig->continentalSupportIds($countryCode);
         $swissIds = $countryConfig->swissFormatCompetitionIds($countryCode);
 
-        // First pass: scan all JSON files to collect needed transfermarkt IDs
-        $neededTmIds = [];
-
-        foreach ($competitionIds as $competitionId) {
-            if (in_array($competitionId, $continentalIds)) {
-                continue;
-            }
-            $neededTmIds = array_merge($neededTmIds, $this->collectPlayerIdsFromCompetition($season, $competitionId));
-        }
-
-        foreach ($swissIds as $competitionId) {
-            $neededTmIds = array_merge($neededTmIds, $this->collectPlayerIdsFromSwissTeams($season, $competitionId));
-        }
-
-        // Load only the players we actually need
-        $players = Player::query()
-            ->whereIn('transfermarkt_id', array_unique($neededTmIds))
-            ->get(['id', 'transfermarkt_id', 'name', 'date_of_birth', 'nationality', 'height', 'foot', 'overall_score'])
-            ->keyBy('transfermarkt_id');
-
         $totalCount = 0;
 
         // Track already-processed club teams (including from prior country runs)
@@ -195,12 +164,12 @@ class GamePlayerTemplateService
                 continue;
             }
 
-            $rows = $this->generateForCompetition($competitionId, $season, $allTeamIds, $players, $processedTeamIds, $processedPlayerIds);
+            $rows = $this->generateForCompetition($competitionId, $season, $allTeamIds, $processedTeamIds, $processedPlayerIds);
             $totalCount += $this->insertAndTrack($rows, $processedTeamIds, $processedPlayerIds);
         }
 
         foreach ($swissIds as $competitionId) {
-            $rows = $this->generateForSwissGapTeams($competitionId, $season, $allTeamIds, $players, $processedTeamIds, $processedPlayerIds);
+            $rows = $this->generateForSwissGapTeams($competitionId, $season, $allTeamIds, $processedTeamIds, $processedPlayerIds);
             $totalCount += $this->insertAndTrack($rows, $processedTeamIds, $processedPlayerIds);
         }
 
@@ -228,7 +197,6 @@ class GamePlayerTemplateService
         string $competitionId,
         string $season,
         array $allTeamIds,
-        Collection $allPlayers,
         array $processedTeamIds = [],
         array $processedPlayerIds = [],
     ): array {
@@ -267,7 +235,7 @@ class GamePlayerTemplateService
 
             foreach ($club['players'] ?? [] as $playerData) {
                 $playerData = $this->applyMarketValueFallback($playerData, $competitionId);
-                $row = $this->prepareTemplateRow($season, $teamId, $playerData, $minimumWage, $allPlayers);
+                $row = $this->prepareTemplateRow($season, $teamId, $playerData, $minimumWage);
                 if ($row && !isset($processedPlayerIds[$row['player_id']])) {
                     $rows[] = $row;
                     $processedPlayerIds[$row['player_id']] = true;
@@ -302,7 +270,6 @@ class GamePlayerTemplateService
         string $competitionId,
         string $season,
         array $allTeamIds,
-        Collection $allPlayers,
         array $processedTeamIds,
         array $processedPlayerIds = [],
     ): array {
@@ -334,7 +301,7 @@ class GamePlayerTemplateService
             $minimumWage = $this->contractService->getMinimumWageForCompetition($competitionId, $teamId);
 
             foreach ($club['players'] ?? [] as $playerData) {
-                $row = $this->prepareTemplateRow($season, $teamId, $playerData, $minimumWage, $allPlayers);
+                $row = $this->prepareTemplateRow($season, $teamId, $playerData, $minimumWage);
                 if ($row && !isset($processedPlayerIds[$row['player_id']])) {
                     $rows[] = $row;
                     $processedPlayerIds[$row['player_id']] = true;
@@ -354,10 +321,20 @@ class GamePlayerTemplateService
         string $teamId,
         array $playerData,
         int $minimumWage,
-        Collection $allPlayers,
     ): ?array {
-        $player = $allPlayers->get($playerData['id']);
-        if (!$player) {
+        if (empty($playerData['id'])) {
+            return null;
+        }
+
+        $dateOfBirth = null;
+        if (!empty($playerData['dateOfBirth'])) {
+            try {
+                $dateOfBirth = Carbon::parse($playerData['dateOfBirth']);
+            } catch (\Exception $e) {
+                // Invalid date — biography stays partial
+            }
+        }
+        if ($dateOfBirth === null) {
             return null;
         }
 
@@ -378,27 +355,40 @@ class GamePlayerTemplateService
                 // Invalid date — keep default
             }
         }
-        $dob = Carbon::parse($player->date_of_birth);
-        $age = (int) $dob->diffInYears($referenceDate);
+
+        $age = (int) $dateOfBirth->diffInYears($referenceDate);
         $marketValueCents = Money::parseMarketValue($playerData['marketValue'] ?? null);
+        // Transfermarkt occasionally lists fringe / youth squad players with
+        // no quoted value — floor those at €100K so they still get a usable
+        // ability baseline and a non-zero transfer price.
+        $marketValueForOverall = $marketValueCents > 0 ? $marketValueCents : 10_000_000;
+        $overallScore = $this->valuationService->marketValueToOverallScore($marketValueForOverall, $age);
         $annualWage = $this->contractService->calculateAnnualWage($marketValueCents, $minimumWage, $age);
 
-        $potentialData = $this->developmentService->generatePotential(
-            $age,
-            (int) $player->overall_score
-        );
+        $potentialData = $this->developmentService->generatePotential($age, $overallScore);
 
         $secondaryPositions = $this->getSecondaryPositions($playerData['id']);
 
+        $foot = match (strtolower($playerData['foot'] ?? '')) {
+            'left' => 'left',
+            'right' => 'right',
+            'both' => 'both',
+            default => null,
+        };
+
         return [
             'season' => $season,
-            'player_id' => $player->id,
-            'transfermarkt_id' => $player->transfermarkt_id,
-            'name' => $player->name,
-            'date_of_birth' => $player->date_of_birth?->toDateString(),
-            'nationality' => $player->nationality !== null ? json_encode($player->nationality) : null,
-            'height' => $player->height,
-            'foot' => $player->foot,
+            // Deterministic UUID per transfermarkt_id so the same real-world
+            // player gets a stable player_id across (season, team) templates
+            // and (game_id, player_id) dedups correctly when SetupNewGame
+            // copies templates into game_players.
+            'player_id' => self::playerIdFor((string) $playerData['id']),
+            'transfermarkt_id' => (string) $playerData['id'],
+            'name' => $playerData['name'] ?? null,
+            'date_of_birth' => $dateOfBirth->toDateString(),
+            'nationality' => isset($playerData['nationality']) ? json_encode($playerData['nationality']) : null,
+            'height' => $playerData['height'] ?? null,
+            'foot' => $foot,
             'team_id' => $teamId,
             'number' => isset($playerData['number']) ? (int) $playerData['number'] : null,
             'position' => $playerData['position'] ?? 'Unknown',
@@ -410,7 +400,7 @@ class GamePlayerTemplateService
             'fitness' => 80,
             'morale' => 80,
             'durability' => InjuryService::generateDurability(),
-            'overall_score' => $player->overall_score,
+            'overall_score' => $overallScore,
             'potential' => $potentialData['potential'],
             'potential_low' => $potentialData['low'],
             'potential_high' => $potentialData['high'],
@@ -445,47 +435,14 @@ class GamePlayerTemplateService
     }
 
     /**
-     * Collect player transfermarkt IDs from a competition's JSON files without loading DB data.
+     * Deterministic player_id UUID per Transfermarkt id, so the same
+     * real-world player gets a stable UUID across (season, team) templates
+     * and the (game_id, player_id) unique constraint on game_players keeps
+     * dedup'ing correctly when SetupNewGame copies templates over.
      */
-    private function collectPlayerIdsFromCompetition(string $season, string $competitionId): array
+    public static function playerIdFor(string $transfermarktId): string
     {
-        $basePath = base_path("data/{$season}/{$competitionId}");
-        $teamsFilePath = "{$basePath}/teams.json";
-
-        if (file_exists($teamsFilePath)) {
-            $clubs = $this->loadClubsFromTeamsJson($teamsFilePath);
-        } else {
-            $clubs = $this->loadClubsFromTeamPoolFiles($basePath);
-        }
-
-        return $this->extractPlayerIdsFromClubs($clubs);
-    }
-
-    /**
-     * Collect player transfermarkt IDs from a Swiss format competition's teams.json.
-     */
-    private function collectPlayerIdsFromSwissTeams(string $season, string $competitionId): array
-    {
-        $teamsFilePath = base_path("data/{$season}/{$competitionId}/teams.json");
-        if (!file_exists($teamsFilePath)) {
-            return [];
-        }
-
-        $teamsData = json_decode(file_get_contents($teamsFilePath), true);
-        return $this->extractPlayerIdsFromClubs($teamsData['clubs'] ?? []);
-    }
-
-    private function extractPlayerIdsFromClubs(array $clubs): array
-    {
-        $ids = [];
-        foreach ($clubs as $club) {
-            foreach ($club['players'] ?? [] as $playerData) {
-                if (!empty($playerData['id'])) {
-                    $ids[] = $playerData['id'];
-                }
-            }
-        }
-        return $ids;
+        return Uuid::uuid5(Uuid::NAMESPACE_OID, 'player:' . $transfermarktId)->toString();
     }
 
     private function extractTransfermarktIdFromImage(string $imageUrl): ?string
