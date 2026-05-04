@@ -344,28 +344,28 @@ class UefaQualificationProcessor implements SeasonProcessor
             return;
         }
 
-        // Find a non-configured-country team to replace
+        // Find a non-configured-country team to replace.
         $configuredCountries = collect($this->countryConfig->allCountryCodes())
             ->filter(fn (string $code) => !empty($this->countryConfig->continentalSlots($code)))
             ->all();
 
-        // PLANES-SEAM: cross-plane JOIN. competition_entries=tenant, teams=control.
-        // Restored while both planes share one physical Postgres. Re-split
-        // before the planes are physically separated. See CLAUDE.md →
-        // "Control plane / tenant plane".
-        $replaceable = CompetitionEntry::where('competition_entries.game_id', $game->id)
-            ->where('competition_entries.competition_id', 'UCL')
-            ->join('teams', 'competition_entries.team_id', '=', 'teams.id')
-            ->whereNotIn('teams.country', $configuredCountries)
-            ->select('competition_entries.*')
-            ->get();
+        // Two-step read: pull the UCL team-id set from the tenant plane, then
+        // filter to non-configured-country teams via the control plane.
+        // Replaces a JOIN that crossed the tenant/control plane boundary.
+        // Bounding by $uclTeamIds keeps the control-plane IN list tiny (~36).
+        $uclTeamIds = CompetitionEntry::where('game_id', $game->id)
+            ->where('competition_id', 'UCL')
+            ->pluck('team_id');
 
-        if ($replaceable->isNotEmpty()) {
-            // Remove a random non-configured-country team
-            $toRemove = $replaceable->random();
+        $disqualifiedTeamIds = Team::whereIn('id', $uclTeamIds)
+            ->whereNotIn('country', $configuredCountries)
+            ->pluck('id');
+
+        if ($disqualifiedTeamIds->isNotEmpty()) {
+            $toRemove = $disqualifiedTeamIds->random();
             CompetitionEntry::where('game_id', $game->id)
                 ->where('competition_id', 'UCL')
-                ->where('team_id', $toRemove->team_id)
+                ->where('team_id', $toRemove)
                 ->delete();
         }
 
