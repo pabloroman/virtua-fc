@@ -94,6 +94,12 @@ jobs:
       name: ${{ inputs.environment || 'production' }}
       url: https://${{ vars.APP_DOMAIN }}
     steps:
+      # Need the deploy/hetzner/ tree to rsync compose files and scripts to
+      # the server. Without this, changes to docker-compose.yml or deploy.sh
+      # never reach production — the box keeps using whatever was rsync'd
+      # during bootstrap.
+      - uses: actions/checkout@v6
+
       - name: Configure SSH
         env:
           SSH_KEY: ${{ secrets.HETZNER_SSH_KEY }}
@@ -105,6 +111,20 @@ jobs:
           printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
           chmod 0600 ~/.ssh/id_ed25519
           ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
+
+      # Sync the compose files and scripts from the repo to the server.
+      # Bootstrap.sh rsyncs these once; without this step, edits to
+      # docker-compose.yml / deploy.sh / etc. would only ever land on
+      # the box if someone re-ran bootstrap or rsync'd by hand.
+      - name: Sync deploy tree to server
+        env:
+          HOST: ${{ secrets.HETZNER_HOST }}
+          USER: ${{ secrets.HETZNER_USER }}
+        run: |
+          ssh "$USER@$HOST" "sudo install -d -m 0755 -o $USER -g $USER /srv/virtua-fc /srv/virtua-fc/compose /srv/virtua-fc/scripts"
+          rsync -az --delete deploy/hetzner/compose/   "$USER@$HOST:/srv/virtua-fc/compose/"
+          rsync -az --delete deploy/hetzner/scripts/   "$USER@$HOST:/srv/virtua-fc/scripts/"
+          ssh "$USER@$HOST" "chmod +x /srv/virtua-fc/scripts/*.sh"
 
       # Render the production .env from GitHub Secrets (sensitive) and Variables
       # (config). This is the single source of truth — the file on the server is
@@ -242,22 +262,36 @@ jobs:
           ssh "$USER@$HOST" "chmod 600 /srv/virtua-fc/env/.env"
           rm -f production.env
 
-      # Migrate postgres data into the v18 nested layout
-      # (/var/lib/virtua-fc/postgres/<major>/docker). Idempotent — runs on
-      # every deploy, but is a no-op once the data lives in the nested path.
+      # Ensure postgres data lives at /var/lib/virtua-fc/postgres in the
+      # postgres:18 nested layout (/var/lib/virtua-fc/postgres/<major>/docker).
       #
-      # Recognises three states that a host directory can be in:
-      #   1. Root layout:   $DATA/PG_VERSION exists (legacy mount was
-      #                     :/var/lib/postgresql/data). Move into nested.
-      #   2. data/ layout:  $DATA/data/PG_VERSION exists (an interim mount
-      #                     change wrote here). Move into nested.
-      #   3. Already nested: $DATA/<ver>/docker/PG_VERSION exists. No-op.
+      # Possible starting states this step handles:
       #
-      # After any migration, postgres is force-recreated so the new mount
-      # config in docker-compose.yml ("- $DATA:/var/lib/postgresql") is
-      # actually applied — `compose up -d app horizon scheduler` does NOT
-      # always recreate dependency services when only their config changed.
-      - name: Migrate postgres data layout
+      #   A. Bind mount already nested (.../<ver>/docker/PG_VERSION exists).
+      #      → No-op, just force-recreate so any compose change is applied.
+      #
+      #   B. Bind mount has root-layout data ($DATA/PG_VERSION exists, from
+      #      a server bootstrapped under :/var/lib/postgresql/data). Move it
+      #      into <ver>/docker.
+      #
+      #   C. Bind mount has data/ subdir layout ($DATA/data/PG_VERSION).
+      #      Same — move into <ver>/docker.
+      #
+      #   D. Bind mount EMPTY but the running postgres container has an
+      #      anonymous Docker volume at /var/lib/postgresql (auto-created
+      #      by the postgres:18 image because the previous compose only
+      #      mounted :/var/lib/postgresql/data, leaving the parent VOLUME
+      #      directive to spawn an anon vol). The real data is in the anon
+      #      vol; we copy it into the bind mount so the new compose's
+      #      :/var/lib/postgresql mount picks it up. Without this, a
+      #      force-recreate would orphan the anon vol and initdb a fresh DB.
+      #
+      #   E. Bind mount empty AND no anon vol with data. First-ever deploy.
+      #      Postgres will initdb on the empty bind mount.
+      #
+      # After whichever branch applies, postgres is force-recreated so
+      # docker-compose.yml mount changes are applied.
+      - name: Place postgres data on the bind mount
         env:
           HOST: ${{ secrets.HETZNER_HOST }}
           USER: ${{ secrets.HETZNER_USER }}
@@ -266,7 +300,7 @@ jobs:
             set -euo pipefail
             DATA=/var/lib/virtua-fc/postgres
 
-            echo "::group::Host state of $DATA before migration"
+            echo "::group::Host state of $DATA"
             sudo ls -la "$DATA" || true
             for sub in data 17 18 19; do
               if sudo test -d "$DATA/$sub"; then
@@ -276,56 +310,63 @@ jobs:
             done
             echo "::endgroup::"
 
-            SOURCE=""
-            if sudo test -e "$DATA/PG_VERSION"; then
-              SOURCE="$DATA"
-              echo "Found legacy data at $DATA (root layout)"
-            elif sudo test -e "$DATA/data/PG_VERSION"; then
-              SOURCE="$DATA/data"
-              echo "Found legacy data at $DATA/data (data-subdir layout)"
-            fi
+            echo "::group::Running postgres container mounts"
+            docker inspect virtua-fc-postgres-1 \
+              --format "{{range .Mounts}}{{.Type}}  {{.Source}} -> {{.Destination}}{{println}}{{end}}" 2>/dev/null || echo "(no virtua-fc-postgres-1 container — first deploy?)"
+            echo "::endgroup::"
 
-            if [ -z "$SOURCE" ]; then
-              echo "No legacy postgres data layout detected — nothing to migrate."
-            else
-              VER=$(sudo cat "$SOURCE/PG_VERSION")
-              TARGET="$DATA/$VER/docker"
+            # Case A: already nested → no-op.
+            if sudo find "$DATA" -maxdepth 3 -path "*/docker/PG_VERSION" -print -quit | grep -q .; then
+              echo "Bind mount already in nested layout — no data move needed."
 
-              if sudo test -e "$TARGET/PG_VERSION"; then
-                echo "::error::Both legacy ($SOURCE) and nested ($TARGET) data exist. Refusing to clobber. Inspect manually."
-                exit 1
-              fi
-
-              echo "Migrating $SOURCE → $TARGET (PG_VERSION=$VER)"
+            # Case B: root layout.
+            elif sudo test -e "$DATA/PG_VERSION"; then
+              VER=$(sudo cat "$DATA/PG_VERSION")
+              echo "Migrating root-layout data → $DATA/$VER/docker (PG_VERSION=$VER)"
               /srv/virtua-fc/scripts/compose.sh stop postgres || true
-
-              # Park source contents in a sibling dir on the same filesystem
-              # (instant rename, no copy), then mv the staging dir into the
-              # nested target.
-              STAGE="${DATA}.migrating"
-              sudo rm -rf "$STAGE"
-              sudo mkdir "$STAGE"
-              sudo find "$SOURCE" -mindepth 1 -maxdepth 1 -exec mv -t "$STAGE" {} +
-
-              # If SOURCE was a subdir (e.g. $DATA/data), remove the now-empty dir.
-              if [ "$SOURCE" != "$DATA" ]; then
-                sudo rmdir "$SOURCE"
-              fi
-
+              STAGE="${DATA}.migrating"; sudo rm -rf "$STAGE"; sudo mkdir "$STAGE"
+              sudo find "$DATA" -mindepth 1 -maxdepth 1 -exec mv -t "$STAGE" {} +
               sudo mkdir -p "$DATA/$VER"
-              sudo mv "$STAGE" "$TARGET"
-              sudo chown -R 999:999 "$DATA"
+              sudo mv "$STAGE" "$DATA/$VER/docker"
 
-              echo "::group::Host state of $DATA after migration"
-              sudo ls -la "$DATA"
-              sudo ls -la "$DATA/$VER"
-              sudo ls "$TARGET" | head -20
-              echo "::endgroup::"
+            # Case C: data/ subdir layout.
+            elif sudo test -e "$DATA/data/PG_VERSION"; then
+              VER=$(sudo cat "$DATA/data/PG_VERSION")
+              echo "Migrating data/-layout → $DATA/$VER/docker (PG_VERSION=$VER)"
+              /srv/virtua-fc/scripts/compose.sh stop postgres || true
+              sudo mkdir -p "$DATA/$VER"
+              sudo mv "$DATA/data" "$DATA/$VER/docker"
+
+            else
+              # Cases D / E: bind mount empty.
+              ANON_PATH=$(docker inspect virtua-fc-postgres-1 \
+                --format "{{range .Mounts}}{{if and (eq .Type \"volume\") (eq .Destination \"/var/lib/postgresql\")}}{{.Source}}{{end}}{{end}}" 2>/dev/null || true)
+              if [ -n "$ANON_PATH" ] && sudo find "$ANON_PATH" -name PG_VERSION -print -quit 2>/dev/null | grep -q .; then
+                # Case D: copy data out of the anonymous volume into the bind mount.
+                echo "Found data in anonymous volume at $ANON_PATH — copying into $DATA"
+                /srv/virtua-fc/scripts/compose.sh stop postgres || true
+                # cp -a preserves perms/owner/timestamps. The /. on src copies contents, not the dir itself.
+                sudo cp -a "$ANON_PATH/." "$DATA/"
+                echo "Copied. The anonymous volume is left in place — drop it manually with \"docker volume rm $(basename "$ANON_PATH")\" once the new layout is verified."
+              else
+                # Case E: nothing to migrate; postgres will initdb on the empty bind mount.
+                echo "Bind mount is empty and no anonymous volume with data found — postgres will initdb fresh."
+              fi
             fi
 
-            # Always force-recreate postgres so any compose-file mount changes
-            # take effect (and the migrated data is picked up on the new mount).
-            echo "Force-recreating postgres container"
+            sudo chown -R 999:999 "$DATA"
+
+            echo "::group::Host state of $DATA after"
+            sudo ls -la "$DATA" || true
+            for sub in data 17 18 19; do
+              if sudo test -d "$DATA/$sub"; then
+                echo "--- $DATA/$sub ---"
+                sudo ls -la "$DATA/$sub" || true
+              fi
+            done
+            echo "::endgroup::"
+
+            echo "Force-recreating postgres container so compose mount changes apply"
             /srv/virtua-fc/scripts/compose.sh up -d --force-recreate --no-deps postgres
           '
 
