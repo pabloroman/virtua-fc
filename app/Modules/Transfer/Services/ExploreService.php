@@ -9,6 +9,7 @@ use App\Models\GamePlayer;
 use App\Models\Loan;
 use App\Models\ShortlistedPlayer;
 use App\Models\Team;
+use App\Modules\Player\PlayerAge;
 use App\Support\CountryCodeMapper;
 use App\Support\PositionMapper;
 use Illuminate\Support\Collection;
@@ -236,32 +237,40 @@ class ExploreService
             if ($positions !== null && $positions !== []) {
                 // Match primary position OR any entry in the secondary_positions
                 // JSON array, so e.g. a CB/DM shows up under "Midfielders".
-                $placeholders = implode(',', array_fill(0, count($positions), '?'));
-                $query->where(function ($inner) use ($positions, $placeholders) {
-                    $inner->whereIn('position', $positions)
-                        ->orWhereRaw(
-                            "(secondary_positions IS NOT NULL AND jsonb_exists_any(secondary_positions::jsonb, ARRAY[$placeholders]::text[]))",
-                            $positions
-                        );
+                $query->where(function ($inner) use ($positions) {
+                    $inner->whereIn('position', $positions);
+                    foreach ($positions as $position) {
+                        $inner->orWhereJsonContains('secondary_positions', $position);
+                    }
                 });
             }
         }
 
         if (!empty($filters['min_age']) || !empty($filters['max_age'])) {
-            $gameDate = $game->current_date->toDateString();
-            $ageExpr = 'EXTRACT(YEAR FROM AGE(?::date, game_players.date_of_birth))';
+            // Convert age boundaries to date-of-birth cutoffs so the query
+            // stays portable (no Postgres-only EXTRACT/AGE). A player is at
+            // least min_age if dob <= current_date - min_age years; at most
+            // max_age if dob > current_date - (max_age + 1) years.
+            $gameDate = $game->current_date;
             if (!empty($filters['min_age'])) {
-                $query->whereRaw("($ageExpr) >= ?", [$gameDate, (int) $filters['min_age']]);
+                $query->where(
+                    'date_of_birth',
+                    '<=',
+                    PlayerAge::dateOfBirthCutoff((int) $filters['min_age'], $gameDate)
+                );
             }
             if (!empty($filters['max_age'])) {
-                $query->whereRaw("($ageExpr) <= ?", [$gameDate, (int) $filters['max_age']]);
+                $query->where(
+                    'date_of_birth',
+                    '>',
+                    PlayerAge::dateOfBirthCutoff((int) $filters['max_age'] + 1, $gameDate)
+                );
             }
         }
 
         if (!empty($filters['nationality'])) {
             // nationality is a JSON array of country names (["France", "Spain"]).
-            // ?::jsonb matches if the array contains the value.
-            $query->whereRaw('game_players.nationality::jsonb @> ?::jsonb', [json_encode([$filters['nationality']])]);
+            $query->whereJsonContains('nationality', $filters['nationality']);
         }
 
         if (!empty($filters['competition_id'])) {
@@ -348,11 +357,15 @@ class ExploreService
      */
     public function getDistinctNationalities(string $gameId): array
     {
-        $rows = DB::table('game_players')
+        // Reduce in PHP rather than via Postgres-only jsonb operators. The
+        // 'nationality' Eloquent cast already decodes the JSON array, so the
+        // primary nationality is just the first element. Volume is bounded by
+        // a single game's roster (~2–3k rows).
+        $rows = GamePlayer::query()
             ->where('game_id', $gameId)
-            ->whereRaw("jsonb_typeof(nationality::jsonb) = 'array'")
-            ->selectRaw("DISTINCT nationality::jsonb->>0 AS nat")
-            ->pluck('nat')
+            ->whereNotNull('nationality')
+            ->pluck('nationality')
+            ->map(fn ($n) => is_array($n) && isset($n[0]) ? $n[0] : null)
             ->filter()
             ->unique()
             ->values()

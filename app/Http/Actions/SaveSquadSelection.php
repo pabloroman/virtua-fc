@@ -86,6 +86,7 @@ class SaveSquadSelection
                 'height' => $template->height,
                 'foot' => $template->foot,
                 'team_id' => $teamId,
+                'is_reserve_squad' => false,
                 'number' => null,
                 'position' => $positionByTmId[$tmId] ?? 'Central Midfield',
                 'market_value' => null,

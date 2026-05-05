@@ -8,6 +8,7 @@ use App\Models\GamePlayer;
 use App\Models\Loan;
 use App\Models\Team;
 use App\Models\TransferOffer;
+use App\Modules\Player\PlayerAge;
 use App\Support\PositionMapper;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -46,7 +47,8 @@ class ScoutSearchQueryBuilder
      * Match candidates whose primary position is in $positions OR whose
      * secondary_positions JSON array contains any of $positions.
      *
-     * Uses PostgreSQL jsonb_exists_any for the secondary match.
+     * Uses Eloquent's whereJsonContains so the query stays portable across
+     * Postgres and SQLite drivers.
      */
     private function applyPositionFilter(Builder $query, array $positions): void
     {
@@ -56,14 +58,11 @@ class ScoutSearchQueryBuilder
             return;
         }
 
-        $placeholders = implode(',', array_fill(0, count($positions), '?'));
-
-        $query->where(function (Builder $inner) use ($positions, $placeholders) {
-            $inner->whereIn('position', $positions)
-                ->orWhereRaw(
-                    "(secondary_positions IS NOT NULL AND jsonb_exists_any(secondary_positions::jsonb, ARRAY[$placeholders]::text[]))",
-                    $positions
-                );
+        $query->where(function (Builder $inner) use ($positions) {
+            $inner->whereIn('position', $positions);
+            foreach ($positions as $position) {
+                $inner->orWhereJsonContains('secondary_positions', $position);
+            }
         });
     }
 
@@ -90,14 +89,25 @@ class ScoutSearchQueryBuilder
             return;
         }
 
-        $gameDate = $game->current_date->toDateString();
-        $ageExpr = "EXTRACT(YEAR FROM AGE(?::date, game_players.date_of_birth))";
+        // Convert age boundaries to date-of-birth cutoffs so the query stays
+        // portable (no Postgres-only EXTRACT/AGE). A player is at least
+        // age_min if dob <= current_date - age_min years; at most age_max if
+        // dob > current_date - (age_max + 1) years.
+        $gameDate = $game->current_date;
 
         if (! empty($filters['age_min'])) {
-            $query->whereRaw("($ageExpr) >= ?", [$gameDate, (int) $filters['age_min']]);
+            $query->where(
+                'date_of_birth',
+                '<=',
+                PlayerAge::dateOfBirthCutoff((int) $filters['age_min'], $gameDate)
+            );
         }
         if (! empty($filters['age_max'])) {
-            $query->whereRaw("($ageExpr) <= ?", [$gameDate, (int) $filters['age_max']]);
+            $query->where(
+                'date_of_birth',
+                '>',
+                PlayerAge::dateOfBirthCutoff((int) $filters['age_max'] + 1, $gameDate)
+            );
         }
     }
 

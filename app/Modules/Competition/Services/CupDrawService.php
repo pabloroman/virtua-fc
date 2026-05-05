@@ -19,6 +19,15 @@ use App\Modules\Competition\Services\LeagueFixtureGenerator;
 
 class CupDrawService
 {
+    /**
+     * Memoized map of competition_id => tier for league competitions, populated
+     * lazily on first cup draw and reused across draws within the same process.
+     * Competition reference data is immutable within a request.
+     *
+     * @var array<string, int>|null
+     */
+    private ?array $leagueTierByCompetition = null;
+
     public function __construct(
         private readonly CountryConfig $countryConfig,
         private readonly FinalVenueResolver $finalVenueResolver,
@@ -371,22 +380,52 @@ class CupDrawService
      */
     private function getTeamTierMap(string $gameId, Collection $teamIds): array
     {
-        // PLANES-SEAM: cross-plane JOIN. competition_entries=tenant,
-        // competitions=control. Restored while both planes share one
-        // physical Postgres. Re-split before the planes are physically
-        // separated. See CLAUDE.md → "Control plane / tenant plane".
-        return DB::table('competition_entries')
-            ->join('competitions', 'competition_entries.competition_id', '=', 'competitions.id')
-            ->where('competition_entries.game_id', $gameId)
-            ->where('competitions.role', Competition::ROLE_LEAGUE)
-            ->where('competitions.tier', '>=', 1)
-            ->whereIn('competition_entries.team_id', $teamIds)
-            ->groupBy('competition_entries.team_id')
-            ->select('competition_entries.team_id', DB::raw('MIN(competitions.tier) as tier'))
-            ->get()
-            ->pluck('tier', 'team_id')
+        // Two-step read: tenant-plane competition_entries first, then a
+        // memoized control-plane lookup of league tiers. Replaces a JOIN that
+        // crossed the tenant/control plane boundary.
+        $entries = DB::table('competition_entries')
+            ->where('game_id', $gameId)
+            ->whereIn('team_id', $teamIds)
+            ->select('team_id', 'competition_id')
+            ->get();
+
+        if ($entries->isEmpty()) {
+            return [];
+        }
+
+        $tierByCompetition = $this->getLeagueTierByCompetition();
+
+        $tierByTeam = [];
+        foreach ($entries as $entry) {
+            $tier = $tierByCompetition[$entry->competition_id] ?? null;
+            if ($tier === null) {
+                continue;
+            }
+            if (!isset($tierByTeam[$entry->team_id]) || $tier < $tierByTeam[$entry->team_id]) {
+                $tierByTeam[$entry->team_id] = $tier;
+            }
+        }
+
+        return $tierByTeam;
+    }
+
+    /**
+     * @return array<string, int>
+     */
+    private function getLeagueTierByCompetition(): array
+    {
+        if ($this->leagueTierByCompetition !== null) {
+            return $this->leagueTierByCompetition;
+        }
+
+        $this->leagueTierByCompetition = Competition::query()
+            ->where('role', Competition::ROLE_LEAGUE)
+            ->where('tier', '>=', 1)
+            ->pluck('tier', 'id')
             ->map(fn ($tier) => (int) $tier)
             ->all();
+
+        return $this->leagueTierByCompetition;
     }
 
     /**

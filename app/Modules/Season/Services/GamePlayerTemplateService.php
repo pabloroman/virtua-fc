@@ -19,11 +19,28 @@ class GamePlayerTemplateService
     /** @var array<string, list<string>> Transfermarkt ID → secondary positions */
     private ?array $secondaryPositionsMap = null;
 
+    /** @var array<string, bool> teamId → is_reserve_squad, populated lazily */
+    private array $teamReserveStatusCache = [];
+
     public function __construct(
         private ContractService $contractService,
         private PlayerDevelopmentService $developmentService,
         private PlayerValuationService $valuationService,
     ) {}
+
+    /**
+     * Memoized lookup of whether a team is a reserve squad (parent_team_id set).
+     */
+    private function isReserveSquad(string $teamId): bool
+    {
+        if (array_key_exists($teamId, $this->teamReserveStatusCache)) {
+            return $this->teamReserveStatusCache[$teamId];
+        }
+
+        $parentTeamId = Team::whereKey($teamId)->value('parent_team_id');
+
+        return $this->teamReserveStatusCache[$teamId] = $parentTeamId !== null;
+    }
 
     /**
      * Delete all templates for a season (call once before generating for multiple countries).
@@ -390,6 +407,7 @@ class GamePlayerTemplateService
             'height' => $playerData['height'] ?? null,
             'foot' => $foot,
             'team_id' => $teamId,
+            'is_reserve_squad' => $this->isReserveSquad($teamId),
             'number' => isset($playerData['number']) ? (int) $playerData['number'] : null,
             'position' => $playerData['position'] ?? 'Unknown',
             'secondary_positions' => json_encode($secondaryPositions),

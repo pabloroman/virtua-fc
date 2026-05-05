@@ -126,6 +126,7 @@ class GamePlayer extends Model
         'height',
         'foot',
         'team_id',
+        'is_reserve_squad',
         'number',
         'position',
         'secondary_positions',
@@ -145,6 +146,7 @@ class GamePlayer extends Model
 
     protected $casts = [
         'number' => 'integer',
+        'is_reserve_squad' => 'bool',
         'secondary_positions' => 'array',
         'nationality' => 'array',
         'date_of_birth' => 'date',

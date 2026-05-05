@@ -14,12 +14,22 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $season
  * @property string $trophy_type
  * @property-read \App\Models\User $user
- * @property-read \App\Models\Game $game
  * @property-read \App\Models\Team $team
  * @property-read \App\Models\Competition $competition
  */
 class ManagerTrophy extends Model
 {
+    /**
+     * Trophies are cross-game artifacts (one row per (user_id, game_id,
+     * competition_id, season)) read aggregated across games on the manager
+     * profile and reputation pages. Lives on the control plane alongside
+     * users, teams and competitions. The `game_id` column stays as a logical
+     * reference so per-season trophy counts can still be scoped to a single
+     * career save, but no Eloquent relation walks back to Game (that would
+     * be a forbidden control → tenant relation per CLAUDE.md).
+     */
+    protected $connection = 'pgsql_control';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -34,11 +44,6 @@ class ManagerTrophy extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function game(): BelongsTo
-    {
-        return $this->belongsTo(Game::class);
     }
 
     public function team(): BelongsTo
