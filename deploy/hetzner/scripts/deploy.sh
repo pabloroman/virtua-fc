@@ -28,11 +28,18 @@ if [ -z "$IMAGE_TAG" ]; then
 fi
 echo "==> Deploying tag: $IMAGE_TAG"
 
-echo "==> Pulling images"
+echo "==> Pulling app images"
 "$COMPOSE" pull app horizon scheduler
 
-echo "==> Rolling app, horizon, scheduler"
-"$COMPOSE" up -d app horizon scheduler
+# Bring up every service defined in docker-compose.yml + the monitoring
+# overlay. Idempotent: services that are running with current config are
+# left alone, services with config changes are recreated, services not
+# yet running are started. Critical for first-boot scenarios where
+# infrastructure services (traefik, prometheus, grafana, …) were never
+# brought up — `up -d app horizon scheduler` would not start them since
+# nothing depends on them.
+echo "==> Reconciling full stack (compose up -d)"
+"$COMPOSE" up -d --remove-orphans
 
 echo "==> Waiting for /up health check"
 APP_DOMAIN=$(grep -E '^APP_DOMAIN=' "$ENV_FILE" | cut -d= -f2-)
