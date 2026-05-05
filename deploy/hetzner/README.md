@@ -233,10 +233,12 @@ nano /srv/virtua-fc/env/.env
 ```
 
 Generate `APP_KEY` once (it must look like `base64:…`) — you can do it before
-the stack is up by running the image directly:
+the stack is up by running the image directly. Use whatever tag exists in
+GHCR right now (see §11): the branch tag for first-time bootstrap, or
+`latest` once a `main` build has landed.
 
 ```bash
-docker run --rm ghcr.io/<owner>/virtua-fc:latest \
+docker run --rm ghcr.io/<owner>/virtua-fc:<tag> \
   php artisan key:generate --show
 ```
 
@@ -842,30 +844,78 @@ GitHub repo's slug is, that's the image path.
 
 ### 11.2 How the image gets there
 
-1. You push to `main`.
-2. `tests.yml` runs and goes green.
-3. `deploy.yml` waits for `tests`, then runs `docker buildx build` against
-   the repo root `Dockerfile` (target `production`) and pushes two tags:
-   - `ghcr.io/pabloroman/virtua-fc:<12-char-sha>` (immutable, what we
-     actually deploy)
-   - `ghcr.io/pabloroman/virtua-fc:latest` (moving pointer for humans)
-4. The workflow then SSHes to the Hetzner box and runs
-   `IMAGE_TAG=<sha> /srv/virtua-fc/scripts/deploy.sh`, which writes the
-   tag into `/srv/virtua-fc/env/.env` and runs `docker compose pull && up -d`.
+The image is published by `.github/workflows/deploy.yml`. There are two
+jobs:
+
+- **`build`** — runs on **every branch push** plus `workflow_dispatch`.
+  It runs `docker buildx build --target production` against the repo root
+  `Dockerfile` and pushes to GHCR with these tags:
+  - `:<12-char-sha>` — always, immutable, what `deploy.sh` actually pins to.
+  - `:<branch-name>` — always, e.g. `:claude-hetzner-deployment-monitoring-5lyhl`.
+  - `:latest` — **only when the build is on `main`** (so feature branches
+    can't accidentally move the prod-facing pointer).
+- **`deploy`** — runs **only on push to `main`** (or `workflow_dispatch`
+  with `deploy=true`). SSHes to the Hetzner box and runs
+  `IMAGE_TAG=<sha> /srv/virtua-fc/scripts/deploy.sh`.
 
 The push step uses the workflow's built-in `GITHUB_TOKEN` with
 `packages: write` permission (granted at the top of `deploy.yml`). No PAT
 needed for *publishing*.
 
-### 11.3 First-time setup
+### 11.3 The very first push (chicken-and-egg)
 
-After the very first successful push from `deploy.yml`:
+GHCR has no image until the `build` job runs and succeeds at least once.
+A fresh repo's `ghcr.io/<owner>/<repo>:latest` URL returns 404 until then —
+which is the order-of-operations problem you'll hit if you try to bootstrap
+the server before any CI build has happened.
+
+Because `build` runs on **every** branch push (not just `main`), the fix
+is simple: just push the branch you're working on. The build will succeed,
+the package will be created, and you'll have a pullable
+`ghcr.io/<owner>/<repo>:<branch-name>` tag — even though `:latest` doesn't
+exist yet (it'll appear when this lands on `main`).
+
+Three paths to get the first image, in order of preference:
+
+1. **Push your branch.** Easiest. Just `git push`. The `build` job runs;
+   the `deploy` job is automatically skipped because you're not on main.
+   Watch it complete in the Actions tab; the package now exists.
+2. **Manually run the workflow** via Actions → "Build and deploy" → Run
+   workflow → pick your branch → leave `deploy` unchecked. Same end state
+   as #1.
+3. **Build and push from your laptop** as a last resort:
+   ```bash
+   echo "$GITHUB_TOKEN" | docker login ghcr.io -u <github-username> --password-stdin
+   docker buildx build \
+     --target production \
+     --platform linux/amd64 \
+     --tag ghcr.io/<owner>/virtua-fc:bootstrap \
+     --push .
+   ```
+   Useful when CI is unavailable, but slower and requires a PAT with
+   `write:packages`.
+
+After any of these:
 
 1. **The package is created automatically** at
    `https://github.com/users/<owner>/packages/container/package/virtua-fc`
    (or `/orgs/<org>/...` for org-owned repos).
 2. **By default the package is private.** You must grant the Hetzner box
-   pull access — pick one option below.
+   pull access — pick one option in §11.4.
+
+### 11.3.1 Bootstrap order with the new server
+
+For a brand-new server + brand-new GHCR package, the order is:
+
+1. Push your bootstrap branch → CI build runs → image lands in GHCR
+   (tagged `:<branch>` and `:<sha>`, but **not** `:latest` yet).
+2. Make the package public *or* set up a PAT for the server (§11.4).
+3. Provision the Hetzner server with `cloud-init.yaml` (§3 Path A).
+4. SSH in, set `IMAGE_TAG=<branch-name>` in `/srv/virtua-fc/env/.env`,
+   first-boot the stack (§3.5).
+5. Once the server is up and you're confident, merge to `main`. The next
+   `main` push tags `:latest`, runs the deploy job, and from then on
+   `deploy.sh` pins to a specific SHA on every CI deploy.
 
 ### 11.4 Granting the server pull access
 
@@ -908,8 +958,14 @@ Open `/srv/virtua-fc/env/.env` and confirm:
 
 ```bash
 GHCR_REPO=pabloroman/virtua-fc      # <owner>/<repo>, no leading "ghcr.io/"
-IMAGE_TAG=latest                    # bumped automatically by deploy.sh
+IMAGE_TAG=<branch-name-or-sha>      # bumped automatically by deploy.sh
 ```
+
+For the very first boot from a feature branch, set `IMAGE_TAG` to the
+branch tag (e.g. `claude-hetzner-deployment-monitoring-5lyhl`) or the
+12-char SHA. After the branch lands on `main`, you can flip it to
+`latest` if you like — though `deploy.sh` overwrites this on every CI run
+to pin to an exact SHA, which is what you want for reproducibility.
 
 The compose file builds the full `ghcr.io/${GHCR_REPO}:${IMAGE_TAG}` URL
 itself — see the `x-app-image` anchor at the top of
