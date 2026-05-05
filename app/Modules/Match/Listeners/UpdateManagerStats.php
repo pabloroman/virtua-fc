@@ -6,9 +6,13 @@ use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\ManagerStats;
 use App\Modules\Match\Events\MatchFinalized;
+use Illuminate\Contracts\Queue\ShouldQueueAfterCommit;
+use Illuminate\Queue\InteractsWithQueue;
 
-class UpdateManagerStats
+class UpdateManagerStats implements ShouldQueueAfterCommit
 {
+    use InteractsWithQueue;
+
     public function handle(MatchFinalized $event): void
     {
         $match = $event->match;

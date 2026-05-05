@@ -93,7 +93,8 @@ class MatchdayOrchestrator
                         // normal flow.
                         $playerMatch = GameMatch::find($result['playerMatch']->id);
                         if ($playerMatch) {
-                            $this->finalizationService->finalize($playerMatch, $game->refresh());
+                            $finalization = $this->finalizationService->finalize($playerMatch, $game->refresh());
+                            $this->finalizationService->dispatchPostFinalizeEffects($finalization);
                         }
 
                         return MatchdayAdvanceResult::done();
@@ -746,7 +747,8 @@ class MatchdayOrchestrator
         $match = GameMatch::find($game->pending_finalization_match_id);
 
         if ($match) {
-            $this->finalizationService->finalize($match, $game);
+            $finalization = $this->finalizationService->finalize($match, $game);
+            $this->finalizationService->dispatchPostFinalizeEffects($finalization);
         }
     }
 

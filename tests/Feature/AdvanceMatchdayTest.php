@@ -123,9 +123,12 @@ class AdvanceMatchdayTest extends TestCase
 
         // Finalize the user's match (standings are deferred until finalization)
         $this->game->refresh();
-        app(MatchFinalizationService::class)->finalize(
-            GameMatch::find($this->game->pending_finalization_match_id),
-            $this->game,
+        $finalizationService = app(MatchFinalizationService::class);
+        $finalizationService->dispatchPostFinalizeEffects(
+            $finalizationService->finalize(
+                GameMatch::find($this->game->pending_finalization_match_id),
+                $this->game,
+            )
         );
 
         // All 4 teams should have 1 game played in standings
@@ -174,9 +177,12 @@ class AdvanceMatchdayTest extends TestCase
 
         // Finalize the user's match (standings are deferred until finalization)
         $this->game->refresh();
-        app(MatchFinalizationService::class)->finalize(
-            GameMatch::find($this->game->pending_finalization_match_id),
-            $this->game,
+        $finalizationService = app(MatchFinalizationService::class);
+        $finalizationService->dispatchPostFinalizeEffects(
+            $finalizationService->finalize(
+                GameMatch::find($this->game->pending_finalization_match_id),
+                $this->game,
+            )
         );
 
         // Verify standings were updated
@@ -269,9 +275,12 @@ class AdvanceMatchdayTest extends TestCase
 
         // Cup tie resolution is deferred until match finalization
         $this->game->refresh();
-        app(MatchFinalizationService::class)->finalize(
-            GameMatch::find($this->game->pending_finalization_match_id),
-            $this->game,
+        $finalizationService = app(MatchFinalizationService::class);
+        $finalizationService->dispatchPostFinalizeEffects(
+            $finalizationService->finalize(
+                GameMatch::find($this->game->pending_finalization_match_id),
+                $this->game,
+            )
         );
 
         // Cup tie should be completed with a winner
@@ -448,7 +457,9 @@ class AdvanceMatchdayTest extends TestCase
 
         // Finalize the user's match
         $finalizationService = app(MatchFinalizationService::class);
-        $finalizationService->finalize($match, $this->game);
+        $finalizationService->dispatchPostFinalizeEffects(
+            $finalizationService->finalize($match, $this->game)
+        );
 
         // Verify standings_applied is set
         $match->refresh();
@@ -456,7 +467,9 @@ class AdvanceMatchdayTest extends TestCase
 
         // Call finalize AGAIN (simulates double-submit or safety net re-entry)
         $this->game->refresh();
-        $finalizationService->finalize($match, $this->game);
+        $finalizationService->dispatchPostFinalizeEffects(
+            $finalizationService->finalize($match, $this->game)
+        );
 
         // Standings should still show 1 played, not 2
         $homeStanding = GameStanding::where('game_id', $this->game->id)

@@ -105,7 +105,8 @@ class SuspensionDeferralTest extends TestCase
         // Finalize the match
         $this->game->refresh();
         $match = GameMatch::find($this->game->pending_finalization_match_id);
-        app(MatchFinalizationService::class)->finalize($match, $this->game);
+        $finalizationService = app(MatchFinalizationService::class);
+        $finalizationService->dispatchPostFinalizeEffects($finalizationService->finalize($match, $this->game));
 
         // AFTER finalization: suspension should now be served
         $suspension->refresh();
@@ -237,7 +238,8 @@ class SuspensionDeferralTest extends TestCase
         $this->game->update(['pending_finalization_match_id' => $match->id]);
 
         // Finalize the match
-        app(MatchFinalizationService::class)->finalize($match, $this->game);
+        $finalizationService = app(MatchFinalizationService::class);
+        $finalizationService->dispatchPostFinalizeEffects($finalizationService->finalize($match, $this->game));
 
         // The red card suspension should NOT have been consumed — the player
         // must miss the NEXT match, not the one where they received the card
@@ -333,7 +335,8 @@ class SuspensionDeferralTest extends TestCase
         ]);
 
         $this->game->update(['pending_finalization_match_id' => $match->id]);
-        app(MatchFinalizationService::class)->finalize($match, $this->game);
+        $finalizationService = app(MatchFinalizationService::class);
+        $finalizationService->dispatchPostFinalizeEffects($finalizationService->finalize($match, $this->game));
 
         // Pre-existing suspension SHOULD be served (player sat out the match)
         $existingSuspension = PlayerSuspension::where('game_player_id', $suspendedPlayer->id)
@@ -482,7 +485,8 @@ class SuspensionDeferralTest extends TestCase
         $this->game->refresh();
         if ($this->game->pending_finalization_match_id) {
             $match = GameMatch::find($this->game->pending_finalization_match_id);
-            app(MatchFinalizationService::class)->finalize($match, $this->game);
+            $finalizationService = app(MatchFinalizationService::class);
+            $finalizationService->dispatchPostFinalizeEffects($finalizationService->finalize($match, $this->game));
         }
 
         // AI Team A's Copa suspension should NOT have been served
@@ -537,7 +541,8 @@ class SuspensionDeferralTest extends TestCase
         // Finalize
         $this->game->refresh();
         $match = GameMatch::find($this->game->pending_finalization_match_id);
-        app(MatchFinalizationService::class)->finalize($match, $this->game);
+        $finalizationService = app(MatchFinalizationService::class);
+        $finalizationService->dispatchPostFinalizeEffects($finalizationService->finalize($match, $this->game));
 
         // La Liga suspension SHOULD be served (team played La Liga)
         $suspension = PlayerSuspension::where('game_player_id', $suspendedPlayer->id)
