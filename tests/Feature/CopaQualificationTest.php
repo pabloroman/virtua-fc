@@ -301,6 +301,49 @@ class CopaQualificationTest extends TestCase
         $this->assertCount(52, $this->cupEntries());
     }
 
+    public function test_supercup_qualifier_outside_top_5_is_force_included(): void
+    {
+        // Reproduces the OddCupDrawPoolException scenario from production:
+        // a tier-3 cup finalist (e.g. SD Ponferradina at ESP3A pos 12, or
+        // Juventud Torremolinos at ESP3B pos 8) qualifies for the supercup
+        // by winning/runner-up of the cup, but lives outside its group's
+        // top 5 and outside the range step 4 reaches when filling
+        // target_size. Without 3b it never enters the rebuilt cup, the
+        // entry_round bump silently misses it, and round 1 ends up odd.
+        Competition::factory()->knockoutCup()->create(['id' => 'ESPSUP', 'country' => 'ES']);
+
+        // 4 supercup qualifiers: 2 ESP1 leaders (always in step 1) plus the
+        // two cup finalists from outside the auto-qualifying tiers.
+        $supercupQualifiers = [
+            $this->teamsByCompetition['ESP1'][0]->id,
+            $this->teamsByCompetition['ESP1'][1]->id,
+            $this->teamsByCompetition['ESP3A'][11]->id, // pos 12, beyond step 4's reach with target=70
+            $this->teamsByCompetition['ESP3B'][7]->id,  // pos 8, beyond step 4's reach with target=70
+        ];
+        foreach ($supercupQualifiers as $teamId) {
+            CompetitionEntry::create([
+                'game_id' => $this->game->id,
+                'competition_id' => 'ESPSUP',
+                'team_id' => $teamId,
+                'entry_round' => 1,
+            ]);
+        }
+
+        // Step 4 with target=70 fills only ESP3A pos 6-20 + ESP3B pos 6-8 —
+        // misses ESP3B pos 8 if 3b doesn't pull it in. Note: with the fix
+        // active, the supercup teams take some of those fill slots, so
+        // step 4 reaches further into ESP3B than it otherwise would.
+        config(['countries.ES.cup_qualification.ESPCUP.target_size' => 70]);
+
+        $this->runProcessor();
+
+        $entries = $this->cupEntries();
+        foreach ($supercupQualifiers as $teamId) {
+            $this->assertContains($teamId, $entries, "supercup team {$teamId} must be in cup");
+        }
+        $this->assertCount(70, $entries, 'cup field still hits target_size');
+    }
+
     public function test_target_size_with_supercup_bump_yields_even_round_1(): void
     {
         // The whole point of the invariant: round 1 must be even after the

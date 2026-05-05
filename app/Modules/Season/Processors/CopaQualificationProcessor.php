@@ -27,6 +27,11 @@ use Illuminate\Support\Facades\Log;
  *     (e.g. ESP3A and ESP3B → top 5 each).
  *  3. Preserve any regional teams already in the cup that aren't in any
  *     playable tier (lower-division seed teams from data/<year>/ESPCUP).
+ *  3b. Force-include any team in this country's supercup field. The
+ *      downstream setup pipeline bumps these teams to a later entry_round
+ *      via an UPDATE — if a supercup-qualifying cup finalist (e.g. a
+ *      tier-3 cup winner outside its group's top 5) isn't in this rebuilt
+ *      cup field, the bump silently misses it and round 1 ends up odd.
  *  4. If `target_size` is set, fill to that size by walking the next
  *     positions in the `top_per_group` competitions, skipping reserves
  *     and teams already qualified.
@@ -77,6 +82,8 @@ class CopaQualificationProcessor implements SeasonProcessor
      *   2. Top N from each top_per_group competition (ESP3A/B top 5 — minus reserves).
      *   3. Pre-existing regional teams already in the cup (lower-division
      *      seed teams not registered in any playable tier).
+     *   3b. Force-include the country's supercup-qualifying teams (so the
+     *       downstream entry_round bump always finds them and round 1 stays even).
      *   4. Fill any remaining slots up to target_size from later positions
      *      in the top_per_group competitions.
      *
@@ -161,6 +168,31 @@ class CopaQualificationProcessor implements SeasonProcessor
         }
         foreach ($regionalQuery->pluck('team_id') as $teamId) {
             $qualifiers[$teamId] = true;
+        }
+
+        // 3b. Force-include the supercup-qualifying teams. The supercup
+        //     processor (priority 80) ran before us and persisted the new
+        //     season's supercup field; downstream the setup pipeline bumps
+        //     these teams from cup round 1 to a later entry_round so the
+        //     supercup field skips the early rounds. That bump is an
+        //     UPDATE on existing rows — if a supercup team isn't in this
+        //     cup field, it silently isn't bumped, and round 1 ends up
+        //     odd (the OddCupDrawPoolException case). League top 1–2 are
+        //     always ESP1/auto-qualify, but cup finalists can be anyone:
+        //     a tier-3 cup winner outside its group's top 5 falls through
+        //     steps 1-3 and may not be reached by step 4. Pull them in
+        //     explicitly so the parity invariant holds.
+        $supercupConfig = $this->countryConfig->supercup($countryCode);
+        if ($supercupConfig && ($supercupConfig['cup'] ?? null) === $cupId) {
+            $supercupTeamIds = CompetitionEntry::where('game_id', $game->id)
+                ->where('competition_id', $supercupConfig['competition'])
+                ->pluck('team_id');
+            foreach ($supercupTeamIds as $teamId) {
+                if (isset($reserveLookup[$teamId])) {
+                    continue;
+                }
+                $qualifiers[$teamId] = true;
+            }
         }
 
         // 4. Fill to target_size from remaining top_per_group competitions
