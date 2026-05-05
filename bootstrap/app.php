@@ -19,6 +19,11 @@ return Application::configure(basePath: dirname(__DIR__))
         }
     })
     ->withMiddleware(function (Middleware $middleware) {
+        // Traefik terminates TLS and forwards plain HTTP to the app
+        // container; trust X-Forwarded-* so URL::to(), asset(), route(),
+        // and Vite's manifest URLs honour the original https scheme.
+        $middleware->trustProxies(at: '*');
+
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
 
         $middleware->web(append: [
