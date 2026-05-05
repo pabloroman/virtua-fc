@@ -22,6 +22,7 @@ issue and update this README.
 8. [Scaling out](#8-scaling-out)
 9. [Disaster-recovery drill](#9-disaster-recovery-drill)
 10. [Reference appendix](#10-reference-appendix)
+11. [Container image (GHCR)](#11-container-image-ghcr)
 
 ---
 
@@ -80,8 +81,9 @@ Before you start the bring-up, make sure you have:
   - (Add other subdomains later if you choose to expose `horizon.` / `pulse.`
     — they are reachable today via the app at `/horizon` and `/pulse`.)
 - **GHCR access** — the GitHub Actions workflow pushes the production image
-  to `ghcr.io/<owner>/virtua-fc`. Make the package public, or grant the box a
-  read-only token.
+  to `ghcr.io/<owner>/<repo>` (e.g. `ghcr.io/pabloroman/virtua-fc`). See
+  [§11 Container image (GHCR)](#11-container-image-ghcr) for how the URL
+  is constructed and how to grant the box pull access.
 - **Resend API key** for transactional email.
 - **Laravel Nightwatch token** for APM/error tracking.
 - **Slack webhook** for alert delivery (optional but recommended).
@@ -806,3 +808,137 @@ at the root of the repo or the design doc that triggered this work):
 
 When the time comes, drop a `migrate.sh` next to the other scripts and add a
 "Migration day" section above §3.
+
+---
+
+## 11. Container image (GHCR)
+
+### 11.1 Where the URL comes from
+
+The image is published to the GitHub Container Registry. The URL is built
+from three pieces:
+
+```
+ghcr.io / <owner> / <repo> : <tag>
+```
+
+| Piece | Source | Value for this project |
+|---|---|---|
+| `ghcr.io` | hard-coded — GHCR's hostname | `ghcr.io` |
+| `<owner>` | GitHub user or org that owns the repo | `pabloroman` |
+| `<repo>` | the repository name | `virtua-fc` |
+| `<tag>` | image tag (commit SHA, branch, or `latest`) | the 12-char SHA, plus `latest` |
+
+So the image you'll be pulling on the server is:
+
+```
+ghcr.io/pabloroman/virtua-fc:latest
+ghcr.io/pabloroman/virtua-fc:3507182f4b9c        # specific build
+```
+
+The `<owner>/<repo>` part comes straight from `${{ github.repository }}` in
+`.github/workflows/deploy.yml` — no manual configuration. Whatever the
+GitHub repo's slug is, that's the image path.
+
+### 11.2 How the image gets there
+
+1. You push to `main`.
+2. `tests.yml` runs and goes green.
+3. `deploy.yml` waits for `tests`, then runs `docker buildx build` against
+   the repo root `Dockerfile` (target `production`) and pushes two tags:
+   - `ghcr.io/pabloroman/virtua-fc:<12-char-sha>` (immutable, what we
+     actually deploy)
+   - `ghcr.io/pabloroman/virtua-fc:latest` (moving pointer for humans)
+4. The workflow then SSHes to the Hetzner box and runs
+   `IMAGE_TAG=<sha> /srv/virtua-fc/scripts/deploy.sh`, which writes the
+   tag into `/srv/virtua-fc/env/.env` and runs `docker compose pull && up -d`.
+
+The push step uses the workflow's built-in `GITHUB_TOKEN` with
+`packages: write` permission (granted at the top of `deploy.yml`). No PAT
+needed for *publishing*.
+
+### 11.3 First-time setup
+
+After the very first successful push from `deploy.yml`:
+
+1. **The package is created automatically** at
+   `https://github.com/users/<owner>/packages/container/package/virtua-fc`
+   (or `/orgs/<org>/...` for org-owned repos).
+2. **By default the package is private.** You must grant the Hetzner box
+   pull access — pick one option below.
+
+### 11.4 Granting the server pull access
+
+#### Option A — make the package public (recommended for OSS)
+
+GitHub UI → your packages → `virtua-fc` → Package settings → "Change
+visibility" → Public. Now `docker pull ghcr.io/<owner>/virtua-fc:<tag>`
+works from anywhere with no credentials. Easiest, no rotation burden.
+
+If the repo is private and you'd rather keep the image private too, use B
+or C.
+
+#### Option B — Personal Access Token on the server
+
+1. GitHub → Settings → Developer settings → Personal access tokens →
+   **Tokens (classic)** → Generate new token. The fine-grained tokens do
+   not yet support the GHCR `read:packages` scope at the time of writing,
+   so use a classic token.
+2. Scope: `read:packages` only. Set an expiry (90 days is reasonable).
+3. SSH to the box and log Docker into GHCR once:
+   ```bash
+   ssh deploy@<server-ip>
+   echo "<the-token>" | docker login ghcr.io -u <github-username> --password-stdin
+   ```
+   The credential is saved to `/home/deploy/.docker/config.json` and survives
+   reboots. `docker compose pull` from the deploy scripts will use it
+   automatically.
+4. Add a calendar reminder for token rotation; re-run `docker login` with the
+   new value when the time comes.
+
+#### Option C — repo-scoped deploy token
+
+Same as B but generated under Repo → Settings → Actions → Repository
+secrets won't work here (those are CI-only). Use a fine-grained PAT scoped
+to a single package once GHCR support lands; until then, B is the path.
+
+### 11.5 Configuring the server-side env
+
+Open `/srv/virtua-fc/env/.env` and confirm:
+
+```bash
+GHCR_REPO=pabloroman/virtua-fc      # <owner>/<repo>, no leading "ghcr.io/"
+IMAGE_TAG=latest                    # bumped automatically by deploy.sh
+```
+
+The compose file builds the full `ghcr.io/${GHCR_REPO}:${IMAGE_TAG}` URL
+itself — see the `x-app-image` anchor at the top of
+`compose/docker-compose.yml`.
+
+### 11.6 Pulling a specific build manually
+
+To pin to a known-good tag (e.g. while debugging):
+
+```bash
+# List the tags GHCR has for the package
+curl -fsSL \
+  -H "Authorization: Bearer $(echo -n '<github-username>:<token>' | base64)" \
+  https://ghcr.io/v2/<owner>/virtua-fc/tags/list | jq
+
+# Pull and run a specific tag
+ssh deploy@<server-ip>
+IMAGE_TAG=3507182f4b9c /srv/virtua-fc/scripts/deploy.sh
+```
+
+`deploy.sh` records the previous tag to `/srv/virtua-fc/env/.previous`, so
+`rollback.sh` can revert with no arguments.
+
+### 11.7 Pruning old images on the server
+
+Disk fills slowly with stale tags. The deploy scripts don't prune
+automatically — add this to a weekly cron if disk pressure becomes a thing:
+
+```bash
+docker image prune -af --filter "until=336h"   # 14 days
+```
+
