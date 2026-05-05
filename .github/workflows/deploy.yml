@@ -233,6 +233,11 @@ jobs:
           HOST: ${{ secrets.HETZNER_HOST }}
           USER: ${{ secrets.HETZNER_USER }}
         run: |
+          # Ensure the env dir exists. bootstrap.sh creates it, but a server
+          # bootstrapped before that step (or with the deploy tree not yet
+          # rsynced) may be missing it. sudo is configured NOPASSWD for the
+          # deploy user, so this is safe in CI.
+          ssh "$USER@$HOST" "sudo install -d -m 0755 -o $USER -g $USER /srv/virtua-fc/env"
           scp -p production.env "$USER@$HOST:/srv/virtua-fc/env/.env"
           ssh "$USER@$HOST" "chmod 600 /srv/virtua-fc/env/.env"
           rm -f production.env
