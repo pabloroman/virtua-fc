@@ -10,13 +10,21 @@ on:
         required: false
         type: string
       deploy:
-        description: 'Run the deploy step (only meaningful on main)'
+        description: 'Run the deploy step'
         required: false
         type: boolean
         default: false
+      environment:
+        description: 'Target environment for the deploy step'
+        required: false
+        type: choice
+        options:
+          - staging
+          - production
+        default: staging
 
 concurrency:
-  group: deploy-hetzner-${{ github.ref }}
+  group: deploy-hetzner-${{ inputs.environment || 'production' }}-${{ github.ref }}
   cancel-in-progress: false
 
 permissions:
@@ -82,15 +90,20 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && inputs.deploy) }}
     runs-on: ubuntu-latest
     environment:
-      name: production
+      name: ${{ inputs.environment || 'production' }}
       url: https://${{ vars.APP_DOMAIN }}
     steps:
       - name: Configure SSH
+        env:
+          SSH_KEY: ${{ secrets.HETZNER_SSH_KEY }}
+          HOST: ${{ secrets.HETZNER_HOST }}
         run: |
+          test -n "$SSH_KEY" || { echo "HETZNER_SSH_KEY is empty for environment '${{ inputs.environment || 'production' }}'"; exit 1; }
+          test -n "$HOST"    || { echo "HETZNER_HOST is empty for environment '${{ inputs.environment || 'production' }}'"; exit 1; }
           install -d -m 0700 ~/.ssh
-          echo "${{ secrets.HETZNER_SSH_KEY }}" > ~/.ssh/id_ed25519
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
           chmod 0600 ~/.ssh/id_ed25519
-          ssh-keyscan -H "${{ secrets.HETZNER_HOST }}" >> ~/.ssh/known_hosts
+          ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
 
       - name: Deploy
         env:
