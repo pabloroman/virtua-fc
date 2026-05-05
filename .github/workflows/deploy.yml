@@ -256,6 +256,29 @@ jobs:
         run: |
           ssh "$USER@$HOST" "/srv/virtua-fc/scripts/smoketest.sh"
 
+      # Surface container state and recent logs whenever any prior step failed,
+      # so a failed deploy doesn't require an SSH session to diagnose.
+      - name: Diagnostics on failure
+        if: failure()
+        env:
+          HOST: ${{ secrets.HETZNER_HOST }}
+          USER: ${{ secrets.HETZNER_USER }}
+        run: |
+          ssh "$USER@$HOST" '
+            set +e
+            echo "::group::compose ps"
+            /srv/virtua-fc/scripts/compose.sh ps
+            echo "::endgroup::"
+            for svc in postgres redis app horizon scheduler traefik; do
+              echo "::group::logs $svc (tail 80)"
+              /srv/virtua-fc/scripts/compose.sh logs --no-color --tail=80 "$svc" || true
+              echo "::endgroup::"
+            done
+            echo "::group::disk usage"
+            df -h /var/lib/virtua-fc /srv/virtua-fc 2>/dev/null
+            echo "::endgroup::"
+          '
+
       - name: Rollback on failure
         if: failure()
         env:
