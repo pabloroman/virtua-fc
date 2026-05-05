@@ -1,0 +1,15 @@
+# Drop dashboard JSON files here to provision them on Grafana startup.
+# The provisioning loader watches this directory (see ../provisioning/dashboards/dashboards.yml).
+#
+# Recommended starter set — import via Grafana UI ("+" → Import → ID) or
+# place the JSON exports next to this file:
+#
+#   1860   Node Exporter Full
+#   14282  cAdvisor exporter
+#   9628   PostgreSQL Database
+#   11835  Redis Dashboard for Prometheus Redis Exporter
+#   17346  Traefik Official Standalone Dashboard
+#
+# After import, use "Share → Export → Save to file" and commit the JSON
+# under deploy/hetzner/grafana/dashboards/ so future deploys are
+# reproducible.

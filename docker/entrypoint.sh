@@ -32,9 +32,17 @@ if [ ! -f .env ]; then
     fi
 fi
 
-# Run migrations
-echo "Running migrations..."
-php artisan migrate --force
+# Run migrations only on the designated container (typically `app`).
+# Multi-service prod deploys (app + horizon + scheduler share this image) must
+# avoid concurrent migrate runs racing each other — set RUN_MIGRATIONS=true on
+# exactly one service. Defaults to true so single-container and dev setups
+# continue to work without changes.
+if [ "${RUN_MIGRATIONS:-true}" = "true" ]; then
+    echo "Running migrations..."
+    php artisan migrate --force
+else
+    echo "Skipping migrations (RUN_MIGRATIONS != true)."
+fi
 
 # Cache configuration in production
 if [ "$APP_ENV" = "production" ]; then

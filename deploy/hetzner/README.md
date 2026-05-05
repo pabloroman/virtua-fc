@@ -1,0 +1,761 @@
+# VirtuaFC on Hetzner — Operational Playbook
+
+A copy-pasteable runbook for deploying and operating VirtuaFC on a single
+dedicated Hetzner root server with a bolted-on monitoring stack. Written for
+an operator who has SSH access and nothing else: every command in this
+document is intended to be run literally, in order, top to bottom.
+
+If something here disagrees with the codebase, the codebase wins — open an
+issue and update this README.
+
+---
+
+## Contents
+
+1. [Topology](#1-topology)
+2. [Prerequisites](#2-prerequisites)
+3. [One-time server bring-up](#3-one-time-server-bring-up)
+4. [Day-2 operations](#4-day-2-operations)
+5. [Monitoring access & on-call](#5-monitoring-access--on-call)
+6. [Health checks & smoke tests](#6-health-checks--smoke-tests)
+7. [Common incidents → fixes](#7-common-incidents--fixes)
+8. [Scaling out](#8-scaling-out)
+9. [Disaster-recovery drill](#9-disaster-recovery-drill)
+10. [Reference appendix](#10-reference-appendix)
+
+---
+
+## 1. Topology
+
+```
+                        Internet
+                           │
+                  ┌────────▼─────────┐
+                  │ Traefik          │  :80/:443 (Let's Encrypt HTTP-01)
+                  │ (TLS, routing)   │
+                  └─┬──────┬────────┬┘
+                    │      │        │
+            virtuafc.…           grafana.…
+                    │              │
+                  app           Grafana
+                  (Octane/FrankenPHP)
+                    │
+              scheduler   horizon
+              (schedule:work) (queues)
+                    │
+        ┌───────────┼────────────────┐
+        │           │                │
+     postgres     redis      Prometheus + Loki + Promtail
+                              + node/cAdvisor/pg/redis exporters
+```
+
+All services run as containers on a single Docker host. Networks:
+
+- `edge` — Traefik plus everything that takes external traffic (`app`, `grafana`).
+- `internal` — everything else (Postgres, Redis, the monitoring scrape targets).
+
+Host paths:
+
+| Path | Purpose |
+|---|---|
+| `/srv/virtua-fc/compose/` | `docker-compose.yml`, `docker-compose.monitoring.yml` |
+| `/srv/virtua-fc/env/.env` | secrets (mode 0600, owned by `deploy`) |
+| `/srv/virtua-fc/scripts/` | `compose.sh`, `deploy.sh`, `rollback.sh`, `backup.sh`, `restore.sh`, `smoketest.sh` |
+| `/srv/virtua-fc/{prometheus,promtail,grafana}/` | provisioned monitoring config |
+| `/srv/virtua-fc/backups/` | local Postgres dumps (rotated) |
+| `/var/lib/virtua-fc/{postgres,redis,traefik,prometheus,grafana,loki}` | persistent data volumes |
+
+---
+
+## 2. Prerequisites
+
+Before you start the bring-up, make sure you have:
+
+- **Hetzner root server** (recommended: AX42, Ryzen 7700, 64 GB ECC, 2×1 TB
+  NVMe in RAID-1) running Ubuntu 24.04 LTS via `installimage`.
+- **SSH key** for the future `deploy` user (the public key, not the private).
+- **Domain** with DNS records pointing at the server's IPv4/IPv6:
+  - `virtuafc.example.com` → app
+  - `grafana.virtuafc.example.com` → Grafana
+  - (Add other subdomains later if you choose to expose `horizon.` / `pulse.`
+    — they are reachable today via the app at `/horizon` and `/pulse`.)
+- **GHCR access** — the GitHub Actions workflow pushes the production image
+  to `ghcr.io/<owner>/virtua-fc`. Make the package public, or grant the box a
+  read-only token.
+- **Resend API key** for transactional email.
+- **Laravel Nightwatch token** for APM/error tracking.
+- **Slack webhook** for alert delivery (optional but recommended).
+- **Hetzner Storage Box** (~€4/mo) for offsite backups, plus its SSH user/host.
+
+GitHub repository settings (one-time):
+
+| Where | Name | Value |
+|---|---|---|
+| Secrets | `HETZNER_HOST` | server IP or hostname |
+| Secrets | `HETZNER_USER` | `deploy` |
+| Secrets | `HETZNER_SSH_KEY` | the *private* key, ed25519 preferred |
+| Variables | `APP_DOMAIN` | e.g. `virtuafc.example.com` |
+
+---
+
+## 3. One-time server bring-up
+
+### 3.1 Install Ubuntu 24.04 with RAID-1
+
+In Hetzner Robot, boot the server into rescue mode and run:
+
+```bash
+installimage
+```
+
+Choose **Ubuntu 24.04**. In the editor, set:
+
+```
+SWRAID 1
+SWRAIDLEVEL 1
+HOSTNAME virtua-fc-1
+PART /boot ext3 1G
+PART lvm vg0 all
+LV vg0 root / ext4 64G
+LV vg0 var /var ext4 100G
+LV vg0 srv /srv ext4 32G
+LV vg0 docker /var/lib/docker ext4 200G
+LV vg0 data /var/lib/virtua-fc ext4 all
+```
+
+Reboot. From your laptop:
+
+```bash
+ssh root@<server-ip>
+```
+
+### 3.2 Run the bootstrap script
+
+Copy the bootstrap script to the box and run it. It is idempotent.
+
+```bash
+# from your laptop, in the repo root
+scp deploy/hetzner/scripts/bootstrap.sh root@<server-ip>:/tmp/bootstrap.sh
+ssh root@<server-ip> "DEPLOY_PUBKEY='ssh-ed25519 AAAA…' bash /tmp/bootstrap.sh"
+```
+
+What it does (see `scripts/bootstrap.sh` for the source):
+
+- Creates the `deploy` user with passwordless sudo and your SSH key.
+- Disables root SSH and password auth in `/etc/ssh/sshd_config`.
+- Configures `ufw` (deny incoming except 22/80/443).
+- Enables `fail2ban` (sshd jail) and `unattended-upgrades`.
+- Installs Docker Engine + compose plugin from Docker's apt repo.
+- Sets the timezone to UTC (matches `APP_TIMEZONE`).
+- Creates `/srv/virtua-fc/...` and `/var/lib/virtua-fc/...` directory layout.
+
+**Verify SSH lockdown** in a *different* terminal — both must hold:
+
+```bash
+ssh root@<server-ip>      # MUST FAIL
+ssh deploy@<server-ip>    # MUST SUCCEED (key only)
+```
+
+### 3.3 Push deployment files to the server
+
+From the repo root on your laptop:
+
+```bash
+rsync -avz --delete \
+  deploy/hetzner/compose/        deploy@<server-ip>:/srv/virtua-fc/compose/
+rsync -avz --delete \
+  deploy/hetzner/scripts/        deploy@<server-ip>:/srv/virtua-fc/scripts/
+rsync -avz --delete \
+  deploy/hetzner/prometheus/     deploy@<server-ip>:/srv/virtua-fc/prometheus/
+rsync -avz --delete \
+  deploy/hetzner/promtail/       deploy@<server-ip>:/srv/virtua-fc/promtail/
+rsync -avz --delete \
+  deploy/hetzner/grafana/        deploy@<server-ip>:/srv/virtua-fc/grafana/
+ssh deploy@<server-ip> "chmod +x /srv/virtua-fc/scripts/*.sh"
+```
+
+### 3.4 Fill in the environment file
+
+```bash
+ssh deploy@<server-ip>
+cp /srv/virtua-fc/compose/.env.example /srv/virtua-fc/env/.env
+chmod 0600 /srv/virtua-fc/env/.env
+nano /srv/virtua-fc/env/.env
+```
+
+Generate `APP_KEY` once (it must look like `base64:…`) — you can do it before
+the stack is up by running the image directly:
+
+```bash
+docker run --rm ghcr.io/<owner>/virtua-fc:latest \
+  php artisan key:generate --show
+```
+
+Paste the output into `APP_KEY=` in `.env`. Fill in `DB_PASSWORD`,
+`RESEND_API_KEY`, `NIGHTWATCH_TOKEN`, `GRAFANA_ADMIN_PASSWORD`, the
+StorageBox values, etc.
+
+### 3.5 First boot
+
+```bash
+cd /srv/virtua-fc/compose
+/srv/virtua-fc/scripts/compose.sh pull
+/srv/virtua-fc/scripts/compose.sh up -d
+/srv/virtua-fc/scripts/compose.sh ps
+```
+
+Watch the logs until `app` reports `Octane has started`:
+
+```bash
+/srv/virtua-fc/scripts/compose.sh logs -f --tail=200 app
+```
+
+The entrypoint will run `migrate --force` automatically on the `app` container
+(see `docker/entrypoint.sh` — gated by `RUN_MIGRATIONS=true`, set on `app`
+only in `compose/docker-compose.yml`). The `horizon` and `scheduler`
+containers skip migrations to avoid races.
+
+### 3.6 Seed reference data
+
+```bash
+/srv/virtua-fc/scripts/compose.sh exec app php artisan app:seed-reference-data --fresh
+```
+
+### 3.7 Open the front door
+
+Visit `https://virtuafc.example.com` — you should see the login page.
+Visit `https://grafana.virtuafc.example.com` — log in with
+`GRAFANA_ADMIN_USER` / `GRAFANA_ADMIN_PASSWORD`, then change the password.
+
+### 3.8 Schedule nightly backups
+
+```bash
+sudo tee /etc/systemd/system/virtua-fc-backup.service >/dev/null <<'EOF'
+[Unit]
+Description=VirtuaFC nightly Postgres backup
+After=docker.service
+
+[Service]
+Type=oneshot
+User=deploy
+ExecStart=/srv/virtua-fc/scripts/backup.sh
+EOF
+
+sudo tee /etc/systemd/system/virtua-fc-backup.timer >/dev/null <<'EOF'
+[Unit]
+Description=Run VirtuaFC backup nightly
+[Timer]
+OnCalendar=*-*-* 03:00:00
+RandomizedDelaySec=15min
+Persistent=true
+[Install]
+WantedBy=timers.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now virtua-fc-backup.timer
+sudo systemctl list-timers virtua-fc-backup.timer
+```
+
+### 3.9 Smoke test
+
+```bash
+/srv/virtua-fc/scripts/smoketest.sh
+```
+
+All checks should print `OK:`. If anything fails, jump to
+[Common incidents → fixes](#7-common-incidents--fixes).
+
+---
+
+## 4. Day-2 operations
+
+All commands assume you've SSHed in as `deploy@<server-ip>`. The
+`compose.sh` wrapper loads the env file and both compose files for you.
+
+### 4.1 Deploy a new version
+
+The normal path is automatic via `.github/workflows/deploy.yml` — push to
+`main`, the workflow builds the image, pushes to GHCR, SSHes in, and runs
+`scripts/deploy.sh` followed by `scripts/smoketest.sh`. To deploy manually:
+
+```bash
+IMAGE_TAG=<sha-or-tag> /srv/virtua-fc/scripts/deploy.sh
+```
+
+`deploy.sh` records the previous tag in `/srv/virtua-fc/env/.previous` for
+fast rollback.
+
+### 4.2 Roll back
+
+```bash
+/srv/virtua-fc/scripts/rollback.sh                  # back to previous
+/srv/virtua-fc/scripts/rollback.sh <explicit-tag>   # to a specific tag
+```
+
+### 4.3 Tail logs
+
+```bash
+/srv/virtua-fc/scripts/compose.sh logs -f --tail=200 app
+/srv/virtua-fc/scripts/compose.sh logs -f --tail=200 horizon scheduler
+/srv/virtua-fc/scripts/compose.sh logs -f --tail=200 traefik
+```
+
+For structured queries, use Grafana → Explore → Loki and filter by
+`{compose_service="app"}`.
+
+### 4.4 Run an artisan command
+
+```bash
+/srv/virtua-fc/scripts/compose.sh exec app php artisan <cmd>
+/srv/virtua-fc/scripts/compose.sh exec app php artisan tinker
+```
+
+Examples:
+
+```bash
+# Trigger the daily cleanup on demand
+/srv/virtua-fc/scripts/compose.sh exec app php artisan app:cleanup-games
+
+# Fire any due scheduled tasks now
+/srv/virtua-fc/scripts/compose.sh exec app php artisan schedule:run
+
+# Retry all failed Horizon jobs
+/srv/virtua-fc/scripts/compose.sh exec app php artisan horizon:retry all
+
+# Clear the cache after a config change in /srv/virtua-fc/env/.env
+/srv/virtua-fc/scripts/compose.sh exec app php artisan config:cache
+```
+
+### 4.5 Inspect Horizon
+
+The dashboard lives at `https://virtuafc.example.com/horizon` and is gated
+to `$user->is_admin` (see `app/Providers/HorizonServiceProvider.php`).
+
+CLI fallbacks:
+
+```bash
+/srv/virtua-fc/scripts/compose.sh exec app php artisan horizon:status
+/srv/virtua-fc/scripts/compose.sh exec horizon php artisan horizon:terminate
+/srv/virtua-fc/scripts/compose.sh exec app php artisan horizon:supervisor:list
+```
+
+The four supervisors (`gameplay`, `setup`, `mail`, `cleanup`) are configured
+in `config/horizon.php`.
+
+### 4.6 Inspect Pulse
+
+`https://virtuafc.example.com/pulse` — same admin gate
+(`app/Providers/AppServiceProvider.php` defines the `viewPulse` gate).
+Pulse is enabled via `PULSE_ENABLED=true`; its tables live in the same
+Postgres as the app.
+
+### 4.7 Database access
+
+```bash
+# psql shell
+/srv/virtua-fc/scripts/compose.sh exec postgres \
+  psql -U virtua_fc virtua_fc
+
+# Top 10 slow queries (requires pg_stat_statements; enable once with:
+#   CREATE EXTENSION pg_stat_statements;)
+/srv/virtua-fc/scripts/compose.sh exec postgres \
+  psql -U virtua_fc -d virtua_fc -c \
+  "SELECT round(total_exec_time::numeric, 2) AS total_ms,
+          calls,
+          round(mean_exec_time::numeric, 2) AS mean_ms,
+          left(query, 120) AS q
+     FROM pg_stat_statements
+    ORDER BY total_exec_time DESC
+    LIMIT 10;"
+
+# Database size
+/srv/virtua-fc/scripts/compose.sh exec postgres \
+  psql -U virtua_fc -d virtua_fc -c \
+  "SELECT pg_size_pretty(pg_database_size('virtua_fc'));"
+```
+
+### 4.8 Backup now / restore from backup
+
+```bash
+# Manual on-demand backup
+/srv/virtua-fc/scripts/backup.sh
+
+# List the contents of a dump (no destruction)
+/srv/virtua-fc/scripts/restore.sh --dry-run \
+  /srv/virtua-fc/backups/virtua_fc-20260105T030000Z.dump
+
+# Destructive restore (asks for confirmation)
+/srv/virtua-fc/scripts/restore.sh \
+  /srv/virtua-fc/backups/virtua_fc-20260105T030000Z.dump
+```
+
+`backup.sh` ships dumps to the Storage Box configured by `STORAGEBOX_*` in
+`/srv/virtua-fc/env/.env`, then prunes anything older than
+`BACKUP_RETENTION_DAYS` locally.
+
+### 4.9 Rotate secrets
+
+#### `APP_KEY`
+
+`APP_KEY` rotation invalidates **all** existing encrypted sessions. Plan a
+brief logout-everyone window:
+
+```bash
+# 1. Generate the new key without writing it.
+NEW_KEY=$(docker run --rm ghcr.io/<owner>/virtua-fc:latest php artisan key:generate --show)
+
+# 2. Edit /srv/virtua-fc/env/.env, replace APP_KEY.
+# 3. Bounce app/horizon/scheduler so they pick up the new key.
+/srv/virtua-fc/scripts/compose.sh up -d --force-recreate app horizon scheduler
+
+# 4. Flush sessions (Redis DB 0).
+/srv/virtua-fc/scripts/compose.sh exec redis redis-cli -n 0 FLUSHDB
+```
+
+#### `DB_PASSWORD`
+
+```bash
+# 1. Change it inside Postgres.
+/srv/virtua-fc/scripts/compose.sh exec postgres \
+  psql -U virtua_fc -d postgres -c "ALTER USER virtua_fc WITH PASSWORD '<new>';"
+
+# 2. Update DB_PASSWORD in /srv/virtua-fc/env/.env.
+# 3. Roll the consumers (postgres_exporter and the app services).
+/srv/virtua-fc/scripts/compose.sh up -d --force-recreate \
+  app horizon scheduler postgres_exporter
+```
+
+#### API tokens (Resend, Nightwatch, Slack webhook)
+
+Update `/srv/virtua-fc/env/.env` and `compose.sh up -d --force-recreate app
+horizon scheduler grafana`. Tokens are read at boot.
+
+### 4.10 Renew TLS
+
+Traefik renews Let's Encrypt certificates automatically (~30 days before
+expiry). Inspect:
+
+```bash
+/srv/virtua-fc/scripts/compose.sh logs traefik | grep -i acme
+```
+
+If renewal stalls, check that ports 80 and 443 are reachable from the
+internet (the HTTP-01 challenge needs port 80) and that DNS still points at
+this box.
+
+### 4.11 Update the deployment files themselves
+
+When this `deploy/hetzner/` tree changes (new compose service, new script):
+
+```bash
+# from your laptop, repo root, after pulling main
+rsync -avz --delete deploy/hetzner/{compose,scripts,prometheus,promtail,grafana}/ \
+  deploy@<server-ip>:/srv/virtua-fc/{compose,scripts,prometheus,promtail,grafana}/
+ssh deploy@<server-ip> "/srv/virtua-fc/scripts/compose.sh up -d"
+```
+
+---
+
+## 5. Monitoring access & on-call
+
+| URL | What | Auth |
+|---|---|---|
+| `https://virtuafc.example.com/up` | Health probe (Laravel default) | none — used by uptime checks |
+| `https://virtuafc.example.com/horizon` | Queue dashboard | logged-in admin (`is_admin`) |
+| `https://virtuafc.example.com/pulse` | App perf dashboard | logged-in admin (`is_admin`) |
+| `https://grafana.virtuafc.example.com` | Metrics + logs | Grafana basic auth |
+| Nightwatch SaaS dashboard | Errors / APM | Nightwatch login |
+| Better Stack / external uptime | External probe | external |
+
+### Where to look first when something is slow
+
+1. **Pulse** (`/pulse`) — slow requests, slow queries, slow jobs, exceptions.
+   Almost everything is here in one screen.
+2. **Horizon** (`/horizon`) — supervisor health, throughput, failed jobs.
+3. **Grafana** → *Node Exporter Full* dashboard — host CPU/RAM/disk pressure.
+4. **Grafana** → *Postgres / Redis* dashboards — connection counts, lock waits, hit rates.
+5. **Grafana → Explore → Loki** — full-text search the app's stdout
+   (`{compose_service="app"} |= "<term>"`).
+6. **Nightwatch** dashboard — exception clusters and traces.
+
+### Silencing an alert before maintenance
+
+- Grafana → Alerting → Silences → New silence → match the alert by label,
+  pick a duration. **Always** set a duration; never indefinite.
+
+### Importing standard dashboards
+
+Grafana → "+" → Import → enter ID → pick the Prometheus data source:
+
+| ID | Dashboard |
+|---|---|
+| 1860 | Node Exporter Full |
+| 14282 | cAdvisor exporter |
+| 9628 | PostgreSQL Database |
+| 11835 | Redis Dashboard for Prometheus Redis Exporter |
+| 17346 | Traefik Official Standalone Dashboard |
+
+Once imported, export each one as JSON and commit it under
+`deploy/hetzner/grafana/dashboards/` — the provisioning loader auto-imports
+that directory on next start (see `grafana/provisioning/dashboards/dashboards.yml`).
+
+---
+
+## 6. Health checks & smoke tests
+
+```bash
+/srv/virtua-fc/scripts/smoketest.sh
+```
+
+Wraps:
+
+- All compose services healthy (`docker compose ps`).
+- `https://<domain>/up` returns 200.
+- Postgres `pg_isready`.
+- Redis `PING` → `PONG`.
+- `php artisan horizon:status` reports running.
+- Grafana `/api/health` returns 200.
+
+Fails loudly on the first red light and exits non-zero — used by both the
+GitHub Actions deploy workflow (auto-rollback on failure) and on-call.
+
+---
+
+## 7. Common incidents → fixes
+
+### 502 Bad Gateway from Traefik
+
+1. `compose.sh ps` — is `app` healthy? If not, check entrypoint logs:
+   `compose.sh logs --tail=200 app`. Common causes:
+   - `APP_KEY` missing or wrong → `Cannot decrypt session` errors. Re-set in `.env`.
+   - DB unreachable → `compose.sh exec app php artisan migrate:status` to confirm.
+   - Migration failed → see "Migration failed mid-deploy" below.
+2. Container healthy but route still 502 → Traefik label drift: `compose.sh
+   logs --tail=200 traefik | grep -i error`.
+
+### Horizon dashboard shows a red supervisor
+
+1. `compose.sh exec horizon php artisan horizon:status` — confirms.
+2. Inspect failures: `https://<domain>/horizon/failed` or
+   `compose.sh exec app php artisan queue:failed`.
+3. Fix the underlying error (look at the exception in Pulse or Nightwatch),
+   then retry: `compose.sh exec app php artisan horizon:retry all`.
+4. If a single supervisor is wedged, restart it: `compose.sh exec horizon
+   php artisan horizon:terminate` (compose restarts the container).
+
+### Postgres disk filling
+
+```bash
+# Find the heaviest tables
+/srv/virtua-fc/scripts/compose.sh exec postgres \
+  psql -U virtua_fc -d virtua_fc -c \
+  "SELECT relname, pg_size_pretty(pg_total_relation_size(relid)) AS total
+     FROM pg_catalog.pg_statio_user_tables
+    ORDER BY pg_total_relation_size(relid) DESC
+    LIMIT 20;"
+
+# Reclaim space
+/srv/virtua-fc/scripts/compose.sh exec postgres \
+  psql -U virtua_fc -d virtua_fc -c "VACUUM (VERBOSE, ANALYZE);"
+```
+
+If Pulse is the culprit (high cardinality writes), trim its tables:
+
+```bash
+/srv/virtua-fc/scripts/compose.sh exec app php artisan pulse:purge
+```
+
+### Redis OOM
+
+Sessions and queues live in DB 0 by default; the cache lives in DB 1 (set by
+Laravel's `REDIS_CACHE_DB`). Flushing the cache only is safe:
+
+```bash
+/srv/virtua-fc/scripts/compose.sh exec redis redis-cli -n 1 FLUSHDB
+```
+
+Never `FLUSHALL` on prod — that drops queued jobs and active sessions.
+
+### Migration failed mid-deploy
+
+The new image is already running on `horizon`/`scheduler` (no migrations
+there) but `app` exited because `migrate --force` failed. `deploy.sh` will
+have detected the smoketest failure and called `rollback.sh`. If it didn't:
+
+```bash
+# 1. Roll back to the previous tag.
+/srv/virtua-fc/scripts/rollback.sh
+
+# 2. Inspect the migration that failed.
+/srv/virtua-fc/scripts/compose.sh exec app php artisan migrate:status
+
+# 3. Hotfix the migration in code, push a new commit, redeploy.
+```
+
+If the migration partially applied (DDL committed but the entrypoint died):
+you may need `php artisan migrate:rollback --step=1` from a one-shot
+container before deploying again.
+
+### Grafana shows "no data" everywhere
+
+1. Prometheus reachable? `compose.sh exec grafana wget -qO- http://prometheus:9090/-/healthy`.
+2. Targets up? Open Prometheus directly inside the network:
+   `compose.sh exec prometheus wget -qO- 'http://localhost:9090/api/v1/targets' | jq '.data.activeTargets[] | {job, health, lastError}'`.
+3. Common cause: a renamed service. Update `prometheus/prometheus.yml`,
+   `compose.sh up -d prometheus`.
+
+### TLS renewal stuck
+
+Traefik can't pass the HTTP-01 challenge if port 80 is blocked or DNS
+points elsewhere.
+
+```bash
+# Confirm port 80 is open and routes to traefik
+sudo ufw status
+sudo ss -tlnp | grep ':80 '
+# Force a reload
+/srv/virtua-fc/scripts/compose.sh restart traefik
+/srv/virtua-fc/scripts/compose.sh logs traefik | grep -i acme | tail -50
+```
+
+If `acme.json` is corrupted, stop traefik, delete the file, restart — Traefik
+will re-issue cleanly (subject to Let's Encrypt rate limits, so don't do
+this casually).
+
+---
+
+## 8. Scaling out
+
+This single-host setup is intentionally simple. Triggers to leave it:
+
+| Symptom | Action |
+|---|---|
+| Postgres CPU > 70 % sustained | Move Postgres to Hetzner Cloud or a dedicated DB host. Update `DB_HOST` in `.env`, redeploy. No code changes. |
+| App p95 latency > 500 ms after Pulse cleanup | Add a second app host behind a load balancer, share Redis + Postgres. Sticky sessions via Redis make this transparent. |
+| Match-simulation throughput becomes the bottleneck | Add a second host running only `horizon` (queue workers); same image, no app-side changes. |
+| Pulse writes drown the OLTP DB | Switch `PULSE_DB_CONNECTION` to a separate Postgres connection (the `pulse_pgsql` connection in `config/database.php` is wired for this). |
+| Cross-tenant queries (`PLANES-SEAM` markers) finally get refactored | Provision a second Postgres for `pgsql_control`, set `CONTROL_DB_*` in `.env`, enable `DATABASE_PLANES_GUARD_ENABLED=true` to verify the rewrite. |
+
+---
+
+## 9. Disaster-recovery drill
+
+Run quarterly. Goal: prove the latest backup is restorable in under 30 minutes.
+
+```bash
+# 1. Pull the latest dump from Storage Box to a scratch host (NOT prod).
+DUMP=$(ls -t /srv/virtua-fc/backups/virtua_fc-*.dump | head -1)
+
+# 2. Spin up an isolated postgres container.
+docker run -d --name vfc-dr -e POSTGRES_DB=virtua_fc \
+  -e POSTGRES_USER=virtua_fc -e POSTGRES_PASSWORD=drill \
+  -p 55432:5432 postgres:18-alpine
+
+# 3. Wait, then restore.
+sleep 5
+docker exec -i vfc-dr pg_restore -U virtua_fc -d virtua_fc < "$DUMP"
+
+# 4. Sanity-check row counts.
+docker exec vfc-dr psql -U virtua_fc -d virtua_fc -c \
+  "SELECT 'users', count(*) FROM users
+   UNION ALL SELECT 'games', count(*) FROM games
+   UNION ALL SELECT 'game_matches', count(*) FROM game_matches;"
+
+# 5. Tear down.
+docker rm -f vfc-dr
+```
+
+Record the date, dump size, and restore wall-clock time in your ops log. If
+the restore took materially longer than the previous drill, investigate
+(usually growth in the largest table or accumulated bloat).
+
+---
+
+## 10. Reference appendix
+
+### 10.1 Environment variables (production)
+
+Everything in `/srv/virtua-fc/env/.env`. The full template is at
+`deploy/hetzner/compose/.env.example`. The most important entries:
+
+| Var | Where it's read | Notes |
+|---|---|---|
+| `APP_KEY` | Laravel | Generate once; rotation logs everyone out. |
+| `APP_DOMAIN` / `APP_URL` | compose + Laravel | Must match DNS + TLS subject. |
+| `IMAGE_TAG` / `GHCR_REPO` | compose | Bumped by `deploy.sh`. |
+| `DB_PASSWORD` | compose + Laravel | Strong random; rotate via §4.9. |
+| `RUN_MIGRATIONS` | `docker/entrypoint.sh` | `true` only on `app`, `false` on `horizon`/`scheduler`. |
+| `TRUSTED_PROXIES` | Octane | `*` inside the compose network. |
+| `NIGHTWATCH_TOKEN`, `NIGHTWATCH_ENABLED` | `laravel/nightwatch` | APM/error tracking. |
+| `PULSE_ENABLED` | `laravel/pulse` | `true` in prod. |
+| `LOG_SLACK_WEBHOOK_URL` | `config/logging.php` | Reused by Grafana alerts. |
+| `RESEND_API_KEY` | `resend/resend-laravel` | Required if `MAIL_MAILER=resend`. |
+| `GRAFANA_ADMIN_PASSWORD` | Grafana | Rotate after first login. |
+| `STORAGEBOX_*`, `BACKUP_RETENTION_DAYS` | `scripts/backup.sh` | Offsite copy + local pruning. |
+
+### 10.2 Ports
+
+| Port | Service | Exposed externally? |
+|---|---|---|
+| 22 | sshd | yes (firewall to your IPs if you can) |
+| 80 | Traefik (HTTP, redirects to 443) | yes |
+| 443 | Traefik (HTTPS) | yes |
+| 8000 | `app` (FrankenPHP) | no (Traefik only) |
+| 3000 | Grafana | no (Traefik only, behind `grafana.<domain>`) |
+| 9090 | Prometheus | no |
+| 3100 | Loki | no |
+| 8082 | Traefik metrics endpoint | no |
+
+UFW enforces this — see `scripts/bootstrap.sh`.
+
+### 10.3 Volumes
+
+| Host path | Container | Purpose |
+|---|---|---|
+| `/var/lib/virtua-fc/postgres` | `postgres:/var/lib/postgresql/data` | Game + control DB |
+| `/var/lib/virtua-fc/redis` | `redis:/data` | AOF persistence |
+| `/var/lib/virtua-fc/traefik` | `traefik:/letsencrypt` | TLS certs |
+| `/var/lib/virtua-fc/prometheus` | `prometheus:/prometheus` | Metrics TSDB (30 d) |
+| `/var/lib/virtua-fc/grafana` | `grafana:/var/lib/grafana` | Dashboards, users |
+| `/var/lib/virtua-fc/loki` | `loki:/loki` | Log chunks |
+| `storage` (named) | `app/horizon/scheduler:/app/storage` | Laravel storage tree (uploads, logs) |
+
+### 10.4 Subdomains
+
+| Subdomain | Service | Set up where |
+|---|---|---|
+| `virtuafc.example.com` | App (Octane) | `traefik.http.routers.app.rule` in compose |
+| `grafana.virtuafc.example.com` | Grafana | `traefik.http.routers.grafana.rule` in monitoring compose |
+| (future) `horizon.virtuafc.example.com` | Horizon — currently served at `/horizon` on the app | not configured today |
+| (future) `pulse.virtuafc.example.com` | Pulse — currently served at `/pulse` on the app | not configured today |
+
+### 10.5 Where the codebase wires up each piece
+
+| Concern | File |
+|---|---|
+| Health endpoint `/up` | `bootstrap/app.php` |
+| Scheduled tasks | `routes/console.php` |
+| Horizon supervisors | `config/horizon.php` |
+| Horizon access gate | `app/Providers/HorizonServiceProvider.php` |
+| Pulse access gate | `app/Providers/AppServiceProvider.php` (`viewPulse`) |
+| DB connections (incl. control plane) | `config/database.php`, `config/database_planes.php` |
+| Migration gate | `docker/entrypoint.sh` (reads `RUN_MIGRATIONS`) |
+| Octane boot command | `Dockerfile` (`CMD`) |
+| Logging channels | `config/logging.php` |
+
+### 10.6 Data migration playbook
+
+We deferred the choice of migration strategy until we know whether prod
+data exists today. The options live in the project plan (see the plan file
+at the root of the repo or the design doc that triggered this work):
+
+1. **Greenfield re-seed** — `app:seed-reference-data --fresh`.
+2. **`pg_dump -Fc` → `pg_restore`** — offline cutover, the default.
+3. **Logical replication** — near-zero downtime, requires `wal_level=logical`.
+4. **Physical streaming replication** — alternative when logical isn't
+   available; same major Postgres version on both sides.
+5. **WAL shipping / pgBackRest** — long-term DR posture, layer on regardless.
+
+When the time comes, drop a `migrate.sh` next to the other scripts and add a
+"Migration day" section above §3.
