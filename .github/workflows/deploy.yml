@@ -121,9 +121,20 @@ jobs:
           HOST: ${{ secrets.HETZNER_HOST }}
           USER: ${{ secrets.HETZNER_USER }}
         run: |
-          ssh "$USER@$HOST" "sudo install -d -m 0755 -o $USER -g $USER /srv/virtua-fc /srv/virtua-fc/compose /srv/virtua-fc/scripts"
-          rsync -az --delete deploy/hetzner/compose/   "$USER@$HOST:/srv/virtua-fc/compose/"
-          rsync -az --delete deploy/hetzner/scripts/   "$USER@$HOST:/srv/virtua-fc/scripts/"
+          ssh "$USER@$HOST" "sudo install -d -m 0755 -o $USER -g $USER \
+            /srv/virtua-fc \
+            /srv/virtua-fc/compose \
+            /srv/virtua-fc/scripts \
+            /srv/virtua-fc/grafana \
+            /srv/virtua-fc/grafana/provisioning \
+            /srv/virtua-fc/grafana/dashboards \
+            /srv/virtua-fc/prometheus \
+            /srv/virtua-fc/promtail"
+          rsync -az --delete deploy/hetzner/compose/    "$USER@$HOST:/srv/virtua-fc/compose/"
+          rsync -az --delete deploy/hetzner/scripts/    "$USER@$HOST:/srv/virtua-fc/scripts/"
+          rsync -az --delete deploy/hetzner/grafana/    "$USER@$HOST:/srv/virtua-fc/grafana/"
+          rsync -az --delete deploy/hetzner/prometheus/ "$USER@$HOST:/srv/virtua-fc/prometheus/"
+          rsync -az --delete deploy/hetzner/promtail/   "$USER@$HOST:/srv/virtua-fc/promtail/"
           ssh "$USER@$HOST" "chmod +x /srv/virtua-fc/scripts/*.sh"
 
       # Render the production .env from GitHub Secrets (sensitive) and Variables

@@ -327,15 +327,23 @@ All commands assume you've SSHed in as `deploy@<server-ip>`. The
 ### 4.1 Deploy a new version
 
 The normal path is automatic via `.github/workflows/deploy.yml` — push to
-`main`, the workflow builds the image, pushes to GHCR, SSHes in, and runs
-`scripts/deploy.sh` followed by `scripts/smoketest.sh`. To deploy manually:
+`main`, the workflow builds the image, renders the production `.env` from
+GitHub environment Secrets/Variables, scps it to `/srv/virtua-fc/env/.env`,
+rsyncs the `deploy/hetzner/` tree, then SSHes in and runs `scripts/deploy.sh`
+followed by `scripts/smoketest.sh`.
+
+To deploy manually (after the new image has been pushed to GHCR):
 
 ```bash
-IMAGE_TAG=<sha-or-tag> /srv/virtua-fc/scripts/deploy.sh
+# As deploy@<host>: edit /srv/virtua-fc/env/.env and bump IMAGE_TAG=<sha-or-tag>
+sudo -u deploy sed -i "s|^IMAGE_TAG=.*|IMAGE_TAG=<sha-or-tag>|" /srv/virtua-fc/env/.env
+/srv/virtua-fc/scripts/deploy.sh
 ```
 
-`deploy.sh` records the previous tag in `/srv/virtua-fc/env/.previous` for
-fast rollback.
+`deploy.sh` is the script the CI runs too; it reads `IMAGE_TAG` from the
+rendered `.env`. CI records the previous tag in
+`/srv/virtua-fc/env/.previous` (read from the running container's image)
+before overwriting `.env`, so `rollback.sh` can revert.
 
 ### 4.2 Roll back
 
@@ -346,10 +354,13 @@ fast rollback.
 
 ### 4.3 Tail logs
 
+`logs.sh` defaults to following app + horizon + scheduler + traefik with
+`--tail=200`; pass any compose-logs args to override:
+
 ```bash
-/srv/virtua-fc/scripts/compose.sh logs -f --tail=200 app
-/srv/virtua-fc/scripts/compose.sh logs -f --tail=200 horizon scheduler
-/srv/virtua-fc/scripts/compose.sh logs -f --tail=200 traefik
+/srv/virtua-fc/scripts/logs.sh                    # default hot-path services
+/srv/virtua-fc/scripts/logs.sh app                # just app
+/srv/virtua-fc/scripts/logs.sh --tail=50 horizon  # last 50 lines, no follow
 ```
 
 For structured queries, use Grafana → Explore → Loki and filter by
@@ -357,25 +368,34 @@ For structured queries, use Grafana → Explore → Loki and filter by
 
 ### 4.4 Run an artisan command
 
+`artisan.sh` and `tinker.sh` wrap the compose-exec dance:
+
 ```bash
-/srv/virtua-fc/scripts/compose.sh exec app php artisan <cmd>
-/srv/virtua-fc/scripts/compose.sh exec app php artisan tinker
+/srv/virtua-fc/scripts/artisan.sh <cmd>
+/srv/virtua-fc/scripts/tinker.sh
+```
+
+Or one-shot from your laptop:
+
+```bash
+ssh deploy@<host> /srv/virtua-fc/scripts/artisan.sh schedule:run
+ssh -t deploy@<host> /srv/virtua-fc/scripts/tinker.sh   # -t for REPL TTY
 ```
 
 Examples:
 
 ```bash
 # Trigger the daily cleanup on demand
-/srv/virtua-fc/scripts/compose.sh exec app php artisan app:cleanup-games
+/srv/virtua-fc/scripts/artisan.sh app:cleanup-games
 
 # Fire any due scheduled tasks now
-/srv/virtua-fc/scripts/compose.sh exec app php artisan schedule:run
+/srv/virtua-fc/scripts/artisan.sh schedule:run
 
 # Retry all failed Horizon jobs
-/srv/virtua-fc/scripts/compose.sh exec app php artisan horizon:retry all
+/srv/virtua-fc/scripts/artisan.sh horizon:retry all
 
 # Clear the cache after a config change in /srv/virtua-fc/env/.env
-/srv/virtua-fc/scripts/compose.sh exec app php artisan config:cache
+/srv/virtua-fc/scripts/artisan.sh config:cache
 ```
 
 ### 4.5 Inspect Horizon
@@ -403,15 +423,17 @@ Postgres as the app.
 
 ### 4.7 Database access
 
+CLI on the box — `psql.sh` reads credentials and DB name from the
+rendered `.env`:
+
 ```bash
-# psql shell
-/srv/virtua-fc/scripts/compose.sh exec postgres \
-  psql -U virtua_fc virtua_fc
+/srv/virtua-fc/scripts/psql.sh
+/srv/virtua-fc/scripts/psql.sh -c "SELECT count(*) FROM users;"
+/srv/virtua-fc/scripts/psql.sh -f /tmp/some-script.sql
 
 # Top 10 slow queries (requires pg_stat_statements; enable once with:
 #   CREATE EXTENSION pg_stat_statements;)
-/srv/virtua-fc/scripts/compose.sh exec postgres \
-  psql -U virtua_fc -d virtua_fc -c \
+/srv/virtua-fc/scripts/psql.sh -c \
   "SELECT round(total_exec_time::numeric, 2) AS total_ms,
           calls,
           round(mean_exec_time::numeric, 2) AS mean_ms,
@@ -421,10 +443,34 @@ Postgres as the app.
     LIMIT 10;"
 
 # Database size
-/srv/virtua-fc/scripts/compose.sh exec postgres \
-  psql -U virtua_fc -d virtua_fc -c \
-  "SELECT pg_size_pretty(pg_database_size('virtua_fc'));"
+/srv/virtua-fc/scripts/psql.sh -c \
+  "SELECT pg_size_pretty(pg_database_size(current_database()));"
 ```
+
+GUI client (TablePlus, pgAdmin, DBeaver, …) — postgres is bound to
+`127.0.0.1:5432` on the host (never exposed publicly), so use an SSH
+local-forward from your laptop:
+
+```bash
+ssh -L 5432:127.0.0.1:5432 deploy@<host>
+```
+
+Then connect to `localhost:5432` with the username, password, and database
+in `/srv/virtua-fc/env/.env` (or your local copy of the GitHub Variables/
+Secrets the workflow renders from).
+
+### 4.7a Grafana access
+
+Grafana is exposed at `https://grafana.${APP_DOMAIN}` via Traefik with
+its own Let's Encrypt cert. You'll need an A/AAAA record (or wildcard)
+for that subdomain pointing at the Hetzner IP.
+
+Login: `GRAFANA_ADMIN_USER` / `GRAFANA_ADMIN_PASSWORD` from the GitHub
+environment (defaults: `admin` and the secret you set). Datasources
+(Prometheus, Loki) and dashboards are provisioned from
+`/srv/virtua-fc/grafana/{provisioning,dashboards}/`, which is rsync'd
+from `deploy/hetzner/grafana/` on every deploy — drop new dashboards
+into the repo, push, and they appear after the next workflow run.
 
 ### 4.8 Backup now / restore from backup
 
