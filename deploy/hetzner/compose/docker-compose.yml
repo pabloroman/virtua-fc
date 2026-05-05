@@ -173,8 +173,14 @@ services:
       POSTGRES_DB: ${DB_DATABASE:-virtua_fc}
       POSTGRES_USER: ${DB_USERNAME:-virtua_fc}
       POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD required}
+    # postgres:18+ stores data at /var/lib/postgresql/<major>/docker (a
+    # major-version-nested layout that supports pg_upgrade --link). Mount
+    # the parent dir so the image manages the version subdirectory itself.
+    # See docker-library/postgres#1259. Servers bootstrapped under the old
+    # ":/var/lib/postgresql/data" layout are migrated by the
+    # "Migrate postgres data layout" step in .github/workflows/deploy.yml.
     volumes:
-      - /var/lib/virtua-fc/postgres:/var/lib/postgresql/data
+      - /var/lib/virtua-fc/postgres:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-virtua_fc} -d ${DB_DATABASE:-virtua_fc}"]
       interval: 10s

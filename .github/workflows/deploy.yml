@@ -242,6 +242,49 @@ jobs:
           ssh "$USER@$HOST" "chmod 600 /srv/virtua-fc/env/.env"
           rm -f production.env
 
+      # Idempotent migration from the legacy postgres:17-style layout
+      # (data files directly inside /var/lib/virtua-fc/postgres) to the
+      # postgres:18-style nested layout (/var/lib/virtua-fc/postgres/<major>/docker).
+      # Detected by the presence of PG_VERSION at the mount root. Stops
+      # postgres if it's running, mv's data via a sibling tmp dir (same
+      # filesystem, no copy), and restores ownership for postgres UID 999.
+      #
+      # Runs on every deploy; the guard makes it a no-op once migrated.
+      - name: Migrate postgres data layout
+        env:
+          HOST: ${{ secrets.HETZNER_HOST }}
+          USER: ${{ secrets.HETZNER_USER }}
+        run: |
+          ssh "$USER@$HOST" '
+            set -euo pipefail
+            DATA=/var/lib/virtua-fc/postgres
+            if ! sudo test -e "$DATA/PG_VERSION"; then
+              echo "No legacy postgres data layout at $DATA — skipping migration."
+              exit 0
+            fi
+            VER=$(sudo cat "$DATA/PG_VERSION")
+            TARGET="$DATA/$VER/docker"
+            echo "Detected legacy layout (PG_VERSION=$VER) — migrating into $TARGET"
+
+            /srv/virtua-fc/scripts/compose.sh stop postgres || true
+
+            # Park the data in a sibling dir on the same filesystem (atomic mv).
+            STAGE="${DATA}.migrating"
+            sudo rm -rf "$STAGE"
+            sudo mkdir "$STAGE"
+            sudo find "$DATA" -mindepth 1 -maxdepth 1 -exec mv -t "$STAGE" {} +
+
+            # Recreate nested layout and slot data into <major>/docker.
+            sudo mkdir -p "$DATA/$VER"
+            sudo mv "$STAGE" "$TARGET"
+
+            sudo chown -R 999:999 "$DATA"
+            echo "Migration complete. New layout:"
+            sudo ls -la "$DATA"
+            sudo ls -la "$DATA/$VER"
+            sudo ls "$TARGET" | head -20
+          '
+
       - name: Deploy
         env:
           HOST: ${{ secrets.HETZNER_HOST }}
