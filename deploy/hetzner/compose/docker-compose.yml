@@ -135,6 +135,13 @@ services:
     environment:
       <<: *app-env
       RUN_MIGRATIONS: "false"
+    # No HTTP server in this container, and 'php artisan horizon:status'
+    # is unreliable as a docker healthcheck (it talks to Redis-backed
+    # state and exits non-zero in the supervisor's own context). Disable
+    # it here — smoketest.sh already validates Horizon by calling
+    # horizon:status from inside the app container.
+    healthcheck:
+      disable: true
     volumes:
       - storage:/app/storage
     depends_on:
@@ -144,12 +151,6 @@ services:
         condition: service_healthy
       app:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD", "php", "artisan", "horizon:status"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
     networks:
       - internal
 
