@@ -100,7 +100,53 @@ GitHub repository settings (one-time):
 
 ## 3. One-time server bring-up
 
-### 3.1 Install Ubuntu 24.04 with RAID-1
+Two paths, depending on which Hetzner product you're on. Both end at the
+same state — `/srv/virtua-fc/...` directories created, `deploy` user with
+your SSH key, root + password SSH disabled, ufw enforcing 22/80/443,
+Docker installed.
+
+### Path A — Hetzner Cloud (CX23+ / CCX) via cloud-init
+
+Pick this if you're provisioning a Cloud server. Cloud-init runs the YAML
+on first boot, so the box is already configured by the time you can SSH in.
+
+> **Sizing:** match/season simulation is CPU-bound. Use **CCX** (dedicated
+> vCPU) rather than CX (shared vCPU) for production, or expect noisy-neighbor
+> stalls. CX is fine for staging.
+
+1. **Edit the user-data file.** Open `deploy/hetzner/cloud-init.yaml` and
+   replace the `ssh-ed25519 AAAA_REPLACE_WITH_YOUR_PUBLIC_KEY …` line with
+   your real public key.
+2. **Create the server.** In the Hetzner Cloud console, choose Ubuntu 24.04,
+   pick CCX23 or larger, and paste the YAML into "User data". Or via CLI:
+   ```bash
+   hcloud server create \
+     --name virtua-fc-1 \
+     --type ccx23 \
+     --image ubuntu-24.04 \
+     --location nbg1 \
+     --ssh-key <your-key-name> \
+     --user-data-from-file deploy/hetzner/cloud-init.yaml
+   ```
+3. **Wait ~2 minutes** for cloud-init to finish (apt-update, Docker install,
+   etc.). The server is ready when `/etc/virtua-fc-bootstrapped` exists.
+4. **SSH in as deploy** (root login is already disabled by cloud-init):
+   ```bash
+   ssh deploy@<server-ip>
+   ```
+5. **Skip to §3.3** to push the deploy tree onto the box.
+
+If cloud-init fails for some reason (rare but possible — check
+`/var/log/cloud-init-output.log` on the box), fall back to Path B by running
+`scripts/bootstrap.sh` manually.
+
+### Path B — Hetzner dedicated root server (AX-line) via installimage
+
+Pick this if you're on a dedicated box. There is no cloud-init on dedicated
+hardware — you boot into rescue mode and run installimage, then run our
+bootstrap script.
+
+#### B.1 Install Ubuntu 24.04 with RAID-1
 
 In Hetzner Robot, boot the server into rescue mode and run:
 
@@ -129,7 +175,7 @@ Reboot. From your laptop:
 ssh root@<server-ip>
 ```
 
-### 3.2 Run the bootstrap script
+#### B.2 Run the bootstrap script
 
 Copy the bootstrap script to the box and run it. It is idempotent.
 
@@ -139,7 +185,8 @@ scp deploy/hetzner/scripts/bootstrap.sh root@<server-ip>:/tmp/bootstrap.sh
 ssh root@<server-ip> "DEPLOY_PUBKEY='ssh-ed25519 AAAA…' bash /tmp/bootstrap.sh"
 ```
 
-What it does (see `scripts/bootstrap.sh` for the source):
+What it does (see `scripts/bootstrap.sh` for the source — same end state as
+the cloud-init YAML):
 
 - Creates the `deploy` user with passwordless sudo and your SSH key.
 - Disables root SSH and password auth in `/etc/ssh/sshd_config`.

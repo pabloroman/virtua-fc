@@ -1,0 +1,129 @@
+#cloud-config
+# VirtuaFC initial-boot configuration for a Hetzner Cloud server (CX23+/CCX).
+#
+# Paste the contents of this file into the "user data" field when creating the
+# server in the Hetzner Cloud console (or pass via `hcloud server create
+# --user-data-from-file deploy/hetzner/cloud-init.yaml`).
+#
+# Before pasting, replace the placeholder ssh-ed25519 key in `users[0].ssh_authorized_keys`
+# with your actual public key. Everything else is generic.
+#
+# After the server boots, log in as `deploy@<ip>` and follow §3.3 onwards in
+# deploy/hetzner/README.md (rsync the deploy tree, fill .env, first boot).
+
+hostname: virtua-fc-1
+timezone: UTC
+locale: en_US.UTF-8
+
+# Disable root SSH and password auth — the deploy user (below) is the only way in.
+disable_root: true
+ssh_pwauth: false
+
+users:
+  - name: deploy
+    groups: [sudo, docker]
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    lock_passwd: true
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAA_REPLACE_WITH_YOUR_PUBLIC_KEY operator@laptop
+
+package_update: true
+package_upgrade: true
+packages:
+  - ca-certificates
+  - curl
+  - gnupg
+  - lsb-release
+  - ufw
+  - fail2ban
+  - unattended-upgrades
+  - htop
+  - iotop
+  - jq
+  - rsync
+  - git
+  - tmux
+  - postgresql-client-common
+  - postgresql-client
+
+write_files:
+  # SSH hardening drop-in — overrides the defaults from /etc/ssh/sshd_config.
+  - path: /etc/ssh/sshd_config.d/99-virtua-fc.conf
+    permissions: '0644'
+    content: |
+      PermitRootLogin no
+      PasswordAuthentication no
+      ChallengeResponseAuthentication no
+      KbdInteractiveAuthentication no
+
+  # fail2ban sshd jail.
+  - path: /etc/fail2ban/jail.d/sshd.local
+    permissions: '0644'
+    content: |
+      [sshd]
+      enabled = true
+      maxretry = 5
+      findtime = 10m
+      bantime = 1h
+
+  # Pin Docker's apt repo. The signing key is fetched in runcmd.
+  - path: /etc/apt/sources.list.d/docker.list.tmpl
+    permissions: '0644'
+    content: |
+      deb [arch=ARCH signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu CODENAME stable
+
+runcmd:
+  # --- Docker install (Ubuntu's repo lags upstream; pin to docker.com) ---
+  - install -m 0755 -d /etc/apt/keyrings
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+  - chmod a+r /etc/apt/keyrings/docker.asc
+  - bash -c 'set -e; . /etc/os-release; sed -e "s|ARCH|$(dpkg --print-architecture)|" -e "s|CODENAME|$VERSION_CODENAME|" /etc/apt/sources.list.d/docker.list.tmpl > /etc/apt/sources.list.d/docker.list'
+  - rm -f /etc/apt/sources.list.d/docker.list.tmpl
+  - apt-get update -y
+  - apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+  # --- Firewall (deny incoming except SSH/HTTP/HTTPS) ---
+  - ufw --force reset
+  - ufw default deny incoming
+  - ufw default allow outgoing
+  - ufw allow 22/tcp comment 'ssh'
+  - ufw allow 80/tcp comment 'http'
+  - ufw allow 443/tcp comment 'https'
+  - ufw --force enable
+
+  # --- Services ---
+  - systemctl enable --now fail2ban
+  - systemctl enable --now systemd-timesyncd
+  - dpkg-reconfigure -f noninteractive unattended-upgrades
+  - systemctl reload ssh || systemctl reload sshd
+
+  # --- Directory layout (matches deploy/hetzner/README.md §1) ---
+  - install -d -m 0755 -o deploy -g deploy /srv/virtua-fc /srv/virtua-fc/compose /srv/virtua-fc/env /srv/virtua-fc/backups /srv/virtua-fc/prometheus /srv/virtua-fc/promtail /srv/virtua-fc/grafana /srv/virtua-fc/grafana/provisioning /srv/virtua-fc/grafana/dashboards /srv/virtua-fc/scripts
+  - install -d -m 0755 /var/lib/virtua-fc /var/lib/virtua-fc/postgres /var/lib/virtua-fc/redis /var/lib/virtua-fc/traefik /var/lib/virtua-fc/prometheus /var/lib/virtua-fc/grafana /var/lib/virtua-fc/loki
+
+  # Grafana container runs as UID 472.
+  - chown -R 472:472 /var/lib/virtua-fc/grafana
+
+  # Traefik acme.json must be 0600 or it refuses to start.
+  - touch /var/lib/virtua-fc/traefik/acme.json
+  - chmod 0600 /var/lib/virtua-fc/traefik/acme.json
+
+  # Marker so the operator knows cloud-init finished.
+  - bash -c 'echo "cloud-init bootstrap finished at $(date -u +%FT%TZ)" > /etc/virtua-fc-bootstrapped'
+
+final_message: |
+  VirtuaFC cloud-init bootstrap complete.
+
+  Next steps from your laptop:
+    1. ssh deploy@<server-ip>           (root login is disabled)
+    2. From the repo root, sync the deploy tree:
+         rsync -avz deploy/hetzner/{compose,scripts,prometheus,promtail,grafana}/ \
+           deploy@<ip>:/srv/virtua-fc/{compose,scripts,prometheus,promtail,grafana}/
+    3. cp /srv/virtua-fc/compose/.env.example /srv/virtua-fc/env/.env
+       chmod 0600 /srv/virtua-fc/env/.env
+       # edit with APP_KEY, DB_PASSWORD, NIGHTWATCH_TOKEN, etc.
+    4. /srv/virtua-fc/scripts/compose.sh up -d
+    5. /srv/virtua-fc/scripts/smoketest.sh
+
+  Full playbook: deploy/hetzner/README.md
