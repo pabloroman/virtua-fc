@@ -63,8 +63,14 @@ x-app-env: &app-env
 
 services:
   traefik:
-    image: traefik:v3.2
+    image: traefik:v3.4
     restart: unless-stopped
+    # traefik:v3.2 ships a Docker SDK that pins API version 1.24, which
+    # modern Docker Engines (>= 25) reject ("client version 1.24 is too
+    # old"). 3.3+ updated the embedded SDK; DOCKER_API_VERSION is set as
+    # a belt-and-suspenders override in case of future engine bumps.
+    environment:
+      DOCKER_API_VERSION: "1.44"
     command:
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
