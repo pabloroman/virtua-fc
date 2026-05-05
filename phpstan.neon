@@ -4,6 +4,8 @@ includes:
 
 parameters:
 
+    phpVersion: 80500
+
     paths:
         - app/
 

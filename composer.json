@@ -6,7 +6,7 @@
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
-        "php": "^8.4",
+        "php": "^8.5",
         "fakerphp/faker": "^1.23",
         "jenssegers/agent": "^2.6",
         "laravel/framework": "^12.0",
