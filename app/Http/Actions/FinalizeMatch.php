@@ -24,18 +24,22 @@ class FinalizeMatch
     {
         // Atomic finalization: lock the game row to prevent double-submit
         // (user clicking Continue twice) and races with the finalizePendingMatch
-        // safety net in MatchdayOrchestrator::advance().
-        $game = DB::transaction(function () use ($gameId) {
+        // safety net in MatchdayOrchestrator::advance(). Only the lock-protected
+        // mutations run inside the transaction; post-finalize side effects
+        // (event dispatches, beforeMatches, date advance, tournament end
+        // detection) run after commit so a sibling finalize can't pile up
+        // behind synchronous listeners.
+        ['game' => $game, 'finalization' => $finalization] = DB::transaction(function () use ($gameId) {
             $game = Game::where('id', $gameId)->lockForUpdate()->first();
 
             if (! $game) {
-                return null;
+                return ['game' => null, 'finalization' => null];
             }
 
             $matchId = $game->pending_finalization_match_id;
 
             if (! $matchId) {
-                return $game;
+                return ['game' => $game, 'finalization' => null];
             }
 
             $match = GameMatch::find($matchId);
@@ -43,16 +47,21 @@ class FinalizeMatch
             if (! $match || ! $match->played) {
                 $game->update(['pending_finalization_match_id' => null]);
 
-                return $game;
+                return ['game' => $game, 'finalization' => null];
             }
 
-            $this->finalizationService->finalize($match, $game);
-
-            return $game;
+            return [
+                'game' => $game,
+                'finalization' => $this->finalizationService->finalize($match, $game),
+            ];
         });
 
         if (! $game) {
             return redirect()->route('show-game', $gameId);
+        }
+
+        if ($finalization) {
+            $this->finalizationService->dispatchPostFinalizeEffects($finalization);
         }
 
         // Fire SeasonCompleted if no unplayed matches remain after finalization.

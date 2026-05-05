@@ -4,6 +4,7 @@ namespace App\Modules\Match\Services;
 
 use App\Events\SeasonCompleted;
 use App\Modules\Competition\Services\CompetitionHandlerResolver;
+use App\Modules\Match\DTOs\MatchFinalizationResult;
 use App\Modules\Match\Events\CupTieResolved;
 use App\Modules\Match\Events\GameDateAdvanced;
 use App\Modules\Match\Events\MatchFinalized;
@@ -43,7 +44,7 @@ class MatchFinalizationService
      */
     public function finalizePendingIfAny(string $gameId): bool
     {
-        $finalizedGame = DB::transaction(function () use ($gameId) {
+        $finalizationResult = DB::transaction(function () use ($gameId) {
             $game = Game::where('id', $gameId)->lockForUpdate()->first();
 
             if (! $game || ! $game->pending_finalization_match_id) {
@@ -58,38 +59,50 @@ class MatchFinalizationService
                 return null;
             }
 
-            $this->finalize($match, $game);
-
-            return $game;
+            return $this->finalize($match, $game);
         });
 
-        if (! $finalizedGame) {
+        if (! $finalizationResult) {
             return false;
         }
+
+        // Side effects (event dispatches, beforeMatches, date advance, tournament
+        // end detection) run AFTER the lock-protected transaction commits so a
+        // sibling finalize on the same game can't pile up behind them.
+        $this->dispatchPostFinalizeEffects($finalizationResult);
 
         // Mirror FinalizeMatch: when no unplayed matches remain after the
         // finalize, fire SeasonCompleted so downstream listeners (other-league
         // simulation, activation records) run. Tournament mode has its own
-        // TournamentEnded chain dispatched from inside finalize().
-        $hasRemainingMatches = GameMatch::where('game_id', $finalizedGame->id)
+        // TournamentEnded chain dispatched from dispatchPostFinalizeEffects().
+        $hasRemainingMatches = GameMatch::where('game_id', $finalizationResult->game->id)
             ->where('played', false)
             ->exists();
 
-        if (! $hasRemainingMatches && ! $finalizedGame->isTournamentMode()) {
-            event(new SeasonCompleted($finalizedGame));
+        if (! $hasRemainingMatches && ! $finalizationResult->game->isTournamentMode()) {
+            event(new SeasonCompleted($finalizationResult->game));
         }
 
         return true;
     }
 
     /**
-     * Apply all deferred score-dependent side effects for a match.
+     * Apply the lock-protected mutations for a finalized match and return the
+     * data needed by {@see dispatchPostFinalizeEffects()} to fire side effects
+     * after the caller's transaction commits.
      *
-     * Core logic (cup tie resolution) runs here. All other side effects
-     * (standings, GK stats, notifications, prize money, draws) are handled
-     * by listeners on MatchFinalized and CupTieResolved events.
+     * The split is deliberate: side-effect listeners (notably
+     * UpdateManagerStats, which writes to the control-plane manager_stats
+     * table via firstOrCreate) used to run synchronously inside the
+     * `lockForUpdate()` on the games row, so two concurrent finalize
+     * requests for the same game would queue up behind each other on the
+     * games lock and the manager_stats unique-constraint speculative
+     * insert. PHP's 30-second limit then killed the queued requests.
+     *
+     * Callers MUST invoke {@see dispatchPostFinalizeEffects()} on the
+     * returned result *after* their transaction commits.
      */
-    public function finalize(GameMatch $match, Game $game): void
+    public function finalize(GameMatch $match, Game $game): MatchFinalizationResult
     {
         $previousDate = $game->current_date->copy();
         $competition = Competition::find($match->competition_id);
@@ -100,43 +113,81 @@ class MatchFinalizationService
         // 2. Serve deferred suspensions for both teams in this match
         $this->serveDeferredSuspensions($match);
 
-        // 3. Resolve cup tie and dispatch CupTieResolved if applicable
+        // 3. Resolve cup tie mutations (the CupTieResolved event dispatch is
+        // deferred to dispatchPostFinalizeEffects so listeners don't run
+        // under the games lock).
+        $resolvedCupTie = null;
+        $cupTieWinnerId = null;
         if ($match->cup_tie_id !== null) {
-            $this->resolveCupTie($match, $game, $competition);
+            [$resolvedCupTie, $cupTieWinnerId] = $this->resolveCupTie($match);
         }
 
-        // 4. Clear the pending flag before dispatching events (prevents re-entry
-        // from the finalizePendingMatch safety net if advance() runs concurrently)
+        // 4. Clear the pending flag last so any sibling request blocked on
+        // lockForUpdate() finds it null when this commit releases the lock
+        // and short-circuits without re-applying steps 1-3.
         $game->update(['pending_finalization_match_id' => null]);
         session()->forget("live_match_animated:{$match->id}");
 
-        // 5. Dispatch MatchFinalized for standings, GK stats, and notifications
-        MatchFinalized::dispatch($match, $game, $competition);
+        return new MatchFinalizationResult(
+            match: $match,
+            game: $game,
+            competition: $competition,
+            previousDate: $previousDate,
+            resolvedCupTie: $resolvedCupTie,
+            cupTieWinnerId: $cupTieWinnerId,
+        );
+    }
 
-        // 6. Advance current_date to the next upcoming match (forward-looking calendar).
+    /**
+     * Dispatch all post-finalize side effects. Must be called *after* the
+     * caller's lock-protected transaction has committed so listeners and
+     * the beforeMatches handler don't extend the games row lock.
+     *
+     * The side effects are individually idempotent (standings_applied flag,
+     * cupTie->completed guard, ManagerStats::firstOrCreate, etc.) so
+     * re-running is safe if the caller retries.
+     */
+    public function dispatchPostFinalizeEffects(MatchFinalizationResult $result): void
+    {
+        // 1. CupTieResolved before MatchFinalized so cup-prize / next-round
+        // draws settle before standings notifications go out.
+        if ($result->resolvedCupTie !== null && $result->cupTieWinnerId !== null) {
+            CupTieResolved::dispatch(
+                $result->resolvedCupTie,
+                $result->cupTieWinnerId,
+                $result->match,
+                $result->game,
+                $result->competition,
+            );
+        }
+
+        // 2. MatchFinalized for standings, GK stats, and notifications.
+        MatchFinalized::dispatch($result->match, $result->game, $result->competition);
+
+        // 3. Advance current_date to the next upcoming match (forward-looking calendar).
         // This ensures transfer windows and other date-based logic reflect where
         // the season calendar actually is, not when the last match was played.
-        $this->advanceCurrentDate($game, $previousDate);
+        $this->advanceCurrentDate($result->game, $result->previousDate);
 
-        // 7. Generate any pending knockout/playoff fixtures now that standings are final.
+        // 4. Generate any pending knockout/playoff fixtures now that standings are final.
         // This covers both league matches (where standings determine playoff seedings)
         // and cup ties (where completing a round may trigger the next round draw,
         // especially for group_stage_cup competitions like the World Cup).
-        if ($competition) {
-            $handler = $this->handlerResolver->resolve($competition);
-            $handler->beforeMatches($game, $game->current_date->toDateString());
+        if ($result->competition) {
+            $handler = $this->handlerResolver->resolve($result->competition);
+            $handler->beforeMatches($result->game, $result->game->current_date->toDateString());
         }
 
-        // 8. Re-advance current_date if step 7 generated new matches (e.g. 3rd-place +
-        // final after both semifinals completed). Step 6 may have found no matches
+        // 5. Re-advance current_date if step 4 generated new matches (e.g. 3rd-place +
+        // final after both semifinals completed). Step 3 may have found no matches
         // because they didn't exist yet.
-        $this->advanceCurrentDate($game, $previousDate);
+        $this->advanceCurrentDate($result->game, $result->previousDate);
 
-        // 9. Detect tournament end AFTER beforeMatches so group_stage_cup competitions
+        // 6. Detect tournament end AFTER beforeMatches so group_stage_cup competitions
         // (like the World Cup) have had a chance to generate the next knockout round.
         // Otherwise the "no unplayed matches" check is briefly true between rounds and
         // ends the tournament prematurely after the group phase.
-        $this->tournamentEndDetector->detect($game->refresh());
+        $this->tournamentEndDetector->detect($result->game->refresh());
     }
 
     /**
@@ -245,7 +296,15 @@ class MatchFinalizationService
         );
     }
 
-    private function resolveCupTie(GameMatch $match, Game $game, ?Competition $competition): void
+    /**
+     * Apply cup-tie resolution mutations and return [cupTie, winnerId] so
+     * the caller can dispatch CupTieResolved after the transaction commits.
+     * Returns [null, null] if there's nothing to resolve (already completed
+     * or insufficient data).
+     *
+     * @return array{0: ?CupTie, 1: ?string}
+     */
+    private function resolveCupTie(GameMatch $match): array
     {
         $cupTie = CupTie::with([
             'firstLegMatch.homeTeam', 'firstLegMatch.awayTeam',
@@ -253,7 +312,7 @@ class MatchFinalizationService
         ])->find($match->cup_tie_id);
 
         if (! $cupTie || $cupTie->completed) {
-            return;
+            return [null, null];
         }
 
         // Build players collection for extra time / penalty simulation
@@ -267,9 +326,9 @@ class MatchFinalizationService
         $winnerId = $this->cupTieResolver->resolve($cupTie, $allPlayers);
 
         if (! $winnerId) {
-            return;
+            return [null, null];
         }
 
-        CupTieResolved::dispatch($cupTie, $winnerId, $match, $game, $competition);
+        return [$cupTie, $winnerId];
     }
 }
