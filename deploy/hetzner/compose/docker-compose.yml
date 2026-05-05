@@ -160,6 +160,11 @@ services:
     environment:
       <<: *app-env
       RUN_MIGRATIONS: "false"
+    # No HTTP server in this container — disable the image's default
+    # HEALTHCHECK (which probes /up) so the scheduler isn't reported
+    # as unhealthy forever.
+    healthcheck:
+      disable: true
     volumes:
       - storage:/app/storage
     depends_on:
