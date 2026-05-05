@@ -84,6 +84,7 @@ return [
     */
 
     'waits' => [
+        'redis:default' => 15,
         'redis:gameplay' => 15,
         'redis:setup' => 120,
         'redis:cleanup' => 600,
@@ -183,6 +184,25 @@ return [
     */
 
     'defaults' => [
+        // Catch-all supervisor for Laravel's framework default queue.
+        // Any ShouldQueue job that doesn't override $queue / viaQueue() lands
+        // on `default`; without this supervisor those jobs would pile up in
+        // Redis with no consumer (and silently). Kept intentionally small —
+        // the named supervisors below own the hot paths; this one is the
+        // safety net for new code that forgets to specify a queue.
+        'supervisor-default' => [
+            'connection' => 'redis',
+            'queue' => ['default'],
+            'balance' => 'auto',
+            'autoScalingStrategy' => 'time',
+            'maxProcesses' => 1,
+            'maxTime' => 0,
+            'maxJobs' => 0,
+            'memory' => 128,
+            'tries' => 1,
+            'timeout' => 60,
+            'nice' => 0,
+        ],
         'supervisor-gameplay' => [
             'connection' => 'redis',
             'queue' => ['gameplay'],
@@ -238,6 +258,10 @@ return [
 
     'environments' => [
         'production' => [
+            'supervisor-default' => [
+                'maxProcesses' => (int) env('HORIZON_MAX_DEFAULT', 2),
+                'force' => true,
+            ],
             'supervisor-gameplay' => [
                 'maxProcesses' => (int) env('HORIZON_MAX_GAMEPLAY', 15),
                 'balanceMaxShift' => 3,
@@ -263,6 +287,9 @@ return [
         ],
 
         'local' => [
+            'supervisor-default' => [
+                'maxProcesses' => 1,
+            ],
             'supervisor-gameplay' => [
                 'maxProcesses' => 2,
             ],
