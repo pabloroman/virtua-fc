@@ -41,14 +41,15 @@ final class TableManifest
         'games',
 
         // Direct children of games (depend only on game_id).
-        // game_players must come before game_matches because
-        // game_matches.mvp_player_id is an FK to game_players.id.
+        // game_players and cup_ties must come before game_matches because
+        // game_matches.mvp_player_id is an FK to game_players.id and
+        // game_matches.cup_tie_id is an FK to cup_ties.id.
         'game_players',
+        'cup_ties',
         'game_matches',
         'game_standings',
         'game_tactics',
         'game_tactical_presets',
-        'cup_ties',
         'competition_entries',
         'team_reputations',
         'game_finances',
