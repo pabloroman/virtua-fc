@@ -346,6 +346,13 @@ Route::middleware(['auth', 'migration.mode:export'])->group(function () {
         ->name('migration.start');
 });
 
+// Terminal page on the export side for users whose migration is sealed.
+// Reachable even when sealed (BlockMigratedUsersOnExport allows this path).
+Route::middleware('migration.mode:export')->group(function () {
+    Route::get('/migration/completed', \App\Http\Views\Migration\ShowCompleted::class)
+        ->name('migration.completed');
+});
+
 Route::middleware('migration.mode:import')->group(function () {
     // Public landing page that consumes a handoff token and logs the user in.
     Route::get('/migration/land', \App\Http\Actions\Migration\LandMigration::class)

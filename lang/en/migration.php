@@ -30,7 +30,7 @@ return [
     'import_no_data_found' => 'We could not find any data to migrate for your account.',
 
     // Export side — user has migrated and tries to use beta
-    'moved_title' => 'You have moved to the new home',
-    'moved_body' => 'Your account and games now live at :url. This server is read-only for migrated users.',
-    'moved_cta' => 'Continue to the new home',
+    'completed_title' => 'Migration completed',
+    'completed_body' => 'Your account and games now live at :url. This server is read-only for migrated users.',
+    'completed_cta' => 'Continue to the new server',
 ];

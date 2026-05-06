@@ -30,7 +30,7 @@ return [
     'import_no_data_found' => 'No hemos encontrado datos que migrar para tu cuenta.',
 
     // Export side — user has migrated and tries to use beta
-    'moved_title' => 'Te has mudado al nuevo hogar',
-    'moved_body' => 'Tu cuenta y tus partidas viven ahora en :url. Este servidor es de solo lectura para los usuarios migrados.',
-    'moved_cta' => 'Continuar al nuevo hogar',
+    'completed_title' => 'Migración completada',
+    'completed_body' => 'Tu cuenta y tus partidas viven ahora en :url. Este servidor es de solo lectura para los usuarios migrados.',
+    'completed_cta' => 'Continuar al nuevo servidor',
 ];
