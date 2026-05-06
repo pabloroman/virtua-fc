@@ -56,10 +56,24 @@ class MigrationImportJob implements ShouldQueue
 
     public function handle(SignedHandoff $handoff, UserImporter $importer): void
     {
+        $startedAt = microtime(true);
+        Log::info('MigrationImport: started', ['user_id' => $this->userId]);
+
         try {
             MigrationProgress::set($this->userId, 1, 'starting');
 
             $manifest = $this->fetchManifest($handoff);
+
+            $controlPlaneCounts = [];
+            foreach ($manifest['control_plane'] ?? [] as $table => $rows) {
+                $controlPlaneCounts[$table] = count($rows);
+            }
+            Log::info('MigrationImport: manifest fetched', [
+                'user_id' => $this->userId,
+                'format_version' => $manifest['format_version'] ?? null,
+                'game_id_count' => count($manifest['game_ids'] ?? []),
+                'control_plane_counts' => $controlPlaneCounts,
+            ]);
 
             MigrationProgress::set($this->userId, 5, 'control_plane');
             $importer->importControlPlane($this->userId, $manifest['control_plane'] ?? []);
@@ -80,7 +94,28 @@ class MigrationImportJob implements ShouldQueue
                 ]);
 
                 $game = $this->fetchGame($handoff, $gameId);
+                $tableCounts = [];
+                $totalRows = 0;
+                foreach ($game['tables'] ?? [] as $table => $rows) {
+                    $count = count($rows);
+                    $tableCounts[$table] = $count;
+                    $totalRows += $count;
+                }
+                Log::info('MigrationImport: game payload received', [
+                    'user_id' => $this->userId,
+                    'game_id' => $gameId,
+                    'progress' => "{$current}/{$total}",
+                    'total_rows' => $totalRows,
+                    'table_counts' => $tableCounts,
+                ]);
+
                 $importer->importGame($game);
+
+                Log::info('MigrationImport: game inserted', [
+                    'user_id' => $this->userId,
+                    'game_id' => $gameId,
+                    'inserted_counts' => $importer->lastInsertCounts(),
+                ]);
             }
 
             MigrationProgress::set($this->userId, 95, 'finalizing');
@@ -88,6 +123,12 @@ class MigrationImportJob implements ShouldQueue
             $this->markCompletedLocally();
 
             MigrationProgress::set($this->userId, 100, 'completed');
+
+            Log::info('MigrationImport: completed', [
+                'user_id' => $this->userId,
+                'game_count' => $total,
+                'duration_ms' => (int) ((microtime(true) - $startedAt) * 1000),
+            ]);
         } catch (\Throwable $e) {
             $this->safeMarkFailedLocally($e);
             MigrationProgress::set($this->userId, 0, 'failed', [

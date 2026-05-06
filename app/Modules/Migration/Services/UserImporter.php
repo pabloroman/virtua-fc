@@ -23,6 +23,22 @@ use Illuminate\Support\Facades\DB;
  */
 class UserImporter
 {
+    /**
+     * Per-table row counts written by the most recent importGame() call.
+     * Exposed for diagnostic logging from the job — when this is all zeros
+     * after a non-empty payload, we know the importer is silently dropping
+     * data.
+     *
+     * @var array<string, array{wiped: int, inserted: int}>
+     */
+    private array $lastInsertCounts = [];
+
+    /** @return array<string, array{wiped: int, inserted: int}> */
+    public function lastInsertCounts(): array
+    {
+        return $this->lastInsertCounts;
+    }
+
     public function importControlPlane(int $userId, array $controlPlane): void
     {
         DB::connection('pgsql_control')->transaction(function () use ($controlPlane) {
@@ -41,20 +57,28 @@ class UserImporter
     public function importGame(array $game): void
     {
         $gameId = $game['game_id'];
+        $this->lastInsertCounts = [];
 
         DB::transaction(function () use ($game, $gameId) {
-            $this->wipeGame($gameId);
+            $wipeCounts = $this->wipeGame($gameId);
 
             foreach (TableManifest::TENANT_TABLES_IN_INSERT_ORDER as $table) {
                 $rows = $game['tables'][$table] ?? [];
-                if (empty($rows)) {
-                    continue;
+                $inserted = 0;
+                if (! empty($rows)) {
+                    // Insert in chunks to keep statement size sane on tables
+                    // with thousands of rows (game_player_match_state,
+                    // match_events).
+                    foreach (array_chunk($rows, 500) as $chunk) {
+                        DB::table($table)->insert($chunk);
+                        $inserted += count($chunk);
+                    }
                 }
-
-                // Insert in chunks to keep statement size sane on tables with
-                // thousands of rows (game_player_match_state, match_events).
-                foreach (array_chunk($rows, 500) as $chunk) {
-                    DB::table($table)->insert($chunk);
+                if ($inserted > 0 || ($wipeCounts[$table] ?? 0) > 0) {
+                    $this->lastInsertCounts[$table] = [
+                        'wiped' => $wipeCounts[$table] ?? 0,
+                        'inserted' => $inserted,
+                    ];
                 }
             }
         });
@@ -68,13 +92,19 @@ class UserImporter
      * uses the default RESTRICT). Reverse-order deletes work for every table
      * regardless of FK action and don't depend on schema details staying put.
      */
-    private function wipeGame(string $gameId): void
+    /**
+     * @return array<string, int> rows deleted per table
+     */
+    private function wipeGame(string $gameId): array
     {
+        $deleted = [];
         $tables = array_reverse(TableManifest::TENANT_TABLES_IN_INSERT_ORDER);
         foreach ($tables as $table) {
             $column = $table === 'games' ? 'id' : 'game_id';
-            DB::table($table)->where($column, $gameId)->delete();
+            $deleted[$table] = DB::table($table)->where($column, $gameId)->delete();
         }
+
+        return $deleted;
     }
 
     private function upsertOnControl(string $table, string $keyColumn, array $rows): void
