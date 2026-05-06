@@ -97,6 +97,15 @@ class UserImporter
                 throw new \RuntimeException("Row in control-plane table {$table} is missing key column {$keyColumn}.");
             }
 
+            // Local state for migration columns is authoritative — StartImport
+            // has just flipped them to in_progress, and MigrationImportJob will
+            // mark them completed at the end. Importing the export-side values
+            // (still `pending` on beta until the seal call) would briefly bounce
+            // the status back to pending and flicker the import page.
+            if ($table === 'users') {
+                unset($row['migration_status'], $row['migration_completed_at']);
+            }
+
             $existing = DB::connection('pgsql_control')
                 ->table($table)
                 ->where($keyColumn, $key)
