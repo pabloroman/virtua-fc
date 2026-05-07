@@ -91,10 +91,10 @@ return [
     | Test user allow-list
     |--------------------------------------------------------------------------
     |
-    | Comma-separated list of user IDs. When set, the migration banner and
-    | the start action only fire for these users — everyone else sees beta
-    | as usual. Use this for a production smoke test before flipping
-    | MIGRATION_MODE on for real. Empty/unset → no restriction.
+    | Comma-separated list of user IDs. When set, the forced-migration
+    | lockout and the start action only fire for these users — everyone
+    | else sees beta as usual. Use this for a production smoke test before
+    | flipping MIGRATION_MODE on for real. Empty/unset → no restriction.
     |
     */
 

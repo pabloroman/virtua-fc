@@ -29,6 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\SetLocale::class,
             \App\Http\Middleware\BlockMigratedUsersOnExport::class,
+            \App\Http\Middleware\ForceMigrationOnExport::class,
             \App\Http\Middleware\RequireMigrationOnImport::class,
         ]);
 

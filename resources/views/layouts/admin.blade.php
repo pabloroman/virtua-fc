@@ -35,8 +35,6 @@
 
             <x-beta-banner />
 
-            <x-migration-banner />
-
             <div class="flex flex-col md:flex-row flex-1" x-data="{ sidebarOpen: false }">
                 {{-- Mobile header --}}
                 <div class="md:hidden flex items-center justify-between px-4 py-3 border-b border-border-default bg-surface-800">

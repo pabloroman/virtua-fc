@@ -38,9 +38,6 @@
 
             <x-beta-banner />
 
-            <x-migration-banner />
-
-
             <!-- Page Heading -->
             @isset($header)
                 <header>

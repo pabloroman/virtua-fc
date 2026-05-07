@@ -342,6 +342,8 @@ Route::middleware(['auth', 'database.editor'])->prefix('editor')->name('editor.'
 // the `migration.mode:<role>` middleware 404s if the deployment isn't acting
 // in that role. See config/migration.php.
 Route::middleware(['auth', 'migration.mode:export'])->group(function () {
+    Route::get('/migration/required', \App\Http\Views\Migration\ShowRequired::class)
+        ->name('migration.required');
     Route::post('/migration/start', \App\Http\Actions\Migration\StartMigration::class)
         ->name('migration.start');
 });

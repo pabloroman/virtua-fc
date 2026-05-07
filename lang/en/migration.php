@@ -1,11 +1,6 @@
 <?php
 
 return [
-    // Banner (export side)
-    'banner_label' => 'New server',
-    'banner_body' => 'VirtuaFC has a new server. Your data and games will be copied automatically and you can keep playing as always.',
-    'banner_cta' => 'Move me to the new server',
-
     // Handoff errors
     'handoff_invalid' => 'This migration link is invalid or has expired. Please go back and try again.',
     'handoff_user_missing' => 'We could not find your account on the new server. Please contact support.',
@@ -39,4 +34,9 @@ return [
     'completed_title' => 'Migration completed',
     'completed_body' => 'Your account and games now live at :url. This server is read-only for migrated users.',
     'completed_cta' => 'Continue to the new server',
+
+    // Export side — pending user is forced to migrate before they can keep playing
+    'required_title' => 'Time to move',
+    'required_body' => 'VirtuaFC has a new server. To keep playing you need to move your account and games over — it only takes a moment and nothing is lost.',
+    'required_cta' => 'Move me to the new server',
 ];

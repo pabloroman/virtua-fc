@@ -1,11 +1,6 @@
 <?php
 
 return [
-    // Banner (export side)
-    'banner_label' => 'Nuevo servidor',
-    'banner_body' => 'VirtuaFC tiene un nuevo servidor. Tus datos y partidas se copiarán automáticamente y podrás seguir jugando como siempre.',
-    'banner_cta' => 'Llévame al nuevo servidor',
-
     // Handoff errors
     'handoff_invalid' => 'Este enlace de migración no es válido o ha caducado. Vuelve atrás e inténtalo de nuevo.',
     'handoff_user_missing' => 'No hemos podido encontrar tu cuenta en el nuevo servidor. Contacta con soporte.',
@@ -39,4 +34,9 @@ return [
     'completed_title' => 'Migración completada',
     'completed_body' => 'Tu cuenta y tus partidas viven ahora en :url. Este servidor es de solo lectura para los usuarios migrados.',
     'completed_cta' => 'Continuar al nuevo servidor',
+
+    // Export side — pending user is forced to migrate before they can keep playing
+    'required_title' => 'Hora de mudarse',
+    'required_body' => 'VirtuaFC tiene un nuevo servidor. Para seguir jugando necesitas mover tu cuenta y tus partidas — solo lleva un momento y no se pierde nada.',
+    'required_cta' => 'Llévame al nuevo servidor',
 ];

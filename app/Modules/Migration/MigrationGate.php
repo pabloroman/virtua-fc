@@ -3,7 +3,7 @@
 namespace App\Modules\Migration;
 
 /**
- * Visibility gate for the migration banner and start action.
+ * Visibility gate for the forced-migration lockout and start action.
  *
  * When config('migration.test_user_ids') is non-empty, only those user IDs
  * are allowed through — the rest of the user base sees beta as usual. Used
