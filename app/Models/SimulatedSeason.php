@@ -12,25 +12,23 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $season
  * @property string $competition_id
  * @property array<array-key, mixed> $results
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Competition $competition
  * @property-read \App\Models\Game $game
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SimulatedSeason newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SimulatedSeason newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SimulatedSeason query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SimulatedSeason whereCompetitionId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SimulatedSeason whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SimulatedSeason whereGameId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SimulatedSeason whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SimulatedSeason whereResults($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SimulatedSeason whereSeason($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SimulatedSeason whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 class SimulatedSeason extends Model
 {
     use HasUuids;
+
+    public $timestamps = false;
 
     protected $fillable = [
         'game_id',
