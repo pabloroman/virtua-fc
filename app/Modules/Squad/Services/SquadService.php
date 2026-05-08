@@ -226,8 +226,6 @@ class SquadService
 
     private function buildDepthChart($players): array
     {
-        $positionToSlot = PositionSlotMapper::getPositionToSlotMap();
-
         $depth = [];
         foreach (PositionSlotMapper::getAllSlots() as $slot) {
             $depth[$slot] = [
@@ -238,17 +236,18 @@ class SquadService
         }
 
         foreach ($players as $player) {
-            $slot = $positionToSlot[$player->position] ?? null;
-            if ($slot && isset($depth[$slot])) {
-                $depth[$slot]['count']++;
-                $depth[$slot]['players'][] = $player->name;
-            }
+            foreach (array_keys($depth) as $slot) {
+                $best = PositionSlotMapper::getPlayerCompatibilityScore(
+                    $player->position,
+                    $player->secondary_positions,
+                    $slot
+                );
 
-            // Count secondary position coverage
-            foreach ($player->positions as $secPos) {
-                $secSlot = $positionToSlot[$secPos] ?? null;
-                if ($secSlot && $secSlot !== $slot && isset($depth[$secSlot])) {
-                    $depth[$secSlot]['secondary_count']++;
+                if ($best === 100) {
+                    $depth[$slot]['count']++;
+                    $depth[$slot]['players'][] = $player->name;
+                } elseif ($best >= PositionSlotMapper::NATURAL_POSITION_THRESHOLD) {
+                    $depth[$slot]['secondary_count']++;
                 }
             }
         }

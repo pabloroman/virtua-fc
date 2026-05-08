@@ -43,14 +43,17 @@
                         $data['count'] === 1 => 'bg-amber-400',
                         default => 'bg-red-400',
                     };
+                    $maxSquares = 10;
+                    $solidShown = min($data['count'], $maxSquares);
+                    $dashedShown = max(0, min($data['secondary_count'], $maxSquares - $solidShown));
                 @endphp
                 <div class="flex items-center gap-2">
                     <span class="w-8 text-xs font-medium text-text-secondary tabular-nums text-right shrink-0">{{ \App\Support\PositionSlotMapper::slotToDisplayAbbreviation($slot) }}</span>
-                    <div class="flex-1 flex items-center gap-1">
-                        @for($i = 0; $i < min($data['count'], 5); $i++)
+                    <div class="flex-1 flex items-center gap-1 flex-wrap">
+                        @for($i = 0; $i < $solidShown; $i++)
                             <div class="w-4 h-4 rounded-xs {{ $barColor }}"></div>
                         @endfor
-                        @for($i = 0; $i < min($data['secondary_count'], 3); $i++)
+                        @for($i = 0; $i < $dashedShown; $i++)
                             <div class="w-4 h-4 rounded-xs border border-dashed {{ $data['count'] >= 2 ? 'border-green-400/50 bg-green-400/15' : 'border-amber-400/50 bg-amber-400/15' }}"></div>
                         @endfor
                         @if($data['count'] === 0 && $data['secondary_count'] === 0)

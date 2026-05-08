@@ -31,32 +31,23 @@ class PositionSlotMapper
         'CB' => [
             'Centre-Back' => 100,
             'Defensive Midfield' => 80,
-            'Left-Back' => 60,
-            'Right-Back' => 60,
         ],
         'LB' => [
             'Left-Back' => 100,
             'Right-Back' => 80,
             'Left Midfield' => 80,
             'Right Midfield' => 80,
-            'Left Winger' => 80,
-            'Right Winger' => 80,
-            'Centre-Back' => 60,
         ],
         'RB' => [
             'Right-Back' => 100,
             'Left-Back' => 80,
             'Right Midfield' => 80,
             'Left Midfield' => 80,
-            'Right Winger' => 80,
-            'Left Winger' => 80,
-            'Centre-Back' => 60,
         ],
         'DM' => [
             'Defensive Midfield' => 100,
             'Central Midfield' => 80,
             'Centre-Back' => 80,
-            'Attacking Midfield' => 80,
         ],
         'CM' => [
             'Central Midfield' => 100,
@@ -64,7 +55,6 @@ class PositionSlotMapper
             'Attacking Midfield' => 80,
             'Left Midfield' => 80,
             'Right Midfield' => 80,
-            'Centre-Back' => 80,
         ],
         'AM' => [
             'Attacking Midfield' => 100,
@@ -74,7 +64,6 @@ class PositionSlotMapper
             'Centre-Forward' => 80,
             'Left Winger' => 80,
             'Right Winger' => 80,
-            'Defensive Midfield' => 60,
         ],
         'LM' => [
             'Left Midfield' => 100,
@@ -83,8 +72,6 @@ class PositionSlotMapper
             'Right Midfield' => 80,
             'Right Winger' => 80,
             'Right-Back' => 80,
-            'Central Midfield' => 80,
-            'Attacking Midfield' => 80,
         ],
         'RM' => [
             'Right Midfield' => 100,
@@ -93,16 +80,12 @@ class PositionSlotMapper
             'Left Midfield' => 80,
             'Left Winger' => 80,
             'Left-Back' => 80,
-            'Central Midfield' => 80,
-            'Attacking Midfield' => 80,
         ],
         'LW' => [
             'Left Winger' => 100,
             'Left Midfield' => 80,
-            'Left-Back' => 80,
             'Right Winger' => 80,
             'Right Midfield' => 80,
-            'Right-Back' => 80,
             'Centre-Forward' => 80,
             'Second Striker' => 80,
             'Attacking Midfield' => 80,
@@ -110,10 +93,8 @@ class PositionSlotMapper
         'RW' => [
             'Right Winger' => 100,
             'Right Midfield' => 80,
-            'Right-Back' => 80,
             'Left Winger' => 80,
             'Left Midfield' => 80,
-            'Left-Back' => 80,
             'Centre-Forward' => 80,
             'Second Striker' => 80,
             'Attacking Midfield' => 80,
@@ -121,8 +102,6 @@ class PositionSlotMapper
         'CF' => [
             'Centre-Forward' => 100,
             'Second Striker' => 100,
-            'Left Winger' => 80,
-            'Right Winger' => 80,
             'Attacking Midfield' => 80,
         ],
     ];
