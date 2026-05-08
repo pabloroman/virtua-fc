@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property int $id
+ * @property string $id
  * @property string $game_id
  * @property string $competition_id
  * @property string $team_id
@@ -45,6 +46,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class GameStanding extends Model
 {
+    use HasUuids;
+
     public $timestamps = false;
 
     protected $fillable = [
