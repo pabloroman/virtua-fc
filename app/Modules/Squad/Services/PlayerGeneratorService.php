@@ -88,7 +88,7 @@ class PlayerGeneratorService
         $transfermarktId = 'gen-' . Str::uuid()->toString();
 
         // Determine market value
-        $marketValue = $data->marketValueCents ?? $this->valuationService->overallScoreToMarketValue($data->overallScore, $age);
+        $marketValue = $data->marketValueCents ?? $this->valuationService->overallScoreToMarketValue($data->overallScore, $age, null, $data->position);
         $marketValue = max(100_000_00, $marketValue);
 
         // Determine potential
@@ -211,7 +211,7 @@ class PlayerGeneratorService
             $gamePlayerId = Str::uuid()->toString();
             $transfermarktId = 'gen-' . Str::uuid()->toString();
 
-            $marketValue = $data->marketValueCents ?? $this->valuationService->overallScoreToMarketValue($data->overallScore, $age);
+            $marketValue = $data->marketValueCents ?? $this->valuationService->overallScoreToMarketValue($data->overallScore, $age, null, $data->position);
             $marketValue = max(100_000_00, $marketValue);
 
             if ($data->potential !== null) {

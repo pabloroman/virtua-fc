@@ -32,18 +32,30 @@ class PlayerValuationService
     ];
 
     /**
+     * Goalkeepers trade at structurally lower market values than outfielders
+     * for equivalent quality (top GKs cap around €40M while top outfielders
+     * push past €120M). Without compensation, the value→overall map rates
+     * world-class keepers like Courtois or Raya as merely good. Scale GK
+     * market value up before the mapping (and back down on the inverse) so
+     * scores reflect on-pitch ability rather than transfer-market quirks.
+     */
+    private const GOALKEEPER_VALUE_MULTIPLIER = 2.0;
+
+    /**
      * Convert market value to a single overall_score.
      *
      * Used during initial seeding to derive ability from Transfermarkt data.
      *
      * @param int $marketValueCents Market value in cents (e.g., 1_500_000_000 = €15M)
      * @param int $age Player's current age
+     * @param string|null $position Player's primary position; goalkeepers receive a value boost.
      */
-    public function marketValueToOverallScore(int $marketValueCents, int $age): int
+    public function marketValueToOverallScore(int $marketValueCents, int $age, ?string $position = null): int
     {
-        $rawAbility = $this->marketValueToRawAbility($marketValueCents);
+        $effectiveValue = $this->applyPositionMultiplier($marketValueCents, $position);
+        $rawAbility = $this->marketValueToRawAbility($effectiveValue);
 
-        return $this->adjustAbilityForAge($rawAbility, $marketValueCents, $age);
+        return $this->adjustAbilityForAge($rawAbility, $effectiveValue, $age);
     }
 
     /**
@@ -54,9 +66,10 @@ class PlayerValuationService
      * @param int $overallScore Player's overall ability score
      * @param int $age Player's current age
      * @param int|null $previousOverall Previous season's overall_score (for performance trend). Only passed during season-end.
+     * @param string|null $position Player's primary position; goalkeepers' market value is scaled down to match real-world levels.
      * @return int Market value in cents
      */
-    public function overallScoreToMarketValue(int $overallScore, int $age, ?int $previousOverall = null): int
+    public function overallScoreToMarketValue(int $overallScore, int $age, ?int $previousOverall = null, ?string $position = null): int
     {
         // Deterministic base value via log-linear interpolation of forward mapping anchors
         $baseValue = $this->abilityToBaseValue($overallScore);
@@ -98,8 +111,34 @@ class PlayerValuationService
 
         $newValue = (int) round($baseValue * $ageMultiplier * $trendMultiplier);
 
+        // Goalkeepers trade below outfielders at the same ability — scale
+        // down so the inverse roughly mirrors marketValueToOverallScore().
+        if ($this->isGoalkeeper($position)) {
+            $newValue = (int) round($newValue / self::GOALKEEPER_VALUE_MULTIPLIER);
+        }
+
         // Clamp to reasonable range: €100K to €150M
         return max(100_000_00, min(150_000_000_00, $newValue));
+    }
+
+    private function applyPositionMultiplier(int $marketValueCents, ?string $position): int
+    {
+        if (!$this->isGoalkeeper($position)) {
+            return $marketValueCents;
+        }
+
+        return (int) round($marketValueCents * self::GOALKEEPER_VALUE_MULTIPLIER);
+    }
+
+    private function isGoalkeeper(?string $position): bool
+    {
+        if ($position === null) {
+            return false;
+        }
+
+        $normalized = strtolower(trim($position));
+
+        return $normalized === 'goalkeeper' || $normalized === 'gk';
     }
 
     /**

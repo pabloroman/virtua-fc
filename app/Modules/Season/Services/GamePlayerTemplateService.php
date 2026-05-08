@@ -362,7 +362,8 @@ class GamePlayerTemplateService
         // no quoted value — floor those at €100K so they still get a usable
         // ability baseline and a non-zero transfer price.
         $marketValueForOverall = $marketValueCents > 0 ? $marketValueCents : 10_000_000;
-        $overallScore = $this->valuationService->marketValueToOverallScore($marketValueForOverall, $age);
+        $position = $playerData['position'] ?? null;
+        $overallScore = $this->valuationService->marketValueToOverallScore($marketValueForOverall, $age, $position);
         $annualWage = $this->contractService->calculateAnnualWage($marketValueCents, $minimumWage, $age);
 
         $potentialData = $this->developmentService->generatePotential($age, $overallScore);
@@ -391,7 +392,7 @@ class GamePlayerTemplateService
             'foot' => $foot,
             'team_id' => $teamId,
             'number' => isset($playerData['number']) ? (int) $playerData['number'] : null,
-            'position' => $playerData['position'] ?? 'Unknown',
+            'position' => $position ?? 'Unknown',
             'secondary_positions' => json_encode($secondaryPositions),
             'market_value' => $playerData['marketValue'] ?? null,
             'market_value_cents' => $marketValueCents,

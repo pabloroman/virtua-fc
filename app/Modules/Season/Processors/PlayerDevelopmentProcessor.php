@@ -58,6 +58,7 @@ class PlayerDevelopmentProcessor implements SeasonProcessor
                 'gp.date_of_birth',
                 'gp.overall_score',
                 'gp.potential',
+                'gp.position',
                 'gp.market_value_cents AS old_market_value',
                 'gp.tier AS old_tier',
                 DB::raw('COALESCE(gpms.season_appearances, 0) AS season_appearances'),
@@ -83,7 +84,7 @@ class PlayerDevelopmentProcessor implements SeasonProcessor
             $appearances = (int) $row->season_appearances;
 
             $newOverall = $this->computeNewOverall($age, $appearances, $previousOverall, $potential);
-            $newMarketValue = $this->valuationService->overallScoreToMarketValue($newOverall, $age, $previousOverall);
+            $newMarketValue = $this->valuationService->overallScoreToMarketValue($newOverall, $age, $previousOverall, $row->position ?? null);
             $newTier = PlayerTierService::tierFromMarketValue($newMarketValue);
 
             $oldMarketValue = (int) $row->old_market_value;
