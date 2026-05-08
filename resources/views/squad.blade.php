@@ -286,7 +286,7 @@
                                                                 <div class="w-8 h-1 rounded-full bg-surface-600 overflow-hidden">
                                                                     <div class="h-full rounded-full fitness-bar @if($gp->fitness >= 80) bg-accent-green @elseif($gp->fitness >= 60) bg-accent-gold @elseif($gp->fitness >= 40) bg-accent-orange @else bg-accent-red @endif" style="width: {{ $gp->fitness }}%"></div>
                                                                 </div>
-                                                                <span class="text-[8px] text-text-faint">{{ $gp->fitness }}%</span>
+                                                                <span class="text-[8px] text-text-secondary">{{ $gp->fitness }}%</span>
                                                             </div>
                                                             <x-morale-indicator :value="$gp->morale" class="shrink-0" />
                                                         </div>
