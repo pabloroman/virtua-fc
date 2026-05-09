@@ -65,18 +65,28 @@ class PositionSlotMapper
             'Left Winger' => 80,
             'Right Winger' => 80,
         ],
+        // Wide-side primaries (LB, LW for LM; RB, RW for RM) are natural-fit
+        // 100 here — a left winger asked to play LM is the same role just
+        // deeper, and a left-back at LM is the same width pushed forward. The
+        // earlier 80 caused FormationRecommender Pass 2 to land a CM with a
+        // "Left Midfield" secondary in LM ahead of an unused LB/LW; bumping
+        // the side-matched wide primaries to 100 lets Pass 1 grab them first
+        // and keeps central midfielders out of wide slots when a natural
+        // wide-side option exists. Cross-side wide primaries (RB/RW into LM,
+        // LB/LW into RM) stay at 80 because that genuinely is a stretched
+        // (inverted-side) assignment.
         'LM' => [
             'Left Midfield' => 100,
-            'Left Winger' => 80,
-            'Left-Back' => 80,
+            'Left Winger' => 100,
+            'Left-Back' => 100,
             'Right Midfield' => 80,
             'Right Winger' => 80,
             'Right-Back' => 80,
         ],
         'RM' => [
             'Right Midfield' => 100,
-            'Right Winger' => 80,
-            'Right-Back' => 80,
+            'Right Winger' => 100,
+            'Right-Back' => 100,
             'Left Midfield' => 80,
             'Left Winger' => 80,
             'Left-Back' => 80,

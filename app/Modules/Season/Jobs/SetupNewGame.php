@@ -3,6 +3,9 @@
 namespace App\Modules\Season\Jobs;
 
 use App\Modules\Competition\Services\CountryConfig;
+use App\Modules\Lineup\Enums\Formation;
+use App\Modules\Lineup\Services\FormationBiasResolver;
+use App\Modules\Lineup\Services\FormationRecommender;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Services\SeasonSetupPipeline;
@@ -14,6 +17,7 @@ use App\Models\CompetitionEntry;
 use App\Models\CompetitionTeam;
 use App\Models\Game;
 use App\Models\GamePlayer;
+use App\Models\GameTactics;
 use App\Models\Team;
 use App\Models\TeamReputation;
 use App\Modules\Stadium\Services\FanLoyaltyService;
@@ -38,7 +42,7 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
      * Number of prep steps that run before the shared setup pipeline.
      * Used as the pipeline step offset and by GameSetupStatus for progress totals.
      */
-    public const PREP_STEPS = 3;
+    public const PREP_STEPS = 4;
 
     /**
      * Steps run by non-career mode after the prep phase (fixtures + standings).
@@ -67,6 +71,8 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
         SeasonSetupPipeline $setupPipeline,
         LeagueFixtureProcessor $fixtureProcessor,
         StandingsResetProcessor $standingsProcessor,
+        FormationRecommender $formationRecommender,
+        FormationBiasResolver $formationBiasResolver,
     ): void {
         // Idempotency: skip if already set up
         $game = Game::find($this->gameId);
@@ -93,7 +99,16 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
         $this->initializeGamePlayersFromTemplates();
         $this->markStep(2);
 
-        // Step 3+: Run shared setup processors
+        // Step 3: Pick a default formation that fits the user's squad. Runs
+        // after templates are materialised so the recommender can score every
+        // shape against real players. Without this, every game would start on
+        // the hardcoded 4-3-3 from GameCreationService and squads built around
+        // 4-4-2 / 4-2-3-1 would land their first /lineup view with several
+        // players in fallback slots.
+        $this->setUserTeamDefaultFormation($formationRecommender, $formationBiasResolver);
+        $this->markStep(3);
+
+        // Step 4+: Run shared setup processors
         if ($this->gameMode === Game::MODE_CAREER) {
             // Career mode: run all 4 shared processors (fixtures, standings, budget, cups/Swiss)
             $allTeams = $this->loadTeamLookup();
@@ -430,5 +445,47 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
             WHERE gp.game_id = ?
             ON CONFLICT (game_player_id) DO NOTHING
         SQL, [$this->season, $this->gameId]);
+    }
+
+    /**
+     * Pick the default formation that best fits the user's squad and persist
+     * it on GameTactics. Combines the squad-based mechanical score from
+     * FormationRecommender with the team's tactical-identity bias (curated
+     * preferred_formation, with a reputation-tier fallback pool).
+     *
+     * Idempotent: re-running on a game that already has a non-default
+     * formation persisted leaves it untouched, so the user's later edits
+     * survive a setup re-dispatch.
+     */
+    private function setUserTeamDefaultFormation(
+        FormationRecommender $formationRecommender,
+        FormationBiasResolver $formationBiasResolver,
+    ): void {
+        $tactics = GameTactics::where('game_id', $this->gameId)->first();
+        if ($tactics === null) {
+            return;
+        }
+
+        // Only overwrite the placeholder set by GameCreationService. If the
+        // user already saved a different shape (e.g. a setup retry after they
+        // touched /lineup), respect their choice.
+        $placeholder = Formation::F_4_3_3->value;
+        if ($tactics->default_formation !== $placeholder) {
+            return;
+        }
+
+        $players = GamePlayer::with('matchState')
+            ->where('game_id', $this->gameId)
+            ->where('team_id', $this->teamId)
+            ->get();
+
+        if ($players->isEmpty()) {
+            return;
+        }
+
+        $bias = $formationBiasResolver->resolveForTeam($this->gameId, $this->teamId);
+        $formation = $formationRecommender->getBestFormation($players, $bias);
+
+        $tactics->update(['default_formation' => $formation->value]);
     }
 }

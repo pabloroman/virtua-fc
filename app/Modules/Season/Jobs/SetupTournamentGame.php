@@ -2,6 +2,9 @@
 
 namespace App\Modules\Season\Jobs;
 
+use App\Modules\Lineup\Enums\Formation;
+use App\Modules\Lineup\Services\FormationBiasResolver;
+use App\Modules\Lineup\Services\FormationRecommender;
 use App\Modules\Notification\Services\NotificationService;
 use App\Models\CompetitionEntry;
 use App\Models\CompetitionTeam;
@@ -9,6 +12,7 @@ use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\GameStanding;
+use App\Models\GameTactics;
 use App\Models\Team;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -36,6 +40,8 @@ class SetupTournamentGame implements ShouldQueue
 
     public function handle(
         NotificationService $notificationService,
+        FormationRecommender $formationRecommender,
+        FormationBiasResolver $formationBiasResolver,
     ): void {
         $game = Game::find($this->gameId);
         if (!$game || $game->isSetupComplete()) {
@@ -54,7 +60,7 @@ class SetupTournamentGame implements ShouldQueue
         });
         $teamKeyMap = $nationalTeams->pluck('id', 'fifa_code')->toArray();
 
-        DB::transaction(function () use ($game, $groupsData, $teamKeyMap, $nationalTeams, $notificationService) {
+        DB::transaction(function () use ($game, $groupsData, $teamKeyMap, $nationalTeams, $notificationService, $formationRecommender, $formationBiasResolver) {
             // Step 1: Create competition entries for all WC teams
             $this->createCompetitionEntries();
 
@@ -66,6 +72,13 @@ class SetupTournamentGame implements ShouldQueue
 
             // Step 4: Create game players from pre-computed templates
             $this->createGamePlayersFromTemplates();
+
+            // Step 5: Pick a default formation that fits the user's squad.
+            // National teams carry preferred_formation via their ClubProfile
+            // (NATIONAL_TEAM_PREFERRED_FORMATION map), so the bias resolver
+            // surfaces the curated identity (Spain → high press, Iran → deep
+            // block, etc.) rather than the generic 4-3-3 placeholder.
+            $this->setUserTeamDefaultFormation($formationRecommender, $formationBiasResolver);
 
             // Send welcome notification
             $teamName = $nationalTeams->firstWhere('id', $this->teamId)?->getRawOriginal('name') ?? '';
@@ -252,5 +265,40 @@ class SetupTournamentGame implements ShouldQueue
             WHERE gp.game_id = ?
             ON CONFLICT (game_player_id) DO NOTHING
         SQL, [$this->gameId]);
+    }
+
+    /**
+     * Pick the default formation that best fits the user's national team and
+     * persist it on GameTactics. Mirrors the SetupNewGame equivalent — only
+     * overwrites the placeholder set by TournamentCreationService so a setup
+     * retry never clobbers a formation the user has since edited.
+     */
+    private function setUserTeamDefaultFormation(
+        FormationRecommender $formationRecommender,
+        FormationBiasResolver $formationBiasResolver,
+    ): void {
+        $tactics = GameTactics::where('game_id', $this->gameId)->first();
+        if ($tactics === null) {
+            return;
+        }
+
+        $placeholder = Formation::F_4_3_3->value;
+        if ($tactics->default_formation !== $placeholder) {
+            return;
+        }
+
+        $players = GamePlayer::with('matchState')
+            ->where('game_id', $this->gameId)
+            ->where('team_id', $this->teamId)
+            ->get();
+
+        if ($players->isEmpty()) {
+            return;
+        }
+
+        $bias = $formationBiasResolver->resolveForTeam($this->gameId, $this->teamId);
+        $formation = $formationRecommender->getBestFormation($players, $bias);
+
+        $tactics->update(['default_formation' => $formation->value]);
     }
 }
