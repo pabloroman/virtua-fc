@@ -47,8 +47,16 @@ class FormationRecommender
      *
      * Evaluates every formation by running the same staged algorithm and
      * picking the one with the highest coverage score.
+     *
+     * `$bias` is an optional [formation_value => bonus_points] map added to
+     * each formation's score, used to express team identity (e.g. Atleti
+     * skewing toward 4-4-2). The bonus is additive, not a hard pin: a team
+     * whose squad genuinely cannot support its preferred shape still gets
+     * the organic best-fit recommendation.
+     *
+     * @param  array<string, int>  $bias
      */
-    public function getBestFormation(Collection $players): Formation
+    public function getBestFormation(Collection $players, array $bias = []): Formation
     {
         // Pre-compute player data once (avoids ~40,000 accessor calls per batch).
         $preComputed = $this->precomputePlayers($players);
@@ -62,6 +70,7 @@ class FormationRecommender
             $bestXI = $this->findBestXI($slots, $players);
             $coverage = $this->calculateCoverage($bestXI);
             $score = $this->calculateFormationScore($bestXI, $coverage);
+            $score += $bias[$formation->value] ?? 0;
 
             if ($score > $bestScore) {
                 $bestScore = $score;
@@ -515,7 +524,13 @@ class FormationRecommender
     }
 
     /**
-     * Calculate overall formation score (0-100).
+     * Calculate overall formation score for inter-formation comparison.
+     *
+     * Used only by getBestFormation to rank candidate shapes; never
+     * surfaced as an absolute quality grade. We deliberately do not cap
+     * at 100 here because the bias signal (team identity) is added on
+     * top, and capping would erase real differentiation between
+     * formations whose mechanical scores both saturate.
      */
     private function calculateFormationScore(array $bestXI, array $coverage): int
     {
@@ -534,6 +549,6 @@ class FormationRecommender
 
         $score = $avgEffective + $naturalBonus - $poorPenalty - $unfilledPenalty;
 
-        return (int) max(0, min(100, $score));
+        return (int) max(0, $score);
     }
 }

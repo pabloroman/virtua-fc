@@ -453,4 +453,57 @@ class FormationRecommenderTest extends TestCase
         $formation = $this->recommender->getBestFormation($players);
         $this->assertInstanceOf(Formation::class, $formation);
     }
+
+    public function test_getBestFormation_respects_bias_when_squad_supports_it(): void
+    {
+        // Squad that fits 4-3-3 perfectly but also covers 4-4-2 cleanly via
+        // wide-midfielder secondaries on two of the CMs. Without bias the
+        // recommender prefers 4-3-3 (every slot natural); a moderate
+        // 4-4-2 bias is enough to flip the choice because 4-4-2 is also
+        // fully filled, just with two compat-100 secondary placements.
+        $players = collect([
+            $this->player('gk', 'Goalkeeper'),
+            $this->player('lb', 'Left-Back'),
+            $this->player('cb1', 'Centre-Back'),
+            $this->player('cb2', 'Centre-Back'),
+            $this->player('rb', 'Right-Back'),
+            $this->player('cm1', 'Central Midfield'),
+            $this->player('cm2', 'Central Midfield', 70, ['Left Midfield']),
+            $this->player('cm3', 'Central Midfield', 70, ['Right Midfield']),
+            $this->player('lw', 'Left Winger'),
+            $this->player('cf', 'Centre-Forward'),
+            $this->player('rw', 'Right Winger'),
+        ]);
+
+        $unbiased = $this->recommender->getBestFormation($players);
+        $biased = $this->recommender->getBestFormation($players, ['4-4-2' => 12]);
+
+        $this->assertSame(Formation::F_4_3_3, $unbiased, 'Sanity check — fixture should pick 4-3-3 without bias');
+        $this->assertSame(Formation::F_4_4_2, $biased, 'Bias should flip the choice when 4-4-2 is also supported');
+    }
+
+    public function test_getBestFormation_overrides_bias_when_squad_cannot_support_it(): void
+    {
+        // 4-3-3 squad with three pure wingers, three pure CMs, and only
+        // one CF. 4-4-2 needs 2 CFs and zero wingers, so the recommender
+        // would force-place wingers as CFs at compat 0 — a moderate
+        // identity bias is not enough to overcome that mechanical penalty.
+        $players = collect([
+            $this->player('gk', 'Goalkeeper'),
+            $this->player('lb', 'Left-Back'),
+            $this->player('cb1', 'Centre-Back'),
+            $this->player('cb2', 'Centre-Back'),
+            $this->player('rb', 'Right-Back'),
+            $this->player('cm1', 'Central Midfield'),
+            $this->player('cm2', 'Central Midfield'),
+            $this->player('cm3', 'Central Midfield'),
+            $this->player('lw', 'Left Winger'),
+            $this->player('cf', 'Centre-Forward'),
+            $this->player('rw', 'Right Winger'),
+        ]);
+
+        $biased = $this->recommender->getBestFormation($players, ['4-4-2' => 12]);
+
+        $this->assertNotSame(Formation::F_4_4_2, $biased, 'Bias must not force a shape the squad cannot fill naturally');
+    }
 }

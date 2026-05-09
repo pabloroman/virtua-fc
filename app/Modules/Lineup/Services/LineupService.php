@@ -7,6 +7,7 @@ use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Enums\Mentality;
 use App\Modules\Lineup\Enums\PlayingStyle;
 use App\Modules\Lineup\Enums\PressingIntensity;
+use App\Models\ClubProfile;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
@@ -22,6 +23,7 @@ class LineupService
     public function __construct(
         private readonly FormationRecommender $formationRecommender,
         private readonly CalendarService $calendarService,
+        private readonly FormationBiasResolver $formationBiasResolver,
     ) {}
 
     /**
@@ -276,26 +278,64 @@ class LineupService
     /**
      * Select the best formation for an AI team based on squad composition.
      * Uses FormationRecommender to evaluate all formations and pick the best fit.
+     *
+     * When $gameId/$teamId are supplied, the recommender is biased toward the
+     * team's curated identity (preferred_formation on ClubProfile, with a
+     * reputation-tier fallback). Without those, the recommendation is purely
+     * mechanical — used for the bare-collection use cases (e.g. one-off
+     * squad analysis where no game/team context is available).
      */
-    public function selectAIFormation(Collection $availablePlayers): Formation
-    {
+    public function selectAIFormation(
+        Collection $availablePlayers,
+        ?string $gameId = null,
+        ?string $teamId = null,
+    ): Formation {
         if ($availablePlayers->count() < 11) {
             return Formation::F_4_3_3;
         }
 
-        return $this->formationRecommender->getBestFormation($availablePlayers);
+        $bias = ($gameId && $teamId)
+            ? $this->formationBiasResolver->resolveForTeam($gameId, $teamId)
+            : [];
+
+        return $this->formationRecommender->getBestFormation($availablePlayers, $bias);
     }
 
     /**
      * Select mentality for an AI team based on reputation, venue, and relative strength.
-     * Returns a deterministic mentality — same inputs always produce the same output.
+     *
+     * `$aggressionBias` (-2..+2) shifts the deterministic baseline up or down
+     * the DEFENSIVE / BALANCED / ATTACKING ladder so curated club identity
+     * (Cholo's Atleti at -2, Gasperini's Atalanta at +2) reads through. Same
+     * inputs always produce the same output — the function stays deterministic.
      */
-    public function selectAIMentality(?string $reputationLevel, bool $isHome, float $teamAvg, float $opponentAvg): Mentality
-    {
+    public function selectAIMentality(
+        ?string $reputationLevel,
+        bool $isHome,
+        float $teamAvg,
+        float $opponentAvg,
+        int $aggressionBias = 0,
+    ): Mentality {
         if ($reputationLevel === null || $opponentAvg <= 0) {
             return Mentality::BALANCED;
         }
 
+        $base = $this->baseAIMentality($reputationLevel, $isHome, $teamAvg, $opponentAvg);
+
+        return $this->shiftLadder(
+            [Mentality::DEFENSIVE, Mentality::BALANCED, Mentality::ATTACKING],
+            $base,
+            $aggressionBias,
+        );
+    }
+
+    /**
+     * Deterministic mentality from the venue/strength/tier inputs alone,
+     * without identity bias. Kept as a private helper so the public method
+     * can apply the bias as a clean ladder shift on top.
+     */
+    private function baseAIMentality(string $reputationLevel, bool $isHome, float $teamAvg, float $opponentAvg): Mentality
+    {
         $diff = $teamAvg - $opponentAvg;
         $isStronger = $diff >= 5;
         $isWeaker = $diff <= -5;
@@ -330,12 +370,45 @@ class LineupService
     }
 
     /**
+     * Shift `$base` along the supplied ordered ladder by `$bias` positions,
+     * clamped to the ladder bounds. Used to apply the curated tactical-
+     * aggression bias to mentality, pressing, defensive line, and playing
+     * style outputs without re-implementing the base decision tree.
+     *
+     * @template T
+     * @param  list<T>  $ladder  Ordered defensive→attacking enum cases.
+     * @param  T  $base
+     * @return T
+     */
+    private function shiftLadder(array $ladder, $base, int $bias)
+    {
+        if ($bias === 0) {
+            return $base;
+        }
+        $i = array_search($base, $ladder, true);
+        if ($i === false) {
+            return $base;
+        }
+        $shifted = max(0, min(count($ladder) - 1, $i + $bias));
+        return $ladder[$shifted];
+    }
+
+    /**
      * Select tactical instructions for an AI team based on context.
+     *
+     * `$aggressionBias` (-2..+2) ladder-shifts each output toward more
+     * possession / higher press / higher line for positive values, and
+     * toward counter-attack / low block / deep line for negative values.
      *
      * @return array{PlayingStyle, PressingIntensity, DefensiveLineHeight}
      */
-    public function selectAIInstructions(?string $reputationLevel, bool $isHome, float $teamAvg, float $opponentAvg): array
-    {
+    public function selectAIInstructions(
+        ?string $reputationLevel,
+        bool $isHome,
+        float $teamAvg,
+        float $opponentAvg,
+        int $aggressionBias = 0,
+    ): array {
         $diff = $teamAvg - $opponentAvg;
         $isStronger = $diff >= 5;
         $isWeaker = $diff <= -5;
@@ -376,6 +449,22 @@ class LineupService
         } else {
             $defLine = DefensiveLineHeight::NORMAL;
         }
+
+        $style = $this->shiftLadder(
+            [PlayingStyle::COUNTER_ATTACK, PlayingStyle::BALANCED, PlayingStyle::POSSESSION],
+            $style,
+            $aggressionBias,
+        );
+        $pressing = $this->shiftLadder(
+            [PressingIntensity::LOW_BLOCK, PressingIntensity::STANDARD, PressingIntensity::HIGH_PRESS],
+            $pressing,
+            $aggressionBias,
+        );
+        $defLine = $this->shiftLadder(
+            [DefensiveLineHeight::DEEP, DefensiveLineHeight::NORMAL, DefensiveLineHeight::HIGH_LINE],
+            $defLine,
+            $aggressionBias,
+        );
 
         return [$style, $pressing, $defLine];
     }
@@ -865,8 +954,9 @@ class LineupService
             // rotation so automated matchday prep doesn't burn out the squad.
             $lineup = $this->selectBestXI($availablePlayers, $playerFormation, applyFitnessRotation: true)->pluck('id')->toArray();
         } else {
-            // AI team: use squad-fitted formation with fitness rotation
-            $aiFormation = $this->selectAIFormation($availablePlayers);
+            // AI team: use squad-fitted formation with fitness rotation,
+            // biased toward the team's curated tactical identity.
+            $aiFormation = $this->selectAIFormation($availablePlayers, $game->id, $teamId);
             $aiSelectedXI = $this->selectBestXI($availablePlayers, $aiFormation, applyFitnessRotation: true);
             $lineup = $aiSelectedXI->pluck('id')->toArray();
         }
@@ -897,7 +987,7 @@ class LineupService
             $match->{$prefix . '_defensive_line'} = $playerDefLine;
         } else {
             // AI team: set formation, reputation-driven mentality, and AI instructions
-            $aiFormation = $aiFormation ?? $this->selectAIFormation($availablePlayers);
+            $aiFormation = $aiFormation ?? $this->selectAIFormation($availablePlayers, $game->id, $teamId);
             $isHome = $prefix === 'home' && ! $match->isNeutralVenue();
             $opponentTeamId = $prefix === 'home' ? $match->away_team_id : $match->home_team_id;
 
@@ -909,9 +999,11 @@ class LineupService
                 ? $this->calculateTeamAverage($this->selectBestXI($opponentPlayers))
                 : 0;
 
-            $reputationLevel = $clubProfiles?->get($teamId)?->reputation_level;
-            $aiMentality = $this->selectAIMentality($reputationLevel, $isHome, $teamAvg, $opponentAvg);
-            [$aiStyle, $aiPressing, $aiDefLine] = $this->selectAIInstructions($reputationLevel, $isHome, $teamAvg, $opponentAvg);
+            $clubProfile = $clubProfiles?->get($teamId);
+            $reputationLevel = $clubProfile?->reputation_level;
+            $aggressionBias = (int) ($clubProfile?->tactical_aggression ?? 0);
+            $aiMentality = $this->selectAIMentality($reputationLevel, $isHome, $teamAvg, $opponentAvg, $aggressionBias);
+            [$aiStyle, $aiPressing, $aiDefLine] = $this->selectAIInstructions($reputationLevel, $isHome, $teamAvg, $opponentAvg, $aggressionBias);
 
             $match->{$prefix . '_formation'} = $aiFormation->value;
             $match->{$prefix . '_mentality'} = $aiMentality->value;
@@ -1061,7 +1153,13 @@ class LineupService
      *
      * Used by both the lineup page and the dashboard next-match card.
      *
-     * @return array{teamAverage: int, avgFitness: int, form: array, formation: string, mentality: string, playingStyle: string, pressing: string, defensiveLine: string, bestXIPlayers: Collection}
+     * `bestXISlots` carries the full slot→player mapping produced by
+     * FormationRecommender so consumers (e.g. the Scout Opponent pitch) can
+     * render players in the formation slot the recommender actually placed
+     * them in — including secondary/swap/weighted placements where a
+     * player's position_group does not match the slot's role.
+     *
+     * @return array{teamAverage: int, avgFitness: int, form: array, formation: string, mentality: string, playingStyle: string, pressing: string, defensiveLine: string, bestXIPlayers: Collection, bestXISlots: array<array{slot: array, player: ?GamePlayer}>}
      */
     public function predictOpponentTactics(
         string $gameId,
@@ -1073,25 +1171,44 @@ class LineupService
     ): array {
         $availablePlayers = $this->getAvailablePlayers($gameId, $opponentTeamId, $matchDate, $competitionId);
 
-        $predictedFormation = $this->selectAIFormation($availablePlayers);
+        $predictedFormation = $this->selectAIFormation($availablePlayers, $gameId, $opponentTeamId);
 
-        $bestXI = $this->selectBestXI($availablePlayers, $predictedFormation);
+        // Run the recommender directly so we keep the slot→player mapping;
+        // selectBestXI drops it. We then derive the flat best-XI collection
+        // from the slot assignments to keep both views perfectly consistent.
+        $slotAssignments = $this->formationRecommender->bestXIFor($predictedFormation, $availablePlayers);
+        $playersById = $availablePlayers->keyBy('id');
+        $bestXISlots = [];
+        $bestXI = collect();
+        foreach ($slotAssignments as $assignment) {
+            $playerId = $assignment['player']['id'] ?? null;
+            $player = $playerId ? $playersById->get($playerId) : null;
+            $bestXISlots[] = ['slot' => $assignment['slot'], 'player' => $player];
+            if ($player) {
+                $bestXI->push($player);
+            }
+        }
+
         $teamAverage = $this->calculateTeamAverage($bestXI);
         $avgFitness = (int) round($bestXI->avg('fitness') ?? 0);
 
         $opponentReputation = TeamReputation::resolveLevel($gameId, $opponentTeamId);
+        $aggressionBias = (int) (ClubProfile::where('team_id', $opponentTeamId)->value('tactical_aggression') ?? 0);
+
         $predictedMentality = $this->selectAIMentality(
             $opponentReputation,
             $opponentIsHome,
             $teamAverage,
-            $userTeamAverage
+            $userTeamAverage,
+            $aggressionBias,
         );
 
         [$predictedStyle, $predictedPressing, $predictedDefLine] = $this->selectAIInstructions(
             $opponentReputation,
             $opponentIsHome,
             $teamAverage,
-            $userTeamAverage
+            $userTeamAverage,
+            $aggressionBias,
         );
 
         $form = $this->calendarService->getTeamForm($gameId, $opponentTeamId);
@@ -1106,6 +1223,7 @@ class LineupService
             'pressing' => $predictedPressing->value,
             'defensiveLine' => $predictedDefLine->value,
             'bestXIPlayers' => $bestXI,
+            'bestXISlots' => $bestXISlots,
         ];
     }
 }

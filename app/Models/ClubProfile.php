@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $team_id
  * @property string $reputation_level
  * @property int $fan_loyalty
+ * @property string|null $preferred_formation
+ * @property int $tactical_aggression
  * @property-read \App\Models\Team $team
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ClubProfile newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ClubProfile newQuery()
@@ -37,11 +39,21 @@ class ClubProfile extends Model
         'team_id',
         'reputation_level',
         'fan_loyalty',
+        'preferred_formation',
+        'tactical_aggression',
     ];
 
     protected $casts = [
         'fan_loyalty' => 'integer',
+        'tactical_aggression' => 'integer',
     ];
+
+    /**
+     * Bounds for tactical_aggression. -2 = extreme low-block / Cholismo,
+     * +2 = extreme front-foot / Gasperini, 0 = tier-typical.
+     */
+    public const TACTICAL_AGGRESSION_MIN = -2;
+    public const TACTICAL_AGGRESSION_MAX = 2;
 
     public const REPUTATION_ELITE = 'elite';
     public const REPUTATION_CONTINENTAL = 'continental';

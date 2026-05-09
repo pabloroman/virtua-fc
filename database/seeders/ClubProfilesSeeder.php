@@ -495,6 +495,228 @@ class ClubProfilesSeeder extends Seeder
         'ACF Fiorentina' => 3,           // 47.2%
     ];
 
+    /**
+     * Curated per-club preferred formation. Captures real-world tactical
+     * identity so AI opponents feel distinct rather than every club
+     * defaulting to 4-3-3. Used by FormationRecommender as a positive
+     * bias on formation scoring; the recommender still overrides when
+     * squad makeup makes the preferred shape genuinely unviable.
+     *
+     * Only clubs with a clear tactical identity are listed. Unlisted
+     * clubs fall back to a reputation-tier formation pool (see
+     * FormationBiasResolver).
+     */
+    private const PREFERRED_FORMATION_OVERRIDES = [
+        // ── Spain — La Liga ──────────────────────────────────────────
+        'Real Madrid' => '4-3-3',
+        'FC Barcelona' => '4-3-3',
+        'Atlético de Madrid' => '4-4-2',          // Simeone trademark
+        'Athletic Club' => '4-2-3-1',
+        'Villarreal CF' => '4-4-2',
+        'Real Betis Balompié' => '4-2-3-1',       // Pellegrini
+        'Sevilla FC' => '4-3-3',
+        'Real Sociedad' => '4-3-3',
+        'Valencia CF' => '4-4-2',
+        'RCD Espanyol Barcelona' => '4-4-2',
+        'RC Celta' => '4-2-3-1',
+        'RCD Mallorca' => '5-3-2',                // Aguirre defensive block
+        'CA Osasuna' => '4-2-3-1',
+        'Getafe CF' => '5-4-1',                   // Bordalás low block
+        'Rayo Vallecano' => '4-3-3',              // Iñigo Pérez attacking
+        'Girona FC' => '3-4-3',                   // Míchel
+        'Deportivo Alavés' => '4-4-2',
+        'Elche CF' => '4-2-3-1',
+        'Levante UD' => '4-2-3-1',
+        'Real Oviedo' => '4-4-2',
+
+        // ── Spain — La Liga 2 ────────────────────────────────────────
+        'Deportivo de La Coruña' => '4-2-3-1',
+        'Málaga CF' => '4-2-3-1',
+        'Sporting Gijón' => '4-2-3-1',
+        'UD Las Palmas' => '4-3-3',               // Possession identity
+        'Real Valladolid CF' => '4-4-2',
+        'Granada CF' => '4-2-3-1',
+        'Cádiz CF' => '5-4-1',                    // Compact low block
+        'Racing Santander' => '4-3-3',
+        'UD Almería' => '4-2-3-1',
+        'Real Zaragoza' => '4-4-2',
+        'Córdoba CF' => '4-2-3-1',
+        'CD Castellón' => '4-3-3',
+        'Albacete Balompié' => '4-2-3-1',
+        'SD Huesca' => '4-2-3-1',
+        'SD Eibar' => '4-4-2',                    // Historic compact identity
+        'CD Leganés' => '4-2-3-1',
+        'Burgos CF' => '4-4-2',
+        'Cultural Leonesa' => '4-4-2',
+        'CD Mirandés' => '4-2-3-1',
+        'AD Ceuta FC' => '4-4-2',
+        'FC Andorra' => '4-3-3',                  // Eder Sarabia possession
+        'Real Sociedad B' => '4-3-3',             // Mirrors first team
+
+        // ── England ──────────────────────────────────────────────────
+        'Manchester City' => '4-3-3',             // Guardiola
+        'Liverpool FC' => '4-3-3',
+        'Arsenal FC' => '4-3-3',                  // Arteta
+        'Chelsea FC' => '4-2-3-1',
+        'Manchester United' => '3-4-3',           // Amorim
+        'Tottenham Hotspur' => '4-3-3',
+        'Newcastle United' => '4-3-3',
+        'Aston Villa' => '4-2-3-1',               // Emery
+        'West Ham United' => '4-2-3-1',
+        'Everton FC' => '4-2-3-1',
+        'Brighton & Hove Albion' => '4-2-3-1',
+        'Crystal Palace' => '3-4-3',              // Glasner
+        'Wolverhampton Wanderers' => '3-4-3',
+        'Leeds United' => '4-2-3-1',
+        'Nottingham Forest' => '4-2-3-1',
+        'Fulham FC' => '4-2-3-1',
+        'Brentford FC' => '4-3-3',
+        'AFC Bournemouth' => '4-2-3-1',
+        'Sunderland AFC' => '4-2-3-1',
+        'Burnley FC' => '4-4-2',
+
+        // ── Germany ──────────────────────────────────────────────────
+        'Bayern Munich' => '4-2-3-1',
+        'Borussia Dortmund' => '4-2-3-1',
+        'Bayer 04 Leverkusen' => '3-4-3',         // Alonso shape
+        'Eintracht Frankfurt' => '3-4-3',
+        'RB Leipzig' => '4-2-3-1',
+        '1.FC Union Berlin' => '5-3-2',           // Compact block
+        'FC St. Pauli' => '3-4-3',
+        '1.FC Heidenheim 1846' => '4-4-2',
+
+        // ── France ───────────────────────────────────────────────────
+        'Paris Saint-Germain' => '4-3-3',         // Luis Enrique
+        'Olympique Marseille' => '4-2-3-1',       // De Zerbi
+        'RC Lens' => '3-4-3',
+        'Stade Brestois 29' => '4-4-2',
+
+        // ── Italy ────────────────────────────────────────────────────
+        'Inter Milan' => '3-5-2',                 // Inzaghi trademark
+        'Juventus FC' => '4-2-3-1',
+        'AC Milan' => '4-2-3-1',
+        'SSC Napoli' => '4-3-3',                  // Conte 4-3-3 base
+        'Atalanta BC' => '3-4-3',                 // Gasperini
+        'AS Roma' => '3-4-3',
+        'SS Lazio' => '4-3-3',
+        'ACF Fiorentina' => '4-2-3-1',
+        'Bologna FC 1909' => '4-2-3-1',
+        'Torino FC' => '3-5-2',
+        'Genoa CFC' => '3-5-2',
+        'Udinese Calcio' => '3-5-2',
+        'Cagliari Calcio' => '4-4-2',
+        'Hellas Verona' => '3-4-3',
+        'US Cremonese' => '3-5-2',
+
+        // ── European pool ────────────────────────────────────────────
+        'SL Benfica' => '4-3-3',
+        'FC Porto' => '4-2-3-1',
+        'Ajax Amsterdam' => '4-3-3',
+        'Sporting CP' => '3-4-3',                 // Amorim legacy shape
+        'Celtic FC' => '4-3-3',
+        'Feyenoord Rotterdam' => '4-3-3',
+        'PSV Eindhoven' => '4-3-3',
+
+        // ── International pool ───────────────────────────────────────
+        'CA Boca Juniors' => '4-3-3',
+        'CA River Plate' => '4-3-3',
+        'CR Flamengo' => '4-2-3-1',
+        'SE Palmeiras' => '4-3-3',
+        'Al-Hilal SFC' => '4-3-3',
+    ];
+
+    /**
+     * Curated per-club tactical aggression on a -2..+2 scale. Captures
+     * how much more attacking (or more cautious) a club is than its
+     * reputation tier alone would suggest. Used by LineupService to
+     * shift mentality, pressing, defensive line, and playing style
+     * one or two notches up/down the ladder.
+     *
+     *   +2 — extreme front-foot (Gasperini's Atalanta, peak Pep)
+     *   +1 — high-press, attacking by default
+     *    0 — tier-typical (the implicit default)
+     *   -1 — pragmatic / cautious
+     *   -2 — deep low-block (Simeone, Bordalás)
+     *
+     * Only clubs whose tactical identity meaningfully diverges from
+     * the tier-typical baseline need an entry; everyone else stays at 0.
+     */
+    private const TACTICAL_AGGRESSION_OVERRIDES = [
+        // ── Spain — La Liga ──────────────────────────────────────────
+        'FC Barcelona' => 1,                      // Flick possession-press
+        'Atlético de Madrid' => -2,               // Cholismo trademark
+        'Athletic Club' => 1,                     // Valverde aggressive press
+        'Real Sociedad' => 1,                     // Imanol high-tempo
+        'Valencia CF' => -1,
+        'RCD Espanyol Barcelona' => -1,
+        'RC Celta' => 1,                          // Giráldez attacking
+        'RCD Mallorca' => -2,                     // Aguirre block
+        'CA Osasuna' => -1,
+        'Getafe CF' => -2,                        // Bordalás compact
+        'Rayo Vallecano' => 1,                    // Iñigo Pérez attacking
+        'Girona FC' => 1,                         // Míchel possession
+        'Deportivo Alavés' => -1,
+        'Real Oviedo' => -1,
+
+        // ── Spain — La Liga 2 ────────────────────────────────────────
+        'UD Las Palmas' => 1,                     // Possession identity
+        'Cádiz CF' => -2,                         // Survival deep block
+        'Racing Santander' => 1,
+        'Córdoba CF' => 1,
+        'CD Castellón' => 1,
+        'SD Eibar' => -1,                         // Compact identity
+        'CD Leganés' => -1,
+        'AD Ceuta FC' => -1,
+        'FC Andorra' => 1,                        // Eder Sarabia possession
+        'Real Sociedad B' => 1,                   // Mirrors first team
+
+        // ── England ──────────────────────────────────────────────────
+        'Manchester City' => 2,                   // Pep extreme press
+        'Liverpool FC' => 1,
+        'Arsenal FC' => 1,                        // Arteta front-foot
+        'Tottenham Hotspur' => 1,
+        'Newcastle United' => 1,                  // Howe pressing
+        'Brighton & Hove Albion' => 1,            // Progressive system
+        'Everton FC' => -1,
+        'Nottingham Forest' => -1,
+
+        // ── Germany ──────────────────────────────────────────────────
+        'Bayern Munich' => 1,
+        'Borussia Dortmund' => 1,
+        'Bayer 04 Leverkusen' => 1,               // Alonso possession-press
+        'RB Leipzig' => 1,                        // Red Bull press
+        '1.FC Union Berlin' => -2,                // Compact 5-3-2
+        'FC Augsburg' => -1,
+        '1.FC Heidenheim 1846' => -1,
+
+        // ── France ───────────────────────────────────────────────────
+        'Paris Saint-Germain' => 1,               // Luis Enrique press
+        'Olympique Marseille' => 1,               // De Zerbi
+        'RC Lens' => 1,
+        'Angers SCO' => -1,
+
+        // ── Italy ────────────────────────────────────────────────────
+        'SSC Napoli' => 1,                        // Conte intense
+        'Atalanta BC' => 2,                       // Gasperini all-out
+        'Bologna FC 1909' => 1,                   // Italiano
+        'Cagliari Calcio' => -1,
+        'Como 1907' => 1,                         // Fabregas progressive
+
+        // ── European pool ────────────────────────────────────────────
+        'SL Benfica' => 1,
+        'Ajax Amsterdam' => 1,
+        'Sporting CP' => 1,
+        'Celtic FC' => 1,
+        'Feyenoord Rotterdam' => 1,
+        'PSV Eindhoven' => 1,
+        'Red Bull Salzburg' => 1,                 // Red Bull press
+
+        // ── International pool ───────────────────────────────────────
+        'CA River Plate' => 1,                    // Gallardo attacking
+        'Al-Hilal SFC' => 1,
+        'Inter Miami CF' => 1,
+    ];
+
     public function run(): void
     {
         $allTeams = Team::all();
@@ -504,12 +726,16 @@ class ClubProfilesSeeder extends Seeder
             $reputation = self::CLUB_DATA[$team->name] ?? ClubProfile::REPUTATION_LOCAL;
             $fanLoyalty = self::FAN_LOYALTY_OVERRIDES[$team->name]
                 ?? ClubProfile::FAN_LOYALTY_DEFAULT;
+            $preferredFormation = self::PREFERRED_FORMATION_OVERRIDES[$team->name] ?? null;
+            $tacticalAggression = self::TACTICAL_AGGRESSION_OVERRIDES[$team->name] ?? 0;
 
             ClubProfile::updateOrCreate(
                 ['team_id' => $team->id],
                 [
                     'reputation_level' => $reputation,
                     'fan_loyalty' => $fanLoyalty,
+                    'preferred_formation' => $preferredFormation,
+                    'tactical_aggression' => $tacticalAggression,
                 ]
             );
 

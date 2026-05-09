@@ -5,6 +5,7 @@ namespace App\Http\Actions;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Modules\Lineup\Enums\Formation;
+use App\Modules\Lineup\Services\FormationBiasResolver;
 use App\Modules\Lineup\Services\FormationRecommender;
 use App\Modules\Lineup\Services\LineupService;
 use Illuminate\Http\JsonResponse;
@@ -31,6 +32,7 @@ class ComputeSlotAssignments
     public function __construct(
         private readonly LineupService $lineupService,
         private readonly FormationRecommender $formationRecommender,
+        private readonly FormationBiasResolver $formationBiasResolver,
     ) {}
 
     public function __invoke(Request $request, string $gameId): JsonResponse
@@ -71,8 +73,12 @@ class ComputeSlotAssignments
         ];
 
         if ($includeSuggested) {
+            // Bias the suggestion toward the manager's club identity so
+            // hitting "auto-formation" on Atleti suggests 4-4-2, not the
+            // generic 4-3-3 default.
+            $bias = $this->formationBiasResolver->resolveForTeam($game->id, $game->team_id);
             $response['suggested_formation'] = $this->formationRecommender
-                ->getBestFormation($players)
+                ->getBestFormation($players, $bias)
                 ->value;
         }
 

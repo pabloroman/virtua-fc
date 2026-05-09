@@ -3,7 +3,6 @@
 namespace App\Modules\Lineup\Services;
 
 use App\Modules\Lineup\Enums\DefensiveLineHeight;
-use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Enums\Mentality;
 use App\Modules\Lineup\Enums\PlayingStyle;
 use App\Modules\Lineup\Enums\PressingIntensity;
@@ -28,27 +27,16 @@ class OpponentAnalysisBuilder
     public function build(array $opponentData): array
     {
         $bestXI = $opponentData['bestXIPlayers']->values();
-        $formation = Formation::tryFrom($opponentData['formation']) ?? Formation::F_4_3_3;
 
-        $pitchSlots = array_map(function ($slot) {
+        // Walk the slot→player map produced by FormationRecommender. This is
+        // the authoritative placement: bin-grouping by position_group used to
+        // misalign here when a player was placed via secondary/swap/weighted
+        // (e.g. a winger covering RB), leaving a slot empty.
+        $slotsWithPlayers = array_map(function ($entry) {
+            $slot = $entry['slot'];
             $slot['displayLabel'] = PositionSlotMapper::slotToDisplayAbbreviation($slot['label']);
-            return $slot;
-        }, $formation->pitchSlots());
-
-        // selectBestXI() returns the chosen players in unspecified order, so we
-        // group by position_group and consume each role's queue while iterating
-        // slots — this lines players up with their actual formation positions.
-        $playersByRole = [
-            'Goalkeeper' => $bestXI->where('position_group', 'Goalkeeper')->values()->all(),
-            'Defender' => $bestXI->where('position_group', 'Defender')->values()->all(),
-            'Midfielder' => $bestXI->where('position_group', 'Midfielder')->values()->all(),
-            'Forward' => $bestXI->where('position_group', 'Forward')->values()->all(),
-        ];
-        $slotsWithPlayers = [];
-        foreach ($pitchSlots as $slot) {
-            $player = array_shift($playersByRole[$slot['role']]);
-            $slotsWithPlayers[] = ['slot' => $slot, 'player' => $player];
-        }
+            return ['slot' => $slot, 'player' => $entry['player'] ?? null];
+        }, $opponentData['bestXISlots'] ?? []);
 
         $topThreats = $bestXI->sortByDesc(fn ($p) => $p->getEffectiveRating())
             ->take(5)
