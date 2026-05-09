@@ -100,7 +100,7 @@ Users interact with matches through:
 Other flat-league competitions in the game (the leagues the player isn't entered in — Premier League, Bundesliga, Serie A, Ligue 1 from a Spanish career, plus other Spanish tiers) are simulated **lazily on demand** by `SyntheticLeagueResolver`:
 
 - The first time the user opens a non-user league page, fixtures are drawn (via `LeagueFixtureGenerator`) and standings are zero-initialized.
-- Every match with `scheduled_date <= game.current_date` is then resolved via independent home/away **Poisson scoreline draws** with λ tuned per reputation tier (LOCAL → 0.9 up to ELITE → 1.8) plus a +0.3 home boost. Scores are capped at 7 per side.
+- Every match with `scheduled_date <= game.current_date` is then resolved via independent home/away **Poisson scoreline draws**. λ is matchup-aware: each team's expected goals start from a 1.35 baseline and shift by the gap between its squad strength and the opponent's (mean of the top 16 `overall_score` values per team), plus a +0.3 home boost. Scores are capped at 7 per side.
 - Standings are updated via the regular `StandingsCalculator`. **No `MatchEvent`, lineup, MVP, or commentary data is generated** — top-scorer leaderboards for non-user leagues are intentionally empty.
 - A Postgres advisory lock keyed on `(game_id, competition_id)` serializes initialization and resolution so concurrent requests don't double-draw fixtures.
 - Subsequent visits resolve only newly-due matches and are otherwise pure reads.

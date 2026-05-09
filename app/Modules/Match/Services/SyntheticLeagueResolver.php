@@ -2,12 +2,10 @@
 
 namespace App\Modules\Match\Services;
 
-use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GameMatch;
-use App\Models\TeamReputation;
 use App\Modules\Competition\Services\LeagueFixtureGenerator;
 use App\Modules\Competition\Services\StandingsCalculator;
 use Carbon\CarbonInterface;
@@ -21,9 +19,12 @@ use Illuminate\Support\Str;
  * league competitions, on demand. Standings & match rows are persisted
  * after first view so subsequent visits are pure reads.
  *
- * Scorelines come from independent home/away Poisson draws with λ derived
- * from each team's reputation tier plus a small home boost. No MatchEvent,
- * lineup, or MVP data is produced.
+ * Scorelines come from independent home/away Poisson draws. λ is matchup-
+ * aware: each team's expected goals depend on the gap between its squad
+ * strength and the opponent's, plus a home boost. Squad strength is the
+ * mean of each team's top N `overall_score` values — the same data the real
+ * engine uses, so synthetic standings track current roster quality. No
+ * MatchEvent, lineup, or MVP data is produced.
  *
  * Concurrency: a Postgres transactional advisory lock keyed on
  * (gameId, competitionId) serializes initialization and resolution so
@@ -33,18 +34,31 @@ use Illuminate\Support\Str;
 class SyntheticLeagueResolver
 {
     /**
-     * Reputation → goals-per-match λ. Values are tuned so the average synthetic
-     * scoreline (~2.6 goals across two evenly-matched teams once the home boost
-     * is applied) lands close to top-flight averages while still allowing
-     * upsets via Poisson variance.
+     * Baseline expected goals per team in an evenly-matched fixture (before
+     * the home boost). ~1.35 lines up with top-flight averages.
      */
-    private const LAMBDA_BY_REPUTATION = [
-        ClubProfile::REPUTATION_LOCAL        => 0.9,
-        ClubProfile::REPUTATION_MODEST       => 1.1,
-        ClubProfile::REPUTATION_ESTABLISHED  => 1.3,
-        ClubProfile::REPUTATION_CONTINENTAL  => 1.55,
-        ClubProfile::REPUTATION_ELITE        => 1.8,
-    ];
+    private const BASE_LAMBDA = 1.35;
+
+    /**
+     * How aggressively a strength gap shifts λ. Each 10-point gap in mean
+     * `overall_score` shifts each side's λ by this amount (favoured side up,
+     * opponent down). Tuned so a ~20-point gap produces a clear favourite
+     * (λ ≈ 2.6 / 0.4) without crushing the league with shutouts.
+     */
+    private const STRENGTH_LAMBDA_PER_10 = 0.55;
+
+    /** Strength used for teams with no players in `game_players`. */
+    private const DEFAULT_STRENGTH = 65.0;
+
+    /**
+     * Number of top `overall_score` values averaged to produce a team's
+     * strength. Larger than 11 to weight squad depth, smaller than full
+     * roster so reserves don't dilute the rating.
+     */
+    private const STRENGTH_TOP_N = 16;
+
+    /** Floor on per-team λ so the loser still has a chance to score. */
+    private const MIN_LAMBDA = 0.15;
 
     private const HOME_BOOST = 0.3;
 
@@ -230,22 +244,19 @@ class SyntheticLeagueResolver
             ->values()
             ->all();
 
-        $reputations = TeamReputation::resolveLevels($game->id, $teamIds);
-
-        // Cache λ per team to avoid repeated lookups on the hot loop.
-        $lambdas = [];
-        foreach ($teamIds as $teamId) {
-            $level = $reputations[$teamId] ?? ClubProfile::REPUTATION_LOCAL;
-            $lambdas[$teamId] = self::LAMBDA_BY_REPUTATION[$level] ?? self::LAMBDA_BY_REPUTATION[ClubProfile::REPUTATION_LOCAL];
-        }
+        $strengths = $this->loadTeamStrengths($game->id, $teamIds);
 
         $matchResults = [];
         $scoreCases = [];
         $matchIds = [];
 
         foreach ($unplayed as $match) {
-            $homeLambda = $lambdas[$match->home_team_id] + self::HOME_BOOST;
-            $awayLambda = $lambdas[$match->away_team_id];
+            $homeStrength = $strengths[$match->home_team_id] ?? self::DEFAULT_STRENGTH;
+            $awayStrength = $strengths[$match->away_team_id] ?? self::DEFAULT_STRENGTH;
+            $delta = ($homeStrength - $awayStrength) * (self::STRENGTH_LAMBDA_PER_10 / 10.0);
+
+            $homeLambda = max(self::MIN_LAMBDA, self::BASE_LAMBDA + $delta + self::HOME_BOOST);
+            $awayLambda = max(self::MIN_LAMBDA, self::BASE_LAMBDA - $delta);
 
             $homeScore = $this->drawPoisson($homeLambda);
             $awayScore = $this->drawPoisson($awayLambda);
@@ -288,6 +299,50 @@ class SyntheticLeagueResolver
             'count' => count($matchResults),
             'cutoff' => $cutoff,
         ]);
+    }
+
+    /**
+     * Mean `overall_score` of each team's top N players. Bulk single-query
+     * lookup so a 20-team batch resolution stays cheap. Teams missing from
+     * the result map have no players and will fall back to DEFAULT_STRENGTH
+     * at the call site.
+     *
+     * @param  array<int, string>  $teamIds
+     * @return array<string, float>  team_id => mean top-N overall_score
+     */
+    private function loadTeamStrengths(string $gameId, array $teamIds): array
+    {
+        if ($teamIds === []) {
+            return [];
+        }
+
+        // Per-team window: rank by overall_score desc, average the top N.
+        // ROW_NUMBER() lets us pick a fixed-size top slice per team in one query.
+        $placeholders = implode(',', array_fill(0, count($teamIds), '?'));
+        $bindings = array_merge([$gameId], $teamIds, [self::STRENGTH_TOP_N]);
+
+        $rows = DB::select(<<<SQL
+            SELECT team_id, AVG(overall_score)::float AS strength
+            FROM (
+                SELECT
+                    team_id,
+                    overall_score,
+                    ROW_NUMBER() OVER (PARTITION BY team_id ORDER BY overall_score DESC) AS rn
+                FROM game_players
+                WHERE game_id = ?
+                  AND team_id IN ({$placeholders})
+                  AND overall_score IS NOT NULL
+            ) ranked
+            WHERE rn <= ?
+            GROUP BY team_id
+        SQL, $bindings);
+
+        $strengths = [];
+        foreach ($rows as $row) {
+            $strengths[$row->team_id] = (float) $row->strength;
+        }
+
+        return $strengths;
     }
 
     /**
