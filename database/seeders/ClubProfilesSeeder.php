@@ -333,6 +333,141 @@ class ClubProfilesSeeder extends Seeder
     ];
 
     /**
+     * Curated reputation tier for national teams keyed by FIFA code.
+     * Reputation drives AI mentality, instructions, and the formation-bias
+     * fallback pool for any national-team match (currently World Cup
+     * tournament mode). Without this, every national team would default to
+     * REPUTATION_LOCAL and behave like a small-club squad regardless of
+     * stature.
+     *
+     * Calibrated against current strength (FIFA ranking + recent tournament
+     * performance) rather than historic prestige alone — Hungary is not on
+     * this list because they aren't at WC2026; Morocco sits at CONTINENTAL
+     * after their 2022 semifinal run, etc.
+     */
+    private const NATIONAL_TEAM_REPUTATION = [
+        // Elite — title contenders
+        'ARG' => ClubProfile::REPUTATION_ELITE,        // World champions
+        'BRA' => ClubProfile::REPUTATION_ELITE,
+        'FRA' => ClubProfile::REPUTATION_ELITE,
+        'ESP' => ClubProfile::REPUTATION_ELITE,        // Euro 2024 champions
+        'ENG' => ClubProfile::REPUTATION_ELITE,
+        'GER' => ClubProfile::REPUTATION_ELITE,
+        'POR' => ClubProfile::REPUTATION_ELITE,
+        'NED' => ClubProfile::REPUTATION_ELITE,
+
+        // Continental — strong regular contenders
+        'BEL' => ClubProfile::REPUTATION_CONTINENTAL,
+        'CRO' => ClubProfile::REPUTATION_CONTINENTAL, // 2022 semifinalists
+        'URU' => ClubProfile::REPUTATION_CONTINENTAL,
+        'COL' => ClubProfile::REPUTATION_CONTINENTAL, // Copa America 2024 finalist
+        'MAR' => ClubProfile::REPUTATION_CONTINENTAL, // 2022 semifinalists
+        'SEN' => ClubProfile::REPUTATION_CONTINENTAL,
+        'SUI' => ClubProfile::REPUTATION_CONTINENTAL,
+        'MEX' => ClubProfile::REPUTATION_CONTINENTAL,
+        'USA' => ClubProfile::REPUTATION_CONTINENTAL,
+        'JPN' => ClubProfile::REPUTATION_CONTINENTAL,
+        'TUR' => ClubProfile::REPUTATION_CONTINENTAL,
+
+        // Established — qualified regularly, mid-tier
+        'SWE' => ClubProfile::REPUTATION_ESTABLISHED,
+        'NOR' => ClubProfile::REPUTATION_ESTABLISHED, // Haaland-led generation
+        'AUT' => ClubProfile::REPUTATION_ESTABLISHED,
+        'EGY' => ClubProfile::REPUTATION_ESTABLISHED,
+        'CIV' => ClubProfile::REPUTATION_ESTABLISHED, // AFCON 2023 winners
+        'IRN' => ClubProfile::REPUTATION_ESTABLISHED,
+        'KOR' => ClubProfile::REPUTATION_ESTABLISHED,
+        'AUS' => ClubProfile::REPUTATION_ESTABLISHED,
+        'CZE' => ClubProfile::REPUTATION_ESTABLISHED,
+        'SCO' => ClubProfile::REPUTATION_ESTABLISHED,
+        'ECU' => ClubProfile::REPUTATION_ESTABLISHED,
+        'PAR' => ClubProfile::REPUTATION_ESTABLISHED,
+        'ALG' => ClubProfile::REPUTATION_ESTABLISHED,
+        'TUN' => ClubProfile::REPUTATION_ESTABLISHED,
+        'GHA' => ClubProfile::REPUTATION_ESTABLISHED,
+        'KSA' => ClubProfile::REPUTATION_ESTABLISHED,
+
+        // Modest — first-time or sporadic qualifiers
+        'QAT' => ClubProfile::REPUTATION_MODEST,
+        'BIH' => ClubProfile::REPUTATION_MODEST,
+        'CAN' => ClubProfile::REPUTATION_MODEST,
+        'NZL' => ClubProfile::REPUTATION_MODEST,
+        'CPV' => ClubProfile::REPUTATION_MODEST,
+        'COD' => ClubProfile::REPUTATION_MODEST,
+        'IRQ' => ClubProfile::REPUTATION_MODEST,
+        'JOR' => ClubProfile::REPUTATION_MODEST,
+        'UZB' => ClubProfile::REPUTATION_MODEST,
+        'PAN' => ClubProfile::REPUTATION_MODEST,
+        'CUR' => ClubProfile::REPUTATION_MODEST,
+
+        // Local — outsiders / debutants
+        'RSA' => ClubProfile::REPUTATION_LOCAL,
+        'HAI' => ClubProfile::REPUTATION_LOCAL,
+    ];
+
+    /**
+     * Curated preferred formation for national teams keyed by FIFA code.
+     * Reflects current managerial identity. Unlisted national teams fall
+     * back to the reputation-tier formation pool in FormationBiasResolver.
+     */
+    private const NATIONAL_TEAM_PREFERRED_FORMATION = [
+        'ARG' => '4-3-3',                              // Scaloni
+        'BRA' => '4-2-3-1',
+        'FRA' => '4-2-3-1',                            // Deschamps
+        'ESP' => '4-3-3',                              // De la Fuente
+        'ENG' => '4-2-3-1',
+        'GER' => '4-2-3-1',
+        'POR' => '4-3-3',
+        'NED' => '4-3-3',
+        'BEL' => '3-4-3',
+        'CRO' => '4-3-3',
+        'URU' => '4-4-2',
+        'COL' => '4-2-3-1',
+        'MAR' => '4-3-3',
+        'SEN' => '4-3-3',
+        'SUI' => '4-2-3-1',
+        'MEX' => '4-3-3',
+        'USA' => '4-3-3',
+        'JPN' => '4-2-3-1',
+        'TUR' => '4-2-3-1',
+        'NOR' => '4-3-3',                              // Solbakken
+        'AUT' => '4-3-3',                              // Rangnick high-press
+        'KOR' => '4-2-3-1',
+        'AUS' => '4-2-3-1',
+        'IRN' => '5-4-1',                              // Compact deep block tradition
+        'KSA' => '4-2-3-1',
+        'QAT' => '5-3-2',
+        'PAR' => '4-4-2',
+    ];
+
+    /**
+     * Curated tactical aggression (-2..+2) for national teams keyed by FIFA
+     * code. International football skews more conservative than club football
+     * (cup format, less drilled-in pressing), so most teams sit at 0; only
+     * sides with a pronounced identity shift one or two notches.
+     */
+    private const NATIONAL_TEAM_TACTICAL_AGGRESSION = [
+        'ESP' => 1,                                    // Tiki-taka high press
+        'BRA' => 1,                                    // Attacking tradition
+        'POR' => 1,
+        'NED' => 1,
+        'AUT' => 1,                                    // Rangnick gegenpress
+        'JPN' => 1,                                    // Recent high-press identity
+        'SEN' => 1,
+        'MAR' => -1,                                   // Compact, counter-attacking
+        'URU' => -1,                                   // Pragmatic
+        'SUI' => -1,
+        'IRN' => -2,                                   // Queiroz-era deep block
+        'KSA' => -1,
+        'QAT' => -1,
+        'NZL' => -1,
+        'JOR' => -1,
+        'PAN' => -1,
+        'HAI' => -1,
+        'RSA' => -1,
+    ];
+
+    /**
      * Curated per-club fan_loyalty on a 0-10 editorial scale. Anchor for
      * TeamReputation.base_loyalty at game start. Only clubs whose loyalty
      * differs from the neutral midpoint need an entry; everyone else
@@ -723,11 +858,27 @@ class ClubProfilesSeeder extends Seeder
         $seeded = 0;
 
         foreach ($allTeams as $team) {
-            $reputation = self::CLUB_DATA[$team->name] ?? ClubProfile::REPUTATION_LOCAL;
-            $fanLoyalty = self::FAN_LOYALTY_OVERRIDES[$team->name]
-                ?? ClubProfile::FAN_LOYALTY_DEFAULT;
-            $preferredFormation = self::PREFERRED_FORMATION_OVERRIDES[$team->name] ?? null;
-            $tacticalAggression = self::TACTICAL_AGGRESSION_OVERRIDES[$team->name] ?? 0;
+            // National teams key on fifa_code (locale-independent and stable),
+            // because Team::name applies the countries.* translation accessor
+            // for type='national' rows and would otherwise miss the lookup.
+            $isNational = $team->getRawOriginal('type') === 'national';
+            $rawName = $team->getRawOriginal('name');
+            $fifaCode = $team->fifa_code;
+
+            if ($isNational && $fifaCode) {
+                $reputation = self::NATIONAL_TEAM_REPUTATION[$fifaCode] ?? ClubProfile::REPUTATION_LOCAL;
+                $preferredFormation = self::NATIONAL_TEAM_PREFERRED_FORMATION[$fifaCode] ?? null;
+                $tacticalAggression = self::NATIONAL_TEAM_TACTICAL_AGGRESSION[$fifaCode] ?? 0;
+                // Fan loyalty doesn't apply to national teams (no club fanbase
+                // demand curve), so we leave it at the neutral default.
+                $fanLoyalty = ClubProfile::FAN_LOYALTY_DEFAULT;
+            } else {
+                $reputation = self::CLUB_DATA[$rawName] ?? ClubProfile::REPUTATION_LOCAL;
+                $fanLoyalty = self::FAN_LOYALTY_OVERRIDES[$rawName]
+                    ?? ClubProfile::FAN_LOYALTY_DEFAULT;
+                $preferredFormation = self::PREFERRED_FORMATION_OVERRIDES[$rawName] ?? null;
+                $tacticalAggression = self::TACTICAL_AGGRESSION_OVERRIDES[$rawName] ?? 0;
+            }
 
             ClubProfile::updateOrCreate(
                 ['team_id' => $team->id],
