@@ -6,11 +6,13 @@ use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Modules\Competition\Services\CompetitionViewService;
+use App\Modules\Match\Services\SyntheticLeagueResolver;
 
 class ShowCompetition
 {
     public function __construct(
         private readonly CompetitionViewService $competitionViewService,
+        private readonly SyntheticLeagueResolver $syntheticLeagueResolver,
     ) {}
 
     public function __invoke(string $gameId, string $competitionId)
@@ -24,26 +26,69 @@ class ShowCompetition
             ->where('team_id', $game->team_id)
             ->exists();
 
-        if (!$participates) {
+        $isFlatLeague = in_array($competition->handler_type, ['league', 'league_with_playoff'], true);
+
+        // Flat-league competitions the player isn't entered in (e.g. browsing
+        // foreign leagues) are simulated lazily on first view. Other handler
+        // types (cups, swiss, group-stage) still require participation.
+        if (!$participates && !$isFlatLeague) {
             abort(404, 'Your team does not participate in this competition.');
         }
 
+        if ($isFlatLeague && !$participates) {
+            $this->syntheticLeagueResolver->catchUp($game, $competition);
+        }
+
+        $otherLeagues = $this->otherLeagues($game, $competition);
+
         if ($competition->handler_type === 'swiss_format') {
-            return $this->showSwissFormat($game, $competition);
+            return $this->showSwissFormat($game, $competition, $otherLeagues);
         }
 
         if ($competition->handler_type === 'group_stage_cup') {
-            return $this->showGroupStageCup($game, $competition);
+            return $this->showGroupStageCup($game, $competition, $otherLeagues);
         }
 
         if ($competition->isLeague()) {
-            return $this->showLeague($game, $competition);
+            return $this->showLeague($game, $competition, $otherLeagues);
         }
 
-        return $this->showCup($game, $competition);
+        return $this->showCup($game, $competition, $otherLeagues);
     }
 
-    private function showLeague(Game $game, Competition $competition)
+    /**
+     * Flat-league competitions in this game the user is NOT entered in.
+     * Surfaced as a small dropdown next to the page title for quick navigation
+     * between leagues; standings/results are simulated lazily on first view.
+     *
+     * Spanish leagues come first (the player's home country in v1), then the
+     * remaining countries alphabetically; within each country, by tier.
+     */
+    private function otherLeagues(Game $game, Competition $current): \Illuminate\Support\Collection
+    {
+        if (!$game->isCareerMode()) {
+            return collect();
+        }
+
+        $userCompetitionIds = CompetitionEntry::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->pluck('competition_id');
+
+        $allLeagueIdsInGame = CompetitionEntry::where('game_id', $game->id)
+            ->pluck('competition_id')
+            ->unique();
+
+        return Competition::whereIn('id', $allLeagueIdsInGame)
+            ->whereIn('handler_type', ['league', 'league_with_playoff'])
+            ->whereNotIn('id', $userCompetitionIds)
+            ->orderByRaw("CASE WHEN country = 'ES' THEN 0 ELSE 1 END")
+            ->orderBy('country')
+            ->orderBy('tier')
+            ->orderBy('id')
+            ->get();
+    }
+
+    private function showLeague(Game $game, Competition $competition, \Illuminate\Support\Collection $otherLeagues)
     {
         $standings = $this->competitionViewService->getStandings($game, $competition);
         $hasGroups = $standings->whereNotNull('group_label')->isNotEmpty();
@@ -69,10 +114,11 @@ class ShowCompetition
             'knockoutRounds' => $knockoutRounds,
             'knockoutTies' => $knockoutTies,
             'leaguePhaseComplete' => $leaguePhaseComplete,
+            'otherLeagues' => $otherLeagues,
         ]);
     }
 
-    private function showSwissFormat(Game $game, Competition $competition)
+    private function showSwissFormat(Game $game, Competition $competition, \Illuminate\Support\Collection $otherLeagues)
     {
         $standings = $this->competitionViewService->getStandings($game, $competition);
         $knockoutRounds = $this->competitionViewService->getKnockoutRounds($competition, $game->season);
@@ -88,10 +134,11 @@ class ShowCompetition
             'knockoutRounds' => $knockoutRounds,
             'knockoutTies' => $knockoutTies,
             'leaguePhaseComplete' => $this->competitionViewService->isLeaguePhaseComplete($game, $competition, $standings),
+            'otherLeagues' => $otherLeagues,
         ]);
     }
 
-    private function showCup(Game $game, Competition $competition)
+    private function showCup(Game $game, Competition $competition, \Illuminate\Support\Collection $otherLeagues)
     {
         $rounds = $this->competitionViewService->getKnockoutRounds($competition, $game->season);
         $tiesByRound = $this->competitionViewService->getKnockoutTies($game, $competition);
@@ -106,10 +153,11 @@ class ShowCompetition
             'playerTie' => $playerTie,
             'cupStatus' => $this->competitionViewService->resolveCupStatus($playerTie, $game->team_id, $maxRound),
             'playerRoundName' => $playerTie?->getRoundConfig()?->name,
+            'otherLeagues' => $otherLeagues,
         ]);
     }
 
-    private function showGroupStageCup(Game $game, Competition $competition)
+    private function showGroupStageCup(Game $game, Competition $competition, \Illuminate\Support\Collection $otherLeagues)
     {
         $standings = $this->competitionViewService->getStandings($game, $competition);
         $groupStageComplete = $this->competitionViewService->isLeaguePhaseComplete($game, $competition, $standings);
@@ -141,6 +189,7 @@ class ShowCompetition
             'knockoutTies' => $knockoutTies,
             'playerTie' => $playerTie,
             'knockoutStatus' => $knockoutStatus,
+            'otherLeagues' => $otherLeagues,
         ]);
     }
 }

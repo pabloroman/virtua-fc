@@ -15,8 +15,9 @@ $defaultTab = $knockoutStarted ? 'knockout' : 'league';
     </x-slot>
 
     <div class="max-w-7xl mx-auto px-4 pb-8" x-data="{ activeTab: '{{ $defaultTab }}' }">
-        <div class="mt-6 mb-6">
+        <div class="mt-6 mb-6 flex items-center justify-between gap-3 flex-wrap">
             <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">{{ __($competition->name) }}</h2>
+            <x-other-leagues-menu :game="$game" :current-competition-id="$competition->id" :other-leagues="$otherLeagues" />
         </div>
 
         {{-- Tab Navigation --}}
