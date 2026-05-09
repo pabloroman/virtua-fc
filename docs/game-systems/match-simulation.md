@@ -97,7 +97,17 @@ Users interact with matches through:
 
 ## Season Simulation
 
-Non-played leagues are simulated match-by-match using the same ratio-based xG formula. Squad strength is calculated from best 18 players. Results are sorted by points → goal difference → goals for. See `SeasonSimulationService`.
+Other flat-league competitions in the game (the leagues the player isn't entered in — Premier League, Bundesliga, Serie A, Ligue 1 from a Spanish career, plus other Spanish tiers) are simulated **lazily on demand** by `SyntheticLeagueResolver`:
+
+- The first time the user opens a non-user league page, fixtures are drawn (via `LeagueFixtureGenerator`) and standings are zero-initialized.
+- Every match with `scheduled_date <= game.current_date` is then resolved via independent home/away **Poisson scoreline draws** with λ tuned per reputation tier (LOCAL → 0.9 up to ELITE → 1.8) plus a +0.3 home boost. Scores are capped at 7 per side.
+- Standings are updated via the regular `StandingsCalculator`. **No `MatchEvent`, lineup, MVP, or commentary data is generated** — top-scorer leaderboards for non-user leagues are intentionally empty.
+- A Postgres advisory lock keyed on `(game_id, competition_id)` serializes initialization and resolution so concurrent requests don't double-draw fixtures.
+- Subsequent visits resolve only newly-due matches and are otherwise pure reads.
+
+At season close, `FinalizeOtherLeaguesProcessor` (priority 74, in `SeasonClosingPipeline`) calls the resolver for every flat league the user never opened, ensuring final standings exist before promotion/relegation, UEFA qualifier selection, and season summaries run. `SeasonSimulationProcessor` (priority 75) keeps its skip-when-real-standings-exist guard and silently no-ops for finalized leagues, but remains as a defensive fallback (still produces `SimulatedSeason` rows for any league the resolver couldn't process — odd team counts, missing schedule.json, etc.).
+
+Cup competitions (`knockout_cup`), Swiss-format competitions (`swiss_format`, `group_stage_cup`), and the World Cup are not handled by the resolver — they keep their existing path.
 
 ## Key Files
 
@@ -105,7 +115,9 @@ Non-played leagues are simulated match-by-match using the same ratio-based xG fo
 |------|---------|
 | `app/Modules/Match/Services/MatchSimulator.php` | Core simulation: xG, strength, events, extra time, penalties |
 | `app/Modules/Match/Services/EnergyCalculator.php` | Energy drain and effectiveness calculations |
+| `app/Modules/Match/Services/SyntheticLeagueResolver.php` | Lazy Poisson simulation of non-user flat leagues |
 | `app/Modules/Player/Services/PlayerConditionService.php` | Between-match recovery and energy updates |
-| `app/Modules/Finance/Services/SeasonSimulationService.php` | Full league season simulation |
+| `app/Modules/Finance/Services/SeasonSimulationService.php` | Reputation-jitter fallback for unresolved non-user leagues |
+| `app/Modules/Season/Processors/FinalizeOtherLeaguesProcessor.php` | Defensive season-close pass for non-user leagues |
 | `config/match_simulation.php` | Energy drain and match tunable parameters |
 | `config/player.php` | Recovery rate and AI rotation parameters |

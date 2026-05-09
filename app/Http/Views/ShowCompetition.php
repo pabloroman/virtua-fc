@@ -6,11 +6,13 @@ use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Modules\Competition\Services\CompetitionViewService;
+use App\Modules\Match\Services\SyntheticLeagueResolver;
 
 class ShowCompetition
 {
     public function __construct(
         private readonly CompetitionViewService $competitionViewService,
+        private readonly SyntheticLeagueResolver $syntheticLeagueResolver,
     ) {}
 
     public function __invoke(string $gameId, string $competitionId)
@@ -24,8 +26,17 @@ class ShowCompetition
             ->where('team_id', $game->team_id)
             ->exists();
 
-        if (!$participates) {
+        $isFlatLeague = in_array($competition->handler_type, ['league', 'league_with_playoff'], true);
+
+        // Flat-league competitions the player isn't entered in (e.g. browsing
+        // foreign leagues) are simulated lazily on first view. Other handler
+        // types (cups, swiss, group-stage) still require participation.
+        if (!$participates && !$isFlatLeague) {
             abort(404, 'Your team does not participate in this competition.');
+        }
+
+        if ($isFlatLeague && !$participates) {
+            $this->syntheticLeagueResolver->catchUp($game, $competition);
         }
 
         if ($competition->handler_type === 'swiss_format') {

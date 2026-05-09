@@ -10,6 +10,7 @@ use App\Modules\Season\Processors\AIFreeAgentSigningProcessor;
 use App\Modules\Season\Processors\ContractExpirationProcessor;
 use App\Modules\Season\Processors\ContractRenewalProcessor;
 use App\Modules\Season\Processors\CopaQualificationProcessor;
+use App\Modules\Season\Processors\FinalizeOtherLeaguesProcessor;
 use App\Modules\Season\Processors\LeaderboardStatsProcessor;
 use App\Modules\Season\Processors\LoanReturnProcessor;
 use App\Modules\Season\Processors\PlayerDevelopmentProcessor;
@@ -61,6 +62,7 @@ class SeasonClosingPipeline
         StatsResetProcessor $statsReset,
         UserSquadCareerSnapshotProcessor $userSquadCareerSnapshot,
         TransferMarketResetProcessor $transferMarketReset,
+        FinalizeOtherLeaguesProcessor $finalizeOtherLeagues,
         SeasonSimulationProcessor $seasonSimulation,
         SupercupQualificationProcessor $supercupQualification,
         CopaQualificationProcessor $copaQualification,
@@ -88,6 +90,7 @@ class SeasonClosingPipeline
             $userSquadCareerSnapshot,
             $statsReset,
             $transferMarketReset,
+            $finalizeOtherLeagues,
             $seasonSimulation,
             $supercupQualification,
             $copaQualification,
