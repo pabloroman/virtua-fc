@@ -10,7 +10,7 @@
         @if(isset($badge) && $badge instanceof \Illuminate\View\ComponentSlot)
             {{ $badge }}
         @elseif($badge)
-            <span class="text-[10px] text-text-faint">{{ $badge }}</span>
+            <span class="text-[11px] text-text-muted">{{ $badge }}</span>
         @endif
     </div>
     @endif

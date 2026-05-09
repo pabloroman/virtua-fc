@@ -133,7 +133,7 @@
                             <template x-for="tip in coachTips" :key="tip.id">
                                 <div class="flex items-start gap-2">
                                     <span class="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" :class="tip.type === 'warning' ? 'bg-amber-400' : 'bg-sky-400'"></span>
-                                    <span class="text-xs text-text-secondary leading-relaxed" x-text="tip.message"></span>
+                                    <span class="text-sm text-text-secondary leading-relaxed" x-text="tip.message"></span>
                                 </div>
                             </template>
                         </div>
@@ -164,32 +164,29 @@
         <x-section-card :title="__('opponent.tactical_mindset')">
             <div class="divide-y divide-border-default">
                 <div class="px-5 py-3 flex items-center justify-between gap-3">
-                    <span class="text-xs text-text-muted uppercase tracking-wide">{{ __('opponent.formation') }}</span>
+                    <span class="text-[11px] text-text-muted uppercase tracking-wide">{{ __('opponent.formation') }}</span>
                     <span class="text-sm font-bold text-text-primary">{{ $opponentData['formation'] }}</span>
                 </div>
 
                 <div class="px-5 py-3">
                     <div class="flex items-center justify-between gap-3 mb-1">
-                        <span class="text-xs text-text-muted uppercase tracking-wide">{{ __('opponent.mentality') }}</span>
+                        <span class="text-[11px] text-text-muted uppercase tracking-wide">{{ __('opponent.mentality') }}</span>
                         <span class="text-sm font-bold {{ $mentalityClass }}">{{ __('squad.mentality_' . $opponentData['mentality']) }}</span>
                     </div>
-                    <p class="text-xs text-text-secondary leading-relaxed">{{ $tacticsSummaries['mentality']['summary'] }}</p>
                 </div>
 
                 <div class="px-5 py-3">
                     <div class="flex items-center justify-between gap-3 mb-1">
-                        <span class="text-xs text-text-muted uppercase tracking-wide">{{ __('opponent.playing_style') }}</span>
+                        <span class="text-[11px] text-text-muted uppercase tracking-wide">{{ __('opponent.playing_style') }}</span>
                         <span class="text-sm font-semibold text-text-body">{{ $tacticsSummaries['playingStyle']['label'] }}</span>
                     </div>
-                    <p class="text-xs text-text-secondary leading-relaxed">{{ $tacticsSummaries['playingStyle']['summary'] }}</p>
                 </div>
 
                 <div class="px-5 py-3">
                     <div class="flex items-center justify-between gap-3 mb-1">
-                        <span class="text-xs text-text-muted uppercase tracking-wide">{{ __('opponent.pressing') }}</span>
+                        <span class="text-[11px] text-text-muted uppercase tracking-wide">{{ __('opponent.pressing') }}</span>
                         <span class="text-sm font-semibold text-text-body">{{ $tacticsSummaries['pressing']['label'] }}</span>
                     </div>
-                    <p class="text-xs text-text-secondary leading-relaxed">{{ $tacticsSummaries['pressing']['summary'] }}</p>
                 </div>
 
                 <div class="px-5 py-3">
@@ -197,7 +194,6 @@
                         <span class="text-xs text-text-muted uppercase tracking-wide">{{ __('opponent.defensive_line') }}</span>
                         <span class="text-sm font-semibold text-text-body">{{ $tacticsSummaries['defensiveLine']['label'] }}</span>
                     </div>
-                    <p class="text-xs text-text-secondary leading-relaxed">{{ $tacticsSummaries['defensiveLine']['summary'] }}</p>
                 </div>
             </div>
         </x-section-card>
@@ -278,6 +274,10 @@
         {{-- Key Players sits right under the pitch so the named threats line
              up visually with the shirts they wear above. --}}
         @include('partials.opponent.key-players')
+
+        {{-- Absentees: opponent squad members ruled out by injury/suspension.
+             Mirrors the Key Players row style and only renders when present. --}}
+        @include('partials.opponent.absentees')
     </div>
 
     @unless($inModal)

@@ -9,6 +9,7 @@ return [
     'predicted_xi' => 'Once previsto',
     'tactical_mindset' => 'Planteamiento táctico',
     'key_players' => 'Jugadores clave',
+    'absentees' => 'Bajas',
     'strengths_radar' => 'Comparativa de fortalezas',
     'prediction_disclaimer' => 'Predicciones basadas en la plantilla disponible — el once final puede variar.',
 

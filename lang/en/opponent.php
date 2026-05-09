@@ -9,6 +9,7 @@ return [
     'predicted_xi' => 'Predicted XI',
     'tactical_mindset' => 'Tactical mindset',
     'key_players' => 'Key players',
+    'absentees' => 'Absentees',
     'strengths_radar' => 'Strengths comparison',
     'prediction_disclaimer' => 'Predictions based on available squad — final XI may vary.',
 

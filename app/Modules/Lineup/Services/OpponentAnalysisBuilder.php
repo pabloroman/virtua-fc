@@ -2,11 +2,13 @@
 
 namespace App\Modules\Lineup\Services;
 
+use App\Models\GamePlayer;
 use App\Modules\Lineup\Enums\DefensiveLineHeight;
 use App\Modules\Lineup\Enums\Mentality;
 use App\Modules\Lineup\Enums\PlayingStyle;
 use App\Modules\Lineup\Enums\PressingIntensity;
 use App\Support\PositionSlotMapper;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 /**
@@ -141,6 +143,36 @@ class OpponentAnalysisBuilder
             fn ($tip) => ['id' => $tip['id'], 'type' => $tip['type'], 'message' => $tip['message']],
             array_slice($tips, 0, 4),
         );
+    }
+
+    /**
+     * Build the opponent's unavailable players (injured or suspended) for the upcoming match.
+     *
+     * `predictOpponentTactics()` filters these out before running the formation
+     * recommender, so they're invisible to the predicted-XI pipeline. The Scout
+     * Opponent page surfaces them in a separate card.
+     *
+     * @param  Collection<int, GamePlayer>  $allOpponentPlayers  full opponent squad with `suspensions` eager-loaded
+     * @return Collection<int, array{player: GamePlayer, reason: string, type: 'suspended'|'injured'}>
+     */
+    public function absentees(Collection $allOpponentPlayers, Carbon $matchDate, string $competitionId): Collection
+    {
+        return $allOpponentPlayers
+            ->reject(fn (GamePlayer $p) => $p->isAvailable($matchDate, $competitionId))
+            ->map(fn (GamePlayer $p) => [
+                'player' => $p,
+                'reason' => $p->getUnavailabilityReason($matchDate, $competitionId) ?? '',
+                'type' => $p->isSuspendedInCompetition($competitionId) ? 'suspended' : 'injured',
+            ])
+            ->sort(function (array $a, array $b) {
+                $posCmp = LineupService::positionSortOrder($a['player']->position)
+                    <=> LineupService::positionSortOrder($b['player']->position);
+                if ($posCmp !== 0) {
+                    return $posCmp;
+                }
+                return $b['player']->getEffectiveRating() <=> $a['player']->getEffectiveRating();
+            })
+            ->values();
     }
 
     /**

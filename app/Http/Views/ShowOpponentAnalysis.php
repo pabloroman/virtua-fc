@@ -48,6 +48,9 @@ class ShowOpponentAnalysis
 
         $derived = $this->analysisBuilder->build($opponentData);
 
+        $opponentSquad = $this->lineupService->getAllPlayers($gameId, $opponent->id);
+        $absentees = $this->analysisBuilder->absentees($opponentSquad, $matchDate, $competitionId);
+
         $opponentColors = TeamColors::toHex(
             $opponent->colors ?? TeamColors::get($opponent->getRawOriginal('name'))
         );
@@ -63,6 +66,7 @@ class ShowOpponentAnalysis
             'playerForm' => $this->calendarService->getTeamForm($gameId, $game->team_id),
             'pitchSlots' => $derived['pitchSlots'],
             'topThreats' => $derived['topThreats'],
+            'absentees' => $absentees,
             'opponentStanding' => GameStanding::forTeamInCompetition($game, $opponent->id, $competitionId),
             'userStanding' => GameStanding::forTeamInCompetition($game, $game->team_id, $competitionId),
             'tacticsSummaries' => $derived['tacticsSummaries'],
