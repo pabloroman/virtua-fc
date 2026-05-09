@@ -6,6 +6,7 @@ use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Modules\Competition\Services\CompetitionViewService;
+use App\Modules\Competition\Services\WorldCupKnockoutGenerator;
 use App\Modules\Match\Services\SyntheticLeagueResolver;
 
 class ShowCompetition
@@ -13,6 +14,7 @@ class ShowCompetition
     public function __construct(
         private readonly CompetitionViewService $competitionViewService,
         private readonly SyntheticLeagueResolver $syntheticLeagueResolver,
+        private readonly WorldCupKnockoutGenerator $worldCupKnockoutGenerator,
     ) {}
 
     public function __invoke(string $gameId, string $competitionId)
@@ -187,6 +189,8 @@ class ShowCompetition
             'groupStageComplete' => $groupStageComplete,
             'knockoutRounds' => $knockoutRounds,
             'knockoutTies' => $knockoutTies,
+            'knockoutSlotsByRound' => $this->worldCupKnockoutGenerator->getSlotsPerRound(),
+            'knockoutDisplayOrderByRound' => $this->worldCupKnockoutGenerator->getDisplayOrderPerRound(),
             'playerTie' => $playerTie,
             'knockoutStatus' => $knockoutStatus,
             'otherLeagues' => $otherLeagues,

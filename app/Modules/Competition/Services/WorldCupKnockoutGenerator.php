@@ -347,6 +347,97 @@ class WorldCupKnockoutGenerator
     }
 
     /**
+     * Match numbers for each round in **bracket display order** — i.e. the order in which
+     * slots should appear top-to-bottom so that paired ties (whose winners meet in the next
+     * round) sit adjacent. Derived by walking bracket.json from the final back to R32.
+     *
+     * Without this, sorting purely by `bracket_position` produces visually misaligned pairs
+     * (e.g. match 73 pairs with match 75 in R16, not match 74).
+     *
+     * @return array<int, array<int>>  round_number => [match_number, ...] in display order
+     */
+    public function getDisplayOrderPerRound(): array
+    {
+        $bracket = $this->loadBracket();
+
+        $finalMatches = array_map(fn ($m) => $m['match_number'], $bracket['final'] ?? []);
+
+        $orderByRound = [self::ROUND_FINAL => $finalMatches];
+
+        $rounds = [
+            self::ROUND_SEMI_FINALS => 'semi_finals',
+            self::ROUND_QUARTER_FINALS => 'quarter_finals',
+            self::ROUND_OF_16 => 'round_of_16',
+            self::ROUND_OF_32 => 'round_of_32',
+        ];
+
+        $currentRound = self::ROUND_FINAL;
+        foreach ($rounds as $roundNumber => $roundKey) {
+            $parentOrder = $orderByRound[$currentRound];
+            $parentLookup = [];
+            foreach ($bracket[$this->roundKey($currentRound)] ?? [] as $match) {
+                $parentLookup[$match['match_number']] = $match;
+            }
+
+            $childOrder = [];
+            foreach ($parentOrder as $parentMatchNumber) {
+                $parent = $parentLookup[$parentMatchNumber] ?? null;
+                if (! $parent) {
+                    continue;
+                }
+                foreach ([$parent['home'], $parent['away']] as $ref) {
+                    if (preg_match('/^W(\d+)$/', $ref, $m)) {
+                        $childOrder[] = (int) $m[1];
+                    }
+                }
+            }
+
+            $orderByRound[$roundNumber] = $childOrder;
+            $currentRound = $roundNumber;
+        }
+
+        // Third-place is rendered out-of-band, but expose its match number(s) for completeness.
+        $orderByRound[self::ROUND_THIRD_PLACE] = array_map(
+            fn ($m) => $m['match_number'],
+            $bracket['third_place'] ?? []
+        );
+
+        return $orderByRound;
+    }
+
+    private function roundKey(int $round): string
+    {
+        return match ($round) {
+            self::ROUND_OF_32 => 'round_of_32',
+            self::ROUND_OF_16 => 'round_of_16',
+            self::ROUND_QUARTER_FINALS => 'quarter_finals',
+            self::ROUND_SEMI_FINALS => 'semi_finals',
+            self::ROUND_THIRD_PLACE => 'third_place',
+            self::ROUND_FINAL => 'final',
+        };
+    }
+
+    /**
+     * Slot count per round, derived from bracket.json. Used by the bracket UI to render
+     * empty placeholders for rounds whose CupTie rows haven't been generated yet.
+     *
+     * @return array<int, int>  round_number => slot count
+     */
+    public function getSlotsPerRound(): array
+    {
+        $bracket = $this->loadBracket();
+
+        return [
+            self::ROUND_OF_32 => count($bracket['round_of_32'] ?? []),
+            self::ROUND_OF_16 => count($bracket['round_of_16'] ?? []),
+            self::ROUND_QUARTER_FINALS => count($bracket['quarter_finals'] ?? []),
+            self::ROUND_SEMI_FINALS => count($bracket['semi_finals'] ?? []),
+            self::ROUND_THIRD_PLACE => count($bracket['third_place'] ?? []),
+            self::ROUND_FINAL => count($bracket['final'] ?? []),
+        ];
+    }
+
+    /**
      * Get teams that qualified from the group stage (top 2 per group + best 8 third-place).
      *
      * @return array<string> Team IDs

@@ -678,6 +678,38 @@ input[type="radio"]:checked {
     scrollbar-width: none;
 }
 
+/* Cup bracket: connector lines for predetermined-bracket cups (World Cup) */
+.cup-bracket__pair--has-out {
+    position: relative;
+}
+.cup-bracket__pair--has-out::after {
+    content: "";
+    position: absolute;
+    top: 25%;
+    bottom: 25%;
+    right: calc(var(--connector-w) * -0.5);
+    border-right: 1px solid var(--border-strong);
+}
+.cup-bracket__cell--has-in {
+    position: relative;
+}
+.cup-bracket__cell--has-in::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: calc(var(--connector-w) * -1);
+    width: var(--connector-w);
+    border-top: 1px solid var(--border-strong);
+}
+.cup-bracket__pair--has-out.cup-bracket__pair--ghost-out::after {
+    border-right-style: dashed;
+    border-right-color: var(--border-default);
+}
+.cup-bracket__cell--has-in.cup-bracket__cell--ghost::before {
+    border-top-style: dashed;
+    border-top-color: var(--border-default);
+}
+
 /* Mobile: larger touch targets for range slider thumbs */
 @media (max-width: 767px) {
     .dual-range input[type="range"]::-webkit-slider-thumb {

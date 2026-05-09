@@ -105,7 +105,10 @@
                 <x-cup-bracket
                     :rounds="$knockoutRounds"
                     :ties-by-round="$knockoutTies"
+                    :slots-by-round="$knockoutSlotsByRound"
+                    :display-order-by-round="$knockoutDisplayOrderByRound"
                     :player-team-id="$game->team_id"
+                    mode="fixed"
                 />
             @endif
         </div>
