@@ -60,6 +60,9 @@ class ShowCompetition
      * Flat-league competitions in this game the user is NOT entered in.
      * Surfaced as a small dropdown next to the page title for quick navigation
      * between leagues; standings/results are simulated lazily on first view.
+     *
+     * Spanish leagues come first (the player's home country in v1), then the
+     * remaining countries alphabetically; within each country, by tier.
      */
     private function otherLeagues(Game $game, Competition $current): \Illuminate\Support\Collection
     {
@@ -78,8 +81,10 @@ class ShowCompetition
         return Competition::whereIn('id', $allLeagueIdsInGame)
             ->whereIn('handler_type', ['league', 'league_with_playoff'])
             ->whereNotIn('id', $userCompetitionIds)
+            ->orderByRaw("CASE WHEN country = 'ES' THEN 0 ELSE 1 END")
             ->orderBy('country')
             ->orderBy('tier')
+            ->orderBy('id')
             ->get();
     }
 

@@ -16,13 +16,18 @@
          x-transition:leave="transition ease-in duration-75"
          x-transition:leave-start="opacity-100 scale-100"
          x-transition:leave-end="opacity-0 scale-95"
-         class="absolute right-0 z-40 mt-2 w-56 rounded-lg shadow-xl bg-surface-800 border border-border-strong"
+         class="absolute right-0 z-40 mt-2 w-72 rounded-lg shadow-xl bg-surface-800 border border-border-strong"
          style="display: none;">
         <div class="py-1">
             @foreach($otherLeagues as $league)
             <a href="{{ route('game.competition', [$game->id, $league->id]) }}"
-               class="block px-4 py-2 text-sm {{ $league->id === $currentCompetitionId ? 'bg-surface-700 text-text-primary font-semibold' : 'text-text-body hover:bg-surface-700 hover:text-text-primary' }}">
-                {{ __($league->name) }}
+               class="flex items-center gap-2.5 px-4 py-2 text-sm whitespace-nowrap {{ $league->id === $currentCompetitionId ? 'bg-surface-700 text-text-primary font-semibold' : 'text-text-body hover:bg-surface-700 hover:text-text-primary' }}">
+                @if($league->flag)
+                    <img src="{{ Storage::disk('assets')->url('flags/' . $league->flag . '.svg') }}"
+                         alt=""
+                         class="w-5 h-4 rounded-sm shadow-sm shrink-0">
+                @endif
+                <span>{{ __($league->name) }}</span>
             </a>
             @endforeach
         </div>
