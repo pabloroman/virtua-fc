@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Services\OpponentAnalysisBuilder;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class OpponentAnalysisBuilderTest extends TestCase
 {

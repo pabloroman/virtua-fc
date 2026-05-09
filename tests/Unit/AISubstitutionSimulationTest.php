@@ -274,12 +274,14 @@ class AISubstitutionSimulationTest extends TestCase
         $this->assertTrue($subsSeen, 'ai_only mode should still produce subs in AI-vs-AI matches');
     }
 
-    public function test_user_team_gets_injury_auto_sub_when_bench_passed_with_user_team_id(): void
+    public function test_user_team_does_not_get_injury_auto_sub_in_live_mode(): void
     {
-        // Crank injury chance to 100% so every simulation produces an injury.
-        // Disable reds/yellows so the only home-team sub is an injury auto-sub —
-        // otherwise a red-card reactive sub (red_minute + 2) can land before the
-        // injury and break the "sub == injury minute + 1" pairing.
+        // Crank injury chance to 100% so every simulation produces an injury,
+        // and disable reds/yellows so any home-team sub would have to be the
+        // injury auto-sub (no red-card reactive subs to confuse the picture).
+        // The user's team gets the injury event but the simulator must NOT
+        // auto-sub them — the human handles that decision in live mode. The
+        // AI side (away) still gets auto-subbed as before.
         config([
             'match_simulation.injury_chance' => 100,
             'match_simulation.direct_red_chance' => 0,
@@ -295,7 +297,8 @@ class AISubstitutionSimulationTest extends TestCase
         $homeBench = $this->createBenchPlayers($game, $homeTeam, 7, 72);
         $awayBench = $this->createBenchPlayers($game, $awayTeam, 7, 72);
 
-        $injurySubSeen = false;
+        $homeInjurySeen = false;
+        $awayInjurySubSeen = false;
         for ($i = 0; $i < 10; $i++) {
             $output = $this->simulator->simulate(
                 $homeTeam, $awayTeam,
@@ -308,32 +311,40 @@ class AISubstitutionSimulationTest extends TestCase
                 userTeamId: $homeTeam->id,
             );
 
-            // Look for a substitution event on the user team (home)
-            $homeSubEvents = $output->result->substitutions()
+            $homeInjuries = $output->result->events
+                ->filter(fn ($e) => $e->type === 'injury' && $e->teamId === $homeTeam->id);
+            $homeSubs = $output->result->substitutions()
                 ->filter(fn ($e) => $e->teamId === $homeTeam->id);
 
-            if ($homeSubEvents->isNotEmpty()) {
-                $injurySubSeen = true;
+            // The user team must never receive an auto-sub — even when an
+            // injury fires the simulator leaves the player decision to the
+            // human. Assert per-iteration so a single rogue auto-sub fails
+            // the test instead of being averaged out.
+            $this->assertCount(
+                0,
+                $homeSubs,
+                'User team must not receive any injury auto-sub in live mode',
+            );
 
-                // The sub should be at injury minute + 1, not at a tactical
-                // window (60-85). Injury auto-subs fire within the first half
-                // too, so some may be well before halftime.
-                $injuryEvents = $output->result->events
-                    ->filter(fn ($e) => $e->type === 'injury' && $e->teamId === $homeTeam->id);
-                if ($injuryEvents->isNotEmpty()) {
-                    $injuryMinute = $injuryEvents->first()->minute;
-                    $subMinute = $homeSubEvents->first()->minute;
-                    $this->assertEquals(
-                        $injuryMinute + 1,
-                        $subMinute,
-                        'Injury auto-sub should fire at injury minute + 1',
-                    );
-                }
-                break;
+            if ($homeInjuries->isNotEmpty()) {
+                $homeInjurySeen = true;
+            }
+
+            $awaySubs = $output->result->substitutions()
+                ->filter(fn ($e) => $e->teamId === $awayTeam->id);
+            if ($awaySubs->isNotEmpty()) {
+                $awayInjurySubSeen = true;
             }
         }
 
-        $this->assertTrue($injurySubSeen, 'User team should get an injury auto-sub when bench is passed with userTeamId');
+        $this->assertTrue(
+            $homeInjurySeen,
+            'Sanity check — at least one home-team injury should have fired across 10 sims at injury_chance=100',
+        );
+        $this->assertTrue(
+            $awayInjurySubSeen,
+            'AI side (away) must still receive injury auto-subs even when the user is on home',
+        );
     }
 
     public function test_user_team_gets_no_tactical_ai_subs_in_pre_simulation(): void

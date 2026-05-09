@@ -162,8 +162,8 @@ class FormationRecommenderTest extends TestCase
         // 4-3-3 with no Centre-Forward or Second Striker in the squad. The CF
         // slot must still be filled via Pass 4 (weighted fallback) using the
         // best available non-natural compat. Only unused candidate is an
-        // Attacking Midfield player (compat 40 for CF) — which is exactly what
-        // the fallback should pick.
+        // Attacking Midfield player (compat 80 for CF — non-natural good fit)
+        // — which is exactly what the fallback should pick.
         $players = collect([
             $this->player('gk', 'Goalkeeper'),
             $this->player('lb', 'Left-Back'),
@@ -185,7 +185,7 @@ class FormationRecommenderTest extends TestCase
         $this->assertSame('am', $map[9], 'CF should be filled via weighted fallback');
 
         $cfRow = collect($bestXI)->firstWhere('slot.id', 9);
-        $this->assertSame(40, $cfRow['compatibility'], 'AM → CF has non-natural compat of 40');
+        $this->assertSame(80, $cfRow['compatibility'], 'AM → CF has non-natural compat of 80');
 
         // All 11 slots should end up filled (no gaps).
         foreach ($bestXI as $row) {
@@ -456,11 +456,15 @@ class FormationRecommenderTest extends TestCase
 
     public function test_getBestFormation_respects_bias_when_squad_supports_it(): void
     {
-        // Squad that fits 4-3-3 perfectly but also covers 4-4-2 cleanly via
-        // wide-midfielder secondaries on two of the CMs. Without bias the
-        // recommender prefers 4-3-3 (every slot natural); a moderate
-        // 4-4-2 bias is enough to flip the choice because 4-4-2 is also
-        // fully filled, just with two compat-100 secondary placements.
+        // Squad that fits 4-3-3 perfectly. 4-4-2 is also a clean fit because:
+        //   - The wingers cover LM and RM via primary (LB/LW/RB/RW are all
+        //     natural-fit 100 for the wide-mid slots in PositionSlotMapper).
+        //   - cm3 carries a `Second Striker` secondary, so Pass 2 fills the
+        //     spare CF slot at compat 100 once cm1 and cm2 have taken the
+        //     two CM slots.
+        // Both formations end at score 103 mechanically, so the unbiased run
+        // settles on the initial 4-3-3 candidate; a moderate 4-4-2 bias is
+        // enough to push it ahead.
         $players = collect([
             $this->player('gk', 'Goalkeeper'),
             $this->player('lb', 'Left-Back'),
@@ -468,8 +472,8 @@ class FormationRecommenderTest extends TestCase
             $this->player('cb2', 'Centre-Back'),
             $this->player('rb', 'Right-Back'),
             $this->player('cm1', 'Central Midfield'),
-            $this->player('cm2', 'Central Midfield', 70, ['Left Midfield']),
-            $this->player('cm3', 'Central Midfield', 70, ['Right Midfield']),
+            $this->player('cm2', 'Central Midfield'),
+            $this->player('cm3', 'Central Midfield', 70, ['Second Striker']),
             $this->player('lw', 'Left Winger'),
             $this->player('cf', 'Centre-Forward'),
             $this->player('rw', 'Right Winger'),
