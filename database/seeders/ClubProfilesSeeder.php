@@ -411,11 +411,11 @@ class ClubProfilesSeeder extends Seeder
      * back to the reputation-tier formation pool in FormationBiasResolver.
      */
     private const NATIONAL_TEAM_PREFERRED_FORMATION = [
-        'ARG' => '4-3-3',                              // Scaloni
-        'BRA' => '4-2-3-1',
-        'FRA' => '4-2-3-1',                            // Deschamps
-        'ESP' => '4-3-3',                              // De la Fuente
-        'ENG' => '4-2-3-1',
+        'ARG' => '4-1-2-3',
+        'BRA' => '4-2-1-3',
+        'FRA' => '4-1-2-3',
+        'ESP' => '4-2-1-3',
+        'ENG' => '3-4-3',
         'GER' => '4-2-3-1',
         'POR' => '4-3-3',
         'NED' => '4-3-3',
@@ -430,11 +430,11 @@ class ClubProfilesSeeder extends Seeder
         'USA' => '4-3-3',
         'JPN' => '4-2-3-1',
         'TUR' => '4-2-3-1',
-        'NOR' => '4-3-3',                              // Solbakken
-        'AUT' => '4-3-3',                              // Rangnick high-press
+        'NOR' => '4-3-3',
+        'AUT' => '4-3-3',
         'KOR' => '4-2-3-1',
         'AUS' => '4-2-3-1',
-        'IRN' => '5-4-1',                              // Compact deep block tradition
+        'IRN' => '5-4-1',
         'KSA' => '4-2-3-1',
         'QAT' => '5-3-2',
         'PAR' => '4-4-2',
@@ -447,17 +447,17 @@ class ClubProfilesSeeder extends Seeder
      * sides with a pronounced identity shift one or two notches.
      */
     private const NATIONAL_TEAM_TACTICAL_AGGRESSION = [
-        'ESP' => 1,                                    // Tiki-taka high press
-        'BRA' => 1,                                    // Attacking tradition
+        'ESP' => 1,
+        'BRA' => 1,
         'POR' => 1,
         'NED' => 1,
-        'AUT' => 1,                                    // Rangnick gegenpress
-        'JPN' => 1,                                    // Recent high-press identity
+        'AUT' => 1,
+        'JPN' => 1,
         'SEN' => 1,
-        'MAR' => -1,                                   // Compact, counter-attacking
-        'URU' => -1,                                   // Pragmatic
+        'MAR' => -1,
+        'URU' => -1,
         'SUI' => -1,
-        'IRN' => -2,                                   // Queiroz-era deep block
+        'IRN' => -2,
         'KSA' => -1,
         'QAT' => -1,
         'NZL' => -1,
@@ -643,35 +643,35 @@ class ClubProfilesSeeder extends Seeder
      */
     private const PREFERRED_FORMATION_OVERRIDES = [
         // ── Spain — La Liga ──────────────────────────────────────────
-        'Real Madrid' => '4-3-3',
-        'FC Barcelona' => '4-3-3',
-        'Atlético de Madrid' => '4-4-2',          // Simeone trademark
-        'Athletic Club' => '4-2-3-1',
+        'Real Madrid' => '4-3-1-2',
+        'FC Barcelona' => '4-2-1-3',
+        'Atlético de Madrid' => '4-4-2',
+        'Athletic Club' => '4-2-1-3',
         'Villarreal CF' => '4-4-2',
-        'Real Betis Balompié' => '4-2-3-1',       // Pellegrini
-        'Sevilla FC' => '4-3-3',
-        'Real Sociedad' => '4-3-3',
-        'Valencia CF' => '4-4-2',
-        'RCD Espanyol Barcelona' => '4-4-2',
-        'RC Celta' => '4-2-3-1',
-        'RCD Mallorca' => '5-3-2',                // Aguirre defensive block
-        'CA Osasuna' => '4-2-3-1',
-        'Getafe CF' => '5-4-1',                   // Bordalás low block
-        'Rayo Vallecano' => '4-3-3',              // Iñigo Pérez attacking
-        'Girona FC' => '3-4-3',                   // Míchel
-        'Deportivo Alavés' => '4-4-2',
-        'Elche CF' => '4-2-3-1',
-        'Levante UD' => '4-2-3-1',
-        'Real Oviedo' => '4-4-2',
+        'Real Betis Balompié' => '4-1-2-3',
+        'Sevilla FC' => '3-4-3',
+        'Real Sociedad' => '4-2-1-3',
+        'Valencia CF' => '4-2-1-3',
+        'RCD Espanyol Barcelona' => '4-1-2-3',
+        'RC Celta' => '3-4-3',
+        'RCD Mallorca' => '4-3-1-2',
+        'CA Osasuna' => '4-2-1-3',
+        'Getafe CF' => '5-3-2',
+        'Rayo Vallecano' => '4-2-1-3',
+        'Girona FC' => '4-2-1-3',
+        'Deportivo Alavés' => '3-5-2',
+        'Elche CF' => '5-3-2',
+        'Levante UD' => '4-1-2-3',
+        'Real Oviedo' => '4-2-1-3',
 
         // ── Spain — La Liga 2 ────────────────────────────────────────
         'Deportivo de La Coruña' => '4-2-3-1',
         'Málaga CF' => '4-2-3-1',
         'Sporting Gijón' => '4-2-3-1',
-        'UD Las Palmas' => '4-3-3',               // Possession identity
+        'UD Las Palmas' => '4-3-3',
         'Real Valladolid CF' => '4-4-2',
         'Granada CF' => '4-2-3-1',
-        'Cádiz CF' => '5-4-1',                    // Compact low block
+        'Cádiz CF' => '5-4-1',
         'Racing Santander' => '4-3-3',
         'UD Almería' => '4-2-3-1',
         'Real Zaragoza' => '4-4-2',
@@ -679,14 +679,14 @@ class ClubProfilesSeeder extends Seeder
         'CD Castellón' => '4-3-3',
         'Albacete Balompié' => '4-2-3-1',
         'SD Huesca' => '4-2-3-1',
-        'SD Eibar' => '4-4-2',                    // Historic compact identity
+        'SD Eibar' => '4-4-2',
         'CD Leganés' => '4-2-3-1',
         'Burgos CF' => '4-4-2',
         'Cultural Leonesa' => '4-4-2',
         'CD Mirandés' => '4-2-3-1',
         'AD Ceuta FC' => '4-4-2',
-        'FC Andorra' => '4-3-3',                  // Eder Sarabia possession
-        'Real Sociedad B' => '4-3-3',             // Mirrors first team
+        'FC Andorra' => '4-3-3',
+        'Real Sociedad B' => '4-3-3',
 
         // ── England ──────────────────────────────────────────────────
         'Manchester City' => '4-3-3',             // Guardiola

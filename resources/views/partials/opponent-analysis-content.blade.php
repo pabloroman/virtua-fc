@@ -112,14 +112,14 @@
     </div>
 </div>
 
-<div class="grid grid-cols-1 {{ $inModal ? 'lg:grid-cols-2' : 'lg:grid-cols-3' }} gap-5">
+<div class="grid grid-cols-1 {{ $inModal ? 'lg:grid-cols-2' : 'lg:grid-cols-8' }} gap-5">
 
     {{-- Sidebar column.
          Standalone page: holds the tactical insights only (left col).
          Modal: also absorbs the radar + key-players cards so we can keep the
          pitch as a balanced second column instead of squeezing three columns
          into the narrower modal width. --}}
-    <div class="space-y-5 {{ $inModal ? 'lg:order-2' : '' }}">
+    <div class="space-y-5 {{ $inModal ? 'lg:order-2' : 'lg:col-span-3' }}">
 
         {{-- Coach recommendations --}}
         <x-section-card :title="__('squad.coach_recommendations')">
@@ -214,7 +214,7 @@
          directly underneath in every layout variant. Reorders to the left
          (`lg:order-1`) inside the modal so the visual sits next to its
          narrative sidebar. --}}
-    <div class="space-y-5 {{ $inModal ? 'lg:order-1' : '' }}">
+    <div class="space-y-5 {{ $inModal ? 'lg:order-1' : 'lg:col-span-3' }}">
         <x-section-card :title="__('opponent.predicted_xi')" :badge="$opponentData['formation']">
             <div class="p-4 md:p-6">
                 <div class="pitch aspect-3/4 w-full max-w-md mx-auto relative">
@@ -252,7 +252,7 @@
                             @endphp
                             <div class="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
                                  style="left: {{ $xPct }}%; top: {{ $yPct }}%;">
-                                <div class="relative w-11 h-11 rounded-xl shadow-lg border border-white/20" style="{{ $shirtStyle }}">
+                                <div class="relative w-10 h-10 rounded-xl shadow-lg border border-white/20" style="{{ $shirtStyle }}">
                                     <div class="absolute inset-0 flex items-center justify-center">
                                         <span class="font-bold text-xs leading-none inline-flex items-center justify-center w-7 h-7 rounded-full" style="{{ $numberStyle }}">
                                             {{ $player?->number ?? $slot['displayLabel'] }}
@@ -284,7 +284,7 @@
         {{-- Right column (standalone page only): head-to-head radar and the
              lineup CTA. The radar moves into the sidebar inside the modal
              so the grid can stay at 2 columns. --}}
-        <div class="space-y-5">
+        <div class="space-y-5 {{ $inModal ? '' : 'lg:col-span-2' }}">
             @include('partials.opponent.strengths-radar')
 
             {{-- Quick actions (redundant inside the lineup modal). --}}

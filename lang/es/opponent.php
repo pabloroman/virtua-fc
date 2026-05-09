@@ -2,7 +2,7 @@
 
 return [
     'eyebrow' => 'Segundo Entrenador',
-    'title' => 'Análisis del :team',
+    'title' => 'Análisis del rival: :team',
     'subtitle' => 'Once tipo previsto y planteamiento táctico para el próximo partido.',
 
     'avg_rating' => 'Media',
