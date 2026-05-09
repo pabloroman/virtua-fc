@@ -5,6 +5,7 @@ return [
     'dashboard' => 'Inicio',
     'squad' => 'Plantilla',
     'starting_xi' => 'Alineación',
+    'scout_opponent' => 'Estudiar Rival',
     'finances' => 'Finanzas',
     'club' => 'Club',
     'transfers' => 'Fichajes',

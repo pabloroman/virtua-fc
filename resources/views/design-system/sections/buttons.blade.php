@@ -421,13 +421,15 @@
     {{-- ================================================================== --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-text-primary mb-2">Button as Link</h3>
-        <p class="text-sm text-text-secondary mb-4">Renders an <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">&lt;a&gt;</code> tag styled as a primary button. Use for navigation that should look like a button.</p>
+        <p class="text-sm text-text-secondary mb-4">Renders an <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">&lt;a&gt;</code> tag styled as a button. Use for navigation that should look like a button.</p>
 
         <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-4">
             <div class="flex flex-wrap gap-3">
                 <x-primary-button-link href="#" color="blue">View Squad</x-primary-button-link>
                 <x-primary-button-link href="#" color="green">Start Season</x-primary-button-link>
                 <x-primary-button-link href="#" color="amber">View Finances</x-primary-button-link>
+                <x-secondary-button-link href="#">Scout Opponent</x-secondary-button-link>
+                <x-secondary-button-link href="#" size="sm">Compact (sm)</x-secondary-button-link>
             </div>
         </div>
 
@@ -438,7 +440,8 @@
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
             <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="code">&lt;x-primary-button-link href="&#123;&#123; route('squad') &#125;&#125;"&gt;View Squad&lt;/x-primary-button-link&gt;
-&lt;x-primary-button-link href="#" color="green"&gt;Start Season&lt;/x-primary-button-link&gt;</code></pre>
+&lt;x-primary-button-link href="#" color="green"&gt;Start Season&lt;/x-primary-button-link&gt;
+&lt;x-secondary-button-link href="#"&gt;Scout Opponent&lt;/x-secondary-button-link&gt;</code></pre>
         </div>
     </div>
 

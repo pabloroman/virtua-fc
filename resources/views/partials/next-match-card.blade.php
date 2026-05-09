@@ -8,6 +8,13 @@
         $fl = $cupTie->firstLegMatch;
         $firstLegScore = $fl->home_score . ' - ' . $fl->away_score;
     }
+
+    $userIsHome = $nextMatch->home_team_id === $game->team_id;
+    $homeForm = $userIsHome ? $playerForm : $opponentForm;
+    $awayForm = $userIsHome ? $opponentForm : $playerForm;
+
+    $showStandings = !$isPreseason && !$cupTie;
+    $showForm = !$isPreseason;
 @endphp
 <div class="rounded-xl overflow-hidden border border-border-strong bg-surface-800">
     {{-- Competition & Match Info --}}
@@ -36,62 +43,25 @@
     {{-- Team Face-Off --}}
     <div class="px-4 py-5 md:px-6 md:py-6">
         <div class="flex items-start justify-center gap-3 md:gap-6">
-            {{-- Home Team --}}
-            <div class="flex-1 flex flex-col items-center text-center min-w-0">
-                <x-team-crest :team="$nextMatch->homeTeam" class="w-14 h-14 md:w-20 md:h-20 mb-2" />
-                <h4 class="text-sm md:text-xl font-bold text-text-primary truncate max-w-full">{{ $nextMatch->homeTeam->name }}</h4>
-                @if(!$isPreseason)
-                    @if($homeStanding && !$cupTie)
-                    <div class="text-xs text-text-muted mt-1.5">
-                        {{ $homeStanding->position }}{{ $homeStanding->position == 1 ? 'st' : ($homeStanding->position == 2 ? 'nd' : ($homeStanding->position == 3 ? 'rd' : 'th')) }} &middot; {{ $homeStanding->points }} {{ __('game.pts') }}
-                    </div>
-                    @endif
-                    <div class="flex gap-1 mt-2">
-                        @php $homeForm = $nextMatch->home_team_id === $game->team_id ? $playerForm : $opponentForm; @endphp
-                        @forelse($homeForm as $result)
-                            <span class="w-5 h-5 rounded-sm text-[10px] font-bold flex items-center justify-center
-                                @if($result === 'W') bg-accent-green text-white
-                                @elseif($result === 'D') bg-slate-500 text-white
-                                @else bg-accent-red text-white @endif">
-                                {{ $result }}
-                            </span>
-                        @empty
-                            <span class="text-text-secondary text-xs">{{ __('game.no_form') }}</span>
-                        @endforelse
-                    </div>
-                @endif
-            </div>
+            @include('partials.next-match-team-block', [
+                'team' => $nextMatch->homeTeam,
+                'standing' => $homeStanding,
+                'form' => $homeForm,
+                'showStanding' => $showStandings,
+                'showForm' => $showForm,
+            ])
 
-            {{-- VS Divider --}}
             <div class="flex flex-col items-center justify-center pt-4 md:pt-6 shrink-0">
                 <span class="text-lg md:text-2xl font-black text-text-body tracking-tight">{{ __('game.vs') }}</span>
             </div>
 
-            {{-- Away Team --}}
-            <div class="flex-1 flex flex-col items-center text-center min-w-0">
-                <x-team-crest :team="$nextMatch->awayTeam" class="w-14 h-14 md:w-20 md:h-20 mb-2" />
-                <h4 class="text-sm md:text-xl font-bold text-text-primary truncate max-w-full">{{ $nextMatch->awayTeam->name }}</h4>
-                @if(!$isPreseason)
-                    @if($awayStanding && !$cupTie)
-                    <div class="text-xs text-text-muted mt-1.5">
-                        {{ $awayStanding->position }}{{ $awayStanding->position == 1 ? 'st' : ($awayStanding->position == 2 ? 'nd' : ($awayStanding->position == 3 ? 'rd' : 'th')) }} &middot; {{ $awayStanding->points }} {{ __('game.pts') }}
-                    </div>
-                    @endif
-                    <div class="flex gap-1 mt-2">
-                        @php $awayForm = $nextMatch->away_team_id === $game->team_id ? $playerForm : $opponentForm; @endphp
-                        @forelse($awayForm as $result)
-                            <span class="w-5 h-5 rounded-sm text-[10px] font-bold flex items-center justify-center
-                                @if($result === 'W') bg-accent-green text-white
-                                @elseif($result === 'D') bg-slate-500 text-white
-                                @else bg-accent-red text-white @endif">
-                                {{ $result }}
-                            </span>
-                        @empty
-                            <span class="text-text-secondary text-xs">{{ __('game.no_form') }}</span>
-                        @endforelse
-                    </div>
-                @endif
-            </div>
+            @include('partials.next-match-team-block', [
+                'team' => $nextMatch->awayTeam,
+                'standing' => $awayStanding,
+                'form' => $awayForm,
+                'showStanding' => $showStandings,
+                'showForm' => $showForm,
+            ])
         </div>
     </div>
 
@@ -114,4 +84,22 @@
         </div>
     @endif
 
+    {{-- Pre-Match Actions --}}
+    <div class="px-4 pb-4 md:px-6 md:pb-5 pt-3 border-t border-border-default">
+        <div class="grid grid-cols-2 gap-2">
+            <x-primary-button-link :href="route('game.lineup', $game->id)" size="sm" class="w-full gap-1.5">
+                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+                {{ __('app.starting_xi') }}
+            </x-primary-button-link>
+
+            <x-secondary-button-link :href="route('game.opponent-analysis', $game->id)" size="sm" class="w-full gap-1.5">
+                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                {{ __('app.scout_opponent') }}
+            </x-secondary-button-link>
+        </div>
+    </div>
 </div>

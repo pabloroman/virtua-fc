@@ -240,12 +240,10 @@
 
                     {{-- CENTER: Available Players sidebar --}}
                     <div class="lg:flex-2 lg:min-w-[280px]" :class="{ 'hidden lg:block': activeLineupTab !== 'squad' }">
-                        <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden" x-data="{ posTab: 'all' }">
-                            {{-- Sidebar header --}}
-                            <div class="flex items-center justify-between px-4 py-3 border-b border-border-default">
-                                <h3 class="font-heading text-sm font-semibold uppercase tracking-widest text-text-secondary">{{ __('squad.available_players') }}</h3>
+                        <x-section-card x-data="{ posTab: 'all' }" title="{{ __('squad.available_players') }}">
+                            <x-slot:badge>
                                 <span class="text-[10px] text-text-faint" x-text="Object.keys(playersData).length + ' {{ __('squad.players_count') }}'"></span>
-                            </div>
+                            </x-slot:badge>
 
                             {{-- Position filter tabs --}}
                             <div class="flex items-center gap-0 px-3 py-2 border-b border-border-default overflow-x-auto scrollbar-hide">
@@ -325,175 +323,145 @@
                                     @endif
                                 @endforeach
                             </div>
-                        </div>
+                        </x-section-card>
 
                     </div>
 
                     {{-- RIGHT: Lineup Overview + Tactical Controls --}}
                     <div :class="{ 'hidden lg:block': activeLineupTab !== 'tactics' }" class="space-y-4 lg:w-64 lg:shrink-0">
 
-                        {{-- Lineup Overview --}}
-                        <div class="bg-surface-800 border border-border-default rounded-xl p-4">
-                            <h3 class="font-heading text-sm font-semibold uppercase tracking-widest text-text-secondary mb-3">{{ __('squad.lineup_overview') }}</h3>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <p class="text-[10px] text-text-muted uppercase tracking-wider mb-1">{{ __('squad.avg_ovr') }}</p>
-                                    <p class="font-heading text-2xl font-bold"
-                                       :class="teamAverage >= 75 ? 'text-accent-green' : (teamAverage >= 65 ? 'text-text-primary' : 'text-accent-gold')"
-                                       x-text="teamAverage || '-'"></p>
-                                </div>
-                                <div>
-                                    <p class="text-[10px] text-text-muted uppercase tracking-wider mb-1">{{ __('squad.fitness_full') }}</p>
-                                    <p class="font-heading text-2xl font-bold"
-                                       :class="averageFitness >= 85 ? 'text-accent-green' : (averageFitness >= 70 ? 'text-text-primary' : 'text-accent-gold')"
-                                       x-text="averageFitness ? averageFitness + '%' : '-'"></p>
-                                </div>
-                            </div>
-
-                            {{-- Formation modifier badges --}}
-                            <template x-if="formationModifiers[selectedFormation]">
-                                <div class="mt-3 pt-3 border-t border-border-default">
-                                    <div class="flex items-center gap-3 text-[10px] font-medium">
-                                        <span :class="formationModifiers[selectedFormation]?.attack > 0 ? 'text-accent-green' : formationModifiers[selectedFormation]?.attack < 0 ? 'text-accent-red' : 'text-text-secondary'">
-                                            ATK <span x-text="(formationModifiers[selectedFormation]?.attack > 0 ? '+' : '') + formationModifiers[selectedFormation]?.attack + '%'"></span>
-                                        </span>
-                                        <span :class="formationModifiers[selectedFormation]?.defense > 0 ? 'text-accent-green' : formationModifiers[selectedFormation]?.defense < 0 ? 'text-accent-red' : 'text-text-secondary'">
-                                            DEF <span x-text="(formationModifiers[selectedFormation]?.defense > 0 ? '+' : '') + formationModifiers[selectedFormation]?.defense + '%'"></span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </template>
-                        </div>
-
                         {{-- Opponent Preview Card --}}
-                        <div class="bg-surface-800 border border-border-default rounded-xl p-4">
-                            <div class="flex items-center justify-between gap-2">
-                                <div class="flex items-center gap-1.5">
-                                    <x-team-crest :team="$game->team" class="w-5 h-5 shrink-0" />
-                                    <span class="text-sm font-bold text-text-primary" x-text="teamAverage || '-'"></span>
-                                </div>
-
-                                {{-- Advantage badge (reactive) --}}
-                                <template x-if="teamAverage && {{ $opponentData['teamAverage'] ?: 0 }}">
-                                    <span
-                                        class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full shrink-0"
-                                        :class="{
-                                            'bg-accent-green/10 text-accent-green': teamAverage > {{ $opponentData['teamAverage'] ?: 0 }},
-                                            'bg-accent-red/10 text-accent-red': teamAverage < {{ $opponentData['teamAverage'] ?: 0 }},
-                                            'bg-surface-700 text-text-secondary': teamAverage === {{ $opponentData['teamAverage'] ?: 0 }}
-                                        }"
-                                        x-text="teamAverage > {{ $opponentData['teamAverage'] ?: 0 }} ? '+' + (teamAverage - {{ $opponentData['teamAverage'] ?: 0 }}) : (teamAverage < {{ $opponentData['teamAverage'] ?: 0 }} ? (teamAverage - {{ $opponentData['teamAverage'] ?: 0 }}) : '=')"
-                                    ></span>
-                                </template>
-                                <template x-if="!teamAverage || !{{ $opponentData['teamAverage'] ?: 0 }}">
-                                    <span class="text-[10px] text-text-secondary">vs</span>
-                                </template>
-
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-sm font-bold text-text-primary">{{ $opponentData['teamAverage'] ?: '-' }}</span>
-                                    <x-team-crest :team="$opponent" class="w-5 h-5 shrink-0" />
-                                </div>
-                            </div>
-
-                            @if(!empty($opponentData['formation']))
-                                <div class="text-center text-[10px] text-text-muted mt-2">
-                                    <span class="font-semibold text-text-body bg-surface-700 px-1.5 py-0.5 rounded-sm">{{ $opponentData['formation'] }}</span>
-                                    <span class="text-text-body mx-0.5">&middot;</span>
-                                    <span class="font-medium
-                                        @if($opponentData['mentality'] === 'defensive') text-accent-blue
-                                        @elseif($opponentData['mentality'] === 'attacking') text-accent-red
-                                        @else text-text-secondary
-                                        @endif">{{ __('squad.mentality_' . $opponentData['mentality']) }}</span>
-                                </div>
-                            @endif
-
-                            {{-- Inline xG Preview (reactive) --}}
-                            <template x-if="xgPreview">
-                                <div class="mt-3 bg-surface-700/50 border border-border-strong rounded-lg p-3">
-                                    <div class="text-[10px] font-semibold text-text-secondary uppercase tracking-wide mb-2 text-center">{{ __('game.xg_preview') }}</div>
-                                    <div class="flex items-center justify-between gap-3">
-                                        <div class="flex-1 text-center">
-                                            <div class="text-2xl font-bold tabular-nums"
-                                                 :class="xgPreview.userXG > xgPreview.opponentXG ? 'text-accent-green' : (xgPreview.userXG < xgPreview.opponentXG ? 'text-accent-red' : 'text-text-primary')"
-                                                 x-text="xgPreview.userXG.toFixed(2)"></div>
-                                            <div class="text-[10px] text-text-muted mt-0.5">{{ __('game.xg_your_team') }}</div>
-                                        </div>
-                                        <div class="text-text-secondary text-xs font-medium shrink-0">xG</div>
-                                        <div class="flex-1 text-center">
-                                            <div class="text-2xl font-bold tabular-nums"
-                                                 :class="xgPreview.opponentXG > xgPreview.userXG ? 'text-accent-red' : (xgPreview.opponentXG < xgPreview.userXG ? 'text-accent-green' : 'text-text-primary')"
-                                                 x-text="xgPreview.opponentXG.toFixed(2)"></div>
-                                            <div class="text-[10px] text-text-muted mt-0.5">{{ __('game.xg_opponent') }}</div>
+                        <x-section-card title="{{ __('squad.opponent') }}">
+                            <div class="px-5 py-4">
+                                <div class="flex items-center justify-between gap-2">
+                                    <div class="flex items-center gap-1.5">
+                                        <x-team-crest :team="$game->team" class="w-7 h-7 shrink-0" />
+                                        <div class="flex flex-col leading-none gap-1 items-start">
+                                            <span class="font-heading text-xl font-bold tabular-nums leading-none text-text-primary" x-text="teamAverage || '-'"></span>
+                                            <div x-show="averageFitness" class="flex items-center gap-1.5">
+                                                <div class="w-8 h-1 rounded-full bg-surface-600 overflow-hidden">
+                                                    <div class="h-full rounded-full fitness-bar transition-all"
+                                                         :class="averageFitness >= 80 ? 'bg-accent-green' : (averageFitness >= 60 ? 'bg-accent-gold' : (averageFitness >= 40 ? 'bg-accent-orange' : 'bg-accent-red'))"
+                                                         :style="'width: ' + (averageFitness || 0) + '%'"></div>
+                                                </div>
+                                                <span class="text-[8px] text-text-muted w-6 text-right tabular-nums" x-text="(averageFitness || 0) + '%'"></span>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="mt-2">
-                                        <div class="flex h-1.5 rounded-full overflow-hidden gap-0.5">
-                                            <div class="h-full rounded-l-full transition-all duration-300"
-                                                 :class="xgPreview.userXG >= xgPreview.opponentXG ? 'bg-accent-green' : 'bg-accent-red'"
-                                                 :style="'width: ' + ((xgPreview.userXG + xgPreview.opponentXG) > 0 ? (xgPreview.userXG / (xgPreview.userXG + xgPreview.opponentXG) * 100) : 50) + '%'"></div>
-                                            <div class="h-full rounded-r-full transition-all duration-300"
-                                                 :class="xgPreview.opponentXG >= xgPreview.userXG ? 'bg-accent-red' : 'bg-accent-green'"
-                                                 :style="'width: ' + ((xgPreview.userXG + xgPreview.opponentXG) > 0 ? (xgPreview.opponentXG / (xgPreview.userXG + xgPreview.opponentXG) * 100) : 50) + '%'"></div>
+
+                                    <span class="text-[10px] text-text-secondary shrink-0">{{ __('game.vs') }}</span>
+
+                                    <div class="flex items-center gap-1.5">
+                                        <div class="flex flex-col leading-none gap-1 items-end">
+                                            <span class="font-heading text-xl font-bold tabular-nums leading-none text-text-primary">{{ $opponentData['teamAverage'] ?: '-' }}</span>
+                                            @if(!empty($opponentData['avgFitness']))
+                                                <x-fitness-bar :value="$opponentData['avgFitness']" size="xs" class="flex-row-reverse" />
+                                            @endif
+                                        </div>
+                                        <x-team-crest :team="$opponent" class="w-7 h-7 shrink-0" />
+                                    </div>
+                                </div>
+
+                                {{-- Inline xG Preview (reactive) --}}
+                                <template x-if="xgPreview">
+                                    <div class="mt-4 pt-3 border-t border-border-default">
+                                        <div class="flex items-center justify-center gap-1 text-[10px] font-medium text-text-secondary uppercase tracking-wide mb-2">
+                                            <span>{{ __('game.xg_preview') }}</span>
+                                            <x-info-icon :tooltip="__('game.xg_explanation')" />
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-heading text-xl font-bold tabular-nums shrink-0 w-10 text-left"
+                                                  :class="xgPreview.userXG > xgPreview.opponentXG ? 'text-accent-green' : (xgPreview.userXG < xgPreview.opponentXG ? 'text-accent-red' : 'text-text-primary')"
+                                                  x-text="xgPreview.userXG.toFixed(2)"></span>
+                                            <div class="flex-1 flex h-1.5 rounded-full overflow-hidden gap-0.5">
+                                                <div class="h-full rounded-l-full transition-all duration-300"
+                                                     :class="xgPreview.userXG >= xgPreview.opponentXG ? 'bg-accent-green' : 'bg-accent-red'"
+                                                     :style="'width: ' + ((xgPreview.userXG + xgPreview.opponentXG) > 0 ? (xgPreview.userXG / (xgPreview.userXG + xgPreview.opponentXG) * 100) : 50) + '%'"></div>
+                                                <div class="h-full rounded-r-full transition-all duration-300"
+                                                     :class="xgPreview.opponentXG >= xgPreview.userXG ? 'bg-accent-red' : 'bg-accent-green'"
+                                                     :style="'width: ' + ((xgPreview.userXG + xgPreview.opponentXG) > 0 ? (xgPreview.opponentXG / (xgPreview.userXG + xgPreview.opponentXG) * 100) : 50) + '%'"></div>
+                                            </div>
+                                            <span class="font-heading text-xl font-bold tabular-nums shrink-0 w-10 text-right"
+                                                  :class="xgPreview.opponentXG > xgPreview.userXG ? 'text-accent-red' : (xgPreview.opponentXG < xgPreview.userXG ? 'text-accent-green' : 'text-text-primary')"
+                                                  x-text="xgPreview.opponentXG.toFixed(2)"></span>
                                         </div>
                                     </div>
-                                    <p class="text-[10px] text-text-secondary mt-2 text-center leading-relaxed">{{ __('game.xg_explanation') }}</p>
+                                </template>
+
+                                <x-secondary-button type="button" size="sm" @click="$dispatch('open-modal', 'opponent-analysis')" class="w-full mt-3 gap-1.5">
+                                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    {{ __('app.scout_opponent') }}
+                                </x-secondary-button>
+                            </div>
+                        </x-section-card>
+
+                        {{-- Team Instructions --}}
+                        <x-section-card title="{{ __('game.instructions_title') }}">
+                            <div class="px-5 py-4 space-y-4">
+                                {{-- Formation impact (ATK/DEF modifiers) --}}
+                                <template x-if="formationModifiers[selectedFormation]">
+                                    <div class="grid grid-cols-2 gap-3 pb-4 border-b border-border-default">
+                                        <div>
+                                            <div class="text-[10px] font-medium text-text-secondary uppercase tracking-wide mb-1">{{ __('squad.attack_short') }}</div>
+                                            <div class="font-heading text-xl font-bold tabular-nums"
+                                                 :class="formationModifiers[selectedFormation]?.attack > 0 ? 'text-accent-green' : (formationModifiers[selectedFormation]?.attack < 0 ? 'text-accent-red' : 'text-text-primary')"
+                                                 x-text="(formationModifiers[selectedFormation]?.attack > 0 ? '+' : '') + formationModifiers[selectedFormation]?.attack + '%'"></div>
+                                        </div>
+                                        <div>
+                                            <div class="text-[10px] font-medium text-text-secondary uppercase tracking-wide mb-1">{{ __('squad.defense_short') }}</div>
+                                            <div class="font-heading text-xl font-bold tabular-nums"
+                                                 :class="formationModifiers[selectedFormation]?.defense > 0 ? 'text-accent-green' : (formationModifiers[selectedFormation]?.defense < 0 ? 'text-accent-red' : 'text-text-primary')"
+                                                 x-text="(formationModifiers[selectedFormation]?.defense > 0 ? '+' : '') + formationModifiers[selectedFormation]?.defense + '%'"></div>
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <div class="space-y-3">
+                                    {{-- Mentality --}}
+                                    <div>
+                                        <div class="text-[10px] font-medium text-text-secondary uppercase tracking-wide mb-1">{{ __('squad.mentality') }}</div>
+                                        <x-tactical-select model="selectedMentality" options="mentalityOptions" label="{{ __('squad.mentality') }}" summary-field="summary" />
+                                    </div>
+
+                                    {{-- Playing Style --}}
+                                    <div>
+                                        <div class="text-[10px] font-medium text-text-secondary uppercase tracking-wide mb-1">{{ __('game.instructions_in_possession') }}</div>
+                                        <x-tactical-select model="selectedPlayingStyle" options="playingStyles" label="{{ __('game.instructions_in_possession') }}" summary-field="summary" />
+                                    </div>
+
+                                    {{-- Pressing --}}
+                                    <div>
+                                        <div class="text-[10px] font-medium text-text-secondary uppercase tracking-wide mb-1">{{ __('game.instructions_out_of_possession') }}</div>
+                                        <x-tactical-select model="selectedPressing" options="pressingOptions" label="{{ __('game.instructions_out_of_possession') }}" summary-field="summary" />
+                                    </div>
+
+                                    {{-- Defensive Line --}}
+                                    <div>
+                                        <div class="text-[10px] font-medium text-text-secondary uppercase tracking-wide mb-1">{{ __('squad.defensive_line') }}</div>
+                                        <x-tactical-select model="selectedDefLine" options="defensiveLineOptions" label="{{ __('squad.defensive_line') }}" summary-field="summary" />
+                                    </div>
                                 </div>
-                            </template>
 
-                            <x-ghost-button type="button" @click="$dispatch('open-modal', 'coach-assistant')" size="xs" class="w-full mt-3">
-                                {{ __('squad.coach_full_report') }} &rarr;
-                            </x-ghost-button>
-                        </div>
-
-                        <div class="bg-surface-800 border border-border-default rounded-xl p-4 space-y-4">
-
-                            {{-- Team Instructions --}}
-                            <div class="space-y-3">
-                                <h4 class="font-heading text-sm font-semibold uppercase tracking-widest text-text-secondary">{{ __('game.instructions_title') }}</h4>
-
-                                {{-- Mentality --}}
-                                <div>
-                                    <div class="text-[10px] font-medium text-text-secondary uppercase tracking-wide mb-1">{{ __('squad.mentality') }}</div>
-                                    <x-tactical-select model="selectedMentality" options="mentalityOptions" label="{{ __('squad.mentality') }}" summary-field="summary" />
-                                </div>
-
-                                {{-- Playing Style --}}
-                                <div>
-                                    <div class="text-[10px] font-medium text-text-secondary uppercase tracking-wide mb-1">{{ __('game.instructions_in_possession') }}</div>
-                                    <x-tactical-select model="selectedPlayingStyle" options="playingStyles" label="{{ __('game.instructions_in_possession') }}" summary-field="summary" />
-                                </div>
-
-                                {{-- Pressing --}}
-                                <div>
-                                    <div class="text-[10px] font-medium text-text-secondary uppercase tracking-wide mb-1">{{ __('game.instructions_out_of_possession') }}</div>
-                                    <x-tactical-select model="selectedPressing" options="pressingOptions" label="{{ __('game.instructions_out_of_possession') }}" summary-field="summary" />
-                                </div>
-
-                                {{-- Defensive Line --}}
-                                <div>
-                                    <div class="text-[10px] font-medium text-text-secondary uppercase tracking-wide mb-1">{{ __('squad.defensive_line') }}</div>
-                                    <x-tactical-select model="selectedDefLine" options="defensiveLineOptions" label="{{ __('squad.defensive_line') }}" summary-field="summary" />
+                                {{-- Tactical guide link --}}
+                                <div class="pt-1">
+                                    <x-ghost-button type="button" x-on:click="$dispatch('open-modal', 'tactical-guide')" size="xs">
+                                        {{ __('game.tactical_guide_link') }} &rarr;
+                                    </x-ghost-button>
                                 </div>
                             </div>
-
-                            {{-- Tactical guide link --}}
-                            <div class="pt-1">
-                                <x-ghost-button type="button" x-on:click="$dispatch('open-modal', 'tactical-guide')" size="xs">
-                                    {{ __('game.tactical_guide_link') }} &rarr;
-                                </x-ghost-button>
-                            </div>
-
-                        </div>
+                        </x-section-card>
                     </div>
                 </div>
             </form>
         </div>
 
-        {{-- Coach Assistant Modal --}}
-        <x-modal name="coach-assistant" max-width="lg">
-            <x-modal-header modal-name="coach-assistant">{{ __('squad.coach_assistant') }}</x-modal-header>
-            <div class="p-5 max-h-[80vh] overflow-y-auto">
-                @include('partials.lineup-coach-panel')
+        {{-- Scout Opponent Modal --}}
+        <x-modal name="opponent-analysis" max-width="4xl">
+            <x-modal-header modal-name="opponent-analysis">{{ __('opponent.title', ['team' => $opponent->name]) }}</x-modal-header>
+            <div class="p-5 max-h-[85vh] overflow-y-auto">
+                @include('partials.opponent-analysis-content', ['inModal' => true])
             </div>
         </x-modal>
 

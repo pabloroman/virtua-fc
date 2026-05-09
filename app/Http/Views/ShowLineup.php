@@ -9,8 +9,10 @@ use App\Modules\Lineup\Enums\Mentality;
 use App\Modules\Lineup\Enums\PlayingStyle;
 use App\Modules\Lineup\Enums\PressingIntensity;
 use App\Modules\Lineup\Services\LineupService;
+use App\Modules\Lineup\Services\OpponentAnalysisBuilder;
 
 use App\Models\Game;
+use App\Models\GameStanding;
 use App\Support\PitchGrid;
 use App\Support\PositionSlotMapper;
 use App\Support\TeamColors;
@@ -20,6 +22,7 @@ class ShowLineup
     public function __construct(
         private readonly LineupService $lineupService,
         private readonly CalendarService $calendarService,
+        private readonly OpponentAnalysisBuilder $analysisBuilder,
     ) {}
 
     public function __invoke(string $gameId)
@@ -146,9 +149,12 @@ class ShowLineup
         // Get opponent scouting data (including predicted formation, mentality, and instructions)
         $opponentData = $this->lineupService->predictOpponentTactics($gameId, $opponent->id, $matchDate, $competitionId, !$isHome, $userTeamAverage);
 
-        // Radar chart data for coach assistant
-        $userRadar = $this->calculateRadarValues($userBestXI['players']);
-        $opponentRadar = $this->calculateRadarValues($opponentData['bestXIPlayers']);
+        // Shared analysis bundle (also used by the in-line Scout Opponent modal)
+        $analysis = $this->analysisBuilder->build($opponentData);
+        $userRadar = $this->analysisBuilder->radarFor($userBestXI['players']);
+        $opponentRadar = $this->analysisBuilder->radarFor($opponentData['bestXIPlayers']);
+        $opponentStanding = GameStanding::forTeamInCompetition($game, $opponent->id, $competitionId);
+        $userStanding = GameStanding::forTeamInCompetition($game, $game->team_id, $competitionId);
 
         // Formation modifiers for coach assistant tips (attack/defense per formation)
         $formationModifiers = [];
@@ -164,6 +170,7 @@ class ShowLineup
 
         // Team shirt colors for pitch visualization
         $teamColorsHex = TeamColors::toHex($game->team->colors ?? TeamColors::get($game->team->getRawOriginal('name')));
+        $opponentColorsHex = TeamColors::toHex($opponent->colors ?? TeamColors::get($opponent->getRawOriginal('name')));
 
         // Instruction defaults and available options
         $defaultPlayingStyle = $game->tactics?->default_playing_style ?? 'balanced';
@@ -292,6 +299,7 @@ class ShowLineup
             'formationSlots' => $formationSlots,
             'slotCompatibility' => $slotCompatibility,
             'opponentData' => $opponentData,
+            'opponentColors' => $opponentColorsHex,
             'teamColors' => $teamColorsHex,
             'userTeamAverage' => $userTeamAverage,
             'formationModifiers' => $formationModifiers,
@@ -313,6 +321,11 @@ class ShowLineup
             'currentPitchPositions' => $currentPitchPositions,
             'userRadar' => $userRadar,
             'opponentRadar' => $opponentRadar,
+            'pitchSlots' => $analysis['pitchSlots'],
+            'topThreats' => $analysis['topThreats'],
+            'tacticsSummaries' => $analysis['tacticsSummaries'],
+            'opponentStanding' => $opponentStanding,
+            'userStanding' => $userStanding,
 
             'tacticalPresets' => $game->tacticalPresets,
             'presetsConfig' => $game->tacticalPresets->map(fn ($p) => [
@@ -332,32 +345,4 @@ class ShowLineup
         ]);
     }
 
-    /**
-     * Calculate radar chart values from a collection of best XI players.
-     * Returns 8 axes: GK, DEF, MID, FWD averages + fitness, morale, technical, physical.
-     *
-     * @return array<string, int>
-     */
-    private function calculateRadarValues(\Illuminate\Support\Collection $players): array
-    {
-        if ($players->isEmpty()) {
-            return array_fill_keys(['goalkeeper', 'defense', 'midfield', 'attack', 'fitness', 'morale', 'overall'], 0);
-        }
-
-        $grouped = $players->groupBy(fn ($p) => $p->position_group);
-
-        $avgOverall = fn (string $group) => (int) round(
-            ($grouped->get($group) ?? collect())->avg(fn ($p) => $p->effective_rating) ?? 0
-        );
-
-        return [
-            'goalkeeper' => $avgOverall('Goalkeeper'),
-            'defense' => $avgOverall('Defender'),
-            'midfield' => $avgOverall('Midfielder'),
-            'attack' => $avgOverall('Forward'),
-            'fitness' => (int) round($players->avg('fitness')),
-            'morale' => (int) round($players->avg('morale')),
-            'overall' => (int) round($players->avg(fn ($p) => $p->effective_rating)),
-        ];
-    }
 }

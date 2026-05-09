@@ -23,6 +23,8 @@ return [
     'morale' => 'MOR',
     'overall' => 'Media',
     'overall_short' => 'MED',
+    'attack_short' => 'ATQ',
+    'defense_short' => 'DEF',
 
     // Status labels
     'on_loan' => 'Cedido',
@@ -88,7 +90,6 @@ return [
     'suspended' => 'sancionados',
 
     // Coach assistant
-    'coach_assistant' => 'Asistente Técnico',
     'coach_recommendations' => 'Recomendaciones',
     'coach_no_tips' => 'Sin recomendaciones especiales para este partido.',
     'coach_defensive_recommended' => 'Rival más fuerte. Mentalidad defensiva reduce sus goles esperados un 30%.',
@@ -100,7 +101,6 @@ return [
     'coach_low_morale' => ':count jugador(es) con moral baja. Tendrán peor rendimiento en el partido.',
     'coach_bench_frustration' => ':count jugador(es) de calidad sin jugar y perdiendo moral. Rota para mantenerlos contentos.',
     'coach_opponent_expected_label' => 'Previsto',
-    'coach_full_report' => 'Ver Informe Completo',
     'coach_opponent_defensive_setup' => 'Rival previsto con :formation (:mentality). Considera un enfoque ofensivo para desbloquearlos.',
     'coach_opponent_attacking_setup' => 'Rival previsto con :formation (:mentality). Dejarán espacios — una defensa sólida puede aprovecharlos.',
     'coach_opponent_deep_block' => 'Rival con 5 defensas. Amplitud y paciencia serán clave.',

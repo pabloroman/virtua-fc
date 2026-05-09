@@ -1061,7 +1061,7 @@ class LineupService
      *
      * Used by both the lineup page and the dashboard next-match card.
      *
-     * @return array{teamAverage: int, form: array, formation: string, mentality: string, playingStyle: string, pressing: string, defensiveLine: string, bestXIPlayers: Collection}
+     * @return array{teamAverage: int, avgFitness: int, form: array, formation: string, mentality: string, playingStyle: string, pressing: string, defensiveLine: string, bestXIPlayers: Collection}
      */
     public function predictOpponentTactics(
         string $gameId,
@@ -1077,6 +1077,7 @@ class LineupService
 
         $bestXI = $this->selectBestXI($availablePlayers, $predictedFormation);
         $teamAverage = $this->calculateTeamAverage($bestXI);
+        $avgFitness = (int) round($bestXI->avg('fitness') ?? 0);
 
         $opponentReputation = TeamReputation::resolveLevel($gameId, $opponentTeamId);
         $predictedMentality = $this->selectAIMentality(
@@ -1097,6 +1098,7 @@ class LineupService
 
         return [
             'teamAverage' => $teamAverage,
+            'avgFitness' => $avgFitness,
             'form' => $form,
             'formation' => $predictedFormation->value,
             'mentality' => $predictedMentality->value,

@@ -23,6 +23,8 @@ return [
     'morale' => 'MOR',
     'overall' => 'Overall',
     'overall_short' => 'OVR',
+    'attack_short' => 'ATK',
+    'defense_short' => 'DEF',
 
     // Status labels
     'on_loan' => 'On Loan',
@@ -88,7 +90,6 @@ return [
     'suspended' => 'suspended',
 
     // Coach assistant
-    'coach_assistant' => 'Coach Assistant',
     'coach_recommendations' => 'Recommendations',
     'coach_no_tips' => 'No special recommendations for this match.',
     'coach_defensive_recommended' => 'Opponent is stronger. Defensive mentality reduces their expected goals by 30%.',
@@ -100,7 +101,6 @@ return [
     'coach_low_morale' => ':count player(s) with low morale. They\'ll perform worse in the match.',
     'coach_bench_frustration' => ':count quality player(s) not playing and losing morale. Rotate to keep them happy.',
     'coach_opponent_expected_label' => 'Expected',
-    'coach_full_report' => 'View Full Report',
     'coach_opponent_defensive_setup' => 'Opponent expected to play :formation (:mentality). Consider an attacking approach to break them down.',
     'coach_opponent_attacking_setup' => 'Opponent expected to play :formation (:mentality). They\'ll leave space — a solid defense can exploit this.',
     'coach_opponent_deep_block' => 'Opponent playing with 5 defenders. Width and patience will be key.',

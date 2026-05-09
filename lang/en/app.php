@@ -5,6 +5,7 @@ return [
     'dashboard' => 'Dashboard',
     'squad' => 'Squad',
     'starting_xi' => 'Starting XI',
+    'scout_opponent' => 'Scout Opponent',
     'finances' => 'Finances',
     'club' => 'Club',
     'transfers' => 'Transfers',
