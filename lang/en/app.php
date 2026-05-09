@@ -64,5 +64,8 @@ return [
     // Common actions
     'close' => 'Close',
     'more' => 'More',
+    'loading' => 'Loading…',
+    'load_failed' => 'Could not load this content. Please try again.',
+    'retry' => 'Retry',
 
 ];

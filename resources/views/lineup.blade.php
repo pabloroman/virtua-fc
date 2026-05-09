@@ -457,11 +457,43 @@
             </form>
         </div>
 
-        {{-- Scout Opponent Modal --}}
+        {{-- Scout Opponent Modal — lazy-loads the analysis partial via AJAX
+             on first open so the lineup page doesn't pay for it upfront. --}}
         <x-modal name="opponent-analysis" max-width="4xl">
             <x-modal-header modal-name="opponent-analysis">{{ __('opponent.title', ['team' => $opponent->name]) }}</x-modal-header>
-            <div class="p-5 max-h-[85vh] overflow-y-auto">
-                @include('partials.opponent-analysis-content', ['inModal' => true])
+            <div class="p-5 max-h-[85vh] overflow-y-auto"
+                 x-data="{
+                     loaded: false,
+                     loading: false,
+                     failed: false,
+                     async ensureLoaded() {
+                         if (this.loaded || this.loading) return;
+                         this.loading = true;
+                         this.failed = false;
+                         try {
+                             const res = await fetch(@js(route('game.opponent-analysis', $game->id)), {
+                                 headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                             });
+                             if (!res.ok) throw new Error('HTTP ' + res.status);
+                             this.$refs.body.innerHTML = await res.text();
+                             window.Alpine.initTree(this.$refs.body);
+                             this.loaded = true;
+                         } catch (e) {
+                             this.failed = true;
+                         } finally {
+                             this.loading = false;
+                         }
+                     },
+                 }"
+                 x-on:open-modal.window="if ($event.detail === 'opponent-analysis') ensureLoaded()">
+                <div x-show="loading" class="text-center text-text-muted text-sm py-12">{{ __('app.loading') }}</div>
+                <div x-show="failed" x-cloak class="text-center text-accent-red text-sm py-12">
+                    {{ __('app.load_failed') }}
+                    <div class="mt-3">
+                        <x-secondary-button type="button" size="sm" @click="ensureLoaded()">{{ __('app.retry') }}</x-secondary-button>
+                    </div>
+                </div>
+                <div x-ref="body" x-show="loaded" x-cloak></div>
             </div>
         </x-modal>
 

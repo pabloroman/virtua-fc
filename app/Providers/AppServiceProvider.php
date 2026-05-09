@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Database\CrossPlaneQueryGuard;
+use App\Http\View\Composers\TacticalGuideComposer;
 use App\Events\SeasonCompleted;
 use App\Events\SeasonStarted;
 use App\Events\TournamentCompleted;
@@ -52,6 +53,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -126,6 +128,11 @@ class AppServiceProvider extends ServiceProvider
                 return $this->app['db']->connection('pgsql');
             });
         }
+
+        // Static reference data for the tactical-guide modal — composed lazily
+        // so view actions that include the partial don't rebuild it on every
+        // request.
+        View::composer('partials.tactical-guide-modal', TacticalGuideComposer::class);
 
         RateLimiter::for('game-creation', fn (Request $request) => Limit::perMinute(5)->by($request->user()?->id ?: $request->ip()));
         RateLimiter::for('tournament-simulation', fn (Request $request) => Limit::perMinute(3)->by($request->user()?->id ?: $request->ip()));

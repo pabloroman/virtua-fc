@@ -2,12 +2,13 @@
 
 namespace App\Http\Views;
 
-use App\Models\Game;
 use App\Models\GameStanding;
 use App\Modules\Competition\Services\CalendarService;
 use App\Modules\Lineup\Services\LineupService;
 use App\Modules\Lineup\Services\OpponentAnalysisBuilder;
+use App\Support\PreMatchContext;
 use App\Support\TeamColors;
+use Illuminate\Http\Request;
 
 class ShowOpponentAnalysis
 {
@@ -17,20 +18,15 @@ class ShowOpponentAnalysis
         private readonly OpponentAnalysisBuilder $analysisBuilder,
     ) {}
 
-    public function __invoke(string $gameId)
+    public function __invoke(string $gameId, Request $request)
     {
-        $game = Game::with('team')->findOrFail($gameId);
-        $match = $game->next_match;
-
-        abort_unless($match, 404);
-
-        $match->load(['homeTeam', 'awayTeam', 'competition']);
-
-        $isHome = $match->home_team_id === $game->team_id;
-        $opponent = $isHome ? $match->awayTeam : $match->homeTeam;
-
-        $matchDate = $match->scheduled_date;
-        $competitionId = $match->competition_id;
+        $context = PreMatchContext::resolve($gameId);
+        $game = $context->game;
+        $match = $context->match;
+        $isHome = $context->isHome;
+        $opponent = $context->opponent;
+        $matchDate = $context->matchDate;
+        $competitionId = $context->competitionId;
         $requireEnrollment = $game->requiresSquadEnrollment();
 
         $userBestXI = $this->lineupService->getBestXIWithAverage(
@@ -56,7 +52,7 @@ class ShowOpponentAnalysis
             $opponent->colors ?? TeamColors::get($opponent->getRawOriginal('name'))
         );
 
-        return view('opponent-analysis', [
+        $viewData = [
             'game' => $game,
             'match' => $match,
             'isHome' => $isHome,
@@ -78,6 +74,15 @@ class ShowOpponentAnalysis
                 $userBestXI['average'],
                 $match->hasHomeAdvantage($game->team_id),
             ),
-        ]);
+        ];
+
+        // The lineup page embeds this analysis in a modal that lazy-loads the
+        // partial via fetch — skip the chrome and return only the inner markup
+        // so it can be injected directly into the modal body.
+        if ($request->ajax()) {
+            return view('partials.opponent-analysis-content', $viewData + ['inModal' => true]);
+        }
+
+        return view('opponent-analysis', $viewData);
     }
 }
