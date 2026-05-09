@@ -250,9 +250,28 @@ class GameMatch extends Model
         return $this->home_team_id === $teamId || $this->away_team_id === $teamId;
     }
 
+    /**
+     * Slot-bookkeeping check: is the team in the home_team_id slot?
+     *
+     * Use this for picking score columns, lineup arrays, opponent identity,
+     * narrative copy, etc. For game mechanics (xG, AI tactics, coach tips),
+     * use hasHomeAdvantage() instead so neutral-venue matches behave correctly.
+     */
     public function isHomeTeam(string $teamId): bool
     {
         return $this->home_team_id === $teamId;
+    }
+
+    /**
+     * Whether the given team gets the home-field advantage for this match.
+     *
+     * Use this anywhere the answer affects gameplay or guidance — xG / morale
+     * / coach tips / AI tactics — so neutral-venue matches (World Cup, finals
+     * at La Cartuja, UEFA finals) don't incorrectly apply the home boost.
+     */
+    public function hasHomeAdvantage(string $teamId): bool
+    {
+        return $this->isHomeTeam($teamId) && ! $this->isNeutralVenue();
     }
 
     public function getOpponentFor(string $teamId): ?Team

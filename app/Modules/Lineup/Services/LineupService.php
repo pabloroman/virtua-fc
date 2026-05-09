@@ -898,8 +898,8 @@ class LineupService
         } else {
             // AI team: set formation, reputation-driven mentality, and AI instructions
             $aiFormation = $aiFormation ?? $this->selectAIFormation($availablePlayers);
-            $isHome = $prefix === 'home';
-            $opponentTeamId = $isHome ? $match->away_team_id : $match->home_team_id;
+            $isHome = $prefix === 'home' && ! $match->isNeutralVenue();
+            $opponentTeamId = $prefix === 'home' ? $match->away_team_id : $match->home_team_id;
 
             // Reuse already-selected lineup for team average (avoids redundant selectBestXI)
             $teamAvg = $this->calculateTeamAverage($aiSelectedXI ?? $this->selectBestXI($availablePlayers, $aiFormation));

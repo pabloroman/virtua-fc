@@ -46,7 +46,7 @@ class ShowOpponentAnalysis
             $opponent->id,
             $matchDate,
             $competitionId,
-            !$isHome,
+            $match->hasHomeAdvantage($opponent->id),
             $userBestXI['average'],
         );
 
@@ -76,7 +76,7 @@ class ShowOpponentAnalysis
                 $opponentData,
                 $userBestXI['players'],
                 $userBestXI['average'],
-                $isHome,
+                $match->hasHomeAdvantage($game->team_id),
             ),
         ]);
     }

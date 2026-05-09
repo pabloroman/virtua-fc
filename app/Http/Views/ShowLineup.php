@@ -147,7 +147,7 @@ class ShowLineup
         $userTeamAverage = $userBestXI['average'];
 
         // Get opponent scouting data (including predicted formation, mentality, and instructions)
-        $opponentData = $this->lineupService->predictOpponentTactics($gameId, $opponent->id, $matchDate, $competitionId, !$isHome, $userTeamAverage);
+        $opponentData = $this->lineupService->predictOpponentTactics($gameId, $opponent->id, $matchDate, $competitionId, $match->hasHomeAdvantage($opponent->id), $userTeamAverage);
 
         // Shared analysis bundle (also used by the in-line Scout Opponent modal)
         $analysis = $this->analysisBuilder->build($opponentData);
