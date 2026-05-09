@@ -39,22 +39,51 @@ class ShowCompetition
             $this->syntheticLeagueResolver->catchUp($game, $competition);
         }
 
+        $otherLeagues = $this->otherLeagues($game, $competition);
+
         if ($competition->handler_type === 'swiss_format') {
-            return $this->showSwissFormat($game, $competition);
+            return $this->showSwissFormat($game, $competition, $otherLeagues);
         }
 
         if ($competition->handler_type === 'group_stage_cup') {
-            return $this->showGroupStageCup($game, $competition);
+            return $this->showGroupStageCup($game, $competition, $otherLeagues);
         }
 
         if ($competition->isLeague()) {
-            return $this->showLeague($game, $competition);
+            return $this->showLeague($game, $competition, $otherLeagues);
         }
 
-        return $this->showCup($game, $competition);
+        return $this->showCup($game, $competition, $otherLeagues);
     }
 
-    private function showLeague(Game $game, Competition $competition)
+    /**
+     * Flat-league competitions in this game the user is NOT entered in.
+     * Surfaced as a small dropdown next to the page title for quick navigation
+     * between leagues; standings/results are simulated lazily on first view.
+     */
+    private function otherLeagues(Game $game, Competition $current): \Illuminate\Support\Collection
+    {
+        if (!$game->isCareerMode()) {
+            return collect();
+        }
+
+        $userCompetitionIds = CompetitionEntry::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->pluck('competition_id');
+
+        $allLeagueIdsInGame = CompetitionEntry::where('game_id', $game->id)
+            ->pluck('competition_id')
+            ->unique();
+
+        return Competition::whereIn('id', $allLeagueIdsInGame)
+            ->whereIn('handler_type', ['league', 'league_with_playoff'])
+            ->whereNotIn('id', $userCompetitionIds)
+            ->orderBy('country')
+            ->orderBy('tier')
+            ->get();
+    }
+
+    private function showLeague(Game $game, Competition $competition, \Illuminate\Support\Collection $otherLeagues)
     {
         $standings = $this->competitionViewService->getStandings($game, $competition);
         $hasGroups = $standings->whereNotNull('group_label')->isNotEmpty();
@@ -80,10 +109,11 @@ class ShowCompetition
             'knockoutRounds' => $knockoutRounds,
             'knockoutTies' => $knockoutTies,
             'leaguePhaseComplete' => $leaguePhaseComplete,
+            'otherLeagues' => $otherLeagues,
         ]);
     }
 
-    private function showSwissFormat(Game $game, Competition $competition)
+    private function showSwissFormat(Game $game, Competition $competition, \Illuminate\Support\Collection $otherLeagues)
     {
         $standings = $this->competitionViewService->getStandings($game, $competition);
         $knockoutRounds = $this->competitionViewService->getKnockoutRounds($competition, $game->season);
@@ -99,10 +129,11 @@ class ShowCompetition
             'knockoutRounds' => $knockoutRounds,
             'knockoutTies' => $knockoutTies,
             'leaguePhaseComplete' => $this->competitionViewService->isLeaguePhaseComplete($game, $competition, $standings),
+            'otherLeagues' => $otherLeagues,
         ]);
     }
 
-    private function showCup(Game $game, Competition $competition)
+    private function showCup(Game $game, Competition $competition, \Illuminate\Support\Collection $otherLeagues)
     {
         $rounds = $this->competitionViewService->getKnockoutRounds($competition, $game->season);
         $tiesByRound = $this->competitionViewService->getKnockoutTies($game, $competition);
@@ -117,10 +148,11 @@ class ShowCompetition
             'playerTie' => $playerTie,
             'cupStatus' => $this->competitionViewService->resolveCupStatus($playerTie, $game->team_id, $maxRound),
             'playerRoundName' => $playerTie?->getRoundConfig()?->name,
+            'otherLeagues' => $otherLeagues,
         ]);
     }
 
-    private function showGroupStageCup(Game $game, Competition $competition)
+    private function showGroupStageCup(Game $game, Competition $competition, \Illuminate\Support\Collection $otherLeagues)
     {
         $standings = $this->competitionViewService->getStandings($game, $competition);
         $groupStageComplete = $this->competitionViewService->isLeaguePhaseComplete($game, $competition, $standings);
@@ -152,6 +184,7 @@ class ShowCompetition
             'knockoutTies' => $knockoutTies,
             'playerTie' => $playerTie,
             'knockoutStatus' => $knockoutStatus,
+            'otherLeagues' => $otherLeagues,
         ]);
     }
 }

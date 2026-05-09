@@ -8,21 +8,6 @@
             ->pluck('competition_id')
     )->orderBy('tier')->get();
 
-    // Other flat-league competitions in this game the user is NOT entered in.
-    // Standings/results for these are simulated lazily on first view via
-    // SyntheticLeagueResolver. Limited to handler_type league|league_with_playoff
-    // so we don't surface cups/swiss formats here.
-    $otherLeagues = $game->isCareerMode()
-        ? \App\Models\Competition::whereIn('id',
-                $game->competitionEntries()->pluck('competition_id')->unique()
-            )
-            ->whereIn('handler_type', ['league', 'league_with_playoff'])
-            ->whereNotIn('id', $teamCompetitions->pluck('id'))
-            ->orderBy('country')
-            ->orderBy('tier')
-            ->get()
-        : collect();
-
     // Notifications for mobile bell icon + modal
     $unreadCount = $game->notifications()->whereNull('read_at')->count();
     $recentNotifications = $game->notifications()->orderByDesc('game_date')->limit(20)->get();
@@ -111,25 +96,13 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
-                        <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute left-0 z-50 mt-2 w-56 rounded-lg shadow-xl bg-surface-800 border border-border-strong" style="display: none;">
+                        <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute left-0 z-50 mt-2 w-48 rounded-lg shadow-xl bg-surface-800 border border-border-strong" style="display: none;">
                             <div class="py-1">
                                 @foreach($teamCompetitions as $competition)
                                 <a href="{{ route('game.competition', [$game->id, $competition->id]) }}" class="block px-4 py-2 text-sm text-text-body hover:bg-surface-700 hover:text-text-primary @if(request()->route('competitionId') == $competition->id) bg-surface-700 text-text-primary font-semibold @endif">
                                     {{ __($competition->name) }}
                                 </a>
                                 @endforeach
-                                @if($otherLeagues->isNotEmpty())
-                                <div class="border-t border-border-default mt-1 pt-1">
-                                    <div class="px-4 pt-1 pb-1">
-                                        <span class="text-[10px] font-semibold text-text-muted uppercase tracking-widest">{{ __('game.other_leagues') }}</span>
-                                    </div>
-                                    @foreach($otherLeagues as $league)
-                                    <a href="{{ route('game.competition', [$game->id, $league->id]) }}" class="block px-4 py-2 text-sm text-text-body hover:bg-surface-700 hover:text-text-primary @if(request()->route('competitionId') == $league->id) bg-surface-700 text-text-primary font-semibold @endif">
-                                        {{ __($league->name) }}
-                                    </a>
-                                    @endforeach
-                                </div>
-                                @endif
                             </div>
                         </div>
                     </div>
@@ -318,7 +291,7 @@
     </div>
 
     {{-- Mobile Bottom Tab Bar --}}
-    <x-bottom-tab-bar :game="$game" :next-match="$nextMatch" :team-competitions="$teamCompetitions" :other-leagues="$otherLeagues" />
+    <x-bottom-tab-bar :game="$game" :next-match="$nextMatch" :team-competitions="$teamCompetitions" />
 
     {{-- Matchday-advance overlay. Shown instantly (client-side) on submit of any
          form that POSTs to game.advance so the user sees the branded loading

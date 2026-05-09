@@ -21,17 +21,20 @@
         <div class="mt-6 mb-6">
             <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
                 <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">{{ __($competition->name) }}</h2>
-                @if($knockoutStatus === 'champion')
-                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-accent-gold/20 text-accent-gold">{{ __('cup.champion') }}</span>
-                @elseif($knockoutStatus === 'eliminated')
-                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-accent-red/20 text-accent-red">{{ __('cup.eliminated') }}</span>
-                @elseif($knockoutStatus === 'active')
-                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-accent-green/20 text-accent-green">{{ __($playerTie?->firstLegMatch?->round_name ?? '') }}</span>
-                @elseif($knockoutStatus === 'qualified')
-                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-accent-green/20 text-accent-green">{{ __('game.knockout_qualified') }}</span>
-                @elseif($knockoutStatus === 'group_stage')
-                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-accent-blue/20 text-accent-blue">{{ __('game.group_stage') }}</span>
-                @endif
+                <div class="flex items-center gap-2 flex-wrap">
+                    @if($knockoutStatus === 'champion')
+                        <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-accent-gold/20 text-accent-gold">{{ __('cup.champion') }}</span>
+                    @elseif($knockoutStatus === 'eliminated')
+                        <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-accent-red/20 text-accent-red">{{ __('cup.eliminated') }}</span>
+                    @elseif($knockoutStatus === 'active')
+                        <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-accent-green/20 text-accent-green">{{ __($playerTie?->firstLegMatch?->round_name ?? '') }}</span>
+                    @elseif($knockoutStatus === 'qualified')
+                        <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-accent-green/20 text-accent-green">{{ __('game.knockout_qualified') }}</span>
+                    @elseif($knockoutStatus === 'group_stage')
+                        <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-accent-blue/20 text-accent-blue">{{ __('game.group_stage') }}</span>
+                    @endif
+                    <x-other-leagues-menu :game="$game" :current-competition-id="$competition->id" :other-leagues="$otherLeagues" />
+                </div>
             </div>
         </div>
         @endunless
