@@ -5,14 +5,26 @@ namespace App\Modules\Match\Services;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\MatchEvent;
+use App\Modules\Match\DTOs\MatchLineupsViewModel;
 use App\Modules\Match\DTOs\MatchSummaryViewModel;
+use App\Support\LiveMatchLineupPresenter;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Builds the prepared view-model for the shared match-summary partial.
+ *
+ * Two modes:
+ *   - 'compact': scoreline + scorers only (used by the matchday results list)
+ *   - 'full':    + MVP + lineups/ratings (fast-mode focal card and the
+ *                dedicated match-summary page)
  */
 class MatchSummaryPresenter
 {
-    public function present(GameMatch $match): MatchSummaryViewModel
+    public const MODE_COMPACT = 'compact';
+
+    public const MODE_FULL = 'full';
+
+    public function present(GameMatch $match, string $mode = self::MODE_COMPACT): MatchSummaryViewModel
     {
         // ET-inclusive score: 90-min score + ET goals (stored separately on
         // home_score_et / away_score_et).
@@ -22,12 +34,24 @@ class MatchSummaryPresenter
 
         [$homeScorers, $awayScorers] = $this->buildScorerLists($match);
 
+        if ($mode !== self::MODE_FULL) {
+            return new MatchSummaryViewModel(
+                homeTotal: $homeTotal,
+                awayTotal: $awayTotal,
+                hasPenalties: $hasPenalties,
+                homeScorers: $homeScorers,
+                awayScorers: $awayScorers,
+            );
+        }
+
         return new MatchSummaryViewModel(
             homeTotal: $homeTotal,
             awayTotal: $awayTotal,
             hasPenalties: $hasPenalties,
             homeScorers: $homeScorers,
             awayScorers: $awayScorers,
+            mvp: $this->buildMvp($match),
+            lineups: $this->buildLineups($match),
         );
     }
 
@@ -47,7 +71,9 @@ class MatchSummaryPresenter
         );
 
         $scorerIds = $goalEvents->pluck('game_player_id')->filter()->unique()->all();
-        $names = GamePlayer::whereIn('id', $scorerIds)->pluck('name', 'id');
+        $names = empty($scorerIds)
+            ? collect()
+            : GamePlayer::whereIn('id', $scorerIds)->pluck('name', 'id');
 
         $beneficiaryTeamId = function (MatchEvent $event) use ($match): string {
             if ($event->event_type === MatchEvent::TYPE_OWN_GOAL) {
@@ -83,4 +109,74 @@ class MatchSummaryPresenter
         ];
     }
 
+    /**
+     * @return array{name:string, side:string}|null
+     */
+    private function buildMvp(GameMatch $match): ?array
+    {
+        $mvp = $match->mvpPlayer;
+        if (! $mvp) {
+            return null;
+        }
+
+        return [
+            'name' => $mvp->name,
+            'side' => $mvp->team_id === $match->home_team_id ? 'home' : 'away',
+        ];
+    }
+
+    /**
+     * Build the lineups/ratings payload consumed by `matchSummaryLineups` —
+     * the post-match twin of the live-match factory. Roster shape comes from
+     * `LiveMatchLineupPresenter::displayRoster()` and events go through
+     * `MatchResimulationService::formatMatchEvents()`, so the data lines up
+     * with what `partials/live-match/lineups-roster.blade.php` expects when
+     * mounted under either factory.
+     */
+    private function buildLineups(GameMatch $match): MatchLineupsViewModel
+    {
+        $performances = Cache::get("match_performances:{$match->id}", []);
+
+        $homeRoster = LiveMatchLineupPresenter::displayRoster($match->home_lineup ?? [], $performances);
+        $awayRoster = LiveMatchLineupPresenter::displayRoster($match->away_lineup ?? [], $performances);
+
+        // Sub-ins feed the rating calc only; team_id from the persisted
+        // substitutions JSON gets reattached so per-team bonuses apply.
+        $subInIds = [];
+        $subInTeamMap = [];
+        foreach ($match->substitutions ?? [] as $sub) {
+            $playerInId = $sub['player_in_id'] ?? null;
+            if (! $playerInId) {
+                continue;
+            }
+            $subInIds[] = $playerInId;
+            $subInTeamMap[$playerInId] = $sub['team_id'] ?? null;
+        }
+
+        $subInPlayers = [];
+        if (! empty($subInIds)) {
+            foreach (LiveMatchLineupPresenter::displayRoster($subInIds, $performances) as $entry) {
+                $entry['teamId'] = $subInTeamMap[$entry['id']] ?? null;
+                $subInPlayers[] = $entry;
+            }
+        }
+
+        $events = MatchResimulationService::formatMatchEvents($match->events);
+
+        $homeTotal = (int) $match->home_score + (int) ($match->home_score_et ?? 0);
+        $awayTotal = (int) $match->away_score + (int) ($match->away_score_et ?? 0);
+
+        return new MatchLineupsViewModel(
+            homeRoster: $homeRoster,
+            awayRoster: $awayRoster,
+            subInPlayers: $subInPlayers,
+            events: $events,
+            homeFormation: $match->home_formation,
+            awayFormation: $match->away_formation,
+            homeTeamId: $match->home_team_id,
+            awayTeamId: $match->away_team_id,
+            homeScore: $homeTotal,
+            awayScore: $awayTotal,
+        );
+    }
 }

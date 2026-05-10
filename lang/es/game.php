@@ -544,4 +544,7 @@ return [
     'xg_your_team' => 'Tu xG',
     'xg_opponent' => 'xG Rival',
     'xg_explanation' => 'Goles esperados según tu alineación y configuración táctica. Cambia al ajustar las tácticas.',
+
+    // Match summary
+    'lineup_unavailable' => 'Alineación no disponible.',
 ];

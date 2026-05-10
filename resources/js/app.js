@@ -5,6 +5,7 @@ import Collapse from '@alpinejs/collapse';
 import Tooltip from '@ryangjchandler/alpine-tooltip';
 import liveMatch from './live-match';
 import lineupManager from './lineup';
+import matchSummaryLineups from './match-summary-lineups';
 import negotiationChat from './negotiation-chat';
 import squadSelection from './squad-selection';
 import tournamentSummary from './tournament-summary';
@@ -18,6 +19,7 @@ Alpine.plugin(Tooltip);
 
 Alpine.data('liveMatch', liveMatch);
 Alpine.data('lineupManager', lineupManager);
+Alpine.data('matchSummaryLineups', matchSummaryLineups);
 Alpine.data('negotiationChat', negotiationChat);
 Alpine.data('squadSelection', squadSelection);
 Alpine.data('squadRegistration', squadRegistration);

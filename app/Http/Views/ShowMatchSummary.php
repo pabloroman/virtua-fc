@@ -12,7 +12,7 @@ class ShowMatchSummary
     {
         $game = Game::findOrFail($gameId);
 
-        $match = GameMatch::with(['homeTeam', 'awayTeam', 'events'])
+        $match = GameMatch::with(['homeTeam', 'awayTeam', 'competition', 'events.gamePlayer', 'mvpPlayer'])
             ->where('game_id', $game->id)
             ->where('played', true)
             ->findOrFail($matchId);
@@ -24,6 +24,7 @@ class ShowMatchSummary
         return view('partials.match-summary', [
             'match' => $match,
             'showHeader' => true,
+            'mode' => 'full',
         ]);
     }
 }
