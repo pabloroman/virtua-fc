@@ -154,6 +154,25 @@ class SkipMatchToEndTest extends TestCase
             $userSubsInJson,
             'Rebuilt substitutions JSON must reflect the newly-generated user auto-subs',
         );
+
+        // Each subbed-in player must accumulate an appearance — the same
+        // bookkeeping that manual subs (TacticalChangeService) and batch
+        // matchday advance (MatchResultProcessor::bulkUpdateAppearances) do.
+        $playerInIds = $userTeamSubsAfter
+            ->pluck('metadata.player_in_id')
+            ->filter()
+            ->all();
+        $this->assertNotEmpty($playerInIds, 'Auto-subs must record a player_in_id');
+
+        $appearancesByPlayer = \App\Models\GamePlayerMatchState::whereIn('game_player_id', $playerInIds)
+            ->pluck('appearances', 'game_player_id');
+        foreach ($playerInIds as $inId) {
+            $this->assertSame(
+                1,
+                $appearancesByPlayer[$inId] ?? 0,
+                "Subbed-in player {$inId} must have appearances incremented to 1",
+            );
+        }
     }
 
     public function test_skip_to_end_is_noop_when_user_has_used_all_subs(): void

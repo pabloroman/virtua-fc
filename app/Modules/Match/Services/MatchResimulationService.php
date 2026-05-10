@@ -736,6 +736,7 @@ class MatchResimulationService
         // Update player stats
         $statIncrements = [];
         $specialEvents = [];
+        $subbedInPlayerIds = [];
 
         foreach ($events as $event) {
             $playerId = $event->gamePlayerId;
@@ -767,6 +768,16 @@ class MatchResimulationService
                 case 'injury':
                     $specialEvents[] = $event;
                     break;
+                case 'substitution':
+                    // Mirrors MatchResultProcessor::bulkUpdateAppearances and
+                    // TacticalChangeService: subbed-in players get an appearance.
+                    // revertEventsAfterMinute() decrements on revert, so without
+                    // this the count drifts negative across resimulations.
+                    $playerInId = $event->metadata['player_in_id'] ?? null;
+                    if ($playerInId !== null) {
+                        $subbedInPlayerIds[] = $playerInId;
+                    }
+                    break;
             }
         }
 
@@ -782,6 +793,10 @@ class MatchResimulationService
         $validIncrements = array_intersect_key($statIncrements, $players->all());
         $validIncrements = array_filter($validIncrements, fn ($inc) => ! empty($inc));
         GamePlayerMatchState::bulkIncrementStats($validIncrements);
+
+        if (! empty($subbedInPlayerIds)) {
+            GamePlayerMatchState::bulkIncrementAppearances(array_values(array_unique($subbedInPlayerIds)));
+        }
 
         // Process special events
         // Skip card suspensions for pre-season matches (cards are recorded but don't carry over)
