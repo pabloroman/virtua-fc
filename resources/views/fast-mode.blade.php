@@ -71,7 +71,6 @@
                 @include('partials.match-summary', [
                     'match' => $lastMatch,
                     'showHeader' => true,
-                    'viewerTeamId' => $game->team_id,
                 ])
             @else
                 <div class="rounded-xl border border-border-default bg-surface-800/60 px-4 py-6 text-center text-xs text-text-muted">

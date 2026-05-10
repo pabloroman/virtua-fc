@@ -19,9 +19,6 @@ readonly class MatchSummaryViewModel
         public bool $hasPenalties,
         public array $homeScorers,
         public array $awayScorers,
-        public ?string $resultLabel,
-        public ?string $resultColor,
-        public ?string $resultBg,
     ) {}
 
     public function hasScorers(): bool

@@ -4,24 +4,15 @@
 
     // Optional props (set by the caller via @include data array).
     $showHeader = $showHeader ?? false;
-    $viewerTeamId = $viewerTeamId ?? null;
 
-    $summary = app(MatchSummaryPresenter::class)->present(
-        $match,
-        $showHeader ? $viewerTeamId : null,
-    );
+    $summary = app(MatchSummaryPresenter::class)->present($match);
 @endphp
 
 <div class="rounded-xl border border-border-default bg-surface-800 overflow-hidden">
-    {{-- Optional header: competition pill + result badge + venue · date --}}
+    {{-- Optional header: competition pill + venue · date --}}
     @if($showHeader)
         <div class="px-4 py-3 md:py-4 border-b border-border-default">
-            <x-match-card-header
-                :match="$match"
-                :result-label="$summary->resultLabel"
-                :result-bg="$summary->resultBg"
-                :result-color="$summary->resultColor"
-            />
+            <x-match-card-header :match="$match" />
         </div>
     @endif
 
