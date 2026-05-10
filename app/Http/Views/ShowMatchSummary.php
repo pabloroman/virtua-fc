@@ -4,7 +4,6 @@ namespace App\Http\Views;
 
 use App\Models\Game;
 use App\Models\GameMatch;
-use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ShowMatchSummary
@@ -13,7 +12,7 @@ class ShowMatchSummary
     {
         $game = Game::findOrFail($gameId);
 
-        $match = GameMatch::with(['homeTeam', 'awayTeam', 'events', 'mvpPlayer'])
+        $match = GameMatch::with(['homeTeam', 'awayTeam', 'events'])
             ->where('game_id', $game->id)
             ->where('played', true)
             ->findOrFail($matchId);
@@ -24,7 +23,6 @@ class ShowMatchSummary
 
         return view('partials.match-summary', [
             'match' => $match,
-            'ratings' => Cache::get("match_performances:{$match->id}"),
         ]);
     }
 }
