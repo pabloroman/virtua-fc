@@ -100,20 +100,46 @@ class LiveMatchLineupPresenter
      */
     public static function displayRoster(array $lineupIds, array $performances): array
     {
-        return GamePlayer::with(['matchState'])
-            ->whereIn('id', $lineupIds)
-            ->get()
-            ->map(fn ($p) => [
-                'id' => $p->id,
-                'name' => $p->name ?? '',
-                'positionAbbr' => PositionMapper::toAbbreviation($p->position),
-                'positionGroup' => $p->position_group,
-                'positionSort' => LineupService::positionSortOrder($p->position),
-                'performance' => $performances[$p->id] ?? null,
-            ])
-            ->sortBy('positionSort')
-            ->values()
-            ->all();
+        return self::displayRosters(['_' => $lineupIds], $performances)['_'];
+    }
+
+    /**
+     * Batch variant of `displayRoster` — resolves several ID groups in a
+     * single query and returns one display roster per group key. Use this
+     * when a single view needs home + away + sub-ins together so we don't
+     * pay one round trip per group.
+     *
+     * @param  array<string, array<int, string>>  $idGroups
+     * @param  array<string, mixed>  $performances
+     * @return array<string, array<int, array<string, mixed>>>
+     */
+    public static function displayRosters(array $idGroups, array $performances): array
+    {
+        $allIds = array_values(array_unique(array_merge(...array_values($idGroups))));
+
+        $playersById = empty($allIds)
+            ? collect()
+            : GamePlayer::with(['matchState'])->whereIn('id', $allIds)->get()->keyBy('id');
+
+        $result = [];
+        foreach ($idGroups as $key => $ids) {
+            $result[$key] = collect($ids)
+                ->map(fn ($id) => $playersById->get($id))
+                ->filter()
+                ->map(fn ($p) => [
+                    'id' => $p->id,
+                    'name' => $p->name ?? '',
+                    'positionAbbr' => PositionMapper::toAbbreviation($p->position),
+                    'positionGroup' => $p->position_group,
+                    'positionSort' => LineupService::positionSortOrder($p->position),
+                    'performance' => $performances[$p->id] ?? null,
+                ])
+                ->sortBy('positionSort')
+                ->values()
+                ->all();
+        }
+
+        return $result;
     }
 
     /**

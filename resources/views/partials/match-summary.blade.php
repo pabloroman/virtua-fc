@@ -92,6 +92,7 @@
                 awayRoster: {{ Js::from($summary->lineups->awayRoster) }},
                 subInPlayers: {{ Js::from($summary->lineups->subInPlayers) }},
                 events: {{ Js::from($summary->lineups->events) }},
+                extraTimeEvents: {{ Js::from($summary->lineups->extraTimeEvents) }},
                 homeTeamId: {{ Js::from($summary->lineups->homeTeamId) }},
                 awayTeamId: {{ Js::from($summary->lineups->awayTeamId) }},
                 homeScore: {{ $summary->lineups->homeScore }},

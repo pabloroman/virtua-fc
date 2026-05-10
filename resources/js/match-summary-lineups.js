@@ -10,8 +10,10 @@
  * Config shape (built by MatchSummaryPresenter, passed via Js::from):
  *   - homeRoster, awayRoster: [{ id, name, positionAbbr, positionGroup, performance? }]
  *   - subInPlayers:           [{ id, positionGroup, performance?, teamId }]
- *   - events:                 MatchResimulationService::formatMatchEvents() output
- *   - homeScore, awayScore:   final scores including ET
+ *   - events:                 formatMatchEvents() output for minute ≤93
+ *   - extraTimeEvents:        formatMatchEvents() output for minute >93
+ *   - homeScore, awayScore:   90-minute scores (no ET), matching what
+ *                             ShowLiveMatch passes as finalHomeScore/Away
  *   - homeTeamId, awayTeamId: team IDs
  */
 import { mixinModule } from './modules/_mixin.js';
@@ -29,16 +31,18 @@ export default function matchSummaryLineups(config) {
         phase: 'full_time',
         playerRatings: {},
 
-        // Shape consumed by createRatingsGlue
+        // Shape consumed by createRatingsGlue — mirrors live-match exactly so
+        // the same fixture yields the same ratings in both views.
         events: config.events || [],
-        extraTimeEvents: [],
+        extraTimeEvents: config.extraTimeEvents || [],
         finalHomeScore: config.homeScore ?? 0,
         finalAwayScore: config.awayScore ?? 0,
         homeTeamId: config.homeTeamId || '',
         awayTeamId: config.awayTeamId || '',
-        // Sub-ins live in opponentBenchPlayers because that branch reads
-        // each player's own teamId (the user/opponent split doesn't apply
-        // to a third-party post-match view).
+        // No user/opponent split in a third-party post-match view: every
+        // sub-in carries its own teamId, so route them through the opponent
+        // bench branch (which reads each player's teamId) and leave
+        // userTeamId null to skip the user-side branch entirely.
         benchPlayers: [],
         opponentBenchPlayers: config.subInPlayers || [],
         userTeamId: null,

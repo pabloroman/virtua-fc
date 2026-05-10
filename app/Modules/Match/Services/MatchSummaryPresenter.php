@@ -3,7 +3,6 @@
 namespace App\Modules\Match\Services;
 
 use App\Models\GameMatch;
-use App\Models\GamePlayer;
 use App\Models\MatchEvent;
 use App\Modules\Match\DTOs\MatchLineupsViewModel;
 use App\Modules\Match\DTOs\MatchSummaryViewModel;
@@ -70,11 +69,8 @@ class MatchSummaryPresenter
             fn (MatchEvent $e) => in_array($e->event_type, [MatchEvent::TYPE_GOAL, MatchEvent::TYPE_OWN_GOAL], true)
         );
 
-        $scorerIds = $goalEvents->pluck('game_player_id')->filter()->unique()->all();
-        $names = empty($scorerIds)
-            ? collect()
-            : GamePlayer::whereIn('id', $scorerIds)->pluck('name', 'id');
-
+        // Scorer names come from the eager-loaded events.gamePlayer relation —
+        // every caller (ShowMatchSummary, FastModeService, CalendarService) loads it.
         $beneficiaryTeamId = function (MatchEvent $event) use ($match): string {
             if ($event->event_type === MatchEvent::TYPE_OWN_GOAL) {
                 return $event->team_id === $match->home_team_id
@@ -86,7 +82,7 @@ class MatchSummaryPresenter
         };
 
         $format = fn ($events) => $events
-            ->groupBy(fn (MatchEvent $e) => $names[$e->game_player_id] ?? '—')
+            ->groupBy(fn (MatchEvent $e) => $e->gamePlayer?->name ?? '—')
             ->map(function ($playerEvents, $name) {
                 $minutes = $playerEvents
                     ->map(function (MatchEvent $e) {
@@ -137,9 +133,6 @@ class MatchSummaryPresenter
     {
         $performances = Cache::get("match_performances:{$match->id}", []);
 
-        $homeRoster = LiveMatchLineupPresenter::displayRoster($match->home_lineup ?? [], $performances);
-        $awayRoster = LiveMatchLineupPresenter::displayRoster($match->away_lineup ?? [], $performances);
-
         // Sub-ins feed the rating calc only; team_id from the persisted
         // substitutions JSON gets reattached so per-team bonuses apply.
         $subInIds = [];
@@ -153,30 +146,36 @@ class MatchSummaryPresenter
             $subInTeamMap[$playerInId] = $sub['team_id'] ?? null;
         }
 
-        $subInPlayers = [];
-        if (! empty($subInIds)) {
-            foreach (LiveMatchLineupPresenter::displayRoster($subInIds, $performances) as $entry) {
-                $entry['teamId'] = $subInTeamMap[$entry['id']] ?? null;
-                $subInPlayers[] = $entry;
-            }
-        }
+        // Single round trip for home XI + away XI + sub-ins.
+        $rosters = LiveMatchLineupPresenter::displayRosters([
+            'home' => $match->home_lineup ?? [],
+            'away' => $match->away_lineup ?? [],
+            'subIns' => $subInIds,
+        ], $performances);
 
-        $events = MatchResimulationService::formatMatchEvents($match->events);
+        $subInPlayers = array_map(
+            fn (array $entry) => $entry + ['teamId' => $subInTeamMap[$entry['id']] ?? null],
+            $rosters['subIns'],
+        );
 
-        $homeTotal = (int) $match->home_score + (int) ($match->home_score_et ?? 0);
-        $awayTotal = (int) $match->away_score + (int) ($match->away_score_et ?? 0);
+        // Mirror the live-match split: regular events (≤93') vs ET (>93').
+        // The shared ratings-glue module unions them but reads finalHomeScore/
+        // finalAwayScore as 90-min only, matching what ShowLiveMatch passes.
+        $regularEvents = $match->events->filter(fn (MatchEvent $e) => $e->minute <= 93);
+        $etEvents = $match->events->filter(fn (MatchEvent $e) => $e->minute > 93);
 
         return new MatchLineupsViewModel(
-            homeRoster: $homeRoster,
-            awayRoster: $awayRoster,
+            homeRoster: $rosters['home'],
+            awayRoster: $rosters['away'],
             subInPlayers: $subInPlayers,
-            events: $events,
+            events: MatchResimulationService::formatMatchEvents($regularEvents),
+            extraTimeEvents: MatchResimulationService::formatMatchEvents($etEvents),
             homeFormation: $match->home_formation,
             awayFormation: $match->away_formation,
             homeTeamId: $match->home_team_id,
             awayTeamId: $match->away_team_id,
-            homeScore: $homeTotal,
-            awayScore: $awayTotal,
+            homeScore: (int) $match->home_score,
+            awayScore: (int) $match->away_score,
         );
     }
 }

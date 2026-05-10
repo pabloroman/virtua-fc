@@ -34,9 +34,9 @@
             <template x-for="p in homeLineupRoster" :key="p.id">
                 <div>
                     {{-- Starter row --}}
-                    <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-surface-800/50">
+                    <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-surface-700">
                         <span class="inline-flex items-center justify-center w-6 h-6 text-[10px] -skew-x-12 font-semibold text-white shrink-0"
-                              :class="{ 'bg-amber-600': p.positionGroup === 'GK', 'bg-blue-600': p.positionGroup === 'DEF', 'bg-green-600': p.positionGroup === 'MID', 'bg-red-600': p.positionGroup === 'FWD', 'bg-surface-600': !['GK','DEF','MID','FWD'].includes(p.positionGroup) }">
+                              :class="{ 'bg-accent-gold': p.positionGroup === 'GK', 'bg-accent-blue': p.positionGroup === 'DEF', 'bg-accent-green': p.positionGroup === 'MID', 'bg-accent-red': p.positionGroup === 'FWD', 'bg-surface-600': !['GK','DEF','MID','FWD'].includes(p.positionGroup) }">
                             <span class="skew-x-12" x-text="p.positionAbbr"></span>
                         </span>
                         <span class="text-xs flex-1 truncate" x-text="p.name"
@@ -51,10 +51,10 @@
                                     </span>
                                 </template>
                                 <template x-if="getEventIcons().yellowCards[p.id]">
-                                    <span class="w-2 h-3 rounded-[1px] bg-yellow-400 shrink-0"></span>
+                                    <span class="w-2 h-3 rounded-[1px] bg-accent-gold shrink-0"></span>
                                 </template>
                                 <template x-if="getEventIcons().redCards[p.id]">
-                                    <span class="w-2 h-3 rounded-[1px] bg-red-500 shrink-0"></span>
+                                    <span class="w-2 h-3 rounded-[1px] bg-accent-red shrink-0"></span>
                                 </template>
                             </span>
                         </template>
@@ -88,10 +88,10 @@
                                         </span>
                                     </template>
                                     <template x-if="getEventIcons().yellowCards[getSubMap().subbedOut[p.id]?.replacedById]">
-                                        <span class="w-2 h-3 rounded-[1px] bg-yellow-400 shrink-0"></span>
+                                        <span class="w-2 h-3 rounded-[1px] bg-accent-gold shrink-0"></span>
                                     </template>
                                     <template x-if="getEventIcons().redCards[getSubMap().subbedOut[p.id]?.replacedById]">
-                                        <span class="w-2 h-3 rounded-[1px] bg-red-500 shrink-0"></span>
+                                        <span class="w-2 h-3 rounded-[1px] bg-accent-red shrink-0"></span>
                                     </template>
                                 </span>
                             </template>
@@ -122,9 +122,9 @@
             <template x-for="p in awayLineupRoster" :key="p.id">
                 <div>
                     {{-- Starter row --}}
-                    <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-surface-800/50">
+                    <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-surface-700">
                         <span class="inline-flex items-center justify-center w-6 h-6 text-[10px] -skew-x-12 font-semibold text-white shrink-0"
-                              :class="{ 'bg-amber-600': p.positionGroup === 'GK', 'bg-blue-600': p.positionGroup === 'DEF', 'bg-green-600': p.positionGroup === 'MID', 'bg-red-600': p.positionGroup === 'FWD', 'bg-surface-600': !['GK','DEF','MID','FWD'].includes(p.positionGroup) }">
+                              :class="{ 'bg-accent-gold': p.positionGroup === 'GK', 'bg-accent-blue': p.positionGroup === 'DEF', 'bg-accent-green': p.positionGroup === 'MID', 'bg-accent-red': p.positionGroup === 'FWD', 'bg-surface-600': !['GK','DEF','MID','FWD'].includes(p.positionGroup) }">
                             <span class="skew-x-12" x-text="p.positionAbbr"></span>
                         </span>
                         <span class="text-xs flex-1 truncate" x-text="p.name"
@@ -139,10 +139,10 @@
                                     </span>
                                 </template>
                                 <template x-if="getEventIcons().yellowCards[p.id]">
-                                    <span class="w-2 h-3 rounded-[1px] bg-yellow-400 shrink-0"></span>
+                                    <span class="w-2 h-3 rounded-[1px] bg-accent-gold shrink-0"></span>
                                 </template>
                                 <template x-if="getEventIcons().redCards[p.id]">
-                                    <span class="w-2 h-3 rounded-[1px] bg-red-500 shrink-0"></span>
+                                    <span class="w-2 h-3 rounded-[1px] bg-accent-red shrink-0"></span>
                                 </template>
                             </span>
                         </template>
@@ -176,10 +176,10 @@
                                         </span>
                                     </template>
                                     <template x-if="getEventIcons().yellowCards[getSubMap().subbedOut[p.id]?.replacedById]">
-                                        <span class="w-2 h-3 rounded-[1px] bg-yellow-400 shrink-0"></span>
+                                        <span class="w-2 h-3 rounded-[1px] bg-accent-gold shrink-0"></span>
                                     </template>
                                     <template x-if="getEventIcons().redCards[getSubMap().subbedOut[p.id]?.replacedById]">
-                                        <span class="w-2 h-3 rounded-[1px] bg-red-500 shrink-0"></span>
+                                        <span class="w-2 h-3 rounded-[1px] bg-accent-red shrink-0"></span>
                                     </template>
                                 </span>
                             </template>
