@@ -87,6 +87,7 @@
                         <ul class="text-text-secondary space-y-1 list-disc ml-4">
                             <li>{{ __('squad.registration_rule_first_team') }}</li>
                             <li>{{ __('squad.registration_rule_academy') }}</li>
+                            <li>{{ __('squad.registration_rule_u23_badge') }}</li>
                             <li>{{ __('squad.registration_rule_unregistered') }}</li>
                         </ul>
                     </div>
@@ -113,6 +114,7 @@
                     <ul class="text-xs text-text-muted space-y-1 ml-6 list-disc">
                         <li>{{ __('squad.registration_rule_first_team') }}</li>
                         <li>{{ __('squad.registration_rule_academy') }}</li>
+                        <li>{{ __('squad.registration_rule_u23_badge') }}</li>
                         <li>{{ __('squad.registration_rule_unregistered') }}</li>
                     </ul>
                 </div>
@@ -156,6 +158,9 @@
                                         </span>
 
                                         <span class="text-sm font-medium text-text-primary truncate flex-1 min-w-0" x-text="getPlayer({{ $i }}).name"></span>
+                                        <template x-if="getPlayer({{ $i }}).is_u23">
+                                            <x-u23-badge />
+                                        </template>
                                         <span class="text-xs text-text-muted tabular-nums shrink-0" x-text="getPlayer({{ $i }}).age + ' {{ __('squad.years_abbr') }}'"></span>
 
                                         <div class="rating-badge w-7 h-7 rounded-md text-xs flex items-center justify-center shrink-0"
@@ -219,6 +224,9 @@
                                     </span>
 
                                     <span class="text-sm font-medium text-text-primary truncate flex-1 min-w-0" x-text="players[entry.id].name"></span>
+                                    <template x-if="players[entry.id].is_u23">
+                                        <x-u23-badge />
+                                    </template>
                                     <span class="text-xs text-text-muted tabular-nums shrink-0" x-text="players[entry.id].age + ' {{ __('squad.years_abbr') }}'"></span>
 
                                     <div class="rating-badge w-7 h-7 rounded-md text-xs flex items-center justify-center shrink-0"
@@ -272,6 +280,9 @@
                                     </span>
 
                                     <span class="text-sm font-medium text-text-primary truncate flex-1 min-w-0" x-text="players[playerId].name"></span>
+                                    <template x-if="players[playerId].is_u23">
+                                        <x-u23-badge />
+                                    </template>
                                     <span class="text-xs text-text-muted tabular-nums shrink-0" x-text="players[playerId].age + ' {{ __('squad.years_abbr') }}'"></span>
 
                                     <div class="rating-badge w-7 h-7 rounded-md text-xs flex items-center justify-center shrink-0"
