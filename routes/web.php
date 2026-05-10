@@ -98,6 +98,7 @@ use App\Http\Views\ShowWelcome;
 use App\Http\Views\ShowCompetition;
 use App\Http\Views\ShowLiveMatch;
 use App\Http\Views\ShowMatchResults;
+use App\Http\Views\ShowMatchSummary;
 use App\Http\Views\ShowIncomingTransfers;
 use App\Http\Views\ShowScoutingHub;
 use App\Http\Views\ShowScoutReportResults;
@@ -191,6 +192,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/game/{gameId}/calendar', ShowCalendar::class)->name('game.calendar');
         Route::get('/game/{gameId}/competition/{competitionId}', ShowCompetition::class)->name('game.competition');
         Route::get('/game/{gameId}/results/{competition}/{matchday}', ShowMatchResults::class)->name('game.results');
+        Route::get('/game/{gameId}/match/{matchId}/summary', ShowMatchSummary::class)->name('game.match.summary');
         Route::get('/game/{gameId}/live/{matchId}', ShowLiveMatch::class)->name('game.live-match');
         Route::get('/game/{gameId}/lineup', ShowLineup::class)->name('game.lineup');
         Route::get('/game/{gameId}/opponent', ShowOpponentAnalysis::class)->name('game.opponent-analysis');

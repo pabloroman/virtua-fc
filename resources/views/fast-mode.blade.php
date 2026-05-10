@@ -10,77 +10,6 @@
     /** @var \Illuminate\Support\Collection|null $tiesByRound */
     /** @var int|null $currentRoundNumber */
 
-    // Last-result summary
-    $lastResultLabel = null;
-    $lastResultColor = null;
-    $lastResultBg = null;
-    $lastOpponent = null;
-    $homeScorers = collect();
-    $awayScorers = collect();
-    $lastHomeTotal = null;
-    $lastAwayTotal = null;
-    if ($lastMatch) {
-        $isHome = $lastMatch->home_team_id === $game->team_id;
-        // ET-inclusive totals: home_score/away_score are the 90-minute score;
-        // goals scored in extra time are stored separately in home_score_et/away_score_et.
-        $lastHomeTotal = (int) $lastMatch->home_score + (int) ($lastMatch->home_score_et ?? 0);
-        $lastAwayTotal = (int) $lastMatch->away_score + (int) ($lastMatch->away_score_et ?? 0);
-        $yourTotal = $isHome ? $lastHomeTotal : $lastAwayTotal;
-        $oppTotal = $isHome ? $lastAwayTotal : $lastHomeTotal;
-        $lastOpponent = $isHome ? $lastMatch->awayTeam : $lastMatch->homeTeam;
-
-        if ($yourTotal !== $oppTotal) {
-            $result = $yourTotal > $oppTotal ? 'W' : 'L';
-        } elseif ($lastMatch->home_score_penalties !== null) {
-            // Tied after ET — penalty shootout decides the outcome.
-            $yourPens = $isHome ? $lastMatch->home_score_penalties : $lastMatch->away_score_penalties;
-            $oppPens = $isHome ? $lastMatch->away_score_penalties : $lastMatch->home_score_penalties;
-            $result = $yourPens > $oppPens ? 'W' : 'L';
-        } else {
-            $result = 'D';
-        }
-
-        $lastResultLabel = $result === 'W' ? __('game.live_result_win') : ($result === 'L' ? __('game.live_result_loss') : __('game.live_result_draw'));
-        $lastResultColor = $result === 'W' ? 'text-accent-green' : ($result === 'L' ? 'text-accent-red' : 'text-text-secondary');
-        $lastResultBg = $result === 'W' ? 'bg-accent-green/10 border-accent-green/20' : ($result === 'L' ? 'bg-accent-red/10 border-accent-red/20' : 'bg-surface-700 border-border-default');
-
-        // Group goal events by team, then by player, preserving first-occurrence
-        // order so the list reads chronologically.
-        $formatScorers = function ($events) {
-            return $events
-                ->groupBy(fn ($e) => $e->gamePlayer?->name ?? '—')
-                ->map(function ($playerEvents, $name) {
-                    $minutes = $playerEvents->map(function ($e) {
-                        $label = $e->minute . "'";
-                        if ($e->event_type === \App\Models\MatchEvent::TYPE_OWN_GOAL) {
-                            $label .= ' ' . __('game.og');
-                        }
-                        return $label;
-                    })->implode(', ');
-                    return ['name' => $name, 'minutes' => $minutes];
-                })
-                ->values();
-        };
-
-        // Own goals are stored with team_id = the scoring player's own team (the conceding side).
-        // They should display under the team that benefits — i.e. the opponent.
-        $scoringTeamId = function ($event) use ($lastMatch) {
-            if ($event->event_type === \App\Models\MatchEvent::TYPE_OWN_GOAL) {
-                return $event->team_id === $lastMatch->home_team_id
-                    ? $lastMatch->away_team_id
-                    : $lastMatch->home_team_id;
-            }
-            return $event->team_id;
-        };
-
-        $homeScorers = $formatScorers(
-            $lastMatch->goalEvents->filter(fn ($e) => $scoringTeamId($e) === $lastMatch->home_team_id)
-        );
-        $awayScorers = $formatScorers(
-            $lastMatch->goalEvents->filter(fn ($e) => $scoringTeamId($e) === $lastMatch->away_team_id)
-        );
-    }
-
     // Title: when the focal competition isn't the player's primary league,
     // show its name (e.g. "Champions League") so the panel reads in context
     // with the result above. For grouped standings, append the group label.
@@ -139,68 +68,11 @@
         <div class="flex-1 px-4 py-5 md:py-8 max-w-3xl w-full mx-auto space-y-5 md:space-y-6">
             {{-- Last result — the focal card --}}
             @if($lastMatch)
-                <div class="rounded-xl border border-border-default bg-surface-800 overflow-hidden">
-                    {{-- Header row: label + result badge + competition --}}
-                    <div class="flex items-center justify-between gap-2 px-4 py-2.5 border-b border-border-default bg-surface-800/60">
-                        <div class="flex items-center gap-2 min-w-0">
-                            <span class="text-[10px] text-text-faint uppercase tracking-widest">{{ __('game.last_result') }}</span>
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border {{ $lastResultBg }} {{ $lastResultColor }}">
-                                {{ $lastResultLabel }}
-                            </span>
-                        </div>
-                        <x-competition-pill :competition="$lastMatch->competition" :round-name="$lastMatch->round_name" :round-number="$lastMatch->round_number" :short="true" class="scale-90 origin-right" />
-                    </div>
-
-                    {{-- Face-off: crests, names, big score --}}
-                    <div class="px-4 py-4 md:py-5">
-                        <div class="flex items-center justify-center gap-3 md:gap-5">
-                            <div class="flex-1 flex items-center justify-end gap-2 md:gap-3 min-w-0">
-                                <span class="text-sm md:text-base font-semibold text-text-primary truncate text-right">
-                                    {{ $lastMatch->homeTeam->short_name ?? $lastMatch->homeTeam->name }}
-                                </span>
-                                <x-team-crest :team="$lastMatch->homeTeam" class="w-10 h-10 md:w-14 md:h-14 shrink-0" />
-                            </div>
-                            <div class="shrink-0 flex flex-col items-center gap-1">
-                                <div class="px-3 py-1.5 md:px-4 md:py-2 rounded-lg bg-surface-700 text-xl md:text-3xl font-heading font-bold text-text-primary tabular-nums">
-                                    {{ $lastHomeTotal }} - {{ $lastAwayTotal }}
-                                </div>
-                                @if($lastMatch->is_extra_time)
-                                    <div class="text-[9px] md:text-[10px] text-text-muted uppercase tracking-widest tabular-nums">
-                                        @if($lastMatch->home_score_penalties !== null)
-                                            {{ __('season.aet_abbr') }} &middot; {{ __('season.pens_abbr') }} {{ $lastMatch->home_score_penalties }}-{{ $lastMatch->away_score_penalties }}
-                                        @else
-                                            {{ __('season.aet_abbr') }}
-                                        @endif
-                                    </div>
-                                @endif
-                            </div>
-                            <div class="flex-1 flex items-center gap-2 md:gap-3 min-w-0">
-                                <x-team-crest :team="$lastMatch->awayTeam" class="w-10 h-10 md:w-14 md:h-14 shrink-0" />
-                                <span class="text-sm md:text-base font-semibold text-text-primary truncate">
-                                    {{ $lastMatch->awayTeam->short_name ?? $lastMatch->awayTeam->name }}
-                                </span>
-                            </div>
-                        </div>
-
-                        {{-- Goal scorers --}}
-                        @if($homeScorers->isNotEmpty() || $awayScorers->isNotEmpty())
-                            <div class="grid grid-cols-2 gap-3 md:gap-6 mt-4 pt-3 border-t border-border-default">
-                                @foreach([['scorers' => $homeScorers, 'align' => 'right'], ['scorers' => $awayScorers, 'align' => 'left']] as $side)
-                                    <div class="text-[11px] md:text-xs {{ $side['align'] === 'right' ? 'text-right' : 'text-left' }}">
-                                        @forelse($side['scorers'] as $scorer)
-                                            <div class="truncate">
-                                                <span class="font-medium text-text-body">{{ $scorer['name'] }}</span>
-                                                <span class="text-text-muted tabular-nums">{{ $scorer['minutes'] }}</span>
-                                            </div>
-                                        @empty
-                                            <div class="text-text-faint">&mdash;</div>
-                                        @endforelse
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endif
-                    </div>
-                </div>
+                @include('partials.match-summary', [
+                    'match' => $lastMatch,
+                    'showHeader' => true,
+                    'viewerTeamId' => $game->team_id,
+                ])
             @else
                 <div class="rounded-xl border border-border-default bg-surface-800/60 px-4 py-6 text-center text-xs text-text-muted">
                     {{ __('game.fast_mode_no_last_match') }}

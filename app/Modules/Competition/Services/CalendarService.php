@@ -94,6 +94,19 @@ class CalendarService
     }
 
     /**
+     * Distinct Competition models that appear in the given fixture collection,
+     * preserving the order of first occurrence (chronological by fixture date).
+     */
+    public function getDistinctCompetitions(Collection $fixtures): Collection
+    {
+        return $fixtures
+            ->filter(fn ($m) => empty($m->is_placeholder) && $m->competition !== null)
+            ->pluck('competition')
+            ->unique('id')
+            ->values();
+    }
+
+    /**
      * Group fixtures by month for calendar display.
      */
     public function groupByMonth(Collection $fixtures): Collection

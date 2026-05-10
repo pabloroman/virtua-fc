@@ -26,7 +26,12 @@
     }
 @endphp
 
-<div class="flex items-center gap-3 px-4 py-2.5 {{ $isNextMatch ? 'bg-accent-blue/[0.06] border-l-2 border-l-accent-blue' : '' }} hover:bg-surface-700/30 transition-colors">
+@php
+    $isClickable = $match->played;
+    $detailUrl = $isClickable ? route('game.match.summary', [$game->id, $match->id]) : null;
+@endphp
+<div class="flex items-center gap-3 px-4 py-2.5 {{ $isNextMatch ? 'bg-accent-blue/[0.06] border-l-2 border-l-accent-blue' : '' }} hover:bg-surface-700/30 transition-colors {{ $isClickable ? 'cursor-pointer' : '' }}"
+    @if($isClickable) role="button" tabindex="0" @click="$dispatch('show-match-detail', '{{ $detailUrl }}')" @keydown.enter.prevent="$dispatch('show-match-detail', '{{ $detailUrl }}')" @keydown.space.prevent="$dispatch('show-match-detail', '{{ $detailUrl }}')" @endif>
     {{-- Date + competition dot --}}
     <div class="w-10 shrink-0 text-center">
         <div class="text-[11px] font-medium text-text-body leading-tight">{{ $match->scheduled_date->locale(app()->getLocale())->translatedFormat('d') }}</div>

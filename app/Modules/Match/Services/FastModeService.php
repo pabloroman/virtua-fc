@@ -34,7 +34,8 @@ class FastModeService
             'homeTeam',
             'awayTeam',
             'competition',
-            'goalEvents.gamePlayer',
+            'events',
+            'mvpPlayer',
         ])
             ->where('game_id', $game->id)
             ->where('played', true)
