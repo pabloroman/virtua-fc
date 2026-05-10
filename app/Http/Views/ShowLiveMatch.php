@@ -2,6 +2,7 @@
 
 namespace App\Http\Views;
 
+use App\Modules\Coaching\Services\HalfTimeAdvisorService;
 use App\Modules\Lineup\Enums\DefensiveLineHeight;
 use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Enums\Mentality;
@@ -28,6 +29,7 @@ class ShowLiveMatch
     public function __construct(
         private readonly LineupService $lineupService,
         private readonly ExtraTimeAndPenaltyService $extraTimeService,
+        private readonly HalfTimeAdvisorService $halfTimeAdvisor,
     ) {}
 
     public function __invoke(string $gameId, string $matchId)
@@ -224,6 +226,14 @@ class ShowLiveMatch
 
         $narrativeTemplates = LiveMatchNarrativeTemplates::build();
 
+        // Pre-compute half-time tactical tips. The match is already simulated
+        // when this view loads, so we can read first-half state directly off
+        // the events collection — no extra queries, single pass over events.
+        $halfTimeTips = array_map(
+            fn ($tip) => $tip->toArray(),
+            $this->halfTimeAdvisor->buildTips($playerMatch, $game),
+        );
+
         // MatchdayOrchestrator::processBatch persists the attendance row before
         // simulating the match, so it's always present when this view loads.
         $attendanceRow = MatchAttendance::where('game_match_id', $playerMatch->id)->first();
@@ -304,6 +314,7 @@ class ShowLiveMatch
             'awayPosition' => $awayStanding?->position,
             'competitionRole' => $playerMatch->competition->role,
             'competitionName' => __($playerMatch->competition->name),
+            'halfTimeTips' => $halfTimeTips,
         ]);
     }
 
