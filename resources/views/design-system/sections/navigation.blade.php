@@ -252,40 +252,93 @@
         </div>
     </div>
 
-    {{-- Position Filter Pills --}}
+    {{-- Filter Pills --}}
     <div class="mb-12">
-        <h3 class="text-lg font-semibold text-text-primary mb-2">Position Filter Pills</h3>
-        <p class="text-sm text-text-secondary mb-4">Pill-style toggle buttons for filtering by position. Inactive pills use <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">bg-surface-700 text-text-secondary</code>, active pills switch to <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">bg-accent-blue text-white</code>. Uses Alpine.js for state management.</p>
+        <h3 class="text-lg font-semibold text-text-primary mb-2">Filter Pills</h3>
+        <p class="text-sm text-text-secondary mb-4">Pill-style toggle buttons for filtering a list. Active pills use <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">bg-accent-blue text-white</code>; inactive pills use <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">bg-surface-700 text-text-secondary</code>. Selection state is managed by the caller via Alpine.js — the component takes the active condition as an Alpine expression. Uses the <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">x-filter-pill</code> component.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
-            <div x-data="{ active: 'all' }" class="flex flex-wrap gap-2">
-                <button @click="active = 'all'" :class="active === 'all' ? 'bg-accent-blue text-white' : 'bg-surface-700 text-text-secondary hover:text-slate-200'" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors">All</button>
-                <button @click="active = 'gk'" :class="active === 'gk' ? 'bg-accent-blue text-white' : 'bg-surface-700 text-text-secondary hover:text-slate-200'" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors">GK</button>
-                <button @click="active = 'def'" :class="active === 'def' ? 'bg-accent-blue text-white' : 'bg-surface-700 text-text-secondary hover:text-slate-200'" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors">DEF</button>
-                <button @click="active = 'mid'" :class="active === 'mid' ? 'bg-accent-blue text-white' : 'bg-surface-700 text-text-secondary hover:text-slate-200'" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors">MID</button>
-                <button @click="active = 'fwd'" :class="active === 'fwd' ? 'bg-accent-blue text-white' : 'bg-surface-700 text-text-secondary hover:text-slate-200'" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors">FWD</button>
+        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3 space-y-5">
+            {{-- Default usage --}}
+            <div>
+                <div class="text-[10px] text-text-muted uppercase tracking-wider mb-3">Default</div>
+                <div x-data="{ active: 'all' }" class="flex flex-wrap gap-2">
+                    <x-filter-pill active="active === 'all'" @click="active = 'all'">All</x-filter-pill>
+                    <x-filter-pill active="active === 'gk'" @click="active = 'gk'">GK</x-filter-pill>
+                    <x-filter-pill active="active === 'def'" @click="active = 'def'">DEF</x-filter-pill>
+                    <x-filter-pill active="active === 'mid'" @click="active = 'mid'">MID</x-filter-pill>
+                    <x-filter-pill active="active === 'fwd'" @click="active = 'fwd'">FWD</x-filter-pill>
+                </div>
+            </div>
+
+            {{-- Size variants --}}
+            <div class="pt-4 border-t border-border-default">
+                <div class="text-[10px] text-text-muted uppercase tracking-wider mb-3">Size Variants</div>
+                <div x-data="{ a: 'all', b: 'all', c: 'all' }" class="space-y-3">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-[10px] text-text-muted w-12">xs</span>
+                        <x-filter-pill size="xs" active="a === 'all'" @click="a = 'all'">All</x-filter-pill>
+                        <x-filter-pill size="xs" active="a === 'one'" @click="a = 'one'">One</x-filter-pill>
+                        <x-filter-pill size="xs" active="a === 'two'" @click="a = 'two'">Two</x-filter-pill>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-[10px] text-text-muted w-12">sm</span>
+                        <x-filter-pill size="sm" active="b === 'all'" @click="b = 'all'">All</x-filter-pill>
+                        <x-filter-pill size="sm" active="b === 'one'" @click="b = 'one'">One</x-filter-pill>
+                        <x-filter-pill size="sm" active="b === 'two'" @click="b = 'two'">Two</x-filter-pill>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-[10px] text-text-muted w-12">default</span>
+                        <x-filter-pill active="c === 'all'" @click="c = 'all'">All</x-filter-pill>
+                        <x-filter-pill active="c === 'one'" @click="c = 'one'">One</x-filter-pill>
+                        <x-filter-pill active="c === 'two'" @click="c = 'two'">Two</x-filter-pill>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div x-data="{ copied: false }" class="relative">
-            <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
+            <button @click="navigator.clipboard.writeText($refs.filterPillCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
                     class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-text-secondary hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
-            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="code">&lt;div x-data="{ active: 'all' }" class="flex flex-wrap gap-2"&gt;
-    &lt;button @click="active = 'all'"
-            :class="active === 'all' ? 'bg-accent-blue text-white' : 'bg-surface-700 text-text-secondary hover:text-slate-200'"
-            class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"&gt;
-        All
-    &lt;/button&gt;
-    &lt;button @click="active = 'gk'"
-            :class="active === 'gk' ? 'bg-accent-blue text-white' : 'bg-surface-700 text-text-secondary hover:text-slate-200'"
-            class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"&gt;
-        GK
-    &lt;/button&gt;
-    &lt;!-- ... more positions --&gt;
-&lt;/div&gt;</code></pre>
+            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="filterPillCode">&lt;!-- Caller owns the Alpine state; component takes the active condition as an expression --&gt;
+&lt;div x-data="{ active: 'all' }" class="flex flex-wrap gap-2"&gt;
+    &lt;x-filter-pill active="active === 'all'" @click="active = 'all'"&gt;All&lt;/x-filter-pill&gt;
+    &lt;x-filter-pill active="active === 'gk'" @click="active = 'gk'"&gt;GK&lt;/x-filter-pill&gt;
+    &lt;x-filter-pill active="active === 'def'" @click="active = 'def'"&gt;DEF&lt;/x-filter-pill&gt;
+&lt;/div&gt;
+
+&lt;!-- Size variant --&gt;
+&lt;x-filter-pill size="xs" active="active === 'all'" @click="active = 'all'"&gt;All&lt;/x-filter-pill&gt;</code></pre>
+        </div>
+
+        {{-- Props table --}}
+        <div class="overflow-x-auto mt-4">
+            <table class="w-full text-sm">
+                <thead class="text-left border-b border-border-strong">
+                    <tr>
+                        <th class="text-[10px] text-text-muted uppercase tracking-wider font-semibold py-2 pr-4">Prop</th>
+                        <th class="text-[10px] text-text-muted uppercase tracking-wider font-semibold py-2 pr-4">Type</th>
+                        <th class="text-[10px] text-text-muted uppercase tracking-wider font-semibold py-2 pr-4">Default</th>
+                        <th class="text-[10px] text-text-muted uppercase tracking-wider font-semibold py-2">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-border-default">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">active</td>
+                        <td class="py-2 pr-4 text-text-secondary">string</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-muted">'false'</td>
+                        <td class="py-2 text-text-secondary">Alpine expression evaluated reactively to determine the active state (e.g. <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">filter === 'all'</code>).</td>
+                    </tr>
+                    <tr class="border-b border-border-default">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">size</td>
+                        <td class="py-2 pr-4 text-text-secondary">string</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-muted">'sm'</td>
+                        <td class="py-2 text-text-secondary">xs | sm | default</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 

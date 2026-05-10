@@ -31,19 +31,17 @@
         {{-- Competition filter pills --}}
         @if(count($competitions) > 1)
             <div class="mb-6 flex flex-wrap items-center gap-2">
-                <button type="button"
-                    @click="comp = 'all'"
-                    :class="comp === 'all' ? 'bg-accent-blue/15 text-accent-blue ring-1 ring-accent-blue/40' : 'bg-surface-700 text-text-secondary hover:bg-surface-600'"
-                    class="px-3 py-1 text-xs font-semibold rounded-full transition-colors">
+                <x-filter-pill active="comp === 'all'" @click="comp = 'all'">
                     {{ __('game.all_competitions') }}
-                </button>
+                </x-filter-pill>
                 @foreach($competitions as $competition)
-                    <button type="button"
-                        @click="comp = @js($competition->id)"
-                        :class="comp === @js($competition->id) ? 'ring-1 ring-accent-blue/60 opacity-100' : 'opacity-70 hover:opacity-100'"
-                        class="rounded-full transition-opacity">
-                        <x-competition-pill :competition="$competition" />
-                    </button>
+                    @php $compIdJs = \Illuminate\Support\Js::from($competition->id); @endphp
+                    <x-filter-pill
+                        active="comp === {{ $compIdJs }}"
+                        @click="comp = {{ $compIdJs }}"
+                    >
+                        {{ $competition->shortName() }}
+                    </x-filter-pill>
                 @endforeach
             </div>
         @endif
