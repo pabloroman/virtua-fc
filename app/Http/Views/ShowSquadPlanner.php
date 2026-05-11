@@ -29,7 +29,11 @@ class ShowSquadPlanner
         // pre-contracts (the signals it surfaces) are only meaningful there.
         abort_unless($game->isCareerMode(), 404);
 
-        $projection = $this->projectionService->build($game);
+        $horizon = $request->query('season') === NextSeasonProjectionService::HORIZON_CURRENT
+            ? NextSeasonProjectionService::HORIZON_CURRENT
+            : NextSeasonProjectionService::HORIZON_NEXT;
+
+        $projection = $this->projectionService->build($game, $horizon);
 
         $formation = $this->resolveFormation($request, $projection);
 
@@ -45,6 +49,7 @@ class ShowSquadPlanner
             'formation' => $formation,
             'formationFit' => $formationFit,
             'advisories' => $advisories,
+            'horizon' => $horizon,
         ]);
     }
 
