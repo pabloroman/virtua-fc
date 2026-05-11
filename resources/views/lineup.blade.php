@@ -69,6 +69,35 @@
     })">
         <div class="max-w-7xl mx-auto px-4 pb-8">
 
+            {{-- Lineup reconciliation banner: appears when the saved lineup
+                 referenced players who are no longer available (sold,
+                 transferred, retired, long-term injured) and the system
+                 auto-replaced them on load. Lets the user see which slots
+                 were affected so they can review before playing. --}}
+            @if(!empty($reconciliationBanner))
+                <x-status-banner color="gold"
+                    :title="__('squad.lineup_reconciled_title')"
+                    :description="trans_choice('squad.lineup_reconciled_subtitle', $reconciliationBanner['count'], ['count' => $reconciliationBanner['count']])"
+                    class="mt-4">
+                    <x-slot name="icon">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                        </svg>
+                    </x-slot>
+                </x-status-banner>
+                <ul class="mt-2 mb-2 text-xs md:text-sm text-text-secondary space-y-1 pl-3">
+                    @foreach($reconciliationBanner['items'] as $item)
+                        <li>
+                            @if($item['in_name'])
+                                {{ __('squad.lineup_reconciled_replacement', ['out' => $item['out_name'], 'in' => $item['in_name']]) }}
+                            @else
+                                {{ __('squad.lineup_reconciled_removed', ['out' => $item['out_name']]) }}
+                            @endif
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+
             {{-- Errors --}}
             @if ($errors->any())
                 <div class="mt-4 p-4 bg-accent-red/10 border border-accent-red/20 rounded-lg">

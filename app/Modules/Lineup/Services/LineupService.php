@@ -141,19 +141,70 @@ class LineupService
         }
 
         // When slot assignments are provided, skip position group validation
-        // (the user has explicitly chosen where each player plays)
+        // (the user has explicitly chosen where each player plays). The slot
+        // map must still be structurally complete: every formation slot
+        // filled, no duplicates, exactly one player at the GK slot. Without
+        // this guard, a malformed POST could persist a lineup with no
+        // goalkeeper or with two players assigned to the same slot, which
+        // then renders as a broken pitch even after reconciliation.
         if (!empty($slotAssignments)) {
-            // Validate slot assignments reference valid players and slots
             $slots = $formation->pitchSlots();
             $slotIds = array_column($slots, 'id');
+            $slotIdSet = array_flip(array_map(fn ($id) => (string) $id, $slotIds));
+
+            $normalisedSlotMap = [];
+            $invalidSlotFound = false;
             foreach ($slotAssignments as $slotId => $playerId) {
-                if (!in_array((int) $slotId, $slotIds, true)) {
+                if (!isset($slotIdSet[(string) $slotId])) {
                     $errors[] = 'Invalid slot assignment.';
+                    $invalidSlotFound = true;
                     break;
                 }
                 if (!in_array($playerId, $playerIds, true)) {
                     $errors[] = 'Slot assigned to player not in lineup.';
+                    $invalidSlotFound = true;
                     break;
+                }
+                $normalisedSlotMap[(string) $slotId] = $playerId;
+            }
+
+            if ($invalidSlotFound) {
+                return $errors;
+            }
+
+            // Every formation slot must be filled exactly once.
+            if (count($normalisedSlotMap) !== count($slotIds)) {
+                $errors[] = __('squad.formation_slot_map_incomplete');
+                return $errors;
+            }
+
+            // No two slots may share a player.
+            if (count($normalisedSlotMap) !== count(array_unique($normalisedSlotMap))) {
+                $errors[] = __('squad.formation_slot_map_duplicates');
+                return $errors;
+            }
+
+            // The GK slot (label === 'GK') must be filled by a Goalkeeper.
+            // Allows the user to drag-swap any outfield player anywhere they
+            // like, but blocks the malformed states the lineup page can fall
+            // into when the saved GK leaves the squad and nothing refills
+            // slot 0 (the bug this fix addresses).
+            $gkSlotId = null;
+            foreach ($slots as $slot) {
+                if ($slot['label'] === 'GK') {
+                    $gkSlotId = (string) $slot['id'];
+                    break;
+                }
+            }
+            if ($gkSlotId !== null) {
+                if (!isset($normalisedSlotMap[$gkSlotId])) {
+                    $errors[] = __('squad.formation_missing_goalkeeper');
+                    return $errors;
+                }
+                $gkPlayer = $availablePlayers->firstWhere('id', $normalisedSlotMap[$gkSlotId]);
+                if ($gkPlayer === null || $gkPlayer->position_group !== 'Goalkeeper') {
+                    $errors[] = __('squad.formation_gk_slot_must_be_goalkeeper');
+                    return $errors;
                 }
             }
 
@@ -578,6 +629,206 @@ class LineupService
         }
 
         return $map;
+    }
+
+    /**
+     * Reconcile a stored lineup / slot map / pitch positions against the
+     * current pool of available players, returning a fully-valid triple plus
+     * a list of replacements that happened.
+     *
+     * Read paths (`ShowLineup`, `ShowLiveMatch`) call this so the user never
+     * sees a lineup that references sold / retired / long-term injured
+     * players. The previous behaviour was a subtractive filter that left
+     * gaps in the formation (e.g. 10 players in 11 slots); this method tops
+     * up via `selectLineupWithPreferencesFromCollection` and re-runs
+     * `computeSlotAssignments` with the surviving slot entries pinned, so
+     * user-intentional placements stick wherever the player is still around.
+     *
+     * Idempotent: a valid input (11 available players, complete slot map for
+     * the formation) returns equivalent output with `changed = false` and
+     * `replaced = []`.
+     *
+     * `pitch_positions` are slot-keyed, so they survive a player swap on
+     * the same slot. We only drop entries for slot ids that don't exist in
+     * `$formation`.
+     *
+     * @param  array<int, string>|null            $lineup
+     * @param  array<int|string, string>|null     $slotMap
+     * @param  array<int|string, array{0:int,1:int}>|null $pitchPositions
+     * @return array{
+     *     lineup: array<int, string>,
+     *     slot_assignments: array<string, string>,
+     *     pitch_positions: array<string, array{0:int,1:int}>|null,
+     *     replaced: list<array{out_id: string, in_id: string|null}>,
+     *     changed: bool,
+     * }
+     */
+    public function reconcileLineupState(
+        ?array $lineup,
+        ?array $slotMap,
+        ?array $pitchPositions,
+        Collection $availablePlayers,
+        Collection $allTeamPlayers,
+        Formation $formation,
+        bool $applyFitnessRotation = false,
+    ): array {
+        $lineup = array_values(array_filter((array) ($lineup ?? []), fn ($id) => is_string($id) && $id !== ''));
+        $slotMap = (array) ($slotMap ?? []);
+
+        $availableIds = $availablePlayers->pluck('id')->all();
+        $availableIdSet = array_flip($availableIds);
+
+        $formationSlots = $formation->pitchSlots();
+        $formationSlotIds = array_map(fn ($s) => (string) $s['id'], $formationSlots);
+        $formationSlotIdSet = array_flip($formationSlotIds);
+
+        // Pass 1: split the saved slot map into "still valid" pins and
+        // "stale" entries we'll need to backfill. Slot ids not in the
+        // current formation are dropped silently.
+        $survivingPins = [];
+        $staleSlotEntries = []; // [slotId => oldPlayerId]
+        foreach ($slotMap as $slotId => $playerId) {
+            $slotKey = (string) $slotId;
+            if (! isset($formationSlotIdSet[$slotKey])) {
+                continue;
+            }
+            if (! is_string($playerId) || $playerId === '') {
+                continue;
+            }
+            if (! isset($availableIdSet[$playerId])) {
+                $staleSlotEntries[$slotKey] = $playerId;
+                continue;
+            }
+            $survivingPins[$slotKey] = $playerId;
+        }
+
+        // Pass 2: filter the lineup list. Track the players we removed so
+        // we can report them in the banner even if they had no slot entry.
+        $filteredLineup = [];
+        $removedFromLineup = [];
+        foreach ($lineup as $playerId) {
+            if (isset($availableIdSet[$playerId])) {
+                $filteredLineup[] = $playerId;
+            } else {
+                $removedFromLineup[] = $playerId;
+            }
+        }
+        // Dedupe in case the saved lineup had duplicates.
+        $filteredLineup = array_values(array_unique($filteredLineup));
+
+        $pitchPositionsOut = $this->filterPitchPositions($pitchPositions, $formationSlotIdSet);
+
+        // Short-circuit: nothing stale, lineup already complete, slot map
+        // already complete. Return as-is — idempotency contract.
+        $slotMapAlreadyComplete = count($survivingPins) === count($formationSlotIds);
+        $nothingChanged = empty($staleSlotEntries)
+            && empty($removedFromLineup)
+            && count($filteredLineup) === 11
+            && $slotMapAlreadyComplete;
+
+        if ($nothingChanged) {
+            // Normalise key types: callers may have int keys after a JSON
+            // round-trip; we always return string-keyed maps.
+            $normalisedSlotMap = [];
+            foreach ($survivingPins as $slotKey => $playerId) {
+                $normalisedSlotMap[(string) $slotKey] = $playerId;
+            }
+
+            return [
+                'lineup' => $filteredLineup,
+                'slot_assignments' => $normalisedSlotMap,
+                'pitch_positions' => $pitchPositionsOut,
+                'replaced' => [],
+                'changed' => false,
+            ];
+        }
+
+        // Top up the lineup to 11 using the same preference-aware selector
+        // that runs at match-time, so the rebuild respects position groups
+        // (a sold CB is replaced by another CB first, not by whoever's
+        // highest-rated on the bench).
+        $rebuiltLineup = $this->selectLineupWithPreferencesFromCollection(
+            $availablePlayers,
+            $allTeamPlayers,
+            $formation,
+            $filteredLineup,
+            $availableIds,
+            applyFitnessRotation: $applyFitnessRotation,
+        );
+
+        // The selector can return < 11 if the squad is genuinely short.
+        // Keep what it returned — the caller can render whatever fits;
+        // `computeSlotAssignments` will simply leave the rest unfilled.
+        $rebuiltLineup = array_values(array_unique($rebuiltLineup));
+
+        // Re-run FormationRecommender, pinning surviving slot entries so
+        // a user's intentional drag-swap placements stick.
+        $rebuiltSet = array_flip($rebuiltLineup);
+        $manualPins = array_filter(
+            $survivingPins,
+            fn ($pid) => isset($rebuiltSet[$pid]),
+        );
+
+        $lineupPlayers = $availablePlayers
+            ->filter(fn ($p) => isset($rebuiltSet[$p->id]))
+            ->values();
+
+        $newSlotMap = $this->computeSlotAssignments($formation, $lineupPlayers, $manualPins);
+
+        // Build replacement report for the banner.
+        $replaced = [];
+        $reportedOutIds = [];
+        foreach ($staleSlotEntries as $slotKey => $oldPlayerId) {
+            $replaced[] = [
+                'out_id' => $oldPlayerId,
+                'in_id' => $newSlotMap[$slotKey] ?? null,
+            ];
+            $reportedOutIds[$oldPlayerId] = true;
+        }
+        // Lineup-only stale ids (no slot entry) — still surface them so the
+        // user knows somebody got dropped, even if we can't name the slot.
+        foreach ($removedFromLineup as $oldPlayerId) {
+            if (isset($reportedOutIds[$oldPlayerId])) {
+                continue;
+            }
+            $replaced[] = ['out_id' => $oldPlayerId, 'in_id' => null];
+            $reportedOutIds[$oldPlayerId] = true;
+        }
+
+        return [
+            'lineup' => $rebuiltLineup,
+            'slot_assignments' => $newSlotMap,
+            'pitch_positions' => $pitchPositionsOut,
+            'replaced' => $replaced,
+            'changed' => true,
+        ];
+    }
+
+    /**
+     * Strip pitch-position overrides that point at slot ids not present in
+     * the current formation. Kept as a helper because `reconcileLineupState`
+     * uses it both on the short-circuit and rebuild paths.
+     *
+     * @param  array<int|string, array{0:int,1:int}>|null  $pitchPositions
+     * @param  array<string, int>  $formationSlotIdSet
+     * @return array<string, array{0:int,1:int}>|null
+     */
+    private function filterPitchPositions(?array $pitchPositions, array $formationSlotIdSet): ?array
+    {
+        if ($pitchPositions === null) {
+            return null;
+        }
+
+        $filtered = [];
+        foreach ($pitchPositions as $slotId => $pos) {
+            $slotKey = (string) $slotId;
+            if (! isset($formationSlotIdSet[$slotKey])) {
+                continue;
+            }
+            $filtered[$slotKey] = $pos;
+        }
+
+        return $filtered;
     }
 
     /**

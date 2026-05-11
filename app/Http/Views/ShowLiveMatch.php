@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
+use App\Models\GamePlayer;
 use App\Models\GameStanding;
 use App\Models\MatchAttendance;
 use App\Models\PlayerSuspension;
@@ -224,6 +225,8 @@ class ShowLiveMatch
 
         $narrativeTemplates = LiveMatchNarrativeTemplates::build();
 
+        $userPitchData = $this->resolveUserPitchData($playerMatch, $game, $userLineupIds, $userFormation, $prefix);
+
         // MatchdayOrchestrator::processBatch persists the attendance row before
         // simulating the match, so it's always present when this view loads.
         $attendanceRow = MatchAttendance::where('game_match_id', $playerMatch->id)->first();
@@ -285,13 +288,15 @@ class ShowLiveMatch
             'teamColors' => $teamColorsHex,
             'slotCompatibility' => $slotCompatibility,
             'gridConfig' => $gridConfig,
-            'pitchPositions' => $playerMatch->{"{$prefix}_pitch_positions"}
-                ?? $game->tactics?->default_pitch_positions ?? [],
-            // Authoritative slot map: persisted value on the match if present,
-            // otherwise lazy-computed via LineupService, with a final fallback
-            // to the team's default_slot_assignments for brand-new installs.
-            'slotAssignments' => $this->lineupService->resolveSlotAssignments($playerMatch, $game->team_id)
-                ?: ($game->tactics?->default_slot_assignments ?? []),
+            // Reconciled against the user's actual `{prefix}_lineup` (the XI
+            // the simulator used / is about to use) so the tactical-panel
+            // pitch can never disagree with the simulator. Defensive: if the
+            // persisted slot map references players not in `home_lineup` or
+            // slot ids that don't exist in the current formation, drop them
+            // and recompute via FormationRecommender. `pitch_positions` are
+            // also filtered to slot ids that still exist in the formation.
+            'slotAssignments' => $userPitchData['slotAssignments'],
+            'pitchPositions' => $userPitchData['pitchPositions'],
             // Endpoint for formation-preview fetches from the tactical panel.
             // Same endpoint the lineup page uses — single source of truth for
             // the placement algorithm.
@@ -307,4 +312,66 @@ class ShowLiveMatch
         ]);
     }
 
+    /**
+     * Resolve the slot map + pitch_positions for the user's side, reconciled
+     * against `{prefix}_lineup` (the XI the simulator is actually using).
+     * Defensive layer for any edge case where the persisted slot map could
+     * drift from the lineup — e.g. the tactics-default fallback firing on
+     * a match that never had its slot map written, or a stale entry that
+     * survived a between-save squad change. Returns a string-keyed
+     * `slotAssignments` map and `pitchPositions` array safe to feed
+     * directly into the live-match tactical panel.
+     *
+     * @param  array<int, string>  $userLineupIds
+     * @return array{slotAssignments: array<string, string>, pitchPositions: array<string, array{0:int,1:int}>}
+     */
+    private function resolveUserPitchData(
+        GameMatch $playerMatch,
+        Game $game,
+        array $userLineupIds,
+        string $userFormationValue,
+        string $prefix,
+    ): array {
+        $rawSlotMap = $this->lineupService->resolveSlotAssignments($playerMatch, $game->team_id)
+            ?: ($game->tactics?->default_slot_assignments ?? []);
+        $rawPitchPositions = $playerMatch->{"{$prefix}_pitch_positions"}
+            ?? $game->tactics?->default_pitch_positions;
+
+        $formation = Formation::tryFrom($userFormationValue) ?? Formation::F_4_3_3;
+
+        // Nothing to reconcile against — keep the current behaviour of
+        // passing the raw fallback through. Brand-new installs / matches
+        // that never had a lineup written hit this branch.
+        if (empty($userLineupIds)) {
+            return [
+                'slotAssignments' => is_array($rawSlotMap) ? $rawSlotMap : [],
+                'pitchPositions' => is_array($rawPitchPositions) ? $rawPitchPositions : [],
+            ];
+        }
+
+        // Constrain the "available" pool to the players actually on the
+        // pitch. The reconciler will drop any slot entries pointing to
+        // players outside this set and re-run FormationRecommender to fill
+        // the gaps. We deliberately don't open up the wider squad here —
+        // the simulator already decided who plays.
+        $lineupPlayers = GamePlayer::with(['matchState'])
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->whereIn('id', $userLineupIds)
+            ->get();
+
+        $reconciled = $this->lineupService->reconcileLineupState(
+            $userLineupIds,
+            is_array($rawSlotMap) ? $rawSlotMap : [],
+            is_array($rawPitchPositions) ? $rawPitchPositions : null,
+            $lineupPlayers,
+            $lineupPlayers,
+            $formation,
+        );
+
+        return [
+            'slotAssignments' => $reconciled['slot_assignments'],
+            'pitchPositions' => $reconciled['pitch_positions'] ?? [],
+        ];
+    }
 }

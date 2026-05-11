@@ -67,6 +67,17 @@ return [
     // Lineup validation
     'formation_position_mismatch' => 'Formation :formation requires :required :position, but you selected :actual.',
     'player_not_available' => 'One or more selected players are not available.',
+    'formation_slot_map_incomplete' => 'Every position in the formation must be filled.',
+    'formation_slot_map_duplicates' => 'The same player cannot be assigned to two positions.',
+    'formation_missing_goalkeeper' => 'You must assign a goalkeeper to the GK position.',
+    'formation_gk_slot_must_be_goalkeeper' => 'Only a goalkeeper can play in the GK position.',
+
+    // Lineup reconciliation banner
+    'lineup_reconciled_title' => 'Your lineup was updated automatically',
+    'lineup_reconciled_subtitle' => '{1}A player from your saved lineup is no longer available and has been replaced. Review and save your changes.|[2,*]:count players from your saved lineup are no longer available and have been replaced. Review and save your changes.',
+    'lineup_reconciled_replacement' => ':out → :in',
+    'lineup_reconciled_removed' => ':out (removed)',
+    'unavailable_player' => 'An unavailable player',
 
     // Lineup
     'formation' => 'Formation',

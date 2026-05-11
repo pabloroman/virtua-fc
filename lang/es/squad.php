@@ -67,6 +67,17 @@ return [
     // Lineup validation
     'formation_position_mismatch' => 'La formación :formation requiere :required :position, pero seleccionaste :actual.',
     'player_not_available' => 'Uno o más jugadores seleccionados no están disponibles.',
+    'formation_slot_map_incomplete' => 'Todas las posiciones de la formación deben estar cubiertas.',
+    'formation_slot_map_duplicates' => 'Un mismo jugador no puede ocupar dos posiciones.',
+    'formation_missing_goalkeeper' => 'Debes asignar un portero a la posición de PT.',
+    'formation_gk_slot_must_be_goalkeeper' => 'Solo un portero puede jugar en la posición de PT.',
+
+    // Banner de reconciliación de alineación
+    'lineup_reconciled_title' => 'Tu alineación se actualizó automáticamente',
+    'lineup_reconciled_subtitle' => '{1}Un jugador de tu alineación guardada ya no está disponible y ha sido reemplazado. Revisa y guarda tus cambios.|[2,*]:count jugadores de tu alineación guardada ya no están disponibles y han sido reemplazados. Revisa y guarda tus cambios.',
+    'lineup_reconciled_replacement' => ':out → :in',
+    'lineup_reconciled_removed' => ':out (sin reemplazo)',
+    'unavailable_player' => 'Un jugador no disponible',
 
     // Lineup
     'formation' => 'Formación',

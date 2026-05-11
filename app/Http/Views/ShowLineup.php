@@ -2,6 +2,7 @@
 
 namespace App\Http\Views;
 
+use App\Models\GamePlayer;
 use App\Modules\Lineup\Enums\DefensiveLineHeight;
 use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Enums\Mentality;
@@ -95,27 +96,77 @@ class ShowLineup
             ];
         })->keyBy('id')->toArray();
 
-        // Filter stale player IDs from lineups (e.g. players sold after lineup was saved)
         $validPlayerIds = array_keys($playersData);
-        if (! empty($currentLineup)) {
-            $currentLineup = array_values(array_intersect($currentLineup, $validPlayerIds));
-        }
 
         // Resolve the authoritative slot map for this match. If the match row
         // already has a persisted map, use it; otherwise lazily compute from
         // the stored lineup + formation (no persistence on the read path).
         // Falls back to the team's default_slot_assignments for brand-new
         // games where the match has no lineup yet.
-        $currentSlotMap = $this->lineupService->resolveSlotAssignments($match, $game->team_id);
-        if (empty($currentSlotMap) && ! empty($game->tactics?->default_slot_assignments)) {
-            $currentSlotMap = $game->tactics->default_slot_assignments;
+        $rawSlotMap = $this->lineupService->resolveSlotAssignments($match, $game->team_id);
+        if (empty($rawSlotMap) && ! empty($game->tactics?->default_slot_assignments)) {
+            $rawSlotMap = $game->tactics->default_slot_assignments;
         }
-        if (! empty($currentSlotMap)) {
-            $currentSlotMap = array_filter(
-                $currentSlotMap,
-                fn ($playerId) => in_array($playerId, $validPlayerIds),
+
+        // Reconcile the saved lineup state against the current squad. If the
+        // user's `default_lineup` or saved slot map references players who
+        // have since been transferred / retired / long-term injured, the
+        // reconciler drops them and tops the lineup back up to 11 via the
+        // same FormationRecommender path used at match-time. This stops the
+        // lineup page from rendering a broken state (gaps in the formation,
+        // orphan goalkeepers) — the bug the user reported when the displayed
+        // pitch diverged from what the simulator would actually run with.
+        $rawPitchPositions = $game->tactics?->default_pitch_positions;
+        $reconciliation = [
+            'lineup' => $currentLineup,
+            'slot_assignments' => $rawSlotMap,
+            'pitch_positions' => $rawPitchPositions,
+            'replaced' => [],
+            'changed' => false,
+        ];
+        $hadSavedState = ! empty($currentLineup) || ! empty($rawSlotMap);
+        if ($hadSavedState) {
+            $availablePlayers = $this->lineupService->getAvailablePlayers(
+                $game->id,
+                $game->team_id,
+                $matchDate,
+                $competitionId,
+                $requireEnrollment,
+            );
+            $reconciliation = $this->lineupService->reconcileLineupState(
+                $currentLineup,
+                $rawSlotMap,
+                $rawPitchPositions,
+                $availablePlayers,
+                $allPlayers,
+                $formationEnum,
             );
         }
+
+        $currentLineup = $reconciliation['lineup'];
+        $currentSlotMap = $reconciliation['slot_assignments'];
+        $currentPitchPositions = $reconciliation['pitch_positions'];
+        $replaced = $reconciliation['replaced'];
+
+        // Persist the reconciled state back to `game.tactics` so the next
+        // page load doesn't re-show the broken state and so match-time
+        // `ensureTeamLineup` reads a consistent preferred lineup. Only
+        // touches tactics rows that already had a saved lineup — brand-new
+        // games (no default_lineup yet) should keep falling back to the
+        // auto-selector on each visit rather than being silently locked in.
+        if ($reconciliation['changed'] && ! empty($game->tactics?->default_lineup)) {
+            $game->tactics->update([
+                'default_lineup' => $currentLineup,
+                'default_slot_assignments' => $currentSlotMap,
+                'default_pitch_positions' => $currentPitchPositions,
+            ]);
+        }
+
+        // Resolve names for the reconciliation banner. The "out" players may
+        // no longer belong to the user's team (transferred to AI) or may
+        // have been deleted (retirement) — look them up by id across the
+        // game without the team filter, falling back to a generic label.
+        $reconciliationBanner = $this->buildReconciliationBanner($replaced, $game->id, $playersData);
 
         // Prepare pitch slots for each formation, adding Spanish display labels
         $formationSlots = [];
@@ -213,7 +264,7 @@ class ShowLineup
 
         // Pitch grid config for advanced positioning
         $gridConfig = PitchGrid::getGridConfig();
-        $currentPitchPositions = $game->tactics?->default_pitch_positions;
+        // $currentPitchPositions is set above by the reconciliation block.
 
         return view('lineup', [
             'game' => $game,
@@ -253,6 +304,7 @@ class ShowLineup
             'xgConfig' => $xgConfig,
             'gridConfig' => $gridConfig,
             'currentPitchPositions' => $currentPitchPositions,
+            'reconciliationBanner' => $reconciliationBanner,
 
             'tacticalPresets' => $game->tacticalPresets,
             'presetsConfig' => $game->tacticalPresets->map(fn ($p) => [
@@ -272,4 +324,47 @@ class ShowLineup
         ]);
     }
 
+    /**
+     * Build the per-replacement banner payload for the lineup page. Resolves
+     * the OUT player's name across the whole game (without team filter,
+     * since transferred players sit on the AI team they were sold to) and
+     * the IN player's name from the current squad's `$playersData` map.
+     *
+     * Returns null when nothing was reconciled — the view hides the banner
+     * in that case.
+     *
+     * @param  list<array{out_id: string, in_id: string|null}>  $replaced
+     * @param  array<string, array{name: string}>  $playersData
+     */
+    private function buildReconciliationBanner(array $replaced, string $gameId, array $playersData): ?array
+    {
+        if (empty($replaced)) {
+            return null;
+        }
+
+        $outIds = array_values(array_unique(array_column($replaced, 'out_id')));
+        $outNames = GamePlayer::query()
+            ->where('game_id', $gameId)
+            ->whereIn('id', $outIds)
+            ->pluck('name', 'id')
+            ->all();
+
+        $items = [];
+        foreach ($replaced as $entry) {
+            $outName = $outNames[$entry['out_id']] ?? __('squad.unavailable_player');
+            $inName = null;
+            if ($entry['in_id'] !== null && isset($playersData[$entry['in_id']])) {
+                $inName = $playersData[$entry['in_id']]['name'];
+            }
+            $items[] = [
+                'out_name' => $outName,
+                'in_name' => $inName,
+            ];
+        }
+
+        return [
+            'items' => $items,
+            'count' => count($items),
+        ];
+    }
 }
