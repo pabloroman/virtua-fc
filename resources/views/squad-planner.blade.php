@@ -3,6 +3,7 @@
     /** @var array $projection */
     /** @var \App\Modules\Lineup\Enums\Formation $formation */
     /** @var array<string, array{group: string, need: int, have: int, delta: int}> $formationFit */
+    /** @var array<int, \App\Modules\Squad\Services\Advisory> $advisories */
 
     $staying = $projection['staying'];
     $outgoing = $projection['outgoing'];
@@ -114,6 +115,11 @@
                             </ul>
                         </div>
                     </div>
+                </x-section-card>
+
+                {{-- Transfer Recommendations --}}
+                <x-section-card :title="__('planner.transfer_recommendations')">
+                    <x-advisory-list :advisories="$advisories" />
                 </x-section-card>
             </aside>
 

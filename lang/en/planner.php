@@ -59,6 +59,21 @@ return [
     'role_reserves' => 'Reserves',
     'role_departing' => 'Departing',
 
+    // Transfer Recommendations
+    'transfer_recommendations' => 'Transfer Recommendations',
+    'advisory_empty' => 'No squad-level recommendations. The projected roster looks balanced.',
+    'advisory_depth_gap' => 'Reinforce :position — :count short of the chosen formation.',
+    'advisory_age_gap' => ':position pipeline thin — no players :age or younger projected next season.',
+    'advisory_wage_cliff' => "Renew :name — contract ends :year and no agreement is in place.",
+    'advisory_development' => 'Give minutes to :names to maximize their development.',
+    'advisory_key_departure' => 'Replace :name (:position) — projected departure leaves a hole.',
+
+    // Position group labels used inside advisories (singular & lowercase for sentence flow)
+    'group_goalkeeper' => 'goalkeeper',
+    'group_defender' => 'defence',
+    'group_midfielder' => 'midfield',
+    'group_forward' => 'attack',
+
     // Tactics Hub
     'tactics_hub' => 'Tactics Hub',
     'target_formation' => 'Target formation',

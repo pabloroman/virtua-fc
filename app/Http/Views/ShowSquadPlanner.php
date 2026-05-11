@@ -8,6 +8,7 @@ use App\Modules\Lineup\Services\FormationRecommender;
 use App\Modules\Squad\Services\NextSeasonProjectionService;
 use App\Modules\Squad\Services\PlayerSquadRoleClassifier;
 use App\Modules\Squad\Services\SquadActionRecommender;
+use App\Modules\Squad\Services\SquadAdvisorService;
 use Illuminate\Http\Request;
 
 class ShowSquadPlanner
@@ -17,6 +18,7 @@ class ShowSquadPlanner
         private readonly PlayerSquadRoleClassifier $roleClassifier,
         private readonly SquadActionRecommender $actionRecommender,
         private readonly FormationRecommender $formationRecommender,
+        private readonly SquadAdvisorService $advisorService,
     ) {}
 
     public function __invoke(string $gameId, Request $request)
@@ -35,12 +37,14 @@ class ShowSquadPlanner
         $projection = $this->actionRecommender->recommend($projection, $game);
 
         $formationFit = $this->projectionService->buildFormationFit($projection, $formation);
+        $advisories = $this->advisorService->build($projection, $formation, $game);
 
         return view('squad-planner', [
             'game' => $game,
             'projection' => $projection,
             'formation' => $formation,
             'formationFit' => $formationFit,
+            'advisories' => $advisories,
         ]);
     }
 
