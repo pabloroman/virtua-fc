@@ -356,12 +356,14 @@ class ContractService
             return false;
         }
 
-        // Capture wage-gap state before the update so we can clear the
-        // salary-unhappy flag and grant a relief boost when this renewal
-        // actually closes the gap. Peer median is read now because the
+        // Capture salary-unhappy state before the update so we can clear
+        // the flag and grant a relief boost when this renewal actually
+        // closes the gap. Only flagged players get the boost — unflagged
+        // underpaid players had no morale drip running, so there is no
+        // grievance to relieve. Peer median is read now because the
         // player is about to be updated.
-        $hadWageGap = $this->dispositionService->hasWageGap($player);
-        $peerMedian = $hadWageGap ? $this->dispositionService->peerMedianWage($player) : 0;
+        $wasSalaryUnhappy = $this->dispositionService->isSalaryUnhappy($player);
+        $peerMedian = $wasSalaryUnhappy ? $this->dispositionService->peerMedianWage($player) : 0;
 
         $seasonYear = (int) $game->season;
 
@@ -380,8 +382,8 @@ class ContractService
         // Synchronous flag clear: if the new effective wage lifts the player
         // out of the wage-gap band (>= 60% of peer median), drop the flag now
         // so the squad page doesn't keep showing "wants raise" until the next
-        // matchday roll catches up.
-        if ($hadWageGap && $peerMedian > 0
+        // roll catches up.
+        if ($wasSalaryUnhappy && $peerMedian > 0
             && $newWage >= (int) ($peerMedian * DispositionService::WAGE_GAP_RATIO)) {
             $updates['salary_unhappy_since'] = null;
         }
@@ -391,7 +393,7 @@ class ContractService
         // Wage-gap resolution: small morale boost when the renewal actually
         // closes the peer-median gap. Token raises that don't clear the gap
         // get no boost — the drip will keep firing.
-        if ($hadWageGap && $newWage >= $peerMedian && $player->matchState) {
+        if ($wasSalaryUnhappy && $newWage >= $peerMedian && $player->matchState) {
             $player->matchState->update([
                 'morale' => min(
                     DispositionService::MAX_MORALE,

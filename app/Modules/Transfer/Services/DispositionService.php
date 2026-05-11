@@ -76,9 +76,13 @@ class DispositionService
     public const STATURE_GAP_MIN_REPUTATION_GAP = 2;
 
     /**
-     * Per-matchday chance (percent) that a wage-gapped player notices and
-     * becomes "salary-unhappy." Until the dice land on them they stay quietly
-     * underpaid; once flagged, the status sticks until the gap is closed.
+     * Per date-advance chance (percent) that a wage-gapped player notices
+     * and becomes "salary-unhappy." The roll fires from `GameDateAdvanced`,
+     * which is dispatched on every user-played match finalization — so a
+     * week with league + cup + European fixtures rolls 2–4× while a quiet
+     * week rolls once. Until the dice land on them, wage-gapped players
+     * stay quietly underpaid; once flagged, the status sticks until the
+     * gap is closed.
      */
     public const WAGE_GAP_TRIGGER_CHANCE_PERCENT = 5;
 
@@ -264,7 +268,7 @@ class DispositionService
             return true;
         }
 
-        return $this->hasWageGap($player);
+        return $this->isSalaryUnhappy($player);
     }
 
     // ── Disposition factor helpers ──
@@ -787,12 +791,15 @@ class DispositionService
 
     /**
      * True when the player has *announced* salary unhappiness — i.e. the
-     * per-matchday dice roll has flipped `salary_unhappy_since`. Eligibility
-     * (the underlying underpayment) is still the wage gap vs same-tier peers,
-     * but the flag is now stochastic: a quietly underpaid player returns
-     * false here until their roll lands.
+     * stochastic roll has flipped `salary_unhappy_since`. This is purely a
+     * flag read; for the underlying "is materially underpaid vs same-tier
+     * peers" check use `hasWageGapAgainst()` with a peer median. Callers
+     * that gate on a player having voiced their grievance (renewal
+     * willingness, morale drip, "wants raise" indicator) want this method;
+     * callers that gate on the underlying eligibility (the per-tick roll,
+     * peer-median demand pricing) want the *Against variant.
      */
-    public function hasWageGap(GamePlayer $player): bool
+    public function isSalaryUnhappy(GamePlayer $player): bool
     {
         return $player->salary_unhappy_since !== null;
     }
@@ -962,10 +969,15 @@ class DispositionService
     }
 
     /**
-     * Wage-gap check against a precomputed peer median. Mirrors hasWageGap
-     * without re-querying the squad. The median includes the player's own
-     * wage; for typical squad sizes (>3 same-tier peers) self-inclusion shifts
-     * the median by less than one slot and does not change the gap outcome.
+     * Underlying wage-gap eligibility check: is this player materially
+     * underpaid vs same-tier squad peers? Drives both the per-tick
+     * salary-unhappiness roll and renewal pricing (peer-median demand
+     * floor). The median includes the player's own wage; for typical
+     * squad sizes (>3 same-tier peers) self-inclusion shifts the median
+     * by less than one slot and does not change the gap outcome.
+     *
+     * For "has the player *announced* their unhappiness?", use
+     * `isSalaryUnhappy()` instead — that reads the stochastic flag.
      */
     public function hasWageGapAgainst(GamePlayer $player, int $peerMedian): bool
     {
