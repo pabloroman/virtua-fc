@@ -6,9 +6,17 @@ use App\Models\GameNotification;
 use App\Modules\Match\Events\GameDateAdvanced;
 use App\Modules\Transfer\Enums\TransferWindowType;
 use App\Modules\Transfer\Services\AITransferMarketService;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
 
-class ProcessTransferWindowClose
+class ProcessTransferWindowClose implements ShouldQueue
 {
+    use InteractsWithQueue;
+
+    public int $tries = 1;
+
+    public string $queue = 'gameplay';
+
     public function __construct(
         private readonly AITransferMarketService $aiTransferMarketService,
     ) {}
