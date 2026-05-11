@@ -49,4 +49,22 @@ return [
     'current_ability' => 'Current',
     'projected_ability' => 'Projected next season',
     'potential' => 'Potential',
+
+    // Squad role badges
+    'role_wonderkid' => 'Wonderkid',
+    'role_key_player' => 'Key player',
+    'role_first_team' => 'First team',
+    'role_rotation' => 'Rotation',
+    'role_prospect' => 'Prospect',
+    'role_reserves' => 'Reserves',
+    'role_departing' => 'Departing',
+
+    // Auto-generated blurbs
+    'blurb_wonderkid' => 'Huge potential — already useful and getting better.',
+    'blurb_key_player' => 'Cornerstone player. Build the team around them.',
+    'blurb_first_team' => 'Reliable starter at :position.',
+    'blurb_prospect' => 'Promising youth, still developing.',
+    'blurb_rotation' => 'Squad option, close to the starting XI.',
+    'blurb_reserves' => 'Deep in the depth chart for :position.',
+    'blurb_departing' => 'Leaving the squad at season end.',
 ];

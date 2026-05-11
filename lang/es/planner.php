@@ -49,4 +49,22 @@ return [
     'current_ability' => 'Actual',
     'projected_ability' => 'Próxima temporada',
     'potential' => 'Potencial',
+
+    // Squad role badges
+    'role_wonderkid' => 'Perla',
+    'role_key_player' => 'Jugador clave',
+    'role_first_team' => 'Titular',
+    'role_rotation' => 'Rotación',
+    'role_prospect' => 'Promesa',
+    'role_reserves' => 'Suplente',
+    'role_departing' => 'Saliente',
+
+    // Auto-generated blurbs
+    'blurb_wonderkid' => 'Gran potencial — ya útil y creciendo rápido.',
+    'blurb_key_player' => 'Pilar del equipo. Construye en torno a él.',
+    'blurb_first_team' => 'Titular fiable en :position.',
+    'blurb_prospect' => 'Joven prometedor, todavía en desarrollo.',
+    'blurb_rotation' => 'Recambio sólido, cerca del once.',
+    'blurb_reserves' => 'Al fondo del banquillo en :position.',
+    'blurb_departing' => 'Se va al final de la temporada.',
 ];

@@ -4,11 +4,13 @@ namespace App\Http\Views;
 
 use App\Models\Game;
 use App\Modules\Squad\Services\NextSeasonProjectionService;
+use App\Modules\Squad\Services\PlayerSquadRoleClassifier;
 
 class ShowSquadPlanner
 {
     public function __construct(
         private readonly NextSeasonProjectionService $projectionService,
+        private readonly PlayerSquadRoleClassifier $roleClassifier,
     ) {}
 
     public function __invoke(string $gameId)
@@ -20,6 +22,7 @@ class ShowSquadPlanner
         abort_unless($game->isCareerMode(), 404);
 
         $projection = $this->projectionService->build($game);
+        $projection = $this->roleClassifier->classify($projection);
 
         return view('squad-planner', [
             'game' => $game,
