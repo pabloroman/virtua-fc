@@ -6,6 +6,8 @@
     $reason = $gp->next_season_reason;
     $status = $gp->next_season_status;
     $nextAge = $gp->next_season_age;
+    $role = $gp->squad_role ?? null;
+    $blurb = $gp->squad_blurb ?? null;
 
     $reasonTone = match ($status) {
         \App\Modules\Squad\Services\NextSeasonProjectionService::STATUS_OUTGOING => 'bg-accent-red/10 text-accent-red border-accent-red/20',
@@ -28,13 +30,13 @@
 <div class="border-b border-border-default last:border-b-0">
     {{-- ===== Mobile row ===== --}}
     <div class="lg:hidden px-4 py-3 cursor-pointer" @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $gp->id]) }}')">
-        <div class="flex items-center gap-2.5">
+        <div class="flex items-start gap-2.5">
             <x-player-avatar :name="$gp->name" :position-group="$group" :number="$gp->number" size="sm" />
             <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-1.5">
+                <div class="flex items-center gap-1.5 min-w-0">
                     <span class="text-sm font-medium text-text-primary truncate">{{ $gp->name }}</span>
                 </div>
-                <div class="flex items-center gap-2 mt-1">
+                <div class="flex items-center gap-2 mt-1 min-w-0">
                     <div class="flex items-center gap-0.5 shrink-0">
                         @foreach($gp->positions as $pos)
                             <x-position-badge :position="$pos" size="sm" />
@@ -42,10 +44,18 @@
                     </div>
                     <span class="text-[10px] text-text-muted tabular-nums shrink-0">{{ __('planner.age_next', ['age' => $nextAge]) }}</span>
                 </div>
-                <div class="mt-2">
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full border text-[10px] font-medium {{ $reasonTone }}">
-                        {{ $reasonLabel }}
-                    </span>
+                @if($blurb)
+                    <p class="mt-1 text-[11px] italic text-text-secondary line-clamp-2">{{ $blurb }}</p>
+                @endif
+                <div class="mt-2 flex flex-wrap items-center gap-1.5">
+                    @if($role)
+                        <x-squad-role-badge :role="$role" />
+                    @endif
+                    @if($reason !== \App\Modules\Squad\Services\NextSeasonProjectionService::REASON_OWNED)
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full border text-[10px] font-medium {{ $reasonTone }}">
+                            {{ $reasonLabel }}
+                        </span>
+                    @endif
                 </div>
             </div>
             <x-rating-badge :value="$gp->next_season_overall" size="sm" class="shrink-0" />
@@ -53,20 +63,26 @@
     </div>
 
     {{-- ===== Desktop row ===== --}}
-    <div class="hidden lg:grid items-center px-4 py-2.5 gap-3 cursor-pointer grid-cols-[1fr_64px_56px_160px_88px_180px]"
+    <div class="hidden lg:grid items-center px-4 py-2.5 gap-3 cursor-pointer grid-cols-[1.1fr_44px_1.4fr_150px_110px_140px]"
          @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $gp->id]) }}')">
 
-        {{-- Player name + avatar --}}
+        {{-- Player name + avatar + positions + contract --}}
         <div class="flex items-center gap-3 min-w-0">
             <x-player-avatar :name="$gp->name" :position-group="$group" :number="$gp->number" size="sm" />
             <div class="min-w-0">
                 <div class="flex items-center gap-2">
                     <span class="text-sm font-medium text-text-primary truncate">{{ $gp->name }}</span>
                 </div>
-                <div class="flex items-center gap-1.5 mt-0.5">
-                    @foreach($gp->positions as $pos)
-                        <x-position-badge :position="$pos" size="sm" />
-                    @endforeach
+                <div class="flex items-center gap-1.5 mt-0.5 text-[10px] text-text-faint">
+                    <div class="flex items-center gap-1">
+                        @foreach($gp->positions as $pos)
+                            <x-position-badge :position="$pos" size="sm" />
+                        @endforeach
+                    </div>
+                    @if($gp->contract_expiry_year)
+                        <span class="tabular-nums">·</span>
+                        <span class="tabular-nums">{{ __('planner.contract_until', ['year' => $gp->contract_expiry_year]) }}</span>
+                    @endif
                 </div>
             </div>
         </div>
@@ -74,16 +90,12 @@
         {{-- Age (next season) --}}
         <div class="text-center">
             <div class="text-sm font-semibold text-text-primary tabular-nums">{{ $nextAge }}</div>
-            <div class="text-[10px] text-text-faint uppercase tracking-wider">{{ __('app.age') }}</div>
+            <div class="text-[10px] text-text-faint uppercase tracking-wider">y</div>
         </div>
 
-        {{-- Contract --}}
-        <div class="text-center text-[11px] tabular-nums">
-            @if($gp->contract_expiry_year)
-                <div class="text-text-secondary">{{ __('planner.contract_until', ['year' => $gp->contract_expiry_year]) }}</div>
-            @else
-                <div class="text-text-faint">{{ __('planner.no_contract') }}</div>
-            @endif
+        {{-- Auto-generated blurb --}}
+        <div class="min-w-0 text-[11px] italic text-text-secondary line-clamp-2">
+            {{ $blurb }}
         </div>
 
         {{-- Potential bar (current + projected) --}}
@@ -96,16 +108,20 @@
                 size="sm" />
         </div>
 
-        {{-- Next-season overall rating --}}
+        {{-- Role badge --}}
         <div class="flex justify-center">
-            <x-rating-badge :value="$gp->next_season_overall" size="sm" />
+            @if($role)
+                <x-squad-role-badge :role="$role" />
+            @endif
         </div>
 
-        {{-- Reason --}}
+        {{-- Reason chip (only shown when the situation differs from a plain "owned" stay) --}}
         <div class="flex justify-end">
-            <span class="inline-flex items-center px-2.5 py-1 rounded-full border text-[11px] font-medium {{ $reasonTone }}">
-                {{ $reasonLabel }}
-            </span>
+            @if($reason !== \App\Modules\Squad\Services\NextSeasonProjectionService::REASON_OWNED)
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full border text-[11px] font-medium {{ $reasonTone }}">
+                    {{ $reasonLabel }}
+                </span>
+            @endif
         </div>
     </div>
 </div>
