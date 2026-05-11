@@ -28,6 +28,9 @@ class NextSeasonProjectionService
     public const STATUS_OUTGOING = 'outgoing';
     public const STATUS_INCOMING = 'incoming';
 
+    public const HORIZON_CURRENT = 'current';
+    public const HORIZON_NEXT = 'next';
+
     public const REASON_OWNED = 'owned';
     public const REASON_RETURNING_FROM_LOAN = 'returning_from_loan';
     public const REASON_STILL_ON_LOAN = 'still_on_loan';
@@ -46,7 +49,16 @@ class NextSeasonProjectionService
     ) {}
 
     /**
-     * Build the next-season projection.
+     * Build the squad projection for the chosen horizon.
+     *
+     * - HORIZON_NEXT (default): season+1 — projects ages, advances overall
+     *   scores by one season of development, partitions the squad into
+     *   staying / outgoing / incoming based on contracts, retirements,
+     *   transfers, and loan return dates.
+     * - HORIZON_CURRENT: today — every owned player sits in `staying` with
+     *   reason `owned`, no age advance, no projection delta. Outgoing /
+     *   incoming are empty. Provides a "what does the team look like right
+     *   now?" comparison view.
      *
      * @return array{
      *     staying: array{goalkeepers: Collection, defenders: Collection, midfielders: Collection, forwards: Collection},
@@ -55,24 +67,33 @@ class NextSeasonProjectionService
      *     counts: array{staying: int, outgoing: int, incoming: int},
      *     seasonEndDate: \Carbon\Carbon,
      *     nextSeasonStartYear: int,
+     *     horizon: string,
      * }
      */
-    public function build(Game $game): array
+    public function build(Game $game, string $horizon = self::HORIZON_NEXT): array
     {
+        $horizon = $horizon === self::HORIZON_CURRENT ? self::HORIZON_CURRENT : self::HORIZON_NEXT;
         $seasonEndDate = $game->getSeasonEndDate();
-        $nextSeasonStart = $seasonEndDate->copy()->addDay();
+        $referenceDate = $horizon === self::HORIZON_CURRENT
+            ? $game->current_date
+            : $seasonEndDate->copy()->addDay();
 
         $owned = $this->loadOwnedPlayers($game);
         $loanedIn = $this->loadLoanedInPlayers($game);
-        $incomingPreContracts = $this->loadIncomingPreContracts($game);
+        $incomingPreContracts = $horizon === self::HORIZON_NEXT
+            ? $this->loadIncomingPreContracts($game)
+            : collect();
 
         $staying = collect();
         $outgoing = collect();
         $incoming = collect();
 
         foreach ($owned as $player) {
-            $verdict = $this->classifyOwned($player, $seasonEndDate);
-            $this->enrich($player, $game, $nextSeasonStart, $verdict['status'], $verdict['reason']);
+            // Current-mode keeps everyone on the books; next-mode partitions.
+            $verdict = $horizon === self::HORIZON_CURRENT
+                ? ['status' => self::STATUS_STAYING, 'reason' => self::REASON_OWNED]
+                : $this->classifyOwned($player, $seasonEndDate);
+            $this->enrich($player, $game, $referenceDate, $verdict['status'], $verdict['reason'], $horizon);
 
             if ($verdict['status'] === self::STATUS_STAYING) {
                 $staying->push($player);
@@ -82,11 +103,17 @@ class NextSeasonProjectionService
         }
 
         foreach ($loanedIn as $player) {
+            if ($horizon === self::HORIZON_CURRENT) {
+                $this->enrich($player, $game, $referenceDate, self::STATUS_STAYING, self::REASON_OWNED, $horizon);
+                $staying->push($player);
+                continue;
+            }
+
             $reason = $this->classifyLoanedIn($player, $seasonEndDate);
             $status = $reason === self::REASON_STILL_ON_LOAN
                 ? self::STATUS_STAYING
                 : self::STATUS_OUTGOING;
-            $this->enrich($player, $game, $nextSeasonStart, $status, $reason);
+            $this->enrich($player, $game, $referenceDate, $status, $reason, $horizon);
 
             if ($status === self::STATUS_STAYING) {
                 $staying->push($player);
@@ -96,7 +123,7 @@ class NextSeasonProjectionService
         }
 
         foreach ($incomingPreContracts as $player) {
-            $this->enrich($player, $game, $nextSeasonStart, self::STATUS_INCOMING, self::REASON_PRE_CONTRACT_JOINING);
+            $this->enrich($player, $game, $referenceDate, self::STATUS_INCOMING, self::REASON_PRE_CONTRACT_JOINING, $horizon);
             $incoming->push($player);
         }
 
@@ -112,7 +139,8 @@ class NextSeasonProjectionService
                 'incoming' => $incoming->count(),
             ],
             'seasonEndDate' => $seasonEndDate,
-            'nextSeasonStartYear' => $nextSeasonStart->year,
+            'nextSeasonStartYear' => $seasonEndDate->copy()->addDay()->year,
+            'horizon' => $horizon,
         ];
     }
 
@@ -147,6 +175,7 @@ class NextSeasonProjectionService
             'team',
             'matchState',
             'activeLoan',
+            'transferOffers',
         ])
             ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
@@ -157,7 +186,9 @@ class NextSeasonProjectionService
     /**
      * Players the user has signed on a pre-contract that arrive at season end.
      * The TransferOffer carries the agreement; the player still belongs to their
-     * current club until the deal completes.
+     * current club until the deal completes. Pre-loads transferOffers so the
+     * action recommender and advisor can read renewal/pre-contract state
+     * without lazy-loading once per row.
      */
     private function loadIncomingPreContracts(Game $game): Collection
     {
@@ -165,6 +196,9 @@ class NextSeasonProjectionService
             'gamePlayer.game',
             'gamePlayer.team',
             'gamePlayer.matchState',
+            'gamePlayer.transferOffers',
+            'gamePlayer.activeRenewalNegotiation',
+            'gamePlayer.latestRenewalNegotiation',
         ])
             ->where('game_id', $game->id)
             ->where('offering_team_id', $game->team_id)
@@ -235,19 +269,26 @@ class NextSeasonProjectionService
 
     /**
      * Attach projection attributes to the player for the Blade layer to render.
+     *
+     * When viewing the current horizon, no development projection is applied —
+     * we expose today's age and today's overall_score so the user sees the
+     * current squad as-is.
      */
     private function enrich(
         GamePlayer $player,
         Game $game,
-        \Carbon\Carbon $nextSeasonStart,
+        \Carbon\Carbon $referenceDate,
         string $status,
         string $reason,
+        string $horizon = self::HORIZON_NEXT,
     ): void {
         $player->setAttribute('next_season_status', $status);
         $player->setAttribute('next_season_reason', $reason);
-        $player->setAttribute('next_season_age', $player->age($nextSeasonStart));
+        $player->setAttribute('next_season_age', $player->age($referenceDate));
 
-        $projection = $this->developmentService->getNextSeasonProjection($player);
+        $projection = $horizon === self::HORIZON_NEXT
+            ? $this->developmentService->getNextSeasonProjection($player)
+            : 0;
         $player->setAttribute('projection', $projection);
         $player->setAttribute('next_season_overall', max(1, min(99, $player->overall_score + $projection)));
     }

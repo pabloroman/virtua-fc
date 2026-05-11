@@ -5,7 +5,10 @@ return [
     'planner' => 'Planner',
     'title' => 'Squad Planner',
     'subtitle_next_season' => 'Projected roster for season :year. See who stays, who leaves, and who arrives.',
+    'subtitle_current_season' => 'Current squad for season :year. Switch to Next Season to see projected changes.',
     'next_season_label' => 'Next season (:year)',
+    'toggle_current_season' => 'Current (:year)',
+    'toggle_next_season' => 'Next (:year)',
 
     // Sections
     'section_staying' => 'Staying',

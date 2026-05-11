@@ -10,6 +10,17 @@
     $blurb = $gp->squad_blurb ?? null;
     $action = $gp->squad_action ?? null;
 
+    // Map each action to its existing flow. Actions without a sensible
+    // destination (KEEP) stay as passive labels.
+    $actionHref = $action ? match ($action) {
+        \App\Modules\Squad\Enums\SquadAction::RENEW => route('game.squad', $game->id),
+        \App\Modules\Squad\Enums\SquadAction::LIST => route('game.transfers.outgoing', $game->id),
+        \App\Modules\Squad\Enums\SquadAction::REPLACE => route('game.transfers.market', $game->id),
+        \App\Modules\Squad\Enums\SquadAction::DEVELOP,
+        \App\Modules\Squad\Enums\SquadAction::PLAY_OFTEN => route('game.squad-selection', $game->id),
+        default => null,
+    } : null;
+
     $reasonTone = match ($status) {
         \App\Modules\Squad\Services\NextSeasonProjectionService::STATUS_OUTGOING => 'bg-accent-red/10 text-accent-red border-accent-red/20',
         \App\Modules\Squad\Services\NextSeasonProjectionService::STATUS_INCOMING => 'bg-accent-green/10 text-accent-green border-accent-green/20',
@@ -52,7 +63,7 @@
                     @if($role)
                         <x-squad-role-badge :role="$role" />
                     @endif
-                    <x-squad-action-chip :action="$action" />
+                    <x-squad-action-chip :action="$action" :href="$actionHref" />
                     @if($reason !== \App\Modules\Squad\Services\NextSeasonProjectionService::REASON_OWNED)
                         <span class="inline-flex items-center px-2 py-0.5 rounded-full border text-[10px] font-medium {{ $reasonTone }}">
                             {{ $reasonLabel }}
@@ -119,7 +130,7 @@
 
         {{-- Action chip --}}
         <div class="flex justify-center">
-            <x-squad-action-chip :action="$action" />
+            <x-squad-action-chip :action="$action" :href="$actionHref" />
         </div>
 
         {{-- Reason chip (only shown when the situation differs from a plain "owned" stay) --}}

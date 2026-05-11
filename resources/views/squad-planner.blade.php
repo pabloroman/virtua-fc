@@ -4,6 +4,9 @@
     /** @var \App\Modules\Lineup\Enums\Formation $formation */
     /** @var array<string, array{group: string, need: int, have: int, delta: int}> $formationFit */
     /** @var array<int, \App\Modules\Squad\Services\Advisory> $advisories */
+    /** @var string $horizon */
+    $isNextSeason = $horizon === \App\Modules\Squad\Services\NextSeasonProjectionService::HORIZON_NEXT;
+    $currentYear = $game->current_date->year;
 
     $staying = $projection['staying'];
     $outgoing = $projection['outgoing'];
@@ -47,14 +50,36 @@
         {{-- Sub-navigation --}}
         <x-section-nav :items="$squadNavItems" />
 
-        {{-- Page header --}}
-        <div class="mt-6 mb-2">
-            <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">
-                {{ __('planner.title') }}
-            </h2>
-            <p class="text-sm text-text-secondary mt-1">
-                {{ __('planner.subtitle_next_season', ['year' => $nextSeasonStartYear]) }}
-            </p>
+        {{-- Page header + season toggle --}}
+        <div class="mt-6 mb-2 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+            <div>
+                <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">
+                    {{ __('planner.title') }}
+                </h2>
+                <p class="text-sm text-text-secondary mt-1">
+                    @if($isNextSeason)
+                        {{ __('planner.subtitle_next_season', ['year' => $nextSeasonStartYear]) }}
+                    @else
+                        {{ __('planner.subtitle_current_season', ['year' => $currentYear]) }}
+                    @endif
+                </p>
+            </div>
+
+            {{-- Season horizon toggle --}}
+            @php
+                $currentHref = route('game.squad.planner', ['gameId' => $game->id, 'season' => 'current', 'formation' => $formation->value]);
+                $nextHref = route('game.squad.planner', ['gameId' => $game->id, 'season' => 'next', 'formation' => $formation->value]);
+            @endphp
+            <div class="inline-flex items-center bg-surface-700 rounded-lg p-0.5 self-start sm:self-end shrink-0">
+                <a href="{{ $currentHref }}"
+                   class="px-3 py-1.5 text-xs font-semibold rounded-md transition-colors whitespace-nowrap {{ ! $isNextSeason ? 'bg-surface-800 text-text-primary shadow-xs' : 'text-text-muted hover:text-text-body' }}">
+                    {{ __('planner.toggle_current_season', ['year' => $currentYear]) }}
+                </a>
+                <a href="{{ $nextHref }}"
+                   class="px-3 py-1.5 text-xs font-semibold rounded-md transition-colors whitespace-nowrap {{ $isNextSeason ? 'bg-accent-blue text-white shadow-xs' : 'text-text-muted hover:text-text-body' }}">
+                    {{ __('planner.toggle_next_season', ['year' => $nextSeasonStartYear]) }}
+                </a>
+            </div>
         </div>
 
         {{-- Summary strip --}}
@@ -80,7 +105,7 @@
                                 <select
                                     id="planner-formation"
                                     x-data
-                                    x-on:change="window.location.href = `{{ route('game.squad.planner', $game->id) }}?formation=${encodeURIComponent($event.target.value)}`"
+                                    x-on:change="window.location.href = `{{ route('game.squad.planner', ['gameId' => $game->id, 'season' => $horizon]) }}&formation=${encodeURIComponent($event.target.value)}`"
                                     class="block w-full appearance-none bg-surface-700 border border-border-strong rounded-lg pl-3 pr-9 py-2 text-sm font-semibold text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-accent-blue">
                                     @foreach(\App\Modules\Lineup\Enums\Formation::cases() as $f)
                                         <option value="{{ $f->value }}" @selected($f === $formation)>{{ $f->label() }}</option>
