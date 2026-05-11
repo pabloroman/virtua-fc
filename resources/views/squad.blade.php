@@ -60,6 +60,7 @@
                         : ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => false];
                     $squadNavItems = [
                         ['href' => route('game.squad', $game->id), 'label' => __('squad.first_team'), 'active' => true],
+                        ['href' => route('game.squad.planner', $game->id), 'label' => __('planner.planner'), 'active' => false],
                         $secondaryItem,
                         ['href' => route('game.squad.registration', $game->id), 'label' => __('squad.registration'), 'active' => false],
                     ];
