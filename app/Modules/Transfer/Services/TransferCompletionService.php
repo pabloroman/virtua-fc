@@ -4,6 +4,7 @@ namespace App\Modules\Transfer\Services;
 
 use App\Models\FinancialTransaction;
 use App\Models\Game;
+use App\Models\GameInvestment;
 use App\Models\GamePlayer;
 use App\Models\GameTransfer;
 use App\Models\Loan;
@@ -70,15 +71,18 @@ class TransferCompletionService
             window: TransferWindowType::currentValue($game->current_date),
         );
 
-        // Update transfer budget and record the transaction
-        $investment = $game->currentInvestment;
+        // Update transfer budget and record the transaction.
+        // firstOrCreate guarantees the (game, season) investment row exists so
+        // the increment cannot be silently skipped — the visible budget and
+        // the FinancialTransaction ledger must always move together.
         if ($offer->transfer_fee > 0) {
-            // Add transfer fee back to transfer budget
-            if ($investment) {
-                $investment->increment('transfer_budget', $offer->transfer_fee);
-            }
+            $investment = GameInvestment::firstOrCreate([
+                'game_id' => $game->id,
+                'season' => (int) $game->season,
+            ]);
 
-            // Record the transaction
+            $investment->increment('transfer_budget', $offer->transfer_fee);
+
             FinancialTransaction::recordIncome(
                 gameId: $game->id,
                 category: FinancialTransaction::CATEGORY_TRANSFER_IN,
@@ -161,9 +165,19 @@ class TransferCompletionService
      */
     public function completeIncomingTransfer(TransferOffer $offer, Game $game): bool
     {
+        // Resolve the (game, season) investment up-front via firstOrCreate so
+        // the budget check and the later decrement both operate on the same
+        // guaranteed row — no silent skip if the relation cache is stale or
+        // the season's row hasn't been allocated yet.
+        $investment = $offer->transfer_fee > 0
+            ? GameInvestment::firstOrCreate([
+                'game_id' => $game->id,
+                'season' => (int) $game->season,
+            ])
+            : null;
+
         // Safety net: reject if budget would go negative
-        $investment = $game->currentInvestment;
-        if ($offer->transfer_fee > 0 && $investment && $offer->transfer_fee > $investment->transfer_budget) {
+        if ($investment && $offer->transfer_fee > $investment->transfer_budget) {
             $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
             return false;
         }
@@ -206,13 +220,11 @@ class TransferCompletionService
             window: TransferWindowType::currentValue($game->current_date),
         );
 
-        // Deduct from transfer budget and record the transaction
-        $investment = $game->currentInvestment;
+        // Deduct from transfer budget and record the transaction. $investment
+        // was resolved at the top of the method via firstOrCreate, so the
+        // decrement and the FinancialTransaction always move together.
         if ($offer->transfer_fee > 0) {
-            // Deduct from transfer budget
-            if ($investment) {
-                $investment->decrement('transfer_budget', $offer->transfer_fee);
-            }
+            $investment->decrement('transfer_budget', $offer->transfer_fee);
 
             FinancialTransaction::recordExpense(
                 gameId: $game->id,
