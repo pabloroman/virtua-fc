@@ -9,6 +9,7 @@ use App\Modules\Match\DTOs\TacticalConfig;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Models\GamePlayerMatchRating;
 use App\Models\GamePlayerMatchState;
 use App\Models\MatchEvent;
 use App\Models\PlayerSuspension;
@@ -16,6 +17,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use App\Modules\Squad\Services\EligibilityService;
 
 class MatchResimulationService
@@ -24,6 +26,7 @@ class MatchResimulationService
         private readonly MatchSimulator $matchSimulator,
         private readonly EligibilityService $eligibilityService,
         private readonly MatchEventRepository $matchEventRepository,
+        private readonly MatchRatingCalculator $ratingCalculator,
     ) {}
 
     /**
@@ -349,6 +352,19 @@ class MatchResimulationService
             $allEvents,
         );
 
+        // 13b. Rewrite persisted ratings so the post-match summary reflects the
+        // new outcome. Scoped delete-then-insert is simpler than maintaining an
+        // upsert key across two write sites, and is bounded to ~22 rows.
+        $this->rewriteMatchRatings(
+            $match,
+            $mergedPerformances,
+            $allHomePlayers,
+            $allAwayPlayers,
+            $newHomeScore,
+            $newAwayScore,
+            $allEvents,
+        );
+
         // 14. Update match score, possession, and MVP
         // Note: Score-dependent side effects (standings, cup ties, GK stats, prize money)
         // are NOT handled here. They are deferred to FinalizeMatch, which applies them
@@ -517,12 +533,27 @@ class MatchResimulationService
             $totalHomeScore = $match->home_score + $newHomeScore;
             $totalAwayScore = $match->away_score + $newAwayScore;
 
+            $etHomePlayers = $allMvpPlayers->filter(fn ($p) => $p->team_id === $match->home_team_id);
+            $etAwayPlayers = $allMvpPlayers->filter(fn ($p) => $p->team_id === $match->away_team_id);
+
             $mvpPlayerId = MvpCalculator::calculate(
                 $cachedPerformances,
-                $allMvpPlayers->filter(fn ($p) => $p->team_id === $match->home_team_id),
-                $allMvpPlayers->filter(fn ($p) => $p->team_id === $match->away_team_id),
+                $etHomePlayers,
+                $etAwayPlayers,
                 $match->home_team_id,
                 $match->away_team_id,
+                $totalHomeScore,
+                $totalAwayScore,
+                $allEvents,
+            );
+
+            // 10b. Rewrite persisted ratings — ET events (late goals, late cards,
+            // clean-sheet evaporation) change the rating distribution.
+            $this->rewriteMatchRatings(
+                $match,
+                $cachedPerformances,
+                $etHomePlayers,
+                $etAwayPlayers,
                 $totalHomeScore,
                 $totalAwayScore,
                 $allEvents,
@@ -544,6 +575,54 @@ class MatchResimulationService
                 $mvpPlayerId,
             );
         });
+    }
+
+    /**
+     * Delete all persisted ratings for this match and rewrite them from the
+     * post-resimulation performances + events. Scoped to a single match so
+     * other matches in the table are untouched.
+     */
+    private function rewriteMatchRatings(
+        GameMatch $match,
+        array $performances,
+        Collection $homePlayers,
+        Collection $awayPlayers,
+        int $homeScore,
+        int $awayScore,
+        Collection $events,
+    ): void {
+        $ratings = $this->ratingCalculator->calculate(
+            [
+                'performances' => $performances,
+                'homeTeamId' => $match->home_team_id,
+                'awayTeamId' => $match->away_team_id,
+                'homeScore' => $homeScore,
+                'awayScore' => $awayScore,
+                'events' => $events,
+            ],
+            $homePlayers,
+            $awayPlayers,
+        );
+
+        GamePlayerMatchRating::where('game_match_id', $match->id)->delete();
+
+        if (empty($ratings)) {
+            return;
+        }
+
+        $rows = [];
+        foreach ($ratings as $playerId => $row) {
+            $rows[] = [
+                'id' => Str::uuid()->toString(),
+                'game_id' => $match->game_id,
+                'game_match_id' => $match->id,
+                'game_player_id' => $playerId,
+                'rating' => $row['rating'],
+                'performance_modifier' => $row['performance_modifier'],
+            ];
+        }
+
+        GamePlayerMatchRating::insert($rows);
     }
 
     /**

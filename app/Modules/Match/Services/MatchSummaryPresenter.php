@@ -3,11 +3,11 @@
 namespace App\Modules\Match\Services;
 
 use App\Models\GameMatch;
+use App\Models\GamePlayerMatchRating;
 use App\Models\MatchEvent;
 use App\Modules\Match\DTOs\MatchLineupsViewModel;
 use App\Modules\Match\DTOs\MatchSummaryViewModel;
 use App\Support\LiveMatchLineupPresenter;
-use Illuminate\Support\Facades\Cache;
 
 /**
  * Builds the prepared view-model for the shared match-summary partial.
@@ -131,7 +131,16 @@ class MatchSummaryPresenter
      */
     private function buildLineups(GameMatch $match): MatchLineupsViewModel
     {
-        $performances = Cache::get("match_performances:{$match->id}", []);
+        // Per-player ratings + modifiers are persisted by MatchResultProcessor
+        // and re-written on every resimulation by MatchResimulationService, so
+        // this read is the authoritative source. The previous 24h cache fallback
+        // is gone — a row that's been finalized stays correct indefinitely.
+        $persistedRatings = GamePlayerMatchRating::where('game_match_id', $match->id)
+            ->get(['game_player_id', 'rating', 'performance_modifier'])
+            ->keyBy('game_player_id');
+
+        $performances = $persistedRatings->map(fn ($r) => (float) $r->performance_modifier)->all();
+        $ratings = $persistedRatings->map(fn ($r) => (float) $r->rating)->all();
 
         // Sub-ins feed the rating calc only; team_id from the persisted
         // substitutions JSON gets reattached so per-team bonuses apply.
@@ -151,7 +160,7 @@ class MatchSummaryPresenter
             'home' => $match->home_lineup ?? [],
             'away' => $match->away_lineup ?? [],
             'subIns' => $subInIds,
-        ], $performances);
+        ], $performances, $ratings);
 
         $subInPlayers = array_map(
             fn (array $entry) => $entry + ['teamId' => $subInTeamMap[$entry['id']] ?? null],

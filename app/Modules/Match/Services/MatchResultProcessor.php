@@ -6,6 +6,7 @@ use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Models\GamePlayerMatchRating;
 use App\Models\GamePlayerMatchState;
 use App\Models\MatchEvent;
 use App\Models\PlayerSuspension;
@@ -25,6 +26,7 @@ class MatchResultProcessor
         private readonly EligibilityService $eligibilityService,
         private readonly PlayerConditionService $conditionService,
         private readonly NotificationService $notificationService,
+        private readonly MatchRatingCalculator $ratingCalculator,
     ) {}
 
     /**
@@ -84,6 +86,13 @@ class MatchResultProcessor
 
         // 4. Bulk insert all match events across all matches
         $this->bulkInsertMatchEvents($gameId, $matchResults);
+
+        // 4b. Bulk insert per-player ratings for every match in the batch that
+        // carries performance data (AI-fast-path matches without performances
+        // are skipped — see AIMatchResolver). For the user's match the row
+        // written here is overwritten by MatchResimulationService on every
+        // tactical change / Skip-to-end before the full-time screen renders.
+        $this->bulkInsertMatchRatings($gameId, $matchResults, $allPlayers);
 
         // 5. Batch process player stats across all matches
         $this->batchProcessPlayerStats($game, $matchResults, $matches, $competitions, $deferMatchId, $allPlayers);
@@ -291,6 +300,50 @@ class MatchResultProcessor
         }
 
         MatchEvent::insert($allRows);
+    }
+
+    /**
+     * Bulk insert per-(match, player) ratings for every match that has
+     * performance data. AI-only matches resolved by AIMatchResolver have no
+     * per-player performances and are skipped.
+     *
+     * @param  \Illuminate\Support\Collection|null  $allPlayers  Players grouped by team_id
+     */
+    private function bulkInsertMatchRatings(string $gameId, array $matchResults, $allPlayers): void
+    {
+        if (! $allPlayers) {
+            return;
+        }
+
+        $rows = [];
+
+        foreach ($matchResults as $result) {
+            if (empty($result['performances'] ?? [])) {
+                continue;
+            }
+
+            $homePlayers = $allPlayers->get($result['homeTeamId'], collect());
+            $awayPlayers = $allPlayers->get($result['awayTeamId'], collect());
+
+            $ratings = $this->ratingCalculator->calculate($result, $homePlayers, $awayPlayers);
+
+            foreach ($ratings as $playerId => $row) {
+                $rows[] = [
+                    'id' => Str::uuid()->toString(),
+                    'game_id' => $gameId,
+                    'game_match_id' => $result['matchId'],
+                    'game_player_id' => $playerId,
+                    'rating' => $row['rating'],
+                    'performance_modifier' => $row['performance_modifier'],
+                ];
+            }
+        }
+
+        if (empty($rows)) {
+            return;
+        }
+
+        GamePlayerMatchRating::insert($rows);
     }
 
     /**

@@ -96,11 +96,12 @@ class LiveMatchLineupPresenter
      *
      * @param  array<int, string>  $lineupIds
      * @param  array<string, mixed>  $performances
+     * @param  array<string, float>  $ratings  Precomputed 1.0–10.0 ratings keyed by player id
      * @return array<int, array<string, mixed>>
      */
-    public static function displayRoster(array $lineupIds, array $performances): array
+    public static function displayRoster(array $lineupIds, array $performances, array $ratings = []): array
     {
-        return self::displayRosters(['_' => $lineupIds], $performances)['_'];
+        return self::displayRosters(['_' => $lineupIds], $performances, $ratings)['_'];
     }
 
     /**
@@ -111,9 +112,12 @@ class LiveMatchLineupPresenter
      *
      * @param  array<string, array<int, string>>  $idGroups
      * @param  array<string, mixed>  $performances
+     * @param  array<string, float>  $ratings  Precomputed 1.0–10.0 ratings keyed by player id.
+     *                                        Empty for the live-match path; populated by
+     *                                        MatchSummaryPresenter from game_player_match_ratings.
      * @return array<string, array<int, array<string, mixed>>>
      */
-    public static function displayRosters(array $idGroups, array $performances): array
+    public static function displayRosters(array $idGroups, array $performances, array $ratings = []): array
     {
         $allIds = array_values(array_unique(array_merge(...array_values($idGroups))));
 
@@ -133,6 +137,7 @@ class LiveMatchLineupPresenter
                     'positionGroup' => $p->position_group,
                     'positionSort' => LineupService::positionSortOrder($p->position),
                     'performance' => $performances[$p->id] ?? null,
+                    'rating' => $ratings[$p->id] ?? null,
                 ])
                 ->sortBy('positionSort')
                 ->values()

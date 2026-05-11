@@ -254,7 +254,12 @@ class MatchdayOrchestrator
         if ($playerMatch) {
             $game->update(['pending_finalization_match_id' => $playerMatch->id]);
 
-            // Cache raw performances for the user's match (used for client-side player ratings)
+            // Cache raw performances for the user's match. MatchResimulationService
+            // reads this back to seed the simulator on tactical changes and
+            // Skip-to-end so each player's "form on the day" stays stable across
+            // resimulations. The post-match display now reads ratings from
+            // game_player_match_ratings instead of recomputing from this cache,
+            // so the 24h TTL is no longer load-bearing for display correctness.
             $userResult = collect($matchResults)->firstWhere('matchId', $playerMatch->id);
             if ($userResult && ! empty($userResult['performances'])) {
                 Cache::put("match_performances:{$playerMatch->id}", $userResult['performances'], now()->addHours(24));
