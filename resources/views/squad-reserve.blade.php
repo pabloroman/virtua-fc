@@ -10,6 +10,7 @@
         {{-- Sub-navigation --}}
         <x-section-nav :items="[
             ['href' => route('game.squad', $game->id), 'label' => __('squad.first_team'), 'active' => false],
+            ['href' => route('game.squad.planner', $game->id), 'label' => __('planner.planner'), 'active' => false],
             ['href' => route('game.squad.reserve', $game->id), 'label' => __('squad.reserve_team'), 'active' => true],
             ['href' => route('game.squad.registration', $game->id), 'label' => __('squad.registration'), 'active' => false],
         ]" />
