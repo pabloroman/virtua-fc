@@ -59,6 +59,21 @@ return [
     'role_reserves' => 'Suplente',
     'role_departing' => 'Saliente',
 
+    // Transfer Recommendations
+    'transfer_recommendations' => 'Recomendaciones de fichajes',
+    'advisory_empty' => 'Sin recomendaciones globales. La plantilla prevista parece equilibrada.',
+    'advisory_depth_gap' => 'Refuerza :position — faltan :count para la formación elegida.',
+    'advisory_age_gap' => 'Cantera escasa en :position — sin jugadores de :age o menos previstos.',
+    'advisory_wage_cliff' => 'Renueva a :name — contrato hasta :year y aún sin acuerdo.',
+    'advisory_development' => 'Da minutos a :names para maximizar su desarrollo.',
+    'advisory_key_departure' => 'Sustituye a :name (:position) — su salida deja un hueco.',
+
+    // Position group labels used inside advisories (singular & lowercase for sentence flow)
+    'group_goalkeeper' => 'la portería',
+    'group_defender' => 'la defensa',
+    'group_midfielder' => 'el centro del campo',
+    'group_forward' => 'la delantera',
+
     // Tactics Hub
     'tactics_hub' => 'Tácticas',
     'target_formation' => 'Formación objetivo',
