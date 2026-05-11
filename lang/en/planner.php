@@ -59,6 +59,12 @@ return [
     'role_reserves' => 'Reserves',
     'role_departing' => 'Departing',
 
+    // Tactics Hub
+    'tactics_hub' => 'Tactics Hub',
+    'target_formation' => 'Target formation',
+    'projected_xi_fit' => 'Projected XI fit',
+    'fit_summary' => ':have / :need',
+
     // Action chips
     'action_play_often' => 'Play often',
     'action_develop' => 'Develop',

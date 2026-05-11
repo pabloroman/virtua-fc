@@ -59,6 +59,12 @@ return [
     'role_reserves' => 'Suplente',
     'role_departing' => 'Saliente',
 
+    // Tactics Hub
+    'tactics_hub' => 'Tácticas',
+    'target_formation' => 'Formación objetivo',
+    'projected_xi_fit' => 'Encaje del once previsto',
+    'fit_summary' => ':have / :need',
+
     // Action chips
     'action_play_often' => 'Dar minutos',
     'action_develop' => 'Desarrollar',

@@ -1,6 +1,8 @@
 @php
     /** @var App\Models\Game $game */
     /** @var array $projection */
+    /** @var \App\Modules\Lineup\Enums\Formation $formation */
+    /** @var array<string, array{group: string, need: int, have: int, delta: int}> $formationFit */
 
     $staying = $projection['staying'];
     $outgoing = $projection['outgoing'];
@@ -24,6 +26,13 @@
         ['href' => route('game.squad.planner', $game->id), 'label' => __('planner.planner'), 'active' => true],
         $secondaryItem,
         ['href' => route('game.squad.registration', $game->id), 'label' => __('squad.registration'), 'active' => false],
+    ];
+
+    $groupDisplay = [
+        'Goalkeeper' => __('planner.goalkeepers'),
+        'Defender' => __('planner.defenders'),
+        'Midfielder' => __('planner.midfielders'),
+        'Forward' => __('planner.forwards'),
     ];
 @endphp
 
@@ -54,76 +63,133 @@
             <x-summary-card :label="__('planner.section_incoming')" :value="$counts['incoming']" :value-class="$counts['incoming'] > 0 ? 'text-accent-green' : 'text-text-primary'" />
         </div>
 
-        {{-- ===== Staying ===== --}}
-        <div class="mt-6">
-            <h3 class="font-heading text-sm font-semibold uppercase tracking-widest text-text-secondary mb-3">
-                {{ __('planner.section_staying') }}
-                <span class="text-text-faint font-normal normal-case tracking-normal ml-1">· {{ $counts['staying'] }}</span>
-            </h3>
+        {{-- ===== Layout: sidebar + main panel ===== --}}
+        <div class="mt-6 grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
 
-            @if($counts['staying'] === 0)
-                <div class="bg-surface-800 border border-border-default rounded-xl px-5 py-8 text-center text-sm text-text-muted">
-                    {{ __('planner.empty_staying') }}
-                </div>
-            @else
-                <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
-                    @foreach($positionGroups as $group)
-                        @if($group['players']->isNotEmpty())
-                            {{-- Position group header --}}
-                            <div class="px-4 py-2 bg-surface-700/30 border-b border-border-default">
-                                <div class="flex items-center justify-between">
-                                    <span class="font-heading text-[11px] font-semibold uppercase tracking-widest text-text-muted">{{ $group['label'] }}</span>
-                                    <span class="text-[10px] text-text-faint">{{ $group['players']->count() }}</span>
-                                </div>
+            {{-- ===== Sidebar ===== --}}
+            <aside class="space-y-6">
+                {{-- Tactics Hub --}}
+                <x-section-card :title="__('planner.tactics_hub')">
+                    <div class="p-4 space-y-4">
+                        <div>
+                            <label for="planner-formation" class="block text-[11px] font-semibold uppercase tracking-widest text-text-muted mb-2">
+                                {{ __('planner.target_formation') }}
+                            </label>
+                            <div class="relative">
+                                <select
+                                    id="planner-formation"
+                                    x-data
+                                    x-on:change="window.location.href = `{{ route('game.squad.planner', $game->id) }}?formation=${encodeURIComponent($event.target.value)}`"
+                                    class="block w-full appearance-none bg-surface-700 border border-border-strong rounded-lg pl-3 pr-9 py-2 text-sm font-semibold text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-accent-blue">
+                                    @foreach(\App\Modules\Lineup\Enums\Formation::cases() as $f)
+                                        <option value="{{ $f->value }}" @selected($f === $formation)>{{ $f->label() }}</option>
+                                    @endforeach
+                                </select>
+                                <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
                             </div>
+                        </div>
 
-                            @foreach($group['players'] as $gp)
-                                @include('partials.squad-planner.player-row', ['gp' => $gp, 'group' => $group['group'], 'game' => $game])
+                        <div>
+                            <p class="text-[11px] font-semibold uppercase tracking-widest text-text-muted mb-2">
+                                {{ __('planner.projected_xi_fit') }}
+                            </p>
+                            <ul class="space-y-1.5">
+                                @foreach($formationFit as $group => $fit)
+                                    @php
+                                        $tone = match (true) {
+                                            $fit['delta'] >= 1 => 'text-accent-green',
+                                            $fit['delta'] === 0 => 'text-text-secondary',
+                                            default => 'text-accent-red',
+                                        };
+                                    @endphp
+                                    <li class="flex items-center justify-between text-[12px]">
+                                        <span class="text-text-muted">{{ $groupDisplay[$group] ?? $group }}</span>
+                                        <span class="tabular-nums {{ $tone }}">
+                                            {{ __('planner.fit_summary', ['need' => $fit['need'], 'have' => $fit['have']]) }}
+                                        </span>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                </x-section-card>
+            </aside>
+
+            {{-- ===== Main column ===== --}}
+            <div>
+                {{-- ===== Staying ===== --}}
+                <div>
+                    <h3 class="font-heading text-sm font-semibold uppercase tracking-widest text-text-secondary mb-3">
+                        {{ __('planner.section_staying') }}
+                        <span class="text-text-faint font-normal normal-case tracking-normal ml-1">· {{ $counts['staying'] }}</span>
+                    </h3>
+
+                    @if($counts['staying'] === 0)
+                        <div class="bg-surface-800 border border-border-default rounded-xl px-5 py-8 text-center text-sm text-text-muted">
+                            {{ __('planner.empty_staying') }}
+                        </div>
+                    @else
+                        <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
+                            @foreach($positionGroups as $group)
+                                @if($group['players']->isNotEmpty())
+                                    <div class="px-4 py-2 bg-surface-700/30 border-b border-border-default">
+                                        <div class="flex items-center justify-between">
+                                            <span class="font-heading text-[11px] font-semibold uppercase tracking-widest text-text-muted">{{ $group['label'] }}</span>
+                                            <span class="text-[10px] text-text-faint">{{ $group['players']->count() }}</span>
+                                        </div>
+                                    </div>
+
+                                    @foreach($group['players'] as $gp)
+                                        @include('partials.squad-planner.player-row', ['gp' => $gp, 'group' => $group['group'], 'game' => $game])
+                                    @endforeach
+                                @endif
                             @endforeach
-                        @endif
-                    @endforeach
+                        </div>
+                    @endif
                 </div>
-            @endif
-        </div>
 
-        {{-- ===== Incoming ===== --}}
-        <div class="mt-8">
-            <h3 class="font-heading text-sm font-semibold uppercase tracking-widest text-text-secondary mb-3">
-                {{ __('planner.section_incoming') }}
-                <span class="text-text-faint font-normal normal-case tracking-normal ml-1">· {{ $counts['incoming'] }}</span>
-            </h3>
+                {{-- ===== Incoming ===== --}}
+                <div class="mt-8">
+                    <h3 class="font-heading text-sm font-semibold uppercase tracking-widest text-text-secondary mb-3">
+                        {{ __('planner.section_incoming') }}
+                        <span class="text-text-faint font-normal normal-case tracking-normal ml-1">· {{ $counts['incoming'] }}</span>
+                    </h3>
 
-            @if($incoming->isEmpty())
-                <div class="bg-surface-800 border border-border-default rounded-xl px-5 py-8 text-center text-sm text-text-muted">
-                    {{ __('planner.empty_incoming') }}
+                    @if($incoming->isEmpty())
+                        <div class="bg-surface-800 border border-border-default rounded-xl px-5 py-8 text-center text-sm text-text-muted">
+                            {{ __('planner.empty_incoming') }}
+                        </div>
+                    @else
+                        <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
+                            @foreach($incoming as $gp)
+                                @include('partials.squad-planner.player-row', ['gp' => $gp, 'group' => $gp->position_group, 'game' => $game])
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
-            @else
-                <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
-                    @foreach($incoming as $gp)
-                        @include('partials.squad-planner.player-row', ['gp' => $gp, 'group' => $gp->position_group, 'game' => $game])
-                    @endforeach
-                </div>
-            @endif
-        </div>
 
-        {{-- ===== Outgoing ===== --}}
-        <div class="mt-8">
-            <h3 class="font-heading text-sm font-semibold uppercase tracking-widest text-text-secondary mb-3">
-                {{ __('planner.section_outgoing') }}
-                <span class="text-text-faint font-normal normal-case tracking-normal ml-1">· {{ $counts['outgoing'] }}</span>
-            </h3>
+                {{-- ===== Outgoing ===== --}}
+                <div class="mt-8">
+                    <h3 class="font-heading text-sm font-semibold uppercase tracking-widest text-text-secondary mb-3">
+                        {{ __('planner.section_outgoing') }}
+                        <span class="text-text-faint font-normal normal-case tracking-normal ml-1">· {{ $counts['outgoing'] }}</span>
+                    </h3>
 
-            @if($outgoing->isEmpty())
-                <div class="bg-surface-800 border border-border-default rounded-xl px-5 py-8 text-center text-sm text-text-muted">
-                    {{ __('planner.empty_outgoing') }}
+                    @if($outgoing->isEmpty())
+                        <div class="bg-surface-800 border border-border-default rounded-xl px-5 py-8 text-center text-sm text-text-muted">
+                            {{ __('planner.empty_outgoing') }}
+                        </div>
+                    @else
+                        <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
+                            @foreach($outgoing as $gp)
+                                @include('partials.squad-planner.player-row', ['gp' => $gp, 'group' => $gp->position_group, 'game' => $game])
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
-            @else
-                <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
-                    @foreach($outgoing as $gp)
-                        @include('partials.squad-planner.player-row', ['gp' => $gp, 'group' => $gp->position_group, 'game' => $game])
-                    @endforeach
-                </div>
-            @endif
+            </div>
         </div>
 
     </div>
