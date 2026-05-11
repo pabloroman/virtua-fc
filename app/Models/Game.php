@@ -409,7 +409,10 @@ class Game extends Model
      */
     public function currentFinances(): HasOne
     {
-        return $this->hasOne(GameFinances::class)->where('season', $this->season);
+        // games.season is string(10), game_finances.season is integer — cast
+        // explicitly so PostgreSQL doesn't have to coerce a varchar parameter
+        // against an integer column on every lookup.
+        return $this->hasOne(GameFinances::class)->where('season', (int) $this->season);
     }
 
     public function investments(): HasMany
@@ -423,7 +426,9 @@ class Game extends Model
      */
     public function currentInvestment(): HasOne
     {
-        return $this->hasOne(GameInvestment::class)->where('season', $this->season);
+        // games.season is string(10), game_investments.season is integer —
+        // cast explicitly so the relation lookup matches the column type.
+        return $this->hasOne(GameInvestment::class)->where('season', (int) $this->season);
     }
 
     /**
