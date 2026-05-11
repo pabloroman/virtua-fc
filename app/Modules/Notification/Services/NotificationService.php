@@ -625,6 +625,31 @@ class NotificationService
     // ==========================================
 
     /**
+     * Notify a pro-manager user that one or more clubs have come calling at
+     * season end. A single notification covers the whole batch — the
+     * season-end screen is where the user reviews and picks an offer.
+     */
+    public function notifyJobOfferReceived(Game $game, int $offerCount, bool $fired): GameNotification
+    {
+        $titleKey = $fired
+            ? 'notifications.job_offer_post_firing_title'
+            : 'notifications.job_offer_received_title';
+
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_JOB_OFFER_RECEIVED,
+            title: __($titleKey, ['count' => $offerCount]),
+            message: __('notifications.job_offer_received_message', ['count' => $offerCount]),
+            priority: $fired ? GameNotification::PRIORITY_CRITICAL : GameNotification::PRIORITY_MILESTONE,
+            metadata: [
+                'offer_count' => $offerCount,
+                'fired' => $fired,
+                'season' => $game->season,
+            ],
+        );
+    }
+
+    /**
      * Notify the user that a transfer window has opened.
      */
     public function notifyTransferWindowOpen(Game $game, string $window): GameNotification
@@ -917,6 +942,7 @@ class NotificationService
             GameNotification::TYPE_BUDGET_LOAN => 'transfer',
             GameNotification::TYPE_TRANSFER_WINDOW_CLOSING => 'clock',
             GameNotification::TYPE_SQUAD_REGISTRATION_REQUIRED => 'squad',
+            GameNotification::TYPE_JOB_OFFER_RECEIVED => 'trophy',
             default => 'bell',
         };
     }

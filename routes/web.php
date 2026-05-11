@@ -163,6 +163,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
     Route::get('/new-game', SelectTeam::class)->name('select-team');
     Route::post('/new-game', InitGame::class)->middleware('throttle:game-creation')->name('init-game');
+
+    // Pro-manager career creation: generate starter offers then accept one.
+    // The Game record is only created on AcceptInitialOffer, so these don't
+    // sit behind the game.owner middleware.
+    Route::post('/new-game-pro', \App\Http\Actions\InitGamePro::class)
+        ->middleware('throttle:game-creation')
+        ->name('new-game-pro');
+    Route::get('/new-game-pro/offers', \App\Http\Views\ShowInitialOffers::class)
+        ->name('new-game-pro.offers');
+    Route::post('/new-game-pro/offers/{offerId}/accept', \App\Http\Actions\AcceptInitialOffer::class)
+        ->middleware('throttle:game-creation')
+        ->name('new-game-pro.offers.accept');
+
     Route::get('/tournament-summary/{summaryId}', ShowTournamentSummary::class)->name('tournament-summary.show');
 
     // All game routes require ownership verification
@@ -278,6 +291,14 @@ Route::middleware('auth')->group(function () {
         // Season End
         Route::get('/game/{gameId}/season-end', ShowSeasonEnd::class)->name('game.season-end');
         Route::post('/game/{gameId}/start-new-season', StartNewSeason::class)->name('game.start-new-season');
+
+        // Pro-manager end-of-season offer handling. Accepting stages the
+        // team-switch (applied by ApplyPendingTeamSwitchProcessor on the
+        // next SeasonSetupPipeline run); declining is blocked when fired.
+        Route::post('/game/{gameId}/job-offers/{offerId}/accept', \App\Http\Actions\AcceptSeasonOffer::class)
+            ->name('game.job-offers.accept');
+        Route::post('/game/{gameId}/job-offers/decline', \App\Http\Actions\DeclineSeasonOffers::class)
+            ->name('game.job-offers.decline');
 
         // Tournament End
         Route::get('/game/{gameId}/tournament-end', ShowTournamentEnd::class)->name('game.tournament-end');

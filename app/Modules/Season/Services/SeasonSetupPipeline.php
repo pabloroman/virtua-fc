@@ -2,6 +2,7 @@
 
 namespace App\Modules\Season\Services;
 
+use App\Modules\Manager\Processors\ApplyPendingTeamSwitchProcessor;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Processors\BudgetProjectionProcessor;
@@ -30,6 +31,7 @@ class SeasonSetupPipeline
     private array $processors = [];
 
     public function __construct(
+        ApplyPendingTeamSwitchProcessor $applyPendingTeamSwitch,
         YouthAcademyPromotionProcessor $academyPromotion,
         LeagueFixtureProcessor $fixtureGeneration,
         StandingsResetProcessor $standingsReset,
@@ -43,6 +45,7 @@ class SeasonSetupPipeline
         SeasonTicketDefaultsProcessor $seasonTicketDefaults,
     ) {
         $this->processors = [
+            $applyPendingTeamSwitch,
             $academyPromotion,
             $fixtureGeneration,
             $standingsReset,

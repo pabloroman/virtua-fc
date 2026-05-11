@@ -94,6 +94,7 @@ class Game extends Model
 
     // Game modes
     public const MODE_CAREER = 'career';
+    public const MODE_CAREER_PRO = 'career_pro';
     public const MODE_TOURNAMENT = 'tournament';
 
     // Season goals
@@ -133,6 +134,8 @@ class Game extends Model
         'matchday_advancing_at',
         'matchday_advance_result',
         'deleting_at',
+        'pending_team_switch',
+        'fired_at_season_end',
     ];
 
     protected $casts = [
@@ -152,6 +155,7 @@ class Game extends Model
         'matchday_advancing_at' => 'datetime',
         'matchday_advance_result' => 'array',
         'deleting_at' => 'datetime',
+        'fired_at_season_end' => 'boolean',
     ];
 
     // ==========================================
@@ -160,7 +164,18 @@ class Game extends Model
 
     public function isCareerMode(): bool
     {
-        return ($this->game_mode ?? self::MODE_CAREER) === self::MODE_CAREER;
+        $mode = $this->game_mode ?? self::MODE_CAREER;
+
+        // Pro-manager mode is a flavour of career mode: every career-mode
+        // pipeline (full SeasonSetupPipeline, finances, cups, transfers, etc.)
+        // runs for it. The only difference is end-of-season team switching,
+        // gated by isProManagerMode() below.
+        return $mode === self::MODE_CAREER || $mode === self::MODE_CAREER_PRO;
+    }
+
+    public function isProManagerMode(): bool
+    {
+        return $this->game_mode === self::MODE_CAREER_PRO;
     }
 
     public function isTournamentMode(): bool

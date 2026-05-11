@@ -105,6 +105,11 @@ return [
     'priority_urgent' => 'Urgente',
     'priority_attention' => 'Atención',
 
+    // Ofertas de empleo del manager (modo Pro Manager)
+    'job_offer_received_title' => ':count clubes interesados en ti',
+    'job_offer_post_firing_title' => 'Elige tu próximo club (:count ofertas)',
+    'job_offer_received_message' => 'Revisa la pantalla de fin de temporada para aceptar o rechazar.',
+
     // Transfer window open
     'transfer_window_open_title' => 'Ventana de :window Abierta',
     'transfer_window_open_message' => 'La ventana de fichajes está abierta. Los fichajes acordados se incorporarán a tu plantilla de inmediato.',

@@ -9,10 +9,9 @@ use App\Modules\Lineup\Services\FormationRecommender;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Services\SeasonSetupPipeline;
+use App\Modules\Season\Services\TeamReputationSeeder;
 use App\Modules\Season\Processors\LeagueFixtureProcessor;
 use App\Modules\Season\Processors\StandingsResetProcessor;
-use App\Models\ClubProfile;
-use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\CompetitionTeam;
 use App\Models\Game;
@@ -111,7 +110,7 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
         $this->markStep(3);
 
         // Step 4+: Run shared setup processors
-        if ($this->gameMode === Game::MODE_CAREER) {
+        if (in_array($this->gameMode, [Game::MODE_CAREER, Game::MODE_CAREER_PRO], true)) {
             // Career mode: run all 4 shared processors (fixtures, standings, budget, cups/Swiss)
             $allTeams = $this->loadTeamLookup();
             $swissPotData = $this->buildSwissPotData($allTeams);
@@ -154,7 +153,7 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
             ->record($game->user_id, \App\Models\ActivationEvent::EVENT_SETUP_COMPLETED, $this->gameId, $this->gameMode);
 
         // Notify the user that the summer transfer window is open
-        if ($this->gameMode === Game::MODE_CAREER) {
+        if (in_array($this->gameMode, [Game::MODE_CAREER, Game::MODE_CAREER_PRO], true)) {
             app(NotificationService::class)->notifyTransferWindowOpen($game->refresh(), 'summer');
         }
     }
@@ -222,86 +221,17 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
     }
 
     /**
-     * Initialize per-game reputation records for all teams with competition entries.
-     * Copies the static ClubProfile reputation as the starting point.
-     * Applies a division bonus for lower-tier teams in top-division leagues.
+     * Initialize per-game reputation records for all teams with competition
+     * entries in the user's country. Delegates to TeamReputationSeeder so
+     * the same logic can be reused mid-game when a pro manager moves to a
+     * previously-unseeded country.
      */
     private function initializeTeamReputations(): void
     {
-        // Idempotency: skip if already done
-        if (TeamReputation::where('game_id', $this->gameId)->exists()) {
-            return;
-        }
-
         $game = Game::find($this->gameId);
         $countryCode = $game->country ?? 'ES';
 
-        // Resolve in-country competition ids on the control plane first, then
-        // filter game-side entries by competition_id. Avoids a cross-plane
-        // whereHas('competition', …) subquery.
-        $countryCompetitionIds = Competition::where('country', $countryCode)->pluck('id');
-
-        $entries = CompetitionEntry::where('game_id', $this->gameId)
-            ->whereIn('competition_id', $countryCompetitionIds)
-            ->get();
-
-        $teamIds = $entries->pluck('team_id')->unique();
-
-        $clubProfileRows = ClubProfile::whereIn('team_id', $teamIds)
-            ->get(['team_id', 'reputation_level', 'fan_loyalty'])
-            ->keyBy('team_id');
-
-        // Build a map of team_id => lowest competition tier (1 = top division)
-        $competitionTiers = Competition::whereIn('id', $entries->pluck('competition_id')->unique())
-            ->pluck('tier', 'id');
-
-        $teamCompetitionTier = [];
-        foreach ($entries as $entry) {
-            $tier = $competitionTiers[$entry->competition_id] ?? 99;
-            if (!isset($teamCompetitionTier[$entry->team_id]) || $tier < $teamCompetitionTier[$entry->team_id]) {
-                $teamCompetitionTier[$entry->team_id] = $tier;
-            }
-        }
-
-        $divisionBonus = (int) config('reputation.division_bonus', 25);
-        $fanLoyaltyService = app(FanLoyaltyService::class);
-
-        $rows = [];
-        foreach ($teamIds as $teamId) {
-            $profile = $clubProfileRows[$teamId] ?? null;
-            $level = $profile->reputation_level ?? ClubProfile::REPUTATION_LOCAL;
-            $curatedLoyalty = $profile?->fan_loyalty;
-            $points = TeamReputation::pointsForTier($level);
-
-            // Apply division bonus for Modest/Local teams in tier 1
-            $competitionTier = $teamCompetitionTier[$teamId] ?? 99;
-            if ($competitionTier === 1 && in_array($level, [ClubProfile::REPUTATION_MODEST, ClubProfile::REPUTATION_LOCAL])) {
-                $points += $divisionBonus;
-            }
-
-            // base_loyalty captures cultural identity (never moves);
-            // loyalty_points starts equal and drifts from that anchor.
-            $seededLoyalty = $fanLoyaltyService->seedInitialValue(
-                $curatedLoyalty !== null ? (int) $curatedLoyalty : null,
-            );
-
-            $rows[] = [
-                'id' => Str::uuid()->toString(),
-                'game_id' => $this->gameId,
-                'team_id' => $teamId,
-                'reputation_level' => $level,
-                'base_reputation_level' => $level,
-                'reputation_points' => $points,
-                'base_loyalty' => $seededLoyalty,
-                'loyalty_points' => $seededLoyalty,
-            ];
-        }
-
-        DB::transaction(function () use ($rows) {
-            foreach (array_chunk($rows, 100) as $chunk) {
-                TeamReputation::insert($chunk);
-            }
-        });
+        app(TeamReputationSeeder::class)->seedForCountry($this->gameId, $countryCode);
     }
 
     private function loadTeamLookup(): Collection

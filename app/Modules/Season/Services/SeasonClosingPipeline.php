@@ -2,6 +2,7 @@
 
 namespace App\Modules\Season\Services;
 
+use App\Modules\Manager\Processors\JobOfferGenerationProcessor;
 use App\Modules\Manager\Processors\TrophyRecordingProcessor;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
@@ -73,6 +74,7 @@ class SeasonClosingPipeline
         FanLoyaltyUpdateProcessor $fanLoyaltyUpdate,
         YouthAcademyClosingProcessor $youthAcademyClosing,
         UefaQualificationProcessor $uefaQualification,
+        JobOfferGenerationProcessor $jobOfferGeneration,
     ) {
         $this->processors = [
             $reserveOveragePromotion,
@@ -102,6 +104,7 @@ class SeasonClosingPipeline
             $fanLoyaltyUpdate,
             $youthAcademyClosing,
             $uefaQualification,
+            $jobOfferGeneration,
         ];
 
         usort($this->processors, fn ($a, $b) => $a->priority() <=> $b->priority());

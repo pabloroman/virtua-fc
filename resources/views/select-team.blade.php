@@ -10,6 +10,34 @@
             $firstId = $allCompetitions->first()?->id;
         @endphp
 
+        {{-- Pro Manager career: separate form posts directly to /new-game-pro. --}}
+        @if($hasCareerAccess)
+            <form method="POST" action="{{ route('new-game-pro') }}" class="mb-6">
+                @csrf
+                <button type="submit"
+                        class="w-full relative flex items-center gap-4 p-4 md:p-5 rounded-xl border border-accent-blue/40 bg-accent-blue/5 hover:bg-accent-blue/10 transition-colors text-left">
+                    <div class="shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center bg-accent-blue">
+                        <svg class="w-6 h-6 md:w-7 md:h-7 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="font-heading font-bold text-base md:text-lg uppercase tracking-wide text-accent-blue">
+                            {{ __('game.mode_career_pro') }}
+                        </h3>
+                        <p class="text-xs md:text-sm mt-0.5 text-accent-blue/80">
+                            {{ __('game.mode_career_pro_desc') }}
+                        </p>
+                    </div>
+                    <div class="shrink-0">
+                        <svg class="w-5 h-5 text-accent-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                        </svg>
+                    </div>
+                </button>
+            </form>
+        @endif
+
         <div x-data="{
                 mode: @js($hasCareerAccess ? 'career' : 'tournament'),
                 openTab: '{{ $firstId }}',
@@ -19,6 +47,7 @@
                 @csrf
 
                 <x-input-error :messages="$errors->get('team_id')" class="mt-2"/>
+                <x-input-error :messages="$errors->get('limit')" class="mt-2"/>
 
                 {{-- Hidden game_mode field --}}
                 <input type="hidden" name="game_mode" :value="mode">

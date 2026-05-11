@@ -413,6 +413,8 @@ return [
     // Game modes
     'mode_career' => 'Career Mode',
     'mode_career_desc' => 'Manage a club through multiple seasons',
+    'mode_career_pro' => 'Pro Manager',
+    'mode_career_pro_desc' => 'Start as an unknown manager in Primera RFEF — earn your way up the pyramid through performance',
     'mode_tournament' => 'National team',
     'mode_tournament_desc' => 'Manage a national team in the World Cup',
     'mode_tournament_badge' => 'World Cup',

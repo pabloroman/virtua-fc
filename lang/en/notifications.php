@@ -105,6 +105,11 @@ return [
     'priority_urgent' => 'Urgent',
     'priority_attention' => 'Attention',
 
+    // Pro-manager job offers
+    'job_offer_received_title' => ':count clubs interested in you',
+    'job_offer_post_firing_title' => 'Choose your next club (:count offers)',
+    'job_offer_received_message' => 'Check the season-end screen to accept or decline.',
+
     // Transfer window open
     'transfer_window_open_title' => ':window Transfer Window Open',
     'transfer_window_open_message' => 'The transfer window is now open. Agreed transfers will join your squad immediately.',
