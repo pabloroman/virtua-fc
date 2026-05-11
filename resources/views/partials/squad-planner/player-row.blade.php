@@ -8,6 +8,7 @@
     $nextAge = $gp->next_season_age;
     $role = $gp->squad_role ?? null;
     $blurb = $gp->squad_blurb ?? null;
+    $action = $gp->squad_action ?? null;
 
     $reasonTone = match ($status) {
         \App\Modules\Squad\Services\NextSeasonProjectionService::STATUS_OUTGOING => 'bg-accent-red/10 text-accent-red border-accent-red/20',
@@ -51,6 +52,7 @@
                     @if($role)
                         <x-squad-role-badge :role="$role" />
                     @endif
+                    <x-squad-action-chip :action="$action" />
                     @if($reason !== \App\Modules\Squad\Services\NextSeasonProjectionService::REASON_OWNED)
                         <span class="inline-flex items-center px-2 py-0.5 rounded-full border text-[10px] font-medium {{ $reasonTone }}">
                             {{ $reasonLabel }}
@@ -63,7 +65,7 @@
     </div>
 
     {{-- ===== Desktop row ===== --}}
-    <div class="hidden lg:grid items-center px-4 py-2.5 gap-3 cursor-pointer grid-cols-[1.1fr_44px_1.4fr_150px_110px_140px]"
+    <div class="hidden lg:grid items-center px-4 py-2.5 gap-3 cursor-pointer grid-cols-[1.1fr_44px_1fr_140px_110px_110px_130px]"
          @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $gp->id]) }}')">
 
         {{-- Player name + avatar + positions + contract --}}
@@ -113,6 +115,11 @@
             @if($role)
                 <x-squad-role-badge :role="$role" />
             @endif
+        </div>
+
+        {{-- Action chip --}}
+        <div class="flex justify-center">
+            <x-squad-action-chip :action="$action" />
         </div>
 
         {{-- Reason chip (only shown when the situation differs from a plain "owned" stay) --}}

@@ -59,6 +59,14 @@ return [
     'role_reserves' => 'Suplente',
     'role_departing' => 'Saliente',
 
+    // Action chips
+    'action_play_often' => 'Dar minutos',
+    'action_develop' => 'Desarrollar',
+    'action_keep' => 'Mantener',
+    'action_renew' => 'Renovar',
+    'action_list' => 'Poner en venta',
+    'action_replace' => 'Sustituir',
+
     // Auto-generated blurbs
     'blurb_wonderkid' => 'Gran potencial — ya útil y creciendo rápido.',
     'blurb_key_player' => 'Pilar del equipo. Construye en torno a él.',

@@ -59,6 +59,14 @@ return [
     'role_reserves' => 'Reserves',
     'role_departing' => 'Departing',
 
+    // Action chips
+    'action_play_often' => 'Play often',
+    'action_develop' => 'Develop',
+    'action_keep' => 'Keep',
+    'action_renew' => 'Renew',
+    'action_list' => 'List',
+    'action_replace' => 'Replace',
+
     // Auto-generated blurbs
     'blurb_wonderkid' => 'Huge potential — already useful and getting better.',
     'blurb_key_player' => 'Cornerstone player. Build the team around them.',
