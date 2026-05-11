@@ -238,6 +238,12 @@ class PrimeraRFEFPromotionRule implements SelfSwappingPromotionRule
     }
 
     /**
+     * Lane invariant: GameStanding first, SimulatedSeason fallback. The
+     * playoff bracket draw (PrimeraRFEFPlayoffGenerator::eligibleTopTeams)
+     * uses the same preference order, and only one of the two sources is
+     * ever populated for a given (game, league, season) — so position 1
+     * here can never collide with positions 2..5 used to seed the bracket.
+     *
      * @return array{teamId: string, position: int|string, teamName: string, origin: string}|null
      */
     private function directPromotion(Game $game, string $groupId): ?array
@@ -346,6 +352,9 @@ class PrimeraRFEFPromotionRule implements SelfSwappingPromotionRule
 
             if ($standIn) {
                 $results[] = $standIn;
+                // Accumulate so Group B's resolution can't pick the same team
+                // again if the data sources happen to overlap.
+                $already[] = $standIn['teamId'];
             }
         }
 

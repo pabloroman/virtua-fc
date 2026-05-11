@@ -604,4 +604,76 @@ class PrimeraRFEFPromotionTest extends TestCase
         $this->expectException(PlayoffInProgressException::class);
         $rule->getPromotedTeams($this->game);
     }
+
+    // ──────────────────────────────────────────────────
+    // Lane invariant: simulated and standings cannot coexist
+    // ──────────────────────────────────────────────────
+
+    /**
+     * Regression for the dual-truth bug: the playoff was drawn from
+     * SimulatedSeason (so a bracket winner is the position-2 simulated team),
+     * but the season-close path later wrote real game_standings with a
+     * different ordering that puts that same team at position 1. The promotion
+     * rule then listed the team as both a direct promotion AND a playoff
+     * winner. With the lane lock in SyntheticLeagueResolver, the standings
+     * write must be refused — so the promoted list reads consistently from
+     * the simulated lane and contains 4 distinct teams.
+     */
+    public function test_resolver_refuses_to_write_standings_after_simulated_lane_committed(): void
+    {
+        $this->game->update(['competition_id' => 'ESP2']);
+
+        $simulatedA = $this->createSimulatedTeams(20);
+        $simulatedB = $this->createSimulatedTeams(20);
+        $this->createSimulatedSeason('ESP3A', $simulatedA);
+        $this->createSimulatedSeason('ESP3B', $simulatedB);
+
+        $resolver = app(\App\Modules\Match\Services\SyntheticLeagueResolver::class);
+        $esp3a = Competition::find('ESP3A');
+
+        $resolver->catchUp($this->game, $esp3a, $this->game->current_date?->copy()->addYear());
+
+        $this->assertSame(0, GameStanding::where('game_id', $this->game->id)
+            ->where('competition_id', 'ESP3A')
+            ->count(), 'catchUp must not write game_standings when SimulatedSeason already exists.');
+        $this->assertSame(0, GameMatch::where('game_id', $this->game->id)
+            ->where('competition_id', 'ESP3A')
+            ->count(), 'catchUp must not write game_matches when SimulatedSeason already exists.');
+    }
+
+    /**
+     * Counterpart of the lock test: with no SimulatedSeason row in place,
+     * catchUp is free to materialize fixtures and standings as before.
+     */
+    public function test_resolver_initializes_when_no_simulated_season_exists(): void
+    {
+        $this->game->update(['competition_id' => 'ESP2']);
+
+        // Seed CompetitionEntry for ESP3A only (20 teams), no SimulatedSeason.
+        $teams = $this->createSimulatedTeams(20);
+        foreach ($teams as $team) {
+            CompetitionEntry::create([
+                'game_id' => $this->game->id,
+                'competition_id' => 'ESP3A',
+                'team_id' => $team->id,
+                'entry_round' => 1,
+            ]);
+        }
+
+        $resolver = app(\App\Modules\Match\Services\SyntheticLeagueResolver::class);
+        $esp3a = Competition::find('ESP3A');
+
+        $resolver->ensureInitialized($this->game, $esp3a);
+
+        $this->assertGreaterThan(0, GameMatch::where('game_id', $this->game->id)
+            ->where('competition_id', 'ESP3A')
+            ->count(), 'ensureInitialized should create fixtures when no lane is locked yet.');
+        $this->assertGreaterThan(0, GameStanding::where('game_id', $this->game->id)
+            ->where('competition_id', 'ESP3A')
+            ->count(), 'ensureInitialized should seed standings when no lane is locked yet.');
+        $this->assertSame(0, SimulatedSeason::where('game_id', $this->game->id)
+            ->where('competition_id', 'ESP3A')
+            ->where('season', $this->game->season)
+            ->count(), 'No SimulatedSeason should be written by the resolver itself.');
+    }
 }

@@ -47,6 +47,15 @@ class SeasonSimulationProcessor implements SeasonProcessor
      * (e.g. on the season-end screen). When true, existing simulated data
      * is overwritten — used after promotion/relegation swaps change rosters.
      *
+     * Lane invariant: the `hasRealStandings` skip below is what keeps a
+     * league from carrying both a SimulatedSeason row and real game_standings
+     * for the same (game, season). The matching guard on the other side lives
+     * in SyntheticLeagueResolver::isLockedToSimulatedLane, which refuses to
+     * write standings once a SimulatedSeason already exists. Together they
+     * guarantee exactly one source of truth per (game, league, season), which
+     * PrimeraRFEFPromotionRule relies on to avoid the same team appearing as
+     * both a direct promotion and a playoff bracket winner.
+     *
      * @param  string[]|null  $competitionIds  If provided, only simulate these competition IDs
      * @param  bool  $forceResimulate  If true, overwrite existing simulated data
      */

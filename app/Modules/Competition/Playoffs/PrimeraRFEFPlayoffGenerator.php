@@ -264,6 +264,14 @@ class PrimeraRFEFPlayoffGenerator implements PlayoffGenerator
      * Reserve teams whose parent club plays in ESP2 are skipped; the next
      * eligible team slides into their playoff slot.
      *
+     * Lane invariant: the "GameStanding first, SimulatedSeason fallback"
+     * order is load-bearing. Per (game, league, season) only one source ever
+     * gets populated — SyntheticLeagueResolver refuses to write standings
+     * once a SimulatedSeason exists, and SeasonSimulationProcessor refuses
+     * to write SimulatedSeason once real standings exist. PrimeraRFEFPromotionRule
+     * uses the same preference order, so the bracket draw and the direct-
+     * promotion read always agree on positions.
+     *
      * @return array<string> Team UUIDs in seed order [2nd, 3rd, 4th, 5th].
      */
     private function eligibleTopTeams(

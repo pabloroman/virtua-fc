@@ -6,6 +6,7 @@ use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GameMatch;
+use App\Models\SimulatedSeason;
 use App\Modules\Competition\Services\LeagueFixtureGenerator;
 use App\Modules\Competition\Services\StandingsCalculator;
 use Carbon\CarbonInterface;
@@ -82,6 +83,10 @@ class SyntheticLeagueResolver
             return;
         }
 
+        if ($this->isLockedToSimulatedLane($game, $competition)) {
+            return;
+        }
+
         $this->withLock($game->id, $competition->id, function () use ($game, $competition, $upToDate): void {
             $this->ensureInitializedLocked($game, $competition);
             $this->resolveDueMatchesLocked($game, $competition, $upToDate ?? $game->current_date);
@@ -98,6 +103,10 @@ class SyntheticLeagueResolver
             return;
         }
 
+        if ($this->isLockedToSimulatedLane($game, $competition)) {
+            return;
+        }
+
         $this->withLock($game->id, $competition->id, function () use ($game, $competition): void {
             $this->ensureInitializedLocked($game, $competition);
         });
@@ -110,6 +119,10 @@ class SyntheticLeagueResolver
     public function resolveDueMatches(Game $game, Competition $competition, ?CarbonInterface $upToDate = null): void
     {
         if (! $this->isSupported($competition) || $this->isUsersPrimaryLeague($game, $competition)) {
+            return;
+        }
+
+        if ($this->isLockedToSimulatedLane($game, $competition)) {
             return;
         }
 
@@ -130,6 +143,25 @@ class SyntheticLeagueResolver
     private function isUsersPrimaryLeague(Game $game, Competition $competition): bool
     {
         return $competition->id === $game->competition_id;
+    }
+
+    /**
+     * Each (game, league, season) is locked to exactly one source of truth.
+     * If a SimulatedSeason row already exists for this league, some prior
+     * caller (the Primera RFEF playoff generator, SeasonSimulationProcessor,
+     * etc.) has committed to the "simulated lane" — the ordering in
+     * `simulated_seasons.results` is authoritative. Writing `game_standings`
+     * here would produce a competing ordering that disagrees on positions,
+     * which is how a team can end up listed both as a direct promotion and
+     * as a playoff bracket winner (see PrimeraRFEFPromotionRule). Bail out
+     * so the simulated lane stays the only source.
+     */
+    private function isLockedToSimulatedLane(Game $game, Competition $competition): bool
+    {
+        return SimulatedSeason::where('game_id', $game->id)
+            ->where('competition_id', $competition->id)
+            ->where('season', $game->season)
+            ->exists();
     }
 
     /**
