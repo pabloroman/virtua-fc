@@ -398,7 +398,7 @@
                         </x-section-card>
 
                         {{-- Team Instructions --}}
-                        <x-section-card title="{{ __('game.instructions_title') }}">
+                        <x-section-card title="{{ __('game.instructions_title') }}" overflow="visible">
                             <div class="px-5 py-4 space-y-4">
                                 {{-- Tactical impact (combined ATK/DEF deltas from formation + mentality + style + pressing + def line) --}}
                                 <template x-if="formationModifiers[selectedFormation]">
