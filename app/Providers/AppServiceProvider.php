@@ -40,6 +40,7 @@ use App\Modules\Squad\Listeners\EnforceSquadRegistration;
 use App\Modules\Transfer\Listeners\ApplyWageGapMoraleDrip;
 use App\Modules\Transfer\Listeners\CompleteAgreedTransfersOnWindowOpen;
 use App\Modules\Transfer\Listeners\ProcessTransferWindowClose;
+use App\Modules\Transfer\Listeners\RollSalaryUnhappiness;
 use App\Modules\Season\Listeners\RecordSeasonCompleted;
 use App\Modules\Season\Listeners\SimulateOtherLeagues;
 use App\Modules\Competition\Services\CompetitionHandlerResolver;
@@ -177,6 +178,7 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(GameDateAdvanced::class, ProcessTransferWindowClose::class);
         Event::listen(GameDateAdvanced::class, NotifyTransferWindowClosed::class);
         Event::listen(GameDateAdvanced::class, EnforceSquadRegistration::class);
+        Event::listen(GameDateAdvanced::class, RollSalaryUnhappiness::class);
         Event::listen(GameDateAdvanced::class, ApplyWageGapMoraleDrip::class);
 
         Queue::failing(function (JobFailed $event) {

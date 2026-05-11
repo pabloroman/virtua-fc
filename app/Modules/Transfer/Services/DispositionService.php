@@ -75,6 +75,13 @@ class DispositionService
      */
     public const STATURE_GAP_MIN_REPUTATION_GAP = 2;
 
+    /**
+     * Per-matchday chance (percent) that a wage-gapped player notices and
+     * becomes "salary-unhappy." Until the dice land on them they stay quietly
+     * underpaid; once flagged, the status sticks until the gap is closed.
+     */
+    public const WAGE_GAP_TRIGGER_CHANCE_PERCENT = 5;
+
     /** Monthly morale loss for unaddressed wage-gap players. */
     public const WAGE_GAP_MORALE_DRIP = 5;
     /** Floor below which the wage-gap drip stops applying. */
@@ -232,9 +239,10 @@ class DispositionService
      *
      * A player whose stature has outgrown the club will not sign a new deal at any
      * wage or length — their only path is to run down the current contract and
-     * leave on a transfer (or free). An underpaid player will always listen
-     * because a renewal is their route to fair wages. Otherwise standard gates
-     * apply: freshly-signed, content players with lots of contract left decline.
+     * leave on a transfer (or free). A salary-unhappy player (i.e. their dice
+     * have landed) will always listen because a renewal is their route to fair
+     * wages. Otherwise standard gates apply: freshly-signed, content players
+     * with lots of contract left decline.
      */
     public function isWillingToNegotiateRenewal(GamePlayer $player): bool
     {
@@ -778,36 +786,15 @@ class DispositionService
     }
 
     /**
-     * True when the player earns materially less than same-tier peers in their
-     * own squad. Wage-gap players always listen to renewal talks and their
-     * demand is pegged to the peer median (not their current-wage floor).
+     * True when the player has *announced* salary unhappiness — i.e. the
+     * per-matchday dice roll has flipped `salary_unhappy_since`. Eligibility
+     * (the underlying underpayment) is still the wage gap vs same-tier peers,
+     * but the flag is now stochastic: a quietly underpaid player returns
+     * false here until their roll lands.
      */
     public function hasWageGap(GamePlayer $player): bool
     {
-        if (!$player->team_id) {
-            return false;
-        }
-
-        // On-loan players are compared against the wrong set of peers.
-        // Skip the check until they're back at the owning club.
-        if ($player->isOnLoan()) {
-            return false;
-        }
-
-        // A pending renewal (agreed but not yet applied until season end)
-        // should close the flag immediately — otherwise the manager keeps
-        // being dripped for months after doing the right thing.
-        $effectiveWage = $player->pending_annual_wage ?: $player->annual_wage;
-        if ($effectiveWage <= 0) {
-            return false;
-        }
-
-        $peerMedian = $this->peerMedianWage($player);
-        if ($peerMedian <= 0) {
-            return false;
-        }
-
-        return $effectiveWage < (int) ($peerMedian * self::WAGE_GAP_RATIO);
+        return $player->salary_unhappy_since !== null;
     }
 
     /**
@@ -848,20 +835,19 @@ class DispositionService
      */
     public function applyWageGapMoraleDrip(Game $game): int
     {
+        // Only players who have actually been flagged by the per-matchday roll
+        // get the drip — quietly underpaid players whose dice haven't landed
+        // are not yet "unhappy" and don't lose morale.
         $squad = GamePlayer::with(['matchState', 'activeLoan'])
             ->joinMatchState()
             ->where('game_players.game_id', $game->id)
             ->where('game_players.team_id', $game->team_id)
+            ->whereNotNull('game_players.salary_unhappy_since')
             ->whereMatchStat('morale', '>', self::WAGE_GAP_MORALE_FLOOR)
             ->get();
 
-        $mediansByTier = $this->peerMedianWagesByTier($squad);
-
         $affected = 0;
         foreach ($squad as $player) {
-            if (!$this->hasWageGapAgainst($player, $mediansByTier[$player->tier] ?? 0)) {
-                continue;
-            }
             $player->matchState->update([
                 'morale' => max(self::WAGE_GAP_MORALE_FLOOR, $player->morale - self::WAGE_GAP_MORALE_DRIP),
             ]);
@@ -872,20 +858,64 @@ class DispositionService
     }
 
     /**
+     * Per-matchday salary-unhappiness roll for the user's first team.
+     *
+     * For every wage-gapped player on the squad that is not yet flagged, roll
+     * `WAGE_GAP_TRIGGER_CHANCE_PERCENT` to flip `salary_unhappy_since` to the
+     * current in-game date. For every already-flagged player whose gap has
+     * since closed (manager raised wage, renewal agreed), clear the flag.
+     *
+     * @return array{flagged: int, cleared: int}
+     */
+    public function rollSalaryUnhappiness(Game $game): array
+    {
+        if (!$game->team_id) {
+            return ['flagged' => 0, 'cleared' => 0];
+        }
+
+        $squad = GamePlayer::with('activeLoan')
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->get();
+
+        $mediansByTier = $this->peerMedianWagesByTier($squad);
+
+        $flagged = 0;
+        $cleared = 0;
+
+        foreach ($squad as $player) {
+            $isEligible = $this->hasWageGapAgainst($player, $mediansByTier[$player->tier] ?? 0);
+            $isFlagged = $player->salary_unhappy_since !== null;
+
+            if ($isFlagged && !$isEligible) {
+                $player->update(['salary_unhappy_since' => null]);
+                $cleared++;
+                continue;
+            }
+
+            if (!$isFlagged && $isEligible && random_int(1, 100) <= self::WAGE_GAP_TRIGGER_CHANCE_PERCENT) {
+                $player->update(['salary_unhappy_since' => $game->current_date]);
+                $flagged++;
+            }
+        }
+
+        return ['flagged' => $flagged, 'cleared' => $cleared];
+    }
+
+    /**
      * Per-player flag map for a game's squad. Used by the squad and renewal
      * views to render the "won't renew" / "wants raise" indicators without
      * recomputing the checks for every row.
      *
      * @return Collection<string, array{stature_gap: bool, wage_gap: bool}>
      */
-    public function buildSquadFlags(Game $game, ?Collection $squad = null, ?array $mediansByTier = null): Collection
+    public function buildSquadFlags(Game $game, ?Collection $squad = null): Collection
     {
         $squad ??= GamePlayer::with('activeLoan')
             ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->get();
 
-        $mediansByTier ??= $this->peerMedianWagesByTier($squad);
         // Resolve once: stature is evaluated against the current team for every
         // player in the squad, so the per-player tierReputationGap call would
         // re-resolve the same team reputation N times otherwise.
@@ -897,7 +927,9 @@ class DispositionService
         return $squad->mapWithKeys(fn (GamePlayer $p) => [
             $p->id => [
                 'stature_gap' => $teamIndex !== null && $this->hasStatureGapAgainst($p, $teamIndex),
-                'wage_gap' => $this->hasWageGapAgainst($p, $mediansByTier[$p->tier] ?? 0),
+                // Stored flag, not live eligibility — only players whose
+                // per-matchday roll has landed get the squad-page indicator.
+                'wage_gap' => $p->salary_unhappy_since !== null,
             ],
         ]);
     }
