@@ -180,7 +180,7 @@ class SquadService
 
         // Per-player flags (stature/wage gap) used to drive squad indicators.
         $playerFlags = $isCareerMode
-            ? $this->dispositionService->buildSquadFlags($game, $allPlayers, $mediansByTier)->toArray()
+            ? $this->dispositionService->buildSquadFlags($game, $allPlayers)->toArray()
             : [];
 
         // MVP counts for the user's team across all competitions

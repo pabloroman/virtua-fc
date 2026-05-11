@@ -296,19 +296,17 @@ class ContractService
         $premium = $scenario->wagePremium($player->market_value_cents);
         $demandedWage = (int) ($baseWage * $premium);
 
-        // Wage-gap renewals: the player knows same-tier teammates earn more
-        // and demands the peer median wage at minimum. When the caller has
+        // Renewals: peg the demand at peer-median ("market rate") for every
+        // player, not just those who've voiced their unhappiness. An unflagged
+        // underpaid player hasn't *announced* anything but still negotiates at
+        // market — the salary_unhappy_since flag drives morale drip and the UI
+        // signal, it does not change renewal pricing. When the caller has
         // already computed the peer median for the squad (e.g. squad page
         // renewal loop), reuse it to avoid an N+1 of squad-wide queries.
         if ($scenario === NegotiationScenario::RENEWAL) {
-            $hasGap = $peerMedian !== null
-                ? $this->dispositionService->hasWageGapAgainst($player, $peerMedian)
-                : $this->dispositionService->hasWageGap($player);
-            if ($hasGap) {
-                $resolvedMedian = $peerMedian ?? $this->dispositionService->peerMedianWage($player);
-                if ($resolvedMedian > $demandedWage) {
-                    $demandedWage = $resolvedMedian;
-                }
+            $resolvedMedian = $peerMedian ?? $this->dispositionService->peerMedianWage($player);
+            if ($resolvedMedian > $demandedWage) {
+                $demandedWage = $resolvedMedian;
             }
         }
 
@@ -358,11 +356,14 @@ class ContractService
             return false;
         }
 
-        // Capture wage-gap state before the update so we can grant a relief
-        // boost if this renewal actually addresses a wage grievance. The peer
-        // median is read now because the player is about to be updated.
-        $hadWageGap = $this->dispositionService->hasWageGap($player);
-        $peerMedian = $hadWageGap ? $this->dispositionService->peerMedianWage($player) : 0;
+        // Capture salary-unhappy state before the update so we can clear
+        // the flag and grant a relief boost when this renewal actually
+        // closes the gap. Only flagged players get the boost — unflagged
+        // underpaid players had no morale drip running, so there is no
+        // grievance to relieve. Peer median is read now because the
+        // player is about to be updated.
+        $wasSalaryUnhappy = $this->dispositionService->isSalaryUnhappy($player);
+        $peerMedian = $wasSalaryUnhappy ? $this->dispositionService->peerMedianWage($player) : 0;
 
         $seasonYear = (int) $game->season;
 
@@ -373,15 +374,26 @@ class ContractService
             $newContractEnd = $player->contract_until->copy();
         }
 
-        $player->update([
+        $updates = [
             'contract_until' => $newContractEnd,
             'pending_annual_wage' => $newWage,
-        ]);
+        ];
+
+        // Synchronous flag clear: if the new effective wage lifts the player
+        // out of the wage-gap band (>= 60% of peer median), drop the flag now
+        // so the squad page doesn't keep showing "wants raise" until the next
+        // roll catches up.
+        if ($wasSalaryUnhappy && $peerMedian > 0
+            && $newWage >= (int) ($peerMedian * DispositionService::WAGE_GAP_RATIO)) {
+            $updates['salary_unhappy_since'] = null;
+        }
+
+        $player->update($updates);
 
         // Wage-gap resolution: small morale boost when the renewal actually
         // closes the peer-median gap. Token raises that don't clear the gap
         // get no boost — the drip will keep firing.
-        if ($hadWageGap && $newWage >= $peerMedian && $player->matchState) {
+        if ($wasSalaryUnhappy && $newWage >= $peerMedian && $player->matchState) {
             $player->matchState->update([
                 'morale' => min(
                     DispositionService::MAX_MORALE,

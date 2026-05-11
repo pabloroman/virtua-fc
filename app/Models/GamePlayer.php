@@ -134,6 +134,7 @@ class GamePlayer extends Model
         'contract_until',
         'annual_wage',
         'pending_annual_wage',
+        'salary_unhappy_since',
         'durability',
         'overall_score',
         'tier',
@@ -152,6 +153,7 @@ class GamePlayer extends Model
         'contract_until' => 'date',
         'annual_wage' => 'integer',
         'pending_annual_wage' => 'integer',
+        'salary_unhappy_since' => 'date',
         'durability' => 'integer',
         // Development fields
         'overall_score' => 'integer',
