@@ -4,8 +4,6 @@ return [
     // Page chrome
     'planner' => 'Planificador',
     'title' => 'Planificador de plantilla',
-    'subtitle_next_season' => 'Plantilla prevista para la temporada :year. Mira quién se queda, quién se va y quién llega.',
-    'subtitle_current_season' => 'Plantilla actual de la temporada :year. Cambia a Próxima temporada para ver los cambios previstos.',
     'next_season_label' => 'Próxima temporada (:year)',
     'toggle_current_season' => 'Actual (:year)',
     'toggle_next_season' => 'Próxima (:year)',

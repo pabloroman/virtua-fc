@@ -47,13 +47,6 @@
                 <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">
                     {{ __('planner.title') }}
                 </h2>
-                <p class="text-sm text-text-secondary mt-1">
-                    @if($isNextSeason)
-                        {{ __('planner.subtitle_next_season', ['year' => $nextSeasonStartYear]) }}
-                    @else
-                        {{ __('planner.subtitle_current_season', ['year' => $currentYear]) }}
-                    @endif
-                </p>
             </div>
 
             {{-- Season horizon toggle --}}
