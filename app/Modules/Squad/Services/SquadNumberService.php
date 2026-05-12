@@ -112,19 +112,24 @@ class SquadNumberService
      * Bulk reassign squad numbers for the user's team.
      *
      * Preserves existing numbers where valid. Only moves players when necessary:
-     * - Over-23 in academy slots (26+) → moved to freed 1-25 slots
+     * - Over-23 stuck in an academy slot (26+) → moved to a 1-25 slot
+     *   (only reachable when a player ages out of U-23 at season transition)
      * - Under-23 in 1-25 → bumped to 26+ only if an over-23 needs the slot
-     * - Unregistered under-23 → assigned 26+ slots
-     * - Unregistered over-23 → assigned 1-25 if possible
      *
-     * Uses traditional football numbering conventions when assigning new numbers.
+     * Players whose number is null are treated as deliberately unenrolled by
+     * the user (transfer-listed, loaned-in surplus, etc.) and are left alone.
+     * Genuine new arrivals — signings, loan returns to the user's team,
+     * academy graduates — get a number assigned via assignNumberForNewPlayer()
+     * at the moment they join, so a null number on the user's team is always
+     * an intentional exclusion that must be preserved.
+     *
      * Returns the count of over-23 players left without a number (unresolvable).
      */
     public function reassignNumbers(Game $game): int
     {
         $players = GamePlayer::where('game_id', $game->id)
             ->where('team_id', $game->team_id)
-            
+
             ->get();
 
         if ($players->isEmpty()) {
@@ -136,35 +141,41 @@ class SquadNumberService
         // first-team slots.
         $u23BirthCutoff = $game->getU23BirthCutoff();
 
-        // Categorize players by age and current number position
+        // Categorize players by age and current number position. Players with
+        // a null number are skipped entirely — they were deliberately left
+        // unenrolled by the user and must stay that way.
         $over23InFirstTeam = collect();
         $under23InFirstTeam = collect();
         $over23NeedSlot = collect();
-        $under23NeedSlot = collect();
         $under23InAcademy = collect();
 
         foreach ($players as $player) {
-            $isYoung = $player->date_of_birth->greaterThanOrEqualTo($u23BirthCutoff);
             $number = $player->number;
-            $inFirstTeam = $number !== null && $number >= 1 && $number <= self::FIRST_TEAM_MAX;
-            $inAcademy = $number !== null && $number > self::FIRST_TEAM_MAX;
+
+            if ($number === null) {
+                continue;
+            }
+
+            $isYoung = $player->date_of_birth->greaterThanOrEqualTo($u23BirthCutoff);
+            $inFirstTeam = $number >= 1 && $number <= self::FIRST_TEAM_MAX;
 
             if (! $isYoung && $inFirstTeam) {
                 $over23InFirstTeam->push($player);
             } elseif ($isYoung && $inFirstTeam) {
                 $under23InFirstTeam->push($player);
             } elseif (! $isYoung) {
+                // Over-23 holding an academy slot — only possible when a U-23
+                // ages out of the cutoff at season transition. Needs to move
+                // to a 1-25 slot.
                 $over23NeedSlot->push($player);
-            } elseif ($inAcademy) {
-                $under23InAcademy->push($player);
             } else {
-                $under23NeedSlot->push($player);
+                $under23InAcademy->push($player);
             }
         }
 
         $over23NeedingCount = $over23NeedSlot->count();
 
-        if ($over23NeedingCount === 0 && $under23NeedSlot->isEmpty()) {
+        if ($over23NeedingCount === 0) {
             return 0;
         }
 
@@ -234,19 +245,6 @@ class SquadNumberService
         // Bumped under-23 go to academy slots
         foreach ($toBump as $player) {
             if ($academyIdx < $freeAcademy->count()) {
-                $updates[$player->id] = $freeAcademy[$academyIdx++];
-            }
-        }
-
-        // Unregistered under-23: try first-team with position prefs, then academy
-        foreach ($under23NeedSlot as $player) {
-            $number = $this->preferredNumber($player->position, $usedFirstTeam, 1, self::FIRST_TEAM_MAX)
-                ?? $this->firstAvailable(1, self::FIRST_TEAM_MAX, $usedFirstTeam);
-
-            if ($number !== null) {
-                $updates[$player->id] = $number;
-                $usedFirstTeam->put($number, true);
-            } elseif ($academyIdx < $freeAcademy->count()) {
                 $updates[$player->id] = $freeAcademy[$academyIdx++];
             }
         }

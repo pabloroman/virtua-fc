@@ -58,19 +58,12 @@ class SquadNumberServiceTest extends TestCase
         // 1 over-23 in academy slot 26 — truly unresolvable (all 25 taken by over-23)
         $orphan = $this->createPlayer(age: 25, number: 26, position: 'Centre-Back');
 
-        // 1 under-23 without a number
-        $youngster = $this->createPlayer(age: 19, number: null, position: 'Left Winger');
-
         $unresolvable = $this->service->reassignNumbers($this->game);
 
         $this->assertEquals(1, $unresolvable);
 
         $orphan->refresh();
         $this->assertNull($orphan->number, 'Unresolvable over-23 should have number cleared');
-
-        $youngster->refresh();
-        $this->assertNotNull($youngster->number, 'Under-23 should get an academy slot');
-        $this->assertGreaterThanOrEqual(26, $youngster->number);
     }
 
     public function test_reassign_handles_normal_operation_without_collisions(): void
@@ -85,22 +78,17 @@ class SquadNumberServiceTest extends TestCase
         $this->createPlayer(age: 19, number: 27, position: 'Right Winger');
         $this->createPlayer(age: 21, number: 28, position: 'Left-Back');
 
-        // 1 over-23 without a number (e.g. returned from loan)
-        $loanReturn = $this->createPlayer(age: 26, number: null, position: 'Centre-Forward');
-
-        // 1 under-23 without a number
-        $newYouth = $this->createPlayer(age: 18, number: null, position: 'Central Midfield');
+        // 1 over-23 wrongly sitting in an academy slot (e.g. aged out of U-23
+        // at season transition) — should be promoted to a first-team slot.
+        $agedOut = $this->createPlayer(age: 24, number: 29, position: 'Centre-Forward');
 
         $unresolvable = $this->service->reassignNumbers($this->game);
 
         $this->assertEquals(0, $unresolvable);
 
-        $loanReturn->refresh();
-        $this->assertNotNull($loanReturn->number);
-        $this->assertLessThanOrEqual(25, $loanReturn->number, 'Over-23 should get a first-team slot');
-
-        $newYouth->refresh();
-        $this->assertNotNull($newYouth->number);
+        $agedOut->refresh();
+        $this->assertNotNull($agedOut->number);
+        $this->assertLessThanOrEqual(25, $agedOut->number, 'Over-23 in academy should be moved to a first-team slot');
     }
 
     public function test_reassign_no_duplicate_numbers(): void
@@ -116,10 +104,6 @@ class SquadNumberServiceTest extends TestCase
         $this->createPlayer(age: 25, number: 26, position: 'Right-Back');
         $this->createPlayer(age: 24, number: 27, position: 'Left-Back');
 
-        // Under-23 without numbers
-        $this->createPlayer(age: 19, number: null, position: 'Central Midfield');
-        $this->createPlayer(age: 18, number: null, position: 'Right Winger');
-
         $this->service->reassignNumbers($this->game);
 
         $numbers = GamePlayer::where('game_id', $this->game->id)
@@ -128,6 +112,32 @@ class SquadNumberServiceTest extends TestCase
             ->pluck('number');
 
         $this->assertEquals($numbers->count(), $numbers->unique()->count(), 'All assigned numbers must be unique');
+    }
+
+    public function test_reassign_does_not_auto_enroll_user_excluded_players(): void
+    {
+        // User has 22 players enrolled in first team (slots 1-22).
+        for ($i = 1; $i <= 22; $i++) {
+            $this->createPlayer(age: 27, number: $i, position: 'Central Midfield');
+        }
+
+        // 3 players the user deliberately left unenrolled — e.g. transfer-listed,
+        // loaned-in surplus, players they intend to sell or send back. They
+        // must stay null after reassignment, otherwise they'd jump into the
+        // matchday squad ahead of intentionally registered players.
+        $forSale = $this->createPlayer(age: 29, number: null, position: 'Centre-Back');
+        $loanedIn = $this->createPlayer(age: 26, number: null, position: 'Right Winger');
+        $youngSurplus = $this->createPlayer(age: 19, number: null, position: 'Left-Back');
+
+        $unresolvable = $this->service->reassignNumbers($this->game);
+
+        $this->assertEquals(0, $unresolvable);
+        $forSale->refresh();
+        $loanedIn->refresh();
+        $youngSurplus->refresh();
+        $this->assertNull($forSale->number, 'Transfer-listed player must stay unenrolled');
+        $this->assertNull($loanedIn->number, 'Loaned-in surplus player must stay unenrolled');
+        $this->assertNull($youngSurplus->number, 'Surplus under-23 must stay unenrolled');
     }
 
     private function createPlayer(int $age, ?int $number, string $position = 'Central Midfield'): GamePlayer
