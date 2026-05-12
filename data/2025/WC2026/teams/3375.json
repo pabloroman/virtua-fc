@@ -3,19 +3,10 @@
   "name": "Spain",
   "players": [
     {
-      "club": { "name": "Arsenal FC", "image": "https://tmssl.akamaized.net/images/wappen/head/11.png" },
-      "contract": "Mar 26, 2022",
-      "dateOfBirth": "Sep 15, 1995",
-      "foot": "right",
-      "height": "1,83m",
-      "id": "262749",
-      "marketValue": "€35.00m",
-      "name": "David Raya",
-      "number": "1",
-      "position": "Goalkeeper"
-    },
-    {
-      "club": { "name": "RCD Espanyol", "image": "https://tmssl.akamaized.net/images/wappen/head/714.png" },
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/131.png",
+        "name": "FC Barcelona"
+      },
       "dateOfBirth": "May 4, 2001",
       "foot": "right",
       "height": "1,94m",
@@ -25,66 +16,88 @@
       "position": "Goalkeeper"
     },
     {
-      "club": { "name": "Athletic Club", "image": "https://tmssl.akamaized.net/images/wappen/head/621.png" },
-      "contract": "Nov 11, 2020",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/11.png",
+        "name": "Arsenal FC"
+      },
+      "dateOfBirth": "Sep 15, 1995",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "262749",
+      "marketValue": "€35.00m",
+      "name": "David Raya",
+      "position": "Goalkeeper"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/621.png",
+        "name": "Athletic Club"
+      },
       "dateOfBirth": "Jun 11, 1997",
       "foot": "right",
       "height": "1,90m",
       "id": "262396",
       "marketValue": "€25.00m",
       "name": "Unai Simón",
-      "number": "23",
       "position": "Goalkeeper"
     },
     {
-      "club": { "name": "Real Sociedad", "image": "https://tmssl.akamaized.net/images/wappen/head/681.png" },
-      "contract": "Mar 22, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/681.png",
+        "name": "Real Sociedad"
+      },
       "dateOfBirth": "Mar 24, 1995",
       "foot": "right",
       "height": "1,91m",
       "id": "212862",
       "marketValue": "€14.00m",
       "name": "Álex Remiro",
-      "number": "13",
       "position": "Goalkeeper"
     },
     {
-      "club": { "name": "Athletic Club", "image": "https://tmssl.akamaized.net/images/wappen/head/621.png" },
-      "contract": "Jun 4, 2021",
-      "dateOfBirth": "May 27, 1994",
-      "foot": "left",
-      "height": "1,91m",
-      "id": "176553",
-      "marketValue": "€9.00m",
-      "name": "Aymeric Laporte",
-      "number": "14",
-      "position": "Centre-Back"
-    },
-    {
-      "club": { "name": "Valencia CF", "image": "https://tmssl.akamaized.net/images/wappen/head/1049.png" },
-      "dateOfBirth": "Jun 27, 2004",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/631.png",
+        "name": "Chelsea FC"
+      },
+      "dateOfBirth": "Nov 18, 1997",
       "foot": "right",
-      "height": "1,91m",
-      "id": "646750",
-      "marketValue": "€35.00m",
-      "name": "Cristhian Mosquera",
-      "position": "Centre-Back"
+      "height": "1,97m",
+      "id": "403151",
+      "marketValue": "€22.00m",
+      "name": "Robert Sánchez",
+      "position": "Goalkeeper"
     },
     {
-      "club": { "name": "Athletic Club", "image": "https://tmssl.akamaized.net/images/wappen/head/621.png" },
-      "contract": "Mar 22, 2024",
-      "dateOfBirth": "Jul 5, 1999",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/237.png",
+        "name": "RCD Mallorca"
+      },
+      "dateOfBirth": "Jul 6, 2000",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "562742",
+      "marketValue": "€6.00m",
+      "name": "Leo Román",
+      "position": "Goalkeeper"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/131.png",
+        "name": "FC Barcelona"
+      },
+      "dateOfBirth": "Jan 22, 2007",
       "foot": "right",
       "height": "1,84m",
-      "id": "524000",
-      "marketValue": "€40.00m",
-      "name": "Dani Vivian",
-      "number": "4",
+      "id": "962110",
+      "marketValue": "€80.00m",
+      "name": "Pau Cubarsí",
       "position": "Centre-Back"
     },
     {
-      "club": { "name": "Real Madrid", "image": "https://tmssl.akamaized.net/images/wappen/head/418.png" },
-      "contract": "Mar 20, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/418.png",
+        "name": "Real Madrid"
+      },
       "dateOfBirth": "Apr 14, 2005",
       "foot": "both",
       "height": "1,97m",
@@ -94,29 +107,75 @@
       "position": "Centre-Back"
     },
     {
-      "club": { "name": "FC Barcelona", "image": "https://tmssl.akamaized.net/images/wappen/head/131.png" },
-      "contract": "Mar 22, 2024",
-      "dateOfBirth": "Jan 22, 2007",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/11.png",
+        "name": "Arsenal FC"
+      },
+      "dateOfBirth": "Jun 27, 2004",
       "foot": "right",
-      "height": "1,84m",
-      "id": "962110",
-      "marketValue": "€80.00m",
-      "name": "Pau Cubarsí",
-      "number": "15",
+      "height": "1,91m",
+      "id": "646750",
+      "marketValue": "€35.00m",
+      "name": "Cristhian Mosquera",
       "position": "Centre-Back"
     },
     {
-      "club": { "name": "Real Madrid", "image": "https://tmssl.akamaized.net/images/wappen/head/418.png" },
-      "dateOfBirth": "Feb 13, 2003",
-      "foot": "right",
-      "height": "1,84m",
-      "id": "935245",
-      "marketValue": "€7.50m",
-      "name": "Raúl Asencio",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/131.png",
+        "name": "FC Barcelona"
+      },
+      "dateOfBirth": "Jan 16, 1997",
+      "foot": "left",
+      "height": "1,92m",
+      "id": "399776",
+      "marketValue": "€25.00m",
+      "name": "Pau Torres",
       "position": "Centre-Back"
     },
     {
-      "club": { "name": "FC Barcelona", "image": "https://tmssl.akamaized.net/images/wappen/head/131.png" },
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/621.png",
+        "name": "Athletic Club"
+      },
+      "dateOfBirth": "May 27, 1994",
+      "foot": "left",
+      "height": "1,91m",
+      "id": "176553",
+      "marketValue": "€9.00m",
+      "name": "Aymeric Laporte",
+      "position": "Centre-Back"
+    },
+    {
+      "club": {
+        "name": "Atlético de Madrid",
+        "image": "https://assets.virtuafc.com/crests/13.png"
+      },
+      "dateOfBirth": "Nov 11, 1996",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "351809",
+      "marketValue": "€40.00m",
+      "name": "Robin Le Normand",
+      "position": "Centre-Back"
+    },
+    {
+      "club": {
+        "name": "Athletic Club",
+        "image": "https://assets.virtuafc.com/crests/621.png"
+      },
+      "dateOfBirth": "Jul 5, 1999",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "524000",
+      "marketValue": "€25.00m",
+      "name": "Dani Vivian",
+      "position": "Centre-Back"
+    },
+    {
+      "club": {
+        "name": "FC Barcelona",
+        "image": "https://assets.virtuafc.com/crests/131.png"
+      },
       "dateOfBirth": "Jan 9, 2001",
       "foot": "right",
       "height": "1,82m",
@@ -126,42 +185,10 @@
       "position": "Centre-Back"
     },
     {
-      "club": { "name": "Atlético de Madrid", "image": "https://tmssl.akamaized.net/images/wappen/head/13.png" },
-      "contract": "Jun 15, 2023",
-      "dateOfBirth": "Nov 11, 1996",
-      "foot": "right",
-      "height": "1,87m",
-      "id": "351809",
-      "marketValue": "€40.00m",
-      "name": "Robin Le Normand",
-      "number": "3",
-      "position": "Centre-Back"
-    },
-    {
-      "club": { "name": "Atlético de Madrid", "image": "https://tmssl.akamaized.net/images/wappen/head/13.png" },
-      "contract": "Jun 30, 2030",
-      "dateOfBirth": "Jun 20, 2003",
-      "foot": "right",
-      "height": "1,90m",
-      "id": "844637",
-      "marketValue": "€15.00m",
-      "name": "Marc Pubill",
-      "position": "Centre-Back"
-    },
-    {
-      "club": { "name": "Bayer 04 Leverkusen", "image": "https://tmssl.akamaized.net/images/wappen/head/15.png" },
-      "contract": "Nov 16, 2023",
-      "dateOfBirth": "Sep 20, 1995",
-      "foot": "left",
-      "height": "1,71m",
-      "id": "193082",
-      "marketValue": "€24.00m",
-      "name": "Alejandro Grimaldo",
-      "number": "17",
-      "position": "Left-Back"
-    },
-    {
-      "club": { "name": "Chelsea FC", "image": "https://tmssl.akamaized.net/images/wappen/head/631.png" },
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/631.png",
+        "name": "Chelsea FC"
+      },
       "dateOfBirth": "Jul 22, 1998",
       "foot": "left",
       "height": "1,73m",
@@ -171,204 +198,114 @@
       "position": "Left-Back"
     },
     {
-      "club": { "name": "FC Barcelona", "image": "https://tmssl.akamaized.net/images/wappen/head/131.png" },
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Oct 18, 2003",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/15.png",
+        "name": "Bayer 04 Leverkusen"
+      },
+      "dateOfBirth": "Sep 20, 1995",
       "foot": "left",
-      "height": "1,77m",
-      "id": "636688",
-      "marketValue": "€55.00m",
-      "name": "Alejandro Balde",
+      "height": "1,71m",
+      "id": "193082",
+      "marketValue": "€24.00m",
+      "name": "Alejandro Grimaldo",
       "position": "Left-Back"
     },
     {
-      "club": { "name": "Real Madrid", "image": "https://tmssl.akamaized.net/images/wappen/head/418.png" },
-      "contract": "Jun 30, 2031",
-      "dateOfBirth": "Mar 23, 2003",
-      "foot": "left",
-      "height": "1,86m",
-      "id": "811778",
-      "marketValue": "€60.00m",
-      "name": "Álvaro Carreras",
-      "number": "18",
-      "position": "Left-Back"
-    },
-    {
-      "club": { "name": "Real Madrid", "image": "https://tmssl.akamaized.net/images/wappen/head/418.png" },
-      "contract": "Sep 4, 2014",
-      "dateOfBirth": "Jan 11, 1992",
-      "foot": "right",
-      "height": "1,73m",
-      "id": "138927",
-      "injured": true,
-      "marketValue": "€10.00m",
-      "name": "Daniel Carvajal",
-      "position": "Right-Back"
-    },
-    {
-      "club": { "name": "Atlético de Madrid", "image": "https://tmssl.akamaized.net/images/wappen/head/13.png" },
-      "contract": "Nov 11, 2020",
-      "dateOfBirth": "Jan 30, 1995",
-      "foot": "right",
-      "height": "1,84m",
-      "id": "282411",
-      "marketValue": "€22.00m",
-      "name": "Marcos Llorente",
-      "number": "5",
-      "position": "Right-Back"
-    },
-    {
-      "club": { "name": "Tottenham Hotspur", "image": "https://tmssl.akamaized.net/images/wappen/head/148.png" },
-      "contract": "Mar 28, 2021",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/148.png",
+        "name": "Tottenham Hotspur"
+      },
       "dateOfBirth": "Sep 13, 1999",
       "foot": "right",
       "height": "1,73m",
       "id": "553875",
       "marketValue": "€40.00m",
       "name": "Pedro Porro",
-      "number": "12",
       "position": "Right-Back"
     },
     {
-      "club": { "name": "Celta de Vigo", "image": "https://tmssl.akamaized.net/images/wappen/head/940.png" },
-      "contract": "Jun 8, 2021",
-      "dateOfBirth": "May 13, 1999",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/13.png",
+        "name": "Atlético de Madrid"
+      },
+      "dateOfBirth": "Jan 30, 1995",
       "foot": "right",
       "height": "1,84m",
-      "id": "331505",
-      "marketValue": "€20.00m",
-      "name": "Óscar Mingueza",
+      "id": "282411",
+      "marketValue": "€22.00m",
+      "name": "Marcos Llorente",
       "position": "Right-Back"
     },
     {
-      "club": { "name": "Arsenal FC", "image": "https://tmssl.akamaized.net/images/wappen/head/11.png" },
-      "contract": "Jun 8, 2021",
+      "club": {
+        "name": "Atlético de Madrid",
+        "image": "https://assets.virtuafc.com/crests/13.png"
+      },
+      "dateOfBirth": "Jun 20, 2003",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "844637",
+      "marketValue": "€15.00m",
+      "name": "Marc Pubill",
+      "position": "Centre-Back"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/681.png",
+        "name": "Real Sociedad"
+      },
+      "dateOfBirth": "Sep 4, 2000",
+      "foot": "left",
+      "height": "1,71m",
+      "id": "366930",
+      "marketValue": "€15.00m",
+      "name": "Sergio Gómez",
+      "position": "Left-Back"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1075.png",
+        "name": "SC Braga"
+      },
+      "dateOfBirth": "Apr 1, 2000",
+      "foot": "right",
+      "height": "1,69m",
+      "id": "495601",
+      "marketValue": "€7.00m",
+      "name": "Víctor Gómez",
+      "position": "Right-Back"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/11.png",
+        "name": "Arsenal FC"
+      },
       "dateOfBirth": "Feb 2, 1999",
       "foot": "right",
       "height": "1,81m",
       "id": "423440",
       "marketValue": "€80.00m",
       "name": "Martín Zubimendi",
-      "number": "18",
       "position": "Defensive Midfield"
     },
     {
-      "club": { "name": "RCD Espanyol", "image": "https://tmssl.akamaized.net/images/wappen/head/714.png" },
-      "dateOfBirth": "Oct 29, 2001",
-      "foot": "left",
-      "height": "1,74m",
-      "id": "709372",
-      "marketValue": "€25.00m",
-      "name": "Carlos Romero",
-      "position": "Left-Back"
-    },
-    {
-      "club": { "name": "Manchester City", "image": "https://tmssl.akamaized.net/images/wappen/head/281.png" },
-      "contract": "Mar 23, 2018",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/281.png",
+        "name": "Manchester City"
+      },
       "dateOfBirth": "Jun 22, 1996",
       "foot": "right",
       "height": "1,91m",
       "id": "357565",
-      "injured": true,
       "marketValue": "€65.00m",
       "name": "Rodri",
       "position": "Defensive Midfield"
     },
     {
-      "club": { "name": "FC Barcelona", "image": "https://tmssl.akamaized.net/images/wappen/head/131.png" },
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "May 26, 2007",
-      "foot": "left",
-      "height": "1,93m",
-      "id": "1018920",
-      "marketValue": "€30.00m",
-      "name": "Marc Bernal",
-      "position": "Defensive Midfield"
-    },
-    {
-      "club": { "name": "Bayer 04 Leverkusen", "image": "https://tmssl.akamaized.net/images/wappen/head/15.png" },
-      "contract": "Nov 16, 2023",
-      "dateOfBirth": "Jun 28, 1997",
-      "foot": "right",
-      "height": "1,73m",
-      "id": "261504",
-      "marketValue": "€20.00m",
-      "name": "Aleix García",
-      "number": "8",
-      "position": "Central Midfield"
-    },
-    {
-      "club": { "name": "Real Sociedad", "image": "https://tmssl.akamaized.net/images/wappen/head/681.png" },
-      "contract": "Sep 2, 2021",
-      "dateOfBirth": "Jan 2, 1997",
-      "foot": "right",
-      "height": "1,80m",
-      "id": "372246",
-      "marketValue": "€8.00m",
-      "name": "Carlos Soler",
-      "position": "Central Midfield"
-    },
-    {
-      "club": { "name": "Paris Saint-Germain", "image": "https://tmssl.akamaized.net/images/wappen/head/583.png" },
-      "contract": "Jun 7, 2019",
-      "dateOfBirth": "Apr 3, 1996",
-      "foot": "left",
-      "height": "1,89m",
-      "id": "350219",
-      "marketValue": "€35.00m",
-      "name": "Fabián Ruiz",
-      "number": "8",
-      "position": "Central Midfield"
-    },
-    {
-      "club": { "name": "FC Barcelona", "image": "https://tmssl.akamaized.net/images/wappen/head/131.png" },
-      "contract": "Oct 6, 2021",
-      "dateOfBirth": "Aug 5, 2004",
-      "foot": "right",
-      "height": "1,73m",
-      "id": "646740",
-      "injured": true,
-      "marketValue": "€80.00m",
-      "name": "Gavi",
-      "position": "Central Midfield"
-    },
-    {
-      "club": { "name": "Arsenal FC", "image": "https://tmssl.akamaized.net/images/wappen/head/11.png" },
-      "contract": "Sep 3, 2020",
-      "dateOfBirth": "Jun 22, 1996",
-      "foot": "left",
-      "height": "1,89m",
-      "id": "338424",
-      "marketValue": "€45.00m",
-      "name": "Mikel Merino",
-      "number": "6",
-      "position": "Central Midfield"
-    },
-    {
-      "club": { "name": "Atlético de Madrid", "image": "https://tmssl.akamaized.net/images/wappen/head/13.png" },
-      "contract": "Nov 18, 2024",
-      "dateOfBirth": "Jun 15, 2003",
-      "foot": "right",
-      "height": "1,81m",
-      "id": "775605",
-      "marketValue": "€50.00m",
-      "name": "Pablo Barrios",
-      "position": "Central Midfield"
-    },
-    {
-      "club": { "name": "Real Betis Balompié", "image": "https://tmssl.akamaized.net/images/wappen/head/150.png" },
-      "contract": "May 29, 2016",
-      "dateOfBirth": "Feb 22, 1996",
-      "foot": "right",
-      "height": "1,78m",
-      "id": "357885",
-      "marketValue": "€8.00m",
-      "name": "Pablo Fornals",
-      "position": "Central Midfield"
-    },
-    {
-      "club": { "name": "FC Barcelona", "image": "https://tmssl.akamaized.net/images/wappen/head/131.png" },
-      "contract": "Mar 25, 2021",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/131.png",
+        "name": "FC Barcelona"
+      },
       "dateOfBirth": "Nov 25, 2002",
       "foot": "right",
       "height": "1,74m",
@@ -378,20 +315,62 @@
       "position": "Central Midfield"
     },
     {
-      "club": { "name": "FC Barcelona", "image": "https://tmssl.akamaized.net/images/wappen/head/131.png" },
-      "contract": "Nov 15, 2019",
-      "dateOfBirth": "May 7, 1998",
+      "club": {
+        "name": "Atlético de Madrid",
+        "image": "https://assets.virtuafc.com/crests/13.png"
+      },
+      "dateOfBirth": "Jun 15, 2003",
       "foot": "right",
-      "height": "1,79m",
-      "id": "293385",
-      "marketValue": "€60.00m",
-      "name": "Dani Olmo",
-      "number": "10",
-      "position": "Attacking Midfield"
+      "height": "1,81m",
+      "id": "775605",
+      "marketValue": "€50.00m",
+      "name": "Pablo Barrios",
+      "position": "Central Midfield"
     },
     {
-      "club": { "name": "FC Barcelona", "image": "https://tmssl.akamaized.net/images/wappen/head/131.png" },
-      "contract": "Jun 5, 2024",
+      "club": {
+        "name": "Bayer 04 Leverkusen",
+        "image": "https://assets.virtuafc.com/crests/15.png"
+      },
+      "dateOfBirth": "Jun 28, 1997",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "261504",
+      "marketValue": "€20.00m",
+      "name": "Aleix García",
+      "position": "Central Midfield"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/681.png",
+        "name": "Real Sociedad"
+      },
+      "dateOfBirth": "Jan 2, 1997",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "372246",
+      "marketValue": "€8.00m",
+      "name": "Carlos Soler",
+      "position": "Central Midfield"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/150.png",
+        "name": "Real Betis Balompié"
+      },
+      "dateOfBirth": "Feb 22, 1996",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "357885",
+      "marketValue": "€8.00m",
+      "name": "Pablo Fornals",
+      "position": "Central Midfield"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/131.png",
+        "name": "FC Barcelona"
+      },
       "dateOfBirth": "May 11, 2003",
       "foot": "right",
       "height": "1,74m",
@@ -401,85 +380,36 @@
       "position": "Attacking Midfield"
     },
     {
-      "club": { "name": "Real Betis Balompié", "image": "https://tmssl.akamaized.net/images/wappen/head/150.png" },
-      "contract": "Feb 6, 2013",
-      "dateOfBirth": "Apr 21, 1992",
-      "foot": "right",
-      "height": "1,76m",
-      "id": "85288",
-      "marketValue": "€6.00m",
-      "name": "Isco",
-      "position": "Attacking Midfield"
-    },
-    {
-      "club": { "name": "Aston Villa", "image": "https://tmssl.akamaized.net/images/wappen/head/405.png" },
-      "contract": "May 30, 2028",
-      "dateOfBirth": "Jan 21, 1996",
-      "foot": "left",
-      "height": "1,82m",
-      "id": "296622",
-      "marketValue": "€15.00m",
-      "name": "Marco Asensio",
-      "position": "Attacking Midfield"
-    },
-    {
-      "club": { "name": "Real Sociedad", "image": "https://tmssl.akamaized.net/images/wappen/head/681.png" },
-      "dateOfBirth": "Dec 27, 2001",
-      "foot": "right",
-      "height": "1,75m",
-      "id": "616369",
-      "marketValue": "€18.00m",
-      "name": "Ander Barrenetxea",
-      "position": "Left Winger"
-    },
-    {
-      "club": { "name": "RC Deportivo", "image": "https://tmssl.akamaized.net/images/wappen/head/897.png" },
-      "contract": "Jun 30, 2030",
-      "dateOfBirth": "Dec 10, 2002",
-      "foot": "right",
-      "height": "1,70m",
-      "id": "636385",
-      "marketValue": "€25.00m",
-      "name": "Yeremay Hernández",
-      "number": "10",
-      "position": "Left Winger"
-    },
-    {
-      "club": { "name": "FC Barcelona", "image": "https://tmssl.akamaized.net/images/wappen/head/131.png" },
-      "contract": "Jun 30, 2030",
-      "dateOfBirth": "Jul 26, 2006",
-      "foot": "right",
-      "height": "1,77m",
-      "id": "1301775",
-      "marketValue": "€15.00m",
-      "name": "Jan Virgili",
-      "number": "17",
-      "position": "Left Winger"
-    },
-    {
-      "club": { "name": "Athletic Club", "image": "https://tmssl.akamaized.net/images/wappen/head/621.png" },
-      "contract": "Sep 24, 2022",
-      "dateOfBirth": "Jul 12, 2002",
-      "foot": "right",
-      "height": "1,81m",
-      "id": "709187",
-      "marketValue": "€70.00m",
-      "name": "Nico Williams",
-      "position": "Left Winger"
-    },
-    {
-      "club": { "name": "Girona FC", "image": "https://tmssl.akamaized.net/images/wappen/head/12321.png" },
-      "dateOfBirth": "Jul 13, 2003",
+      "club": {
+        "name": "FC Barcelona",
+        "image": "https://assets.virtuafc.com/crests/131.png"
+      },
+      "dateOfBirth": "Aug 5, 2004",
       "foot": "right",
       "height": "1,73m",
-      "id": "935231",
-      "marketValue": "€20.00m",
-      "name": "Víctor Muñoz",
-      "position": "Left Winger"
+      "id": "646740",
+      "marketValue": "€80.00m",
+      "name": "Gavi",
+      "position": "Central Midfield"
     },
     {
-      "club": { "name": "Atlético de Madrid", "image": "https://tmssl.akamaized.net/images/wappen/head/13.png" },
-      "contract": "Sep 12, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/131.png",
+        "name": "FC Barcelona"
+      },
+      "dateOfBirth": "May 7, 1998",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "293385",
+      "marketValue": "€60.00m",
+      "name": "Dani Olmo",
+      "position": "Attacking Midfield"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/13.png",
+        "name": "Atlético de Madrid"
+      },
       "dateOfBirth": "Jul 20, 2001",
       "foot": "right",
       "height": "1,74m",
@@ -489,119 +419,147 @@
       "position": "Left Winger"
     },
     {
-      "club": { "name": "Rayo Vallecano", "image": "https://tmssl.akamaized.net/images/wappen/head/367.png" },
-      "contract": "Sep 7, 2025",
-      "dateOfBirth": "Feb 20, 1997",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/331.png",
+        "name": "CA Osasuna"
+      },
+      "dateOfBirth": "Jul 13, 2003",
       "foot": "right",
       "height": "1,73m",
-      "id": "455181",
-      "marketValue": "€4.00m",
-      "name": "Jorge de Frutos",
-      "number": "2",
-      "position": "Right Winger"
+      "id": "935231",
+      "marketValue": "€20.00m",
+      "name": "Víctor Muñoz",
+      "position": "Left Winger"
     },
     {
-      "club": { "name": "FC Barcelona", "image": "https://tmssl.akamaized.net/images/wappen/head/131.png" },
-      "contract": "Sep 8, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/681.png",
+        "name": "Real Sociedad"
+      },
+      "dateOfBirth": "Dec 27, 2001",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "616369",
+      "marketValue": "€18.00m",
+      "name": "Ander Barrenetxea",
+      "position": "Left Winger"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/131.png",
+        "name": "FC Barcelona"
+      },
       "dateOfBirth": "Jul 13, 2007",
       "foot": "left",
       "height": "1,80m",
       "id": "937958",
       "marketValue": "€200.00m",
       "name": "Lamine Yamal",
-      "number": "19",
       "position": "Right Winger"
     },
     {
-      "club": { "name": "Crystal Palace", "image": "https://tmssl.akamaized.net/images/wappen/head/873.png" },
-      "contract": "Oct 6, 2021",
+      "club": {
+        "name": "Rayo Vallecano",
+        "image": "https://assets.virtuafc.com/crests/367.png"
+      },
+      "dateOfBirth": "Feb 20, 1997",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "455181",
+      "marketValue": "€4.00m",
+      "name": "Jorge de Frutos",
+      "position": "Right Winger"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/873.png",
+        "name": "Crystal Palace"
+      },
       "dateOfBirth": "Oct 20, 2002",
       "foot": "right",
       "height": "1,72m",
       "id": "568157",
       "marketValue": "€35.00m",
       "name": "Yéremy Pino",
-      "number": "11",
       "position": "Right Winger"
     },
     {
-      "club": { "name": "Villarreal CF", "image": "https://tmssl.akamaized.net/images/wappen/head/1050.png" },
-      "contract": "Jun 5, 2024",
-      "dateOfBirth": "Jul 29, 1993",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1047.png",
+        "name": "Como 1907"
+      },
+      "dateOfBirth": "Nov 21, 2005",
       "foot": "right",
-      "height": "1,78m",
-      "id": "246968",
-      "marketValue": "€10.00m",
-      "name": "Ayoze Pérez",
-      "position": "Centre-Forward"
+      "height": "1,85m",
+      "id": "1190411",
+      "marketValue": "€30.00m",
+      "name": "Jesús Rodríguez",
+      "position": "Left Winger"
     },
     {
-      "club": { "name": "Celta de Vigo", "image": "https://tmssl.akamaized.net/images/wappen/head/940.png" },
-      "contract": "Sep 24, 2022",
-      "dateOfBirth": "Jan 17, 1993",
-      "foot": "right",
-      "height": "1,87m",
-      "id": "278359",
-      "marketValue": "€3.00m",
-      "name": "Borja Iglesias",
-      "number": "9",
-      "position": "Centre-Forward"
-    },
-    {
-      "club": { "name": "FC Barcelona", "image": "https://tmssl.akamaized.net/images/wappen/head/131.png" },
-      "contract": "Sep 3, 2020",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/131.png",
+        "name": "FC Barcelona"
+      },
       "dateOfBirth": "Feb 29, 2000",
       "foot": "right",
       "height": "1,82m",
       "id": "398184",
       "marketValue": "€50.00m",
       "name": "Ferran Torres",
-      "number": "7",
       "position": "Centre-Forward"
     },
     {
-      "club": { "name": "Real Sociedad", "image": "https://tmssl.akamaized.net/images/wappen/head/681.png" },
-      "contract": "May 29, 2016",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/681.png",
+        "name": "Real Sociedad"
+      },
       "dateOfBirth": "Apr 21, 1997",
       "foot": "left",
       "height": "1,81m",
       "id": "351478",
       "marketValue": "€25.00m",
       "name": "Mikel Oyarzabal",
-      "number": "21",
       "position": "Centre-Forward"
     },
     {
-      "club": { "name": "FC Porto", "image": "https://tmssl.akamaized.net/images/wappen/head/720.png" },
-      "contract": "Nov 18, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/940.png",
+        "name": "RC Celta"
+      },
+      "dateOfBirth": "Jan 17, 1993",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "278359",
+      "marketValue": "€3.00m",
+      "name": "Borja Iglesias",
+      "position": "Centre-Forward"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1050.png",
+        "name": "Villarreal CF"
+      },
+      "dateOfBirth": "Sep 30, 2003",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "733576",
+      "marketValue": "€40.00m",
+      "name": "Alberto Moleiro",
+      "position": "Left Winger"
+    },
+    {
+      "club": {
+        "name": "FC Porto",
+        "image": "https://assets.virtuafc.com/crests/720.png"
+      },
       "dateOfBirth": "May 5, 2004",
       "foot": "right",
       "height": "1,93m",
       "id": "991268",
+      "injured": true,
       "marketValue": "€50.00m",
       "name": "Samu Aghehowa",
-      "position": "Centre-Forward"
-    },
-    {
-      "club": { "name": "Como 1907", "image": "https://tmssl.akamaized.net/images/wappen/head/1047.png" },
-      "contract": "Nov 15, 2014",
-      "dateOfBirth": "Oct 23, 1992",
-      "foot": "right",
-      "height": "1,89m",
-      "id": "128223",
-      "marketValue": "€13.00m",
-      "name": "Álvaro Morata",
-      "position": "Centre-Forward"
-    },
-    {
-      "club": { "name": "Real Madrid", "image": "https://tmssl.akamaized.net/images/wappen/head/418.png" },
-      "contract": "Jun 30, 2030",
-      "dateOfBirth": "Mar 24, 2004",
-      "foot": "both",
-      "height": "1,82m",
-      "id": "935230",
-      "marketValue": "€30.00m",
-      "name": "Gonzalo García",
       "position": "Centre-Forward"
     }
   ],
