@@ -156,4 +156,6 @@ return [
     // Squad registration
     'squad_registration_required_title' => 'Inscripción de plantilla requerida',
     'squad_registration_required_message' => 'Tienes :count jugadores sin inscribir. Registra tu plantilla antes de que comience la temporada — los jugadores no inscritos no podrán ser convocados.',
+    'unenrolled_before_window_close_title' => 'Jugadores sin inscribir — cierra la ventana de :window',
+    'unenrolled_before_window_close_message' => 'Tienes :count jugadores sin inscribir. Esta es tu última jornada para registrarlos antes de que cierre la ventana de fichajes — sin dorsal no podrán ser convocados.',
 ];

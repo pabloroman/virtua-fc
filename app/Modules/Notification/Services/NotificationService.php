@@ -799,6 +799,22 @@ class NotificationService
         );
     }
 
+    public function notifyUnenrolledBeforeWindowClose(Game $game, int $unenrolledCount, string $window): GameNotification
+    {
+        $windowLabel = __("notifications.ai_transfer_window_{$window}");
+
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_SQUAD_REGISTRATION_REQUIRED,
+            title: __('notifications.unenrolled_before_window_close_title', ['window' => $windowLabel]),
+            message: __('notifications.unenrolled_before_window_close_message', ['count' => $unenrolledCount]),
+            priority: GameNotification::PRIORITY_WARNING,
+            metadata: [
+                'window' => $window,
+            ],
+        );
+    }
+
     // ==========================================
     // Helpers
     // ==========================================

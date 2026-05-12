@@ -24,6 +24,7 @@ use App\Modules\Match\Listeners\EnsureMatchAttendance;
 use App\Modules\Notification\Listeners\NotifyTransferWindowClosed;
 use App\Modules\Notification\Listeners\NotifyTransferWindowClosing;
 use App\Modules\Notification\Listeners\NotifyTransferWindowOpen;
+use App\Modules\Notification\Listeners\NotifyUnenrolledPlayersBeforeWindowClose;
 use App\Modules\Notification\Listeners\SendCupTieNotifications;
 use App\Modules\Notification\Listeners\SendCompetitionProgressNotifications;
 use App\Modules\Notification\Listeners\SendMatchNotifications;
@@ -175,6 +176,7 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(GameDateAdvanced::class, NotifyTransferWindowOpen::class);
         Event::listen(GameDateAdvanced::class, CompleteAgreedTransfersOnWindowOpen::class);
         Event::listen(GameDateAdvanced::class, NotifyTransferWindowClosing::class);
+        Event::listen(GameDateAdvanced::class, NotifyUnenrolledPlayersBeforeWindowClose::class);
         Event::listen(GameDateAdvanced::class, ProcessTransferWindowClose::class);
         Event::listen(GameDateAdvanced::class, NotifyTransferWindowClosed::class);
         Event::listen(GameDateAdvanced::class, EnforceSquadRegistration::class);

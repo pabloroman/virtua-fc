@@ -156,4 +156,6 @@ return [
     // Squad registration
     'squad_registration_required_title' => 'Squad registration required',
     'squad_registration_required_message' => 'You have :count unenrolled players. Register your squad before the season begins — unenrolled players cannot be selected for matches.',
+    'unenrolled_before_window_close_title' => 'Unenrolled players — :window window closing',
+    'unenrolled_before_window_close_message' => 'You have :count unenrolled players. This is your last matchday to register them before the transfer window closes — without a squad number they cannot be selected for matches.',
 ];
