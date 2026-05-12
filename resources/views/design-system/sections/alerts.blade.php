@@ -353,7 +353,7 @@
     ['type' =&gt; 'warning', 'message' =&gt; '…'],
     ['type' =&gt; 'danger',  'message' =&gt; '…'],
 ]
-Domain objects can expose a toTip(): array adapter (see App\Modules\Squad\Services\Advisory). --&gt;</code></pre>
+Domain objects can expose a toTip(): array adapter (see App\Modules\Squad\DTOs\Advisory). --&gt;</code></pre>
         </div>
 
         {{-- Props table --}}

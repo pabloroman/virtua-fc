@@ -1,7 +1,7 @@
 @php
     /** @var App\Models\Game $game */
     /** @var array $projection */
-    /** @var array<int, \App\Modules\Squad\Services\Advisory> $advisories */
+    /** @var array<int, \App\Modules\Squad\DTOs\Advisory> $advisories */
     $staying = $projection['staying'];
     $outgoing = $projection['outgoing'];
     $incoming = $projection['incoming'];
