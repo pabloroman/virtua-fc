@@ -3,6 +3,7 @@
   "name": "Spain",
   "players": [
     {
+      "club": { "name": "Arsenal FC", "image": "https://tmssl.akamaized.net/images/wappen/head/11.png" },
       "contract": "Mar 26, 2022",
       "dateOfBirth": "Sep 15, 1995",
       "foot": "right",
@@ -14,6 +15,7 @@
       "position": "Goalkeeper"
     },
     {
+      "club": { "name": "RCD Espanyol", "image": "https://tmssl.akamaized.net/images/wappen/head/714.png" },
       "dateOfBirth": "May 4, 2001",
       "foot": "right",
       "height": "1,94m",
@@ -23,6 +25,7 @@
       "position": "Goalkeeper"
     },
     {
+      "club": { "name": "Athletic Club", "image": "https://tmssl.akamaized.net/images/wappen/head/621.png" },
       "contract": "Nov 11, 2020",
       "dateOfBirth": "Jun 11, 1997",
       "foot": "right",
@@ -34,6 +37,7 @@
       "position": "Goalkeeper"
     },
     {
+      "club": { "name": "Real Sociedad", "image": "https://tmssl.akamaized.net/images/wappen/head/681.png" },
       "contract": "Mar 22, 2024",
       "dateOfBirth": "Mar 24, 1995",
       "foot": "right",
@@ -45,6 +49,7 @@
       "position": "Goalkeeper"
     },
     {
+      "club": { "name": "Athletic Club", "image": "https://tmssl.akamaized.net/images/wappen/head/621.png" },
       "contract": "Jun 4, 2021",
       "dateOfBirth": "May 27, 1994",
       "foot": "left",
@@ -56,6 +61,7 @@
       "position": "Centre-Back"
     },
     {
+      "club": { "name": "Valencia CF", "image": "https://tmssl.akamaized.net/images/wappen/head/1049.png" },
       "dateOfBirth": "Jun 27, 2004",
       "foot": "right",
       "height": "1,91m",
@@ -65,6 +71,7 @@
       "position": "Centre-Back"
     },
     {
+      "club": { "name": "Athletic Club", "image": "https://tmssl.akamaized.net/images/wappen/head/621.png" },
       "contract": "Mar 22, 2024",
       "dateOfBirth": "Jul 5, 1999",
       "foot": "right",
@@ -76,6 +83,7 @@
       "position": "Centre-Back"
     },
     {
+      "club": { "name": "Real Madrid", "image": "https://tmssl.akamaized.net/images/wappen/head/418.png" },
       "contract": "Mar 20, 2025",
       "dateOfBirth": "Apr 14, 2005",
       "foot": "both",
@@ -86,6 +94,7 @@
       "position": "Centre-Back"
     },
     {
+      "club": { "name": "FC Barcelona", "image": "https://tmssl.akamaized.net/images/wappen/head/131.png" },
       "contract": "Mar 22, 2024",
       "dateOfBirth": "Jan 22, 2007",
       "foot": "right",
@@ -97,6 +106,7 @@
       "position": "Centre-Back"
     },
     {
+      "club": { "name": "Real Madrid", "image": "https://tmssl.akamaized.net/images/wappen/head/418.png" },
       "dateOfBirth": "Feb 13, 2003",
       "foot": "right",
       "height": "1,84m",
@@ -106,6 +116,7 @@
       "position": "Centre-Back"
     },
     {
+      "club": { "name": "FC Barcelona", "image": "https://tmssl.akamaized.net/images/wappen/head/131.png" },
       "dateOfBirth": "Jan 9, 2001",
       "foot": "right",
       "height": "1,82m",
@@ -115,6 +126,7 @@
       "position": "Centre-Back"
     },
     {
+      "club": { "name": "Atlético de Madrid", "image": "https://tmssl.akamaized.net/images/wappen/head/13.png" },
       "contract": "Jun 15, 2023",
       "dateOfBirth": "Nov 11, 1996",
       "foot": "right",
@@ -126,6 +138,7 @@
       "position": "Centre-Back"
     },
     {
+      "club": { "name": "Atlético de Madrid", "image": "https://tmssl.akamaized.net/images/wappen/head/13.png" },
       "contract": "Jun 30, 2030",
       "dateOfBirth": "Jun 20, 2003",
       "foot": "right",
@@ -136,6 +149,7 @@
       "position": "Centre-Back"
     },
     {
+      "club": { "name": "Bayer 04 Leverkusen", "image": "https://tmssl.akamaized.net/images/wappen/head/15.png" },
       "contract": "Nov 16, 2023",
       "dateOfBirth": "Sep 20, 1995",
       "foot": "left",
@@ -147,6 +161,7 @@
       "position": "Left-Back"
     },
     {
+      "club": { "name": "Chelsea FC", "image": "https://tmssl.akamaized.net/images/wappen/head/631.png" },
       "dateOfBirth": "Jul 22, 1998",
       "foot": "left",
       "height": "1,73m",
@@ -156,6 +171,7 @@
       "position": "Left-Back"
     },
     {
+      "club": { "name": "FC Barcelona", "image": "https://tmssl.akamaized.net/images/wappen/head/131.png" },
       "contract": "Jun 30, 2028",
       "dateOfBirth": "Oct 18, 2003",
       "foot": "left",
@@ -166,6 +182,7 @@
       "position": "Left-Back"
     },
     {
+      "club": { "name": "Real Madrid", "image": "https://tmssl.akamaized.net/images/wappen/head/418.png" },
       "contract": "Jun 30, 2031",
       "dateOfBirth": "Mar 23, 2003",
       "foot": "left",
@@ -177,16 +194,19 @@
       "position": "Left-Back"
     },
     {
+      "club": { "name": "Real Madrid", "image": "https://tmssl.akamaized.net/images/wappen/head/418.png" },
       "contract": "Sep 4, 2014",
       "dateOfBirth": "Jan 11, 1992",
       "foot": "right",
       "height": "1,73m",
       "id": "138927",
+      "injured": true,
       "marketValue": "€10.00m",
       "name": "Daniel Carvajal",
       "position": "Right-Back"
     },
     {
+      "club": { "name": "Atlético de Madrid", "image": "https://tmssl.akamaized.net/images/wappen/head/13.png" },
       "contract": "Nov 11, 2020",
       "dateOfBirth": "Jan 30, 1995",
       "foot": "right",
@@ -198,6 +218,7 @@
       "position": "Right-Back"
     },
     {
+      "club": { "name": "Tottenham Hotspur", "image": "https://tmssl.akamaized.net/images/wappen/head/148.png" },
       "contract": "Mar 28, 2021",
       "dateOfBirth": "Sep 13, 1999",
       "foot": "right",
@@ -209,6 +230,7 @@
       "position": "Right-Back"
     },
     {
+      "club": { "name": "Celta de Vigo", "image": "https://tmssl.akamaized.net/images/wappen/head/940.png" },
       "contract": "Jun 8, 2021",
       "dateOfBirth": "May 13, 1999",
       "foot": "right",
@@ -219,6 +241,7 @@
       "position": "Right-Back"
     },
     {
+      "club": { "name": "Arsenal FC", "image": "https://tmssl.akamaized.net/images/wappen/head/11.png" },
       "contract": "Jun 8, 2021",
       "dateOfBirth": "Feb 2, 1999",
       "foot": "right",
@@ -230,6 +253,7 @@
       "position": "Defensive Midfield"
     },
     {
+      "club": { "name": "RCD Espanyol", "image": "https://tmssl.akamaized.net/images/wappen/head/714.png" },
       "dateOfBirth": "Oct 29, 2001",
       "foot": "left",
       "height": "1,74m",
@@ -239,16 +263,19 @@
       "position": "Left-Back"
     },
     {
+      "club": { "name": "Manchester City", "image": "https://tmssl.akamaized.net/images/wappen/head/281.png" },
       "contract": "Mar 23, 2018",
       "dateOfBirth": "Jun 22, 1996",
       "foot": "right",
       "height": "1,91m",
       "id": "357565",
+      "injured": true,
       "marketValue": "€65.00m",
       "name": "Rodri",
       "position": "Defensive Midfield"
     },
     {
+      "club": { "name": "FC Barcelona", "image": "https://tmssl.akamaized.net/images/wappen/head/131.png" },
       "contract": "Jun 30, 2029",
       "dateOfBirth": "May 26, 2007",
       "foot": "left",
@@ -259,6 +286,7 @@
       "position": "Defensive Midfield"
     },
     {
+      "club": { "name": "Bayer 04 Leverkusen", "image": "https://tmssl.akamaized.net/images/wappen/head/15.png" },
       "contract": "Nov 16, 2023",
       "dateOfBirth": "Jun 28, 1997",
       "foot": "right",
@@ -270,6 +298,7 @@
       "position": "Central Midfield"
     },
     {
+      "club": { "name": "Real Sociedad", "image": "https://tmssl.akamaized.net/images/wappen/head/681.png" },
       "contract": "Sep 2, 2021",
       "dateOfBirth": "Jan 2, 1997",
       "foot": "right",
@@ -280,6 +309,7 @@
       "position": "Central Midfield"
     },
     {
+      "club": { "name": "Paris Saint-Germain", "image": "https://tmssl.akamaized.net/images/wappen/head/583.png" },
       "contract": "Jun 7, 2019",
       "dateOfBirth": "Apr 3, 1996",
       "foot": "left",
@@ -291,16 +321,19 @@
       "position": "Central Midfield"
     },
     {
+      "club": { "name": "FC Barcelona", "image": "https://tmssl.akamaized.net/images/wappen/head/131.png" },
       "contract": "Oct 6, 2021",
       "dateOfBirth": "Aug 5, 2004",
       "foot": "right",
       "height": "1,73m",
       "id": "646740",
+      "injured": true,
       "marketValue": "€80.00m",
       "name": "Gavi",
       "position": "Central Midfield"
     },
     {
+      "club": { "name": "Arsenal FC", "image": "https://tmssl.akamaized.net/images/wappen/head/11.png" },
       "contract": "Sep 3, 2020",
       "dateOfBirth": "Jun 22, 1996",
       "foot": "left",
@@ -312,6 +345,7 @@
       "position": "Central Midfield"
     },
     {
+      "club": { "name": "Atlético de Madrid", "image": "https://tmssl.akamaized.net/images/wappen/head/13.png" },
       "contract": "Nov 18, 2024",
       "dateOfBirth": "Jun 15, 2003",
       "foot": "right",
@@ -322,6 +356,7 @@
       "position": "Central Midfield"
     },
     {
+      "club": { "name": "Real Betis Balompié", "image": "https://tmssl.akamaized.net/images/wappen/head/150.png" },
       "contract": "May 29, 2016",
       "dateOfBirth": "Feb 22, 1996",
       "foot": "right",
@@ -332,6 +367,7 @@
       "position": "Central Midfield"
     },
     {
+      "club": { "name": "FC Barcelona", "image": "https://tmssl.akamaized.net/images/wappen/head/131.png" },
       "contract": "Mar 25, 2021",
       "dateOfBirth": "Nov 25, 2002",
       "foot": "right",
@@ -342,6 +378,7 @@
       "position": "Central Midfield"
     },
     {
+      "club": { "name": "FC Barcelona", "image": "https://tmssl.akamaized.net/images/wappen/head/131.png" },
       "contract": "Nov 15, 2019",
       "dateOfBirth": "May 7, 1998",
       "foot": "right",
@@ -353,6 +390,7 @@
       "position": "Attacking Midfield"
     },
     {
+      "club": { "name": "FC Barcelona", "image": "https://tmssl.akamaized.net/images/wappen/head/131.png" },
       "contract": "Jun 5, 2024",
       "dateOfBirth": "May 11, 2003",
       "foot": "right",
@@ -363,6 +401,7 @@
       "position": "Attacking Midfield"
     },
     {
+      "club": { "name": "Real Betis Balompié", "image": "https://tmssl.akamaized.net/images/wappen/head/150.png" },
       "contract": "Feb 6, 2013",
       "dateOfBirth": "Apr 21, 1992",
       "foot": "right",
@@ -373,6 +412,7 @@
       "position": "Attacking Midfield"
     },
     {
+      "club": { "name": "Aston Villa", "image": "https://tmssl.akamaized.net/images/wappen/head/405.png" },
       "contract": "May 30, 2028",
       "dateOfBirth": "Jan 21, 1996",
       "foot": "left",
@@ -383,6 +423,7 @@
       "position": "Attacking Midfield"
     },
     {
+      "club": { "name": "Real Sociedad", "image": "https://tmssl.akamaized.net/images/wappen/head/681.png" },
       "dateOfBirth": "Dec 27, 2001",
       "foot": "right",
       "height": "1,75m",
@@ -392,6 +433,7 @@
       "position": "Left Winger"
     },
     {
+      "club": { "name": "RC Deportivo", "image": "https://tmssl.akamaized.net/images/wappen/head/897.png" },
       "contract": "Jun 30, 2030",
       "dateOfBirth": "Dec 10, 2002",
       "foot": "right",
@@ -403,6 +445,7 @@
       "position": "Left Winger"
     },
     {
+      "club": { "name": "FC Barcelona", "image": "https://tmssl.akamaized.net/images/wappen/head/131.png" },
       "contract": "Jun 30, 2030",
       "dateOfBirth": "Jul 26, 2006",
       "foot": "right",
@@ -414,6 +457,7 @@
       "position": "Left Winger"
     },
     {
+      "club": { "name": "Athletic Club", "image": "https://tmssl.akamaized.net/images/wappen/head/621.png" },
       "contract": "Sep 24, 2022",
       "dateOfBirth": "Jul 12, 2002",
       "foot": "right",
@@ -424,6 +468,7 @@
       "position": "Left Winger"
     },
     {
+      "club": { "name": "Girona FC", "image": "https://tmssl.akamaized.net/images/wappen/head/12321.png" },
       "dateOfBirth": "Jul 13, 2003",
       "foot": "right",
       "height": "1,73m",
@@ -433,6 +478,7 @@
       "position": "Left Winger"
     },
     {
+      "club": { "name": "Atlético de Madrid", "image": "https://tmssl.akamaized.net/images/wappen/head/13.png" },
       "contract": "Sep 12, 2023",
       "dateOfBirth": "Jul 20, 2001",
       "foot": "right",
@@ -443,6 +489,7 @@
       "position": "Left Winger"
     },
     {
+      "club": { "name": "Rayo Vallecano", "image": "https://tmssl.akamaized.net/images/wappen/head/367.png" },
       "contract": "Sep 7, 2025",
       "dateOfBirth": "Feb 20, 1997",
       "foot": "right",
@@ -454,6 +501,7 @@
       "position": "Right Winger"
     },
     {
+      "club": { "name": "FC Barcelona", "image": "https://tmssl.akamaized.net/images/wappen/head/131.png" },
       "contract": "Sep 8, 2023",
       "dateOfBirth": "Jul 13, 2007",
       "foot": "left",
@@ -465,6 +513,7 @@
       "position": "Right Winger"
     },
     {
+      "club": { "name": "Crystal Palace", "image": "https://tmssl.akamaized.net/images/wappen/head/873.png" },
       "contract": "Oct 6, 2021",
       "dateOfBirth": "Oct 20, 2002",
       "foot": "right",
@@ -476,6 +525,7 @@
       "position": "Right Winger"
     },
     {
+      "club": { "name": "Villarreal CF", "image": "https://tmssl.akamaized.net/images/wappen/head/1050.png" },
       "contract": "Jun 5, 2024",
       "dateOfBirth": "Jul 29, 1993",
       "foot": "right",
@@ -486,6 +536,7 @@
       "position": "Centre-Forward"
     },
     {
+      "club": { "name": "Celta de Vigo", "image": "https://tmssl.akamaized.net/images/wappen/head/940.png" },
       "contract": "Sep 24, 2022",
       "dateOfBirth": "Jan 17, 1993",
       "foot": "right",
@@ -497,6 +548,7 @@
       "position": "Centre-Forward"
     },
     {
+      "club": { "name": "FC Barcelona", "image": "https://tmssl.akamaized.net/images/wappen/head/131.png" },
       "contract": "Sep 3, 2020",
       "dateOfBirth": "Feb 29, 2000",
       "foot": "right",
@@ -508,6 +560,7 @@
       "position": "Centre-Forward"
     },
     {
+      "club": { "name": "Real Sociedad", "image": "https://tmssl.akamaized.net/images/wappen/head/681.png" },
       "contract": "May 29, 2016",
       "dateOfBirth": "Apr 21, 1997",
       "foot": "left",
@@ -519,6 +572,7 @@
       "position": "Centre-Forward"
     },
     {
+      "club": { "name": "FC Porto", "image": "https://tmssl.akamaized.net/images/wappen/head/720.png" },
       "contract": "Nov 18, 2024",
       "dateOfBirth": "May 5, 2004",
       "foot": "right",
@@ -529,6 +583,7 @@
       "position": "Centre-Forward"
     },
     {
+      "club": { "name": "Como 1907", "image": "https://tmssl.akamaized.net/images/wappen/head/1047.png" },
       "contract": "Nov 15, 2014",
       "dateOfBirth": "Oct 23, 1992",
       "foot": "right",
@@ -539,6 +594,7 @@
       "position": "Centre-Forward"
     },
     {
+      "club": { "name": "Real Madrid", "image": "https://tmssl.akamaized.net/images/wappen/head/418.png" },
       "contract": "Jun 30, 2030",
       "dateOfBirth": "Mar 24, 2004",
       "foot": "both",

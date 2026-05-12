@@ -66,7 +66,8 @@ class ShowSquadSelection
         // canonical roster source post-Phase-3, so abilities and date_of_birth
         // are read off them instead of the deprecated Player table.
         $tmIds = array_column($jsonPlayers, 'id');
-        $templates = GamePlayerTemplate::whereIn('transfermarkt_id', $tmIds)
+        $templates = GamePlayerTemplate::with('tournamentInfo')
+            ->whereIn('transfermarkt_id', $tmIds)
             ->get()
             ->keyBy('transfermarkt_id');
 
@@ -88,6 +89,8 @@ class ShowSquadSelection
             $positionDisplay = PositionMapper::getPositionDisplay($position);
             $overall = (int) $template->overall_score;
 
+            $tournamentInfo = $template->tournamentInfo;
+
             $candidate = [
                 'transfermarkt_id' => (string) $tmId,
                 'player_id' => $template->player_id,
@@ -100,6 +103,9 @@ class ShowSquadSelection
                 'age' => $template->date_of_birth->age,
                 'height' => $jp['height'] ?? null,
                 'overall' => $overall,
+                'club_name' => $tournamentInfo?->club_name,
+                'club_crest_url' => $tournamentInfo?->club_crest_url,
+                'is_injured' => (bool) $tournamentInfo?->is_injured,
             ];
 
             $groupKey = match ($positionGroup) {

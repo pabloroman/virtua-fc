@@ -99,6 +99,7 @@ class GamePlayerTemplateService
 
         $processedPlayerIds = [];
         $rows = [];
+        $tournamentInfoByPlayerId = [];
 
         foreach ($teamRosters as $roster) {
             foreach ($roster['players'] as $playerData) {
@@ -107,6 +108,11 @@ class GamePlayerTemplateService
                     $row['number'] = null; // WC templates must not store squad numbers
                     $rows[] = $row;
                     $processedPlayerIds[$row['player_id']] = true;
+                    $tournamentInfoByPlayerId[$row['player_id']] = [
+                        'club_name' => $playerData['club']['name'] ?? null,
+                        'club_crest_url' => $playerData['club']['image'] ?? null,
+                        'is_injured' => (bool) ($playerData['injured'] ?? false),
+                    ];
                 }
             }
         }
@@ -115,7 +121,53 @@ class GamePlayerTemplateService
             DB::connection('pgsql_control')->table('game_player_templates')->insert($chunk);
         }
 
+        $this->insertTournamentInfo($season, $tournamentInfoByPlayerId);
+
         return count($rows);
+    }
+
+    /**
+     * Insert satellite tournament-info rows keyed by the templates we just
+     * inserted. `generateForWorldCup` calls clearTemplatesForNationalTeams
+     * first, so the FK cascade already wiped any stale satellite rows.
+     */
+    private function insertTournamentInfo(string $season, array $tournamentInfoByPlayerId): void
+    {
+        if (empty($tournamentInfoByPlayerId)) {
+            return;
+        }
+
+        $templateIdsByPlayerId = DB::connection('pgsql_control')
+            ->table('game_player_templates')
+            ->where('season', $season)
+            ->whereIn('player_id', array_keys($tournamentInfoByPlayerId))
+            ->pluck('id', 'player_id');
+
+        $satelliteRows = [];
+        foreach ($tournamentInfoByPlayerId as $playerId => $info) {
+            $templateId = $templateIdsByPlayerId[$playerId] ?? null;
+            if (!$templateId) {
+                continue;
+            }
+
+            // Skip rows with no useful data so the satellite stays small.
+            if (!$info['is_injured'] && !$info['club_name'] && !$info['club_crest_url']) {
+                continue;
+            }
+
+            $satelliteRows[] = [
+                'game_player_template_id' => $templateId,
+                'is_injured' => $info['is_injured'],
+                'club_name' => $info['club_name'],
+                'club_crest_url' => $info['club_crest_url'],
+            ];
+        }
+
+        foreach (array_chunk($satelliteRows, 500) as $chunk) {
+            DB::connection('pgsql_control')
+                ->table('game_player_template_tournament_info')
+                ->insert($chunk);
+        }
     }
 
     /**

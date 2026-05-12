@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class GamePlayerTemplate extends Model
 {
@@ -68,5 +69,10 @@ class GamePlayerTemplate extends Model
     public function audits(): HasMany
     {
         return $this->hasMany(GamePlayerTemplateAudit::class)->orderByDesc('created_at');
+    }
+
+    public function tournamentInfo(): HasOne
+    {
+        return $this->hasOne(GamePlayerTemplateTournamentInfo::class, 'game_player_template_id');
     }
 }

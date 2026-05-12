@@ -99,12 +99,26 @@ $tabs = [
 
                         {{-- Name + Meta --}}
                         <div class="flex-1 min-w-0">
-                            <div class="font-semibold text-sm md:text-base text-text-primary truncate">{{ $candidate['name'] }}</div>
-                            <div class="flex items-center gap-2 text-xs text-text-secondary mt-0.5">
-                                <span>{{ $candidate['age'] }} {{ __('squad.years_abbr') }}</span>
+                            <div class="flex items-center gap-1.5 min-w-0">
+                                <div class="font-semibold text-sm md:text-base text-text-primary truncate">{{ $candidate['name'] }}</div>
+                                @if($candidate['is_injured'])
+                                    <svg title="{{ __('squad.injured_generic') }}" aria-label="{{ __('squad.injured_generic') }}" class="w-3.5 h-3.5 text-accent-red shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M8 2a1 1 0 0 0-1 1v4H3a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h4v4a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-4h4a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-4V3a1 1 0 0 0-1-1H8z" clip-rule="evenodd"/>
+                                    </svg>
+                                @endif
+                            </div>
+                            <div class="flex items-center gap-1.5 text-xs text-text-secondary mt-0.5 min-w-0">
+                                @if($candidate['club_crest_url'])
+                                    <img src="{{ $candidate['club_crest_url'] }}" alt="" class="w-3.5 h-3.5 shrink-0 object-contain">
+                                @endif
+                                @if($candidate['club_name'])
+                                    <span class="truncate">{{ $candidate['club_name'] }}</span>
+                                    <span class="shrink-0">&middot;</span>
+                                @endif
+                                <span class="shrink-0">{{ $candidate['age'] }} {{ __('squad.years_abbr') }}</span>
                                 @if($candidate['height'])
-                                <span>&middot;</span>
-                                <span>{{ $candidate['height'] }}</span>
+                                    <span class="shrink-0">&middot;</span>
+                                    <span class="shrink-0">{{ $candidate['height'] }}</span>
                                 @endif
                             </div>
                         </div>
