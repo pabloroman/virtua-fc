@@ -2,7 +2,6 @@
     /** @var App\Models\GamePlayer $gp */
     /** @var App\Models\Game $game */
     /** @var string $group */
-    $posAbbrev = \App\Support\PositionMapper::toAbbreviation($gp->position);
     $reason = $gp->next_season_reason;
     $status = $gp->next_season_status;
     $nextAge = $gp->next_season_age;
@@ -14,9 +13,9 @@
     // destination (KEEP) stay as passive labels.
     $actionHref = $action ? match ($action) {
         \App\Modules\Squad\Enums\SquadAction::RENEW => route('game.squad', $game->id),
-        \App\Modules\Squad\Enums\SquadAction::LIST => route('game.transfers.outgoing', $game->id),
+        \App\Modules\Squad\Enums\SquadAction::LIST,
+        \App\Modules\Squad\Enums\SquadAction::LOAN_OUT => route('game.transfers.outgoing', $game->id),
         \App\Modules\Squad\Enums\SquadAction::REPLACE => route('game.transfers.market', $game->id),
-        \App\Modules\Squad\Enums\SquadAction::DEVELOP,
         \App\Modules\Squad\Enums\SquadAction::PLAY_OFTEN => route('game.squad-selection', $game->id),
         default => null,
     } : null;
@@ -37,82 +36,45 @@
             => __('planner.reason_still_on_loan', ['date' => $gp->activeLoan?->return_at?->translatedFormat('M Y') ?? '—']),
         default => __('planner.reason_' . $reason),
     };
+
+    $showReason = $reason !== \App\Modules\Squad\Services\NextSeasonProjectionService::REASON_OWNED;
+    $contractExpiring = $gp->isContractExpiring($game->getSeasonEndDate());
 @endphp
 
-<div class="border-b border-border-default last:border-b-0">
-    {{-- ===== Mobile row ===== --}}
-    <div class="lg:hidden px-4 py-3 cursor-pointer" @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $gp->id]) }}')">
-        <div class="flex items-start gap-2.5">
-            <x-player-avatar :name="$gp->name" :position-group="$group" :number="$gp->number" size="sm" />
-            <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-1.5 min-w-0">
-                    <span class="text-sm font-medium text-text-primary truncate">{{ $gp->name }}</span>
-                </div>
-                <div class="flex items-center gap-2 mt-1 min-w-0">
-                    <div class="flex items-center gap-0.5 shrink-0">
-                        @foreach($gp->positions as $pos)
-                            <x-position-badge :position="$pos" size="sm" />
-                        @endforeach
-                    </div>
-                    <span class="text-[10px] text-text-muted tabular-nums shrink-0">{{ __('planner.age_next', ['age' => $nextAge]) }}</span>
-                </div>
-                @if($blurb)
-                    <p class="mt-1 text-[11px] italic text-text-secondary line-clamp-2">{{ $blurb }}</p>
+{{-- Mobile row --}}
+<div class="md:hidden px-4 py-3 border-b border-border-default last:border-b-0 cursor-pointer"
+     @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $gp->id]) }}')">
+    <div class="flex items-center gap-3">
+        <x-player-avatar :name="$gp->name" :position-group="$group" :number="$gp->number" size="sm" />
+        <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-sm font-medium text-text-primary truncate">{{ $gp->name }}</span>
+                @if($showReason)
+                    <span class="inline-flex items-center px-1.5 py-0.5 rounded-full border text-[10px] font-medium {{ $reasonTone }}">
+                        {{ $reasonLabel }}
+                    </span>
                 @endif
-                <div class="mt-2 flex flex-wrap items-center gap-1.5">
-                    @if($role)
-                        <x-squad-role-badge :role="$role" />
-                    @endif
-                    <x-squad-action-chip :action="$action" :href="$actionHref" />
-                    @if($reason !== \App\Modules\Squad\Services\NextSeasonProjectionService::REASON_OWNED)
-                        <span class="inline-flex items-center px-2 py-0.5 rounded-full border text-[10px] font-medium {{ $reasonTone }}">
-                            {{ $reasonLabel }}
-                        </span>
-                    @endif
-                </div>
             </div>
-            <x-rating-badge :value="$gp->next_season_overall" size="sm" class="shrink-0" />
-        </div>
-    </div>
-
-    {{-- ===== Desktop row ===== --}}
-    <div class="hidden lg:grid items-center px-4 py-2.5 gap-3 cursor-pointer grid-cols-[1.1fr_44px_1fr_140px_110px_110px_130px]"
-         @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $gp->id]) }}')">
-
-        {{-- Player name + avatar + positions + contract --}}
-        <div class="flex items-center gap-3 min-w-0">
-            <x-player-avatar :name="$gp->name" :position-group="$group" :number="$gp->number" size="sm" />
-            <div class="min-w-0">
-                <div class="flex items-center gap-2">
-                    <span class="text-sm font-medium text-text-primary truncate">{{ $gp->name }}</span>
+            <div class="flex items-center gap-2 mt-1 min-w-0 text-[10px] text-text-faint">
+                <div class="flex items-center gap-0.5 shrink-0">
+                    @foreach($gp->positions as $pos)
+                        <x-position-badge :position="$pos" size="sm" />
+                    @endforeach
                 </div>
-                <div class="flex items-center gap-1.5 mt-0.5 text-[10px] text-text-faint">
-                    <div class="flex items-center gap-1">
-                        @foreach($gp->positions as $pos)
-                            <x-position-badge :position="$pos" size="sm" />
-                        @endforeach
-                    </div>
-                    @if($gp->contract_expiry_year)
-                        <span class="tabular-nums">·</span>
-                        <span class="tabular-nums">{{ __('planner.contract_until', ['year' => $gp->contract_expiry_year]) }}</span>
-                    @endif
-                </div>
+                <span class="tabular-nums shrink-0">{{ $nextAge }}</span>
+                @if($gp->contract_expiry_year)
+                    <span>·</span>
+                    <span class="tabular-nums {{ $contractExpiring ? 'text-accent-red font-medium' : '' }}">{{ $gp->contract_expiry_year }}</span>
+                @endif
+            </div>
+            <div class="mt-2 flex items-center gap-1.5">
+                @if($role)
+                    <x-squad-role-badge :role="$role" :tooltip="$blurb" />
+                @endif
+                <x-squad-action-chip :action="$action" :href="$actionHref" />
             </div>
         </div>
-
-        {{-- Age (next season) --}}
-        <div class="text-center">
-            <div class="text-sm font-semibold text-text-primary tabular-nums">{{ $nextAge }}</div>
-            <div class="text-[10px] text-text-faint uppercase tracking-wider">y</div>
-        </div>
-
-        {{-- Auto-generated blurb --}}
-        <div class="min-w-0 text-[11px] italic text-text-secondary line-clamp-2">
-            {{ $blurb }}
-        </div>
-
-        {{-- Potential bar (current + projected) --}}
-        <div>
+        <div class="shrink-0 w-[130px]">
             <x-potential-bar
                 :current-ability="$gp->overall_score"
                 :potential-low="$gp->potential_low"
@@ -120,26 +82,61 @@
                 :projection="$gp->projection"
                 size="sm" />
         </div>
+    </div>
+</div>
 
-        {{-- Role badge --}}
-        <div class="flex justify-center">
-            @if($role)
-                <x-squad-role-badge :role="$role" />
-            @endif
-        </div>
+{{-- Desktop row --}}
+<div class="hidden md:grid grid-cols-[40px_1fr_140px_48px_72px_180px_48px] gap-3 items-center px-4 py-2.5 border-b border-border-default last:border-b-0 hover:bg-surface-700/30 transition-colors cursor-pointer"
+     @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $gp->id]) }}')">
 
-        {{-- Action chip --}}
-        <div class="flex justify-center">
-            <x-squad-action-chip :action="$action" :href="$actionHref" />
-        </div>
+    {{-- Position badge --}}
+    <div class="flex justify-center">
+        <x-position-badge :position="$gp->position" size="sm" :tooltip="\App\Support\PositionMapper::toDisplayName($gp->position)" class="cursor-help" />
+    </div>
 
-        {{-- Reason chip (only shown when the situation differs from a plain "owned" stay) --}}
-        <div class="flex justify-end">
-            @if($reason !== \App\Modules\Squad\Services\NextSeasonProjectionService::REASON_OWNED)
-                <span class="inline-flex items-center px-2.5 py-1 rounded-full border text-[11px] font-medium {{ $reasonTone }}">
-                    {{ $reasonLabel }}
-                </span>
-            @endif
-        </div>
+    {{-- Name + nationality + reason badge --}}
+    <div class="flex items-center gap-2 min-w-0">
+        @if($gp->nationality_flag)
+            <img src="{{ Storage::disk('assets')->url('flags/' . $gp->nationality_flag['code'] . '.svg') }}"
+                 class="w-4 h-3 rounded-xs shadow-xs shrink-0"
+                 title="{{ $gp->nationality_flag['name'] }}"
+                 alt="">
+        @endif
+        <span class="text-sm font-medium text-text-primary truncate">{{ $gp->name }}</span>
+        @if($showReason)
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded-full border text-[10px] font-medium whitespace-nowrap shrink-0 {{ $reasonTone }}">
+                {{ $reasonLabel }}
+            </span>
+        @endif
+    </div>
+
+    {{-- Action tag (icon + label) --}}
+    <div class="flex justify-end">
+        <x-squad-action-chip :action="$action" :href="$actionHref" />
+    </div>
+
+    {{-- Age (next season) --}}
+    <span class="text-xs text-text-secondary text-center tabular-nums">{{ $nextAge }}</span>
+
+    {{-- Contract --}}
+    <span class="text-[11px] text-center tabular-nums {{ $contractExpiring ? 'text-accent-red font-medium' : 'text-text-muted' }}">
+        {{ $gp->contract_expiry_year ?? '—' }}
+    </span>
+
+    {{-- Quality + potential bar --}}
+    <div>
+        <x-potential-bar
+            :current-ability="$gp->overall_score"
+            :potential-low="$gp->potential_low"
+            :potential-high="$gp->potential_high"
+            :projection="$gp->projection"
+            size="sm" />
+    </div>
+
+    {{-- Role icon (label + blurb in tooltip) --}}
+    <div class="flex justify-center">
+        @if($role)
+            <x-squad-role-badge :role="$role" :tooltip="$blurb" />
+        @endif
     </div>
 </div>

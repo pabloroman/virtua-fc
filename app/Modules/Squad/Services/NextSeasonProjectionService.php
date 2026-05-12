@@ -109,7 +109,7 @@ class NextSeasonProjectionService
             }
 
             $reason = $this->classifyLoanedIn($player, $seasonEndDate);
-            $status = $reason === self::REASON_STILL_ON_LOAN
+            $status = in_array($reason, [self::REASON_STILL_ON_LOAN, self::REASON_OWNED], true)
                 ? self::STATUS_STAYING
                 : self::STATUS_OUTGOING;
             $this->enrich($player, $game, $referenceDate, $status, $reason, $horizon);
@@ -254,9 +254,17 @@ class NextSeasonProjectionService
     /**
      * Loaned-in players are physically at the user's team but borrowed.
      * They leave when the loan returns home, which usually happens at season end.
+     *
+     * Reserve→first-team call-ups use the same loan table internally, but
+     * they aren't "borrowed" from the user's perspective — the canterano is
+     * theirs through the reserve, so we surface them as plain owned.
      */
     private function classifyLoanedIn(GamePlayer $player, \Carbon\Carbon $seasonEndDate): string
     {
+        if ($player->isCalledUpFromReserve($player->game)) {
+            return self::REASON_OWNED;
+        }
+
         $loan = $player->activeLoan;
 
         if ($loan && $loan->return_at !== null && $loan->return_at->gt($seasonEndDate)) {

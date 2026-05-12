@@ -12,7 +12,7 @@ namespace App\Modules\Squad\Enums;
 enum SquadAction: string
 {
     case PLAY_OFTEN = 'play_often';
-    case DEVELOP = 'develop';
+    case LOAN_OUT = 'loan_out';
     case KEEP = 'keep';
     case RENEW = 'renew';
     case LIST = 'list';
@@ -27,7 +27,7 @@ enum SquadAction: string
     {
         return match ($this) {
             self::PLAY_OFTEN => 'bg-accent-green/15 text-accent-green border-accent-green/30',
-            self::DEVELOP => 'bg-accent-blue/15 text-accent-blue border-accent-blue/30',
+            self::LOAN_OUT => 'bg-accent-blue/15 text-accent-blue border-accent-blue/30',
             self::RENEW => 'bg-accent-gold/15 text-accent-gold border-accent-gold/30',
             self::LIST => 'bg-accent-orange/15 text-accent-orange border-accent-orange/30',
             self::REPLACE => 'bg-accent-red/15 text-accent-red border-accent-red/30',

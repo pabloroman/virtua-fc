@@ -85,18 +85,18 @@ class PlayerSquadRoleClassifier
         foreach ($staying as $player) {
             $role = $this->classifyOne($player, $bestXIIds, $rankingByGroup);
             $player->setAttribute('squad_role', $role);
-            $player->setAttribute('squad_blurb', $this->buildBlurb($player, $role));
+            $player->setAttribute('squad_blurb', $this->buildBlurb($role));
         }
 
         foreach ($incoming as $player) {
             $role = $this->classifyOne($player, $bestXIIds, $rankingByGroup);
             $player->setAttribute('squad_role', $role);
-            $player->setAttribute('squad_blurb', $this->buildBlurb($player, $role));
+            $player->setAttribute('squad_blurb', $this->buildBlurb($role));
         }
 
         foreach ($outgoing as $player) {
             $player->setAttribute('squad_role', SquadRole::DEPARTING);
-            $player->setAttribute('squad_blurb', $this->buildBlurb($player, SquadRole::DEPARTING));
+            $player->setAttribute('squad_blurb', $this->buildBlurb(SquadRole::DEPARTING));
         }
 
         return $projection;
@@ -207,17 +207,15 @@ class PlayerSquadRoleClassifier
      * name so the copy reads naturally ("Squad depth at goalkeeper" vs the
      * raw enum value).
      */
-    private function buildBlurb(GamePlayer $player, SquadRole $role): string
+    private function buildBlurb(SquadRole $role): string
     {
-        $position = $player->position_name;
-
         return match ($role) {
-            SquadRole::WONDERKID => __('planner.blurb_wonderkid', ['position' => $position]),
-            SquadRole::KEY_PLAYER => __('planner.blurb_key_player', ['position' => $position]),
-            SquadRole::FIRST_TEAM => __('planner.blurb_first_team', ['position' => $position]),
-            SquadRole::PROSPECT => __('planner.blurb_prospect', ['position' => $position]),
-            SquadRole::ROTATION => __('planner.blurb_rotation', ['position' => $position]),
-            SquadRole::RESERVES => __('planner.blurb_reserves', ['position' => $position]),
+            SquadRole::WONDERKID => __('planner.blurb_wonderkid'),
+            SquadRole::KEY_PLAYER => __('planner.blurb_key_player'),
+            SquadRole::FIRST_TEAM => __('planner.blurb_first_team'),
+            SquadRole::PROSPECT => __('planner.blurb_prospect'),
+            SquadRole::ROTATION => __('planner.blurb_rotation'),
+            SquadRole::RESERVES => __('planner.blurb_reserves'),
             SquadRole::DEPARTING => __('planner.blurb_departing'),
         };
     }
