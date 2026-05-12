@@ -5,7 +5,6 @@ namespace App\Modules\Squad\Services;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\TransferOffer;
-use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Player\Services\PlayerDevelopmentService;
 use Illuminate\Support\Collection;
 
@@ -294,38 +293,9 @@ class NextSeasonProjectionService
     }
 
     /**
-     * Build a per-position-group fit summary for a chosen formation: how many
-     * players the formation needs vs how many the projected squad has, and
-     * how many of those are "primary fits" (specialists for the position).
-     *
-     * @return array<string, array{group: string, need: int, have: int, delta: int}>
-     */
-    public function buildFormationFit(array $projection, Formation $formation): array
-    {
-        $available = $this->availablePool($projection);
-
-        $needs = $formation->requirements();
-        $haves = $available->countBy(fn (GamePlayer $p) => $p->position_group);
-
-        $fit = [];
-        foreach (['Goalkeeper', 'Defender', 'Midfielder', 'Forward'] as $group) {
-            $need = $needs[$group] ?? 0;
-            $have = $haves[$group] ?? 0;
-            $fit[$group] = [
-                'group' => $group,
-                'need' => $need,
-                'have' => $have,
-                'delta' => $have - $need,
-            ];
-        }
-
-        return $fit;
-    }
-
-    /**
      * The pool of players actually available for next-season selection —
      * STAYING (minus still-on-loan) plus INCOMING. Shared by the classifier
-     * and the formation-fit math so both speak about the same roster.
+     * and the advisor so both speak about the same roster.
      */
     public function availablePool(array $projection): Collection
     {

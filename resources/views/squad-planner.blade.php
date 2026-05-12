@@ -1,8 +1,6 @@
 @php
     /** @var App\Models\Game $game */
     /** @var array $projection */
-    /** @var \App\Modules\Lineup\Enums\Formation $formation */
-    /** @var array<string, array{group: string, need: int, have: int, delta: int}> $formationFit */
     /** @var array<int, \App\Modules\Squad\Services\Advisory> $advisories */
     /** @var string $horizon */
     $isNextSeason = $horizon === \App\Modules\Squad\Services\NextSeasonProjectionService::HORIZON_NEXT;
@@ -30,13 +28,6 @@
         ['href' => route('game.squad.planner', $game->id), 'label' => __('planner.planner'), 'active' => true],
         $secondaryItem,
         ['href' => route('game.squad.registration', $game->id), 'label' => __('squad.registration'), 'active' => false],
-    ];
-
-    $groupDisplay = [
-        'Goalkeeper' => __('planner.goalkeepers'),
-        'Defender' => __('planner.defenders'),
-        'Midfielder' => __('planner.midfielders'),
-        'Forward' => __('planner.forwards'),
     ];
 @endphp
 
@@ -67,8 +58,8 @@
 
             {{-- Season horizon toggle --}}
             @php
-                $currentHref = route('game.squad.planner', ['gameId' => $game->id, 'season' => 'current', 'formation' => $formation->value]);
-                $nextHref = route('game.squad.planner', ['gameId' => $game->id, 'season' => 'next', 'formation' => $formation->value]);
+                $currentHref = route('game.squad.planner', ['gameId' => $game->id, 'season' => 'current']);
+                $nextHref = route('game.squad.planner', ['gameId' => $game->id, 'season' => 'next']);
             @endphp
             <div class="inline-flex items-center bg-surface-700 rounded-lg p-0.5 self-start sm:self-end shrink-0">
                 <a href="{{ $currentHref }}"
@@ -94,54 +85,6 @@
 
             {{-- ===== Sidebar ===== --}}
             <aside class="space-y-6">
-                {{-- Tactics Hub --}}
-                <x-section-card :title="__('planner.tactics_hub')">
-                    <div class="p-4 space-y-4">
-                        <div>
-                            <label for="planner-formation" class="block text-[11px] font-semibold uppercase tracking-widest text-text-muted mb-2">
-                                {{ __('planner.target_formation') }}
-                            </label>
-                            <div class="relative">
-                                <select
-                                    id="planner-formation"
-                                    x-data
-                                    x-on:change="window.location.href = `{{ route('game.squad.planner', ['gameId' => $game->id, 'season' => $horizon]) }}&formation=${encodeURIComponent($event.target.value)}`"
-                                    class="block w-full appearance-none bg-surface-700 border border-border-strong rounded-lg pl-3 pr-9 py-2 text-sm font-semibold text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-accent-blue">
-                                    @foreach(\App\Modules\Lineup\Enums\Formation::cases() as $f)
-                                        <option value="{{ $f->value }}" @selected($f === $formation)>{{ $f->label() }}</option>
-                                    @endforeach
-                                </select>
-                                <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                </svg>
-                            </div>
-                        </div>
-
-                        <div>
-                            <p class="text-[11px] font-semibold uppercase tracking-widest text-text-muted mb-2">
-                                {{ __('planner.projected_xi_fit') }}
-                            </p>
-                            <ul class="space-y-1.5">
-                                @foreach($formationFit as $group => $fit)
-                                    @php
-                                        $tone = match (true) {
-                                            $fit['delta'] >= 1 => 'text-accent-green',
-                                            $fit['delta'] === 0 => 'text-text-secondary',
-                                            default => 'text-accent-red',
-                                        };
-                                    @endphp
-                                    <li class="flex items-center justify-between text-[12px]">
-                                        <span class="text-text-muted">{{ $groupDisplay[$group] ?? $group }}</span>
-                                        <span class="tabular-nums {{ $tone }}">
-                                            {{ __('planner.fit_summary', ['need' => $fit['need'], 'have' => $fit['have']]) }}
-                                        </span>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    </div>
-                </x-section-card>
-
                 {{-- Transfer Recommendations --}}
                 <x-section-card :title="__('planner.transfer_recommendations')">
                     <x-advisory-list :advisories="$advisories" />
