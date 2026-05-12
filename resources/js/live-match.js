@@ -24,6 +24,7 @@ import { createMatchStats } from './modules/match-stats.js';
 import { createAtmosphereGlue } from './modules/atmosphere-glue.js';
 import { createTacticalPanel } from './modules/tactical-panel.js';
 import { createTacticalSubmission } from './modules/tactical-submission.js';
+import { createHalfTimeAdvisor } from './modules/half-time-advisor.js';
 import { createPitchLayout } from './modules/pitch-layout.js';
 import { mixinModule } from './modules/_mixin.js';
 import {
@@ -58,6 +59,7 @@ export default function liveMatch(config) {
     const atmosphere = createAtmosphereGlue(ctx);
     const tacticalPanel = createTacticalPanel(ctx);
     const tacticalSubmission = createTacticalSubmission(ctx);
+    const halfTimeAdvisor = createHalfTimeAdvisor(ctx);
     const pitchLayout = createPitchLayout(ctx);
 
     const component = {
@@ -156,6 +158,10 @@ export default function liveMatch(config) {
         awayPosition: config.awayPosition || null,
         competitionRole: config.competitionRole || 'league',
         competitionName: config.competitionName || '',
+
+        // Half-time advisor: tips precomputed server-side, dismissals tracked client-side.
+        halfTimeTips: config.halfTimeTips || [],
+        halfTimeTipsDismissed: [],
 
         // Pitch visualization config
         formationSlots: config.formationSlots || {},
@@ -827,6 +833,7 @@ export default function liveMatch(config) {
     mixinModule(component, atmosphere);
     mixinModule(component, tacticalPanel);
     mixinModule(component, tacticalSubmission);
+    mixinModule(component, halfTimeAdvisor);
     mixinModule(component, pitchLayout);
 
     return component;
