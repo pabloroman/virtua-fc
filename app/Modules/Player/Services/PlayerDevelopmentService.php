@@ -100,9 +100,11 @@ class PlayerDevelopmentService
     /**
      * Generate potential for a new player based on age, current ability, and market value.
      *
-     * Market value is a key indicator of potential:
-     * - Young players with high market value have PROVEN their potential at top level
-     * - Veterans with exceptional market value have PROVEN their quality ceiling
+     * Market value is used as a proxy for "proven" ceiling on young/peak players —
+     * a 17yo worth €80M has demonstrated elite upside even before maturing.
+     * Veterans (age > PRIME_END) are clamped to their current ability: the
+     * development curve has no upward path for them, so any displayed
+     * headroom would be unreachable in practice.
      *
      * @param int $age Player's current age
      * @param int $currentAbility Player's current overall ability
@@ -125,14 +127,16 @@ class PlayerDevelopmentService
             $potentialRange = $basePotentialRange + (int) ($valueBonus * 0.6);
             $uncertainty = rand(4, 7);
         } elseif ($age <= PlayerAge::PRIME_END) {
-            // Peak players: small potential margin
-            $basePotentialRange = rand(0, 5);
+            // Peak players: small headroom over current ability — elite peak
+            // players (high market value) get a slightly higher visible ceiling.
+            $basePotentialRange = rand(0, 2);
             $potentialRange = $basePotentialRange + (int) ($valueBonus * 0.3);
-            $uncertainty = rand(2, 4);
+            $uncertainty = rand(1, 2);
         } else {
-            // Veterans: potential reflects proven quality
-            $potentialRange = $this->getVeteranPotentialBonus($age, $currentAbility, $marketValueCents);
-            $uncertainty = 2; // Low uncertainty — we know what they can do
+            // Veterans: no upside left — current ability IS the ceiling.
+            // UI hides the potential row for this branch (see player-detail view).
+            $potentialRange = 0;
+            $uncertainty = 0;
         }
 
         // True potential (hidden from user)
@@ -156,7 +160,9 @@ class PlayerDevelopmentService
      */
     private function getValuePotentialBonus(int $age, int $marketValueCents): int
     {
-        // No bonus for veterans (handled separately in getVeteranPotentialBonus)
+        // Veterans (PRIME_END+1 and up) have no upside left and skip this
+        // branch entirely. Players from age 29 onwards also get no value
+        // bonus since their ceiling is essentially fixed at current ability.
         if ($age >= 29) {
             return 0;
         }
@@ -181,34 +187,6 @@ class PlayerDevelopmentService
             $valueRatio >= 10 => 4,
             $valueRatio >= 5 => 2,
             default => 0,
-        };
-    }
-
-    /**
-     * Calculate potential adjustment for veteran players.
-     *
-     * Veterans with exceptional market value have proven their quality ceiling.
-     *
-     * @return int Points to add to current ability for potential
-     */
-    private function getVeteranPotentialBonus(int $age, int $currentAbility, int $marketValueCents): int
-    {
-        // Typical market value for veterans
-        $typicalValueForAge = match (true) {
-            $age <= 33 => 800_000_000,   // €8M
-            $age <= 35 => 400_000_000,   // €4M
-            $age <= 37 => 200_000_000,   // €2M
-            default => 100_000_000,       // €1M
-        };
-
-        $valueRatio = $marketValueCents / max(1, $typicalValueForAge);
-
-        return match (true) {
-            $valueRatio >= 10 => 8,  // 10x typical = proven world class (Lewandowski, Modric)
-            $valueRatio >= 5 => 5,   // 5x typical = proven high quality
-            $valueRatio >= 3 => 3,
-            $valueRatio >= 2 => 1,
-            default => 0,            // Typical veteran = current ability is their ceiling
         };
     }
 

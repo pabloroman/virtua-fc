@@ -135,10 +135,12 @@
                 </div>
             @endif
 
-            <div class="flex items-center justify-between">
-                <span class="text-[11px] text-text-muted uppercase tracking-wide">{{ __('game.potential') }}</span>
-                <span class="text-xs font-semibold text-text-primary">{{ $gamePlayer->potential_range }}</span>
-            </div>
+            @if($devStatus !== 'declining')
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] text-text-muted uppercase tracking-wide">{{ __('game.potential') }}</span>
+                    <span class="text-xs font-semibold text-text-primary">{{ $gamePlayer->potential_range }}</span>
+                </div>
+            @endif
         </div>
     </div>
 
