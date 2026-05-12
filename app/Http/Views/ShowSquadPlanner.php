@@ -35,39 +35,28 @@ class ShowSquadPlanner
 
         $projection = $this->projectionService->build($game, $horizon);
 
-        $formation = $this->resolveFormation($request, $projection);
+        // Auto-pick the best-fit formation for the projected pool — used
+        // internally by the role classifier (FIRST_TEAM) and the squad
+        // advisor (depth gaps). The user-facing Tactics Hub selector was
+        // removed; surfacing the chosen shape will come back in a future
+        // iteration once the UX is settled.
+        $formation = $this->pickFormation($projection);
 
         $projection = $this->roleClassifier->classify($projection, $formation);
         $projection = $this->actionRecommender->recommend($projection, $game);
 
-        $formationFit = $this->projectionService->buildFormationFit($projection, $formation);
         $advisories = $this->advisorService->build($projection, $formation, $game);
 
         return view('squad-planner', [
             'game' => $game,
             'projection' => $projection,
-            'formation' => $formation,
-            'formationFit' => $formationFit,
             'advisories' => $advisories,
             'horizon' => $horizon,
         ]);
     }
 
-    /**
-     * Resolve the formation to evaluate the squad against. Honors a `?formation`
-     * query param when it matches a known Formation case, otherwise falls back
-     * to the recommender's best-fit pick against the projected squad.
-     */
-    private function resolveFormation(Request $request, array $projection): Formation
+    private function pickFormation(array $projection): Formation
     {
-        $requested = $request->query('formation');
-        if (is_string($requested)) {
-            $match = Formation::tryFrom($requested);
-            if ($match !== null) {
-                return $match;
-            }
-        }
-
         $available = $this->projectionService->availablePool($projection);
 
         if ($available->isEmpty()) {
