@@ -9,7 +9,6 @@ use App\Modules\Squad\Services\NextSeasonProjectionService;
 use App\Modules\Squad\Services\PlayerSquadRoleClassifier;
 use App\Modules\Squad\Services\SquadActionRecommender;
 use App\Modules\Squad\Services\SquadAdvisorService;
-use Illuminate\Http\Request;
 
 class ShowSquadPlanner
 {
@@ -21,7 +20,7 @@ class ShowSquadPlanner
         private readonly SquadAdvisorService $advisorService,
     ) {}
 
-    public function __invoke(string $gameId, Request $request)
+    public function __invoke(string $gameId)
     {
         $game = Game::with('team')->findOrFail($gameId);
 
@@ -29,11 +28,10 @@ class ShowSquadPlanner
         // pre-contracts (the signals it surfaces) are only meaningful there.
         abort_unless($game->isCareerMode(), 404);
 
-        $horizon = $request->query('season') === NextSeasonProjectionService::HORIZON_CURRENT
-            ? NextSeasonProjectionService::HORIZON_CURRENT
-            : NextSeasonProjectionService::HORIZON_NEXT;
-
-        $projection = $this->projectionService->build($game, $horizon);
+        // The planner is always next-season-focused; the horizon toggle was
+        // removed so users land directly on the projection that matters for
+        // transfer/development decisions.
+        $projection = $this->projectionService->build($game, NextSeasonProjectionService::HORIZON_NEXT);
 
         // Auto-pick the best-fit formation for the projected pool — used
         // internally by the role classifier (FIRST_TEAM) and the squad
@@ -51,7 +49,6 @@ class ShowSquadPlanner
             'game' => $game,
             'projection' => $projection,
             'advisories' => $advisories,
-            'horizon' => $horizon,
         ]);
     }
 

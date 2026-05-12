@@ -25,9 +25,22 @@ class SquadAdvisorService
 
     /**
      * A player counts as "barely playing" when their season appearances are
-     * below this threshold — the dev-opportunity advisory targets these.
+     * below this threshold — the dev-opportunity and wasted-wage advisories
+     * both target these.
      */
     private const LOW_APPEARANCES = 12;
+
+    /**
+     * A position group is a "weak spot" when its projected starters average
+     * this many overall points below the rest of the squad.
+     */
+    private const QUALITY_GAP_THRESHOLD = 5;
+
+    /**
+     * Wage percentile above which a player is considered "expensive" for the
+     * purposes of the wasted-wage advisory. 0.75 = top quartile of the squad.
+     */
+    private const HIGH_WAGE_PERCENTILE = 0.75;
 
     /**
      * @return array<int, Advisory>
@@ -44,7 +57,16 @@ class SquadAdvisorService
 
         $advisories = [];
 
-        foreach ($this->depthGapAdvisories($available, $formation) as $a) {
+        // Compute depth shortages once so quality-gap can skip groups we
+        // already flagged as thin — saying "your defense is short" and
+        // "your defense is weak" in the same panel is just noise.
+        $thinGroups = $this->findThinGroups($available, $formation);
+
+        foreach ($this->depthGapAdvisories($thinGroups) as $a) {
+            $advisories[] = $a;
+        }
+
+        foreach ($this->qualityGapAdvisories($available, $formation, array_keys($thinGroups)) as $a) {
             $advisories[] = $a;
         }
 
@@ -59,6 +81,11 @@ class SquadAdvisorService
         $devAdvisory = $this->developmentAdvisory($available);
         if ($devAdvisory !== null) {
             $advisories[] = $devAdvisory;
+        }
+
+        $wastedWageAdvisory = $this->wastedWageAdvisory($available);
+        if ($wastedWageAdvisory !== null) {
+            $advisories[] = $wastedWageAdvisory;
         }
 
         foreach ($this->departureAdvisories($projection['outgoing']) as $a) {
@@ -79,24 +106,38 @@ class SquadAdvisorService
     }
 
     /**
-     * One bullet per position group that's short of the formation's
-     * requirement. Severity scales with how many players are missing.
+     * Identify position groups that are short of the formation's requirement.
      *
-     * @return array<int, Advisory>
+     * @return array<string, int> group key → missing-player count
      */
-    private function depthGapAdvisories(Collection $available, Formation $formation): array
+    private function findThinGroups(Collection $available, Formation $formation): array
     {
-        $advisories = [];
         $needs = $formation->requirements();
         $haves = $available->countBy(fn (GamePlayer $p) => $p->position_group);
 
+        $thin = [];
         foreach ($needs as $group => $need) {
-            $have = $haves[$group] ?? 0;
-            if ($have >= $need) {
-                continue;
+            $missing = $need - ($haves[$group] ?? 0);
+            if ($missing > 0) {
+                $thin[$group] = $missing;
             }
+        }
 
-            $missing = $need - $have;
+        return $thin;
+    }
+
+    /**
+     * One bullet per position group that's short of the formation's
+     * requirement. Severity scales with how many players are missing.
+     *
+     * @param array<string, int> $thinGroups
+     * @return array<int, Advisory>
+     */
+    private function depthGapAdvisories(array $thinGroups): array
+    {
+        $advisories = [];
+
+        foreach ($thinGroups as $group => $missing) {
             $severity = $missing >= 2 ? Advisory::SEVERITY_CRITICAL : Advisory::SEVERITY_WARN;
 
             $advisories[] = new Advisory(
@@ -105,6 +146,85 @@ class SquadAdvisorService
                 message: __('planner.advisory_depth_gap', [
                     'count' => $missing,
                     'position' => $this->groupLabel($group),
+                ]),
+            );
+        }
+
+        return $advisories;
+    }
+
+    /**
+     * Flag position groups whose *quality* (top-N projected overall) sits
+     * meaningfully below the rest of the squad. Catches the "we have the
+     * bodies but they aren't good enough" case that depth gap misses.
+     *
+     * Skips groups already covered by depth gap — those need bodies before
+     * quality is the right complaint.
+     *
+     * @param array<int, string> $skipGroups
+     * @return array<int, Advisory>
+     */
+    private function qualityGapAdvisories(Collection $available, Formation $formation, array $skipGroups = []): array
+    {
+        $needs = $formation->requirements();
+
+        // Per-group average ovr of the projected first-choice players.
+        $groupAverages = [];
+        foreach ($needs as $group => $need) {
+            $top = $available
+                ->where('position_group', $group)
+                ->sortByDesc('next_season_overall')
+                ->take($need);
+
+            if ($top->isEmpty()) {
+                continue;
+            }
+
+            $groupAverages[$group] = $top->avg('next_season_overall');
+        }
+
+        if (count($groupAverages) < 2) {
+            return [];
+        }
+
+        $advisories = [];
+
+        foreach ($groupAverages as $group => $avg) {
+            if (in_array($group, $skipGroups, true)) {
+                continue;
+            }
+
+            // Compare against the average of the *other* groups, weighted by
+            // their formation needs — so a weak group doesn't dilute the
+            // benchmark it's being measured against.
+            $otherScore = 0;
+            $otherWeight = 0;
+            foreach ($groupAverages as $g => $a) {
+                if ($g === $group) {
+                    continue;
+                }
+                $w = $needs[$g];
+                $otherScore += $a * $w;
+                $otherWeight += $w;
+            }
+
+            if ($otherWeight === 0) {
+                continue;
+            }
+
+            $reference = $otherScore / $otherWeight;
+            $gap = (int) round($reference - $avg);
+
+            if ($gap < self::QUALITY_GAP_THRESHOLD) {
+                continue;
+            }
+
+            $advisories[] = new Advisory(
+                severity: Advisory::SEVERITY_WARN,
+                category: Advisory::CATEGORY_QUALITY,
+                message: __('planner.advisory_quality_gap', [
+                    'position' => $this->groupLabel($group),
+                    'gap' => $gap,
                 ]),
             );
         }
@@ -210,12 +330,56 @@ class SquadAdvisorService
             return null;
         }
 
-        $names = $candidates->pluck('name')->join(', ');
+        $names = $this->joinNames($candidates->pluck('name'));
 
         return new Advisory(
             severity: Advisory::SEVERITY_INFO,
             category: Advisory::CATEGORY_DEVELOPMENT,
             message: __('planner.advisory_development', ['names' => $names]),
+        );
+    }
+
+    /**
+     * Single combined bullet flagging players in the projected squad whose
+     * wage is in the top quartile *and* who barely featured this season.
+     * They're the "overpaid, underutilized" sell candidates — moving them
+     * frees wage space without hurting first-choice quality.
+     */
+    private function wastedWageAdvisory(Collection $available): ?Advisory
+    {
+        $wages = $available->pluck('annual_wage')->filter(fn ($w) => $w > 0)->sort()->values();
+
+        if ($wages->count() < 4) {
+            return null;
+        }
+
+        $index = (int) floor(($wages->count() - 1) * self::HIGH_WAGE_PERCENTILE);
+        $wageThreshold = $wages[$index];
+
+        $candidates = $available
+            ->filter(function (GamePlayer $p) use ($wageThreshold) {
+                $role = $p->squad_role ?? null;
+                if ($role !== SquadRole::ROTATION && $role !== SquadRole::RESERVES) {
+                    return false;
+                }
+                if ($p->season_appearances >= self::LOW_APPEARANCES) {
+                    return false;
+                }
+                return $p->annual_wage > $wageThreshold;
+            })
+            ->sortByDesc('annual_wage')
+            ->take(self::MAX_NAMES_PER_BULLET);
+
+        if ($candidates->isEmpty()) {
+            return null;
+        }
+
+        $names = $this->joinNames($candidates->pluck('name'));
+
+        return new Advisory(
+            severity: Advisory::SEVERITY_INFO,
+            category: Advisory::CATEGORY_WAGE,
+            message: __('planner.advisory_wasted_wage', ['names' => $names]),
         );
     }
 
@@ -248,6 +412,32 @@ class SquadAdvisorService
         }
 
         return $advisories;
+    }
+
+    /**
+     * Natural-language join of player names: comma-separated except the last
+     * item, which gets the localized conjunction ("y" / "and") prepended.
+     *
+     *   1 name  → "Carvajal"
+     *   2 names → "Carvajal y Alaba"
+     *   3+ names → "Carvajal, Rüdiger y Alaba"
+     */
+    private function joinNames(Collection $names): string
+    {
+        $count = $names->count();
+
+        if ($count === 0) {
+            return '';
+        }
+
+        if ($count === 1) {
+            return (string) $names->first();
+        }
+
+        $last = $names->last();
+        $rest = $names->slice(0, $count - 1)->join(', ');
+
+        return $rest . ' ' . __('planner.list_conjunction') . ' ' . $last;
     }
 
     private function groupLabel(string $group): string

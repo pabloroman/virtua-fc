@@ -31,6 +31,21 @@ class SquadActionRecommender
     private const LIST_MIN_OVERALL = 60;
 
     /**
+     * A departing player counts as a real loss when their projected next-season
+     * ability is still useful to the senior squad. Below this we let the
+     * departure pass without a "Replace" nudge — slot already has cover or
+     * the player no longer contributes enough to feel.
+     */
+    private const IMPACTFUL_LOSS_MIN_OVERALL = 72;
+
+    /**
+     * Younger contract-expiring players whose ceiling is still well above their
+     * current ability are worth a renewal offer even when ovr is modest — they
+     * can be a cheap development project rather than walking for free.
+     */
+    private const RENEWABLE_YOUTH_POTENTIAL_GAP = 10;
+
+    /**
      * Recommend an action for every player in the projection and write a
      * `squad_action` attribute. Returns the projection unchanged in shape.
      */
@@ -60,19 +75,27 @@ class SquadActionRecommender
             return null;
         }
 
-        // DEPARTING — only surface a "Replace" prompt for players the user will
-        // actually miss. Squad fillers leaving need no advice.
+        // DEPARTING — split by *why* the player is leaving. Contract expiring
+        // unrenewed is still fixable (you can offer a new deal); retirement
+        // and already-signed exits aren't. Within each branch, only surface
+        // an action when there's something useful to do.
         if ($role === SquadRole::DEPARTING) {
-            return $this->isImpactfulLoss($player, $game) ? SquadAction::REPLACE : null;
+            return $this->recommendForDeparting($player, $game);
         }
 
         $contractCritical = $this->contractNeedsAttention($player, $game);
 
         return match ($role) {
+            // Wonderkids ready for the senior XI need real minutes to keep
+            // growing; the not-yet-ready ones just stay in-house (KEEP =
+            // hidden chip — the role badge sparkle already signals the
+            // long-term investment).
             SquadRole::WONDERKID => $this->isReadyForMinutes($player)
                 ? SquadAction::PLAY_OFTEN
-                : SquadAction::DEVELOP,
-            SquadRole::PROSPECT => SquadAction::DEVELOP,
+                : SquadAction::KEEP,
+            // Prospects benefit from real matches at a lower level — loan
+            // them out to a club where they'll play every week.
+            SquadRole::PROSPECT => SquadAction::LOAN_OUT,
             SquadRole::KEY_PLAYER, SquadRole::FIRST_TEAM => $contractCritical
                 ? SquadAction::RENEW
                 : SquadAction::KEEP,
@@ -87,18 +110,57 @@ class SquadActionRecommender
     }
 
     /**
-     * "Impactful loss" means the user would feel the player's absence — a key
-     * player or first-teamer leaving. Reserves retiring don't need a replace
-     * nudge; the slot already has cover.
+     * Pick the right action for a DEPARTING player. The reason matters:
      *
-     * We look at the player's current `overall_score` since DEPARTING players
-     * skip the role-tier classifier paths that would have flagged them as KEY.
+     *  - CONTRACT_EXPIRING_UNRENEWED is the only path the manager can still
+     *    influence — RENEW if they're young with room to grow, REPLACE if
+     *    they were a real contributor, otherwise no nudge (let them walk).
+     *  - Retiring / transfer agreed / pre-contract elsewhere are locked in:
+     *    we only flag REPLACE when the loss actually hurts.
      */
-    private function isImpactfulLoss(GamePlayer $player, Game $game): bool
+    private function recommendForDeparting(GamePlayer $player, Game $game): ?SquadAction
     {
-        return $player->overall_score >= 75
-            || $player->tier >= 4
-            || ! PlayerAge::isVeteran($player->age($game->current_date));
+        $reason = $player->next_season_reason ?? null;
+
+        if ($reason === NextSeasonProjectionService::REASON_CONTRACT_EXPIRING_UNRENEWED) {
+            if ($this->isRenewableYouth($player)) {
+                return SquadAction::RENEW;
+            }
+            return $this->isImpactfulLoss($player) ? SquadAction::REPLACE : null;
+        }
+
+        return $this->isImpactfulLoss($player) ? SquadAction::REPLACE : null;
+    }
+
+    /**
+     * "Impactful loss" means the user would feel the player's absence —
+     * the player still contributes meaningful quality to the senior squad.
+     *
+     * Pure ability-based now: tier captures past stature, not current value,
+     * so an aging tier-4 player whose overall has fallen below the cutoff
+     * gets no replace nudge ("just let them go" speaks for itself).
+     */
+    private function isImpactfulLoss(GamePlayer $player): bool
+    {
+        return $player->overall_score >= self::IMPACTFUL_LOSS_MIN_OVERALL;
+    }
+
+    /**
+     * A young player whose ceiling is well above today's ability is worth
+     * offering a renewal to, even at a modest current overall — they're a
+     * cheap development project rather than a free-agent loss.
+     */
+    private function isRenewableYouth(GamePlayer $player): bool
+    {
+        $age = $player->next_season_age ?? PlayerAge::PRIME_END + 1;
+        if ($age > PlayerAge::YOUNG_END) {
+            return false;
+        }
+
+        $potential = $player->potential ?? $player->overall_score;
+        $gap = $potential - $player->overall_score;
+
+        return $gap >= self::RENEWABLE_YOUTH_POTENTIAL_GAP;
     }
 
     /**
