@@ -817,6 +817,9 @@ class GamePlayer extends Model
     public function getPotentialRangeAttribute(): string
     {
         if ($this->potential_low && $this->potential_high) {
+            if ($this->potential_low === $this->potential_high) {
+                return (string) $this->potential_low;
+            }
             return "{$this->potential_low}-{$this->potential_high}";
         }
         return '?';
