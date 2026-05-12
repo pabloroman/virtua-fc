@@ -6,6 +6,7 @@ use App\Models\Game;
 use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Services\FormationRecommender;
 use App\Modules\Squad\DTOs\Advisory;
+use App\Modules\Squad\DTOs\SquadContext;
 
 /**
  * Single entry point that produces the full Squad Planner payload.
@@ -47,9 +48,16 @@ class SquadPlannerService
         $formation = $this->pickFormation($projection);
 
         $projection = $this->roleClassifier->classify($projection, $formation);
-        $projection = $this->actionRecommender->recommend($projection, $game);
 
-        $advisories = $this->advisorService->build($projection, $formation, $game);
+        // Shared per-squad reference stats — keeps recommender + advisor
+        // anchored to the actual roster's capacity (worst projected starter
+        // per group, group sizes, formation needs) instead of absolute
+        // overall thresholds that misfire on extremely strong or weak squads.
+        $context = SquadContext::fromProjection($projection, $formation);
+
+        $projection = $this->actionRecommender->recommend($projection, $game, $context);
+
+        $advisories = $this->advisorService->build($projection, $formation, $game, $context);
 
         return [
             'projection' => $projection,

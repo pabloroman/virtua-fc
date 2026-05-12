@@ -8,11 +8,15 @@
     $projectedAbility = $projection !== null ? $currentAbility + $projection : null;
     $projectedPct = $projectedAbility ? min(100, max(0, ($projectedAbility / $max) * 100)) : null;
 
+    // Apply the design-system rating utility (resources/views/design-system/
+    // sections/badges.blade.php) so the bar fill and the leading number stay
+    // colour-aligned with every other rating surface in the app.
     $fillColor = match(true) {
-        $currentAbility >= 80 => 'bg-accent-green',
-        $currentAbility >= 70 => 'bg-lime-500',
-        $currentAbility >= 60 => 'bg-accent-gold',
-        default => 'bg-surface-600',
+        $currentAbility >= 80 => 'rating-elite',
+        $currentAbility >= 70 => 'rating-good',
+        $currentAbility >= 60 => 'rating-average',
+        $currentAbility >= 50 => 'rating-below',
+        default => 'rating-poor',
     };
 
     $barHeight = match($size) {
@@ -43,7 +47,16 @@
 
 <div class="flex items-center {{ $gapClass }} {{ $containerMin }}">
     {{-- Current ability number --}}
-    <span class="{{ $numberClass }} text-right shrink-0 @if($currentAbility >= 80) text-accent-green @elseif($currentAbility >= 70) text-lime-400 @elseif($currentAbility >= 60) text-accent-gold @else text-text-muted @endif">{{ $currentAbility }}</span>
+    @php
+        $numberColor = match(true) {
+            $currentAbility >= 80 => 'text-accent-green',
+            $currentAbility >= 70 => 'text-lime-400',
+            $currentAbility >= 60 => 'text-accent-gold',
+            $currentAbility >= 50 => 'text-accent-orange',
+            default => 'text-accent-red',
+        };
+    @endphp
+    <span class="{{ $numberClass }} {{ $numberColor }} text-right shrink-0">{{ $currentAbility }}</span>
 
     {{-- Bar --}}
     <div class="relative w-full {{ $barHeight }} bg-surface-600 rounded-full overflow-hidden grow">

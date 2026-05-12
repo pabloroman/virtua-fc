@@ -7,6 +7,7 @@ use App\Models\GamePlayer;
 use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Player\PlayerAge;
 use App\Modules\Squad\DTOs\Advisory;
+use App\Modules\Squad\DTOs\SquadContext;
 use App\Modules\Squad\Enums\AdvisoryCategory;
 use App\Modules\Squad\Enums\AdvisorySeverity;
 use App\Modules\Squad\Enums\PositionGroup;
@@ -47,9 +48,23 @@ class SquadAdvisorService
     private const HIGH_WAGE_PERCENTILE = 0.75;
 
     /**
+     * Overall-points gap between the worst starter and the first backup that
+     * counts as "not a decent substitute". Below this, the backup is close
+     * enough to step in without a quality drop.
+     */
+    private const BACKUP_GAP_THRESHOLD = 10;
+
+    /**
+     * Surplus of elite (KEY_PLAYER) projections over the formation's spots
+     * that triggers the overload advisory. 2 = one rotation-level competitor
+     * is fine; two or more is dressing-room friction.
+     */
+    private const ELITE_SURPLUS_THRESHOLD = 2;
+
+    /**
      * @return array<int, Advisory>
      */
-    public function build(array $projection, Formation $formation, Game $game): array
+    public function build(array $projection, Formation $formation, Game $game, SquadContext $context): array
     {
         $available = NextSeasonProjectionService::availablePool($projection);
 
@@ -65,6 +80,14 @@ class SquadAdvisorService
         }
 
         foreach ($this->qualityGapAdvisories($available, $formation, array_keys($thinGroups)) as $a) {
+            $advisories[] = $a;
+        }
+
+        foreach ($this->backupGapAdvisories($available, $formation, array_keys($thinGroups)) as $a) {
+            $advisories[] = $a;
+        }
+
+        foreach ($this->overloadAdvisories($available, $formation) as $a) {
             $advisories[] = $a;
         }
 
@@ -86,7 +109,7 @@ class SquadAdvisorService
             $advisories[] = $wastedWageAdvisory;
         }
 
-        foreach ($this->departureAdvisories($projection['outgoing']) as $a) {
+        foreach ($this->departureAdvisories($projection['outgoing'], $context) as $a) {
             $advisories[] = $a;
         }
 
@@ -216,6 +239,110 @@ class SquadAdvisorService
                 message: __('planner.advisory_quality_gap', [
                     'position' => $this->advisoryLabel($group),
                     'gap' => $gap,
+                ]),
+            );
+        }
+
+        return $advisories;
+    }
+
+    /**
+     * Flag position groups where the projected starters have no credible
+     * substitute on the bench: either no extra body beyond the formation's
+     * needs, or the first backup is meaningfully weaker than the worst
+     * starter. Catches "11 starters, no plan B for injuries/suspensions".
+     *
+     * Skips groups already covered by the depth-gap advisory — they need
+     * starters before they need backups.
+     *
+     * @param array<int, string> $skipGroups
+     * @return array<int, Advisory>
+     */
+    private function backupGapAdvisories(Collection $available, Formation $formation, array $skipGroups = []): array
+    {
+        $needs = $formation->requirements();
+        $advisories = [];
+
+        foreach ($needs as $group => $need) {
+            if (in_array($group, $skipGroups, true)) {
+                continue;
+            }
+
+            $players = $available
+                ->where('position_group', $group)
+                ->sortByDesc('next_season_overall')
+                ->values();
+
+            // No body at all beyond the starters → no backup, full stop.
+            if ($players->count() <= $need) {
+                $advisories[] = new Advisory(
+                    severity: AdvisorySeverity::WARN,
+                    category: AdvisoryCategory::BACKUP,
+                    message: __('planner.advisory_no_backup', [
+                        'position' => $this->advisoryLabel($group),
+                    ]),
+                );
+                continue;
+            }
+
+            $starters = $players->take($need);
+            $firstBackup = $players->get($need);
+
+            $worstStarter = (int) $starters->min('next_season_overall');
+            $backupOvr = (int) $firstBackup->next_season_overall;
+            $gap = $worstStarter - $backupOvr;
+
+            if ($gap >= self::BACKUP_GAP_THRESHOLD) {
+                $advisories[] = new Advisory(
+                    severity: AdvisorySeverity::WARN,
+                    category: AdvisoryCategory::BACKUP,
+                    message: __('planner.advisory_weak_backup', [
+                        'position' => $this->advisoryLabel($group),
+                        'gap' => $gap,
+                    ]),
+                );
+            }
+        }
+
+        return $advisories;
+    }
+
+    /**
+     * Flag position groups where too many established players (KEY_PLAYER
+     * roles) are competing for too few starting spots. Cornerstone players
+     * stuck on the bench breed dressing-room friction — the user should
+     * either sell, loan out, or accept the risk.
+     *
+     * @return array<int, Advisory>
+     */
+    private function overloadAdvisories(Collection $available, Formation $formation): array
+    {
+        $needs = $formation->requirements();
+        $advisories = [];
+
+        foreach ($needs as $group => $need) {
+            $elite = $available
+                ->where('position_group', $group)
+                ->filter(fn (GamePlayer $p) => ($p->squad_role ?? null) === SquadRole::KEY_PLAYER)
+                ->sortByDesc('next_season_overall')
+                ->values();
+
+            if ($elite->count() - $need < self::ELITE_SURPLUS_THRESHOLD) {
+                continue;
+            }
+
+            $names = $this->joinNames(
+                $elite->take(self::MAX_NAMES_PER_BULLET)->pluck('name')
+            );
+
+            $advisories[] = new Advisory(
+                severity: AdvisorySeverity::WARN,
+                category: AdvisoryCategory::OVERLOAD,
+                message: __('planner.advisory_overload', [
+                    'position' => $this->advisoryLabel($group),
+                    'count' => $elite->count(),
+                    'spots' => $need,
+                    'names' => $names,
                 ]),
             );
         }
@@ -370,19 +497,16 @@ class SquadAdvisorService
     }
 
     /**
-     * One bullet per outgoing player who would leave a real gap — key players,
-     * starters, and high-overall regulars. Squad fillers leaving don't need a
-     * replacement nudge.
+     * One bullet per outgoing player who would leave a real gap — those who
+     * project at starter level next season. Squad fillers leaving don't
+     * need a replacement nudge; the depth/backup advisories already cover
+     * structural holes.
      *
      * @return array<int, Advisory>
      */
-    private function departureAdvisories(Collection $outgoing): array
+    private function departureAdvisories(Collection $outgoing, SquadContext $context): array
     {
-        $impactful = $outgoing->filter(function (GamePlayer $p) {
-            // squad_role is DEPARTING for everyone in the outgoing bucket — fall
-            // back to ability+tier to pick out the meaningful losses.
-            return $p->overall_score >= 75 || $p->tier >= 4;
-        });
+        $impactful = $outgoing->filter(fn (GamePlayer $p) => $context->isImpactfulLoss($p));
 
         $advisories = [];
         foreach ($impactful as $player) {

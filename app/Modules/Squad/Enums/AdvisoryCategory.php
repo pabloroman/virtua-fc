@@ -10,6 +10,8 @@ enum AdvisoryCategory: string
 {
     case DEPTH = 'depth';
     case QUALITY = 'quality';
+    case BACKUP = 'backup';
+    case OVERLOAD = 'overload';
     case AGE = 'age';
     case WAGE = 'wage';
     case DEVELOPMENT = 'development';

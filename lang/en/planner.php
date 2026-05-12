@@ -62,6 +62,9 @@ return [
     'advisory_empty' => 'No squad-level recommendations. The projected roster looks balanced.',
     'advisory_depth_gap' => 'Reinforce :position — :count short of the chosen formation.',
     'advisory_quality_gap' => 'Reinforce :position — :gap points below the rest of the squad.',
+    'advisory_no_backup' => 'No backup at :position — starters have nobody to step in for injuries or rotation.',
+    'advisory_weak_backup' => 'Strengthen the bench at :position — first backup is :gap points behind the worst starter.',
+    'advisory_overload' => 'Overload at :position — :count top-tier players competing for :spots starting spots (:names). Expect unhappy squad members.',
     'advisory_age_gap' => ':position pipeline thin — no players :age or younger projected next season.',
     'advisory_wage_cliff' => "Renew :name — contract ends :year and no agreement is in place.",
     'advisory_development' => 'Give minutes to :names to maximize their development.',
@@ -81,6 +84,17 @@ return [
     'action_renew' => 'Renew',
     'action_list' => 'List',
     'action_replace' => 'Replace',
+
+    // Help disclosure
+    'help_toggle' => 'How does the Planner work?',
+    'help_overview_intro' => 'This view projects what your squad will look like at the start of next season based on contracts, loans, agreed transfers and pre-contracts.',
+    'help_overview_sections' => 'Staying gathers the players who will continue with you; Incoming are confirmed arrivals; Outgoing will have left before next season kicks off.',
+    'help_actions_title' => 'Per-player recommendations',
+    'help_action_renew' => 'Renew — offer a new deal before the contract runs out.',
+    'help_action_replace' => "Replace — their departure leaves a hole worth filling on the market.",
+    'help_action_play_often' => 'Play often — wonderkid ready to clock minutes with the first team.',
+    'help_action_loan_out' => 'Loan out — heads elsewhere to gain rhythm and returns more developed.',
+    'help_action_list' => 'List — surplus depth with no place in the rotation, worth putting on the market.',
 
     // Auto-generated blurbs
     'blurb_wonderkid' => 'Huge potential — already useful and getting better.',

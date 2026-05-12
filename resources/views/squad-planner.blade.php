@@ -31,7 +31,7 @@
         <x-game-header :game="$game" :next-match="$game->next_match"></x-game-header>
     </x-slot>
 
-    <div class="max-w-7xl mx-auto px-4 pb-8">
+    <div x-data class="max-w-7xl mx-auto px-4 pb-8">
 
         {{-- Sub-navigation --}}
         <x-section-nav :items="$squadNavItems" />
@@ -43,12 +43,54 @@
             </h2>
         </div>
 
-        {{-- Summary strip --}}
-        <div class="flex gap-2.5 overflow-x-auto scrollbar-hide mt-4 pb-1">
-            <x-summary-card :label="__('planner.section_staying')" :value="$counts['staying'] > 0 ? $counts['staying'] : '—'" />
-            <x-summary-card :label="__('planner.section_outgoing')" :value="$counts['outgoing'] > 0 ? $counts['outgoing'] : '—'" :value-class="$counts['outgoing'] > 0 ? 'text-accent-red' : 'text-text-faint'" />
-            <x-summary-card :label="__('planner.section_incoming')" :value="$counts['incoming'] > 0 ? $counts['incoming'] : '—'" :value-class="$counts['incoming'] > 0 ? 'text-accent-green' : 'text-text-faint'" />
-        </div>
+        {{-- Summary strip + collapsible help --}}
+        <x-help-disclosure class="mt-4">
+            <x-slot name="trigger">
+                <div class="flex items-center gap-2.5 overflow-x-auto scrollbar-hide pb-1">
+                    <x-summary-card :label="__('planner.section_staying')" :value="$counts['staying'] > 0 ? $counts['staying'] : '—'" />
+                    <x-summary-card :label="__('planner.section_outgoing')" :value="$counts['outgoing'] > 0 ? $counts['outgoing'] : '—'" :value-class="$counts['outgoing'] > 0 ? 'text-accent-red' : 'text-text-faint'" />
+                    <x-summary-card :label="__('planner.section_incoming')" :value="$counts['incoming'] > 0 ? $counts['incoming'] : '—'" :value-class="$counts['incoming'] > 0 ? 'text-accent-green' : 'text-text-faint'" />
+                    <div class="ml-auto shrink-0">
+                        <x-help-toggle :label="__('planner.help_toggle')" />
+                    </div>
+                </div>
+            </x-slot>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {{-- Overview --}}
+                <div>
+                    <p class="text-text-secondary mb-3">{{ __('planner.help_overview_intro') }}</p>
+                    <p class="text-text-secondary">{{ __('planner.help_overview_sections') }}</p>
+                </div>
+
+                {{-- Actions --}}
+                <div>
+                    <p class="font-semibold text-text-body mb-2">{{ __('planner.help_actions_title') }}</p>
+                    <ul class="space-y-2">
+                        <li class="flex gap-2">
+                            <span class="text-accent-gold shrink-0">●</span>
+                            <span class="text-text-secondary">{{ __('planner.help_action_renew') }}</span>
+                        </li>
+                        <li class="flex gap-2">
+                            <span class="text-accent-red shrink-0">●</span>
+                            <span class="text-text-secondary">{{ __('planner.help_action_replace') }}</span>
+                        </li>
+                        <li class="flex gap-2">
+                            <span class="text-accent-green shrink-0">●</span>
+                            <span class="text-text-secondary">{{ __('planner.help_action_play_often') }}</span>
+                        </li>
+                        <li class="flex gap-2">
+                            <span class="text-accent-blue shrink-0">●</span>
+                            <span class="text-text-secondary">{{ __('planner.help_action_loan_out') }}</span>
+                        </li>
+                        <li class="flex gap-2">
+                            <span class="text-accent-orange shrink-0">●</span>
+                            <span class="text-text-secondary">{{ __('planner.help_action_list') }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </x-help-disclosure>
 
         {{-- ===== Layout: sidebar + main panel ===== --}}
         <div class="mt-6 grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
@@ -136,4 +178,6 @@
         </div>
 
     </div>
+
+    <x-player-detail-modal />
 </x-app-layout>

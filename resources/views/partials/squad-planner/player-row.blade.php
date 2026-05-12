@@ -9,17 +9,6 @@
     $blurb = $gp->squad_blurb ?? null;
     $action = $gp->squad_action ?? null;
 
-    // Map each action to its existing flow. Actions without a sensible
-    // destination (KEEP) stay as passive labels.
-    $actionHref = $action ? match ($action) {
-        \App\Modules\Squad\Enums\SquadAction::RENEW => route('game.squad', $game->id),
-        \App\Modules\Squad\Enums\SquadAction::LIST,
-        \App\Modules\Squad\Enums\SquadAction::LOAN_OUT => route('game.transfers.outgoing', $game->id),
-        \App\Modules\Squad\Enums\SquadAction::REPLACE => route('game.transfers.market', $game->id),
-        \App\Modules\Squad\Enums\SquadAction::PLAY_OFTEN => route('game.squad-selection', $game->id),
-        default => null,
-    } : null;
-
     $reasonTone = match ($status) {
         \App\Modules\Squad\Services\NextSeasonProjectionService::STATUS_OUTGOING => 'bg-accent-red/10 text-accent-red border-accent-red/20',
         \App\Modules\Squad\Services\NextSeasonProjectionService::STATUS_INCOMING => 'bg-accent-green/10 text-accent-green border-accent-green/20',
@@ -71,7 +60,7 @@
                 @if($role)
                     <x-squad-role-badge :role="$role" :tooltip="$blurb" />
                 @endif
-                <x-squad-action-chip :action="$action" :href="$actionHref" />
+                <x-squad-action-chip :action="$action" />
             </div>
         </div>
         <div class="shrink-0 w-[130px]">
@@ -112,7 +101,7 @@
 
     {{-- Action tag (icon + label) --}}
     <div class="flex justify-end">
-        <x-squad-action-chip :action="$action" :href="$actionHref" />
+        <x-squad-action-chip :action="$action" />
     </div>
 
     {{-- Age (next season) --}}
