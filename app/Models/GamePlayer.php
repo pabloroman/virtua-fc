@@ -540,6 +540,35 @@ class GamePlayer extends Model
     }
 
     /**
+     * Number of months ahead of `current_date` that counts as "the user
+     * should already be thinking about this contract". Covers both
+     * current-season-end and next-season-end deals so the manager gets a
+     * heads-up before the pre-contract window opens to rival clubs.
+     */
+    public const CONTRACT_ATTENTION_WINDOW_MONTHS = 14;
+
+    /**
+     * True when the contract expires within the attention window and no
+     * renewal or pre-contract elsewhere has been agreed. Shared by the
+     * Squad Planner action recommender and advisor so a single rule change
+     * propagates everywhere.
+     */
+    public function contractNeedsAttention(Carbon $referenceDate): bool
+    {
+        if (! $this->contract_until) {
+            return false;
+        }
+
+        if ($this->hasRenewalAgreed() || $this->hasPreContractAgreement()) {
+            return false;
+        }
+
+        $cutoff = $referenceDate->copy()->addMonths(self::CONTRACT_ATTENTION_WINDOW_MONTHS);
+
+        return $this->contract_until->lte($cutoff);
+    }
+
+    /**
      * Check if player can receive pre-contract offers.
      * Available when contract expires at end of season and no agreement exists.
      *

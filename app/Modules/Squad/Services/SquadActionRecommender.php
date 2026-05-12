@@ -83,7 +83,7 @@ class SquadActionRecommender
             return $this->recommendForDeparting($player, $game);
         }
 
-        $contractCritical = $this->contractNeedsAttention($player, $game);
+        $contractCritical = $player->contractNeedsAttention($game->current_date);
 
         return match ($role) {
             // Wonderkids ready for the senior XI need real minutes to keep
@@ -161,29 +161,6 @@ class SquadActionRecommender
         $gap = $potential - $player->overall_score;
 
         return $gap >= self::RENEWABLE_YOUTH_POTENTIAL_GAP;
-    }
-
-    /**
-     * Contract attention is warranted when the player's deal expires at the
-     * end of the *upcoming* season and no renewal or pre-contract elsewhere
-     * has been agreed yet.
-     */
-    private function contractNeedsAttention(GamePlayer $player, Game $game): bool
-    {
-        if (! $player->contract_until) {
-            return false;
-        }
-
-        if ($player->hasRenewalAgreed() || $player->hasPreContractAgreement()) {
-            return false;
-        }
-
-        // Roughly "expires within the next ~14 months" — covers both
-        // current-season-end and next-season-end contracts so the user gets a
-        // heads-up before the pre-contract window opens.
-        $cutoff = $game->current_date->copy()->addMonths(14);
-
-        return $player->contract_until->lte($cutoff);
     }
 
     /**

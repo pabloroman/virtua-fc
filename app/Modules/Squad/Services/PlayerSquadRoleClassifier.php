@@ -63,21 +63,21 @@ class PlayerSquadRoleClassifier
      */
     public function classify(array $projection, ?Formation $formation = null): array
     {
-        $staying = collect()
-            ->merge($projection['staying']['goalkeepers'])
-            ->merge($projection['staying']['defenders'])
-            ->merge($projection['staying']['midfielders'])
-            ->merge($projection['staying']['forwards']);
-
         $incoming = $projection['incoming'];
         $outgoing = $projection['outgoing'];
 
         // Pool of players who will actually be available next season — used for
         // best XI and peer ranking. STILL_ON_LOAN players are owned but won't be
         // training with the squad, so they're excluded from the XI competition.
-        $available = $staying
-            ->reject(fn (GamePlayer $p) => $p->next_season_reason === NextSeasonProjectionService::REASON_STILL_ON_LOAN)
-            ->merge($incoming);
+        $available = NextSeasonProjectionService::availablePool($projection);
+
+        // STAYING flat collection — used to iterate every owned player for the
+        // role assignment loop, with peer ranking provided by `$available`.
+        $staying = collect()
+            ->merge($projection['staying']['goalkeepers'])
+            ->merge($projection['staying']['defenders'])
+            ->merge($projection['staying']['midfielders'])
+            ->merge($projection['staying']['forwards']);
 
         $bestXIIds = $this->resolveBestXIIds($available, $formation);
         $rankingByGroup = $this->buildPositionGroupRankings($available);

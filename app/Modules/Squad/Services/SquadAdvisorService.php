@@ -6,6 +6,10 @@ use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Player\PlayerAge;
+use App\Modules\Squad\DTOs\Advisory;
+use App\Modules\Squad\Enums\AdvisoryCategory;
+use App\Modules\Squad\Enums\AdvisorySeverity;
+use App\Modules\Squad\Enums\PositionGroup;
 use App\Modules\Squad\Enums\SquadRole;
 use Illuminate\Support\Collection;
 
@@ -47,13 +51,7 @@ class SquadAdvisorService
      */
     public function build(array $projection, Formation $formation, Game $game): array
     {
-        $available = collect()
-            ->merge($projection['staying']['goalkeepers'])
-            ->merge($projection['staying']['defenders'])
-            ->merge($projection['staying']['midfielders'])
-            ->merge($projection['staying']['forwards'])
-            ->reject(fn (GamePlayer $p) => $p->next_season_reason === NextSeasonProjectionService::REASON_STILL_ON_LOAN)
-            ->merge($projection['incoming']);
+        $available = NextSeasonProjectionService::availablePool($projection);
 
         $advisories = [];
 
@@ -93,14 +91,7 @@ class SquadAdvisorService
         }
 
         // Stable sort by severity so critical bubbles to the top.
-        usort($advisories, function (Advisory $a, Advisory $b) {
-            $order = [
-                Advisory::SEVERITY_CRITICAL => 0,
-                Advisory::SEVERITY_WARN => 1,
-                Advisory::SEVERITY_INFO => 2,
-            ];
-            return ($order[$a->severity] ?? 99) <=> ($order[$b->severity] ?? 99);
-        });
+        usort($advisories, fn (Advisory $a, Advisory $b) => $a->severity->sortWeight() <=> $b->severity->sortWeight());
 
         return $advisories;
     }
@@ -138,14 +129,14 @@ class SquadAdvisorService
         $advisories = [];
 
         foreach ($thinGroups as $group => $missing) {
-            $severity = $missing >= 2 ? Advisory::SEVERITY_CRITICAL : Advisory::SEVERITY_WARN;
+            $severity = $missing >= 2 ? AdvisorySeverity::CRITICAL : AdvisorySeverity::WARN;
 
             $advisories[] = new Advisory(
                 severity: $severity,
-                category: Advisory::CATEGORY_DEPTH,
+                category: AdvisoryCategory::DEPTH,
                 message: __('planner.advisory_depth_gap', [
                     'count' => $missing,
-                    'position' => $this->groupLabel($group),
+                    'position' => $this->advisoryLabel($group),
                 ]),
             );
         }
@@ -220,10 +211,10 @@ class SquadAdvisorService
             }
 
             $advisories[] = new Advisory(
-                severity: Advisory::SEVERITY_WARN,
-                category: Advisory::CATEGORY_QUALITY,
+                severity: AdvisorySeverity::WARN,
+                category: AdvisoryCategory::QUALITY,
                 message: __('planner.advisory_quality_gap', [
-                    'position' => $this->groupLabel($group),
+                    'position' => $this->advisoryLabel($group),
                     'gap' => $gap,
                 ]),
             );
@@ -242,8 +233,8 @@ class SquadAdvisorService
     {
         $advisories = [];
 
-        foreach (['Goalkeeper', 'Defender', 'Midfielder', 'Forward'] as $group) {
-            $inGroup = $available->where('position_group', $group);
+        foreach (PositionGroup::cases() as $group) {
+            $inGroup = $available->where('position_group', $group->value);
 
             if ($inGroup->isEmpty()) {
                 continue;
@@ -255,10 +246,10 @@ class SquadAdvisorService
 
             if (! $hasYouth) {
                 $advisories[] = new Advisory(
-                    severity: Advisory::SEVERITY_WARN,
-                    category: Advisory::CATEGORY_AGE,
+                    severity: AdvisorySeverity::WARN,
+                    category: AdvisoryCategory::AGE,
                     message: __('planner.advisory_age_gap', [
-                        'position' => $this->groupLabel($group),
+                        'position' => $group->advisoryLabel(),
                         'age' => PlayerAge::YOUNG_END,
                     ]),
                 );
@@ -277,19 +268,14 @@ class SquadAdvisorService
      */
     private function wageCliffAdvisories(Collection $available, Game $game): array
     {
-        $cutoff = $game->current_date->copy()->addMonths(14);
-
         $atRisk = $available
-            ->filter(function (GamePlayer $p) use ($cutoff) {
+            ->filter(function (GamePlayer $p) use ($game) {
                 $role = $p->squad_role ?? null;
                 $isKey = $role === SquadRole::KEY_PLAYER || $role === SquadRole::FIRST_TEAM;
                 if (! $isKey) {
                     return false;
                 }
-                if (! $p->contract_until || $p->contract_until->gt($cutoff)) {
-                    return false;
-                }
-                return ! $p->hasRenewalAgreed() && ! $p->hasPreContractAgreement();
+                return $p->contractNeedsAttention($game->current_date);
             })
             ->sortBy('contract_until')
             ->values();
@@ -297,8 +283,8 @@ class SquadAdvisorService
         $advisories = [];
         foreach ($atRisk as $player) {
             $advisories[] = new Advisory(
-                severity: Advisory::SEVERITY_WARN,
-                category: Advisory::CATEGORY_WAGE,
+                severity: AdvisorySeverity::WARN,
+                category: AdvisoryCategory::WAGE,
                 message: __('planner.advisory_wage_cliff', [
                     'name' => $player->name,
                     'year' => $player->contract_until->year,
@@ -333,8 +319,8 @@ class SquadAdvisorService
         $names = $this->joinNames($candidates->pluck('name'));
 
         return new Advisory(
-            severity: Advisory::SEVERITY_INFO,
-            category: Advisory::CATEGORY_DEVELOPMENT,
+            severity: AdvisorySeverity::INFO,
+            category: AdvisoryCategory::DEVELOPMENT,
             message: __('planner.advisory_development', ['names' => $names]),
         );
     }
@@ -377,8 +363,8 @@ class SquadAdvisorService
         $names = $this->joinNames($candidates->pluck('name'));
 
         return new Advisory(
-            severity: Advisory::SEVERITY_INFO,
-            category: Advisory::CATEGORY_WAGE,
+            severity: AdvisorySeverity::INFO,
+            category: AdvisoryCategory::WAGE,
             message: __('planner.advisory_wasted_wage', ['names' => $names]),
         );
     }
@@ -393,7 +379,6 @@ class SquadAdvisorService
     private function departureAdvisories(Collection $outgoing): array
     {
         $impactful = $outgoing->filter(function (GamePlayer $p) {
-            $role = $p->squad_role ?? null;
             // squad_role is DEPARTING for everyone in the outgoing bucket — fall
             // back to ability+tier to pick out the meaningful losses.
             return $p->overall_score >= 75 || $p->tier >= 4;
@@ -402,8 +387,8 @@ class SquadAdvisorService
         $advisories = [];
         foreach ($impactful as $player) {
             $advisories[] = new Advisory(
-                severity: Advisory::SEVERITY_CRITICAL,
-                category: Advisory::CATEGORY_DEPARTURE,
+                severity: AdvisorySeverity::CRITICAL,
+                category: AdvisoryCategory::DEPARTURE,
                 message: __('planner.advisory_key_departure', [
                     'name' => $player->name,
                     'position' => $player->position_name,
@@ -440,14 +425,17 @@ class SquadAdvisorService
         return $rest . ' ' . __('planner.list_conjunction') . ' ' . $last;
     }
 
-    private function groupLabel(string $group): string
+    /**
+     * Resolve the lowercase singular advisory label for either a raw
+     * `position_group` string (as it arrives from Formation requirements
+     * and `position_group` collections) or a typed `PositionGroup`.
+     */
+    private function advisoryLabel(string|PositionGroup $group): string
     {
-        return match ($group) {
-            'Goalkeeper' => __('planner.group_goalkeeper'),
-            'Defender' => __('planner.group_defender'),
-            'Midfielder' => __('planner.group_midfielder'),
-            'Forward' => __('planner.group_forward'),
-            default => $group,
-        };
+        $resolved = $group instanceof PositionGroup
+            ? $group
+            : PositionGroup::tryFrom($group);
+
+        return $resolved?->advisoryLabel() ?? (string) $group;
     }
 }

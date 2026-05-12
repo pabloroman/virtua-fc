@@ -6,6 +6,7 @@ use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\TransferOffer;
 use App\Modules\Player\Services\PlayerDevelopmentService;
+use App\Modules\Squad\Enums\PositionGroup;
 use Illuminate\Support\Collection;
 
 /**
@@ -27,9 +28,6 @@ class NextSeasonProjectionService
     public const STATUS_OUTGOING = 'outgoing';
     public const STATUS_INCOMING = 'incoming';
 
-    public const HORIZON_CURRENT = 'current';
-    public const HORIZON_NEXT = 'next';
-
     public const REASON_OWNED = 'owned';
     public const REASON_RETURNING_FROM_LOAN = 'returning_from_loan';
     public const REASON_STILL_ON_LOAN = 'still_on_loan';
@@ -48,16 +46,10 @@ class NextSeasonProjectionService
     ) {}
 
     /**
-     * Build the squad projection for the chosen horizon.
-     *
-     * - HORIZON_NEXT (default): season+1 — projects ages, advances overall
-     *   scores by one season of development, partitions the squad into
-     *   staying / outgoing / incoming based on contracts, retirements,
-     *   transfers, and loan return dates.
-     * - HORIZON_CURRENT: today — every owned player sits in `staying` with
-     *   reason `owned`, no age advance, no projection delta. Outgoing /
-     *   incoming are empty. Provides a "what does the team look like right
-     *   now?" comparison view.
+     * Build the squad projection for the start of next season: projects ages,
+     * advances overall scores by one season of development, partitions the
+     * squad into staying / outgoing / incoming based on contracts, retirements,
+     * transfers, and loan return dates.
      *
      * @return array{
      *     staying: array{goalkeepers: Collection, defenders: Collection, midfielders: Collection, forwards: Collection},
@@ -66,33 +58,24 @@ class NextSeasonProjectionService
      *     counts: array{staying: int, outgoing: int, incoming: int},
      *     seasonEndDate: \Carbon\Carbon,
      *     nextSeasonStartYear: int,
-     *     horizon: string,
      * }
      */
-    public function build(Game $game, string $horizon = self::HORIZON_NEXT): array
+    public function build(Game $game): array
     {
-        $horizon = $horizon === self::HORIZON_CURRENT ? self::HORIZON_CURRENT : self::HORIZON_NEXT;
         $seasonEndDate = $game->getSeasonEndDate();
-        $referenceDate = $horizon === self::HORIZON_CURRENT
-            ? $game->current_date
-            : $seasonEndDate->copy()->addDay();
+        $referenceDate = $seasonEndDate->copy()->addDay();
 
         $owned = $this->loadOwnedPlayers($game);
         $loanedIn = $this->loadLoanedInPlayers($game);
-        $incomingPreContracts = $horizon === self::HORIZON_NEXT
-            ? $this->loadIncomingPreContracts($game)
-            : collect();
+        $incomingPreContracts = $this->loadIncomingPreContracts($game);
 
         $staying = collect();
         $outgoing = collect();
         $incoming = collect();
 
         foreach ($owned as $player) {
-            // Current-mode keeps everyone on the books; next-mode partitions.
-            $verdict = $horizon === self::HORIZON_CURRENT
-                ? ['status' => self::STATUS_STAYING, 'reason' => self::REASON_OWNED]
-                : $this->classifyOwned($player, $seasonEndDate);
-            $this->enrich($player, $game, $referenceDate, $verdict['status'], $verdict['reason'], $horizon);
+            $verdict = $this->classifyOwned($player, $seasonEndDate);
+            $this->enrich($player, $referenceDate, $verdict['status'], $verdict['reason']);
 
             if ($verdict['status'] === self::STATUS_STAYING) {
                 $staying->push($player);
@@ -102,17 +85,11 @@ class NextSeasonProjectionService
         }
 
         foreach ($loanedIn as $player) {
-            if ($horizon === self::HORIZON_CURRENT) {
-                $this->enrich($player, $game, $referenceDate, self::STATUS_STAYING, self::REASON_OWNED, $horizon);
-                $staying->push($player);
-                continue;
-            }
-
-            $reason = $this->classifyLoanedIn($player, $seasonEndDate);
+            $reason = $this->classifyLoanedIn($player, $game, $seasonEndDate);
             $status = in_array($reason, [self::REASON_STILL_ON_LOAN, self::REASON_OWNED], true)
                 ? self::STATUS_STAYING
                 : self::STATUS_OUTGOING;
-            $this->enrich($player, $game, $referenceDate, $status, $reason, $horizon);
+            $this->enrich($player, $referenceDate, $status, $reason);
 
             if ($status === self::STATUS_STAYING) {
                 $staying->push($player);
@@ -122,7 +99,7 @@ class NextSeasonProjectionService
         }
 
         foreach ($incomingPreContracts as $player) {
-            $this->enrich($player, $game, $referenceDate, self::STATUS_INCOMING, self::REASON_PRE_CONTRACT_JOINING, $horizon);
+            $this->enrich($player, $referenceDate, self::STATUS_INCOMING, self::REASON_PRE_CONTRACT_JOINING);
             $incoming->push($player);
         }
 
@@ -139,7 +116,6 @@ class NextSeasonProjectionService
             ],
             'seasonEndDate' => $seasonEndDate,
             'nextSeasonStartYear' => $seasonEndDate->copy()->addDay()->year,
-            'horizon' => $horizon,
         ];
     }
 
@@ -150,7 +126,6 @@ class NextSeasonProjectionService
     private function loadOwnedPlayers(Game $game): Collection
     {
         return GamePlayer::with([
-            'game',
             'team',
             'matchState',
             'activeLoan',
@@ -170,7 +145,6 @@ class NextSeasonProjectionService
     private function loadLoanedInPlayers(Game $game): Collection
     {
         return GamePlayer::with([
-            'game',
             'team',
             'matchState',
             'activeLoan',
@@ -192,7 +166,6 @@ class NextSeasonProjectionService
     private function loadIncomingPreContracts(Game $game): Collection
     {
         $offers = TransferOffer::with([
-            'gamePlayer.game',
             'gamePlayer.team',
             'gamePlayer.matchState',
             'gamePlayer.transferOffers',
@@ -259,9 +232,9 @@ class NextSeasonProjectionService
      * they aren't "borrowed" from the user's perspective — the canterano is
      * theirs through the reserve, so we surface them as plain owned.
      */
-    private function classifyLoanedIn(GamePlayer $player, \Carbon\Carbon $seasonEndDate): string
+    private function classifyLoanedIn(GamePlayer $player, Game $game, \Carbon\Carbon $seasonEndDate): string
     {
-        if ($player->isCalledUpFromReserve($player->game)) {
+        if ($player->isCalledUpFromReserve($game)) {
             return self::REASON_OWNED;
         }
 
@@ -276,26 +249,18 @@ class NextSeasonProjectionService
 
     /**
      * Attach projection attributes to the player for the Blade layer to render.
-     *
-     * When viewing the current horizon, no development projection is applied —
-     * we expose today's age and today's overall_score so the user sees the
-     * current squad as-is.
      */
     private function enrich(
         GamePlayer $player,
-        Game $game,
         \Carbon\Carbon $referenceDate,
         string $status,
         string $reason,
-        string $horizon = self::HORIZON_NEXT,
     ): void {
         $player->setAttribute('next_season_status', $status);
         $player->setAttribute('next_season_reason', $reason);
         $player->setAttribute('next_season_age', $player->age($referenceDate));
 
-        $projection = $horizon === self::HORIZON_NEXT
-            ? $this->developmentService->getNextSeasonProjection($player)
-            : 0;
+        $projection = $this->developmentService->getNextSeasonProjection($player);
         $player->setAttribute('projection', $projection);
         $player->setAttribute('next_season_overall', max(1, min(99, $player->overall_score + $projection)));
     }
@@ -305,7 +270,7 @@ class NextSeasonProjectionService
      * STAYING (minus still-on-loan) plus INCOMING. Shared by the classifier
      * and the advisor so both speak about the same roster.
      */
-    public function availablePool(array $projection): Collection
+    public static function availablePool(array $projection): Collection
     {
         $staying = collect()
             ->merge($projection['staying']['goalkeepers'])
@@ -325,19 +290,28 @@ class NextSeasonProjectionService
      */
     private function groupByPosition(Collection $players): array
     {
-        $grouped = $players->groupBy(fn (GamePlayer $p) => match ($p->position_group) {
-            'Goalkeeper' => 'goalkeepers',
-            'Defender' => 'defenders',
-            'Midfielder' => 'midfielders',
-            'Forward' => 'forwards',
-            default => 'midfielders',
-        });
+        $buckets = [
+            PositionGroup::GOALKEEPER->pluralKey() => collect(),
+            PositionGroup::DEFENDER->pluralKey() => collect(),
+            PositionGroup::MIDFIELDER->pluralKey() => collect(),
+            PositionGroup::FORWARD->pluralKey() => collect(),
+        ];
+
+        foreach ($players as $player) {
+            $group = PositionGroup::tryFrom((string) $player->position_group);
+            if ($group === null) {
+                throw new \UnexpectedValueException(
+                    "Unknown position_group '{$player->position_group}' for player {$player->id}"
+                );
+            }
+            $buckets[$group->pluralKey()]->push($player);
+        }
 
         return [
-            'goalkeepers' => ($grouped->get('goalkeepers') ?? collect())->sortByDesc('overall_score')->values(),
-            'defenders' => ($grouped->get('defenders') ?? collect())->sortByDesc('overall_score')->values(),
-            'midfielders' => ($grouped->get('midfielders') ?? collect())->sortByDesc('overall_score')->values(),
-            'forwards' => ($grouped->get('forwards') ?? collect())->sortByDesc('overall_score')->values(),
+            'goalkeepers' => $buckets['goalkeepers']->sortByDesc('overall_score')->values(),
+            'defenders' => $buckets['defenders']->sortByDesc('overall_score')->values(),
+            'midfielders' => $buckets['midfielders']->sortByDesc('overall_score')->values(),
+            'forwards' => $buckets['forwards']->sortByDesc('overall_score')->values(),
         ];
     }
 }
