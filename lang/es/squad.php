@@ -180,6 +180,7 @@ return [
     // Player detail modal
     'abilities' => 'Habilidades',
     'overall_full' => 'Media',
+    'base_ability' => 'Base',
     'fitness_full' => 'Energía',
     'morale_full' => 'Moral',
     'season_stats' => 'Estadísticas de Temporada',

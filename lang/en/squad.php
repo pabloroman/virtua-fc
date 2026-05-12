@@ -180,6 +180,7 @@ return [
     // Player detail modal
     'abilities' => 'Abilities',
     'overall_full' => 'Overall',
+    'base_ability' => 'Base',
     'fitness_full' => 'Energy',
     'morale_full' => 'Morale',
     'season_stats' => 'Season Stats',

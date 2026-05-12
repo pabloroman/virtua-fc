@@ -111,7 +111,7 @@
     <div class="p-5">
         <h4 class="font-heading text-[11px] font-semibold uppercase tracking-widest text-text-secondary mb-4">{{ __('squad.abilities') }}</h4>
         <div class="space-y-3">
-            <x-stat-bar :label="__('squad.overall_full')" :value="$gamePlayer->effective_rating" />
+            <x-stat-bar :label="__('squad.base_ability')" :value="$gamePlayer->overall_score" />
             <x-stat-bar :label="__('squad.fitness_full')" :value="$gamePlayer->fitness" :max="100" />
             <x-stat-bar :label="__('squad.morale_full')" :value="$gamePlayer->morale" :max="100" />
 
