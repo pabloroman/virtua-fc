@@ -64,9 +64,13 @@ class ShowSquadSelection
 
         // Look up the matching templates for biography. Templates are the
         // canonical roster source post-Phase-3, so abilities and date_of_birth
-        // are read off them instead of the deprecated Player table.
+        // are read off them instead of the deprecated Player table. Filter
+        // by the game's national team id so we never resolve to a club
+        // template that shares the same transfermarkt_id (the same player
+        // can exist as both a club and a national-team template).
         $tmIds = array_column($jsonPlayers, 'id');
         $templates = GamePlayerTemplate::with('tournamentInfo')
+            ->where('team_id', $game->team_id)
             ->whereIn('transfermarkt_id', $tmIds)
             ->get()
             ->keyBy('transfermarkt_id');
