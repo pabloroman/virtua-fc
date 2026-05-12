@@ -15,6 +15,7 @@
         @endphp
         <x-section-nav :items="[
             ['href' => route('game.squad', $game->id), 'label' => __('squad.first_team'), 'active' => false],
+            ['href' => route('game.squad.planner', $game->id), 'label' => __('planner.planner'), 'active' => false],
             $secondaryItem,
             ['href' => route('game.squad.registration', $game->id), 'label' => __('squad.registration'), 'active' => false],
         ]" />

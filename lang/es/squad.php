@@ -190,6 +190,8 @@ return [
     'joined' => 'Incorporación',
     'origin_academy' => 'Filial',
     'origin_free_agent' => 'Agente libre',
+    'precontract_banner_title' => 'Precontrato firmado',
+    'precontract_banner_body' => 'Aún no está en tu plantilla — se incorpora al inicio de la temporada :year en transferencia libre.',
     'career_history' => 'Trayectoria',
     'no_career_history' => 'Aún no hay temporadas completadas.',
 

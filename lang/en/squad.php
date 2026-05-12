@@ -190,6 +190,8 @@ return [
     'joined' => 'Joined',
     'origin_academy' => 'Academy',
     'origin_free_agent' => 'Free agent',
+    'precontract_banner_title' => 'Pre-contract signed',
+    'precontract_banner_body' => 'Not on your roster yet — joins the squad at the start of the :year season on a free transfer.',
     'career_history' => 'Career history',
     'no_career_history' => 'No completed seasons yet.',
 

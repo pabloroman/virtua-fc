@@ -318,4 +318,100 @@
 &lt;/div&gt;</code></pre>
         </div>
     </div>
+
+    {{-- Tip List --}}
+    <div class="mt-12">
+        <h3 class="text-lg font-semibold text-text-primary mb-2">Tip List</h3>
+        <p class="text-sm text-text-secondary mb-4">Compact recommendation / coach-tip list. Tiny colored dot bullet (sky / amber / red) plus secondary text. Used inside <code class="font-mono text-xs">&lt;x-section-card&gt;</code> bodies for the opponent analysis recommendations and the squad planner sidebar.</p>
+
+        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3 max-w-md">
+            <x-tip-list :tips="[
+                ['type' => 'warning', 'message' => 'Renueva a Pedri — contrato hasta 2026 y aún sin acuerdo.'],
+                ['type' => 'info',    'message' => 'Da minutos a Lamine Yamal, Cubarsí para maximizar su desarrollo.'],
+                ['type' => 'danger',  'message' => 'Sustituye a Lewandowski (DC) — su salida deja un hueco.'],
+            ]" />
+        </div>
+
+        <div x-data="{ copied: false }" class="relative mb-4">
+            <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-text-secondary hover:text-text-body bg-surface-600 rounded-sm transition-colors">
+                <span x-show="!copied">Copy</span>
+                <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
+            </button>
+            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="code">&lt;!-- Inside a section card body --&gt;
+&lt;x-section-card :title="__('planner.transfer_recommendations')"&gt;
+    &lt;div class="p-4"&gt;
+        &lt;x-tip-list
+            :tips="$tips"
+            :empty-message="__('planner.advisory_empty')" /&gt;
+    &lt;/div&gt;
+&lt;/x-section-card&gt;
+
+&lt;!-- $tips shape:
+[
+    ['type' =&gt; 'info',    'message' =&gt; '…'],
+    ['type' =&gt; 'warning', 'message' =&gt; '…'],
+    ['type' =&gt; 'danger',  'message' =&gt; '…'],
+]
+Domain objects can expose a toTip(): array adapter (see App\Modules\Squad\DTOs\Advisory). --&gt;</code></pre>
+        </div>
+
+        {{-- Props table --}}
+        <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+                <thead class="text-left border-b border-border-strong">
+                    <tr>
+                        <th class="font-semibold py-2 pr-4 text-text-body">Prop</th>
+                        <th class="font-semibold py-2 pr-4 text-text-body">Type</th>
+                        <th class="font-semibold py-2 pr-4 text-text-body">Default</th>
+                        <th class="font-semibold py-2 text-text-body">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-border-default">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">tips</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-secondary">array</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-secondary">[]</td>
+                        <td class="py-2 text-text-secondary">List of <code class="font-mono text-xs">['type' =&gt; ..., 'message' =&gt; ...]</code>. Type is one of <code class="font-mono text-xs">info | warning | danger</code> (defaults to info).</td>
+                    </tr>
+                    <tr class="border-b border-border-default">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">emptyMessage</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-secondary">string|null</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-secondary">null</td>
+                        <td class="py-2 text-text-secondary">Italic copy rendered when the list is empty. If null, nothing renders.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        {{-- Dot color reference --}}
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="text-left border-b border-border-strong">
+                    <tr>
+                        <th class="font-semibold py-2 pr-4 text-text-body">Type</th>
+                        <th class="font-semibold py-2 pr-4 text-text-body">Dot</th>
+                        <th class="font-semibold py-2 text-text-body">Use case</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-border-default">
+                        <td class="py-2 pr-4 font-medium text-text-primary">info</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-sky-400">sky-400</td>
+                        <td class="py-2 text-text-secondary">Neutral observation, development nudge.</td>
+                    </tr>
+                    <tr class="border-b border-border-default">
+                        <td class="py-2 pr-4 font-medium text-text-primary">warning</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-amber-400">amber-400</td>
+                        <td class="py-2 text-text-secondary">Needs attention (renewals, fitness, depth gaps).</td>
+                    </tr>
+                    <tr class="border-b border-border-default">
+                        <td class="py-2 pr-4 font-medium text-text-primary">danger</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-red-400">red-400</td>
+                        <td class="py-2 text-text-secondary">Critical — key departure, severe shortfall.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </section>

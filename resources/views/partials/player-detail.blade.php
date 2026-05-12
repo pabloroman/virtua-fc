@@ -3,8 +3,13 @@
     /** @var App\Models\GamePlayer $gamePlayer */
 
     $isCareerMode = $game->isCareerMode();
-    $isListed = $gamePlayer->isTransferListed();
     $isCalledUpFromReserve = $isCalledUpFromReserve ?? false;
+    $incomingPreContract = $incomingPreContract ?? false;
+
+    // Transfer listing belongs to the player's owning club. For a pre-contract
+    // signing still at another club, suppress it so we don't render the user's
+    // list/unlist actions on a player they don't own.
+    $isListed = $incomingPreContract ? false : $gamePlayer->isTransferListed();
     $canManage = $isCareerMode
         && !$gamePlayer->isRetiring()
         && ($isCalledUpFromReserve || !$gamePlayer->isLoanedIn($game->team_id))
@@ -51,6 +56,21 @@
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
     </x-icon-button>
 </div>
+
+@if($incomingPreContract)
+    {{-- Incoming pre-contract banner — this player is not yet on the user's
+         team but will join when the next season starts. Clearly differentiate
+         from owned-player flows above. --}}
+    <div class="px-5 py-3 bg-accent-green/10 border-b border-accent-green/30 flex items-start gap-3">
+        <svg class="w-5 h-5 text-accent-green shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        </svg>
+        <div class="text-sm">
+            <p class="font-semibold text-accent-green">{{ __('squad.precontract_banner_title') }}</p>
+            <p class="text-text-secondary mt-0.5">{{ __('squad.precontract_banner_body', ['year' => $game->getSeasonEndDate()->copy()->addDay()->year]) }}</p>
+        </div>
+    </div>
+@endif
 
 {{-- Player Banner --}}
 <div class="px-5 py-4 bg-surface-900/50 border-b border-border-default">

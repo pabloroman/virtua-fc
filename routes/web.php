@@ -117,6 +117,7 @@ use App\Http\Views\GameSetupStatus;
 use App\Http\Views\ShowAcademyPlayerDetail;
 use App\Http\Views\ShowPlayerDetail;
 use App\Http\Views\ShowSquad;
+use App\Http\Views\ShowSquadPlanner;
 use App\Http\Views\ShowTransferActivity;
 use App\Http\Views\ShowOutgoingTransfers;
 use App\Http\Views\ShowTransferMarket;
@@ -167,6 +168,7 @@ Route::middleware('auth')->group(function () {
         // Game Views
         Route::get('/game/{gameId}', ShowGame::class)->name('show-game');
         Route::get('/game/{gameId}/squad', ShowSquad::class)->name('game.squad');
+        Route::get('/game/{gameId}/squad/planner', ShowSquadPlanner::class)->name('game.squad.planner');
         Route::get('/game/{gameId}/squad/academy', ShowAcademy::class)->name('game.squad.academy');
         Route::get('/game/{gameId}/squad/registration', ShowSquadRegistration::class)->name('game.squad.registration');
         Route::post('/game/{gameId}/squad/registration', SaveSquadRegistration::class)->name('game.squad.registration.save');

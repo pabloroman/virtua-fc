@@ -6,6 +6,7 @@ use App\Modules\Transfer\Services\ContractService;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\RenewalNegotiation;
+use App\Models\TransferOffer;
 
 class ShowPlayerDetail
 {
@@ -19,17 +20,35 @@ class ShowPlayerDetail
 
         // The modal is reachable from any squad page that lists a player on
         // the user's roster, including loaned-in players (physically present
-        // but owned by another club). userOwned() would 404 on those, so we
-        // accept "physically here" as well as "owned via active loan-out".
+        // but owned by another club) and incoming pre-contract signings
+        // (still at their current club but joining next season). userOwned()
+        // would 404 on those, so we accept any of the three relations.
         $userTeamIds = $game->userTeamIds();
 
         $gamePlayer = GamePlayer::with(['careerRecord', 'activeLoan'])
             ->where('game_id', $gameId)
-            ->where(function ($q) use ($userTeamIds) {
+            ->where(function ($q) use ($userTeamIds, $game) {
                 $q->whereIn('team_id', $userTeamIds)
-                    ->orWhereHas('activeLoan', fn ($loan) => $loan->whereIn('parent_team_id', $userTeamIds));
+                    ->orWhereHas('activeLoan', fn ($loan) => $loan->whereIn('parent_team_id', $userTeamIds))
+                    ->orWhereHas('transferOffers', fn ($offer) => $offer
+                        ->where('game_id', $game->id)
+                        ->where('offering_team_id', $game->team_id)
+                        ->where('direction', TransferOffer::DIRECTION_INCOMING)
+                        ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
+                        ->where('status', TransferOffer::STATUS_AGREED));
             })
             ->findOrFail($playerId);
+
+        // True when this player is joining the user's team on a signed
+        // pre-contract — drives the banner in the detail modal so the user
+        // sees at a glance "this isn't mine yet, but they're coming".
+        $incomingPreContract = TransferOffer::where('game_id', $game->id)
+            ->where('offering_team_id', $game->team_id)
+            ->where('game_player_id', $gamePlayer->id)
+            ->where('direction', TransferOffer::DIRECTION_INCOMING)
+            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
+            ->where('status', TransferOffer::STATUS_AGREED)
+            ->exists();
 
         $isCalledUpFromReserve = $gamePlayer->isCalledUpFromReserve($game);
 
@@ -76,6 +95,7 @@ class ShowPlayerDetail
             'severance' => $severance,
             'isOnReserve' => $isOnReserve,
             'isCalledUpFromReserve' => $isCalledUpFromReserve,
+            'incomingPreContract' => $incomingPreContract,
         ]);
     }
 }
