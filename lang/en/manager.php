@@ -1,12 +1,6 @@
 <?php
 
 return [
-    // Initial offer flow (Pro Manager career start)
-    'initial_offers_title' => 'Your first job offers',
-    'initial_offers_intro' => 'Three Primera RFEF clubs are interested in giving you your first chance as a manager. Pick the one you want to start your career with.',
-    'reroll_offers' => 'Generate new offers',
-    'back_to_select_team' => 'Back to mode selection',
-
     // Generic offer card
     'accept_offer' => 'Accept offer',
 

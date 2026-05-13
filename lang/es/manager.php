@@ -1,12 +1,6 @@
 <?php
 
 return [
-    // Initial offer flow (Pro Manager career start)
-    'initial_offers_title' => 'Tus primeras ofertas',
-    'initial_offers_intro' => 'Tres clubes de Primera RFEF se interesan en darte tu primera oportunidad como entrenador. Elige con cuál quieres empezar tu carrera.',
-    'reroll_offers' => 'Generar nuevas ofertas',
-    'back_to_select_team' => 'Volver a la selección de modo',
-
     // Generic offer card
     'accept_offer' => 'Aceptar oferta',
 

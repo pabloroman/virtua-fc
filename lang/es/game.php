@@ -413,8 +413,9 @@ return [
     // Game modes
     'mode_career' => 'Modo Carrera',
     'mode_career_desc' => 'Dirige un club a través de múltiples temporadas',
-    'mode_career_pro' => 'Manager Pro',
-    'mode_career_pro_desc' => 'Empieza como entrenador desconocido en Primera RFEF y ábrete camino hasta lo más alto a base de resultados',
+    'mode_career_pro' => 'Pro Manager',
+    'mode_career_pro_desc' => 'Empieza desde abajo y forja tu carrera de entrenador',
+    'pro_manager_pick_intro' => 'Cuatro clubes de Primera RFEF están dispuestos a apostar por ti. Elige con cuál quieres empezar tu carrera.',
     'mode_tournament' => 'Selección nacional',
     'mode_tournament_desc' => 'Dirige una selección en el Mundial',
     'mode_tournament_badge' => 'Copa del Mundo',

@@ -10,36 +10,8 @@
             $firstId = $allCompetitions->first()?->id;
         @endphp
 
-        {{-- Pro Manager career: separate form posts directly to /new-game-pro. --}}
-        @if($hasCareerAccess)
-            <form method="POST" action="{{ route('new-game-pro') }}" class="mb-6">
-                @csrf
-                <button type="submit"
-                        class="w-full relative flex items-center gap-4 p-4 md:p-5 rounded-xl border border-accent-blue/40 bg-accent-blue/5 hover:bg-accent-blue/10 transition-colors text-left">
-                    <div class="shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center bg-accent-blue">
-                        <svg class="w-6 h-6 md:w-7 md:h-7 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                        </svg>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <h3 class="font-heading font-bold text-base md:text-lg uppercase tracking-wide text-accent-blue">
-                            {{ __('game.mode_career_pro') }}
-                        </h3>
-                        <p class="text-xs md:text-sm mt-0.5 text-accent-blue/80">
-                            {{ __('game.mode_career_pro_desc') }}
-                        </p>
-                    </div>
-                    <div class="shrink-0">
-                        <svg class="w-5 h-5 text-accent-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                        </svg>
-                    </div>
-                </button>
-            </form>
-        @endif
-
         <div x-data="{
-                mode: @js($hasCareerAccess ? 'career' : 'tournament'),
+                mode: @js($hasCareerAccess ? 'career_pro' : ($hasTournamentMode ? 'tournament' : 'career')),
                 openTab: '{{ $firstId }}',
                 loading: false,
             }">
@@ -52,9 +24,21 @@
                 {{-- Hidden game_mode field --}}
                 <input type="hidden" name="game_mode" :value="mode">
 
-                {{-- Mode selector --}}
-                @if($hasTournamentMode)
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                {{-- Mode selector. Career card always renders (locked or unlocked), so
+                     we have a tab as long as there's at least one more mode available. --}}
+                @php
+                    $modeCardCount = 1
+                        + ($hasCareerAccess ? 1 : 0)
+                        + ($hasTournamentMode ? 1 : 0);
+                    // Literal class strings so Tailwind JIT keeps the variants.
+                    $modeGridClass = match ($modeCardCount) {
+                        3 => 'md:grid-cols-3',
+                        2 => 'md:grid-cols-2',
+                        default => 'md:grid-cols-1',
+                    };
+                @endphp
+                @if($modeCardCount > 1)
+                    <div class="grid grid-cols-1 {{ $modeGridClass }} gap-3 md:gap-4">
                         {{-- Career mode card --}}
                         @if($hasCareerAccess)
                             <button type="button"
@@ -107,7 +91,38 @@
                             </div>
                         @endif
 
+                        {{-- Pro Manager career card --}}
+                        @if($hasCareerAccess)
+                            <button type="button"
+                                    @click="mode = 'career_pro'"
+                                    :class="mode === 'career_pro'
+                                        ? 'ring-2 ring-accent-blue border-accent-blue/30 bg-accent-blue/5'
+                                        : 'border-border-strong hover:bg-surface-700/50'"
+                                    class="relative flex items-center gap-4 p-4 md:p-5 rounded-xl border transition-all duration-200 text-left">
+                                <div class="shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center"
+                                     :class="mode === 'career_pro' ? 'bg-accent-blue' : 'bg-surface-600'">
+                                    <svg class="w-6 h-6 md:w-7 md:h-7" :class="mode === 'career_pro' ? 'text-white' : 'text-text-muted'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                    </svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="font-heading font-bold text-base md:text-lg uppercase tracking-wide" :class="mode === 'career_pro' ? 'text-accent-blue' : 'text-text-body'">
+                                        {{ __('game.mode_career_pro') }}
+                                    </h3>
+                                    <p class="text-xs md:text-sm mt-0.5" :class="mode === 'career_pro' ? 'text-accent-blue/80' : 'text-text-muted'">
+                                        {{ __('game.mode_career_pro_desc') }}
+                                    </p>
+                                </div>
+                                <div x-show="mode === 'career_pro'" x-cloak class="shrink-0">
+                                    <svg class="w-6 h-6 text-accent-blue" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </button>
+                        @endif
+
                         {{-- Tournament mode card --}}
+                        @if($hasTournamentMode)
                         <button type="button"
                                 @click="mode = 'tournament'"
                                 :class="mode === 'tournament'
@@ -134,11 +149,12 @@
                                 </svg>
                             </div>
                         </button>
+                        @endif
                     </div>
                 @endif
 
                 {{-- ===================== CAREER MODE: Club teams ===================== --}}
-                <div x-show="mode === 'career'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+                <div x-show="mode === 'career'" x-cloak x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
                     {{-- Competition tabs. ESP3A/ESP3B collapse into a single virtual "Primera Federación" tab keyed 'ESP3'. --}}
                     @php
                         $allComps = collect($countries)->flatMap(fn ($c) => collect($c['tiers']))->values();
@@ -210,6 +226,25 @@
                     @endforeach
                 </div>
 
+                {{-- ===================== PRO MANAGER MODE: 3 random Primera RFEF clubs ===================== --}}
+                @if($hasCareerAccess && $proManagerTeams->isNotEmpty())
+                    <div x-show="mode === 'career_pro'" x-cloak x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+                        <p class="text-sm text-text-secondary mb-4">{{ __('game.pro_manager_pick_intro') }}</p>
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2">
+                            @foreach($proManagerTeams as $team)
+                                <label class="flex items-center gap-2 md:gap-3 rounded-lg border border-border-default p-2 md:p-4 cursor-pointer transition-all
+                                               hover:bg-accent-blue/5 hover:border-accent-blue/30
+                                               has-checked:ring-2 has-checked:ring-accent-blue has-checked:border-accent-blue/30 has-checked:bg-accent-blue/5">
+                                    <x-team-crest :team="$team" class="w-7 h-7 md:w-10 md:h-10 shrink-0" />
+                                    <span class="text-xs md:text-base font-medium text-text-body truncate">{{ $team->name }}</span>
+                                    <input x-bind:required="mode === 'career_pro'" x-bind:disabled="mode !== 'career_pro'"
+                                           type="radio" name="team_id" value="{{ $team->id }}" class="hidden">
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
                 {{-- ===================== TOURNAMENT MODE: National teams ===================== --}}
                 @if($hasTournamentMode)
                     <div x-show="mode === 'tournament'" x-cloak x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="space-y-6">
@@ -254,7 +289,12 @@
 
                 {{-- Submit --}}
                 <div class="flex justify-center pt-2">
-                    <div x-show="mode === 'career'">
+                    <div x-show="mode === 'career'" x-cloak>
+                        <x-primary-button-spin>
+                            {{ __('game.start_game') }}
+                        </x-primary-button-spin>
+                    </div>
+                    <div x-show="mode === 'career_pro'" x-cloak>
                         <x-primary-button-spin>
                             {{ __('game.start_game') }}
                         </x-primary-button-spin>

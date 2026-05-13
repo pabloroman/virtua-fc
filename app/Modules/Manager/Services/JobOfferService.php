@@ -13,9 +13,11 @@ use App\Modules\Competition\Services\CountryConfig;
 use Illuminate\Support\Collection;
 
 /**
- * Generates the manager job offers that drive pro-manager mode: the three
- * starter offers shown before a Game exists, and the end-of-season offers
- * sent to a manager based on how the season just played out.
+ * Generates manager job offers and the starter team pool that drive
+ * pro-manager mode: the three Local-tier Primera RFEF teams shown inline
+ * on /new-game when a user starts a Pro Manager career, and the
+ * end-of-season offers sent to a manager based on how the season just
+ * played out.
  *
  * Cross-country offers are emitted as a matter of course — by the time a
  * career manager is doing well enough to attract foreign attention, the
@@ -31,7 +33,8 @@ class JobOfferService
     /** Primera RFEF (Spanish third division) — the floor of the pyramid. */
     private const STARTING_TIER = 3;
 
-    private const INITIAL_OFFER_COUNT = 3;
+    // Four to fill the 4-column /new-game grid at lg without leaving gaps.
+    private const INITIAL_OFFER_COUNT = 4;
     private const POST_FIRING_OFFER_COUNT = 3;
 
     public function __construct(
@@ -39,42 +42,38 @@ class JobOfferService
     ) {}
 
     /**
-     * Create the three Local-tier Primera RFEF offers shown to a brand-new
-     * pro-manager career. Old pending initials for the user are rejected so
-     * a second visit to /new-game-pro doesn't pile up offers.
+     * Sample N random Local-tier Primera RFEF Team models for the inline
+     * Pro Manager onboarding picker on /new-game. Returns hydrated Team
+     * models with clubProfile eager-loaded so the Blade can render crest +
+     * name without N+1. No persistence — the chosen team is materialized
+     * via GameCreationService when InitGame fires.
      *
-     * @return Collection<int, ManagerJobOffer>
+     * @return Collection<int, Team>
      */
-    public function generateInitialOffers(int $userId): Collection
+    public function sampleInitialProManagerTeams(int $count = self::INITIAL_OFFER_COUNT): Collection
     {
-        $this->expirePendingInitialOffers($userId);
+        $picks = $this->eligibleProManagerStartingTeamIds()->shuffle()->take($count);
 
-        $eligibleTeamIds = $this->eligibleTeamIdsForTier(
+        return Team::with('clubProfile')
+            ->whereIn('id', $picks)
+            ->get();
+    }
+
+    /**
+     * The full pool of teams eligible to be picked as the starting club of
+     * a brand-new Pro Manager career. Used by SelectTeam for sampling and
+     * by InitGame to validate that a submitted team_id wasn't tampered.
+     *
+     * @return Collection<int, string>
+     */
+    public function eligibleProManagerStartingTeamIds(): Collection
+    {
+        return $this->eligibleTeamIdsForTier(
             countryCode: self::STARTING_COUNTRY,
             tier: self::STARTING_TIER,
             reputationLevel: ClubProfile::REPUTATION_LOCAL,
             excludeTeamId: null,
         );
-
-        $picks = $eligibleTeamIds->shuffle()->take(self::INITIAL_OFFER_COUNT);
-
-        $offers = collect();
-        foreach ($picks as $teamId) {
-            $offers->push(ManagerJobOffer::create([
-                'user_id' => $userId,
-                'game_id' => null,
-                'team_id' => $teamId,
-                'competition_id' => $this->resolveCompetitionId($teamId, self::STARTING_COUNTRY, self::STARTING_TIER),
-                'season' => null,
-                'offer_type' => ManagerJobOffer::TYPE_INITIAL,
-                'status' => ManagerJobOffer::STATUS_PENDING,
-                'source_reputation_level' => null,
-                'target_reputation_level' => ClubProfile::REPUTATION_LOCAL,
-                'created_on_game_date' => null,
-            ]));
-        }
-
-        return $offers;
     }
 
     /**
@@ -273,7 +272,10 @@ class JobOfferService
 
     /**
      * Find every team in $countryCode whose ClubProfile sits at
-     * $reputationLevel and that participates at the given tier.
+     * $reputationLevel and that participates at the given tier. Reserve
+     * (B) teams are filtered out — they're never selectable as a managed
+     * club, neither for the Pro Manager starting pick nor for any other
+     * offer the manager could accept.
      *
      * @return Collection<int, string>
      */
@@ -289,6 +291,9 @@ class JobOfferService
         }
 
         $teamIds = CompetitionTeam::whereIn('competition_id', $tierIds)
+            ->whereIn('team_id', function ($q) {
+                $q->select('id')->from('teams')->whereNull('parent_team_id');
+            })
             ->pluck('team_id')
             ->unique();
 
@@ -305,6 +310,7 @@ class JobOfferService
     /**
      * Find every team in any playable country whose ClubProfile is at
      * $reputationLevel. Used for end-of-season cross-country offers.
+     * Reserve teams are excluded — see eligibleTeamIdsForTier.
      *
      * @param array<int, string> $excludeTeamIds
      * @return Collection<int, string>
@@ -316,7 +322,10 @@ class JobOfferService
         $countryCodes = $this->countryConfig->playableCountryCodes();
 
         return ClubProfile::whereIn('team_id', function ($query) use ($countryCodes) {
-                $query->select('id')->from('teams')->whereIn('country', $countryCodes);
+                $query->select('id')
+                    ->from('teams')
+                    ->whereIn('country', $countryCodes)
+                    ->whereNull('parent_team_id');
             })
             ->where('reputation_level', $reputationLevel)
             ->whereNotIn('team_id', $excludeTeamIds)
@@ -328,13 +337,5 @@ class JobOfferService
     {
         return ClubProfile::where('team_id', $game->team_id)->value('reputation_level')
             ?? ClubProfile::REPUTATION_LOCAL;
-    }
-
-    private function expirePendingInitialOffers(int $userId): void
-    {
-        ManagerJobOffer::where('user_id', $userId)
-            ->where('offer_type', ManagerJobOffer::TYPE_INITIAL)
-            ->where('status', ManagerJobOffer::STATUS_PENDING)
-            ->update(['status' => ManagerJobOffer::STATUS_EXPIRED]);
     }
 }

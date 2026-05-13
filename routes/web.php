@@ -164,18 +164,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/new-game', SelectTeam::class)->name('select-team');
     Route::post('/new-game', InitGame::class)->middleware('throttle:game-creation')->name('init-game');
 
-    // Pro-manager career creation: generate starter offers then accept one.
-    // The Game record is only created on AcceptInitialOffer, so these don't
-    // sit behind the game.owner middleware.
-    Route::post('/new-game-pro', \App\Http\Actions\InitGamePro::class)
-        ->middleware('throttle:game-creation')
-        ->name('new-game-pro');
-    Route::get('/new-game-pro/offers', \App\Http\Views\ShowInitialOffers::class)
-        ->name('new-game-pro.offers');
-    Route::post('/new-game-pro/offers/{offerId}/accept', \App\Http\Actions\AcceptInitialOffer::class)
-        ->middleware('throttle:game-creation')
-        ->name('new-game-pro.offers.accept');
-
     Route::get('/tournament-summary/{summaryId}', ShowTournamentSummary::class)->name('tournament-summary.show');
 
     // All game routes require ownership verification
