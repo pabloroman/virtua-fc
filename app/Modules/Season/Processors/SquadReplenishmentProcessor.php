@@ -152,11 +152,14 @@ class SquadReplenishmentProcessor implements SeasonProcessor
             $currentSquadSize = $players->count() + count($positionsToFill);
             $youthCount = mt_rand(self::YOUTH_INTAKE_MIN, self::YOUTH_INTAKE_MAX);
 
-            // Collect release candidates if squad would exceed cap
-            $slotsAvailable = self::YOUTH_INTAKE_SQUAD_CAP - $currentSquadSize;
-            if ($slotsAvailable < $youthCount) {
-                $toRelease = $youthCount - max(0, $slotsAvailable);
-                $candidates = $this->getOldestWeakestIds($players, $game->current_date, $toRelease);
+            // Trim back to YOUTH_INTAKE_SQUAD_CAP after this season's intake.
+            // Target-based, not delta-based: a squad that has drifted past the
+            // cap (via loan returns, reserve promotions, etc.) gets pulled back
+            // down, not merely held flat.
+            $projectedSize = $currentSquadSize + $youthCount;
+            $toRelease = max(0, $projectedSize - self::YOUTH_INTAKE_SQUAD_CAP);
+            if ($toRelease > 0) {
+                $candidates = $this->getReleaseCandidates($players, $game->current_date, $toRelease);
                 $releaseIds = array_merge($releaseIds, $candidates);
             }
 
@@ -337,20 +340,58 @@ class SquadReplenishmentProcessor implements SeasonProcessor
     }
 
     /**
-     * Get IDs of the oldest, weakest players from a team to release.
-     * Only targets players aged 30+ sorted by ability ascending.
+     * Pick players to release down to a target squad size.
+     *
+     * Retirement-age players are preferred (lowest-rated first), then any other
+     * player by ability ascending. GROUP_MINIMUMS are respected so a release
+     * never leaves a position group below its viable floor (e.g. < 3 GK).
+     *
+     * Returning fewer than $count is acceptable — if the squad is at the
+     * minimums in every group there's nothing safe to release.
      *
      * @return string[]
      */
-    private function getOldestWeakestIds(Collection $players, Carbon $currentDate, int $count): array
+    private function getReleaseCandidates(Collection $players, Carbon $currentDate, int $count): array
     {
+        if ($count <= 0) {
+            return [];
+        }
+
         $cutoff = PlayerAge::dateOfBirthCutoff(PlayerAge::MIN_RETIREMENT_OUTFIELD, $currentDate);
 
-        return $players
-            ->filter(fn ($gp) => $gp->date_of_birth && Carbon::parse($gp->date_of_birth)->lte($cutoff))
-            ->sortBy(fn ($gp) => $gp->overall_score ?? 0)
-            ->take($count)
-            ->pluck('id')
-            ->toArray();
+        $sorted = $players->sort(function ($a, $b) use ($cutoff) {
+            $aOlder = $a->date_of_birth && Carbon::parse($a->date_of_birth)->lte($cutoff);
+            $bOlder = $b->date_of_birth && Carbon::parse($b->date_of_birth)->lte($cutoff);
+
+            if ($aOlder !== $bOlder) {
+                return $aOlder ? -1 : 1;
+            }
+
+            return ($a->overall_score ?? 0) <=> ($b->overall_score ?? 0);
+        })->values();
+
+        $groupCounts = [];
+        foreach ($players as $player) {
+            $group = PositionMapper::getPositionGroup($player->position);
+            $groupCounts[$group] = ($groupCounts[$group] ?? 0) + 1;
+        }
+
+        $selected = [];
+        foreach ($sorted as $player) {
+            if (count($selected) >= $count) {
+                break;
+            }
+
+            $group = PositionMapper::getPositionGroup($player->position);
+            $groupMin = self::GROUP_MINIMUMS[$group] ?? 0;
+            if (($groupCounts[$group] ?? 0) <= $groupMin) {
+                continue;
+            }
+
+            $selected[] = $player->id;
+            $groupCounts[$group]--;
+        }
+
+        return $selected;
     }
 }
