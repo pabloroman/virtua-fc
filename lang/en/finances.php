@@ -201,6 +201,7 @@ return [
     'tx_infrastructure_upgrade' => ':area upgraded from Tier :from to Tier :to',
     'tx_budget_loan_received' => 'Budget loan received: :amount',
     'tx_stadium_supplementary_payment' => 'Temporary stands (:seats seats): :amount',
+    'tx_stadium_stand_expansion_payment' => 'Stand expansion (:seats seats): :amount',
     'tx_stadium_rebuild_payment' => 'Stadium rebuild (:capacity seats): :amount',
     'tx_stadium_loan_instalment' => 'Stadium loan annual instalment: :amount',
 

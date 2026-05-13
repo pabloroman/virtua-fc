@@ -36,6 +36,7 @@ class GameStadiumProject extends Model
     public $timestamps = false;
 
     public const TYPE_SUPPLEMENTARY = 'supplementary';
+    public const TYPE_STAND_EXPANSION = 'stand_expansion';
     public const TYPE_REBUILD = 'rebuild';
 
     public const STATUS_PENDING = 'pending';
@@ -94,6 +95,11 @@ class GameStadiumProject extends Model
     public function isSupplementary(): bool
     {
         return $this->type === self::TYPE_SUPPLEMENTARY;
+    }
+
+    public function isStandExpansion(): bool
+    {
+        return $this->type === self::TYPE_STAND_EXPANSION;
     }
 
     public function isRebuild(): bool

@@ -12,16 +12,21 @@ use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 
 /**
- * Progresses rebuild projects across the season boundary and bills the
- * annual instalment on every active stadium loan.
+ * Progresses rebuild and stand-expansion projects across the season
+ * boundary and bills the annual instalment on every active stadium loan.
  *
- * Lifecycle (within the closing of season X, with $game->season == X):
+ * Rebuild lifecycle (within the closing of season X, $game->season == X):
  *   pending      → in_progress   when committed_season == X
  *                                  (next season X+1 is the construction year)
  *   in_progress  → completed     when completion_season == X+1
  *                                  (capacity goes live in X+1; rebuilt_capacity
  *                                   is set on the stadium and any supplementary
  *                                   seats are folded in)
+ *
+ * Stand-expansion lifecycle — one-step (no mid-construction disruption):
+ *   pending      → completed     when completion_season == X+1
+ *                                  (target_capacity added to rebuilt_capacity;
+ *                                   supplementary stands left untouched)
  *
  * Runs at priority 65 — immediately after SeasonSettlementProcessor (60),
  * which handles the existing single-season budget-loan repayment. Stadium-
@@ -47,6 +52,7 @@ class StadiumProjectProgressionProcessor implements SeasonProcessor
         $nextSeason = $closingSeason + 1;
 
         $this->progressRebuilds($game, $closingSeason, $nextSeason);
+        $this->progressStandExpansions($game, $nextSeason);
         $this->billActiveLoans($game);
 
         return $data;
@@ -79,6 +85,53 @@ class StadiumProjectProgressionProcessor implements SeasonProcessor
                 $this->completeRebuild($game, $project);
             }
         }
+    }
+
+    private function progressStandExpansions(Game $game, int $nextSeason): void
+    {
+        $projects = GameStadiumProject::query()
+            ->where('game_id', $game->id)
+            ->where('type', GameStadiumProject::TYPE_STAND_EXPANSION)
+            ->where('status', GameStadiumProject::STATUS_PENDING)
+            ->where('completion_season', $nextSeason)
+            ->get();
+
+        foreach ($projects as $project) {
+            $this->completeStandExpansion($game, $project);
+        }
+    }
+
+    private function completeStandExpansion(Game $game, GameStadiumProject $project): void
+    {
+        $stadium = GameStadium::query()
+            ->where('game_id', $project->game_id)
+            ->where('team_id', $project->team_id)
+            ->first();
+
+        if (! $stadium) {
+            return;
+        }
+
+        // Stand expansion adds permanent seats on top of the existing
+        // (rebuilt or base) capacity. rebuilt_capacity is the single
+        // source of truth for permanent capacity after the first
+        // change — initialise it from base_capacity on the first
+        // expansion so subsequent expansions accumulate cleanly.
+        $currentPermanent = $stadium->rebuilt_capacity ?? $stadium->base_capacity;
+        $stadium->update([
+            'rebuilt_capacity' => $currentPermanent + $project->target_capacity,
+        ]);
+
+        $project->update([
+            'status' => GameStadiumProject::STATUS_COMPLETED,
+            'completion_date' => $game->current_date,
+        ]);
+
+        $this->notificationService->notifyStadiumProjectCompleted(
+            $game,
+            GameStadiumProject::TYPE_STAND_EXPANSION,
+            $stadium->fresh()->effective_capacity,
+        );
     }
 
     private function completeRebuild(Game $game, GameStadiumProject $project): void

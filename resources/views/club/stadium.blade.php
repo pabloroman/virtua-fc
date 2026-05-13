@@ -70,6 +70,10 @@ foreach ($ticketAreas as $i => $area) {
                 {{-- Capacity upgrades (gradas supletorias + rebuild) --}}
                 @include('club.partials.stadium-upgrades')
 
+                {{-- Renovation history — single source of truth for past
+                     and in-flight projects. --}}
+                @include('club.partials.stadium-history')
+
                 {{-- Season tickets — editable or locked. Hidden for pre-feature in-flight
                      saves where SeasonTicketDefaultsProcessor never ran, so no pricing row
                      exists and the user has no way to set prices mid-season. --}}

@@ -201,6 +201,7 @@ return [
     'tx_infrastructure_upgrade' => ':area mejorada de Nivel :from a Nivel :to',
     'tx_budget_loan_received' => 'Préstamo presupuestario recibido: :amount',
     'tx_stadium_supplementary_payment' => 'Gradas supletorias (:seats asientos): :amount',
+    'tx_stadium_stand_expansion_payment' => 'Ampliación de grada (:seats asientos): :amount',
     'tx_stadium_rebuild_payment' => 'Reforma del estadio (:capacity asientos): :amount',
     'tx_stadium_loan_instalment' => 'Cuota anual del préstamo del estadio: :amount',
 

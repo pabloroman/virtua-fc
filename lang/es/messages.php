@@ -181,6 +181,7 @@ return [
     'loan_exceeds_maximum' => 'El importe del préstamo supera el máximo permitido.',
 
     'stadium_supplementary_committed' => 'Obras iniciadas: :seats asientos supletorios estarán listos en 30 días.',
+    'stadium_stand_expansion_committed' => 'Ampliación de grada aprobada: :seats nuevos asientos permanentes estarán listos la próxima temporada.',
     'stadium_rebuild_committed' => 'Reforma del estadio aprobada. Nuevo aforo objetivo: :capacity.',
     'stadium_active_project_exists' => 'Ya tienes un proyecto en curso. Espera a que termine antes de iniciar otro.',
     'stadium_supplementary_too_few_seats' => 'Debes añadir al menos un asiento supletorio.',

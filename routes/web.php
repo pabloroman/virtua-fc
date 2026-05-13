@@ -63,6 +63,7 @@ use App\Http\Actions\ReleasePlayer;
 use App\Http\Actions\RejectTransferOffer;
 use App\Http\Actions\RequestBudgetLoan;
 use App\Http\Actions\CommitSupplementaryStands;
+use App\Http\Actions\CommitStandExpansion;
 use App\Http\Actions\CommitStadiumRebuild;
 use App\Http\Actions\RequestLoan;
 use App\Http\Actions\WithdrawTransferOffer;
@@ -190,6 +191,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/game/{gameId}/club/stadium/season-tickets', SaveSeasonTicketPricing::class)->name('game.club.stadium.season-tickets.save');
         Route::post('/game/{gameId}/club/stadium/season-tickets/preview', PreviewSeasonTicketPricing::class)->name('game.club.stadium.season-tickets.preview');
         Route::post('/game/{gameId}/club/stadium/supplementary', CommitSupplementaryStands::class)->name('game.club.stadium.supplementary');
+        Route::post('/game/{gameId}/club/stadium/expansion', CommitStandExpansion::class)->name('game.club.stadium.expansion');
         Route::post('/game/{gameId}/club/stadium/rebuild', CommitStadiumRebuild::class)->name('game.club.stadium.rebuild');
         Route::get('/game/{gameId}/club/reputation', ShowClubReputation::class)->name('game.club.reputation');
         Route::get('/game/{gameId}/transfers', ShowIncomingTransfers::class)->name('game.transfers');

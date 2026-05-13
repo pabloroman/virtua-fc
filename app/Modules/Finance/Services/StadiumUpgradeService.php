@@ -60,32 +60,153 @@ class StadiumUpgradeService
             ->first();
     }
 
-    public function rebuildCostPerSeat(): int
-    {
-        return (int) config('finances.stadium_costs.rebuild_per_seat_cents', 1_500_000);
-    }
-
     public function supplementaryCostPerSeat(): int
     {
-        return (int) config('finances.stadium_costs.supplementary_per_seat_cents', 800_000);
+        return (int) config('finances.stadium_costs.supplementary_per_seat_cents', 400_000);
+    }
+
+    public function supplementaryMaxSeatsPerProject(): int
+    {
+        return (int) config('finances.stadium_costs.supplementary_max_seats_per_project', 8_000);
+    }
+
+    public function standExpansionCostPerSeat(): int
+    {
+        return (int) config('finances.stadium_costs.stand_expansion_per_seat_cents', 800_000);
+    }
+
+    public function standExpansionMinSeats(): int
+    {
+        return (int) config('finances.stadium_costs.stand_expansion_min_seats', 3_000);
+    }
+
+    public function standExpansionMaxSeats(): int
+    {
+        return (int) config('finances.stadium_costs.stand_expansion_max_seats', 12_000);
     }
 
     /**
-     * Maximum capacity a rebuild can target given the loan cap and the
-     * per-seat cost. The user can pay cash if they have it, but the cap
-     * still applies — the bank's willingness to lend is the regulator's
-     * proxy for "reasonable stadium size for a club of this stature".
+     * The most a stand-expansion project can target given (a) the design
+     * cap and (b) what cash can buy. Loan-financed projects are clamped
+     * separately by the loan cap.
      */
-    public function maxRebuildCapacity(Game $game): int
+    public function affordableStandExpansionMaxSeats(Game $game): int
     {
-        $maxFunding = $this->loanService->maxLoanCap($game);
-        $perSeat = $this->rebuildCostPerSeat();
-
+        $perSeat = $this->standExpansionCostPerSeat();
         if ($perSeat <= 0) {
             return 0;
         }
 
-        return intdiv($maxFunding, $perSeat);
+        $cashCap = intdiv($this->availableCashFor($game), $perSeat);
+
+        return min($this->standExpansionMaxSeats(), $cashCap);
+    }
+
+    /**
+     * Bracket-priced rebuild cost (cumulative across bands). Per-seat
+     * marginal cost grows with target size, but the total cost stays
+     * continuous as the slider crosses band boundaries — no cliffs.
+     *
+     * @return int total cost in cents
+     */
+    public function rebuildCostFor(int $targetCapacity): int
+    {
+        if ($targetCapacity <= 0) {
+            return 0;
+        }
+
+        $bands = $this->rebuildBands();
+        $cost = 0;
+        $remaining = $targetCapacity;
+        $prevCap = 0;
+
+        foreach ($bands as $band) {
+            $upTo = $band['up_to'];
+            $rate = (int) $band['per_seat_cents'];
+            $bandSeats = $upTo === null ? $remaining : min($remaining, $upTo - $prevCap);
+
+            if ($bandSeats <= 0) {
+                if ($upTo !== null) {
+                    $prevCap = $upTo;
+                }
+                continue;
+            }
+
+            $cost += $bandSeats * $rate;
+            $remaining -= $bandSeats;
+            $prevCap = $upTo ?? $prevCap;
+
+            if ($remaining <= 0) {
+                break;
+            }
+        }
+
+        return $cost;
+    }
+
+    /**
+     * Maximum capacity a rebuild can target given the loan cap (the bank's
+     * proxy for "reasonable stadium size"). Delegates to
+     * maxRebuildCapacityForBudget().
+     */
+    public function maxRebuildCapacity(Game $game): int
+    {
+        return $this->maxRebuildCapacityForBudget($this->loanService->maxLoanCap($game));
+    }
+
+    /**
+     * Largest target capacity buildable under a given budget (in cents).
+     * Walks the bracket array in order, consuming budget band-by-band
+     * until the budget runs out, then adds the partial seats the remaining
+     * budget can still pay for in the next band.
+     */
+    public function maxRebuildCapacityForBudget(int $budget): int
+    {
+        if ($budget <= 0) {
+            return 0;
+        }
+
+        $bands = $this->rebuildBands();
+        $capacity = 0;
+        $prevCap = 0;
+
+        foreach ($bands as $band) {
+            $upTo = $band['up_to'];
+            $rate = (int) $band['per_seat_cents'];
+            if ($rate <= 0) {
+                continue;
+            }
+
+            $bandWidth = $upTo === null ? PHP_INT_MAX : ($upTo - $prevCap);
+            $bandCost = $bandWidth === PHP_INT_MAX ? PHP_INT_MAX : $bandWidth * $rate;
+
+            if ($budget >= $bandCost) {
+                $capacity += $bandWidth;
+                $budget -= $bandCost;
+                $prevCap = $upTo ?? $prevCap;
+                continue;
+            }
+
+            // Budget runs out inside this band — buy as many seats as it can.
+            $capacity += intdiv($budget, $rate);
+            return $capacity;
+        }
+
+        return $capacity;
+    }
+
+    /**
+     * @return array<int, array{up_to: int|null, per_seat_cents: int}>
+     */
+    private function rebuildBands(): array
+    {
+        $raw = config('finances.stadium_costs.rebuild_per_seat_bands');
+        if (! is_array($raw) || $raw === []) {
+            // Legacy fallback: behave like a single €15k band.
+            return [['up_to' => null, 'per_seat_cents' => 1_500_000]];
+        }
+
+        return $raw;
     }
 
     public function canRebuild(Game $game): bool
@@ -118,6 +239,10 @@ class StadiumUpgradeService
         }
 
         if ($seats > $stadium->supplementary_headroom) {
+            throw new InvalidArgumentException('messages.stadium_supplementary_exceeds_cap');
+        }
+
+        if ($seats > $this->supplementaryMaxSeatsPerProject()) {
             throw new InvalidArgumentException('messages.stadium_supplementary_exceeds_cap');
         }
 
@@ -193,7 +318,7 @@ class StadiumUpgradeService
             throw new InvalidArgumentException('messages.stadium_invalid_financing');
         }
 
-        $cost = $targetCapacity * $this->rebuildCostPerSeat();
+        $cost = $this->rebuildCostFor($targetCapacity);
 
         if ($financing === GameStadiumProject::FINANCING_CASH) {
             $this->assertCashAvailable($game, $cost);
@@ -233,6 +358,88 @@ class StadiumUpgradeService
                 GameStadiumProject::TYPE_REBUILD,
                 $targetCapacity,
                 (string) ($committedSeason + 2),
+            );
+
+            return $project->fresh();
+        });
+    }
+
+    /**
+     * Commit a permanent single-stand expansion. Construction runs through
+     * one season; the new seats go live at the start of the next season.
+     * Unlike a full rebuild, the rest of the stadium stays open during
+     * construction, so capacity is not reduced.
+     */
+    public function commitStandExpansion(
+        Game $game,
+        int $seats,
+        string $financing,
+    ): GameStadiumProject {
+        if ($this->activeProject($game) !== null) {
+            throw new InvalidArgumentException('messages.stadium_active_project_exists');
+        }
+
+        if ($seats < $this->standExpansionMinSeats()) {
+            throw new InvalidArgumentException('messages.stadium_supplementary_too_few_seats');
+        }
+
+        if ($seats > $this->standExpansionMaxSeats()) {
+            throw new InvalidArgumentException('messages.stadium_supplementary_exceeds_cap');
+        }
+
+        if (! in_array($financing, [
+            GameStadiumProject::FINANCING_CASH,
+            GameStadiumProject::FINANCING_LOAN,
+        ], true)) {
+            throw new InvalidArgumentException('messages.stadium_invalid_financing');
+        }
+
+        $cost = $seats * $this->standExpansionCostPerSeat();
+
+        if ($financing === GameStadiumProject::FINANCING_CASH) {
+            $this->assertCashAvailable($game, $cost);
+        } else {
+            // Reuse the rebuild loan cap as the bank's ceiling on
+            // stand-expansion borrowing — same affordability/reputation
+            // signal applies.
+            if ($cost > $this->loanService->maxLoanCap($game)) {
+                throw new InvalidArgumentException('messages.stadium_rebuild_exceeds_max_capacity');
+            }
+        }
+
+        return DB::transaction(function () use ($game, $seats, $cost, $financing) {
+            $committedSeason = (int) $game->season;
+
+            $project = GameStadiumProject::create([
+                'game_id' => $game->id,
+                'team_id' => $game->team_id,
+                'type' => GameStadiumProject::TYPE_STAND_EXPANSION,
+                'status' => GameStadiumProject::STATUS_PENDING,
+                'target_capacity' => $seats,
+                'committed_season' => $committedSeason,
+                'committed_date' => $game->current_date,
+                'completion_date' => null,
+                // New seats go live at the start of committed_season + 1.
+                'completion_season' => $committedSeason + 1,
+                'total_cost_cents' => $cost,
+                'financing' => $financing,
+                'paid_cents' => $financing === GameStadiumProject::FINANCING_CASH ? $cost : 0,
+            ]);
+
+            if ($financing === GameStadiumProject::FINANCING_CASH) {
+                $this->deductCash($game, $cost, __('finances.tx_stadium_stand_expansion_payment', [
+                    'seats' => number_format($seats, 0, ',', '.'),
+                    'amount' => Money::format($cost),
+                ]));
+            } else {
+                $this->loanService->request($game, $project, $cost);
+            }
+
+            $this->notificationService->notifyStadiumProjectCommitted(
+                $game,
+                GameStadiumProject::TYPE_STAND_EXPANSION,
+                $seats,
+                (string) ($committedSeason + 1),
             );
 
             return $project->fresh();

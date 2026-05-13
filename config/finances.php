@@ -58,14 +58,39 @@ return [
 
     // Stadium upgrade pricing.
     'stadium_costs' => [
-        // Build cost per seat for a full stadium rebuild.
-        'rebuild_per_seat_cents' => 1_500_000,    // €15,000/seat
-        // Build cost per seat for supplementary stands ("gradas supletorias").
-        'supplementary_per_seat_cents' => 800_000, // €8,000/seat
+        // Modular bleachers — temporary feel, fast install. Per-seat cost
+        // anchored on real-world temp-stadium contracts (e.g. Ibercaja
+        // Estadio for the Zaragoza relocation: ~€6M for ~14k seats).
+        'supplementary_per_seat_cents' => 400_000, // €4,000/seat
+        'supplementary_max_seats_per_project' => 8_000,
         // Supplementary stands take this many in-game days to install.
         'supplementary_construction_days' => 30,
+
+        // Permanent single-stand rebuild — Anfield Road / Selhurst Park
+        // scope (€30–80M for 3–8k seats ≈ €4–10k/seat). One construction
+        // season, no mid-construction capacity drop (the rest of the
+        // stadium stays open).
+        'stand_expansion_per_seat_cents' => 800_000, // €8,000/seat
+        'stand_expansion_min_seats' => 3_000,
+        'stand_expansion_max_seats' => 12_000,
+
+        // Full rebuild — cumulative bracket pricing (tax-bracket style).
+        // Per-seat marginal cost grows with target size; total cost stays
+        // continuous as the slider crosses bracket boundaries.
+        // Anchors: Boston United / FC Andorra (≤10k, €3k/seat);
+        // Wildparkstadion (≤30k, €5k); Europa-Park Stadion (≤50k, €7k);
+        // Metropolitano (≤80k, €10k); Wembley / Bernabéu (>80k, €15k).
+        'rebuild_per_seat_bands' => [
+            ['up_to' =>  10_000, 'per_seat_cents' =>   300_000],
+            ['up_to' =>  30_000, 'per_seat_cents' =>   500_000],
+            ['up_to' =>  50_000, 'per_seat_cents' =>   700_000],
+            ['up_to' =>  80_000, 'per_seat_cents' => 1_000_000],
+            ['up_to' =>    null, 'per_seat_cents' => 1_500_000],
+        ],
+
         // During a rebuild's construction season, effective capacity drops
-        // to this fraction of the pre-rebuild base.
+        // to this fraction of the pre-rebuild base. (Stand expansion does
+        // not reduce capacity — it only rebuilds a single stand.)
         'rebuild_construction_capacity_factor' => 0.4,
     ],
 

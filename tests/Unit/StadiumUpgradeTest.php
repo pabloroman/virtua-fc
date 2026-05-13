@@ -83,12 +83,12 @@ class StadiumUpgradeTest extends TestCase
         $this->assertSame(GameStadiumProject::STATUS_IN_PROGRESS, $project->status);
         $this->assertSame(2_000, $project->target_capacity);
         $this->assertSame(GameStadiumProject::FINANCING_CASH, $project->financing);
-        // 2,000 × €8k = €16M
-        $this->assertSame(16_000_000_00, $project->total_cost_cents);
-        $this->assertSame(16_000_000_00, $project->paid_cents);
+        // 2,000 × €4k = €8M
+        $this->assertSame(8_000_000_00, $project->total_cost_cents);
+        $this->assertSame(8_000_000_00, $project->paid_cents);
 
         $investment = GameInvestment::where('game_id', $game->id)->first();
-        $this->assertSame(200_000_000_00 - 16_000_000_00, $investment->transfer_budget);
+        $this->assertSame(200_000_000_00 - 8_000_000_00, $investment->transfer_budget);
     }
 
     public function test_supplementary_rejects_when_over_cap(): void
@@ -329,6 +329,178 @@ class StadiumUpgradeTest extends TestCase
 
         $project->refresh();
         $this->assertSame(GameStadiumProject::STATUS_IN_PROGRESS, $project->status);
+    }
+
+    public function test_rebuild_cost_uses_cumulative_bracket_pricing(): void
+    {
+        $service = app(StadiumUpgradeService::class);
+
+        // Single-band example: 8,000 seats entirely in the first band
+        // (≤10k @ €3k/seat) = €24M.
+        $this->assertSame(24_000_000_00, $service->rebuildCostFor(8_000));
+
+        // 45,000 seats crosses three bands:
+        //   10,000 × €3k  = €30M
+        // + 20,000 × €5k  = €100M
+        // + 15,000 × €7k  = €105M
+        //                = €235M
+        $this->assertSame(235_000_000_00, $service->rebuildCostFor(45_000));
+
+        // Elite-size example: 90,000 seats spans every band.
+        //   10,000 × €3k  = €30M
+        // + 20,000 × €5k  = €100M
+        // + 20,000 × €7k  = €140M
+        // + 30,000 × €10k = €300M
+        // + 10,000 × €15k = €150M
+        //                = €720M
+        $this->assertSame(720_000_000_00, $service->rebuildCostFor(90_000));
+    }
+
+    public function test_max_rebuild_capacity_inverts_bracket_pricing(): void
+    {
+        $service = app(StadiumUpgradeService::class);
+
+        // €15M budget: stays inside the first band (€3k/seat) → 5,000 seats.
+        $this->assertSame(5_000, $service->maxRebuildCapacityForBudget(15_000_000_00));
+
+        // €235M budget should be exactly the inversion of the 45k anchor above.
+        $this->assertSame(45_000, $service->maxRebuildCapacityForBudget(235_000_000_00));
+
+        // €720M budget → 90,000 seats per the elite-size anchor.
+        $this->assertSame(90_000, $service->maxRebuildCapacityForBudget(720_000_000_00));
+
+        // Zero / negative budget → no capacity.
+        $this->assertSame(0, $service->maxRebuildCapacityForBudget(0));
+    }
+
+    public function test_stand_expansion_commit_with_cash_creates_project_and_deducts_cash(): void
+    {
+        [$game, $team] = $this->setupGame();
+        $this->seedInvestment($game, transferBudget: 200_000_000_00); // €200M
+
+        $project = app(StadiumUpgradeService::class)->commitStandExpansion(
+            $game,
+            5_000,
+            GameStadiumProject::FINANCING_CASH,
+        );
+
+        $this->assertSame(GameStadiumProject::TYPE_STAND_EXPANSION, $project->type);
+        $this->assertSame(GameStadiumProject::STATUS_PENDING, $project->status);
+        $this->assertSame(5_000, $project->target_capacity);
+        // 5,000 × €8k = €40M
+        $this->assertSame(40_000_000_00, $project->total_cost_cents);
+        $this->assertSame(40_000_000_00, $project->paid_cents);
+        $this->assertSame((int) $game->season + 1, $project->completion_season);
+        $this->assertNull($project->completion_date);
+
+        $investment = GameInvestment::where('game_id', $game->id)->first();
+        $this->assertSame(200_000_000_00 - 40_000_000_00, $investment->transfer_budget);
+    }
+
+    public function test_stand_expansion_with_loan_creates_stadium_loan_and_no_cash_deduction(): void
+    {
+        [$game, $team] = $this->setupGame(reputation: ClubProfile::REPUTATION_ESTABLISHED);
+        $startingBudget = 5_000_000_00; // tiny cash on hand
+        $this->seedInvestment($game, transferBudget: $startingBudget);
+        $this->seedFinances($game, revenue: 200_000_000_00);
+
+        $project = app(StadiumUpgradeService::class)->commitStandExpansion(
+            $game,
+            6_000,
+            GameStadiumProject::FINANCING_LOAN,
+        );
+
+        $this->assertSame(GameStadiumProject::FINANCING_LOAN, $project->financing);
+        $this->assertSame(0, $project->paid_cents);
+        $this->assertNotNull($project->stadium_loan_id);
+
+        // Transfer budget unchanged with loan financing.
+        $investment = GameInvestment::where('game_id', $game->id)->first();
+        $this->assertSame($startingBudget, $investment->transfer_budget);
+    }
+
+    public function test_stand_expansion_rejects_below_minimum_seats(): void
+    {
+        [$game, $team] = $this->setupGame();
+        $this->seedInvestment($game, transferBudget: 200_000_000_00);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('messages.stadium_supplementary_too_few_seats');
+
+        app(StadiumUpgradeService::class)->commitStandExpansion(
+            $game,
+            1_000, // below the 3,000-seat min
+            GameStadiumProject::FINANCING_CASH,
+        );
+    }
+
+    public function test_stand_expansion_rejects_above_design_cap(): void
+    {
+        [$game, $team] = $this->setupGame();
+        $this->seedInvestment($game, transferBudget: 200_000_000_00);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('messages.stadium_supplementary_exceeds_cap');
+
+        app(StadiumUpgradeService::class)->commitStandExpansion(
+            $game,
+            15_000, // above the 12,000-seat cap
+            GameStadiumProject::FINANCING_CASH,
+        );
+    }
+
+    public function test_stand_expansion_blocked_when_active_project_exists(): void
+    {
+        [$game, $team] = $this->setupGame();
+        $this->seedInvestment($game, transferBudget: 200_000_000_00);
+
+        app(StadiumUpgradeService::class)->commitSupplementary($game, 1_000);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('messages.stadium_active_project_exists');
+
+        app(StadiumUpgradeService::class)->commitStandExpansion(
+            $game,
+            5_000,
+            GameStadiumProject::FINANCING_CASH,
+        );
+    }
+
+    public function test_progression_processor_completes_stand_expansion_at_season_close(): void
+    {
+        [$game, $team] = $this->setupGame();
+
+        $project = GameStadiumProject::create([
+            'game_id' => $game->id,
+            'team_id' => $team->id,
+            'type' => GameStadiumProject::TYPE_STAND_EXPANSION,
+            'status' => GameStadiumProject::STATUS_PENDING,
+            'target_capacity' => 6_000,
+            'committed_season' => (int) $game->season,
+            'committed_date' => $game->current_date,
+            'completion_season' => (int) $game->season + 1,
+            'total_cost_cents' => 48_000_000_00,
+            'financing' => GameStadiumProject::FINANCING_CASH,
+            'paid_cents' => 48_000_000_00,
+        ]);
+
+        $stadiumBefore = GameStadium::where('game_id', $game->id)->first();
+        $baseBefore = $stadiumBefore->rebuilt_capacity ?? $stadiumBefore->base_capacity;
+
+        app(StadiumProjectProgressionProcessor::class)->process($game, new SeasonTransitionData(
+            oldSeason: (string) $game->season,
+            newSeason: (string) ((int) $game->season + 1),
+            competitionId: $game->competition_id,
+        ));
+
+        $project->refresh();
+        $stadium = GameStadium::where('game_id', $game->id)->first();
+
+        $this->assertSame(GameStadiumProject::STATUS_COMPLETED, $project->status);
+        // Permanent capacity bumped by the project's target_capacity;
+        // supplementary stands left untouched.
+        $this->assertSame($baseBefore + 6_000, $stadium->rebuilt_capacity);
+        $this->assertSame($stadiumBefore->supplementary_seats, $stadium->supplementary_seats);
     }
 
     /**

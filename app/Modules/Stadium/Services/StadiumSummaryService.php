@@ -6,6 +6,7 @@ use App\Models\ClubProfile;
 use App\Models\Game;
 use App\Models\GameFinances;
 use App\Models\GameMatch;
+use App\Models\GameStadium;
 use App\Models\MatchAttendance;
 use App\Models\SeasonTicketPricing;
 use App\Models\TeamReputation;
@@ -67,9 +68,18 @@ class StadiumSummaryService
         $lastHomeMatch = $this->resolveLastHomeMatch($game);
         $seasonTickets = $this->resolveSeasonTickets($game);
 
+        // Per-game stadium row captures upgrades (rebuild + supletorias).
+        // Falls back to the control-plane baseline for saves that predate
+        // the GameStadium backfill migration.
+        $stadium = GameStadium::query()
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->first();
+        $capacity = $stadium?->effective_capacity ?? (int) ($team->stadium_seats ?? 0);
+
         return [
             'stadium_name' => $team->stadium_name,
-            'capacity' => (int) ($team->stadium_seats ?? 0),
+            'capacity' => $capacity,
             'loyalty_points' => $loyaltyPoints,
             'base_loyalty' => $baseLoyalty,
             'loyalty_direction' => $direction,

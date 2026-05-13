@@ -181,6 +181,7 @@ return [
     'loan_exceeds_maximum' => 'The loan amount exceeds the maximum allowed.',
 
     'stadium_supplementary_committed' => 'Construction started: :seats temporary seats will be ready in 30 days.',
+    'stadium_stand_expansion_committed' => 'Stand expansion approved: :seats new permanent seats will be ready next season.',
     'stadium_rebuild_committed' => 'Stadium rebuild approved. New target capacity: :capacity.',
     'stadium_active_project_exists' => 'You already have a project in progress. Wait for it to finish before starting another.',
     'stadium_supplementary_too_few_seats' => 'You must add at least one temporary seat.',

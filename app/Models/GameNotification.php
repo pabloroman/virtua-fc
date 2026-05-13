@@ -111,6 +111,7 @@ class GameNotification extends Model
         self::TYPE_TRANSFER_WINDOW_CLOSING => 'transfers',
         self::TYPE_TRANSFER_WINDOW_CLOSED => 'transfers',
         self::TYPE_SQUAD_REGISTRATION_REQUIRED => 'registration',
+        self::TYPE_STADIUM => 'stadium',
     ];
 
     protected $fillable = [
@@ -232,6 +233,7 @@ class GameNotification extends Model
             'academy' => 'game.squad.academy',
             'transfer-activity' => 'game.transfer-activity',
             'finances' => 'game.club.finances',
+            'stadium' => 'game.club.stadium',
             'registration' => 'game.squad.registration',
             default => 'game.squad.academy',
         };
