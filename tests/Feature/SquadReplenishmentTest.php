@@ -373,8 +373,8 @@ class SquadReplenishmentTest extends TestCase
         foreach ($youthEntries as $entry) {
             $gamePlayer = GamePlayer::find($entry['playerId']);
             $age = $gamePlayer->age($this->game->current_date);
-            $this->assertGreaterThanOrEqual(20, $age, "Youth player should be at least 20");
-            $this->assertLessThanOrEqual(23, $age, "Youth player should be at most 23");
+            $this->assertGreaterThanOrEqual(17, $age, "Youth player should be at least 17");
+            $this->assertLessThanOrEqual(20, $age, "Youth player should be at most 20");
         }
     }
 
