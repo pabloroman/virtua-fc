@@ -108,6 +108,11 @@ class DefaultLeagueConfig implements CompetitionConfig, HasSeasonGoals
         return 0;
     }
 
+    public function getLeaguePhaseQualificationBonus(int $position): int
+    {
+        return 0;
+    }
+
     public function getStandingsZones(): array
     {
         // Calculate zones dynamically based on league size

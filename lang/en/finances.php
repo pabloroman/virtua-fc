@@ -196,7 +196,8 @@ return [
     'tx_player_signed' => ':player signed from :team',
     'tx_loan_in' => ':player loaned from :team (salary)',
     'tx_player_released' => ':player released (severance)',
-    'tx_cup_advancement' => ':competition - Round :round advancement',
+    'tx_cup_advancement' => ':competition - :round',
+    'tx_league_phase_qualification' => ':competition - League phase qualification (:position)',
     'tx_infrastructure_upgrade' => ':area upgraded from Tier :from to Tier :to',
     'tx_budget_loan_received' => 'Budget loan received: :amount',
 

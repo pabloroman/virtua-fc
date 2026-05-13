@@ -53,6 +53,18 @@ class EuropaLeagueConfig implements CompetitionConfig
         return self::KNOCKOUT_PRIZE_MONEY[$roundNumber] ?? 0;
     }
 
+    public function getLeaguePhaseQualificationBonus(int $position): int
+    {
+        if ($position <= 8) {
+            return 200_000_000; // €2M — direct R16
+        }
+        if ($position <= 24) {
+            return 50_000_000;  // €500K — qualified to knockout playoff
+        }
+
+        return 0; // Eliminated
+    }
+
     public function getStandingsZones(): array
     {
         return [

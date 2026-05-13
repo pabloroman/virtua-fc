@@ -24,11 +24,16 @@ class AwardCupPrizeMoney
             return;
         }
 
+        $roundKey = $event->cupTie->firstLegMatch?->round_name;
+        $roundLabel = $roundKey
+            ? __($roundKey)
+            : __('cup.round_n', ['round' => $event->cupTie->round_number]);
+
         FinancialTransaction::recordIncome(
             gameId: $event->game->id,
             category: FinancialTransaction::CATEGORY_CUP_BONUS,
             amount: $amount,
-            description: __('finances.tx_cup_advancement', ['competition' => $competition->name, 'round' => $event->cupTie->round_number]),
+            description: __('finances.tx_cup_advancement', ['competition' => $competition->name, 'round' => $roundLabel]),
             transactionDate: $event->game->current_date->toDateString(),
         );
     }

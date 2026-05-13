@@ -51,4 +51,15 @@ interface CompetitionConfig
      * Returns 0 for competitions without knockout prize money.
      */
     public function getKnockoutPrizeMoney(int $roundNumber): int;
+
+    /**
+     * Get the bonus paid to a team for qualifying out of the league phase,
+     * based on its final league-phase position (in cents).
+     *
+     * Applies to Swiss-format competitions (UCL/UEL/UECL) where finishing
+     * the league phase is itself an achievement worth rewarding mid-season,
+     * independent of the end-of-season position-based TV revenue. Returns 0
+     * for competitions without a league phase.
+     */
+    public function getLeaguePhaseQualificationBonus(int $position): int;
 }

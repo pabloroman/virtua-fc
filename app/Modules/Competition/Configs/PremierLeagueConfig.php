@@ -113,6 +113,11 @@ class PremierLeagueConfig implements CompetitionConfig, HasSeasonGoals
         return 0;
     }
 
+    public function getLeaguePhaseQualificationBonus(int $position): int
+    {
+        return 0;
+    }
+
     public function getStandingsZones(): array
     {
         $slots = config('countries.EN.continental_slots.ENG1', []);

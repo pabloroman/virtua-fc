@@ -48,6 +48,11 @@ class PrimeraRFEFPlayoffConfig implements CompetitionConfig
         return self::KNOCKOUT_PRIZE_MONEY[$roundNumber] ?? 0;
     }
 
+    public function getLeaguePhaseQualificationBonus(int $position): int
+    {
+        return 0;
+    }
+
     public function getStandingsZones(): array
     {
         return [];

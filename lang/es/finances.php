@@ -196,7 +196,8 @@ return [
     'tx_player_signed' => ':player fichado de :team',
     'tx_loan_in' => ':player cedido de :team (salario)',
     'tx_player_released' => ':player liberado (indemnización)',
-    'tx_cup_advancement' => ':competition - Ronda :round superada',
+    'tx_cup_advancement' => ':competition - :round',
+    'tx_league_phase_qualification' => ':competition - Fase de liga superada (:positionº)',
     'tx_infrastructure_upgrade' => ':area mejorada de Nivel :from a Nivel :to',
     'tx_budget_loan_received' => 'Préstamo presupuestario recibido: :amount',
 

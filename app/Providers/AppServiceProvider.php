@@ -11,6 +11,7 @@ use App\Events\TournamentEnded;
 use App\Modules\Academy\Listeners\GenerateInitialAcademyBatch;
 use App\Modules\Match\Events\CupTieResolved;
 use App\Modules\Match\Events\GameDateAdvanced;
+use App\Modules\Match\Events\LeaguePhaseCompleted;
 use App\Modules\Match\Events\MatchFinalized;
 use App\Modules\Match\Handlers\PreSeasonHandler;
 use App\Modules\Match\Handlers\GroupStageCupHandler;
@@ -19,6 +20,7 @@ use App\Modules\Match\Handlers\LeagueHandler;
 use App\Modules\Match\Handlers\LeagueWithPlayoffHandler;
 use App\Modules\Match\Handlers\SwissFormatHandler;
 use App\Modules\Match\Listeners\AwardCupPrizeMoney;
+use App\Modules\Match\Listeners\AwardLeaguePhaseBonus;
 use App\Modules\Match\Listeners\ConductNextCupRoundDraw;
 use App\Modules\Match\Listeners\EnsureMatchAttendance;
 use App\Modules\Notification\Listeners\NotifyTransferWindowClosed;
@@ -157,6 +159,8 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(CupTieResolved::class, AwardCupPrizeMoney::class);
         Event::listen(CupTieResolved::class, ConductNextCupRoundDraw::class);
         Event::listen(CupTieResolved::class, SendCupTieNotifications::class);
+
+        Event::listen(LeaguePhaseCompleted::class, AwardLeaguePhaseBonus::class);
 
         Event::listen(SeasonStarted::class, GenerateInitialAcademyBatch::class);
 

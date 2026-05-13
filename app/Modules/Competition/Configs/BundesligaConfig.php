@@ -111,6 +111,11 @@ class BundesligaConfig implements CompetitionConfig, HasSeasonGoals
         return 0;
     }
 
+    public function getLeaguePhaseQualificationBonus(int $position): int
+    {
+        return 0;
+    }
+
     public function getStandingsZones(): array
     {
         $slots = config('countries.DE.continental_slots.DEU1', []);

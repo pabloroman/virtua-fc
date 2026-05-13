@@ -114,6 +114,11 @@ class LaLiga2Config implements CompetitionConfig, HasSeasonGoals
         return 0;
     }
 
+    public function getLeaguePhaseQualificationBonus(int $position): int
+    {
+        return 0;
+    }
+
     public function getStandingsZones(): array
     {
         $promotions = config('countries.ES.promotions', []);

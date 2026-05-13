@@ -111,6 +111,11 @@ class Ligue1Config implements CompetitionConfig, HasSeasonGoals
         return 0;
     }
 
+    public function getLeaguePhaseQualificationBonus(int $position): int
+    {
+        return 0;
+    }
+
     public function getStandingsZones(): array
     {
         $slots = config('countries.FR.continental_slots.FRA1', []);

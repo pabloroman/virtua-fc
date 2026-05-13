@@ -43,6 +43,11 @@ class KnockoutCupConfig implements CompetitionConfig
         return self::KNOCKOUT_PRIZE_MONEY[$roundNumber] ?? self::KNOCKOUT_PRIZE_MONEY[1];
     }
 
+    public function getLeaguePhaseQualificationBonus(int $position): int
+    {
+        return 0;
+    }
+
     public function getStandingsZones(): array
     {
         return [];

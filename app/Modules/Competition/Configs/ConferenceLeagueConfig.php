@@ -53,6 +53,18 @@ class ConferenceLeagueConfig implements CompetitionConfig
         return self::KNOCKOUT_PRIZE_MONEY[$roundNumber] ?? 0;
     }
 
+    public function getLeaguePhaseQualificationBonus(int $position): int
+    {
+        if ($position <= 8) {
+            return 100_000_000; // €1M — direct R16
+        }
+        if ($position <= 24) {
+            return 30_000_000;  // €300K — qualified to knockout playoff
+        }
+
+        return 0; // Eliminated
+    }
+
     public function getStandingsZones(): array
     {
         return [

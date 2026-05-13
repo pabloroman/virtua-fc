@@ -112,6 +112,11 @@ class LaLigaConfig implements CompetitionConfig, HasSeasonGoals
         return 0;
     }
 
+    public function getLeaguePhaseQualificationBonus(int $position): int
+    {
+        return 0;
+    }
+
     public function getStandingsZones(): array
     {
         $slots = config('countries.ES.continental_slots.ESP1', []);

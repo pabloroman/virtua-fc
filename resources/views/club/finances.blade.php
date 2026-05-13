@@ -278,7 +278,7 @@
                                 <tr class="border-b border-border-default"
                                     x-show="filter === 'all' || filter === '{{ $transaction->type }}'"
                                     x-transition>
-                                    <td class="px-5 py-2.5 text-text-muted whitespace-nowrap">{{ $transaction->transaction_date->format('d M') }}</td>
+                                    <td class="px-5 py-2.5 text-text-muted whitespace-nowrap">{{ $transaction->transaction_date->locale(app()->getLocale())->translatedFormat('d M') }}</td>
                                     <td class="py-2.5">
                                         <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full {{ $transaction->isIncome() ? 'bg-accent-green/10 text-accent-green' : 'bg-accent-red/10 text-accent-red' }}">
                                             {{ $transaction->category_label }}

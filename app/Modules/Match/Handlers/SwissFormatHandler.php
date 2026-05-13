@@ -5,6 +5,7 @@ namespace App\Modules\Match\Handlers;
 use App\Models\Competition;
 use App\Modules\Competition\Services\FinalVenueResolver;
 use App\Modules\Competition\Services\SwissKnockoutGenerator;
+use App\Modules\Match\Events\LeaguePhaseCompleted;
 use App\Modules\Match\Services\CupTieResolver;
 use App\Modules\Squad\Services\EligibilityService;
 use App\Models\CupTie;
@@ -118,10 +119,18 @@ class SwissFormatHandler extends CupCompetitionHandler
             return;
         }
 
-        // For round 1 (knockout playoff), generate if it doesn't exist
+        // For round 1 (knockout playoff), generate if it doesn't exist.
+        // Generating round 1 is also the moment the league phase definitively
+        // ends — final standings are known, so fire LeaguePhaseCompleted so
+        // qualification bonuses can be paid before the knockout begins.
         if ($nextRound === SwissKnockoutGenerator::ROUND_KNOCKOUT_PLAYOFF) {
             if (!$this->roundExists($game->id, $competitionId, $nextRound)) {
                 $this->generateKnockoutRound($game, $competitionId, $nextRound);
+
+                $competition = Competition::find($competitionId);
+                if ($competition) {
+                    LeaguePhaseCompleted::dispatch($game, $competition);
+                }
             }
             return;
         }
