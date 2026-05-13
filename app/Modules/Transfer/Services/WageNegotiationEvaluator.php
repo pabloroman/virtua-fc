@@ -28,7 +28,7 @@ class WageNegotiationEvaluator
      * @param  int  $maxRounds  Maximum allowed rounds
      * @param  int|null  $salaryFloor  Minimum acceptable wage (e.g. current wage for renewals)
      * @param  int|null  $previousCounter  Previous counter-offer cap (never raise above this)
-     * @param  float|null  $flexibilityRatio  Override for flexibility scaling (default 0.30, renewals use 0.18)
+     * @param  float|null  $flexibilityRatio  Override for flexibility scaling (default 0.30; renewals taper by tier from 0.20 at Tier 4–5 up to 0.30 at Tier 1)
      * @return array{result: string, counterWage: int|null}
      */
     public function evaluate(

@@ -293,7 +293,7 @@ class ContractService
             deterministic: true,
         );
 
-        $premium = $scenario->wagePremium($player->market_value_cents);
+        $premium = $scenario->wagePremium($player->market_value_cents, $player->tier);
         $demandedWage = (int) ($baseWage * $premium);
 
         // Renewals: peg the demand at peer-median ("market rate") for every
@@ -310,14 +310,15 @@ class ContractService
             }
         }
 
-        // Renewals: player wants at least a raise over their current wage
+        // Renewals: player wants at least a raise over their current wage.
+        // Tier 1 (premium 1.00x) skips the bump — fringe players have no outside
+        // market and will renew at their current wage.
         if ($scenario === NegotiationScenario::RENEWAL) {
             $currentWageWithPremium = (int) ($player->annual_wage * $premium);
             $demandedWage = max($demandedWage, $currentWageWithPremium);
             $demandedWage = $this->roundWage($demandedWage);
 
-            // Ensure the demand is strictly above the current wage
-            if ($demandedWage <= $player->annual_wage) {
+            if ($premium > 1.0 && $demandedWage <= $player->annual_wage) {
                 $unit = $demandedWage < 100_000_000 ? 1_000_000 : 10_000_000;
                 $demandedWage = $player->annual_wage + $unit;
             }
@@ -569,7 +570,7 @@ class ContractService
             maxRounds: self::MAX_NEGOTIATION_ROUNDS,
             salaryFloor: $salaryFloor,
             previousCounter: $negotiation->counter_offer,
-            flexibilityRatio: NegotiationScenario::RENEWAL->flexibilityRatio(),
+            flexibilityRatio: NegotiationScenario::RENEWAL->flexibilityRatio($player->tier),
         );
 
         $updateData = ['disposition' => $disposition];
@@ -1001,7 +1002,7 @@ class ContractService
             maxRounds: self::MAX_NEGOTIATION_ROUNDS,
             salaryFloor: $buyingClubFloor,
             previousCounter: $offer->wage_counter_offer,
-            flexibilityRatio: $scenario->flexibilityRatio(),
+            flexibilityRatio: $scenario->flexibilityRatio($player->tier),
         );
 
         $extraStatusUpdates = [];

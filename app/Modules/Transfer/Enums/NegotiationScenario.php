@@ -24,20 +24,48 @@ enum NegotiationScenario: string
     /**
      * How much disposition translates into wage flexibility.
      * Lower = player demands closer to their full ask.
+     *
+     * Renewals taper by player tier: Tier 1 (fringe, no outside market) is the
+     * most flexible and will renew at his current wage; Tier 2–3 are somewhat
+     * flexible; Tier 4–5 keep the current baseline because other clubs would
+     * sign them. Other scenarios always use the flat 0.20.
      */
-    public function flexibilityRatio(): float
+    public function flexibilityRatio(?int $tier = null): float
     {
+        if ($this === self::RENEWAL && $tier !== null) {
+            return match ($tier) {
+                1 => 0.30,
+                2, 3 => 0.25,
+                default => 0.20,
+            };
+        }
+
         return 0.2;
     }
 
     /**
      * Wage premium multiplier applied on top of the base market wage.
+     *
+     * Renewals taper by player tier so leverage matches the real market:
+     * Tier 1 asks no raise (1.00x); Tier 2–3 a modest 1.05x; Tier 4–5 keep
+     * the current 1.15x because they have outside suitors. When tier is
+     * unavailable, fall back to the previous flat 1.15x.
      */
-    public function wagePremium(int $marketValueCents): float
+    public function wagePremium(int $marketValueCents, ?int $tier = null): float
     {
         return match ($this) {
-            self::RENEWAL, self::TRANSFER, self::FREE_AGENT => 1.15,
+            self::RENEWAL => self::renewalPremiumForTier($tier),
+            self::TRANSFER, self::FREE_AGENT => 1.15,
             self::PRE_CONTRACT => self::preContractPremium($marketValueCents),
+        };
+    }
+
+    private static function renewalPremiumForTier(?int $tier): float
+    {
+        return match ($tier) {
+            1 => 1.00,
+            2, 3 => 1.05,
+            default => 1.15,
         };
     }
 
