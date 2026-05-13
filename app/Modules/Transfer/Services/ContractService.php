@@ -310,15 +310,14 @@ class ContractService
             }
         }
 
-        // Renewals: player wants at least a raise over their current wage.
-        // Tier 1 (premium 1.00x) skips the bump — fringe players have no outside
-        // market and will renew at their current wage.
+        // Renewals: player wants at least a raise over their current wage
         if ($scenario === NegotiationScenario::RENEWAL) {
             $currentWageWithPremium = (int) ($player->annual_wage * $premium);
             $demandedWage = max($demandedWage, $currentWageWithPremium);
             $demandedWage = $this->roundWage($demandedWage);
 
-            if ($premium > 1.0 && $demandedWage <= $player->annual_wage) {
+            // Ensure the demand is strictly above the current wage
+            if ($demandedWage <= $player->annual_wage) {
                 $unit = $demandedWage < 100_000_000 ? 1_000_000 : 10_000_000;
                 $demandedWage = $player->annual_wage + $unit;
             }

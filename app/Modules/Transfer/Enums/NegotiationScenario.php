@@ -47,7 +47,8 @@ enum NegotiationScenario: string
      * Wage premium multiplier applied on top of the base market wage.
      *
      * Renewals taper by player tier so leverage matches the real market:
-     * Tier 1 asks no raise (1.00x); Tier 2–3 a modest 1.05x; Tier 4–5 keep
+     * Tier 1 opens with a small 1.05x ask but accepts current wage when
+     * pressed (see flexibilityRatio); Tier 2–3 a modest 1.10x; Tier 4–5 keep
      * the current 1.15x because they have outside suitors. When tier is
      * unavailable, fall back to the previous flat 1.15x.
      */
@@ -63,8 +64,8 @@ enum NegotiationScenario: string
     private static function renewalPremiumForTier(?int $tier): float
     {
         return match ($tier) {
-            1 => 1.00,
-            2, 3 => 1.05,
+            1 => 1.05,
+            2, 3 => 1.10,
             default => 1.15,
         };
     }
