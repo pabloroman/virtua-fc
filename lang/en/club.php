@@ -58,6 +58,9 @@ return [
             'cta_supplementary_title' => 'Add temporary stands',
             'cta_supplementary_hint' => 'Up to :max extra seats at :cost per seat. Ready in 30 days.',
             'cta_supplementary_full' => 'Maximum temporary stands installed. Rebuild the stadium to free up more headroom.',
+            'cta_supplementary_no_budget' => 'Not enough budget for the minimum batch (:minimum). Available budget: :budget.',
+            'budget_caps_slider' => 'Available budget (:budget) is capping the batch — without it you could reach :natural seats.',
+            'financing_cash_hint_budget' => 'Deducted from the available transfer budget (:budget) on confirmation.',
 
             'cta_rebuild_label' => 'Major project',
             'cta_rebuild_title' => 'Rebuild the stadium',

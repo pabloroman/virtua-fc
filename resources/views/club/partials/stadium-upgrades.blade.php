@@ -1,36 +1,46 @@
 @php
 /**
  * @var App\Models\Game                          $game
- * @var App\Models\GameStadium                   $stadium
- * @var ?App\Models\GameStadiumProject           $activeProject
- * @var ?App\Models\StadiumLoan                  $activeLoan
- * @var int                                      $supplementaryHeadroom
- * @var int                                      $supplementaryPerSeat
- * @var int                                      $rebuildPerSeat
- * @var bool                                     $canRebuild
- * @var int                                      $rebuildMaxCapacity
- * @var int                                      $loanCapCents
- * @var string                                   $reputationLevel
+ * @var array                                    $upgrade  // populated by ShowClubStadium
  */
 
 use App\Models\GameStadiumProject;
 use App\Support\Money;
 
-$stadium = $upgrade['stadium'];
-$activeProject = $upgrade['active_project'];
-$activeLoan = $upgrade['active_loan'];
-$supplementaryHeadroom = $upgrade['supplementary_headroom'];
-$supplementaryPerSeat = $upgrade['supplementary_per_seat_cents'];
-$rebuildPerSeat = $upgrade['rebuild_per_seat_cents'];
-$canRebuild = $upgrade['can_rebuild'];
-$rebuildMaxCapacity = $upgrade['rebuild_max_capacity'];
-$loanCapCents = $upgrade['loan_cap_cents'];
-$reputationLevel = $upgrade['reputation_level'];
-$bindingConstraint = $upgrade['binding_constraint'];
-$nextReputationTier = $upgrade['next_reputation_tier'];
-$revenueRequiredCents = $upgrade['revenue_required_cents'];
+$stadium                  = $upgrade['stadium'];
+$activeProject            = $upgrade['active_project'];
+$activeLoan               = $upgrade['active_loan'];
+$supplementaryHeadroom    = $upgrade['supplementary_headroom'];
+$supplementaryMax         = $upgrade['supplementary_effective_max']; // min(headroom, what cash can buy)
+$supplementaryPerSeat     = $upgrade['supplementary_per_seat_cents'];
+$rebuildPerSeat           = $upgrade['rebuild_per_seat_cents'];
+$rebuildMaxCash           = $upgrade['rebuild_max_capacity_cash'];   // cap when financing=cash
+$canRebuild               = $upgrade['can_rebuild'];
+$rebuildMaxCapacity       = $upgrade['rebuild_max_capacity'];        // cap from loan ceiling
+$loanCapCents             = $upgrade['loan_cap_cents'];
+$availableBudgetCents     = $upgrade['available_budget_cents'];
+$reputationLevel          = $upgrade['reputation_level'];
+$bindingConstraint        = $upgrade['binding_constraint'];
+$nextReputationTier       = $upgrade['next_reputation_tier'];
+$revenueRequiredCents     = $upgrade['revenue_required_cents'];
 
 $currentCapacity = $stadium->effective_capacity;
+
+// Slider step + minimum project size. Used both server-side (to gate the
+// CTA when not even the minimum is affordable) and client-side (slider
+// bounds). 500 seats is the smallest supletoria batch we support.
+$supplementaryMin  = 500;
+$supplementaryStep = 100;
+$rebuildMin        = $currentCapacity + 1000;
+$rebuildStep       = 1000;
+
+$supplementaryAffordable = $supplementaryMax >= $supplementaryMin;
+$rebuildCashAffordable   = $rebuildMaxCash >= $rebuildMin;
+// The rebuild CTA opens the modal as long as *either* financing path is
+// viable. Inside the modal we hide / disable the option that isn't.
+$rebuildAvailable = $canRebuild
+    && $rebuildMaxCapacity >= $rebuildMin
+    && ($rebuildCashAffordable || $rebuildMaxCapacity >= $rebuildMin);
 @endphp
 
 <x-section-card :title="__('club.stadium.upgrades.title')">
@@ -86,26 +96,31 @@ $currentCapacity = $stadium->effective_capacity;
             </div>
         @else
             {{-- CTAs. The x-data wrapper is required: Alpine only processes
-                 directives inside an x-data scope, so without it the
+                 directives inside an x-data subtree, so without it the
                  $dispatch('open-modal', ...) calls would never fire. --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3" x-data>
                 {{-- Gradas supletorias --}}
                 <button
                     type="button"
-                    @if($supplementaryHeadroom <= 0) disabled @endif
+                    @if(! $supplementaryAffordable) disabled @endif
                     x-on:click="$dispatch('open-modal', 'stadium-supplementary')"
                     class="w-full text-left p-4 rounded-lg border border-border-strong bg-surface-700 hover:bg-surface-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                     <div class="text-[10px] text-text-muted uppercase tracking-widest mb-1">{{ __('club.stadium.upgrades.cta_supplementary_label') }}</div>
                     <div class="font-heading text-base font-bold text-text-primary">{{ __('club.stadium.upgrades.cta_supplementary_title') }}</div>
                     <div class="text-xs text-text-muted mt-2">
-                        @if($supplementaryHeadroom > 0)
-                            {{ __('club.stadium.upgrades.cta_supplementary_hint', [
-                                'max' => number_format($supplementaryHeadroom),
-                                'cost' => Money::format($supplementaryPerSeat),
+                        @if($supplementaryHeadroom <= 0)
+                            {{ __('club.stadium.upgrades.cta_supplementary_full') }}
+                        @elseif(! $supplementaryAffordable)
+                            {{ __('club.stadium.upgrades.cta_supplementary_no_budget', [
+                                'minimum' => Money::format($supplementaryMin * $supplementaryPerSeat),
+                                'budget'  => Money::format($availableBudgetCents),
                             ]) }}
                         @else
-                            {{ __('club.stadium.upgrades.cta_supplementary_full') }}
+                            {{ __('club.stadium.upgrades.cta_supplementary_hint', [
+                                'max'  => number_format($supplementaryMax),
+                                'cost' => Money::format($supplementaryPerSeat),
+                            ]) }}
                         @endif
                     </div>
                 </button>
@@ -113,7 +128,7 @@ $currentCapacity = $stadium->effective_capacity;
                 {{-- Rebuild --}}
                 <button
                     type="button"
-                    @if(! $canRebuild || $rebuildMaxCapacity <= $currentCapacity) disabled @endif
+                    @if(! $rebuildAvailable) disabled @endif
                     x-on:click="$dispatch('open-modal', 'stadium-rebuild')"
                     class="w-full text-left p-4 rounded-lg border border-border-strong bg-surface-700 hover:bg-surface-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
@@ -127,8 +142,8 @@ $currentCapacity = $stadium->effective_capacity;
                         @elseif($rebuildMaxCapacity <= $currentCapacity && $bindingConstraint === 'reputation')
                             @if($nextReputationTier)
                                 {{ __('club.stadium.upgrades.cta_rebuild_locked_by_reputation', [
-                                    'cap' => Money::format($loanCapCents),
-                                    'max' => number_format($rebuildMaxCapacity),
+                                    'cap'  => Money::format($loanCapCents),
+                                    'max'  => number_format($rebuildMaxCapacity),
                                     'tier' => __('club.stadium.reputation_tiers.'.$nextReputationTier),
                                 ]) }}
                             @else
@@ -139,13 +154,13 @@ $currentCapacity = $stadium->effective_capacity;
                             @endif
                         @elseif($rebuildMaxCapacity <= $currentCapacity)
                             {{ __('club.stadium.upgrades.cta_rebuild_locked_by_affordability', [
-                                'cap' => Money::format($loanCapCents),
-                                'max' => number_format($rebuildMaxCapacity),
+                                'cap'     => Money::format($loanCapCents),
+                                'max'     => number_format($rebuildMaxCapacity),
                                 'revenue' => Money::format($revenueRequiredCents),
                             ]) }}
                         @else
                             {{ __('club.stadium.upgrades.cta_rebuild_hint', [
-                                'max' => number_format($rebuildMaxCapacity),
+                                'max'  => number_format($rebuildMaxCapacity),
                                 'cost' => Money::format($rebuildPerSeat),
                             ]) }}
                         @endif
@@ -159,9 +174,22 @@ $currentCapacity = $stadium->effective_capacity;
 
 @if(! $activeProject)
     {{-- Supplementary stands modal --}}
+    @if($supplementaryAffordable)
     <x-modal name="stadium-supplementary" maxWidth="lg">
         <form method="POST" action="{{ route('game.club.stadium.supplementary', $game->id) }}"
-              x-data="{ seats: {{ min(1000, $supplementaryHeadroom) }} }"
+              x-data="{
+                  seats: {{ min($supplementaryMin + 500, $supplementaryMax) }},
+                  min: {{ $supplementaryMin }},
+                  max: {{ $supplementaryMax }},
+                  perSeat: {{ $supplementaryPerSeat }},
+                  fillPercent() {
+                      if (this.max <= this.min) return 0;
+                      return ((this.seats - this.min) / (this.max - this.min)) * 100;
+                  },
+                  costLabel() {
+                      return '€ ' + ((this.seats * this.perSeat) / 100_000_000).toFixed(1) + 'M';
+                  }
+              }"
               class="p-6 space-y-4">
             @csrf
 
@@ -173,19 +201,30 @@ $currentCapacity = $stadium->effective_capacity;
                     {{ __('club.stadium.upgrades.seats_to_add') }}
                     <span x-text="seats.toLocaleString('es-ES')" class="font-heading text-base text-text-primary ml-2"></span>
                 </label>
-                <input type="range" name="seats" min="500" max="{{ $supplementaryHeadroom }}" step="100"
+                <input type="range" name="seats"
+                       min="{{ $supplementaryMin }}"
+                       max="{{ $supplementaryMax }}"
+                       step="{{ $supplementaryStep }}"
                        x-model.number="seats"
-                       class="w-full">
+                       :style="`--fill: ${fillPercent()}%`"
+                       class="season-ticket-slider w-full">
                 <div class="flex justify-between text-xs text-text-faint mt-1">
-                    <span>500</span>
-                    <span>{{ number_format($supplementaryHeadroom) }}</span>
+                    <span>{{ number_format($supplementaryMin) }}</span>
+                    <span>{{ number_format($supplementaryMax) }}</span>
                 </div>
+                @if($supplementaryMax < $supplementaryHeadroom)
+                    <div class="text-[11px] text-text-faint mt-2">
+                        {{ __('club.stadium.upgrades.budget_caps_slider', [
+                            'budget'  => Money::format($availableBudgetCents),
+                            'natural' => number_format($supplementaryHeadroom),
+                        ]) }}
+                    </div>
+                @endif
             </div>
 
             <div class="flex items-center justify-between pt-2 border-t border-border-strong">
                 <span class="text-sm text-text-muted">{{ __('club.stadium.upgrades.total_cost') }}</span>
-                <span class="font-heading text-lg font-bold text-text-primary"
-                      x-text="'€ ' + ((seats * {{ $supplementaryPerSeat }}) / 100_000_000).toFixed(1) + 'M'"></span>
+                <span class="font-heading text-lg font-bold text-text-primary" x-text="costLabel()"></span>
             </div>
 
             <div class="flex justify-end gap-3 pt-4">
@@ -198,17 +237,34 @@ $currentCapacity = $stadium->effective_capacity;
             </div>
         </form>
     </x-modal>
+    @endif
 
     {{-- Rebuild modal --}}
-    @if($canRebuild && $rebuildMaxCapacity > $currentCapacity)
+    @if($rebuildAvailable)
     <x-modal name="stadium-rebuild" maxWidth="xl">
         <form method="POST" action="{{ route('game.club.stadium.rebuild', $game->id) }}"
               x-data="{
-                  capacity: {{ min($currentCapacity + 10000, $rebuildMaxCapacity) }},
-                  financing: 'cash',
-                  costCents() { return this.capacity * {{ $rebuildPerSeat }}; },
-                  costLabel() { return '€ ' + (this.costCents() / 100_000_000).toFixed(1) + 'M'; }
+                  capacity: {{ min($rebuildMin + 5000, $rebuildMaxCapacity) }},
+                  financing: '{{ $rebuildCashAffordable ? 'cash' : 'loan' }}',
+                  min: {{ $rebuildMin }},
+                  maxLoan: {{ $rebuildMaxCapacity }},
+                  maxCash: {{ $rebuildMaxCash }},
+                  perSeat: {{ $rebuildPerSeat }},
+                  effectiveMax() {
+                      return this.financing === 'cash'
+                          ? Math.min(this.maxLoan, this.maxCash)
+                          : this.maxLoan;
+                  },
+                  fillPercent() {
+                      const max = this.effectiveMax();
+                      if (max <= this.min) return 0;
+                      return ((this.capacity - this.min) / (max - this.min)) * 100;
+                  },
+                  costCents() { return this.capacity * this.perSeat; },
+                  costLabel() { return '€ ' + (this.costCents() / 100_000_000).toFixed(1) + 'M'; },
+                  cashAffordable() { return this.maxCash >= this.min; }
               }"
+              x-effect="if (capacity > effectiveMax()) capacity = effectiveMax()"
               class="p-6 space-y-4">
             @csrf
 
@@ -216,25 +272,17 @@ $currentCapacity = $stadium->effective_capacity;
             <p class="text-sm text-text-muted">{{ __('club.stadium.upgrades.modal_rebuild_description') }}</p>
 
             <div>
-                <label class="block text-[10px] text-text-muted uppercase tracking-widest mb-2">
-                    {{ __('club.stadium.upgrades.target_capacity') }}
-                    <span x-text="capacity.toLocaleString('es-ES')" class="font-heading text-base text-text-primary ml-2"></span>
-                </label>
-                <input type="range" name="capacity" min="{{ $currentCapacity + 1000 }}" max="{{ $rebuildMaxCapacity }}" step="1000"
-                       x-model.number="capacity"
-                       class="w-full">
-                <div class="flex justify-between text-xs text-text-faint mt-1">
-                    <span>{{ number_format($currentCapacity + 1000) }}</span>
-                    <span>{{ number_format($rebuildMaxCapacity) }}</span>
-                </div>
-            </div>
-
-            <div>
                 <label class="block text-[10px] text-text-muted uppercase tracking-widest mb-2">{{ __('club.stadium.upgrades.financing') }}</label>
                 <div class="grid grid-cols-2 gap-2">
-                    <label class="flex items-center gap-2 p-3 rounded-lg border cursor-pointer"
-                           :class="financing === 'cash' ? 'border-accent-blue bg-accent-blue/10' : 'border-border-strong bg-surface-700'">
-                        <input type="radio" name="financing" value="cash" x-model="financing" class="text-accent-blue">
+                    <label class="flex items-center gap-2 p-3 rounded-lg border"
+                           :class="{
+                               'border-accent-blue bg-accent-blue/10': financing === 'cash',
+                               'border-border-strong bg-surface-700': financing !== 'cash',
+                               'opacity-50 cursor-not-allowed': !cashAffordable(),
+                               'cursor-pointer': cashAffordable()
+                           }">
+                        <input type="radio" name="financing" value="cash" x-model="financing"
+                               :disabled="!cashAffordable()" class="text-accent-blue">
                         <span class="text-sm font-medium text-text-primary">{{ __('club.stadium.upgrades.financing_cash') }}</span>
                     </label>
                     <label class="flex items-center gap-2 p-3 rounded-lg border cursor-pointer"
@@ -243,10 +291,32 @@ $currentCapacity = $stadium->effective_capacity;
                         <span class="text-sm font-medium text-text-primary">{{ __('club.stadium.upgrades.financing_loan') }}</span>
                     </label>
                 </div>
-                <div class="text-xs text-text-muted mt-2"
-                     x-text="financing === 'loan'
-                         ? '{{ __('club.stadium.upgrades.financing_loan_hint', ['cap' => Money::format($loanCapCents)]) }}'
-                         : '{{ __('club.stadium.upgrades.financing_cash_hint') }}'"></div>
+                <div class="text-xs text-text-muted mt-2">
+                    <template x-if="financing === 'loan'">
+                        <span>{{ __('club.stadium.upgrades.financing_loan_hint', ['cap' => Money::format($loanCapCents)]) }}</span>
+                    </template>
+                    <template x-if="financing === 'cash'">
+                        <span>{{ __('club.stadium.upgrades.financing_cash_hint_budget', ['budget' => Money::format($availableBudgetCents)]) }}</span>
+                    </template>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-[10px] text-text-muted uppercase tracking-widest mb-2">
+                    {{ __('club.stadium.upgrades.target_capacity') }}
+                    <span x-text="capacity.toLocaleString('es-ES')" class="font-heading text-base text-text-primary ml-2"></span>
+                </label>
+                <input type="range" name="capacity"
+                       :min="min"
+                       :max="effectiveMax()"
+                       step="{{ $rebuildStep }}"
+                       x-model.number="capacity"
+                       :style="`--fill: ${fillPercent()}%`"
+                       class="season-ticket-slider w-full">
+                <div class="flex justify-between text-xs text-text-faint mt-1">
+                    <span x-text="min.toLocaleString('es-ES')"></span>
+                    <span x-text="effectiveMax().toLocaleString('es-ES')"></span>
+                </div>
             </div>
 
             <div class="flex items-center justify-between pt-2 border-t border-border-strong">

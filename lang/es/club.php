@@ -58,6 +58,9 @@ return [
             'cta_supplementary_title' => 'Añadir gradas supletorias',
             'cta_supplementary_hint' => 'Hasta :max asientos extra a :cost por asiento. Listas en 30 días.',
             'cta_supplementary_full' => 'Has alcanzado el límite de gradas supletorias. Reforma el estadio para liberar más espacio.',
+            'cta_supplementary_no_budget' => 'No te alcanza para el lote mínimo (:minimum). Presupuesto disponible: :budget.',
+            'budget_caps_slider' => 'El presupuesto disponible (:budget) limita el lote — sin él podrías llegar a :natural asientos.',
+            'financing_cash_hint_budget' => 'Se descuenta del presupuesto disponible (:budget) al confirmar.',
 
             'cta_rebuild_label' => 'Gran proyecto',
             'cta_rebuild_title' => 'Reformar el estadio',
