@@ -239,17 +239,29 @@ class StadiumUpgradeService
         });
     }
 
-    private function assertCashAvailable(Game $game, int $cost): void
+    /**
+     * Cash actually free to commit to a stadium project right now: the
+     * transfer budget minus what's already promised to in-flight offers.
+     * Returns 0 when the game has no current investment / no projections.
+     */
+    public function availableCashFor(Game $game): int
     {
         $investment = $game->currentInvestment;
 
         if (! $investment) {
+            return 0;
+        }
+
+        return max(0, $investment->transfer_budget - TransferOffer::committedBudget($game->id));
+    }
+
+    private function assertCashAvailable(Game $game, int $cost): void
+    {
+        if (! $game->currentInvestment) {
             throw new InvalidArgumentException('messages.budget_no_projections');
         }
 
-        $available = $investment->transfer_budget - TransferOffer::committedBudget($game->id);
-
-        if ($cost > $available) {
+        if ($cost > $this->availableCashFor($game)) {
             throw new InvalidArgumentException('messages.stadium_insufficient_budget');
         }
     }

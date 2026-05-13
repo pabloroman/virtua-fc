@@ -5,7 +5,6 @@ namespace App\Http\Views;
 use App\Models\ClubProfile;
 use App\Models\Game;
 use App\Models\TeamReputation;
-use App\Models\TransferOffer;
 use App\Modules\Finance\Services\StadiumLoanService;
 use App\Modules\Finance\Services\StadiumUpgradeService;
 use App\Modules\Stadium\Services\StadiumSummaryService;
@@ -60,19 +59,11 @@ class ShowClubStadium
             }
         }
 
-        // Cash budget actually available for stadium projects: the transfer
-        // budget minus what's already promised to in-flight transfer offers
-        // (same rule infrastructure upgrades use). Used by the modals to
-        // clamp the sliders so the user can never queue up a project they
-        // can't afford, and to disable the CTAs entirely when not even the
-        // minimum project size is reachable.
-        $availableBudgetCents = 0;
-        if ($game->currentInvestment) {
-            $availableBudgetCents = max(
-                0,
-                $game->currentInvestment->transfer_budget - TransferOffer::committedBudget($game->id),
-            );
-        }
+        // Cash actually free for stadium projects right now. Used by the
+        // modals to clamp the sliders so the user can never queue a project
+        // they can't afford, and to disable the CTAs entirely when not even
+        // the minimum project size is reachable.
+        $availableBudgetCents = $this->stadiumUpgradeService->availableCashFor($game);
 
         $supplementaryPerSeat = $this->stadiumUpgradeService->supplementaryCostPerSeat();
 
