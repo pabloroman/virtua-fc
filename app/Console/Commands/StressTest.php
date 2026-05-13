@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Modules\Match\Services\FastModeService;
 use App\Modules\Match\Services\MatchdayAdvanceCoordinator;
 use App\Modules\Season\Services\GameCreationService;
 use App\Models\Game;
@@ -170,49 +171,64 @@ class StressTest extends Command
 
         $matchCountBefore = GameMatch::where('game_id', $game->id)->where('played', true)->count();
 
-        while ($advances < 600) {
-            $game->refresh();
+        // Run as fast mode so the orchestrator finalizes the user's match
+        // inline. Without fastForward the HTTP flow takes over: the user's
+        // match is left as pending_finalization_match_id waiting for a
+        // FinalizeMatch handoff that never comes in console context.
+        $fastModeWasEntered = $game->isFastMode();
+        if (! $fastModeWasEntered) {
+            app(FastModeService::class)->enter($game);
+        }
 
-            $hasMatches = GameMatch::where('game_id', $game->id)
-                ->where('played', false)
-                ->exists();
+        try {
+            while ($advances < 600) {
+                $game->refresh();
 
-            if (! $hasMatches) {
-                break;
-            }
+                $hasMatches = GameMatch::where('game_id', $game->id)
+                    ->where('played', false)
+                    ->exists();
 
-            $t0 = microtime(true);
-            $mem0 = memory_get_usage(true);
+                if (! $hasMatches) {
+                    break;
+                }
 
-            DB::enableQueryLog();
-            $result = app(MatchdayAdvanceCoordinator::class)->runSync($game->id);
-            $queryCount = count(DB::getQueryLog());
+                $t0 = microtime(true);
+                $mem0 = memory_get_usage(true);
 
-            if (! $result) {
-                $this->warn("  Could not claim advancing flag for game {$game->id} — skipping.");
+                DB::enableQueryLog();
+                $result = app(MatchdayAdvanceCoordinator::class)->runSync($game->id, fastForward: true);
+                $queryCount = count(DB::getQueryLog());
+
+                if (! $result) {
+                    $this->warn("  Could not claim advancing flag for game {$game->id} — skipping.");
+                    DB::disableQueryLog();
+                    DB::flushQueryLog();
+                    break;
+                }
                 DB::disableQueryLog();
                 DB::flushQueryLog();
-                break;
+
+                $elapsed = (microtime(true) - $t0) * 1000;
+
+                $batchTimings[] = [
+                    'advance' => $advances + 1,
+                    'elapsed_ms' => round($elapsed, 1),
+                    'queries' => $queryCount,
+                    'memory_mb' => round(memory_get_usage(true) / 1024 / 1024, 2),
+                ];
+
+                $advances++;
+
+                // Show progress every 20 advances
+                if ($advances % 20 === 0) {
+                    $avgMs = round(collect($batchTimings)->avg('elapsed_ms'));
+                    $avgQ = round(collect($batchTimings)->avg('queries'));
+                    $this->line("    Game {$gameNumber}/{$totalGames}: {$advances} advances (avg {$avgMs}ms, {$avgQ} queries/advance)");
+                }
             }
-            DB::disableQueryLog();
-            DB::flushQueryLog();
-
-            $elapsed = (microtime(true) - $t0) * 1000;
-
-            $batchTimings[] = [
-                'advance' => $advances + 1,
-                'elapsed_ms' => round($elapsed, 1),
-                'queries' => $queryCount,
-                'memory_mb' => round(memory_get_usage(true) / 1024 / 1024, 2),
-            ];
-
-            $advances++;
-
-            // Show progress every 20 advances
-            if ($advances % 20 === 0) {
-                $avgMs = round(collect($batchTimings)->avg('elapsed_ms'));
-                $avgQ = round(collect($batchTimings)->avg('queries'));
-                $this->line("    Game {$gameNumber}/{$totalGames}: {$advances} advances (avg {$avgMs}ms, {$avgQ} queries/advance)");
+        } finally {
+            if (! $fastModeWasEntered) {
+                app(FastModeService::class)->exit($game->refresh());
             }
         }
 
