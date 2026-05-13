@@ -31,6 +31,7 @@ class MatchAttendanceService
     public function __construct(
         private readonly DemandCurveService $demandCurve,
         private readonly SeasonTicketPricingService $seasonTicketPricingService,
+        private readonly StadiumCapacityResolver $capacityResolver,
     ) {}
 
     /** Per-request caches — MatchAttendanceService is resolved fresh per request. */
@@ -186,7 +187,7 @@ class MatchAttendanceService
     public function describeForMatch(GameMatch $match, Game $game): ?array
     {
         if ($this->isSoldOutRound($match)) {
-            $capacity = $this->soldOutCapacity($match);
+            $capacity = $this->soldOutCapacity($match, $game);
             if ($capacity > 0) {
                 return ['attendance' => $capacity, 'capacity' => $capacity];
             }
@@ -211,7 +212,7 @@ class MatchAttendanceService
     public function projectForMatch(GameMatch $match, Game $game): ?array
     {
         if ($this->isSoldOutRound($match)) {
-            $capacity = $this->soldOutCapacity($match);
+            $capacity = $this->soldOutCapacity($match, $game);
             if ($capacity > 0) {
                 return ['attendance' => $capacity, 'capacity' => $capacity];
             }
@@ -231,14 +232,20 @@ class MatchAttendanceService
         $homeRep = $this->loadReputation($game->id, $home->id);
         $awayRep = $this->loadReputation($game->id, $match->away_team_id);
 
+        $capacity = $this->capacityResolver->effectiveCapacity(
+            $game->id,
+            $home->id,
+            (int) ($home->stadium_seats ?? 0),
+        );
+
         $attendance = $this->demandCurve->project(
             $home,
             $homeRep,
             $awayRep,
             $competition,
+            $capacity,
         );
 
-        $capacity = (int) ($home->stadium_seats ?? 0);
         $attendance = $this->applySeasonTicketFloor($match, $game, $attendance, $capacity);
 
         return [
@@ -282,8 +289,13 @@ class MatchAttendanceService
     public function projectBaselineForTeam(string $gameId, Team $home): int
     {
         $homeRep = $this->loadReputation($gameId, $home->id);
+        $capacity = $this->capacityResolver->effectiveCapacity(
+            $gameId,
+            $home->id,
+            (int) ($home->stadium_seats ?? 0),
+        );
 
-        return $this->demandCurve->projectBaseline($home, $homeRep);
+        return $this->demandCurve->projectBaseline($home, $homeRep, $capacity);
     }
 
     private function isSoldOutRound(GameMatch $match): bool
@@ -295,13 +307,22 @@ class MatchAttendanceService
      * Capacity a final/semi-final plays to: the designated neutral venue
      * when one is set, otherwise the home club's own stadium.
      */
-    private function soldOutCapacity(GameMatch $match): int
+    private function soldOutCapacity(GameMatch $match, Game $game): int
     {
         if ($match->neutral_venue_capacity !== null) {
             return (int) $match->neutral_venue_capacity;
         }
 
-        return (int) ($this->loadTeam($match->home_team_id)?->stadium_seats ?? 0);
+        $home = $this->loadTeam($match->home_team_id);
+        if (! $home) {
+            return 0;
+        }
+
+        return $this->capacityResolver->effectiveCapacity(
+            $game->id,
+            $home->id,
+            (int) ($home->stadium_seats ?? 0),
+        );
     }
 
     private function loadTeam(string $teamId): ?Team

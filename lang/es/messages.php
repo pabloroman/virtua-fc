@@ -179,4 +179,16 @@ return [
     'loan_not_available' => 'Un préstamo presupuestario no está disponible ahora mismo.',
     'loan_below_minimum' => 'El importe del préstamo está por debajo del mínimo.',
     'loan_exceeds_maximum' => 'El importe del préstamo supera el máximo permitido.',
+
+    'stadium_supplementary_committed' => 'Obras iniciadas: :seats asientos supletorios estarán listos en 30 días.',
+    'stadium_rebuild_committed' => 'Reforma del estadio aprobada. Nuevo aforo objetivo: :capacity.',
+    'stadium_active_project_exists' => 'Ya tienes un proyecto en curso. Espera a que termine antes de iniciar otro.',
+    'stadium_supplementary_too_few_seats' => 'Debes añadir al menos un asiento supletorio.',
+    'stadium_supplementary_exceeds_cap' => 'Supera el límite de gradas supletorias permitidas.',
+    'stadium_rebuild_reputation_too_low' => 'Tu reputación todavía no permite una reforma integral del estadio.',
+    'stadium_rebuild_must_be_larger' => 'El aforo objetivo debe ser mayor que el actual.',
+    'stadium_rebuild_exceeds_max_capacity' => 'El aforo objetivo supera el tope que tu reputación e ingresos permiten financiar.',
+    'stadium_invalid_financing' => 'Financiación no válida.',
+    'stadium_insufficient_budget' => 'No tienes presupuesto suficiente para pagar el proyecto al contado.',
+    'stadium_loan_exceeds_cap' => 'El préstamo solicitado supera el tope autorizado por el banco.',
 ];

@@ -8,6 +8,7 @@ use App\Modules\Season\Jobs\SetupNewGame;
 use App\Models\Competition;
 use App\Models\CompetitionTeam;
 use App\Models\Game;
+use App\Models\GameStadium;
 use App\Models\GameTactics;
 use App\Models\Team;
 use Ramsey\Uuid\Uuid;
@@ -61,6 +62,16 @@ class GameCreationService
 
         // Create default tactical settings
         GameTactics::create(['game_id' => $gameId, 'default_formation' => Formation::F_4_3_3->value]);
+
+        // Snapshot the user team's stadium capacity. Team.stadium_seats
+        // lives on the control plane and is immutable per-game; this row
+        // becomes the per-game source of truth for capacity once the user
+        // starts upgrading.
+        GameStadium::create([
+            'game_id' => $gameId,
+            'team_id' => $teamId,
+            'base_capacity' => $team->stadium_seats,
+        ]);
 
         // Dispatch heavy initialization to a queued job
         SetupNewGame::dispatch(

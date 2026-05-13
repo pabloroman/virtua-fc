@@ -179,4 +179,16 @@ return [
     'loan_not_available' => 'A budget loan is not available right now.',
     'loan_below_minimum' => 'The loan amount is below the minimum.',
     'loan_exceeds_maximum' => 'The loan amount exceeds the maximum allowed.',
+
+    'stadium_supplementary_committed' => 'Construction started: :seats temporary seats will be ready in 30 days.',
+    'stadium_rebuild_committed' => 'Stadium rebuild approved. New target capacity: :capacity.',
+    'stadium_active_project_exists' => 'You already have a project in progress. Wait for it to finish before starting another.',
+    'stadium_supplementary_too_few_seats' => 'You must add at least one temporary seat.',
+    'stadium_supplementary_exceeds_cap' => 'Exceeds the maximum number of temporary stands allowed.',
+    'stadium_rebuild_reputation_too_low' => 'Your reputation does not yet allow a full stadium rebuild.',
+    'stadium_rebuild_must_be_larger' => 'Target capacity must be larger than the current capacity.',
+    'stadium_rebuild_exceeds_max_capacity' => 'Target capacity exceeds what your reputation and projected revenue can finance.',
+    'stadium_invalid_financing' => 'Invalid financing option.',
+    'stadium_insufficient_budget' => 'Not enough budget to pay for the project in cash.',
+    'stadium_loan_exceeds_cap' => 'The requested loan exceeds the ceiling the bank is willing to lend.',
 ];

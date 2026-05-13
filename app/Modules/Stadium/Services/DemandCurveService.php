@@ -55,9 +55,9 @@ class DemandCurveService
      * dropping it keeps projections within a few percent of the
      * fixture-by-fixture sum at a fraction of the queries.
      */
-    public function projectBaseline(Team $home, TeamReputation $homeRep): int
+    public function projectBaseline(Team $home, TeamReputation $homeRep, ?int $capacityOverride = null): int
     {
-        $capacity = (int) ($home->stadium_seats ?? 0);
+        $capacity = $capacityOverride ?? (int) ($home->stadium_seats ?? 0);
         if ($capacity <= 0) {
             return 0;
         }
@@ -73,8 +73,9 @@ class DemandCurveService
         TeamReputation $homeRep,
         TeamReputation $awayRep,
         Competition $competition,
+        ?int $capacityOverride = null,
     ): int {
-        $capacity = (int) ($home->stadium_seats ?? 0);
+        $capacity = $capacityOverride ?? (int) ($home->stadium_seats ?? 0);
         if ($capacity <= 0) {
             return 0;
         }

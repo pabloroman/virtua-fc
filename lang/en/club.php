@@ -32,6 +32,48 @@ return [
             'help' => 'Season tickets are pre-paid up front; matchday revenue accrues per home fixture.',
         ],
 
+        'upgrades' => [
+            'title' => 'Expansion & rebuild',
+            'base_capacity' => 'Base capacity',
+            'supplementary' => 'Temporary stands',
+            'total' => 'Total capacity',
+            'seats' => 'seats',
+            'seats_total' => 'seats total',
+            'seats_to_add' => 'Seats to add',
+            'target_capacity' => 'Target capacity',
+            'total_cost' => 'Total cost',
+            'financing' => 'Financing',
+            'financing_cash' => 'Cash up front',
+            'financing_loan' => 'Bank loan',
+            'financing_cash_hint' => 'Deducted from the available transfer budget on confirmation.',
+            'financing_loan_hint' => 'Bank ceiling: :cap. Repaid in 10 annual instalments (flat principal + interest on the outstanding balance).',
+
+            'project_supplementary' => 'Temporary stands under construction',
+            'project_rebuild' => 'Stadium rebuild in progress',
+            'ready_on' => 'Ready on :date',
+            'ready_in_season' => 'Available from the :season season',
+            'loan_remaining' => 'Loan outstanding: :amount',
+
+            'cta_supplementary_label' => 'Quick expansion',
+            'cta_supplementary_title' => 'Add temporary stands',
+            'cta_supplementary_hint' => 'Up to :max extra seats at :cost per seat. Ready in 30 days.',
+            'cta_supplementary_full' => 'Maximum temporary stands installed. Rebuild the stadium to free up more headroom.',
+
+            'cta_rebuild_label' => 'Major project',
+            'cta_rebuild_title' => 'Rebuild the stadium',
+            'cta_rebuild_hint' => 'Build a new stadium up to :max seats at :cost per seat. One construction season at 40% capacity.',
+            'cta_rebuild_reputation_lock' => 'Your club doesn\'t have the reputation needed for a full stadium rebuild yet.',
+            'cta_rebuild_no_headroom' => 'Your reputation and projected revenue don\'t allow a project larger than your current stadium.',
+
+            'modal_supplementary_title' => 'Add temporary stands',
+            'modal_supplementary_description' => 'Modular installation, quick to fit. Cash payment, no financing.',
+            'modal_rebuild_title' => 'Rebuild the stadium',
+            'modal_rebuild_description' => 'Pick the target capacity and how to finance it. One construction season (40% capacity) before the new stadium opens.',
+            'rebuild_disruption_warning' => 'During the construction season, home-match capacity drops to 40% of the current stadium. Matchday revenue falls accordingly.',
+            'commit_supplementary' => 'Confirm stands',
+            'commit_rebuild' => 'Start rebuild',
+        ],
+
         'season_tickets' => [
             'title' => 'Pricing',
             'subtitle' => 'Set your season ticket prices for each seating area. Pricing is locked once your first league match has been played.',

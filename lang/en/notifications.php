@@ -153,6 +153,20 @@ return [
     'budget_loan_repaid_message' => 'The budget loan has been repaid (:repayment with interest).',
     'budget_loan_repaid_with_debt' => 'The budget loan repayment of :repayment exceeded available surplus. The shortfall has been carried as debt.',
 
+    // Stadium
+    'stadium_supplementary_committed_title' => 'Stadium expansion started',
+    'stadium_supplementary_committed_message' => ':capacity temporary seats have been ordered. Construction completes on :completion.',
+    'stadium_rebuild_committed_title' => 'Stadium rebuild approved',
+    'stadium_rebuild_committed_message' => 'Rebuild started for a capacity of :capacity seats. The new stadium opens in the :completion season.',
+    'stadium_supplementary_completed_title' => 'Temporary stands ready',
+    'stadium_supplementary_completed_message' => 'The new stands are now in use. Total capacity: :capacity seats.',
+    'stadium_rebuild_completed_title' => 'Stadium opened',
+    'stadium_rebuild_completed_message' => 'The new stadium has opened with a capacity of :capacity seats.',
+    'stadium_loan_drawn_title' => 'Stadium loan finalised',
+    'stadium_loan_drawn_message' => 'The bank has financed the project with :amount, repayable over :years annual instalments.',
+    'stadium_loan_repaid_title' => 'Stadium loan repaid',
+    'stadium_loan_repaid_message' => 'The :amount stadium loan has been fully repaid.',
+
     // Squad registration
     'squad_registration_required_title' => 'Squad registration required',
     'squad_registration_required_message' => 'You have :count unenrolled players. Register your squad before the season begins — unenrolled players cannot be selected for matches.',

@@ -788,6 +788,72 @@ class NotificationService
         );
     }
 
+    public function notifyStadiumProjectCommitted(
+        Game $game,
+        string $type,
+        int $targetCapacity,
+        string $completionLabel,
+    ): GameNotification {
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_STADIUM,
+            title: __("notifications.stadium_{$type}_committed_title"),
+            message: __("notifications.stadium_{$type}_committed_message", [
+                'capacity' => number_format($targetCapacity, 0, ',', '.'),
+                'completion' => $completionLabel,
+            ]),
+            priority: GameNotification::PRIORITY_INFO,
+        );
+    }
+
+    public function notifyStadiumProjectCompleted(
+        Game $game,
+        string $type,
+        int $newCapacity,
+    ): GameNotification {
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_STADIUM,
+            title: __("notifications.stadium_{$type}_completed_title"),
+            message: __("notifications.stadium_{$type}_completed_message", [
+                'capacity' => number_format($newCapacity, 0, ',', '.'),
+            ]),
+            priority: GameNotification::PRIORITY_MILESTONE,
+        );
+    }
+
+    public function notifyStadiumLoanDrawn(
+        Game $game,
+        string $formattedPrincipal,
+        int $termYears,
+    ): GameNotification {
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_STADIUM,
+            title: __('notifications.stadium_loan_drawn_title'),
+            message: __('notifications.stadium_loan_drawn_message', [
+                'amount' => $formattedPrincipal,
+                'years' => $termYears,
+            ]),
+            priority: GameNotification::PRIORITY_WARNING,
+        );
+    }
+
+    public function notifyStadiumLoanRepaid(
+        Game $game,
+        string $formattedPrincipal,
+    ): GameNotification {
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_STADIUM,
+            title: __('notifications.stadium_loan_repaid_title'),
+            message: __('notifications.stadium_loan_repaid_message', [
+                'amount' => $formattedPrincipal,
+            ]),
+            priority: GameNotification::PRIORITY_INFO,
+        );
+    }
+
     public function notifySquadRegistrationRequired(Game $game, int $unenrolledCount): GameNotification
     {
         return $this->create(

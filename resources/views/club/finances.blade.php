@@ -159,6 +159,14 @@
                         </div>
                         @endif
 
+                        {{-- Stadium loan debt service --}}
+                        @if($finances->projected_stadium_debt_service > 0)
+                        <div class="flex items-center justify-between py-2">
+                            <span class="text-text-muted pl-5 flex items-center gap-1.5">{{ __('finances.stadium_debt_service') }} <x-info-icon :tooltip="__('finances.tooltip_stadium_debt_service')" /></span>
+                            <span class="text-accent-red font-medium">-{{ $finances->formatted_projected_stadium_debt_service }}</span>
+                        </div>
+                        @endif
+
                         {{-- Infrastructure deduction --}}
                         <div class="flex items-center justify-between py-2">
                             <span class="text-text-muted pl-5 flex items-center gap-1.5">{{ __('finances.infrastructure_investment') }} <x-info-icon :tooltip="__('finances.tooltip_infrastructure')" /></span>

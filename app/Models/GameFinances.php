@@ -135,6 +135,7 @@ class GameFinances extends Model
         'carried_debt',
         'carried_surplus',
         'previous_loan_repayment',
+        'projected_stadium_debt_service',
     ];
 
     protected $casts = [
@@ -171,6 +172,7 @@ class GameFinances extends Model
         'carried_debt' => 'integer',
         'carried_surplus' => 'integer',
         'previous_loan_repayment' => 'integer',
+        'projected_stadium_debt_service' => 'integer',
     ];
 
     public function game(): BelongsTo
@@ -208,7 +210,19 @@ class GameFinances extends Model
      */
     public function getAvailableSurplusAttribute(): int
     {
-        return max(0, $this->projected_surplus + $this->carried_surplus - $this->carried_debt - $this->previous_loan_repayment);
+        return max(
+            0,
+            $this->projected_surplus
+                + $this->carried_surplus
+                - $this->carried_debt
+                - $this->previous_loan_repayment
+                - $this->projected_stadium_debt_service,
+        );
+    }
+
+    public function getFormattedProjectedStadiumDebtServiceAttribute(): string
+    {
+        return Money::format($this->projected_stadium_debt_service);
     }
 
     // Formatted accessors for projections

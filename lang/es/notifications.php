@@ -153,6 +153,20 @@ return [
     'budget_loan_repaid_message' => 'El préstamo presupuestario ha sido devuelto (:repayment con intereses).',
     'budget_loan_repaid_with_debt' => 'La devolución del préstamo de :repayment superó el superávit disponible. El déficit se arrastra como deuda.',
 
+    // Stadium
+    'stadium_supplementary_committed_title' => 'Obras de gradas iniciadas',
+    'stadium_supplementary_committed_message' => 'Se han contratado :capacity asientos supletorios. Estarán listos para el :completion.',
+    'stadium_rebuild_committed_title' => 'Reforma del estadio aprobada',
+    'stadium_rebuild_committed_message' => 'Se ha iniciado la reforma para un aforo de :capacity asientos. El nuevo estadio abrirá en la temporada :completion.',
+    'stadium_supplementary_completed_title' => 'Gradas supletorias listas',
+    'stadium_supplementary_completed_message' => 'Las nuevas gradas ya están operativas. Aforo total: :capacity asientos.',
+    'stadium_rebuild_completed_title' => 'Estadio inaugurado',
+    'stadium_rebuild_completed_message' => 'El nuevo estadio ha sido inaugurado con un aforo de :capacity asientos.',
+    'stadium_loan_drawn_title' => 'Préstamo del estadio formalizado',
+    'stadium_loan_drawn_message' => 'El banco ha financiado el proyecto con :amount, a devolver en :years cuotas anuales.',
+    'stadium_loan_repaid_title' => 'Préstamo del estadio devuelto',
+    'stadium_loan_repaid_message' => 'El préstamo de :amount ha sido devuelto en su totalidad.',
+
     // Squad registration
     'squad_registration_required_title' => 'Inscripción de plantilla requerida',
     'squad_registration_required_message' => 'Tienes :count jugadores sin inscribir. Registra tu plantilla antes de que comience la temporada — los jugadores no inscritos no podrán ser convocados.',

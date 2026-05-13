@@ -56,6 +56,39 @@ return [
         'minimum' => 50_000_000,        // €500K minimum loan (in cents)
     ],
 
+    // Stadium upgrade pricing.
+    'stadium_costs' => [
+        // Build cost per seat for a full stadium rebuild.
+        'rebuild_per_seat_cents' => 1_500_000,    // €15,000/seat
+        // Build cost per seat for supplementary stands ("gradas supletorias").
+        'supplementary_per_seat_cents' => 800_000, // €8,000/seat
+        // Supplementary stands take this many in-game days to install.
+        'supplementary_construction_days' => 30,
+        // During a rebuild's construction season, effective capacity drops
+        // to this fraction of the pre-rebuild base.
+        'rebuild_construction_capacity_factor' => 0.4,
+    ],
+
+    // Stadium rebuild loan configuration.
+    // Flat-principal: principal/term_years constant principal per year,
+    // plus interest on the outstanding balance — total payment is highest
+    // in year 1 and declines over the term.
+    'stadium_loan' => [
+        'term_years' => 10,
+        'interest_rate_bps' => 400,            // 4% interest (basis points)
+        // Maximum share of projected operating revenue that can go to
+        // year-1 debt service. The bank refuses to lend beyond this.
+        'max_debt_service_pct' => 0.25,
+        // Reputation-tier ceilings on loan principal (in cents). Ambition cap.
+        'reputation_caps' => [
+            'local'        =>  10_000_000_000, // €100M
+            'modest'       =>  25_000_000_000, // €250M
+            'established'  =>  60_000_000_000, // €600M
+            'continental'  => 120_000_000_000, // €1.2B
+            'elite'        => 250_000_000_000, // €2.5B
+        ],
+    ],
+
     // Position-based commercial revenue growth multipliers.
     // Key = max position (inclusive), value = multiplier applied to projected commercial revenue.
     'commercial_growth' => [

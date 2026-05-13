@@ -16,6 +16,7 @@ use App\Models\TeamReputation;
 use App\Modules\Squad\Services\SquadService;
 use App\Modules\Stadium\Services\MatchAttendanceService;
 use App\Modules\Stadium\Services\SeasonTicketPricingService;
+use App\Modules\Finance\Services\StadiumLoanService;
 use Carbon\Carbon;
 
 class BudgetProjectionService
@@ -24,6 +25,7 @@ class BudgetProjectionService
         private readonly SquadService $squadService,
         private readonly MatchAttendanceService $matchAttendanceService,
         private readonly SeasonTicketPricingService $seasonTicketPricingService,
+        private readonly StadiumLoanService $stadiumLoanService,
     ) {}
     /**
      * UEFA / RFEF solidarity funds by competition tier (in cents).
@@ -119,9 +121,14 @@ class BudgetProjectionService
         $carriedSurplus = $this->getCarriedSurplus($game);
         $previousLoanRepayment = $this->getPreviousSeasonLoanRepayment($game);
 
+        // Stadium debt service: next instalment of every active stadium
+        // loan. Treated like previous_loan_repayment — reduces available
+        // surplus so the user can't earmark it for transfers.
+        $projectedStadiumDebtService = $this->stadiumLoanService->activePaymentsForGame($game);
+
         // Calculate public subsidy if needed to guarantee minimum viable budget
         $projectedSubsidyRevenue = $this->calculateSubsidy(
-            $projectedSurplus, $carriedDebt, $carriedSurplus, $previousLoanRepayment, $league->tier
+            $projectedSurplus, $carriedDebt, $carriedSurplus, $previousLoanRepayment + $projectedStadiumDebtService, $league->tier
         );
         if ($projectedSubsidyRevenue > 0) {
             $projectedTotalRevenue += $projectedSubsidyRevenue;
@@ -149,6 +156,7 @@ class BudgetProjectionService
                 'carried_debt' => $carriedDebt,
                 'carried_surplus' => $carriedSurplus,
                 'previous_loan_repayment' => $previousLoanRepayment,
+                'projected_stadium_debt_service' => $projectedStadiumDebtService,
             ]
         );
 
