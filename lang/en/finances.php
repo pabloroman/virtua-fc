@@ -181,6 +181,7 @@ return [
     'category_loan' => 'Loan',
     'category_severance' => 'Severance',
     'category_infrastructure' => 'Infrastructure',
+    'category_stadium' => 'Stadium',
     'category_budget_loan' => 'Budget Loan',
     'category_loan_repayment' => 'Loan Repayment',
 
@@ -200,9 +201,9 @@ return [
     'tx_league_phase_qualification' => ':competition - League phase qualification (:position)',
     'tx_infrastructure_upgrade' => ':area upgraded from Tier :from to Tier :to',
     'tx_budget_loan_received' => 'Budget loan received: :amount',
-    'tx_stadium_supplementary_payment' => 'Temporary stands (:seats seats): :amount',
-    'tx_stadium_stand_expansion_payment' => 'Stand expansion (:seats seats): :amount',
-    'tx_stadium_rebuild_payment' => 'Stadium rebuild (:capacity seats): :amount',
+    'tx_stadium_supplementary_payment' => 'Temporary stands (:seats seats)',
+    'tx_stadium_stand_expansion_payment' => 'Stand expansion (:seats seats)',
+    'tx_stadium_rebuild_payment' => 'Stadium rebuild (:capacity seats)',
     'tx_stadium_loan_instalment' => 'Stadium loan annual instalment: :amount',
 
     'stadium_debt_service' => 'Stadium Debt Service',

@@ -293,7 +293,7 @@
                                         </span>
                                     </td>
                                     <td class="py-2.5 text-text-secondary hidden md:table-cell">{{ $transaction->description }}</td>
-                                    <td class="py-2.5 pr-5 text-right font-heading font-semibold {{ $transaction->amount == 0 ? 'text-text-muted' : ($transaction->isIncome() ? 'text-accent-green' : 'text-accent-red') }}">
+                                    <td class="py-2.5 pr-5 text-right text-base font-heading font-semibold {{ $transaction->amount == 0 ? 'text-text-muted' : ($transaction->isIncome() ? 'text-accent-green' : 'text-accent-red') }}">
                                         @if($transaction->amount == 0)
                                             {{ __('finances.free') }}
                                         @else

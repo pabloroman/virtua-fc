@@ -24,29 +24,11 @@ class StadiumSummaryService
     ) {}
 
     /**
-     * @return array{
-     *   stadium_name: ?string,
-     *   capacity: int,
-     *   loyalty_points: int,
-     *   base_loyalty: int,
-     *   loyalty_direction: 'rising'|'stable'|'declining',
-     *   last_home_match: ?array{
-     *     match: GameMatch,
-     *     attendance: int,
-     *     capacity_at_match: int,
-     *     fill_rate: int,
-     *   },
-     *   finances: ?GameFinances,
-     *   season_tickets: array{
-     *     can_edit: bool,
-     *     pricing: ?SeasonTicketPricing,
-     *     areas: array<int, array<string, mixed>>,
-     *     baseline_areas: array<int, array{slug: string, capacity: int, baseline_price_cents: int, multiplier: float}>,
-     *     overall_fill_rate: int,
-     *     min_price_multiplier: float,
-     *     max_price_multiplier: float,
-     *   },
-     * }
+     * Returns a flat, view-ready payload for the stadium page. Every value
+     * is pre-computed here so the Blade template carries no business logic
+     * and no @php blocks. The shape mirrors the view's named variables.
+     *
+     * @return array<string, mixed>
      */
     public function build(Game $game): array
     {
@@ -77,15 +59,62 @@ class StadiumSummaryService
             ->first();
         $capacity = $stadium?->effective_capacity ?? (int) ($team->stadium_seats ?? 0);
 
+        $finances = $game->currentFinances;
+        $projectedMatchday = (int) ($finances?->projected_matchday_revenue ?? 0);
+        $actualMatchday = (int) ($finances?->actual_matchday_revenue ?? 0);
+        $hasActualMatchday = $actualMatchday > 0;
+
+        $pricing = $seasonTickets['pricing'];
+        $ticketAreas = $seasonTickets['areas'];
+        $baselineAreas = $seasonTickets['baseline_areas'];
+        $minMultiplier = $seasonTickets['min_price_multiplier'];
+        $maxMultiplier = $seasonTickets['max_price_multiplier'];
+
+        // Alpine seed for the season-ticket editor — per-area current price
+        // + baseline. The component re-fetches predictions from the server,
+        // so this only needs to cover the first render. Per-area slider
+        // bounds (min/max price in cents) are also stamped onto each area
+        // so the template doesn't recompute them at render time.
+        $alpinePrices = [];
+        $alpineBaselines = [];
+        foreach ($ticketAreas as $i => $area) {
+            $alpinePrices[$i] = (int) ($area['price_cents'] ?? $area['baseline_price_cents']);
+            $alpineBaselines[$i] = (int) ($area['baseline_price_cents'] ?? $alpinePrices[$i]);
+
+            $baselineCents = (int) ($baselineAreas[$i]['baseline_price_cents'] ?? $area['baseline_price_cents']);
+            $ticketAreas[$i]['min_price_cents'] = (int) round($baselineCents * $minMultiplier);
+            $ticketAreas[$i]['max_price_cents'] = (int) round($baselineCents * $maxMultiplier);
+        }
+
+        // Locked-state aggregates (rendered when season tickets are no
+        // longer editable for the season).
+        $lockedSeasonTicketRevenue = (int) ($pricing?->total_revenue ?? 0);
+        $lockedMatchdayRevenue = $hasActualMatchday ? $actualMatchday : $projectedMatchday;
+        $lockedTotalRevenue = $lockedSeasonTicketRevenue + $lockedMatchdayRevenue;
+
         return [
-            'stadium_name' => $team->stadium_name,
+            'stadiumName' => $team->stadium_name,
             'capacity' => $capacity,
-            'loyalty_points' => $loyaltyPoints,
-            'base_loyalty' => $baseLoyalty,
-            'loyalty_direction' => $direction,
-            'last_home_match' => $lastHomeMatch,
-            'finances' => $game->currentFinances,
-            'season_tickets' => $seasonTickets,
+            'loyaltyPoints' => $loyaltyPoints,
+            'baseLoyalty' => $baseLoyalty,
+            'loyaltyDirection' => $direction,
+            'lastHomeMatch' => $lastHomeMatch,
+            'finances' => $finances,
+            'projectedMatchday' => $projectedMatchday,
+            'actualMatchday' => $actualMatchday,
+            'hasActualMatchday' => $hasActualMatchday,
+            'canEditTickets' => $seasonTickets['can_edit'],
+            'pricing' => $pricing,
+            'ticketAreas' => $ticketAreas,
+            'baselineAreas' => $baselineAreas,
+            'overallFill' => $seasonTickets['overall_fill_rate'],
+            'minMultiplier' => $seasonTickets['min_price_multiplier'],
+            'maxMultiplier' => $seasonTickets['max_price_multiplier'],
+            'alpinePrices' => $alpinePrices,
+            'alpineBaselines' => $alpineBaselines,
+            'lockedSeasonTicketRevenue' => $lockedSeasonTicketRevenue,
+            'lockedMatchdayRevenue' => $lockedMatchdayRevenue,
+            'lockedTotalRevenue' => $lockedTotalRevenue,
         ];
     }
 
@@ -115,11 +144,21 @@ class StadiumSummaryService
             return null;
         }
 
+        $fillRate = $attendance->fillRatePercent();
+
+        // Pre-computed fill-rate accent so the template doesn't carry the
+        // banding logic. Bands roughly match a "great / good / soft / bad"
+        // attendance scale.
+        $fillColor = $fillRate >= 90 ? 'bg-accent-green'
+            : ($fillRate >= 70 ? 'bg-accent-blue'
+            : ($fillRate >= 50 ? 'bg-accent-gold' : 'bg-accent-red'));
+
         return [
             'match' => $match,
             'attendance' => (int) $attendance->attendance,
             'capacity_at_match' => (int) $attendance->capacity_at_match,
-            'fill_rate' => $attendance->fillRatePercent(),
+            'fill_rate' => $fillRate,
+            'fill_color' => $fillColor,
         ];
     }
 

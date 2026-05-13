@@ -11,7 +11,6 @@ use App\Models\StadiumLoan;
 use App\Models\TeamReputation;
 use App\Models\TransferOffer;
 use App\Modules\Notification\Services\NotificationService;
-use App\Support\Money;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -269,8 +268,7 @@ class StadiumUpgradeService
             ]);
 
             $this->deductCash($game, $cost, __('finances.tx_stadium_supplementary_payment', [
-                'seats' => $seats,
-                'amount' => Money::format($cost),
+                'seats' => number_format($seats, 0, ',', '.'),
             ]));
 
             $this->notificationService->notifyStadiumProjectCommitted(
@@ -347,7 +345,6 @@ class StadiumUpgradeService
             if ($financing === GameStadiumProject::FINANCING_CASH) {
                 $this->deductCash($game, $cost, __('finances.tx_stadium_rebuild_payment', [
                     'capacity' => number_format($targetCapacity, 0, ',', '.'),
-                    'amount' => Money::format($cost),
                 ]));
             } else {
                 $this->loanService->request($game, $project, $cost);
@@ -429,7 +426,6 @@ class StadiumUpgradeService
             if ($financing === GameStadiumProject::FINANCING_CASH) {
                 $this->deductCash($game, $cost, __('finances.tx_stadium_stand_expansion_payment', [
                     'seats' => number_format($seats, 0, ',', '.'),
-                    'amount' => Money::format($cost),
                 ]));
             } else {
                 $this->loanService->request($game, $project, $cost);
@@ -480,7 +476,7 @@ class StadiumUpgradeService
 
         FinancialTransaction::recordExpense(
             gameId: $game->id,
-            category: FinancialTransaction::CATEGORY_INFRASTRUCTURE,
+            category: FinancialTransaction::CATEGORY_STADIUM,
             amount: $cost,
             description: $description,
             transactionDate: $game->current_date->toDateString(),

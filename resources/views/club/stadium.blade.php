@@ -1,37 +1,4 @@
-@php
-/** @var App\Models\Game $game */
-/** @var array $summary */
-
-use App\Support\Money;
-
-$capacity = $summary['capacity'];
-$stadiumName = $summary['stadium_name'];
-$lastHomeMatch = $summary['last_home_match'];
-$finances = $summary['finances'];
-
-$projectedMatchday = (int) ($finances?->projected_matchday_revenue ?? 0);
-$actualMatchday = (int) ($finances?->actual_matchday_revenue ?? 0);
-$hasActualMatchday = $actualMatchday > 0;
-
-$seasonTickets = $summary['season_tickets'];
-$canEditTickets = $seasonTickets['can_edit'];
-$ticketAreas = $seasonTickets['areas'];
-$baselineAreas = $seasonTickets['baseline_areas'];
-$overallFill = $seasonTickets['overall_fill_rate'];
-$pricing = $seasonTickets['pricing'];
-
-// Initial Alpine seed: per-area current price + baseline. The component
-// re-fetches predictions from the server so this seed only needs to cover
-// the first render.
-$alpinePrices = [];
-$alpineBaselines = [];
-$minMultiplier = $seasonTickets['min_price_multiplier'];
-$maxMultiplier = $seasonTickets['max_price_multiplier'];
-foreach ($ticketAreas as $i => $area) {
-    $alpinePrices[$i] = (int) ($area['price_cents'] ?? $area['baseline_price_cents']);
-    $alpineBaselines[$i] = (int) ($area['baseline_price_cents'] ?? $alpinePrices[$i]);
-}
-@endphp
+@use(App\Support\Money)
 
 <x-app-layout>
     <x-slot name="header">
@@ -104,24 +71,19 @@ foreach ($ticketAreas as $i => $area) {
                             {{-- Per-area pricing rows --}}
                             <div class="mt-6 space-y-2">
                                 @foreach($ticketAreas as $i => $area)
-                                    @php
-                                        $baselineCents = (int) ($baselineAreas[$i]['baseline_price_cents'] ?? $area['baseline_price_cents']);
-                                        $minPrice = (int) round($baselineCents * $minMultiplier);
-                                        $maxPrice = (int) round($baselineCents * $maxMultiplier);
-                                    @endphp
                                     <div class="px-3.5 py-2.5 bg-surface-700/50 border border-border-default rounded-lg space-y-2">
                                         <div class="flex items-baseline justify-between gap-4">
                                             <div class="min-w-0">
                                                 <span class="text-xs font-semibold text-text-primary uppercase tracking-wide">{{ __('club.stadium.season_tickets.area.' . $area['slug']) }}</span>
                                                 <span class="text-[11px] text-text-muted ml-1.5">{{ number_format($area['capacity']) }}</span>
                                             </div>
-                                            <span class="font-heading text-2xl font-bold text-text-primary tabular-nums leading-none shrink-0"
+                                            <span class="font-heading text-base font-bold text-text-primary tabular-nums leading-none shrink-0"
                                                   x-text="formatPrice(prices[{{ $i }}])"></span>
                                         </div>
 
                                         <input type="range"
-                                               min="{{ $minPrice }}"
-                                               max="{{ $maxPrice }}"
+                                               min="{{ $area['min_price_cents'] }}"
+                                               max="{{ $area['max_price_cents'] }}"
                                                step="500"
                                                :value="prices[{{ $i }}]"
                                                :style="`--fill: ${sliderFill({{ $i }})}`"
@@ -201,11 +163,6 @@ foreach ($ticketAreas as $i => $area) {
                         <div class="px-5 py-4">
                             <p class="text-xs text-accent-gold leading-relaxed mb-4">{{ __('club.stadium.season_tickets.locked_notice') }}</p>
 
-                            @php
-                                $lockedSeasonTicketRevenue = (int) ($pricing->total_revenue ?? 0);
-                                $lockedTaquilla = $hasActualMatchday ? $actualMatchday : $projectedMatchday;
-                                $lockedTotalRevenue = $lockedSeasonTicketRevenue + $lockedTaquilla;
-                            @endphp
                             <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-3">
                                 <div class="bg-surface-700/50 border border-border-default rounded-lg px-4 py-3">
                                     <div class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('club.stadium.season_tickets.tickets_sold') }}</div>
@@ -222,7 +179,7 @@ foreach ($ticketAreas as $i => $area) {
                                         </div>
                                         <div class="flex justify-between gap-2">
                                             <span class="text-text-muted">{{ __('club.stadium.stadium_revenue.matchday') }}</span>
-                                            <span class="text-text-body font-semibold">{{ Money::format($lockedTaquilla) }}</span>
+                                            <span class="text-text-body font-semibold">{{ Money::format($lockedMatchdayRevenue) }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -241,25 +198,19 @@ foreach ($ticketAreas as $i => $area) {
                 <x-section-card :title="__('club.stadium.last_attendance')">
                     <div class="px-5 py-4">
                         @if($lastHomeMatch)
-                            @php
-                                /** @var App\Models\GameMatch $lastMatch */
-                                $lastMatch = $lastHomeMatch['match'];
-                                $fillRate = $lastHomeMatch['fill_rate'];
-                                $fillColor = $fillRate >= 90 ? 'bg-accent-green' : ($fillRate >= 70 ? 'bg-accent-blue' : ($fillRate >= 50 ? 'bg-accent-gold' : 'bg-accent-red'));
-                            @endphp
                             <div class="flex flex-col gap-4">
                                 <div class="flex items-center gap-3">
                                     <x-team-crest :team="$game->team" class="w-10 h-10 shrink-0" />
                                     <div class="flex-1 min-w-0">
                                         <div class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('game.vs') }}</div>
                                         <div class="flex items-center gap-2">
-                                            <x-team-crest :team="$lastMatch->awayTeam" class="w-5 h-5" />
-                                            <span class="text-sm font-semibold text-text-primary truncate">{{ $lastMatch->awayTeam->name }}</span>
+                                            <x-team-crest :team="$lastHomeMatch['match']->awayTeam" class="w-5 h-5" />
+                                            <span class="text-sm font-semibold text-text-primary truncate">{{ $lastHomeMatch['match']->awayTeam->name }}</span>
                                         </div>
                                     </div>
                                     <div class="text-right shrink-0">
-                                        <div class="text-[10px] text-text-muted uppercase tracking-widest">{{ __($lastMatch->competition->name ?? '') }}</div>
-                                        <div class="text-xs text-text-body">{{ $lastMatch->scheduled_date->format('d M Y') }}</div>
+                                        <div class="text-[10px] text-text-muted uppercase tracking-widest">{{ __($lastHomeMatch['match']->competition->name ?? '') }}</div>
+                                        <div class="text-xs text-text-body">{{ $lastHomeMatch['match']->scheduled_date->format('d M Y') }}</div>
                                     </div>
                                 </div>
 
@@ -269,11 +220,11 @@ foreach ($ticketAreas as $i => $area) {
                                         <span class="text-sm text-text-muted">/ {{ number_format($lastHomeMatch['capacity_at_match']) }}</span>
                                     </div>
                                     <div class="w-full h-2 bg-surface-600 rounded-full overflow-hidden">
-                                        <div class="h-full rounded-full {{ $fillColor }}" style="width: {{ min($fillRate, 100) }}%"></div>
+                                        <div class="h-full rounded-full {{ $lastHomeMatch['fill_color'] }}" style="width: {{ min($lastHomeMatch['fill_rate'], 100) }}%"></div>
                                     </div>
                                     <div class="flex items-center justify-between mt-1">
                                         <span class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('club.stadium.fill_rate') }}</span>
-                                        <span class="text-xs font-semibold text-text-body">{{ $fillRate }}%</span>
+                                        <span class="text-xs font-semibold text-text-body">{{ $lastHomeMatch['fill_rate'] }}%</span>
                                     </div>
                                 </div>
                             </div>

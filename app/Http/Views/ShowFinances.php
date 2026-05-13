@@ -73,15 +73,17 @@ class ShowFinances
                 FinancialTransaction::CATEGORY_TRANSFER_IN,
                 FinancialTransaction::CATEGORY_TRANSFER_OUT,
                 FinancialTransaction::CATEGORY_INFRASTRUCTURE,
+                FinancialTransaction::CATEGORY_STADIUM,
             ])
             ->selectRaw("
                 COALESCE(SUM(CASE WHEN category = ? AND type = ? THEN amount ELSE 0 END), 0) as sales_revenue,
                 COALESCE(SUM(CASE WHEN category = ? AND type = ? THEN amount ELSE 0 END), 0) as purchase_spending,
-                COALESCE(SUM(CASE WHEN category = ? AND type = ? THEN amount ELSE 0 END), 0) as infrastructure_spending
+                COALESCE(SUM(CASE WHEN category IN (?, ?) AND type = ? THEN amount ELSE 0 END), 0) as infrastructure_spending
             ", [
                 FinancialTransaction::CATEGORY_TRANSFER_IN, FinancialTransaction::TYPE_INCOME,
                 FinancialTransaction::CATEGORY_TRANSFER_OUT, FinancialTransaction::TYPE_EXPENSE,
-                FinancialTransaction::CATEGORY_INFRASTRUCTURE, FinancialTransaction::TYPE_EXPENSE,
+                FinancialTransaction::CATEGORY_INFRASTRUCTURE, FinancialTransaction::CATEGORY_STADIUM,
+                FinancialTransaction::TYPE_EXPENSE,
             ])
             ->first();
 

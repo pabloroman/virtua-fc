@@ -27,17 +27,6 @@ use App\Models\GameStadiumProject;
                 <tbody>
                     @foreach($projectHistory as $project)
                         @php
-                            // Type-driven text colour: subtle blue for the
-                            // cheap quick option, full blue for the
-                            // intermediate stand expansion, gold for the
-                            // major rebuild — mirrors the CTA accents.
-                            $typeColor = match ($project->type) {
-                                GameStadiumProject::TYPE_SUPPLEMENTARY => 'text-text-body',
-                                GameStadiumProject::TYPE_STAND_EXPANSION => 'text-accent-blue',
-                                GameStadiumProject::TYPE_REBUILD => 'text-accent-gold',
-                                default => 'text-text-body',
-                            };
-
                             // Additive projects (supplementary, stand
                             // expansion) display as "+N"; rebuild's
                             // target_capacity is a total, not a delta.
@@ -62,13 +51,13 @@ use App\Models\GameStadiumProject;
                                     : '—');
                         @endphp
                         <tr class="border-b border-border-default">
-                            <td class="px-5 py-2.5 font-semibold {{ $typeColor }}">
+                            <td class="px-5 py-2.5 font-semibold text-text-primary">
                                 {{ __('club.stadium.upgrades.project_'.$project->type) }}
                             </td>
                             <td class="py-2.5 text-text-secondary hidden md:table-cell">
                                 {{ $detail }}
                             </td>
-                            <td class="py-2.5 pl-4 text-right font-heading font-semibold text-text-body whitespace-nowrap">
+                            <td class="py-2.5 pl-4 text-right font-heading font-semibold text-base text-text-body whitespace-nowrap">
                                 {{ $project->formatted_total_cost }}
                             </td>
                             <td class="py-2.5 pl-4 pr-5 text-right">

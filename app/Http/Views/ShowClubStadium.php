@@ -155,9 +155,9 @@ class ShowClubStadium
 
         return view('club.stadium', [
             'game' => $game,
-            'summary' => $this->stadiumSummaryService->build($game),
             'upgrade' => $upgrade,
             'projectHistory' => $projectHistory,
+            ...$this->stadiumSummaryService->build($game),
         ]);
     }
 
