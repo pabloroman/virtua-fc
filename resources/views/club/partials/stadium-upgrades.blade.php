@@ -26,6 +26,9 @@ $canRebuild = $upgrade['can_rebuild'];
 $rebuildMaxCapacity = $upgrade['rebuild_max_capacity'];
 $loanCapCents = $upgrade['loan_cap_cents'];
 $reputationLevel = $upgrade['reputation_level'];
+$bindingConstraint = $upgrade['binding_constraint'];
+$nextReputationTier = $upgrade['next_reputation_tier'];
+$revenueRequiredCents = $upgrade['revenue_required_cents'];
 
 $currentCapacity = $stadium->effective_capacity;
 @endphp
@@ -116,9 +119,28 @@ $currentCapacity = $stadium->effective_capacity;
                     <div class="font-heading text-base font-bold text-text-primary">{{ __('club.stadium.upgrades.cta_rebuild_title') }}</div>
                     <div class="text-xs text-text-muted mt-2">
                         @if(! $canRebuild)
-                            {{ __('club.stadium.upgrades.cta_rebuild_reputation_lock') }}
+                            {{ __('club.stadium.upgrades.cta_rebuild_reputation_lock', [
+                                'tier' => __('club.stadium.reputation_tiers.modest'),
+                            ]) }}
+                        @elseif($rebuildMaxCapacity <= $currentCapacity && $bindingConstraint === 'reputation')
+                            @if($nextReputationTier)
+                                {{ __('club.stadium.upgrades.cta_rebuild_locked_by_reputation', [
+                                    'cap' => Money::format($loanCapCents),
+                                    'max' => number_format($rebuildMaxCapacity),
+                                    'tier' => __('club.stadium.reputation_tiers.'.$nextReputationTier),
+                                ]) }}
+                            @else
+                                {{ __('club.stadium.upgrades.cta_rebuild_locked_at_elite', [
+                                    'cap' => Money::format($loanCapCents),
+                                    'max' => number_format($rebuildMaxCapacity),
+                                ]) }}
+                            @endif
                         @elseif($rebuildMaxCapacity <= $currentCapacity)
-                            {{ __('club.stadium.upgrades.cta_rebuild_no_headroom') }}
+                            {{ __('club.stadium.upgrades.cta_rebuild_locked_by_affordability', [
+                                'cap' => Money::format($loanCapCents),
+                                'max' => number_format($rebuildMaxCapacity),
+                                'revenue' => Money::format($revenueRequiredCents),
+                            ]) }}
                         @else
                             {{ __('club.stadium.upgrades.cta_rebuild_hint', [
                                 'max' => number_format($rebuildMaxCapacity),

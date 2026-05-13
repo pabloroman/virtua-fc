@@ -62,8 +62,18 @@ return [
             'cta_rebuild_label' => 'Gran proyecto',
             'cta_rebuild_title' => 'Reformar el estadio',
             'cta_rebuild_hint' => 'Construye un estadio nuevo de hasta :max asientos a :cost por asiento. Una temporada de obras al 40% de aforo.',
-            'cta_rebuild_reputation_lock' => 'Tu club aún no tiene la reputación necesaria para acometer una reforma integral.',
-            'cta_rebuild_no_headroom' => 'Tu reputación y previsión de ingresos no permiten un proyecto mayor que tu estadio actual.',
+            'cta_rebuild_reputation_lock' => 'Necesitas alcanzar reputación :tier para acometer una reforma integral. Compite y haz buenas temporadas para subir de nivel.',
+            'cta_rebuild_locked_by_reputation' => 'Tope del banco: :cap (máx. :max asientos). Para subirlo, alcanza reputación :tier — ganarás un tope de préstamo mayor.',
+            'cta_rebuild_locked_by_affordability' => 'Tope del banco: :cap (máx. :max asientos). El banco solo presta lo que tus ingresos pueden devolver. Sube tus ingresos proyectados a unos :revenue al año para desbloquear un estadio más grande.',
+            'cta_rebuild_locked_at_elite' => 'Tope del banco: :cap (máx. :max asientos). Tu reputación ya es la máxima; aumenta tus ingresos proyectados para desbloquear un proyecto mayor.',
+
+            'reputation_tiers' => [
+                'local' => 'Local',
+                'modest' => 'Modesta',
+                'established' => 'Consolidada',
+                'continental' => 'Continental',
+                'elite' => 'Elite',
+            ],
 
             'modal_supplementary_title' => 'Añadir gradas supletorias',
             'modal_supplementary_description' => 'Instalación modular y rápida. Pago al contado, sin financiación.',

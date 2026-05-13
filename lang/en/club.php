@@ -62,8 +62,18 @@ return [
             'cta_rebuild_label' => 'Major project',
             'cta_rebuild_title' => 'Rebuild the stadium',
             'cta_rebuild_hint' => 'Build a new stadium up to :max seats at :cost per seat. One construction season at 40% capacity.',
-            'cta_rebuild_reputation_lock' => 'Your club doesn\'t have the reputation needed for a full stadium rebuild yet.',
-            'cta_rebuild_no_headroom' => 'Your reputation and projected revenue don\'t allow a project larger than your current stadium.',
+            'cta_rebuild_reputation_lock' => 'You need :tier reputation to unlock stadium rebuilds. Compete and string together strong seasons to climb the ladder.',
+            'cta_rebuild_locked_by_reputation' => 'Bank ceiling: :cap (max :max seats). To raise it, reach :tier reputation — it unlocks a higher loan ceiling.',
+            'cta_rebuild_locked_by_affordability' => 'Bank ceiling: :cap (max :max seats). The bank only lends what your income can repay. Grow projected revenue to around :revenue per season to unlock a bigger stadium.',
+            'cta_rebuild_locked_at_elite' => 'Bank ceiling: :cap (max :max seats). Your reputation is already maxed; grow projected revenue to unlock a larger project.',
+
+            'reputation_tiers' => [
+                'local' => 'Local',
+                'modest' => 'Modest',
+                'established' => 'Established',
+                'continental' => 'Continental',
+                'elite' => 'Elite',
+            ],
 
             'modal_supplementary_title' => 'Add temporary stands',
             'modal_supplementary_description' => 'Modular installation, quick to fit. Cash payment, no financing.',
