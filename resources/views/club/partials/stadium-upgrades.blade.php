@@ -85,8 +85,10 @@ $currentCapacity = $stadium->effective_capacity;
                 </div>
             </div>
         @else
-            {{-- CTAs --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {{-- CTAs. The x-data wrapper is required: Alpine only processes
+                 directives inside an x-data scope, so without it the
+                 $dispatch('open-modal', ...) calls would never fire. --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3" x-data>
                 {{-- Gradas supletorias --}}
                 <button
                     type="button"
