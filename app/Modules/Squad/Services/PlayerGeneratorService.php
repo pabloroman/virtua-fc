@@ -343,13 +343,18 @@ class PlayerGeneratorService
 
     /**
      * Average potential upside (points above current ability) per reputation tier.
+     *
+     * Aligned with YouthAcademyService::POTENTIAL_UPSIDE_MEAN — the two pools
+     * should produce comparable distributions. Earlier values were too
+     * conservative for the AI side, leaving aggregate synthetic p90_potential
+     * ~8 points below originals and starving the league of replacement stars.
      */
     private const POTENTIAL_UPSIDE_MEAN = [
         0 => 12,
-        1 => 12,
-        2 => 10,
-        3 => 12,
-        4 => 14,
+        1 => 15,
+        2 => 15,
+        3 => 14,
+        4 => 16,
     ];
 
     private const POTENTIAL_UPSIDE_STD_DEV = 5;
@@ -360,9 +365,9 @@ class PlayerGeneratorService
     private const POTENTIAL_FLOOR = [
         0 => 42,
         1 => 45,
-        2 => 50,
-        3 => 55,
-        4 => 60,
+        2 => 52,
+        3 => 58,
+        4 => 62,
     ];
 
     /**
@@ -395,7 +400,28 @@ class PlayerGeneratorService
         $reputationIndex = ClubProfile::getReputationTierIndex($reputationLevel);
         $abilityMean = self::REPUTATION_BASE_QUALITY[$reputationIndex];
 
-        $overallScore = $this->sampler->sampleAbility($abilityMean, self::ABILITY_STD_DEV, 30, 80);
+        // Spawn academy graduates inside the dev-curve growth window (17-20)
+        // rather than past it (20-23), so the existing DevelopmentCurve has
+        // enough runway to deliver players to their potential. A 17-year-old
+        // gets ~6 development years before plateau; a 23-year-old gets zero.
+        $ageRoll = mt_rand(1, 100);
+        $age = match (true) {
+            $ageRoll <= 20 => 17,
+            $ageRoll <= 55 => 18,
+            $ageRoll <= 85 => 19,
+            default        => 20,
+        };
+
+        // Per-age cap on rolled ability so a 17-year-old elite prospect
+        // doesn't spawn at overall 78. Mirrors YouthAcademyService's
+        // age-cap shape. Headroom lives in `potential`, not in spawn ability.
+        $ageCap = match ($age) {
+            17 => 72,
+            18 => 74,
+            19 => 76,
+            default => 80,
+        };
+        $overallScore = $this->sampler->sampleAbility($abilityMean, self::ABILITY_STD_DEV, 30, $ageCap);
 
         $potentialData = $this->sampler->generatePotentialFromAbility(
             $overallScore,
@@ -407,14 +433,6 @@ class PlayerGeneratorService
         $potential = $potentialData['potential'];
         $potentialLow = $potentialData['potentialLow'];
         $potentialHigh = $potentialData['potentialHigh'];
-
-        $ageRoll = mt_rand(1, 100);
-        $age = match (true) {
-            $ageRoll <= 20 => 20,
-            $ageRoll <= 55 => 21,
-            $ageRoll <= 85 => 22,
-            default => 23,
-        };
 
         $dateOfBirth = $game->current_date->copy()->subYears($age)->subDays(mt_rand(0, 364));
 
