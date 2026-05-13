@@ -154,6 +154,9 @@ Route::get('/design-system', fn () => view('design-system.index', [
     'allTeams' => \App\Support\TeamColors::allGrouped(),
 ]))->name('design-system');
 
+Route::get('/mockups/stadium-renovation', fn () => view('mockups.stadium-renovation'))
+    ->name('mockups.stadium-renovation');
+
 Route::middleware('auth')->group(function () {
     // Dashboard & Game Creation
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
