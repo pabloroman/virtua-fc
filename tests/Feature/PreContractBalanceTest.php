@@ -171,6 +171,85 @@ class PreContractBalanceTest extends TestCase
         $this->assertLessThan(1.70, $avgRatio, "Premium ratio should not exceed 1.70, got {$avgRatio}");
     }
 
+    public function test_pre_contract_demand_floors_at_current_wage_with_premium(): void
+    {
+        // A player mid-contract at another club has a current wage we should
+        // respect — without this floor, a LOCAL Primera RFEF club can compute
+        // a wage demand off its own €20K tier-3 minimum and pre-contract a
+        // Real Madrid bench player at ~10% of his actual wage. Mirrors the
+        // current-wage floor that renewals already use.
+        $user = User::factory()->create();
+        $sourceTeam = Team::factory()->create();
+        $userTeam = Team::factory()->create();
+
+        $game = Game::factory()->create([
+            'user_id' => $user->id,
+            'team_id' => $userTeam->id,
+            'competition_id' => $this->competition->id,
+        ]);
+
+        // €1.5M market value (Tier 2 fringe) but currently earning €1.2M at
+        // a top-flight club — the kind of player a low-tier club tries to
+        // poach for free on a Bosman.
+        $player = GamePlayer::factory()->create([
+            'game_id' => $game->id,
+            'team_id' => $sourceTeam->id,
+            'market_value_cents' => 150_000_000,  // €1.5M
+            'annual_wage' => 120_000_000,         // €1.2M — earned at top club
+        ]);
+
+        $demand = $this->contractService->calculateWageDemand($player, NegotiationScenario::PRE_CONTRACT)['wage'];
+
+        // Premium for <€2M players is 1.20x. Demand must clear current wage × premium.
+        $this->assertGreaterThanOrEqual(
+            (int) ($player->annual_wage * 1.20 * 0.95),
+            $demand,
+            'Pre-contract demand must respect the player\'s current wage as a floor'
+        );
+
+        // And the demand must be meaningfully higher than a market-only calc
+        // — the whole point of the floor is to lift the demand for high-wage
+        // players above the bare market-value premium.
+        $marketOnlyDemand = (int) (150_000_000 * 0.08 * 1.20); // €14.4K
+        $this->assertGreaterThan(
+            $marketOnlyDemand * 5,
+            $demand,
+            'High-wage player should demand far more than the market-only premium'
+        );
+    }
+
+    public function test_pre_contract_demand_unchanged_when_current_wage_is_low(): void
+    {
+        // A player whose current wage is below market — typical for young
+        // players or low-rep clubs — should still demand the market-value
+        // premium, not be capped by their underpaid current deal.
+        $user = User::factory()->create();
+        $sourceTeam = Team::factory()->create();
+        $userTeam = Team::factory()->create();
+
+        $game = Game::factory()->create([
+            'user_id' => $user->id,
+            'team_id' => $userTeam->id,
+            'competition_id' => $this->competition->id,
+        ]);
+
+        $player = GamePlayer::factory()->create([
+            'game_id' => $game->id,
+            'team_id' => $sourceTeam->id,
+            'market_value_cents' => 150_000_000,
+            'annual_wage' => 1_000_000, // €10K — well below market
+        ]);
+
+        $marketBasedDemand = (int) (150_000_000 * 0.08 * 1.20); // baseWage × premium
+        $demand = $this->contractService->calculateWageDemand($player, NegotiationScenario::PRE_CONTRACT)['wage'];
+
+        $this->assertGreaterThanOrEqual(
+            (int) ($marketBasedDemand * 0.90),
+            $demand,
+            'Underpaid players still demand the market-value premium, not their current wage'
+        );
+    }
+
     public function test_pre_contract_wage_demand_applies_premium_for_low_value_player(): void
     {
         $user = User::factory()->create();

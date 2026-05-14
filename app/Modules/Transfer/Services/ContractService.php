@@ -296,6 +296,19 @@ class ContractService
         $premium = $scenario->wagePremium($player->market_value_cents, $player->tier);
         $demandedWage = (int) ($baseWage * $premium);
 
+        // Pre-contract floor: the player is mid-contract at another club and
+        // would be walking away on a free transfer. He won't take a pay cut
+        // to do that — without this floor, a Primera RFEF (LOCAL) club can
+        // offer a Real Madrid fringe player a wage demand computed off the
+        // LOCAL tier-3 minimum (€20K) and pre-contract him for ~10% of his
+        // current salary. Mirrors the same-current-wage floor renewals use,
+        // with the same per-tier premium acting as the raise the player
+        // expects for leaving on a Bosman.
+        if ($scenario === NegotiationScenario::PRE_CONTRACT && $player->annual_wage > 0) {
+            $currentWageWithPremium = (int) ($player->annual_wage * $premium);
+            $demandedWage = max($demandedWage, $currentWageWithPremium);
+        }
+
         // Renewals: peg the demand at peer-median ("market rate") for every
         // player, not just those who've voiced their unhappiness. An unflagged
         // underpaid player hasn't *announced* anything but still negotiates at
