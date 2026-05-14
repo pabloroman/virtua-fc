@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Season\Processors;
+namespace App\Modules\Stadium\Processors;
 
 use App\Models\Game;
 use App\Modules\Season\Contracts\SeasonProcessor;

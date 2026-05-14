@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support;
+namespace App\Modules\Stadium\Support;
 
 /**
  * Spanish grammatical article helpers for stadium names.

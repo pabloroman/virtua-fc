@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Match\Listeners;
+namespace App\Modules\Stadium\Listeners;
 
 use App\Modules\Match\Events\MatchFinalized;
 use App\Modules\Stadium\Services\MatchAttendanceService;
