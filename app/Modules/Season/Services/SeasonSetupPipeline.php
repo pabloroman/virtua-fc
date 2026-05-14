@@ -4,6 +4,7 @@ namespace App\Modules\Season\Services;
 
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
+use App\Modules\Season\Processors\AIPreemptiveRenewalProcessor;
 use App\Modules\Season\Processors\BudgetProjectionProcessor;
 use App\Modules\Season\Processors\ContinentalAndCupInitProcessor;
 use App\Modules\Season\Processors\LeagueFixtureProcessor;
@@ -33,6 +34,7 @@ class SeasonSetupPipeline
         YouthAcademyPromotionProcessor $academyPromotion,
         LeagueFixtureProcessor $fixtureGeneration,
         StandingsResetProcessor $standingsReset,
+        AIPreemptiveRenewalProcessor $aiPreemptiveRenewal,
         BudgetProjectionProcessor $budgetProjection,
         ContinentalAndCupInitProcessor $competitionInitialization,
         UefaSuperCupQualificationProcessor $uefaSuperCup,
@@ -46,6 +48,7 @@ class SeasonSetupPipeline
             $academyPromotion,
             $fixtureGeneration,
             $standingsReset,
+            $aiPreemptiveRenewal,
             $budgetProjection,
             $competitionInitialization,
             $uefaSuperCup,
