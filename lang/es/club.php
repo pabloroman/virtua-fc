@@ -13,7 +13,7 @@ return [
         'home_ground' => 'Campo',
         'stadium_name' => 'Estadio',
         'capacity' => 'Aforo',
-        'uefa_category' => 'Categoría UEFA',
+        'uefa_category' => 'Nivel UEFA',
         'uefa_category_short' => 'UEFA',
         'uefa_category_tooltip' => 'La UEFA clasifica los estadios en cuatro categorías (1 a 4). Subir de categoría requiere reformar las instalaciones (iluminación, vestuarios, sala de prensa, palcos) y que el aforo supere el mínimo de la siguiente categoría.',
 
@@ -59,31 +59,34 @@ return [
             'ready_in_season' => 'Disponible en la temporada :season',
             'loan_remaining' => 'Pendiente del préstamo: :amount',
 
-            'chip_per_seat' => ':cost / asiento',
-            'chip_per_seat_from' => 'desde :cost / asiento',
-            'chip_time_days' => ':days días',
-            'chip_time_seasons' => ':count temporada|:count temporadas',
+            'tier_label' => 'Nivel :n',
+            'from_total' => 'Desde :total',
+            'per_seat_inline' => ':cost / asiento',
+            'time_days_inline' => ':days días',
+            'time_seasons_inline' => ':count temporada|:count temporadas',
+            'status_available' => 'Disponible',
+            'status_locked' => 'Bloqueado',
+            'status_in_progress' => 'En obra',
+            'cta_planificar' => 'Planificar →',
+            'unlock_with_revenue' => 'Desbloquea con :revenue de ingresos anuales',
+            'unlock_with_reputation' => 'Desbloquea en categoría :tier',
+            'unlock_progress_label' => 'Ingresos actuales: :current',
 
-            'cta_supplementary_label' => 'Ampliación rápida',
-            'cta_supplementary_title' => 'Añadir gradas supletorias',
-            'cta_supplementary_tagline' => 'Gradas modulares, hasta :max asientos extra. Se retiran al reformar.',
-            'cta_supplementary_full' => 'Has alcanzado el límite de gradas supletorias. Reforma el estadio para liberar más espacio.',
-            'cta_supplementary_no_budget' => 'No te alcanza para el lote mínimo (:minimum). Presupuesto disponible: :budget.',
+            'cta_supplementary_full_short' => 'Aforo supletorio al límite. Reforma el estadio para liberar espacio.',
+            'cta_supplementary_no_budget_short' => 'No alcanza para el lote mínimo. Presupuesto: :budget.',
+            'cta_stand_expansion_no_budget_short' => 'No hay presupuesto ni crédito suficientes. Disponible: :budget.',
+
             'budget_caps_slider' => 'El presupuesto disponible (:budget) limita el lote — sin él podrías llegar a :natural asientos.',
             'financing_cash_hint_budget' => 'Se descuenta del presupuesto disponible (:budget) al confirmar.',
 
-            'cta_stand_expansion_label' => 'Proyecto intermedio',
-            'cta_stand_expansion_title' => 'Ampliar una grada',
-            'cta_stand_expansion_tagline' => 'Reforma una grada para añadir :min–:max asientos permanentes. Sin interrumpir la temporada.',
-            'cta_stand_expansion_no_budget' => 'No hay presupuesto ni crédito bancario para el proyecto mínimo (:minimum). Presupuesto disponible: :budget.',
+            'cta_supplementary_label' => 'Ampliación',
+            'cta_supplementary_title' => 'Añadir gradas supletorias',
 
-            'cta_rebuild_label' => 'Gran proyecto',
+            'cta_stand_expansion_label' => 'Ampliación',
+            'cta_stand_expansion_title' => 'Ampliar una grada',
+
+            'cta_rebuild_label' => 'Reconstrucción',
             'cta_rebuild_title' => 'Reformar el estadio',
-            'cta_rebuild_tagline' => 'Estadio nuevo, hasta :max asientos. El precio sube con el tamaño; una temporada al 40% de aforo.',
-            'cta_rebuild_reputation_lock' => 'Necesitas alcanzar reputación :tier para acometer una reforma integral. Compite y haz buenas temporadas para subir de nivel.',
-            'cta_rebuild_locked_by_reputation' => 'Tope del banco: :cap (máx. :max asientos). Para subirlo, alcanza reputación :tier — ganarás un tope de préstamo mayor.',
-            'cta_rebuild_locked_by_affordability' => 'Tope del banco: :cap (máx. :max asientos). El banco solo presta lo que tus ingresos pueden devolver. Sube tus ingresos proyectados a unos :revenue al año para desbloquear un estadio más grande.',
-            'cta_rebuild_locked_at_elite' => 'Tope del banco: :cap (máx. :max asientos). Tu reputación ya es la máxima; aumenta tus ingresos proyectados para desbloquear un proyecto mayor.',
 
             'reputation_tiers' => [
                 'local' => 'Local',
@@ -94,7 +97,7 @@ return [
             ],
 
             'modal_supplementary_title' => 'Añadir gradas supletorias',
-            'modal_supplementary_description' => 'Gradas modulares montadas sobre la estructura existente. Rápidas de instalar (30 días) y al contado, pero con aspecto provisional, sin espacio comercial nuevo y se retiran cuando reformas el estadio. Referencia: las gradas supletorias durante la reforma de un estadio (≈6M€ por ~14.000 asientos).',
+            'modal_supplementary_description' => 'Gradas modulares provisionales: rápidas (30 días) y al contado, pero sin espacio comercial nuevo y se retiran al reformar el estadio. Referencia: ≈6M€ por ~14.000 asientos.',
             'modal_stand_expansion_title' => 'Ampliar una grada',
             'modal_stand_expansion_description' => 'Demuele una grada y la reconstruye más grande para ganar entre 3.000 y 12.000 asientos permanentes. El resto del estadio sigue operativo durante las obras y la nueva grada se inaugura al inicio de la próxima temporada. Referencia: la ampliación de Anfield Road del Liverpool (+7.000 asientos).',
             'stand_expansion_disruption_note' => 'El resto del estadio sigue operativo durante las obras — no se reduce el aforo. Los nuevos asientos se estrenan al inicio de la próxima temporada.',
@@ -110,7 +113,7 @@ return [
 
             'cta_disabled_by_active_project' => 'Ya tienes un proyecto en curso. Consulta el historial debajo.',
 
-            'cta_uefa_label' => 'Mejora de instalaciones',
+            'cta_uefa_label' => 'Reforma',
             'cta_uefa_title' => 'Subir a Categoría UEFA :to (desde :from)',
             'cta_uefa_title_generic' => 'Subir de categoría UEFA',
             'cta_uefa_button' => 'Mejorar instalaciones',

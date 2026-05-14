@@ -59,31 +59,34 @@ return [
             'ready_in_season' => 'Available from the :season season',
             'loan_remaining' => 'Loan outstanding: :amount',
 
-            'chip_per_seat' => ':cost / seat',
-            'chip_per_seat_from' => 'from :cost / seat',
-            'chip_time_days' => ':days days',
-            'chip_time_seasons' => ':count season|:count seasons',
+            'tier_label' => 'Tier :n',
+            'from_total' => 'From :total',
+            'per_seat_inline' => ':cost / seat',
+            'time_days_inline' => ':days days',
+            'time_seasons_inline' => ':count season|:count seasons',
+            'status_available' => 'Available',
+            'status_locked' => 'Locked',
+            'status_in_progress' => 'Under works',
+            'cta_planificar' => 'Plan →',
+            'unlock_with_revenue' => 'Unlock with :revenue in annual revenue',
+            'unlock_with_reputation' => 'Unlock at :tier reputation',
+            'unlock_progress_label' => 'Current revenue: :current',
 
-            'cta_supplementary_label' => 'Quick expansion',
-            'cta_supplementary_title' => 'Add temporary stands',
-            'cta_supplementary_tagline' => 'Modular bleachers, up to :max extra seats. Removed when you rebuild.',
-            'cta_supplementary_full' => 'Maximum temporary stands installed. Rebuild the stadium to free up more headroom.',
-            'cta_supplementary_no_budget' => 'Not enough budget for the minimum batch (:minimum). Available budget: :budget.',
+            'cta_supplementary_full_short' => 'Temporary stands maxed out. Rebuild the stadium to free up headroom.',
+            'cta_supplementary_no_budget_short' => 'Not enough budget for the minimum batch. Available: :budget.',
+            'cta_stand_expansion_no_budget_short' => 'Not enough budget or credit. Available: :budget.',
+
             'budget_caps_slider' => 'Available budget (:budget) is capping the batch — without it you could reach :natural seats.',
             'financing_cash_hint_budget' => 'Deducted from the available transfer budget (:budget) on confirmation.',
 
-            'cta_stand_expansion_label' => 'Mid-scale project',
-            'cta_stand_expansion_title' => 'Expand a stand',
-            'cta_stand_expansion_tagline' => 'Rebuild a single stand for :min–:max permanent seats. No mid-season disruption.',
-            'cta_stand_expansion_no_budget' => 'Not enough budget or bank credit for the minimum project (:minimum). Available budget: :budget.',
+            'cta_supplementary_label' => 'Expansion',
+            'cta_supplementary_title' => 'Add temporary stands',
 
-            'cta_rebuild_label' => 'Major project',
+            'cta_stand_expansion_label' => 'Expansion',
+            'cta_stand_expansion_title' => 'Expand a stand',
+
+            'cta_rebuild_label' => 'Rebuild',
             'cta_rebuild_title' => 'Rebuild the stadium',
-            'cta_rebuild_tagline' => 'Brand-new stadium, up to :max seats. Price grows with size; one season at 40% capacity.',
-            'cta_rebuild_reputation_lock' => 'You need :tier reputation to unlock stadium rebuilds. Compete and string together strong seasons to climb the ladder.',
-            'cta_rebuild_locked_by_reputation' => 'Bank ceiling: :cap (max :max seats). To raise it, reach :tier reputation — it unlocks a higher loan ceiling.',
-            'cta_rebuild_locked_by_affordability' => 'Bank ceiling: :cap (max :max seats). The bank only lends what your income can repay. Grow projected revenue to around :revenue per season to unlock a bigger stadium.',
-            'cta_rebuild_locked_at_elite' => 'Bank ceiling: :cap (max :max seats). Your reputation is already maxed; grow projected revenue to unlock a larger project.',
 
             'reputation_tiers' => [
                 'local' => 'Local',
@@ -94,7 +97,7 @@ return [
             ],
 
             'modal_supplementary_title' => 'Add temporary stands',
-            'modal_supplementary_description' => 'Modular bleachers fitted around the existing pitch. Quick to install (30 days) and cash-only, but they look temporary, add no commercial space, and are removed when you rebuild the stadium. Reference: temporary stands used during a stadium reform (≈€6M for ~14k seats).',
+            'modal_supplementary_description' => 'Temporary modular bleachers: quick (30 days) and cash-only, but add no commercial space and are removed when you rebuild. Reference: ≈€6M for ~14k seats.',
             'modal_stand_expansion_title' => 'Expand a stand',
             'modal_stand_expansion_description' => 'Demolish one stand and rebuild it bigger to gain 3,000–12,000 permanent seats. The rest of the stadium stays open during construction, and the new stand is ready at the start of next season. Reference: Liverpool\'s Anfield Road expansion (+7,000 seats).',
             'stand_expansion_disruption_note' => 'The rest of the stadium stays open during construction — no capacity reduction. The new seats go live at the start of next season.',
@@ -110,7 +113,7 @@ return [
 
             'cta_disabled_by_active_project' => 'A project is already in progress. See the history below.',
 
-            'cta_uefa_label' => 'Facility upgrade',
+            'cta_uefa_label' => 'Refit',
             'cta_uefa_title' => 'Upgrade to UEFA Category :to (from :from)',
             'cta_uefa_title_generic' => 'Upgrade UEFA category',
             'cta_uefa_button' => 'Upgrade facilities',

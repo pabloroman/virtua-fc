@@ -13,40 +13,54 @@
         </div>
         <x-club-section-nav :game="$game" active="stadium" />
 
+        <x-flash-message type="success" :message="session('success')" class="mt-4" />
+        <x-flash-message type="error" :message="session('error')" class="mt-4" />
+
+        {{-- Stadium identity hero — single prominent header row with the stadium name
+             leading and capacity / UEFA as supporting chips. Sits above the grid so
+             it reads as a true hero for the page, not just another card in the column.
+             The decorative SVG silhouette is hero-only by design (one image, behind
+             the name) and must not be repeated on other cards. --}}
+        <div class="relative overflow-hidden bg-surface-800 border border-border-default rounded-xl mt-6">
+
+            <div class="relative px-5 py-6 md:px-7 md:py-8 flex flex-col md:flex-row md:items-end md:justify-between gap-5">
+                <div class="min-w-0">
+                    <div class="text-[10px] text-text-muted uppercase tracking-widest mb-2">{{ __('club.stadium.home_ground') }}</div>
+                    <h3 class="font-heading text-2xl md:text-2xl lg:text-3xl font-bold uppercase text-text-primary">
+                        {{ $stadiumName ?? '—' }}
+                    </h3>
+                </div>
+
+                {{-- Stacked label-on-top metrics, separated by a middot.
+                     Numbers carry the visual weight; labels are small uppercase
+                     eyebrows above each value. --}}
+                <div class="flex flex-wrap items-end gap-x-5 gap-y-3 shrink-0">
+                    <div class="flex flex-col items-end text-right">
+                        <span class="text-[10px] text-text-muted uppercase tracking-widest mb-1">{{ __('club.stadium.capacity') }}</span>
+                        <span class="font-heading text-2xl md:text-3xl font-bold text-text-primary tabular-nums leading-none">{{ number_format($capacity) }}</span>
+                    </div>
+
+                    <span class="text-text-faint pb-2 hidden sm:inline" aria-hidden="true">·</span>
+
+                    <div class="flex flex-col items-end text-right">
+                        <span class="inline-flex items-center gap-1 text-[10px] text-text-muted uppercase tracking-widest mb-1">
+                            {{ __('club.stadium.uefa_category') }}
+                            <x-info-icon :tooltip="__('club.stadium.uefa_category_tooltip')" />
+                        </span>
+                        @if($uefaLevel)
+                            <span class="inline-flex items-center justify-center self-end min-w-[2rem] px-2 rounded-md bg-accent-blue/15 text-accent-blue font-heading text-2xl md:text-3xl font-bold tabular-nums leading-none py-0.5">{{ $uefaLevel }}</span>
+                        @else
+                            <span class="font-heading text-2xl md:text-3xl font-bold text-text-faint leading-none">—</span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
 
-            {{-- LEFT column (2/3): Stadium identity + season tickets + last attendance --}}
+            {{-- LEFT column (2/3): upgrades + history + season tickets --}}
             <div class="lg:col-span-2 space-y-6">
-
-                {{-- Stadium identity card --}}
-                <x-section-card :title="__('club.stadium.home_ground')">
-                    <div class="px-5 py-4">
-                        <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-                            <div>
-                                <div class="text-[10px] text-text-muted uppercase tracking-widest mb-1">{{ __('club.stadium.stadium_name') }}</div>
-                                <div class="font-heading text-2xl font-bold text-text-primary">{{ $stadiumName ?? '—' }}</div>
-                            </div>
-                            <div class="md:text-right">
-                                <div class="text-[10px] text-text-muted uppercase tracking-widest mb-1">{{ __('club.stadium.capacity') }}</div>
-                                <div class="font-heading text-2xl font-bold text-text-primary">{{ number_format($capacity) }}</div>
-                            </div>
-                            <div class="md:text-right">
-                                <div class="text-[10px] text-text-muted uppercase tracking-widest mb-1 flex items-center md:justify-end gap-1.5">
-                                    {{ __('club.stadium.uefa_category') }}
-                                    <x-info-icon :tooltip="__('club.stadium.uefa_category_tooltip')" />
-                                </div>
-                                @if($uefaLevel)
-                                    <div class="inline-flex items-center gap-2 font-heading text-2xl font-bold text-text-primary">
-                                        <span class="inline-flex items-center justify-center min-w-[2.25rem] px-2 py-0.5 rounded-md bg-accent-blue/15 text-accent-blue tabular-nums">{{ $uefaLevel }}</span>
-                                        <span class="text-sm font-medium text-text-muted uppercase tracking-wide">{{ __('club.stadium.uefa_category_short') }}</span>
-                                    </div>
-                                @else
-                                    <div class="font-heading text-2xl font-bold text-text-faint">—</div>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                </x-section-card>
 
                 {{-- Capacity upgrades (gradas supletorias + rebuild) --}}
                 @include('club.partials.stadium-upgrades')

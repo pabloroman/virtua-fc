@@ -138,6 +138,55 @@ class ShowClubStadium
         $uefaAvailable = $uefaBlocker === null
             && ($uefaCashAffordable || $uefaLoanAffordable);
 
+        // "From total" hero numbers surfaced on the tier cards. Each is the
+        // cheapest realistic total the player can commit to at that tier —
+        // not a per-seat rate — so the price-at-a-glance reads as a single
+        // figure instead of three lines of prose.
+        $supplementaryMinTotalCents = $supplementaryMin * $supplementaryPerSeat;
+        $standExpansionMinTotalCents = $standExpansionMinSeats * $standExpansionPerSeat;
+        $rebuildMinTotalCents = $this->stadiumUpgradeService->rebuildCostFor($rebuildMin);
+
+        // Projected operating revenue drives the affordability-lock progress
+        // bar on the rebuild card. Lazy-loaded per CLAUDE.md; if there is no
+        // current finances row yet (very early-season edge), surface 0 so
+        // the bar renders empty rather than blowing up.
+        $currentAnnualRevenueCents = (int) ($game->currentFinances?->projected_total_revenue ?? 0);
+
+        // Per-card display state — single source of truth the partial reads
+        // when picking border color, status badge, hover/disabled treatment,
+        // and goal-line variant. Keeping derivation here (not in a Blade @php
+        // block) preserves the project rule that templates stay logic-free.
+        //
+        // Values:
+        //   'in_progress'        — another project is in flight; click disabled
+        //   'locked_reputation'  — rebuild only; need a higher reputation tier
+        //   'locked_affordability' — rebuild only; need more annual revenue
+        //   'locked'             — generic gate (not enough cash / no headroom)
+        //   'available_loan'     — affordable only via stadium loan (stretches budget)
+        //   'available_cash'     — comfortably within current cash budget
+        $supplementaryState = match (true) {
+            $activeProject !== null                 => 'in_progress',
+            ! $supplementaryAffordable              => 'locked',
+            default                                 => 'available_cash',
+        };
+
+        $standExpansionState = match (true) {
+            $activeProject !== null                 => 'in_progress',
+            ! $standExpansionAvailable              => 'locked',
+            ! $standExpansionCashAffordable         => 'available_loan',
+            default                                 => 'available_cash',
+        };
+
+        $rebuildState = match (true) {
+            $activeProject !== null                 => 'in_progress',
+            ! $canRebuild                           => 'locked_reputation',
+            $rebuildMaxCapacity <= $currentCapacity && $bindingConstraint === 'reputation'
+                                                    => 'locked_reputation',
+            $rebuildMaxCapacity <= $currentCapacity => 'locked_affordability',
+            ! $rebuildCashAffordable                => 'available_loan',
+            default                                 => 'available_cash',
+        };
+
         $upgrade = [
             'stadium' => $stadium,
             'active_project' => $activeProject,
@@ -158,13 +207,16 @@ class ShowClubStadium
             'supplementary_effective_max' => $supplementaryEffectiveMax,
             'supplementary_per_seat_cents' => $supplementaryPerSeat,
             'supplementary_min' => $supplementaryMin,
+            'supplementary_min_total_cents' => $supplementaryMinTotalCents,
             'supplementary_step' => $supplementaryStep,
             'supplementary_affordable' => $supplementaryAffordable,
             'supplementary_natural_max' => $supplementaryNaturalMax,
+            'supplementary_state' => $supplementaryState,
 
             // Stand expansion (permanent single-stand rebuild).
             'stand_expansion_per_seat_cents' => $standExpansionPerSeat,
             'stand_expansion_min_seats' => $standExpansionMinSeats,
+            'stand_expansion_min_total_cents' => $standExpansionMinTotalCents,
             'stand_expansion_max_seats' => $standExpansionMaxSeats,
             'stand_expansion_cash_max' => $standExpansionCashMax,
             'stand_expansion_loan_max' => $standExpansionLoanMax,
@@ -172,6 +224,7 @@ class ShowClubStadium
             'stand_expansion_cash_affordable' => $standExpansionCashAffordable,
             'stand_expansion_loan_affordable' => $standExpansionLoanAffordable,
             'stand_expansion_available' => $standExpansionAvailable,
+            'stand_expansion_state' => $standExpansionState,
 
             // Full rebuild (cumulative bracket pricing).
             'rebuild_cost_bands' => $rebuildBands,
@@ -180,12 +233,15 @@ class ShowClubStadium
             'can_rebuild' => $canRebuild,
             'rebuild_max_capacity' => $rebuildMaxCapacity,
             'rebuild_min' => $rebuildMin,
+            'rebuild_min_total_cents' => $rebuildMinTotalCents,
             'rebuild_step' => $rebuildStep,
             'rebuild_cash_affordable' => $rebuildCashAffordable,
             'rebuild_available' => $rebuildAvailable,
+            'rebuild_state' => $rebuildState,
 
             'loan_cap_cents' => $loanCap,
             'available_budget_cents' => $availableBudgetCents,
+            'current_annual_revenue_cents' => $currentAnnualRevenueCents,
             'current_capacity' => $currentCapacity,
             'reputation_level' => $reputationLevel,
             'reputation_cap_cents' => $reputationCap,

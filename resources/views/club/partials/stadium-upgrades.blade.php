@@ -12,6 +12,7 @@ $activeProject                 = $upgrade['active_project'];
 $activeLoan                    = $upgrade['active_loan'];
 $loanCapCents                  = $upgrade['loan_cap_cents'];
 $availableBudgetCents          = $upgrade['available_budget_cents'];
+$currentAnnualRevenueCents     = $upgrade['current_annual_revenue_cents'];
 $currentCapacity               = $upgrade['current_capacity'];
 $bindingConstraint             = $upgrade['binding_constraint'];
 $nextReputationTier            = $upgrade['next_reputation_tier'];
@@ -21,12 +22,15 @@ $supplementaryHeadroom         = $upgrade['supplementary_headroom'];
 $supplementaryMax              = $upgrade['supplementary_effective_max'];
 $supplementaryPerSeat          = $upgrade['supplementary_per_seat_cents'];
 $supplementaryMin              = $upgrade['supplementary_min'];
+$supplementaryMinTotalCents    = $upgrade['supplementary_min_total_cents'];
 $supplementaryStep             = $upgrade['supplementary_step'];
 $supplementaryAffordable       = $upgrade['supplementary_affordable'];
 $supplementaryNaturalMax       = $upgrade['supplementary_natural_max'];
+$supplementaryState            = $upgrade['supplementary_state'];
 
 $standExpansionPerSeat         = $upgrade['stand_expansion_per_seat_cents'];
 $standExpansionMinSeats        = $upgrade['stand_expansion_min_seats'];
+$standExpansionMinTotalCents   = $upgrade['stand_expansion_min_total_cents'];
 $standExpansionMaxSeats        = $upgrade['stand_expansion_max_seats'];
 $standExpansionCashMax         = $upgrade['stand_expansion_cash_max'];
 $standExpansionLoanMax         = $upgrade['stand_expansion_loan_max'];
@@ -34,6 +38,7 @@ $standExpansionStep            = $upgrade['stand_expansion_step'];
 $standExpansionCashAffordable  = $upgrade['stand_expansion_cash_affordable'];
 $standExpansionLoanAffordable  = $upgrade['stand_expansion_loan_affordable'];
 $standExpansionAvailable       = $upgrade['stand_expansion_available'];
+$standExpansionState           = $upgrade['stand_expansion_state'];
 
 $rebuildBands                  = $upgrade['rebuild_cost_bands'];
 $rebuildEntryPerSeat           = $upgrade['rebuild_entry_per_seat_cents'];
@@ -41,9 +46,11 @@ $rebuildMaxCash                = $upgrade['rebuild_max_capacity_cash'];
 $canRebuild                    = $upgrade['can_rebuild'];
 $rebuildMaxCapacity            = $upgrade['rebuild_max_capacity'];
 $rebuildMin                    = $upgrade['rebuild_min'];
+$rebuildMinTotalCents          = $upgrade['rebuild_min_total_cents'];
 $rebuildStep                   = $upgrade['rebuild_step'];
 $rebuildCashAffordable         = $upgrade['rebuild_cash_affordable'];
 $rebuildAvailable              = $upgrade['rebuild_available'];
+$rebuildState                  = $upgrade['rebuild_state'];
 
 $uefaCurrentLevel              = $upgrade['uefa_current_level'];
 $uefaNextLevel                 = $upgrade['uefa_next_level'];
@@ -56,193 +63,110 @@ $uefaAvailable                 = $upgrade['uefa_available'];
 @endphp
 
 <x-section-card :title="__('club.stadium.upgrades.title')">
-    <div class="px-5 py-4 space-y-4">
+    <div class="px-5 py-4">
 
-            {{-- CTAs. The x-data wrapper is required: Alpine only processes
+        @if($activeProject)
+            {{-- A project is already in flight. Hide the upgrade options
+                 entirely — they're all unactionable, and the history card
+                 below already shows what's being built. A single muted
+                 status line keeps the section explained without repeating
+                 the in-progress state on four disabled rows. --}}
+            <div class="text-sm text-text-muted">
+                {{ __('club.stadium.upgrades.cta_disabled_by_active_project') }}
+            </div>
+        @else
+            {{-- Upgrade list. Four options rendered as a single column of
+                 list-style rows: three capacity tiers (supplementary →
+                 stand expansion → full rebuild) and the UEFA facilities
+                 upgrade. The state-driven left border encodes financing
+                 reachability (green = cash, blue = loan, gold = locked).
+
+                 The x-data wrapper is required: Alpine only processes
                  directives inside an x-data subtree, so without it the
-                 $dispatch('open-modal', ...) calls would never fire.
+                 $dispatch('open-modal', ...) calls would never fire. --}}
+            <div class="flex flex-col gap-3" x-data>
 
-                 Each CTA carries a left-border accent of increasing weight
-                 (subtle → strong → gold) plus a chip row (cost rate +
-                 time-to-ready) so the three options read as a progressive
-                 commitment, not three identical cards.
+                {{-- Tier 1 · Gradas supletorias --}}
+                <x-stadium-upgrade-row
+                    :state="$supplementaryState"
+                    :actionable="$supplementaryState === 'available_cash'"
+                    modal="stadium-supplementary"
+                    :label="__('club.stadium.upgrades.cta_supplementary_label')"
+                    :title="__('club.stadium.upgrades.cta_supplementary_title')"
+                    :cost-label="$supplementaryPerSeat > 0 ? __('club.stadium.upgrades.from_total', ['total' => Money::format($supplementaryMinTotalCents)]) : null"
+                    :duration-label="__('club.stadium.upgrades.time_days_inline', ['days' => 30])"
+                    :locked-reason="$supplementaryState === 'locked' && $supplementaryHeadroom <= 0
+                        ? __('club.stadium.upgrades.cta_supplementary_full_short')
+                        : ($supplementaryState === 'locked' ? __('club.stadium.upgrades.cta_supplementary_no_budget_short', ['budget' => Money::format($availableBudgetCents)]) : null)" />
 
-                 When an active project is in flight, all three CTAs are
-                 disabled with the same "ongoing project" hint — the
-                 history card below is the single source of truth for what
-                 is currently being built. --}}
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3" x-data>
-                {{-- Gradas supletorias --}}
-                <button
-                    type="button"
-                    @if($activeProject || ! $supplementaryAffordable) disabled @endif
-                    x-on:click="$dispatch('open-modal', 'stadium-supplementary')"
-                    class="flex flex-col items-start w-full text-left p-4 rounded-lg border border-border-strong border-l-4 border-l-accent-blue/40 bg-surface-700 hover:bg-surface-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                    <div class="text-[10px] text-text-muted uppercase tracking-widest mb-1">{{ __('club.stadium.upgrades.cta_supplementary_label') }}</div>
-                    <div class="font-heading text-base font-bold text-text-primary">{{ __('club.stadium.upgrades.cta_supplementary_title') }}</div>
+                {{-- Tier 2 · Ampliación de grada --}}
+                <x-stadium-upgrade-row
+                    :state="$standExpansionState"
+                    :actionable="in_array($standExpansionState, ['available_cash', 'available_loan'], true)"
+                    modal="stadium-stand-expansion"
+                    :label="__('club.stadium.upgrades.cta_stand_expansion_label')"
+                    :title="__('club.stadium.upgrades.cta_stand_expansion_title')"
+                    :cost-label="$standExpansionPerSeat > 0 ? __('club.stadium.upgrades.from_total', ['total' => Money::format($standExpansionMinTotalCents)]) : null"
+                    :duration-label="trans_choice('club.stadium.upgrades.time_seasons_inline', 1, ['count' => 1])"
+                    :locked-reason="$standExpansionState === 'locked' ? __('club.stadium.upgrades.cta_stand_expansion_no_budget_short', ['budget' => Money::format($availableBudgetCents)]) : null" />
 
-                    @if(! $activeProject && $supplementaryAffordable && $supplementaryHeadroom > 0)
-                        <div class="flex flex-wrap gap-1.5 mt-3">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-surface-600 text-[10px] font-medium text-text-body uppercase tracking-wider">{{ __('club.stadium.upgrades.chip_per_seat', ['cost' => Money::format($supplementaryPerSeat)]) }}</span>
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-surface-600 text-[10px] font-medium text-text-body uppercase tracking-wider">{{ __('club.stadium.upgrades.chip_time_days', ['days' => 30]) }}</span>
-                        </div>
-                    @endif
+                {{-- Tier 3 · Reconstruir el estadio --}}
+                @php
+                    $rebuildClickable = in_array($rebuildState, ['available_cash', 'available_loan'], true);
+                    $rebuildLockedReason = match ($rebuildState) {
+                        'locked_affordability' => __('club.stadium.upgrades.unlock_with_revenue', ['revenue' => Money::format($revenueRequiredCents)]),
+                        'locked_reputation'    => __('club.stadium.upgrades.unlock_with_reputation', [
+                            'tier' => __('club.stadium.reputation_tiers.'.($nextReputationTier ?? 'modest')),
+                        ]),
+                        default => null,
+                    };
+                @endphp
+                <x-stadium-upgrade-row
+                    :state="$rebuildState"
+                    :actionable="$rebuildClickable"
+                    modal="stadium-rebuild"
+                    :label="__('club.stadium.upgrades.cta_rebuild_label')"
+                    :title="__('club.stadium.upgrades.cta_rebuild_title')"
+                    :cost-label="$rebuildEntryPerSeat > 0 ? __('club.stadium.upgrades.from_total', ['total' => Money::format($rebuildMinTotalCents)]) : null"
+                    :duration-label="trans_choice('club.stadium.upgrades.time_seasons_inline', 2, ['count' => 2])"
+                    :locked-reason="$rebuildLockedReason" />
 
-                    <div class="text-xs text-text-muted mt-3">
-                        @if($activeProject)
-                            {{ __('club.stadium.upgrades.cta_disabled_by_active_project') }}
-                        @elseif($supplementaryHeadroom <= 0)
-                            {{ __('club.stadium.upgrades.cta_supplementary_full') }}
-                        @elseif(! $supplementaryAffordable)
-                            {{ __('club.stadium.upgrades.cta_supplementary_no_budget', [
-                                'minimum' => Money::format($supplementaryMin * $supplementaryPerSeat),
-                                'budget'  => Money::format($availableBudgetCents),
-                            ]) }}
-                        @else
-                            {{ __('club.stadium.upgrades.cta_supplementary_tagline', [
-                                'max' => number_format($supplementaryMax),
-                            ]) }}
-                        @endif
-                    </div>
-                </button>
-
-                {{-- Stand expansion --}}
-                <button
-                    type="button"
-                    @if($activeProject || ! $standExpansionAvailable) disabled @endif
-                    x-on:click="$dispatch('open-modal', 'stadium-stand-expansion')"
-                    class="flex flex-col items-start w-full text-left p-4 rounded-lg border border-border-strong border-l-4 border-l-accent-blue bg-surface-700 hover:bg-surface-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                    <div class="text-[10px] text-accent-blue uppercase tracking-widest mb-1">{{ __('club.stadium.upgrades.cta_stand_expansion_label') }}</div>
-                    <div class="font-heading text-base font-bold text-text-primary">{{ __('club.stadium.upgrades.cta_stand_expansion_title') }}</div>
-
-                    @if(! $activeProject && $standExpansionAvailable)
-                        <div class="flex flex-wrap gap-1.5 mt-3">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-surface-600 text-[10px] font-medium text-text-body uppercase tracking-wider">{{ __('club.stadium.upgrades.chip_per_seat', ['cost' => Money::format($standExpansionPerSeat)]) }}</span>
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-surface-600 text-[10px] font-medium text-text-body uppercase tracking-wider">{{ trans_choice('club.stadium.upgrades.chip_time_seasons', 1, ['count' => 1]) }}</span>
-                        </div>
-                    @endif
-
-                    <div class="text-xs text-text-muted mt-3">
-                        @if($activeProject)
-                            {{ __('club.stadium.upgrades.cta_disabled_by_active_project') }}
-                        @elseif(! $standExpansionAvailable)
-                            {{ __('club.stadium.upgrades.cta_stand_expansion_no_budget', [
-                                'minimum' => Money::format($standExpansionMinSeats * $standExpansionPerSeat),
-                                'budget'  => Money::format($availableBudgetCents),
-                            ]) }}
-                        @else
-                            {{ __('club.stadium.upgrades.cta_stand_expansion_tagline', [
-                                'min' => number_format($standExpansionMinSeats),
-                                'max' => number_format($standExpansionMaxSeats),
-                            ]) }}
-                        @endif
-                    </div>
-                </button>
-
-                {{-- Rebuild --}}
-                <button
-                    type="button"
-                    @if($activeProject || ! $rebuildAvailable) disabled @endif
-                    x-on:click="$dispatch('open-modal', 'stadium-rebuild')"
-                    class="flex flex-col items-start w-full text-left p-4 rounded-lg border border-border-strong border-l-4 border-l-accent-gold bg-surface-700 hover:bg-surface-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                    <div class="text-[10px] text-accent-gold uppercase tracking-widest mb-1">{{ __('club.stadium.upgrades.cta_rebuild_label') }}</div>
-                    <div class="font-heading text-base font-bold text-text-primary">{{ __('club.stadium.upgrades.cta_rebuild_title') }}</div>
-
-                    @if(! $activeProject && $rebuildAvailable)
-                        <div class="flex flex-wrap gap-1.5 mt-3">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-surface-600 text-[10px] font-medium text-text-body uppercase tracking-wider">{{ __('club.stadium.upgrades.chip_per_seat_from', ['cost' => Money::format($rebuildEntryPerSeat)]) }}</span>
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-surface-600 text-[10px] font-medium text-text-body uppercase tracking-wider">{{ trans_choice('club.stadium.upgrades.chip_time_seasons', 2, ['count' => 2]) }}</span>
-                        </div>
-                    @endif
-
-                    <div class="text-xs text-text-muted mt-3">
-                        @if($activeProject)
-                            {{ __('club.stadium.upgrades.cta_disabled_by_active_project') }}
-                        @elseif(! $canRebuild)
-                            {{ __('club.stadium.upgrades.cta_rebuild_reputation_lock', [
-                                'tier' => __('club.stadium.reputation_tiers.modest'),
-                            ]) }}
-                        @elseif($rebuildMaxCapacity <= $currentCapacity && $bindingConstraint === 'reputation')
-                            @if($nextReputationTier)
-                                {{ __('club.stadium.upgrades.cta_rebuild_locked_by_reputation', [
-                                    'cap'  => Money::format($loanCapCents),
-                                    'max'  => number_format($rebuildMaxCapacity),
-                                    'tier' => __('club.stadium.reputation_tiers.'.$nextReputationTier),
-                                ]) }}
-                            @else
-                                {{ __('club.stadium.upgrades.cta_rebuild_locked_at_elite', [
-                                    'cap' => Money::format($loanCapCents),
-                                    'max' => number_format($rebuildMaxCapacity),
-                                ]) }}
-                            @endif
-                        @elseif($rebuildMaxCapacity <= $currentCapacity)
-                            {{ __('club.stadium.upgrades.cta_rebuild_locked_by_affordability', [
-                                'cap'     => Money::format($loanCapCents),
-                                'max'     => number_format($rebuildMaxCapacity),
-                                'revenue' => Money::format($revenueRequiredCents),
-                            ]) }}
-                        @else
-                            {{ __('club.stadium.upgrades.cta_rebuild_tagline', [
-                                'max' => number_format($rebuildMaxCapacity),
-                            ]) }}
-                        @endif
-                    </div>
-                </button>
+                {{-- UEFA category upgrade. Capacity-agnostic facility tier
+                     upgrade (one step at a time): floodlights, dressing
+                     rooms, media facilities. Shares the same row layout
+                     as the capacity tiers so all options read as a list. --}}
+                @php
+                    $uefaActionable = $uefaAvailable;
+                    $uefaState = $uefaActionable
+                        ? ($uefaCashAffordable ? 'available_cash' : 'available_loan')
+                        : 'locked';
+                    $uefaLockedReason = match (true) {
+                        $uefaBlocker === UefaUpgradeBlocker::NoBaseLevel    => __('club.stadium.upgrades.cta_uefa_no_base_level'),
+                        $uefaBlocker === UefaUpgradeBlocker::AlreadyMax     => __('club.stadium.upgrades.cta_uefa_already_max'),
+                        $uefaBlocker === UefaUpgradeBlocker::CapacityFloor  => __('club.stadium.upgrades.cta_uefa_capacity_floor', [
+                            'target'  => $uefaNextLevel,
+                            'min_cap' => number_format($uefaCapacityFloor),
+                        ]),
+                        ! $uefaAvailable => __('club.stadium.upgrades.cta_uefa_no_budget', [
+                            'cost'   => Money::format($uefaUpgradeCost),
+                            'budget' => Money::format($availableBudgetCents),
+                        ]),
+                        default => null,
+                    };
+                @endphp
+                <x-stadium-upgrade-row
+                    :state="$uefaState"
+                    :actionable="$uefaActionable"
+                    modal="stadium-uefa-upgrade"
+                    :label="__('club.stadium.upgrades.cta_uefa_label')"
+                    :title="$uefaCurrentLevel !== null && $uefaNextLevel !== null
+                        ? __('club.stadium.upgrades.cta_uefa_title', ['from' => $uefaCurrentLevel, 'to' => $uefaNextLevel])
+                        : __('club.stadium.upgrades.cta_uefa_title_generic')"
+                    :cost-label="$uefaActionable ? Money::format($uefaUpgradeCost) : null"
+                    :duration-label="$uefaActionable ? trans_choice('club.stadium.upgrades.time_seasons_inline', 1, ['count' => 1]) : null"
+                    :locked-reason="$uefaLockedReason" />
             </div>
-
-            {{-- UEFA category upgrade. Capacity-agnostic facility tier
-                 upgrade (one step at a time): floodlights, dressing
-                 rooms, media facilities. Renders as a compact horizontal
-                 card so it reads as a distinct concern from the capacity
-                 CTAs above. --}}
-            <div x-data
-                 class="flex flex-col md:flex-row md:items-center gap-3 p-4 rounded-lg border border-border-strong border-l-4 border-l-accent-green bg-surface-700">
-                <div class="flex-1 min-w-0">
-                    <div class="text-[10px] text-accent-green uppercase tracking-widest mb-1">{{ __('club.stadium.upgrades.cta_uefa_label') }}</div>
-                    <div class="font-heading text-base font-bold text-text-primary">
-                        @if($uefaCurrentLevel !== null && $uefaNextLevel !== null)
-                            {{ __('club.stadium.upgrades.cta_uefa_title', ['from' => $uefaCurrentLevel, 'to' => $uefaNextLevel]) }}
-                        @else
-                            {{ __('club.stadium.upgrades.cta_uefa_title_generic') }}
-                        @endif
-                    </div>
-                    <div class="text-xs text-text-muted mt-1.5">
-                        @if($activeProject)
-                            {{ __('club.stadium.upgrades.cta_disabled_by_active_project') }}
-                        @elseif($uefaBlocker === UefaUpgradeBlocker::NoBaseLevel)
-                            {{ __('club.stadium.upgrades.cta_uefa_no_base_level') }}
-                        @elseif($uefaBlocker === UefaUpgradeBlocker::AlreadyMax)
-                            {{ __('club.stadium.upgrades.cta_uefa_already_max') }}
-                        @elseif($uefaBlocker === UefaUpgradeBlocker::CapacityFloor)
-                            {{ __('club.stadium.upgrades.cta_uefa_capacity_floor', [
-                                'target'   => $uefaNextLevel,
-                                'min_cap'  => number_format($uefaCapacityFloor),
-                            ]) }}
-                        @elseif(! $uefaAvailable)
-                            {{ __('club.stadium.upgrades.cta_uefa_no_budget', [
-                                'cost'   => Money::format($uefaUpgradeCost),
-                                'budget' => Money::format($availableBudgetCents),
-                            ]) }}
-                        @else
-                            {{ __('club.stadium.upgrades.cta_uefa_tagline', [
-                                'target' => $uefaNextLevel,
-                                'cost'   => Money::format($uefaUpgradeCost),
-                            ]) }}
-                        @endif
-                    </div>
-                </div>
-                <button
-                    type="button"
-                    @if($activeProject || ! $uefaAvailable) disabled @endif
-                    x-on:click="$dispatch('open-modal', 'stadium-uefa-upgrade')"
-                    class="shrink-0 inline-flex items-center justify-center px-4 py-2 rounded-lg bg-accent-green/20 hover:bg-accent-green/30 border border-accent-green/40 text-accent-green text-xs font-semibold uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                    {{ __('club.stadium.upgrades.cta_uefa_button') }}
-                </button>
-            </div>
+        @endif
 
     </div>
 </x-section-card>
@@ -275,7 +199,7 @@ $uefaAvailable                 = $upgrade['uefa_available'];
             <div>
                 <label class="block text-[10px] text-text-muted uppercase tracking-widest mb-2">
                     {{ __('club.stadium.upgrades.seats_to_add') }}
-                    <span x-text="seats.toLocaleString('es-ES')" class="font-heading text-base text-text-primary ml-2"></span>
+                    <span x-text="seats.toLocaleString('es-ES')" class="font-heading text-base font-semibold text-text-primary ml-2"></span>
                 </label>
                 <input type="range" name="seats"
                        min="{{ $supplementaryMin }}"
@@ -357,7 +281,7 @@ $uefaAvailable                 = $upgrade['uefa_available'];
             <div>
                 <label class="block text-[10px] text-text-muted uppercase tracking-widest mb-2">
                     {{ __('club.stadium.upgrades.seats_to_add') }}
-                    <span x-text="seats.toLocaleString('es-ES')" class="font-heading text-base text-text-primary ml-2"></span>
+                    <span x-text="seats.toLocaleString('es-ES')" class="font-heading text-base font-semibold text-text-primary ml-2"></span>
                 </label>
                 <input type="range" name="seats"
                        :min="min"
