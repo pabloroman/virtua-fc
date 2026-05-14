@@ -100,7 +100,8 @@ class StadiumLoanService
     }
 
     /**
-     * Create a stadium loan to fund a rebuild or stand-expansion project.
+     * Create a stadium loan to fund a rebuild, stand-expansion, or UEFA
+     * category upgrade project. Supplementary stands are cash-only.
      * The full principal is treated as drawn at commit time; repayments
      * begin from the next season.
      */
@@ -109,8 +110,9 @@ class StadiumLoanService
         if (! in_array($project->type, [
             StadiumProjectType::Rebuild,
             StadiumProjectType::StandExpansion,
+            StadiumProjectType::UefaUpgrade,
         ], true)) {
-            throw new InvalidArgumentException('Stadium loans only fund rebuild or stand-expansion projects.');
+            throw new InvalidArgumentException('Stadium loans only fund rebuild, stand-expansion, or UEFA-upgrade projects.');
         }
 
         if ($principalCents <= 0) {
