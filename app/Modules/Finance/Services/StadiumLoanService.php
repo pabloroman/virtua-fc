@@ -77,14 +77,17 @@ class StadiumLoanService
     }
 
     /**
-     * Create a stadium loan to fund a rebuild project. The full principal
-     * is treated as drawn at commit time; repayments begin from the next
-     * season.
+     * Create a stadium loan to fund a rebuild or stand-expansion project.
+     * The full principal is treated as drawn at commit time; repayments
+     * begin from the next season.
      */
     public function request(Game $game, GameStadiumProject $project, int $principalCents): StadiumLoan
     {
-        if ($project->type !== GameStadiumProject::TYPE_REBUILD) {
-            throw new InvalidArgumentException('Stadium loans only fund rebuild projects.');
+        if (! in_array($project->type, [
+            GameStadiumProject::TYPE_REBUILD,
+            GameStadiumProject::TYPE_STAND_EXPANSION,
+        ], true)) {
+            throw new InvalidArgumentException('Stadium loans only fund rebuild or stand-expansion projects.');
         }
 
         if ($principalCents <= 0) {
