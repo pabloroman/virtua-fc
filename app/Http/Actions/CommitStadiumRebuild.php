@@ -2,13 +2,17 @@
 
 namespace App\Http\Actions;
 
+use App\Http\Actions\Concerns\HandlesStadiumProjectCommit;
 use App\Models\Game;
-use App\Models\GameStadiumProject;
-use App\Modules\Finance\Services\StadiumUpgradeService;
+use App\Modules\Stadium\Enums\StadiumProjectFinancing;
+use App\Modules\Stadium\Services\StadiumUpgradeService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CommitStadiumRebuild
 {
+    use HandlesStadiumProjectCommit;
+
     public function __construct(
         private readonly StadiumUpgradeService $stadiumUpgradeService,
     ) {}
@@ -16,26 +20,20 @@ class CommitStadiumRebuild
     public function __invoke(Request $request, string $gameId)
     {
         $game = Game::with('team')->findOrFail($gameId);
-
         $validated = $request->validate([
             'capacity' => 'required|integer|min:1',
-            'financing' => 'required|in:'.GameStadiumProject::FINANCING_CASH.','.GameStadiumProject::FINANCING_LOAN,
+            'financing' => ['required', Rule::enum(StadiumProjectFinancing::class)],
         ]);
 
-        try {
-            $this->stadiumUpgradeService->commitRebuild(
-                $game,
-                (int) $validated['capacity'],
-                $validated['financing'],
-            );
-        } catch (\InvalidArgumentException $e) {
-            return redirect()->route('game.club.stadium', $gameId)
-                ->with('error', __($e->getMessage()));
+        $capacity = (int) $validated['capacity'];
+        $financing = StadiumProjectFinancing::from($validated['financing']);
+
+        if ($redirect = $this->safeCommit($gameId, fn () => $this->stadiumUpgradeService->commitRebuild($game, $capacity, $financing))) {
+            return $redirect;
         }
 
-        return redirect()->route('game.club.stadium', $gameId)
-            ->with('success', __('messages.stadium_rebuild_committed', [
-                'capacity' => number_format((int) $validated['capacity'], 0, ',', '.'),
-            ]));
+        return $this->stadiumSuccess($gameId, 'messages.stadium_rebuild_committed', [
+            'capacity' => number_format($capacity, 0, ',', '.'),
+        ]);
     }
 }

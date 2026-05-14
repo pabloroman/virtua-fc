@@ -2,26 +2,28 @@
 
 namespace App\Models;
 
+use App\Modules\Stadium\Enums\StadiumProjectFinancing;
+use App\Modules\Stadium\Enums\StadiumProjectStatus;
+use App\Modules\Stadium\Enums\StadiumProjectType;
 use App\Support\Money;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
 
 /**
  * @property string $id
  * @property string $game_id
  * @property string $team_id
- * @property string $type
- * @property string $status
+ * @property StadiumProjectType $type
+ * @property StadiumProjectStatus $status
  * @property int $target_capacity
  * @property int $committed_season
  * @property \Illuminate\Support\Carbon $committed_date
  * @property \Illuminate\Support\Carbon|null $completion_date
  * @property int|null $completion_season
  * @property int $total_cost_cents
- * @property string $financing
+ * @property StadiumProjectFinancing $financing
  * @property int $paid_cents
  * @property string|null $stadium_loan_id
  * @property-read \App\Models\Game $game
@@ -34,18 +36,6 @@ class GameStadiumProject extends Model
     use HasUuids;
 
     public $timestamps = false;
-
-    public const TYPE_SUPPLEMENTARY = 'supplementary';
-    public const TYPE_STAND_EXPANSION = 'stand_expansion';
-    public const TYPE_REBUILD = 'rebuild';
-    public const TYPE_UEFA_UPGRADE = 'uefa_upgrade';
-
-    public const STATUS_PENDING = 'pending';
-    public const STATUS_IN_PROGRESS = 'in_progress';
-    public const STATUS_COMPLETED = 'completed';
-
-    public const FINANCING_CASH = 'cash';
-    public const FINANCING_LOAN = 'loan';
 
     protected $fillable = [
         'game_id',
@@ -64,6 +54,9 @@ class GameStadiumProject extends Model
     ];
 
     protected $casts = [
+        'type' => StadiumProjectType::class,
+        'status' => StadiumProjectStatus::class,
+        'financing' => StadiumProjectFinancing::class,
         'target_capacity' => 'integer',
         'committed_season' => 'integer',
         'committed_date' => 'date',
@@ -85,32 +78,35 @@ class GameStadiumProject extends Model
 
     public function scopeActive(Builder $query): Builder
     {
-        return $query->whereIn('status', [self::STATUS_PENDING, self::STATUS_IN_PROGRESS]);
+        return $query->whereIn('status', [
+            StadiumProjectStatus::Pending->value,
+            StadiumProjectStatus::InProgress->value,
+        ]);
     }
 
-    public function scopeOfType(Builder $query, string $type): Builder
+    public function scopeOfType(Builder $query, StadiumProjectType $type): Builder
     {
-        return $query->where('type', $type);
+        return $query->where('type', $type->value);
     }
 
     public function isSupplementary(): bool
     {
-        return $this->type === self::TYPE_SUPPLEMENTARY;
+        return $this->type === StadiumProjectType::Supplementary;
     }
 
     public function isStandExpansion(): bool
     {
-        return $this->type === self::TYPE_STAND_EXPANSION;
+        return $this->type === StadiumProjectType::StandExpansion;
     }
 
     public function isRebuild(): bool
     {
-        return $this->type === self::TYPE_REBUILD;
+        return $this->type === StadiumProjectType::Rebuild;
     }
 
     public function isUefaUpgrade(): bool
     {
-        return $this->type === self::TYPE_UEFA_UPGRADE;
+        return $this->type === StadiumProjectType::UefaUpgrade;
     }
 
     /**
@@ -119,7 +115,7 @@ class GameStadiumProject extends Model
      */
     public function reducesMatchCapacity(): bool
     {
-        return $this->isRebuild() && $this->status === self::STATUS_IN_PROGRESS;
+        return $this->isRebuild() && $this->status === StadiumProjectStatus::InProgress;
     }
 
     public function getFormattedTotalCostAttribute(): string

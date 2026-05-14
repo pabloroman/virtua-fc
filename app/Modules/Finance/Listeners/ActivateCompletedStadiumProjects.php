@@ -6,6 +6,8 @@ use App\Models\GameStadium;
 use App\Models\GameStadiumProject;
 use App\Modules\Match\Events\GameDateAdvanced;
 use App\Modules\Notification\Services\NotificationService;
+use App\Modules\Stadium\Enums\StadiumProjectStatus;
+use App\Modules\Stadium\Enums\StadiumProjectType;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -23,8 +25,8 @@ class ActivateCompletedStadiumProjects
     {
         $due = GameStadiumProject::query()
             ->where('game_id', $event->game->id)
-            ->where('type', GameStadiumProject::TYPE_SUPPLEMENTARY)
-            ->where('status', GameStadiumProject::STATUS_IN_PROGRESS)
+            ->where('type', StadiumProjectType::Supplementary->value)
+            ->where('status', StadiumProjectStatus::InProgress->value)
             ->whereNotNull('completion_date')
             ->where('completion_date', '<=', $event->newDate->toDateString())
             ->get();
@@ -46,11 +48,11 @@ class ActivateCompletedStadiumProjects
                 }
 
                 $stadium->increment('supplementary_seats', $project->target_capacity);
-                $project->update(['status' => GameStadiumProject::STATUS_COMPLETED]);
+                $project->update(['status' => StadiumProjectStatus::Completed]);
 
                 $this->notificationService->notifyStadiumProjectCompleted(
                     $event->game,
-                    GameStadiumProject::TYPE_SUPPLEMENTARY,
+                    StadiumProjectType::Supplementary,
                     $stadium->fresh()->effective_capacity,
                 );
             }

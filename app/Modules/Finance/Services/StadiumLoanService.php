@@ -9,6 +9,8 @@ use App\Models\GameStadiumProject;
 use App\Models\StadiumLoan;
 use App\Models\TeamReputation;
 use App\Modules\Notification\Services\NotificationService;
+use App\Modules\Stadium\Enums\StadiumLoanStatus;
+use App\Modules\Stadium\Enums\StadiumProjectType;
 use InvalidArgumentException;
 
 class StadiumLoanService
@@ -77,6 +79,27 @@ class StadiumLoanService
     }
 
     /**
+     * Projected operating revenue (cents/year) required so that
+     * `affordabilityLoanCap` reaches at least `$principalCents`. Used by
+     * the stadium UI to tell the user how much income they need to unlock
+     * a target rebuild.
+     */
+    public function revenueRequiredForPrincipal(int $principalCents): int
+    {
+        $maxPct = (float) config('finances.stadium_loan.max_debt_service_pct', 0.25);
+        $termYears = (int) config('finances.stadium_loan.term_years', 10);
+        $rateBps = (int) config('finances.stadium_loan.interest_rate_bps', 400);
+
+        $firstYearRate = (1 / $termYears) + ($rateBps / 10000);
+
+        if ($firstYearRate <= 0 || $maxPct <= 0) {
+            return 0;
+        }
+
+        return (int) ceil($principalCents * $firstYearRate / $maxPct);
+    }
+
+    /**
      * Create a stadium loan to fund a rebuild or stand-expansion project.
      * The full principal is treated as drawn at commit time; repayments
      * begin from the next season.
@@ -84,8 +107,8 @@ class StadiumLoanService
     public function request(Game $game, GameStadiumProject $project, int $principalCents): StadiumLoan
     {
         if (! in_array($project->type, [
-            GameStadiumProject::TYPE_REBUILD,
-            GameStadiumProject::TYPE_STAND_EXPANSION,
+            StadiumProjectType::Rebuild,
+            StadiumProjectType::StandExpansion,
         ], true)) {
             throw new InvalidArgumentException('Stadium loans only fund rebuild or stand-expansion projects.');
         }
@@ -108,7 +131,7 @@ class StadiumLoanService
             'remaining_principal_cents' => $principalCents,
             // First repayment is billed at the next season-close.
             'season_started' => (int) $game->season + 1,
-            'status' => StadiumLoan::STATUS_ACTIVE,
+            'status' => StadiumLoanStatus::Active,
         ]);
 
         $project->stadium_loan_id = $loan->id;
@@ -145,7 +168,7 @@ class StadiumLoanService
 
         $loan->remaining_principal_cents = max(0, $loan->remaining_principal_cents - $principal);
         if ($loan->remaining_principal_cents === 0) {
-            $loan->status = StadiumLoan::STATUS_REPAID;
+            $loan->status = StadiumLoanStatus::Repaid;
         }
         $loan->save();
 
@@ -159,7 +182,7 @@ class StadiumLoanService
             transactionDate: $game->current_date->toDateString(),
         );
 
-        if ($loan->status === StadiumLoan::STATUS_REPAID) {
+        if ($loan->status === StadiumLoanStatus::Repaid) {
             $this->notificationService->notifyStadiumLoanRepaid($game, $loan->formatted_principal);
         }
 
@@ -175,17 +198,8 @@ class StadiumLoanService
     {
         return (int) StadiumLoan::query()
             ->where('game_id', $game->id)
-            ->where('status', StadiumLoan::STATUS_ACTIVE)
+            ->where('status', StadiumLoanStatus::Active->value)
             ->get()
             ->sum(fn (StadiumLoan $loan) => $loan->next_payment_cents);
-    }
-
-    public function activeLoanForProject(GameStadiumProject $project): ?StadiumLoan
-    {
-        if ($project->stadium_loan_id === null) {
-            return null;
-        }
-
-        return StadiumLoan::find($project->stadium_loan_id);
     }
 }

@@ -10,6 +10,9 @@ use App\Modules\Finance\Services\StadiumLoanService;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
+use App\Modules\Stadium\Enums\StadiumLoanStatus;
+use App\Modules\Stadium\Enums\StadiumProjectStatus;
+use App\Modules\Stadium\Enums\StadiumProjectType;
 
 /**
  * Progresses rebuild and stand-expansion projects across the season
@@ -53,13 +56,38 @@ class StadiumProjectProgressionProcessor implements SeasonProcessor
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
+        // Cheap short-circuit: the vast majority of games have no stadium
+        // projects or loans at any given time. Two cheap `exists()` queries
+        // beat four targeted `get()`s every season for every game.
+        $hasProjects = GameStadiumProject::query()
+            ->where('game_id', $game->id)
+            ->whereIn('status', [
+                StadiumProjectStatus::Pending->value,
+                StadiumProjectStatus::InProgress->value,
+            ])
+            ->exists();
+
+        $hasLoans = StadiumLoan::query()
+            ->where('game_id', $game->id)
+            ->where('status', StadiumLoanStatus::Active->value)
+            ->exists();
+
+        if (! $hasProjects && ! $hasLoans) {
+            return $data;
+        }
+
         $closingSeason = (int) $game->season;
         $nextSeason = $closingSeason + 1;
 
-        $this->progressRebuilds($game, $closingSeason, $nextSeason);
-        $this->progressStandExpansions($game, $nextSeason);
-        $this->progressUefaUpgrades($game, $nextSeason);
-        $this->billActiveLoans($game);
+        if ($hasProjects) {
+            $this->progressRebuilds($game, $closingSeason, $nextSeason);
+            $this->progressStandExpansions($game, $nextSeason);
+            $this->progressUefaUpgrades($game, $nextSeason);
+        }
+
+        if ($hasLoans) {
+            $this->billActiveLoans($game);
+        }
 
         return $data;
     }
@@ -68,24 +96,24 @@ class StadiumProjectProgressionProcessor implements SeasonProcessor
     {
         $projects = GameStadiumProject::query()
             ->where('game_id', $game->id)
-            ->where('type', GameStadiumProject::TYPE_REBUILD)
+            ->where('type', StadiumProjectType::Rebuild->value)
             ->whereIn('status', [
-                GameStadiumProject::STATUS_PENDING,
-                GameStadiumProject::STATUS_IN_PROGRESS,
+                StadiumProjectStatus::Pending->value,
+                StadiumProjectStatus::InProgress->value,
             ])
             ->get();
 
         foreach ($projects as $project) {
             if (
-                $project->status === GameStadiumProject::STATUS_PENDING
+                $project->status === StadiumProjectStatus::Pending
                 && $project->committed_season === $closingSeason
             ) {
-                $project->update(['status' => GameStadiumProject::STATUS_IN_PROGRESS]);
+                $project->update(['status' => StadiumProjectStatus::InProgress]);
                 continue;
             }
 
             if (
-                $project->status === GameStadiumProject::STATUS_IN_PROGRESS
+                $project->status === StadiumProjectStatus::InProgress
                 && $project->completion_season === $nextSeason
             ) {
                 $this->completeRebuild($game, $project);
@@ -97,8 +125,8 @@ class StadiumProjectProgressionProcessor implements SeasonProcessor
     {
         $projects = GameStadiumProject::query()
             ->where('game_id', $game->id)
-            ->where('type', GameStadiumProject::TYPE_STAND_EXPANSION)
-            ->where('status', GameStadiumProject::STATUS_PENDING)
+            ->where('type', StadiumProjectType::StandExpansion->value)
+            ->where('status', StadiumProjectStatus::Pending->value)
             ->where('completion_season', $nextSeason)
             ->get();
 
@@ -111,8 +139,8 @@ class StadiumProjectProgressionProcessor implements SeasonProcessor
     {
         $projects = GameStadiumProject::query()
             ->where('game_id', $game->id)
-            ->where('type', GameStadiumProject::TYPE_UEFA_UPGRADE)
-            ->where('status', GameStadiumProject::STATUS_PENDING)
+            ->where('type', StadiumProjectType::UefaUpgrade->value)
+            ->where('status', StadiumProjectStatus::Pending->value)
             ->where('completion_season', $nextSeason)
             ->get();
 
@@ -137,13 +165,13 @@ class StadiumProjectProgressionProcessor implements SeasonProcessor
         $stadium->update(['rebuilt_uefa_level' => (int) $project->target_capacity]);
 
         $project->update([
-            'status' => GameStadiumProject::STATUS_COMPLETED,
+            'status' => StadiumProjectStatus::Completed,
             'completion_date' => $game->current_date,
         ]);
 
         $this->notificationService->notifyStadiumProjectCompleted(
             $game,
-            GameStadiumProject::TYPE_UEFA_UPGRADE,
+            StadiumProjectType::UefaUpgrade,
             (int) $project->target_capacity,
         );
     }
@@ -170,14 +198,14 @@ class StadiumProjectProgressionProcessor implements SeasonProcessor
         ]);
 
         $project->update([
-            'status' => GameStadiumProject::STATUS_COMPLETED,
+            'status' => StadiumProjectStatus::Completed,
             'completion_date' => $game->current_date,
         ]);
 
         $this->notificationService->notifyStadiumProjectCompleted(
             $game,
-            GameStadiumProject::TYPE_STAND_EXPANSION,
-            $stadium->fresh()->effective_capacity,
+            StadiumProjectType::StandExpansion,
+            $stadium->effective_capacity,
         );
     }
 
@@ -202,14 +230,14 @@ class StadiumProjectProgressionProcessor implements SeasonProcessor
         ]);
 
         $project->update([
-            'status' => GameStadiumProject::STATUS_COMPLETED,
+            'status' => StadiumProjectStatus::Completed,
             'completion_date' => $game->current_date,
         ]);
 
         $this->notificationService->notifyStadiumProjectCompleted(
             $game,
-            GameStadiumProject::TYPE_REBUILD,
-            $stadium->fresh()->effective_capacity,
+            StadiumProjectType::Rebuild,
+            $stadium->effective_capacity,
         );
     }
 
@@ -217,7 +245,7 @@ class StadiumProjectProgressionProcessor implements SeasonProcessor
     {
         $loans = StadiumLoan::query()
             ->where('game_id', $game->id)
-            ->where('status', StadiumLoan::STATUS_ACTIVE)
+            ->where('status', StadiumLoanStatus::Active->value)
             ->get();
 
         foreach ($loans as $loan) {

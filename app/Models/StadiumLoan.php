@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Modules\Stadium\Enums\StadiumLoanStatus;
 use App\Support\Money;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
@@ -23,7 +24,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $interest_rate_bps
  * @property int $remaining_principal_cents
  * @property int $season_started
- * @property string $status
+ * @property StadiumLoanStatus $status
  * @property-read \App\Models\Game $game
  * @property-read \App\Models\GameStadiumProject $project
  * @property-read int $annual_principal_payment_cents
@@ -38,9 +39,6 @@ class StadiumLoan extends Model
 
     public $timestamps = false;
 
-    public const STATUS_ACTIVE = 'active';
-    public const STATUS_REPAID = 'repaid';
-
     protected $fillable = [
         'game_id',
         'stadium_project_id',
@@ -53,6 +51,7 @@ class StadiumLoan extends Model
     ];
 
     protected $casts = [
+        'status' => StadiumLoanStatus::class,
         'principal_cents' => 'integer',
         'term_years' => 'integer',
         'interest_rate_bps' => 'integer',
@@ -72,7 +71,7 @@ class StadiumLoan extends Model
 
     public function isActive(): bool
     {
-        return $this->status === self::STATUS_ACTIVE;
+        return $this->status === StadiumLoanStatus::Active;
     }
 
     /**

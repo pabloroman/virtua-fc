@@ -1,16 +1,20 @@
 <?php
 
-namespace App\Modules\Finance\Services;
+namespace App\Modules\Stadium\Services;
 
 use App\Models\ClubProfile;
 use App\Models\FinancialTransaction;
 use App\Models\Game;
 use App\Models\GameStadium;
 use App\Models\GameStadiumProject;
-use App\Models\StadiumLoan;
 use App\Models\TeamReputation;
 use App\Models\TransferOffer;
+use App\Modules\Finance\Services\StadiumLoanService;
 use App\Modules\Notification\Services\NotificationService;
+use App\Modules\Stadium\Enums\StadiumProjectFinancing;
+use App\Modules\Stadium\Enums\StadiumProjectStatus;
+use App\Modules\Stadium\Enums\StadiumProjectType;
+use App\Modules\Stadium\Enums\UefaUpgradeBlocker;
 use App\Modules\Stadium\UefaCategory;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -257,15 +261,15 @@ class StadiumUpgradeService
             $project = GameStadiumProject::create([
                 'game_id' => $game->id,
                 'team_id' => $game->team_id,
-                'type' => GameStadiumProject::TYPE_SUPPLEMENTARY,
-                'status' => GameStadiumProject::STATUS_IN_PROGRESS,
+                'type' => StadiumProjectType::Supplementary,
+                'status' => StadiumProjectStatus::InProgress,
                 'target_capacity' => $seats,
                 'committed_season' => (int) $game->season,
                 'committed_date' => $game->current_date,
                 'completion_date' => $completionDate,
                 'completion_season' => null,
                 'total_cost_cents' => $cost,
-                'financing' => GameStadiumProject::FINANCING_CASH,
+                'financing' => StadiumProjectFinancing::Cash,
                 'paid_cents' => $cost,
             ]);
 
@@ -275,7 +279,7 @@ class StadiumUpgradeService
 
             $this->notificationService->notifyStadiumProjectCommitted(
                 $game,
-                GameStadiumProject::TYPE_SUPPLEMENTARY,
+                StadiumProjectType::Supplementary,
                 $seats,
                 $completionDate->isoFormat('LL'),
             );
@@ -291,7 +295,7 @@ class StadiumUpgradeService
     public function commitRebuild(
         Game $game,
         int $targetCapacity,
-        string $financing,
+        StadiumProjectFinancing $financing,
     ): GameStadiumProject {
         if ($this->activeProject($game) !== null) {
             throw new InvalidArgumentException('messages.stadium_active_project_exists');
@@ -311,16 +315,9 @@ class StadiumUpgradeService
             throw new InvalidArgumentException('messages.stadium_rebuild_exceeds_max_capacity');
         }
 
-        if (! in_array($financing, [
-            GameStadiumProject::FINANCING_CASH,
-            GameStadiumProject::FINANCING_LOAN,
-        ], true)) {
-            throw new InvalidArgumentException('messages.stadium_invalid_financing');
-        }
-
         $cost = $this->rebuildCostFor($targetCapacity);
 
-        if ($financing === GameStadiumProject::FINANCING_CASH) {
+        if ($financing === StadiumProjectFinancing::Cash) {
             $this->assertCashAvailable($game, $cost);
         }
 
@@ -330,8 +327,8 @@ class StadiumUpgradeService
             $project = GameStadiumProject::create([
                 'game_id' => $game->id,
                 'team_id' => $game->team_id,
-                'type' => GameStadiumProject::TYPE_REBUILD,
-                'status' => GameStadiumProject::STATUS_PENDING,
+                'type' => StadiumProjectType::Rebuild,
+                'status' => StadiumProjectStatus::Pending,
                 'target_capacity' => $targetCapacity,
                 'committed_season' => $committedSeason,
                 'committed_date' => $game->current_date,
@@ -341,10 +338,10 @@ class StadiumUpgradeService
                 'completion_season' => $committedSeason + 2,
                 'total_cost_cents' => $cost,
                 'financing' => $financing,
-                'paid_cents' => $financing === GameStadiumProject::FINANCING_CASH ? $cost : 0,
+                'paid_cents' => $financing === StadiumProjectFinancing::Cash ? $cost : 0,
             ]);
 
-            if ($financing === GameStadiumProject::FINANCING_CASH) {
+            if ($financing === StadiumProjectFinancing::Cash) {
                 $this->deductCash($game, $cost, __('finances.tx_stadium_rebuild_payment', [
                     'capacity' => number_format($targetCapacity, 0, ',', '.'),
                 ]));
@@ -354,7 +351,7 @@ class StadiumUpgradeService
 
             $this->notificationService->notifyStadiumProjectCommitted(
                 $game,
-                GameStadiumProject::TYPE_REBUILD,
+                StadiumProjectType::Rebuild,
                 $targetCapacity,
                 (string) ($committedSeason + 2),
             );
@@ -372,7 +369,7 @@ class StadiumUpgradeService
     public function commitStandExpansion(
         Game $game,
         int $seats,
-        string $financing,
+        StadiumProjectFinancing $financing,
     ): GameStadiumProject {
         if ($this->activeProject($game) !== null) {
             throw new InvalidArgumentException('messages.stadium_active_project_exists');
@@ -386,16 +383,9 @@ class StadiumUpgradeService
             throw new InvalidArgumentException('messages.stadium_supplementary_exceeds_cap');
         }
 
-        if (! in_array($financing, [
-            GameStadiumProject::FINANCING_CASH,
-            GameStadiumProject::FINANCING_LOAN,
-        ], true)) {
-            throw new InvalidArgumentException('messages.stadium_invalid_financing');
-        }
-
         $cost = $seats * $this->standExpansionCostPerSeat();
 
-        if ($financing === GameStadiumProject::FINANCING_CASH) {
+        if ($financing === StadiumProjectFinancing::Cash) {
             $this->assertCashAvailable($game, $cost);
         } else {
             // Reuse the rebuild loan cap as the bank's ceiling on
@@ -412,8 +402,8 @@ class StadiumUpgradeService
             $project = GameStadiumProject::create([
                 'game_id' => $game->id,
                 'team_id' => $game->team_id,
-                'type' => GameStadiumProject::TYPE_STAND_EXPANSION,
-                'status' => GameStadiumProject::STATUS_PENDING,
+                'type' => StadiumProjectType::StandExpansion,
+                'status' => StadiumProjectStatus::Pending,
                 'target_capacity' => $seats,
                 'committed_season' => $committedSeason,
                 'committed_date' => $game->current_date,
@@ -422,10 +412,10 @@ class StadiumUpgradeService
                 'completion_season' => $committedSeason + 1,
                 'total_cost_cents' => $cost,
                 'financing' => $financing,
-                'paid_cents' => $financing === GameStadiumProject::FINANCING_CASH ? $cost : 0,
+                'paid_cents' => $financing === StadiumProjectFinancing::Cash ? $cost : 0,
             ]);
 
-            if ($financing === GameStadiumProject::FINANCING_CASH) {
+            if ($financing === StadiumProjectFinancing::Cash) {
                 $this->deductCash($game, $cost, __('finances.tx_stadium_stand_expansion_payment', [
                     'seats' => number_format($seats, 0, ',', '.'),
                 ]));
@@ -435,7 +425,7 @@ class StadiumUpgradeService
 
             $this->notificationService->notifyStadiumProjectCommitted(
                 $game,
-                GameStadiumProject::TYPE_STAND_EXPANSION,
+                StadiumProjectType::StandExpansion,
                 $seats,
                 (string) ($committedSeason + 1),
             );
@@ -458,36 +448,29 @@ class StadiumUpgradeService
 
     /**
      * Why the next UEFA upgrade can't be committed right now. Returns
-     * null when an upgrade IS available. The view consumes the reason
-     * code to render an explanatory hint on the CTA.
-     *
-     *   'already_max'      — already at Cat 4
-     *   'capacity_floor'   — current capacity below the next category's
-     *                        UEFA minimum
-     *   'no_base_level'    — stadium has no UEFA category at all (e.g.
-     *                        placeholder team / sub-200-seat ground)
-     *   'active_project'   — another project is in flight
+     * null when an upgrade IS available. The view consumes the blocker
+     * case to render an explanatory hint on the CTA.
      */
-    public function uefaUpgradeBlocker(Game $game): ?string
+    public function uefaUpgradeBlocker(Game $game): ?UefaUpgradeBlocker
     {
         if ($this->activeProject($game) !== null) {
-            return 'active_project';
+            return UefaUpgradeBlocker::ActiveProject;
         }
 
         $stadium = $this->stadiumFor($game);
         $current = $stadium->effective_uefa_level;
 
         if ($current === null) {
-            return 'no_base_level';
+            return UefaUpgradeBlocker::NoBaseLevel;
         }
 
         if ($current >= UefaCategory::MAX) {
-            return 'already_max';
+            return UefaUpgradeBlocker::AlreadyMax;
         }
 
         $target = $current + 1;
         if ($stadium->effective_capacity < UefaCategory::capacityFloor($target)) {
-            return 'capacity_floor';
+            return UefaUpgradeBlocker::CapacityFloor;
         }
 
         return null;
@@ -501,23 +484,11 @@ class StadiumUpgradeService
      */
     public function commitUefaUpgrade(
         Game $game,
-        string $financing,
+        StadiumProjectFinancing $financing,
     ): GameStadiumProject {
         $blocker = $this->uefaUpgradeBlocker($game);
         if ($blocker !== null) {
-            throw new InvalidArgumentException(match ($blocker) {
-                'active_project'  => 'messages.stadium_active_project_exists',
-                'already_max'     => 'messages.stadium_uefa_already_max',
-                'capacity_floor'  => 'messages.stadium_uefa_capacity_floor',
-                'no_base_level'   => 'messages.stadium_uefa_no_base_level',
-            });
-        }
-
-        if (! in_array($financing, [
-            GameStadiumProject::FINANCING_CASH,
-            GameStadiumProject::FINANCING_LOAN,
-        ], true)) {
-            throw new InvalidArgumentException('messages.stadium_invalid_financing');
+            throw new InvalidArgumentException($blocker->messageKey());
         }
 
         $stadium = $this->stadiumFor($game);
@@ -529,7 +500,7 @@ class StadiumUpgradeService
             throw new InvalidArgumentException('messages.stadium_uefa_already_max');
         }
 
-        if ($financing === GameStadiumProject::FINANCING_CASH) {
+        if ($financing === StadiumProjectFinancing::Cash) {
             $this->assertCashAvailable($game, $cost);
         } else {
             if ($cost > $this->loanService->maxLoanCap($game)) {
@@ -543,8 +514,8 @@ class StadiumUpgradeService
             $project = GameStadiumProject::create([
                 'game_id' => $game->id,
                 'team_id' => $game->team_id,
-                'type' => GameStadiumProject::TYPE_UEFA_UPGRADE,
-                'status' => GameStadiumProject::STATUS_PENDING,
+                'type' => StadiumProjectType::UefaUpgrade,
+                'status' => StadiumProjectStatus::Pending,
                 // target_capacity stores the target UEFA level (1–4) for
                 // this project type. The history view branches on type
                 // before rendering, so the integer never gets mistaken
@@ -556,10 +527,10 @@ class StadiumUpgradeService
                 'completion_season' => $committedSeason + 1,
                 'total_cost_cents' => $cost,
                 'financing' => $financing,
-                'paid_cents' => $financing === GameStadiumProject::FINANCING_CASH ? $cost : 0,
+                'paid_cents' => $financing === StadiumProjectFinancing::Cash ? $cost : 0,
             ]);
 
-            if ($financing === GameStadiumProject::FINANCING_CASH) {
+            if ($financing === StadiumProjectFinancing::Cash) {
                 $this->deductCash($game, $cost, __('finances.tx_stadium_uefa_upgrade_payment', [
                     'level' => $targetLevel,
                 ]));
@@ -569,7 +540,7 @@ class StadiumUpgradeService
 
             $this->notificationService->notifyStadiumProjectCommitted(
                 $game,
-                GameStadiumProject::TYPE_UEFA_UPGRADE,
+                StadiumProjectType::UefaUpgrade,
                 $targetLevel,
                 (string) ($committedSeason + 1),
             );

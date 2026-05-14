@@ -1,74 +1,58 @@
 @php
 /**
- * @var App\Models\Game                          $game
- * @var array                                    $upgrade  // populated by ShowClubStadium
+ * @var App\Models\Game $game
+ * @var array $upgrade Computed by ShowClubStadium — assignments only, no logic.
  */
 
-use App\Models\GameStadiumProject;
+use App\Modules\Stadium\Enums\UefaUpgradeBlocker;
 use App\Support\Money;
 
-$stadium                  = $upgrade['stadium'];
-$activeProject            = $upgrade['active_project'];
-$activeLoan               = $upgrade['active_loan'];
+$stadium                       = $upgrade['stadium'];
+$activeProject                 = $upgrade['active_project'];
+$activeLoan                    = $upgrade['active_loan'];
+$loanCapCents                  = $upgrade['loan_cap_cents'];
+$availableBudgetCents          = $upgrade['available_budget_cents'];
+$currentCapacity               = $upgrade['current_capacity'];
+$bindingConstraint             = $upgrade['binding_constraint'];
+$nextReputationTier            = $upgrade['next_reputation_tier'];
+$revenueRequiredCents          = $upgrade['revenue_required_cents'];
 
-$supplementaryHeadroom    = $upgrade['supplementary_headroom'];
-$supplementaryMax         = $upgrade['supplementary_effective_max']; // min(headroom, project cap, what cash can buy)
-$supplementaryPerSeat     = $upgrade['supplementary_per_seat_cents'];
+$supplementaryHeadroom         = $upgrade['supplementary_headroom'];
+$supplementaryMax              = $upgrade['supplementary_effective_max'];
+$supplementaryPerSeat          = $upgrade['supplementary_per_seat_cents'];
+$supplementaryMin              = $upgrade['supplementary_min'];
+$supplementaryStep             = $upgrade['supplementary_step'];
+$supplementaryAffordable       = $upgrade['supplementary_affordable'];
+$supplementaryNaturalMax       = $upgrade['supplementary_natural_max'];
 
-$standExpansionPerSeat    = $upgrade['stand_expansion_per_seat_cents'];
-$standExpansionMinSeats   = $upgrade['stand_expansion_min_seats'];
-$standExpansionMaxSeats   = $upgrade['stand_expansion_max_seats'];
-$standExpansionCashMax    = $upgrade['stand_expansion_cash_max'];   // cap when financing=cash
-$standExpansionLoanMax    = $upgrade['stand_expansion_loan_max'];   // cap when financing=loan
+$standExpansionPerSeat         = $upgrade['stand_expansion_per_seat_cents'];
+$standExpansionMinSeats        = $upgrade['stand_expansion_min_seats'];
+$standExpansionMaxSeats        = $upgrade['stand_expansion_max_seats'];
+$standExpansionCashMax         = $upgrade['stand_expansion_cash_max'];
+$standExpansionLoanMax         = $upgrade['stand_expansion_loan_max'];
+$standExpansionStep            = $upgrade['stand_expansion_step'];
+$standExpansionCashAffordable  = $upgrade['stand_expansion_cash_affordable'];
+$standExpansionLoanAffordable  = $upgrade['stand_expansion_loan_affordable'];
+$standExpansionAvailable       = $upgrade['stand_expansion_available'];
 
-$rebuildBands             = $upgrade['rebuild_cost_bands'];
-$rebuildEntryPerSeat      = $upgrade['rebuild_entry_per_seat_cents']; // first band rate; used in copy
-$rebuildMaxCash           = $upgrade['rebuild_max_capacity_cash'];    // cap when financing=cash
-$canRebuild               = $upgrade['can_rebuild'];
-$rebuildMaxCapacity       = $upgrade['rebuild_max_capacity'];         // cap from loan ceiling
+$rebuildBands                  = $upgrade['rebuild_cost_bands'];
+$rebuildEntryPerSeat           = $upgrade['rebuild_entry_per_seat_cents'];
+$rebuildMaxCash                = $upgrade['rebuild_max_capacity_cash'];
+$canRebuild                    = $upgrade['can_rebuild'];
+$rebuildMaxCapacity            = $upgrade['rebuild_max_capacity'];
+$rebuildMin                    = $upgrade['rebuild_min'];
+$rebuildStep                   = $upgrade['rebuild_step'];
+$rebuildCashAffordable         = $upgrade['rebuild_cash_affordable'];
+$rebuildAvailable              = $upgrade['rebuild_available'];
 
-$loanCapCents             = $upgrade['loan_cap_cents'];
-$availableBudgetCents     = $upgrade['available_budget_cents'];
-$reputationLevel          = $upgrade['reputation_level'];
-$bindingConstraint        = $upgrade['binding_constraint'];
-$nextReputationTier       = $upgrade['next_reputation_tier'];
-$revenueRequiredCents     = $upgrade['revenue_required_cents'];
-
-$currentCapacity = $stadium->effective_capacity;
-
-// Slider step + minimum project size. Used both server-side (to gate the
-// CTA when not even the minimum is affordable) and client-side (slider
-// bounds). 500 seats is the smallest supletoria batch we support.
-$supplementaryMin  = 500;
-$supplementaryStep = 100;
-$standExpansionStep = 500;
-$rebuildMin        = $currentCapacity + 1000;
-$rebuildStep       = 1000;
-
-$supplementaryAffordable = $supplementaryMax >= $supplementaryMin;
-$standExpansionCashAffordable = $standExpansionCashMax >= $standExpansionMinSeats;
-$standExpansionLoanAffordable = $standExpansionLoanMax >= $standExpansionMinSeats;
-$standExpansionAvailable = $standExpansionCashAffordable || $standExpansionLoanAffordable;
-
-$rebuildCashAffordable   = $rebuildMaxCash >= $rebuildMin;
-// The rebuild CTA opens the modal as long as *either* financing path is
-// viable. Inside the modal we hide / disable the option that isn't.
-$rebuildAvailable = $canRebuild
-    && $rebuildMaxCapacity >= $rebuildMin
-    && ($rebuildCashAffordable || $rebuildMaxCapacity >= $rebuildMin);
-
-// UEFA category upgrade — flat cost, one step at a time. CTA opens the
-// modal when there's no blocker and at least one financing path is
-// affordable.
-$uefaCurrentLevel   = $upgrade['uefa_current_level'];
-$uefaNextLevel      = $upgrade['uefa_next_level'];
-$uefaUpgradeCost    = $upgrade['uefa_upgrade_cost_cents'];
-$uefaCapacityFloor  = $upgrade['uefa_capacity_floor'];
-$uefaBlocker        = $upgrade['uefa_blocker'];
-$uefaCashAffordable = $upgrade['uefa_cash_affordable'];
-$uefaLoanAffordable = $upgrade['uefa_loan_affordable'];
-$uefaAvailable = $uefaBlocker === null
-    && ($uefaCashAffordable || $uefaLoanAffordable);
+$uefaCurrentLevel              = $upgrade['uefa_current_level'];
+$uefaNextLevel                 = $upgrade['uefa_next_level'];
+$uefaUpgradeCost               = $upgrade['uefa_upgrade_cost_cents'];
+$uefaCapacityFloor             = $upgrade['uefa_capacity_floor'];
+$uefaBlocker                   = $upgrade['uefa_blocker'];
+$uefaCashAffordable            = $upgrade['uefa_cash_affordable'];
+$uefaLoanAffordable            = $upgrade['uefa_loan_affordable'];
+$uefaAvailable                 = $upgrade['uefa_available'];
 @endphp
 
 <x-section-card :title="__('club.stadium.upgrades.title')">
@@ -228,11 +212,11 @@ $uefaAvailable = $uefaBlocker === null
                     <div class="text-xs text-text-muted mt-1.5">
                         @if($activeProject)
                             {{ __('club.stadium.upgrades.cta_disabled_by_active_project') }}
-                        @elseif($uefaBlocker === 'no_base_level')
+                        @elseif($uefaBlocker === UefaUpgradeBlocker::NoBaseLevel)
                             {{ __('club.stadium.upgrades.cta_uefa_no_base_level') }}
-                        @elseif($uefaBlocker === 'already_max')
+                        @elseif($uefaBlocker === UefaUpgradeBlocker::AlreadyMax)
                             {{ __('club.stadium.upgrades.cta_uefa_already_max') }}
-                        @elseif($uefaBlocker === 'capacity_floor')
+                        @elseif($uefaBlocker === UefaUpgradeBlocker::CapacityFloor)
                             {{ __('club.stadium.upgrades.cta_uefa_capacity_floor', [
                                 'target'   => $uefaNextLevel,
                                 'min_cap'  => number_format($uefaCapacityFloor),
@@ -271,10 +255,10 @@ $uefaAvailable = $uefaBlocker === null
 
         <form method="POST" action="{{ route('game.club.stadium.supplementary', $game->id) }}"
               x-data="{
-                  seats: {{ min($supplementaryMin + 500, $supplementaryMax) }},
-                  min: {{ $supplementaryMin }},
-                  max: {{ $supplementaryMax }},
-                  perSeat: {{ $supplementaryPerSeat }},
+                  seats: @js(min($supplementaryMin + 500, $supplementaryMax)),
+                  min: @js($supplementaryMin),
+                  max: @js($supplementaryMax),
+                  perSeat: @js($supplementaryPerSeat),
                   fillPercent() {
                       if (this.max <= this.min) return 0;
                       return ((this.seats - this.min) / (this.max - this.min)) * 100;
@@ -304,11 +288,11 @@ $uefaAvailable = $uefaBlocker === null
                     <span>{{ number_format($supplementaryMin) }}</span>
                     <span>{{ number_format($supplementaryMax) }}</span>
                 </div>
-                @if($supplementaryMax < min($supplementaryHeadroom, $upgrade['supplementary_project_cap']))
+                @if($supplementaryMax < $supplementaryNaturalMax)
                     <div class="text-[11px] text-text-faint mt-2">
                         {{ __('club.stadium.upgrades.budget_caps_slider', [
                             'budget'  => Money::format($availableBudgetCents),
-                            'natural' => number_format(min($supplementaryHeadroom, $upgrade['supplementary_project_cap'])),
+                            'natural' => number_format($supplementaryNaturalMax),
                         ]) }}
                     </div>
                 @endif
@@ -338,13 +322,13 @@ $uefaAvailable = $uefaBlocker === null
 
         <form method="POST" action="{{ route('game.club.stadium.expansion', $game->id) }}"
               x-data="{
-                  seats: {{ min($standExpansionMinSeats + 1000, max($standExpansionCashMax, $standExpansionLoanMax)) }},
-                  financing: '{{ $standExpansionCashAffordable ? 'cash' : 'loan' }}',
-                  min: {{ $standExpansionMinSeats }},
-                  designMax: {{ $standExpansionMaxSeats }},
-                  cashMax: {{ $standExpansionCashMax }},
-                  loanMax: {{ $standExpansionLoanMax }},
-                  perSeat: {{ $standExpansionPerSeat }},
+                  seats: @js(min($standExpansionMinSeats + 1000, max($standExpansionCashMax, $standExpansionLoanMax))),
+                  financing: @js($standExpansionCashAffordable ? 'cash' : 'loan'),
+                  min: @js($standExpansionMinSeats),
+                  designMax: @js($standExpansionMaxSeats),
+                  cashMax: @js($standExpansionCashMax),
+                  loanMax: @js($standExpansionLoanMax),
+                  perSeat: @js($standExpansionPerSeat),
                   effectiveMax() {
                       return this.financing === 'cash' ? this.cashMax : this.loanMax;
                   },
@@ -364,41 +348,11 @@ $uefaAvailable = $uefaBlocker === null
 
             <p class="text-sm text-text-muted">{{ __('club.stadium.upgrades.modal_stand_expansion_description') }}</p>
 
-            <div>
-                <label class="block text-[10px] text-text-muted uppercase tracking-widest mb-2">{{ __('club.stadium.upgrades.financing') }}</label>
-                <div class="grid grid-cols-2 gap-2">
-                    <label class="flex items-center gap-2 p-3 rounded-lg border"
-                           :class="{
-                               'border-accent-blue bg-accent-blue/10': financing === 'cash',
-                               'border-border-strong bg-surface-700': financing !== 'cash',
-                               'opacity-50 cursor-not-allowed': !cashAffordable(),
-                               'cursor-pointer': cashAffordable()
-                           }">
-                        <input type="radio" name="financing" value="cash" x-model="financing"
-                               :disabled="!cashAffordable()" class="text-accent-blue">
-                        <span class="text-sm font-medium text-text-primary">{{ __('club.stadium.upgrades.financing_cash') }}</span>
-                    </label>
-                    <label class="flex items-center gap-2 p-3 rounded-lg border"
-                           :class="{
-                               'border-accent-blue bg-accent-blue/10': financing === 'loan',
-                               'border-border-strong bg-surface-700': financing !== 'loan',
-                               'opacity-50 cursor-not-allowed': !loanAffordable(),
-                               'cursor-pointer': loanAffordable()
-                           }">
-                        <input type="radio" name="financing" value="loan" x-model="financing"
-                               :disabled="!loanAffordable()" class="text-accent-blue">
-                        <span class="text-sm font-medium text-text-primary">{{ __('club.stadium.upgrades.financing_loan') }}</span>
-                    </label>
-                </div>
-                <div class="text-xs text-text-muted mt-2">
-                    <template x-if="financing === 'loan'">
-                        <span>{{ __('club.stadium.upgrades.financing_loan_hint', ['cap' => Money::format($loanCapCents)]) }}</span>
-                    </template>
-                    <template x-if="financing === 'cash'">
-                        <span>{{ __('club.stadium.upgrades.financing_cash_hint_budget', ['budget' => Money::format($availableBudgetCents)]) }}</span>
-                    </template>
-                </div>
-            </div>
+            <x-stadium-financing-toggle
+                cash-affordable="cashAffordable()"
+                loan-affordable="loanAffordable()"
+                :loan-cap-cents="$loanCapCents"
+                :budget-cents="$availableBudgetCents" />
 
             <div>
                 <label class="block text-[10px] text-text-muted uppercase tracking-widest mb-2">
@@ -444,9 +398,9 @@ $uefaAvailable = $uefaBlocker === null
 
         <form method="POST" action="{{ route('game.club.stadium.uefa-upgrade', $game->id) }}"
               x-data="{
-                  financing: '{{ $uefaCashAffordable ? 'cash' : 'loan' }}',
-                  cashAffordable: {{ $uefaCashAffordable ? 'true' : 'false' }},
-                  loanAffordable: {{ $uefaLoanAffordable ? 'true' : 'false' }}
+                  financing: @js($uefaCashAffordable ? 'cash' : 'loan'),
+                  cashAffordable: @js($uefaCashAffordable),
+                  loanAffordable: @js($uefaLoanAffordable)
               }"
               class="p-6 space-y-4">
             @csrf
@@ -468,41 +422,11 @@ $uefaAvailable = $uefaBlocker === null
                 </div>
             </div>
 
-            <div>
-                <label class="block text-[10px] text-text-muted uppercase tracking-widest mb-2">{{ __('club.stadium.upgrades.financing') }}</label>
-                <div class="grid grid-cols-2 gap-2">
-                    <label class="flex items-center gap-2 p-3 rounded-lg border"
-                           :class="{
-                               'border-accent-blue bg-accent-blue/10': financing === 'cash',
-                               'border-border-strong bg-surface-700': financing !== 'cash',
-                               'opacity-50 cursor-not-allowed': !cashAffordable,
-                               'cursor-pointer': cashAffordable
-                           }">
-                        <input type="radio" name="financing" value="cash" x-model="financing"
-                               :disabled="!cashAffordable" class="text-accent-blue">
-                        <span class="text-sm font-medium text-text-primary">{{ __('club.stadium.upgrades.financing_cash') }}</span>
-                    </label>
-                    <label class="flex items-center gap-2 p-3 rounded-lg border"
-                           :class="{
-                               'border-accent-blue bg-accent-blue/10': financing === 'loan',
-                               'border-border-strong bg-surface-700': financing !== 'loan',
-                               'opacity-50 cursor-not-allowed': !loanAffordable,
-                               'cursor-pointer': loanAffordable
-                           }">
-                        <input type="radio" name="financing" value="loan" x-model="financing"
-                               :disabled="!loanAffordable" class="text-accent-blue">
-                        <span class="text-sm font-medium text-text-primary">{{ __('club.stadium.upgrades.financing_loan') }}</span>
-                    </label>
-                </div>
-                <div class="text-xs text-text-muted mt-2">
-                    <template x-if="financing === 'loan'">
-                        <span>{{ __('club.stadium.upgrades.financing_loan_hint', ['cap' => Money::format($loanCapCents)]) }}</span>
-                    </template>
-                    <template x-if="financing === 'cash'">
-                        <span>{{ __('club.stadium.upgrades.financing_cash_hint_budget', ['budget' => Money::format($availableBudgetCents)]) }}</span>
-                    </template>
-                </div>
-            </div>
+            <x-stadium-financing-toggle
+                cash-affordable="cashAffordable"
+                loan-affordable="loanAffordable"
+                :loan-cap-cents="$loanCapCents"
+                :budget-cents="$availableBudgetCents" />
 
             <x-status-banner color="blue" :description="__('club.stadium.upgrades.uefa_no_capacity_change_note')" />
 
@@ -525,11 +449,11 @@ $uefaAvailable = $uefaBlocker === null
 
         <form method="POST" action="{{ route('game.club.stadium.rebuild', $game->id) }}"
               x-data="{
-                  capacity: {{ min($rebuildMin + 5000, $rebuildMaxCapacity) }},
-                  financing: '{{ $rebuildCashAffordable ? 'cash' : 'loan' }}',
-                  min: {{ $rebuildMin }},
-                  maxLoan: {{ $rebuildMaxCapacity }},
-                  maxCash: {{ $rebuildMaxCash }},
+                  capacity: @js(min($rebuildMin + 5000, $rebuildMaxCapacity)),
+                  financing: @js($rebuildCashAffordable ? 'cash' : 'loan'),
+                  min: @js($rebuildMin),
+                  maxLoan: @js($rebuildMaxCapacity),
+                  maxCash: @js($rebuildMaxCash),
                   bands: @js($rebuildBands),
                   effectiveMax() {
                       return this.financing === 'cash'
@@ -585,35 +509,13 @@ $uefaAvailable = $uefaBlocker === null
 
             <p class="text-sm text-text-muted">{{ __('club.stadium.upgrades.modal_rebuild_description') }}</p>
 
-            <div>
-                <label class="block text-[10px] text-text-muted uppercase tracking-widest mb-2">{{ __('club.stadium.upgrades.financing') }}</label>
-                <div class="grid grid-cols-2 gap-2">
-                    <label class="flex items-center gap-2 p-3 rounded-lg border"
-                           :class="{
-                               'border-accent-blue bg-accent-blue/10': financing === 'cash',
-                               'border-border-strong bg-surface-700': financing !== 'cash',
-                               'opacity-50 cursor-not-allowed': !cashAffordable(),
-                               'cursor-pointer': cashAffordable()
-                           }">
-                        <input type="radio" name="financing" value="cash" x-model="financing"
-                               :disabled="!cashAffordable()" class="text-accent-blue">
-                        <span class="text-sm font-medium text-text-primary">{{ __('club.stadium.upgrades.financing_cash') }}</span>
-                    </label>
-                    <label class="flex items-center gap-2 p-3 rounded-lg border cursor-pointer"
-                           :class="financing === 'loan' ? 'border-accent-blue bg-accent-blue/10' : 'border-border-strong bg-surface-700'">
-                        <input type="radio" name="financing" value="loan" x-model="financing" class="text-accent-blue">
-                        <span class="text-sm font-medium text-text-primary">{{ __('club.stadium.upgrades.financing_loan') }}</span>
-                    </label>
-                </div>
-                <div class="text-xs text-text-muted mt-2">
-                    <template x-if="financing === 'loan'">
-                        <span>{{ __('club.stadium.upgrades.financing_loan_hint', ['cap' => Money::format($loanCapCents)]) }}</span>
-                    </template>
-                    <template x-if="financing === 'cash'">
-                        <span>{{ __('club.stadium.upgrades.financing_cash_hint_budget', ['budget' => Money::format($availableBudgetCents)]) }}</span>
-                    </template>
-                </div>
-            </div>
+            {{-- Loan is the always-reachable path here (the CTA itself is
+                 gated on rebuildAvailable, which proxies loan reachability). --}}
+            <x-stadium-financing-toggle
+                cash-affordable="cashAffordable()"
+                loan-affordable="true"
+                :loan-cap-cents="$loanCapCents"
+                :budget-cents="$availableBudgetCents" />
 
             <div>
                 <label class="block text-[10px] text-text-muted uppercase tracking-widest mb-2">

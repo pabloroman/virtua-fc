@@ -790,15 +790,15 @@ class NotificationService
 
     public function notifyStadiumProjectCommitted(
         Game $game,
-        string $type,
+        \App\Modules\Stadium\Enums\StadiumProjectType $type,
         int $targetCapacity,
         string $completionLabel,
     ): GameNotification {
         return $this->create(
             game: $game,
             type: GameNotification::TYPE_STADIUM,
-            title: __("notifications.stadium_{$type}_committed_title"),
-            message: __("notifications.stadium_{$type}_committed_message", [
+            title: __("notifications.stadium_{$type->value}_committed_title"),
+            message: __("notifications.stadium_{$type->value}_committed_message", [
                 'capacity' => number_format($targetCapacity, 0, ',', '.'),
                 'completion' => $completionLabel,
             ]),
@@ -808,14 +808,14 @@ class NotificationService
 
     public function notifyStadiumProjectCompleted(
         Game $game,
-        string $type,
+        \App\Modules\Stadium\Enums\StadiumProjectType $type,
         int $newCapacity,
     ): GameNotification {
         return $this->create(
             game: $game,
             type: GameNotification::TYPE_STADIUM,
-            title: __("notifications.stadium_{$type}_completed_title"),
-            message: __("notifications.stadium_{$type}_completed_message", [
+            title: __("notifications.stadium_{$type->value}_completed_title"),
+            message: __("notifications.stadium_{$type->value}_completed_message", [
                 'capacity' => number_format($newCapacity, 0, ',', '.'),
             ]),
             priority: GameNotification::PRIORITY_MILESTONE,

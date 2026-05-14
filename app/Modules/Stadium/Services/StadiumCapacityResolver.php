@@ -4,6 +4,8 @@ namespace App\Modules\Stadium\Services;
 
 use App\Models\GameStadium;
 use App\Models\GameStadiumProject;
+use App\Modules\Stadium\Enums\StadiumProjectStatus;
+use App\Modules\Stadium\Enums\StadiumProjectType;
 
 /**
  * Resolves the *game-scoped* effective stadium capacity for a team. Wraps:
@@ -79,8 +81,8 @@ class StadiumCapacityResolver
         return $this->rebuildingCache[$key] = GameStadiumProject::query()
             ->where('game_id', $gameId)
             ->where('team_id', $teamId)
-            ->where('type', GameStadiumProject::TYPE_REBUILD)
-            ->where('status', GameStadiumProject::STATUS_IN_PROGRESS)
+            ->where('type', StadiumProjectType::Rebuild->value)
+            ->where('status', StadiumProjectStatus::InProgress->value)
             ->exists();
     }
 }

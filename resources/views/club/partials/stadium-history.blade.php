@@ -1,14 +1,9 @@
 @php
-/**
- * @var App\Models\Game $game
- * @var \Illuminate\Database\Eloquent\Collection<int, App\Models\GameStadiumProject> $projectHistory
- */
-
-use App\Models\GameStadiumProject;
+/** @var array<int, array{type_label:string, detail:string, cost_label:string, status_label:string, ready_label:string, is_completed:bool}> $historyRows */
 @endphp
 
 <x-section-card :title="__('club.stadium.history.title')">
-    @if($projectHistory->isEmpty())
+    @if(empty($historyRows))
         <div class="px-5 py-8 text-center">
             <p class="text-sm text-text-muted">{{ __('club.stadium.history.empty') }}</p>
             <p class="text-xs text-text-faint mt-1">{{ __('club.stadium.history.empty_hint') }}</p>
@@ -25,61 +20,16 @@ use App\Models\GameStadiumProject;
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($projectHistory as $project)
-                        @php
-                            // Additive projects (supplementary, stand
-                            // expansion) display as "+N"; rebuild's
-                            // target_capacity is a total, not a delta.
-                            $detail = match ($project->type) {
-                                GameStadiumProject::TYPE_SUPPLEMENTARY,
-                                GameStadiumProject::TYPE_STAND_EXPANSION
-                                    => '+'.number_format($project->target_capacity),
-                                GameStadiumProject::TYPE_REBUILD
-                                    => __('club.stadium.history.detail_rebuild', ['count' => number_format($project->target_capacity)]),
-                                // For uefa_upgrade, target_capacity stores
-                                // the destination UEFA level (1–4), not a
-                                // seat count. Render the transition arrow.
-                                GameStadiumProject::TYPE_UEFA_UPGRADE
-                                    => __('club.stadium.history.detail_uefa_upgrade', [
-                                        'from' => max(1, (int) $project->target_capacity - 1),
-                                        'to'   => (int) $project->target_capacity,
-                                    ]),
-                                default => '',
-                            };
-
-                            $isCompleted = $project->status === GameStadiumProject::STATUS_COMPLETED;
-
-                            // "When is it ready" label varies by project shape:
-                            // supplementary lands on a calendar date, the
-                            // others land at the start of a season.
-                            $readyLabel = $project->completion_date
-                                ? $project->completion_date->isoFormat('LL')
-                                : ($project->completion_season
-                                    ? __('club.stadium.history.season_label', ['season' => $project->completion_season])
-                                    : '—');
-                        @endphp
+                    @foreach($historyRows as $row)
                         <tr class="border-b border-border-default">
-                            <td class="px-5 py-2.5 font-semibold text-text-primary">
-                                {{ __('club.stadium.upgrades.project_'.$project->type) }}
-                            </td>
-                            <td class="py-2.5 text-text-secondary hidden md:table-cell">
-                                {{ $detail }}
-                            </td>
-                            <td class="py-2.5 pl-4 text-right font-heading font-semibold text-base text-text-body whitespace-nowrap">
-                                {{ $project->formatted_total_cost }}
-                            </td>
+                            <td class="px-5 py-2.5 font-semibold text-text-primary">{{ $row['type_label'] }}</td>
+                            <td class="py-2.5 text-text-secondary hidden md:table-cell">{{ $row['detail'] }}</td>
+                            <td class="py-2.5 pl-4 text-right font-heading font-semibold text-base text-text-body whitespace-nowrap">{{ $row['cost_label'] }}</td>
                             <td class="py-2.5 pl-4 pr-5 text-right">
-                                @if($isCompleted)
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-accent-green/10 text-accent-green">
-                                        {{ __('club.stadium.history.status_completed') }}
-                                    </span>
-                                    <div class="text-[11px] text-text-faint mt-0.5">{{ $readyLabel }}</div>
-                                @else
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-accent-gold/10 text-accent-gold">
-                                        {{ __('club.stadium.history.status_in_progress') }}
-                                    </span>
-                                    <div class="text-[11px] text-text-faint mt-0.5">{{ __('club.stadium.history.ready_label', ['date' => $readyLabel]) }}</div>
-                                @endif
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $row['is_completed'] ? 'bg-accent-green/10 text-accent-green' : 'bg-accent-gold/10 text-accent-gold' }}">
+                                    {{ $row['status_label'] }}
+                                </span>
+                                <div class="text-[11px] text-text-faint mt-0.5">{{ $row['ready_label'] }}</div>
                             </td>
                         </tr>
                     @endforeach

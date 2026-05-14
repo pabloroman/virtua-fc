@@ -2,13 +2,17 @@
 
 namespace App\Http\Actions;
 
+use App\Http\Actions\Concerns\HandlesStadiumProjectCommit;
 use App\Models\Game;
-use App\Models\GameStadiumProject;
-use App\Modules\Finance\Services\StadiumUpgradeService;
+use App\Modules\Stadium\Enums\StadiumProjectFinancing;
+use App\Modules\Stadium\Services\StadiumUpgradeService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CommitStandExpansion
 {
+    use HandlesStadiumProjectCommit;
+
     public function __construct(
         private readonly StadiumUpgradeService $stadiumUpgradeService,
     ) {}
@@ -16,26 +20,20 @@ class CommitStandExpansion
     public function __invoke(Request $request, string $gameId)
     {
         $game = Game::with('team')->findOrFail($gameId);
-
         $validated = $request->validate([
             'seats' => 'required|integer|min:1',
-            'financing' => 'required|in:'.GameStadiumProject::FINANCING_CASH.','.GameStadiumProject::FINANCING_LOAN,
+            'financing' => ['required', Rule::enum(StadiumProjectFinancing::class)],
         ]);
 
-        try {
-            $this->stadiumUpgradeService->commitStandExpansion(
-                $game,
-                (int) $validated['seats'],
-                $validated['financing'],
-            );
-        } catch (\InvalidArgumentException $e) {
-            return redirect()->route('game.club.stadium', $gameId)
-                ->with('error', __($e->getMessage()));
+        $seats = (int) $validated['seats'];
+        $financing = StadiumProjectFinancing::from($validated['financing']);
+
+        if ($redirect = $this->safeCommit($gameId, fn () => $this->stadiumUpgradeService->commitStandExpansion($game, $seats, $financing))) {
+            return $redirect;
         }
 
-        return redirect()->route('game.club.stadium', $gameId)
-            ->with('success', __('messages.stadium_stand_expansion_committed', [
-                'seats' => number_format((int) $validated['seats'], 0, ',', '.'),
-            ]));
+        return $this->stadiumSuccess($gameId, 'messages.stadium_stand_expansion_committed', [
+            'seats' => number_format($seats, 0, ',', '.'),
+        ]);
     }
 }

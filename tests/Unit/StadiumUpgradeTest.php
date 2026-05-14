@@ -13,11 +13,15 @@ use App\Models\StadiumLoan;
 use App\Models\Team;
 use App\Models\TeamReputation;
 use App\Modules\Finance\Services\StadiumLoanService;
-use App\Modules\Finance\Services\StadiumUpgradeService;
+use App\Modules\Stadium\Services\StadiumUpgradeService;
 use App\Modules\Match\Events\GameDateAdvanced;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Processors\StadiumProjectProgressionProcessor;
+use App\Modules\Stadium\Enums\StadiumLoanStatus;
+use App\Modules\Stadium\Enums\StadiumProjectFinancing;
+use App\Modules\Stadium\Enums\StadiumProjectStatus;
+use App\Modules\Stadium\Enums\StadiumProjectType;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use InvalidArgumentException;
@@ -35,7 +39,7 @@ class StadiumUpgradeTest extends TestCase
             'term_years' => 10,
             'interest_rate_bps' => 400,         // 4%
             'remaining_principal_cents' => 100_000_000_00,
-            'status' => StadiumLoan::STATUS_ACTIVE,
+            'status' => StadiumLoanStatus::Active,
         ]);
 
         // Year 1: €10M principal + 4% of €100M = €4M → €14M
@@ -79,10 +83,10 @@ class StadiumUpgradeTest extends TestCase
         $service = app(StadiumUpgradeService::class);
         $project = $service->commitSupplementary($game, 2_000);
 
-        $this->assertSame(GameStadiumProject::TYPE_SUPPLEMENTARY, $project->type);
-        $this->assertSame(GameStadiumProject::STATUS_IN_PROGRESS, $project->status);
+        $this->assertSame(StadiumProjectType::Supplementary, $project->type);
+        $this->assertSame(StadiumProjectStatus::InProgress, $project->status);
         $this->assertSame(2_000, $project->target_capacity);
-        $this->assertSame(GameStadiumProject::FINANCING_CASH, $project->financing);
+        $this->assertSame(StadiumProjectFinancing::Cash, $project->financing);
         // 2,000 × €4k = €8M
         $this->assertSame(8_000_000_00, $project->total_cost_cents);
         $this->assertSame(8_000_000_00, $project->paid_cents);
@@ -130,7 +134,7 @@ class StadiumUpgradeTest extends TestCase
         app(StadiumUpgradeService::class)->commitRebuild(
             $game,
             25_000,
-            GameStadiumProject::FINANCING_CASH,
+            StadiumProjectFinancing::Cash,
         );
     }
 
@@ -144,12 +148,12 @@ class StadiumUpgradeTest extends TestCase
         $project = app(StadiumUpgradeService::class)->commitRebuild(
             $game,
             25_000,
-            GameStadiumProject::FINANCING_LOAN,
+            StadiumProjectFinancing::Loan,
         );
 
-        $this->assertSame(GameStadiumProject::TYPE_REBUILD, $project->type);
-        $this->assertSame(GameStadiumProject::STATUS_PENDING, $project->status);
-        $this->assertSame(GameStadiumProject::FINANCING_LOAN, $project->financing);
+        $this->assertSame(StadiumProjectType::Rebuild, $project->type);
+        $this->assertSame(StadiumProjectStatus::Pending, $project->status);
+        $this->assertSame(StadiumProjectFinancing::Loan, $project->financing);
         $this->assertSame(0, $project->paid_cents); // loan funds the project, club cash untouched
         $this->assertNotNull($project->stadium_loan_id);
 
@@ -170,14 +174,14 @@ class StadiumUpgradeTest extends TestCase
         $project = GameStadiumProject::create([
             'game_id' => $game->id,
             'team_id' => $team->id,
-            'type' => GameStadiumProject::TYPE_REBUILD,
-            'status' => GameStadiumProject::STATUS_PENDING,
+            'type' => StadiumProjectType::Rebuild,
+            'status' => StadiumProjectStatus::Pending,
             'target_capacity' => 30_000,
             'committed_season' => (int) $game->season,
             'committed_date' => $game->current_date,
             'completion_season' => (int) $game->season + 2,
             'total_cost_cents' => 450_000_000_00,
-            'financing' => GameStadiumProject::FINANCING_CASH,
+            'financing' => StadiumProjectFinancing::Cash,
             'paid_cents' => 450_000_000_00,
         ]);
 
@@ -189,7 +193,7 @@ class StadiumUpgradeTest extends TestCase
         ));
 
         $project->refresh();
-        $this->assertSame(GameStadiumProject::STATUS_IN_PROGRESS, $project->status);
+        $this->assertSame(StadiumProjectStatus::InProgress, $project->status);
     }
 
     public function test_progression_processor_completes_rebuild_and_folds_supletorias(): void
@@ -202,14 +206,14 @@ class StadiumUpgradeTest extends TestCase
         $project = GameStadiumProject::create([
             'game_id' => $game->id,
             'team_id' => $team->id,
-            'type' => GameStadiumProject::TYPE_REBUILD,
-            'status' => GameStadiumProject::STATUS_IN_PROGRESS,
+            'type' => StadiumProjectType::Rebuild,
+            'status' => StadiumProjectStatus::InProgress,
             'target_capacity' => 40_000,
             'committed_season' => (int) $game->season - 1,
             'committed_date' => $game->current_date,
             'completion_season' => (int) $game->season + 1,
             'total_cost_cents' => 600_000_000_00,
-            'financing' => GameStadiumProject::FINANCING_CASH,
+            'financing' => StadiumProjectFinancing::Cash,
             'paid_cents' => 600_000_000_00,
         ]);
 
@@ -222,7 +226,7 @@ class StadiumUpgradeTest extends TestCase
         $project->refresh();
         $stadium->refresh();
 
-        $this->assertSame(GameStadiumProject::STATUS_COMPLETED, $project->status);
+        $this->assertSame(StadiumProjectStatus::Completed, $project->status);
         // Supletorias folded into the new base capacity.
         $this->assertSame(43_000, $stadium->rebuilt_capacity);
         $this->assertSame(0, $stadium->supplementary_seats);
@@ -236,14 +240,14 @@ class StadiumUpgradeTest extends TestCase
         $project = GameStadiumProject::create([
             'game_id' => $game->id,
             'team_id' => $team->id,
-            'type' => GameStadiumProject::TYPE_REBUILD,
-            'status' => GameStadiumProject::STATUS_COMPLETED,
+            'type' => StadiumProjectType::Rebuild,
+            'status' => StadiumProjectStatus::Completed,
             'target_capacity' => 30_000,
             'committed_season' => (int) $game->season - 5,
             'committed_date' => $game->current_date,
             'completion_season' => (int) $game->season - 3,
             'total_cost_cents' => 450_000_000_00,
-            'financing' => GameStadiumProject::FINANCING_LOAN,
+            'financing' => StadiumProjectFinancing::Loan,
             'paid_cents' => 0,
         ]);
 
@@ -255,7 +259,7 @@ class StadiumUpgradeTest extends TestCase
             'interest_rate_bps' => 400,
             'remaining_principal_cents' => 100_000_000_00,
             'season_started' => (int) $game->season - 4,
-            'status' => StadiumLoan::STATUS_ACTIVE,
+            'status' => StadiumLoanStatus::Active,
         ]);
 
         app(StadiumProjectProgressionProcessor::class)->process($game, new SeasonTransitionData(
@@ -267,7 +271,7 @@ class StadiumUpgradeTest extends TestCase
         $loan->refresh();
         // €10M principal slice paid this year → €90M remaining.
         $this->assertSame(90_000_000_00, $loan->remaining_principal_cents);
-        $this->assertSame(StadiumLoan::STATUS_ACTIVE, $loan->status);
+        $this->assertSame(StadiumLoanStatus::Active, $loan->status);
     }
 
     public function test_listener_activates_supplementary_when_completion_date_reached(): void
@@ -277,14 +281,14 @@ class StadiumUpgradeTest extends TestCase
         $project = GameStadiumProject::create([
             'game_id' => $game->id,
             'team_id' => $team->id,
-            'type' => GameStadiumProject::TYPE_SUPPLEMENTARY,
-            'status' => GameStadiumProject::STATUS_IN_PROGRESS,
+            'type' => StadiumProjectType::Supplementary,
+            'status' => StadiumProjectStatus::InProgress,
             'target_capacity' => 2_000,
             'committed_season' => (int) $game->season,
             'committed_date' => Carbon::parse('2025-01-01'),
             'completion_date' => Carbon::parse('2025-01-31'),
             'total_cost_cents' => 16_000_000_00,
-            'financing' => GameStadiumProject::FINANCING_CASH,
+            'financing' => StadiumProjectFinancing::Cash,
             'paid_cents' => 16_000_000_00,
         ]);
 
@@ -298,7 +302,7 @@ class StadiumUpgradeTest extends TestCase
         $project->refresh();
         $stadium = GameStadium::where('game_id', $game->id)->first();
 
-        $this->assertSame(GameStadiumProject::STATUS_COMPLETED, $project->status);
+        $this->assertSame(StadiumProjectStatus::Completed, $project->status);
         $this->assertSame(2_000, $stadium->supplementary_seats);
     }
 
@@ -309,14 +313,14 @@ class StadiumUpgradeTest extends TestCase
         $project = GameStadiumProject::create([
             'game_id' => $game->id,
             'team_id' => $team->id,
-            'type' => GameStadiumProject::TYPE_SUPPLEMENTARY,
-            'status' => GameStadiumProject::STATUS_IN_PROGRESS,
+            'type' => StadiumProjectType::Supplementary,
+            'status' => StadiumProjectStatus::InProgress,
             'target_capacity' => 2_000,
             'committed_season' => (int) $game->season,
             'committed_date' => Carbon::parse('2025-01-01'),
             'completion_date' => Carbon::parse('2025-01-31'),
             'total_cost_cents' => 16_000_000_00,
-            'financing' => GameStadiumProject::FINANCING_CASH,
+            'financing' => StadiumProjectFinancing::Cash,
             'paid_cents' => 16_000_000_00,
         ]);
 
@@ -328,7 +332,7 @@ class StadiumUpgradeTest extends TestCase
         ));
 
         $project->refresh();
-        $this->assertSame(GameStadiumProject::STATUS_IN_PROGRESS, $project->status);
+        $this->assertSame(StadiumProjectStatus::InProgress, $project->status);
     }
 
     public function test_rebuild_cost_uses_cumulative_bracket_pricing(): void
@@ -381,11 +385,11 @@ class StadiumUpgradeTest extends TestCase
         $project = app(StadiumUpgradeService::class)->commitStandExpansion(
             $game,
             5_000,
-            GameStadiumProject::FINANCING_CASH,
+            StadiumProjectFinancing::Cash,
         );
 
-        $this->assertSame(GameStadiumProject::TYPE_STAND_EXPANSION, $project->type);
-        $this->assertSame(GameStadiumProject::STATUS_PENDING, $project->status);
+        $this->assertSame(StadiumProjectType::StandExpansion, $project->type);
+        $this->assertSame(StadiumProjectStatus::Pending, $project->status);
         $this->assertSame(5_000, $project->target_capacity);
         // 5,000 × €8k = €40M
         $this->assertSame(40_000_000_00, $project->total_cost_cents);
@@ -407,10 +411,10 @@ class StadiumUpgradeTest extends TestCase
         $project = app(StadiumUpgradeService::class)->commitStandExpansion(
             $game,
             6_000,
-            GameStadiumProject::FINANCING_LOAN,
+            StadiumProjectFinancing::Loan,
         );
 
-        $this->assertSame(GameStadiumProject::FINANCING_LOAN, $project->financing);
+        $this->assertSame(StadiumProjectFinancing::Loan, $project->financing);
         $this->assertSame(0, $project->paid_cents);
         $this->assertNotNull($project->stadium_loan_id);
 
@@ -430,7 +434,7 @@ class StadiumUpgradeTest extends TestCase
         app(StadiumUpgradeService::class)->commitStandExpansion(
             $game,
             1_000, // below the 3,000-seat min
-            GameStadiumProject::FINANCING_CASH,
+            StadiumProjectFinancing::Cash,
         );
     }
 
@@ -445,7 +449,7 @@ class StadiumUpgradeTest extends TestCase
         app(StadiumUpgradeService::class)->commitStandExpansion(
             $game,
             15_000, // above the 12,000-seat cap
-            GameStadiumProject::FINANCING_CASH,
+            StadiumProjectFinancing::Cash,
         );
     }
 
@@ -462,7 +466,7 @@ class StadiumUpgradeTest extends TestCase
         app(StadiumUpgradeService::class)->commitStandExpansion(
             $game,
             5_000,
-            GameStadiumProject::FINANCING_CASH,
+            StadiumProjectFinancing::Cash,
         );
     }
 
@@ -473,14 +477,14 @@ class StadiumUpgradeTest extends TestCase
         $project = GameStadiumProject::create([
             'game_id' => $game->id,
             'team_id' => $team->id,
-            'type' => GameStadiumProject::TYPE_STAND_EXPANSION,
-            'status' => GameStadiumProject::STATUS_PENDING,
+            'type' => StadiumProjectType::StandExpansion,
+            'status' => StadiumProjectStatus::Pending,
             'target_capacity' => 6_000,
             'committed_season' => (int) $game->season,
             'committed_date' => $game->current_date,
             'completion_season' => (int) $game->season + 1,
             'total_cost_cents' => 48_000_000_00,
-            'financing' => GameStadiumProject::FINANCING_CASH,
+            'financing' => StadiumProjectFinancing::Cash,
             'paid_cents' => 48_000_000_00,
         ]);
 
@@ -496,7 +500,7 @@ class StadiumUpgradeTest extends TestCase
         $project->refresh();
         $stadium = GameStadium::where('game_id', $game->id)->first();
 
-        $this->assertSame(GameStadiumProject::STATUS_COMPLETED, $project->status);
+        $this->assertSame(StadiumProjectStatus::Completed, $project->status);
         // Permanent capacity bumped by the project's target_capacity;
         // supplementary stands left untouched.
         $this->assertSame($baseBefore + 6_000, $stadium->rebuilt_capacity);
