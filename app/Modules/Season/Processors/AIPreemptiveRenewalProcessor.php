@@ -3,12 +3,12 @@
 namespace App\Modules\Season\Processors;
 
 use App\Models\Game;
-use App\Models\GamePlayer;
+use App\Models\Loan;
 use App\Modules\Player\PlayerAge;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
-use App\Modules\Transfer\Services\DispositionService;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -26,6 +26,12 @@ use Illuminate\Support\Facades\Log;
  *
  * Priority 45: after StandingsReset (40), well before SquadRegistration (109)
  * and TransferMarketSeed (111) so they see the post-renewal contract state.
+ *
+ * Perf note: bypasses Eloquent hydration for the read pass (the universe is
+ * ~2–5k AI players at season start; hydrating just to read 5 columns is
+ * wasteful). Sorts each squad once and caches importance per player id, so
+ * candidates within the same team are O(1) lookups instead of re-sorting.
+ * Mirrors the raw-query bulk pattern in ContractExpirationProcessor.
  */
 class AIPreemptiveRenewalProcessor implements SeasonProcessor
 {
@@ -40,10 +46,6 @@ class AIPreemptiveRenewalProcessor implements SeasonProcessor
 
     private const TOP_IMPORTANCE_THRESHOLD = 0.70;
     private const MID_IMPORTANCE_THRESHOLD = 0.40;
-
-    public function __construct(
-        private readonly DispositionService $dispositionService,
-    ) {}
 
     public function priority(): int
     {
@@ -67,41 +69,66 @@ class AIPreemptiveRenewalProcessor implements SeasonProcessor
             $game->current_date,
         );
 
-        // Load every AI-team player once, grouped by team, so playerImportance
-        // can rank against full-squad teammates without re-querying.
-        $allAiPlayers = GamePlayer::query()
-            ->where('game_id', $game->id)
-            ->whereNotNull('team_id')
-            ->where('team_id', '<>', $game->team_id)
-            ->with('activeLoan')
+        // Single lightweight scan: only the columns we need to filter and
+        // rank, plus a join-derived flag for on-loan-out so we don't have to
+        // eager-load a relation. Skips Eloquent hydration entirely on the
+        // read side — saves ~1s on a fully-seeded universe.
+        $rows = DB::table('game_players')
+            ->leftJoin('loans', function ($join) {
+                $join->on('loans.game_player_id', '=', 'game_players.id')
+                    ->where('loans.status', '=', Loan::STATUS_ACTIVE);
+            })
+            ->where('game_players.game_id', $game->id)
+            ->whereNotNull('game_players.team_id')
+            ->where('game_players.team_id', '<>', $game->team_id)
+            ->select(
+                'game_players.id',
+                'game_players.team_id',
+                'game_players.overall_score',
+                'game_players.contract_until',
+                'game_players.date_of_birth',
+                'game_players.pending_annual_wage',
+                DB::raw('CASE WHEN loans.id IS NULL THEN 0 ELSE 1 END AS on_loan'),
+            )
             ->get();
 
         $renewIds = [];
         $considered = 0;
+        $veteranCutoffStr = $veteranCutoff->toDateString();
+        $expirationDateStr = $expirationDate->toDateString();
 
-        foreach ($allAiPlayers->groupBy('team_id') as $teammates) {
-            $candidates = $teammates->filter(
-                fn (GamePlayer $p) => $this->isRenewalCandidate($p, $expirationDate, $veteranCutoff),
-            );
-
-            if ($candidates->isEmpty()) {
-                continue;
+        foreach ($rows->groupBy('team_id') as $teammates) {
+            // Sort the whole squad once; build an id → importance map so
+            // every candidate is an O(1) lookup. Mirrors the rank-based
+            // formula in DispositionService::playerImportance, kept inline
+            // to avoid that method's per-call re-sort.
+            $sorted = $teammates->sortByDesc('overall_score')->values();
+            $total = $sorted->count();
+            $importanceById = [];
+            foreach ($sorted as $rank => $row) {
+                $importanceById[$row->id] = $total > 1
+                    ? 1.0 - ($rank / ($total - 1))
+                    : 0.5;
             }
 
-            foreach ($candidates as $player) {
+            foreach ($teammates as $row) {
+                if (!$this->isRenewalCandidate($row, $expirationDateStr, $veteranCutoffStr)) {
+                    continue;
+                }
+
                 $considered++;
-                $importance = $this->dispositionService->playerImportance($player, $teammates);
-                $chance = $this->retentionChance($importance);
+                $chance = $this->retentionChance($importanceById[$row->id] ?? 0.0);
 
                 if (mt_rand(1, 100) <= $chance) {
-                    $renewIds[] = $player->id;
+                    $renewIds[] = $row->id;
                 }
             }
         }
 
         if (!empty($renewIds)) {
-            GamePlayer::whereIn('id', $renewIds)
-                ->update(['contract_until' => $newContractEnd]);
+            DB::table('game_players')
+                ->whereIn('id', $renewIds)
+                ->update(['contract_until' => $newContractEnd->toDateString()]);
         }
 
         Log::info('[AIPreemptiveRenewal] considered=' . $considered . ' renewed=' . count($renewIds));
@@ -112,29 +139,26 @@ class AIPreemptiveRenewalProcessor implements SeasonProcessor
         ]);
     }
 
-    private function isRenewalCandidate(
-        GamePlayer $player,
-        Carbon $expirationDate,
-        Carbon $veteranCutoff,
-    ): bool {
-        if ($player->contract_until === null || $player->contract_until->gt($expirationDate)) {
+    /**
+     * Row comes from a raw DB query — fields are strings/scalars, not Carbon
+     * or null-cast attributes. Compare as date strings (PostgreSQL emits
+     * ISO-8601 from `date` columns; lexicographic order matches calendar
+     * order).
+     */
+    private function isRenewalCandidate(object $row, string $expirationDateStr, string $veteranCutoffStr): bool
+    {
+        if ($row->contract_until === null || $row->contract_until > $expirationDateStr) {
             return false;
         }
-
-        // Don't touch players the user is already in the middle of renewing.
-        if ($player->pending_annual_wage !== null) {
+        if ($row->pending_annual_wage !== null) {
             return false;
         }
-
-        // Renewal authority on loaned-out players sits with the parent club's
-        // own pipeline (and on-loan filial squads run separate flows).
-        if ($player->isOnLoan()) {
+        if ($row->on_loan) {
             return false;
         }
-
-        // Veterans (age > PRIME_END) keep the existing season-end coin flip,
-        // simulating "club still deciding whether to keep the aging star."
-        if ($player->date_of_birth === null || $player->date_of_birth->lte($veteranCutoff)) {
+        // Veterans (date_of_birth on or before the cutoff) keep the existing
+        // season-end coin flip; the AI doesn't preemptively decide on them.
+        if ($row->date_of_birth === null || $row->date_of_birth <= $veteranCutoffStr) {
             return false;
         }
 
