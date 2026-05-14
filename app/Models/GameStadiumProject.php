@@ -78,10 +78,7 @@ class GameStadiumProject extends Model
 
     public function scopeActive(Builder $query): Builder
     {
-        return $query->whereIn('status', [
-            StadiumProjectStatus::Pending->value,
-            StadiumProjectStatus::InProgress->value,
-        ]);
+        return $query->where('status', StadiumProjectStatus::InProgress->value);
     }
 
     public function scopeOfType(Builder $query, StadiumProjectType $type): Builder
@@ -107,15 +104,6 @@ class GameStadiumProject extends Model
     public function isUefaUpgrade(): bool
     {
         return $this->type === StadiumProjectType::UefaUpgrade;
-    }
-
-    /**
-     * True while a rebuild is actively under construction — the season in
-     * which match capacity drops to the construction-time fraction.
-     */
-    public function reducesMatchCapacity(): bool
-    {
-        return $this->isRebuild() && $this->status === StadiumProjectStatus::InProgress;
     }
 
     public function getFormattedTotalCostAttribute(): string

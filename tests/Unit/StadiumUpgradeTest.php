@@ -17,7 +17,7 @@ use App\Modules\Stadium\Services\StadiumUpgradeService;
 use App\Modules\Match\Events\GameDateAdvanced;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Season\DTOs\SeasonTransitionData;
-use App\Modules\Season\Processors\StadiumProjectProgressionProcessor;
+use App\Modules\Season\Processors\StadiumLoanBillingProcessor;
 use App\Modules\Stadium\Enums\StadiumLoanStatus;
 use App\Modules\Stadium\Enums\StadiumProjectFinancing;
 use App\Modules\Stadium\Enums\StadiumProjectStatus;
@@ -152,8 +152,10 @@ class StadiumUpgradeTest extends TestCase
         );
 
         $this->assertSame(StadiumProjectType::Rebuild, $project->type);
-        $this->assertSame(StadiumProjectStatus::Pending, $project->status);
+        $this->assertSame(StadiumProjectStatus::InProgress, $project->status);
         $this->assertSame(StadiumProjectFinancing::Loan, $project->financing);
+        $this->assertNotNull($project->completion_date);
+        $this->assertNull($project->completion_season);
         $this->assertSame(0, $project->paid_cents); // loan funds the project, club cash untouched
         $this->assertNotNull($project->stadium_loan_id);
 
@@ -167,36 +169,7 @@ class StadiumUpgradeTest extends TestCase
         $this->assertSame($startingBudget, $investment->transfer_budget);
     }
 
-    public function test_progression_processor_advances_pending_rebuild_to_in_progress(): void
-    {
-        [$game, $team] = $this->setupGame();
-
-        $project = GameStadiumProject::create([
-            'game_id' => $game->id,
-            'team_id' => $team->id,
-            'type' => StadiumProjectType::Rebuild,
-            'status' => StadiumProjectStatus::Pending,
-            'target_capacity' => 30_000,
-            'committed_season' => (int) $game->season,
-            'committed_date' => $game->current_date,
-            'completion_season' => (int) $game->season + 2,
-            'total_cost_cents' => 450_000_000_00,
-            'financing' => StadiumProjectFinancing::Cash,
-            'paid_cents' => 450_000_000_00,
-        ]);
-
-        $processor = app(StadiumProjectProgressionProcessor::class);
-        $processor->process($game, new SeasonTransitionData(
-            oldSeason: (string) $game->season,
-            newSeason: (string) ((int) $game->season + 1),
-            competitionId: $game->competition_id,
-        ));
-
-        $project->refresh();
-        $this->assertSame(StadiumProjectStatus::InProgress, $project->status);
-    }
-
-    public function test_progression_processor_completes_rebuild_and_folds_supletorias(): void
+    public function test_listener_completes_rebuild_and_folds_supletorias(): void
     {
         [$game, $team] = $this->setupGame();
 
@@ -209,18 +182,19 @@ class StadiumUpgradeTest extends TestCase
             'type' => StadiumProjectType::Rebuild,
             'status' => StadiumProjectStatus::InProgress,
             'target_capacity' => 40_000,
-            'committed_season' => (int) $game->season - 1,
-            'committed_date' => $game->current_date,
-            'completion_season' => (int) $game->season + 1,
+            'committed_season' => (int) $game->season,
+            'committed_date' => Carbon::parse('2025-01-01'),
+            'completion_date' => Carbon::parse('2026-06-25'),
             'total_cost_cents' => 600_000_000_00,
             'financing' => StadiumProjectFinancing::Cash,
             'paid_cents' => 600_000_000_00,
         ]);
 
-        app(StadiumProjectProgressionProcessor::class)->process($game, new SeasonTransitionData(
-            oldSeason: (string) $game->season,
-            newSeason: (string) ((int) $game->season + 1),
-            competitionId: $game->competition_id,
+        $listener = app(\App\Modules\Finance\Listeners\ActivateCompletedStadiumProjects::class);
+        $listener->handle(new GameDateAdvanced(
+            $game,
+            Carbon::parse('2026-06-24'),
+            Carbon::parse('2026-06-30'),
         ));
 
         $project->refresh();
@@ -233,7 +207,7 @@ class StadiumUpgradeTest extends TestCase
         $this->assertSame(43_000, $stadium->effective_capacity);
     }
 
-    public function test_progression_processor_bills_active_loan_and_decrements_principal(): void
+    public function test_loan_billing_processor_bills_active_loan_and_decrements_principal(): void
     {
         [$game, $team] = $this->setupGame();
 
@@ -245,7 +219,7 @@ class StadiumUpgradeTest extends TestCase
             'target_capacity' => 30_000,
             'committed_season' => (int) $game->season - 5,
             'committed_date' => $game->current_date,
-            'completion_season' => (int) $game->season - 3,
+            'completion_date' => $game->current_date,
             'total_cost_cents' => 450_000_000_00,
             'financing' => StadiumProjectFinancing::Loan,
             'paid_cents' => 0,
@@ -262,7 +236,7 @@ class StadiumUpgradeTest extends TestCase
             'status' => StadiumLoanStatus::Active,
         ]);
 
-        app(StadiumProjectProgressionProcessor::class)->process($game, new SeasonTransitionData(
+        app(StadiumLoanBillingProcessor::class)->process($game, new SeasonTransitionData(
             oldSeason: (string) $game->season,
             newSeason: (string) ((int) $game->season + 1),
             competitionId: $game->competition_id,
@@ -389,13 +363,13 @@ class StadiumUpgradeTest extends TestCase
         );
 
         $this->assertSame(StadiumProjectType::StandExpansion, $project->type);
-        $this->assertSame(StadiumProjectStatus::Pending, $project->status);
+        $this->assertSame(StadiumProjectStatus::InProgress, $project->status);
         $this->assertSame(5_000, $project->target_capacity);
         // 5,000 × €8k = €40M
         $this->assertSame(40_000_000_00, $project->total_cost_cents);
         $this->assertSame(40_000_000_00, $project->paid_cents);
-        $this->assertSame((int) $game->season + 1, $project->completion_season);
-        $this->assertNull($project->completion_date);
+        $this->assertNotNull($project->completion_date);
+        $this->assertNull($project->completion_season);
 
         $investment = GameInvestment::where('game_id', $game->id)->first();
         $this->assertSame(200_000_000_00 - 40_000_000_00, $investment->transfer_budget);
@@ -470,7 +444,7 @@ class StadiumUpgradeTest extends TestCase
         );
     }
 
-    public function test_progression_processor_completes_stand_expansion_at_season_close(): void
+    public function test_listener_completes_stand_expansion_on_completion_date(): void
     {
         [$game, $team] = $this->setupGame();
 
@@ -478,11 +452,11 @@ class StadiumUpgradeTest extends TestCase
             'game_id' => $game->id,
             'team_id' => $team->id,
             'type' => StadiumProjectType::StandExpansion,
-            'status' => StadiumProjectStatus::Pending,
+            'status' => StadiumProjectStatus::InProgress,
             'target_capacity' => 6_000,
             'committed_season' => (int) $game->season,
-            'committed_date' => $game->current_date,
-            'completion_season' => (int) $game->season + 1,
+            'committed_date' => Carbon::parse('2025-01-01'),
+            'completion_date' => Carbon::parse('2025-09-28'),
             'total_cost_cents' => 48_000_000_00,
             'financing' => StadiumProjectFinancing::Cash,
             'paid_cents' => 48_000_000_00,
@@ -491,10 +465,11 @@ class StadiumUpgradeTest extends TestCase
         $stadiumBefore = GameStadium::where('game_id', $game->id)->first();
         $baseBefore = $stadiumBefore->rebuilt_capacity ?? $stadiumBefore->base_capacity;
 
-        app(StadiumProjectProgressionProcessor::class)->process($game, new SeasonTransitionData(
-            oldSeason: (string) $game->season,
-            newSeason: (string) ((int) $game->season + 1),
-            competitionId: $game->competition_id,
+        $listener = app(\App\Modules\Finance\Listeners\ActivateCompletedStadiumProjects::class);
+        $listener->handle(new GameDateAdvanced(
+            $game,
+            Carbon::parse('2025-09-27'),
+            Carbon::parse('2025-10-02'),
         ));
 
         $project->refresh();

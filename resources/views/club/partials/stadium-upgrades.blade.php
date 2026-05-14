@@ -107,7 +107,7 @@ $uefaAvailable                 = $upgrade['uefa_available'];
                     :label="__('club.stadium.upgrades.cta_stand_expansion_label')"
                     :title="__('club.stadium.upgrades.cta_stand_expansion_title')"
                     :cost-label="$standExpansionPerSeat > 0 ? __('club.stadium.upgrades.from_total', ['total' => Money::format($standExpansionMinTotalCents)]) : null"
-                    :duration-label="trans_choice('club.stadium.upgrades.time_seasons_inline', 1, ['count' => 1])"
+                    :duration-label="trans_choice('club.stadium.upgrades.time_months_inline', 9, ['count' => 9])"
                     :locked-reason="$standExpansionState === 'locked' ? __('club.stadium.upgrades.cta_stand_expansion_no_budget_short', ['budget' => Money::format($availableBudgetCents)]) : null" />
 
                 {{-- Tier 3 · Reconstruir el estadio --}}
@@ -128,7 +128,7 @@ $uefaAvailable                 = $upgrade['uefa_available'];
                     :label="__('club.stadium.upgrades.cta_rebuild_label')"
                     :title="__('club.stadium.upgrades.cta_rebuild_title')"
                     :cost-label="$rebuildEntryPerSeat > 0 ? __('club.stadium.upgrades.from_total', ['total' => Money::format($rebuildMinTotalCents)]) : null"
-                    :duration-label="trans_choice('club.stadium.upgrades.time_seasons_inline', 2, ['count' => 2])"
+                    :duration-label="trans_choice('club.stadium.upgrades.time_months_inline', 18, ['count' => 18])"
                     :locked-reason="$rebuildLockedReason" />
 
                 {{-- UEFA category upgrade. Capacity-agnostic facility tier
@@ -163,7 +163,7 @@ $uefaAvailable                 = $upgrade['uefa_available'];
                         ? __('club.stadium.upgrades.cta_uefa_title', ['from' => $uefaCurrentLevel, 'to' => $uefaNextLevel])
                         : __('club.stadium.upgrades.cta_uefa_title_generic')"
                     :cost-label="$uefaActionable ? Money::format($uefaUpgradeCost) : null"
-                    :duration-label="$uefaActionable ? trans_choice('club.stadium.upgrades.time_seasons_inline', 1, ['count' => 1]) : null"
+                    :duration-label="$uefaActionable ? trans_choice('club.stadium.upgrades.time_months_inline', 9, ['count' => 9]) : null"
                     :locked-reason="$uefaLockedReason" />
             </div>
         @endif

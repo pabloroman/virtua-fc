@@ -19,10 +19,10 @@
         default                                       => 'border-l-border-default',
     };
 
-    // Subtitle: cost + duration when available, locked reason when blocked,
-    // "En obra" when an active project is in flight.
+    // Subtitle: cost + duration when available, locked reason when blocked.
+    // (The list is hidden by the parent when a project is in flight, so we
+    // don't render an in-progress variant here.)
     $subtitle = match (true) {
-        $state === 'in_progress'              => __('club.stadium.upgrades.status_in_progress'),
         $lockedReason !== null                => $lockedReason,
         $costLabel && $durationLabel          => $costLabel.' · '.$durationLabel,
         $costLabel                            => $costLabel,
@@ -34,7 +34,7 @@
     type="button"
     @if(! $actionable) disabled @endif
     @if($modal) x-on:click="$dispatch('open-modal', '{{ $modal }}')" @endif
-    class="group relative flex items-center gap-4 w-full text-left p-4 rounded-lg border border-border-strong border-l-4 {{ $borderClass }} bg-surface-700 enabled:hover:bg-surface-600 disabled:cursor-not-allowed {{ $state === 'in_progress' ? 'opacity-60' : '' }} transition-colors"
+    class="group relative flex items-center gap-4 w-full text-left p-4 rounded-lg border border-border-strong border-l-4 {{ $borderClass }} bg-surface-700 enabled:hover:bg-surface-600 disabled:cursor-not-allowed transition-colors"
 >
     <div class="flex-1 min-w-0">
         <div class="text-[10px] text-text-muted uppercase tracking-widest mb-1">{{ $label }}</div>
@@ -47,8 +47,6 @@
     <div class="shrink-0 text-sm font-semibold tabular-nums">
         @if($actionable)
             <span class="text-accent-blue group-hover:text-accent-blue/80 transition-colors">{{ __('club.stadium.upgrades.cta_planificar') }}</span>
-        @elseif($state === 'in_progress')
-            <span class="text-text-faint">{{ __('club.stadium.upgrades.status_in_progress') }}</span>
         @else
             <span class="text-text-faint">{{ __('club.stadium.upgrades.status_locked') }}</span>
         @endif

@@ -75,6 +75,11 @@ class StadiumUpgradeService
         return (int) config('finances.stadium_costs.supplementary_max_seats_per_project', 8_000);
     }
 
+    public function supplementaryConstructionDays(): int
+    {
+        return (int) config('finances.stadium_costs.supplementary_construction_days', 30);
+    }
+
     public function standExpansionCostPerSeat(): int
     {
         return (int) config('finances.stadium_costs.stand_expansion_per_seat_cents', 800_000);
@@ -88,6 +93,21 @@ class StadiumUpgradeService
     public function standExpansionMaxSeats(): int
     {
         return (int) config('finances.stadium_costs.stand_expansion_max_seats', 12_000);
+    }
+
+    public function standExpansionConstructionDays(): int
+    {
+        return (int) config('finances.stadium_costs.stand_expansion_construction_days', 270);
+    }
+
+    public function rebuildConstructionDays(): int
+    {
+        return (int) config('finances.stadium_costs.rebuild_construction_days', 540);
+    }
+
+    public function uefaUpgradeConstructionDays(): int
+    {
+        return (int) config('finances.stadium_costs.uefa_upgrade_construction_days', 270);
     }
 
     /**
@@ -254,8 +274,7 @@ class StadiumUpgradeService
         $cost = $seats * $this->supplementaryCostPerSeat();
         $this->assertCashAvailable($game, $cost);
 
-        $days = (int) config('finances.stadium_costs.supplementary_construction_days', 30);
-        $completionDate = $game->current_date->copy()->addDays($days);
+        $completionDate = $game->current_date->copy()->addDays($this->supplementaryConstructionDays());
 
         return DB::transaction(function () use ($game, $seats, $cost, $completionDate) {
             $project = GameStadiumProject::create([
@@ -289,8 +308,9 @@ class StadiumUpgradeService
     }
 
     /**
-     * Commit a full stadium rebuild. Construction begins next season at
-     * 40% capacity and the new capacity goes live the season after.
+     * Commit a full stadium rebuild. Construction takes a fixed in-game
+     * duration; capacity stays at the current level until the project
+     * completes and the new capacity replaces it.
      */
     public function commitRebuild(
         Game $game,
@@ -321,21 +341,19 @@ class StadiumUpgradeService
             $this->assertCashAvailable($game, $cost);
         }
 
-        return DB::transaction(function () use ($game, $targetCapacity, $cost, $financing) {
-            $committedSeason = (int) $game->season;
+        $completionDate = $game->current_date->copy()->addDays($this->rebuildConstructionDays());
 
+        return DB::transaction(function () use ($game, $targetCapacity, $cost, $financing, $completionDate) {
             $project = GameStadiumProject::create([
                 'game_id' => $game->id,
                 'team_id' => $game->team_id,
                 'type' => StadiumProjectType::Rebuild,
-                'status' => StadiumProjectStatus::Pending,
+                'status' => StadiumProjectStatus::InProgress,
                 'target_capacity' => $targetCapacity,
-                'committed_season' => $committedSeason,
+                'committed_season' => (int) $game->season,
                 'committed_date' => $game->current_date,
-                'completion_date' => null,
-                // One off-season + one construction season; new capacity
-                // goes live at the start of committed_season + 2.
-                'completion_season' => $committedSeason + 2,
+                'completion_date' => $completionDate,
+                'completion_season' => null,
                 'total_cost_cents' => $cost,
                 'financing' => $financing,
                 'paid_cents' => $financing === StadiumProjectFinancing::Cash ? $cost : 0,
@@ -353,7 +371,7 @@ class StadiumUpgradeService
                 $game,
                 StadiumProjectType::Rebuild,
                 $targetCapacity,
-                (string) ($committedSeason + 2),
+                $completionDate->isoFormat('LL'),
             );
 
             return $project->fresh();
@@ -361,10 +379,9 @@ class StadiumUpgradeService
     }
 
     /**
-     * Commit a permanent single-stand expansion. Construction runs through
-     * one season; the new seats go live at the start of the next season.
-     * Unlike a full rebuild, the rest of the stadium stays open during
-     * construction, so capacity is not reduced.
+     * Commit a permanent single-stand expansion. Construction takes a
+     * fixed in-game duration; the rest of the stadium stays open while
+     * the build runs and the new seats activate on the completion date.
      */
     public function commitStandExpansion(
         Game $game,
@@ -396,20 +413,19 @@ class StadiumUpgradeService
             }
         }
 
-        return DB::transaction(function () use ($game, $seats, $cost, $financing) {
-            $committedSeason = (int) $game->season;
+        $completionDate = $game->current_date->copy()->addDays($this->standExpansionConstructionDays());
 
+        return DB::transaction(function () use ($game, $seats, $cost, $financing, $completionDate) {
             $project = GameStadiumProject::create([
                 'game_id' => $game->id,
                 'team_id' => $game->team_id,
                 'type' => StadiumProjectType::StandExpansion,
-                'status' => StadiumProjectStatus::Pending,
+                'status' => StadiumProjectStatus::InProgress,
                 'target_capacity' => $seats,
-                'committed_season' => $committedSeason,
+                'committed_season' => (int) $game->season,
                 'committed_date' => $game->current_date,
-                'completion_date' => null,
-                // New seats go live at the start of committed_season + 1.
-                'completion_season' => $committedSeason + 1,
+                'completion_date' => $completionDate,
+                'completion_season' => null,
                 'total_cost_cents' => $cost,
                 'financing' => $financing,
                 'paid_cents' => $financing === StadiumProjectFinancing::Cash ? $cost : 0,
@@ -427,7 +443,7 @@ class StadiumUpgradeService
                 $game,
                 StadiumProjectType::StandExpansion,
                 $seats,
-                (string) ($committedSeason + 1),
+                $completionDate->isoFormat('LL'),
             );
 
             return $project->fresh();
@@ -477,10 +493,9 @@ class StadiumUpgradeService
     }
 
     /**
-     * Commit a one-step UEFA category upgrade (current → current+1).
-     * Construction runs through one season and the new category is live
-     * at the start of the next season; capacity is unaffected during the
-     * build (it's a facility fit-out, not a seat change).
+     * Commit a one-step UEFA category upgrade (current → current+1). Takes
+     * a fixed in-game duration; capacity is unaffected during the build
+     * (it's a facility fit-out, not a seat change).
      */
     public function commitUefaUpgrade(
         Game $game,
@@ -508,23 +523,23 @@ class StadiumUpgradeService
             }
         }
 
-        return DB::transaction(function () use ($game, $targetLevel, $cost, $financing) {
-            $committedSeason = (int) $game->season;
+        $completionDate = $game->current_date->copy()->addDays($this->uefaUpgradeConstructionDays());
 
+        return DB::transaction(function () use ($game, $targetLevel, $cost, $financing, $completionDate) {
             $project = GameStadiumProject::create([
                 'game_id' => $game->id,
                 'team_id' => $game->team_id,
                 'type' => StadiumProjectType::UefaUpgrade,
-                'status' => StadiumProjectStatus::Pending,
+                'status' => StadiumProjectStatus::InProgress,
                 // target_capacity stores the target UEFA level (1–4) for
                 // this project type. The history view branches on type
                 // before rendering, so the integer never gets mistaken
                 // for a seat count.
                 'target_capacity' => $targetLevel,
-                'committed_season' => $committedSeason,
+                'committed_season' => (int) $game->season,
                 'committed_date' => $game->current_date,
-                'completion_date' => null,
-                'completion_season' => $committedSeason + 1,
+                'completion_date' => $completionDate,
+                'completion_season' => null,
                 'total_cost_cents' => $cost,
                 'financing' => $financing,
                 'paid_cents' => $financing === StadiumProjectFinancing::Cash ? $cost : 0,
@@ -542,7 +557,7 @@ class StadiumUpgradeService
                 $game,
                 StadiumProjectType::UefaUpgrade,
                 $targetLevel,
-                (string) ($committedSeason + 1),
+                $completionDate->isoFormat('LL'),
             );
 
             return $project->fresh();

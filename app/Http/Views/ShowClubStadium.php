@@ -157,28 +157,28 @@ class ShowClubStadium
         // and goal-line variant. Keeping derivation here (not in a Blade @php
         // block) preserves the project rule that templates stay logic-free.
         //
+        // The partial hides the row list entirely while a project is in
+        // flight (the history card carries the in-progress info), so the
+        // matches below assume there is no active project.
+        //
         // Values:
-        //   'in_progress'        — another project is in flight; click disabled
-        //   'locked_reputation'  — rebuild only; need a higher reputation tier
+        //   'locked_reputation'    — rebuild only; need a higher reputation tier
         //   'locked_affordability' — rebuild only; need more annual revenue
-        //   'locked'             — generic gate (not enough cash / no headroom)
-        //   'available_loan'     — affordable only via stadium loan (stretches budget)
-        //   'available_cash'     — comfortably within current cash budget
+        //   'locked'               — generic gate (not enough cash / no headroom)
+        //   'available_loan'       — affordable only via stadium loan (stretches budget)
+        //   'available_cash'       — comfortably within current cash budget
         $supplementaryState = match (true) {
-            $activeProject !== null                 => 'in_progress',
             ! $supplementaryAffordable              => 'locked',
             default                                 => 'available_cash',
         };
 
         $standExpansionState = match (true) {
-            $activeProject !== null                 => 'in_progress',
             ! $standExpansionAvailable              => 'locked',
             ! $standExpansionCashAffordable         => 'available_loan',
             default                                 => 'available_cash',
         };
 
         $rebuildState = match (true) {
-            $activeProject !== null                 => 'in_progress',
             ! $canRebuild                           => 'locked_reputation',
             $rebuildMaxCapacity <= $currentCapacity && $bindingConstraint === 'reputation'
                                                     => 'locked_reputation',
@@ -308,9 +308,9 @@ class ShowClubStadium
 
         $isCompleted = $project->status === StadiumProjectStatus::Completed;
 
-        // "When is it ready" label varies by project shape: supplementary
-        // lands on a calendar date, the others land at the start of a
-        // season.
+        // Every project type now lands on a fixed completion_date stamped
+        // at commit. Pre-refactor records that still only carry
+        // completion_season fall back to the legacy season label.
         $readyLabel = $project->completion_date
             ? $project->completion_date->isoFormat('LL')
             : ($project->completion_season

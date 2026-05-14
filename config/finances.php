@@ -67,12 +67,13 @@ return [
         'supplementary_construction_days' => 30,
 
         // Permanent single-stand rebuild — Anfield Road / Selhurst Park
-        // scope (€30–80M for 3–8k seats ≈ €4–10k/seat). One construction
-        // season, no mid-construction capacity drop (the rest of the
-        // stadium stays open).
+        // scope (€30–80M for 3–8k seats ≈ €4–10k/seat). Construction takes
+        // a fixed in-game duration; the rest of the stadium stays open
+        // during the build (no capacity drop).
         'stand_expansion_per_seat_cents' => 800_000, // €8,000/seat
         'stand_expansion_min_seats' => 3_000,
         'stand_expansion_max_seats' => 12_000,
+        'stand_expansion_construction_days' => 270, // ~9 months / one football season
 
         // Full rebuild — cumulative bracket pricing (tax-bracket style).
         // Per-seat marginal cost grows with target size; total cost stays
@@ -87,18 +88,14 @@ return [
             ['up_to' =>  80_000, 'per_seat_cents' => 1_000_000],
             ['up_to' =>    null, 'per_seat_cents' => 1_500_000],
         ],
-
-        // During a rebuild's construction season, effective capacity drops
-        // to this fraction of the pre-rebuild base. (Stand expansion does
-        // not reduce capacity — it only rebuilds a single stand.)
-        'rebuild_construction_capacity_factor' => 0.4,
+        'rebuild_construction_days' => 540, // ~18 months / two football seasons
 
         // UEFA category upgrade — facility-tier renovation (covered seats,
         // floodlights, broadcast booths, media rooms, dressing rooms, etc.)
         // to meet the next UEFA category's infrastructure requirements.
         // One-level-at-a-time; each transition costs the amount listed
-        // below (key = source level). Works through a single construction
-        // season with no capacity disruption (like stand expansion).
+        // below (key = source level). No capacity change while the
+        // facilities are being fitted out.
         // Reference: UEFA Cat 4 fit-outs run ~€20–80M depending on the
         // starting state; the values here sit at the lower end so multiple
         // projects across a long save remain affordable.
@@ -107,6 +104,7 @@ return [
             2 => 2_000_000_000,  // 2 → 3: €20M
             3 => 5_000_000_000,  // 3 → 4: €50M
         ],
+        'uefa_upgrade_construction_days' => 270, // ~9 months / one football season
     ],
 
     // Stadium rebuild loan configuration.
