@@ -43,6 +43,7 @@ use App\Modules\Squad\Listeners\EnforceSquadRegistration;
 use App\Modules\Transfer\Listeners\ApplyWageGapMoraleDrip;
 use App\Modules\Transfer\Listeners\CompleteAgreedTransfersOnWindowOpen;
 use App\Modules\Transfer\Listeners\ProcessTransferWindowClose;
+use App\Modules\Transfer\Listeners\RollAIContractRenewals;
 use App\Modules\Transfer\Listeners\RollSalaryUnhappiness;
 use App\Modules\Season\Listeners\RecordSeasonCompleted;
 use App\Modules\Season\Listeners\SimulateOtherLeagues;
@@ -186,6 +187,7 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(GameDateAdvanced::class, EnforceSquadRegistration::class);
         Event::listen(GameDateAdvanced::class, RollSalaryUnhappiness::class);
         Event::listen(GameDateAdvanced::class, ApplyWageGapMoraleDrip::class);
+        Event::listen(GameDateAdvanced::class, RollAIContractRenewals::class);
 
         Queue::failing(function (JobFailed $event) {
             try {
