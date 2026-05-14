@@ -204,6 +204,7 @@ return [
     'tx_stadium_supplementary_payment' => 'Temporary stands (:seats seats)',
     'tx_stadium_stand_expansion_payment' => 'Stand expansion (:seats seats)',
     'tx_stadium_rebuild_payment' => 'Stadium rebuild (:capacity seats)',
+    'tx_stadium_uefa_upgrade_payment' => 'Upgrade to UEFA Category :level',
     'tx_stadium_loan_instalment' => 'Stadium loan annual instalment: :amount',
 
     'stadium_debt_service' => 'Stadium Debt Service',

@@ -56,6 +56,19 @@ $rebuildCashAffordable   = $rebuildMaxCash >= $rebuildMin;
 $rebuildAvailable = $canRebuild
     && $rebuildMaxCapacity >= $rebuildMin
     && ($rebuildCashAffordable || $rebuildMaxCapacity >= $rebuildMin);
+
+// UEFA category upgrade — flat cost, one step at a time. CTA opens the
+// modal when there's no blocker and at least one financing path is
+// affordable.
+$uefaCurrentLevel   = $upgrade['uefa_current_level'];
+$uefaNextLevel      = $upgrade['uefa_next_level'];
+$uefaUpgradeCost    = $upgrade['uefa_upgrade_cost_cents'];
+$uefaCapacityFloor  = $upgrade['uefa_capacity_floor'];
+$uefaBlocker        = $upgrade['uefa_blocker'];
+$uefaCashAffordable = $upgrade['uefa_cash_affordable'];
+$uefaLoanAffordable = $upgrade['uefa_loan_affordable'];
+$uefaAvailable = $uefaBlocker === null
+    && ($uefaCashAffordable || $uefaLoanAffordable);
 @endphp
 
 <x-section-card :title="__('club.stadium.upgrades.title')">
@@ -193,6 +206,57 @@ $rebuildAvailable = $canRebuild
                             ]) }}
                         @endif
                     </div>
+                </button>
+            </div>
+
+            {{-- UEFA category upgrade. Capacity-agnostic facility tier
+                 upgrade (one step at a time): floodlights, dressing
+                 rooms, media facilities. Renders as a compact horizontal
+                 card so it reads as a distinct concern from the capacity
+                 CTAs above. --}}
+            <div x-data
+                 class="flex flex-col md:flex-row md:items-center gap-3 p-4 rounded-lg border border-border-strong border-l-4 border-l-accent-green bg-surface-700">
+                <div class="flex-1 min-w-0">
+                    <div class="text-[10px] text-accent-green uppercase tracking-widest mb-1">{{ __('club.stadium.upgrades.cta_uefa_label') }}</div>
+                    <div class="font-heading text-base font-bold text-text-primary">
+                        @if($uefaCurrentLevel !== null && $uefaNextLevel !== null)
+                            {{ __('club.stadium.upgrades.cta_uefa_title', ['from' => $uefaCurrentLevel, 'to' => $uefaNextLevel]) }}
+                        @else
+                            {{ __('club.stadium.upgrades.cta_uefa_title_generic') }}
+                        @endif
+                    </div>
+                    <div class="text-xs text-text-muted mt-1.5">
+                        @if($activeProject)
+                            {{ __('club.stadium.upgrades.cta_disabled_by_active_project') }}
+                        @elseif($uefaBlocker === 'no_base_level')
+                            {{ __('club.stadium.upgrades.cta_uefa_no_base_level') }}
+                        @elseif($uefaBlocker === 'already_max')
+                            {{ __('club.stadium.upgrades.cta_uefa_already_max') }}
+                        @elseif($uefaBlocker === 'capacity_floor')
+                            {{ __('club.stadium.upgrades.cta_uefa_capacity_floor', [
+                                'target'   => $uefaNextLevel,
+                                'min_cap'  => number_format($uefaCapacityFloor),
+                            ]) }}
+                        @elseif(! $uefaAvailable)
+                            {{ __('club.stadium.upgrades.cta_uefa_no_budget', [
+                                'cost'   => Money::format($uefaUpgradeCost),
+                                'budget' => Money::format($availableBudgetCents),
+                            ]) }}
+                        @else
+                            {{ __('club.stadium.upgrades.cta_uefa_tagline', [
+                                'target' => $uefaNextLevel,
+                                'cost'   => Money::format($uefaUpgradeCost),
+                            ]) }}
+                        @endif
+                    </div>
+                </div>
+                <button
+                    type="button"
+                    @if($activeProject || ! $uefaAvailable) disabled @endif
+                    x-on:click="$dispatch('open-modal', 'stadium-uefa-upgrade')"
+                    class="shrink-0 inline-flex items-center justify-center px-4 py-2 rounded-lg bg-accent-green/20 hover:bg-accent-green/30 border border-accent-green/40 text-accent-green text-xs font-semibold uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                    {{ __('club.stadium.upgrades.cta_uefa_button') }}
                 </button>
             </div>
 
@@ -367,6 +431,87 @@ $rebuildAvailable = $canRebuild
                 </x-secondary-button>
                 <x-primary-button>
                     {{ __('club.stadium.upgrades.commit_stand_expansion') }}
+                </x-primary-button>
+            </div>
+        </form>
+    </x-modal>
+    @endif
+
+    {{-- UEFA category upgrade modal --}}
+    @if($uefaAvailable)
+    <x-modal name="stadium-uefa-upgrade" maxWidth="lg">
+        <x-modal-header modalName="stadium-uefa-upgrade">{{ __('club.stadium.upgrades.modal_uefa_title', ['from' => $uefaCurrentLevel, 'to' => $uefaNextLevel]) }}</x-modal-header>
+
+        <form method="POST" action="{{ route('game.club.stadium.uefa-upgrade', $game->id) }}"
+              x-data="{
+                  financing: '{{ $uefaCashAffordable ? 'cash' : 'loan' }}',
+                  cashAffordable: {{ $uefaCashAffordable ? 'true' : 'false' }},
+                  loanAffordable: {{ $uefaLoanAffordable ? 'true' : 'false' }}
+              }"
+              class="p-6 space-y-4">
+            @csrf
+
+            <p class="text-sm text-text-muted">{{ __('club.stadium.upgrades.modal_uefa_description') }}</p>
+
+            <div class="flex items-center justify-between p-3 rounded-lg bg-surface-700 border border-border-default">
+                <div>
+                    <div class="text-[10px] text-text-muted uppercase tracking-widest mb-0.5">{{ __('club.stadium.upgrades.uefa_transition_label') }}</div>
+                    <div class="font-heading text-base font-bold text-text-primary">
+                        <span class="inline-flex items-center justify-center min-w-[2rem] px-2 py-0.5 rounded-md bg-surface-600 text-text-body tabular-nums">{{ $uefaCurrentLevel }}</span>
+                        <span class="mx-1 text-text-faint">→</span>
+                        <span class="inline-flex items-center justify-center min-w-[2rem] px-2 py-0.5 rounded-md bg-accent-green/20 text-accent-green tabular-nums">{{ $uefaNextLevel }}</span>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-[10px] text-text-muted uppercase tracking-widest mb-0.5">{{ __('club.stadium.upgrades.total_cost') }}</div>
+                    <div class="font-heading text-base font-bold text-text-primary">{{ Money::format($uefaUpgradeCost) }}</div>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-[10px] text-text-muted uppercase tracking-widest mb-2">{{ __('club.stadium.upgrades.financing') }}</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <label class="flex items-center gap-2 p-3 rounded-lg border"
+                           :class="{
+                               'border-accent-blue bg-accent-blue/10': financing === 'cash',
+                               'border-border-strong bg-surface-700': financing !== 'cash',
+                               'opacity-50 cursor-not-allowed': !cashAffordable,
+                               'cursor-pointer': cashAffordable
+                           }">
+                        <input type="radio" name="financing" value="cash" x-model="financing"
+                               :disabled="!cashAffordable" class="text-accent-blue">
+                        <span class="text-sm font-medium text-text-primary">{{ __('club.stadium.upgrades.financing_cash') }}</span>
+                    </label>
+                    <label class="flex items-center gap-2 p-3 rounded-lg border"
+                           :class="{
+                               'border-accent-blue bg-accent-blue/10': financing === 'loan',
+                               'border-border-strong bg-surface-700': financing !== 'loan',
+                               'opacity-50 cursor-not-allowed': !loanAffordable,
+                               'cursor-pointer': loanAffordable
+                           }">
+                        <input type="radio" name="financing" value="loan" x-model="financing"
+                               :disabled="!loanAffordable" class="text-accent-blue">
+                        <span class="text-sm font-medium text-text-primary">{{ __('club.stadium.upgrades.financing_loan') }}</span>
+                    </label>
+                </div>
+                <div class="text-xs text-text-muted mt-2">
+                    <template x-if="financing === 'loan'">
+                        <span>{{ __('club.stadium.upgrades.financing_loan_hint', ['cap' => Money::format($loanCapCents)]) }}</span>
+                    </template>
+                    <template x-if="financing === 'cash'">
+                        <span>{{ __('club.stadium.upgrades.financing_cash_hint_budget', ['budget' => Money::format($availableBudgetCents)]) }}</span>
+                    </template>
+                </div>
+            </div>
+
+            <x-status-banner color="blue" :description="__('club.stadium.upgrades.uefa_no_capacity_change_note')" />
+
+            <div class="flex justify-end gap-3 pt-4">
+                <x-secondary-button type="button" x-on:click="$dispatch('close-modal', 'stadium-uefa-upgrade')">
+                    {{ __('app.cancel') }}
+                </x-secondary-button>
+                <x-primary-button>
+                    {{ __('club.stadium.upgrades.commit_uefa_upgrade') }}
                 </x-primary-button>
             </div>
         </form>

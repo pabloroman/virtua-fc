@@ -30,6 +30,20 @@
                                 <div class="text-[10px] text-text-muted uppercase tracking-widest mb-1">{{ __('club.stadium.capacity') }}</div>
                                 <div class="font-heading text-2xl font-bold text-text-primary">{{ number_format($capacity) }}</div>
                             </div>
+                            <div class="md:text-right">
+                                <div class="text-[10px] text-text-muted uppercase tracking-widest mb-1 flex items-center md:justify-end gap-1.5">
+                                    {{ __('club.stadium.uefa_category') }}
+                                    <x-info-icon :tooltip="__('club.stadium.uefa_category_tooltip')" />
+                                </div>
+                                @if($uefaLevel)
+                                    <div class="inline-flex items-center gap-2 font-heading text-2xl font-bold text-text-primary">
+                                        <span class="inline-flex items-center justify-center min-w-[2.25rem] px-2 py-0.5 rounded-md bg-accent-blue/15 text-accent-blue tabular-nums">{{ $uefaLevel }}</span>
+                                        <span class="text-sm font-medium text-text-muted uppercase tracking-wide">{{ __('club.stadium.uefa_category_short') }}</span>
+                                    </div>
+                                @else
+                                    <div class="font-heading text-2xl font-bold text-text-faint">—</div>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </x-section-card>

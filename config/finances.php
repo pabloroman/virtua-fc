@@ -92,6 +92,21 @@ return [
         // to this fraction of the pre-rebuild base. (Stand expansion does
         // not reduce capacity — it only rebuilds a single stand.)
         'rebuild_construction_capacity_factor' => 0.4,
+
+        // UEFA category upgrade — facility-tier renovation (covered seats,
+        // floodlights, broadcast booths, media rooms, dressing rooms, etc.)
+        // to meet the next UEFA category's infrastructure requirements.
+        // One-level-at-a-time; each transition costs the amount listed
+        // below (key = source level). Works through a single construction
+        // season with no capacity disruption (like stand expansion).
+        // Reference: UEFA Cat 4 fit-outs run ~€20–80M depending on the
+        // starting state; the values here sit at the lower end so multiple
+        // projects across a long save remain affordable.
+        'uefa_upgrade_cost_cents' => [
+            1 => 500_000_000,    // 1 → 2: €5M
+            2 => 2_000_000_000,  // 2 → 3: €20M
+            3 => 5_000_000_000,  // 3 → 4: €50M
+        ],
     ],
 
     // Stadium rebuild loan configuration.

@@ -204,6 +204,7 @@ return [
     'tx_stadium_supplementary_payment' => 'Gradas supletorias (:seats asientos)',
     'tx_stadium_stand_expansion_payment' => 'Ampliación de grada (:seats asientos)',
     'tx_stadium_rebuild_payment' => 'Reforma del estadio (:capacity asientos)',
+    'tx_stadium_uefa_upgrade_payment' => 'Mejora a Categoría UEFA :level',
     'tx_stadium_loan_instalment' => 'Cuota anual del préstamo del estadio: :amount',
 
     'stadium_debt_service' => 'Servicio de Deuda del Estadio',

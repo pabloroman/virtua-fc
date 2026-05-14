@@ -13,6 +13,9 @@ return [
         'home_ground' => 'Campo',
         'stadium_name' => 'Estadio',
         'capacity' => 'Aforo',
+        'uefa_category' => 'Categoría UEFA',
+        'uefa_category_short' => 'UEFA',
+        'uefa_category_tooltip' => 'La UEFA clasifica los estadios en cuatro categorías (1 a 4). Subir de categoría requiere reformar las instalaciones (iluminación, vestuarios, sala de prensa, palcos) y que el aforo supere el mínimo de la siguiente categoría.',
 
         'fan_base' => 'Afición',
         'fan_base_help' => 'La lealtad sube con títulos y buenas campañas y baja tras temporadas flojas. Junto a la reputación, determina cuánto se llena el estadio los días de partido.',
@@ -51,6 +54,7 @@ return [
             'project_supplementary' => 'Gradas supletorias',
             'project_stand_expansion' => 'Ampliación de grada',
             'project_rebuild' => 'Reforma del estadio',
+            'project_uefa_upgrade' => 'Mejora UEFA',
             'ready_on' => 'Listas para :date',
             'ready_in_season' => 'Disponible en la temporada :season',
             'loan_remaining' => 'Pendiente del préstamo: :amount',
@@ -102,8 +106,24 @@ return [
             'commit_supplementary' => 'Confirmar gradas',
             'commit_stand_expansion' => 'Iniciar ampliación',
             'commit_rebuild' => 'Iniciar reforma',
+            'commit_uefa_upgrade' => 'Iniciar mejora',
 
             'cta_disabled_by_active_project' => 'Ya tienes un proyecto en curso. Consulta el historial debajo.',
+
+            'cta_uefa_label' => 'Mejora de instalaciones',
+            'cta_uefa_title' => 'Subir a Categoría UEFA :to (desde :from)',
+            'cta_uefa_title_generic' => 'Subir de categoría UEFA',
+            'cta_uefa_button' => 'Mejorar instalaciones',
+            'cta_uefa_tagline' => 'Reforma las instalaciones para subir a Categoría UEFA :target. Coste fijo :cost, una temporada de obras, sin afectar al aforo.',
+            'cta_uefa_no_budget' => 'Coste de la mejora: :cost. No hay presupuesto ni crédito bancario suficientes. Presupuesto disponible: :budget.',
+            'cta_uefa_capacity_floor' => 'Para optar a Categoría UEFA :target el estadio debe superar los :min_cap asientos. Amplía el aforo primero.',
+            'cta_uefa_already_max' => 'Tu estadio ya está en la máxima categoría UEFA. No hay más niveles que desbloquear.',
+            'cta_uefa_no_base_level' => 'Tu estadio no tiene categoría UEFA asignada. Amplía el aforo para acceder a la clasificación.',
+
+            'modal_uefa_title' => 'Subir a Categoría UEFA :to',
+            'modal_uefa_description' => 'Reforma de las instalaciones para alcanzar los requisitos de la siguiente categoría UEFA (iluminación, vestuarios, zonas de prensa, palcos y accesibilidad). El aforo no se ve afectado durante las obras: la nueva categoría queda inscrita al inicio de la próxima temporada.',
+            'uefa_transition_label' => 'Categoría',
+            'uefa_no_capacity_change_note' => 'El estadio sigue plenamente operativo durante las obras. La nueva categoría UEFA queda registrada al inicio de la próxima temporada.',
         ],
 
         'history' => [
@@ -115,6 +135,7 @@ return [
             'col_cost' => 'Coste',
             'col_status' => 'Estado',
             'detail_rebuild' => ':count asientos (estadio nuevo)',
+            'detail_uefa_upgrade' => 'Categoría UEFA :from → :to',
             'status_completed' => 'Completado',
             'status_in_progress' => 'En curso',
             'season_label' => 'Temp. :season',

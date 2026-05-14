@@ -38,6 +38,7 @@ class GameStadiumProject extends Model
     public const TYPE_SUPPLEMENTARY = 'supplementary';
     public const TYPE_STAND_EXPANSION = 'stand_expansion';
     public const TYPE_REBUILD = 'rebuild';
+    public const TYPE_UEFA_UPGRADE = 'uefa_upgrade';
 
     public const STATUS_PENDING = 'pending';
     public const STATUS_IN_PROGRESS = 'in_progress';
@@ -105,6 +106,11 @@ class GameStadiumProject extends Model
     public function isRebuild(): bool
     {
         return $this->type === self::TYPE_REBUILD;
+    }
+
+    public function isUefaUpgrade(): bool
+    {
+        return $this->type === self::TYPE_UEFA_UPGRADE;
     }
 
     /**

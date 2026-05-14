@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Modules\Competition\Services\CountryConfig;
+use App\Modules\Stadium\UefaCategory;
 use App\Models\User;
 use App\Support\Money;
 use App\Support\TeamColors;
@@ -500,6 +501,9 @@ class SeedReferenceData extends Command
 
             if (!$teamId) {
                 $teamId = Str::uuid()->toString();
+                $stadiumSeats = isset($data['stadiumSeats'])
+                    ? (int) str_replace(['.', ','], '', $data['stadiumSeats'])
+                    : 0;
                 DB::connection('pgsql_control')->table('teams')->insert([
                     'id' => $teamId,
                     'transfermarkt_id' => $transfermarktId,
@@ -508,9 +512,8 @@ class SeedReferenceData extends Command
                     'country' => $teamCountry,
                     'image' => $data['image'] ?? null,
                     'stadium_name' => $data['stadiumName'] ?? null,
-                    'stadium_seats' => isset($data['stadiumSeats'])
-                        ? (int) str_replace(['.', ','], '', $data['stadiumSeats'])
-                        : 0,
+                    'stadium_seats' => $stadiumSeats,
+                    'uefa_stadium_category' => UefaCategory::deriveFromCapacity($stadiumSeats),
                 ]);
                 $teamsByTransfermarktId[$transfermarktId] = $teamId;
             } else {
@@ -676,10 +679,13 @@ class SeedReferenceData extends Command
                     ? (int) str_replace(['.', ','], '', $club['stadiumSeats'])
                     : 0;
 
+                $effectiveSeats = (int) ($stadiumSeats ?: $existingTeam->stadium_seats);
                 DB::connection('pgsql_control')->table('teams')->where('id', $teamId)->update([
                     'image' => $club['image'] ?? $existingTeam->image,
                     'stadium_name' => $club['stadiumName'] ?? $existingTeam->stadium_name,
-                    'stadium_seats' => $stadiumSeats ?: $existingTeam->stadium_seats,
+                    'stadium_seats' => $effectiveSeats,
+                    'uefa_stadium_category' => $existingTeam->uefa_stadium_category
+                        ?? UefaCategory::deriveFromCapacity($effectiveSeats),
                     'colors' => json_encode($colors),
                 ]);
             } else {
@@ -699,6 +705,7 @@ class SeedReferenceData extends Command
                     'image' => $club['image'] ?? null,
                     'stadium_name' => $club['stadiumName'] ?? null,
                     'stadium_seats' => $stadiumSeats,
+                    'uefa_stadium_category' => UefaCategory::deriveFromCapacity($stadiumSeats),
                     'colors' => json_encode($colors),
                 ]);
             }

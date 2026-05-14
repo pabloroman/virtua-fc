@@ -36,6 +36,14 @@ use App\Models\GameStadiumProject;
                                     => '+'.number_format($project->target_capacity),
                                 GameStadiumProject::TYPE_REBUILD
                                     => __('club.stadium.history.detail_rebuild', ['count' => number_format($project->target_capacity)]),
+                                // For uefa_upgrade, target_capacity stores
+                                // the destination UEFA level (1–4), not a
+                                // seat count. Render the transition arrow.
+                                GameStadiumProject::TYPE_UEFA_UPGRADE
+                                    => __('club.stadium.history.detail_uefa_upgrade', [
+                                        'from' => max(1, (int) $project->target_capacity - 1),
+                                        'to'   => (int) $project->target_capacity,
+                                    ]),
                                 default => '',
                             };
 

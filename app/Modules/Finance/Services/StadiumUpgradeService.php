@@ -11,6 +11,7 @@ use App\Models\StadiumLoan;
 use App\Models\TeamReputation;
 use App\Models\TransferOffer;
 use App\Modules\Notification\Services\NotificationService;
+use App\Modules\Stadium\UefaCategory;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -46,6 +47,7 @@ class StadiumUpgradeService
             'game_id' => $game->id,
             'team_id' => $game->team_id,
             'base_capacity' => $game->team?->stadium_seats ?? 0,
+            'base_uefa_level' => $game->team?->uefa_stadium_category,
         ]);
     }
 
@@ -435,6 +437,140 @@ class StadiumUpgradeService
                 $game,
                 GameStadiumProject::TYPE_STAND_EXPANSION,
                 $seats,
+                (string) ($committedSeason + 1),
+            );
+
+            return $project->fresh();
+        });
+    }
+
+    /**
+     * Flat cost (in cents) to bump the UEFA category one step starting
+     * from `$fromLevel`. Returns 0 if there's no configured cost for that
+     * transition (e.g. already at the top tier).
+     */
+    public function uefaUpgradeCost(int $fromLevel): int
+    {
+        $bands = (array) config('finances.stadium_costs.uefa_upgrade_cost_cents', []);
+
+        return (int) ($bands[$fromLevel] ?? 0);
+    }
+
+    /**
+     * Why the next UEFA upgrade can't be committed right now. Returns
+     * null when an upgrade IS available. The view consumes the reason
+     * code to render an explanatory hint on the CTA.
+     *
+     *   'already_max'      — already at Cat 4
+     *   'capacity_floor'   — current capacity below the next category's
+     *                        UEFA minimum
+     *   'no_base_level'    — stadium has no UEFA category at all (e.g.
+     *                        placeholder team / sub-200-seat ground)
+     *   'active_project'   — another project is in flight
+     */
+    public function uefaUpgradeBlocker(Game $game): ?string
+    {
+        if ($this->activeProject($game) !== null) {
+            return 'active_project';
+        }
+
+        $stadium = $this->stadiumFor($game);
+        $current = $stadium->effective_uefa_level;
+
+        if ($current === null) {
+            return 'no_base_level';
+        }
+
+        if ($current >= UefaCategory::MAX) {
+            return 'already_max';
+        }
+
+        $target = $current + 1;
+        if ($stadium->effective_capacity < UefaCategory::capacityFloor($target)) {
+            return 'capacity_floor';
+        }
+
+        return null;
+    }
+
+    /**
+     * Commit a one-step UEFA category upgrade (current → current+1).
+     * Construction runs through one season and the new category is live
+     * at the start of the next season; capacity is unaffected during the
+     * build (it's a facility fit-out, not a seat change).
+     */
+    public function commitUefaUpgrade(
+        Game $game,
+        string $financing,
+    ): GameStadiumProject {
+        $blocker = $this->uefaUpgradeBlocker($game);
+        if ($blocker !== null) {
+            throw new InvalidArgumentException(match ($blocker) {
+                'active_project'  => 'messages.stadium_active_project_exists',
+                'already_max'     => 'messages.stadium_uefa_already_max',
+                'capacity_floor'  => 'messages.stadium_uefa_capacity_floor',
+                'no_base_level'   => 'messages.stadium_uefa_no_base_level',
+            });
+        }
+
+        if (! in_array($financing, [
+            GameStadiumProject::FINANCING_CASH,
+            GameStadiumProject::FINANCING_LOAN,
+        ], true)) {
+            throw new InvalidArgumentException('messages.stadium_invalid_financing');
+        }
+
+        $stadium = $this->stadiumFor($game);
+        $currentLevel = (int) $stadium->effective_uefa_level;
+        $targetLevel = $currentLevel + 1;
+
+        $cost = $this->uefaUpgradeCost($currentLevel);
+        if ($cost <= 0) {
+            throw new InvalidArgumentException('messages.stadium_uefa_already_max');
+        }
+
+        if ($financing === GameStadiumProject::FINANCING_CASH) {
+            $this->assertCashAvailable($game, $cost);
+        } else {
+            if ($cost > $this->loanService->maxLoanCap($game)) {
+                throw new InvalidArgumentException('messages.stadium_rebuild_exceeds_max_capacity');
+            }
+        }
+
+        return DB::transaction(function () use ($game, $targetLevel, $cost, $financing) {
+            $committedSeason = (int) $game->season;
+
+            $project = GameStadiumProject::create([
+                'game_id' => $game->id,
+                'team_id' => $game->team_id,
+                'type' => GameStadiumProject::TYPE_UEFA_UPGRADE,
+                'status' => GameStadiumProject::STATUS_PENDING,
+                // target_capacity stores the target UEFA level (1–4) for
+                // this project type. The history view branches on type
+                // before rendering, so the integer never gets mistaken
+                // for a seat count.
+                'target_capacity' => $targetLevel,
+                'committed_season' => $committedSeason,
+                'committed_date' => $game->current_date,
+                'completion_date' => null,
+                'completion_season' => $committedSeason + 1,
+                'total_cost_cents' => $cost,
+                'financing' => $financing,
+                'paid_cents' => $financing === GameStadiumProject::FINANCING_CASH ? $cost : 0,
+            ]);
+
+            if ($financing === GameStadiumProject::FINANCING_CASH) {
+                $this->deductCash($game, $cost, __('finances.tx_stadium_uefa_upgrade_payment', [
+                    'level' => $targetLevel,
+                ]));
+            } else {
+                $this->loanService->request($game, $project, $cost);
+            }
+
+            $this->notificationService->notifyStadiumProjectCommitted(
+                $game,
+                GameStadiumProject::TYPE_UEFA_UPGRADE,
+                $targetLevel,
                 (string) ($committedSeason + 1),
             );
 

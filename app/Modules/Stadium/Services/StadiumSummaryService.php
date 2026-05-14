@@ -58,6 +58,7 @@ class StadiumSummaryService
             ->where('team_id', $game->team_id)
             ->first();
         $capacity = $stadium?->effective_capacity ?? (int) ($team->stadium_seats ?? 0);
+        $uefaLevel = $stadium?->effective_uefa_level ?? $team->uefa_stadium_category;
 
         $finances = $game->currentFinances;
         $projectedMatchday = (int) ($finances?->projected_matchday_revenue ?? 0);
@@ -95,6 +96,7 @@ class StadiumSummaryService
         return [
             'stadiumName' => $team->stadium_name,
             'capacity' => $capacity,
+            'uefaLevel' => $uefaLevel,
             'loyaltyPoints' => $loyaltyPoints,
             'baseLoyalty' => $baseLoyalty,
             'loyaltyDirection' => $direction,

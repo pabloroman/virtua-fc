@@ -28,6 +28,11 @@ use App\Modules\Season\DTOs\SeasonTransitionData;
  *                                  (target_capacity added to rebuilt_capacity;
  *                                   supplementary stands left untouched)
  *
+ * UEFA-upgrade lifecycle — one-step facility fit-out, no capacity change:
+ *   pending      → completed     when completion_season == X+1
+ *                                  (target_capacity stores the target UEFA
+ *                                   level; written to rebuilt_uefa_level)
+ *
  * Runs at priority 65 — immediately after SeasonSettlementProcessor (60),
  * which handles the existing single-season budget-loan repayment. Stadium-
  * loan instalments are billed here so that BudgetProjectionProcessor in the
@@ -53,6 +58,7 @@ class StadiumProjectProgressionProcessor implements SeasonProcessor
 
         $this->progressRebuilds($game, $closingSeason, $nextSeason);
         $this->progressStandExpansions($game, $nextSeason);
+        $this->progressUefaUpgrades($game, $nextSeason);
         $this->billActiveLoans($game);
 
         return $data;
@@ -99,6 +105,47 @@ class StadiumProjectProgressionProcessor implements SeasonProcessor
         foreach ($projects as $project) {
             $this->completeStandExpansion($game, $project);
         }
+    }
+
+    private function progressUefaUpgrades(Game $game, int $nextSeason): void
+    {
+        $projects = GameStadiumProject::query()
+            ->where('game_id', $game->id)
+            ->where('type', GameStadiumProject::TYPE_UEFA_UPGRADE)
+            ->where('status', GameStadiumProject::STATUS_PENDING)
+            ->where('completion_season', $nextSeason)
+            ->get();
+
+        foreach ($projects as $project) {
+            $this->completeUefaUpgrade($game, $project);
+        }
+    }
+
+    private function completeUefaUpgrade(Game $game, GameStadiumProject $project): void
+    {
+        $stadium = GameStadium::query()
+            ->where('game_id', $project->game_id)
+            ->where('team_id', $project->team_id)
+            ->first();
+
+        if (! $stadium) {
+            return;
+        }
+
+        // target_capacity stores the target UEFA level for this project
+        // type (commitUefaUpgrade stamps it as currentLevel + 1).
+        $stadium->update(['rebuilt_uefa_level' => (int) $project->target_capacity]);
+
+        $project->update([
+            'status' => GameStadiumProject::STATUS_COMPLETED,
+            'completion_date' => $game->current_date,
+        ]);
+
+        $this->notificationService->notifyStadiumProjectCompleted(
+            $game,
+            GameStadiumProject::TYPE_UEFA_UPGRADE,
+            (int) $project->target_capacity,
+        );
     }
 
     private function completeStandExpansion(Game $game, GameStadiumProject $project): void

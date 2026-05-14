@@ -192,4 +192,8 @@ return [
     'stadium_invalid_financing' => 'Financiación no válida.',
     'stadium_insufficient_budget' => 'No tienes presupuesto suficiente para pagar el proyecto al contado.',
     'stadium_loan_exceeds_cap' => 'El préstamo solicitado supera el tope autorizado por el banco.',
+    'stadium_uefa_upgrade_committed' => 'Mejora UEFA iniciada: el estadio alcanzará la Categoría :level la próxima temporada.',
+    'stadium_uefa_already_max' => 'Tu estadio ya está en la máxima categoría UEFA.',
+    'stadium_uefa_capacity_floor' => 'El aforo actual no alcanza el mínimo exigido por la siguiente categoría UEFA.',
+    'stadium_uefa_no_base_level' => 'Tu estadio no tiene categoría UEFA asignada. Amplía el aforo primero.',
 ];

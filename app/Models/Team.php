@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string|null $image
  * @property string|null $stadium_name
  * @property int $stadium_seats
+ * @property int|null $uefa_stadium_category
  * @property array|null $colors
  * @property-read \App\Models\ClubProfile|null $clubProfile
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Competition> $competitions
@@ -66,11 +67,13 @@ class Team extends Model
         'image',
         'stadium_name',
         'stadium_seats',
+        'uefa_stadium_category',
         'colors',
     ];
 
     protected $casts = [
         'stadium_seats' => 'integer',
+        'uefa_stadium_category' => 'integer',
         'is_placeholder' => 'boolean',
         'colors' => 'array',
     ];

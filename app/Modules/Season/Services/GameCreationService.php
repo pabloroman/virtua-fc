@@ -71,6 +71,7 @@ class GameCreationService
             'game_id' => $gameId,
             'team_id' => $teamId,
             'base_capacity' => $team->stadium_seats,
+            'base_uefa_level' => $team->uefa_stadium_category,
         ]);
 
         // Dispatch heavy initialization to a queued job

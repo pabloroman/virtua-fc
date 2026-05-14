@@ -13,6 +13,9 @@ return [
         'home_ground' => 'Home ground',
         'stadium_name' => 'Stadium',
         'capacity' => 'Capacity',
+        'uefa_category' => 'UEFA category',
+        'uefa_category_short' => 'UEFA',
+        'uefa_category_tooltip' => 'UEFA classifies stadiums into four categories (1 to 4). Moving up a category requires upgrading the facilities (floodlights, dressing rooms, media booths, hospitality areas) and a capacity that clears the next category\'s minimum.',
 
         'fan_base' => 'Fan base',
         'fan_base_help' => 'Loyalty rises with trophies and strong finishes and dips after poor seasons. Together with reputation, it drives how full the stadium gets on matchday.',
@@ -51,6 +54,7 @@ return [
             'project_supplementary' => 'Temporary stands',
             'project_stand_expansion' => 'Stand expansion',
             'project_rebuild' => 'Stadium rebuild',
+            'project_uefa_upgrade' => 'UEFA upgrade',
             'ready_on' => 'Ready on :date',
             'ready_in_season' => 'Available from the :season season',
             'loan_remaining' => 'Loan outstanding: :amount',
@@ -102,8 +106,24 @@ return [
             'commit_supplementary' => 'Confirm stands',
             'commit_stand_expansion' => 'Start expansion',
             'commit_rebuild' => 'Start rebuild',
+            'commit_uefa_upgrade' => 'Start upgrade',
 
             'cta_disabled_by_active_project' => 'A project is already in progress. See the history below.',
+
+            'cta_uefa_label' => 'Facility upgrade',
+            'cta_uefa_title' => 'Upgrade to UEFA Category :to (from :from)',
+            'cta_uefa_title_generic' => 'Upgrade UEFA category',
+            'cta_uefa_button' => 'Upgrade facilities',
+            'cta_uefa_tagline' => 'Refit the stadium to reach UEFA Category :target. Flat cost :cost, one construction season, no capacity disruption.',
+            'cta_uefa_no_budget' => 'Upgrade cost: :cost. Neither budget nor bank credit covers it. Available budget: :budget.',
+            'cta_uefa_capacity_floor' => 'To qualify for UEFA Category :target the stadium must exceed :min_cap seats. Expand the capacity first.',
+            'cta_uefa_already_max' => 'Your stadium is already at the top UEFA category. No further levels to unlock.',
+            'cta_uefa_no_base_level' => 'Your stadium has no UEFA category yet. Expand the capacity first to enter the classification.',
+
+            'modal_uefa_title' => 'Upgrade to UEFA Category :to',
+            'modal_uefa_description' => 'Facility refit to meet the next UEFA category requirements (floodlights, dressing rooms, media areas, hospitality and accessibility). Stadium capacity is not affected during construction: the new category is registered at the start of next season.',
+            'uefa_transition_label' => 'Category',
+            'uefa_no_capacity_change_note' => 'The stadium remains fully operational during construction. The new UEFA category is registered at the start of next season.',
         ],
 
         'history' => [
@@ -115,6 +135,7 @@ return [
             'col_cost' => 'Cost',
             'col_status' => 'Status',
             'detail_rebuild' => ':count seats (full stadium)',
+            'detail_uefa_upgrade' => 'UEFA Category :from → :to',
             'status_completed' => 'Completed',
             'status_in_progress' => 'In progress',
             'season_label' => 'Season :season',

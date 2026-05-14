@@ -65,6 +65,7 @@ use App\Http\Actions\RequestBudgetLoan;
 use App\Http\Actions\CommitSupplementaryStands;
 use App\Http\Actions\CommitStandExpansion;
 use App\Http\Actions\CommitStadiumRebuild;
+use App\Http\Actions\CommitStadiumUefaUpgrade;
 use App\Http\Actions\RequestLoan;
 use App\Http\Actions\WithdrawTransferOffer;
 use App\Http\Actions\ComputeSlotAssignments;
@@ -193,6 +194,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/game/{gameId}/club/stadium/supplementary', CommitSupplementaryStands::class)->name('game.club.stadium.supplementary');
         Route::post('/game/{gameId}/club/stadium/expansion', CommitStandExpansion::class)->name('game.club.stadium.expansion');
         Route::post('/game/{gameId}/club/stadium/rebuild', CommitStadiumRebuild::class)->name('game.club.stadium.rebuild');
+        Route::post('/game/{gameId}/club/stadium/uefa-upgrade', CommitStadiumUefaUpgrade::class)->name('game.club.stadium.uefa-upgrade');
         Route::get('/game/{gameId}/club/reputation', ShowClubReputation::class)->name('game.club.reputation');
         Route::get('/game/{gameId}/transfers', ShowIncomingTransfers::class)->name('game.transfers');
         Route::get('/game/{gameId}/transfers/outgoing', ShowOutgoingTransfers::class)->name('game.transfers.outgoing');

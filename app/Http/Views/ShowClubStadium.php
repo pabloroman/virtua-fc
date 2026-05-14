@@ -9,6 +9,7 @@ use App\Models\TeamReputation;
 use App\Modules\Finance\Services\StadiumLoanService;
 use App\Modules\Finance\Services\StadiumUpgradeService;
 use App\Modules\Stadium\Services\StadiumSummaryService;
+use App\Modules\Stadium\UefaCategory;
 
 class ShowClubStadium
 {
@@ -106,12 +107,39 @@ class ShowClubStadium
         $affordableRebuildRaw = $this->stadiumUpgradeService->maxRebuildCapacityForBudget($availableBudgetCents);
         $affordableRebuildCapacity = (int) (floor($affordableRebuildRaw / 1_000) * 1_000);
 
+        // UEFA category upgrade context: current level, next-step target,
+        // flat cost, capacity floor for the target, and the blocker code
+        // (if any) so the modal/CTA can render the right hint without
+        // recomputing the rules.
+        $currentUefaLevel = $stadium->effective_uefa_level;
+        $nextUefaLevel = $currentUefaLevel !== null && $currentUefaLevel < UefaCategory::MAX
+            ? $currentUefaLevel + 1
+            : null;
+        $uefaUpgradeCost = $currentUefaLevel !== null
+            ? $this->stadiumUpgradeService->uefaUpgradeCost($currentUefaLevel)
+            : 0;
+        $uefaCapacityFloor = $nextUefaLevel !== null
+            ? UefaCategory::capacityFloor($nextUefaLevel)
+            : 0;
+        $uefaBlocker = $this->stadiumUpgradeService->uefaUpgradeBlocker($game);
+        $uefaCashAffordable = $uefaUpgradeCost > 0 && $uefaUpgradeCost <= $availableBudgetCents;
+        $uefaLoanAffordable = $uefaUpgradeCost > 0 && $uefaUpgradeCost <= $loanCap;
+
         $upgrade = [
             'stadium' => $stadium,
             'active_project' => $activeProject,
             'active_loan' => $activeProject
                 ? $this->stadiumLoanService->activeLoanForProject($activeProject)
                 : null,
+
+            // UEFA category upgrade.
+            'uefa_current_level' => $currentUefaLevel,
+            'uefa_next_level' => $nextUefaLevel,
+            'uefa_upgrade_cost_cents' => $uefaUpgradeCost,
+            'uefa_capacity_floor' => $uefaCapacityFloor,
+            'uefa_blocker' => $uefaBlocker,
+            'uefa_cash_affordable' => $uefaCashAffordable,
+            'uefa_loan_affordable' => $uefaLoanAffordable,
 
             // Supplementary stands (modular bleachers).
             'supplementary_headroom' => $stadium->supplementary_headroom,
