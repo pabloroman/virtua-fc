@@ -3,6 +3,7 @@
 return [
     // Generic offer card
     'accept_offer' => 'Aceptar oferta',
+    'league_position' => 'Posición en liga',
 
     // End-of-season offers
     'season_offers_title' => 'Clubes interesados en ti',

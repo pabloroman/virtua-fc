@@ -103,6 +103,7 @@ $nextSeasonLabel = \App\Models\Game::formatSeason((string) ((int) $game->season 
                                 <x-job-offer-card
                                     :offer="$offer"
                                     :last-season-position="$positionsByOfferId[$offer->id] ?? null"
+                                    :season-goal-label="$goalLabelsByOfferId[$offer->id] ?? null"
                                     accept-route="game.job-offers.accept"
                                     :accept-params="['gameId' => $game->id, 'offerId' => $offer->id]"
                                 />

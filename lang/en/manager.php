@@ -3,6 +3,7 @@
 return [
     // Generic offer card
     'accept_offer' => 'Accept offer',
+    'league_position' => 'League position',
 
     // End-of-season offers
     'season_offers_title' => 'Clubs interested in you',

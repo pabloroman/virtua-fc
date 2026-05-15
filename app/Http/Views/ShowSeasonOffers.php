@@ -9,6 +9,7 @@ use App\Modules\Competition\Playoffs\PlayoffGeneratorFactory;
 use App\Modules\Manager\Services\JobOfferService;
 use App\Modules\Match\Services\MatchFinalizationService;
 use App\Modules\Report\Services\SeasonSummaryService;
+use App\Modules\Season\Services\SeasonGoalService;
 
 /**
  * Renders the pro-manager between-seasons decision screen: pending job
@@ -28,6 +29,7 @@ class ShowSeasonOffers
         private readonly JobOfferService $jobOfferService,
         private readonly MatchFinalizationService $finalizationService,
         private readonly PlayoffGeneratorFactory $playoffFactory,
+        private readonly SeasonGoalService $seasonGoalService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -70,6 +72,7 @@ class ShowSeasonOffers
         [$jobOffers, $pendingTeamSwitchOffer] = $this->seasonSummaryService->buildProManagerOffers($game);
 
         $positionsByOfferId = $this->loadLastSeasonPositions($game, $jobOffers);
+        $goalLabelsByOfferId = $this->resolveSeasonGoals($jobOffers);
 
         return view('season-offers', [
             'game' => $game,
@@ -77,7 +80,32 @@ class ShowSeasonOffers
             'pendingTeamSwitchOffer' => $pendingTeamSwitchOffer,
             'firedAtSeasonEnd' => (bool) $game->fired_at_season_end,
             'positionsByOfferId' => $positionsByOfferId,
+            'goalLabelsByOfferId' => $goalLabelsByOfferId,
         ]);
+    }
+
+    /**
+     * Resolve the season-goal label each offering club would set if the
+     * manager takes the job: based on the club's reputation level in its
+     * league config. Returns null for competitions without a HasSeasonGoals
+     * config (cups, etc.) so the card can hide the line.
+     *
+     * @return array<string, string|null>
+     */
+    private function resolveSeasonGoals(\Illuminate\Support\Collection $offers): array
+    {
+        $result = [];
+        foreach ($offers as $offer) {
+            $team = $offer->team;
+            $competition = $offer->competition;
+            if (!$team || !$competition) {
+                $result[$offer->id] = null;
+                continue;
+            }
+            $goal = $this->seasonGoalService->determineGoalForTeam($team, $competition);
+            $result[$offer->id] = __($this->seasonGoalService->getGoalLabel($goal, $competition));
+        }
+        return $result;
     }
 
     /**
