@@ -20,6 +20,7 @@ use App\Models\GamePlayer;
 use App\Models\GameTactics;
 use App\Models\Team;
 use App\Models\TeamReputation;
+use App\Models\UserSquadCareerRecord;
 use App\Modules\Stadium\Services\FanLoyaltyService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
@@ -97,6 +98,7 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
 
         // Step 2: Initialize game players from templates (required)
         $this->initializeGamePlayersFromTemplates();
+        $this->initializeUserSquadCareerRecords($game);
         $this->markStep(2);
 
         // Step 3: Pick a default formation that fits the user's squad. Runs
@@ -445,6 +447,48 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
             WHERE gp.game_id = ?
             ON CONFLICT (game_player_id) DO NOTHING
         SQL, [$this->season, $this->gameId]);
+    }
+
+    /**
+     * Seed UserSquadCareerRecord rows for the initial squad of every team the
+     * user manages (first team plus, for parent clubs, the reserve team).
+     *
+     * Without this, starting players have no career record, so the
+     * season-close snapshot processor (which only updates existing records)
+     * never appends their per-season stats and the trajectory table on the
+     * player detail page stays empty for them — only transfer-acquired
+     * players (whose records are created by TransferCompletionService) ever
+     * accumulate history.
+     *
+     * `joined_from` is left NULL: starting players didn't come from anywhere
+     * in the game's universe, and the origin badge/label gracefully renders
+     * nothing for the NULL case.
+     */
+    private function initializeUserSquadCareerRecords(Game $game): void
+    {
+        $userTeamIds = $game->userTeamIds();
+        if ($userTeamIds === []) {
+            return;
+        }
+
+        // Idempotency: skip if already done.
+        if (UserSquadCareerRecord::where('game_id', $this->gameId)->exists()) {
+            return;
+        }
+
+        $placeholders = implode(',', array_fill(0, count($userTeamIds), '?'));
+
+        DB::insert(<<<SQL
+            INSERT INTO user_squad_career_records (
+                id, game_player_id, game_id, team_id, joined_season, joined_from, season_stats
+            )
+            SELECT
+                gen_random_uuid(), gp.id, gp.game_id, gp.team_id, ?, NULL, '{}'::jsonb
+            FROM game_players gp
+            WHERE gp.game_id = ?
+              AND gp.team_id IN ($placeholders)
+            ON CONFLICT (game_player_id) DO NOTHING
+        SQL, [(int) $this->season, $this->gameId, ...$userTeamIds]);
     }
 
     /**
