@@ -623,14 +623,20 @@ class DispositionService
             ];
         }
 
-        if ($importance > 0.7) {
+        // Reserve teams (filiales) exist to develop players, and a step up to a
+        // senior club is exactly the development opportunity they want. Relax
+        // the importance gates when the source is a reserve team moving up.
+        $keyPlayerThreshold = $this->loanImportanceKeyPlayerThreshold($player, $game);
+        $sharedDecisionThreshold = $this->loanImportanceSharedDecisionThreshold($player, $game);
+
+        if ($importance > $keyPlayerThreshold) {
             return [
                 'result' => 'rejected',
                 'message' => __('transfers.loan_rejected_key_player', ['team' => $player->team?->name, 'player' => $player->name]),
             ];
         }
 
-        if ($importance > 0.4) {
+        if ($importance > $sharedDecisionThreshold) {
             // 50% chance
             if (rand(0, 1) === 1) {
                 return [
@@ -676,8 +682,10 @@ class DispositionService
         // rejecting on importance grounds would contradict the club's own market stance.
         $publicMarketSignal = $player->isTransferListed() || $player->hasActiveLoanSearch();
 
-        // Gate 1: Key player — club refuses to loan
-        if (! $publicMarketSignal && $importance > 0.70) {
+        // Gate 1: Key player — club refuses to loan. Threshold is relaxed when
+        // the source is a reserve team moving up (development opportunity).
+        $keyPlayerThreshold = $this->loanImportanceKeyPlayerThreshold($player, $game);
+        if (! $publicMarketSignal && $importance > $keyPlayerThreshold) {
             return [
                 'result' => 'rejected',
                 'disposition' => 0.15,
@@ -706,6 +714,64 @@ class DispositionService
             'disposition' => $disposition,
             'rejection_reason' => null,
         ];
+    }
+
+    /**
+     * "Key player" importance cut-off for a loan request. Default 0.70, but a
+     * reserve team (filial) sending a player up to a higher-reputation senior
+     * club is doing development work — relax the gate so the top of a feeder
+     * squad isn't treated like an irreplaceable first-team starter.
+     */
+    private function loanImportanceKeyPlayerThreshold(GamePlayer $player, ?Game $game): float
+    {
+        $upwardGap = $this->reserveTeamUpwardReputationGap($player, $game);
+
+        return match (true) {
+            $upwardGap >= 2 => 1.01, // bypass: development move up two+ tiers
+            $upwardGap === 1 => 0.90, // only truly irreplaceable players refused
+            default => 0.70,
+        };
+    }
+
+    /**
+     * "Shared decision" (50/50 roll) cut-off for a loan request. Mirrors the
+     * key-player threshold relaxation for reserve teams moving up: a two-tier
+     * jump bypasses the coin-flip entirely, a one-tier jump nudges it up.
+     */
+    private function loanImportanceSharedDecisionThreshold(GamePlayer $player, ?Game $game): float
+    {
+        $upwardGap = $this->reserveTeamUpwardReputationGap($player, $game);
+
+        return match (true) {
+            $upwardGap >= 2 => 1.01,
+            $upwardGap === 1 => 0.60,
+            default => 0.40,
+        };
+    }
+
+    /**
+     * Tier gap from a reserve team to the requesting (senior) club. Returns 0
+     * for non-reserve sources or when no game context is available, so the
+     * default thresholds apply. Positive = requesting club is more reputable.
+     */
+    private function reserveTeamUpwardReputationGap(GamePlayer $player, ?Game $game): int
+    {
+        if (!$game || !$game->team_id || !$player->team_id) {
+            return 0;
+        }
+
+        if ($player->team?->parent_team_id === null) {
+            return 0;
+        }
+
+        $sourceIndex = ClubProfile::getReputationTierIndex(
+            TeamReputation::resolveLevel($player->game_id, $player->team_id)
+        );
+        $offeringIndex = ClubProfile::getReputationTierIndex(
+            TeamReputation::resolveLevel($player->game_id, $game->team_id)
+        );
+
+        return $offeringIndex - $sourceIndex;
     }
 
     // =========================================
