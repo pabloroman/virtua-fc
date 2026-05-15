@@ -52,6 +52,12 @@ class TacticalChangeService
 
         if ($formation !== null) {
             $matchUpdates["{$prefix}_formation"] = $formation;
+            // Custom pitch positions are keyed by slot IDs whose grid-cell
+            // meaning is formation-specific, so the saved map doesn't survive
+            // a shape change. Clear it alongside the formation update so a
+            // page reload after the change doesn't re-seed the live pitch
+            // with positions tied to the old formation.
+            $matchUpdates["{$prefix}_pitch_positions"] = null;
         }
         if ($mentality !== null) {
             $matchUpdates["{$prefix}_mentality"] = $mentality;

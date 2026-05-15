@@ -129,6 +129,16 @@ export function createTacticalSubmission(ctx) {
 
                 // Update active tactics
                 if (result.formation) {
+                    // Custom pitch positions are keyed by slot IDs whose
+                    // grid-cell meaning is formation-specific, so a formation
+                    // change makes the saved positions meaningless against the
+                    // new shape. Drop them in lockstep with the formation
+                    // bump — mirrors what the lineup page does in
+                    // updateAutoLineup() — and keep _pitchPositionsFormation
+                    // pointing at the formation the (now-empty) map belongs to.
+                    if (result.formation !== c.activeFormation) {
+                        c.livePitchPositions = {};
+                    }
                     c.activeFormation = result.formation;
                     c._pitchPositionsFormation = result.formation;
                 }
