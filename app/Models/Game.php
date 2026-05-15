@@ -350,6 +350,25 @@ class Game extends Model
         return $this->belongsTo(Team::class);
     }
 
+    /**
+     * Team to render in user-facing chrome (loading screens, etc.). When a
+     * pro-manager has accepted an end-of-season offer but the setup pipeline
+     * hasn't applied the switch yet, team_id still points at the outgoing
+     * club — preview the destination club instead so the crest matches the
+     * user's just-made choice.
+     */
+    public function displayTeam(): ?Team
+    {
+        if ($this->pending_team_switch) {
+            $offer = ManagerJobOffer::with('team')->find($this->pending_team_switch);
+            if ($offer?->team) {
+                return $offer->team;
+            }
+        }
+
+        return $this->team;
+    }
+
     public function reserveTeam(): BelongsTo
     {
         return $this->belongsTo(Team::class, 'reserve_team_id');

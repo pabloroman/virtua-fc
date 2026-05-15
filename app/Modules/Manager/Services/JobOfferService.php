@@ -4,7 +4,6 @@ namespace App\Modules\Manager\Services;
 
 use App\Models\ClubProfile;
 use App\Models\Competition;
-use App\Models\CompetitionEntry;
 use App\Models\CompetitionTeam;
 use App\Models\Game;
 use App\Models\GameStanding;
@@ -40,6 +39,13 @@ class JobOfferService
     // Four to fill the 4-column /new-game grid at lg without leaving gaps.
     private const INITIAL_OFFER_COUNT = 4;
     private const POST_FIRING_OFFER_COUNT = 3;
+
+    /**
+     * Deepest league tier in any country pyramid (Spain's Primera RFEF at 3).
+     * Used as a fixed denominator so prestige ranks are comparable across
+     * countries with different pyramid depths. Bump if a deeper tier is added.
+     */
+    private const MAX_LEAGUE_TIER = 3;
 
     public function __construct(
         private readonly CountryConfig $countryConfig,
@@ -225,17 +231,18 @@ class JobOfferService
         }
 
         $currentReputation = $this->currentClubReputation($game);
-        $currentTierIndex = ClubProfile::getReputationTierIndex($currentReputation);
+        $currentLeagueTier = $this->currentLeagueTier($game);
+        $currentRank = $this->prestigeRank($currentLeagueTier, $currentReputation);
 
         $plan = match ($grade) {
-            'exceptional' => $this->planForExceptional($currentTierIndex),
+            'exceptional' => $this->planForExceptional($currentRank),
             'exceeded' => [
                 ['shift' => 1, 'count' => 1],
                 ['shift' => 0, 'count' => 1],
             ],
             'met' => mt_rand(1, 100) <= 50 ? [['shift' => 0, 'count' => 1]] : [],
             'below' => [],
-            'disaster' => $this->planForDisaster($currentTierIndex),
+            'disaster' => [['shift' => -1, 'count' => self::POST_FIRING_OFFER_COUNT]],
             default => [],
         };
 
@@ -254,7 +261,7 @@ class JobOfferService
         return $this->writeOffers(
             game: $game,
             plan: $plan,
-            currentTierIndex: $currentTierIndex,
+            currentRank: $currentRank,
             currentReputation: $currentReputation,
             offerType: $offerType,
             allowAdjacentFallback: $grade === 'disaster',
@@ -308,33 +315,23 @@ class JobOfferService
             ?? $this->countryConfig->competitionForTier($team->country, 1);
     }
 
-    private function planForExceptional(int $currentTierIndex): array
+    private function planForExceptional(int $currentRank): array
     {
-        // At the top of the pyramid (Elite, index 4) there is nowhere up to
-        // go — emit a single lateral move instead.
-        if ($currentTierIndex >= ClubProfile::getReputationTierIndex(ClubProfile::REPUTATION_ELITE)) {
+        $maxRank = self::maxPrestigeRank();
+
+        // At the top of the pyramid (T1 / elite) there is nowhere up to go
+        // — emit a single lateral move instead.
+        if ($currentRank >= $maxRank) {
             return [['shift' => 0, 'count' => 1]];
         }
 
-        $plan = [
-            ['shift' => 1, 'count' => 1],
-        ];
+        $plan = [['shift' => 1, 'count' => 1]];
 
-        if ($currentTierIndex + 2 <= ClubProfile::getReputationTierIndex(ClubProfile::REPUTATION_ELITE)) {
+        if ($currentRank + 2 <= $maxRank) {
             $plan[] = ['shift' => 2, 'count' => 1];
         }
 
         return $plan;
-    }
-
-    private function planForDisaster(int $currentTierIndex): array
-    {
-        // Sacked managers are placed back in the market one tier lower (or
-        // at Local if already there) with a healthy three offers so they're
-        // not stuck choosing between just one or two clubs.
-        $targetTier = max(0, $currentTierIndex - 1);
-
-        return [['shift' => $targetTier - $currentTierIndex, 'count' => self::POST_FIRING_OFFER_COUNT]];
     }
 
     /**
@@ -344,36 +341,31 @@ class JobOfferService
     private function writeOffers(
         Game $game,
         array $plan,
-        int $currentTierIndex,
+        int $currentRank,
         string $currentReputation,
         string $offerType,
         bool $allowAdjacentFallback,
     ): Collection {
-        $tiers = ClubProfile::REPUTATION_TIERS;
-        $maxIndex = count($tiers) - 1;
+        $maxRank = self::maxPrestigeRank();
         $usedTeamIds = [$game->team_id];
         $created = collect();
 
         foreach ($plan as $entry) {
-            $targetIndex = max(0, min($maxIndex, $currentTierIndex + $entry['shift']));
-            $targetReputation = $tiers[$targetIndex];
+            $targetRank = max(0, min($maxRank, $currentRank + $entry['shift']));
 
-            $candidates = $this->eligibleTeamIdsAnyPlayableCountry(
-                reputationLevel: $targetReputation,
-                excludeTeamIds: $usedTeamIds,
-            );
+            $candidates = $this->eligibleTeamIdsAtRank($targetRank, $usedTeamIds);
 
             // Fallback: on a disaster the user must end up with offers even
-            // if the exact target tier has nothing — widen to the adjacent
-            // tier in the same direction (down for firings, up for lateral
-            // failovers when 'local' is already empty).
+            // if the exact target rank is empty — widen one rank further in
+            // the same direction (down for firings, up for lateral failovers
+            // when the floor is empty).
             if ($candidates->count() < $entry['count'] && $allowAdjacentFallback) {
-                $fallbackIndex = max(0, min($maxIndex, $targetIndex + ($entry['shift'] < 0 ? 1 : -1)));
-                if ($fallbackIndex !== $targetIndex) {
+                $fallbackRank = max(0, min($maxRank, $targetRank + ($entry['shift'] < 0 ? -1 : 1)));
+                if ($fallbackRank !== $targetRank) {
                     $candidates = $candidates->merge(
-                        $this->eligibleTeamIdsAnyPlayableCountry(
-                            reputationLevel: $tiers[$fallbackIndex],
-                            excludeTeamIds: array_merge($usedTeamIds, $candidates->all()),
+                        $this->eligibleTeamIdsAtRank(
+                            $fallbackRank,
+                            array_merge($usedTeamIds, $candidates->all()),
                         )
                     );
                 }
@@ -391,7 +383,11 @@ class JobOfferService
                     'offer_type' => $offerType,
                     'status' => ManagerJobOffer::STATUS_PENDING,
                     'source_reputation_level' => $currentReputation,
-                    'target_reputation_level' => $targetReputation,
+                    // The chosen team's actual reputation — may differ from
+                    // the target rank's reputation slot if a fallback widened
+                    // the pool, so read it off the team rather than the plan.
+                    'target_reputation_level' => ClubProfile::where('team_id', $teamId)->value('reputation_level')
+                        ?? $currentReputation,
                     'created_on_game_date' => $game->current_date,
                 ]);
                 $created->push($offer);
@@ -400,6 +396,107 @@ class JobOfferService
         }
 
         return $created;
+    }
+
+    /**
+     * Composite prestige rank for a (league_tier, reputation) pair. Higher =
+     * more prestigious. League tier dominates: any job in a higher league
+     * tier outranks every job in a lower one. Within a tier, reputation
+     * orders the ladder.
+     *
+     *   rank = (MAX_LEAGUE_TIER - league_tier) * |reputation_tiers| + rep_index
+     *
+     * With MAX_LEAGUE_TIER = 3 and 5 reputations, ranks span 0..14:
+     *   0  T3/local        ...  4  T3/elite
+     *   5  T2/local        ...  9  T2/elite
+     *   10 T1/local        ... 14 T1/elite
+     */
+    public function prestigeRank(int $leagueTier, string $reputation): int
+    {
+        $repIndex = ClubProfile::getReputationTierIndex($reputation);
+        $tier = max(1, min(self::MAX_LEAGUE_TIER, $leagueTier));
+        return (self::MAX_LEAGUE_TIER - $tier) * count(ClubProfile::REPUTATION_TIERS) + $repIndex;
+    }
+
+    /**
+     * Decompose a prestige rank back into (league_tier, reputation_level).
+     *
+     * @return array{0: int, 1: string}
+     */
+    private function decomposePrestigeRank(int $rank): array
+    {
+        $repCount = count(ClubProfile::REPUTATION_TIERS);
+        $rank = max(0, min(self::maxPrestigeRank(), $rank));
+
+        $tier = self::MAX_LEAGUE_TIER - intdiv($rank, $repCount);
+        $reputation = ClubProfile::REPUTATION_TIERS[$rank % $repCount];
+
+        return [$tier, $reputation];
+    }
+
+    private static function maxPrestigeRank(): int
+    {
+        return self::MAX_LEAGUE_TIER * count(ClubProfile::REPUTATION_TIERS) - 1;
+    }
+
+    /**
+     * Read the league tier the manager is currently coaching at from the
+     * game's main league competition. Falls back to the deepest tier if the
+     * competition row is missing (shouldn't happen in practice but keeps
+     * pro-manager bootstrap defensive).
+     */
+    private function currentLeagueTier(Game $game): int
+    {
+        return Competition::where('id', $game->competition_id)
+            ->value('tier') ?? self::MAX_LEAGUE_TIER;
+    }
+
+    /**
+     * Every team across all playable countries whose (current league tier,
+     * club reputation) matches the given prestige rank. Reserves are
+     * filtered out so they can never appear as offers.
+     *
+     * @param array<int, string> $excludeTeamIds
+     * @return Collection<int, string>
+     */
+    private function eligibleTeamIdsAtRank(int $rank, array $excludeTeamIds): Collection
+    {
+        [$tier, $reputation] = $this->decomposePrestigeRank($rank);
+
+        $tierCompetitionIds = $this->competitionIdsAtTier($tier);
+        if (empty($tierCompetitionIds)) {
+            return collect();
+        }
+
+        $teamIdsAtTier = CompetitionTeam::whereIn('competition_id', $tierCompetitionIds)
+            ->whereIn('team_id', function ($q) {
+                $q->select('id')->from('teams')->whereNull('parent_team_id');
+            })
+            ->pluck('team_id')
+            ->unique();
+
+        return ClubProfile::whereIn('team_id', $teamIdsAtTier)
+            ->where('reputation_level', $reputation)
+            ->whereNotIn('team_id', $excludeTeamIds)
+            ->pluck('team_id')
+            ->values();
+    }
+
+    /**
+     * Every league competition ID at a given tier across all playable
+     * countries (primary + siblings).
+     *
+     * @return array<int, string>
+     */
+    private function competitionIdsAtTier(int $tier): array
+    {
+        $ids = [];
+        foreach ($this->countryConfig->playableCountryCodes() as $code) {
+            foreach ($this->countryConfig->tierCompetitionIds($code, $tier) as $id) {
+                $ids[] = $id;
+            }
+        }
+        return array_values(array_unique($ids));
     }
 
     /**
@@ -437,66 +534,6 @@ class JobOfferService
         }
 
         return $query->pluck('team_id')->values();
-    }
-
-    /**
-     * Find every cross-country team at $reputationLevel that's offerable
-     * end-of-season. Reputation-filtered slice of eligibleOfferableTeamIds.
-     *
-     * @param array<int, string> $excludeTeamIds
-     * @return Collection<int, string>
-     */
-    private function eligibleTeamIdsAnyPlayableCountry(
-        string $reputationLevel,
-        array $excludeTeamIds,
-    ): Collection {
-        return ClubProfile::whereIn('team_id', $this->eligibleOfferableTeamIds())
-            ->where('reputation_level', $reputationLevel)
-            ->whereNotIn('team_id', $excludeTeamIds)
-            ->pluck('team_id')
-            ->values();
-    }
-
-    /**
-     * Every team eligible to appear as an end-of-season offer — exactly
-     * the set a user can pick on /new-game: teams registered in any tier
-     * competition of a playable country, excluding reserves (B teams,
-     * which the new-game picker renders as disabled).
-     *
-     * National teams and cup-only filler clubs fall out implicitly —
-     * neither is registered as a participant in a league tier competition.
-     *
-     * @return Collection<int, string>
-     */
-    private function eligibleOfferableTeamIds(): Collection
-    {
-        return CompetitionTeam::whereIn('competition_id', $this->playableLeagueCompetitionIds())
-            ->whereIn('team_id', function ($q) {
-                $q->select('id')->from('teams')->whereNull('parent_team_id');
-            })
-            ->pluck('team_id')
-            ->unique()
-            ->values();
-    }
-
-    /**
-     * Every tier competition ID across every playable country (primary
-     * + sibling competitions). Mirrors the structure /new-game iterates
-     * over to render the team picker.
-     *
-     * @return array<int, string>
-     */
-    private function playableLeagueCompetitionIds(): array
-    {
-        $ids = [];
-        foreach ($this->countryConfig->playableCountryCodes() as $code) {
-            foreach ($this->countryConfig->flattenedTiers($code) as $tier) {
-                if (!empty($tier['competition'])) {
-                    $ids[] = $tier['competition'];
-                }
-            }
-        }
-        return array_values(array_unique($ids));
     }
 
     private function currentClubReputation(Game $game): string

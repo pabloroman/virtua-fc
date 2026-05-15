@@ -7,7 +7,7 @@
         <div class="text-center px-4">
             @if($showCrest ?? false)
                 {{-- Team Logo --}}
-                <x-team-crest :team="$game->team"
+                <x-team-crest :team="$game->displayTeam()"
                      class="w-24 h-24 mx-auto mb-6 animate-pulse" />
             @endif
 
