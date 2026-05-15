@@ -136,6 +136,7 @@ class GameFinances extends Model
         'carried_surplus',
         'previous_loan_repayment',
         'projected_stadium_debt_service',
+        'commercial_uefa_multiplier_bps',
     ];
 
     protected $casts = [
@@ -173,6 +174,7 @@ class GameFinances extends Model
         'carried_surplus' => 'integer',
         'previous_loan_repayment' => 'integer',
         'projected_stadium_debt_service' => 'integer',
+        'commercial_uefa_multiplier_bps' => 'integer',
     ];
 
     public function game(): BelongsTo

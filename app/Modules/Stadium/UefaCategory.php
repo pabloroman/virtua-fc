@@ -22,6 +22,28 @@ final class UefaCategory
     public const MAX = 4;
 
     /**
+     * Commercial revenue multiplier by UEFA category. A modern, fully
+     * fitted-out ground attracts richer sponsorship, hospitality and brand
+     * deals — the same effect Bernabéu / Tottenham renovations produced in
+     * the real world. Band is intentionally tight so upgrades pay back
+     * over several seasons rather than flipping the economy.
+     *
+     * Applied at projection time on top of the seat-based base. Uncategorised
+     * grounds (null) and Cat 1 see no uplift.
+     */
+    public const COMMERCIAL_MULTIPLIERS = [
+        1 => 1.00,
+        2 => 1.05,
+        3 => 1.12,
+        4 => 1.20,
+    ];
+
+    public static function commercialMultiplier(?int $category): float
+    {
+        return self::COMMERCIAL_MULTIPLIERS[$category] ?? 1.00;
+    }
+
+    /**
      * Real UEFA minimum-capacity floors a stadium must clear to qualify for
      * a given category. Used to gate upgrades server-side and surface
      * "expand the stadium first" hints in the UI.

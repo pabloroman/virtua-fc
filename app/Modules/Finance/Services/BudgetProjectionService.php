@@ -11,12 +11,14 @@ use App\Models\GameFinances;
 use App\Models\GameInvestment;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Models\GameStadium;
 use App\Models\Team;
 use App\Models\TeamReputation;
 use App\Modules\Squad\Services\SquadService;
 use App\Modules\Stadium\Services\MatchAttendanceService;
 use App\Modules\Stadium\Services\SeasonTicketPricingService;
 use App\Modules\Finance\Services\StadiumLoanService;
+use App\Modules\Stadium\UefaCategory;
 use Carbon\Carbon;
 
 class BudgetProjectionService
@@ -95,7 +97,9 @@ class BudgetProjectionService
         $projectedTvRevenue = $this->calculateTvRevenue($projectedPosition, $league);
         $projectedMatchdayRevenue = $this->calculateMatchdayRevenue($team, $game);
         $projectedSolidarityFundsRevenue = self::SOLIDARITY_FUNDS_BY_TIER[$game->competition->tier] ?? 0;
-        $projectedCommercialRevenue = $this->getBaseCommercialRevenue($game, $team, $league);
+        $commercialUefaMultiplier = $this->currentCommercialUefaMultiplier($game, $team);
+        $projectedCommercialRevenue = $this->getBaseCommercialRevenue($game, $team, $league, $commercialUefaMultiplier);
+        $commercialUefaMultiplierBps = (int) round($commercialUefaMultiplier * 10_000);
         $projectedSeasonTicketRevenue = $this->seasonTicketPricingService->getCurrent($game)?->total_revenue ?? 0;
 
         $projectedTotalRevenue = $projectedTvRevenue
@@ -157,6 +161,7 @@ class BudgetProjectionService
                 'carried_surplus' => $carriedSurplus,
                 'previous_loan_repayment' => $previousLoanRepayment,
                 'projected_stadium_debt_service' => $projectedStadiumDebtService,
+                'commercial_uefa_multiplier_bps' => $commercialUefaMultiplierBps,
             ]
         );
 
@@ -362,10 +367,17 @@ class BudgetProjectionService
 
     /**
      * Get base commercial revenue for budget projections.
-     * Season 2+: uses previous season's actual commercial revenue.
+     * Season 2+: inherits previous season's actual commercial revenue,
+     * stripping the prior UEFA multiplier so the current season's
+     * multiplier can be re-applied (this is what lets a mid-save
+     * UEFA-category upgrade flow into commercial without compounding).
      * Season 1: calculates from stadium_seats × config rate.
+     *
+     * The UEFA multiplier is applied to the returned value — callers
+     * pass the current value in so the same factor can be persisted on
+     * the GameFinances row.
      */
-    private function getBaseCommercialRevenue(Game $game, Team $team, Competition $league): int|float
+    private function getBaseCommercialRevenue(Game $game, Team $team, Competition $league, float $currentUefaMultiplier): int|float
     {
         // Check for prior season actual commercial revenue
         $previousSeason = (int) $game->season - 1;
@@ -374,7 +386,12 @@ class BudgetProjectionService
             ->first();
 
         if ($previousFinances && $previousFinances->actual_commercial_revenue > 0) {
-            return $previousFinances->actual_commercial_revenue;
+            $previousMultiplier = $previousFinances->commercial_uefa_multiplier_bps
+                ? $previousFinances->commercial_uefa_multiplier_bps / 10_000
+                : 1.0;
+            $unscaledBase = $previousFinances->actual_commercial_revenue / $previousMultiplier;
+
+            return $unscaledBase * $currentUefaMultiplier;
         }
 
         // First season: calculate from stadium seats × config rate (capped)
@@ -385,7 +402,25 @@ class BudgetProjectionService
 
         $tierMultiplier = config("finances.commercial_tier_multiplier.{$league->tier}", 1.0);
 
-        return $base * $tierMultiplier;
+        return $base * $tierMultiplier * $currentUefaMultiplier;
+    }
+
+    /**
+     * Reads the current UEFA category for the team's stadium and maps it
+     * to a commercial-revenue multiplier. Prefers the per-game overlay
+     * (game_stadiums) so mid-save upgrades take effect; falls back to the
+     * team's seed category for saves that predate the backfill.
+     */
+    private function currentCommercialUefaMultiplier(Game $game, Team $team): float
+    {
+        $stadium = GameStadium::query()
+            ->where('game_id', $game->id)
+            ->where('team_id', $team->id)
+            ->first();
+
+        $category = $stadium?->effective_uefa_level ?? $team->uefa_stadium_category;
+
+        return UefaCategory::commercialMultiplier($category);
     }
 
     /**
