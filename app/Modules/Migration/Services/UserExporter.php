@@ -48,7 +48,7 @@ class UserExporter
             }
             $controlPlane[$table] = DB::connection('pgsql_control')
                 ->table($table)
-                ->where($meta['key'], $userId)
+                ->where($meta['user_key'], $userId)
                 ->get()
                 ->map(fn ($row) => (array) $row)
                 ->all();

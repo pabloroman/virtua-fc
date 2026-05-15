@@ -48,7 +48,7 @@ class UserImporter
                     continue;
                 }
 
-                $this->upsertOnControl($table, $meta['key'], $rows);
+                $this->upsertOnControl($table, $meta['row_key'], $rows);
             }
         });
     }
