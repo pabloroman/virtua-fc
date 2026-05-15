@@ -29,4 +29,21 @@ return [
     // Flash messages
     'offer_accepted_flash' => 'Offer accepted. You will take over at the new club when the season starts.',
     'offers_declined_flash' => 'You stay at your current club.',
+
+    // Career history page
+    'career_title' => 'My career',
+    'career_intro' => 'Every season you have managed in this game, the goal the club set, and how it ended.',
+    'career_empty' => 'Your career history will appear here at the end of your first season.',
+    'career_col_season' => 'Season',
+    'career_col_club' => 'Club',
+    'career_col_goal' => 'Goal',
+    'career_col_position' => 'Final position',
+    'career_col_outcome' => 'Outcome',
+    'career_col_end' => 'End',
+    'career_in_progress' => 'In progress',
+    'career_no_position' => '—',
+    'career_no_goal' => 'No goal set',
+    'career_end_still_active' => 'Still here',
+    'career_end_left_voluntarily' => 'Moved club',
+    'career_end_fired' => 'Sacked',
 ];

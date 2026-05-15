@@ -112,6 +112,7 @@ use App\Http\Views\ExploreTeams;
 use App\Http\Views\ExplorePoolTeams;
 use App\Http\Views\ExploreFreeAgents;
 use App\Http\Views\ExploreSquad;
+use App\Http\Views\ShowManagerCareer;
 use App\Http\Views\ShowSeasonEnd;
 use App\Http\Views\ShowSeasonOffers;
 use App\Http\Views\ShowTournamentEnd;
@@ -294,6 +295,10 @@ Route::middleware('auth')->group(function () {
             ->name('game.job-offers.accept');
         Route::post('/game/{gameId}/job-offers/decline', \App\Http\Actions\DeclineSeasonOffers::class)
             ->name('game.job-offers.decline');
+
+        // Pro-manager career history (season-by-season summary). 404s in
+        // non-pro-manager modes — gated inside the view class.
+        Route::get('/game/{gameId}/career', ShowManagerCareer::class)->name('game.manager.career');
 
         // Tournament End
         Route::get('/game/{gameId}/tournament-end', ShowTournamentEnd::class)->name('game.tournament-end');

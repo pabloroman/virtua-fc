@@ -132,6 +132,9 @@
                         </div>
                     </div>
                     @endif
+                    @if($game->isProManagerMode())
+                    <a href="{{ route('game.manager.career', $game->id) }}" class="nav-item @if(Route::currentRouteName() == 'game.manager.career') active @endif whitespace-nowrap px-3 py-2 text-xs font-medium uppercase tracking-wider {{ Route::currentRouteName() == 'game.manager.career' ? 'text-text-primary' : 'text-text-muted hover:text-text-body' }}">{{ __('manager.career_title') }}</a>
+                    @endif
                 </nav>
 
                 {{-- Right: Notification bell + action button --}}

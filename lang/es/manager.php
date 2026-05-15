@@ -29,4 +29,21 @@ return [
     // Flash messages
     'offer_accepted_flash' => 'Oferta aceptada. Te incorporarás al nuevo club al inicio de la temporada.',
     'offers_declined_flash' => 'Sigues en tu club actual.',
+
+    // Career history page
+    'career_title' => 'Mi carrera',
+    'career_intro' => 'Cada temporada que has dirigido en esta partida, con el objetivo marcado por el club y cómo terminó.',
+    'career_empty' => 'Tu historial aparecerá aquí al final de tu primera temporada.',
+    'career_col_season' => 'Temporada',
+    'career_col_club' => 'Club',
+    'career_col_goal' => 'Objetivo',
+    'career_col_position' => 'Posición final',
+    'career_col_outcome' => 'Resultado',
+    'career_col_end' => 'Final',
+    'career_in_progress' => 'En curso',
+    'career_no_position' => '—',
+    'career_no_goal' => 'Sin objetivo',
+    'career_end_still_active' => 'Continúas',
+    'career_end_left_voluntarily' => 'Cambio de club',
+    'career_end_fired' => 'Destituido',
 ];

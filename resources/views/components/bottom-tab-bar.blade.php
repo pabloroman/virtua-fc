@@ -11,7 +11,7 @@
     $lineupActive = $currentRoute === 'game.lineup';
     $transfersActive = in_array($currentRoute, ['game.transfers', 'game.transfers.outgoing', 'game.scouting', 'game.explore', 'game.transfer-activity', 'game.transfers.market']);
     $clubRoutes = ['game.club', 'game.club.finances', 'game.club.stadium', 'game.club.reputation'];
-    $moreActive = in_array($currentRoute, array_merge($clubRoutes, ['game.calendar', 'game.competition']));
+    $moreActive = in_array($currentRoute, array_merge($clubRoutes, ['game.calendar', 'game.competition', 'game.manager.career']));
 
 @endphp
 
@@ -109,6 +109,16 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/>
                     </svg>
                     <span class="text-sm font-medium">{{ __('app.club') }}</span>
+                </a>
+                @endif
+
+                @if($game->isProManagerMode())
+                {{-- My Career (pro-manager only) --}}
+                <a href="{{ route('game.manager.career', $game->id) }}" @click="moreOpen = false" class="flex items-center gap-3 px-4 py-4 rounded-xl transition-colors {{ $currentRoute === 'game.manager.career' ? 'bg-accent-blue/10 text-accent-blue' : 'text-text-body hover:bg-surface-700' }}">
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/>
+                    </svg>
+                    <span class="text-sm font-medium">{{ __('manager.career_title') }}</span>
                 </a>
                 @endif
 

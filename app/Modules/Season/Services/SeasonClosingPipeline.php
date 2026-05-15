@@ -2,6 +2,7 @@
 
 namespace App\Modules\Season\Services;
 
+use App\Modules\Manager\Processors\SnapshotManagerSeasonRecordProcessor;
 use App\Modules\Manager\Processors\TrophyRecordingProcessor;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
@@ -50,6 +51,7 @@ class SeasonClosingPipeline
         LoanReturnProcessor $loanReturn,
         TrophyRecordingProcessor $trophyRecording,
         LeaderboardStatsProcessor $leaderboardStats,
+        SnapshotManagerSeasonRecordProcessor $snapshotManagerSeasonRecord,
         ContractExpirationProcessor $contractExpiration,
         SeasonArchiveProcessor $seasonArchive,
         PreContractTransferProcessor $preContractTransfer,
@@ -79,6 +81,7 @@ class SeasonClosingPipeline
             $loanReturn,
             $trophyRecording,
             $leaderboardStats,
+            $snapshotManagerSeasonRecord,
             $contractExpiration,
             $seasonArchive,
             $preContractTransfer,
