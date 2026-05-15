@@ -22,19 +22,16 @@ class ReleasePlayer
             ->whereIn('team_id', $game->userTeamIds())
             ->firstOrFail();
 
-        $wasOnReserve = $game->reserve_team_id !== null && $player->team_id === $game->reserve_team_id;
-        $redirectRoute = $wasOnReserve ? 'game.squad.reserve' : 'game.squad';
-
         $result = $this->contractService->releasePlayer($game, $player);
 
         if ($result['error'] ?? false) {
             return redirect()
-                ->route($redirectRoute, $gameId)
+                ->back()
                 ->with('error', $result['error']);
         }
 
         return redirect()
-            ->route($redirectRoute, $gameId)
+            ->back()
             ->with('success', __('messages.player_released', [
                 'player' => $result['playerName'],
                 'severance' => $result['formattedSeverance'],

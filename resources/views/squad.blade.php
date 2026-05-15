@@ -23,13 +23,33 @@
 
     <div x-data="{
         viewMode: new URLSearchParams(window.location.search).get('mode') || 'tactical',
-        posFilter: 'all',
-        availFilter: 'all',
+        posFilter: new URLSearchParams(window.location.search).get('pos') || 'all',
+        availFilter: new URLSearchParams(window.location.search).get('avail') || 'all',
         statusFilter: 'all',
         sortCol: null,
         sortDir: 'desc',
         sidebarOpen: true,
 
+        init() {
+            const sync = () => {
+                const url = new URL(window.location.href);
+                const set = (key, value, defaultValue) => {
+                    if (value && value !== defaultValue) {
+                        url.searchParams.set(key, value);
+                    } else {
+                        url.searchParams.delete(key);
+                    }
+                };
+                set('mode', this.viewMode, 'tactical');
+                set('pos', this.posFilter, 'all');
+                set('avail', this.availFilter, 'all');
+                history.replaceState({}, '', url);
+            };
+            this.$watch('viewMode', sync);
+            this.$watch('posFilter', sync);
+            this.$watch('availFilter', sync);
+            sync();
+        },
         isVisible(group, available, status) {
             if (this.posFilter !== 'all' && group !== this.posFilter) return false;
             if (this.availFilter === 'available' && !available) return false;
