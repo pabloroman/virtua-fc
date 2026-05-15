@@ -208,6 +208,13 @@ class StressTest extends Command
                 DB::disableQueryLog();
                 DB::flushQueryLog();
 
+                // The orchestrator queued ProcessCareerActions on the gameplay
+                // queue; its handler clears career_actions_processing_at. The
+                // next claim() bails while that flag is set, so drain the
+                // queue inline (works without Horizon) then wait briefly in
+                // case Horizon already grabbed the job.
+                $this->drainCareerActions($game->id);
+
                 $elapsed = (microtime(true) - $t0) * 1000;
 
                 $batchTimings[] = [
@@ -395,5 +402,27 @@ class StressTest extends Command
             '--once' => true,
             '--queue' => 'default',
         ]);
+    }
+
+    private function drainCareerActions(string $gameId): void
+    {
+        $this->callSilently('queue:work', [
+            '--queue' => 'gameplay',
+            '--stop-when-empty' => true,
+            '--tries' => 1,
+        ]);
+
+        $deadline = microtime(true) + 30;
+        while (microtime(true) < $deadline) {
+            $stillProcessing = (bool) Game::where('id', $gameId)
+                ->whereNotNull('career_actions_processing_at')
+                ->exists();
+
+            if (! $stillProcessing) {
+                return;
+            }
+
+            usleep(100_000);
+        }
     }
 }

@@ -79,6 +79,15 @@ class SimulateSeason extends Command
                 }
                 $advances++;
 
+                // The orchestrator queues a ProcessCareerActions job on the
+                // gameplay queue at the end of advance(); its handler clears
+                // career_actions_processing_at. The next claim() refuses to
+                // run while that flag is set, so we have to wait for it. Drain
+                // anything queue:work can grab itself (so we don't depend on
+                // Horizon being up), then wait briefly in case Horizon already
+                // picked it up and is still running it.
+                $this->drainCareerActions($game->id);
+
                 // Force PHP to collect circular references (Eloquent models
                 // create model<->relation cycles that only gc_collect_cycles
                 // can reclaim).
@@ -108,5 +117,29 @@ class SimulateSeason extends Command
             ->where('played', true)
             ->whereNull('cup_tie_id')
             ->max('round_number');
+    }
+
+    private function drainCareerActions(string $gameId): void
+    {
+        $this->callSilently('queue:work', [
+            '--queue' => 'gameplay',
+            '--stop-when-empty' => true,
+            '--tries' => 1,
+        ]);
+
+        // If Horizon grabbed the job before queue:work above, the flag may
+        // still be set while Horizon finishes. Poll for up to ~30s.
+        $deadline = microtime(true) + 30;
+        while (microtime(true) < $deadline) {
+            $stillProcessing = (bool) Game::where('id', $gameId)
+                ->whereNotNull('career_actions_processing_at')
+                ->exists();
+
+            if (! $stillProcessing) {
+                return;
+            }
+
+            usleep(100_000); // 100ms
+        }
     }
 }
