@@ -233,7 +233,11 @@ class PreContractBalanceTest extends TestCase
             'competition_id' => $this->competition->id,
         ]);
 
-        $player = GamePlayer::factory()->create([
+        // Pin to prime age so the wage-demand age modifier is 1.0; otherwise
+        // the factory's random 16-40 birthdate makes ~30% of runs land in
+        // academy/young bands (modifier 0.25/0.65) and the market-based
+        // demand falls below the assertion threshold.
+        $player = GamePlayer::factory()->age(25)->create([
             'game_id' => $game->id,
             'team_id' => $sourceTeam->id,
             'market_value_cents' => 150_000_000,
