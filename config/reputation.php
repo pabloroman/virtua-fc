@@ -7,20 +7,20 @@ return [
     // Positions are checked top-down; the first matching range applies.
     'position_deltas' => [
         1 => [ // Top division (La Liga, Premier League, etc.)
-            2  => 40,   // 1st-2nd: title contention
-            4  => 30,   // 3rd-4th: Champions League places
-            6  => 15,   // 5th-6th: Europa League
-            10 => 5,    // 7th-10th: upper mid-table
+            2  => 80,   // 1st-2nd: title contention
+            4  => 60,   // 3rd-4th: Champions League places
+            6  => 30,   // 5th-6th: Europa League
+            10 => 10,   // 7th-10th: upper mid-table
             17 => 0,    // 11th-17th: mid/lower table (neutral)
-            99 => -15,  // 18th+: relegated
+            99 => -30,  // 18th+: relegated
         ],
         2 => [ // Second division (Segunda, Championship, etc.)
-            1  => 15,   // 1st: champion
-            2  => 12,   // 2nd: automatic promotion
-            6  => 8,    // 3rd-6th: playoff places
-            10 => 3,    // 7th-10th: upper mid-table
+            1  => 30,   // 1st: champion
+            2  => 24,   // 2nd: automatic promotion
+            6  => 16,   // 3rd-6th: playoff places
+            10 => 6,    // 7th-10th: upper mid-table
             16 => 0,    // 11th-16th: mid-table
-            99 => -8,   // 17th+: lower table
+            99 => -16,  // 17th+: lower table
         ],
     ],
 

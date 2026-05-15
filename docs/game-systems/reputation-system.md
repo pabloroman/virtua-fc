@@ -27,9 +27,9 @@ After points are updated, the effective tier is recalculated from the new total.
 
 ### Approximate Pace
 
-With the default config, a modest team (100 pts) consistently finishing in Champions League places (~+30 pts/season, minus ~5 regression) reaches established (200 pts) in roughly **4 seasons**. A dominant run with title finishes (+40 pts/season) can accelerate this to ~3 seasons.
+With the default config, a modest team (100 pts) consistently finishing in Champions League places (~+60 pts/season, no regression at this tier) reaches established (200 pts) in under **2 seasons**. A dominant run with title finishes (+80 pts/season) can climb a tier in roughly **1 season**. Higher tiers carry more regression, so the Continental → Elite climb still takes ~1.5 seasons of strong play.
 
-Decline works similarly: an elite team that finishes mid-table (+5 pts but -5 regression) will plateau, while a team in the relegation zone (-10 pts -5 regression) will drop a tier in about 7 seasons.
+Decline is unchanged by the tuning: an elite team that finishes mid-table (0 pts but -25 regression) erodes -25/season, while a team in the relegation zone (-30 pts -25 regression) drops a tier in under 2 seasons.
 
 ## Floor Mechanism
 

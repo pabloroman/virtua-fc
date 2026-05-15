@@ -48,7 +48,7 @@ class ReputationUpdateProcessorTest extends TestCase
 
     public function test_title_winner_gains_points(): void
     {
-        // Established team gets +40 for 1st place, minus 5 gravity = +35 net.
+        // Established team gets +80 for 1st place, minus 5 gravity = +75 net.
         $this->enterLeague($this->userTeam);
         $reputation = $this->seedReputation(
             $this->userTeam,
@@ -59,7 +59,7 @@ class ReputationUpdateProcessorTest extends TestCase
 
         $this->processor->process($this->game, $this->transitionData());
 
-        $this->assertSame(285, $reputation->fresh()->reputation_points);
+        $this->assertSame(325, $reputation->fresh()->reputation_points);
     }
 
     public function test_mid_table_team_declines_from_gravity(): void
@@ -86,7 +86,7 @@ class ReputationUpdateProcessorTest extends TestCase
             level: ClubProfile::REPUTATION_LOCAL,
             points: 5,
         );
-        $this->placeStanding($this->userTeam, position: 20); // 18+ = -15
+        $this->placeStanding($this->userTeam, position: 20); // 18+ = -30
 
         $this->processor->process($this->game, $this->transitionData());
 
@@ -95,7 +95,7 @@ class ReputationUpdateProcessorTest extends TestCase
 
     public function test_tier_recalculates_when_points_cross_threshold(): void
     {
-        // 195 + 40 (1st) - 5 (gravity) = 230 → crosses into ESTABLISHED (>= 200).
+        // 195 + 80 (1st) - 5 (gravity) = 270 → crosses into ESTABLISHED (>= 200).
         $this->enterLeague($this->userTeam);
         $reputation = $this->seedReputation(
             $this->userTeam,
