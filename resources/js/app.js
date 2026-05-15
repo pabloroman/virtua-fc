@@ -17,6 +17,11 @@ import seasonTicketEditor from './season-ticket-editor';
 Alpine.plugin(Collapse);
 Alpine.plugin(Tooltip);
 
+Alpine.magic('fmt', () => (value) => {
+    if (value === null || value === undefined || value === '') return '';
+    return String(Math.round(Number(value))).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+});
+
 Alpine.data('liveMatch', liveMatch);
 Alpine.data('lineupManager', lineupManager);
 Alpine.data('matchSummaryLineups', matchSummaryLineups);

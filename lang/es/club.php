@@ -45,6 +45,7 @@ return [
             'seats_to_add' => 'Asientos a añadir',
             'target_capacity' => 'Aforo objetivo',
             'total_cost' => 'Coste total',
+            'completion_date' => 'Fecha de finalización',
             'financing' => 'Financiación',
             'financing_cash' => 'Pago al contado',
             'financing_loan' => 'Préstamo bancario',
@@ -73,8 +74,7 @@ return [
             'unlock_progress_label' => 'Ingresos actuales: :current',
 
             'cta_supplementary_full_short' => 'Aforo supletorio al límite. Reforma el estadio para liberar espacio.',
-            'cta_supplementary_no_budget_short' => 'No alcanza para el lote mínimo. Presupuesto: :budget.',
-            'cta_stand_expansion_no_budget_short' => 'No hay presupuesto ni crédito suficientes. Disponible: :budget.',
+            'cta_locked_no_budget' => 'Desbloquea con :cost. Presupuesto disponible: :budget.',
 
             'budget_caps_slider' => 'El presupuesto disponible (:budget) limita el lote — sin él podrías llegar a :natural asientos.',
             'financing_cash_hint_budget' => 'Se descuenta del presupuesto disponible (:budget) al confirmar.',
@@ -86,7 +86,7 @@ return [
             'cta_stand_expansion_title' => 'Ampliar una grada',
 
             'cta_rebuild_label' => 'Reconstrucción',
-            'cta_rebuild_title' => 'Reformar el estadio',
+            'cta_rebuild_title' => 'Reconstruir el estadio',
 
             'reputation_tiers' => [
                 'local' => 'Local',
@@ -101,15 +101,13 @@ return [
             'modal_stand_expansion_title' => 'Ampliar una grada',
             'modal_stand_expansion_description' => 'Demuele una grada y la reconstruye más grande. Los asientos son permanentes, a diferencia de las gradas supletorias.',
             'stand_expansion_disruption_note' => 'El resto del estadio sigue operativo durante las obras. Los nuevos asientos se estrenan en la fecha de finalización.',
-            'modal_rebuild_title' => 'Reformar el estadio',
-            'modal_rebuild_description' => 'Derriba el estadio actual y construye uno nuevo. El precio por asiento crece por tramos: cuanto más grande el estadio, más cara cada plaza adicional.',
-            'rebuild_disruption_warning' => 'Las obras duran unos 18 meses. El estadio se mantiene operativo durante la construcción y el aforo nuevo entra en juego en la fecha de finalización.',
+            'modal_rebuild_title' => 'Reconstruir el estadio',
+            'modal_rebuild_description' => 'Derriba el estadio actual y construye uno nuevo. El precio por asiento crece por tramos: cuanto más grande el estadio, más cara cada plaza adicional. El estadio nuevo se entrega con la mejor categoría UEFA que permita su aforo, sin coste adicional.',
             'rebuild_marginal_rate_prefix' => 'Coste por asiento en este tamaño:',
             'rebuild_marginal_rate_suffix' => '',
-            'commit_supplementary' => 'Confirmar gradas',
-            'commit_stand_expansion' => 'Iniciar ampliación',
-            'commit_rebuild' => 'Iniciar reforma',
-            'commit_uefa_upgrade' => 'Iniciar mejora',
+            'rebuild_cap_explainer_reputation' => 'El máximo lo fija el préstamo bancario al que opta tu club (:cap). Tu reputación actual (:tier) marca ese tope: sube de categoría para acceder a un crédito mayor.',
+            'rebuild_cap_explainer_affordability' => 'El máximo lo fija el préstamo bancario al que opta tu club (:cap), calculado sobre tus ingresos anuales previstos. Aumenta tus ingresos para acceder a un crédito mayor.',
+            'commit_project' => 'Iniciar obras',
 
             'cta_disabled_by_active_project' => 'Ya tienes un proyecto en curso. Consulta el historial debajo.',
 
@@ -118,7 +116,6 @@ return [
             'cta_uefa_title_generic' => 'Subir de categoría UEFA',
             'cta_uefa_button' => 'Mejorar instalaciones',
             'cta_uefa_tagline' => 'Reforma las instalaciones para subir a Categoría UEFA :target. Coste fijo :cost, unos 9 meses de obras, sin afectar al aforo.',
-            'cta_uefa_no_budget' => 'Coste de la mejora: :cost. No hay presupuesto ni crédito bancario suficientes. Presupuesto disponible: :budget.',
             'cta_uefa_capacity_floor' => 'Para optar a Categoría UEFA :target el estadio debe superar los :min_cap asientos. Amplía el aforo primero.',
             'cta_uefa_already_max' => 'Tu estadio ya está en la máxima categoría UEFA. No hay más niveles que desbloquear.',
             'cta_uefa_no_base_level' => 'Tu estadio no tiene categoría UEFA asignada. Amplía el aforo para acceder a la clasificación.',
@@ -134,9 +131,10 @@ return [
             'empty' => 'Aún no hay obras en el estadio.',
             'empty_hint' => 'Las obras pasadas y en curso aparecerán aquí.',
             'col_type' => 'Proyecto',
-            'col_detail' => 'Detalle',
+            'col_detail' => 'Detalles',
             'col_cost' => 'Coste',
             'col_status' => 'Estado',
+            'detail_seats' => ':count asientos',
             'detail_rebuild' => ':count asientos (estadio nuevo)',
             'detail_uefa_upgrade' => 'Categoría UEFA :from → :to',
             'status_completed' => 'Completado',

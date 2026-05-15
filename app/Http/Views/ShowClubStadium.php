@@ -13,6 +13,7 @@ use App\Modules\Stadium\Services\StadiumSummaryService;
 use App\Modules\Stadium\Services\StadiumUpgradeService;
 use App\Modules\Stadium\UefaCategory;
 use App\Support\Money;
+use Illuminate\Support\Number;
 
 class ShowClubStadium
 {
@@ -45,13 +46,17 @@ class ShowClubStadium
         $rebuildMaxCapacity = $this->stadiumUpgradeService->maxRebuildCapacityForBudget($loanCap);
         $currentCapacity = $stadium->effective_capacity;
 
-        $bindingConstraint = null;
+        // Which loan cap is binding — surfaced in both the locked-state
+        // unlock CTAs and the rebuild modal's "why is this the max?"
+        // explainer. Always computed so the modal can render it even when
+        // the rebuild is reachable. Ties go to reputation (the easier
+        // mental model for users to act on).
+        $bindingConstraint = $reputationCap <= $affordabilityCap ? 'reputation' : 'affordability';
+
         $nextReputationTier = null;
         $revenueRequiredCents = null;
 
         if ($rebuildMaxCapacity <= $currentCapacity) {
-            $bindingConstraint = $reputationCap <= $affordabilityCap ? 'reputation' : 'affordability';
-
             if ($bindingConstraint === 'reputation') {
                 $nextReputationTier = $this->nextReputationTier($reputationLevel);
             } else {
@@ -61,6 +66,25 @@ class ShowClubStadium
         }
 
         $availableBudgetCents = $this->stadiumUpgradeService->availableCashFor($game);
+
+        // Pre-format the estimated completion date for each project type
+        // so the modals can render a "Fecha de finalización" row without
+        // any date math in the template. Each project's construction
+        // window is calendar-fixed at commit time, so adding the same
+        // window to current_date here matches what the user will see in
+        // the history once they commit.
+        $supplementaryCompletionLabel = $this->formatCompletionDate(
+            $game->current_date->copy()->addDays($this->stadiumUpgradeService->supplementaryConstructionDays())
+        );
+        $standExpansionCompletionLabel = $this->formatCompletionDate(
+            $game->current_date->copy()->addDays($this->stadiumUpgradeService->standExpansionConstructionDays())
+        );
+        $rebuildCompletionLabel = $this->formatCompletionDate(
+            $game->current_date->copy()->addDays($this->stadiumUpgradeService->rebuildConstructionDays())
+        );
+        $uefaCompletionLabel = $this->formatCompletionDate(
+            $game->current_date->copy()->addDays($this->stadiumUpgradeService->uefaUpgradeConstructionDays())
+        );
 
         $supplementaryPerSeat = $this->stadiumUpgradeService->supplementaryCostPerSeat();
         $supplementaryProjectCap = $this->stadiumUpgradeService->supplementaryMaxSeatsPerProject();
@@ -239,6 +263,11 @@ class ShowClubStadium
             'rebuild_available' => $rebuildAvailable,
             'rebuild_state' => $rebuildState,
 
+            'supplementary_completion_label' => $supplementaryCompletionLabel,
+            'stand_expansion_completion_label' => $standExpansionCompletionLabel,
+            'rebuild_completion_label' => $rebuildCompletionLabel,
+            'uefa_completion_label' => $uefaCompletionLabel,
+
             'loan_cap_cents' => $loanCap,
             'available_budget_cents' => $availableBudgetCents,
             'current_annual_revenue_cents' => $currentAnnualRevenueCents,
@@ -296,9 +325,9 @@ class ShowClubStadium
         $detail = match ($project->type) {
             StadiumProjectType::Supplementary,
             StadiumProjectType::StandExpansion
-                => '+'.number_format($project->target_capacity),
+                => __('club.stadium.history.detail_seats', ['count' => '+'.Number::format($project->target_capacity)]),
             StadiumProjectType::Rebuild
-                => __('club.stadium.history.detail_rebuild', ['count' => number_format($project->target_capacity)]),
+                => __('club.stadium.history.detail_rebuild', ['count' => Number::format($project->target_capacity)]),
             StadiumProjectType::UefaUpgrade
                 => __('club.stadium.history.detail_uefa_upgrade', [
                     'from' => max(1, (int) $project->target_capacity - 1),
@@ -329,6 +358,19 @@ class ShowClubStadium
                 ? $readyLabel
                 : __('club.stadium.history.ready_label', ['date' => $readyLabel]),
         ];
+    }
+
+    /**
+     * Render a completion date in the modal-friendly "30 Junio 2027"
+     * style — day, capitalised month name, year — using the configured
+     * app locale. Falls through to the raw isoFormat output for locales
+     * where mb_convert_case mis-cases month names.
+     */
+    private function formatCompletionDate(\Carbon\Carbon|\Illuminate\Support\Carbon $date): string
+    {
+        $label = $date->isoFormat('D MMMM YYYY');
+
+        return mb_convert_case($label, MB_CASE_TITLE, 'UTF-8');
     }
 
     private function nextReputationTier(string $current): ?string

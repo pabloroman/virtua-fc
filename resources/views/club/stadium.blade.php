@@ -1,4 +1,5 @@
 @use(App\Support\Money)
+@use(Illuminate\Support\Number)
 
 <x-app-layout>
     <x-slot name="header">
@@ -37,7 +38,7 @@
                 <div class="flex flex-wrap items-end gap-x-5 gap-y-3 shrink-0">
                     <div class="flex flex-col items-end text-right">
                         <span class="text-[10px] text-text-muted uppercase tracking-widest mb-1">{{ __('club.stadium.capacity') }}</span>
-                        <span class="font-heading text-2xl md:text-3xl font-bold text-text-primary tabular-nums leading-none">{{ number_format($capacity) }}</span>
+                        <span class="font-heading text-2xl md:text-3xl font-bold text-text-primary tabular-nums leading-none">{{ Number::format($capacity) }}</span>
                     </div>
 
                     <span class="text-text-faint pb-2 hidden sm:inline" aria-hidden="true">·</span>
@@ -103,7 +104,7 @@
                                         <div class="flex items-baseline justify-between gap-4">
                                             <div class="min-w-0">
                                                 <span class="text-xs font-semibold text-text-primary uppercase tracking-wide">{{ __('club.stadium.season_tickets.area.' . $area['slug']) }}</span>
-                                                <span class="text-[11px] text-text-muted ml-1.5">{{ number_format($area['capacity']) }}</span>
+                                                <span class="text-[11px] text-text-muted ml-1.5">{{ Number::format($area['capacity']) }}</span>
                                             </div>
                                             <span class="font-heading text-base font-bold text-text-primary tabular-nums leading-none shrink-0"
                                                   x-text="formatPrice(prices[{{ $i }}])"></span>
@@ -122,7 +123,7 @@
                                             <span class="text-text-body font-semibold"><span x-text="Math.round((areas[{{ $i }}]?.fill_rate ?? 0) * 100)"></span>%</span>
                                             <span class="text-text-muted">{{ __('club.stadium.season_tickets.predicted_fill') }}</span>
                                             <span class="text-text-faint">·</span>
-                                            <span class="text-text-muted"><span x-text="(areas[{{ $i }}]?.sold ?? 0).toLocaleString('es-ES')"></span> / {{ number_format($area['capacity']) }}</span>
+                                            <span class="text-text-muted"><span x-text="$fmt(areas[{{ $i }}]?.sold ?? 0)"></span> / {{ Number::format($area['capacity']) }}</span>
                                         </div>
                                     </div>
                                 @endforeach
@@ -142,7 +143,7 @@
                                         <div class="h-full bg-accent-blue rounded-full" :style="`width: ${overallFill}%`"></div>
                                     </div>
                                     <div class="text-[11px] text-text-muted mt-1">
-                                        <span x-text="totalSold.toLocaleString('es-ES')"></span> / {{ number_format($capacity) }}
+                                        <span x-text="$fmt(totalSold)"></span> / {{ Number::format($capacity) }}
                                     </div>
                                 </div>
                                 <div class="bg-surface-700/50 border border-border-default rounded-lg px-4 py-3">
@@ -194,7 +195,7 @@
                             <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-3">
                                 <div class="bg-surface-700/50 border border-border-default rounded-lg px-4 py-3">
                                     <div class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('club.stadium.season_tickets.tickets_sold') }}</div>
-                                    <div class="font-heading text-2xl font-bold text-text-primary">{{ number_format((int) ($pricing->total_sold ?? 0)) }}</div>
+                                    <div class="font-heading text-2xl font-bold text-text-primary">{{ Number::format((int) ($pricing->total_sold ?? 0)) }}</div>
                                     <div class="text-[11px] text-text-muted mt-1">{{ $overallFill }}% {{ __('club.stadium.season_tickets.predicted_fill') }}</div>
                                 </div>
                                 <div class="bg-surface-700/50 border border-border-default rounded-lg px-4 py-3">
@@ -244,8 +245,8 @@
 
                                 <div>
                                     <div class="flex items-baseline justify-between gap-3 mb-2">
-                                        <span class="font-heading text-3xl font-bold text-text-primary">{{ number_format($lastHomeMatch['attendance']) }}</span>
-                                        <span class="text-sm text-text-muted">/ {{ number_format($lastHomeMatch['capacity_at_match']) }}</span>
+                                        <span class="font-heading text-3xl font-bold text-text-primary">{{ Number::format($lastHomeMatch['attendance']) }}</span>
+                                        <span class="text-sm text-text-muted">/ {{ Number::format($lastHomeMatch['capacity_at_match']) }}</span>
                                     </div>
                                     <div class="w-full h-2 bg-surface-600 rounded-full overflow-hidden">
                                         <div class="h-full rounded-full {{ $lastHomeMatch['fill_color'] }}" style="width: {{ min($lastHomeMatch['fill_rate'], 100) }}%"></div>

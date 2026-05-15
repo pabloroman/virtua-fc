@@ -6,6 +6,7 @@
 
 use App\Modules\Stadium\Enums\UefaUpgradeBlocker;
 use App\Support\Money;
+use Illuminate\Support\Number;
 
 $stadium                       = $upgrade['stadium'];
 $activeProject                 = $upgrade['active_project'];
@@ -17,6 +18,7 @@ $currentCapacity               = $upgrade['current_capacity'];
 $bindingConstraint             = $upgrade['binding_constraint'];
 $nextReputationTier            = $upgrade['next_reputation_tier'];
 $revenueRequiredCents          = $upgrade['revenue_required_cents'];
+$reputationLevel               = $upgrade['reputation_level'];
 
 $supplementaryHeadroom         = $upgrade['supplementary_headroom'];
 $supplementaryMax              = $upgrade['supplementary_effective_max'];
@@ -27,6 +29,7 @@ $supplementaryStep             = $upgrade['supplementary_step'];
 $supplementaryAffordable       = $upgrade['supplementary_affordable'];
 $supplementaryNaturalMax       = $upgrade['supplementary_natural_max'];
 $supplementaryState            = $upgrade['supplementary_state'];
+$supplementaryCompletionLabel  = $upgrade['supplementary_completion_label'];
 
 $standExpansionPerSeat         = $upgrade['stand_expansion_per_seat_cents'];
 $standExpansionMinSeats        = $upgrade['stand_expansion_min_seats'];
@@ -39,6 +42,7 @@ $standExpansionCashAffordable  = $upgrade['stand_expansion_cash_affordable'];
 $standExpansionLoanAffordable  = $upgrade['stand_expansion_loan_affordable'];
 $standExpansionAvailable       = $upgrade['stand_expansion_available'];
 $standExpansionState           = $upgrade['stand_expansion_state'];
+$standExpansionCompletionLabel = $upgrade['stand_expansion_completion_label'];
 
 $rebuildBands                  = $upgrade['rebuild_cost_bands'];
 $rebuildEntryPerSeat           = $upgrade['rebuild_entry_per_seat_cents'];
@@ -51,6 +55,7 @@ $rebuildStep                   = $upgrade['rebuild_step'];
 $rebuildCashAffordable         = $upgrade['rebuild_cash_affordable'];
 $rebuildAvailable              = $upgrade['rebuild_available'];
 $rebuildState                  = $upgrade['rebuild_state'];
+$rebuildCompletionLabel        = $upgrade['rebuild_completion_label'];
 
 $uefaCurrentLevel              = $upgrade['uefa_current_level'];
 $uefaNextLevel                 = $upgrade['uefa_next_level'];
@@ -60,6 +65,7 @@ $uefaBlocker                   = $upgrade['uefa_blocker'];
 $uefaCashAffordable            = $upgrade['uefa_cash_affordable'];
 $uefaLoanAffordable            = $upgrade['uefa_loan_affordable'];
 $uefaAvailable                 = $upgrade['uefa_available'];
+$uefaCompletionLabel           = $upgrade['uefa_completion_label'];
 @endphp
 
 <x-section-card :title="__('club.stadium.upgrades.title')">
@@ -97,7 +103,10 @@ $uefaAvailable                 = $upgrade['uefa_available'];
                     :duration-label="__('club.stadium.upgrades.time_days_inline', ['days' => 30])"
                     :locked-reason="$supplementaryState === 'locked' && $supplementaryHeadroom <= 0
                         ? __('club.stadium.upgrades.cta_supplementary_full_short')
-                        : ($supplementaryState === 'locked' ? __('club.stadium.upgrades.cta_supplementary_no_budget_short', ['budget' => Money::format($availableBudgetCents)]) : null)" />
+                        : ($supplementaryState === 'locked' ? __('club.stadium.upgrades.cta_locked_no_budget', [
+                            'cost'   => Money::format($supplementaryMinTotalCents),
+                            'budget' => Money::format($availableBudgetCents),
+                        ]) : null)" />
 
                 {{-- Tier 2 · Ampliación de grada --}}
                 <x-stadium-upgrade-row
@@ -108,7 +117,10 @@ $uefaAvailable                 = $upgrade['uefa_available'];
                     :title="__('club.stadium.upgrades.cta_stand_expansion_title')"
                     :cost-label="$standExpansionPerSeat > 0 ? __('club.stadium.upgrades.from_total', ['total' => Money::format($standExpansionMinTotalCents)]) : null"
                     :duration-label="trans_choice('club.stadium.upgrades.time_months_inline', 9, ['count' => 9])"
-                    :locked-reason="$standExpansionState === 'locked' ? __('club.stadium.upgrades.cta_stand_expansion_no_budget_short', ['budget' => Money::format($availableBudgetCents)]) : null" />
+                    :locked-reason="$standExpansionState === 'locked' ? __('club.stadium.upgrades.cta_locked_no_budget', [
+                        'cost'   => Money::format($standExpansionMinTotalCents),
+                        'budget' => Money::format($availableBudgetCents),
+                    ]) : null" />
 
                 {{-- Tier 3 · Reconstruir el estadio --}}
                 @php
@@ -116,7 +128,7 @@ $uefaAvailable                 = $upgrade['uefa_available'];
                     $rebuildLockedReason = match ($rebuildState) {
                         'locked_affordability' => __('club.stadium.upgrades.unlock_with_revenue', ['revenue' => Money::format($revenueRequiredCents)]),
                         'locked_reputation'    => __('club.stadium.upgrades.unlock_with_reputation', [
-                            'tier' => __('club.stadium.reputation_tiers.'.($nextReputationTier ?? 'modest')),
+                            'tier' => __('club.stadium.upgrades.reputation_tiers.'.($nextReputationTier ?? 'modest')),
                         ]),
                         default => null,
                     };
@@ -145,9 +157,9 @@ $uefaAvailable                 = $upgrade['uefa_available'];
                         $uefaBlocker === UefaUpgradeBlocker::AlreadyMax     => __('club.stadium.upgrades.cta_uefa_already_max'),
                         $uefaBlocker === UefaUpgradeBlocker::CapacityFloor  => __('club.stadium.upgrades.cta_uefa_capacity_floor', [
                             'target'  => $uefaNextLevel,
-                            'min_cap' => number_format($uefaCapacityFloor),
+                            'min_cap' => Number::format($uefaCapacityFloor),
                         ]),
-                        ! $uefaAvailable => __('club.stadium.upgrades.cta_uefa_no_budget', [
+                        ! $uefaAvailable => __('club.stadium.upgrades.cta_locked_no_budget', [
                             'cost'   => Money::format($uefaUpgradeCost),
                             'budget' => Money::format($availableBudgetCents),
                         ]),
@@ -199,7 +211,7 @@ $uefaAvailable                 = $upgrade['uefa_available'];
             <div>
                 <label class="block text-[10px] text-text-muted uppercase tracking-widest mb-2">
                     {{ __('club.stadium.upgrades.seats_to_add') }}
-                    <span x-text="seats.toLocaleString('es-ES')" class="font-heading text-base font-semibold text-text-primary ml-2"></span>
+                    <span x-text="$fmt(seats)" class="font-heading text-base font-semibold text-text-primary ml-2"></span>
                 </label>
                 <input type="range" name="seats"
                        min="{{ $supplementaryMin }}"
@@ -209,22 +221,28 @@ $uefaAvailable                 = $upgrade['uefa_available'];
                        :style="`--fill: ${fillPercent()}%`"
                        class="season-ticket-slider w-full">
                 <div class="flex justify-between text-xs text-text-faint mt-1">
-                    <span>{{ number_format($supplementaryMin) }}</span>
-                    <span>{{ number_format($supplementaryMax) }}</span>
+                    <span>{{ Number::format($supplementaryMin) }}</span>
+                    <span>{{ Number::format($supplementaryMax) }}</span>
                 </div>
                 @if($supplementaryMax < $supplementaryNaturalMax)
                     <div class="text-[11px] text-text-faint mt-2">
                         {{ __('club.stadium.upgrades.budget_caps_slider', [
                             'budget'  => Money::format($availableBudgetCents),
-                            'natural' => number_format($supplementaryNaturalMax),
+                            'natural' => Number::format($supplementaryNaturalMax),
                         ]) }}
                     </div>
                 @endif
             </div>
 
-            <div class="flex items-center justify-between pt-2 border-t border-border-strong">
-                <span class="text-sm text-text-muted">{{ __('club.stadium.upgrades.total_cost') }}</span>
-                <span class="font-heading text-lg font-bold text-text-primary" x-text="costLabel()"></span>
+            <div class="pt-2 border-t border-border-strong space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-text-muted">{{ __('club.stadium.upgrades.total_cost') }}</span>
+                    <span class="font-heading text-lg font-bold text-text-primary" x-text="costLabel()"></span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-text-muted">{{ __('club.stadium.upgrades.completion_date') }}</span>
+                    <span class="font-heading text-lg font-bold text-text-primary">{{ $supplementaryCompletionLabel }}</span>
+                </div>
             </div>
 
             <div class="flex justify-end gap-3 pt-4">
@@ -232,7 +250,7 @@ $uefaAvailable                 = $upgrade['uefa_available'];
                     {{ __('app.cancel') }}
                 </x-secondary-button>
                 <x-primary-button>
-                    {{ __('club.stadium.upgrades.commit_supplementary') }}
+                    {{ __('club.stadium.upgrades.commit_project') }}
                 </x-primary-button>
             </div>
         </form>
@@ -281,7 +299,7 @@ $uefaAvailable                 = $upgrade['uefa_available'];
             <div>
                 <label class="block text-[10px] text-text-muted uppercase tracking-widest mb-2">
                     {{ __('club.stadium.upgrades.seats_to_add') }}
-                    <span x-text="seats.toLocaleString('es-ES')" class="font-heading text-base font-semibold text-text-primary ml-2"></span>
+                    <span x-text="$fmt(seats)" class="font-heading text-base font-semibold text-text-primary ml-2"></span>
                 </label>
                 <input type="range" name="seats"
                        :min="min"
@@ -291,14 +309,20 @@ $uefaAvailable                 = $upgrade['uefa_available'];
                        :style="`--fill: ${fillPercent()}%`"
                        class="season-ticket-slider w-full">
                 <div class="flex justify-between text-xs text-text-faint mt-1">
-                    <span x-text="min.toLocaleString('es-ES')"></span>
-                    <span x-text="effectiveMax().toLocaleString('es-ES')"></span>
+                    <span x-text="$fmt(min)"></span>
+                    <span x-text="$fmt(effectiveMax())"></span>
                 </div>
             </div>
 
-            <div class="flex items-center justify-between pt-2 border-t border-border-strong">
-                <span class="text-sm text-text-muted">{{ __('club.stadium.upgrades.total_cost') }}</span>
-                <span class="font-heading text-lg font-bold text-text-primary" x-text="costLabel()"></span>
+            <div class="pt-2 border-t border-border-strong space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-text-muted">{{ __('club.stadium.upgrades.total_cost') }}</span>
+                    <span class="font-heading text-lg font-bold text-text-primary" x-text="costLabel()"></span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-text-muted">{{ __('club.stadium.upgrades.completion_date') }}</span>
+                    <span class="font-heading text-lg font-bold text-text-primary">{{ $standExpansionCompletionLabel }}</span>
+                </div>
             </div>
 
             <x-status-banner color="blue" :description="__('club.stadium.upgrades.stand_expansion_disruption_note')" />
@@ -308,7 +332,7 @@ $uefaAvailable                 = $upgrade['uefa_available'];
                     {{ __('app.cancel') }}
                 </x-secondary-button>
                 <x-primary-button>
-                    {{ __('club.stadium.upgrades.commit_stand_expansion') }}
+                    {{ __('club.stadium.upgrades.commit_project') }}
                 </x-primary-button>
             </div>
         </form>
@@ -352,6 +376,11 @@ $uefaAvailable                 = $upgrade['uefa_available'];
                 :loan-cap-cents="$loanCapCents"
                 :budget-cents="$availableBudgetCents" />
 
+            <div class="flex items-center justify-between pt-2 border-t border-border-strong">
+                <span class="text-sm text-text-muted">{{ __('club.stadium.upgrades.completion_date') }}</span>
+                <span class="font-heading text-lg font-bold text-text-primary">{{ $uefaCompletionLabel }}</span>
+            </div>
+
             <x-status-banner color="blue" :description="__('club.stadium.upgrades.uefa_no_capacity_change_note')" />
 
             <div class="flex justify-end gap-3 pt-4">
@@ -359,7 +388,7 @@ $uefaAvailable                 = $upgrade['uefa_available'];
                     {{ __('app.cancel') }}
                 </x-secondary-button>
                 <x-primary-button>
-                    {{ __('club.stadium.upgrades.commit_uefa_upgrade') }}
+                    {{ __('club.stadium.upgrades.commit_project') }}
                 </x-primary-button>
             </div>
         </form>
@@ -444,7 +473,7 @@ $uefaAvailable                 = $upgrade['uefa_available'];
             <div>
                 <label class="block text-[10px] text-text-muted uppercase tracking-widest mb-2">
                     {{ __('club.stadium.upgrades.target_capacity') }}
-                    <span x-text="capacity.toLocaleString('es-ES')" class="font-heading text-base text-text-primary ml-2"></span>
+                    <span x-text="$fmt(capacity)" class="font-heading text-base font-semibold text-text-primary ml-2"></span>
                 </label>
                 <input type="range" name="capacity"
                        :min="min"
@@ -454,27 +483,38 @@ $uefaAvailable                 = $upgrade['uefa_available'];
                        :style="`--fill: ${fillPercent()}%`"
                        class="season-ticket-slider w-full">
                 <div class="flex justify-between text-xs text-text-faint mt-1">
-                    <span x-text="min.toLocaleString('es-ES')"></span>
-                    <span x-text="effectiveMax().toLocaleString('es-ES')"></span>
+                    <span x-text="$fmt(min)"></span>
+                    <span x-text="$fmt(effectiveMax())"></span>
                 </div>
                 <div class="text-[11px] text-text-faint mt-2">
                     {{ __('club.stadium.upgrades.rebuild_marginal_rate_prefix') }} <span x-text="marginalLabel()"></span> {{ __('club.stadium.upgrades.rebuild_marginal_rate_suffix') }}
                 </div>
             </div>
 
-            <div class="flex items-center justify-between pt-2 border-t border-border-strong">
-                <span class="text-sm text-text-muted">{{ __('club.stadium.upgrades.total_cost') }}</span>
-                <span class="font-heading text-lg font-bold text-text-primary" x-text="costLabel()"></span>
-            </div>
+            <x-status-banner
+                color="blue"
+                :description="__('club.stadium.upgrades.rebuild_cap_explainer_'.$bindingConstraint, [
+                    'cap'  => Money::format($loanCapCents),
+                    'tier' => __('club.stadium.upgrades.reputation_tiers.'.$reputationLevel),
+                ])" />
 
-            <x-status-banner color="gold" :description="__('club.stadium.upgrades.rebuild_disruption_warning')" />
+            <div class="pt-2 border-t border-border-strong space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-text-muted">{{ __('club.stadium.upgrades.total_cost') }}</span>
+                    <span class="font-heading text-lg font-bold text-text-primary" x-text="costLabel()"></span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-text-muted">{{ __('club.stadium.upgrades.completion_date') }}</span>
+                    <span class="font-heading text-lg font-bold text-text-primary">{{ $rebuildCompletionLabel }}</span>
+                </div>
+            </div>
 
             <div class="flex justify-end gap-3 pt-4">
                 <x-secondary-button type="button" x-on:click="$dispatch('close-modal', 'stadium-rebuild')">
                     {{ __('app.cancel') }}
                 </x-secondary-button>
                 <x-primary-button>
-                    {{ __('club.stadium.upgrades.commit_rebuild') }}
+                    {{ __('club.stadium.upgrades.commit_project') }}
                 </x-primary-button>
             </div>
         </form>

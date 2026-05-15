@@ -44,6 +44,26 @@ final class UefaCategory
     }
 
     /**
+     * Highest UEFA category a given capacity qualifies for under the
+     * official capacity floors. Used by the rebuild flow to fold the
+     * facility upgrade into the build itself — a brand-new stadium is
+     * delivered at the best category its size allows.
+     */
+    public static function highestQualifyingCategory(int $capacity): ?int
+    {
+        $floors = self::capacityFloors();
+        krsort($floors);
+
+        foreach ($floors as $category => $floor) {
+            if ($capacity >= $floor) {
+                return $category;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Heuristic for deriving a team's starting UEFA category from its
      * stadium capacity at seed time. Uses thresholds that match the rough
      * empirical mapping in real Spanish football — Cat 4 for top-flight

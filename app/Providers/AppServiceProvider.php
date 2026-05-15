@@ -103,6 +103,8 @@ class AppServiceProvider extends ServiceProvider
             return $user->is_admin;
         });
 
+        \Illuminate\Support\Number::useLocale(config('app.locale'));
+
         // Runtime guard: fail loudly in dev/staging when a query crosses
         // the control/tenant plane boundary. Currently opt-in via
         // `database_planes.guard_enabled` (default false) because several

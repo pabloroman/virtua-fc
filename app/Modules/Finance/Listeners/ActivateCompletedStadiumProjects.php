@@ -9,6 +9,7 @@ use App\Modules\Match\Events\GameDateAdvanced;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Stadium\Enums\StadiumProjectStatus;
 use App\Modules\Stadium\Enums\StadiumProjectType;
+use App\Modules\Stadium\UefaCategory;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -83,9 +84,19 @@ class ActivateCompletedStadiumProjects
         // the user keeps their seats and gains back the full headroom
         // for future supletorias.
         $newBase = $project->target_capacity + $stadium->supplementary_seats;
+
+        // Deliver the new stadium at the highest UEFA category its size
+        // allows — a ground-up rebuild is realistically engineered to the
+        // best spec from day 1. Never downgrade: if the user already had
+        // a higher category (e.g. via a prior UEFA upgrade), keep it.
+        $qualifying = UefaCategory::highestQualifyingCategory($newBase) ?? 0;
+        $existing = $stadium->effective_uefa_level ?? 0;
+        $upgradedLevel = max($qualifying, $existing) ?: null;
+
         $stadium->update([
             'rebuilt_capacity' => $newBase,
             'supplementary_seats' => 0,
+            'rebuilt_uefa_level' => $upgradedLevel,
         ]);
     }
 
