@@ -45,8 +45,8 @@ class RollAIContractRenewalsTest extends TestCase
     public function test_top_importance_player_is_renewed_after_enough_ticks(): void
     {
         // Cumulative test: ~20 ticks (Aug→Dec) is enough for a top-importance
-        // player to cross the renewal line in the strong majority of runs.
-        // Per-tick rate 70‰ → 1 - 0.93^20 ≈ 76% chance the top player is
+        // player to cross the renewal line in a meaningful share of runs.
+        // Per-tick rate 35‰ → 1 - 0.965^20 ≈ 51% chance the top player is
         // renewed by tick 20; loose bound to absorb noise.
         $renewedRuns = 0;
         $iterations = 50;
@@ -67,15 +67,15 @@ class RollAIContractRenewalsTest extends TestCase
         }
 
         $this->assertGreaterThanOrEqual(
-            (int) ($iterations * 0.55),
+            (int) ($iterations * 0.30),
             $renewedRuns,
-            "Top-importance player should be renewed in the majority of runs by tick 20 (got {$renewedRuns}/{$iterations})",
+            "Top-importance player should be renewed in a meaningful share of runs by tick 20 (got {$renewedRuns}/{$iterations})",
         );
     }
 
     public function test_low_importance_player_is_rarely_renewed_after_few_ticks(): void
     {
-        // Low bucket rate is 5‰; even at tick 20 cumulative ≈ 10%. Loose
+        // Low bucket rate is 2‰; even at tick 20 cumulative ≈ 4%. Loose
         // upper bound asserts the floor doesn't accidentally drift up.
         $renewedRuns = 0;
         $iterations = 50;
