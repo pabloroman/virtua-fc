@@ -18,11 +18,12 @@ use Illuminate\Support\Facades\DB;
  * the user can shop the entire top flight on a free.
  *
  * Distributes the renewal work across the season instead of doing it in one
- * batch at setup. By Jan 1 (~20 ticks in) the high-importance bucket is
- * roughly 75% renewed; by season end it's near-complete. Mid-window the user
- * still encounters some pre-contractable players from each tier, but the
- * pool drains as the window progresses — which matches how clubs really
- * keep extending stars throughout the year to avoid the Bosman.
+ * batch at setup. By Jan 1 (~20 ticks in) roughly half the high-importance
+ * bucket is renewed; the rest of each tier remains shoppable. Mid-window the
+ * user still encounters a healthy supply of pre-contractable players from
+ * each tier, and the pool gradually drains as the window progresses — which
+ * matches how clubs really keep extending stars throughout the year to avoid
+ * the Bosman, without making the January free market dry up entirely.
  *
  * Skips veterans (they keep the existing 50/50 retire-vs-renew coin flip at
  * season end), loaned-out players (renewal authority sits with the parent
@@ -35,13 +36,15 @@ class RollAIContractRenewals
      * Per-tick renewal probability in permille (parts per 1000).
      *
      * Calibrated against ~20 ticks Aug→Dec so cumulative chance by the Jan 1
-     * pre-contract window lands roughly where the old once-per-season batch
-     * put it: ~75% / ~45% / ~10% renewed for top / mid / low importance.
-     * Over the full ~38-tick season the rates converge to ~94% / ~70% / ~17%.
+     * pre-contract window lands at roughly ~50% / ~22% / ~4% renewed for
+     * top / mid / low importance — leaving a healthy free-agent pool to shop
+     * in January. Over the full ~38-tick season the rates converge to
+     * ~74% / ~37% / ~7%, with the remainder handled by the existing
+     * season-end ContractExpirationProcessor coin flip.
      */
-    private const ROLL_TOP_PERMILLE = 70;
-    private const ROLL_MID_PERMILLE = 30;
-    private const ROLL_LOW_PERMILLE = 5;
+    private const ROLL_TOP_PERMILLE = 35;
+    private const ROLL_MID_PERMILLE = 12;
+    private const ROLL_LOW_PERMILLE = 2;
 
     private const TOP_IMPORTANCE_THRESHOLD = 0.70;
     private const MID_IMPORTANCE_THRESHOLD = 0.40;
