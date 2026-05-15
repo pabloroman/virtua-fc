@@ -140,11 +140,25 @@ class Team extends Model
         return $name;
     }
 
+    /**
+     * Flag-icon code for this team's country. Lowercased ISO code for most
+     * countries, with the same special cases as CountryConfig::flag()
+     * (e.g. England 'EN' → 'gb-eng' because the flag-icons package uses
+     * UK subdivision codes). Callers append '.svg' to build a flag URL.
+     */
+    public function getFlagAttribute(): string
+    {
+        return match ($this->country) {
+            'EN' => 'gb-eng',
+            default => strtolower($this->country ?? ''),
+        };
+    }
+
     public function getImageAttribute(): ?string
     {
         // National teams use flag SVGs
         if (($this->attributes['type'] ?? 'club') === 'national') {
-            return Storage::disk('assets')->url('flags/' . strtolower($this->country) . '.svg');
+            return Storage::disk('assets')->url('flags/' . $this->flag . '.svg');
         }
 
         $originalUrl = $this->attributes['image'] ?? null;

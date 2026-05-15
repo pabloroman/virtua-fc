@@ -7,9 +7,13 @@ use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\CompetitionTeam;
 use App\Models\Game;
+use App\Models\GameStanding;
 use App\Models\ManagerJobOffer;
 use App\Models\Team;
+use App\Modules\Competition\Promotions\PromotionRelegationFactory;
 use App\Modules\Competition\Services\CountryConfig;
+use App\Modules\Notification\Services\NotificationService;
+use App\Modules\Season\Services\SeasonGoalService;
 use Illuminate\Support\Collection;
 
 /**
@@ -39,7 +43,135 @@ class JobOfferService
 
     public function __construct(
         private readonly CountryConfig $countryConfig,
+        private readonly SeasonGoalService $seasonGoalService,
+        private readonly PromotionRelegationFactory $promotionRelegationFactory,
+        private readonly NotificationService $notificationService,
     ) {}
+
+    /**
+     * Ensure end-of-season job offers exist for a pro-manager game whose
+     * season has just finished. Idempotent — short-circuits if any offer for
+     * this (game, season) tuple already exists. Resolves the manager's grade
+     * from the final standings + promotion rule, generates the offers, and
+     * notifies the user.
+     *
+     * Called from /season-end's Continue action and from ShowSeasonOffers
+     * itself (so the page can be refreshed safely). Runs at view time
+     * rather than inside SeasonClosingPipeline because the user needs to
+     * act on the offers *before* the pipeline kicks off.
+     */
+    public function ensureEndOfSeasonOffersGenerated(Game $game): void
+    {
+        if (!$game->isProManagerMode()) {
+            return;
+        }
+
+        if ($game->season_offers_generated_for === $game->season) {
+            return;
+        }
+
+        $grade = $this->resolveGrade($game);
+
+        $offers = $this->generateEndOfSeasonOffers($game, $grade);
+
+        // Stamp the season even when the plan was empty (e.g. "below"
+        // grade with no interested clubs). hasResolvedOffersFor relies on
+        // this marker to distinguish "not yet generated" from "generated
+        // and produced zero rows" — without it, the no-offers branch on
+        // /season-offers loops back here forever.
+        $game->update(['season_offers_generated_for' => $game->season]);
+
+        if ($offers->isNotEmpty()) {
+            // refresh() so the fired_at_season_end flag (just persisted by
+            // generateEndOfSeasonOffers for disasters) is visible to the
+            // notifier.
+            $this->notificationService->notifyJobOfferReceived(
+                $game->refresh(),
+                $offers->count(),
+                $grade === 'disaster',
+            );
+        }
+    }
+
+    /**
+     * Has the manager already resolved this season's offers — by accepting
+     * one (sets pending_team_switch) or by declining all (every offer is
+     * STATUS_REJECTED)? Used by StartNewSeason to know whether to route the
+     * user through /season-offers or fall through to the closing pipeline.
+     */
+    public function hasResolvedOffersFor(Game $game): bool
+    {
+        // Until ensureEndOfSeasonOffersGenerated has stamped this season,
+        // the user hasn't even been shown the offers page yet.
+        if ($game->season_offers_generated_for !== $game->season) {
+            return false;
+        }
+
+        if ($game->pending_team_switch) {
+            return true;
+        }
+
+        // Generated but nobody's pending: either every offer was declined
+        // (rejected status) or the plan produced zero offers in the first
+        // place. Either way, the user has nothing left to act on.
+        $pendingExists = ManagerJobOffer::where('game_id', $game->id)
+            ->where('season', $game->season)
+            ->where('status', ManagerJobOffer::STATUS_PENDING)
+            ->whereIn('offer_type', [
+                ManagerJobOffer::TYPE_END_OF_SEASON,
+                ManagerJobOffer::TYPE_POST_FIRING,
+            ])
+            ->exists();
+
+        return !$pendingExists;
+    }
+
+    /**
+     * Determine the manager's performance grade for the season just closed.
+     * Mirrors the calculation in SeasonSummaryService::buildSeasonSummary().
+     */
+    private function resolveGrade(Game $game): string
+    {
+        $playerStanding = GameStanding::where('game_id', $game->id)
+            ->where('competition_id', $game->competition_id)
+            ->where('team_id', $game->team_id)
+            ->first();
+
+        $evaluation = $this->seasonGoalService->evaluatePerformance(
+            $game,
+            $playerStanding->position ?? 20,
+            $this->wasPromoted($game),
+        );
+
+        return $evaluation['grade'] ?? 'met';
+    }
+
+    private function wasPromoted(Game $game): bool
+    {
+        $competition = Competition::find($game->competition_id);
+        if (!$competition) {
+            return false;
+        }
+
+        $rule = $this->promotionRelegationFactory->forCompetition($competition->id);
+        if (!$rule) {
+            return false;
+        }
+
+        try {
+            $promoted = $rule->getPromotedTeams($game);
+        } catch (\Throwable) {
+            return false;
+        }
+
+        foreach ($promoted as $entry) {
+            if (($entry['teamId'] ?? null) === $game->team_id) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     /**
      * Sample N random Local-tier Primera RFEF Team models for the inline
@@ -308,9 +440,8 @@ class JobOfferService
     }
 
     /**
-     * Find every team in any playable country whose ClubProfile is at
-     * $reputationLevel. Used for end-of-season cross-country offers.
-     * Reserve teams are excluded — see eligibleTeamIdsForTier.
+     * Find every cross-country team at $reputationLevel that's offerable
+     * end-of-season. Reputation-filtered slice of eligibleOfferableTeamIds.
      *
      * @param array<int, string> $excludeTeamIds
      * @return Collection<int, string>
@@ -319,18 +450,53 @@ class JobOfferService
         string $reputationLevel,
         array $excludeTeamIds,
     ): Collection {
-        $countryCodes = $this->countryConfig->playableCountryCodes();
-
-        return ClubProfile::whereIn('team_id', function ($query) use ($countryCodes) {
-                $query->select('id')
-                    ->from('teams')
-                    ->whereIn('country', $countryCodes)
-                    ->whereNull('parent_team_id');
-            })
+        return ClubProfile::whereIn('team_id', $this->eligibleOfferableTeamIds())
             ->where('reputation_level', $reputationLevel)
             ->whereNotIn('team_id', $excludeTeamIds)
             ->pluck('team_id')
             ->values();
+    }
+
+    /**
+     * Every team eligible to appear as an end-of-season offer — exactly
+     * the set a user can pick on /new-game: teams registered in any tier
+     * competition of a playable country, excluding reserves (B teams,
+     * which the new-game picker renders as disabled).
+     *
+     * National teams and cup-only filler clubs fall out implicitly —
+     * neither is registered as a participant in a league tier competition.
+     *
+     * @return Collection<int, string>
+     */
+    private function eligibleOfferableTeamIds(): Collection
+    {
+        return CompetitionTeam::whereIn('competition_id', $this->playableLeagueCompetitionIds())
+            ->whereIn('team_id', function ($q) {
+                $q->select('id')->from('teams')->whereNull('parent_team_id');
+            })
+            ->pluck('team_id')
+            ->unique()
+            ->values();
+    }
+
+    /**
+     * Every tier competition ID across every playable country (primary
+     * + sibling competitions). Mirrors the structure /new-game iterates
+     * over to render the team picker.
+     *
+     * @return array<int, string>
+     */
+    private function playableLeagueCompetitionIds(): array
+    {
+        $ids = [];
+        foreach ($this->countryConfig->playableCountryCodes() as $code) {
+            foreach ($this->countryConfig->flattenedTiers($code) as $tier) {
+                if (!empty($tier['competition'])) {
+                    $ids[] = $tier['competition'];
+                }
+            }
+        }
+        return array_values(array_unique($ids));
     }
 
     private function currentClubReputation(Game $game): string

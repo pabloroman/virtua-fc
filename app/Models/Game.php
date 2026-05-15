@@ -136,6 +136,7 @@ class Game extends Model
         'deleting_at',
         'pending_team_switch',
         'fired_at_season_end',
+        'season_offers_generated_for',
     ];
 
     protected $casts = [

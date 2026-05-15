@@ -46,7 +46,10 @@ class AcceptSeasonOffer
             $game->update(['pending_team_switch' => $offer->id]);
         });
 
-        return redirect()->route('game.season-end', $game->id)
-            ->with('status', __('manager.offer_accepted_flash'));
+        // Acceptance is the trigger for the closing pipeline — re-enter
+        // StartNewSeason so the atomic check-and-set + dispatch happens in
+        // one place. The pro-manager router there sees the resolved offer
+        // and falls through to the pipeline-dispatch block.
+        return app(StartNewSeason::class)($game->id);
     }
 }

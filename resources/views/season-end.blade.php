@@ -649,101 +649,12 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
         </div>
 
         {{-- ============================================================ --}}
-        {{-- PRO MANAGER: Job offers                                        --}}
-        {{-- ============================================================ --}}
-
-        @if(($isProManagerMode ?? false))
-            @php
-                /** @var \Illuminate\Support\Collection $jobOffers */
-                /** @var \App\Models\ManagerJobOffer|null $pendingTeamSwitchOffer */
-                $fired = $firedAtSeasonEnd ?? false;
-                $hasAccepted = (bool) $pendingTeamSwitchOffer;
-                $hasPending = $jobOffers->isNotEmpty();
-            @endphp
-
-            @if($fired && !$hasAccepted)
-                <div class="mb-6 rounded-xl border border-accent-red/30 bg-accent-red/10 px-5 py-4 flex items-start gap-3">
-                    <svg class="w-6 h-6 text-accent-red shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
-                    </svg>
-                    <div>
-                        <div class="font-heading text-base font-semibold text-accent-red uppercase tracking-wide">
-                            {{ __('manager.dismissed_banner_title', ['club' => $game->team->name]) }}
-                        </div>
-                        <div class="text-sm text-text-secondary mt-1">
-                            {{ __('manager.dismissed_banner_message') }}
-                        </div>
-                    </div>
-                </div>
-            @endif
-
-            @if($hasAccepted)
-                <x-section-card :title="__('manager.next_chapter_title')" class="mb-6">
-                    <div class="p-5 flex items-center gap-4">
-                        <div class="shrink-0 w-12 h-12 flex items-center justify-center bg-surface-700 rounded-lg overflow-hidden">
-                            <x-team-crest :team="$pendingTeamSwitchOffer->team" class="w-10 h-10 object-contain" />
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="font-heading text-base font-semibold text-text-primary truncate">
-                                {{ $pendingTeamSwitchOffer->team->name }}
-                            </div>
-                            <div class="mt-1 text-xs text-text-secondary">
-                                {{ __('manager.starts_next_season_at', [
-                                    'season' => \App\Models\Game::formatSeason((string)((int) $game->season + 1)),
-                                ]) }}
-                            </div>
-                        </div>
-                        @if(!$fired)
-                            <form method="POST" action="{{ route('game.job-offers.decline', $game->id) }}">
-                                @csrf
-                                <button type="submit" class="text-xs text-text-secondary hover:text-text-primary underline underline-offset-2">
-                                    {{ __('manager.change_my_mind') }}
-                                </button>
-                            </form>
-                        @endif
-                    </div>
-                </x-section-card>
-            @elseif($hasPending)
-                <x-section-card :title="__($fired ? 'manager.post_firing_offers_title' : 'manager.season_offers_title')" class="mb-6">
-                    <div class="p-5">
-                        <p class="text-sm text-text-secondary mb-4">
-                            {{ __($fired ? 'manager.post_firing_offers_intro' : 'manager.season_offers_intro') }}
-                        </p>
-
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            @foreach($jobOffers as $offer)
-                                <x-job-offer-card
-                                    :offer="$offer"
-                                    accept-route="game.job-offers.accept"
-                                    :accept-params="['gameId' => $game->id, 'offerId' => $offer->id]"
-                                />
-                            @endforeach
-                        </div>
-
-                        @if(!$fired)
-                            <div class="mt-4">
-                                <form method="POST" action="{{ route('game.job-offers.decline', $game->id) }}">
-                                    @csrf
-                                    <button type="submit" class="text-xs text-text-secondary hover:text-text-primary underline underline-offset-2">
-                                        {{ __('manager.stay_at_current_club', ['club' => $game->team->name]) }}
-                                    </button>
-                                </form>
-                            </div>
-                        @endif
-                    </div>
-                </x-section-card>
-            @endif
-        @endif
-
-        {{-- ============================================================ --}}
         {{-- CTA: Start New Season                                         --}}
         {{-- ============================================================ --}}
-
-        @php
-            $proStartBlocked = ($isProManagerMode ?? false)
-                && ($firedAtSeasonEnd ?? false)
-                && !($pendingTeamSwitchOffer ?? null);
-        @endphp
+        {{-- For Pro Manager games, Continue routes to /season-offers      --}}
+        {{-- where the user picks a team (or stays); the closing pipeline  --}}
+        {{-- only kicks in after that decision. Non-pro games dispatch the --}}
+        {{-- pipeline immediately from StartNewSeason.                     --}}
 
         <div class="flex flex-col sm:flex-row items-center justify-center gap-3 py-6 md:py-10">
             <x-secondary-button
@@ -754,18 +665,12 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
                 <span class="ml-1.5">{{ __('season.download_season') }}</span>
             </x-secondary-button>
-            @if($proStartBlocked)
-                <div class="text-sm text-text-secondary italic text-center max-w-sm">
-                    {{ __('manager.must_accept_offer_to_continue') }}
-                </div>
-            @else
-                <form method="post" action="{{ route('game.start-new-season', $game->id) }}" x-data="{ loading: false }" @submit="loading = true">
-                    @csrf
-                    <x-primary-button-spin color="red" class="px-8 py-4 text-lg font-bold">
-                        {{ __('season.start_new_season', ['season' => \App\Models\Game::formatSeason((string)((int)$game->season + 1))]) }}
-                    </x-primary-button-spin>
-                </form>
-            @endif
+            <form method="post" action="{{ route('game.start-new-season', $game->id) }}" x-data="{ loading: false }" @submit="loading = true">
+                @csrf
+                <x-primary-button-spin color="red" class="px-8 py-4 text-lg font-bold">
+                    {{ __('season.start_new_season', ['season' => \App\Models\Game::formatSeason((string)((int)$game->season + 1))]) }}
+                </x-primary-button-spin>
+            </form>
         </div>
 
     </div>

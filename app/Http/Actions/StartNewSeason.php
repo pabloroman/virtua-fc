@@ -4,6 +4,7 @@ namespace App\Http\Actions;
 
 use App\Modules\Competition\Enums\PlayoffState;
 use App\Modules\Competition\Playoffs\PlayoffGeneratorFactory;
+use App\Modules\Manager\Services\JobOfferService;
 use App\Modules\Match\Services\MatchFinalizationService;
 use App\Modules\Season\Jobs\ProcessSeasonTransition;
 use App\Models\Game;
@@ -13,6 +14,7 @@ class StartNewSeason
     public function __construct(
         private readonly PlayoffGeneratorFactory $playoffFactory,
         private readonly MatchFinalizationService $finalizationService,
+        private readonly JobOfferService $jobOfferService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -45,12 +47,15 @@ class StartNewSeason
             }
         }
 
-        // Pro-manager guard: a fired manager cannot start the next season
-        // until they have accepted one of the post-firing offers. Without
-        // this they could bypass the whole hiring loop by hitting the CTA.
-        if ($game->isProManagerMode() && $game->fired_at_season_end && !$game->pending_team_switch) {
-            return redirect()->route('game.season-end', $gameId)
-                ->with('error', __('manager.must_accept_offer_to_continue'));
+        // Pro-manager router: between seasons the user picks a team (or
+        // stays) on /season-offers, and that choice is what triggers the
+        // closing pipeline. Generate the offers on first visit; once the
+        // user has resolved them (accepted one or declined all), fall
+        // through to the pipeline-dispatch block below — Accept and Decline
+        // both re-enter this action.
+        if ($game->isProManagerMode() && !$this->jobOfferService->hasResolvedOffersFor($game)) {
+            $this->jobOfferService->ensureEndOfSeasonOffersGenerated($game);
+            return redirect()->route('game.season-offers', $gameId);
         }
 
         // Atomic check-and-set: only one request can win the race

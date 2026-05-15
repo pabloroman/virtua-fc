@@ -113,6 +113,7 @@ use App\Http\Views\ExplorePoolTeams;
 use App\Http\Views\ExploreFreeAgents;
 use App\Http\Views\ExploreSquad;
 use App\Http\Views\ShowSeasonEnd;
+use App\Http\Views\ShowSeasonOffers;
 use App\Http\Views\ShowTournamentEnd;
 use App\Http\Actions\DismissAcademyPlayer;
 use App\Http\Actions\LoanAcademyPlayer;
@@ -280,9 +281,15 @@ Route::middleware('auth')->group(function () {
         Route::get('/game/{gameId}/season-end', ShowSeasonEnd::class)->name('game.season-end');
         Route::post('/game/{gameId}/start-new-season', StartNewSeason::class)->name('game.start-new-season');
 
-        // Pro-manager end-of-season offer handling. Accepting stages the
-        // team-switch (applied by ApplyPendingTeamSwitchProcessor on the
-        // next SeasonSetupPipeline run); declining is blocked when fired.
+        // Pro-manager between-seasons decision screen. Continue on
+        // /season-end routes here when the user has unresolved offers; the
+        // Accept/Decline actions below re-enter StartNewSeason to kick off
+        // the closing pipeline.
+        Route::get('/game/{gameId}/season-offers', ShowSeasonOffers::class)->name('game.season-offers');
+
+        // Accepting stages the team-switch (applied by
+        // ApplyPendingTeamSwitchProcessor on the next SeasonSetupPipeline
+        // run); declining is blocked when fired.
         Route::post('/game/{gameId}/job-offers/{offerId}/accept', \App\Http\Actions\AcceptSeasonOffer::class)
             ->name('game.job-offers.accept');
         Route::post('/game/{gameId}/job-offers/decline', \App\Http\Actions\DeclineSeasonOffers::class)

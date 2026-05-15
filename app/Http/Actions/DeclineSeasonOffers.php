@@ -33,7 +33,9 @@ class DeclineSeasonOffers
 
         $game->update(['pending_team_switch' => null]);
 
-        return redirect()->route('game.season-end', $game->id)
-            ->with('status', __('manager.offers_declined_flash'));
+        // Staying is also a resolution — kick off the closing pipeline by
+        // re-entering StartNewSeason. The pro-manager router sees no
+        // pending offers and falls through to dispatch.
+        return app(StartNewSeason::class)($game->id);
     }
 }

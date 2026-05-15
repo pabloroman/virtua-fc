@@ -95,8 +95,6 @@ class SeasonSummaryService
 
         $simulatedResults = $this->buildSimulatedResults($game->id, $game->season);
 
-        [$jobOffers, $pendingTeamSwitchOffer] = $this->buildProManagerOffers($game);
-
         return [
             'competition' => $competition,
             'standings' => $standings,
@@ -124,22 +122,18 @@ class SeasonSummaryService
             'transferBalance' => $transferBalance,
             'simulatedResults' => $simulatedResults,
             'reputationData' => $reputationData,
-            'jobOffers' => $jobOffers,
-            'pendingTeamSwitchOffer' => $pendingTeamSwitchOffer,
-            'firedAtSeasonEnd' => (bool) $game->fired_at_season_end,
-            'isProManagerMode' => $game->isProManagerMode(),
         ];
     }
 
     /**
-     * Load the pro-manager offers the user needs to act on at the season-end
-     * screen. Returns a [pending list, accepted-pending-switch] tuple; the
-     * accepted offer is broken out so the UI can present a "you've agreed
-     * to move to X" confirmation card.
+     * Load the pro-manager offers the user needs to act on between seasons.
+     * Returns a [pending list, accepted-pending-switch] tuple; the accepted
+     * offer is broken out so the UI can present a "you've agreed to move to
+     * X" confirmation card. Consumed by ShowSeasonOffers.
      *
      * @return array{0: \Illuminate\Support\Collection, 1: ?ManagerJobOffer}
      */
-    private function buildProManagerOffers(Game $game): array
+    public function buildProManagerOffers(Game $game): array
     {
         if (!$game->isProManagerMode()) {
             return [collect(), null];
