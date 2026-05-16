@@ -1134,6 +1134,78 @@ class TransferService
     }
 
     /**
+     * Squad-composition guard for the AI selling side. The seller refuses to
+     * part with the player when doing so would shrink their roster below the
+     * position-group or total minimums.
+     *
+     * Other in-flight commitments from the same club — outgoing offers
+     * already at fee_agreed or agreed — are counted as already-gone so the
+     * user can't drain a position group by stacking parallel negotiations on
+     * several of the seller's players at once (e.g. bidding on every
+     * goalkeeper before any single deal completes).
+     *
+     * @throws \InvalidArgumentException when the sale would breach the
+     *         seller's squad-composition minimum.
+     */
+    private function assertSellerCanPartWith(GamePlayer $player, Game $game): void
+    {
+        $sellingTeamId = $player->team_id;
+        if ($sellingTeamId === null) {
+            return;
+        }
+
+        $committedAwayIds = TransferOffer::where('game_id', $game->id)
+            ->where('selling_team_id', $sellingTeamId)
+            ->where('direction', TransferOffer::DIRECTION_INCOMING)
+            ->whereIn('offer_type', [
+                TransferOffer::TYPE_USER_BID,
+                TransferOffer::TYPE_LISTED,
+                TransferOffer::TYPE_UNSOLICITED,
+            ])
+            ->whereIn('status', [
+                TransferOffer::STATUS_FEE_AGREED,
+                TransferOffer::STATUS_AGREED,
+            ])
+            ->where('game_player_id', '!=', $player->id)
+            ->pluck('game_player_id')
+            ->all();
+
+        $remainingSquad = GamePlayer::where('game_id', $game->id)
+            ->where('team_id', $sellingTeamId)
+            ->when($committedAwayIds, fn ($q) => $q->whereNotIn('id', $committedAwayIds))
+            ->get();
+
+        // Selling this player would drop the totals by one
+        if (($remainingSquad->count() - 1) < SquadMinimumService::MIN_SQUAD_SIZE) {
+            throw new \InvalidArgumentException(
+                __('transfers.club_refuses_squad_minimum', [
+                    'team' => $player->team?->name ?? '',
+                    'player' => $player->name,
+                ])
+            );
+        }
+
+        $positionGroup = $player->position_group;
+        $groupMinimum = SquadMinimumService::POSITION_GROUP_MINIMUMS[$positionGroup] ?? 0;
+        if ($groupMinimum === 0) {
+            return;
+        }
+
+        $groupCount = $remainingSquad
+            ->filter(fn (GamePlayer $p) => $p->position_group === $positionGroup)
+            ->count();
+
+        if (($groupCount - 1) < $groupMinimum) {
+            throw new \InvalidArgumentException(
+                __('transfers.club_refuses_squad_minimum', [
+                    'team' => $player->team?->name ?? '',
+                    'player' => $player->name,
+                ])
+            );
+        }
+    }
+
+    /**
      * Players with an active loan are not available for transfer offers — the
      * parent club retains authority and the loan team isn't free to sell. The
      * UI hides the bid action, but the service guards the same rule so a
@@ -1228,6 +1300,8 @@ class TransferService
         if ($this->playerHasActiveLoan($player)) {
             throw new \InvalidArgumentException(__('transfers.player_on_loan_unavailable'));
         }
+
+        $this->assertSellerCanPartWith($player, $game);
 
         // Check for existing countered offer to resume
         $existing = TransferOffer::where('game_id', $game->id)
@@ -1328,6 +1402,11 @@ class TransferService
         if ($counterAmount > $available) {
             throw new \InvalidArgumentException(__('messages.bid_exceeds_budget'));
         }
+
+        // Re-check at the binding moment: another parallel negotiation could
+        // have driven the seller below their minimum since this counter was
+        // tabled, in which case they can no longer commit to selling.
+        $this->assertSellerCanPartWith($offer->gamePlayer, $game);
 
         $offer->update([
             'transfer_fee' => $counterAmount,

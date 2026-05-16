@@ -133,6 +133,7 @@ return [
     'already_bidding' => 'Ya tienes una oferta por este jugador',
     'player_on_loan_unavailable' => 'Este jugador está cedido y no se puede fichar.',
     'cannot_target_own_player' => 'Este jugador ya pertenece a tu club.',
+    'club_refuses_squad_minimum' => ':team no quiere vender a :player: la plantilla quedaría por debajo del mínimo en esa demarcación.',
     'pre_contract_player_not_interested' => ':player no está interesado en fichar por un club de nuestra categoría.',
     'negotiation_cooldown' => 'Las negociaciones con este jugador se rompieron recientemente. Espera a la siguiente jornada para intentarlo de nuevo.',
     'negotiation_cooldown_short' => 'Espera a la próxima jornada',

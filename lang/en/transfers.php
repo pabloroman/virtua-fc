@@ -132,6 +132,7 @@ return [
     'already_bidding' => 'You already have a bid for this player',
     'player_on_loan_unavailable' => 'This player is currently on loan and cannot be transferred.',
     'cannot_target_own_player' => 'This player already belongs to your club.',
+    'club_refuses_squad_minimum' => ":team won't sell :player — selling would leave their squad below the minimum in that position.",
     'pre_contract_player_not_interested' => ":player isn't interested in signing for a club at our level.",
     'negotiation_cooldown' => 'Negotiations with this player broke down recently. Wait until the next matchday to try again.',
     'negotiation_cooldown_short' => 'Wait until next matchday',
