@@ -20,22 +20,34 @@ return new class extends Migration
         // across planes (see CLAUDE.md → "Control plane / tenant plane").
         $gameIds = ManagerStats::query()
             ->whereNotNull('game_id')
-            ->pluck('game_id')
-            ->unique()
-            ->values();
+            ->distinct()
+            ->pluck('game_id');
 
         if ($gameIds->isEmpty()) {
             return;
         }
 
-        $modesByGame = Game::query()
-            ->whereIn('id', $gameIds)
-            ->pluck('game_mode', 'id');
+        // Group game ids by mode so we issue one UPDATE per mode instead of
+        // one per game. Only ~3 modes exist, so this collapses N round-trips
+        // into a small constant.
+        $idsByMode = [];
+        foreach ($gameIds->chunk(5000) as $chunk) {
+            Game::query()
+                ->whereIn('id', $chunk)
+                ->select(['id', 'game_mode'])
+                ->toBase()
+                ->orderBy('id')
+                ->each(function ($row) use (&$idsByMode) {
+                    $idsByMode[$row->game_mode][] = $row->id;
+                });
+        }
 
-        foreach ($modesByGame as $gameId => $mode) {
-            ManagerStats::query()
-                ->where('game_id', $gameId)
-                ->update(['game_mode' => $mode]);
+        foreach ($idsByMode as $mode => $ids) {
+            foreach (array_chunk($ids, 5000) as $idChunk) {
+                ManagerStats::query()
+                    ->whereIn('game_id', $idChunk)
+                    ->update(['game_mode' => $mode]);
+            }
         }
     }
 
