@@ -17,10 +17,11 @@ use Tests\TestCase;
 /**
  * Regression coverage for the goalkeeper-drain exploit: a user could sign
  * every one of a rival's goalkeepers because TransferService never asked
- * whether the AI seller could legitimately part with the player. The same
- * SquadMinimumService guard that protects the user's roster now applies to
- * the AI side too, both for a single bid and for parallel negotiations
- * stacked across several of the seller's players in the same position.
+ * whether the AI seller could legitimately part with the player. A
+ * seller-side guard now refuses sales that would drop the AI more than one
+ * player short of the normal floors — so a rival can be raided down to a
+ * lone keeper, but the user can never strip a position bare, even by
+ * stacking parallel negotiations on multiple of the seller's players.
  */
 class SellerSquadMinimumGuardTest extends TestCase
 {
@@ -64,25 +65,26 @@ class SellerSquadMinimumGuardTest extends TestCase
         ]);
     }
 
-    public function test_seller_refuses_bid_that_would_breach_position_minimum(): void
+    public function test_seller_refuses_bid_that_would_empty_a_position(): void
     {
-        // AI exactly at the goalkeeper floor (2). Pad other positions so the
-        // refusal is unambiguously about the position-group minimum.
-        $this->fillSquad($this->aiTeam, goalkeepers: 2);
+        // AI down to its last keeper — selling it would leave them with no
+        // goalkeeper at all, which is the absolute floor the guard protects.
+        $this->fillSquad($this->aiTeam, goalkeepers: 1);
         $targetGk = $this->aiTeamGoalkeepers()->first();
 
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('AI Team');
 
         $this->transferService->negotiateTransferFeeSync(
-            $this->game, $targetGk, 100_000_000_00, $this->scoutingService,
+            $this->game, $targetGk, 500_000_000_00, $this->scoutingService,
         );
     }
 
-    public function test_seller_accepts_bid_when_squad_stays_above_minimum(): void
+    public function test_seller_accepts_bid_that_dips_one_player_short(): void
     {
-        // AI has one extra GK beyond the floor — selling one keeps them at 2.
-        $this->fillSquad($this->aiTeam, goalkeepers: 3);
+        // AI sitting at the global floor of 2 keepers: the leniency lets a
+        // third-party bid take them down to 1.
+        $this->fillSquad($this->aiTeam, goalkeepers: 2);
         $targetGk = $this->aiTeamGoalkeepers()->first();
 
         $result = $this->transferService->negotiateTransferFeeSync(
@@ -90,14 +92,15 @@ class SellerSquadMinimumGuardTest extends TestCase
         );
 
         $this->assertContains($result['result'], ['accepted', 'countered'],
-            'A bid that leaves the seller above the floor must reach the AI for evaluation.');
+            'A bid that leaves the seller one short of the global floor must still reach the AI.');
     }
 
     public function test_parallel_bids_cannot_drain_a_position_below_minimum(): void
     {
-        // AI has 3 GKs. First sale is allowed (3 → 2). The second bid must
-        // be refused because the first commitment is already in flight.
-        $this->fillSquad($this->aiTeam, goalkeepers: 3);
+        // AI has 2 GKs. The first commitment is already in flight (FEE_AGREED),
+        // so the second bid must be refused — otherwise the user could strip
+        // the position bare via two parallel negotiations.
+        $this->fillSquad($this->aiTeam, goalkeepers: 2);
         $goalkeepers = $this->aiTeamGoalkeepers();
         [$gk1, $gk2] = [$goalkeepers->get(0), $goalkeepers->get(1)];
 
@@ -125,10 +128,10 @@ class SellerSquadMinimumGuardTest extends TestCase
 
     public function test_seller_still_allows_bids_on_unrestricted_positions(): void
     {
-        // AI is at the goalkeeper floor, but the bid is on a forward whose
+        // AI is at its last keeper, but the bid is on a forward whose
         // position group has plenty of depth. The guard must scope to the
         // affected position group.
-        $this->fillSquad($this->aiTeam, goalkeepers: 2);
+        $this->fillSquad($this->aiTeam, goalkeepers: 1);
         $targetForward = GamePlayer::where('game_id', $this->game->id)
             ->where('team_id', $this->aiTeam->id)
             ->where('position', 'Centre-Forward')
@@ -151,19 +154,20 @@ class SellerSquadMinimumGuardTest extends TestCase
     }
 
     /**
-     * Build a roster that sits one above SquadMinimumService::MIN_SQUAD_SIZE
-     * (20) and one above each per-position floor (except goalkeepers, which
-     * each test sets explicitly). That way a single sale never trips the
-     * total-squad guard and the tests' assertions isolate the position-group
-     * guard cleanly.
+     * Build a roster that sits above the seller-side tolerant floors so a
+     * single sale never trips the total-squad or non-goalkeeper position
+     * guards: total stays >= MIN_SQUAD_SIZE - 1 (19) post-sale, and each
+     * non-GK group stays one above its tolerant floor. That keeps each
+     * test's assertion focused on the goalkeeper floor, set explicitly via
+     * the $goalkeepers argument.
      */
     private function fillSquad(Team $team, int $goalkeepers): void
     {
         $positions = [
             ['Goalkeeper', $goalkeepers],
-            ['Centre-Back', 7],     // Defender floor 6
-            ['Central Midfield', 7], // Midfielder floor 6
-            ['Centre-Forward', 5],   // Forward floor 4
+            ['Centre-Back', 7],      // Defender tolerant floor 5
+            ['Central Midfield', 7], // Midfielder tolerant floor 5
+            ['Centre-Forward', 5],   // Forward tolerant floor 3
         ];
 
         foreach ($positions as [$position, $count]) {

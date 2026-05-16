@@ -1135,8 +1135,15 @@ class TransferService
 
     /**
      * Squad-composition guard for the AI selling side. The seller refuses to
-     * part with the player when doing so would shrink their roster below the
-     * position-group or total minimums.
+     * part with the player when doing so would shrink their roster more than
+     * one player short of the normal floors.
+     *
+     * The leniency is intentional and scoped to this code path: when a third
+     * party (the user) tables an attractive bid, the AI accepts a one-player
+     * dip below the global SquadMinimumService floor in exchange for the
+     * windfall. So the user can raid depth — taking a rival from 2 keepers
+     * to 1 — but never strip a position bare. The global rule still binds
+     * the seller's own listings, releases, and squad management.
      *
      * Other in-flight commitments from the same club — outgoing offers
      * already at fee_agreed or agreed — are counted as already-gone so the
@@ -1145,7 +1152,7 @@ class TransferService
      * goalkeeper before any single deal completes).
      *
      * @throws \InvalidArgumentException when the sale would breach the
-     *         seller's squad-composition minimum.
+     *         seller's tolerated squad-composition minimum.
      */
     private function assertSellerCanPartWith(GamePlayer $player, Game $game): void
     {
@@ -1175,8 +1182,12 @@ class TransferService
             ->when($committedAwayIds, fn ($q) => $q->whereNotIn('id', $committedAwayIds))
             ->get();
 
+        // Seller-side leniency: allow the AI to dip one player short of the
+        // normal floors in this code path only.
+        $tolerantSquadMin = SquadMinimumService::MIN_SQUAD_SIZE - 1;
+
         // Selling this player would drop the totals by one
-        if (($remainingSquad->count() - 1) < SquadMinimumService::MIN_SQUAD_SIZE) {
+        if (($remainingSquad->count() - 1) < $tolerantSquadMin) {
             throw new \InvalidArgumentException(
                 __('transfers.club_refuses_squad_minimum', [
                     'team' => $player->team?->name ?? '',
@@ -1191,11 +1202,12 @@ class TransferService
             return;
         }
 
+        $tolerantGroupMin = $groupMinimum - 1;
         $groupCount = $remainingSquad
             ->filter(fn (GamePlayer $p) => $p->position_group === $positionGroup)
             ->count();
 
-        if (($groupCount - 1) < $groupMinimum) {
+        if (($groupCount - 1) < $tolerantGroupMin) {
             throw new \InvalidArgumentException(
                 __('transfers.club_refuses_squad_minimum', [
                     'team' => $player->team?->name ?? '',
