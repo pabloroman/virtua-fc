@@ -388,7 +388,7 @@ return [
     |
     */
     'goalkeeper' => [
-        'missing_gk_xg_penalty' => 0.25,   // opponent xG multiplied by (1 + this) when no natural GK
+        'missing_gk_xg_penalty' => 1.0,    // opponent xG multiplied by (1 + this) when no natural GK
     ],
 
     /*
