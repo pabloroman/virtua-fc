@@ -154,6 +154,18 @@ class ShowNewSeason
             return null;
         }
 
+        // Pro-manager team switch: the archive only stores stats for the team
+        // the user was managing last season. After a switch, $game->team_id is
+        // the new club, so a departures/arrivals diff against the archive is
+        // meaningless (every current player looks like an arrival). Skip.
+        $archivedTeamIds = collect($archive->player_season_stats ?? [])
+            ->pluck('team_id')
+            ->unique();
+
+        if ($archivedTeamIds->isNotEmpty() && !$archivedTeamIds->contains($game->team_id)) {
+            return null;
+        }
+
         // Get player IDs from previous season's archived stats for the user's team
         $previousPlayerIds = collect($archive->player_season_stats ?? [])
             ->where('team_id', $game->team_id)
