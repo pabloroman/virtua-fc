@@ -66,8 +66,10 @@ class ApplyPendingTeamSwitchProcessor implements SeasonProcessor
         $newSeason = $data->newSeason;
         $oldSeason = $data->oldSeason;
 
-        DB::transaction(function () use ($game, $newTeam, $newCompetitionId, $newCountry, $newSeason, $oldSeason) {
-            $this->closeOutgoingTenure($game, $oldSeason);
+        $wasFired = $offer->offer_type === ManagerJobOffer::TYPE_POST_FIRING;
+
+        DB::transaction(function () use ($game, $newTeam, $newCompetitionId, $newCountry, $newSeason, $oldSeason, $wasFired) {
+            $this->closeOutgoingTenure($game, $oldSeason, $wasFired);
             $this->openNewTenure($game, $newTeam->id, $newCompetitionId, $newSeason);
 
             if ($newCountry !== $game->country) {
@@ -88,7 +90,6 @@ class ApplyPendingTeamSwitchProcessor implements SeasonProcessor
                 'competition_id' => $newCompetitionId,
                 'country' => $newCountry,
                 'pending_team_switch' => null,
-                'fired_at_season_end' => false,
                 'season_goal' => null,
             ]);
         });
@@ -100,7 +101,7 @@ class ApplyPendingTeamSwitchProcessor implements SeasonProcessor
         return $data;
     }
 
-    private function closeOutgoingTenure(Game $game, string $oldSeason): void
+    private function closeOutgoingTenure(Game $game, string $oldSeason, bool $wasFired): void
     {
         $tenure = ManagerJobHistory::where('game_id', $game->id)
             ->where('team_id', $game->team_id)
@@ -108,7 +109,7 @@ class ApplyPendingTeamSwitchProcessor implements SeasonProcessor
             ->orderByDesc('season_start')
             ->first();
 
-        $endReason = $game->fired_at_season_end
+        $endReason = $wasFired
             ? ManagerJobHistory::REASON_FIRED
             : ManagerJobHistory::REASON_LEFT_VOLUNTARILY;
 

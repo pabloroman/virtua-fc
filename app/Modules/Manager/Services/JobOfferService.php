@@ -47,6 +47,9 @@ class JobOfferService
      */
     private const MAX_LEAGUE_TIER = 3;
 
+    /** @var array<int, array<int, string>> */
+    private array $tierCompetitionIdsCache = [];
+
     public function __construct(
         private readonly CountryConfig $countryConfig,
         private readonly SeasonGoalService $seasonGoalService,
@@ -88,11 +91,8 @@ class JobOfferService
         $game->update(['season_offers_generated_for' => $game->season]);
 
         if ($offers->isNotEmpty()) {
-            // refresh() so the fired_at_season_end flag (just persisted by
-            // generateEndOfSeasonOffers for disasters) is visible to the
-            // notifier.
             $this->notificationService->notifyJobOfferReceived(
-                $game->refresh(),
+                $game,
                 $offers->count(),
                 $grade === 'disaster',
             );
@@ -146,37 +146,10 @@ class JobOfferService
         $evaluation = $this->seasonGoalService->evaluatePerformance(
             $game,
             $playerStanding->position ?? 20,
-            $this->wasPromoted($game),
+            $this->promotionRelegationFactory->wasTeamPromoted($game),
         );
 
         return $evaluation['grade'] ?? 'met';
-    }
-
-    private function wasPromoted(Game $game): bool
-    {
-        $competition = Competition::find($game->competition_id);
-        if (!$competition) {
-            return false;
-        }
-
-        $rule = $this->promotionRelegationFactory->forCompetition($competition->id);
-        if (!$rule) {
-            return false;
-        }
-
-        try {
-            $promoted = $rule->getPromotedTeams($game);
-        } catch (\Throwable) {
-            return false;
-        }
-
-        foreach ($promoted as $entry) {
-            if (($entry['teamId'] ?? null) === $game->team_id) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -219,8 +192,8 @@ class JobOfferService
      * manager's performance grade and current club reputation.
      *
      * Returns the new offers (empty when the manager has merely survived
-     * with no extra interest). Sets Game.fired_at_season_end = true when
-     * the season was a disaster.
+     * with no extra interest). A 'disaster' grade emits POST_FIRING offers
+     * — the presence of those rows is what Game::wasFiredThisSeason() reads.
      *
      * @return Collection<int, ManagerJobOffer>
      */
@@ -245,10 +218,6 @@ class JobOfferService
             'disaster' => [['shift' => -1, 'count' => self::POST_FIRING_OFFER_COUNT]],
             default => [],
         };
-
-        if ($grade === 'disaster') {
-            $game->update(['fired_at_season_end' => true]);
-        }
 
         if (empty($plan)) {
             return collect();
@@ -490,13 +459,18 @@ class JobOfferService
      */
     private function competitionIdsAtTier(int $tier): array
     {
+        if (isset($this->tierCompetitionIdsCache[$tier])) {
+            return $this->tierCompetitionIdsCache[$tier];
+        }
+
         $ids = [];
         foreach ($this->countryConfig->playableCountryCodes() as $code) {
             foreach ($this->countryConfig->tierCompetitionIds($code, $tier) as $id) {
                 $ids[] = $id;
             }
         }
-        return array_values(array_unique($ids));
+
+        return $this->tierCompetitionIdsCache[$tier] = array_values(array_unique($ids));
     }
 
     /**

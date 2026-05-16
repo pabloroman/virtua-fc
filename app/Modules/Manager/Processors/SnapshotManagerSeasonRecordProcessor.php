@@ -2,7 +2,6 @@
 
 namespace App\Modules\Manager\Processors;
 
-use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GameStanding;
 use App\Models\ManagerSeasonRecord;
@@ -19,8 +18,9 @@ use App\Modules\Season\Services\SeasonGoalService;
  *
  * Runs in the closing pipeline at priority 20: after TrophyRecording (10)
  * and LeaderboardStats (15), before SeasonArchive (25) — at this point
- * the final standings, $game->season_goal, fired_at_season_end, and
- * pending_team_switch all still describe the season we're closing.
+ * the final standings, $game->season_goal, the season's POST_FIRING offer
+ * rows (read via Game::wasFiredThisSeason), and pending_team_switch all
+ * still describe the season we're closing.
  *
  * Idempotent on (game_id, user_id, season). Skips non-pro-manager games.
  */
@@ -49,11 +49,10 @@ class SnapshotManagerSeasonRecordProcessor implements SeasonProcessor
 
         $finalPosition = $standing?->position;
 
-        $promoted = $this->wasPromoted($game);
         $evaluation = $this->seasonGoalService->evaluatePerformance(
             $game,
             $finalPosition ?? 20,
-            $promoted,
+            $this->promotionRelegationFactory->wasTeamPromoted($game),
         );
 
         ManagerSeasonRecord::updateOrCreate(
@@ -80,7 +79,7 @@ class SnapshotManagerSeasonRecordProcessor implements SeasonProcessor
 
     private function resolveEndReason(Game $game): string
     {
-        if ($game->fired_at_season_end) {
+        if ($game->wasFiredThisSeason()) {
             return ManagerSeasonRecord::END_REASON_FIRED;
         }
 
@@ -89,32 +88,5 @@ class SnapshotManagerSeasonRecordProcessor implements SeasonProcessor
         }
 
         return ManagerSeasonRecord::END_REASON_STILL_ACTIVE;
-    }
-
-    private function wasPromoted(Game $game): bool
-    {
-        $competition = Competition::find($game->competition_id);
-        if (!$competition) {
-            return false;
-        }
-
-        $rule = $this->promotionRelegationFactory->forCompetition($competition->id);
-        if (!$rule) {
-            return false;
-        }
-
-        try {
-            $promoted = $rule->getPromotedTeams($game);
-        } catch (\Throwable) {
-            return false;
-        }
-
-        foreach ($promoted as $entry) {
-            if (($entry['teamId'] ?? null) === $game->team_id) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

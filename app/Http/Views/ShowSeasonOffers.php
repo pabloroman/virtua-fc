@@ -3,13 +3,11 @@
 namespace App\Http\Views;
 
 use App\Models\Game;
-use App\Models\GameStanding;
 use App\Modules\Competition\Enums\PlayoffState;
 use App\Modules\Competition\Playoffs\PlayoffGeneratorFactory;
 use App\Modules\Manager\Services\JobOfferService;
 use App\Modules\Match\Services\MatchFinalizationService;
 use App\Modules\Report\Services\SeasonSummaryService;
-use App\Modules\Season\Services\SeasonGoalService;
 
 /**
  * Renders the pro-manager between-seasons decision screen: pending job
@@ -29,7 +27,6 @@ class ShowSeasonOffers
         private readonly JobOfferService $jobOfferService,
         private readonly MatchFinalizationService $finalizationService,
         private readonly PlayoffGeneratorFactory $playoffFactory,
-        private readonly SeasonGoalService $seasonGoalService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -65,79 +62,16 @@ class ShowSeasonOffers
 
         $this->jobOfferService->ensureEndOfSeasonOffersGenerated($game);
 
-        // The generator may flip fired_at_season_end — refresh so the
-        // view sees it.
-        $game->refresh();
-
         [$jobOffers, $pendingTeamSwitchOffer] = $this->seasonSummaryService->buildProManagerOffers($game);
-
-        $positionsByOfferId = $this->loadLastSeasonPositions($game, $jobOffers);
-        $goalLabelsByOfferId = $this->resolveSeasonGoals($jobOffers);
 
         return view('season-offers', [
             'game' => $game,
             'jobOffers' => $jobOffers,
             'pendingTeamSwitchOffer' => $pendingTeamSwitchOffer,
-            'firedAtSeasonEnd' => (bool) $game->fired_at_season_end,
-            'positionsByOfferId' => $positionsByOfferId,
-            'goalLabelsByOfferId' => $goalLabelsByOfferId,
+            'firedAtSeasonEnd' => $game->wasFiredThisSeason(),
+            'positionsByOfferId' => $this->seasonSummaryService->lastSeasonPositionsByOfferId($game, $jobOffers),
+            'goalLabelsByOfferId' => $this->seasonSummaryService->seasonGoalLabelsByOfferId($jobOffers),
+            'nextSeasonLabel' => Game::formatSeason((string) ((int) $game->season + 1)),
         ]);
-    }
-
-    /**
-     * Resolve the season-goal label each offering club would set if the
-     * manager takes the job: based on the club's reputation level in its
-     * league config. Returns null for competitions without a HasSeasonGoals
-     * config (cups, etc.) so the card can hide the line.
-     *
-     * @return array<string, string|null>
-     */
-    private function resolveSeasonGoals(\Illuminate\Support\Collection $offers): array
-    {
-        $result = [];
-        foreach ($offers as $offer) {
-            $team = $offer->team;
-            $competition = $offer->competition;
-            if (!$team || !$competition) {
-                $result[$offer->id] = null;
-                continue;
-            }
-            $goal = $this->seasonGoalService->determineGoalForTeam($team, $competition);
-            $result[$offer->id] = __($this->seasonGoalService->getGoalLabel($goal, $competition));
-        }
-        return $result;
-    }
-
-    /**
-     * Resolve each offer's "last season finishing position" by reading the
-     * tenant-side GameStanding rows still holding the just-ended season's
-     * values. Returns a map keyed by offer.id; null entries mean we have
-     * no published position to show (e.g. foreign league that hasn't been
-     * finalized yet because the closing pipeline runs after Accept/Decline).
-     *
-     * @return array<string, int|null>
-     */
-    private function loadLastSeasonPositions(Game $game, \Illuminate\Support\Collection $offers): array
-    {
-        $teamIds = $offers->pluck('team_id')->unique()->values()->all();
-        $competitionIds = $offers->pluck('competition_id')->filter()->unique()->values()->all();
-
-        if (empty($teamIds) || empty($competitionIds)) {
-            return [];
-        }
-
-        $standings = GameStanding::where('game_id', $game->id)
-            ->whereIn('team_id', $teamIds)
-            ->whereIn('competition_id', $competitionIds)
-            ->where('played', '>', 0)
-            ->get(['team_id', 'competition_id', 'position'])
-            ->keyBy(fn ($s) => $s->team_id . ':' . $s->competition_id);
-
-        $result = [];
-        foreach ($offers as $offer) {
-            $key = $offer->team_id . ':' . $offer->competition_id;
-            $result[$offer->id] = $standings->get($key)?->position;
-        }
-        return $result;
     }
 }

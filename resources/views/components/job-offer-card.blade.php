@@ -23,7 +23,7 @@
     {{-- Header: crest + team name + competition --}}
     <div class="px-5 pt-5 pb-4 flex items-start gap-4">
         @if($team)
-            <div class="shrink-0 w-14 h-14 flex items-center justify-center bg-surface-800 rounded-lg overflow-hidden">
+            <div class="shrink-0 w-14 h-14 flex items-center justify-center bg-surface-600 rounded-lg overflow-hidden">
                 <x-team-crest :team="$team" class="w-12 h-12 object-contain" />
             </div>
         @endif

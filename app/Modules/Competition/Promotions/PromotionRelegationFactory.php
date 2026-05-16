@@ -2,6 +2,7 @@
 
 namespace App\Modules\Competition\Promotions;
 
+use App\Models\Game;
 use App\Modules\Competition\Contracts\PromotionRelegationRule;
 use App\Modules\Competition\Playoffs\PlayoffGeneratorFactory;
 use App\Modules\Competition\Services\CountryConfig;
@@ -59,6 +60,36 @@ class PromotionRelegationFactory
         }
 
         return null;
+    }
+
+    /**
+     * Did $teamId (defaulting to the game's managed team) get promoted out
+     * of its current competition this season? Swallows playoff/runtime errors
+     * because callers (offer generation, season snapshot) treat them as
+     * "not promoted" rather than failing the surrounding flow.
+     */
+    public function wasTeamPromoted(Game $game, ?string $teamId = null): bool
+    {
+        $rule = $this->forCompetition($game->competition_id);
+        if (!$rule) {
+            return false;
+        }
+
+        try {
+            $promoted = $rule->getPromotedTeams($game);
+        } catch (\Throwable) {
+            return false;
+        }
+
+        $target = $teamId ?? $game->team_id;
+
+        foreach ($promoted as $entry) {
+            if (($entry['teamId'] ?? null) === $target) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

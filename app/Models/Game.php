@@ -135,7 +135,6 @@ class Game extends Model
         'matchday_advance_result',
         'deleting_at',
         'pending_team_switch',
-        'fired_at_season_end',
         'season_offers_generated_for',
     ];
 
@@ -156,7 +155,6 @@ class Game extends Model
         'matchday_advancing_at' => 'datetime',
         'matchday_advance_result' => 'array',
         'deleting_at' => 'datetime',
-        'fired_at_season_end' => 'boolean',
     ];
 
     // ==========================================
@@ -367,6 +365,25 @@ class Game extends Model
         }
 
         return $this->team;
+    }
+
+    /**
+     * Was the manager fired at the end of the current $game->season? Derived
+     * from the existence of a post-firing offer row for this season: the only
+     * code path that creates such offers is JobOfferService for grade=disaster.
+     *
+     * Must be called while $game->season still points at the season whose
+     * firing outcome we care about — the closing pipeline runs first (so
+     * SnapshotManagerSeasonRecordProcessor sees the old season), then the
+     * season is advanced, then the setup pipeline runs. Setup-time callers
+     * should read offer_type off the accepted offer instead.
+     */
+    public function wasFiredThisSeason(): bool
+    {
+        return ManagerJobOffer::where('game_id', $this->id)
+            ->where('season', $this->season)
+            ->where('offer_type', ManagerJobOffer::TYPE_POST_FIRING)
+            ->exists();
     }
 
     public function reserveTeam(): BelongsTo

@@ -22,7 +22,7 @@ class DeclineSeasonOffers
 
         abort_unless($game->isProManagerMode(), 404);
 
-        if ($game->fired_at_season_end) {
+        if ($game->wasFiredThisSeason()) {
             return back()->withErrors(['decline' => __('manager.cannot_decline_after_firing')]);
         }
 

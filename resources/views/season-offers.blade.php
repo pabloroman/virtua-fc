@@ -3,11 +3,9 @@
 /** @var \Illuminate\Support\Collection $jobOffers */
 /** @var \App\Models\ManagerJobOffer|null $pendingTeamSwitchOffer */
 /** @var bool $firedAtSeasonEnd */
-
-$fired = $firedAtSeasonEnd;
+/** @var string $nextSeasonLabel */
 $hasAccepted = (bool) $pendingTeamSwitchOffer;
 $hasPending = $jobOffers->isNotEmpty();
-$nextSeasonLabel = \App\Models\Game::formatSeason((string) ((int) $game->season + 1));
 @endphp
 
 <x-app-layout :hide-footer="true">
@@ -16,7 +14,7 @@ $nextSeasonLabel = \App\Models\Game::formatSeason((string) ((int) $game->season 
 
             <header class="text-center mb-8">
                 <h1 class="font-heading text-2xl md:text-3xl font-bold text-text-primary uppercase tracking-wide">
-                    {{ __($fired ? 'manager.post_firing_offers_title' : 'manager.season_offers_title') }}
+                    {{ __($firedAtSeasonEnd ? 'manager.post_firing_offers_title' : 'manager.season_offers_title') }}
                 </h1>
             </header>
 
@@ -33,7 +31,7 @@ $nextSeasonLabel = \App\Models\Game::formatSeason((string) ((int) $game->season 
                         </svg>
                     </x-slot:icon>
                 </x-status-banner>
-            @elseif($fired)
+            @elseif($firedAtSeasonEnd)
                 <x-status-banner
                     color="red"
                     :title="__('manager.dismissed_banner_title', ['team_el' => $game->team->nameWithEl()])"
@@ -96,7 +94,7 @@ $nextSeasonLabel = \App\Models\Game::formatSeason((string) ((int) $game->season 
                     </div>
                 </x-section-card>
             @elseif($hasPending)
-                <x-section-card :title="__($fired ? 'manager.post_firing_offers_title' : 'manager.season_offers_title')" class="mb-6">
+                <x-section-card :title="__($firedAtSeasonEnd ? 'manager.post_firing_offers_title' : 'manager.season_offers_title')" class="mb-6">
                     <div class="p-5">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             @foreach($jobOffers as $offer)
@@ -110,7 +108,7 @@ $nextSeasonLabel = \App\Models\Game::formatSeason((string) ((int) $game->season 
                             @endforeach
                         </div>
 
-                        @if(!$fired)
+                        @if(!$firedAtSeasonEnd)
                             <div class="mt-6 flex justify-center">
                                 <form method="POST" action="{{ route('game.job-offers.decline', $game->id) }}" x-data="{ loading: false }" @submit="loading = true">
                                     @csrf

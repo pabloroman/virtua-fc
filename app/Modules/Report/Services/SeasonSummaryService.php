@@ -158,6 +158,61 @@ class SeasonSummaryService
         return [$pending, $accepted];
     }
 
+    /**
+     * Each offer's "last season finishing position" from the GameStanding
+     * rows still holding the just-ended season's values. Returns a map
+     * keyed by offer.id; null entries mean we have no published position
+     * to show (e.g. foreign league not finalized yet because the closing
+     * pipeline runs after Accept/Decline).
+     *
+     * @return array<string, int|null>
+     */
+    public function lastSeasonPositionsByOfferId(Game $game, \Illuminate\Support\Collection $offers): array
+    {
+        $teamIds = $offers->pluck('team_id')->unique()->values()->all();
+        $competitionIds = $offers->pluck('competition_id')->filter()->unique()->values()->all();
+
+        if (empty($teamIds) || empty($competitionIds)) {
+            return [];
+        }
+
+        $standings = GameStanding::where('game_id', $game->id)
+            ->whereIn('team_id', $teamIds)
+            ->whereIn('competition_id', $competitionIds)
+            ->where('played', '>', 0)
+            ->get(['team_id', 'competition_id', 'position'])
+            ->keyBy(fn ($s) => $s->team_id . ':' . $s->competition_id);
+
+        $result = [];
+        foreach ($offers as $offer) {
+            $result[$offer->id] = $standings->get($offer->team_id . ':' . $offer->competition_id)?->position;
+        }
+        return $result;
+    }
+
+    /**
+     * Translated season-goal label each offering club would set if the
+     * manager accepts. Null for competitions without a HasSeasonGoals
+     * config (cups etc.) so the offer card can hide the line.
+     *
+     * @return array<string, string|null>
+     */
+    public function seasonGoalLabelsByOfferId(\Illuminate\Support\Collection $offers): array
+    {
+        $result = [];
+        foreach ($offers as $offer) {
+            $team = $offer->team;
+            $competition = $offer->competition;
+            if (!$team || !$competition) {
+                $result[$offer->id] = null;
+                continue;
+            }
+            $goal = $this->seasonGoalService->determineGoalForTeam($team, $competition);
+            $result[$offer->id] = __($this->seasonGoalService->getGoalLabel($goal, $competition));
+        }
+        return $result;
+    }
+
     public function buildPromotionData(Game $game, Competition $competition): ?array
     {
         $rule = $this->promotionRelegationFactory->forCompetition($competition->id);
