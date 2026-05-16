@@ -11,7 +11,7 @@
         @endphp
 
         <div x-data="{
-                mode: @js($hasCareerAccess ? 'career_pro' : ($hasTournamentMode ? 'tournament' : 'career')),
+                mode: @js($hasCareerAccess ? 'career' : ($hasTournamentMode ? 'tournament' : 'career')),
                 openTab: '{{ $firstId }}',
                 loading: false,
             }">
