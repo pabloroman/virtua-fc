@@ -19,23 +19,24 @@ class ShowLeaderboard
         $country = $request->query('country');
         $province = $request->query('province');
         $sort = $this->leaderboardService->normalizeSort($request->query('sort', 'win_percentage'));
+        $mode = $this->leaderboardService->normalizeMode($request->query('mode'));
         $page = $request->query('page', 1);
 
-        $cacheKey = "leaderboard:{$sort}:{$country}:{$province}:{$page}";
+        $cacheKey = "leaderboard:{$sort}:{$country}:{$province}:{$mode}:{$page}";
 
-        $cached = Cache::remember($cacheKey, self::CACHE_TTL, function () use ($country, $province, $sort, $request) {
-            $managers = $this->leaderboardService->getRankings($sort, $country, $province)
+        $cached = Cache::remember($cacheKey, self::CACHE_TTL, function () use ($country, $province, $sort, $mode, $request) {
+            $managers = $this->leaderboardService->getRankings($sort, $country, $province, $mode)
                 ->appends($request->query());
 
             $provinces = $country
-                ? $this->leaderboardService->getProvincesForCountry($country)
+                ? $this->leaderboardService->getProvincesForCountry($country, $mode)
                 : [];
 
             return [
                 'managers' => $managers,
-                'countries' => $this->leaderboardService->getCountries(),
+                'countries' => $this->leaderboardService->getCountries($mode),
                 'provinces' => $provinces,
-                ...$this->leaderboardService->getAggregateStats(),
+                ...$this->leaderboardService->getAggregateStats($mode),
             ];
         });
 
@@ -44,6 +45,7 @@ class ShowLeaderboard
             'selectedCountry' => $country,
             'selectedProvince' => $province,
             'currentSort' => $sort,
+            'selectedMode' => $mode,
             'minMatches' => LeaderboardService::MIN_MATCHES,
         ]);
     }

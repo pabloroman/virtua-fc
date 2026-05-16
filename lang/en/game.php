@@ -411,6 +411,7 @@ return [
     'tournament_history' => 'Tournament History',
 
     // Game modes
+    'mode_all' => 'All',
     'mode_career' => 'Club Manager',
     'mode_career_desc' => 'Take charge of one club. Build a long-term project.',
     'mode_career_pro' => 'Pro Manager',

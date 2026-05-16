@@ -411,6 +411,7 @@ return [
     'tournament_history' => 'Historial de Torneos',
 
     // Game modes
+    'mode_all' => 'Todos',
     'mode_career' => 'Club Manager',
     'mode_career_desc' => 'Toma el mando de un club. Construye un proyecto a largo plazo.',
     'mode_career_pro' => 'Pro Manager',

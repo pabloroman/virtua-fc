@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $user_id
  * @property string|null $game_id
  * @property string|null $team_id
+ * @property string|null $game_mode
  * @property int $matches_played
  * @property int $matches_won
  * @property int $matches_drawn
@@ -41,6 +42,7 @@ class ManagerStats extends Model
         'user_id',
         'game_id',
         'team_id',
+        'game_mode',
         'matches_played',
         'matches_won',
         'matches_drawn',

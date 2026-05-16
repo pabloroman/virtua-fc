@@ -43,18 +43,51 @@
                 </div>
             </div>
 
+            @php
+                $modeTabs = [
+                    null => __('game.mode_all'),
+                    \App\Models\Game::MODE_CAREER => __('game.mode_career'),
+                    \App\Models\Game::MODE_CAREER_PRO => __('game.mode_career_pro'),
+                ];
+                $buildUrl = function (array $overrides) use ($selectedCountry, $selectedProvince, $currentSort, $selectedMode) {
+                    $params = array_filter([
+                        'country' => $selectedCountry,
+                        'province' => $selectedProvince,
+                        'sort' => $currentSort === 'win_percentage' ? null : $currentSort,
+                        'mode' => $selectedMode,
+                        ...$overrides,
+                    ], fn ($value) => $value !== null && $value !== '');
+
+                    return route('leaderboard', $params);
+                };
+            @endphp
+
+            {{-- Mode Tabs --}}
+            <div class="flex border-b border-border-default overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+                @foreach($modeTabs as $modeValue => $modeLabel)
+                    @php $isActive = $selectedMode === $modeValue; @endphp
+                    <a href="{{ $buildUrl(['mode' => $modeValue]) }}"
+                        class="px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap min-h-[44px] flex items-center
+                            {{ $isActive ? 'border-accent-blue text-accent-blue' : 'border-transparent text-text-muted hover:text-text-secondary' }}">
+                        {{ $modeLabel }}
+                    </a>
+                @endforeach
+            </div>
+
             {{-- Filters --}}
             <x-section-card>
                 <div class="p-4" x-data="{
                     country: @js($selectedCountry ?? ''),
                     province: @js($selectedProvince ?? ''),
                     sort: @js($currentSort),
+                    mode: @js($selectedMode ?? ''),
                     provinces: @js($provinces),
                     apply() {
                         const params = new URLSearchParams();
                         if (this.country) params.set('country', this.country);
                         if (this.province) params.set('province', this.province);
                         if (this.sort !== 'win_percentage') params.set('sort', this.sort);
+                        if (this.mode) params.set('mode', this.mode);
                         window.location.href = '{{ route('leaderboard') }}' + (params.toString() ? '?' + params.toString() : '');
                     },
                     async updateProvinces() {
@@ -115,15 +148,11 @@
                     </div>
                 @else
                     @php
-                        $sortUrl = function (string $column) use ($selectedCountry, $selectedProvince) {
-                            $params = array_filter([
-                                'country' => $selectedCountry,
-                                'province' => $selectedProvince,
-                                'sort' => $column === 'win_percentage' ? null : $column,
-                            ]);
-                            return route('leaderboard', $params);
-                        };
+                        $sortUrl = fn (string $column) => $buildUrl([
+                            'sort' => $column === 'win_percentage' ? null : $column,
+                        ]);
                         $sortIcon = '<svg class="size-3 inline-block ml-0.5 -mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>';
+                        $showModeBadge = $selectedMode === null;
                     @endphp
 
                     {{-- Desktop Header --}}
@@ -172,6 +201,9 @@
                                             @else
                                                 <span class="text-sm font-medium text-text-primary truncate">{{ $manager->name }}</span>
                                             @endif
+                                            @if($showModeBadge)
+                                                <x-mode-badge :mode="$manager->game_mode" />
+                                            @endif
                                         </div>
                                         @if($manager->team_name)
                                             <div class="flex items-center gap-1 mt-0.5">
@@ -203,13 +235,18 @@
                                         <img src="{{ $avatarUrl }}" alt="" class="size-11 max-w-none -mt-0.5">
                                     </div>
                                     <div class="min-w-0">
-                                        @if($manager->username)
-                                            <a href="{{ route('manager.profile', $manager->username) }}" class="text-sm font-medium text-text-primary hover:text-accent-blue truncate block">
-                                                {{ $manager->name }}
-                                            </a>
-                                        @else
-                                            <span class="text-sm font-medium text-text-primary truncate block">{{ $manager->name }}</span>
-                                        @endif
+                                        <div class="flex items-center gap-1.5">
+                                            @if($manager->username)
+                                                <a href="{{ route('manager.profile', $manager->username) }}" class="text-sm font-medium text-text-primary hover:text-accent-blue truncate block">
+                                                    {{ $manager->name }}
+                                                </a>
+                                            @else
+                                                <span class="text-sm font-medium text-text-primary truncate block">{{ $manager->name }}</span>
+                                            @endif
+                                            @if($showModeBadge)
+                                                <x-mode-badge :mode="$manager->game_mode" />
+                                            @endif
+                                        </div>
                                         @if($manager->team_name)
                                             <div class="flex items-center gap-1 mt-0.5">
                                                 <img src="{{ $manager->team_image }}" alt="{{ $manager->team_name }}" class="size-3.5 shrink-0">

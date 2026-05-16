@@ -36,7 +36,11 @@ class UpdateManagerStats implements ShouldQueueAfterCommit
 
         $stats = ManagerStats::firstOrCreate(
             ['game_id' => $game->id],
-            ['user_id' => $game->user_id, 'team_id' => $game->team_id],
+            [
+                'user_id' => $game->user_id,
+                'team_id' => $game->team_id,
+                'game_mode' => $game->game_mode,
+            ],
         );
 
         $stats->recordResult($result);

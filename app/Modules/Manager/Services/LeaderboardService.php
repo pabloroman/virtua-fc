@@ -2,9 +2,11 @@
 
 namespace App\Modules\Manager\Services;
 
+use App\Models\Game;
 use App\Models\ManagerStats;
 use App\Models\Team;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Locale;
 
@@ -20,6 +22,11 @@ class LeaderboardService
         'seasons_completed',
     ];
 
+    public const ALLOWED_MODES = [
+        Game::MODE_CAREER,
+        Game::MODE_CAREER_PRO,
+    ];
+
     /**
      * Validate and normalize the sort column.
      */
@@ -29,15 +36,25 @@ class LeaderboardService
     }
 
     /**
+     * Validate and normalize the mode filter. Null means "All modes".
+     */
+    public function normalizeMode(?string $mode): ?string
+    {
+        return in_array($mode, self::ALLOWED_MODES, true) ? $mode : null;
+    }
+
+    /**
      * Get the paginated leaderboard rankings.
      */
-    public function getRankings(string $sort, ?string $country, ?string $province): LengthAwarePaginator
+    public function getRankings(string $sort, ?string $country, ?string $province, ?string $mode = null): LengthAwarePaginator
     {
         $query = ManagerStats::query()
             ->join('users', 'users.id', '=', 'manager_stats.user_id')
             ->leftJoin('teams', 'teams.id', '=', 'manager_stats.team_id')
             ->where('manager_stats.matches_played', '>=', self::MIN_MATCHES)
             ->select('manager_stats.*', 'users.name', 'users.username', 'users.avatar', 'users.country', 'users.province', 'teams.name as team_name', 'teams.image as team_image');
+
+        $this->applyModeFilter($query, $mode);
 
         if ($country) {
             $query->where('users.country', $country);
@@ -55,14 +72,17 @@ class LeaderboardService
     /**
      * Get provinces with qualifying managers for a given country.
      */
-    public function getProvincesForCountry(string $country): array
+    public function getProvincesForCountry(string $country, ?string $mode = null): array
     {
-        return ManagerStats::query()
+        $query = ManagerStats::query()
             ->join('users', 'users.id', '=', 'manager_stats.user_id')
             ->where('users.country', $country)
             ->whereNotNull('users.province')
-            ->where('users.province', '!=', '')
-            ->distinct()
+            ->where('users.province', '!=', '');
+
+        $this->applyModeFilter($query, $mode);
+
+        return $query->distinct()
             ->orderBy('users.province')
             ->pluck('users.province')
             ->toArray();
@@ -71,17 +91,19 @@ class LeaderboardService
     /**
      * Get all countries with qualifying managers, localized.
      */
-    public function getCountries(): array
+    public function getCountries(?string $mode = null): array
     {
         $locale = app()->getLocale();
 
-        $countryCodes = ManagerStats::query()
+        $query = ManagerStats::query()
             ->join('users', 'users.id', '=', 'manager_stats.user_id')
             ->where('manager_stats.matches_played', '>=', self::MIN_MATCHES)
             ->whereNotNull('users.country')
-            ->where('users.country', '!=', '')
-            ->distinct()
-            ->pluck('users.country');
+            ->where('users.country', '!=', '');
+
+        $this->applyModeFilter($query, $mode);
+
+        $countryCodes = $query->distinct()->pluck('users.country');
 
         return $countryCodes->mapWithKeys(function ($code) use ($locale) {
             $localized = Locale::getDisplayRegion('und_'.$code, $locale);
@@ -93,27 +115,33 @@ class LeaderboardService
     /**
      * Get aggregate leaderboard stats (total qualifying managers, total matches).
      */
-    public function getAggregateStats(): array
+    public function getAggregateStats(?string $mode = null): array
     {
-        $totalManagers = ManagerStats::where('matches_played', '>=', self::MIN_MATCHES)
-            ->count();
+        $managersQuery = ManagerStats::query()
+            ->where('matches_played', '>=', self::MIN_MATCHES);
+        $matchesQuery = ManagerStats::query();
 
-        $totalMatches = ManagerStats::sum('matches_played');
+        $this->applyModeFilter($managersQuery, $mode);
+        $this->applyModeFilter($matchesQuery, $mode);
 
         return [
-            'totalManagers' => $totalManagers,
-            'totalMatches' => (int) $totalMatches,
+            'totalManagers' => $managersQuery->count(),
+            'totalMatches' => (int) $matchesQuery->sum('matches_played'),
         ];
     }
 
     /**
      * Get all club teams that have at least one qualifying manager, with manager counts.
+     *
+     * Team boards are Club Manager only — Pro Manager careers span multiple
+     * teams and a short stint shouldn't appear on a club's "best managers" board.
      */
     public function getTeamsWithManagers(): Collection
     {
         return Team::query()
             ->join('manager_stats', 'teams.id', '=', 'manager_stats.team_id')
             ->where('manager_stats.matches_played', '>=', self::MIN_MATCHES)
+            ->where('manager_stats.game_mode', Game::MODE_CAREER)
             ->where('teams.type', 'club')
             ->where('teams.is_placeholder', false)
             ->whereNull('teams.parent_team_id')
@@ -124,7 +152,7 @@ class LeaderboardService
     }
 
     /**
-     * Get paginated leaderboard rankings filtered by team.
+     * Get paginated leaderboard rankings filtered by team. Club Manager only.
      */
     public function getRankingsForTeam(string $teamId, string $sort): LengthAwarePaginator
     {
@@ -133,6 +161,7 @@ class LeaderboardService
             ->leftJoin('teams', 'teams.id', '=', 'manager_stats.team_id')
             ->where('manager_stats.matches_played', '>=', self::MIN_MATCHES)
             ->where('manager_stats.team_id', $teamId)
+            ->where('manager_stats.game_mode', Game::MODE_CAREER)
             ->select('manager_stats.*', 'users.name', 'users.username', 'users.avatar', 'users.country', 'users.province', 'teams.name as team_name', 'teams.image as team_image')
             ->orderByDesc("manager_stats.{$sort}")
             ->orderByDesc('manager_stats.matches_played')
@@ -140,12 +169,13 @@ class LeaderboardService
     }
 
     /**
-     * Get aggregate stats for a specific team.
+     * Get aggregate stats for a specific team. Club Manager only.
      */
     public function getTeamAggregateStats(string $teamId): array
     {
         $query = ManagerStats::query()
-            ->where('manager_stats.team_id', $teamId);
+            ->where('manager_stats.team_id', $teamId)
+            ->where('manager_stats.game_mode', Game::MODE_CAREER);
 
         $totalManagers = (clone $query)
             ->where('manager_stats.matches_played', '>=', self::MIN_MATCHES)
@@ -157,5 +187,14 @@ class LeaderboardService
             'totalManagers' => $totalManagers,
             'totalMatches' => $totalMatches,
         ];
+    }
+
+    private function applyModeFilter(Builder $query, ?string $mode): void
+    {
+        if ($mode === null) {
+            return;
+        }
+
+        $query->where('manager_stats.game_mode', $mode);
     }
 }

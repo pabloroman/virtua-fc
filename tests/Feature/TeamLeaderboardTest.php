@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Game;
 use App\Models\ManagerStats;
 use App\Models\Team;
 use App\Models\User;
@@ -28,6 +29,7 @@ class TeamLeaderboardTest extends TestCase
         ManagerStats::create([
             'user_id' => $user->id,
             'team_id' => $team->id,
+            'game_mode' => Game::MODE_CAREER,
             'matches_played' => 20,
             'matches_won' => 15,
             'matches_drawn' => 3,
@@ -50,6 +52,7 @@ class TeamLeaderboardTest extends TestCase
         ManagerStats::create([
             'user_id' => $user->id,
             'team_id' => $team->id,
+            'game_mode' => Game::MODE_CAREER,
             'matches_played' => 5,
             'matches_won' => 3,
             'matches_drawn' => 1,
@@ -84,6 +87,7 @@ class TeamLeaderboardTest extends TestCase
         ManagerStats::create([
             'user_id' => $user->id,
             'team_id' => $team->id,
+            'game_mode' => Game::MODE_CAREER,
             'matches_played' => 30,
             'matches_won' => 20,
             'matches_drawn' => 5,
@@ -110,6 +114,7 @@ class TeamLeaderboardTest extends TestCase
         ManagerStats::create([
             'user_id' => $userA->id,
             'team_id' => $teamA->id,
+            'game_mode' => Game::MODE_CAREER,
             'matches_played' => 20,
             'matches_won' => 15,
             'matches_drawn' => 3,
@@ -121,6 +126,7 @@ class TeamLeaderboardTest extends TestCase
         ManagerStats::create([
             'user_id' => $userB->id,
             'team_id' => $teamB->id,
+            'game_mode' => Game::MODE_CAREER,
             'matches_played' => 20,
             'matches_won' => 10,
             'matches_drawn' => 5,
@@ -146,6 +152,7 @@ class TeamLeaderboardTest extends TestCase
         ManagerStats::create([
             'user_id' => $user1->id,
             'team_id' => $team->id,
+            'game_mode' => Game::MODE_CAREER,
             'matches_played' => 15,
             'matches_won' => 14,
             'matches_drawn' => 1,
@@ -157,6 +164,7 @@ class TeamLeaderboardTest extends TestCase
         ManagerStats::create([
             'user_id' => $user2->id,
             'team_id' => $team->id,
+            'game_mode' => Game::MODE_CAREER,
             'matches_played' => 50,
             'matches_won' => 25,
             'matches_drawn' => 10,
@@ -205,6 +213,7 @@ class TeamLeaderboardTest extends TestCase
         ManagerStats::create([
             'user_id' => $user->id,
             'team_id' => $team->id,
+            'game_mode' => Game::MODE_CAREER,
             'matches_played' => 20,
             'matches_won' => 10,
             'matches_drawn' => 5,
@@ -228,6 +237,7 @@ class TeamLeaderboardTest extends TestCase
         ManagerStats::create([
             'user_id' => $user->id,
             'team_id' => $team->id,
+            'game_mode' => Game::MODE_CAREER,
             'matches_played' => 20,
             'matches_won' => 15,
             'matches_drawn' => 3,
@@ -249,6 +259,7 @@ class TeamLeaderboardTest extends TestCase
         ManagerStats::create([
             'user_id' => $user->id,
             'team_id' => $team->id,
+            'game_mode' => Game::MODE_CAREER,
             'matches_played' => 25,
             'matches_won' => 15,
             'matches_drawn' => 5,
