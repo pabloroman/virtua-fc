@@ -2,7 +2,7 @@
 
 return [
     'title' => 'Clasificación',
-    'subtitle' => 'Los mejores mánagers del modo carrera',
+    'subtitle' => 'Los mejores mánagers de carrera',
     'rank' => '#',
     'manager' => 'Mánager',
     'matches_played' => 'PJ',

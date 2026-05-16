@@ -2,7 +2,7 @@
 
 return [
     'title' => 'Leaderboard',
-    'subtitle' => 'Top career mode managers',
+    'subtitle' => 'Top career managers',
     'rank' => '#',
     'manager' => 'Manager',
     'matches_played' => 'MP',

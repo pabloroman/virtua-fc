@@ -43,6 +43,12 @@
                                         {{ __('game.mode_tournament_badge') }}
                                     </span>
                                 </dd>
+                            @elseif($game->isProManagerMode())
+                            <dd class="mb-1">
+                                <span class="inline-flex items-center rounded-full bg-accent-gold/10 px-2.5 py-0.5 text-xs font-medium text-accent-gold ring-1 ring-inset ring-amber-600/20">
+                                    {{ __('game.mode_career_pro') }}
+                                </span>
+                            </dd>
                             @elseif($game->isCareerMode())
                             <dd class="mb-1">
                                 <span class="inline-flex items-center rounded-full bg-accent-gold/10 px-2.5 py-0.5 text-xs font-medium text-accent-gold ring-1 ring-inset ring-amber-600/20">

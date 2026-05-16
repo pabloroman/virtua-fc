@@ -153,7 +153,7 @@
                     </div>
                 @endif
 
-                {{-- ===================== CAREER MODE: Club teams ===================== --}}
+                {{-- ===================== CLUB MANAGER MODE: Club teams ===================== --}}
                 <div x-show="mode === 'career'" x-cloak x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
                     {{-- Competition tabs. ESP3A/ESP3B collapse into a single virtual "Primera Federación" tab keyed 'ESP3'. --}}
                     @php
