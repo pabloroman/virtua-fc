@@ -159,20 +159,24 @@
                 @else
                     <div class="divide-y divide-border-default">
                         @foreach($trophiesByStint as $stint)
-                            <div class="px-5 py-4">
-                                <div class="flex items-center gap-3 mb-3">
+                            <div class="grid grid-cols-1 md:grid-cols-3">
+                                {{-- Club header: full-width banner on mobile,
+                                     left column on desktop. --}}
+                                <div class="md:col-span-1 bg-surface-700/40 md:bg-transparent px-5 py-4 md:border-r md:border-border-default flex items-center gap-3">
                                     @if($stint['team'])
-                                        <div class="shrink-0 w-10 h-10 flex items-center justify-center bg-surface-700 rounded-lg overflow-hidden">
-                                            <x-team-crest :team="$stint['team']" class="w-8 h-8 object-contain" />
+                                        <div class="shrink-0 w-11 h-11 flex items-center justify-center bg-surface-700 rounded-lg overflow-hidden">
+                                            <x-team-crest :team="$stint['team']" class="w-9 h-9 object-contain" />
                                         </div>
                                     @endif
                                     <div class="min-w-0 flex-1">
-                                        <div class="font-heading text-base font-semibold text-text-primary truncate">{{ $stint['team']?->name ?? '—' }}</div>
-                                        <div class="text-xs text-text-muted">{{ $stint['season_range_label'] }}</div>
+                                        <div class="font-heading text-base font-bold text-text-primary truncate">{{ $stint['team']?->name ?? '—' }}</div>
+                                        <div class="text-[11px] uppercase tracking-widest text-text-muted mt-0.5">{{ $stint['season_range_label'] }}</div>
                                     </div>
                                     <span class="shrink-0 text-xs font-heading font-bold text-text-muted">×{{ $stint['total'] }}</span>
                                 </div>
-                                <div class="space-y-2">
+
+                                {{-- Trophies for this stint --}}
+                                <div class="md:col-span-2 px-5 py-4 space-y-2">
                                     @foreach($stint['trophies'] as $entry)
                                         @php
                                             $typeConfig = match($entry['trophy_type']) {
