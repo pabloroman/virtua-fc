@@ -31,6 +31,7 @@ class CareerSummaryService
 
         $trophies = ManagerTrophy::where('user_id', $userId)
             ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
             ->count();
 
         $seasonsCompleted = (int) ($stats?->seasons_completed ?? 0);
@@ -58,6 +59,7 @@ class CareerSummaryService
         $trophies = ManagerTrophy::with('competition')
             ->where('user_id', $userId)
             ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
             ->get();
 
         if ($trophies->isEmpty()) {
