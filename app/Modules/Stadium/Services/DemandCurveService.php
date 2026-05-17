@@ -20,6 +20,10 @@ use App\Models\TeamReputation;
  *    clubs so a marquee brand with crashed loyalty still draws walk-ups.
  *  - Context modifier (opponent reputation, competition weight)
  *    multiplies on top, clamped to [0.85, 1.20].
+ *  - Big-game sellout: when the combined context bonus reaches
+ *    SELLOUT_BONUS_THRESHOLD, attendance jumps to full capacity. Marquee
+ *    visitors and European knockout nights pack the ground regardless of
+ *    the home side's day-to-day loyalty level.
  *
  * Calibrated against real La Liga / La Liga 2 occupancy data. With
  * average modifiers (~1.0 for mid-table), the formula produces:
@@ -45,6 +49,13 @@ class DemandCurveService
         ClubProfile::REPUTATION_ELITE => 0.90,
         ClubProfile::REPUTATION_CONTINENTAL => 0.80,
     ];
+
+    // Combined context-bonus (opponentDelta + competitionWeight) at which a
+    // match is treated as a guaranteed sellout. 0.10 fires for: any elite
+    // visitor against a local/modest tier club in any competition, any
+    // European knockout fixture, and strong visitors in European group
+    // stage. Routine same-tier league matches stay under the threshold.
+    private const SELLOUT_BONUS_THRESHOLD = 0.10;
 
     /**
      * Season-average attendance for a home team, ignoring per-fixture
@@ -82,11 +93,14 @@ class DemandCurveService
 
         $baseFill = $this->baseFillRate($homeRep);
 
-        $modifier = 1.0
-            + $this->opponentDelta($homeRep, $awayRep)
+        $contextBonus = $this->opponentDelta($homeRep, $awayRep)
             + $this->competitionWeight($competition);
 
-        $modifier = max(self::MODIFIER_MIN, min(self::MODIFIER_MAX, $modifier));
+        if ($contextBonus >= self::SELLOUT_BONUS_THRESHOLD) {
+            return $capacity;
+        }
+
+        $modifier = max(self::MODIFIER_MIN, min(self::MODIFIER_MAX, 1.0 + $contextBonus));
 
         $attendance = (int) round($capacity * $baseFill * $modifier);
 
