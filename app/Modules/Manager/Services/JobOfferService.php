@@ -11,9 +11,11 @@ use App\Models\ManagerJobOffer;
 use App\Models\Team;
 use App\Modules\Competition\Promotions\PromotionRelegationFactory;
 use App\Modules\Competition\Services\CountryConfig;
+use App\Modules\Manager\ManagerReputation;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Season\Services\SeasonGoalService;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Generates manager job offers and the starter team pool that drive
@@ -55,6 +57,7 @@ class JobOfferService
         private readonly SeasonGoalService $seasonGoalService,
         private readonly PromotionRelegationFactory $promotionRelegationFactory,
         private readonly NotificationService $notificationService,
+        private readonly ManagerReputationService $managerReputationService,
     ) {}
 
     /**
@@ -79,16 +82,34 @@ class JobOfferService
             return;
         }
 
-        $grade = $this->resolveGrade($game);
+        $evaluation = $this->resolveEvaluation($game);
+        $grade = $evaluation['grade'] ?? 'met';
 
-        $offers = $this->generateEndOfSeasonOffers($game, $grade);
+        // Reputation update + offer generation + stamp share one
+        // transaction so a crash between steps can't leave manager_reputation_points
+        // doubled or offers orphaned without the season marker. The
+        // season_offers_generated_for stamp is the resume sentinel — once
+        // committed, the early-return at the top of this method makes
+        // subsequent calls no-ops.
+        $offers = DB::transaction(function () use ($game, $evaluation, $grade) {
+            $this->managerReputationService->applySeasonOutcome($game, $evaluation);
 
-        // Stamp the season even when the plan was empty (e.g. "below"
-        // grade with no interested clubs). hasResolvedOffersFor relies on
-        // this marker to distinguish "not yet generated" from "generated
-        // and produced zero rows" — without it, the no-offers branch on
-        // /season-offers loops back here forever.
-        $game->update(['season_offers_generated_for' => $game->season]);
+            // Re-read so generateEndOfSeasonOffers sees the freshly applied
+            // reputation when computing the effective rank floor.
+            $game->refresh();
+
+            $created = $this->generateEndOfSeasonOffers($game, $grade);
+
+            // Stamp the season even when the plan was empty (e.g. an
+            // isolated "met" season with no interested clubs).
+            // hasResolvedOffersFor relies on this marker to distinguish
+            // "not yet generated" from "generated and produced zero
+            // rows" — without it, the no-offers branch on /season-offers
+            // would loop back here forever.
+            $game->update(['season_offers_generated_for' => $game->season]);
+
+            return $created;
+        });
 
         if ($offers->isNotEmpty()) {
             $this->notificationService->notifyJobOfferReceived(
@@ -133,23 +154,26 @@ class JobOfferService
     }
 
     /**
-     * Determine the manager's performance grade for the season just closed.
+     * Resolve the full performance evaluation for the season just closed.
      * Mirrors the calculation in SeasonSummaryService::buildSeasonSummary().
+     * Returns the structured array so callers can read both the headline
+     * grade and the supporting trophy/promotion signals that drive the
+     * manager-reputation delta.
+     *
+     * @return array<string, mixed>
      */
-    private function resolveGrade(Game $game): string
+    private function resolveEvaluation(Game $game): array
     {
         $playerStanding = GameStanding::where('game_id', $game->id)
             ->where('competition_id', $game->competition_id)
             ->where('team_id', $game->team_id)
             ->first();
 
-        $evaluation = $this->seasonGoalService->evaluatePerformance(
+        return $this->seasonGoalService->evaluatePerformance(
             $game,
             $playerStanding->position ?? 20,
             $this->promotionRelegationFactory->wasTeamPromoted($game),
         );
-
-        return $evaluation['grade'] ?? 'met';
     }
 
     /**
@@ -205,16 +229,29 @@ class JobOfferService
 
         $currentReputation = $this->currentClubReputation($game);
         $currentLeagueTier = $this->currentLeagueTier($game);
-        $currentRank = $this->prestigeRank($currentLeagueTier, $currentReputation);
+        $clubRank = $this->prestigeRank($currentLeagueTier, $currentReputation);
+
+        // Manager reputation acts as a parallel anchor: a manager whose
+        // personal rep has outgrown their club fields offers above the
+        // club's prestige band. The effective rank is the higher of the
+        // two, so a Lorca-era manager still sees Tier-3 offers (club
+        // anchor wins early), while a manager who racked up European
+        // trophies at a mid-table club starts seeing top-flight offers.
+        $managerRank = $this->managerReputationRank($game);
+        $effectiveRank = max($clubRank, $managerRank);
 
         $plan = match ($grade) {
-            'exceptional' => $this->planForExceptional($currentRank),
+            'exceptional' => $this->planForExceptional($effectiveRank),
             'exceeded' => [
                 ['shift' => 1, 'count' => 1],
                 ['shift' => 0, 'count' => 1],
             ],
             'met' => mt_rand(1, 100) <= 50 ? [['shift' => 0, 'count' => 1]] : [],
-            'below' => [],
+            // A "below" season at a club above the manager's personal
+            // ceiling is the Emery-at-Arsenal moment: no firing, but
+            // other clubs lower down the ladder reach out — the soft
+            // landing that lets the career bounce back.
+            'below' => [['shift' => -1, 'count' => 1]],
             'disaster' => [['shift' => -1, 'count' => self::POST_FIRING_OFFER_COUNT]],
             default => [],
         };
@@ -230,11 +267,25 @@ class JobOfferService
         return $this->writeOffers(
             game: $game,
             plan: $plan,
-            currentRank: $currentRank,
+            currentRank: $effectiveRank,
             currentReputation: $currentReputation,
             offerType: $offerType,
-            allowAdjacentFallback: $grade === 'disaster',
+            allowAdjacentFallback: $grade === 'disaster' || $grade === 'below',
         );
+    }
+
+    /**
+     * Compute the manager's personal prestige rank from their accumulated
+     * reputation points. Returned on the same scale as prestigeRank() so
+     * the two can be compared directly inside generateEndOfSeasonOffers.
+     * See ManagerReputation::anchorFor() for the per-tier mapping rationale.
+     */
+    private function managerReputationRank(Game $game): int
+    {
+        $level = ManagerReputation::levelFromPoints((int) ($game->manager_reputation_points ?? 0));
+        [$tier, $reputation] = ManagerReputation::anchorFor($level);
+
+        return $this->prestigeRank($tier, $reputation);
     }
 
     /**

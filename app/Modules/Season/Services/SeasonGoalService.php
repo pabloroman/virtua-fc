@@ -148,7 +148,9 @@ class SeasonGoalService
             $goalLabel,
             $achieved,
             $positionDiff,
-            $boost['achievements']
+            $boost['achievements'],
+            $boost['steps'],
+            $promoted,
         );
     }
 
@@ -261,7 +263,9 @@ class SeasonGoalService
         string $goalLabel,
         bool $achieved,
         int $positionDiff,
-        array $achievements = []
+        array $achievements = [],
+        int $trophyBoostSteps = 0,
+        bool $promoted = false,
     ): array {
         $titleKey = "season.evaluation_{$grade}";
         $messageKey = "season.evaluation_{$grade}_message";
@@ -290,6 +294,12 @@ class SeasonGoalService
             'achieved' => $achieved,
             'positionDiff' => $positionDiff,
             'achievements' => $achievements,
+            // Raw cup/European boost step count so downstream consumers
+            // (ManagerReputationService) can weight trophies independently
+            // of the final grade. Each step = either a final reached or a
+            // domestic-cup win; European wins add 2 steps.
+            'trophyBoostSteps' => $trophyBoostSteps,
+            'promoted' => $promoted,
         ];
     }
 

@@ -30,6 +30,7 @@ use Illuminate\Database\Eloquent\Builder;
  * @property string $game_mode
  * @property \Illuminate\Support\Carbon|null $setup_completed_at
  * @property string $country
+ * @property int $manager_reputation_points
  * @property \Illuminate\Support\Carbon|null $deleting_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Loan> $activeLoans
  * @property-read int|null $active_loans_count
@@ -136,6 +137,7 @@ class Game extends Model
         'deleting_at',
         'pending_team_switch',
         'season_offers_generated_for',
+        'manager_reputation_points',
     ];
 
     protected $casts = [
@@ -155,6 +157,7 @@ class Game extends Model
         'matchday_advancing_at' => 'datetime',
         'matchday_advance_result' => 'array',
         'deleting_at' => 'datetime',
+        'manager_reputation_points' => 'integer',
     ];
 
     // ==========================================
