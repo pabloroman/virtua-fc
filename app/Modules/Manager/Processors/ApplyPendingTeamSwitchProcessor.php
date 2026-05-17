@@ -5,6 +5,7 @@ namespace App\Modules\Manager\Processors;
 use App\Models\Game;
 use App\Models\ManagerJobHistory;
 use App\Models\ManagerJobOffer;
+use App\Models\ManagerStats;
 use App\Models\Team;
 use App\Modules\Manager\Services\JobOfferService;
 use App\Modules\Season\Contracts\SeasonProcessor;
@@ -92,6 +93,12 @@ class ApplyPendingTeamSwitchProcessor implements SeasonProcessor
                 'pending_team_switch' => null,
                 'season_goal' => null,
             ]);
+
+            // Keep the leaderboard aggregate pointing at the manager's current
+            // club. No-op if the row doesn't exist yet (UpdateManagerStats will
+            // create it against $game->team_id on the next finalized match).
+            ManagerStats::where('game_id', $game->id)
+                ->update(['team_id' => $newTeam->id]);
         });
 
         // Mutate the transition DTO so LeagueFixtureProcessor and the rest
