@@ -23,7 +23,9 @@ class ShowManagerCareer
 
         abort_unless($game->isProManagerMode(), 404);
 
-        $entries = $this->historyService->historyFor($game, (int) auth()->id());
+        $userId = (int) auth()->id();
+        $entries = $this->historyService->historyFor($game, $userId);
+        $trophiesByStint = $this->historyService->trophiesByStint($game, $userId);
 
         $hasOnlyInProgress = $entries->count() === 1
             && ($entries->first()['in_progress'] ?? false);
@@ -31,6 +33,7 @@ class ShowManagerCareer
         return view('manager-career', [
             'game' => $game,
             'entries' => $entries,
+            'trophiesByStint' => $trophiesByStint,
             'hasOnlyInProgress' => $hasOnlyInProgress,
             'gradeBadgeClasses' => [
                 'disaster' => 'bg-accent-red/10 text-accent-red border border-accent-red/30',

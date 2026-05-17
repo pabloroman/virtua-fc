@@ -46,4 +46,8 @@ return [
     'career_end_still_active' => 'Continúas',
     'career_end_left_voluntarily' => 'Cambio de club',
     'career_end_fired' => 'Destituido',
+
+    // Vitrina de trofeos de la carrera (agrupada por etapa)
+    'career_trophies_title' => 'Trofeos por etapa',
+    'career_trophies_empty' => 'Aún no has ganado ningún título — tus trofeos aparecerán aquí, agrupados por el club con el que los conseguiste.',
 ];

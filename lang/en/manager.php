@@ -46,4 +46,8 @@ return [
     'career_end_still_active' => 'Still here',
     'career_end_left_voluntarily' => 'Moved club',
     'career_end_fired' => 'Sacked',
+
+    // Career trophy cabinet (grouped by stint)
+    'career_trophies_title' => 'Trophies by stint',
+    'career_trophies_empty' => 'You haven\'t won any silverware yet — your trophies will be listed here, grouped by the club you won them with.',
 ];
