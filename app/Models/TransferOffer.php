@@ -290,6 +290,19 @@ class TransferOffer extends Model
     }
 
     /**
+     * Budget currently reserved by this single offer. Mirrors the per-row
+     * logic in committedBudget(): if the seller has countered, asking_price
+     * is what would actually be paid on accept, so it's the true reservation.
+     * Used when re-opening or replacing this offer so we add back the right
+     * amount — using only transfer_fee leaks the counter delta and falsely
+     * shrinks the user's available budget round after round.
+     */
+    public function committedAmount(): int
+    {
+        return (int) max((int) $this->transfer_fee, (int) ($this->asking_price ?? 0));
+    }
+
+    /**
      * Check if fee has been agreed and personal terms are pending.
      */
     public function isFeeAgreed(): bool

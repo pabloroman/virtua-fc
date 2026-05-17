@@ -91,7 +91,7 @@ class NegotiateTransfer
                 'negotiation_status' => 'open',
                 'round' => $existing->negotiation_round,
                 'max_rounds' => self::MAX_ROUNDS,
-                'available_budget' => (int) (($this->transferService->availableBudget($game) + $existing->transfer_fee) / 100),
+                'available_budget' => (int) (($this->transferService->availableBudget($game) + $existing->committedAmount()) / 100),
                 'budget_loan_available' => $this->budgetLoanService->canRequestLoan($game),
                 'budget_loan_url' => route('game.club.finances', $game->id),
                 'messages' => [
@@ -235,7 +235,7 @@ class NegotiateTransfer
                 'negotiation_status' => 'open',
                 'round' => $offer->negotiation_round,
                 'max_rounds' => self::MAX_ROUNDS,
-                'available_budget' => (int) (($this->transferService->availableBudget($game) + $offer->transfer_fee) / 100),
+                'available_budget' => (int) (($this->transferService->availableBudget($game) + $offer->committedAmount()) / 100),
                 'messages' => [
                     $this->agentMessage('counter', [
                         'text' => __('transfers.chat_club_counter', [

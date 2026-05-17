@@ -1326,7 +1326,7 @@ class TransferService
 
         if ($existing) {
             // Resume: update bid, increment round
-            if ($bidCents > $this->availableBudget($game) + $existing->transfer_fee) {
+            if ($bidCents > $this->availableBudget($game) + $existing->committedAmount()) {
                 throw new \InvalidArgumentException(__('messages.bid_exceeds_budget'));
             }
 
@@ -1409,7 +1409,7 @@ class TransferService
         }
 
         $counterAmount = $offer->asking_price;
-        $available = $this->availableBudget($game) + $offer->transfer_fee;
+        $available = $this->availableBudget($game) + $offer->committedAmount();
 
         if ($counterAmount > $available) {
             throw new \InvalidArgumentException(__('messages.bid_exceeds_budget'));
