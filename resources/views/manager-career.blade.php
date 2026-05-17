@@ -172,7 +172,6 @@
                                         <div class="font-heading text-base font-semibold text-text-primary truncate">{{ $stint['team']?->name ?? '—' }}</div>
                                         <div class="text-[11px] uppercase tracking-widest text-text-muted mt-0.5">{{ $stint['season_range_label'] }}</div>
                                     </div>
-                                    <span class="shrink-0 text-xs font-heading font-bold text-text-muted">×{{ $stint['total'] }}</span>
                                 </div>
 
                                 {{-- Trophies for this stint --}}
