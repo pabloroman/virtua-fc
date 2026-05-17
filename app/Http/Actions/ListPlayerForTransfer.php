@@ -27,7 +27,7 @@ class ListPlayerForTransfer
             abort(403, 'Cannot list a loaned player for transfer.');
         }
 
-        if ($player->joinedInCurrentWindow($game)) {
+        if ($player->isInSaleCooldown($game)) {
             return redirect()->back()->with('error', __('messages.cannot_sell_same_window', [
                 'player' => $player->name,
             ]));

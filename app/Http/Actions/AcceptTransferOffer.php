@@ -34,7 +34,7 @@ class AcceptTransferOffer
             abort(403, 'Cannot accept offers for loaned players.');
         }
 
-        if ($offer->gamePlayer->joinedInCurrentWindow($game)) {
+        if ($offer->gamePlayer->isInSaleCooldown($game)) {
             return redirect()->back()->with('error', __('messages.cannot_sell_same_window', [
                 'player' => $offer->gamePlayer->name,
             ]));
