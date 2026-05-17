@@ -5,6 +5,7 @@ namespace App\Modules\Manager\Services;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\ManagerStats;
+use App\Models\ManagerTrophy;
 use App\Models\SeasonArchive;
 use App\Models\User;
 
@@ -113,6 +114,7 @@ class ManagerStatsRebuilder
             : 0;
 
         $aggregate['seasons_completed'] = SeasonArchive::where('game_id', $game->id)->count();
+        $aggregate['trophies_count'] = ManagerTrophy::where('game_id', $game->id)->count();
 
         $stats = ManagerStats::firstOrNew(['game_id' => $game->id]);
         $stats->user_id = $game->user_id;

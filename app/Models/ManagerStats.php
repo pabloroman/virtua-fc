@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $current_unbeaten_streak
  * @property int $longest_unbeaten_streak
  * @property int $seasons_completed
+ * @property int $trophies_count
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\User $user
  * @property-read \App\Models\Game|null $game
@@ -51,6 +52,7 @@ class ManagerStats extends Model
         'current_unbeaten_streak',
         'longest_unbeaten_streak',
         'seasons_completed',
+        'trophies_count',
     ];
 
     protected $casts = [
@@ -62,6 +64,7 @@ class ManagerStats extends Model
         'current_unbeaten_streak' => 'integer',
         'longest_unbeaten_streak' => 'integer',
         'seasons_completed' => 'integer',
+        'trophies_count' => 'integer',
     ];
 
     public function user(): BelongsTo

@@ -7,6 +7,7 @@ use App\Models\CompetitionEntry;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameStanding;
+use App\Models\ManagerStats;
 use App\Models\ManagerTrophy;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
@@ -24,13 +25,22 @@ class TrophyRecordingProcessor implements SeasonProcessor
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
-        $this->recordLeagueTitle($game);
-        $this->recordCupWins($game);
+        $created = 0;
+        $created += $this->recordLeagueTitle($game);
+        $created += $this->recordCupWins($game);
+
+        if ($created > 0) {
+            // Keep the denormalized leaderboard counter in sync. No-op if no
+            // manager_stats row exists yet (first match hasn't been played);
+            // the row will be created against the live trophies via the
+            // rebuilder or the listener's next write.
+            ManagerStats::where('game_id', $game->id)->increment('trophies_count', $created);
+        }
 
         return $data;
     }
 
-    private function recordLeagueTitle(Game $game): void
+    private function recordLeagueTitle(Game $game): int
     {
         $standing = GameStanding::where('game_id', $game->id)
             ->where('competition_id', $game->competition_id)
@@ -39,10 +49,10 @@ class TrophyRecordingProcessor implements SeasonProcessor
             ->first();
 
         if (! $standing) {
-            return;
+            return 0;
         }
 
-        ManagerTrophy::firstOrCreate([
+        $trophy = ManagerTrophy::firstOrCreate([
             'game_id' => $game->id,
             'competition_id' => $game->competition_id,
             'season' => $game->season,
@@ -51,9 +61,11 @@ class TrophyRecordingProcessor implements SeasonProcessor
             'team_id' => $game->team_id,
             'trophy_type' => 'league',
         ]);
+
+        return $trophy->wasRecentlyCreated ? 1 : 0;
     }
 
-    private function recordCupWins(Game $game): void
+    private function recordCupWins(Game $game): int
     {
         $supercupIds = $this->getSupercupCompetitionIds();
 
@@ -62,6 +74,8 @@ class TrophyRecordingProcessor implements SeasonProcessor
             ->where('team_id', $game->team_id)
             ->where('competition_id', '!=', $game->competition_id)
             ->get();
+
+        $created = 0;
 
         foreach ($entries as $entry) {
             $competition = $entry->competition;
@@ -79,7 +93,7 @@ class TrophyRecordingProcessor implements SeasonProcessor
 
             $trophyType = $this->determineTrophyType($competition, $supercupIds);
 
-            ManagerTrophy::firstOrCreate([
+            $trophy = ManagerTrophy::firstOrCreate([
                 'game_id' => $game->id,
                 'competition_id' => $competition->id,
                 'season' => $game->season,
@@ -88,7 +102,13 @@ class TrophyRecordingProcessor implements SeasonProcessor
                 'team_id' => $game->team_id,
                 'trophy_type' => $trophyType,
             ]);
+
+            if ($trophy->wasRecentlyCreated) {
+                $created++;
+            }
         }
+
+        return $created;
     }
 
     private function determineTrophyType(Competition $competition, array $supercupIds): string

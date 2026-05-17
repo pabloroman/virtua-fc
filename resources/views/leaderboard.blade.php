@@ -133,6 +133,7 @@
                                 <option value="longest_unbeaten_streak">{{ __('leaderboard.unbeaten_streak_full') }}</option>
                                 <option value="matches_played">{{ __('leaderboard.matches_played_full') }}</option>
                                 <option value="seasons_completed">{{ __('leaderboard.seasons_full') }}</option>
+                                <option value="trophies_count">{{ __('leaderboard.titles_full') }}</option>
                             </select>
                         </div>
                     </div>
@@ -156,7 +157,7 @@
                     @endphp
 
                     {{-- Desktop Header --}}
-                    <div class="hidden md:grid grid-cols-[3rem_1fr_4rem_5rem_8rem_4rem_4rem] gap-2 px-4 py-2.5 border-b border-border-default">
+                    <div class="hidden md:grid grid-cols-[3rem_1fr_4rem_5rem_8rem_4rem_4rem_4rem] gap-2 px-4 py-2.5 border-b border-border-default">
                         <div class="text-[10px] text-text-muted uppercase tracking-wider text-center">{{ __('leaderboard.rank') }}</div>
                         <div class="text-[10px] text-text-muted uppercase tracking-wider">{{ __('leaderboard.manager') }}</div>
                         <a href="{{ $sortUrl('matches_played') }}" class="text-[10px] uppercase tracking-wider text-center {{ $currentSort === 'matches_played' ? 'text-accent-blue font-semibold' : 'text-text-muted hover:text-text-secondary' }} transition">
@@ -171,6 +172,9 @@
                         </a>
                         <a href="{{ $sortUrl('seasons_completed') }}" class="text-[10px] uppercase tracking-wider text-center {{ $currentSort === 'seasons_completed' ? 'text-accent-blue font-semibold' : 'text-text-muted hover:text-text-secondary' }} transition">
                             {{ __('leaderboard.seasons') }}{!! $currentSort === 'seasons_completed' ? $sortIcon : '' !!}
+                        </a>
+                        <a href="{{ $sortUrl('trophies_count') }}" class="text-[10px] uppercase tracking-wider text-center {{ $currentSort === 'trophies_count' ? 'text-accent-blue font-semibold' : 'text-text-muted hover:text-text-secondary' }} transition">
+                            {{ __('leaderboard.titles') }}{!! $currentSort === 'trophies_count' ? $sortIcon : '' !!}
                         </a>
                     </div>
 
@@ -216,16 +220,21 @@
                                     </div>
 
                                     <div class="text-right shrink-0">
-                                        <div class="font-heading text-lg font-bold text-text-primary">{{ number_format($manager->win_percentage, 1) }}%</div>
-                                        <div class="text-[10px] text-text-muted">
-                                            {{ $manager->longest_unbeaten_streak }} {{ __('leaderboard.unbeaten_streak') }}
-                                        </div>
+                                        @if($currentSort === 'trophies_count')
+                                            <div class="font-heading text-lg font-bold text-text-primary">{{ $manager->trophies_count }}</div>
+                                            <div class="text-[10px] text-text-muted">{{ __('leaderboard.titles') }}</div>
+                                        @else
+                                            <div class="font-heading text-lg font-bold text-text-primary">{{ number_format($manager->win_percentage, 1) }}%</div>
+                                            <div class="text-[10px] text-text-muted">
+                                                {{ $manager->longest_unbeaten_streak }} {{ __('leaderboard.unbeaten_streak') }}
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
 
                             {{-- Desktop Layout --}}
-                            <div class="hidden md:grid grid-cols-[3rem_1fr_4rem_5rem_8rem_4rem_4rem] gap-2 px-4 py-2.5 items-center transition-colors hover:bg-surface-700/30">
+                            <div class="hidden md:grid grid-cols-[3rem_1fr_4rem_5rem_8rem_4rem_4rem_4rem] gap-2 px-4 py-2.5 items-center transition-colors hover:bg-surface-700/30">
                                 <span class="font-heading text-base font-bold text-center {{ $rank <= 3 ? 'text-amber-500' : 'text-text-muted' }}">
                                     {{ $rank }}
                                 </span>
@@ -271,6 +280,8 @@
                                 <span class="text-sm text-text-secondary text-center">{{ $manager->longest_unbeaten_streak }}</span>
 
                                 <span class="text-sm text-text-secondary text-center">{{ $manager->seasons_completed }}</span>
+
+                                <span class="text-sm text-text-secondary text-center">{{ $manager->trophies_count }}</span>
                             </div>
                         @endforeach
                     </div>

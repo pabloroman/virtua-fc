@@ -20,6 +20,7 @@ class LeaderboardService
         'longest_unbeaten_streak',
         'matches_played',
         'seasons_completed',
+        'trophies_count',
     ];
 
     public const ALLOWED_MODES = [
