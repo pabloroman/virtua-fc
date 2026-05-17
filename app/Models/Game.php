@@ -30,6 +30,7 @@ use Illuminate\Database\Eloquent\Builder;
  * @property string $game_mode
  * @property \Illuminate\Support\Carbon|null $setup_completed_at
  * @property string $country
+ * @property int $manager_reputation_points
  * @property \Illuminate\Support\Carbon|null $deleting_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Loan> $activeLoans
  * @property-read int|null $active_loans_count
@@ -136,6 +137,7 @@ class Game extends Model
         'deleting_at',
         'pending_team_switch',
         'season_offers_generated_for',
+        'manager_reputation_points',
     ];
 
     protected $casts = [
@@ -155,6 +157,21 @@ class Game extends Model
         'matchday_advancing_at' => 'datetime',
         'matchday_advance_result' => 'array',
         'deleting_at' => 'datetime',
+        'manager_reputation_points' => 'integer',
+    ];
+
+    /**
+     * Mirror the games.game_mode DB default into the in-memory model.
+     * Without this, factory-created models leave $game->game_mode as null
+     * until refreshed — and listeners like UpdateManagerStats that copy
+     * the field forward into manager_stats end up sending null and
+     * tripping the NOT NULL constraint on that column. Real game-creation
+     * paths (GameCreationService / TournamentCreationService) always set
+     * game_mode explicitly, so this default only matters for tests and
+     * any future caller that omits the field.
+     */
+    protected $attributes = [
+        'game_mode' => self::MODE_CAREER,
     ];
 
     // ==========================================
