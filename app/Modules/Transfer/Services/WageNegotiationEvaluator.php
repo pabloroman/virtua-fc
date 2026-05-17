@@ -10,9 +10,6 @@ namespace App\Modules\Transfer\Services;
  */
 class WageNegotiationEvaluator
 {
-    /** Counter threshold: offer must be >= 85% of minimum acceptable to get a counter */
-    private const COUNTER_THRESHOLD = 0.85;
-
     /** Default disposition-to-flexibility scaling factor */
     private const DEFAULT_FLEXIBILITY_RATIO = 0.30;
 
@@ -58,10 +55,9 @@ class WageNegotiationEvaluator
             return ['result' => 'accepted', 'counterWage' => null];
         }
 
-        // Check if close enough for a counter
-        $counterThreshold = (int) ($minimumAcceptable * self::COUNTER_THRESHOLD);
-
-        if ($effectiveOffer >= $counterThreshold && $round < $maxRounds) {
+        // While rounds remain, the player holds firm rather than walking out:
+        // counter near the minimum acceptable so the user can keep negotiating.
+        if ($round < $maxRounds) {
             $counterWage = (int) (($minimumAcceptable + $playerDemand) / 2);
             $counterWage = $this->roundCounterOffer($counterWage, $minimumAcceptable);
 

@@ -139,7 +139,7 @@ class NegotiateRenewal
                     'years' => $demand['contractYears'],
                     'mood' => $mood,
                 ], [
-                    'canAccept' => false,
+                    'canAccept' => true,
                     'suggestedWage' => (int) ($demand['wage'] / 100),
                     'preferredYears' => $demand['contractYears'],
                 ]),

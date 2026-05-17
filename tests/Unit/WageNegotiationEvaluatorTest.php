@@ -31,8 +31,10 @@ class WageNegotiationEvaluatorTest extends TestCase
         $this->assertNull($result['counterWage']);
     }
 
-    public function test_very_low_offer_is_rejected(): void
+    public function test_very_low_offer_within_rounds_is_countered(): void
     {
+        // Lowballs no longer hard-reject while negotiation rounds remain — the
+        // player holds firm with a counter near their minimum acceptable wage.
         $result = $this->evaluator->evaluate(
             offerWage: 10_000_000,
             offeredYears: 3,
@@ -40,6 +42,23 @@ class WageNegotiationEvaluatorTest extends TestCase
             preferredYears: 3,
             disposition: 0.50,
             round: 1,
+            maxRounds: 3,
+        );
+
+        $this->assertEquals('countered', $result['result']);
+        $this->assertNotNull($result['counterWage']);
+        $this->assertLessThanOrEqual(50_000_000, $result['counterWage']);
+    }
+
+    public function test_very_low_offer_at_final_round_is_rejected(): void
+    {
+        $result = $this->evaluator->evaluate(
+            offerWage: 10_000_000,
+            offeredYears: 3,
+            playerDemand: 50_000_000,
+            preferredYears: 3,
+            disposition: 0.50,
+            round: 3,
             maxRounds: 3,
         );
 

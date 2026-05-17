@@ -286,11 +286,27 @@ export default function negotiationChat() {
                     }
                 }
             } else {
-                // Renewal mode
-                const data = await this.sendAction('accept_counter');
-                if (data) {
-                    this.negotiationStatus = data.negotiation_status;
-                    this.appendMessages(data.messages);
+                // Renewal mode. On round 0 the user is accepting the player's
+                // opening demand — no negotiation row exists yet, so submit a
+                // normal offer at the demand wage/years rather than calling
+                // accept_counter (which only resolves an existing counter).
+                if (this.round === 0) {
+                    const data = await this.sendAction('offer', {
+                        wage: this.offerWage,
+                        years: this.offerYears,
+                    });
+                    if (data) {
+                        this.negotiationStatus = data.negotiation_status;
+                        this.round = data.round || this.round;
+                        this.appendMessages(data.messages);
+                        this.prefillFromOptions();
+                    }
+                } else {
+                    const data = await this.sendAction('accept_counter');
+                    if (data) {
+                        this.negotiationStatus = data.negotiation_status;
+                        this.appendMessages(data.messages);
+                    }
                 }
             }
             this.loading = false;
