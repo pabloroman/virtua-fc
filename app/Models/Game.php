@@ -160,6 +160,20 @@ class Game extends Model
         'manager_reputation_points' => 'integer',
     ];
 
+    /**
+     * Mirror the games.game_mode DB default into the in-memory model.
+     * Without this, factory-created models leave $game->game_mode as null
+     * until refreshed — and listeners like UpdateManagerStats that copy
+     * the field forward into manager_stats end up sending null and
+     * tripping the NOT NULL constraint on that column. Real game-creation
+     * paths (GameCreationService / TournamentCreationService) always set
+     * game_mode explicitly, so this default only matters for tests and
+     * any future caller that omits the field.
+     */
+    protected $attributes = [
+        'game_mode' => self::MODE_CAREER,
+    ];
+
     // ==========================================
     // Game Mode
     // ==========================================
