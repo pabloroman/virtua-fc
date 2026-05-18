@@ -39,8 +39,8 @@ return [
     'evaluation_met_message_with_trophies' => 'A satisfying season. League objectives were met and :trophies made the campaign even more memorable. The board expects you to build on this next year.',
     'evaluation_below_message_with_trophies' => 'The league campaign fell short of expectations, but :trophies softened the blow in terms of both prestige and revenue. The board still expects a stronger league effort next season.',
     'evaluation_disaster_message_with_trophies' => 'A chaotic season. The league finish around position :actual was far below the expected :target, and only :trophies prevented an outright catastrophe. The board demands a major turnaround.',
-    'achievement_winner' => ':competition winner',
-    'achievement_runner_up' => ':competition runner-up',
+    'achievement_winner' => 'the :competition',
+    'achievement_runner_up' => 'the :competition runner-up spot',
     'achievement_and' => 'and',
 
     // Individual awards
