@@ -10,6 +10,7 @@ use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Processors\SeasonSimulationProcessor;
 use App\Modules\Competition\Promotions\PromotionRelegationFactory;
+use App\Modules\Competition\Promotions\ReserveCascader;
 use App\Models\Game;
 use App\Models\CompetitionEntry;
 use App\Models\GameStanding;
@@ -29,6 +30,7 @@ class PromotionRelegationProcessor implements SeasonProcessor
         private PromotionRelegationFactory $ruleFactory,
         private SeasonSimulationProcessor $simulationProcessor,
         private PlayoffGeneratorFactory $playoffFactory,
+        private ReserveCascader $reserveCascader,
     ) {}
 
     public function priority(): int
@@ -119,6 +121,13 @@ class PromotionRelegationProcessor implements SeasonProcessor
                     $userRelegated = array_merge($userRelegated, $relegated);
                 }
             }
+
+            // Repair any reserve/parent same-competition pairs that the
+            // per-rule swap left behind. The per-rule logic only blocks
+            // reserves from being *promoted* into the parent's tier — it
+            // can't see the parent's *relegation* into the reserve's tier.
+            $cascadedCompetitionIds = $this->reserveCascader->cascade($game);
+            $affectedCompetitionIds = array_merge($affectedCompetitionIds, $cascadedCompetitionIds);
 
             // Update competition in transition data if the player's team moved
             $game->refresh();
