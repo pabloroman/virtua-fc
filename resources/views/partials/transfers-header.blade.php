@@ -36,4 +36,21 @@
 
     {{-- Wage Bill --}}
     <x-summary-card :label="__('transfers.wage_bill')" :value="\App\Support\Money::format($totalWageBill) . __('squad.per_year')" />
+
+    {{-- Wage Headroom (current season) --}}
+    @if(isset($wageHeadroomCurrent))
+    @php
+        $headroomCurrent = $wageHeadroomCurrent->headroom();
+        $overCap = $headroomCurrent < 0;
+    @endphp
+    <x-summary-card :label="__('finances.wage_budget_headroom')">
+        <div class="font-heading text-xl font-bold mt-0.5 {{ $overCap ? 'text-accent-red' : 'text-accent-green' }}">{{ \App\Support\Money::format($headroomCurrent) }}</div>
+        @if(isset($wageHeadroomNext))
+            @php $headroomNext = $wageHeadroomNext->headroom(); @endphp
+            <div class="text-[10px] {{ $headroomNext < 0 ? 'text-accent-red' : 'text-text-muted' }} mt-0.5">
+                {{ __('finances.wage_budget_next_season') }}: {{ \App\Support\Money::format($headroomNext) }}
+            </div>
+        @endif
+    </x-summary-card>
+    @endif
 </div>

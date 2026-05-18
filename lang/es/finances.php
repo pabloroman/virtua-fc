@@ -5,6 +5,28 @@ return [
     // Page title
     'finances' => 'Finanzas',
 
+    // Wage Budget panel
+    'wage_budget' => 'Presupuesto Salarial',
+    'wage_budget_this_season' => 'Esta Temporada',
+    'wage_budget_next_season' => 'Próxima Temporada',
+    'wage_budget_revenue' => 'Ingresos Proyectados',
+    'wage_budget_current_wages' => 'Salarios actuales de la plantilla',
+    'wage_budget_carrying_wages' => 'Salarios que se mantienen',
+    'wage_budget_pre_contracts' => 'Precontratos pendientes',
+    'wage_budget_cap' => 'Tope salarial',
+    'wage_budget_headroom' => 'Margen disponible',
+    'wage_budget_over_cap' => 'Tope superado',
+    'wage_budget_utilisation' => ':percent% utilizado',
+    'wage_budget_panel_title' => 'Presupuesto Salarial',
+    'wage_budget_panel_blocked' => 'Estás por encima del tope salarial. No podrás cerrar nuevos fichajes hasta liberar masa salarial.',
+    'wage_budget_free_space_title' => 'Liberar masa salarial',
+    'wage_budget_free_space_subtitle' => 'Vender o liberar a estos jugadores devuelve sus salarios a tu margen disponible.',
+    'wage_budget_free_space_shortfall' => 'Necesitas liberar :amount adicionales para realizar este fichaje.',
+    'wage_budget_free_space_action_list' => 'Poner en venta',
+    'wage_budget_free_space_action_release' => 'Liberar',
+    'wage_budget_free_space_action_squad' => 'Ir a la plantilla',
+    'wage_budget_free_space_no_candidates' => 'Ningún jugador de tu plantilla tiene salario distinto de cero.',
+
     // Overview cards
     'squad_value' => 'Valor de la Plantilla',
     'annual_wage_bill' => 'Masa Salarial Anual',

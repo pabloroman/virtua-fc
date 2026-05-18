@@ -538,4 +538,5 @@
 
     <x-player-detail-modal />
     <x-negotiation-chat-modal />
+    <x-wage-cap-modal :game="$game" />
 </x-app-layout>

@@ -5,6 +5,28 @@ return [
     // Page title
     'finances' => 'Finances',
 
+    // Wage Budget panel
+    'wage_budget' => 'Wage Budget',
+    'wage_budget_this_season' => 'This Season',
+    'wage_budget_next_season' => 'Next Season',
+    'wage_budget_revenue' => 'Projected revenue',
+    'wage_budget_current_wages' => 'Current squad wages',
+    'wage_budget_carrying_wages' => 'Wages carrying forward',
+    'wage_budget_pre_contracts' => 'Pending pre-contracts',
+    'wage_budget_cap' => 'Wage cap',
+    'wage_budget_headroom' => 'Headroom',
+    'wage_budget_over_cap' => 'Over cap',
+    'wage_budget_utilisation' => ':percent% used',
+    'wage_budget_panel_title' => 'Wage Budget',
+    'wage_budget_panel_blocked' => 'You are over the wage cap. New signings are blocked until you free up wages.',
+    'wage_budget_free_space_title' => 'Free up wages',
+    'wage_budget_free_space_subtitle' => 'Selling or releasing these players returns their annual wage to your cap.',
+    'wage_budget_free_space_shortfall' => 'You need :amount more headroom to make this signing.',
+    'wage_budget_free_space_action_list' => 'List for sale',
+    'wage_budget_free_space_action_release' => 'Release',
+    'wage_budget_free_space_action_squad' => 'Go to squad',
+    'wage_budget_free_space_no_candidates' => 'No players on your roster have non-zero wages to free up.',
+
     // Overview cards
     'squad_value' => 'Squad Value',
     'annual_wage_bill' => 'Annual Wage Bill',

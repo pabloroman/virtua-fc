@@ -2,12 +2,16 @@
 
 namespace App\Modules\Transfer\Services;
 
+use App\Modules\Finance\DTOs\WageCapDecision;
+use App\Modules\Finance\Enums\SigningContext;
+use App\Modules\Finance\Services\WageBudgetService;
 use App\Modules\Player\PlayerAge;
 use App\Modules\Squad\Services\SquadMinimumService;
 use App\Modules\Squad\Services\SquadNumberService;
 use App\Modules\Transfer\Enums\NegotiationScenario;
 use App\Modules\Transfer\Exceptions\SquadMinimumException;
 use App\Modules\Transfer\Enums\TransferWindowType;
+use App\Modules\Transfer\Exceptions\WageCapException;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\LoanService;
 use App\Modules\Transfer\Services\ScoutingService;
@@ -36,6 +40,7 @@ class TransferService
         private readonly DispositionService $dispositionService,
         private readonly SquadNumberService $squadNumberService,
         private readonly SquadMinimumService $squadMinimumService,
+        private readonly WageBudgetService $wageBudgetService,
     ) {}
 
     /**
@@ -1056,6 +1061,8 @@ class TransferService
      */
     public function signFreeAgent(Game $game, GamePlayer $player, int $wageDemand): TransferOffer
     {
+        $this->assertWageCap($game, $wageDemand, SigningContext::FREE_AGENT);
+
         $seasonYear = (int) $game->season;
         $contractYears = $player->age($game->current_date) >= 32 ? 1 : mt_rand(2, 3);
         $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
@@ -1100,10 +1107,14 @@ class TransferService
 
     /**
      * Complete a free agent signing from a negotiated offer (wage already agreed).
+     *
+     * Returns false (and marks the offer rejected) when the wage cap blocks the
+     * signing. Callers should surface a budget-exceeded error rather than
+     * treating this as a silent success.
      */
-    public function completeFreeAgentSigning(Game $game, GamePlayer $player, TransferOffer $offer): void
+    public function completeFreeAgentSigning(Game $game, GamePlayer $player, TransferOffer $offer): bool
     {
-        $this->completionService->completeFreeAgentSigning($game, $player, $offer);
+        return $this->completionService->completeFreeAgentSigning($game, $player, $offer);
     }
 
     public function acceptIncomingOffer(TransferOffer $offer): bool
@@ -1246,6 +1257,25 @@ class TransferService
     }
 
     /**
+     * Throw a WageCapException when the proposed annual wage would breach the
+     * cap for the given signing context. Carries the WageCapDecision so the
+     * HTTP layer can surface shortfall + suggested players to sell.
+     *
+     * @throws WageCapException
+     */
+    public function assertWageCap(Game $game, int $annualWageCents, SigningContext $context): void
+    {
+        $decision = $this->wageBudgetService->canAfford($game, $annualWageCents, $context);
+
+        if (! $decision->allowed) {
+            throw new WageCapException(
+                $decision,
+                __('messages.wage_budget_exceeded'),
+            );
+        }
+    }
+
+    /**
      * Submit a pre-contract offer for an expiring player (user-initiated).
      *
      * @throws \InvalidArgumentException
@@ -1277,6 +1307,8 @@ class TransferService
         if ($existingOffer) {
             throw new \InvalidArgumentException(__('transfers.already_bidding'));
         }
+
+        $this->assertWageCap($game, $offeredWageCents, SigningContext::PRE_CONTRACT);
 
         return TransferOffer::create([
             'game_id' => $game->id,

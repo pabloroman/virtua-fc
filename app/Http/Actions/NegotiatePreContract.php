@@ -5,10 +5,13 @@ namespace App\Http\Actions;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\TransferOffer;
+use App\Modules\Finance\Enums\SigningContext;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Transfer\Enums\NegotiationScenario;
+use App\Modules\Transfer\Exceptions\WageCapException;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\DispositionService;
+use App\Modules\Transfer\Services\TransferService;
 use App\Support\Money;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,6 +25,7 @@ class NegotiatePreContract
         private readonly ContractService $contractService,
         private readonly NotificationService $notificationService,
         private readonly DispositionService $dispositionService,
+        private readonly TransferService $transferService,
     ) {}
 
     public function __invoke(Request $request, string $gameId, string $playerId): JsonResponse
@@ -181,6 +185,16 @@ class NegotiatePreContract
             'years' => ['required', 'integer', 'min:1', 'max:5'],
         ]);
 
+        $offerWageCents = $validated['wage'] * 100;
+
+        // Wage cap: reject before the pre-contract is created/updated so it
+        // never reaches the player. Re-checked at season rollover.
+        try {
+            $this->transferService->assertWageCap($game, $offerWageCents, SigningContext::PRE_CONTRACT);
+        } catch (WageCapException $e) {
+            return $this->wageCapRejection($e, $player);
+        }
+
         // Find or create the pre-contract offer
         $offer = TransferOffer::where('game_id', $game->id)
             ->where('game_player_id', $player->id)
@@ -206,7 +220,6 @@ class NegotiatePreContract
             ]);
         }
 
-        $offerWageCents = $validated['wage'] * 100;
         $offeredYears = $validated['years'];
 
         $result = $this->contractService->negotiateTermsSync(
@@ -272,6 +285,12 @@ class NegotiatePreContract
             ], 422);
         }
 
+        try {
+            $this->transferService->assertWageCap($game, (int) $offer->wage_counter_offer, SigningContext::PRE_CONTRACT);
+        } catch (WageCapException $e) {
+            return $this->wageCapRejection($e, $player);
+        }
+
         $this->contractService->acceptTermsCounterForScenario($offer, NegotiationScenario::PRE_CONTRACT);
         $offer->refresh();
 
@@ -314,4 +333,15 @@ class NegotiatePreContract
         return (int) (ceil(($centsA + $centsB) / 2 / 100 / 10000) * 10000);
     }
 
+    private function wageCapRejection(WageCapException $e, GamePlayer $player): JsonResponse
+    {
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage(),
+            'wage_cap' => [
+                'shortfall_cents' => $e->decision->shortfallCents,
+                'blocked_by' => $e->decision->blockedBy,
+            ],
+        ], 422);
+    }
 }

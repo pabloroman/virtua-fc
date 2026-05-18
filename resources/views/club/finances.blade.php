@@ -12,6 +12,8 @@
 /** @var App\Models\BudgetLoan|null $activeLoan */
 /** @var bool $canRequestLoan */
 /** @var int $maxLoanAmount */
+/** @var App\Modules\Finance\DTOs\WageHeadroom $wageHeadroomCurrent */
+/** @var App\Modules\Finance\DTOs\WageHeadroom $wageHeadroomNext */
 @endphp
 
 <x-app-layout>
@@ -73,6 +75,14 @@
             @if($investment)
             <x-summary-card :label="__('finances.transfer_budget')" :value="$investment->formatted_transfer_budget" value-class="text-accent-blue" />
             @endif
+        </div>
+
+        {{-- Wage Budget panel --}}
+        <div class="mb-6">
+            <x-wage-budget-panel
+                :current-season="$wageHeadroomCurrent"
+                :next-season="$wageHeadroomNext"
+            />
         </div>
 
         {{-- 2-Column Layout --}}

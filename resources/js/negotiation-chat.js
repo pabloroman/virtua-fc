@@ -416,6 +416,14 @@ export default function negotiationChat() {
                         content: { text: error.message || 'Something went wrong' },
                         options: null,
                     });
+                    if (error?.wage_cap) {
+                        window.dispatchEvent(new CustomEvent('wage-cap-blocked', {
+                            detail: {
+                                shortfall_cents: error.wage_cap.shortfall_cents ?? 0,
+                                blocked_by: error.wage_cap.blocked_by ?? null,
+                            },
+                        }));
+                    }
                     return null;
                 }
 

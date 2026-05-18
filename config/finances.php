@@ -1,6 +1,25 @@
 <?php
 
 return [
+    // Wage cap — annual squad wages must not exceed this fraction of projected
+    // total revenue, plus a small absolute buffer to avoid blocking signings
+    // that are technically a few euros over. Held intentionally generous: the
+    // cap is a sanity floor against the Bosman/free-agent stacking exploit,
+    // not a punishment. Tighten in a future release by editing this value or
+    // adding a per-tier override below.
+    'wage_cap_ratio' => 1.0,
+
+    // Optional per-competition-tier override of the wage cap. Tier 1 = La Liga,
+    // tier 2 = Segunda, tier 3 = Primera RFEF. Leave empty to apply the global
+    // ratio above to every tier.
+    'wage_cap_ratio_by_tier' => [
+        // 1 => 0.85, // example: tighten La Liga to 85%
+    ],
+
+    // Absolute tolerance on top of the ratio-derived cap (cents). €100K covers
+    // rounding noise and tiny overruns without forcing the user to renegotiate.
+    'wage_cap_buffer_cents' => 10_000_000,
+
     // Annual operating expenses by reputation level (in cents)
     // Covers: non-playing staff, admin, travel, insurance, legal, etc.
     'operating_expenses' => [

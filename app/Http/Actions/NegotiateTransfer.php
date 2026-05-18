@@ -5,9 +5,11 @@ namespace App\Http\Actions;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\TransferOffer;
+use App\Modules\Finance\Enums\SigningContext;
 use App\Modules\Finance\Services\BudgetLoanService;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Transfer\Enums\NegotiationScenario;
+use App\Modules\Transfer\Exceptions\WageCapException;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\ScoutingService;
 use App\Modules\Transfer\Services\TransferService;
@@ -446,6 +448,12 @@ class NegotiateTransfer
         $offerWageCents = $validated['wage'] * 100;
         $offeredYears = $validated['years'];
 
+        try {
+            $this->transferService->assertWageCap($game, $offerWageCents, SigningContext::TRANSFER);
+        } catch (WageCapException $e) {
+            return $this->wageCapRejection($e);
+        }
+
         $result = $this->contractService->negotiateTermsSync(
             $offer, $offerWageCents, $offeredYears, NegotiationScenario::TRANSFER, $game,
         );
@@ -506,6 +514,12 @@ class NegotiateTransfer
                 'status' => 'error',
                 'message' => __('messages.transfer_failed'),
             ], 422);
+        }
+
+        try {
+            $this->transferService->assertWageCap($game, (int) $offer->wage_counter_offer, SigningContext::TRANSFER);
+        } catch (WageCapException $e) {
+            return $this->wageCapRejection($e);
         }
 
         $this->contractService->acceptTermsCounterForScenario($offer, NegotiationScenario::TRANSFER);
@@ -573,5 +587,17 @@ class NegotiateTransfer
     private function calculateMidpointInEuros(int $centsA, int $centsB): int
     {
         return (int) (ceil(($centsA + $centsB) / 2 / 100 / 10000) * 10000);
+    }
+
+    private function wageCapRejection(WageCapException $e): JsonResponse
+    {
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage(),
+            'wage_cap' => [
+                'shortfall_cents' => $e->decision->shortfallCents,
+                'blocked_by' => $e->decision->blockedBy,
+            ],
+        ], 422);
     }
 }

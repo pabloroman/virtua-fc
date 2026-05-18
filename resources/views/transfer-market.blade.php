@@ -80,4 +80,5 @@
     </div>
 
     <x-negotiation-chat-modal />
+    <x-wage-cap-modal :game="$game" />
 </x-app-layout>

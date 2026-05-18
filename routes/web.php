@@ -309,6 +309,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/game/{gameId}/budget', SaveBudgetAllocation::class)->name('game.budget.save');
         Route::post('/game/{gameId}/infrastructure/upgrade', UpgradeInfrastructure::class)->name('game.infrastructure.upgrade');
         Route::post('/game/{gameId}/budget-loan', RequestBudgetLoan::class)->name('game.budget-loan');
+        Route::get('/game/{gameId}/wage-budget/freeables', \App\Http\Actions\ShowWageBudgetFreeables::class)->name('game.wage-budget.freeables');
 
         // Welcome Tutorial (new games only)
         Route::get('/game/{gameId}/welcome', ShowWelcome::class)->name('game.welcome');

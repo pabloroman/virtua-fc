@@ -4,6 +4,7 @@ namespace App\Http\Actions;
 
 use App\Models\Game;
 use App\Models\GamePlayer;
+use App\Modules\Transfer\Exceptions\WageCapException;
 use App\Modules\Transfer\Services\TransferService;
 use Illuminate\Http\Request;
 
@@ -31,6 +32,10 @@ class SubmitPreContractOffer
 
         try {
             $this->transferService->submitPreContractOffer($game, $player, $offeredWageCents);
+        } catch (WageCapException $e) {
+            return redirect()->route('game.transfers', $gameId)
+                ->with('error', $e->getMessage())
+                ->with('wage_cap_shortfall', $e->decision->shortfallCents);
         } catch (\InvalidArgumentException $e) {
             return redirect()->route('game.transfers', $gameId)
                 ->with('error', $e->getMessage());

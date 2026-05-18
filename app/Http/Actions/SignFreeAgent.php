@@ -6,6 +6,7 @@ use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Transfer\Enums\NegotiationScenario;
+use App\Modules\Transfer\Exceptions\WageCapException;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\DispositionService;
 use App\Modules\Transfer\Services\TransferService;
@@ -44,7 +45,14 @@ class SignFreeAgent
 
         $demand = $this->contractService->calculateWageDemand($player, NegotiationScenario::FREE_AGENT, $game->team);
 
-        $offer = $this->transferService->signFreeAgent($game, $player, $demand['wage']);
+        try {
+            $offer = $this->transferService->signFreeAgent($game, $player, $demand['wage']);
+        } catch (WageCapException $e) {
+            return redirect()->route('game.transfers', $gameId)
+                ->with('error', $e->getMessage())
+                ->with('wage_cap_shortfall', $e->decision->shortfallCents);
+        }
+
         $this->notificationService->notifyTransferComplete($game, $offer);
 
         return redirect()->route('game.transfers', $gameId)

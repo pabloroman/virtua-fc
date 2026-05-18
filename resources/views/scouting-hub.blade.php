@@ -714,5 +714,6 @@
     <x-scout-search-modal :game="$game" :can-search-internationally="$canSearchInternationally" />
     <x-scout-results-modal />
     <x-negotiation-chat-modal />
+    <x-wage-cap-modal :game="$game" />
 
 </x-app-layout>

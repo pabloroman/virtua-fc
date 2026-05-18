@@ -5,9 +5,14 @@ namespace App\Modules\Transfer\Services;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\TransferOffer;
+use App\Modules\Finance\Services\WageBudgetService;
 
 class TransferHeaderService
 {
+    public function __construct(
+        private readonly WageBudgetService $wageBudgetService,
+    ) {}
+
     /**
      * Gather all shared header data for the transfer tab views.
      *
@@ -17,6 +22,8 @@ class TransferHeaderService
      *     windowCountdown: array|null,
      *     totalWageBill: int,
      *     salidaBadgeCount: int,
+     *     wageHeadroomCurrent: \App\Modules\Finance\DTOs\WageHeadroom,
+     *     wageHeadroomNext: \App\Modules\Finance\DTOs\WageHeadroom,
      * }
      */
     public function getHeaderData(Game $game): array
@@ -27,6 +34,8 @@ class TransferHeaderService
             'windowCountdown' => $game->getWindowCountdown(),
             'totalWageBill' => $this->getTotalWageBill($game),
             'salidaBadgeCount' => $this->getSalidaBadgeCount($game),
+            'wageHeadroomCurrent' => $this->wageBudgetService->currentSeasonHeadroom($game),
+            'wageHeadroomNext' => $this->wageBudgetService->nextSeasonHeadroom($game),
         ];
     }
 

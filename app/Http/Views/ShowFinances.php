@@ -4,6 +4,7 @@ namespace App\Http\Views;
 
 use App\Modules\Finance\Services\BudgetLoanService;
 use App\Modules\Finance\Services\BudgetProjectionService;
+use App\Modules\Finance\Services\WageBudgetService;
 use App\Models\FinancialTransaction;
 use App\Models\Game;
 use App\Models\GameInvestment;
@@ -15,6 +16,7 @@ class ShowFinances
     public function __construct(
         private readonly BudgetProjectionService $projectionService,
         private readonly BudgetLoanService $loanService,
+        private readonly WageBudgetService $wageBudgetService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -104,6 +106,9 @@ class ShowFinances
         $canRequestLoan = $this->loanService->canRequestLoan($game);
         $maxLoanAmount = $this->loanService->maxLoanAmount($game);
 
+        $wageHeadroomCurrent = $this->wageBudgetService->currentSeasonHeadroom($game);
+        $wageHeadroomNext = $this->wageBudgetService->nextSeasonHeadroom($game);
+
         return view('club.finances', [
             'game' => $game,
             'finances' => $finances,
@@ -124,6 +129,8 @@ class ShowFinances
             'activeLoan' => $activeLoan,
             'canRequestLoan' => $canRequestLoan,
             'maxLoanAmount' => $maxLoanAmount,
+            'wageHeadroomCurrent' => $wageHeadroomCurrent,
+            'wageHeadroomNext' => $wageHeadroomNext,
         ]);
     }
 }

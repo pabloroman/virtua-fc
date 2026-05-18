@@ -5,8 +5,10 @@ namespace App\Http\Actions;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\TransferOffer;
+use App\Modules\Finance\Enums\SigningContext;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Transfer\Enums\NegotiationScenario;
+use App\Modules\Transfer\Exceptions\WageCapException;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\DispositionService;
 use App\Modules\Transfer\Services\TransferService;
@@ -164,6 +166,12 @@ class NegotiateFreeAgent
             'years' => ['required', 'integer', 'min:1', 'max:5'],
         ]);
 
+        try {
+            $this->transferService->assertWageCap($game, $validated['wage'] * 100, SigningContext::FREE_AGENT);
+        } catch (WageCapException $e) {
+            return $this->wageCapRejection($e);
+        }
+
         $offer = $this->findPendingFreeAgentOffer($game, $player);
 
         if (!$offer) {
@@ -239,6 +247,12 @@ class NegotiateFreeAgent
             ], 422);
         }
 
+        try {
+            $this->transferService->assertWageCap($game, (int) $offer->wage_counter_offer, SigningContext::FREE_AGENT);
+        } catch (WageCapException $e) {
+            return $this->wageCapRejection($e);
+        }
+
         $this->contractService->acceptTermsCounterForScenario($offer, NegotiationScenario::FREE_AGENT);
         $offer->refresh();
 
@@ -247,7 +261,22 @@ class NegotiateFreeAgent
 
     private function completeFreeAgentSigning(TransferOffer $offer, Game $game, GamePlayer $player): JsonResponse
     {
-        $this->transferService->completeFreeAgentSigning($game, $player, $offer);
+        $signed = $this->transferService->completeFreeAgentSigning($game, $player, $offer);
+
+        if (! $signed) {
+            return response()->json([
+                'status' => 'ok',
+                'negotiation_status' => 'rejected',
+                'round' => $offer->terms_round ?? 1,
+                'max_rounds' => self::MAX_ROUNDS,
+                'messages' => [
+                    $this->agentMessage('rejected', [
+                        'text' => __('messages.wage_budget_exceeded'),
+                    ]),
+                ],
+            ]);
+        }
+
         $this->notificationService->notifyTransferComplete($game, $offer->refresh());
 
         return response()->json([
@@ -298,4 +327,15 @@ class NegotiateFreeAgent
         return (int) (ceil(($centsA + $centsB) / 2 / 100 / 10000) * 10000);
     }
 
+    private function wageCapRejection(WageCapException $e): JsonResponse
+    {
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage(),
+            'wage_cap' => [
+                'shortfall_cents' => $e->decision->shortfallCents,
+                'blocked_by' => $e->decision->blockedBy,
+            ],
+        ], 422);
+    }
 }

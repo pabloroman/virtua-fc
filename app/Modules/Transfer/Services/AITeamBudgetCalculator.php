@@ -47,11 +47,22 @@ class AITeamBudgetCalculator
                 $spendingLimit = (int) ($spendingLimit * 0.40);
             }
 
-            // Apply financial pressure: teams with high wage bills get reduced budgets
+            // Apply financial pressure: teams with high wage bills get reduced budgets.
+            // Now also enforces the user-side wage cap: AI teams over `wage_cap_ratio`
+            // get a hard cut to (near-)zero spending, matching the user's hard reject.
+            // Below the cap, the original soft curve (max 50% reduction) still applies.
             $players = $teamRosters->get($teamId, collect());
             $pressure = $this->financialPressure($players, $reputation);
-            $pressureDiscount = 1.0 - ($pressure * 0.50); // Up to 50% budget reduction at max pressure
-            $spendingLimit = (int) ($spendingLimit * max(0.30, $pressureDiscount));
+            $pressureDiscount = 1.0 - ($pressure * 0.50);
+            $estimatedRevenue = $this->estimatedRevenue($reputation);
+            $totalWages = $players->sum('annual_wage');
+            $capRatio = (float) config('finances.wage_cap_ratio', 1.0);
+            $overCap = $estimatedRevenue > 0 && $totalWages > ($estimatedRevenue * $capRatio);
+            if ($overCap) {
+                $spendingLimit = 0;
+            } else {
+                $spendingLimit = (int) ($spendingLimit * max(0.30, $pressureDiscount));
+            }
 
             $completed = $completedFinancials->get($teamId, ['spent' => 0, 'earned' => 0, 'sells' => 0, 'buys' => 0]);
             $maxTransfers = $this->computeTransferCount($teamId, $season, $window, $isSummer, $reputation);

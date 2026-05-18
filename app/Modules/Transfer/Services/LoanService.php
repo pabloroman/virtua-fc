@@ -14,6 +14,8 @@ use App\Models\Team;
 use App\Models\TeamReputation;
 use App\Models\TransferListing;
 use App\Models\TransferOffer;
+use App\Modules\Finance\Enums\SigningContext;
+use App\Modules\Finance\Services\WageBudgetService;
 use App\Modules\Squad\Services\SquadMinimumService;
 use App\Modules\Squad\Services\SquadNumberService;
 use App\Modules\Transfer\Enums\TransferWindowType;
@@ -31,6 +33,7 @@ class LoanService
         private readonly SquadNumberService $squadNumberService,
         private readonly AIExclusionList $exclusionList,
         private readonly SquadMinimumService $squadMinimumService,
+        private readonly WageBudgetService $wageBudgetService,
     ) {}
 
     /**
@@ -528,6 +531,17 @@ class LoanService
         $parentTeamId = $offer->selling_team_id ?? $player->team_id;
 
         if ($parentTeamId === null) {
+            $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
+            return;
+        }
+
+        // Wage cap: charge the player's annual wage against the current
+        // season's headroom. Loans don't extend the contract — the player
+        // returns to the parent club at season end — so the next-season gate
+        // doesn't apply (LOAN_IN context handles this).
+        $loanWage = (int) ($offer->offered_wage ?: $player->annual_wage);
+        $decision = $this->wageBudgetService->canAfford($game, $loanWage, SigningContext::LOAN_IN);
+        if (! $decision->allowed) {
             $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
             return;
         }

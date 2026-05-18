@@ -12,6 +12,8 @@ use App\Models\ShortlistedPlayer;
 use App\Models\TransferListing;
 use App\Models\TransferOffer;
 use App\Models\UserSquadCareerRecord;
+use App\Modules\Finance\Enums\SigningContext;
+use App\Modules\Finance\Services\WageBudgetService;
 use App\Modules\Player\PlayerAge;
 use App\Modules\Squad\Services\SquadNumberService;
 use App\Modules\Transfer\Enums\TransferWindowType;
@@ -28,6 +30,7 @@ class TransferCompletionService
 {
     public function __construct(
         private readonly SquadNumberService $squadNumberService,
+        private readonly WageBudgetService $wageBudgetService,
     ) {}
     /**
      * Complete an outgoing transfer (user's player sold to AI team).
@@ -182,6 +185,21 @@ class TransferCompletionService
             return false;
         }
 
+        // Wage cap. Pre-contracts skip the re-check here: they were gated at
+        // submission and the user can't react to a rejection at rollover.
+        // Regular incoming transfers commit current AND next season's wages.
+        if ($offer->offer_type !== TransferOffer::TYPE_PRE_CONTRACT) {
+            $wageDecision = $this->wageBudgetService->canAfford(
+                $game,
+                (int) ($offer->offered_wage ?? 0),
+                SigningContext::TRANSFER,
+            );
+            if (! $wageDecision->allowed) {
+                $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
+                return false;
+            }
+        }
+
         $player = $offer->gamePlayer;
         $playerName = $player->name;
         $sellerName = $offer->sellingTeam->name ?? $player->team->name ?? 'Unknown';
@@ -246,9 +264,23 @@ class TransferCompletionService
 
     /**
      * Complete a free agent signing (user signs unattached player).
+     *
+     * Returns false (and marks the offer rejected) when the wage cap blocks
+     * the signing. Callers should branch on the boolean to surface a
+     * shortfall message instead of an empty success.
      */
-    public function completeFreeAgentSigning(Game $game, GamePlayer $player, TransferOffer $offer): void
+    public function completeFreeAgentSigning(Game $game, GamePlayer $player, TransferOffer $offer): bool
     {
+        $wageDecision = $this->wageBudgetService->canAfford(
+            $game,
+            (int) ($offer->offered_wage ?? 0),
+            SigningContext::FREE_AGENT,
+        );
+        if (! $wageDecision->allowed) {
+            $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
+            return false;
+        }
+
         $seasonYear = (int) $game->season;
         $contractYears = $offer->offered_years ?? ($player->age($game->current_date) >= 32 ? 1 : 3);
         $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
@@ -288,6 +320,8 @@ class TransferCompletionService
         );
 
         ShortlistedPlayer::removeForPlayer($game->id, $player->id);
+
+        return true;
     }
 
     /**
