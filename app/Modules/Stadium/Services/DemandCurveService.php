@@ -43,11 +43,17 @@ class DemandCurveService
     private const ATTENDANCE_FLOOR_RATIO = 0.10;
     private const ATTENDANCE_FLOOR_ABSOLUTE = 500;
 
-    // Opponent-reputation floors. Hosting a marquee visitor draws near-full
-    // stadiums regardless of home-side loyalty or form.
+    // Visitor-reputation floors. The visiting club's brand alone draws a
+    // baseline crowd regardless of home-side loyalty: elite/continental
+    // names pack stadiums, but even an established or modest opponent in
+    // the top flight pulls more than a deserted ground would imply. Floor
+    // ladder descends 10 points per tier; a local-tier visitor falls back
+    // to the loyalty curve's own 50% floor.
     private const OPPONENT_FLOOR_RATIO = [
         ClubProfile::REPUTATION_ELITE => 0.90,
         ClubProfile::REPUTATION_CONTINENTAL => 0.80,
+        ClubProfile::REPUTATION_ESTABLISHED => 0.70,
+        ClubProfile::REPUTATION_MODEST => 0.60,
     ];
 
     // Combined context-bonus (opponentDelta + competitionWeight) at which a
@@ -111,10 +117,10 @@ class DemandCurveService
     }
 
     /**
-     * Minimum attendance when hosting a top-tier visitor. Elite visitors
-     * (Real/Barça/etc.) floor the gate at 90% capacity, continental visitors
-     * at 80%. Lower-tier visitors don't trigger a floor — the normal
-     * loyalty-driven demand curve applies.
+     * Visitor-reputation floor on the gate. Each tier sets a minimum fill
+     * regardless of home-side loyalty: elite 90%, continental 80%,
+     * established 70%, modest 60%. Local-tier visitors fall back to the
+     * loyalty curve's own 50% floor.
      */
     private function opponentFloor(TeamReputation $awayRep, int $capacity): int
     {
