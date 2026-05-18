@@ -357,15 +357,34 @@ class GamePlayer extends Model
     }
 
     /**
-     * True if the player joined their current team during the currently-open
-     * transfer window. Used to prevent flipping a player in the same window
-     * they were acquired.
+     * True if the player is currently locked from being sold. Triggered when
+     * they joined during the currently-open transfer window, or were signed
+     * as a free agent at any point in the current season.
+     *
+     * Free agent signings are always covered, even outside an open transfer
+     * window: free agents can be signed at any time and come in at zero cost,
+     * so without a season-long lock a user could sign a free player and
+     * immediately flip them for full market value.
      */
-    public function joinedInCurrentWindow(?Game $game = null): bool
+    public function isInSaleCooldown(?Game $game = null): bool
     {
         $game = $game ?? $this->game;
 
-        if (! $game?->current_date || ! $game->isTransferWindowOpen()) {
+        if (! $game?->current_date) {
+            return false;
+        }
+
+        $signedAsFreeAgentThisSeason = GameTransfer::where('game_player_id', $this->id)
+            ->where('to_team_id', $this->team_id)
+            ->where('type', GameTransfer::TYPE_FREE_AGENT)
+            ->where('season', $game->season)
+            ->exists();
+
+        if ($signedAsFreeAgentThisSeason) {
+            return true;
+        }
+
+        if (! $game->isTransferWindowOpen()) {
             return false;
         }
 

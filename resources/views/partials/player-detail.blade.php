@@ -17,7 +17,7 @@
         && !$gamePlayer->hasPreContractAgreement()
         && !$gamePlayer->hasAgreedTransfer()
         && !$gamePlayer->hasActiveLoanSearch();
-    $canSell = $canManage && !$gamePlayer->joinedInCurrentWindow($game);
+    $canSell = $canManage && !$gamePlayer->isInSaleCooldown($game);
     $isTransferWindow = $isCareerMode && $game->isTransferWindowOpen();
     $showActions = $isCareerMode && ($isListed || $canManage);
 
