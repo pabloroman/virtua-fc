@@ -6,7 +6,7 @@
  * Isolated from the UI panel (tactical-panel.js) so the network + state-
  * reconciliation flow can be reasoned about on its own.
  */
-import { MINUTE, FREE_SUB_WINDOW_MINUTES, resolveMinuteForTacticalChange } from './match-phases.js';
+import { MINUTE, FREE_SUB_WINDOW_MINUTES } from './match-phases.js';
 import { regenerateShots, regenerateNarratives } from './atmosphere-generator.js';
 import { updateRosterPerformances } from './player-ratings.js';
 
@@ -34,7 +34,7 @@ export function createTacticalSubmission(ctx) {
             c.tacticalError = null;
             c.applyingChanges = true;
 
-            const minute = resolveMinuteForTacticalChange(c.currentMinute, c.phase);
+            const minute = Math.floor(c.currentMinute);
 
             try {
                 const payload = {

@@ -68,8 +68,16 @@ class MatchResimulationService
         $oldHomeScore = $match->home_score;
         $oldAwayScore = $match->away_score;
 
+        // The clock can reach 90 in the going-to-ET window while stoppage-time
+        // events (minutes 91-93) are already counted in home_score / away_score.
+        // Pin the revert/resim anchor to 93 in that zone so a sub stamped at
+        // minute 90 doesn't wipe the stoppage events and leave the scoreline
+        // out of sync with the event feed. Mid-match the anchor is just the
+        // actual clock minute.
+        $resimAnchor = $minute >= 90 ? 93 : $minute;
+
         // 2. Revert all events after the minute
-        $this->revertEventsAfterMinute($match, $minute, $competitionId);
+        $this->revertEventsAfterMinute($match, $resimAnchor, $competitionId);
 
         // 3. Calculate score at the minute (from remaining events)
         $scoreAtMinute = $this->calculateScoreAtMinute($match);
@@ -80,7 +88,7 @@ class MatchResimulationService
         // 5. Exclude red-carded and substituted-out players
         $unavailablePlayerIds = MatchEvent::where('game_match_id', $match->id)
             ->whereIn('event_type', ['red_card', 'substitution'])
-            ->where('minute', '<=', $minute)
+            ->where('minute', '<=', $resimAnchor)
             ->pluck('game_player_id')
             ->all();
 
@@ -97,7 +105,7 @@ class MatchResimulationService
         $userAutoSubEvents = MatchEvent::where('game_match_id', $match->id)
             ->where('team_id', $userTeamId)
             ->where('event_type', 'substitution')
-            ->where('minute', '<=', $minute)
+            ->where('minute', '<=', $resimAnchor)
             ->whereNotIn('game_player_id', collect($allSubstitutions)->pluck('playerOutId')->all())
             ->get();
 
@@ -120,14 +128,14 @@ class MatchResimulationService
 
         // 6. Get existing injuries/yellows for context
         $existingInjuryTeamIds = MatchEvent::where('game_match_id', $match->id)
-            ->where('minute', '<=', $minute)
+            ->where('minute', '<=', $resimAnchor)
             ->where('event_type', 'injury')
             ->pluck('team_id')
             ->unique()
             ->all();
 
         $existingYellowPlayerIds = MatchEvent::where('game_match_id', $match->id)
-            ->where('minute', '<=', $minute)
+            ->where('minute', '<=', $resimAnchor)
             ->where('event_type', 'yellow_card')
             ->pluck('game_player_id')
             ->unique()
@@ -165,7 +173,7 @@ class MatchResimulationService
         $opponentSubEvents = MatchEvent::where('game_match_id', $match->id)
             ->where('team_id', $opponentTeamId)
             ->where('event_type', 'substitution')
-            ->where('minute', '<=', $minute)
+            ->where('minute', '<=', $resimAnchor)
             ->get();
         foreach ($opponentSubEvents as $subEvent) {
             $playerInId = $subEvent->metadata['player_in_id'] ?? null;
@@ -250,7 +258,7 @@ class MatchResimulationService
                 $tc->awayFormation,
                 $tc->homeMentality,
                 $tc->awayMentality,
-                $minute,
+                $resimAnchor,
                 $game,
                 $existingInjuryTeamIds,
                 $existingYellowPlayerIds,
@@ -286,7 +294,7 @@ class MatchResimulationService
                 $tc->awayFormation,
                 $tc->homeMentality,
                 $tc->awayMentality,
-                $minute,
+                $resimAnchor,
                 $game,
                 $existingInjuryTeamIds,
                 $existingYellowPlayerIds,
@@ -407,8 +415,14 @@ class MatchResimulationService
             $oldHomeScore = $match->home_score_et ?? 0;
             $oldAwayScore = $match->away_score_et ?? 0;
 
+            // In early ET the clock can sit at 91-92 while regulation stoppage
+            // events (minutes 91-93) are already counted in home_score /
+            // away_score. Pin the revert/resim anchor to >= 93 so a sub
+            // stamped at 91 doesn't delete the stoppage-time event log.
+            $resimAnchor = max($minute, 93);
+
             // 2. Revert all events after the minute
-            $this->revertEventsAfterMinute($match, $minute, $competitionId);
+            $this->revertEventsAfterMinute($match, $resimAnchor, $competitionId);
 
             // 3. Calculate ET-only score at minute (events with minute > 93 that remain).
             // Use 93 (not 90) because stoppage-time goals at minutes 91-93 are
@@ -421,7 +435,7 @@ class MatchResimulationService
             // 5. Exclude red-carded and substituted-out players
             $unavailablePlayerIds = MatchEvent::where('game_match_id', $match->id)
                 ->whereIn('event_type', ['red_card', 'substitution'])
-                ->where('minute', '<=', $minute)
+                ->where('minute', '<=', $resimAnchor)
                 ->pluck('game_player_id')
                 ->all();
 
@@ -435,7 +449,7 @@ class MatchResimulationService
             $userAutoSubEvents = MatchEvent::where('game_match_id', $match->id)
                 ->where('team_id', $userTeamId)
                 ->where('event_type', 'substitution')
-                ->where('minute', '<=', $minute)
+                ->where('minute', '<=', $resimAnchor)
                 ->whereNotIn('game_player_id', collect($allSubstitutions)->pluck('playerOutId')->all())
                 ->get();
 
@@ -501,7 +515,7 @@ class MatchResimulationService
                 $awayPlayers,
                 $homeEntryMinutes,
                 $awayEntryMinutes,
-                fromMinute: $minute,
+                fromMinute: $resimAnchor,
                 homeFormation: $tc->homeFormation,
                 awayFormation: $tc->awayFormation,
                 homeMentality: $tc->homeMentality,

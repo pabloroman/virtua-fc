@@ -31,15 +31,11 @@ import {
     MINUTE,
     isExtraTimePhase,
     isPlayingPhase,
-    resolveMinuteForTacticalChange,
 } from './modules/match-phases.js';
 import { createKnockoutOutcome } from './modules/knockout-outcome.js';
 import { createRatingsGlue } from './modules/ratings-glue.js';
 import { createEventFeed } from './modules/event-feed.js';
 import { createEventCache } from './modules/event-cache.js';
-
-// Re-export for any consumers that imported it from this module.
-export { resolveMinuteForTacticalChange };
 
 export default function liveMatch(config) {
     // Create modules early with a deferred context reference so their

@@ -20,7 +20,6 @@ export const PHASE = Object.freeze({
 export const MINUTE = Object.freeze({
     FIRST_HALF_END: 45,
     REGULAR_TIME_END: 90,
-    ET_MIN: 93, // backend routing threshold for tactical changes
     ET_FIRST_HALF_END: 105,
     ET_END: 120,
 });
@@ -53,17 +52,3 @@ export function isHalfTimeLike(phase) {
     return phase === PHASE.HALF_TIME || phase === PHASE.EXTRA_TIME_HALF_TIME;
 }
 
-/**
- * Determine the minute value to send to the backend for a tactical change.
- * During ET-related phases, the currentMinute may be 90 (set by
- * enterRegularTimeEnd), which the backend would interpret as regular time.
- * Clamp to ET_MIN so the backend routes to resimulateExtraTime and doesn't
- * delete stoppage-time goal events.
- */
-export function resolveMinuteForTacticalChange(currentMinute, phase) {
-    const minute = Math.floor(currentMinute);
-    if (isExtraTimePhase(phase) && minute <= MINUTE.ET_MIN) {
-        return Math.max(minute, MINUTE.ET_MIN);
-    }
-    return minute;
-}
