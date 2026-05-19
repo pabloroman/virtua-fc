@@ -216,9 +216,13 @@ class FixReserveCoexistence extends Command
             }
 
             if ($repaired > 0) {
-                // Clear ESPSUP-style supercup entries so the next pipeline run
-                // re-derives them against the corrected league rosters. Use
-                // the country's supercup config rather than hard-coding ESPSUP.
+                // Clear ESPSUP-style supercup entries so the bump step in
+                // SeasonInitializationService::updateCupEntryRoundsForSupercupTeams
+                // becomes a no-op (no supercup teams to bump = no odd
+                // round-1 pool). The supercup for THIS season simply doesn't
+                // get played; next season's closing pipeline re-derives it
+                // cleanly. Use the country's supercup config rather than
+                // hard-coding ESPSUP.
                 $supercupConfig = $countryConfig->supercup($country);
                 if ($supercupConfig !== null && !empty($supercupConfig['competition'])) {
                     CompetitionEntry::where('game_id', $game->id)
@@ -226,18 +230,14 @@ class FixReserveCoexistence extends Command
                         ->delete();
                 }
 
-                // If the game is mid-transition, clear the checkpoint so the
-                // pipeline restarts from the beginning of the closing phase.
-                // Most processors are idempotent — they short-circuit already-
-                // completed work. Leaving a stale step pointer would skip
-                // SupercupQualificationProcessor, which is exactly the step we
-                // want to re-run.
-                if ($game->season_transition_step !== null) {
-                    Game::where('id', $game->id)->update([
-                        'season_transition_step' => null,
-                        'season_transition_data' => null,
-                    ]);
-                }
+                // DON'T clear season_transition_step. A first version did,
+                // which caused the closing pipeline to re-run for the
+                // already-advanced new season — which has no played data,
+                // and SupercupQualificationProcessor then crashed with
+                // "expected 4 qualifiers, got 0". Leaving the checkpoint
+                // in place lets the pipeline resume from where it crashed
+                // in the setup phase, where the cup draw can now succeed
+                // with the empty supercup field.
             }
 
             return $repaired;

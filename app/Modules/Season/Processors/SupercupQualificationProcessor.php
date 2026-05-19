@@ -11,6 +11,7 @@ use App\Models\CompetitionEntry;
 use App\Models\GameStanding;
 use App\Models\SimulatedSeason;
 use App\Models\Team;
+use Illuminate\Support\Facades\Log;
 use RuntimeException;
 
 /**
@@ -99,6 +100,31 @@ class SupercupQualificationProcessor implements SeasonProcessor
 
         // Determine the 4 supercup qualifiers
         $qualifiers = $this->determineQualifiers($cupFinalists, $leagueTopTeams);
+
+        if (count($qualifiers) === 0
+            && $cupFinalists['winner'] === null
+            && $cupFinalists['runnerUp'] === null
+            && empty($leagueTopTeams)) {
+            // No data at all to derive a supercup field — neither real
+            // standings, simulated results, nor a completed cup final.
+            // Happens on recovery paths where the closing pipeline is
+            // re-run for a season that hasn't actually played yet (the
+            // setup pipeline already advanced the season but crashed
+            // mid-way, and a recovery rewound the checkpoint). Skip
+            // cleanly rather than crash — the supercup for this season
+            // simply doesn't get derived; next season it picks up again.
+            // The < 4 partial-data path below still throws, which is the
+            // Population A signal we want to keep.
+            Log::warning('[SupercupQualification] No data to derive qualifiers — skipping', [
+                'game_id' => $game->id,
+                'supercup_id' => $supercupId,
+                'cup_id' => $cupId,
+                'league_id' => $leagueId,
+                'season' => $game->season,
+            ]);
+
+            return;
+        }
 
         if (count($qualifiers) !== 4) {
             // Source of Population A in the cup-draw incident: cup didn't
