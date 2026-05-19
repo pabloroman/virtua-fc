@@ -2,6 +2,8 @@
 
 namespace App\Modules\Manager\Processors;
 
+use App\Models\Competition;
+use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\ManagerJobHistory;
 use App\Models\ManagerJobOffer;
@@ -12,6 +14,7 @@ use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Services\TeamReputationSeeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Apply a pro-manager team switch the user accepted at the previous
@@ -42,23 +45,45 @@ class ApplyPendingTeamSwitchProcessor implements SeasonProcessor
 
         $offer = ManagerJobOffer::find($game->pending_team_switch);
         if (!$offer || $offer->status !== ManagerJobOffer::STATUS_ACCEPTED) {
-            // Stale or invalid pointer — clear it so the user isn't stuck.
+            Log::warning('[ApplyPendingTeamSwitch] aborting: offer missing or not accepted', [
+                'game_id' => $game->id,
+                'pending_team_switch' => $game->pending_team_switch,
+                'offer_status' => $offer?->status,
+            ]);
             $game->update(['pending_team_switch' => null]);
             return $data;
         }
 
         $newTeam = Team::find($offer->team_id);
         if (!$newTeam) {
+            Log::warning('[ApplyPendingTeamSwitch] aborting: offer team not found', [
+                'game_id' => $game->id,
+                'offer_id' => $offer->id,
+                'team_id' => $offer->team_id,
+            ]);
             $game->update(['pending_team_switch' => null]);
             return $data;
         }
 
-        $newCompetitionId = $offer->competition_id
+        // Resolve from per-game competition_entries first. The offer was
+        // stamped before the closing pipeline ran, so its competition_id is
+        // stale whenever PromotionRelegationProcessor moved the destination
+        // team between leagues during closing — picking the offer's value
+        // strands the user in a league their new club isn't entered in,
+        // and SyntheticLeagueResolver silently resolves the team's real
+        // league as a "non-user" league at season-close (Copa del Rey is
+        // the only thing left to play).
+        $newCompetitionId = $this->resolveCurrentLeagueForTeam($game->id, $offer->team_id)
+            ?? $offer->competition_id
             ?? $this->jobOfferService->resolveAcceptedCompetitionId($offer->team_id);
 
         if (!$newCompetitionId) {
-            // Should never happen for reference-seeded clubs, but bail
-            // rather than land the user in an unconfigured league.
+            Log::warning('[ApplyPendingTeamSwitch] aborting: could not resolve destination competition', [
+                'game_id' => $game->id,
+                'offer_id' => $offer->id,
+                'team_id' => $offer->team_id,
+                'offer_competition_id' => $offer->competition_id,
+            ]);
             $game->update(['pending_team_switch' => null]);
             return $data;
         }
@@ -152,5 +177,23 @@ class ApplyPendingTeamSwitchProcessor implements SeasonProcessor
             'season_end' => null,
             'end_reason' => ManagerJobHistory::REASON_STILL_ACTIVE,
         ]);
+    }
+
+    /**
+     * Return the league competition the team is currently entered in for this
+     * game. Reads competition_entries (tenant) and the cached set of league
+     * competition_ids (control) separately to avoid a planes-seam JOIN.
+     */
+    private function resolveCurrentLeagueForTeam(string $gameId, string $teamId): ?string
+    {
+        $leagueIds = Competition::where('role', Competition::ROLE_LEAGUE)->pluck('id')->all();
+        if ($leagueIds === []) {
+            return null;
+        }
+
+        return CompetitionEntry::where('game_id', $gameId)
+            ->where('team_id', $teamId)
+            ->whereIn('competition_id', $leagueIds)
+            ->value('competition_id');
     }
 }
