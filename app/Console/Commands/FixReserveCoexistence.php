@@ -70,7 +70,7 @@ class FixReserveCoexistence extends Command
                 continue;
             }
 
-            $violations = $this->findViolations($game->id, $reserveTeams);
+            $violations = $this->findViolations($game->id, $reserveTeams, $country, $countryConfig);
 
             if ($violations->isEmpty()) {
                 continue;
@@ -81,7 +81,10 @@ class FixReserveCoexistence extends Command
 
             if (!$apply) {
                 foreach ($violations as $v) {
-                    $this->line("  - reserve {$v['reserve_name']} ({$v['reserve_id']}) and parent {$v['parent_id']} share {$v['competition_id']}");
+                    $detail = $v['type'] === 'coexistence'
+                        ? "reserve {$v['reserve_name']} ({$v['reserve_id']}) and parent {$v['parent_id']} share {$v['competition_id']}"
+                        : "reserve {$v['reserve_name']} ({$v['reserve_id']}) in {$v['competition_id']} is one tier below parent {$v['parent_id']} (fragile — coexistence on parent relegation)";
+                    $this->line("  - [{$v['type']}] {$detail}");
                 }
                 continue;
             }
@@ -99,14 +102,24 @@ class FixReserveCoexistence extends Command
     }
 
     /**
+     * Two violation types are reported:
+     *   - 'coexistence': reserve and parent in the same competition (the
+     *     bug this command was built for).
+     *   - 'fragile': reserve is in a competition immediately below the
+     *     parent's. The parent relegating creates coexistence in the next
+     *     season transition — exactly the trap the first pass of this
+     *     command fell into when it placed a reserve in ESP2 with the
+     *     parent in ESP1. Detect and move pre-emptively.
+     *
      * @return \Illuminate\Support\Collection<int, array{
+     *     type: 'coexistence'|'fragile',
      *     reserve_id: string,
      *     reserve_name: string,
      *     parent_id: string,
      *     competition_id: string,
      * }>
      */
-    private function findViolations(string $gameId, \Illuminate\Support\Collection $reserveTeams)
+    private function findViolations(string $gameId, \Illuminate\Support\Collection $reserveTeams, string $country, CountryConfig $countryConfig)
     {
         $reservesById = $reserveTeams->keyBy('id');
 
@@ -125,20 +138,40 @@ class FixReserveCoexistence extends Command
             ->groupBy('team_id')
             ->map(fn ($e) => $e->pluck('competition_id')->all());
 
-        return $reserveEntries->map(function ($entry) use ($reservesById, $parentEntries) {
+        $tierMap = $countryConfig->tiers($country);
+
+        return $reserveEntries->map(function ($entry) use ($reservesById, $parentEntries, $tierMap, $countryConfig, $country) {
             $reserve = $reservesById->get($entry->team_id);
             $parentDivisions = $parentEntries->get($reserve->parent_team_id, []);
 
-            if (!in_array($entry->competition_id, $parentDivisions, true)) {
-                return null;
+            if (in_array($entry->competition_id, $parentDivisions, true)) {
+                return [
+                    'type' => 'coexistence',
+                    'reserve_id' => $entry->team_id,
+                    'reserve_name' => $reserve->name,
+                    'parent_id' => $reserve->parent_team_id,
+                    'competition_id' => $entry->competition_id,
+                ];
             }
 
-            return [
-                'reserve_id' => $entry->team_id,
-                'reserve_name' => $reserve->name,
-                'parent_id' => $reserve->parent_team_id,
-                'competition_id' => $entry->competition_id,
-            ];
+            // Fragile: reserve sits immediately below the parent. The next
+            // parent relegation creates coexistence. Detected by comparing
+            // tiers (lower tier number = higher division).
+            $reserveTier = $this->resolveTier($entry->competition_id, $tierMap, $countryConfig, $country);
+            foreach ($parentDivisions as $parentCompetitionId) {
+                $parentTier = $this->resolveTier($parentCompetitionId, $tierMap, $countryConfig, $country);
+                if ($parentTier !== null && $reserveTier !== null && $reserveTier === $parentTier + 1) {
+                    return [
+                        'type' => 'fragile',
+                        'reserve_id' => $entry->team_id,
+                        'reserve_name' => $reserve->name,
+                        'parent_id' => $reserve->parent_team_id,
+                        'competition_id' => $entry->competition_id,
+                    ];
+                }
+            }
+
+            return null;
         })->filter()->values();
     }
 
@@ -212,12 +245,16 @@ class FixReserveCoexistence extends Command
     }
 
     /**
-     * Find a non-reserve team to swap into the violating competition. Looks
-     * for the worst-ranked non-reserve in a lower tier than the violation's
-     * competition where the reserve's parent is NOT present. Preferring the
-     * worst-ranked team minimises competitive disruption — a struggling
-     * lower-tier team gets a bump up; the reserve drops into the slot it
-     * vacates.
+     * Find a non-reserve team to swap with the violating reserve. Walks
+     * tiers strictly below the violation from DEEPEST to shallowest — a
+     * reserve placed at the bottom of the pyramid is safe from any
+     * realistic parent relegation, whereas placing it one tier below the
+     * parent recreates the same fragile state the next season transition
+     * would collapse.
+     *
+     * Skips any tier where the parent is currently present (would be
+     * immediate coexistence) and any tier whose only competitions host
+     * reserves (replacing a reserve with another reserve solves nothing).
      *
      * @param  array{reserve_id: string, parent_id: string, competition_id: string}  $violation
      * @return array{team_id: string, competition_id: string}|null
@@ -236,11 +273,10 @@ class FixReserveCoexistence extends Command
             ->pluck('competition_id')
             ->all();
 
-        // Walk tiers strictly below the violation downward. Prefer the
-        // worst-ranked eligible team in the lowest tier that doesn't host
-        // the parent. Reserve teams in those tiers are skipped — replacing
-        // a reserve with another reserve solves nothing.
-        for ($tier = $violationTier + 1; $tier <= max(array_keys($tierMap)); $tier++) {
+        $tiersBelow = array_values(array_filter(array_keys($tierMap), fn ($t) => $t > $violationTier));
+        rsort($tiersBelow); // deepest first — see method docblock
+
+        foreach ($tiersBelow as $tier) {
             foreach ($countryConfig->tierCompetitionIds($country, $tier) as $candidateCompetition) {
                 if (in_array($candidateCompetition, $parentCompetitions, true)) {
                     continue;
