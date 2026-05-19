@@ -212,6 +212,13 @@ class SeasonInitializationService
     /**
      * Update ESPCUP entry_rounds for teams qualifying for the supercup.
      * Supercup-qualifying teams enter the cup at a later round.
+     *
+     * Upserts (rather than a plain UPDATE) so a supercup team that isn't
+     * already a cup entry is inserted at the configured entry_round. The
+     * supercup qualifier path now scrubs reserves up front, so any team
+     * landing here is eligible for the cup — the upsert is a tiny safety
+     * belt for the silent-UPDATE-miss case that produced the 113-team
+     * round-1 OddCupDrawPoolException in production.
      */
     private function updateCupEntryRoundsForSupercupTeams(string $gameId, string $countryCode): void
     {
@@ -228,7 +235,6 @@ class SeasonInitializationService
         $domesticCupId = $supercupConfig['cup'];
         $supercupId = $supercupConfig['competition'];
 
-        // Get teams qualifying for the supercup
         $supercupTeamIds = CompetitionEntry::where('game_id', $gameId)
             ->where('competition_id', $supercupId)
             ->pluck('team_id')
@@ -238,16 +244,50 @@ class SeasonInitializationService
             return;
         }
 
+        // Scrub reserves from the supercup list before the upsert below.
+        // The upstream SupercupQualificationProcessor scrubs reserves at
+        // qualification time now, but games whose supercup field was
+        // written by the previous code can still carry one. Without this
+        // filter, the upsert would insert the reserve into the cup,
+        // breaking the reserve-never-in-cup invariant. Note: this does
+        // not by itself recover an in-flight transition that already
+        // contains a reserve supercup pick (round 1 parity is fixed
+        // upstream by SupercupQualificationProcessor re-deriving the
+        // field with the corrected query).
+        $reserveTeamIds = Team::where('country', $countryCode)
+            ->whereNotNull('parent_team_id')
+            ->pluck('id')
+            ->all();
+
+        if (!empty($reserveTeamIds)) {
+            $reserveLookup = array_flip($reserveTeamIds);
+            $supercupTeamIds = array_values(array_filter(
+                $supercupTeamIds,
+                fn (string $teamId) => !isset($reserveLookup[$teamId]),
+            ));
+        }
+
         // Reset ALL domestic cup entries to round 1
         CompetitionEntry::where('game_id', $gameId)
             ->where('competition_id', $domesticCupId)
             ->update(['entry_round' => 1]);
 
-        // Set supercup-qualifying teams to enter at the later round
-        CompetitionEntry::where('game_id', $gameId)
-            ->where('competition_id', $domesticCupId)
-            ->whereIn('team_id', $supercupTeamIds)
-            ->update(['entry_round' => $cupEntryRound]);
+        if (empty($supercupTeamIds)) {
+            return;
+        }
+
+        $supercupRows = array_map(fn (string $teamId) => [
+            'game_id' => $gameId,
+            'competition_id' => $domesticCupId,
+            'team_id' => $teamId,
+            'entry_round' => $cupEntryRound,
+        ], $supercupTeamIds);
+
+        CompetitionEntry::upsert(
+            $supercupRows,
+            ['game_id', 'competition_id', 'team_id'],
+            ['entry_round']
+        );
     }
 
     /**

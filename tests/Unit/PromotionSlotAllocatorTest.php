@@ -489,4 +489,77 @@ class PromotionSlotAllocatorTest extends TestCase
         $this->assertSame(4, $allocation->playoffQualifiers[0]['position']);
         $this->assertSame(7, $allocation->playoffQualifiers[3]['position']);
     }
+
+    // ──────────────────────────────────────────────────
+    // Cross-rule incoming context — parent relegation collision
+    // ──────────────────────────────────────────────────
+
+    /**
+     * The pro-manager game (a6f6db6e-…) regression. Same-season collision:
+     * a reserve at the top of the bottom division gets promoted while its
+     * parent is being relegated from above into the destination division.
+     *
+     * The reserve filter's snapshot reads the top division's current state —
+     * the parent is still in its old division, not the destination — so it
+     * doesn't block. PromotionRelegationProcessor now threads each rule's
+     * incoming-relegation list into the allocator so the filter sees the
+     * post-relegation roster of the destination and treats the reserve as
+     * blocked.
+     */
+    public function test_reserve_is_blocked_when_parent_is_about_to_be_relegated_into_destination(): void
+    {
+        $teams = $this->seedFullStandings();
+
+        // Pick a parent club. Crucially, the parent is NOT currently in the
+        // top division — it's about to be relegated INTO it via a sibling
+        // rule. Without the incoming context, the filter sees no parent in
+        // ESP1 and clears the reserve.
+        $parent = Team::factory()->create();
+        $reserve = Team::factory()->create(['parent_team_id' => $parent->id]);
+
+        GameStanding::where('game_id', $this->game->id)
+            ->where('competition_id', self::BOTTOM_DIVISION)
+            ->where('position', 1)
+            ->delete();
+        $this->placeAtPosition(1, $reserve);
+        $teams[1] = $reserve;
+
+        // No-context call: filter is blind to the pending relegation, so the
+        // reserve at position 1 is promoted. This pins the pre-fix behaviour
+        // as the explicit baseline the new arg corrects.
+        $allocationWithoutContext = $this->allocator()->allocate(
+            $this->game,
+            self::BOTTOM_DIVISION,
+            2,
+            4,
+        );
+        $this->assertSame(
+            $reserve->id,
+            $allocationWithoutContext->directPromotions[0]['teamId'],
+            'Without incoming context, the allocator allows the reserve through (legacy behaviour).',
+        );
+
+        // With-context call: the parent is in the list of teams about to
+        // land in ESP1 this season. Filter now blocks the reserve and the
+        // direct-promotion slot slides to the next eligible team.
+        $allocationWithContext = $this->allocator()->allocate(
+            $this->game,
+            self::BOTTOM_DIVISION,
+            2,
+            4,
+            [$parent->id],
+        );
+
+        $direct = $this->teamIds($allocationWithContext->directPromotions);
+        $this->assertNotContains(
+            $reserve->id,
+            $direct,
+            'Reserve must be blocked when its parent is incoming to the destination.',
+        );
+        $this->assertSame(
+            [$teams[2]->id, $teams[3]->id],
+            $direct,
+            'Direct slots slide down to the next eligible teams.',
+        );
+    }
 }

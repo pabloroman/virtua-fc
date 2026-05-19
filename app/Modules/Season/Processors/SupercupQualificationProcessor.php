@@ -10,6 +10,7 @@ use App\Models\Game;
 use App\Models\CompetitionEntry;
 use App\Models\GameStanding;
 use App\Models\SimulatedSeason;
+use App\Models\Team;
 use RuntimeException;
 
 /**
@@ -78,12 +79,23 @@ class SupercupQualificationProcessor implements SeasonProcessor
             return;
         }
 
-        // Get cup finalists
-        $cupFinalists = $this->getCupFinalists($game->id, $cupId, $cupFinalRound);
+        // Reserve teams must never appear as supercup qualifiers — they're
+        // ineligible for the cup, so the downstream entry_round bump can't
+        // place them at the supercup-skip round and round 1 ends up odd
+        // (OddCupDrawPoolException). Filter once here against the country's
+        // full reserve roster rather than per-source; it covers both the
+        // GameStanding/SimulatedSeason path and a reserve cup-finalist
+        // (shouldn't happen in practice but cheap to guard against).
+        $reserveTeamIds = Team::where('country', $game->country ?? 'ES')
+            ->whereNotNull('parent_team_id')
+            ->pluck('id')
+            ->all();
+
+        $cupFinalists = $this->getCupFinalists($game->id, $cupId, $cupFinalRound, $reserveTeamIds);
 
         // Fetch league top 4 — enough to backfill 3rd/4th slots when both
         // cup finalists overlap with the league champion/runner-up.
-        $leagueTopTeams = $this->getLeagueTopTeams($game->id, $leagueId, 4);
+        $leagueTopTeams = $this->getLeagueTopTeams($game->id, $leagueId, 4, $reserveTeamIds);
 
         // Determine the 4 supercup qualifiers
         $qualifiers = $this->determineQualifiers($cupFinalists, $leagueTopTeams);
@@ -116,9 +128,10 @@ class SupercupQualificationProcessor implements SeasonProcessor
     /**
      * Get the two cup finalists.
      *
+     * @param  string[]  $reserveTeamIds  Reserve team IDs to scrub from the result.
      * @return array{winner: string|null, runnerUp: string|null}
      */
-    private function getCupFinalists(string $gameId, string $cupId, int $finalRound): array
+    private function getCupFinalists(string $gameId, string $cupId, int $finalRound, array $reserveTeamIds = []): array
     {
         $finalTie = CupTie::where('game_id', $gameId)
             ->where('competition_id', $cupId)
@@ -130,23 +143,44 @@ class SupercupQualificationProcessor implements SeasonProcessor
             return ['winner' => null, 'runnerUp' => null];
         }
 
+        $reserveLookup = array_flip($reserveTeamIds);
+        $winner = $finalTie->winner_id;
+        $runnerUp = $finalTie->getLoserId();
+
         return [
-            'winner' => $finalTie->winner_id,
-            'runnerUp' => $finalTie->getLoserId(),
+            'winner' => isset($reserveLookup[$winner]) ? null : $winner,
+            'runnerUp' => isset($reserveLookup[$runnerUp]) ? null : $runnerUp,
         ];
     }
 
     /**
      * Get the top N teams from league standings.
      *
+     * GameStanding rows are skipped when `played = 0` — those are placeholder
+     * rows written by StandingsResetProcessor at season setup and never
+     * touched again for leagues the user doesn't play (in pro-manager mode
+     * the user can be coaching a tier-3 club, so ESP1 standings stay at
+     * played=0 all season). Without this filter, the supercup qualifier
+     * path picks team IDs ordered by placeholder position rather than the
+     * real season's simulated outcome, which has put a Primera RFEF reserve
+     * into the supercup in production (cup_entry_round bump then misses the
+     * reserve, since it's not in the cup, and round 1 ends up odd).
+     *
+     * @param  string[]  $reserveTeamIds  Reserve team IDs to skip in both sources.
      * @return array<int, string> Team IDs in order of position
      */
-    private function getLeagueTopTeams(string $gameId, string $leagueId, int $count): array
+    private function getLeagueTopTeams(string $gameId, string $leagueId, int $count, array $reserveTeamIds = []): array
     {
-        // Try real standings first (player's league)
-        $teams = GameStanding::where('game_id', $gameId)
+        $standingsQuery = GameStanding::where('game_id', $gameId)
             ->where('competition_id', $leagueId)
-            ->orderBy('position')
+            ->where('played', '>', 0)
+            ->orderBy('position');
+
+        if (!empty($reserveTeamIds)) {
+            $standingsQuery->whereNotIn('team_id', $reserveTeamIds);
+        }
+
+        $teams = $standingsQuery
             ->limit($count)
             ->pluck('team_id')
             ->toArray();
@@ -163,7 +197,13 @@ class SupercupQualificationProcessor implements SeasonProcessor
             ->first();
 
         if ($simulated && !empty($simulated->results)) {
-            return array_slice($simulated->results, 0, $count);
+            $reserveLookup = array_flip($reserveTeamIds);
+            $filtered = array_values(array_filter(
+                $simulated->results,
+                fn (string $teamId) => !isset($reserveLookup[$teamId]),
+            ));
+
+            return array_slice($filtered, 0, $count);
         }
 
         return [];

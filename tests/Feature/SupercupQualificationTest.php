@@ -7,6 +7,7 @@ use App\Models\CompetitionEntry;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameStanding;
+use App\Models\SimulatedSeason;
 use App\Models\Team;
 use App\Models\User;
 use App\Modules\Season\DTOs\SeasonTransitionData;
@@ -249,6 +250,87 @@ class SupercupQualificationTest extends TestCase
 
         $this->assertNotContains($stranger->id, $entries);
         $this->assertCount(4, $entries);
+    }
+
+    public function test_pro_manager_simulated_league_uses_simulated_season_not_placeholder_standings(): void
+    {
+        // Pro-manager regression: the user plays a tier-3 league, so ESP1
+        // is fully simulated. StandingsResetProcessor wrote placeholder
+        // GameStanding rows (played=0) for ESP1 at season setup that
+        // never get touched; the real ranking lives in SimulatedSeason.
+        //
+        // The pre-fix getLeagueTopTeams read those placeholder rows by
+        // position and returned them, which in production (season 2037 of
+        // game a6f6db6e-…) put a Primera RFEF reserve (RC Celta Fortuna,
+        // somehow promoted up to ESP1's CompetitionEntry over time) into
+        // the supercup. The downstream entry_round bump then failed
+        // because reserves aren't in the cup, leaving round 1 odd and
+        // crashing the season transition with OddCupDrawPoolException.
+        //
+        // Two protections against that path:
+        //   1. played=0 placeholder rows are skipped, forcing fallback
+        //      to SimulatedSeason.
+        //   2. Reserve teams are filtered from both sources, so even if
+        //      a reserve sneaks into the simulated ranking it can't
+        //      become a supercup pick.
+        GameStanding::where('game_id', $this->game->id)
+            ->where('competition_id', 'ESP1')
+            ->update(['played' => 0]);
+
+        $reserve = Team::factory()->create([
+            'country' => 'ES',
+            'name' => 'Reserve B',
+            'parent_team_id' => $this->league[1]->id,
+        ]);
+
+        // Simulated ranking: a reserve at the top (must be filtered),
+        // then the legitimate teams in a known order.
+        SimulatedSeason::create([
+            'game_id' => $this->game->id,
+            'season' => '2025',
+            'competition_id' => 'ESP1',
+            'results' => [
+                $reserve->id,           // must be filtered — reserves never qualify
+                $this->league[2]->id,
+                $this->league[3]->id,
+                $this->league[4]->id,
+                $this->league[5]->id,
+            ],
+        ]);
+
+        $this->runProcessor();
+
+        $this->assertSupercupTeams([
+            $this->league[2]->id,
+            $this->league[3]->id,
+            $this->league[4]->id,
+            $this->league[5]->id,
+        ]);
+    }
+
+    public function test_reserve_cup_finalist_is_scrubbed_from_qualifiers(): void
+    {
+        // A reserve should never be a cup finalist in practice (reserves
+        // aren't in the cup), but if data drift lets one through, the
+        // supercup must not include it — the entry_round bump can't
+        // place a reserve in the cup, which is what produced the
+        // OddCupDrawPoolException in production.
+        $reserve = Team::factory()->create([
+            'country' => 'ES',
+            'name' => 'Reserve B',
+            'parent_team_id' => $this->league[1]->id,
+        ]);
+
+        $this->setCupFinalists($reserve, $this->league[6]);
+
+        $this->runProcessor();
+
+        $this->assertSupercupTeams([
+            $this->league[6]->id, // runner-up survives
+            $this->league[1]->id,
+            $this->league[2]->id,
+            $this->league[3]->id, // backfills the displaced reserve slot
+        ]);
     }
 
     public function test_metadata_records_qualifiers_in_priority_order(): void

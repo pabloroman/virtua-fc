@@ -78,7 +78,7 @@ class ConfigDrivenPromotionRule implements PromotionRelegationRule
         return $this->playoffGenerator;
     }
 
-    public function getPromotedTeams(Game $game): array
+    public function getPromotedTeams(Game $game, array $incomingByDivision = []): array
     {
         if (!$this->hasDataSource($game, $this->bottomDivision)) {
             return [];
@@ -96,6 +96,7 @@ class ConfigDrivenPromotionRule implements PromotionRelegationRule
             $this->bottomDivision,
             $this->directCount,
             $this->playoffCount,
+            $incomingByDivision[$this->topDivision] ?? [],
         );
 
         $promoted = $allocation->directPromotions;
@@ -115,6 +116,11 @@ class ConfigDrivenPromotionRule implements PromotionRelegationRule
         $this->validateTeamCount($promoted, $expectedCount, 'promoted', $this->bottomDivision, $game);
 
         return $promoted;
+    }
+
+    public function getRelegationDestinations(): array
+    {
+        return [$this->bottomDivision];
     }
 
     public function getRelegatedTeams(Game $game): array

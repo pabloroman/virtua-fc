@@ -59,11 +59,39 @@ class PromotionRelegationProcessor implements SeasonProcessor
             // reads — e.g. the ESP1↔ESP2 swap inserting teams at the bottom
             // of ESP2 before the ESP2↔ESP3 rule reads positions 19–22.
 
-            // Pass 1: Read — collect promoted/relegated teams from every rule.
-            $ruleData = [];
+            // Pass 1a: Read relegations first, build a cross-rule
+            // "incoming to division" map. A reserve team in ESP3 about to be
+            // promoted to ESP2 must be blocked if its parent is being
+            // relegated FROM ESP1 to ESP2 this same season — the per-rule
+            // reserve filter reads a stale snapshot (parent still in ESP1)
+            // and misses the collision. The map lets each rule's promotion
+            // computation see what its destination division will look like
+            // after every other rule's relegations land.
+            $relegatedByRule = [];
+            $incomingByDivision = [];
             foreach ($this->ruleFactory->all() as $rule) {
-                $promoted = $rule->getPromotedTeams($game);
                 $relegated = $rule->getRelegatedTeams($game);
+                $relegatedByRule[] = ['rule' => $rule, 'relegated' => $relegated];
+
+                if (empty($relegated)) {
+                    continue;
+                }
+
+                $relegatedIds = array_column($relegated, 'teamId');
+                foreach ($rule->getRelegationDestinations() as $destinationId) {
+                    foreach ($relegatedIds as $teamId) {
+                        $incomingByDivision[$destinationId][] = $teamId;
+                    }
+                }
+            }
+            foreach ($incomingByDivision as $division => $ids) {
+                $incomingByDivision[$division] = array_values(array_unique($ids));
+            }
+
+            // Pass 1b: Read promotions with the cross-rule context attached.
+            $ruleData = [];
+            foreach ($relegatedByRule as ['rule' => $rule, 'relegated' => $relegated]) {
+                $promoted = $rule->getPromotedTeams($game, $incomingByDivision);
 
                 if (empty($promoted) && empty($relegated)) {
                     continue;
@@ -131,12 +159,83 @@ class PromotionRelegationProcessor implements SeasonProcessor
                 $this->resimulateAffectedLeagues($game, array_unique($affectedCompetitionIds));
             }
 
+            // Belt-and-suspenders invariant check: no reserve team should
+            // share a competition with its parent club after all swaps. The
+            // cross-rule incoming context above prevents the known collision
+            // path; this guard catches any future regression (a new rule
+            // shape that bypasses the filter, a data drift in CompetitionTeam
+            // seeding) before it accumulates into a multi-season corruption
+            // like the game that produced this fix.
+            $this->assertNoReserveCoexistence($game, array_unique($affectedCompetitionIds));
+
             // Store only the user's division promotions/relegations for the transition log
             $data->setMetadata('promotedTeams', $userPromoted);
             $data->setMetadata('relegatedTeams', $userRelegated);
 
             return $data;
         });
+    }
+
+    /**
+     * Scan competitions touched by this run for any reserve team whose
+     * parent club shares the division. Throws with a list of offending
+     * (reserve, parent, competition) tuples so the rollback message names
+     * exactly what went wrong.
+     *
+     * @param  string[]  $competitionIds
+     */
+    private function assertNoReserveCoexistence(Game $game, array $competitionIds): void
+    {
+        if (empty($competitionIds)) {
+            return;
+        }
+
+        $rows = CompetitionEntry::where('game_id', $game->id)
+            ->whereIn('competition_id', $competitionIds)
+            ->join('teams', 'teams.id', '=', 'competition_entries.team_id')
+            ->whereNotNull('teams.parent_team_id')
+            ->select([
+                'competition_entries.competition_id as competition_id',
+                'competition_entries.team_id as reserve_id',
+                'teams.parent_team_id as parent_id',
+            ])
+            ->get();
+
+        if ($rows->isEmpty()) {
+            return;
+        }
+
+        $parentIds = $rows->pluck('parent_id')->unique()->all();
+        $parentCompetitions = CompetitionEntry::where('game_id', $game->id)
+            ->whereIn('team_id', $parentIds)
+            ->whereIn('competition_id', $competitionIds)
+            ->get(['competition_id', 'team_id'])
+            ->groupBy('team_id')
+            ->map(fn ($entries) => $entries->pluck('competition_id')->all());
+
+        $violations = [];
+        foreach ($rows as $row) {
+            $parentDivisions = $parentCompetitions->get($row->parent_id, []);
+            if (in_array($row->competition_id, $parentDivisions, true)) {
+                $violations[] = sprintf(
+                    'reserve=%s parent=%s competition=%s',
+                    $row->reserve_id,
+                    $row->parent_id,
+                    $row->competition_id,
+                );
+            }
+        }
+
+        if (empty($violations)) {
+            return;
+        }
+
+        throw new \RuntimeException(
+            'Reserve/parent coexistence invariant violated after promotion/relegation: '
+            . implode('; ', $violations)
+            . '. This shouldn\'t reach here — the per-rule reserve filter plus the '
+            . 'incomingByDivision cross-rule context should block it upstream.'
+        );
     }
 
     /**

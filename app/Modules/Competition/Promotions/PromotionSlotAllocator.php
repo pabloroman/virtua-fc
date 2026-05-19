@@ -46,12 +46,19 @@ class PromotionSlotAllocator
      * @param  string  $bottomDivision  Competition ID being walked (e.g., 'ESP2').
      * @param  int  $directCount  Number of direct-promotion slots to fill.
      * @param  int  $playoffCount  Number of bracket slots to fill.
+     * @param  array<int, string>  $incomingToTopDivision  Team UUIDs scheduled
+     *     to land in the destination of this allocation via sibling rules'
+     *     relegations. Merged into the reserve-filter reference set so a
+     *     parent being relegated into the destination this season blocks its
+     *     reserve from being promoted there in the same swap. Empty array =
+     *     standalone allocation with no cross-rule context.
      */
     public function allocate(
         Game $game,
         string $bottomDivision,
         int $directCount,
         int $playoffCount,
+        array $incomingToTopDivision = [],
     ): PromotionSlotAllocation {
         $orderedTeams = $this->loadOrderedTeams($game, $bottomDivision, $directCount + $playoffCount);
 
@@ -60,6 +67,11 @@ class PromotionSlotAllocator
         }
 
         $topDivisionTeamIds = $this->reserveFilter->getTopDivisionTeamIds($game, $bottomDivision);
+
+        if (!empty($incomingToTopDivision)) {
+            $topDivisionTeamIds = $topDivisionTeamIds->concat($incomingToTopDivision)->unique()->values();
+        }
+
         $parentMap = $this->reserveFilter->loadParentTeamIds(
             array_column($orderedTeams, 'teamId')
         );

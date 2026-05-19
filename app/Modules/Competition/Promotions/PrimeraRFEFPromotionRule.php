@@ -79,9 +79,10 @@ class PrimeraRFEFPromotionRule implements SelfSwappingPromotionRule
     }
 
     /**
+     * @param  array<string, array<int, string>>  $incomingByDivision
      * @return array<array{teamId: string, position: int|string, teamName: string, origin: string}>
      */
-    public function getPromotedTeams(Game $game): array
+    public function getPromotedTeams(Game $game, array $incomingByDivision = []): array
     {
         if (!$this->isActiveForGame($game)) {
             return [];
@@ -111,12 +112,23 @@ class PrimeraRFEFPromotionRule implements SelfSwappingPromotionRule
         // case and promoted a losing team. Explicit state handling prevents
         // that class of bug.
         $state = $this->resolvePlayoffState($game);
+        $incomingToEsp2 = $incomingByDivision[self::TOP_DIVISION] ?? [];
 
         return match ($state) {
             PlayoffState::Completed => array_merge($promoted, $this->requirePlayoffWinners($game)),
             PlayoffState::InProgress => throw PlayoffInProgressException::forCompetition(self::PLAYOFF_ID),
-            PlayoffState::NotStarted => array_merge($promoted, $this->simulatedPlayoffStandIns($game, $promoted)),
+            PlayoffState::NotStarted => array_merge($promoted, $this->simulatedPlayoffStandIns($game, $promoted, $incomingToEsp2)),
         };
+    }
+
+    public function getRelegationDestinations(): array
+    {
+        // Relegated ESP2 teams are redistributed between the two ESP3 groups
+        // by performSwap(); the exact per-group split isn't known until
+        // promotion counts settle. Return both groups so any consumer of
+        // cross-rule incoming context treats either as a possible landing
+        // place for a parent club.
+        return [self::GROUP_A_ID, self::GROUP_B_ID];
     }
 
     /**
@@ -334,9 +346,13 @@ class PrimeraRFEFPromotionRule implements SelfSwappingPromotionRule
      * is the player's, the other is simulated.
      *
      * @param array<array{teamId: string, position: int|string, teamName: string, origin: string}> $alreadyPromoted
+     * @param  array<int, string>  $incomingToEsp2  Teams about to land in ESP2
+     *     via sibling rules' relegations; merged into the reserve-filter
+     *     reference set so a parent being relegated to ESP2 this season
+     *     blocks its reserve from being a stand-in here.
      * @return array<array{teamId: string, position: int|string, teamName: string, origin: string}>
      */
-    private function simulatedPlayoffStandIns(Game $game, array $alreadyPromoted): array
+    private function simulatedPlayoffStandIns(Game $game, array $alreadyPromoted, array $incomingToEsp2 = []): array
     {
         $already = array_column($alreadyPromoted, 'teamId');
         $filter = $this->reserveTeamFilter ?? app(ReserveTeamFilter::class);
@@ -344,6 +360,10 @@ class PrimeraRFEFPromotionRule implements SelfSwappingPromotionRule
         $topDivisionTeamIds = CompetitionEntry::where('game_id', $game->id)
             ->where('competition_id', self::TOP_DIVISION)
             ->pluck('team_id');
+
+        if (!empty($incomingToEsp2)) {
+            $topDivisionTeamIds = $topDivisionTeamIds->concat($incomingToEsp2)->unique()->values();
+        }
 
         $results = [];
         foreach ([self::GROUP_A_ID, self::GROUP_B_ID] as $groupId) {
