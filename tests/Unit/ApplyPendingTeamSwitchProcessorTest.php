@@ -87,6 +87,16 @@ class ApplyPendingTeamSwitchProcessorTest extends TestCase
      */
     private function buildScenario(string $offerCompetitionId, string $actualEntryCompetitionId): array
     {
+        $espThreeA = Competition::factory()->create([
+            'id' => 'ESP3A',
+            'name' => 'Primera Federación - Grupo I',
+            'country' => 'ES',
+            'tier' => 3,
+            'role' => Competition::ROLE_LEAGUE,
+            'handler_type' => 'league_with_playoff',
+            'scope' => Competition::SCOPE_DOMESTIC,
+        ]);
+
         $espTwo = Competition::factory()->create([
             'id' => 'ESP2',
             'name' => 'LaLiga2',
