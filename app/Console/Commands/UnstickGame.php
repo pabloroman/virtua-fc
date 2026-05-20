@@ -6,6 +6,7 @@ use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GameStanding;
+use App\Models\SimulatedSeason;
 use App\Models\Team;
 use App\Modules\Competition\Services\CountryConfig;
 use App\Modules\Competition\Services\StandingsCalculator;
@@ -92,9 +93,10 @@ class UnstickGame extends Command
 
             $violations = $this->findViolations($game->id, $country, $countryConfig);
             $rebuilds = $this->findStandingsRebuilds($game->id);
+            $simFixes = $this->findSimulatedSeasonFixes($game);
 
-            if ($violations->isEmpty() && $rebuilds->isEmpty()) {
-                $this->line('  no violations, no standings to rebuild');
+            if ($violations->isEmpty() && $rebuilds->isEmpty() && $simFixes->isEmpty()) {
+                $this->line('  no violations, no standings to rebuild, no sim mismatches');
                 continue;
             }
 
@@ -103,6 +105,11 @@ class UnstickGame extends Command
             }
             foreach ($rebuilds as $r) {
                 $this->line("  - [standings] {$r['competition_id']}: entries={$r['entries']} standings={$r['standings']} matches={$r['matches']}");
+            }
+            foreach ($simFixes as $s) {
+                $stale = implode(',', $s['stale_ids']);
+                $missing = implode(',', $s['missing_ids']);
+                $this->line("  - [sim] {$s['competition_id']}: replace [{$stale}] with [{$missing}]");
             }
 
             if (!$apply) {
@@ -116,13 +123,14 @@ class UnstickGame extends Command
                 $calculator,
                 $violations,
                 $rebuilds,
+                $simFixes,
                 $promotionRelegationStep,
             );
             $totalRepaired += $result['repaired'];
             $totalRebuilt += $result['rebuilt'];
 
             $stepNote = $result['stepAdvanced'] ? "step advanced to {$promotionRelegationStep}" : 'step unchanged';
-            $this->info("  -> repaired={$result['repaired']} rebuilt={$result['rebuilt']} ({$stepNote})");
+            $this->info("  -> repaired={$result['repaired']} rebuilt={$result['rebuilt']} sim_fixed={$result['simFixed']} ({$stepNote})");
         }
 
         $this->line('');
@@ -206,7 +214,7 @@ class UnstickGame extends Command
     }
 
     /**
-     * @return array{repaired: int, rebuilt: int, stepAdvanced: bool}
+     * @return array{repaired: int, rebuilt: int, simFixed: int, stepAdvanced: bool}
      */
     private function repair(
         Game $game,
@@ -215,9 +223,10 @@ class UnstickGame extends Command
         StandingsCalculator $calculator,
         Collection $violations,
         Collection $rebuilds,
+        Collection $simFixes,
         int $promotionRelegationStep,
     ): array {
-        return DB::transaction(function () use ($game, $country, $countryConfig, $calculator, $violations, $rebuilds, $promotionRelegationStep) {
+        return DB::transaction(function () use ($game, $country, $countryConfig, $calculator, $violations, $rebuilds, $simFixes, $promotionRelegationStep) {
             $repaired = 0;
             $anySwap = false;
 
@@ -234,6 +243,16 @@ class UnstickGame extends Command
                 $rebuilt++;
             }
 
+            // Reconcile SimulatedSeason AFTER team swaps, so we map against the
+            // final roster, not the pre-repair state.
+            $simFixed = 0;
+            foreach ($simFixes as $s) {
+                $applied = $this->applySimulatedSeasonFix($game, $s['competition_id']);
+                if ($applied) {
+                    $simFixed++;
+                }
+            }
+
             $stepAdvanced = false;
             if ($anySwap) {
                 $game->updateQuietly(['season_transition_step' => $promotionRelegationStep]);
@@ -247,8 +266,105 @@ class UnstickGame extends Command
                 }
             }
 
-            return compact('repaired', 'rebuilt', 'stepAdvanced');
+            return compact('repaired', 'rebuilt', 'simFixed', 'stepAdvanced');
         });
+    }
+
+    /**
+     * Detect SimulatedSeason rows whose `results` roster has drifted from the
+     * current CompetitionEntry roster (typically because a team was moved
+     * between leagues after the season was simulated, but the SimulatedSeason
+     * row was never refreshed). If the in-sim-not-entry and in-entry-not-sim
+     * sets are equal in size, they can be paired 1:1 and swapped in place —
+     * preserving the simulated finishing order.
+     *
+     * @return Collection<int, array{competition_id: string, stale_ids: list<string>, missing_ids: list<string>}>
+     */
+    private function findSimulatedSeasonFixes(Game $game): Collection
+    {
+        $simRows = SimulatedSeason::where('game_id', $game->id)
+            ->where('season', $game->season)
+            ->get(['competition_id', 'results']);
+
+        return $simRows->map(function ($sim) use ($game) {
+            $simTeams = is_array($sim->results) ? $sim->results : (array) $sim->results;
+            $entryTeams = CompetitionEntry::where('game_id', $game->id)
+                ->where('competition_id', $sim->competition_id)
+                ->pluck('team_id')->all();
+
+            $stale = array_values(array_diff($simTeams, $entryTeams));
+            $missing = array_values(array_diff($entryTeams, $simTeams));
+
+            if (empty($stale) && empty($missing)) {
+                return null;
+            }
+
+            if (count($stale) !== count($missing)) {
+                Log::warning('[UnstickGame] SimulatedSeason mismatch with unequal sets — skipping', [
+                    'game_id' => $game->id,
+                    'competition_id' => $sim->competition_id,
+                    'stale' => $stale,
+                    'missing' => $missing,
+                ]);
+                return null;
+            }
+
+            return [
+                'competition_id' => $sim->competition_id,
+                'stale_ids' => $stale,
+                'missing_ids' => $missing,
+            ];
+        })->filter()->values();
+    }
+
+    /**
+     * Replace stale team IDs in SimulatedSeason.results with the current
+     * roster's missing teams, position-for-position. Returns true if the row
+     * was updated.
+     */
+    private function applySimulatedSeasonFix(Game $game, string $competitionId): bool
+    {
+        $sim = SimulatedSeason::where('game_id', $game->id)
+            ->where('season', $game->season)
+            ->where('competition_id', $competitionId)
+            ->first();
+
+        if (!$sim) {
+            return false;
+        }
+
+        $simTeams = is_array($sim->results) ? $sim->results : (array) $sim->results;
+        $entryTeams = CompetitionEntry::where('game_id', $game->id)
+            ->where('competition_id', $competitionId)
+            ->pluck('team_id')->all();
+
+        $stale = array_values(array_diff($simTeams, $entryTeams));
+        $missing = array_values(array_diff($entryTeams, $simTeams));
+
+        if (count($stale) !== count($missing) || empty($stale)) {
+            return false;
+        }
+
+        // Pair them 1:1. The order is arbitrary (we don't have meaningful
+        // signal to choose which missing team replaces which stale team), so
+        // pair by index — stable and deterministic.
+        $replacement = array_combine($stale, $missing);
+
+        $newResults = array_map(
+            fn ($teamId) => $replacement[$teamId] ?? $teamId,
+            $simTeams,
+        );
+
+        $sim->results = $newResults;
+        $sim->save();
+
+        Log::info('[UnstickGame] SimulatedSeason results reconciled', [
+            'game_id' => $game->id,
+            'competition_id' => $competitionId,
+            'replacements' => $replacement,
+        ]);
+
+        return true;
     }
 
     private function repairViolation(string $gameId, string $country, array $v, CountryConfig $countryConfig): bool
