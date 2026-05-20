@@ -173,6 +173,66 @@ class CountryPromotionRelegationPlannerTest extends TestCase
         }
     }
 
+    public function test_inherited_coexistence_in_legacy_game_promotes_parent_up_when_no_deeper_tier(): void
+    {
+        $esp1 = $this->ids(20, 'a1');
+        $esp2 = $this->ids(22, 'a2');
+
+        // Legacy game (no ESP3A/B in snapshot). Parent and reserve coexist
+        // mid-table in ESP2. Cascade-down is impossible (no deeper tier),
+        // so the planner must promote the parent up to ESP1 instead and
+        // swap a non-relegating ESP1 team down to ESP2 to balance.
+        $parent = $esp2[10];
+        $reserve = $esp2[15];
+
+        $snapshot = new CountrySeasonSnapshot(
+            countryCode: 'ES',
+            standingsByCompetition: [
+                'ESP1' => $esp1,
+                'ESP2' => $esp2,
+            ],
+            reserveToParent: [$reserve => $parent],
+            playoffStates: [
+                'ESP2' => PlayoffState::NotStarted,
+                'ESP3PO' => PlayoffState::NotStarted,
+            ],
+        );
+
+        $plan = $this->planner->planFromSnapshot($snapshot, $this->spainConfig);
+
+        // Parent should be moved up to ESP1.
+        $parentMove = null;
+        foreach ($plan->moves as $move) {
+            if ($move->teamId === $parent) {
+                $parentMove = $move;
+                break;
+            }
+        }
+        $this->assertNotNull($parentMove, 'Parent should be moved');
+        $this->assertSame('ESP2', $parentMove->fromCompetitionId);
+        $this->assertSame('ESP1', $parentMove->toCompetitionId);
+
+        // Backfill team comes from the lowest non-relegating ESP1 position
+        // (positions 18-20 are relegating via Rule #1, so the bottom-up
+        // walk picks position 17 = $esp1[16]).
+        $backfillMove = null;
+        foreach ($plan->moves as $move) {
+            if ($move->fromCompetitionId === 'ESP1' && $move->toCompetitionId === 'ESP2'
+                && $move->reason === PromotionMove::REASON_CASCADE_COMPENSATION
+            ) {
+                $backfillMove = $move;
+                break;
+            }
+        }
+        $this->assertNotNull($backfillMove, 'A non-relegating ESP1 team should backfill ESP2');
+        $this->assertSame($esp1[16], $backfillMove->teamId);
+
+        // Reserve untouched.
+        foreach ($plan->moves as $move) {
+            $this->assertNotSame($reserve, $move->teamId, 'Reserve should not be moved');
+        }
+    }
+
     public function test_legacy_game_cancels_relegation_when_reserve_in_destination_and_no_deeper_tier_in_snapshot(): void
     {
         $esp1 = $this->ids(20, 'a1');

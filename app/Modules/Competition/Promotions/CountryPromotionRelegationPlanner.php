@@ -743,7 +743,16 @@ class CountryPromotionRelegationPlanner
             }
         }
         foreach ($snapshot->reserveToParent as $reserve => $parent) {
+            // Skip pairs the per-rule loop will resolve naturally:
+            //   - parent being relegated: leaves the coexistence tier.
+            //   - parent being promoted: leaves the coexistence tier.
+            //   - reserve being promoted: leaves the coexistence tier.
+            // In all three cases the post-plan finalComp puts the two
+            // teams in different competitions without any repair move.
             if (isset($beingRelegated[$parent])) {
+                continue;
+            }
+            if (isset($alreadyPromoted[$parent])) {
                 continue;
             }
             if (isset($alreadyPromoted[$reserve])) {
@@ -764,52 +773,107 @@ class CountryPromotionRelegationPlanner
                 continue;
             }
 
+            // Repair strategy A — cascade reserve down to the tier below
+            // (preferred when a deeper tier is present in the snapshot).
             $deeperTier = $reserveTier + 1;
             $deeperComps = array_values(array_filter(
                 $tierStructure['competitionsByTier'][$deeperTier] ?? [],
                 fn ($comp) => array_key_exists($comp, $snapshot->standingsByCompetition),
             ));
-            if (empty($deeperComps)) {
-                // Coexistence at the deepest tier present in the snapshot
-                // (e.g. both teams in ESP3A on a Spanish game). Cannot
-                // cascade the reserve down. Promoting the parent up would
-                // work but isn't implemented here yet; for now leave the
-                // pair untouched and let validatePlan throw the existing
-                // coexistence error so the operator runs the one-off
-                // repair command. The error message will name this pair.
+
+            if (!empty($deeperComps)) {
+                $cascadeDest = $this->chooseCascadeDestination(
+                    $deeperComps,
+                    $snapshot,
+                    $parent,
+                );
+
+                $cascadeMoves[] = new PromotionMove(
+                    teamId: $reserve,
+                    fromCompetitionId: $reserveCurrentComp,
+                    toCompetitionId: $cascadeDest,
+                    reason: PromotionMove::REASON_RESERVE_CASCADE,
+                );
+
+                $compTeam = $this->pickCompensation(
+                    $snapshot,
+                    $cascadeDest,
+                    $reserveCurrentComp,
+                    $usedAsCompensation,
+                    $alreadyPromoted,
+                    $reserve,
+                );
+                if ($compTeam !== null) {
+                    $compensationMoves[] = new PromotionMove(
+                        teamId: $compTeam,
+                        fromCompetitionId: $cascadeDest,
+                        toCompetitionId: $reserveCurrentComp,
+                        reason: PromotionMove::REASON_CASCADE_COMPENSATION,
+                    );
+                    $usedAsCompensation[$compTeam] = true;
+                }
                 continue;
             }
 
-            $cascadeDest = $this->chooseCascadeDestination(
-                $deeperComps,
-                $snapshot,
-                $parent,
-            );
+            // Repair strategy B — promote parent up to the tier above.
+            // Used when cascade-down is impossible (coexistence at the
+            // deepest tier present in the snapshot — typically a legacy
+            // game whose deeper tiers were never seeded, e.g. ESP3A/ESP3B
+            // missing from a pre-Primera-RFEF Spanish game).
+            //
+            // Reuses RESERVE_CASCADE / CASCADE_COMPENSATION reasons even
+            // though the directions are inverted. The named buckets in
+            // PromotionRelegationQuery::summaryForCompetition key on
+            // from/to competition IDs (not reason), so these repair
+            // moves don't show up in the user-facing promoted/relegated
+            // lists — which is the right behaviour (the parent didn't
+            // "earn" the promotion, and the backfill team didn't "earn"
+            // the relegation; this is silent data-drift repair).
+            $shallowerTier = $reserveTier - 1;
+            $shallowerComps = array_values(array_filter(
+                $tierStructure['competitionsByTier'][$shallowerTier] ?? [],
+                fn ($comp) => array_key_exists($comp, $snapshot->standingsByCompetition),
+            ));
+            if (empty($shallowerComps)) {
+                // Coexistence at the only tier present in the snapshot
+                // (no tier above OR below). Cannot self-repair; leave
+                // for validatePlan to surface so the operator runs the
+                // one-off repair command.
+                continue;
+            }
 
-            $cascadeMoves[] = new PromotionMove(
-                teamId: $reserve,
-                fromCompetitionId: $reserveCurrentComp,
-                toCompetitionId: $cascadeDest,
-                reason: PromotionMove::REASON_RESERVE_CASCADE,
-            );
-
-            $compTeam = $this->pickCompensation(
+            $promotionDest = $this->chooseCascadeDestination(
+                $shallowerComps,
                 $snapshot,
-                $cascadeDest,
-                $reserveCurrentComp,
-                $usedAsCompensation,
-                $alreadyPromoted,
                 $reserve,
             );
-            if ($compTeam !== null) {
-                $compensationMoves[] = new PromotionMove(
-                    teamId: $compTeam,
-                    fromCompetitionId: $cascadeDest,
-                    toCompetitionId: $reserveCurrentComp,
-                    reason: PromotionMove::REASON_CASCADE_COMPENSATION,
-                );
-                $usedAsCompensation[$compTeam] = true;
+
+            $backfillTeam = $this->pickPromotionBackfill(
+                $snapshot,
+                $promotionDest,
+                $reserveCurrentComp,
+                $beingRelegated,
+                $usedAsCompensation,
+                $alreadyPromoted,
+                $parent,
+            );
+            if ($backfillTeam === null) {
+                continue;
             }
+
+            $cascadeMoves[] = new PromotionMove(
+                teamId: $parent,
+                fromCompetitionId: $reserveCurrentComp,
+                toCompetitionId: $promotionDest,
+                reason: PromotionMove::REASON_RESERVE_CASCADE,
+            );
+            $compensationMoves[] = new PromotionMove(
+                teamId: $backfillTeam,
+                fromCompetitionId: $promotionDest,
+                toCompetitionId: $reserveCurrentComp,
+                reason: PromotionMove::REASON_CASCADE_COMPENSATION,
+            );
+            $usedAsCompensation[$backfillTeam] = true;
         }
 
         foreach ($promotionRules as $i => $rule) {
@@ -1047,6 +1111,57 @@ class CountryPromotionRelegationPlanner
                 continue;
             }
             if (isset($alreadyPromoted[$teamId])) {
+                continue;
+            }
+            $parent = $snapshot->parentOf($teamId);
+            if ($parent !== null && isset($destAfter[$parent])) {
+                continue;
+            }
+            return $teamId;
+        }
+        return null;
+    }
+
+    /**
+     * Pick a backfill team from the shallower tier $sourceComp to swap
+     * down into $destinationComp as part of an inherited-coexistence
+     * "promote parent up" repair. Mirrors pickCompensation in shape but
+     * walks the standings BOTTOM-UP (worst position first) — we want the
+     * weakest team in the shallower tier, since this is a forced demotion
+     * to make room for the promoting parent.
+     *
+     * Skips teams already in motion (relegating via some rule, already
+     * being promoted, already used as compensation) and reserves whose
+     * parent will be in the destination after the parent move lands.
+     *
+     * @param  array<string, bool>  $beingRelegated
+     * @param  array<string, bool>  $usedAsCompensation
+     * @param  array<string, bool>  $alreadyPromoted
+     */
+    private function pickPromotionBackfill(
+        CountrySeasonSnapshot $snapshot,
+        string $sourceComp,
+        string $destinationComp,
+        array $beingRelegated,
+        array $usedAsCompensation,
+        array $alreadyPromoted,
+        string $promotingParent,
+    ): ?string {
+        $destRoster = $snapshot->standings($destinationComp);
+        $destRosterPlusParent = array_merge($destRoster, [$promotingParent]);
+        $destAfter = array_flip($destRosterPlusParent);
+
+        foreach (array_reverse($snapshot->standings($sourceComp)) as $teamId) {
+            if ($teamId === $promotingParent) {
+                continue;
+            }
+            if (isset($beingRelegated[$teamId])) {
+                continue;
+            }
+            if (isset($alreadyPromoted[$teamId])) {
+                continue;
+            }
+            if (isset($usedAsCompensation[$teamId])) {
                 continue;
             }
             $parent = $snapshot->parentOf($teamId);
