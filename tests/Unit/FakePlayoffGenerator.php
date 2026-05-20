@@ -9,7 +9,7 @@ use App\Modules\Competition\Enums\PlayoffState;
 /**
  * Test double for PlayoffGenerator so rule tests don't need a real generator
  * with its schedule JSON + DB lookups. Only the methods exercised by
- * ConfigDrivenPromotionRule are meaningfully implemented.
+ * promotion-rule plumbing are meaningfully implemented.
  */
 class FakePlayoffGenerator implements PlayoffGenerator
 {

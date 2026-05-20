@@ -268,7 +268,7 @@ class PrimeraRFEFPlayoffGenerator implements PlayoffGenerator
      * order is load-bearing. Per (game, league, season) only one source ever
      * gets populated — SyntheticLeagueResolver refuses to write standings
      * once a SimulatedSeason exists, and SeasonSimulationProcessor refuses
-     * to write SimulatedSeason once real standings exist. PrimeraRFEFPromotionRule
+     * to write SimulatedSeason once real standings exist. CountryPromotionRelegationPlanner
      * uses the same preference order, so the bracket draw and the direct-
      * promotion read always agree on positions.
      *
@@ -351,7 +351,7 @@ class PrimeraRFEFPlayoffGenerator implements PlayoffGenerator
 
     /**
      * Idempotently insert CompetitionEntry rows for the 8 playoff teams.
-     * These entries are cleared at season end by PrimeraRFEFPromotionRule.
+     * These entries are cleared at season end by CountryPromotionRelegationPlanner.
      *
      * @param array<string> $teamIds
      */

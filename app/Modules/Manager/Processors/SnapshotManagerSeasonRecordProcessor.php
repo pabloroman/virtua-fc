@@ -5,7 +5,7 @@ namespace App\Modules\Manager\Processors;
 use App\Models\Game;
 use App\Models\GameStanding;
 use App\Models\ManagerSeasonRecord;
-use App\Modules\Competition\Promotions\PromotionRelegationFactory;
+use App\Modules\Competition\Promotions\PromotionRelegationQuery;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Services\SeasonGoalService;
@@ -28,7 +28,7 @@ class SnapshotManagerSeasonRecordProcessor implements SeasonProcessor
 {
     public function __construct(
         private readonly SeasonGoalService $seasonGoalService,
-        private readonly PromotionRelegationFactory $promotionRelegationFactory,
+        private readonly PromotionRelegationQuery $promotionRelegationQuery,
     ) {}
 
     public function priority(): int
@@ -52,7 +52,7 @@ class SnapshotManagerSeasonRecordProcessor implements SeasonProcessor
         $evaluation = $this->seasonGoalService->evaluatePerformance(
             $game,
             $finalPosition ?? 20,
-            $this->promotionRelegationFactory->wasTeamPromoted($game),
+            $this->promotionRelegationQuery->wasTeamPromoted($game),
         );
 
         ManagerSeasonRecord::updateOrCreate(

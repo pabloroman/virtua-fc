@@ -13,8 +13,8 @@ use App\Models\Team;
  * Single source of truth for assigning teams to a competition's
  * direct-promotion and playoff-bracket slots.
  *
- * The historical bug this exists to prevent: ConfigDrivenPromotionRule and
- * ESP2PlayoffGenerator each ran their own reserve-team filter against
+ * The historical bug this exists to prevent: the earlier ConfigDrivenPromotionRule
+ * and ESP2PlayoffGenerator each ran their own reserve-team filter against
  * overlapping standings ranges. When a reserve team held a direct-promotion
  * position, the direct list slid down into the bracket's range and the same
  * team appeared in both — silently corrupting promotion at the array_merge.

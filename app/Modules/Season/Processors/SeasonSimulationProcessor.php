@@ -53,7 +53,7 @@ class SeasonSimulationProcessor implements SeasonProcessor
      * in SyntheticLeagueResolver::isLockedToSimulatedLane, which refuses to
      * write standings once a SimulatedSeason already exists. Together they
      * guarantee exactly one source of truth per (game, league, season), which
-     * PrimeraRFEFPromotionRule relies on to avoid the same team appearing as
+     * CountryPromotionRelegationPlanner relies on to avoid the same team appearing as
      * both a direct promotion and a playoff bracket winner.
      *
      * @param  string[]|null  $competitionIds  If provided, only simulate these competition IDs

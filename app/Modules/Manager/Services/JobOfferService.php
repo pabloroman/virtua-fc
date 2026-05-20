@@ -9,7 +9,7 @@ use App\Models\Game;
 use App\Models\GameStanding;
 use App\Models\ManagerJobOffer;
 use App\Models\Team;
-use App\Modules\Competition\Promotions\PromotionRelegationFactory;
+use App\Modules\Competition\Promotions\PromotionRelegationQuery;
 use App\Modules\Competition\Services\CountryConfig;
 use App\Modules\Manager\ManagerReputation;
 use App\Modules\Notification\Services\NotificationService;
@@ -55,7 +55,7 @@ class JobOfferService
     public function __construct(
         private readonly CountryConfig $countryConfig,
         private readonly SeasonGoalService $seasonGoalService,
-        private readonly PromotionRelegationFactory $promotionRelegationFactory,
+        private readonly PromotionRelegationQuery $promotionRelegationQuery,
         private readonly NotificationService $notificationService,
         private readonly ManagerReputationService $managerReputationService,
     ) {}
@@ -172,7 +172,7 @@ class JobOfferService
         return $this->seasonGoalService->evaluatePerformance(
             $game,
             $playerStanding->position ?? 20,
-            $this->promotionRelegationFactory->wasTeamPromoted($game),
+            $this->promotionRelegationQuery->wasTeamPromoted($game),
         );
     }
 

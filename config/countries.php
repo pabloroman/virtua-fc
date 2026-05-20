@@ -136,10 +136,12 @@ return [
             [
                 // ESP2 ↔ Primera RFEF (ESP3A + ESP3B + ESP3PO).
                 //
-                // 'bottom_division' is nominal — the real swap logic lives in
-                // PrimeraRFEFPromotionRule which implements SelfSwappingPromotionRule
-                // and handles promotion from three feeder competitions plus
-                // redistribution of relegated teams across two groups.
+                // The presence of 'playoff_source_divisions' + 'playoff_competition'
+                // is what tells CountryPromotionRelegationPlanner to use the
+                // split-format branch: 1 direct promoter from each feeder group
+                // (ESP3A pos 1, ESP3B pos 1) + 2 bracket winners from ESP3PO,
+                // matched against 4 ESP2 relegators distributed back across
+                // the two groups by how many teams left each one.
                 'top_division' => 'ESP2',
                 'bottom_division' => 'ESP3A',
                 'relegated_positions' => [19, 20, 21, 22],
@@ -148,7 +150,6 @@ return [
                 // standings independently using these counts.
                 'direct_count' => 1,
                 'playoff_count' => 4,
-                'rule_class' => \App\Modules\Competition\Promotions\PrimeraRFEFPromotionRule::class,
                 'playoff_generator' => \App\Modules\Competition\Playoffs\PrimeraRFEFPlayoffGenerator::class,
                 // Register the same playoff generator under both groups so
                 // whichever one the player is in triggers the playoff draw.

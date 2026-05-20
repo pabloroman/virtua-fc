@@ -10,7 +10,7 @@ use RuntimeException;
  * job, season-end view) are expected to catch this, abort cleanly, and wait
  * for the playoff to finish before retrying.
  *
- * Replaces a silent fallback in ConfigDrivenPromotionRule::getPromotedTeams
+ * Replaces a silent fallback in the earlier promotion-rule code
  * that used to promote the next league position whenever no playoff winner
  * could be resolved — masking the real cause (an in-flight playoff) and
  * producing the "playoff loser promoted" bug.

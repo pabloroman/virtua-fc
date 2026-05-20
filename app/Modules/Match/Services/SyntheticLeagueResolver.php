@@ -153,7 +153,7 @@ class SyntheticLeagueResolver
      * `simulated_seasons.results` is authoritative. Writing `game_standings`
      * here would produce a competing ordering that disagrees on positions,
      * which is how a team can end up listed both as a direct promotion and
-     * as a playoff bracket winner (see PrimeraRFEFPromotionRule). Bail out
+     * as a playoff bracket winner (see CountryPromotionRelegationPlanner). Bail out
      * so the simulated lane stays the only source.
      */
     private function isLockedToSimulatedLane(Game $game, Competition $competition): bool

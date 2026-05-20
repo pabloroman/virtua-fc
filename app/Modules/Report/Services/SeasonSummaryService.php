@@ -14,10 +14,8 @@ use App\Models\ManagerJobOffer;
 use App\Models\SimulatedSeason;
 use App\Models\Team;
 use App\Models\TeamReputation;
-use App\Modules\Competition\Exceptions\PlayoffInProgressException;
-use App\Modules\Competition\Promotions\PromotionRelegationFactory;
+use App\Modules\Competition\Promotions\PromotionRelegationQuery;
 use App\Modules\Season\Services\SeasonGoalService;
-use Illuminate\Support\Facades\Log;
 
 class SeasonSummaryService
 {
@@ -25,7 +23,7 @@ class SeasonSummaryService
         private readonly AwardService $awardService,
         private readonly CompetitionSummaryService $competitionSummaryService,
         private readonly SeasonGoalService $seasonGoalService,
-        private readonly PromotionRelegationFactory $promotionRelegationFactory,
+        private readonly PromotionRelegationQuery $promotionRelegationQuery,
     ) {}
 
     public function buildSeasonSummary(Game $game): array
@@ -215,34 +213,13 @@ class SeasonSummaryService
 
     public function buildPromotionData(Game $game, Competition $competition): ?array
     {
-        $rule = $this->promotionRelegationFactory->forCompetition($competition->id);
-
-        if (!$rule) {
+        $summary = $this->promotionRelegationQuery->summaryForCompetition($game, $competition->id);
+        if ($summary === null) {
             return null;
         }
 
-        try {
-            $promoted = $rule->getPromotedTeams($game);
-            $relegated = $rule->getRelegatedTeams($game);
-        } catch (PlayoffInProgressException $e) {
-            // Expected: user viewing the season-end page while a playoff is
-            // still in progress. Hide the promotion panel rather than show
-            // data that would diverge from the eventual actual swap.
-            return null;
-        } catch (\RuntimeException $e) {
-            // Data invariant violation — log so we know. Hide the panel
-            // rather than show garbage.
-            Log::warning('SeasonSummaryService: promotion rule threw', [
-                'game_id' => $game->id,
-                'competition_id' => $competition->id,
-                'error' => $e->getMessage(),
-            ]);
-            return null;
-        }
-
-        if (empty($promoted) && empty($relegated)) {
-            return null;
-        }
+        $promoted = $summary['promoted'];
+        $relegated = $summary['relegated'];
 
         $teamIds = array_merge(
             array_column($promoted, 'teamId'),
@@ -250,8 +227,8 @@ class SeasonSummaryService
         );
         $teams = Team::whereIn('id', $teamIds)->get()->keyBy('id');
 
-        $topLeague = Competition::find($rule->getTopDivision());
-        $bottomLeague = Competition::find($rule->getBottomDivision());
+        $topLeague = Competition::find($summary['promotedCompetitionId']);
+        $bottomLeague = Competition::find($summary['relegatedCompetitionId']);
 
         return [
             'promoted' => $promoted,
