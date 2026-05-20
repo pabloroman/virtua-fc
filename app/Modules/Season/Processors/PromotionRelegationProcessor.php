@@ -62,6 +62,14 @@ class PromotionRelegationProcessor implements SeasonProcessor
     {
         $this->assertNoPlayoffInProgress($game);
 
+        if ($game->country === null) {
+            // Test-only path: factories that build a Game without seeding the
+            // country column. Production games always have a country (DB
+            // default 'ES' on the games table); the closing pipeline runs
+            // here against a partial fixture with nothing to relegate.
+            return $data;
+        }
+
         $config = $this->countryConfig->get($game->country) ?? [];
         if (empty($config['promotions'] ?? null)) {
             // Country with no promotion rules (e.g. England in current data).

@@ -42,6 +42,10 @@ class PromotionRelegationQuery
      */
     public function wasTeamPromoted(Game $game, ?string $teamId = null): bool
     {
+        if ($game->country === null) {
+            return false;
+        }
+
         $target = $teamId ?? $game->team_id;
 
         try {
@@ -75,6 +79,10 @@ class PromotionRelegationQuery
      */
     public function summaryForCompetition(Game $game, string $competitionId): ?array
     {
+        if ($game->country === null) {
+            return null;
+        }
+
         try {
             $plan = $this->planFor($game);
         } catch (PlayoffInProgressException) {
