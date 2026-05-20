@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\CompetitionEntry;
 use App\Models\Game;
+use App\Models\GameMatch;
 use App\Models\GameStanding;
 use App\Models\Team;
 use Illuminate\Console\Command;
@@ -43,16 +44,34 @@ class DiagnoseStuckGame extends Command
             ->whereNotNull('parent_team_id')
             ->get(['id', 'name', 'parent_team_id']);
 
+        $tierOrder = ['ESP1' => 1, 'ESP2' => 2, 'ESP3A' => 3, 'ESP3B' => 3];
+
         foreach ($reserves as $r) {
-            $rEntry = CompetitionEntry::where('game_id', $gameId)
+            $rEntries = CompetitionEntry::where('game_id', $gameId)
                 ->where('team_id', $r->id)
-                ->value('competition_id');
-            $pEntry = CompetitionEntry::where('game_id', $gameId)
+                ->pluck('competition_id')->all();
+            $pEntries = CompetitionEntry::where('game_id', $gameId)
                 ->where('team_id', $r->parent_team_id)
-                ->value('competition_id');
+                ->pluck('competition_id')->all();
             $pName = Team::where('id', $r->parent_team_id)->value('name');
-            $flag = ($rEntry !== null && $rEntry === $pEntry) ? '  <-- COEXISTENCE' : '';
-            $this->line("  {$r->name} ({$rEntry}) <- parent {$pName} ({$pEntry}){$flag}");
+
+            $rLeague = collect($rEntries)->first(fn ($c) => isset($tierOrder[$c]));
+            $pLeague = collect($pEntries)->first(fn ($c) => isset($tierOrder[$c]));
+
+            $flags = [];
+            if ($rLeague !== null && $rLeague === $pLeague) {
+                $flags[] = 'COEXISTENCE';
+            }
+            if ($rLeague !== null && $pLeague !== null
+                && ($tierOrder[$rLeague] < $tierOrder[$pLeague])
+            ) {
+                $flags[] = 'INVERTED';
+            }
+
+            $rEntriesStr = '[' . implode(',', $rEntries) . ']';
+            $pEntriesStr = '[' . implode(',', $pEntries) . ']';
+            $flagStr = empty($flags) ? '' : '  <-- ' . implode(' / ', $flags);
+            $this->line("  {$r->name} {$rEntriesStr} <- parent {$pName} {$pEntriesStr}{$flagStr}");
         }
 
         $this->line('');
@@ -62,7 +81,29 @@ class DiagnoseStuckGame extends Command
                 ->where('competition_id', $c)->count();
             $standings = GameStanding::where('game_id', $gameId)
                 ->where('competition_id', $c)->count();
-            $this->line("  {$c}: entries={$entries}  standings={$standings}");
+            $finalised = GameMatch::where('game_id', $gameId)
+                ->where('competition_id', $c)
+                ->whereNotNull('home_score')
+                ->count();
+            $this->line("  {$c}: entries={$entries}  standings={$standings}  finalised_matches={$finalised}");
+        }
+
+        $this->line('');
+        $this->line('=== ESP1 entries missing from standings ===');
+        $esp1Entries = CompetitionEntry::where('game_id', $gameId)
+            ->where('competition_id', 'ESP1')
+            ->pluck('team_id')->all();
+        $esp1Standings = GameStanding::where('game_id', $gameId)
+            ->where('competition_id', 'ESP1')
+            ->pluck('team_id')->all();
+        $missing = array_diff($esp1Entries, $esp1Standings);
+        if (empty($missing)) {
+            $this->line('  (none)');
+        } else {
+            foreach ($missing as $teamId) {
+                $name = Team::where('id', $teamId)->value('name');
+                $this->line("  {$teamId}  {$name}");
+            }
         }
 
         return self::SUCCESS;
