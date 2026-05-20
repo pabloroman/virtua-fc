@@ -6,8 +6,10 @@ use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GameStanding;
+use App\Models\SimulatedSeason;
 use App\Models\Team;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Print a focused state dump for a game stuck mid season-transition:
@@ -109,13 +111,14 @@ class DiagnoseStuckGame extends Command
         $this->line('');
         $this->line('=== Teams with entries in multiple leagues ===');
         $leagueIds = ['ESP1', 'ESP2', 'ESP3A', 'ESP3B'];
-        $multi = CompetitionEntry::where('game_id', $gameId)
+        $multi = DB::table('competition_entries')
+            ->where('game_id', $gameId)
             ->whereIn('competition_id', $leagueIds)
             ->select('team_id')
             ->selectRaw('count(*) as n')
             ->selectRaw("string_agg(competition_id, ',' ORDER BY competition_id) as comps")
             ->groupBy('team_id')
-            ->having('n', '>', 1)
+            ->havingRaw('count(*) > 1')
             ->get();
         if ($multi->isEmpty()) {
             $this->line('  (none)');
@@ -123,6 +126,44 @@ class DiagnoseStuckGame extends Command
             foreach ($multi as $row) {
                 $name = Team::where('id', $row->team_id)->value('name');
                 $this->line("  {$row->team_id}  {$name}  [{$row->comps}]");
+            }
+        }
+
+        $this->line('');
+        $this->line('=== SimulatedSeason vs current CompetitionEntry mismatches ===');
+        $simRows = SimulatedSeason::where('game_id', $gameId)
+            ->where('season', $game->season)
+            ->whereIn('competition_id', $leagueIds)
+            ->get(['competition_id', 'results']);
+        if ($simRows->isEmpty()) {
+            $this->line('  (no SimulatedSeason rows for this season)');
+        } else {
+            foreach ($simRows as $sim) {
+                $simTeams = is_array($sim->results) ? $sim->results : (array) $sim->results;
+                $entryTeams = CompetitionEntry::where('game_id', $gameId)
+                    ->where('competition_id', $sim->competition_id)
+                    ->pluck('team_id')->all();
+
+                $inSimNotEntry = array_diff($simTeams, $entryTeams);
+                $inEntryNotSim = array_diff($entryTeams, $simTeams);
+
+                $this->line("  {$sim->competition_id}: sim_size=" . count($simTeams) . " entry_size=" . count($entryTeams));
+                if (!empty($inSimNotEntry)) {
+                    foreach ($inSimNotEntry as $tid) {
+                        $name = Team::where('id', $tid)->value('name');
+                        $otherComp = CompetitionEntry::where('game_id', $gameId)
+                            ->where('team_id', $tid)
+                            ->whereIn('competition_id', $leagueIds)
+                            ->value('competition_id');
+                        $this->line("    in sim, not in entry: {$tid}  {$name}  (currently in {$otherComp})");
+                    }
+                }
+                if (!empty($inEntryNotSim)) {
+                    foreach ($inEntryNotSim as $tid) {
+                        $name = Team::where('id', $tid)->value('name');
+                        $this->line("    in entry, not in sim: {$tid}  {$name}");
+                    }
+                }
             }
         }
 
