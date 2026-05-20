@@ -192,6 +192,95 @@ class CountryPromotionRelegationPlannerTest extends TestCase
         $this->assertTierCountsPreserved($plan, $snapshot, $this->spainConfig);
     }
 
+    // ──────────────────────────────────────────────────
+     // Playoff winner ↔ direct promoter dedupe
+     // (production bug: bracket seeded mid-season, winner climbs to direct
+     // slot by season-end → planner emits two moves for the same team)
+     // ──────────────────────────────────────────────────
+
+    public function test_simple_rule_playoff_winner_also_direct_promoter_dedupes(): void
+    {
+        // Reproduces the Racing Santander scenario: ESP2 finalist climbs to
+        // pos 2 (a direct-promotion slot) by season-end and also wins the
+        // bracket. Without dedupe the planner emits two ESP2→ESP1 moves for
+        // the same team and trips the no-double-move invariant.
+        $esp1 = $this->ids(20, 'a1');
+        $esp2 = $this->ids(22, 'a2');
+        $playoffWinner = $esp2[1]; // pos 2 = direct promoter
+
+        $snapshot = new CountrySeasonSnapshot(
+            countryCode: 'ES',
+            standingsByCompetition: [
+                'ESP1' => $esp1,
+                'ESP2' => $esp2,
+                'ESP3A' => $this->ids(20, 'a3'),
+                'ESP3B' => $this->ids(20, 'b3'),
+            ],
+            reserveToParent: [],
+            playoffStates: ['ESP2' => PlayoffState::Completed, 'ESP3PO' => PlayoffState::NotStarted],
+            playoffWinners: ['ESP2' => [$playoffWinner]],
+        );
+
+        $plan = $this->planner->planFromSnapshot($snapshot, $this->spainConfig);
+
+        $promotedToEsp1 = array_map(fn ($m) => $m->teamId, $plan->promotionsInto('ESP1'));
+
+        // Three unique promoters: the two direct slots + a fallback playoff
+        // pick (the next eligible team in standings after the direct range).
+        $this->assertCount(3, $promotedToEsp1);
+        $this->assertSame(
+            [$esp2[0], $esp2[1], $esp2[2]],
+            $promotedToEsp1,
+            'Direct slots take pos 1-2; playoff slot falls through to pos 3 because pos 2 is already direct',
+        );
+
+        $this->assertNoTeamMovedTwice($plan);
+        $this->assertTierCountsPreserved($plan, $snapshot, $this->spainConfig);
+    }
+
+    public function test_split_rule_playoff_winner_also_direct_promoter_dedupes(): void
+    {
+        // Same dedupe applied to the PrimeraRFEF split rule: a bracket winner
+        // that's also taking a direct slot from its feeder group falls back
+        // to the next eligible team in the same group.
+        $esp1 = $this->ids(20, 'a1');
+        $esp2 = $this->ids(22, 'a2');
+        $esp3a = $this->ids(20, 'a3');
+        $esp3b = $this->ids(20, 'b3');
+
+        // ESP3PO completed with two winners; the first is also ESP3A's
+        // direct promoter (pos 1) — that's the dedupe target.
+        $snapshot = new CountrySeasonSnapshot(
+            countryCode: 'ES',
+            standingsByCompetition: [
+                'ESP1' => $esp1,
+                'ESP2' => $esp2,
+                'ESP3A' => $esp3a,
+                'ESP3B' => $esp3b,
+            ],
+            reserveToParent: [],
+            playoffStates: ['ESP2' => PlayoffState::NotStarted, 'ESP3PO' => PlayoffState::Completed],
+            playoffWinners: ['ESP3PO' => [$esp3a[0], $esp3a[2]]], // pos 1 (also direct) + pos 3 (clean)
+        );
+
+        $plan = $this->planner->planFromSnapshot($snapshot, $this->spainConfig);
+
+        $promotedToEsp2 = array_map(fn ($m) => $m->teamId, $plan->promotionsInto('ESP2'));
+
+        // 4 unique promoters expected (1 direct from each of A and B, plus 2 playoff slots).
+        $this->assertCount(4, $promotedToEsp2);
+        // The duplicate (esp3a[0]) appears only once; the missing playoff slot
+        // falls back to a stand-in past the direct range.
+        $this->assertSame(
+            1,
+            count(array_keys($promotedToEsp2, $esp3a[0], true)),
+            'Duplicate winner appears only once in promotion moves',
+        );
+
+        $this->assertNoTeamMovedTwice($plan);
+        $this->assertTierCountsPreserved($plan, $snapshot, $this->spainConfig);
+    }
+
     public function test_escape_hatch_cancels_parent_relegation_when_reserve_at_deepest_tier(): void
     {
         // Spain's tier 3 (ESP3A/B) has siblings, so the split rule can always
