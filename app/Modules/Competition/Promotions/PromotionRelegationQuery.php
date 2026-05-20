@@ -70,9 +70,14 @@ class PromotionRelegationQuery
      * Returns null when there are no moves to show or when planning isn't
      * possible (e.g. playoff in progress).
      *
+     * Each entry carries `position` for the view's "1º" / "Playoff" label —
+     * the team's finishing position in the relevant source competition
+     * (top division for relegations, source group for promotions). Derived
+     * from the snapshot's ordered standings.
+     *
      * @return array{
-     *     promoted: list<array{teamId: string}>,
-     *     relegated: list<array{teamId: string}>,
+     *     promoted: list<array{teamId: string, position: int|string}>,
+     *     relegated: list<array{teamId: string, position: int|string}>,
      *     promotedCompetitionId: string,
      *     relegatedCompetitionId: string,
      * }|null
@@ -84,7 +89,9 @@ class PromotionRelegationQuery
         }
 
         try {
-            $plan = $this->planFor($game);
+            $config = $this->countryConfig->get($game->country) ?? [];
+            $snapshot = $this->snapshotBuilder->build($game);
+            $plan = $this->planner->planFromSnapshot($snapshot, $config);
         } catch (PlayoffInProgressException) {
             return null;
         } catch (\RuntimeException) {
@@ -109,12 +116,18 @@ class PromotionRelegationQuery
             if ($move->isPromotion() && $move->toCompetitionId === $top
                 && in_array($move->fromCompetitionId, $sources, true)
             ) {
-                $promoted[] = ['teamId' => $move->teamId];
+                $promoted[] = [
+                    'teamId' => $move->teamId,
+                    'position' => $this->positionFor($move, $snapshot),
+                ];
             }
             if ($move->isRelegation() && $move->fromCompetitionId === $top
                 && in_array($move->toCompetitionId, $sources, true)
             ) {
-                $relegated[] = ['teamId' => $move->teamId];
+                $relegated[] = [
+                    'teamId' => $move->teamId,
+                    'position' => $this->positionFor($move, $snapshot),
+                ];
             }
         }
 
@@ -128,6 +141,19 @@ class PromotionRelegationQuery
             'promotedCompetitionId' => $top,
             'relegatedCompetitionId' => $sources[0],
         ];
+    }
+
+    private function positionFor(PromotionMove $move, CountrySeasonSnapshot $snapshot): int|string
+    {
+        $standings = $snapshot->standingsByCompetition[$move->fromCompetitionId] ?? [];
+        $idx = array_search($move->teamId, $standings, true);
+        if ($idx !== false) {
+            return $idx + 1;
+        }
+        // Defensive: the team isn't in the source comp's standings (shouldn't
+        // happen since the planner sources moves from the same snapshot). Fall
+        // back to the legacy 'Playoff' label so the view still renders.
+        return 'Playoff';
     }
 
     private function planFor(Game $game): PromotionRelegationPlan
