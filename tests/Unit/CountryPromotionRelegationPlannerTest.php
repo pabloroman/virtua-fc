@@ -364,6 +364,75 @@ class CountryPromotionRelegationPlannerTest extends TestCase
         $this->assertTierCountsPreserved($plan, $snapshot, $config);
     }
 
+    public function test_split_rule_escape_hatch_iterates_until_no_residual_coexistence(): void
+    {
+        // Production regression (planner produced a coexistence violation in
+        // ESP3A): every ESP2 relegator has a reserve in ESP3A, so all four
+        // need to land in ESP3B. ESP3B has only one promotion slot (1 direct
+        // + both playoff winners coming from ESP3A), so three relegators
+        // collide in the first assignment pass.
+        //
+        // The escape hatch cancels those three relegations and drops three
+        // promotions. The drop removes ESP3B's only direct promoter, leaving
+        // cap_B = 0 in the second assignment pass. The fourth relegator —
+        // which sat safely in ESP3B in the first pass — now has nowhere to
+        // go but the colliding sibling. Without iteration the planner emits
+        // a plan with that residual collision and validatePlan trips.
+        $esp1 = $this->ids(20, 'a1');
+        $esp2 = $this->ids(18, 'a2');
+        $parents = ['parent-A', 'parent-B', 'parent-C', 'parent-D'];
+        // ESP2 positions 19-22 (indexes 18-21) all relegate.
+        $esp2 = array_merge($esp2, $parents);
+
+        // All four reserves sit in ESP3A. Place them past the direct-promotion
+        // slot so they don't muddy the eligibility check; cap_A still adds up
+        // to 3 (direct + 2 playoff winners) for the standard four-team flow.
+        $reserves = ['reserve-A', 'reserve-B', 'reserve-C', 'reserve-D'];
+        $esp3a = array_merge(
+            [$this->ids(1, 'a3-top')[0]], // pos 1 (direct promoter)
+            $reserves,                     // pos 2-5 (reserves of ESP2 relegators)
+            $this->ids(15, 'a3-rest'),
+        );
+        $esp3b = $this->ids(20, 'b3');
+
+        $snapshot = new CountrySeasonSnapshot(
+            countryCode: 'ES',
+            standingsByCompetition: [
+                'ESP1' => $esp1,
+                'ESP2' => $esp2,
+                'ESP3A' => $esp3a,
+                'ESP3B' => $esp3b,
+            ],
+            reserveToParent: [
+                'reserve-A' => 'parent-A',
+                'reserve-B' => 'parent-B',
+                'reserve-C' => 'parent-C',
+                'reserve-D' => 'parent-D',
+            ],
+            playoffStates: ['ESP2' => PlayoffState::NotStarted, 'ESP3PO' => PlayoffState::Completed],
+            // Both bracket winners from ESP3A → cap_A = 3, cap_B = 1.
+            playoffWinners: ['ESP3PO' => [$esp3a[6], $esp3a[7]]],
+        );
+
+        $plan = $this->planner->planFromSnapshot($snapshot, $this->spainConfig);
+
+        // All four parents stay in ESP2 (every ESP3 slot would coexist with
+        // their reserve once capacities collapse).
+        foreach ($parents as $parent) {
+            $this->assertNull(
+                $this->findMove($plan, $parent),
+                "Parent {$parent} should not relegate when capacity is exhausted",
+            );
+        }
+        $this->assertCount(4, $plan->skippedRelegations);
+        foreach ($plan->skippedRelegations as $skipped) {
+            $this->assertSame(SkippedRelegation::REASON_RESERVE_AT_FLOOR, $skipped->reason);
+        }
+
+        $this->assertNoReserveParentCoexistenceAfterPlan($plan, $snapshot);
+        $this->assertTierCountsPreserved($plan, $snapshot, $this->spainConfig);
+    }
+
     // ──────────────────────────────────────────────────
     // Reserve promotion + parent relegation (the user's stated case)
     // ──────────────────────────────────────────────────

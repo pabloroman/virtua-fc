@@ -73,29 +73,61 @@ class CountryPromotionRelegationPlanner
             );
         }
 
-        // Step 4: Reserve protection — cascade reserves whose parent is about to
-        // land in their tier, or cancel the parent's relegation if there's no
-        // deeper tier to cascade to.
-        [$cascadeMoves, $compensationMoves, $cancellations] = $this->resolveReserveProtection(
-            $snapshot,
-            $tierStructure,
-            $promotionRules,
-            $relegatorsByRule,
-            $promotersByRule,
-        );
+        // Steps 4-5: Iterate reserve protection + cancellation until stable.
+        //
+        // A single pass isn't enough on split rules (ESP2 ↔ ESP3A/ESP3B): the
+        // first cancellation pass also drops promotions, which shrinks the
+        // capacity of one of the sibling destinations. Recomputing the split
+        // assignment with the reduced capacity can push a previously
+        // non-colliding parent into the colliding sibling — but the original
+        // resolveReserveProtection only saw the pre-cancellation assignment,
+        // so that residual collision is never escape-hatched and trips
+        // validatePlan's coexistence check.
+        //
+        // Re-running resolveReserveProtection against the post-cancellation
+        // state surfaces those residual collisions. The loop terminates
+        // because each iteration either applies new cancellations (strictly
+        // reducing relegators + promoters) or stabilises.
+        $skippedRelegations = [];
+        $cascadeMoves = [];
+        $compensationMoves = [];
+        $iterationLimit = $this->reserveProtectionIterationLimit($relegatorsByRule);
 
-        // Step 5: Apply cancellations from the escape hatch.
-        foreach ($cancellations['relegations'] as $ruleIdx => $cancelledTeamIds) {
-            $relegatorsByRule[$ruleIdx] = array_values(
-                array_diff($relegatorsByRule[$ruleIdx], $cancelledTeamIds),
+        for ($iter = 0; $iter <= $iterationLimit; $iter++) {
+            [$cascadeMoves, $compensationMoves, $cancellations] = $this->resolveReserveProtection(
+                $snapshot,
+                $tierStructure,
+                $promotionRules,
+                $relegatorsByRule,
+                $promotersByRule,
             );
-        }
-        foreach ($cancellations['promotionsCount'] as $ruleIdx => $count) {
-            // Drop the lowest-priority promoters (end of list = playoff winners
-            // / lowest-seeded direct slot, depending on rule order).
-            $current = $promotersByRule[$ruleIdx];
-            $keep = max(0, count($current) - $count);
-            $promotersByRule[$ruleIdx] = array_slice($current, 0, $keep);
+
+            $hadCancellation = false;
+            foreach ($cancellations['relegations'] as $ruleIdx => $cancelledTeamIds) {
+                if (empty($cancelledTeamIds)) {
+                    continue;
+                }
+                $relegatorsByRule[$ruleIdx] = array_values(
+                    array_diff($relegatorsByRule[$ruleIdx], $cancelledTeamIds),
+                );
+                $hadCancellation = true;
+            }
+            foreach ($cancellations['promotionsCount'] as $ruleIdx => $count) {
+                if ($count <= 0) {
+                    continue;
+                }
+                // Drop the lowest-priority promoters (end of list = playoff
+                // winners / lowest-seeded direct slot, depending on rule order).
+                $current = $promotersByRule[$ruleIdx];
+                $keep = max(0, count($current) - $count);
+                $promotersByRule[$ruleIdx] = array_slice($current, 0, $keep);
+                $hadCancellation = true;
+            }
+            $skippedRelegations = array_merge($skippedRelegations, $cancellations['skipped']);
+
+            if (!$hadCancellation) {
+                break;
+            }
         }
 
         // Step 6: Build the rule-driven moves (relegations + promotions).
@@ -115,13 +147,30 @@ class CountryPromotionRelegationPlanner
         $plan = new PromotionRelegationPlan(
             countryCode: $snapshot->countryCode,
             moves: array_values($moves),
-            skippedRelegations: $cancellations['skipped'],
+            skippedRelegations: $skippedRelegations,
             touchedCompetitionIds: $touched,
         );
 
         $this->validatePlan($plan, $snapshot, $tierStructure);
 
         return $plan;
+    }
+
+    /**
+     * Upper bound on reserve-protection iterations. Each iteration that
+     * makes progress strictly reduces relegators (and matching promoters),
+     * so the loop terminates in at most one iteration per relegator plus
+     * one stabilisation pass.
+     *
+     * @param  array<int, list<string>>  $relegatorsByRule
+     */
+    private function reserveProtectionIterationLimit(array $relegatorsByRule): int
+    {
+        $total = 0;
+        foreach ($relegatorsByRule as $ids) {
+            $total += count($ids);
+        }
+        return $total + 1;
     }
 
     // ──────────────────────────────────────────────────
