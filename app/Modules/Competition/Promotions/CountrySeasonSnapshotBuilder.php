@@ -6,6 +6,7 @@ use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\Team;
 use App\Modules\Competition\Enums\PlayoffState;
+use App\Modules\Competition\Exceptions\TierStandingsMissingException;
 use App\Modules\Competition\Playoffs\PlayoffGeneratorFactory;
 use App\Modules\Competition\Services\CountryConfig;
 
@@ -36,6 +37,9 @@ class CountrySeasonSnapshotBuilder
         foreach ($this->tierCompetitionIds($config) as $competitionId) {
             $entries = $this->standingsReader->read($game, $competitionId);
             $standingsByCompetition[$competitionId] = array_column($entries, 'teamId');
+            if (empty($standingsByCompetition[$competitionId])) {
+                throw TierStandingsMissingException::forCompetition($competitionId);
+            }
         }
 
         $reserveToParent = $this->buildReserveMap($country, $standingsByCompetition);

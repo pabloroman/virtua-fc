@@ -315,7 +315,15 @@ class CountryPromotionRelegationPlanner
         $playoffPickCount = 2; // Two bracket finals → two promotion spots.
 
         $playoffPicks = match ($state) {
-            PlayoffState::Completed => $this->primeraRfefCompletedWinners($snapshot, $playoffComp, $playoffPickCount),
+            PlayoffState::Completed => $this->primeraRfefCompletedWinners(
+                $snapshot,
+                $playoffComp,
+                $playoffPickCount,
+                array_column($out, 'teamId'),
+                $sources,
+                $directCount,
+                $effectiveTopRoster,
+            ),
             PlayoffState::NotStarted => $this->primeraRfefStandIns(
                 $snapshot,
                 $sources,
@@ -412,7 +420,13 @@ class CountryPromotionRelegationPlanner
         $state = $snapshot->playoffState($playoffComp);
 
         return match ($state) {
-            PlayoffState::Completed => array_slice($snapshot->playoffWinners($playoffComp), 0, 1),
+            PlayoffState::Completed => $this->completedPlayoffSlots(
+                $snapshot,
+                $playoffComp,
+                $eligible,
+                $directAlreadyTaken,
+                1,
+            ),
             PlayoffState::InProgress => throw PlayoffInProgressException::forCompetition($playoffComp),
             PlayoffState::NotStarted => array_slice(
                 array_values(array_diff($eligible, $directAlreadyTaken)),
@@ -423,16 +437,111 @@ class CountryPromotionRelegationPlanner
     }
 
     /**
+     * Build the playoff-promoted team list for the Completed branch, skipping
+     * any winner that's already a direct promoter and falling back to the next
+     * eligible team in standings order to keep the promotion count consistent.
+     *
+     * The bracket is seeded mid-season (at the trigger matchday). A team
+     * seeded into the playoff range can climb into direct-promotion territory
+     * by season-end and then win the bracket — without this dedupe the planner
+     * would emit two promotion moves for the same team and trip the
+     * no-double-move invariant. The direct promotion (earned by final
+     * standings) is treated as the stronger claim; the playoff slot falls
+     * through to the next eligible team.
+     *
+     * @param  list<string>  $eligible
+     * @param  list<string>  $directAlreadyTaken
+     * @return list<string>
+     */
+    private function completedPlayoffSlots(
+        CountrySeasonSnapshot $snapshot,
+        string $playoffComp,
+        array $eligible,
+        array $directAlreadyTaken,
+        int $slots,
+    ): array {
+        $taken = array_flip($directAlreadyTaken);
+        $out = [];
+
+        foreach ($snapshot->playoffWinners($playoffComp) as $teamId) {
+            if (isset($taken[$teamId])) {
+                continue;
+            }
+            $out[] = $teamId;
+            $taken[$teamId] = true;
+            if (count($out) >= $slots) {
+                return $out;
+            }
+        }
+
+        // Fallback: at least one winner was also a direct promoter, leaving
+        // the playoff slot short. Pull the next eligible team(s) past the
+        // direct range to fill the gap.
+        foreach (array_slice($eligible, count($directAlreadyTaken)) as $teamId) {
+            if (isset($taken[$teamId])) {
+                continue;
+            }
+            $out[] = $teamId;
+            $taken[$teamId] = true;
+            if (count($out) >= $slots) {
+                break;
+            }
+        }
+
+        return $out;
+    }
+
+    /**
+     * Build playoff-promoted picks for the split (PrimeraRFEF) rule, skipping
+     * any bracket winner that's already a direct promoter from one of the
+     * feeder groups. Same rationale as {@see completedPlayoffSlots}: bracket
+     * seeding is a mid-season snapshot and the standings can shift before
+     * season-end. Stand-in logic fills any gaps left by the dedupe so the
+     * total promotion count stays consistent.
+     *
+     * @param  list<string>  $directAlreadyTaken
+     * @param  list<string>  $sources
+     * @param  list<string>  $effectiveTopRoster
      * @return list<array{teamId: string, source: string}>
      */
-    private function primeraRfefCompletedWinners(CountrySeasonSnapshot $snapshot, string $playoffComp, int $count): array
-    {
-        $winners = array_slice($snapshot->playoffWinners($playoffComp), 0, $count);
+    private function primeraRfefCompletedWinners(
+        CountrySeasonSnapshot $snapshot,
+        string $playoffComp,
+        int $count,
+        array $directAlreadyTaken,
+        array $sources,
+        int $directCount,
+        array $effectiveTopRoster,
+    ): array {
+        $taken = array_flip($directAlreadyTaken);
         $out = [];
-        foreach ($winners as $teamId) {
+
+        foreach ($snapshot->playoffWinners($playoffComp) as $teamId) {
+            if (isset($taken[$teamId])) {
+                continue;
+            }
             $source = $snapshot->competitionOf($teamId) ?? '';
             $out[] = ['teamId' => $teamId, 'source' => $source];
+            $taken[$teamId] = true;
+            if (count($out) >= $count) {
+                return $out;
+            }
         }
+
+        if (count($out) < $count) {
+            $standIns = $this->primeraRfefStandIns(
+                $snapshot,
+                $sources,
+                $directCount,
+                $effectiveTopRoster,
+                array_keys($taken),
+                $count - count($out),
+            );
+            foreach ($standIns as $pick) {
+                $out[] = $pick;
+            }
+        }
+
         return $out;
     }
 
