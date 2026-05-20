@@ -42,6 +42,8 @@ class CountrySeasonSnapshotBuilder
             }
         }
 
+        $this->assertTierStandingsMatchConfig($config, $standingsByCompetition);
+
         $reserveToParent = $this->buildReserveMap($country, $standingsByCompetition);
 
         [$playoffStates, $playoffWinners] = $this->buildPlayoffData($game, $config);
@@ -71,6 +73,51 @@ class CountrySeasonSnapshotBuilder
             }
         }
         return $ids;
+    }
+
+    /**
+     * Belt-and-braces check that every tier's standings match the team count
+     * the country config declares. If they don't, the planner is being handed
+     * partial data and will silently produce an unbalanced plan — the failure
+     * eventually surfaces as a confusing mid-validation "ends with N teams"
+     * error well after the snapshot was built. Throwing at the boundary keeps
+     * the operator-facing message pointed at the real precondition violation.
+     *
+     * @param  array<string, list<string>>  $standingsByCompetition
+     */
+    private function assertTierStandingsMatchConfig(array $config, array $standingsByCompetition): void
+    {
+        foreach ($config['tiers'] ?? [] as $tier) {
+            $this->assertCompetitionMatchesTierSize(
+                $tier['competition'],
+                $tier['teams'] ?? null,
+                $standingsByCompetition,
+            );
+            foreach ($tier['siblings'] ?? [] as $sibling) {
+                $this->assertCompetitionMatchesTierSize(
+                    $sibling['competition'],
+                    $sibling['teams'] ?? null,
+                    $standingsByCompetition,
+                );
+            }
+        }
+    }
+
+    /**
+     * @param  array<string, list<string>>  $standingsByCompetition
+     */
+    private function assertCompetitionMatchesTierSize(
+        string $competitionId,
+        ?int $expectedSize,
+        array $standingsByCompetition,
+    ): void {
+        if ($expectedSize === null) {
+            return;
+        }
+        $actual = count($standingsByCompetition[$competitionId] ?? []);
+        if ($actual !== $expectedSize) {
+            throw TierStandingsMissingException::sizeMismatch($competitionId, $actual, $expectedSize);
+        }
     }
 
     /**

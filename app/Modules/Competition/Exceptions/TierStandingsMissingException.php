@@ -26,4 +26,18 @@ class TierStandingsMissingException extends RuntimeException
             . 'for this game and season.'
         );
     }
+
+    public static function sizeMismatch(string $competitionId, int $actual, int $expected): self
+    {
+        return new self(
+            "Cannot build promotion/relegation snapshot: tier competition '{$competitionId}' "
+            . "has {$actual} teams with played > 0 in standings, expected {$expected} per country "
+            . 'config. The missing teams are most likely phantom rows from a prior incomplete '
+            . 'season transition (registered in competition_entries / game_standings but with '
+            . 'played = 0). The planner cannot produce a balanced plan against partial standings '
+            . '— the relegation positions would resolve to slots that no team actually competed '
+            . 'in. Resolve the standings (either by completing the missing matches or by removing '
+            . 'the phantom rows) before retrying the season transition.'
+        );
+    }
 }
