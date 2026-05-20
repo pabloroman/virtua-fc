@@ -387,13 +387,37 @@ class CountryPromotionRelegationPlanner
         $incoming = $incomingByDestination[$topDiv] ?? [];
         $effectiveTopRoster = $this->effectiveTopRoster($snapshot, $rule, $topRoster, $incoming);
 
+        // Pre-pick the tentative direct promoters per source so we can extend
+        // the effective top roster with them. Without this the per-source
+        // filters can't see each other: if ESP3A's top is a reserve and
+        // ESP3B's top is its parent, both pass their individual filters
+        // (each parent/reserve is currently outside ESP2) and both land in
+        // ESP2 together, tripping validatePlan's coexistence check.
+        // The extended roster makes the parent visible to the reserve's
+        // source filter, which then skips the reserve in favour of the
+        // next eligible team in that group.
+        $tentativeDirects = [];
+        foreach ($sources as $sourceDiv) {
+            $eligible = $this->eligibleInOrder(
+                $snapshot,
+                $snapshot->standings($sourceDiv),
+                $effectiveTopRoster,
+            );
+            foreach (array_slice($eligible, 0, $directCount) as $tid) {
+                $tentativeDirects[] = $tid;
+            }
+        }
+        $extendedTopRoster = array_values(array_unique(
+            array_merge($effectiveTopRoster, $tentativeDirects),
+        ));
+
         $out = [];
 
         foreach ($sources as $sourceDiv) {
             $eligible = $this->eligibleInOrder(
                 $snapshot,
                 $snapshot->standings($sourceDiv),
-                $effectiveTopRoster,
+                $extendedTopRoster,
             );
 
             $sourceDirect = array_slice($eligible, 0, $directCount);
@@ -408,6 +432,11 @@ class CountryPromotionRelegationPlanner
         // total) but only 2 winners (the two bracket finals). For now we
         // expose the snapshot's ESP3PO winners list, which the test fixtures
         // populate with the expected (teamId, sourceGroup) entries.
+        //
+        // The extended top roster (including the directs we just emitted)
+        // also guards real playoff winners and stand-ins: a bracket winner
+        // that's a reserve of one of the directs gets skipped in favour of
+        // the next non-conflicting winner / stand-in.
         $state = $snapshot->playoffState($playoffComp);
         $playoffPickCount = 2; // Two bracket finals → two promotion spots.
 
@@ -419,13 +448,13 @@ class CountryPromotionRelegationPlanner
                 array_column($out, 'teamId'),
                 $sources,
                 $directCount,
-                $effectiveTopRoster,
+                $extendedTopRoster,
             ),
             PlayoffState::NotStarted => $this->primeraRfefStandIns(
                 $snapshot,
                 $sources,
                 $directCount,
-                $effectiveTopRoster,
+                $extendedTopRoster,
                 array_column($out, 'teamId'),
                 $playoffPickCount,
             ),
@@ -611,10 +640,19 @@ class CountryPromotionRelegationPlanner
         array $effectiveTopRoster,
     ): array {
         $taken = array_flip($directAlreadyTaken);
+        $topRosterSet = array_flip($effectiveTopRoster);
         $out = [];
 
         foreach ($snapshot->playoffWinners($playoffComp) as $teamId) {
             if (isset($taken[$teamId])) {
+                continue;
+            }
+            // Skip winners whose parent is already going to the top division
+            // (either via this rule's directs, or via another rule's
+            // incoming relegators that the extended roster carries). The
+            // stand-in fallback below picks up the freed slot.
+            $parent = $snapshot->parentOf($teamId);
+            if ($parent !== null && isset($topRosterSet[$parent])) {
                 continue;
             }
             $source = $snapshot->competitionOf($teamId) ?? '';

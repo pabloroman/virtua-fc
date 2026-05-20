@@ -107,6 +107,72 @@ class CountryPromotionRelegationPlannerTest extends TestCase
         }
     }
 
+    public function test_split_rule_drops_reserve_when_parent_promoted_from_sibling_group(): void
+    {
+        $esp1 = $this->ids(20, 'a1');
+        $esp2 = $this->ids(22, 'a2');
+        $esp3a = $this->ids(20, 'a3');
+        $esp3b = $this->ids(20, 'b3');
+
+        // Promesas at top of ESP3A, Osasuna at top of ESP3B. Each passes
+        // its own group's reserve filter (parent isn't in current ESP2
+        // standings) — but if both get promoted to ESP2 via Rule #2 they
+        // coexist there. The planner must see the cross-group conflict
+        // and drop the reserve in favour of the next eligible ESP3A team.
+        $parent = $esp3b[0];   // Osasuna at top of ESP3B
+        $reserve = $esp3a[0];  // Promesas at top of ESP3A
+
+        $snapshot = new CountrySeasonSnapshot(
+            countryCode: 'ES',
+            standingsByCompetition: [
+                'ESP1' => $esp1,
+                'ESP2' => $esp2,
+                'ESP3A' => $esp3a,
+                'ESP3B' => $esp3b,
+            ],
+            reserveToParent: [$reserve => $parent],
+            playoffStates: [
+                'ESP2' => PlayoffState::NotStarted,
+                'ESP3PO' => PlayoffState::NotStarted,
+            ],
+        );
+
+        $plan = $this->planner->planFromSnapshot($snapshot, $this->spainConfig);
+
+        // Parent promoted to ESP2.
+        $parentPromoted = false;
+        foreach ($plan->moves as $move) {
+            if ($move->teamId === $parent
+                && $move->toCompetitionId === 'ESP2'
+                && $move->isPromotion()
+            ) {
+                $parentPromoted = true;
+            }
+        }
+        $this->assertTrue($parentPromoted, 'Parent should be promoted to ESP2 from ESP3B');
+
+        // Reserve NOT promoted to ESP2 (filtered, ESP3A's slot goes to position 2).
+        foreach ($plan->moves as $move) {
+            if ($move->teamId === $reserve) {
+                $this->fail('Reserve should not be moved when parent is being promoted to the same destination');
+            }
+        }
+
+        // ESP3A's direct slot still filled — by the next eligible (position 2).
+        $esp3aDirect = null;
+        foreach ($plan->moves as $move) {
+            if ($move->fromCompetitionId === 'ESP3A'
+                && $move->toCompetitionId === 'ESP2'
+                && $move->reason === PromotionMove::REASON_PROMOTION
+            ) {
+                $esp3aDirect = $move;
+                break;
+            }
+        }
+        $this->assertNotNull($esp3aDirect, 'ESP3A should still have a direct promoter');
+        $this->assertSame($esp3a[1], $esp3aDirect->teamId, 'ESP3A direct should fall through to position 2');
+    }
+
     public function test_inherited_coexistence_in_intermediate_tier_cascades_reserve_down(): void
     {
         $esp1 = $this->ids(20, 'a1');
