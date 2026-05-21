@@ -132,7 +132,30 @@ export function createEventFeed(ctx) {
 
         get timelineProgress() {
             const c = ctx();
-            return Math.min((c.currentMinute / c.totalMinutes) * 100, 100);
+            // Pin the bar at the half boundary while the clock ticks
+            // through stoppage. `currentMinute` keeps advancing past 45/90
+            // so events still reveal on time, but if the bar advances with
+            // it the phase-transition snap-back (e.g. enterHalfTime → 45)
+            // would visibly move the bar backwards. Clamping the display
+            // value here keeps the bar paused at the boundary during
+            // stoppage, jumps cleanly through half-time, and resumes
+            // advancing from the boundary in the next half.
+            let displayMinute = c.currentMinute;
+            switch (c.phase) {
+                case PHASE.FIRST_HALF:
+                    displayMinute = Math.min(displayMinute, MINUTE.FIRST_HALF_END);
+                    break;
+                case PHASE.SECOND_HALF:
+                    displayMinute = Math.min(displayMinute, MINUTE.REGULAR_TIME_END);
+                    break;
+                case PHASE.EXTRA_TIME_FIRST_HALF:
+                    displayMinute = Math.min(displayMinute, MINUTE.ET_FIRST_HALF_END);
+                    break;
+                case PHASE.EXTRA_TIME_SECOND_HALF:
+                    displayMinute = Math.min(displayMinute, MINUTE.ET_END);
+                    break;
+            }
+            return Math.min((displayMinute / c.totalMinutes) * 100, 100);
         },
 
         get timelineHalfMarker() {
