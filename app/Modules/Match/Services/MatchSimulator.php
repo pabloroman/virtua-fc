@@ -5,7 +5,6 @@ namespace App\Modules\Match\Services;
 use App\Modules\Match\DTOs\MatchEventData;
 use App\Modules\Match\DTOs\MatchResult;
 use App\Modules\Match\DTOs\MatchSimulationOutput;
-use App\Modules\Match\Support\StoppageDurations;
 use App\Modules\Lineup\Enums\DefensiveLineHeight;
 use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Enums\Mentality;
@@ -26,6 +25,31 @@ class MatchSimulator
 {
     /** Upper bound for Dixon-Coles probability table (above config max_goals_cap for tail coverage). */
     private const DIXON_COLES_MAX_GOALS = 8;
+
+    /**
+     * Raw absolute upper bound for regulation event generation. The actual
+     * `second_half_stoppage` value (1-12 min) is computed *from* the events
+     * the simulator emits — see StoppageCalculator. Generating in [1, 95]
+     * means ~5% of events naturally fall in stoppage minutes (around 90-95),
+     * which the calculator then accommodates by ensuring shs ≥ event overflow.
+     */
+    public const REGULATION_UPPER_BOUND = 95;
+
+    /**
+     * Raw absolute upper bound for ET event generation, relative to start of
+     * ET (which itself starts at regulation_end + 1). The simulator's caller
+     * adds the persisted regulation stoppage to compute the absolute toMinute.
+     */
+    public const EXTRA_TIME_NOMINAL_END = 120;
+
+    /**
+     * Headroom past EXTRA_TIME_NOMINAL_END for ET stoppage event generation.
+     * MUST be ≤ `config('match_simulation.stoppage.et_max_minutes')` so the
+     * computed etshs can always accommodate any generated stoppage events
+     * (the calculator clamps to et_max_minutes, so events past that minute
+     * would orphan into a phase they don't belong to).
+     */
+    public const EXTRA_TIME_HEADROOM = 4;
 
     private const FACTORIALS = [1, 1, 2, 6, 24, 120, 720, 5040, 40320]; // 0! through 8!
 
@@ -154,13 +178,13 @@ class MatchSimulator
         ?string $userTeamId = null,
         ?array $homePlayerSlots = null,
         ?array $awayPlayerSlots = null,
-        ?StoppageDurations $stoppage = null,
     ): MatchSimulationOutput {
-        // Falls back to the old hardcoded "ends at 93" if the caller hasn't
-        // sampled stoppage yet. Callers in production paths supply this; tests
-        // and dev tooling can omit it.
-        $stoppage ??= new StoppageDurations(0, 3);
-        $regulationEnd = $stoppage->regulationEnd();
+        // Fixed upper bound for event generation — actual stoppage is derived
+        // from the event mix *after* simulation by StoppageCalculator. Picking
+        // 95 (5 min over nominal 90) lets a few events naturally land in
+        // second-half stoppage; the caller's StoppageCalculator computes the
+        // real stoppage_minute value to use for display + decomposition.
+        $regulationEnd = self::REGULATION_UPPER_BOUND;
         $this->homePlayerSlotMap = $homePlayerSlots ?? [];
         $this->awayPlayerSlotMap = $awayPlayerSlots ?? [];
 
@@ -749,7 +773,7 @@ class MatchSimulator
         ?array $homePlayerSlots = null,
         ?array $awayPlayerSlots = null,
         bool $preservePerformance = false,
-        int $toMinute = 93,
+        int $toMinute = 95,
     ): MatchSimulationOutput {
         if ($homePlayerSlots !== null) {
             $this->homePlayerSlotMap = $homePlayerSlots;
@@ -1928,7 +1952,7 @@ class MatchSimulator
         int $awayExistingSubstitutions = 0,
         bool $neutralVenue = false,
         bool $preservePerformance = false,
-        int $toMinute = 93,
+        int $toMinute = 95,
         bool $skipXGAdjustment = false,
         ?array $homePlayerSlots = null,
         ?array $awayPlayerSlots = null,
@@ -2237,7 +2261,7 @@ class MatchSimulator
         ?MatchEventData $homeRedCard,
         ?MatchEventData $awayRedCard,
         bool $neutralVenue = false,
-        int $toMinute = 93,
+        int $toMinute = 95,
         ?Carbon $currentDate = null,
     ): array {
         $splitMinute = min(
@@ -2786,15 +2810,15 @@ class MatchSimulator
         bool $neutralVenue = false,
         ?array $homePlayerSlots = null,
         ?array $awayPlayerSlots = null,
-        ?StoppageDurations $stoppage = null,
+        int $regulationStoppage = 0,
     ): MatchResult {
-        // Default stoppage values keep behavior backward compatible: 0 first-half
-        // stoppage and 3' second-half makes regulation end at raw minute 93,
-        // so ET starts at 94. ET halves get 0' default stoppage when not given,
-        // matching today's "ET runs to minute 120" cap.
-        $stoppage ??= new StoppageDurations(0, 3, 0, 0);
-        $regulationEnd = $stoppage->regulationEnd();
-        $extraTimeEnd = $stoppage->extraTimeEnd();
+        // ET begins right after regulation finishes. Caller passes the
+        // *persisted* regulation stoppage so events generated here don't
+        // collide with regulation-stoppage events that occupy those raw
+        // minutes. Actual ET stoppage is computed from event mix after
+        // simulation by StoppageCalculator::calculateExtraTime.
+        $regulationEnd = 90 + $regulationStoppage;
+        $extraTimeEnd = self::EXTRA_TIME_NOMINAL_END + $regulationStoppage + self::EXTRA_TIME_HEADROOM;
         $fromMinute ??= $regulationEnd;
         if ($homePlayerSlots !== null) {
             $this->homePlayerSlotMap = $homePlayerSlots;
@@ -2883,9 +2907,10 @@ class MatchSimulator
         }
 
         // Generate goal events in range [fromMinute+1, extraTimeEnd].
-        // extraTimeEnd = 120 + regulation stoppage + ET stoppage, so events
-        // can land anywhere from the start of ET first half (after regulation
-        // ends) through ET second-half stoppage.
+        // extraTimeEnd = 120 + regulation stoppage + ET headroom, so events
+        // can land anywhere from the start of ET first half through ET
+        // second-half stoppage. Actual ET stoppage minutes are derived
+        // from the event mix after simulation by StoppageCalculator.
         $minMinute = $fromMinute + 1;
         $maxMinute = $extraTimeEnd;
 

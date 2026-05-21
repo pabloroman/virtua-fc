@@ -9,8 +9,7 @@ use App\Models\CupTie;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\Team;
-use App\Modules\Match\Support\StoppageDurations;
-use App\Modules\Match\Support\StoppageSampler;
+use App\Modules\Match\Support\StoppageCalculator;
 use Illuminate\Support\Collection;
 use App\Modules\Match\Services\MatchSimulator;
 
@@ -20,7 +19,7 @@ class CupTieResolver
         private readonly MatchSimulator $matchSimulator,
         private readonly MatchEventRepository $matchEventRepository,
         private readonly PlayoffTiebreakerService $playoffTiebreakerService,
-        private readonly StoppageSampler $stoppageSampler = new StoppageSampler,
+        private readonly StoppageCalculator $stoppageCalculator = new StoppageCalculator,
     ) {}
 
     /**
@@ -75,8 +74,6 @@ class CupTieResolver
             $homeTeam = $match->relationLoaded('homeTeam') ? $match->homeTeam : Team::find($match->home_team_id);
             $awayTeam = $match->relationLoaded('awayTeam') ? $match->awayTeam : Team::find($match->away_team_id);
 
-            $stoppage = $this->ensureExtraTimeStoppage($match);
-
             $extraTimeResult = $this->matchSimulator->simulateExtraTime(
                 $homeTeam,
                 $awayTeam,
@@ -85,11 +82,17 @@ class CupTieResolver
                 neutralVenue: $match->isNeutralVenue(),
                 homePlayerSlots: $match->playerSlotMap('home'),
                 awayPlayerSlots: $match->playerSlotMap('away'),
-                stoppage: $stoppage,
+                regulationStoppage: (int) ($match->second_half_stoppage ?? 0),
             );
 
             $homeScoreEt = $extraTimeResult->homeScore;
             $awayScoreEt = $extraTimeResult->awayScore;
+
+            // Derive ET stoppage from events, persist before event-insert.
+            $etStoppage = $this->stoppageCalculator->calculateExtraTime(
+                $extraTimeResult->events,
+                regulationStoppage: (int) ($match->second_half_stoppage ?? 0),
+            );
 
             $match->update([
                 'is_extra_time' => true,
@@ -97,6 +100,8 @@ class CupTieResolver
                 'away_score_et' => $awayScoreEt,
                 'home_possession' => $extraTimeResult->homePossession,
                 'away_possession' => $extraTimeResult->awayPossession,
+                'et_first_half_stoppage' => $etStoppage['et_first_half'],
+                'et_second_half_stoppage' => $etStoppage['et_second_half'],
             ]);
 
             // Persist ET goal/card/etc. events so scorer lists stay consistent
@@ -183,8 +188,6 @@ class CupTieResolver
             $homeTeam = $secondLeg->relationLoaded('homeTeam') ? $secondLeg->homeTeam : Team::find($secondLeg->home_team_id);
             $awayTeam = $secondLeg->relationLoaded('awayTeam') ? $secondLeg->awayTeam : Team::find($secondLeg->away_team_id);
 
-            $stoppage = $this->ensureExtraTimeStoppage($secondLeg);
-
             $extraTimeResult = $this->matchSimulator->simulateExtraTime(
                 $homeTeam,
                 $awayTeam,
@@ -193,11 +196,16 @@ class CupTieResolver
                 neutralVenue: $secondLeg->isNeutralVenue(),
                 homePlayerSlots: $secondLeg->playerSlotMap('home'),
                 awayPlayerSlots: $secondLeg->playerSlotMap('away'),
-                stoppage: $stoppage,
+                regulationStoppage: (int) ($secondLeg->second_half_stoppage ?? 0),
             );
 
             $homeScoreEt = $extraTimeResult->homeScore;
             $awayScoreEt = $extraTimeResult->awayScore;
+
+            $etStoppage = $this->stoppageCalculator->calculateExtraTime(
+                $extraTimeResult->events,
+                regulationStoppage: (int) ($secondLeg->second_half_stoppage ?? 0),
+            );
 
             $secondLeg->update([
                 'is_extra_time' => true,
@@ -205,6 +213,8 @@ class CupTieResolver
                 'away_score_et' => $awayScoreEt,
                 'home_possession' => $extraTimeResult->homePossession,
                 'away_possession' => $extraTimeResult->awayPossession,
+                'et_first_half_stoppage' => $etStoppage['et_first_half'],
+                'et_second_half_stoppage' => $etStoppage['et_second_half'],
             ]);
 
             // Persist ET events so scorer lists stay consistent with the
@@ -283,20 +293,5 @@ class CupTieResolver
         ]);
     }
 
-    /**
-     * Sample and persist ET stoppage on the match if missing. Idempotent.
-     * Mirrors ExtraTimeAndPenaltyService::ensureExtraTimeStoppage — both
-     * resolution paths converge here so the displayed clock stays consistent.
-     */
-    private function ensureExtraTimeStoppage(GameMatch $match): StoppageDurations
-    {
-        if ($match->et_first_half_stoppage === null || $match->et_second_half_stoppage === null) {
-            $match->et_first_half_stoppage = $this->stoppageSampler->sampleEtFirstHalf();
-            $match->et_second_half_stoppage = $this->stoppageSampler->sampleEtSecondHalf();
-            $match->save();
-        }
-
-        return StoppageDurations::fromMatch($match);
-    }
 
 }

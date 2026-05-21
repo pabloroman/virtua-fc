@@ -12,8 +12,7 @@ use App\Modules\Match\DTOs\ExtraTimeProcessResult;
 use App\Modules\Match\DTOs\PenaltyProcessResult;
 use App\Modules\Match\DTOs\TacticalConfig;
 use App\Modules\Match\Enums\MatchPhase;
-use App\Modules\Match\Support\StoppageDurations;
-use App\Modules\Match\Support\StoppageSampler;
+use App\Modules\Match\Support\StoppageCalculator;
 use Illuminate\Support\Collection;
 
 class ExtraTimeAndPenaltyService
@@ -22,7 +21,7 @@ class ExtraTimeAndPenaltyService
         private readonly MatchSimulator $matchSimulator,
         private readonly MatchEventRepository $matchEventRepository,
         private readonly PlayoffTiebreakerService $playoffTiebreakerService,
-        private readonly StoppageSampler $stoppageSampler = new StoppageSampler,
+        private readonly StoppageCalculator $stoppageCalculator = new StoppageCalculator,
     ) {}
 
     /**
@@ -50,8 +49,6 @@ class ExtraTimeAndPenaltyService
         $homePlayerSlots = $match->playerSlotMap('home');
         $awayPlayerSlots = $match->playerSlotMap('away');
 
-        $stoppage = $this->ensureExtraTimeStoppage($match);
-
         $extraTimeResult = $this->matchSimulator->simulateExtraTime(
             $match->homeTeam,
             $match->awayTeam,
@@ -72,7 +69,14 @@ class ExtraTimeAndPenaltyService
             neutralVenue: $match->isNeutralVenue(),
             homePlayerSlots: $homePlayerSlots,
             awayPlayerSlots: $awayPlayerSlots,
-            stoppage: $stoppage,
+            regulationStoppage: (int) ($match->second_half_stoppage ?? 0),
+        );
+
+        // Derive ET stoppage from the event mix; persist before storing events
+        // so MatchEventRepository decomposes raw minutes correctly.
+        $etStoppage = $this->stoppageCalculator->calculateExtraTime(
+            $extraTimeResult->events,
+            regulationStoppage: (int) ($match->second_half_stoppage ?? 0),
         );
 
         $match->update([
@@ -81,6 +85,8 @@ class ExtraTimeAndPenaltyService
             'away_score_et' => $extraTimeResult->awayScore,
             'home_possession' => $extraTimeResult->homePossession,
             'away_possession' => $extraTimeResult->awayPossession,
+            'et_first_half_stoppage' => $etStoppage['et_first_half'],
+            'et_second_half_stoppage' => $etStoppage['et_second_half'],
         ]);
 
         $storedEvents = $this->storeExtraTimeEvents($match, $game, $extraTimeResult->events);
@@ -256,22 +262,6 @@ class ExtraTimeAndPenaltyService
             ->whereIn('id', $ids)
             ->orderedChronologically()
             ->get();
-    }
-
-    /**
-     * Sample ET stoppage values and persist them on the match if not yet set.
-     * Idempotent — once persisted, returns the same StoppageDurations across
-     * resims so the displayed clock stays consistent.
-     */
-    private function ensureExtraTimeStoppage(GameMatch $match): StoppageDurations
-    {
-        if ($match->et_first_half_stoppage === null || $match->et_second_half_stoppage === null) {
-            $match->et_first_half_stoppage = $this->stoppageSampler->sampleEtFirstHalf();
-            $match->et_second_half_stoppage = $this->stoppageSampler->sampleEtSecondHalf();
-            $match->save();
-        }
-
-        return StoppageDurations::fromMatch($match);
     }
 
 }

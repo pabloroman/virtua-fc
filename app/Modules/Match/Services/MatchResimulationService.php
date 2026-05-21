@@ -546,7 +546,7 @@ class MatchResimulationService
                 neutralVenue: $match->isNeutralVenue(),
                 homePlayerSlots: $homePlayerSlots,
                 awayPlayerSlots: $awayPlayerSlots,
-                stoppage: $stoppage,
+                regulationStoppage: $stoppage->secondHalf,
             );
 
             // 8. Calculate new ET score

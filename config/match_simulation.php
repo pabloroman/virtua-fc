@@ -170,17 +170,31 @@ return [
     | Stoppage Time
     |--------------------------------------------------------------------------
     |
-    | Per-half stoppage durations are sampled from a clamped Poisson and
-    | persisted on game_matches at simulation time. Real-world averages: 1H
-    | tends to ~2', 2H ~4-5', and ET halves are short. Adjust here to tune
-    | realism without changing the simulator.
+    | Stoppage durations are computed *from* the actual event mix the
+    | simulator produced (subs, cards, injuries, goals), not sampled blindly.
+    | This mirrors how a real referee accounts for stoppage on the touchline.
+    |
+    |   stoppage_seconds = baseline
+    |       + seconds_per_substitution × subs
+    |       + seconds_per_card         × bookings
+    |       + seconds_per_injury       × injuries
+    |       + seconds_per_goal         × goals
+    |
+    | Then ceil()'d to whole minutes and clamped to [min_minutes, max_minutes].
+    | A quiet 0-0 gets ~1 min; a chaotic 4-3 with several subs and bookings
+    | gets 6-8'.
     |
     */
     'stoppage' => [
-        'first_half'     => ['mean' => 2.0, 'min' => 1, 'max' => 7],
-        'second_half'    => ['mean' => 4.5, 'min' => 3, 'max' => 10],
-        'et_first_half'  => ['mean' => 0.8, 'min' => 0, 'max' => 3],
-        'et_second_half' => ['mean' => 1.5, 'min' => 1, 'max' => 4],
+        'baseline_seconds'         => 30,
+        'seconds_per_substitution' => 30,
+        'seconds_per_card'         => 30,
+        'seconds_per_injury'       => 60,
+        'seconds_per_goal'         => 30,
+        'first_half_min_minutes'   => 0,
+        'second_half_min_minutes'  => 1,
+        'max_minutes'              => 12,
+        'et_max_minutes'           => 4,
     ],
 
     /*
