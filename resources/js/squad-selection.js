@@ -20,6 +20,21 @@ export default function squadSelection(config) {
         fifaCode: config.fifaCode,
         gameId: config.gameId,
 
+        init() {
+            // Pre-select the officially called-up players (up to maxPlayers).
+            // Teams whose JSON hasn't been flagged yet start empty, matching
+            // the legacy manual-selection flow.
+            const calledUp = [];
+            for (const group of Object.keys(this.players)) {
+                for (const p of this.players[group]) {
+                    if (p.is_called_up && calledUp.length < this.maxPlayers) {
+                        calledUp.push(p.transfermarkt_id);
+                    }
+                }
+            }
+            this.selectedIds = calledUp;
+        },
+
         togglePlayer(id) {
             const idx = this.selectedIds.indexOf(id);
             if (idx > -1) {

@@ -106,6 +106,9 @@ $tabs = [
                                         <path fill-rule="evenodd" d="M8 2a1 1 0 0 0-1 1v4H3a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h4v4a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-4h4a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-4V3a1 1 0 0 0-1-1H8z" clip-rule="evenodd"/>
                                     </svg>
                                 @endif
+                                @if($candidate['is_called_up'])
+                                    <x-called-up-badge />
+                                @endif
                             </div>
                             <div class="flex items-center gap-1.5 text-xs text-text-secondary mt-0.5 min-w-0">
                                 @if($candidate['club_crest_url'])

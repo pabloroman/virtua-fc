@@ -110,6 +110,7 @@ class ShowSquadSelection
                 'club_name' => $tournamentInfo?->club_name,
                 'club_crest_url' => $tournamentInfo?->club_crest_url,
                 'is_injured' => (bool) $tournamentInfo?->is_injured,
+                'is_called_up' => (bool) $tournamentInfo?->is_called_up,
             ];
 
             $groupKey = match ($positionGroup) {

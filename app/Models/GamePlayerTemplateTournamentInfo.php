@@ -19,12 +19,14 @@ class GamePlayerTemplateTournamentInfo extends Model
     protected $fillable = [
         'game_player_template_id',
         'is_injured',
+        'is_called_up',
         'club_name',
         'club_crest_url',
     ];
 
     protected $casts = [
         'is_injured' => 'boolean',
+        'is_called_up' => 'boolean',
     ];
 
     public function template(): BelongsTo

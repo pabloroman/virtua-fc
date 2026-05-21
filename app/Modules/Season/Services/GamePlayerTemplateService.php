@@ -117,6 +117,7 @@ class GamePlayerTemplateService
                         'club_name' => $playerData['club']['name'] ?? null,
                         'club_crest_url' => $playerData['club']['image'] ?? null,
                         'is_injured' => (bool) ($playerData['injured'] ?? false),
+                        'is_called_up' => (bool) ($playerData['calledUp'] ?? false),
                     ];
                 }
             }
@@ -161,13 +162,14 @@ class GamePlayerTemplateService
             }
 
             // Skip rows with no useful data so the satellite stays small.
-            if (!$info['is_injured'] && !$info['club_name'] && !$info['club_crest_url']) {
+            if (!$info['is_injured'] && !$info['is_called_up'] && !$info['club_name'] && !$info['club_crest_url']) {
                 continue;
             }
 
             $satelliteRows[] = [
                 'game_player_template_id' => $templateId,
                 'is_injured' => $info['is_injured'],
+                'is_called_up' => $info['is_called_up'],
                 'club_name' => $info['club_name'],
                 'club_crest_url' => $info['club_crest_url'],
             ];
@@ -179,7 +181,7 @@ class GamePlayerTemplateService
                 ->upsert(
                     $chunk,
                     ['game_player_template_id'],
-                    ['is_injured', 'club_name', 'club_crest_url'],
+                    ['is_injured', 'is_called_up', 'club_name', 'club_crest_url'],
                 );
         }
     }

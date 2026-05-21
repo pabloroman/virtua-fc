@@ -236,6 +236,31 @@ class SetupTournamentGame implements ShouldQueue
 
         $placeholders = implode(',', array_fill(0, count($eligibleNationalTeamIds), '?'));
 
+        // National teams that have an explicit "called up" roster published in
+        // their JSON (via game_player_template_tournament_info.is_called_up).
+        // For those, AI opponents start the tournament with only that 26-man
+        // squad. Teams without any called-up flag fall through to the legacy
+        // behavior of copying every templated player, so the JSON files can be
+        // updated incrementally without breaking unseeded nations.
+        $teamsWithCalledUp = DB::connection('pgsql_control')
+            ->table('game_player_template_tournament_info as ti')
+            ->join('game_player_templates as t', 't.id', '=', 'ti.game_player_template_id')
+            ->where('t.season', '2025')
+            ->where('ti.is_called_up', true)
+            ->whereIn('t.team_id', $eligibleNationalTeamIds)
+            ->distinct()
+            ->pluck('t.team_id')
+            ->all();
+
+        if ($teamsWithCalledUp !== []) {
+            $calledUpPlaceholders = implode(',', array_fill(0, count($teamsWithCalledUp), '?'));
+            $calledUpFilter = "AND (ti.is_called_up = true OR t.team_id NOT IN ($calledUpPlaceholders))";
+            $calledUpBindings = $teamsWithCalledUp;
+        } else {
+            $calledUpFilter = '';
+            $calledUpBindings = [];
+        }
+
         DB::insert(<<<SQL
             INSERT INTO game_players (
                 id, game_id, player_id,
@@ -253,11 +278,13 @@ class SetupTournamentGame implements ShouldQueue
                 t.overall_score,
                 t.potential, t.potential_low, t.potential_high, t.tier
             FROM game_player_templates t
+            LEFT JOIN game_player_template_tournament_info ti ON ti.game_player_template_id = t.id
             WHERE t.season = '2025'
               AND t.team_id IN ($placeholders)
               AND t.team_id <> ?
+              $calledUpFilter
             ON CONFLICT (game_id, player_id) DO NOTHING
-        SQL, [$this->gameId, ...$eligibleNationalTeamIds, $this->teamId]);
+        SQL, [$this->gameId, ...$eligibleNationalTeamIds, $this->teamId, ...$calledUpBindings]);
 
         DB::insert(<<<'SQL'
             INSERT INTO game_player_match_state (game_player_id, game_id, fitness, morale)

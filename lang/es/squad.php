@@ -268,6 +268,7 @@ return [
     'invalid_selection' => 'Selección inválida. Verifica los jugadores seleccionados.',
     'download_squad' => 'Descargar convocatoria',
     'squad_list' => 'Lista de convocados',
+    'called_up_badge' => 'Convocado',
 
     // Radar chart
     'radar_gk' => 'Portería',
