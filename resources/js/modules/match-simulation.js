@@ -98,12 +98,20 @@ export function createMatchSimulation(ctx) {
         // "Fourth official adds N minutes" announcement on the boundary.
         // Fires once per half-end, pauses the clock for a beat of drama,
         // then ticking resumes into the stoppage window.
+        // Each stoppage-announcement branch must keep the animation loop
+        // alive: `pauseForDrama` (called from `announceStoppage`) sets
+        // `state.isPaused` and clears it via a timer, but `tick()` only
+        // notices the unpause if another frame is already scheduled.
+        // Returning here without re-arming `requestAnimationFrame` freezes
+        // the clock and the half-time / full-time transition never fires
+        // — the user has to manually press skip-to-end to unstick it.
         if (state.phase === 'first_half'
             && !state._announcedFirstHalfStoppage
             && (state.firstHalfStoppage || 0) > 0
             && state.currentMinute >= 45) {
             state._announcedFirstHalfStoppage = true;
             announceStoppage(state.firstHalfStoppage, 45);
+            _animFrame = requestAnimationFrame(tick);
             return;
         }
         if (state.phase === 'second_half'
@@ -112,6 +120,7 @@ export function createMatchSimulation(ctx) {
             && state.currentMinute >= 90) {
             state._announcedSecondHalfStoppage = true;
             announceStoppage(state.secondHalfStoppage, 90);
+            _animFrame = requestAnimationFrame(tick);
             return;
         }
         if (state.phase === 'extra_time_first_half'
@@ -120,6 +129,7 @@ export function createMatchSimulation(ctx) {
             && state.currentMinute >= 105) {
             state._announcedEtFirstHalfStoppage = true;
             announceStoppage(state.etFirstHalfStoppage, 105);
+            _animFrame = requestAnimationFrame(tick);
             return;
         }
         if (state.phase === 'extra_time_second_half'
@@ -128,6 +138,7 @@ export function createMatchSimulation(ctx) {
             && state.currentMinute >= 120) {
             state._announcedEtSecondHalfStoppage = true;
             announceStoppage(state.etSecondHalfStoppage, 120);
+            _animFrame = requestAnimationFrame(tick);
             return;
         }
 
