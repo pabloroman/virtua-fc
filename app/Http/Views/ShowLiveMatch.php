@@ -85,9 +85,10 @@ class ShowLiveMatch
         }
 
         // Build the events payload for the Alpine.js component
-        // When ET is already played, separate regular (<=93) and ET events (>93)
+        // Split by phase: regulation phases for the main feed, ET for the
+        // post-90 extra-time feed.
         $allEvents = $playerMatch->events;
-        $regularEvents = $allEvents->filter(fn ($e) => $e->minute <= 93);
+        $regularEvents = $allEvents->filter(fn ($e) => $e->phase->isRegulation());
 
         $events = MatchResimulationService::formatMatchEvents($regularEvents);
 
@@ -115,7 +116,10 @@ class ShowLiveMatch
                 'goalMinutes' => $m->events
                     ->filter(fn ($e) => in_array($e->event_type, ['goal', 'own_goal']))
                     ->map(fn ($e) => [
-                        'minute' => $e->minute,
+                        // Raw absolute minute for the live-match ticker, which
+                        // reveals other-match goals as the clock passes them.
+                        'minute' => $e->absoluteMinute(),
+                        'displayMinute' => $e->displayMinute(),
                         'side' => ($e->event_type === 'goal' && $e->team_id === $m->home_team_id)
                             || ($e->event_type === 'own_goal' && $e->team_id === $m->away_team_id)
                             ? 'home' : 'away',
@@ -275,6 +279,10 @@ class ShowLiveMatch
                 : null,
             'homePossession' => $playerMatch->home_possession ?? 50,
             'awayPossession' => $playerMatch->away_possession ?? 50,
+            'firstHalfStoppage' => (int) ($playerMatch->first_half_stoppage ?? 0),
+            'secondHalfStoppage' => (int) ($playerMatch->second_half_stoppage ?? 3),
+            'etFirstHalfStoppage' => $playerMatch->et_first_half_stoppage,
+            'etSecondHalfStoppage' => $playerMatch->et_second_half_stoppage,
             'mvpPlayerName' => $playerMatch->mvpPlayer?->name,
             'mvpPlayerTeamId' => $playerMatch->mvpPlayer?->team_id,
             'homeLineupDisplay' => $homeLineupDisplay,

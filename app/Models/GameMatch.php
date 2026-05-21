@@ -30,6 +30,10 @@ use App\Support\PositionSlotMapper;
  * @property int|null $away_score_et
  * @property int|null $home_score_penalties
  * @property int|null $away_score_penalties
+ * @property int $first_half_stoppage
+ * @property int $second_half_stoppage
+ * @property int|null $et_first_half_stoppage
+ * @property int|null $et_second_half_stoppage
  * @property array<array-key, mixed>|null $home_lineup
  * @property array<array-key, mixed>|null $away_lineup
  * @property string|null $home_formation
@@ -125,6 +129,10 @@ class GameMatch extends Model
         'away_score_et',
         'home_score_penalties',
         'away_score_penalties',
+        'first_half_stoppage',
+        'second_half_stoppage',
+        'et_first_half_stoppage',
+        'et_second_half_stoppage',
         'home_possession',
         'away_possession',
         'mvp_player_id',
@@ -163,6 +171,10 @@ class GameMatch extends Model
         'away_score_penalties' => 'integer',
         'home_possession' => 'integer',
         'away_possession' => 'integer',
+        'first_half_stoppage' => 'integer',
+        'second_half_stoppage' => 'integer',
+        'et_first_half_stoppage' => 'integer',
+        'et_second_half_stoppage' => 'integer',
         'substitutions' => 'array',
         'standings_applied' => 'boolean',
         'neutral_venue_capacity' => 'integer',
@@ -205,7 +217,8 @@ class GameMatch extends Model
 
     public function events(): HasMany
     {
-        return $this->hasMany(MatchEvent::class, 'game_match_id')->orderBy('minute');
+        // Phase tuple ordering — minute alone is ambiguous in stoppage time.
+        return $this->hasMany(MatchEvent::class, 'game_match_id')->orderedChronologically();
     }
 
     /**

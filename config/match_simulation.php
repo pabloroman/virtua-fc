@@ -167,6 +167,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Stoppage Time
+    |--------------------------------------------------------------------------
+    |
+    | Per-half stoppage durations are sampled from a clamped Poisson and
+    | persisted on game_matches at simulation time. Real-world averages: 1H
+    | tends to ~2', 2H ~4-5', and ET halves are short. Adjust here to tune
+    | realism without changing the simulator.
+    |
+    */
+    'stoppage' => [
+        'first_half'     => ['mean' => 2.0, 'min' => 1, 'max' => 7],
+        'second_half'    => ['mean' => 4.5, 'min' => 3, 'max' => 10],
+        'et_first_half'  => ['mean' => 0.8, 'min' => 0, 'max' => 3],
+        'et_second_half' => ['mean' => 1.5, 'min' => 1, 'max' => 4],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Player Energy (Unified Fitness/Stamina)
     |--------------------------------------------------------------------------
     |

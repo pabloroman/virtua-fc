@@ -19,8 +19,8 @@ namespace App\Modules\Match\DTOs;
  *     winning-team edge) correctly without a userTeamId/opponent split.
  *
  *   events / extraTimeEvents — MatchResimulationService::formatMatchEvents()
- *     output, split the same way ShowLiveMatch splits them: minute ≤93 in
- *     `events`, minute >93 in `extraTimeEvents`. Required because the shared
+ *     output, split by phase: regulation phases (FH/FHS/SH/SHS) in `events`,
+ *     ET phases (ET_*) in `extraTimeEvents`. Required because the shared
  *     ratings-glue module unions them but reads `homeScore`/`awayScore` as
  *     90-min only — matching this contract keeps post-match ratings identical
  *     to the live-match view for the same fixture.

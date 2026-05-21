@@ -86,7 +86,10 @@ class MatchSummaryPresenter
             ->map(function ($playerEvents, $name) {
                 $minutes = $playerEvents
                     ->map(function (MatchEvent $e) {
-                        $label = $e->minute . "'";
+                        // displayMinute renders "45+2'" for stoppage events
+                        // and "47'" for open-play events; either way no extra
+                        // quote needed here.
+                        $label = $e->displayMinute();
                         if ($e->event_type === MatchEvent::TYPE_OWN_GOAL) {
                             $label .= ' ' . __('game.og');
                         }
@@ -167,11 +170,10 @@ class MatchSummaryPresenter
             $rosters['subIns'],
         );
 
-        // Mirror the live-match split: regular events (≤93') vs ET (>93').
-        // The shared ratings-glue module unions them but reads finalHomeScore/
-        // finalAwayScore as 90-min only, matching what ShowLiveMatch passes.
-        $regularEvents = $match->events->filter(fn (MatchEvent $e) => $e->minute <= 93);
-        $etEvents = $match->events->filter(fn (MatchEvent $e) => $e->minute > 93);
+        // Mirror the live-match split: regulation events (FH/FHS/SH/SHS)
+        // vs ET events. Phase-aware so 90+2' stoppage goals stay with regulation.
+        $regularEvents = $match->events->filter(fn (MatchEvent $e) => $e->phase->isRegulation());
+        $etEvents = $match->events->filter(fn (MatchEvent $e) => $e->phase->isExtraTime());
 
         return new MatchLineupsViewModel(
             homeRoster: $rosters['home'],

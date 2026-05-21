@@ -2,8 +2,10 @@
 
 namespace App\Modules\Match\Services;
 
+use App\Models\GameMatch;
 use App\Models\MatchEvent;
 use App\Modules\Match\DTOs\MatchEventData;
+use App\Modules\Match\Support\MinuteCoordinates;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -12,21 +14,42 @@ class MatchEventRepository
     /**
      * Map MatchEventData objects to database rows and bulk insert.
      *
+     * The simulator hands us events with a raw absolute `minute`. At persist
+     * time we decompose into (phase, base minute in phase, stoppage minute)
+     * using the match's sampled stoppage durations — that decomposition is
+     * the canonical form stored in `match_events`.
+     *
      * @param  Collection<MatchEventData>  $events
      * @return array<string>  Inserted row IDs
      */
     public function bulkInsert(Collection $events, string $gameId, string $matchId, int $chunkSize = 50): array
     {
-        $rows = $events->map(fn (MatchEventData $e) => [
-            'id' => Str::uuid()->toString(),
-            'game_id' => $gameId,
-            'game_match_id' => $matchId,
-            'game_player_id' => $e->gamePlayerId,
-            'team_id' => $e->teamId,
-            'minute' => $e->minute,
-            'event_type' => $e->type,
-            'metadata' => $e->metadata ? json_encode($e->metadata) : null,
-        ])->all();
+        if ($events->isEmpty()) {
+            return [];
+        }
+
+        $match = GameMatch::query()->findOrFail($matchId);
+        $fhs = (int) ($match->first_half_stoppage ?? 0);
+        $shs = (int) ($match->second_half_stoppage ?? 0);
+        $etfhs = $match->et_first_half_stoppage;
+        $etshs = $match->et_second_half_stoppage;
+
+        $rows = $events->map(function (MatchEventData $e) use ($gameId, $matchId, $fhs, $shs, $etfhs, $etshs) {
+            $coords = MinuteCoordinates::decompose($e->minute, $fhs, $shs, $etfhs, $etshs);
+
+            return [
+                'id' => Str::uuid()->toString(),
+                'game_id' => $gameId,
+                'game_match_id' => $matchId,
+                'game_player_id' => $e->gamePlayerId,
+                'team_id' => $e->teamId,
+                'minute' => $coords['minute'],
+                'phase' => $coords['phase']->value,
+                'stoppage_minute' => $coords['stoppage_minute'],
+                'event_type' => $e->type,
+                'metadata' => $e->metadata ? json_encode($e->metadata) : null,
+            ];
+        })->all();
 
         foreach (array_chunk($rows, $chunkSize) as $chunk) {
             MatchEvent::insert($chunk);

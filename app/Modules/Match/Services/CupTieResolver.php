@@ -9,6 +9,8 @@ use App\Models\CupTie;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\Team;
+use App\Modules\Match\Support\StoppageDurations;
+use App\Modules\Match\Support\StoppageSampler;
 use Illuminate\Support\Collection;
 use App\Modules\Match\Services\MatchSimulator;
 
@@ -18,6 +20,7 @@ class CupTieResolver
         private readonly MatchSimulator $matchSimulator,
         private readonly MatchEventRepository $matchEventRepository,
         private readonly PlayoffTiebreakerService $playoffTiebreakerService,
+        private readonly StoppageSampler $stoppageSampler = new StoppageSampler,
     ) {}
 
     /**
@@ -72,6 +75,8 @@ class CupTieResolver
             $homeTeam = $match->relationLoaded('homeTeam') ? $match->homeTeam : Team::find($match->home_team_id);
             $awayTeam = $match->relationLoaded('awayTeam') ? $match->awayTeam : Team::find($match->away_team_id);
 
+            $stoppage = $this->ensureExtraTimeStoppage($match);
+
             $extraTimeResult = $this->matchSimulator->simulateExtraTime(
                 $homeTeam,
                 $awayTeam,
@@ -80,6 +85,7 @@ class CupTieResolver
                 neutralVenue: $match->isNeutralVenue(),
                 homePlayerSlots: $match->playerSlotMap('home'),
                 awayPlayerSlots: $match->playerSlotMap('away'),
+                stoppage: $stoppage,
             );
 
             $homeScoreEt = $extraTimeResult->homeScore;
@@ -177,6 +183,8 @@ class CupTieResolver
             $homeTeam = $secondLeg->relationLoaded('homeTeam') ? $secondLeg->homeTeam : Team::find($secondLeg->home_team_id);
             $awayTeam = $secondLeg->relationLoaded('awayTeam') ? $secondLeg->awayTeam : Team::find($secondLeg->away_team_id);
 
+            $stoppage = $this->ensureExtraTimeStoppage($secondLeg);
+
             $extraTimeResult = $this->matchSimulator->simulateExtraTime(
                 $homeTeam,
                 $awayTeam,
@@ -185,6 +193,7 @@ class CupTieResolver
                 neutralVenue: $secondLeg->isNeutralVenue(),
                 homePlayerSlots: $secondLeg->playerSlotMap('home'),
                 awayPlayerSlots: $secondLeg->playerSlotMap('away'),
+                stoppage: $stoppage,
             );
 
             $homeScoreEt = $extraTimeResult->homeScore;
@@ -272,6 +281,22 @@ class CupTieResolver
             'completed' => true,
             'resolution' => $resolution,
         ]);
+    }
+
+    /**
+     * Sample and persist ET stoppage on the match if missing. Idempotent.
+     * Mirrors ExtraTimeAndPenaltyService::ensureExtraTimeStoppage — both
+     * resolution paths converge here so the displayed clock stays consistent.
+     */
+    private function ensureExtraTimeStoppage(GameMatch $match): StoppageDurations
+    {
+        if ($match->et_first_half_stoppage === null || $match->et_second_half_stoppage === null) {
+            $match->et_first_half_stoppage = $this->stoppageSampler->sampleEtFirstHalf();
+            $match->et_second_half_stoppage = $this->stoppageSampler->sampleEtSecondHalf();
+            $match->save();
+        }
+
+        return StoppageDurations::fromMatch($match);
     }
 
 }

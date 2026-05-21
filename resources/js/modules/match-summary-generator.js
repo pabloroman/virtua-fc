@@ -540,8 +540,12 @@ function buildKeyMoment(t, replacements, ctx) {
 
     if (totalHome + totalAway >= 2) {
         const goals = allEvents.filter(e => e.type === 'goal' || e.type === 'own_goal');
-        const firstHalf = goals.filter(e => e.minute <= 45);
-        const secondHalf = goals.filter(e => e.minute > 45);
+        // Phase-aware first/second-half split — a 45+2' goal still belongs
+        // to the first half, which a `minute <= 45` cutoff would miss.
+        const firstHalf = goals.filter(e =>
+            e.phase === 'first_half' || e.phase === 'first_half_stoppage');
+        const secondHalf = goals.filter(e =>
+            e.phase === 'second_half' || e.phase === 'second_half_stoppage');
 
         if (secondHalf.length === 0 && firstHalf.length >= 2 && t.summaryDominantFirstHalf) {
             return pickTemplate(t.summaryDominantFirstHalf, replacements);

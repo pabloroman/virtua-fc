@@ -155,19 +155,30 @@ class MvpCalculator
         $matchLength = 90;
 
         foreach ($events as $event) {
+            $phase = null;
             if (is_array($event)) {
                 $type = $event['type'] ?? $event['event_type'] ?? null;
                 $playerId = $event['gamePlayerId'] ?? $event['game_player_id'] ?? null;
                 $minute = $event['minute'] ?? 0;
                 $metadata = $event['metadata'] ?? null;
+                $phase = $event['phase'] ?? null;
             } else {
                 $type = $event->type ?? $event->event_type ?? null;
                 $playerId = $event->gamePlayerId ?? $event->game_player_id ?? null;
                 $minute = $event->minute ?? 0;
                 $metadata = $event->metadata ?? null;
+                $phase = $event->phase ?? null;
             }
 
-            if ($minute > 93) {
+            // Phase-based ET detection — works whether `phase` is a MatchPhase
+            // enum (Eloquent model) or its string value (array). Fall back to
+            // a minute heuristic if phase is missing (legacy callers).
+            $isExtraTime = match (true) {
+                $phase instanceof \App\Modules\Match\Enums\MatchPhase => $phase->isExtraTime(),
+                is_string($phase) => str_starts_with($phase, 'et_'),
+                default => $minute > 93,
+            };
+            if ($isExtraTime) {
                 $matchLength = 120;
             }
 
