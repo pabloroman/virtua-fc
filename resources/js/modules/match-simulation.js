@@ -723,6 +723,11 @@ export function createMatchSimulation(ctx) {
      * with the number of minutes to cover (800ms–1500ms). When the
      * animation finishes the clock is snapped to the sampled
      * stoppage-time end and the callback fires.
+     *
+     * If the skip was triggered during the first half, the phase is
+     * promoted to SECOND_HALF as the clock crosses the half-time
+     * boundary so displayMinute doesn't render past-45 minutes as
+     * "45+N" stoppage notation against the first half.
      */
     function animateClockToEnd(fromMinute, onComplete) {
         const state = ctx();
@@ -739,10 +744,18 @@ export function createMatchSimulation(ctx) {
 
             state.currentMinute = fromMinute + minutesToCover * eased;
 
+            if ((state.phase === PHASE.FIRST_HALF && state.currentMinute >= MINUTE.FIRST_HALF_END)
+                || state.phase === PHASE.HALF_TIME) {
+                state.phase = PHASE.SECOND_HALF;
+            }
+
             if (t < 1) {
                 _animFrame = requestAnimationFrame(advanceFrame);
             } else {
                 state.currentMinute = regulationEnd;
+                if (state.phase === PHASE.FIRST_HALF || state.phase === PHASE.HALF_TIME) {
+                    state.phase = PHASE.SECOND_HALF;
+                }
                 updateOtherMatches();
                 onComplete();
             }
