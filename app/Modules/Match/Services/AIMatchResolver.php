@@ -6,6 +6,7 @@ use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\Game;
 use App\Modules\Match\DTOs\MatchEventData;
+use App\Modules\Match\Support\StoppageSampler;
 use Illuminate\Support\Collection;
 
 /**
@@ -25,6 +26,10 @@ use Illuminate\Support\Collection;
  */
 class AIMatchResolver
 {
+    public function __construct(
+        private readonly StoppageSampler $stoppageSampler = new StoppageSampler,
+    ) {}
+
     private const DIXON_COLES_MAX_GOALS = 8;
 
     private const FACTORIALS = [1, 1, 2, 6, 24, 120, 720, 5040, 40320];
@@ -121,6 +126,13 @@ class AIMatchResolver
         $match->away_formation = '4-3-3';
         $match->home_mentality = 'balanced';
         $match->away_mentality = 'balanced';
+
+        // Sample stoppage so events generated below decompose into phase
+        // coordinates correctly when MatchResultProcessor persists them.
+        if ($match->first_half_stoppage <= 0 && $match->second_half_stoppage <= 0) {
+            $match->first_half_stoppage = $this->stoppageSampler->sampleFirstHalf();
+            $match->second_half_stoppage = $this->stoppageSampler->sampleSecondHalf();
+        }
 
         if ($match->isDirty()) {
             $match->save();

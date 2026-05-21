@@ -8,6 +8,8 @@ use App\Models\TeamReputation;
 use App\Modules\Lineup\Services\LineupService;
 use App\Modules\Match\DTOs\MatchEventData;
 use App\Modules\Match\DTOs\TacticalConfig;
+use App\Modules\Match\Support\StoppageDurations;
+use App\Modules\Match\Support\StoppageSampler;
 use App\Modules\Notification\Services\NotificationService;
 use Illuminate\Support\Collection;
 
@@ -26,6 +28,7 @@ class FullMatchSimulationService
         private readonly LineupService $lineupService,
         private readonly NotificationService $notificationService,
         private readonly AIMatchResolver $aiMatchResolver = new AIMatchResolver,
+        private readonly StoppageSampler $stoppageSampler = new StoppageSampler,
     ) {}
 
     /**
@@ -158,6 +161,13 @@ class FullMatchSimulationService
         $homePlayerSlots = $match->playerSlotMap('home');
         $awayPlayerSlots = $match->playerSlotMap('away');
 
+        // Sample regulation stoppage for the match (idempotent — if already
+        // set from a prior partial sim, keep the same values so the user
+        // doesn't see the clock change between resims). Persisted before the
+        // simulator runs so MatchEventRepository can decompose event minutes
+        // into (phase, base, stoppage_minute).
+        $stoppage = $this->ensureRegulationStoppage($match);
+
         // In fast mode the assistant coach also makes the user's in-match
         // substitutions — pass userTeamId = null so the AI sub helper covers
         // both teams, same as if the user had clicked "Skip to end" from
@@ -187,6 +197,7 @@ class FullMatchSimulationService
             userTeamId: $simulatorUserTeamId,
             homePlayerSlots: $homePlayerSlots,
             awayPlayerSlots: $awayPlayerSlots,
+            stoppage: $stoppage,
         );
 
         $result = $output->result;
@@ -258,6 +269,29 @@ class FullMatchSimulationService
         }
 
         return $teamPlayers->filter(fn ($p) => in_array($p->id, $lineupIds));
+    }
+
+    /**
+     * Sample regulation stoppage values and persist them on the match if not
+     * already set. Idempotent: a row that already has stoppage values is
+     * returned as-is so partial resimulations stay deterministic relative to
+     * what's been persisted (and shown to the user).
+     *
+     * The default migration default for these columns is 0; the explicit
+     * "is this a played match that just got sampled" detection uses played=true
+     * + non-zero second-half stoppage to distinguish "never simulated" from
+     * "simulated with this seed".
+     */
+    private function ensureRegulationStoppage(GameMatch $match): StoppageDurations
+    {
+        $hasStoppage = $match->second_half_stoppage > 0 || $match->first_half_stoppage > 0;
+        if (! $hasStoppage) {
+            $match->first_half_stoppage = $this->stoppageSampler->sampleFirstHalf();
+            $match->second_half_stoppage = $this->stoppageSampler->sampleSecondHalf();
+            $match->save();
+        }
+
+        return StoppageDurations::fromMatch($match);
     }
 
 }

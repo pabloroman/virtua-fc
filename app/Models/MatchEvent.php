@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Modules\Match\Enums\MatchPhase;
+use App\Modules\Match\Support\MinuteCoordinates;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,6 +16,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $game_player_id
  * @property string $team_id
  * @property int $minute
+ * @property MatchPhase $phase
+ * @property int|null $stoppage_minute
  * @property string $event_type
  * @property array<array-key, mixed>|null $metadata
  * @property-read \App\Models\Game $game
@@ -46,12 +51,16 @@ class MatchEvent extends Model
         'game_player_id',
         'team_id',
         'minute',
+        'phase',
+        'stoppage_minute',
         'event_type',
         'metadata',
     ];
 
     protected $casts = [
         'minute' => 'integer',
+        'phase' => MatchPhase::class,
+        'stoppage_minute' => 'integer',
         'metadata' => 'array',
     ];
 
@@ -110,11 +119,70 @@ class MatchEvent extends Model
     }
 
     /**
+     * Render the minute as it should appear in the UI — "45+2'" for stoppage,
+     * "47'" for open play. Penalty-shootout events have no minute.
+     */
+    public function displayMinute(): string
+    {
+        if ($this->phase === MatchPhase::PENALTIES) {
+            return '';
+        }
+
+        return $this->stoppage_minute
+            ? "{$this->minute}+{$this->stoppage_minute}'"
+            : "{$this->minute}'";
+    }
+
+    /**
+     * The simulator's raw absolute clock time for this event, derived from
+     * the persisted phase tuple + the match's stoppage values. Used by the
+     * resimulation service when it needs to compare DB-loaded events to
+     * newly-generated ones on a common axis.
+     */
+    public function absoluteMinute(): int
+    {
+        $match = $this->gameMatch;
+
+        return MinuteCoordinates::toAbsolute(
+            $this->phase,
+            $this->minute,
+            $this->stoppage_minute,
+            (int) ($match->first_half_stoppage ?? 0),
+            (int) ($match->second_half_stoppage ?? 0),
+            $match->et_first_half_stoppage,
+            $match->et_second_half_stoppage,
+        );
+    }
+
+    /**
+     * Chronological ordering across phase + minute + stoppage_minute. Use
+     * this instead of `orderBy('minute')` — minute alone is ambiguous in
+     * stoppage time.
+     */
+    public function scopeOrderedChronologically(Builder $query): Builder
+    {
+        return $query
+            ->orderByRaw("CASE phase
+                WHEN 'first_half' THEN 1
+                WHEN 'first_half_stoppage' THEN 2
+                WHEN 'second_half' THEN 3
+                WHEN 'second_half_stoppage' THEN 4
+                WHEN 'et_first_half' THEN 5
+                WHEN 'et_first_half_stoppage' THEN 6
+                WHEN 'et_second_half' THEN 7
+                WHEN 'et_second_half_stoppage' THEN 8
+                WHEN 'penalties' THEN 9
+                ELSE 99 END")
+            ->orderBy('minute')
+            ->orderByRaw('COALESCE(stoppage_minute, 0)');
+    }
+
+    /**
      * Get display string for the event (e.g., "45' Goal - Vinicius Jr.")
      */
     public function getDisplayStringAttribute(): string
     {
-        $minute = $this->minute . "'";
+        $minute = $this->displayMinute();
         $player = $this->player_name;
 
         return match ($this->event_type) {

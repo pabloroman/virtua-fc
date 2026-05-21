@@ -621,10 +621,12 @@ export function createMatchSimulation(ctx) {
             _kickoffTimeout = null;
         }
 
-        // Reveal all first-half events (up to minute 45)
+        // Reveal all first-half events (FH + FH stoppage). Phase-aware so a
+        // 45+2' event doesn't get skipped when the user clicks "skip to HT".
         for (let i = state.lastRevealedIndex + 1; i < state.events.length; i++) {
             const event = state.events[i];
-            if (event.minute > 45) break;
+            const isFirstHalf = event.phase === 'first_half' || event.phase === 'first_half_stoppage';
+            if (!isFirstHalf) break;
             state.lastRevealedIndex = i;
             state.revealedEvents.unshift(event);
             state.latestEvent = event;

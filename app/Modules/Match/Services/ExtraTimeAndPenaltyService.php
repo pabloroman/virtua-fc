@@ -11,6 +11,9 @@ use App\Modules\Competition\Services\PlayoffTiebreakerService;
 use App\Modules\Match\DTOs\ExtraTimeProcessResult;
 use App\Modules\Match\DTOs\PenaltyProcessResult;
 use App\Modules\Match\DTOs\TacticalConfig;
+use App\Modules\Match\Enums\MatchPhase;
+use App\Modules\Match\Support\StoppageDurations;
+use App\Modules\Match\Support\StoppageSampler;
 use Illuminate\Support\Collection;
 
 class ExtraTimeAndPenaltyService
@@ -19,6 +22,7 @@ class ExtraTimeAndPenaltyService
         private readonly MatchSimulator $matchSimulator,
         private readonly MatchEventRepository $matchEventRepository,
         private readonly PlayoffTiebreakerService $playoffTiebreakerService,
+        private readonly StoppageSampler $stoppageSampler = new StoppageSampler,
     ) {}
 
     /**
@@ -46,6 +50,8 @@ class ExtraTimeAndPenaltyService
         $homePlayerSlots = $match->playerSlotMap('home');
         $awayPlayerSlots = $match->playerSlotMap('away');
 
+        $stoppage = $this->ensureExtraTimeStoppage($match);
+
         $extraTimeResult = $this->matchSimulator->simulateExtraTime(
             $match->homeTeam,
             $match->awayTeam,
@@ -66,6 +72,7 @@ class ExtraTimeAndPenaltyService
             neutralVenue: $match->isNeutralVenue(),
             homePlayerSlots: $homePlayerSlots,
             awayPlayerSlots: $awayPlayerSlots,
+            stoppage: $stoppage,
         );
 
         $match->update([
@@ -173,7 +180,7 @@ class ExtraTimeAndPenaltyService
      */
     public function buildRefreshState(GameMatch $match): array
     {
-        $etEvents = $match->events->filter(fn ($e) => $e->minute > 93);
+        $etEvents = $match->events->filter(fn ($e) => $e->phase->isExtraTime());
 
         $state = [
             'extraTimeEvents' => MatchResimulationService::formatMatchEvents($etEvents),
@@ -247,8 +254,24 @@ class ExtraTimeAndPenaltyService
 
         return MatchEvent::with('gamePlayer')
             ->whereIn('id', $ids)
-            ->orderBy('minute')
+            ->orderedChronologically()
             ->get();
+    }
+
+    /**
+     * Sample ET stoppage values and persist them on the match if not yet set.
+     * Idempotent — once persisted, returns the same StoppageDurations across
+     * resims so the displayed clock stays consistent.
+     */
+    private function ensureExtraTimeStoppage(GameMatch $match): StoppageDurations
+    {
+        if ($match->et_first_half_stoppage === null || $match->et_second_half_stoppage === null) {
+            $match->et_first_half_stoppage = $this->stoppageSampler->sampleEtFirstHalf();
+            $match->et_second_half_stoppage = $this->stoppageSampler->sampleEtSecondHalf();
+            $match->save();
+        }
+
+        return StoppageDurations::fromMatch($match);
     }
 
 }
