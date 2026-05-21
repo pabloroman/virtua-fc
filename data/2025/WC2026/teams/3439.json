@@ -1,540 +1,759 @@
 {
-  "image": "https://tmssl.akamaized.net/images/wappen/big/3439.png",
+  "image": "https://assets.virtuafc.com/crests/3439.png",
   "name": "Brazil",
   "players": [
     {
-      "contract": "Oct 11, 2017",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/36.png",
+        "name": "Fenerbahce"
+      },
       "dateOfBirth": "Aug 17, 1993",
       "foot": "left",
       "height": "1,88m",
       "id": "238223",
+      "injured": false,
       "marketValue": "€30.00m",
       "name": "Ederson",
       "position": "Goalkeeper"
     },
     {
-      "contract": "Oct 14, 2015",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/31.png",
+        "name": "Liverpool FC"
+      },
       "dateOfBirth": "Oct 2, 1992",
       "foot": "right",
       "height": "1,93m",
       "id": "105470",
+      "injured": true,
       "marketValue": "€25.00m",
       "name": "Alisson",
       "position": "Goalkeeper"
     },
     {
-      "contract": "Mar 23, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/18544.png",
+        "name": "Al-Nassr FC"
+      },
       "dateOfBirth": "Jun 10, 1999",
       "foot": "right",
       "height": "1,90m",
       "id": "691906",
+      "injured": false,
       "marketValue": "€12.00m",
       "name": "Bento",
       "position": "Goalkeeper"
     },
     {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/399.png",
+        "name": "Leeds United"
+      },
       "dateOfBirth": "Dec 10, 1997",
       "foot": "right",
       "height": "1,97m",
       "id": "352041",
+      "injured": false,
       "marketValue": "€8.00m",
       "name": "Lucas Perri",
       "position": "Goalkeeper"
     },
     {
-      "contract": "Oct 14, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/199.png",
+        "name": "Sport Club Corinthians Paulista"
+      },
       "dateOfBirth": "Jan 31, 1999",
       "foot": "right",
       "height": "1,99m",
       "id": "574901",
+      "injured": false,
       "marketValue": "€8.00m",
       "name": "Hugo Souza",
-      "number": "1",
       "position": "Goalkeeper"
     },
     {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/703.png",
+        "name": "Nottingham Forest"
+      },
       "dateOfBirth": "Feb 13, 1996",
       "foot": "right",
       "height": "1,97m",
       "id": "432914",
+      "injured": false,
       "marketValue": "€7.00m",
       "name": "John Victor",
       "position": "Goalkeeper"
     },
     {
-      "contract": "Jan 26, 2017",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/210.png",
+        "name": "Grêmio Foot-Ball Porto Alegrense"
+      },
       "dateOfBirth": "Dec 13, 1987",
       "foot": "right",
       "height": "1,89m",
       "id": "69400",
+      "injured": false,
       "marketValue": "€1.80m",
       "name": "Weverton",
       "position": "Goalkeeper"
     },
     {
-      "contract": "Sep 9, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/11.png",
+        "name": "Arsenal FC"
+      },
       "dateOfBirth": "Dec 19, 1997",
       "foot": "left",
       "height": "1,90m",
       "id": "435338",
+      "injured": false,
       "marketValue": "€75.00m",
       "name": "Gabriel",
       "position": "Centre-Back"
     },
     {
-      "contract": "Mar 26, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/703.png",
+        "name": "Nottingham Forest"
+      },
       "dateOfBirth": "Jul 4, 2002",
       "foot": "left",
       "height": "1,80m",
       "id": "1005649",
+      "injured": true,
       "marketValue": "€50.00m",
       "name": "Murillo",
       "position": "Centre-Back"
     },
     {
-      "contract": "Nov 17, 2013",
-      "dateOfBirth": "May 14, 1994",
-      "foot": "right",
-      "height": "1,83m",
-      "id": "181767",
-      "marketValue": "€40.00m",
-      "name": "Marquinhos",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Sep 12, 2018",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/418.png",
+        "name": "Real Madrid"
+      },
       "dateOfBirth": "Jan 18, 1998",
       "foot": "right",
       "height": "1,86m",
       "id": "401530",
+      "injured": true,
       "marketValue": "€40.00m",
       "name": "Éder Militão",
       "position": "Centre-Back"
     },
     {
-      "contract": "Mar 23, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/583.png",
+        "name": "Paris Saint-Germain"
+      },
+      "dateOfBirth": "May 14, 1994",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "181767",
+      "injured": false,
+      "marketValue": "€40.00m",
+      "name": "Marquinhos",
+      "position": "Centre-Back"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/583.png",
+        "name": "Paris Saint-Germain"
+      },
       "dateOfBirth": "Nov 24, 2003",
       "foot": "left",
       "height": "1,86m",
       "id": "872171",
+      "injured": false,
       "marketValue": "€30.00m",
       "name": "Lucas Beraldo",
       "position": "Centre-Back"
     },
     {
-      "contract": "Jun 6, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1082.png",
+        "name": "LOSC Lille"
+      },
       "dateOfBirth": "Aug 9, 1999",
       "foot": "both",
       "height": "1,91m",
       "id": "648020",
+      "injured": false,
       "marketValue": "€12.00m",
       "name": "Alexsandro",
       "position": "Centre-Back"
     },
     {
-      "contract": "Mar 21, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/614.png",
+        "name": "CR Flamengo"
+      },
       "dateOfBirth": "Jan 3, 1996",
       "foot": "right",
       "height": "1,85m",
       "id": "374136",
+      "injured": false,
       "marketValue": "€11.00m",
       "name": "Léo Ortiz",
       "position": "Centre-Back"
     },
     {
-      "contract": "Mar 23, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/609.png",
+        "name": "Cruzeiro Esporte Clube"
+      },
       "dateOfBirth": "Feb 12, 1996",
       "foot": "right",
       "height": "1,90m",
       "id": "432773",
+      "injured": false,
       "marketValue": "€7.00m",
       "name": "Fabrício Bruno",
       "position": "Centre-Back"
     },
     {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/614.png",
+        "name": "CR Flamengo"
+      },
       "dateOfBirth": "Jul 15, 1991",
       "foot": "right",
       "height": "1,84m",
       "id": "145707",
+      "injured": false,
       "marketValue": "€4.00m",
       "name": "Danilo",
       "position": "Centre-Back"
     },
     {
-      "contract": "Oct 18, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/46.png",
+        "name": "Inter Milan"
+      },
       "dateOfBirth": "Jan 7, 1999",
       "foot": "left",
       "height": "1,84m",
       "id": "585982",
+      "injured": false,
       "marketValue": "€22.00m",
       "name": "Carlos Augusto",
       "position": "Left-Back"
     },
     {
-      "contract": "Sep 9, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/162.png",
+        "name": "AS Monaco"
+      },
       "dateOfBirth": "Jul 31, 1997",
       "foot": "left",
       "height": "1,78m",
       "id": "420064",
+      "injured": true,
       "marketValue": "€18.00m",
       "name": "Caio Henrique",
       "position": "Left-Back"
     },
     {
-      "contract": "Oct 8, 2021",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/2462.png",
+        "name": "Fluminense Football Club"
+      },
       "dateOfBirth": "Apr 14, 1997",
       "foot": "left",
       "height": "1,76m",
       "id": "346766",
+      "injured": false,
       "marketValue": "€13.00m",
       "name": "Guilherme Arana",
       "position": "Left-Back"
     },
     {
-      "contract": "May 30, 2016",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/964.png",
+        "name": "Zenit St. Petersburg"
+      },
       "dateOfBirth": "Mar 22, 1994",
       "foot": "left",
       "height": "1,76m",
       "id": "220793",
+      "injured": false,
       "marketValue": "€10.00m",
       "name": "Douglas Santos",
       "position": "Left-Back"
     },
     {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/10010.png",
+        "name": "Esporte Clube Bahia"
+      },
       "dateOfBirth": "Aug 29, 1999",
       "foot": "left",
       "height": "1,76m",
       "id": "676035",
+      "injured": false,
       "marketValue": "€3.00m",
       "name": "Luciano Juba",
       "position": "Left-Back"
     },
     {
-      "contract": "Nov 10, 2011",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/614.png",
+        "name": "CR Flamengo"
+      },
       "dateOfBirth": "Jan 26, 1991",
       "foot": "left",
       "height": "1,81m",
       "id": "79960",
+      "injured": false,
       "marketValue": "€1.80m",
       "name": "Alex Sandro",
       "position": "Left-Back"
     },
     {
-      "contract": "Jun 17, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/162.png",
+        "name": "AS Monaco"
+      },
       "dateOfBirth": "Jun 21, 2001",
       "foot": "right",
       "height": "1,73m",
       "id": "789082",
+      "injured": false,
       "marketValue": "€20.00m",
       "name": "Vanderson",
       "position": "Right-Back"
     },
     {
-      "contract": "Mar 21, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/12.png",
+        "name": "AS Roma"
+      },
       "dateOfBirth": "Sep 6, 2003",
       "foot": "right",
       "height": "1,78m",
       "id": "964580",
+      "injured": false,
       "marketValue": "€9.00m",
       "name": "Wesley",
       "position": "Right-Back"
     },
     {
-      "contract": "Sep 10, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/537.png",
+        "name": "Botafogo de Futebol e Regatas"
+      },
       "dateOfBirth": "Jul 23, 1999",
       "foot": "right",
       "height": "1,74m",
       "id": "468249",
+      "injured": false,
       "marketValue": "€6.00m",
       "name": "Vitinho",
       "position": "Right-Back"
     },
     {
-      "contract": "Oct 10, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/978.png",
+        "name": "Clube de Regatas Vasco da Gama"
+      },
       "dateOfBirth": "Jul 25, 1996",
       "foot": "right",
       "height": "1,75m",
       "id": "412594",
+      "injured": true,
       "marketValue": "€1.70m",
       "name": "Paulo Henrique",
       "position": "Right-Back"
     },
     {
-      "contract": "Jun 20, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/543.png",
+        "name": "Wolverhampton Wanderers"
+      },
       "dateOfBirth": "Jul 16, 2001",
       "foot": "right",
       "height": "1,76m",
       "id": "800176",
+      "injured": false,
       "marketValue": "€25.00m",
       "name": "André",
       "position": "Defensive Midfield"
     },
     {
-      "contract": "Jun 7, 2015",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/8023.png",
+        "name": "Al-Ittihad Club"
+      },
       "dateOfBirth": "Oct 23, 1993",
       "foot": "right",
       "height": "1,88m",
       "id": "225693",
+      "injured": false,
       "marketValue": "€18.00m",
       "name": "Fabinho",
       "position": "Defensive Midfield"
     },
     {
-      "contract": "Sep 15, 2011",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/985.png",
+        "name": "Manchester United"
+      },
       "dateOfBirth": "Feb 23, 1992",
       "foot": "right",
       "height": "1,85m",
       "id": "16306",
+      "injured": false,
       "marketValue": "€12.00m",
       "name": "Casemiro",
       "position": "Defensive Midfield"
     },
     {
-      "contract": "Nov 18, 2020",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/762.png",
+        "name": "Newcastle United"
+      },
       "dateOfBirth": "Nov 16, 1997",
       "foot": "right",
       "height": "1,82m",
       "id": "520624",
+      "injured": false,
       "marketValue": "€80.00m",
       "name": "Bruno Guimarães",
       "position": "Central Midfield"
     },
     {
-      "contract": "Jun 9, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/800.png",
+        "name": "Atalanta BC"
+      },
       "dateOfBirth": "Jul 7, 1999",
       "foot": "right",
       "height": "1,83m",
       "id": "607854",
+      "injured": false,
       "marketValue": "€50.00m",
       "name": "Éderson",
       "position": "Central Midfield"
     },
     {
-      "contract": "Jun 17, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/762.png",
+        "name": "Newcastle United"
+      },
       "dateOfBirth": "Aug 14, 1996",
       "foot": "right",
       "height": "1,86m",
       "id": "333241",
+      "injured": true,
       "marketValue": "€40.00m",
       "name": "Joelinton",
       "position": "Central Midfield"
     },
     {
-      "contract": "Mar 23, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/543.png",
+        "name": "Wolverhampton Wanderers"
+      },
       "dateOfBirth": "Feb 12, 2001",
       "foot": "right",
       "height": "1,76m",
       "id": "735570",
+      "injured": false,
       "marketValue": "€40.00m",
       "name": "João Gomes",
       "position": "Central Midfield"
     },
     {
-      "contract": "Mar 25, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/631.png",
+        "name": "Chelsea FC"
+      },
       "dateOfBirth": "May 3, 2004",
       "foot": "right",
       "height": "1,80m",
       "id": "743600",
+      "injured": false,
       "marketValue": "€25.00m",
       "name": "Andrey Santos",
       "position": "Central Midfield"
     },
     {
-      "contract": "Sep 12, 2018",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1023.png",
+        "name": "Sociedade Esportiva Palmeiras"
+      },
       "dateOfBirth": "Jan 1, 1996",
       "foot": "right",
       "height": "1,78m",
       "id": "203394",
+      "injured": false,
       "marketValue": "€20.00m",
       "name": "Andreas Pereira",
       "position": "Central Midfield"
     },
     {
-      "contract": "Sep 3, 2021",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/609.png",
+        "name": "Cruzeiro Esporte Clube"
+      },
       "dateOfBirth": "May 20, 1997",
       "foot": "left",
       "height": "1,84m",
       "id": "341705",
+      "injured": false,
       "marketValue": "€20.00m",
       "name": "Gerson",
       "position": "Central Midfield"
     },
     {
-      "contract": "Sep 10, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/10010.png",
+        "name": "Esporte Clube Bahia"
+      },
       "dateOfBirth": "Jun 22, 1998",
       "foot": "right",
       "height": "1,81m",
       "id": "578872",
+      "injured": false,
       "marketValue": "€8.00m",
       "name": "Jean Lucas",
       "position": "Central Midfield"
     },
     {
-      "contract": "Sep 8, 2018",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/614.png",
+        "name": "CR Flamengo"
+      },
       "dateOfBirth": "Aug 27, 1997",
       "foot": "left",
       "height": "1,80m",
       "id": "444523",
+      "injured": false,
       "marketValue": "€40.00m",
       "name": "Lucas Paquetá",
       "position": "Attacking Midfield"
     },
     {
-      "contract": "Sep 11, 2019",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/418.png",
+        "name": "Real Madrid"
+      },
       "dateOfBirth": "Jul 12, 2000",
       "foot": "right",
       "height": "1,76m",
       "id": "371998",
+      "injured": false,
       "marketValue": "€200.00m",
       "name": "Vinicius Junior",
       "position": "Left Winger"
     },
     {
-      "contract": "Oct 8, 2021",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/131.png",
+        "name": "FC Barcelona"
+      },
       "dateOfBirth": "Dec 14, 1996",
       "foot": "left",
       "height": "1,76m",
       "id": "411295",
+      "injured": false,
       "marketValue": "€80.00m",
       "name": "Raphinha",
       "position": "Left Winger"
     },
     {
-      "contract": "Mar 25, 2022",
-      "dateOfBirth": "Jun 18, 2001",
-      "foot": "right",
-      "height": "1,78m",
-      "id": "655488",
-      "marketValue": "€55.00m",
-      "name": "Gabriel Martinelli",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "Mar 23, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/281.png",
+        "name": "Manchester City"
+      },
       "dateOfBirth": "Apr 10, 2004",
       "foot": "left",
       "height": "1,76m",
       "id": "743591",
+      "injured": false,
       "marketValue": "€55.00m",
       "name": "Savinho",
       "position": "Left Winger"
     },
     {
-      "contract": "Sep 10, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/11.png",
+        "name": "Arsenal FC"
+      },
+      "dateOfBirth": "Jun 18, 2001",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "655488",
+      "injured": false,
+      "marketValue": "€55.00m",
+      "name": "Gabriel Martinelli",
+      "position": "Left Winger"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/614.png",
+        "name": "CR Flamengo"
+      },
       "dateOfBirth": "Dec 23, 1999",
       "foot": "right",
       "height": "1,77m",
       "id": "694928",
+      "injured": false,
       "marketValue": "€25.00m",
       "name": "Samuel Lino",
       "position": "Left Winger"
     },
     {
-      "contract": "Nov 15, 2019",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/418.png",
+        "name": "Real Madrid"
+      },
       "dateOfBirth": "Jan 9, 2001",
       "foot": "right",
       "height": "1,74m",
       "id": "412363",
+      "injured": true,
       "marketValue": "€100.00m",
       "name": "Rodrygo",
       "position": "Right Winger"
     },
     {
-      "contract": "Sep 7, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/631.png",
+        "name": "Chelsea FC"
+      },
       "dateOfBirth": "Apr 24, 2007",
       "foot": "left",
-      "height": "1,76m",
+      "height": "1,78m",
       "id": "1056993",
+      "injured": true,
       "marketValue": "€50.00m",
       "name": "Estêvão",
       "position": "Right Winger"
     },
     {
-      "contract": "Sep 7, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/964.png",
+        "name": "Zenit St. Petersburg"
+      },
       "dateOfBirth": "Jan 2, 2001",
       "foot": "left",
       "height": "1,82m",
       "id": "800175",
+      "injured": false,
       "marketValue": "€22.00m",
       "name": "Luiz Henrique",
       "position": "Right Winger"
     },
     {
-      "contract": "Oct 8, 2021",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/150.png",
+        "name": "Real Betis Balompié"
+      },
       "dateOfBirth": "Feb 24, 2000",
       "foot": "left",
       "height": "1,72m",
       "id": "602105",
+      "injured": false,
       "marketValue": "€20.00m",
       "name": "Antony",
       "position": "Right Winger"
     },
     {
-      "contract": "Sep 3, 2021",
-      "dateOfBirth": "May 27, 1999",
-      "foot": "right",
-      "height": "1,83m",
-      "id": "517894",
-      "marketValue": "€50.00m",
-      "name": "Matheus Cunha",
-      "position": "Centre-Forward"
-    },
-    {
-      "contract": "Nov 17, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/631.png",
+        "name": "Chelsea FC"
+      },
       "dateOfBirth": "Sep 26, 2001",
       "foot": "right",
-      "height": "1,82m",
+      "height": "1,86m",
       "id": "626724",
+      "injured": false,
       "marketValue": "€50.00m",
       "name": "João Pedro",
       "position": "Centre-Forward"
     },
     {
-      "contract": "Nov 17, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/985.png",
+        "name": "Manchester United"
+      },
+      "dateOfBirth": "May 27, 1999",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "517894",
+      "injured": false,
+      "marketValue": "€50.00m",
+      "name": "Matheus Cunha",
+      "position": "Centre-Forward"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1041.png",
+        "name": "Olympique Lyon"
+      },
       "dateOfBirth": "Jul 21, 2006",
       "foot": "left",
       "height": "1,73m",
       "id": "971570",
+      "injured": false,
       "marketValue": "€40.00m",
       "name": "Endrick",
       "position": "Centre-Forward"
     },
     {
-      "contract": "Sep 8, 2018",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/148.png",
+        "name": "Tottenham Hotspur"
+      },
       "dateOfBirth": "May 10, 1997",
       "foot": "right",
       "height": "1,84m",
       "id": "378710",
+      "injured": false,
       "marketValue": "€30.00m",
       "name": "Richarlison",
       "position": "Centre-Forward"
     },
     {
-      "contract": "Mar 25, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1023.png",
+        "name": "Sociedade Esportiva Palmeiras"
+      },
       "dateOfBirth": "Feb 28, 2005",
       "foot": "right",
       "height": "1,74m",
       "id": "943837",
+      "injured": true,
       "marketValue": "€20.00m",
       "name": "Vitor Roque",
       "position": "Centre-Forward"
     },
     {
-      "contract": "Oct 11, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/703.png",
+        "name": "Nottingham Forest"
+      },
       "dateOfBirth": "Feb 25, 2001",
       "foot": "right",
       "height": "1,79m",
       "id": "432164",
+      "injured": false,
       "marketValue": "€15.00m",
       "name": "Igor Jesus",
       "position": "Centre-Forward"
     },
     {
-      "contract": "Sep 5, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/609.png",
+        "name": "Cruzeiro Esporte Clube"
+      },
       "dateOfBirth": "Jan 24, 2002",
       "foot": "right",
       "height": "1,82m",
       "id": "620477",
+      "injured": false,
       "marketValue": "€4.50m",
       "name": "Kaio Jorge",
       "position": "Centre-Forward"

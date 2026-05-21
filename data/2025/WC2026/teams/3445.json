@@ -1,275 +1,409 @@
 {
-  "image": "https://tmssl.akamaized.net/images/wappen/big/3445.png",
+  "image": "https://assets.virtuafc.com/crests/3445.png",
   "name": "Czechia",
   "players": [
     {
-      "contract": "Mar 31, 2026",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1075.png",
+        "name": "SC Braga"
+      },
       "dateOfBirth": "Jul 13, 2002",
       "foot": "right",
       "height": "1,98m",
       "id": "629773",
+      "injured": false,
       "marketValue": "€15.00m",
       "name": "Lukas Hornicek",
-      "number": "16",
       "position": "Goalkeeper"
     },
     {
-      "contract": "Mar 26, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/383.png",
+        "name": "PSV Eindhoven"
+      },
       "dateOfBirth": "May 17, 2000",
       "foot": "right",
       "height": "1,96m",
       "id": "550829",
+      "injured": false,
       "marketValue": "€7.00m",
       "name": "Matej Kovar",
-      "number": "1",
       "position": "Goalkeeper"
     },
     {
-      "contract": "Nov 13, 2025",
-      "dateOfBirth": "Jan 24, 1998",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/62.png",
+        "name": "SK Slavia Prague"
+      },
+      "dateOfBirth": "Apr 27, 1996",
       "foot": "right",
-      "height": "1,87m",
-      "id": "293357",
-      "marketValue": "€2.50m",
-      "name": "Martin Jedlicka",
-      "number": "23",
+      "height": "1,92m",
+      "id": "242089",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Jindrich Stanek",
       "position": "Goalkeeper"
     },
     {
-      "contract": "Mar 24, 2022",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/543.png",
+        "name": "Wolverhampton Wanderers"
+      },
       "dateOfBirth": "Apr 20, 1999",
       "foot": "left",
       "height": "1,91m",
       "id": "345911",
+      "injured": false,
       "marketValue": "€22.00m",
       "name": "Ladislav Krejčí",
-      "number": "7",
       "position": "Centre-Back"
     },
     {
-      "contract": "Mar 26, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/533.png",
+        "name": "TSG 1899 Hoffenheim"
+      },
       "dateOfBirth": "Jan 29, 2000",
       "foot": "right",
       "height": "1,90m",
       "id": "620217",
+      "injured": false,
       "marketValue": "€10.00m",
       "name": "Robin Hranac",
-      "number": "4",
       "position": "Centre-Back"
     },
     {
-      "contract": "Nov 20, 2023",
-      "dateOfBirth": "Jan 21, 2003",
-      "foot": "right",
-      "height": "1,93m",
-      "id": "652054",
-      "marketValue": "€10.00m",
-      "name": "Martin Vitík",
-      "number": "6",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Nov 17, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/62.png",
+        "name": "SK Slavia Prague"
+      },
       "dateOfBirth": "Mar 8, 2003",
       "foot": "right",
       "height": "1,88m",
       "id": "944827",
-      "marketValue": "€8.00m",
+      "injured": false,
+      "marketValue": "€10.00m",
       "name": "Stepan Chaloupek",
-      "number": "2",
       "position": "Centre-Back"
     },
     {
-      "contract": "Sep 7, 2020",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/62.png",
+        "name": "SK Slavia Prague"
+      },
+      "dateOfBirth": "Nov 8, 2000",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "544149",
+      "injured": false,
+      "marketValue": "€7.00m",
+      "name": "David Zima",
+      "position": "Centre-Back"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/62.png",
+        "name": "SK Slavia Prague"
+      },
       "dateOfBirth": "Mar 31, 1993",
       "foot": "right",
       "height": "1,80m",
       "id": "216278",
-      "marketValue": "€1.20m",
+      "injured": false,
+      "marketValue": "€1.00m",
       "name": "Tomas Holes",
-      "number": "3",
       "position": "Centre-Back"
     },
     {
-      "contract": "Sep 7, 2020",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/197.png",
+        "name": "AC Sparta Prague"
+      },
       "dateOfBirth": "Aug 20, 1992",
       "foot": "left",
       "height": "1,90m",
       "id": "142219",
-      "marketValue": "€700k",
+      "injured": false,
+      "marketValue": "€600k",
       "name": "Jaroslav Zelený",
-      "number": "20",
       "position": "Centre-Back"
     },
     {
-      "contract": "Mar 24, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/62.png",
+        "name": "SK Slavia Prague"
+      },
       "dateOfBirth": "Aug 7, 2000",
       "foot": "left",
       "height": "1,83m",
       "id": "500054",
+      "injured": false,
       "marketValue": "€5.00m",
       "name": "David Jurásek",
-      "number": "17",
       "position": "Left-Back"
     },
     {
-      "contract": "Nov 11, 2017",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/533.png",
+        "name": "TSG 1899 Hoffenheim"
+      },
       "dateOfBirth": "Aug 22, 1992",
       "foot": "right",
       "height": "1,74m",
       "id": "157672",
+      "injured": false,
       "marketValue": "€2.70m",
       "name": "Vladimír Coufal",
-      "number": "5",
       "position": "Right-Back"
     },
     {
-      "contract": "Nov 15, 2016",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/379.png",
+        "name": "West Ham United"
+      },
       "dateOfBirth": "Feb 27, 1995",
       "foot": "right",
       "height": "1,92m",
       "id": "283628",
+      "injured": false,
       "marketValue": "€12.00m",
       "name": "Tomáš Souček",
-      "number": "22",
       "position": "Defensive Midfield"
     },
     {
-      "contract": "Jun 4, 2021",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/62.png",
+        "name": "SK Slavia Prague"
+      },
       "dateOfBirth": "May 31, 1999",
       "foot": "left",
       "height": "1,69m",
       "id": "321204",
+      "injured": false,
       "marketValue": "€8.00m",
       "name": "Michal Sadílek",
-      "number": "18",
       "position": "Central Midfield"
     },
     {
-      "contract": "Jun 7, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/941.png",
+        "name": "FC Viktoria Plzen"
+      },
       "dateOfBirth": "Apr 10, 2001",
       "height": "1,82m",
       "id": "611049",
+      "injured": false,
       "marketValue": "€6.00m",
       "name": "Lukas Cerv",
-      "number": "12",
       "position": "Central Midfield"
     },
     {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/51772.png",
+        "name": "FC Cincinnati"
+      },
       "dateOfBirth": "Mar 11, 1998",
       "foot": "right",
       "height": "1,77m",
       "id": "563033",
+      "injured": false,
       "marketValue": "€4.00m",
       "name": "Pavel Bucha",
       "position": "Central Midfield"
     },
     {
-      "contract": "May 26, 2012",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/197.png",
+        "name": "AC Sparta Prague"
+      },
+      "dateOfBirth": "Jun 7, 2008",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "1206877",
+      "injured": false,
+      "marketValue": "€3.50m",
+      "name": "Hugo Sochurek",
+      "position": "Central Midfield"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/941.png",
+        "name": "FC Viktoria Plzen"
+      },
+      "dateOfBirth": "Apr 2, 2003",
+      "height": "1,88m",
+      "id": "826103",
+      "injured": false,
+      "marketValue": "€2.30m",
+      "name": "Alexandr Sojka",
+      "position": "Central Midfield"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1897.png",
+        "name": "FC Hradec Kralove"
+      },
       "dateOfBirth": "Aug 8, 1990",
       "foot": "right",
       "height": "1,72m",
       "id": "179643",
-      "marketValue": "€400k",
+      "injured": false,
+      "marketValue": "€375k",
       "name": "Vladimír Darida",
-      "number": "8",
       "position": "Central Midfield"
     },
     {
-      "contract": "Mar 22, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/62.png",
+        "name": "SK Slavia Prague"
+      },
+      "dateOfBirth": "May 31, 1998",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "493758",
+      "injured": false,
+      "marketValue": "€3.50m",
+      "name": "David Doudera",
+      "position": "Right Midfield"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1041.png",
+        "name": "Olympique Lyon"
+      },
       "dateOfBirth": "Dec 29, 2000",
       "foot": "right",
       "height": "1,77m",
       "id": "500053",
+      "injured": false,
       "marketValue": "€20.00m",
       "name": "Pavel Sulc",
-      "number": "15",
       "position": "Attacking Midfield"
     },
     {
-      "contract": "Sep 8, 2025",
-      "dateOfBirth": "Jul 2, 2003",
-      "foot": "left",
-      "height": "1,87m",
-      "id": "652061",
-      "marketValue": "€8.00m",
-      "name": "Adam Karabec",
-      "number": "9",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Sep 4, 2020",
-      "dateOfBirth": "Oct 23, 1996",
-      "foot": "left",
-      "height": "1,89m",
-      "id": "292779",
-      "marketValue": "€8.00m",
-      "name": "Lukas Provod",
-      "number": "14",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Mar 31, 2026",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/941.png",
+        "name": "FC Viktoria Plzen"
+      },
       "dateOfBirth": "Mar 21, 2003",
       "foot": "right",
       "height": "1,78m",
       "id": "652060",
-      "marketValue": "€1.80m",
+      "injured": false,
+      "marketValue": "€3.00m",
       "name": "Denis Visinsky",
-      "number": "21",
       "position": "Attacking Midfield"
     },
     {
-      "contract": "Nov 13, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/941.png",
+        "name": "FC Viktoria Plzen"
+      },
       "dateOfBirth": "Apr 24, 1997",
       "foot": "right",
       "height": "1,78m",
       "id": "334803",
-      "marketValue": "€1.00m",
+      "injured": false,
+      "marketValue": "€1.30m",
       "name": "Tomas Ladra",
       "position": "Attacking Midfield"
     },
     {
-      "contract": "May 27, 2016",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/62.png",
+        "name": "SK Slavia Prague"
+      },
+      "dateOfBirth": "Oct 23, 1996",
+      "foot": "left",
+      "height": "1,91m",
+      "id": "292779",
+      "injured": false,
+      "marketValue": "€8.00m",
+      "name": "Lukas Provod",
+      "position": "Left Winger"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/15.png",
+        "name": "Bayer 04 Leverkusen"
+      },
       "dateOfBirth": "Jan 24, 1996",
       "foot": "left",
       "height": "1,91m",
       "id": "242086",
+      "injured": false,
       "marketValue": "€20.00m",
       "name": "Patrik Schick",
-      "number": "10",
       "position": "Centre-Forward"
     },
     {
-      "contract": "Nov 16, 2022",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/533.png",
+        "name": "TSG 1899 Hoffenheim"
+      },
+      "dateOfBirth": "Jul 25, 2002",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "552057",
+      "injured": false,
+      "marketValue": "€12.00m",
+      "name": "Adam Hlozek",
+      "position": "Centre-Forward"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/62.png",
+        "name": "SK Slavia Prague"
+      },
       "dateOfBirth": "Apr 29, 1999",
+      "foot": "right",
       "height": "1,87m",
       "id": "405855",
+      "injured": false,
       "marketValue": "€4.00m",
       "name": "Mojmír Chytil",
-      "number": "13",
       "position": "Centre-Forward"
     },
     {
-      "contract": "Nov 20, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/62.png",
+        "name": "SK Slavia Prague"
+      },
       "dateOfBirth": "Jan 26, 1995",
       "foot": "right",
       "height": "1,99m",
       "id": "198614",
-      "marketValue": "€3.00m",
+      "injured": false,
+      "marketValue": "€2.70m",
       "name": "Tomas Chory",
-      "number": "19",
       "position": "Centre-Forward"
     },
     {
-      "contract": "Sep 1, 2017",
-      "dateOfBirth": "Sep 1, 1993",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/197.png",
+        "name": "AC Sparta Prague"
+      },
+      "dateOfBirth": "Jan 8, 1997",
       "foot": "right",
       "height": "1,85m",
-      "id": "218299",
-      "marketValue": "€500k",
-      "name": "Jan Kliment",
-      "number": "11",
+      "id": "334802",
+      "injured": false,
+      "marketValue": "€2.70m",
+      "name": "Jan Kuchta",
+      "position": "Centre-Forward"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/5546.png",
+        "name": "FK Mlada Boleslav"
+      },
+      "dateOfBirth": "Aug 27, 2003",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "707347",
+      "injured": false,
+      "marketValue": "€750k",
+      "name": "Christophe Kabongo",
       "position": "Centre-Forward"
     }
   ],

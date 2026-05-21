@@ -1,367 +1,460 @@
 {
-  "image": "https://tmssl.akamaized.net/images/wappen/big/3806.png",
+  "image": "https://assets.virtuafc.com/crests/3806.png",
   "name": "South Africa",
   "players": [
     {
-      "contract": "Mar 5, 2014",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/2557.png",
+        "name": "Orlando Pirates"
+      },
+      "dateOfBirth": "Dec 14, 1996",
+      "height": "1,81m",
+      "id": "453370",
+      "injured": false,
+      "marketValue": "€1.40m",
+      "name": "Sipho Chaine",
+      "position": "Goalkeeper"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/6356.png",
+        "name": "Mamelodi Sundowns FC"
+      },
       "dateOfBirth": "Jan 21, 1992",
       "foot": "right",
       "height": "1,84m",
       "id": "175577",
-      "marketValue": "€1.00m",
+      "injured": false,
+      "marketValue": "€900k",
       "name": "Ronwen Williams",
-      "number": "1",
       "position": "Goalkeeper"
     },
     {
-      "contract": "Sep 10, 2024",
-      "dateOfBirth": "Dec 14, 1996",
-      "height": "1,81m",
-      "id": "453370",
-      "marketValue": "€700k",
-      "name": "Sipho Chaine",
-      "number": "16",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Oct 8, 2020",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/132785.png",
+        "name": "Siwelele Football Club"
+      },
       "dateOfBirth": "Apr 2, 1994",
       "foot": "right",
       "height": "1,81m",
       "id": "258304",
-      "marketValue": "€700k",
+      "injured": false,
+      "marketValue": "€350k",
       "name": "Ricardo Goss",
-      "number": "22",
       "position": "Goalkeeper"
     },
     {
-      "contract": "Jun 7, 2024",
-      "dateOfBirth": "Jul 15, 1997",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/568.png",
+        "name": "Kaizer Chiefs"
+      },
+      "dateOfBirth": "Sep 22, 1994",
       "foot": "right",
-      "height": "1,88m",
-      "id": "445610",
-      "marketValue": "€2.20m",
-      "name": "Siyabonga Ngezana",
-      "number": "21",
+      "height": "1,85m",
+      "id": "268567",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Brandon Petersen",
+      "position": "Goalkeeper"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/432.png",
+        "name": "Chicago Fire FC"
+      },
+      "dateOfBirth": "Sep 19, 2005",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "1378320",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Mbekezeli Mbokazi",
       "position": "Centre-Back"
     },
     {
-      "contract": "Jun 10, 2021",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/25467.png",
+        "name": "Philadelphia Union"
+      },
+      "dateOfBirth": "Apr 30, 2004",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "1069801",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Olwethu Makhanya",
+      "position": "Centre-Back"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/42.png",
+        "name": "Hannover 96"
+      },
+      "dateOfBirth": "Feb 20, 2004",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "1107265",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Ime Okon",
+      "position": "Centre-Back"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/2557.png",
+        "name": "Orlando Pirates"
+      },
       "dateOfBirth": "Sep 22, 1995",
       "foot": "right",
       "height": "1,77m",
       "id": "399068",
-      "marketValue": "€1.40m",
+      "injured": false,
+      "marketValue": "€1.60m",
       "name": "Nkosinathi Sibisi",
-      "number": "19",
       "position": "Centre-Back"
     },
     {
-      "contract": "Jun 6, 2025",
-      "dateOfBirth": "Feb 24, 1999",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/6356.png",
+        "name": "Mamelodi Sundowns FC"
+      },
+      "dateOfBirth": "Feb 5, 2004",
       "foot": "right",
-      "height": "1,78m",
-      "id": "579124",
-      "marketValue": "€650k",
-      "name": "Thabo Moloisane",
-      "number": "28",
+      "id": "1283140",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Khulumani Ndamane",
       "position": "Centre-Back"
     },
     {
-      "contract": "Jun 9, 2022",
-      "dateOfBirth": "Oct 31, 1992",
-      "foot": "right",
-      "height": "1,79m",
-      "id": "43030",
-      "marketValue": "€600k",
-      "name": "Grant Kekana",
-      "position": "Centre-Back"
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/687.png",
+        "name": "Molde FK"
+      },
+      "dateOfBirth": "Mar 15, 2004",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "1175086",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Samukele Kabini",
+      "position": "Left-Back"
     },
     {
-      "contract": "Jun 18, 2016",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/6356.png",
+        "name": "Mamelodi Sundowns FC"
+      },
       "dateOfBirth": "Jul 22, 1995",
       "foot": "left",
       "height": "1,67m",
       "id": "353432",
-      "marketValue": "€1.60m",
+      "injured": false,
+      "marketValue": "€1.80m",
       "name": "Aubrey Modiba",
-      "number": "6",
       "position": "Left-Back"
     },
     {
-      "contract": "Nov 15, 2024",
-      "dateOfBirth": "Dec 23, 1996",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/568.png",
+        "name": "Kaizer Chiefs"
+      },
+      "dateOfBirth": "Jan 30, 2001",
       "foot": "left",
-      "id": "478520",
-      "marketValue": "€1.20m",
-      "name": "Fawaaz Basadien",
+      "height": "1,83m",
+      "id": "555209",
+      "injured": false,
+      "marketValue": "€650k",
+      "name": "Bradley Cross",
       "position": "Left-Back"
     },
     {
-      "contract": "Mar 25, 2022",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/6356.png",
+        "name": "Mamelodi Sundowns FC"
+      },
       "dateOfBirth": "Apr 26, 1995",
       "foot": "right",
       "height": "1,81m",
       "id": "450806",
-      "marketValue": "€1.40m",
+      "injured": false,
+      "marketValue": "€1.20m",
       "name": "Khuliso Mudau",
-      "number": "20",
       "position": "Right-Back"
     },
     {
-      "contract": "Mar 25, 2015",
-      "dateOfBirth": "Aug 6, 1993",
-      "foot": "right",
-      "height": "1,70m",
-      "id": "297509",
-      "marketValue": "€1.20m",
-      "name": "Thapelo Morena",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Aug 4, 2019",
-      "dateOfBirth": "Sep 11, 1994",
-      "foot": "right",
-      "height": "1,80m",
-      "id": "435086",
-      "marketValue": "€1.20m",
-      "name": "Nyiko Mobbie",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Jun 6, 2025",
-      "dateOfBirth": "Nov 24, 1996",
-      "foot": "right",
-      "height": "1,77m",
-      "id": "514175",
-      "marketValue": "€1.20m",
-      "name": "Deano Van Rooyen",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Jul 13, 2022",
-      "dateOfBirth": "Mar 31, 2001",
-      "foot": "right",
-      "height": "1,80m",
-      "id": "659775",
-      "marketValue": "€850k",
-      "name": "Kegan Johannes",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Sep 9, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/568.png",
+        "name": "Kaizer Chiefs"
+      },
       "dateOfBirth": "Apr 30, 2000",
       "foot": "right",
       "height": "1,67m",
       "id": "579037",
-      "marketValue": "€750k",
+      "injured": false,
+      "marketValue": "€900k",
       "name": "Thabiso Monyane",
       "position": "Right-Back"
     },
     {
-      "contract": "Sep 5, 2025",
-      "dateOfBirth": "Jun 6, 1999",
-      "height": "1,74m",
-      "id": "801354",
-      "marketValue": "€700k",
-      "name": "Zuko Mdunyelwa",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/21202.png",
+        "name": "Polokwane City FC"
+      },
+      "dateOfBirth": "Jan 14, 1999",
+      "foot": "right",
+      "id": "1109254",
+      "injured": false,
+      "marketValue": "€900k",
+      "name": "Thabang Matuludi",
       "position": "Right-Back"
     },
     {
-      "contract": "Mar 24, 2018",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/6356.png",
+        "name": "Mamelodi Sundowns FC"
+      },
+      "dateOfBirth": "Aug 6, 1993",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "297509",
+      "injured": false,
+      "marketValue": "€900k",
+      "name": "Thapelo Morena",
+      "position": "Right-Back"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/2557.png",
+        "name": "Orlando Pirates"
+      },
+      "dateOfBirth": "Jul 21, 2002",
+      "foot": "right",
+      "id": "994370",
+      "injured": false,
+      "marketValue": "€850k",
+      "name": "Kamogelo Sebelebele",
+      "position": "Right-Back"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/6356.png",
+        "name": "Mamelodi Sundowns FC"
+      },
       "dateOfBirth": "Jan 24, 1997",
       "foot": "right",
       "height": "1,76m",
       "id": "436372",
-      "marketValue": "€2.40m",
+      "injured": false,
+      "marketValue": "€2.50m",
       "name": "Teboho Mokoena",
-      "number": "4",
       "position": "Defensive Midfield"
     },
     {
-      "contract": "Jul 22, 2017",
-      "dateOfBirth": "Mar 22, 1998",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/14187.png",
+        "name": "Durban City Football Club"
+      },
+      "dateOfBirth": "Oct 3, 1999",
       "foot": "right",
-      "height": "1,77m",
-      "id": "436374",
-      "marketValue": "€800k",
-      "name": "Sipho Mbule",
-      "number": "17",
+      "id": "533547",
+      "injured": false,
+      "marketValue": "€450k",
+      "name": "Brooklyn Poggenpoel",
+      "position": "Defensive Midfield"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/2557.png",
+        "name": "Orlando Pirates"
+      },
+      "dateOfBirth": "Mar 6, 2000",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "735697",
+      "injured": false,
+      "marketValue": "€1.60m",
+      "name": "Thalente Mbatha",
       "position": "Central Midfield"
     },
     {
-      "contract": "Sep 24, 2022",
-      "dateOfBirth": "Mar 10, 2000",
-      "foot": "right",
-      "height": "1,84m",
-      "id": "467616",
-      "marketValue": "€700k",
-      "name": "Luke Le Roux",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Mar 2, 2025",
-      "dateOfBirth": "Dec 1, 1995",
-      "foot": "left",
-      "height": "1,67m",
-      "id": "560463",
-      "marketValue": "€1.50m",
-      "name": "Neo Maema",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Mar 21, 2024",
-      "dateOfBirth": "Apr 4, 1998",
-      "foot": "left",
-      "height": "1,78m",
-      "id": "555606",
-      "marketValue": "€1.40m",
-      "name": "Patrick Maswanganyi",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Jan 21, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/6356.png",
+        "name": "Mamelodi Sundowns FC"
+      },
       "dateOfBirth": "May 5, 2001",
       "foot": "right",
       "height": "1,75m",
       "id": "804472",
-      "marketValue": "€1.00m",
+      "injured": false,
+      "marketValue": "€1.40m",
       "name": "Jayden Adams",
-      "position": "Attacking Midfield"
+      "position": "Central Midfield"
     },
     {
-      "contract": "Aug 8, 2025",
-      "dateOfBirth": "May 28, 1995",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/7179.png",
+        "name": "CD Tondela"
+      },
+      "dateOfBirth": "Mar 3, 1999",
       "foot": "right",
-      "height": "1,61m",
-      "id": "636981",
-      "marketValue": "€850k",
-      "name": "Ndabayithethwa Ndlondlo",
-      "position": "Attacking Midfield"
+      "height": "1,86m",
+      "id": "401736",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Yaya Sithole",
+      "position": "Central Midfield"
     },
     {
-      "contract": "Nov 20, 2018",
-      "dateOfBirth": "May 13, 1993",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/568.png",
+        "name": "Kaizer Chiefs"
+      },
+      "dateOfBirth": "Sep 17, 1994",
       "foot": "right",
-      "height": "1,81m",
-      "id": "370663",
-      "marketValue": "€750k",
-      "name": "Fortune Makaringe",
-      "position": "Attacking Midfield"
+      "height": "1,72m",
+      "id": "420543",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Lebohang Maboe",
+      "position": "Central Midfield"
     },
     {
-      "contract": "Jun 11, 2024",
-      "dateOfBirth": "Oct 23, 2004",
-      "foot": "right",
-      "height": "1,66m",
-      "id": "1125037",
-      "marketValue": "€800k",
-      "name": "Relebohile Mofokeng",
-      "number": "10",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "Dec 26, 2025",
-      "dateOfBirth": "Jul 15, 2005",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/2557.png",
+        "name": "Orlando Pirates"
+      },
+      "dateOfBirth": "Apr 4, 1998",
       "foot": "left",
       "height": "1,78m",
-      "id": "1159786",
-      "marketValue": "€800k",
-      "name": "Shandre Campbell",
-      "number": "24",
-      "position": "Left Winger"
+      "id": "555606",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Patrick Maswanganyi",
+      "position": "Attacking Midfield"
     },
     {
-      "contract": "Sep 5, 2014",
-      "dateOfBirth": "Jan 22, 1993",
-      "foot": "left",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/6356.png",
+        "name": "Mamelodi Sundowns FC"
+      },
+      "dateOfBirth": "Aug 3, 1989",
+      "foot": "right",
       "height": "1,70m",
-      "id": "234006",
-      "marketValue": "€600k",
-      "name": "Keagan Dolly",
-      "position": "Left Winger"
+      "id": "176578",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Themba Zwane",
+      "position": "Attacking Midfield"
     },
     {
-      "contract": "Nov 21, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/2557.png",
+        "name": "Orlando Pirates"
+      },
       "dateOfBirth": "Aug 25, 2001",
       "foot": "right",
       "height": "1,71m",
       "id": "673381",
-      "marketValue": "€600k",
+      "injured": false,
+      "marketValue": "€2.00m",
       "name": "Oswin Appollis",
-      "number": "7",
       "position": "Left Winger"
     },
     {
-      "contract": "Mar 25, 2017",
-      "dateOfBirth": "May 13, 1994",
-      "foot": "left",
-      "height": "1,75m",
-      "id": "312239",
-      "marketValue": "€1.50m",
-      "name": "Percy Tau",
-      "position": "Right Winger"
-    },
-    {
-      "contract": "Mar 21, 2024",
-      "dateOfBirth": "Sep 8, 1999",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/2557.png",
+        "name": "Orlando Pirates"
+      },
+      "dateOfBirth": "Oct 23, 2004",
       "foot": "right",
-      "height": "1,75m",
-      "id": "968496",
-      "marketValue": "€900k",
-      "name": "Elias Mokwana",
-      "number": "12",
+      "height": "1,66m",
+      "id": "1125037",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Relebohile Mofokeng",
+      "position": "Left Winger"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/2557.png",
+        "name": "Orlando Pirates"
+      },
+      "dateOfBirth": "Oct 2, 2000",
+      "id": "844485",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Tshepang Moremi",
+      "position": "Left Winger"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/786.png",
+        "name": "AEL Limassol"
+      },
+      "dateOfBirth": "Nov 11, 2003",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "983330",
+      "injured": false,
+      "marketValue": "€750k",
+      "name": "Thapelo Maseko",
+      "position": "Left Winger"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/56089.png",
+        "name": "Minnesota United FC"
+      },
+      "dateOfBirth": "Jun 20, 2000",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "669202",
+      "injured": false,
+      "marketValue": "€3.50m",
+      "name": "Bongokuhle Hlongwane",
       "position": "Right Winger"
     },
     {
-      "contract": "Sep 5, 2025",
-      "dateOfBirth": "Jul 21, 2002",
-      "id": "994370",
-      "marketValue": "€550k",
-      "name": "Kamogelo Sebelebele",
-      "position": "Right Winger"
-    },
-    {
-      "contract": "Oct 8, 2020",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1132.png",
+        "name": "Burnley FC"
+      },
       "dateOfBirth": "Sep 3, 2000",
       "foot": "right",
       "height": "1,85m",
       "id": "467623",
-      "marketValue": "€9.00m",
+      "injured": false,
+      "marketValue": "€10.00m",
       "name": "Lyle Foster",
-      "number": "9",
       "position": "Centre-Forward"
     },
     {
-      "contract": "Mar 21, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/6356.png",
+        "name": "Mamelodi Sundowns FC"
+      },
       "dateOfBirth": "Dec 19, 1995",
       "foot": "right",
       "height": "1,76m",
       "id": "337884",
-      "marketValue": "€1.80m",
+      "injured": false,
+      "marketValue": "€3.00m",
       "name": "Iqraam Rayners",
-      "number": "27",
       "position": "Centre-Forward"
     },
     {
-      "contract": "Sep 24, 2022",
-      "dateOfBirth": "Mar 19, 1997",
-      "foot": "right",
-      "height": "1,79m",
-      "id": "596913",
-      "marketValue": "€650k",
-      "name": "Zakhele Lepasa",
-      "position": "Centre-Forward"
-    },
-    {
-      "contract": "Jun 10, 2021",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/2557.png",
+        "name": "Orlando Pirates"
+      },
       "dateOfBirth": "Jun 5, 2000",
       "foot": "right",
       "height": "1,88m",
       "id": "746781",
-      "marketValue": "€650k",
+      "injured": false,
+      "marketValue": "€1.20m",
       "name": "Evidence Makgopa",
-      "number": "23",
       "position": "Centre-Forward"
     }
   ],
