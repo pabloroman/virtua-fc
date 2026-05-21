@@ -11,6 +11,7 @@ use App\Models\GamePlayerMatchState;
 use App\Models\MatchEvent;
 use App\Models\PlayerSuspension;
 use App\Modules\Match\Support\MinuteCoordinates;
+use App\Modules\Match\Support\StoppageDurations;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -296,13 +297,10 @@ class MatchResultProcessor
 
         foreach ($matchResults as $result) {
             $match = $stoppageByMatch->get($result['matchId']);
-            $fhs = (int) ($match?->first_half_stoppage ?? 0);
-            $shs = (int) ($match?->second_half_stoppage ?? 0);
-            $etfhs = $match?->et_first_half_stoppage;
-            $etshs = $match?->et_second_half_stoppage;
+            $stoppage = $match ? StoppageDurations::fromMatch($match) : new StoppageDurations(0, 0);
 
             foreach ($result['events'] as $eventData) {
-                $coords = MinuteCoordinates::decompose((int) $eventData['minute'], $fhs, $shs, $etfhs, $etshs);
+                $coords = MinuteCoordinates::decomposeWith((int) $eventData['minute'], $stoppage);
 
                 $allRows[] = [
                     'id' => Str::uuid()->toString(),

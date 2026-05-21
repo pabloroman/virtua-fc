@@ -230,14 +230,7 @@ class TacticalChangeService
         // writes via MatchEventRepository.
         $substitutionDetails = [];
         if (! empty($newSubstitutions)) {
-            $stoppage = StoppageDurations::fromMatch($match);
-            $coords = MinuteCoordinates::decompose(
-                $minute,
-                $stoppage->firstHalf,
-                $stoppage->secondHalf,
-                $stoppage->etFirstHalf,
-                $stoppage->etSecondHalf,
-            );
+            $coords = MinuteCoordinates::decomposeWith($minute, StoppageDurations::fromMatch($match));
 
             $playerIds = [];
             $eventRows = [];

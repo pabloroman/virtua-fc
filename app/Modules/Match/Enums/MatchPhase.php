@@ -41,17 +41,6 @@ enum MatchPhase: string
         };
     }
 
-    public function isStoppage(): bool
-    {
-        return match ($this) {
-            self::FIRST_HALF_STOPPAGE,
-            self::SECOND_HALF_STOPPAGE,
-            self::ET_FIRST_HALF_STOPPAGE,
-            self::ET_SECOND_HALF_STOPPAGE => true,
-            default => false,
-        };
-    }
-
     public function isExtraTime(): bool
     {
         return match ($this) {

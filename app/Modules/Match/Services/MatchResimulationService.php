@@ -82,10 +82,8 @@ class MatchResimulationService
         $resimAnchor = $minute >= 90 ? $stoppage->regulationEnd() : $minute;
 
         // 2. Revert all events that happened after the cutoff. Uses phase
-        // tuple comparison — a 91' ET goal (phase=ET_FIRST_HALF) is no longer
-        // confused with a 91' regulation-stoppage goal (phase=SECOND_HALF_STOPPAGE)
-        // the way it was under the old raw-minute filter. This is the fix for
-        // the Pontevedra–Osasuna bug.
+        // tuple comparison so a 91' ET goal (phase=ET_FIRST_HALF) is not
+        // confused with a 91' regulation-stoppage goal (phase=SECOND_HALF_STOPPAGE).
         $this->revertEventsAfterMinute($match, $resimAnchor, $competitionId, $stoppage);
 
         // 3. Calculate regulation score from remaining events. We count goals
@@ -96,9 +94,14 @@ class MatchResimulationService
         // 4. Read formation/mentality/instructions from match record (already updated by caller)
         $tc = TacticalConfig::fromMatch($match);
 
+        // Single load of post-revert events at the anchor — every classifier
+        // below (red-card / substitution exclusion, auto-sub re-add, opponent
+        // sub windows) projects from the same set, so one query suffices.
+        $eventsAtAnchor = $this->eventsUpTo($match->id, $resimAnchor, $stoppage);
+
         // 5. Exclude red-carded and substituted-out players. Phase-aware so
         // late-regulation events at minute 91+ aren't misclassified.
-        $unavailablePlayerIds = $this->eventsUpTo($match->id, $resimAnchor, $stoppage)
+        $unavailablePlayerIds = $eventsAtAnchor
             ->whereIn('event_type', ['red_card', 'substitution'])
             ->pluck('game_player_id')
             ->all();
@@ -113,7 +116,7 @@ class MatchResimulationService
         $isUserHome = $match->isHomeTeam($game->team_id);
         $userTeamId = $game->team_id;
 
-        $userAutoSubEvents = $this->eventsUpTo($match->id, $resimAnchor, $stoppage)
+        $userAutoSubEvents = $eventsAtAnchor
             ->where('team_id', $userTeamId)
             ->where('event_type', 'substitution')
             ->whereNotIn('game_player_id', collect($allSubstitutions)->pluck('playerOutId')->all());
@@ -136,14 +139,13 @@ class MatchResimulationService
         }
 
         // 6. Get existing injuries/yellows for context
-        $remainingEvents = $this->eventsUpTo($match->id, $resimAnchor, $stoppage);
-        $existingInjuryTeamIds = $remainingEvents
+        $existingInjuryTeamIds = $eventsAtAnchor
             ->where('event_type', 'injury')
             ->pluck('team_id')
             ->unique()
             ->all();
 
-        $existingYellowPlayerIds = $remainingEvents
+        $existingYellowPlayerIds = $eventsAtAnchor
             ->where('event_type', 'yellow_card')
             ->pluck('game_player_id')
             ->unique()
@@ -181,7 +183,7 @@ class MatchResimulationService
         // which is populated by the initial simulation and not updated by subsequent resims
         // — leaving it stale and out of sync with the actual events.
         $opponentTeamId = $isUserHome ? $match->away_team_id : $match->home_team_id;
-        $opponentSubEvents = $this->eventsUpTo($match->id, $resimAnchor, $stoppage)
+        $opponentSubEvents = $eventsAtAnchor
             ->where('team_id', $opponentTeamId)
             ->where('event_type', 'substitution');
         foreach ($opponentSubEvents as $subEvent) {
@@ -437,10 +439,9 @@ class MatchResimulationService
             $regulationEnd = $stoppage->regulationEnd();
             $resimAnchor = max($minute, $regulationEnd);
 
-            // 2. Revert all events after the cutoff (phase tuple comparison).
-            // This is where the Pontevedra-Osasuna scoreline mismatch closes:
-            // a 91' ET goal carries phase=ET_FIRST_HALF and is no longer
-            // miscategorised as regulation-stoppage by a hardcoded `minute > 93`.
+            // 2. Revert all events after the cutoff (phase tuple comparison
+            // — a 91' ET goal carries phase=ET_FIRST_HALF, not regulation
+            // stoppage, even though the raw minute would be ambiguous).
             $this->revertEventsAfterMinute($match, $resimAnchor, $competitionId, $stoppage);
 
             // 3. Calculate ET-only score from remaining ET-phase goals.
@@ -449,8 +450,12 @@ class MatchResimulationService
             // 4. Read formation/mentality/instructions from match record
             $tc = TacticalConfig::fromMatch($match);
 
+            // Single load of post-revert events at the anchor — every
+            // classifier below projects from the same set.
+            $eventsAtAnchor = $this->eventsUpTo($match->id, $resimAnchor, $stoppage);
+
             // 5. Exclude red-carded and substituted-out players
-            $unavailablePlayerIds = $this->eventsUpTo($match->id, $resimAnchor, $stoppage)
+            $unavailablePlayerIds = $eventsAtAnchor
                 ->whereIn('event_type', ['red_card', 'substitution'])
                 ->pluck('game_player_id')
                 ->all();
@@ -462,7 +467,7 @@ class MatchResimulationService
             $isUserHome = $match->isHomeTeam($game->team_id);
             $userTeamId = $game->team_id;
 
-            $userAutoSubEvents = $this->eventsUpTo($match->id, $resimAnchor, $stoppage)
+            $userAutoSubEvents = $eventsAtAnchor
                 ->where('team_id', $userTeamId)
                 ->where('event_type', 'substitution')
                 ->whereNotIn('game_player_id', collect($allSubstitutions)->pluck('playerOutId')->all());
@@ -807,9 +812,8 @@ class MatchResimulationService
      *
      * Used in two places: resimulating regulation (count regulation-phase
      * goals) and resimulating extra time (count ET-phase goals). Phase
-     * filtering replaces the old `minute > 93` heuristic, which conflated
-     * 91-93 regulation-stoppage events with ET first-half events and led
-     * directly to the Pontevedra–Osasuna scoreline mismatch.
+     * filtering replaces the older `minute > 93` heuristic, which conflated
+     * 91-93 regulation-stoppage events with ET first-half events.
      *
      * @param  list<MatchPhase>  $phases
      * @return array{home:int, away:int}
@@ -853,15 +857,7 @@ class MatchResimulationService
 
     private function absoluteMinuteFor(MatchEvent $event, StoppageDurations $stoppage): int
     {
-        return MinuteCoordinates::toAbsolute(
-            $event->phase,
-            $event->minute,
-            $event->stoppage_minute,
-            $stoppage->firstHalf,
-            $stoppage->secondHalf,
-            $stoppage->etFirstHalf,
-            $stoppage->etSecondHalf,
-        );
+        return MinuteCoordinates::toAbsoluteWith($event->phase, $event->minute, $event->stoppage_minute, $stoppage);
     }
 
     /**
@@ -1035,14 +1031,11 @@ class MatchResimulationService
             ? StoppageDurations::fromMatch($firstEvent->gameMatch)
             : new StoppageDurations(0, 3);
 
-        $absoluteMinute = fn ($e) => MinuteCoordinates::toAbsolute(
+        $absoluteMinute = fn ($e) => MinuteCoordinates::toAbsoluteWith(
             $e->phase,
             $e->minute,
             $e->stoppage_minute,
-            $stoppage->firstHalf,
-            $stoppage->secondHalf,
-            $stoppage->etFirstHalf,
-            $stoppage->etSecondHalf,
+            $stoppage,
         );
 
         $formatted = $events

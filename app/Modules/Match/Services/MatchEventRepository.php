@@ -6,6 +6,7 @@ use App\Models\GameMatch;
 use App\Models\MatchEvent;
 use App\Modules\Match\DTOs\MatchEventData;
 use App\Modules\Match\Support\MinuteCoordinates;
+use App\Modules\Match\Support\StoppageDurations;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -28,14 +29,10 @@ class MatchEventRepository
             return [];
         }
 
-        $match = GameMatch::query()->findOrFail($matchId);
-        $fhs = (int) ($match->first_half_stoppage ?? 0);
-        $shs = (int) ($match->second_half_stoppage ?? 0);
-        $etfhs = $match->et_first_half_stoppage;
-        $etshs = $match->et_second_half_stoppage;
+        $stoppage = StoppageDurations::fromMatch(GameMatch::query()->findOrFail($matchId));
 
-        $rows = $events->map(function (MatchEventData $e) use ($gameId, $matchId, $fhs, $shs, $etfhs, $etshs) {
-            $coords = MinuteCoordinates::decompose($e->minute, $fhs, $shs, $etfhs, $etshs);
+        $rows = $events->map(function (MatchEventData $e) use ($gameId, $matchId, $stoppage) {
+            $coords = MinuteCoordinates::decomposeWith($e->minute, $stoppage);
 
             return [
                 'id' => Str::uuid()->toString(),

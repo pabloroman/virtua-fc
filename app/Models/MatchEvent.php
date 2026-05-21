@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Modules\Match\Enums\MatchPhase;
 use App\Modules\Match\Support\MinuteCoordinates;
+use App\Modules\Match\Support\StoppageDurations;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
@@ -62,15 +63,9 @@ class MatchEvent extends Model
                 return;
             }
 
-            $rawMinute = (int) $event->minute;
-            $stoppage = $event->resolveStoppageDurations();
-
-            $coords = MinuteCoordinates::decompose(
-                $rawMinute,
-                $stoppage['fhs'],
-                $stoppage['shs'],
-                $stoppage['etfhs'],
-                $stoppage['etshs'],
+            $coords = MinuteCoordinates::decomposeWith(
+                (int) $event->minute,
+                $event->resolveStoppageDurations(),
             );
 
             $event->phase = $coords['phase'];
@@ -80,22 +75,24 @@ class MatchEvent extends Model
     }
 
     /**
-     * Match-level stoppage values for decomposition, falling back to
-     * historical defaults (0/3/0/0) when the match has no stoppage set yet
-     * — keeps factory fixtures working before stoppage sampling lands.
-     *
-     * @return array{fhs:int, shs:int, etfhs:?int, etshs:?int}
+     * Match-level stoppage values for decomposition, falling back to a
+     * historical "second half got 3' of stoppage" default when the match
+     * has no stoppage set yet — keeps factory fixtures working before
+     * stoppage sampling lands.
      */
-    private function resolveStoppageDurations(): array
+    private function resolveStoppageDurations(): StoppageDurations
     {
         $match = $this->gameMatch;
 
-        return [
-            'fhs' => (int) ($match->first_half_stoppage ?? 0),
-            'shs' => (int) ($match->second_half_stoppage ?? 3),
-            'etfhs' => $match?->et_first_half_stoppage,
-            'etshs' => $match?->et_second_half_stoppage,
-        ];
+        if ($match === null) {
+            return new StoppageDurations(0, 3);
+        }
+
+        $stoppage = StoppageDurations::fromMatch($match);
+
+        return $match->second_half_stoppage === null
+            ? new StoppageDurations($stoppage->firstHalf, 3, $stoppage->etFirstHalf, $stoppage->etSecondHalf)
+            : $stoppage;
     }
 
     protected $fillable = [
@@ -194,38 +191,29 @@ class MatchEvent extends Model
      */
     public function absoluteMinute(): int
     {
-        $match = $this->gameMatch;
-
-        return MinuteCoordinates::toAbsolute(
+        return MinuteCoordinates::toAbsoluteWith(
             $this->phase,
             $this->minute,
             $this->stoppage_minute,
-            (int) ($match->first_half_stoppage ?? 0),
-            (int) ($match->second_half_stoppage ?? 0),
-            $match->et_first_half_stoppage,
-            $match->et_second_half_stoppage,
+            StoppageDurations::fromMatch($this->gameMatch),
         );
     }
 
     /**
      * Chronological ordering across phase + minute + stoppage_minute. Use
      * this instead of `orderBy('minute')` — minute alone is ambiguous in
-     * stoppage time.
+     * stoppage time. The CASE arms are generated from `MatchPhase::ordinal()`
+     * so adding a phase only requires updating the enum.
      */
     public function scopeOrderedChronologically(Builder $query): Builder
     {
+        $arms = array_map(
+            fn (MatchPhase $p) => "WHEN '{$p->value}' THEN {$p->ordinal()}",
+            MatchPhase::cases(),
+        );
+
         return $query
-            ->orderByRaw("CASE phase
-                WHEN 'first_half' THEN 1
-                WHEN 'first_half_stoppage' THEN 2
-                WHEN 'second_half' THEN 3
-                WHEN 'second_half_stoppage' THEN 4
-                WHEN 'et_first_half' THEN 5
-                WHEN 'et_first_half_stoppage' THEN 6
-                WHEN 'et_second_half' THEN 7
-                WHEN 'et_second_half_stoppage' THEN 8
-                WHEN 'penalties' THEN 9
-                ELSE 99 END")
+            ->orderByRaw('CASE phase '.implode(' ', $arms).' ELSE 99 END')
             ->orderBy('minute')
             ->orderByRaw('COALESCE(stoppage_minute, 0)');
     }

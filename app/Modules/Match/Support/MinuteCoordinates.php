@@ -27,6 +27,24 @@ use App\Modules\Match\Enums\MatchPhase;
 final class MinuteCoordinates
 {
     /**
+     * Decompose using a StoppageDurations value object — the form callers
+     * already build at every persistence site. Delegates to decompose() so
+     * the int-arg overload remains the single canonical implementation.
+     *
+     * @return array{phase: MatchPhase, minute: int, stoppage_minute: ?int}
+     */
+    public static function decomposeWith(int $rawMinute, StoppageDurations $stoppage): array
+    {
+        return self::decompose(
+            $rawMinute,
+            $stoppage->firstHalf,
+            $stoppage->secondHalf,
+            $stoppage->etFirstHalf,
+            $stoppage->etSecondHalf,
+        );
+    }
+
+    /**
      * Decompose a raw absolute minute into (phase, base_minute, stoppage_minute).
      *
      * @return array{phase: MatchPhase, minute: int, stoppage_minute: ?int}
@@ -77,6 +95,26 @@ final class MinuteCoordinates
         // whichever half we ran out at. This shouldn't happen if simulators
         // respect the configured toMinute, but the clamp keeps the data sane.
         return ['phase' => MatchPhase::ET_SECOND_HALF_STOPPAGE, 'minute' => 120, 'stoppage_minute' => max(1, $etshs)];
+    }
+
+    /**
+     * Recompose using a StoppageDurations value object — see decomposeWith().
+     */
+    public static function toAbsoluteWith(
+        MatchPhase $phase,
+        int $minute,
+        ?int $stoppageMinute,
+        StoppageDurations $stoppage,
+    ): int {
+        return self::toAbsolute(
+            $phase,
+            $minute,
+            $stoppageMinute,
+            $stoppage->firstHalf,
+            $stoppage->secondHalf,
+            $stoppage->etFirstHalf,
+            $stoppage->etSecondHalf,
+        );
     }
 
     /**

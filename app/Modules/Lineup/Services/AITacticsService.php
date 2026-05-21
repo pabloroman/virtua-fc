@@ -21,9 +21,9 @@ use Illuminate\Support\Collection;
  * "given a squad, what's the best shape?"), FormationBiasResolver (curated
  * club identity), and CalendarService (recent form for opponent analysis).
  *
- * Lifted out of LineupService so match prep (`ensureTeamLineup`) and
- * opponent scouting (`predictOpponentTactics`) share a single source of
- * truth instead of independently rebuilding the same decision tree.
+ * Shared between match prep (`ensureTeamLineup`) and opponent scouting
+ * (`predictOpponentTactics`) so both surfaces read from the same decision
+ * tree.
  */
 class AITacticsService
 {
