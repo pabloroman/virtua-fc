@@ -237,6 +237,13 @@ export default function liveMatch(config) {
         userPaused: false,
         pauseTimer: null,
 
+        // "Fourth official adds N minutes" announcement guards — flip to
+        // true after each half-end announcement so it fires only once.
+        _announcedFirstHalfStoppage: false,
+        _announcedSecondHalfStoppage: false,
+        _announcedEtFirstHalfStoppage: false,
+        _announcedEtSecondHalfStoppage: false,
+
         // Derived state
         revealedEvents: [],
         homeScore: 0,

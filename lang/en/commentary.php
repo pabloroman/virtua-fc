@@ -258,4 +258,21 @@ return [
         ':team go direct and it pays off — :player latches onto the ball and finishes',
         'Route one football! The long ball finds :player who makes no mistake',
     ],
+
+    // Added-time announcement. The client picks the singular or plural
+    // variant based on the minute count (:minutes) to avoid "1 minutes".
+    'stoppage_announcement_singular' => [
+        'The referee adds :minutes minute',
+        'Fourth official signals :minutes minute of added time',
+        ':minutes minute added on',
+        'Just :minutes minute of stoppage time',
+    ],
+    'stoppage_announcement_plural' => [
+        'The referee adds :minutes minutes',
+        'Fourth official signals :minutes minutes of stoppage time',
+        ':minutes minutes added on',
+        'Added time: :minutes minutes',
+        ':minutes more minutes to play',
+        ':minutes minutes of stoppage! Still time for drama',
+    ],
 ];

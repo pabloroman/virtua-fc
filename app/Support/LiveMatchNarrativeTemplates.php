@@ -60,6 +60,11 @@ class LiveMatchNarrativeTemplates
             'goalCounterAttack' => __('commentary.goal_counter_attack'),
             'goalPossession' => __('commentary.goal_possession'),
             'goalDirect' => __('commentary.goal_direct'),
+            // Stoppage announcement — split singular/plural to avoid
+            // "1 minutes" / "1 minutos" agreement bugs. JS picks the right
+            // set based on the actual minute count.
+            'stoppageAnnouncementSingular' => __('commentary.stoppage_announcement_singular'),
+            'stoppageAnnouncementPlural' => __('commentary.stoppage_announcement_plural'),
         ];
     }
 

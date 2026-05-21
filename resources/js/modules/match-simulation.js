@@ -95,6 +95,42 @@ export function createMatchSimulation(ctx) {
         // Fluctuate possession display
         updatePossession();
 
+        // "Fourth official adds N minutes" announcement on the boundary.
+        // Fires once per half-end, pauses the clock for a beat of drama,
+        // then ticking resumes into the stoppage window.
+        if (state.phase === 'first_half'
+            && !state._announcedFirstHalfStoppage
+            && (state.firstHalfStoppage || 0) > 0
+            && state.currentMinute >= 45) {
+            state._announcedFirstHalfStoppage = true;
+            announceStoppage(state.firstHalfStoppage, 45);
+            return;
+        }
+        if (state.phase === 'second_half'
+            && !state._announcedSecondHalfStoppage
+            && (state.secondHalfStoppage || 0) > 0
+            && state.currentMinute >= 90) {
+            state._announcedSecondHalfStoppage = true;
+            announceStoppage(state.secondHalfStoppage, 90);
+            return;
+        }
+        if (state.phase === 'extra_time_first_half'
+            && !state._announcedEtFirstHalfStoppage
+            && (state.etFirstHalfStoppage || 0) > 0
+            && state.currentMinute >= 105) {
+            state._announcedEtFirstHalfStoppage = true;
+            announceStoppage(state.etFirstHalfStoppage, 105);
+            return;
+        }
+        if (state.phase === 'extra_time_second_half'
+            && !state._announcedEtSecondHalfStoppage
+            && (state.etSecondHalfStoppage || 0) > 0
+            && state.currentMinute >= 120) {
+            state._announcedEtSecondHalfStoppage = true;
+            announceStoppage(state.etSecondHalfStoppage, 120);
+            return;
+        }
+
         // Check for half-time (after 1H stoppage runs out)
         if (state.phase === 'first_half' && state.currentMinute >= firstHalfEnd) {
             enterHalfTime();
@@ -280,6 +316,39 @@ export function createMatchSimulation(ctx) {
         state.pauseTimer = setTimeout(() => {
             state.isPaused = false;
         }, ms);
+    }
+
+    /**
+     * Inject a "fourth official adds N minutes" narrative event into the
+     * feed and briefly pause the clock so the user notices it. Picks a
+     * random template from the appropriate singular/plural pool.
+     */
+    function announceStoppage(minutes, atClockMinute) {
+        const state = ctx();
+        const templates = (minutes === 1
+            ? state.narrativeTemplates?.stoppageAnnouncementSingular
+            : state.narrativeTemplates?.stoppageAnnouncementPlural) || [];
+        if (templates.length === 0) {
+            // Fallback if narrative templates didn't load — still pause so
+            // the boundary feels deliberate.
+            pauseForDrama(1000);
+            return;
+        }
+        const template = templates[Math.floor(Math.random() * templates.length)];
+        const narrative = template.replaceAll(':minutes', String(minutes));
+
+        const event = {
+            minute: atClockMinute,
+            type: 'stoppage_announcement',
+            atmosphere: true,
+            playerName: '',
+            teamId: null,
+            gamePlayerId: null,
+            metadata: { narrative },
+        };
+        state.revealedEvents.unshift(event);
+        state.latestEvent = event;
+        pauseForDrama(1000);
     }
 
     function recalculateScore() {
