@@ -68,10 +68,17 @@ export function createMatchSimulation(ctx) {
 
         const isExtraTime = state.phase === 'extra_time_first_half' || state.phase === 'extra_time_second_half';
 
+        // Per-half clock caps come from the persisted match stoppage values
+        // (variable per match) instead of the historical hardcoded 93/123.
+        const firstHalfEnd = 45 + (state.firstHalfStoppage || 0);
+        const secondHalfEnd = 90 + (state.secondHalfStoppage || 3);
+        const etFirstHalfEnd = 105 + (state.etFirstHalfStoppage || 0);
+        const etSecondHalfEnd = 120 + (state.etSecondHalfStoppage || 0);
+
         if (isExtraTime) {
-            state.currentMinute = Math.min(state.currentMinute + deltaMinutes, 123);
+            state.currentMinute = Math.min(state.currentMinute + deltaMinutes, etSecondHalfEnd);
         } else {
-            state.currentMinute = Math.min(state.currentMinute + deltaMinutes, 93);
+            state.currentMinute = Math.min(state.currentMinute + deltaMinutes, secondHalfEnd);
         }
 
         // Reveal events
@@ -87,26 +94,26 @@ export function createMatchSimulation(ctx) {
         // Fluctuate possession display
         updatePossession();
 
-        // Check for half-time
-        if (state.phase === 'first_half' && state.currentMinute >= 45) {
+        // Check for half-time (after 1H stoppage runs out)
+        if (state.phase === 'first_half' && state.currentMinute >= firstHalfEnd) {
             enterHalfTime();
             return;
         }
 
         // Check for end of regular time
-        if (state.phase === 'second_half' && state.currentMinute >= 93) {
+        if (state.phase === 'second_half' && state.currentMinute >= secondHalfEnd) {
             enterRegularTimeEnd();
             return;
         }
 
         // Check for ET half-time
-        if (state.phase === 'extra_time_first_half' && state.currentMinute >= 105) {
+        if (state.phase === 'extra_time_first_half' && state.currentMinute >= etFirstHalfEnd) {
             enterETHalfTime();
             return;
         }
 
         // Check for end of extra time
-        if (state.phase === 'extra_time_second_half' && state.currentMinute >= 123) {
+        if (state.phase === 'extra_time_second_half' && state.currentMinute >= etSecondHalfEnd) {
             enterExtraTimeEnd();
             return;
         }
@@ -313,7 +320,9 @@ export function createMatchSimulation(ctx) {
 
     function enterRegularTimeEnd() {
         const state = ctx();
-        state.currentMinute = 90;
+        // Snap to the absolute end-of-regulation minute (90 + sampled stoppage)
+        // so the clock doesn't visually rewind from "95" to "90".
+        state.currentMinute = 90 + (state.secondHalfStoppage || 3);
 
         // Reveal any remaining regular time events
         for (let i = state.lastRevealedIndex + 1; i < state.events.length; i++) {
@@ -344,7 +353,7 @@ export function createMatchSimulation(ctx) {
 
     function enterETHalfTime() {
         const state = ctx();
-        state.currentMinute = 105;
+        state.currentMinute = 105 + (state.etFirstHalfStoppage || 0);
         state.phase = 'extra_time_half_time';
         // ET half-time is a proper pause — the user must dismiss it to start
         // the ET second half (via startETSecondHalf), or skip to end.
@@ -361,7 +370,7 @@ export function createMatchSimulation(ctx) {
     function enterExtraTimeEnd() {
         const state = ctx();
         clearTimeout(_startETTimeout);
-        state.currentMinute = 120;
+        state.currentMinute = 120 + (state.etSecondHalfStoppage || 0);
 
         // Reveal any remaining ET events
         for (let i = state.lastRevealedETIndex + 1; i < state.extraTimeEvents.length; i++) {
@@ -394,7 +403,7 @@ export function createMatchSimulation(ctx) {
         state.phase = 'full_time';
 
         if (!state.hasExtraTime) {
-            state.currentMinute = 90;
+            state.currentMinute = 90 + (state.secondHalfStoppage || 3);
             // When a backend resimulation is in flight (_skippingToEnd),
             // don't force scores or reveal events from the old simulation —
             // autoSubUserTeamBeforeSkip will rebuild everything atomically
@@ -410,7 +419,7 @@ export function createMatchSimulation(ctx) {
                 state.lastRevealedIndex = state.events.length - 1;
             }
         } else {
-            state.currentMinute = 120;
+            state.currentMinute = 120 + (state.etSecondHalfStoppage || 0);
         }
 
         if (_animFrame) {
@@ -522,7 +531,7 @@ export function createMatchSimulation(ctx) {
         const state = ctx();
         clearTimeout(_startETTimeout);
         state._skippingToEnd = false;
-        state.currentMinute = 123;
+        state.currentMinute = 120 + (state.etSecondHalfStoppage || 0);
 
         // Reveal all ET events
         for (let i = state.lastRevealedETIndex + 1; i < state.extraTimeEvents.length; i++) {
@@ -646,12 +655,13 @@ export function createMatchSimulation(ctx) {
      * Animate the clock from the current minute up to 90 using
      * requestAnimationFrame with easeOutCubic easing. Duration scales
      * with the number of minutes to cover (800ms–1500ms). When the
-     * animation finishes the clock is snapped to 93 (stoppage-time
-     * end) and the callback fires.
+     * animation finishes the clock is snapped to the end of regulation
+     * (90 + sampled second-half stoppage) and the callback fires.
      */
     function animateClockToEnd(fromMinute, onComplete) {
         const state = ctx();
         const toMinute = 90;
+        const regulationEnd = 90 + (state.secondHalfStoppage || 3);
         const minutesToCover = toMinute - fromMinute;
         const duration = Math.max(800, Math.min(1500, minutesToCover * 20));
         const startTime = performance.now();
@@ -666,7 +676,7 @@ export function createMatchSimulation(ctx) {
             if (t < 1) {
                 _animFrame = requestAnimationFrame(advanceFrame);
             } else {
-                state.currentMinute = 93;
+                state.currentMinute = regulationEnd;
                 updateOtherMatches();
                 onComplete();
             }
@@ -695,7 +705,7 @@ export function createMatchSimulation(ctx) {
 
         if (state.isKnockout && !state.hasExtraTime && !state._skippingToEnd) {
             state._skippingToEnd = true;
-            state.currentMinute = 93;
+            state.currentMinute = 90 + (state.secondHalfStoppage || 3);
             updateOtherMatches();
             enterRegularTimeEnd();
 

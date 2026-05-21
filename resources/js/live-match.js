@@ -125,6 +125,16 @@ export default function liveMatch(config) {
         matchId: config.matchId || '',
         animationSeen: config.animationSeen || false,
 
+        // Per-match stoppage durations (sampled server-side, persisted on
+        // game_matches). Drives the clock cap for each half: regulation ends
+        // at 90 + secondHalfStoppage, ET at 120 + ET stoppage. Defaults match
+        // the historical "ends at 93/120" behavior so old matches keep
+        // working when stoppage wasn't sampled.
+        firstHalfStoppage: config.firstHalfStoppage ?? 0,
+        secondHalfStoppage: config.secondHalfStoppage ?? 3,
+        etFirstHalfStoppage: config.etFirstHalfStoppage ?? 0,
+        etSecondHalfStoppage: config.etSecondHalfStoppage ?? 0,
+
         // MVP
         mvpPlayerName: config.mvpPlayerName || null,
         mvpPlayerTeamId: config.mvpPlayerTeamId || null,

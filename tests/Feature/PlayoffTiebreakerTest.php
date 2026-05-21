@@ -456,7 +456,8 @@ class PlayoffTiebreakerTest extends TestCase
         ];
 
         if ($withExtraTime) {
-            $secondLegAttrs['is_extra_time'] = true;
+            // Non-null *_score_et IS the "reached ET" signal — see
+            // GameMatch::reachedExtraTime().
             $secondLegAttrs['home_score_et'] = 0;
             $secondLegAttrs['away_score_et'] = 0;
         }

@@ -92,8 +92,9 @@ class GameMatchFactory extends Factory
 
     public function withExtraTime(int $homeScoreEt = 0, int $awayScoreEt = 0): static
     {
+        // Non-null *_score_et IS the canonical "reached ET" signal — the
+        // redundant is_extra_time column was removed in cleanup.
         return $this->state(fn (array $attributes) => [
-            'is_extra_time' => true,
             'home_score_et' => $homeScoreEt,
             'away_score_et' => $awayScoreEt,
         ]);

@@ -65,7 +65,7 @@ class CupTieResolver
         }
 
         // Check if ET was already simulated during the live match
-        if ($match->is_extra_time) {
+        if ($match->reachedExtraTime()) {
             $homeScoreEt = $match->home_score_et ?? 0;
             $awayScoreEt = $match->away_score_et ?? 0;
         } else {
@@ -92,7 +92,6 @@ class CupTieResolver
             $awayScoreEt = $extraTimeResult->awayScore;
 
             $match->update([
-                'is_extra_time' => true,
                 'home_score_et' => $homeScoreEt,
                 'away_score_et' => $awayScoreEt,
                 'home_possession' => $extraTimeResult->homePossession,
@@ -174,7 +173,7 @@ class CupTieResolver
 
         // Tied on aggregate - extra time in second leg
         // Check if ET was already simulated during the live match
-        if ($secondLeg->is_extra_time) {
+        if ($secondLeg->reachedExtraTime()) {
             $homeScoreEt = $secondLeg->home_score_et ?? 0;
             $awayScoreEt = $secondLeg->away_score_et ?? 0;
         } else {
@@ -200,7 +199,6 @@ class CupTieResolver
             $awayScoreEt = $extraTimeResult->awayScore;
 
             $secondLeg->update([
-                'is_extra_time' => true,
                 'home_score_et' => $homeScoreEt,
                 'away_score_et' => $awayScoreEt,
                 'home_possession' => $extraTimeResult->homePossession,

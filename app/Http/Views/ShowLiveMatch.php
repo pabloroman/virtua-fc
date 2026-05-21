@@ -64,7 +64,7 @@ class ShowLiveMatch
         $extraTimeData = null;
 
         // If match already has ET data (page refresh during ET), prepare it
-        if ($isKnockout && $playerMatch->is_extra_time) {
+        if ($isKnockout && $playerMatch->reachedExtraTime()) {
             $extraTimeData = $this->extraTimeService->buildRefreshState($playerMatch);
         }
 

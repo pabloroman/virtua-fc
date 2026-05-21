@@ -44,24 +44,31 @@ export function createEventFeed(ctx) {
 
     return {
         // --- Event grouping by half --------------------------------------
+        // Phase-based filtering — `event.minute` is raw absolute time, so a
+        // raw `<= 45` comparison would miss a 45+2' first-half event. Each
+        // event carries its phase from the persisted phase tuple.
         get firstHalfEvents() {
-            return groupSubstitutions(ctx().revealedEvents.filter(e => e.minute <= MINUTE.FIRST_HALF_END));
+            return groupSubstitutions(ctx().revealedEvents.filter(
+                e => e.phase === 'first_half' || e.phase === 'first_half_stoppage',
+            ));
         },
 
         get secondHalfEvents() {
             return groupSubstitutions(ctx().revealedEvents.filter(
-                e => e.minute > MINUTE.FIRST_HALF_END && e.minute <= MINUTE.REGULAR_TIME_END,
+                e => e.phase === 'second_half' || e.phase === 'second_half_stoppage',
             ));
         },
 
         get etFirstHalfEvents() {
             return groupSubstitutions(ctx().revealedEvents.filter(
-                e => e.minute > MINUTE.REGULAR_TIME_END && e.minute <= MINUTE.ET_FIRST_HALF_END,
+                e => e.phase === 'et_first_half' || e.phase === 'et_first_half_stoppage',
             ));
         },
 
         get etSecondHalfEvents() {
-            return groupSubstitutions(ctx().revealedEvents.filter(e => e.minute > MINUTE.ET_FIRST_HALF_END));
+            return groupSubstitutions(ctx().revealedEvents.filter(
+                e => e.phase === 'et_second_half' || e.phase === 'et_second_half_stoppage',
+            ));
         },
 
         // --- Separators --------------------------------------------------
@@ -85,22 +92,47 @@ export function createEventFeed(ctx) {
         },
 
         // --- Timeline ----------------------------------------------------
+        // Renders the clock minute, using "45+N'" notation when the live
+        // clock has crossed into stoppage of any half. Reads the per-match
+        // sampled stoppage values from the component state.
         get displayMinute() {
             const c = ctx();
             const m = Math.floor(c.currentMinute);
+            const fhs = c.firstHalfStoppage || 0;
+            const shs = c.secondHalfStoppage || 0;
+            const etfhs = c.etFirstHalfStoppage || 0;
+            const etshs = c.etSecondHalfStoppage || 0;
+
+            const stoppage = (base, extra) => extra > 0 ? `${base}+${extra}` : String(base);
+
             switch (c.phase) {
                 case PHASE.PRE_MATCH: return '0';
-                case PHASE.HALF_TIME: return String(MINUTE.FIRST_HALF_END);
-                case PHASE.GOING_TO_EXTRA_TIME: return String(MINUTE.REGULAR_TIME_END);
-                case PHASE.EXTRA_TIME_HALF_TIME: return String(MINUTE.ET_FIRST_HALF_END);
-                case PHASE.PENALTIES: return String(MINUTE.ET_END);
+                case PHASE.HALF_TIME: return stoppage(MINUTE.FIRST_HALF_END, fhs);
+                case PHASE.GOING_TO_EXTRA_TIME: return stoppage(MINUTE.REGULAR_TIME_END, shs);
+                case PHASE.EXTRA_TIME_HALF_TIME: return stoppage(MINUTE.ET_FIRST_HALF_END, etfhs);
+                case PHASE.PENALTIES: return stoppage(MINUTE.ET_END, etshs);
                 case PHASE.FULL_TIME:
-                    return c.hasExtraTime ? String(MINUTE.ET_END) : String(MINUTE.REGULAR_TIME_END);
+                    return c.hasExtraTime
+                        ? stoppage(MINUTE.ET_END, etshs)
+                        : stoppage(MINUTE.REGULAR_TIME_END, shs);
+                case PHASE.FIRST_HALF:
+                    return m > MINUTE.FIRST_HALF_END
+                        ? stoppage(MINUTE.FIRST_HALF_END, m - MINUTE.FIRST_HALF_END)
+                        : String(m);
+                case PHASE.SECOND_HALF:
+                    return m > MINUTE.REGULAR_TIME_END
+                        ? stoppage(MINUTE.REGULAR_TIME_END, m - MINUTE.REGULAR_TIME_END)
+                        : String(m);
                 case PHASE.EXTRA_TIME_FIRST_HALF:
+                    return m > MINUTE.ET_FIRST_HALF_END
+                        ? stoppage(MINUTE.ET_FIRST_HALF_END, m - MINUTE.ET_FIRST_HALF_END)
+                        : String(Math.min(m, MINUTE.ET_FIRST_HALF_END));
                 case PHASE.EXTRA_TIME_SECOND_HALF:
-                    return String(Math.min(m, MINUTE.ET_END));
+                    return m > MINUTE.ET_END
+                        ? stoppage(MINUTE.ET_END, m - MINUTE.ET_END)
+                        : String(m);
                 default:
-                    return String(Math.min(m, MINUTE.REGULAR_TIME_END));
+                    return String(m);
             }
         },
 

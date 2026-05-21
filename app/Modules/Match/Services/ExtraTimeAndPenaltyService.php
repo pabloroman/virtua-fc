@@ -75,8 +75,9 @@ class ExtraTimeAndPenaltyService
             stoppage: $stoppage,
         );
 
+        // Presence of a non-null home_score_et is the canonical "reached ET"
+        // signal — the redundant is_extra_time boolean was dropped in cleanup.
         $match->update([
-            'is_extra_time' => true,
             'home_score_et' => $extraTimeResult->homeScore,
             'away_score_et' => $extraTimeResult->awayScore,
             'home_possession' => $extraTimeResult->homePossession,

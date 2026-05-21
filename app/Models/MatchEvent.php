@@ -208,6 +208,29 @@ class MatchEvent extends Model
     }
 
     /**
+     * Constrain to regulation-phase events (FH, FHS, SH, SHS). Mirrors
+     * MatchPhase::regulation().
+     */
+    public function scopeInRegulation(Builder $query): Builder
+    {
+        return $query->whereIn('phase', array_map(
+            fn (MatchPhase $p) => $p->value,
+            MatchPhase::regulation(),
+        ));
+    }
+
+    /**
+     * Constrain to extra-time events (ET_*). Mirrors MatchPhase::extraTime().
+     */
+    public function scopeInExtraTime(Builder $query): Builder
+    {
+        return $query->whereIn('phase', array_map(
+            fn (MatchPhase $p) => $p->value,
+            MatchPhase::extraTime(),
+        ));
+    }
+
+    /**
      * Chronological ordering across phase + minute + stoppage_minute. Use
      * this instead of `orderBy('minute')` — minute alone is ambiguous in
      * stoppage time.

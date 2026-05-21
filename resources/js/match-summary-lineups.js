@@ -12,8 +12,8 @@
  * Config shape (built by MatchSummaryPresenter, passed via Js::from):
  *   - homeRoster, awayRoster: [{ id, name, positionAbbr, positionGroup, performance?, rating? }]
  *   - subInPlayers:           [{ id, positionGroup, performance?, rating?, teamId }]
- *   - events:                 formatMatchEvents() output for minute ≤93
- *   - extraTimeEvents:        formatMatchEvents() output for minute >93
+ *   - events:                 formatMatchEvents() output for regulation phases
+ *   - extraTimeEvents:        formatMatchEvents() output for ET phases
  *   - homeScore, awayScore:   90-minute scores (no ET), matching what
  *                             ShowLiveMatch passes as finalHomeScore/Away
  *   - homeTeamId, awayTeamId: team IDs
