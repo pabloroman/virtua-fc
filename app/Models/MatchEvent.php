@@ -45,6 +45,59 @@ class MatchEvent extends Model
 
     public $timestamps = false;
 
+    /**
+     * Auto-decompose `minute` (raw absolute) into (phase, base, stoppage)
+     * when `phase` isn't supplied. Lets `MatchEvent::create(['minute' => 47])`
+     * keep working — tests and ad-hoc creators don't have to know about the
+     * phase tuple.
+     *
+     * The bulk-insert paths (MatchEventRepository, MatchResultProcessor,
+     * TacticalChangeService) decompose explicitly because `Model::insert`
+     * skips this hook.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (self $event): void {
+            if ($event->phase !== null) {
+                return;
+            }
+
+            $rawMinute = (int) $event->minute;
+            $stoppage = $event->resolveStoppageDurations();
+
+            $coords = MinuteCoordinates::decompose(
+                $rawMinute,
+                $stoppage['fhs'],
+                $stoppage['shs'],
+                $stoppage['etfhs'],
+                $stoppage['etshs'],
+            );
+
+            $event->phase = $coords['phase'];
+            $event->minute = $coords['minute'];
+            $event->stoppage_minute = $coords['stoppage_minute'];
+        });
+    }
+
+    /**
+     * Match-level stoppage values for decomposition, falling back to
+     * historical defaults (0/3/0/0) when the match has no stoppage set yet
+     * — keeps factory fixtures working before stoppage sampling lands.
+     *
+     * @return array{fhs:int, shs:int, etfhs:?int, etshs:?int}
+     */
+    private function resolveStoppageDurations(): array
+    {
+        $match = $this->gameMatch;
+
+        return [
+            'fhs' => (int) ($match->first_half_stoppage ?? 0),
+            'shs' => (int) ($match->second_half_stoppage ?? 3),
+            'etfhs' => $match?->et_first_half_stoppage,
+            'etshs' => $match?->et_second_half_stoppage,
+        ];
+    }
+
     protected $fillable = [
         'game_id',
         'game_match_id',
