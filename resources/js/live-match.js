@@ -125,6 +125,15 @@ export default function liveMatch(config) {
         matchId: config.matchId || '',
         animationSeen: config.animationSeen || false,
 
+        // Per-match stoppage durations (computed from match events by
+        // StoppageCalculator and persisted on game_matches). Drives the clock
+        // cap for each half. Defaults match the historical "ends at 93/120"
+        // behavior so old data keeps working when stoppage was never derived.
+        firstHalfStoppage: config.firstHalfStoppage ?? 0,
+        secondHalfStoppage: config.secondHalfStoppage ?? 3,
+        etFirstHalfStoppage: config.etFirstHalfStoppage ?? 0,
+        etSecondHalfStoppage: config.etSecondHalfStoppage ?? 0,
+
         // MVP
         mvpPlayerName: config.mvpPlayerName || null,
         mvpPlayerTeamId: config.mvpPlayerTeamId || null,
@@ -227,6 +236,13 @@ export default function liveMatch(config) {
         isPaused: false,
         userPaused: false,
         pauseTimer: null,
+
+        // "Fourth official adds N minutes" announcement guards — flip to
+        // true after each half-end announcement so it fires only once.
+        _announcedFirstHalfStoppage: false,
+        _announcedSecondHalfStoppage: false,
+        _announcedEtFirstHalfStoppage: false,
+        _announcedEtSecondHalfStoppage: false,
 
         // Derived state
         revealedEvents: [],

@@ -10,6 +10,8 @@ use App\Models\GamePlayerMatchRating;
 use App\Models\GamePlayerMatchState;
 use App\Models\MatchEvent;
 use App\Models\PlayerSuspension;
+use App\Modules\Match\Support\MinuteCoordinates;
+use App\Modules\Match\Support\StoppageDurations;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -273,20 +275,42 @@ class MatchResultProcessor
 
     /**
      * Bulk insert all match events across ALL matches in a single statement.
+     *
+     * Decomposes each event's raw absolute `minute` into (phase, base minute,
+     * stoppage_minute) using the match's persisted stoppage values. The
+     * simulator + AIMatchResolver are responsible for having set those
+     * stoppage values before handing off here.
      */
     private function bulkInsertMatchEvents(string $gameId, array $matchResults): void
     {
+        if (empty($matchResults)) {
+            return;
+        }
+
+        $matchIds = array_column($matchResults, 'matchId');
+        $stoppageByMatch = GameMatch::query()
+            ->whereIn('id', $matchIds)
+            ->get(['id', 'first_half_stoppage', 'second_half_stoppage', 'et_first_half_stoppage', 'et_second_half_stoppage'])
+            ->keyBy('id');
+
         $allRows = [];
 
         foreach ($matchResults as $result) {
+            $match = $stoppageByMatch->get($result['matchId']);
+            $stoppage = $match ? StoppageDurations::fromMatch($match) : new StoppageDurations(0, 0);
+
             foreach ($result['events'] as $eventData) {
+                $coords = MinuteCoordinates::decomposeWith((int) $eventData['minute'], $stoppage);
+
                 $allRows[] = [
                     'id' => Str::uuid()->toString(),
                     'game_id' => $gameId,
                     'game_match_id' => $result['matchId'],
                     'game_player_id' => $eventData['game_player_id'],
                     'team_id' => $eventData['team_id'],
-                    'minute' => $eventData['minute'],
+                    'minute' => $coords['minute'],
+                    'phase' => $coords['phase']->value,
+                    'stoppage_minute' => $coords['stoppage_minute'],
                     'event_type' => $eventData['event_type'],
                     'metadata' => isset($eventData['metadata']) ? json_encode($eventData['metadata']) : null,
                 ];

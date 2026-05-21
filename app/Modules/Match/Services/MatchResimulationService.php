@@ -6,6 +6,9 @@ use App\Modules\Match\DTOs\MatchEventData;
 use App\Modules\Match\DTOs\MatchResult;
 use App\Modules\Match\DTOs\ResimulationResult;
 use App\Modules\Match\DTOs\TacticalConfig;
+use App\Modules\Match\Enums\MatchPhase;
+use App\Modules\Match\Support\MinuteCoordinates;
+use App\Modules\Match\Support\StoppageDurations;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
@@ -63,32 +66,43 @@ class MatchResimulationService
         bool $autoSubUserTeam = false,
     ): ResimulationResult {
         $competitionId = $match->competition_id;
+        $stoppage = StoppageDurations::fromMatch($match);
 
         // 1. Capture old scores
         $oldHomeScore = $match->home_score;
         $oldAwayScore = $match->away_score;
 
-        // The clock can reach 90 in the going-to-ET window while stoppage-time
-        // events (minutes 91-93) are already counted in home_score / away_score.
-        // Pin the revert/resim anchor to 93 in that zone so a sub stamped at
-        // minute 90 doesn't wipe the stoppage events and leave the scoreline
-        // out of sync with the event feed. Mid-match the anchor is just the
-        // actual clock minute.
-        $resimAnchor = $minute >= 90 ? 93 : $minute;
+        // When the user pauses at minute 90, regulation isn't actually over —
+        // stoppage time (minute 91..90+shs) is still in the regulation phase.
+        // Pin the cutoff to the regulation end so a sub stamped at minute 90
+        // doesn't wipe stoppage events that count toward home_score/away_score.
+        // Phases give us this for free: anywhere in regulation maps to a
+        // SECOND_HALF_STOPPAGE-or-earlier tuple, and the simulator's remainder
+        // restarts from the corresponding raw minute.
+        $resimAnchor = $minute >= 90 ? $stoppage->regulationEnd() : $minute;
 
-        // 2. Revert all events after the minute
-        $this->revertEventsAfterMinute($match, $resimAnchor, $competitionId);
+        // 2. Revert all events that happened after the cutoff. Uses phase
+        // tuple comparison so a 91' ET goal (phase=ET_FIRST_HALF) is not
+        // confused with a 91' regulation-stoppage goal (phase=SECOND_HALF_STOPPAGE).
+        $this->revertEventsAfterMinute($match, $resimAnchor, $competitionId, $stoppage);
 
-        // 3. Calculate score at the minute (from remaining events)
-        $scoreAtMinute = $this->calculateScoreAtMinute($match);
+        // 3. Calculate regulation score from remaining events. We count goals
+        // in regulation phases (FH/FHS/SH/SHS); ET goals don't roll into
+        // home_score/away_score.
+        $scoreAtMinute = $this->scoreFromEventsInPhases($match, MatchPhase::regulation());
 
         // 4. Read formation/mentality/instructions from match record (already updated by caller)
         $tc = TacticalConfig::fromMatch($match);
 
-        // 5. Exclude red-carded and substituted-out players
-        $unavailablePlayerIds = MatchEvent::where('game_match_id', $match->id)
+        // Single load of post-revert events at the anchor — every classifier
+        // below (red-card / substitution exclusion, auto-sub re-add, opponent
+        // sub windows) projects from the same set, so one query suffices.
+        $eventsAtAnchor = $this->eventsUpTo($match->id, $resimAnchor, $stoppage);
+
+        // 5. Exclude red-carded and substituted-out players. Phase-aware so
+        // late-regulation events at minute 91+ aren't misclassified.
+        $unavailablePlayerIds = $eventsAtAnchor
             ->whereIn('event_type', ['red_card', 'substitution'])
-            ->where('minute', '<=', $resimAnchor)
             ->pluck('game_player_id')
             ->all();
 
@@ -102,12 +116,10 @@ class MatchResimulationService
         $isUserHome = $match->isHomeTeam($game->team_id);
         $userTeamId = $game->team_id;
 
-        $userAutoSubEvents = MatchEvent::where('game_match_id', $match->id)
+        $userAutoSubEvents = $eventsAtAnchor
             ->where('team_id', $userTeamId)
             ->where('event_type', 'substitution')
-            ->where('minute', '<=', $resimAnchor)
-            ->whereNotIn('game_player_id', collect($allSubstitutions)->pluck('playerOutId')->all())
-            ->get();
+            ->whereNotIn('game_player_id', collect($allSubstitutions)->pluck('playerOutId')->all());
 
         $autoSubPlayerInIds = $userAutoSubEvents
             ->map(fn ($e) => $e->metadata['player_in_id'] ?? null)
@@ -127,15 +139,13 @@ class MatchResimulationService
         }
 
         // 6. Get existing injuries/yellows for context
-        $existingInjuryTeamIds = MatchEvent::where('game_match_id', $match->id)
-            ->where('minute', '<=', $resimAnchor)
+        $existingInjuryTeamIds = $eventsAtAnchor
             ->where('event_type', 'injury')
             ->pluck('team_id')
             ->unique()
             ->all();
 
-        $existingYellowPlayerIds = MatchEvent::where('game_match_id', $match->id)
-            ->where('minute', '<=', $resimAnchor)
+        $existingYellowPlayerIds = $eventsAtAnchor
             ->where('event_type', 'yellow_card')
             ->pluck('game_player_id')
             ->unique()
@@ -153,16 +163,19 @@ class MatchResimulationService
             }
         }
         // User's pre-simulated auto-subs (injury auto-subs from the initial
-        // simulation that aren't in the frontend's manual sub list).
+        // simulation that aren't in the frontend's manual sub list). Entry
+        // minutes use raw absolute time — the simulator's internal coord —
+        // so DB-loaded events get converted from their phase tuple.
         foreach ($userAutoSubEvents as $subEvent) {
             $playerInId = $subEvent->metadata['player_in_id'] ?? null;
             if ($playerInId === null) {
                 continue;
             }
+            $entryMinute = $this->absoluteMinuteFor($subEvent, $stoppage);
             if ($isUserHome) {
-                $homeEntryMinutes[$playerInId] = $subEvent->minute;
+                $homeEntryMinutes[$playerInId] = $entryMinute;
             } else {
-                $awayEntryMinutes[$playerInId] = $subEvent->minute;
+                $awayEntryMinutes[$playerInId] = $entryMinute;
             }
         }
         // Opponent's substitutions up to the resimulation minute. Read from match_events
@@ -170,20 +183,19 @@ class MatchResimulationService
         // which is populated by the initial simulation and not updated by subsequent resims
         // — leaving it stale and out of sync with the actual events.
         $opponentTeamId = $isUserHome ? $match->away_team_id : $match->home_team_id;
-        $opponentSubEvents = MatchEvent::where('game_match_id', $match->id)
+        $opponentSubEvents = $eventsAtAnchor
             ->where('team_id', $opponentTeamId)
-            ->where('event_type', 'substitution')
-            ->where('minute', '<=', $resimAnchor)
-            ->get();
+            ->where('event_type', 'substitution');
         foreach ($opponentSubEvents as $subEvent) {
             $playerInId = $subEvent->metadata['player_in_id'] ?? null;
             if ($playerInId === null) {
                 continue;
             }
+            $entryMinute = $this->absoluteMinuteFor($subEvent, $stoppage);
             if ($isUserHome) {
-                $awayEntryMinutes[$playerInId] = $subEvent->minute;
+                $awayEntryMinutes[$playerInId] = $entryMinute;
             } else {
-                $homeEntryMinutes[$playerInId] = $subEvent->minute;
+                $homeEntryMinutes[$playerInId] = $entryMinute;
             }
         }
 
@@ -248,6 +260,8 @@ class MatchResimulationService
         $cachedPerformances = Cache::get("match_performances:{$match->id}", []);
         $this->matchSimulator->seedPerformance($cachedPerformances);
 
+        $regulationEnd = $stoppage->regulationEnd();
+
         if ($aiSubsActive) {
             $remainderOutput = $this->matchSimulator->simulateRemainderWithAISubs(
                 $match->homeTeam,
@@ -283,6 +297,7 @@ class MatchResimulationService
                 homePlayerSlots: $homePlayerSlots,
                 awayPlayerSlots: $awayPlayerSlots,
                 preservePerformance: true,
+                toMinute: $regulationEnd,
             );
         } else {
             $remainderOutput = $this->matchSimulator->simulateRemainder(
@@ -312,6 +327,7 @@ class MatchResimulationService
                 awayExistingSubstitutions: $awayExistingSubs,
                 neutralVenue: $match->isNeutralVenue(),
                 preservePerformance: true,
+                toMinute: $regulationEnd,
                 homePlayerSlots: $homePlayerSlots,
                 awayPlayerSlots: $awayPlayerSlots,
                 // Mirrors the AI-subs branch above: passing null opts the
@@ -410,32 +426,37 @@ class MatchResimulationService
     ): ResimulationResult {
         return DB::transaction(function () use ($match, $game, $minute, $homePlayers, $awayPlayers, $allSubstitutions, $homeBenchPlayers, $awayBenchPlayers) {
             $competitionId = $match->competition_id;
+            $stoppage = StoppageDurations::fromMatch($match);
 
             // 1. Capture old ET scores
             $oldHomeScore = $match->home_score_et ?? 0;
             $oldAwayScore = $match->away_score_et ?? 0;
 
-            // In early ET the clock can sit at 91-92 while regulation stoppage
-            // events (minutes 91-93) are already counted in home_score /
-            // away_score. Pin the revert/resim anchor to >= 93 so a sub
-            // stamped at 91 doesn't delete the stoppage-time event log.
-            $resimAnchor = max($minute, 93);
+            // In early ET the clock can sit anywhere from "just past regulation
+            // end" upward. Pin the cutoff to no earlier than regulation end so
+            // a sub stamped at the start of ET first half doesn't accidentally
+            // wipe regulation-stoppage events.
+            $regulationEnd = $stoppage->regulationEnd();
+            $resimAnchor = max($minute, $regulationEnd);
 
-            // 2. Revert all events after the minute
-            $this->revertEventsAfterMinute($match, $resimAnchor, $competitionId);
+            // 2. Revert all events after the cutoff (phase tuple comparison
+            // — a 91' ET goal carries phase=ET_FIRST_HALF, not regulation
+            // stoppage, even though the raw minute would be ambiguous).
+            $this->revertEventsAfterMinute($match, $resimAnchor, $competitionId, $stoppage);
 
-            // 3. Calculate ET-only score at minute (events with minute > 93 that remain).
-            // Use 93 (not 90) because stoppage-time goals at minutes 91-93 are
-            // regular-time events already counted in home_score/away_score.
-            $scoreAtMinute = $this->calculateScoreAtMinute($match, 93);
+            // 3. Calculate ET-only score from remaining ET-phase goals.
+            $scoreAtMinute = $this->scoreFromEventsInPhases($match, MatchPhase::extraTime());
 
             // 4. Read formation/mentality/instructions from match record
             $tc = TacticalConfig::fromMatch($match);
 
+            // Single load of post-revert events at the anchor — every
+            // classifier below projects from the same set.
+            $eventsAtAnchor = $this->eventsUpTo($match->id, $resimAnchor, $stoppage);
+
             // 5. Exclude red-carded and substituted-out players
-            $unavailablePlayerIds = MatchEvent::where('game_match_id', $match->id)
+            $unavailablePlayerIds = $eventsAtAnchor
                 ->whereIn('event_type', ['red_card', 'substitution'])
-                ->where('minute', '<=', $resimAnchor)
                 ->pluck('game_player_id')
                 ->all();
 
@@ -446,12 +467,10 @@ class MatchResimulationService
             $isUserHome = $match->isHomeTeam($game->team_id);
             $userTeamId = $game->team_id;
 
-            $userAutoSubEvents = MatchEvent::where('game_match_id', $match->id)
+            $userAutoSubEvents = $eventsAtAnchor
                 ->where('team_id', $userTeamId)
                 ->where('event_type', 'substitution')
-                ->where('minute', '<=', $resimAnchor)
-                ->whereNotIn('game_player_id', collect($allSubstitutions)->pluck('playerOutId')->all())
-                ->get();
+                ->whereNotIn('game_player_id', collect($allSubstitutions)->pluck('playerOutId')->all());
 
             $autoSubPlayerInIds = $userAutoSubEvents
                 ->map(fn ($e) => $e->metadata['player_in_id'] ?? null)
@@ -481,16 +500,19 @@ class MatchResimulationService
                     $awayEntryMinutes[$sub['playerInId']] = $sub['minute'];
                 }
             }
-            // User's pre-simulated auto-subs
+            // User's pre-simulated auto-subs. Entry minutes use raw absolute
+            // time so the simulator's internal scheduling stays consistent
+            // when the DB-loaded event lives in a stoppage phase.
             foreach ($userAutoSubEvents as $subEvent) {
                 $playerInId = $subEvent->metadata['player_in_id'] ?? null;
                 if ($playerInId === null) {
                     continue;
                 }
+                $entryMinute = $this->absoluteMinuteFor($subEvent, $stoppage);
                 if ($isUserHome) {
-                    $homeEntryMinutes[$playerInId] = $subEvent->minute;
+                    $homeEntryMinutes[$playerInId] = $entryMinute;
                 } else {
-                    $awayEntryMinutes[$playerInId] = $subEvent->minute;
+                    $awayEntryMinutes[$playerInId] = $entryMinute;
                 }
             }
 
@@ -529,6 +551,7 @@ class MatchResimulationService
                 neutralVenue: $match->isNeutralVenue(),
                 homePlayerSlots: $homePlayerSlots,
                 awayPlayerSlots: $awayPlayerSlots,
+                regulationStoppage: $stoppage->secondHalf,
             );
 
             // 8. Calculate new ET score
@@ -646,11 +669,19 @@ class MatchResimulationService
      * we delete the events, clear side-effects (suspensions/injuries), then
      * recalculate each affected player's stats from all their remaining events.
      */
-    private function revertEventsAfterMinute(GameMatch $match, int $minute, string $competitionId): void
+    private function revertEventsAfterMinute(GameMatch $match, int $minute, string $competitionId, ?StoppageDurations $stoppage = null): void
     {
+        $stoppage ??= StoppageDurations::fromMatch($match);
+
+        // Phase-aware revert: an event survives if its raw absolute minute is
+        // ≤ the cutoff. Computed in PHP because the cutoff comparison spans
+        // (phase, minute, stoppage_minute) and the match-specific stoppage
+        // durations — straightforward SQL would be a CASE-heavy expression
+        // for negligible gain on ~20 events.
         $eventsToRevert = MatchEvent::where('game_match_id', $match->id)
-            ->where('minute', '>', $minute)
-            ->get();
+            ->get()
+            ->filter(fn (MatchEvent $e) => $this->absoluteMinuteFor($e, $stoppage) > $minute)
+            ->values();
 
         if ($eventsToRevert->isEmpty()) {
             return;
@@ -717,9 +748,7 @@ class MatchResimulationService
         }
 
         // Delete the events
-        MatchEvent::where('game_match_id', $match->id)
-            ->where('minute', '>', $minute)
-            ->delete();
+        MatchEvent::whereIn('id', $eventsToRevert->pluck('id')->all())->delete();
 
         // Recalculate stats for affected players from all their remaining events
         $this->recalculatePlayerStats($affectedPlayerIds, $match->game_id);
@@ -779,40 +808,56 @@ class MatchResimulationService
     }
 
     /**
-     * Calculate the score from remaining events.
+     * Count goals from remaining events restricted to the given phases.
      *
-     * @param  int  $afterMinute  Only count events with minute > this value (0 = all events)
+     * Used in two places: resimulating regulation (count regulation-phase
+     * goals) and resimulating extra time (count ET-phase goals). Phase
+     * filtering replaces the older `minute > 93` heuristic, which conflated
+     * 91-93 regulation-stoppage events with ET first-half events.
+     *
+     * @param  list<MatchPhase>  $phases
+     * @return array{home:int, away:int}
      */
-    private function calculateScoreAtMinute(GameMatch $match, int $afterMinute = 0): array
+    private function scoreFromEventsInPhases(GameMatch $match, array $phases): array
     {
-        $query = MatchEvent::where('game_match_id', $match->id);
+        $phaseValues = array_map(fn (MatchPhase $p) => $p->value, $phases);
 
-        if ($afterMinute > 0) {
-            $query->where('minute', '>', $afterMinute);
-        }
-
-        $events = $query->get();
+        $events = MatchEvent::where('game_match_id', $match->id)
+            ->whereIn('phase', $phaseValues)
+            ->whereIn('event_type', ['goal', 'own_goal'])
+            ->get();
 
         $homeScore = 0;
         $awayScore = 0;
 
         foreach ($events as $event) {
+            $isHome = $event->team_id === $match->home_team_id;
             if ($event->event_type === 'goal') {
-                if ($event->team_id === $match->home_team_id) {
-                    $homeScore++;
-                } else {
-                    $awayScore++;
-                }
-            } elseif ($event->event_type === 'own_goal') {
-                if ($event->team_id === $match->home_team_id) {
-                    $awayScore++;
-                } else {
-                    $homeScore++;
-                }
+                $isHome ? $homeScore++ : $awayScore++;
+            } else { // own_goal credits the opposing side
+                $isHome ? $awayScore++ : $homeScore++;
             }
         }
 
         return ['home' => $homeScore, 'away' => $awayScore];
+    }
+
+    /**
+     * Load match events whose raw absolute minute is at-or-before $cutoff.
+     * Stoppage-aware: an event at phase=SECOND_HALF_STOPPAGE / minute=90 /
+     * stoppage_minute=2 is treated as absolute minute 92+fhs (not 90).
+     */
+    private function eventsUpTo(string $matchId, int $cutoff, StoppageDurations $stoppage): Collection
+    {
+        return MatchEvent::where('game_match_id', $matchId)
+            ->get()
+            ->filter(fn (MatchEvent $e) => $this->absoluteMinuteFor($e, $stoppage) <= $cutoff)
+            ->values();
+    }
+
+    private function absoluteMinuteFor(MatchEvent $event, StoppageDurations $stoppage): int
+    {
+        return MinuteCoordinates::toAbsoluteWith($event->phase, $event->minute, $event->stoppage_minute, $stoppage);
     }
 
     /**
@@ -932,11 +977,14 @@ class MatchResimulationService
      */
     public function buildEventsResponse(GameMatch $match, int $minute): array
     {
+        $stoppage = StoppageDurations::fromMatch($match);
+
         $newEvents = MatchEvent::with('gamePlayer')
             ->where('game_match_id', $match->id)
-            ->where('minute', '>', $minute)
-            ->orderBy('minute')
-            ->get();
+            ->orderedChronologically()
+            ->get()
+            ->filter(fn (MatchEvent $e) => $this->absoluteMinuteFor($e, $stoppage) > $minute)
+            ->values();
 
         return self::formatMatchEvents($newEvents);
     }
@@ -946,6 +994,14 @@ class MatchResimulationService
      *
      * Resolves player-in names for substitution events, pairs assists with goals,
      * and returns a sorted array ready for JSON serialization.
+     *
+     * Each emitted event carries:
+     *   - minute:        raw absolute clock minute (for the live-match JS
+     *                    which compares against state.currentMinute)
+     *   - baseMinute:    base minute in phase (1-45, 46-90, 91-105, 106-120)
+     *   - stoppageMinute: nullable; e.g. 2 for "45+2'"
+     *   - displayMinute: pre-formatted string ("45+2'" or "47'")
+     *   - phase:         phase value (frontend can use this to draw HT markers)
      */
     public static function formatMatchEvents(Collection $events): array
     {
@@ -967,11 +1023,30 @@ class MatchResimulationService
                 ->all();
         }
 
+        // Resolve match-level stoppage once so we can emit raw absolute minute
+        // alongside the phase-coordinate fields. All events here belong to the
+        // same match (callers pass per-match slices).
+        $firstEvent = $events->first();
+        $stoppage = $firstEvent
+            ? StoppageDurations::fromMatch($firstEvent->gameMatch)
+            : new StoppageDurations(0, 3);
+
+        $absoluteMinute = fn ($e) => MinuteCoordinates::toAbsoluteWith(
+            $e->phase,
+            $e->minute,
+            $e->stoppage_minute,
+            $stoppage,
+        );
+
         $formatted = $events
             ->filter(fn ($e) => $e->event_type !== 'assist')
-            ->map(function ($e) use ($playerInNames) {
+            ->map(function ($e) use ($playerInNames, $absoluteMinute) {
                 $data = [
-                    'minute' => $e->minute,
+                    'minute' => $absoluteMinute($e),
+                    'baseMinute' => $e->minute,
+                    'stoppageMinute' => $e->stoppage_minute,
+                    'phase' => $e->phase->value,
+                    'displayMinute' => $e->displayMinute(),
                     'type' => $e->event_type,
                     'playerName' => $e->gamePlayer->name ?? '',
                     'teamId' => $e->team_id,
@@ -990,14 +1065,15 @@ class MatchResimulationService
             ->values()
             ->all();
 
-        // Pair assists with their goals (keyed by minute:team_id to avoid cross-team misattribution)
+        // Pair assists with their goals. Key includes phase + stoppage so an
+        // assist on a 90+3' goal isn't confused with an unrelated 90' event.
         $assists = $events
             ->filter(fn ($e) => $e->event_type === 'assist')
-            ->keyBy(fn ($e) => $e->minute.':'.$e->team_id);
+            ->keyBy(fn ($e) => $e->phase->value.':'.$e->minute.':'.($e->stoppage_minute ?? 0).':'.$e->team_id);
 
         return array_map(function ($event) use ($assists) {
             if ($event['type'] === 'goal') {
-                $key = $event['minute'].':'.$event['teamId'];
+                $key = $event['phase'].':'.$event['baseMinute'].':'.($event['stoppageMinute'] ?? 0).':'.$event['teamId'];
                 if (isset($assists[$key])) {
                     $event['assistPlayerName'] = $assists[$key]->gamePlayer->name ?? null;
                     $event['assistPlayerId'] = $assists[$key]->game_player_id;

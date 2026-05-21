@@ -258,4 +258,21 @@ return [
         ':team va directo y funciona — :player controla y define',
         '¡Juego directo puro! El balón largo encuentra a :player que no perdona',
     ],
+
+    // Anuncio del tiempo añadido. El cliente elige la variante singular o
+    // plural según los minutos (:minutes) para evitar "1 minutos".
+    'stoppage_announcement_singular' => [
+        'El árbitro añade :minutes minuto',
+        'El cuarto árbitro indica :minutes minuto de añadido',
+        ':minutes minuto al descuento',
+        'Solo :minutes minuto de tiempo añadido',
+    ],
+    'stoppage_announcement_plural' => [
+        'El árbitro añade :minutes minutos',
+        'El cuarto árbitro indica :minutes minutos de descuento',
+        ':minutes minutos al añadido',
+        'Tiempo añadido: :minutes minutos',
+        'Se añaden :minutes minutos al final',
+        '¡:minutes minutos de descuento! Aún hay tiempo',
+    ],
 ];

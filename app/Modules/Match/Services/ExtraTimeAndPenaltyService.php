@@ -11,6 +11,8 @@ use App\Modules\Competition\Services\PlayoffTiebreakerService;
 use App\Modules\Match\DTOs\ExtraTimeProcessResult;
 use App\Modules\Match\DTOs\PenaltyProcessResult;
 use App\Modules\Match\DTOs\TacticalConfig;
+use App\Modules\Match\Enums\MatchPhase;
+use App\Modules\Match\Support\StoppageCalculator;
 use Illuminate\Support\Collection;
 
 class ExtraTimeAndPenaltyService
@@ -19,6 +21,7 @@ class ExtraTimeAndPenaltyService
         private readonly MatchSimulator $matchSimulator,
         private readonly MatchEventRepository $matchEventRepository,
         private readonly PlayoffTiebreakerService $playoffTiebreakerService,
+        private readonly StoppageCalculator $stoppageCalculator = new StoppageCalculator,
     ) {}
 
     /**
@@ -66,6 +69,14 @@ class ExtraTimeAndPenaltyService
             neutralVenue: $match->isNeutralVenue(),
             homePlayerSlots: $homePlayerSlots,
             awayPlayerSlots: $awayPlayerSlots,
+            regulationStoppage: (int) ($match->second_half_stoppage ?? 0),
+        );
+
+        // Derive ET stoppage from the event mix; persist before storing events
+        // so MatchEventRepository decomposes raw minutes correctly.
+        $etStoppage = $this->stoppageCalculator->calculateExtraTime(
+            $extraTimeResult->events,
+            regulationStoppage: (int) ($match->second_half_stoppage ?? 0),
         );
 
         $match->update([
@@ -74,6 +85,8 @@ class ExtraTimeAndPenaltyService
             'away_score_et' => $extraTimeResult->awayScore,
             'home_possession' => $extraTimeResult->homePossession,
             'away_possession' => $extraTimeResult->awayPossession,
+            'et_first_half_stoppage' => $etStoppage['et_first_half'],
+            'et_second_half_stoppage' => $etStoppage['et_second_half'],
         ]);
 
         $storedEvents = $this->storeExtraTimeEvents($match, $game, $extraTimeResult->events);
@@ -173,7 +186,7 @@ class ExtraTimeAndPenaltyService
      */
     public function buildRefreshState(GameMatch $match): array
     {
-        $etEvents = $match->events->filter(fn ($e) => $e->minute > 93);
+        $etEvents = $match->events->filter(fn ($e) => $e->phase->isExtraTime());
 
         $state = [
             'extraTimeEvents' => MatchResimulationService::formatMatchEvents($etEvents),
@@ -247,7 +260,7 @@ class ExtraTimeAndPenaltyService
 
         return MatchEvent::with('gamePlayer')
             ->whereIn('id', $ids)
-            ->orderBy('minute')
+            ->orderedChronologically()
             ->get();
     }
 

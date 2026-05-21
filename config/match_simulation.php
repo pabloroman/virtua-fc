@@ -167,6 +167,38 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Stoppage Time
+    |--------------------------------------------------------------------------
+    |
+    | Stoppage durations are computed *from* the actual event mix the
+    | simulator produced (subs, cards, injuries, goals), not sampled blindly.
+    | This mirrors how a real referee accounts for stoppage on the touchline.
+    |
+    |   stoppage_seconds = baseline
+    |       + seconds_per_substitution × subs
+    |       + seconds_per_card         × bookings
+    |       + seconds_per_injury       × injuries
+    |       + seconds_per_goal         × goals
+    |
+    | Then ceil()'d to whole minutes and clamped to [min_minutes, max_minutes].
+    | A quiet 0-0 gets ~1 min; a chaotic 4-3 with several subs and bookings
+    | gets 6-8'.
+    |
+    */
+    'stoppage' => [
+        'baseline_seconds'         => 30,
+        'seconds_per_substitution' => 30,
+        'seconds_per_card'         => 30,
+        'seconds_per_injury'       => 60,
+        'seconds_per_goal'         => 30,
+        'first_half_min_minutes'   => 0,
+        'second_half_min_minutes'  => 1,
+        'max_minutes'              => 12,
+        'et_max_minutes'           => 4,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Player Energy (Unified Fitness/Stamina)
     |--------------------------------------------------------------------------
     |

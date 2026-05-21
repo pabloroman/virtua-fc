@@ -9,6 +9,7 @@ use App\Models\CupTie;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\Team;
+use App\Modules\Match\Support\StoppageCalculator;
 use Illuminate\Support\Collection;
 use App\Modules\Match\Services\MatchSimulator;
 
@@ -18,6 +19,7 @@ class CupTieResolver
         private readonly MatchSimulator $matchSimulator,
         private readonly MatchEventRepository $matchEventRepository,
         private readonly PlayoffTiebreakerService $playoffTiebreakerService,
+        private readonly StoppageCalculator $stoppageCalculator = new StoppageCalculator,
     ) {}
 
     /**
@@ -80,10 +82,17 @@ class CupTieResolver
                 neutralVenue: $match->isNeutralVenue(),
                 homePlayerSlots: $match->playerSlotMap('home'),
                 awayPlayerSlots: $match->playerSlotMap('away'),
+                regulationStoppage: (int) ($match->second_half_stoppage ?? 0),
             );
 
             $homeScoreEt = $extraTimeResult->homeScore;
             $awayScoreEt = $extraTimeResult->awayScore;
+
+            // Derive ET stoppage from events, persist before event-insert.
+            $etStoppage = $this->stoppageCalculator->calculateExtraTime(
+                $extraTimeResult->events,
+                regulationStoppage: (int) ($match->second_half_stoppage ?? 0),
+            );
 
             $match->update([
                 'is_extra_time' => true,
@@ -91,6 +100,8 @@ class CupTieResolver
                 'away_score_et' => $awayScoreEt,
                 'home_possession' => $extraTimeResult->homePossession,
                 'away_possession' => $extraTimeResult->awayPossession,
+                'et_first_half_stoppage' => $etStoppage['et_first_half'],
+                'et_second_half_stoppage' => $etStoppage['et_second_half'],
             ]);
 
             // Persist ET goal/card/etc. events so scorer lists stay consistent
@@ -185,10 +196,16 @@ class CupTieResolver
                 neutralVenue: $secondLeg->isNeutralVenue(),
                 homePlayerSlots: $secondLeg->playerSlotMap('home'),
                 awayPlayerSlots: $secondLeg->playerSlotMap('away'),
+                regulationStoppage: (int) ($secondLeg->second_half_stoppage ?? 0),
             );
 
             $homeScoreEt = $extraTimeResult->homeScore;
             $awayScoreEt = $extraTimeResult->awayScore;
+
+            $etStoppage = $this->stoppageCalculator->calculateExtraTime(
+                $extraTimeResult->events,
+                regulationStoppage: (int) ($secondLeg->second_half_stoppage ?? 0),
+            );
 
             $secondLeg->update([
                 'is_extra_time' => true,
@@ -196,6 +213,8 @@ class CupTieResolver
                 'away_score_et' => $awayScoreEt,
                 'home_possession' => $extraTimeResult->homePossession,
                 'away_possession' => $extraTimeResult->awayPossession,
+                'et_first_half_stoppage' => $etStoppage['et_first_half'],
+                'et_second_half_stoppage' => $etStoppage['et_second_half'],
             ]);
 
             // Persist ET events so scorer lists stay consistent with the
@@ -273,5 +292,6 @@ class CupTieResolver
             'resolution' => $resolution,
         ]);
     }
+
 
 }

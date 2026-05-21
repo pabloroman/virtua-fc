@@ -8,6 +8,7 @@ use App\Models\TeamReputation;
 use App\Modules\Lineup\Services\LineupService;
 use App\Modules\Match\DTOs\MatchEventData;
 use App\Modules\Match\DTOs\TacticalConfig;
+use App\Modules\Match\Support\StoppageCalculator;
 use App\Modules\Notification\Services\NotificationService;
 use Illuminate\Support\Collection;
 
@@ -26,6 +27,7 @@ class FullMatchSimulationService
         private readonly LineupService $lineupService,
         private readonly NotificationService $notificationService,
         private readonly AIMatchResolver $aiMatchResolver = new AIMatchResolver,
+        private readonly StoppageCalculator $stoppageCalculator = new StoppageCalculator,
     ) {}
 
     /**
@@ -191,6 +193,16 @@ class FullMatchSimulationService
 
         $result = $output->result;
         $performances = $output->performances;
+
+        // Derive regulation stoppage from the actual event mix and persist
+        // it BEFORE the event-insert step (MatchResultProcessor reads these
+        // columns to decompose raw minutes into phase tuples). Idempotent
+        // for partial resims: re-persisting the same numbers is harmless.
+        $stoppage = $this->stoppageCalculator->calculateRegulation($result->events);
+        $match->update([
+            'first_half_stoppage' => $stoppage['first_half'],
+            'second_half_stoppage' => $stoppage['second_half'],
+        ]);
         $mvpPlayerId = MvpCalculator::calculate(
             $performances,
             $homePlayers,

@@ -28,6 +28,12 @@ class GameMatchFactory extends Factory
             'away_score' => null,
             'played' => false,
             'cup_tie_id' => null,
+            // Default stoppage matches the historical "regulation ends at 93"
+            // behavior, so test fixtures that create MatchEvent rows at
+            // minute 91-93 decompose into SECOND_HALF_STOPPAGE rather than
+            // accidentally landing in ET phases.
+            'first_half_stoppage' => 0,
+            'second_half_stoppage' => 3,
         ];
     }
 

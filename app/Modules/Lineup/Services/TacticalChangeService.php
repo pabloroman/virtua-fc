@@ -8,6 +8,8 @@ use App\Models\GamePlayer;
 use App\Models\GamePlayerMatchState;
 use App\Models\MatchEvent;
 use App\Modules\Lineup\Enums\Formation;
+use App\Modules\Match\Support\MinuteCoordinates;
+use App\Modules\Match\Support\StoppageDurations;
 use Illuminate\Support\Str;
 use App\Modules\Match\Services\ExtraTimeAndPenaltyService;
 use App\Modules\Match\Services\MatchResimulationService;
@@ -193,16 +195,20 @@ class TacticalChangeService
             ->all();
 
         if ($autoSubUserTeam) {
+            // Snapshot of all user-team subs persisted as events. Convert each
+            // event's phase tuple back to raw absolute minute so the stored
+            // substitutions JSON stays in the simulator's internal coord
+            // (matches what MatchEventData emits during a fresh simulation).
             $userSubs = MatchEvent::where('game_match_id', $match->id)
                 ->where('event_type', MatchEvent::TYPE_SUBSTITUTION)
                 ->where('team_id', $game->team_id)
-                ->orderBy('minute')
+                ->orderedChronologically()
                 ->get()
                 ->map(fn ($e) => [
                     'team_id' => $game->team_id,
                     'player_out_id' => $e->game_player_id,
                     'player_in_id' => $e->metadata['player_in_id'] ?? null,
-                    'minute' => $e->minute,
+                    'minute' => $e->absoluteMinute(),
                 ])
                 ->filter(fn ($s) => $s['player_in_id'] !== null)
                 ->values()
@@ -218,9 +224,14 @@ class TacticalChangeService
 
         $match->update(['substitutions' => array_merge($opponentSubs, $userSubs)]);
 
-        // Record new substitution events and appearances
+        // Record new substitution events and appearances. Decompose the raw
+        // clock minute into (phase, base minute, stoppage_minute) using the
+        // match's persisted stoppage durations — same form the simulator
+        // writes via MatchEventRepository.
         $substitutionDetails = [];
         if (! empty($newSubstitutions)) {
+            $coords = MinuteCoordinates::decomposeWith($minute, StoppageDurations::fromMatch($match));
+
             $playerIds = [];
             $eventRows = [];
 
@@ -231,7 +242,9 @@ class TacticalChangeService
                     'game_match_id' => $match->id,
                     'game_player_id' => $sub['playerOutId'],
                     'team_id' => $game->team_id,
-                    'minute' => $minute,
+                    'minute' => $coords['minute'],
+                    'phase' => $coords['phase']->value,
+                    'stoppage_minute' => $coords['stoppage_minute'],
                     'event_type' => MatchEvent::TYPE_SUBSTITUTION,
                     'metadata' => json_encode(['player_in_id' => $sub['playerInId']]),
                 ];

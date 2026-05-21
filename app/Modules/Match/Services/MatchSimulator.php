@@ -26,6 +26,31 @@ class MatchSimulator
     /** Upper bound for Dixon-Coles probability table (above config max_goals_cap for tail coverage). */
     private const DIXON_COLES_MAX_GOALS = 8;
 
+    /**
+     * Raw absolute upper bound for regulation event generation. The actual
+     * `second_half_stoppage` value (1-12 min) is computed *from* the events
+     * the simulator emits — see StoppageCalculator. Generating in [1, 95]
+     * means ~5% of events naturally fall in stoppage minutes (around 90-95),
+     * which the calculator then accommodates by ensuring shs ≥ event overflow.
+     */
+    public const REGULATION_UPPER_BOUND = 95;
+
+    /**
+     * Raw absolute upper bound for ET event generation, relative to start of
+     * ET (which itself starts at regulation_end + 1). The simulator's caller
+     * adds the persisted regulation stoppage to compute the absolute toMinute.
+     */
+    public const EXTRA_TIME_NOMINAL_END = 120;
+
+    /**
+     * Headroom past EXTRA_TIME_NOMINAL_END for ET stoppage event generation.
+     * MUST be ≤ `config('match_simulation.stoppage.et_max_minutes')` so the
+     * computed etshs can always accommodate any generated stoppage events
+     * (the calculator clamps to et_max_minutes, so events past that minute
+     * would orphan into a phase they don't belong to).
+     */
+    public const EXTRA_TIME_HEADROOM = 4;
+
     private const FACTORIALS = [1, 1, 2, 6, 24, 120, 720, 5040, 40320]; // 0! through 8!
 
     public function __construct(
@@ -154,6 +179,12 @@ class MatchSimulator
         ?array $homePlayerSlots = null,
         ?array $awayPlayerSlots = null,
     ): MatchSimulationOutput {
+        // Fixed upper bound for event generation — actual stoppage is derived
+        // from the event mix *after* simulation by StoppageCalculator. Picking
+        // 95 (5 min over nominal 90) lets a few events naturally land in
+        // second-half stoppage; the caller's StoppageCalculator computes the
+        // real stoppage_minute value to use for display + decomposition.
+        $regulationEnd = self::REGULATION_UPPER_BOUND;
         $this->homePlayerSlotMap = $homePlayerSlots ?? [];
         $this->awayPlayerSlotMap = $awayPlayerSlots ?? [];
 
@@ -183,6 +214,7 @@ class MatchSimulator
                 $homeBenchPlayers, $awayBenchPlayers,
                 $matchSeed,
                 $userTeamId,
+                $regulationEnd,
             );
         }
 
@@ -203,6 +235,7 @@ class MatchSimulator
             awayBenchPlayers: $awayBenchPlayers,
             matchSeed: $matchSeed,
             neutralVenue: $neutralVenue,
+            toMinute: $regulationEnd,
             userTeamId: $userTeamId,
         );
     }
@@ -234,6 +267,7 @@ class MatchSimulator
         ?Collection $awayBenchPlayers,
         string $matchSeed,
         ?string $userTeamId = null,
+        int $regulationEnd = 93,
     ): MatchSimulationOutput {
         $homeFormation = $homeFormation ?? Formation::F_4_4_2;
         $awayFormation = $awayFormation ?? Formation::F_4_4_2;
@@ -420,7 +454,7 @@ class MatchSimulator
             $currentMinute = $splitMinute;
         }
 
-        // Simulate final period [lastSplitMinute, 93]
+        // Simulate final period [lastSplitMinute, regulationEnd]
         $finalOutput = $this->simulateRemainder(
             $homeTeam, $awayTeam,
             $homePlayers, $awayPlayers,
@@ -444,6 +478,7 @@ class MatchSimulator
             homeExistingSubstitutions: $homeSubsUsed,
             awayExistingSubstitutions: $awaySubsUsed,
             preservePerformance: true,
+            toMinute: $regulationEnd,
             skipXGAdjustment: true,
             userTeamId: $userTeamId,
         );
@@ -738,6 +773,7 @@ class MatchSimulator
         ?array $homePlayerSlots = null,
         ?array $awayPlayerSlots = null,
         bool $preservePerformance = false,
+        int $toMinute = 95,
     ): MatchSimulationOutput {
         if ($homePlayerSlots !== null) {
             $this->homePlayerSlotMap = $homePlayerSlots;
@@ -809,6 +845,7 @@ class MatchSimulator
                 matchSeed: $matchSeed,
                 homeExistingSubstitutions: $homeExistingSubstitutions,
                 awayExistingSubstitutions: $awayExistingSubstitutions,
+                toMinute: $toMinute,
                 userTeamId: $userTeamId,
             );
         }
@@ -950,6 +987,7 @@ class MatchSimulator
             homeExistingSubstitutions: $homeSubsUsed,
             awayExistingSubstitutions: $awaySubsUsed,
             preservePerformance: true,
+            toMinute: $toMinute,
             skipXGAdjustment: true,
             userTeamId: $userTeamId,
         );
@@ -1914,7 +1952,7 @@ class MatchSimulator
         int $awayExistingSubstitutions = 0,
         bool $neutralVenue = false,
         bool $preservePerformance = false,
-        int $toMinute = 93,
+        int $toMinute = 95,
         bool $skipXGAdjustment = false,
         ?array $homePlayerSlots = null,
         ?array $awayPlayerSlots = null,
@@ -2223,7 +2261,7 @@ class MatchSimulator
         ?MatchEventData $homeRedCard,
         ?MatchEventData $awayRedCard,
         bool $neutralVenue = false,
-        int $toMinute = 93,
+        int $toMinute = 95,
         ?Carbon $currentDate = null,
     ): array {
         $splitMinute = min(
@@ -2758,7 +2796,7 @@ class MatchSimulator
         Collection $awayPlayers,
         array $homeEntryMinutes = [],
         array $awayEntryMinutes = [],
-        int $fromMinute = 90,
+        ?int $fromMinute = null,
         ?Formation $homeFormation = null,
         ?Formation $awayFormation = null,
         ?Mentality $homeMentality = null,
@@ -2772,7 +2810,16 @@ class MatchSimulator
         bool $neutralVenue = false,
         ?array $homePlayerSlots = null,
         ?array $awayPlayerSlots = null,
+        int $regulationStoppage = 0,
     ): MatchResult {
+        // ET begins right after regulation finishes. Caller passes the
+        // *persisted* regulation stoppage so events generated here don't
+        // collide with regulation-stoppage events that occupy those raw
+        // minutes. Actual ET stoppage is computed from event mix after
+        // simulation by StoppageCalculator::calculateExtraTime.
+        $regulationEnd = 90 + $regulationStoppage;
+        $extraTimeEnd = self::EXTRA_TIME_NOMINAL_END + $regulationStoppage + self::EXTRA_TIME_HEADROOM;
+        $fromMinute ??= $regulationEnd;
         if ($homePlayerSlots !== null) {
             $this->homePlayerSlotMap = $homePlayerSlots;
         }
@@ -2796,8 +2843,10 @@ class MatchSimulator
         $homeTacticalDrain = $homePlayingStyle->energyDrainMultiplier() * $homePressing->energyDrainMultiplier();
         $awayTacticalDrain = $awayPlayingStyle->energyDrainMultiplier() * $awayPressing->energyDrainMultiplier();
 
-        // Scale ET fraction based on remaining minutes (full ET = 30/90, partial if re-simulating)
-        $etMinutesRemaining = max(0, 120 - $fromMinute);
+        // Scale ET fraction based on remaining minutes (full ET = 30/90, partial if re-simulating).
+        // ET duration is 30 minutes + sampled stoppage; the simulator works in
+        // a continuous absolute clock, so $extraTimeEnd may exceed 120.
+        $etMinutesRemaining = max(0, $extraTimeEnd - $fromMinute);
         $etFraction = $etMinutesRemaining / 90.0;
 
         // Derive current date for age calculations (all players share the same game)
@@ -2857,9 +2906,13 @@ class MatchSimulator
             $awayScore = 0;
         }
 
-        // Generate goal events in range [fromMinute+1, 120]
+        // Generate goal events in range [fromMinute+1, extraTimeEnd].
+        // extraTimeEnd = 120 + regulation stoppage + ET headroom, so events
+        // can land anywhere from the start of ET first half through ET
+        // second-half stoppage. Actual ET stoppage minutes are derived
+        // from the event mix after simulation by StoppageCalculator.
         $minMinute = $fromMinute + 1;
-        $maxMinute = 120;
+        $maxMinute = $extraTimeEnd;
 
         if ($homePlayers->isNotEmpty() && $awayPlayers->isNotEmpty()) {
             $homeGoalEvents = $this->generateGoalEventsInRange(

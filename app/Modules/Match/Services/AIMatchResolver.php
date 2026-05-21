@@ -6,6 +6,7 @@ use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\Game;
 use App\Modules\Match\DTOs\MatchEventData;
+use App\Modules\Match\Support\StoppageCalculator;
 use Illuminate\Support\Collection;
 
 /**
@@ -25,6 +26,10 @@ use Illuminate\Support\Collection;
  */
 class AIMatchResolver
 {
+    public function __construct(
+        private readonly StoppageCalculator $stoppageCalculator = new StoppageCalculator,
+    ) {}
+
     private const DIXON_COLES_MAX_GOALS = 8;
 
     private const FACTORIALS = [1, 1, 2, 6, 24, 120, 720, 5040, 40320];
@@ -149,6 +154,13 @@ class AIMatchResolver
             $homeScore, $awayScore,
             $game,
         );
+
+        // Derive regulation stoppage from the generated event mix and persist
+        // it BEFORE MatchResultProcessor runs decomposition on these events.
+        $stoppage = $this->stoppageCalculator->calculateRegulation($events);
+        $match->first_half_stoppage = $stoppage['first_half'];
+        $match->second_half_stoppage = $stoppage['second_half'];
+        $match->save();
 
         // Calculate possession (simplified)
         $strengthRatio = $awayStrength > 0 ? $homeStrength / $awayStrength : 1.0;
@@ -395,7 +407,9 @@ class AIMatchResolver
         $goalCounts = [];
 
         for ($i = 0; $i < $goals; $i++) {
-            $minute = mt_rand(1, 90);
+            // Extend slightly past 90 so AI matches can have stoppage-time
+            // goals — StoppageCalculator clamps the persisted stoppage to fit.
+            $minute = mt_rand(1, 95);
 
             // Own goal check (scored by opponent defender)
             if (mt_rand(1, 1000) <= $ownGoalChance * 10) {
