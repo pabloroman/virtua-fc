@@ -18,7 +18,7 @@ use Illuminate\Support\Collection;
 class OpponentAnalysisBuilder
 {
     /**
-     * Build the secondary derivations on top of LineupService::predictOpponentTactics().
+     * Build the secondary derivations on top of AITacticsService::predictOpponentTactics().
      *
      * @return array{
      *     pitchSlots: list<array{slot: array, player: ?object}>,

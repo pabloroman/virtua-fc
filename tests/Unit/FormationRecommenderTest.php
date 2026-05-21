@@ -435,7 +435,7 @@ class FormationRecommenderTest extends TestCase
     public function test_getBestFormation_still_returns_a_formation_enum(): void
     {
         // Sanity: the legacy public method must keep working for its current
-        // call sites (LineupService::selectAIFormation).
+        // call sites (AITacticsService::selectAIFormation).
         $players = collect([
             $this->player('gk', 'Goalkeeper'),
             $this->player('lb', 'Left-Back'),

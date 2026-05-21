@@ -2,19 +2,13 @@
 
 namespace App\Modules\Lineup\Services;
 
-use App\Modules\Lineup\Enums\DefensiveLineHeight;
 use App\Modules\Lineup\Enums\Formation;
-use App\Modules\Lineup\Enums\Mentality;
-use App\Modules\Lineup\Enums\PlayingStyle;
-use App\Modules\Lineup\Enums\PressingIntensity;
-use App\Models\ClubProfile;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\PlayerSuspension;
-use App\Models\TeamReputation;
-use App\Modules\Competition\Services\CalendarService;
 use App\Support\PositionMapper;
+use App\Support\PositionSlotMapper;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
@@ -22,8 +16,7 @@ class LineupService
 {
     public function __construct(
         private readonly FormationRecommender $formationRecommender,
-        private readonly CalendarService $calendarService,
-        private readonly FormationBiasResolver $formationBiasResolver,
+        private readonly AITacticsService $aiTactics,
     ) {}
 
     /**
@@ -277,212 +270,6 @@ class LineupService
     }
 
     /**
-     * Select the best formation for an AI team based on squad composition.
-     * Uses FormationRecommender to evaluate all formations and pick the best fit.
-     *
-     * When $gameId/$teamId are supplied, the recommender is biased toward the
-     * team's curated identity (preferred_formation on ClubProfile, with a
-     * reputation-tier fallback). Without those, the recommendation is purely
-     * mechanical — used for the bare-collection use cases (e.g. one-off
-     * squad analysis where no game/team context is available).
-     */
-    public function selectAIFormation(
-        Collection $availablePlayers,
-        ?string $gameId = null,
-        ?string $teamId = null,
-    ): Formation {
-        if ($availablePlayers->count() < 11) {
-            return Formation::F_4_3_3;
-        }
-
-        $bias = ($gameId && $teamId)
-            ? $this->formationBiasResolver->resolveForTeam($gameId, $teamId)
-            : [];
-
-        return $this->formationRecommender->getBestFormation($availablePlayers, $bias);
-    }
-
-    /**
-     * Select mentality for an AI team based on reputation, venue, and relative strength.
-     *
-     * `$aggressionBias` (-2..+2) shifts the deterministic baseline up or down
-     * the DEFENSIVE / BALANCED / ATTACKING ladder so curated club identity
-     * (Cholo's Atleti at -2, Gasperini's Atalanta at +2) reads through. Same
-     * inputs always produce the same output — the function stays deterministic.
-     */
-    public function selectAIMentality(
-        ?string $reputationLevel,
-        bool $isHome,
-        float $teamAvg,
-        float $opponentAvg,
-        int $aggressionBias = 0,
-    ): Mentality {
-        if ($reputationLevel === null || $opponentAvg <= 0) {
-            return Mentality::BALANCED;
-        }
-
-        $base = $this->baseAIMentality($reputationLevel, $isHome, $teamAvg, $opponentAvg);
-
-        return $this->shiftLadder(
-            [Mentality::DEFENSIVE, Mentality::BALANCED, Mentality::ATTACKING],
-            $base,
-            $aggressionBias,
-        );
-    }
-
-    /**
-     * Deterministic mentality from the venue/strength/tier inputs alone,
-     * without identity bias. Kept as a private helper so the public method
-     * can apply the bias as a clean ladder shift on top.
-     */
-    private function baseAIMentality(string $reputationLevel, bool $isHome, float $teamAvg, float $opponentAvg): Mentality
-    {
-        $diff = $teamAvg - $opponentAvg;
-        $isStronger = $diff >= 5;
-        $isWeaker = $diff <= -5;
-
-        // Group reputations into tactical tiers
-        $tier = match ($reputationLevel) {
-            'elite' => 'bold',
-            'continental', 'established' => 'mid',
-            default => 'cautious', // modest, local
-        };
-
-        if ($isHome) {
-            if ($isStronger) {
-                return $tier === 'cautious' ? Mentality::BALANCED : Mentality::ATTACKING;
-            }
-            if ($isWeaker) {
-                return $tier === 'bold' ? Mentality::BALANCED : Mentality::DEFENSIVE;
-            }
-            // Similar strength at home
-            return Mentality::BALANCED;
-        }
-
-        // Away
-        if ($isStronger) {
-            return $tier === 'cautious' ? Mentality::DEFENSIVE : Mentality::BALANCED;
-        }
-        if ($isWeaker) {
-            return Mentality::DEFENSIVE;
-        }
-        // Similar strength away
-        return $tier === 'bold' ? Mentality::BALANCED : Mentality::DEFENSIVE;
-    }
-
-    /**
-     * Shift `$base` along the supplied ordered ladder by `$bias` positions,
-     * clamped to the ladder bounds. Used to apply the curated tactical-
-     * aggression bias to mentality, pressing, defensive line, and playing
-     * style outputs without re-implementing the base decision tree.
-     *
-     * @template T
-     * @param  list<T>  $ladder  Ordered defensive→attacking enum cases.
-     * @param  T  $base
-     * @return T
-     */
-    private function shiftLadder(array $ladder, $base, int $bias)
-    {
-        if ($bias === 0) {
-            return $base;
-        }
-        $i = array_search($base, $ladder, true);
-        if ($i === false) {
-            return $base;
-        }
-        $shifted = max(0, min(count($ladder) - 1, $i + $bias));
-        return $ladder[$shifted];
-    }
-
-    /**
-     * Select tactical instructions for an AI team based on context.
-     *
-     * `$aggressionBias` (-2..+2) ladder-shifts each output toward more
-     * possession / higher press / higher line for positive values, and
-     * toward counter-attack / low block / deep line for negative values.
-     *
-     * @return array{PlayingStyle, PressingIntensity, DefensiveLineHeight}
-     */
-    public function selectAIInstructions(
-        ?string $reputationLevel,
-        bool $isHome,
-        float $teamAvg,
-        float $opponentAvg,
-        int $aggressionBias = 0,
-    ): array {
-        $diff = $teamAvg - $opponentAvg;
-        $isStronger = $diff >= 5;
-        $isWeaker = $diff <= -5;
-
-        $tier = match ($reputationLevel) {
-            'elite' => 'bold',
-            'continental', 'established' => 'mid',
-            default => 'cautious',
-        };
-
-        // Playing Style
-        if ($isStronger && $isHome) {
-            $style = $tier === 'cautious' ? PlayingStyle::BALANCED : PlayingStyle::POSSESSION;
-        } elseif ($isWeaker && ! $isHome) {
-            $style = PlayingStyle::COUNTER_ATTACK;
-        } elseif ($isWeaker) {
-            $style = PlayingStyle::COUNTER_ATTACK;
-        } else {
-            $style = $tier === 'bold' ? PlayingStyle::POSSESSION : PlayingStyle::BALANCED;
-        }
-
-        // Pressing Intensity
-        if ($isStronger && $tier === 'bold') {
-            $pressing = PressingIntensity::HIGH_PRESS;
-        } elseif ($isWeaker && ! $isHome) {
-            $pressing = PressingIntensity::LOW_BLOCK;
-        } elseif ($isWeaker) {
-            $pressing = $tier === 'bold' ? PressingIntensity::STANDARD : PressingIntensity::LOW_BLOCK;
-        } else {
-            $pressing = PressingIntensity::STANDARD;
-        }
-
-        // Defensive Line
-        if ($isStronger && $tier === 'bold') {
-            $defLine = $isHome ? DefensiveLineHeight::HIGH_LINE : DefensiveLineHeight::NORMAL;
-        } elseif ($isWeaker) {
-            $defLine = DefensiveLineHeight::DEEP;
-        } else {
-            $defLine = DefensiveLineHeight::NORMAL;
-        }
-
-        $style = $this->shiftLadder(
-            [PlayingStyle::COUNTER_ATTACK, PlayingStyle::BALANCED, PlayingStyle::POSSESSION],
-            $style,
-            $aggressionBias,
-        );
-        $pressing = $this->shiftLadder(
-            [PressingIntensity::LOW_BLOCK, PressingIntensity::STANDARD, PressingIntensity::HIGH_PRESS],
-            $pressing,
-            $aggressionBias,
-        );
-        $defLine = $this->shiftLadder(
-            [DefensiveLineHeight::DEEP, DefensiveLineHeight::NORMAL, DefensiveLineHeight::HIGH_LINE],
-            $defLine,
-            $aggressionBias,
-        );
-
-        return [$style, $pressing, $defLine];
-    }
-
-    /**
-     * Calculate the average overall score for a collection of players.
-     */
-    public function calculateTeamAverage(Collection $players): int
-    {
-        if ($players->isEmpty()) {
-            return 0;
-        }
-
-        return (int) round($players->avg('overall_score'));
-    }
-
-    /**
      * Get the best XI and their average rating for a team.
      * Convenience method combining selectBestXI and calculateTeamAverage.
      *
@@ -501,7 +288,7 @@ class LineupService
 
         return [
             'players' => $bestXI,
-            'average' => $this->calculateTeamAverage($bestXI),
+            'average' => $this->aiTactics->calculateTeamAverage($bestXI),
         ];
     }
 
@@ -950,6 +737,13 @@ class LineupService
             $availablePlayers = $this->getAvailablePlayers($game->id, $teamId, $matchDate, $competitionId, $requireEnrollment);
         }
 
+        // When the preference-driven path produces slot assignments alongside
+        // the lineup, we persist them directly and skip the post-hoc
+        // computeSlotAssignments fallback below — keeps lineup composition
+        // and slot mapping in lockstep, which is what the fast-mode bug
+        // (GK at LB, CF at CB) hinged on losing.
+        $preComputedSlotAssignments = null;
+
         if ($isPlayerTeam && !empty($playerPreferredLineup)) {
             // Select lineup with preferences using pre-loaded data. Applies
             // fitness rotation so tired preferred starters get swapped for
@@ -959,7 +753,7 @@ class LineupService
             $allTeamPlayers = $allPlayersGrouped !== null
                 ? $allPlayersGrouped->get($teamId, collect())
                 : GamePlayer::with(['matchState'])->where('game_id', $game->id)->where('team_id', $teamId)->get();
-            $lineup = $this->selectLineupWithPreferencesFromCollection(
+            $preferenceResult = $this->selectLineupWithPreferencesFromCollection(
                 $availablePlayers,
                 $allTeamPlayers,
                 $playerFormation,
@@ -967,6 +761,8 @@ class LineupService
                 $availableIds,
                 applyFitnessRotation: true,
             );
+            $lineup = $preferenceResult['lineup'];
+            $preComputedSlotAssignments = $preferenceResult['slot_assignments'];
         } elseif ($isPlayerTeam) {
             // Player team without preferred lineup — auto-select with fitness
             // rotation so automated matchday prep doesn't burn out the squad.
@@ -974,7 +770,7 @@ class LineupService
         } else {
             // AI team: use squad-fitted formation with fitness rotation,
             // biased toward the team's curated tactical identity.
-            $aiFormation = $this->selectAIFormation($availablePlayers, $game->id, $teamId);
+            $aiFormation = $this->aiTactics->selectAIFormation($availablePlayers, $game->id, $teamId);
             $aiSelectedXI = $this->selectBestXI($availablePlayers, $aiFormation, applyFitnessRotation: true);
             $lineup = $aiSelectedXI->pluck('id')->toArray();
         }
@@ -1005,23 +801,23 @@ class LineupService
             $match->{$prefix . '_defensive_line'} = $playerDefLine;
         } else {
             // AI team: set formation, reputation-driven mentality, and AI instructions
-            $aiFormation = $aiFormation ?? $this->selectAIFormation($availablePlayers, $game->id, $teamId);
+            $aiFormation = $aiFormation ?? $this->aiTactics->selectAIFormation($availablePlayers, $game->id, $teamId);
             $isHome = $prefix === 'home' && ! $match->isNeutralVenue();
             $opponentTeamId = $prefix === 'home' ? $match->away_team_id : $match->home_team_id;
 
             // Reuse already-selected lineup for team average (avoids redundant selectBestXI)
-            $teamAvg = $this->calculateTeamAverage($aiSelectedXI ?? $this->selectBestXI($availablePlayers, $aiFormation));
+            $teamAvg = $this->aiTactics->calculateTeamAverage($aiSelectedXI ?? $this->selectBestXI($availablePlayers, $aiFormation));
 
             $opponentPlayers = $allPlayersGrouped?->get($opponentTeamId, collect()) ?? collect();
             $opponentAvg = $opponentPlayers->isNotEmpty()
-                ? $this->calculateTeamAverage($this->selectBestXI($opponentPlayers))
+                ? $this->aiTactics->calculateTeamAverage($this->selectBestXI($opponentPlayers))
                 : 0;
 
             $clubProfile = $clubProfiles?->get($teamId);
             $reputationLevel = $clubProfile?->reputation_level;
             $aggressionBias = (int) ($clubProfile?->tactical_aggression ?? 0);
-            $aiMentality = $this->selectAIMentality($reputationLevel, $isHome, $teamAvg, $opponentAvg, $aggressionBias);
-            [$aiStyle, $aiPressing, $aiDefLine] = $this->selectAIInstructions($reputationLevel, $isHome, $teamAvg, $opponentAvg, $aggressionBias);
+            $aiMentality = $this->aiTactics->selectAIMentality($reputationLevel, $isHome, $teamAvg, $opponentAvg, $aggressionBias);
+            [$aiStyle, $aiPressing, $aiDefLine] = $this->aiTactics->selectAIInstructions($reputationLevel, $isHome, $teamAvg, $opponentAvg, $aggressionBias);
 
             $match->{$prefix . '_formation'} = $aiFormation->value;
             $match->{$prefix . '_mentality'} = $aiMentality->value;
@@ -1032,10 +828,13 @@ class LineupService
         }
 
         // Compute and persist the slot map so the frontend never has to
-        // re-derive it. We already have the team's GamePlayer records loaded
-        // as $availablePlayers, so we filter down to the chosen 11 in memory
-        // instead of hitting the DB again.
-        if ($activeFormation !== null && ! empty($lineup)) {
+        // re-derive it. The preference-driven path already produced the map
+        // via FormationRecommender pins — use it as-is. Otherwise we filter
+        // the team's GamePlayer records down to the chosen 11 in memory and
+        // run the recommender once.
+        if ($preComputedSlotAssignments !== null) {
+            $match->{$prefix . '_slot_assignments'} = $preComputedSlotAssignments;
+        } elseif ($activeFormation !== null && ! empty($lineup)) {
             $lineupPlayers = $availablePlayers->filter(fn ($p) => in_array($p->id, $lineup, true))->values();
             if ($lineupPlayers->isNotEmpty()) {
                 $slotAssignments = $this->computeSlotAssignments($activeFormation, $lineupPlayers);
@@ -1047,14 +846,26 @@ class LineupService
     /**
      * Select lineup using preferred players from a pre-loaded collection (no DB queries).
      *
-     * When $applyFitnessRotation is true, tired preferred starters are treated
-     * like unavailable players and swapped for rested same-position subs where
-     * possible. If the entire position group is tired, the preferred tired
-     * player is kept rather than forcing an out-of-position replacement —
-     * a tired specialist outperforms a rested player in the wrong role.
+     * Treats the preferred lineup as manual pins for FormationRecommender:
+     * each available preferred starter is pinned to an unclaimed slot whose
+     * label matches their primary (or, if taken, secondary) position. The
+     * recommender then fills the remaining slots via its multi-pass
+     * algorithm (primary → secondary → swap → weighted → force), so any
+     * slot the preferences can't cover gets a natural-fit substitute
+     * rather than the highest-OVR-from-any-position fallback that used to
+     * land goalkeepers at fullback during fast-mode runs.
+     *
+     * When $applyFitnessRotation is true, tired preferred starters are
+     * dropped from the pin set whenever a rested compat-100 sub exists for
+     * their slot — letting Pass 1 pick up the rested specialist. If no
+     * such sub exists, the tired starter is still pinned (a tired
+     * specialist beats a fresh out-of-position fill-in). Score adjustment
+     * via effectiveScore further biases the recommender toward rested
+     * players in unpinned slots.
      *
      * @param Collection $availablePlayers Players available for selection (not injured/suspended)
      * @param Collection $allTeamPlayers All team players (including unavailable) for position lookups
+     * @return array{lineup: array<int, string>, slot_assignments: array<int|string, string>}
      */
     private function selectLineupWithPreferencesFromCollection(
         Collection $availablePlayers,
@@ -1066,182 +877,145 @@ class LineupService
     ): array {
         $formation = $formation ?? Formation::F_4_3_3;
 
-        // Separate preferred players into available and unavailable
-        $availablePreferred = [];
-        // Each replacement slot is [positionGroup, fallbackId|null]. The fallback
-        // is the preferred player kept in reserve for the tired-but-no-sub case;
-        // it is null when the preferred player is injured/suspended (no fallback
-        // is viable in that case).
-        $replacementSlots = [];
+        $formationSlots = $formation->pitchSlots();
+        $slotIdToLabel = [];
+        foreach ($formationSlots as $slot) {
+            $slotIdToLabel[$slot['id']] = $slot['label'];
+        }
 
-        // Use all team players for lookups so we can find position groups of unavailable players
         $allPlayersById = $allTeamPlayers->keyBy('id');
 
+        // Build manual pins from the preferred lineup. Injured/suspended
+        // players are dropped (no pin); tired starters with a viable rested
+        // compat-100 alternative are also dropped so the recommender's Pass 1
+        // can pick the rested specialist.
+        $manualPins = [];
+        $usedSlotIds = [];
+
         foreach ($preferredLineup as $playerId) {
-            if (!in_array($playerId, $availableIds)) {
-                // Injured/suspended — must be replaced, no fallback available.
-                $player = $allPlayersById->get($playerId);
-                if ($player) {
-                    $replacementSlots[] = [$player->position_group, null];
-                }
+            if (! in_array($playerId, $availableIds, true)) {
                 continue;
             }
 
             $player = $allPlayersById->get($playerId);
-            if ($applyFitnessRotation && $player && $this->isTired($player)) {
-                // Tired — try to find a rested same-group sub, keep as fallback.
-                $replacementSlots[] = [$player->position_group, $playerId];
+            if ($player === null) {
                 continue;
             }
 
-            $availablePreferred[] = $playerId;
-        }
+            $chosenSlotId = $this->findNaturalSlotForPreferredPlayer($player, $formationSlots, $usedSlotIds);
 
-        // If all preferred players are available and fresh, use them as-is.
-        if (count($availablePreferred) === 11) {
-            return $availablePreferred;
-        }
-
-        // Start with available preferred players
-        $lineup = $availablePreferred;
-
-        // Group remaining available players by position
-        $remainingAvailable = $availablePlayers->filter(fn ($p) => !in_array($p->id, $lineup));
-        $grouped = $remainingAvailable->groupBy(fn ($p) => $p->position_group);
-
-        // Sort helper — when rotating, rank by fitness-adjusted effective score
-        // so rested high-raters float to the top of the fallback lists.
-        $rankScore = $applyFitnessRotation
-            ? fn ($p) => $this->effectiveScore($p)
-            : fn ($p) => $p->overall_score;
-
-        // Fill replacement slots: prefer a rested same-position sub; fall back
-        // to the tired preferred player if no rested sub exists in that group.
-        foreach ($replacementSlots as [$positionGroup, $fallbackId]) {
-            if (count($lineup) >= 11) {
-                break;
+            if ($chosenSlotId === null) {
+                // No natural-fit slot left for this preferred player. Skip
+                // the pin; the recommender's later passes may still place
+                // them via weighted/force in a slot that genuinely needs
+                // filling.
+                continue;
             }
 
-            $groupCandidates = ($grouped->get($positionGroup) ?? collect())
-                ->filter(fn ($p) => !in_array($p->id, $lineup));
+            // Tired-starter rotation: skip pinning when a rested compat-100
+            // sub exists for the slot. Without a compat-100 alternative we
+            // keep the tired specialist — a fresh out-of-position fill-in
+            // is worse.
+            if ($applyFitnessRotation && $this->isTired($player)) {
+                $slotLabel = $slotIdToLabel[$chosenSlotId];
+                $restedSubExists = $availablePlayers->contains(function ($candidate) use ($player, $slotLabel) {
+                    if ($candidate->id === $player->id || $this->isTired($candidate)) {
+                        return false;
+                    }
+                    return PositionSlotMapper::getPlayerCompatibilityScore(
+                        $candidate->position,
+                        $candidate->secondary_positions,
+                        $slotLabel,
+                    ) === 100;
+                });
 
-            if ($applyFitnessRotation) {
-                // Prefer rested players in the same position group.
-                $rested = $groupCandidates->filter(fn ($p) => !$this->isTired($p))->sortByDesc($rankScore);
-                $replacement = $rested->first();
-
-                // No rested same-group sub: keep the tired preferred starter
-                // rather than pulling an out-of-position player in.
-                if (!$replacement && $fallbackId !== null && !in_array($fallbackId, $lineup)) {
-                    $lineup[] = $fallbackId;
+                if ($restedSubExists) {
                     continue;
                 }
-            } else {
-                $replacement = $groupCandidates->sortByDesc($rankScore)->first();
             }
 
-            if ($replacement) {
-                $lineup[] = $replacement->id;
-            } elseif ($fallbackId !== null && !in_array($fallbackId, $lineup)) {
-                // Last-ditch: preserve the preferred player even without rotation
-                // when no same-group sub exists.
-                $lineup[] = $fallbackId;
-            }
+            $manualPins[$chosenSlotId] = $playerId;
+            $usedSlotIds[] = $chosenSlotId;
         }
 
-        // If still not 11, fill with best available from any position.
-        if (count($lineup) < 11) {
-            $remaining = $availablePlayers
-                ->filter(fn ($p) => !in_array($p->id, $lineup))
-                ->sortByDesc($rankScore);
+        // Apply fitness-adjusted ratings so the recommender's score-ranked
+        // passes weigh fresh players over tired ones in unpinned slots.
+        $pool = $availablePlayers;
+        if ($applyFitnessRotation) {
+            $pool = $availablePlayers->map(function ($p) {
+                $clone = clone $p;
+                $clone->overall_score = (int) round($this->effectiveScore($p));
 
-            foreach ($remaining as $player) {
-                if (count($lineup) >= 11) {
-                    break;
-                }
-                $lineup[] = $player->id;
-            }
+                return $clone;
+            });
         }
 
-        return $lineup;
+        $slotAssignments = $this->computeSlotAssignments($formation, $pool, $manualPins);
+
+        return [
+            'lineup' => array_values($slotAssignments),
+            'slot_assignments' => $slotAssignments,
+        ];
     }
 
     /**
-     * Predict opponent tactics for a match (formation, mentality, instructions).
+     * Find the most natural unclaimed formation slot for a preferred player.
      *
-     * Used by both the lineup page and the dashboard next-match card.
+     * Tier 1 — slot whose natural occupant (first compat=100 entry in
+     *          SLOT_COMPATIBILITY) IS this player's primary position.
+     *          Prevents e.g. a Left Winger getting pinned at LM when an
+     *          LW slot is open: both are compat 100 for Left Winger, but
+     *          LW's natural occupant is "Left Winger", LM's is "Left Midfield".
+     * Tier 2 — any other compat-100 slot for the player's primary (e.g.
+     *          a Left Winger at LM when the formation has no LW slot).
+     * Tier 3 — compat-100 slot via one of the player's secondary positions.
      *
-     * `bestXISlots` carries the full slot→player mapping produced by
-     * FormationRecommender so consumers (e.g. the Scout Opponent pitch) can
-     * render players in the formation slot the recommender actually placed
-     * them in — including secondary/swap/weighted placements where a
-     * player's position_group does not match the slot's role.
+     * Returns null when no slot at compat 100 is available — the caller
+     * then leaves the player unpinned and lets FormationRecommender's
+     * weighted/force passes decide.
      *
-     * @return array{teamAverage: int, avgFitness: int, form: array, formation: string, mentality: string, playingStyle: string, pressing: string, defensiveLine: string, bestXIPlayers: Collection, bestXISlots: array<array{slot: array, player: ?GamePlayer}>}
+     * @param  array<array{id: int, label: string, role: string, col: int, row: int}>  $formationSlots
+     * @param  array<int>  $usedSlotIds
      */
-    public function predictOpponentTactics(
-        string $gameId,
-        string $opponentTeamId,
-        Carbon $matchDate,
-        string $competitionId,
-        bool $opponentIsHome,
-        int $userTeamAverage,
-    ): array {
-        $availablePlayers = $this->getAvailablePlayers($gameId, $opponentTeamId, $matchDate, $competitionId);
+    private function findNaturalSlotForPreferredPlayer(
+        GamePlayer $player,
+        array $formationSlots,
+        array $usedSlotIds,
+    ): ?int {
+        $position = $player->position;
+        $secondaryPositions = $player->secondary_positions ?? [];
 
-        $predictedFormation = $this->selectAIFormation($availablePlayers, $gameId, $opponentTeamId);
-
-        // Run the recommender directly so we keep the slot→player mapping;
-        // selectBestXI drops it. We then derive the flat best-XI collection
-        // from the slot assignments to keep both views perfectly consistent.
-        $slotAssignments = $this->formationRecommender->bestXIFor($predictedFormation, $availablePlayers);
-        $playersById = $availablePlayers->keyBy('id');
-        $bestXISlots = [];
-        $bestXI = collect();
-        foreach ($slotAssignments as $assignment) {
-            $playerId = $assignment['player']['id'] ?? null;
-            $player = $playerId ? $playersById->get($playerId) : null;
-            $bestXISlots[] = ['slot' => $assignment['slot'], 'player' => $player];
-            if ($player) {
-                $bestXI->push($player);
+        foreach ($formationSlots as $slot) {
+            if (in_array($slot['id'], $usedSlotIds, true)) {
+                continue;
+            }
+            $slotPositions = PositionSlotMapper::SLOT_COMPATIBILITY[$slot['label']] ?? [];
+            if (array_key_first($slotPositions) === $position) {
+                return $slot['id'];
             }
         }
 
-        $teamAverage = $this->calculateTeamAverage($bestXI);
-        $avgFitness = (int) round($bestXI->avg('fitness') ?? 0);
+        foreach ($formationSlots as $slot) {
+            if (in_array($slot['id'], $usedSlotIds, true)) {
+                continue;
+            }
+            if (PositionSlotMapper::getCompatibilityScore($position, $slot['label']) === 100) {
+                return $slot['id'];
+            }
+        }
 
-        $opponentReputation = TeamReputation::resolveLevel($gameId, $opponentTeamId);
-        $aggressionBias = (int) (ClubProfile::where('team_id', $opponentTeamId)->value('tactical_aggression') ?? 0);
+        foreach ($formationSlots as $slot) {
+            if (in_array($slot['id'], $usedSlotIds, true)) {
+                continue;
+            }
+            foreach ($secondaryPositions as $secondary) {
+                if (PositionSlotMapper::getCompatibilityScore($secondary, $slot['label']) === 100) {
+                    return $slot['id'];
+                }
+            }
+        }
 
-        $predictedMentality = $this->selectAIMentality(
-            $opponentReputation,
-            $opponentIsHome,
-            $teamAverage,
-            $userTeamAverage,
-            $aggressionBias,
-        );
-
-        [$predictedStyle, $predictedPressing, $predictedDefLine] = $this->selectAIInstructions(
-            $opponentReputation,
-            $opponentIsHome,
-            $teamAverage,
-            $userTeamAverage,
-            $aggressionBias,
-        );
-
-        $form = $this->calendarService->getTeamForm($gameId, $opponentTeamId);
-
-        return [
-            'teamAverage' => $teamAverage,
-            'avgFitness' => $avgFitness,
-            'form' => $form,
-            'formation' => $predictedFormation->value,
-            'mentality' => $predictedMentality->value,
-            'playingStyle' => $predictedStyle->value,
-            'pressing' => $predictedPressing->value,
-            'defensiveLine' => $predictedDefLine->value,
-            'bestXIPlayers' => $bestXI,
-            'bestXISlots' => $bestXISlots,
-        ];
+        return null;
     }
+
 }

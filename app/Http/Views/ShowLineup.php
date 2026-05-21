@@ -7,6 +7,7 @@ use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Enums\Mentality;
 use App\Modules\Lineup\Enums\PlayingStyle;
 use App\Modules\Lineup\Enums\PressingIntensity;
+use App\Modules\Lineup\Services\AITacticsService;
 use App\Modules\Lineup\Services\LineupService;
 
 use App\Support\PitchGrid;
@@ -18,6 +19,7 @@ class ShowLineup
 {
     public function __construct(
         private readonly LineupService $lineupService,
+        private readonly AITacticsService $aiTactics,
     ) {}
 
     public function __invoke(string $gameId)
@@ -147,7 +149,14 @@ class ShowLineup
             ->getBestXIWithAverage($gameId, $game->team_id, $matchDate, $competitionId, requireEnrollment: $requireEnrollment)['average'];
 
         // Get opponent scouting data (including predicted formation, mentality, and instructions)
-        $opponentData = $this->lineupService->predictOpponentTactics($gameId, $opponent->id, $matchDate, $competitionId, $match->hasHomeAdvantage($opponent->id), $userTeamAverage);
+        $opponentAvailable = $this->lineupService->getAvailablePlayers($gameId, $opponent->id, $matchDate, $competitionId);
+        $opponentData = $this->aiTactics->predictOpponentTactics(
+            $opponentAvailable,
+            $gameId,
+            $opponent->id,
+            $match->hasHomeAdvantage($opponent->id),
+            $userTeamAverage,
+        );
 
         // Formation modifiers for coach assistant tips (attack/defense per formation)
         $formationModifiers = [];

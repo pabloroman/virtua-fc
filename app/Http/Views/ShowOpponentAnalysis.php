@@ -4,6 +4,7 @@ namespace App\Http\Views;
 
 use App\Models\GameStanding;
 use App\Modules\Competition\Services\CalendarService;
+use App\Modules\Lineup\Services\AITacticsService;
 use App\Modules\Lineup\Services\LineupService;
 use App\Modules\Lineup\Services\OpponentAnalysisBuilder;
 use App\Support\PreMatchContext;
@@ -16,6 +17,7 @@ class ShowOpponentAnalysis
         private readonly LineupService $lineupService,
         private readonly CalendarService $calendarService,
         private readonly OpponentAnalysisBuilder $analysisBuilder,
+        private readonly AITacticsService $aiTactics,
     ) {}
 
     public function __invoke(string $gameId, Request $request)
@@ -37,11 +39,11 @@ class ShowOpponentAnalysis
             requireEnrollment: $requireEnrollment,
         );
 
-        $opponentData = $this->lineupService->predictOpponentTactics(
+        $opponentAvailable = $this->lineupService->getAvailablePlayers($gameId, $opponent->id, $matchDate, $competitionId);
+        $opponentData = $this->aiTactics->predictOpponentTactics(
+            $opponentAvailable,
             $gameId,
             $opponent->id,
-            $matchDate,
-            $competitionId,
             $match->hasHomeAdvantage($opponent->id),
             $userBestXI['average'],
         );
