@@ -121,6 +121,10 @@ class SeasonTicketPricingService
     private array $currentCache = [];
     private array $defaultPricingCache = [];
 
+    public function __construct(
+        private readonly StadiumCapacityResolver $capacityResolver,
+    ) {}
+
     /**
      * Build the seating layout for a stadium of the given capacity.
      * Returns a list of areas with absolute capacity (proportions of the
@@ -177,7 +181,11 @@ class SeasonTicketPricingService
     {
         $reputation = TeamReputation::resolveLevel($game->id, $team->id);
         $homeRep = $this->resolveReputation($game->id, $team->id, $reputation);
-        $capacity = (int) ($team->stadium_seats ?? 0);
+        $capacity = $this->capacityResolver->effectiveCapacity(
+            $game->id,
+            $team->id,
+            (int) ($team->stadium_seats ?? 0),
+        );
 
         $areas = $this->buildAreas($capacity, $reputation);
 
@@ -198,7 +206,11 @@ class SeasonTicketPricingService
     {
         $reputation = TeamReputation::resolveLevel($game->id, $team->id);
         $homeRep = $this->resolveReputation($game->id, $team->id, $reputation);
-        $capacity = (int) ($team->stadium_seats ?? 0);
+        $capacity = $this->capacityResolver->effectiveCapacity(
+            $game->id,
+            $team->id,
+            (int) ($team->stadium_seats ?? 0),
+        );
 
         $areas = $this->buildAreas($capacity, $reputation);
 

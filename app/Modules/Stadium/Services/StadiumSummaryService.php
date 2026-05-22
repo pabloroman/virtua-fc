@@ -48,7 +48,6 @@ class StadiumSummaryService
         $direction = $loyaltyDelta > 5 ? 'rising' : ($loyaltyDelta < -5 ? 'declining' : 'stable');
 
         $lastHomeMatch = $this->resolveLastHomeMatch($game);
-        $seasonTickets = $this->resolveSeasonTickets($game);
 
         // Per-game stadium row captures upgrades (rebuild + supletorias).
         // Falls back to the control-plane baseline for saves that predate
@@ -59,6 +58,8 @@ class StadiumSummaryService
             ->first();
         $capacity = $stadium?->effective_capacity ?? (int) ($team->stadium_seats ?? 0);
         $uefaLevel = $stadium?->effective_uefa_level ?? $team->uefa_stadium_category;
+
+        $seasonTickets = $this->resolveSeasonTickets($game, $capacity);
 
         $finances = $game->currentFinances;
         $projectedMatchday = (int) ($finances?->projected_matchday_revenue ?? 0);
@@ -170,11 +171,10 @@ class StadiumSummaryService
      * layout (so the schematic always has something to render) and the
      * editable flag.
      */
-    private function resolveSeasonTickets(Game $game): array
+    private function resolveSeasonTickets(Game $game, int $capacity): array
     {
         $pricing = $this->seasonTicketPricingService->getCurrent($game);
         $reputation = TeamReputation::resolveLevel($game->id, $game->team_id);
-        $capacity = (int) ($game->team->stadium_seats ?? 0);
         $baselineAreas = $this->seasonTicketPricingService->buildAreas($capacity, $reputation);
 
         // Areas with persisted sold/fill, or computed defaults so the
