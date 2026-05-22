@@ -1,439 +1,619 @@
 {
-  "image": "https://tmssl.akamaized.net/images/wappen/big/3262.png",
+  "image": "https://assets.virtuafc.com/crests/3262.png",
   "name": "Germany",
   "players": [
     {
-      "contract": "May 26, 2012",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/12321.png",
+        "name": "Girona FC"
+      },
       "dateOfBirth": "Apr 30, 1992",
       "foot": "right",
       "height": "1,87m",
       "id": "74857",
+      "injured": false,
       "marketValue": "€15.00m",
       "name": "Marc-André ter Stegen",
       "position": "Goalkeeper"
     },
     {
-      "contract": "Oct 11, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/79.png",
+        "name": "VfB Stuttgart"
+      },
       "dateOfBirth": "Sep 30, 1996",
       "foot": "right",
       "height": "1,93m",
       "id": "195778",
+      "injured": false,
       "marketValue": "€12.00m",
       "name": "Alexander Nübel",
       "position": "Goalkeeper"
     },
     {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/703.png",
+        "name": "Nottingham Forest"
+      },
       "dateOfBirth": "Nov 6, 1992",
       "foot": "right",
       "height": "1,85m",
       "id": "85941",
+      "injured": false,
       "marketValue": "€9.00m",
       "name": "Stefan Ortega",
       "position": "Goalkeeper"
     },
     {
-      "contract": "Oct 14, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/533.png",
+        "name": "TSG 1899 Hoffenheim"
+      },
       "dateOfBirth": "Jun 2, 1990",
       "foot": "right",
       "height": "1,87m",
       "id": "55089",
+      "injured": false,
       "marketValue": "€3.00m",
       "name": "Oliver Baumann",
       "position": "Goalkeeper"
     },
     {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/167.png",
+        "name": "FC Augsburg"
+      },
       "dateOfBirth": "Mar 27, 1998",
       "foot": "right",
       "height": "1,86m",
       "id": "251299",
+      "injured": false,
       "marketValue": "€2.50m",
       "name": "Finn Dahmen",
       "position": "Goalkeeper"
     },
     {
-      "contract": "Mar 26, 2022",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/16.png",
+        "name": "Borussia Dortmund"
+      },
       "dateOfBirth": "Dec 1, 1999",
       "foot": "left",
       "height": "1,91m",
       "id": "388198",
+      "injured": false,
       "marketValue": "€40.00m",
       "name": "Nico Schlotterbeck",
       "position": "Centre-Back"
     },
     {
-      "contract": "Mar 26, 2016",
-      "dateOfBirth": "Feb 11, 1996",
-      "foot": "right",
-      "height": "1,95m",
-      "id": "196357",
-      "marketValue": "€30.00m",
-      "name": "Jonathan Tah",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Mar 23, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/46.png",
+        "name": "Inter Milan"
+      },
       "dateOfBirth": "Nov 29, 2000",
       "foot": "right",
       "height": "1,96m",
       "id": "441986",
+      "injured": false,
       "marketValue": "€30.00m",
       "name": "Yann Bisseck",
       "position": "Centre-Back"
     },
     {
-      "contract": "May 13, 2014",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/27.png",
+        "name": "Bayern Munich"
+      },
+      "dateOfBirth": "Feb 11, 1996",
+      "foot": "right",
+      "height": "1,95m",
+      "id": "196357",
+      "injured": false,
+      "marketValue": "€30.00m",
+      "name": "Jonathan Tah",
+      "position": "Centre-Back"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/418.png",
+        "name": "Real Madrid"
+      },
       "dateOfBirth": "Mar 3, 1993",
       "foot": "right",
       "height": "1,90m",
       "id": "86202",
+      "injured": false,
       "marketValue": "€24.00m",
       "name": "Antonio Rüdiger",
       "position": "Centre-Back"
     },
     {
-      "contract": "Mar 23, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/16.png",
+        "name": "Borussia Dortmund"
+      },
       "dateOfBirth": "Jul 20, 1996",
       "foot": "right",
       "height": "1,89m",
       "id": "193004",
+      "injured": false,
       "marketValue": "€24.00m",
       "name": "Waldemar Anton",
       "position": "Centre-Back"
     },
     {
-      "contract": "Jun 16, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/762.png",
+        "name": "Newcastle United"
+      },
       "dateOfBirth": "Aug 8, 2001",
       "foot": "right",
       "height": "1,94m",
       "id": "521964",
+      "injured": false,
       "marketValue": "€20.00m",
       "name": "Malick Thiaw",
       "position": "Centre-Back"
     },
     {
-      "contract": "Oct 9, 2019",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/24.png",
+        "name": "Eintracht Frankfurt"
+      },
       "dateOfBirth": "Jul 17, 1996",
       "foot": "right",
       "height": "1,92m",
       "id": "328784",
+      "injured": false,
       "marketValue": "€18.00m",
       "name": "Robin Koch",
       "position": "Centre-Back"
     },
     {
-      "contract": "Sep 9, 2018",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/162.png",
+        "name": "AS Monaco"
+      },
       "dateOfBirth": "Sep 21, 1996",
       "foot": "both",
       "height": "1,86m",
       "id": "228948",
+      "injured": false,
       "marketValue": "€15.00m",
       "name": "Thilo Kehrer",
       "position": "Centre-Back"
     },
     {
-      "contract": "Sep 4, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/24.png",
+        "name": "Eintracht Frankfurt"
+      },
       "dateOfBirth": "Jan 10, 2004",
       "foot": "right",
       "height": "1,88m",
       "id": "684315",
+      "injured": true,
       "marketValue": "€4.00m",
       "name": "Nnamdi Collins",
       "position": "Centre-Back"
     },
     {
-      "contract": "Sep 5, 2021",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/23826.png",
+        "name": "RB Leipzig"
+      },
       "dateOfBirth": "Apr 22, 1998",
       "foot": "left",
       "height": "1,81m",
       "id": "318204",
+      "injured": false,
       "marketValue": "€25.00m",
       "name": "David Raum",
       "position": "Left-Back"
     },
     {
-      "contract": "Mar 23, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/79.png",
+        "name": "VfB Stuttgart"
+      },
       "dateOfBirth": "Mar 18, 1997",
       "foot": "left",
       "height": "1,80m",
       "id": "282660",
+      "injured": false,
       "marketValue": "€20.00m",
       "name": "Maximilian Mittelstädt",
       "position": "Left-Back"
     },
     {
-      "contract": "Sep 3, 2020",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/430.png",
+        "name": "ACF Fiorentina"
+      },
       "dateOfBirth": "Jul 5, 1994",
       "foot": "left",
       "height": "1,83m",
       "id": "273132",
+      "injured": false,
       "marketValue": "€8.00m",
       "name": "Robin Gosens",
       "position": "Left-Back"
     },
     {
-      "contract": "Oct 10, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/24.png",
+        "name": "Eintracht Frankfurt"
+      },
       "dateOfBirth": "Jun 16, 2003",
       "foot": "left",
       "height": "1,76m",
       "id": "691892",
+      "injured": false,
       "marketValue": "€8.00m",
       "name": "Nathaniel Brown",
       "position": "Left-Back"
     },
     {
-      "contract": "Nov 11, 2020",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/23826.png",
+        "name": "RB Leipzig"
+      },
       "dateOfBirth": "Apr 8, 1998",
       "foot": "right",
       "height": "1,76m",
       "id": "327251",
+      "injured": false,
       "marketValue": "€7.00m",
       "name": "Ridle Baku",
       "position": "Right-Back"
     },
     {
-      "contract": "May 29, 2016",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/27.png",
+        "name": "Bayern Munich"
+      },
       "dateOfBirth": "Feb 8, 1995",
       "foot": "right",
       "height": "1,77m",
       "id": "161056",
+      "injured": false,
       "marketValue": "€50.00m",
       "name": "Joshua Kimmich",
       "position": "Defensive Midfield"
     },
     {
-      "contract": "Jun 3, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/27.png",
+        "name": "Bayern Munich"
+      },
       "dateOfBirth": "May 3, 2004",
       "foot": "both",
       "height": "1,88m",
       "id": "792380",
+      "injured": false,
       "marketValue": "€50.00m",
       "name": "Aleksandar Pavlovic",
       "position": "Defensive Midfield"
     },
     {
-      "contract": "Sep 7, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/79.png",
+        "name": "VfB Stuttgart"
+      },
       "dateOfBirth": "Apr 4, 2001",
       "foot": "left",
       "height": "1,83m",
       "id": "443710",
+      "injured": false,
       "marketValue": "€32.00m",
       "name": "Angelo Stiller",
       "position": "Defensive Midfield"
     },
     {
-      "contract": "Nov 21, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/15.png",
+        "name": "Bayer 04 Leverkusen"
+      },
       "dateOfBirth": "Sep 22, 1994",
       "foot": "right",
       "height": "1,87m",
       "id": "159088",
+      "injured": false,
       "marketValue": "€15.00m",
       "name": "Robert Andrich",
       "position": "Defensive Midfield"
     },
     {
-      "contract": "Mar 28, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/16.png",
+        "name": "Borussia Dortmund"
+      },
       "dateOfBirth": "Oct 10, 2000",
       "foot": "right",
       "height": "1,90m",
       "id": "406640",
+      "injured": false,
       "marketValue": "€28.00m",
       "name": "Felix Nmecha",
       "position": "Central Midfield"
     },
     {
-      "contract": "May 13, 2014",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/27.png",
+        "name": "Bayern Munich"
+      },
       "dateOfBirth": "Feb 6, 1995",
       "foot": "right",
       "height": "1,89m",
       "id": "153084",
+      "injured": false,
       "marketValue": "€22.00m",
       "name": "Leon Goretzka",
       "position": "Central Midfield"
     },
     {
-      "contract": "Jun 8, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/27.png",
+        "name": "Bayern Munich"
+      },
       "dateOfBirth": "Jun 28, 2005",
       "foot": "left",
       "height": "1,76m",
       "id": "822959",
+      "injured": false,
       "marketValue": "€12.00m",
       "name": "Tom Bischof",
       "position": "Central Midfield"
     },
     {
-      "contract": "Oct 9, 2019",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/39.png",
+        "name": "1.FSV Mainz 05"
+      },
       "dateOfBirth": "Oct 27, 1996",
       "foot": "right",
       "height": "1,80m",
       "id": "232454",
+      "injured": false,
       "marketValue": "€11.00m",
       "name": "Nadiem Amiri",
       "position": "Central Midfield"
     },
     {
-      "contract": "Nov 17, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/23826.png",
+        "name": "RB Leipzig"
+      },
       "dateOfBirth": "May 9, 2006",
       "foot": "right",
       "height": "1,91m",
       "id": "897424",
+      "injured": false,
       "marketValue": "€10.00m",
       "name": "Assan Ouédraogo",
       "position": "Central Midfield"
     },
     {
-      "contract": "Sep 9, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1237.png",
+        "name": "Brighton & Hove Albion"
+      },
       "dateOfBirth": "Jun 15, 1991",
       "foot": "right",
       "height": "1,81m",
       "id": "82873",
+      "injured": false,
       "marketValue": "€7.00m",
       "name": "Pascal Groß",
       "position": "Central Midfield"
     },
     {
-      "contract": "Mar 25, 2021",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/27.png",
+        "name": "Bayern Munich"
+      },
       "dateOfBirth": "Feb 26, 2003",
       "foot": "right",
       "height": "1,84m",
       "id": "580195",
+      "injured": false,
       "marketValue": "€140.00m",
       "name": "Jamal Musiala",
       "position": "Attacking Midfield"
     },
     {
-      "contract": "Sep 2, 2021",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/31.png",
+        "name": "Liverpool FC"
+      },
       "dateOfBirth": "May 3, 2003",
       "foot": "right",
       "height": "1,77m",
       "id": "598577",
+      "injured": false,
       "marketValue": "€140.00m",
       "name": "Florian Wirtz",
       "position": "Attacking Midfield"
     },
     {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/39.png",
+        "name": "1.FSV Mainz 05"
+      },
       "dateOfBirth": "Oct 10, 2002",
       "foot": "both",
       "height": "1,69m",
       "id": "503160",
+      "injured": false,
       "marketValue": "€7.00m",
       "name": "Paul Nebel",
       "position": "Attacking Midfield"
     },
     {
-      "contract": "Mar 25, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1148.png",
+        "name": "Brentford FC"
+      },
       "dateOfBirth": "Nov 27, 2001",
       "foot": "right",
       "height": "1,85m",
       "id": "473050",
+      "injured": false,
       "marketValue": "€22.00m",
       "name": "Kevin Schade",
       "position": "Left Winger"
     },
     {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/3.png",
+        "name": "1.FC Köln"
+      },
       "dateOfBirth": "Aug 26, 2006",
       "foot": "both",
       "height": "1,87m",
       "id": "1168219",
+      "injured": false,
       "marketValue": "€1.00m",
       "name": "Said El Mala",
       "position": "Left Winger"
     },
     {
-      "contract": "Nov 13, 2015",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/141.png",
+        "name": "Galatasaray"
+      },
       "dateOfBirth": "Jan 11, 1996",
       "foot": "left",
       "height": "1,83m",
       "id": "192565",
+      "injured": false,
       "marketValue": "€45.00m",
       "name": "Leroy Sané",
       "position": "Right Winger"
     },
     {
-      "contract": "Sep 5, 2021",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/16.png",
+        "name": "Borussia Dortmund"
+      },
       "dateOfBirth": "Jan 18, 2002",
       "foot": "left",
       "height": "1,80m",
       "id": "496094",
+      "injured": false,
       "marketValue": "€35.00m",
       "name": "Karim Adeyemi",
       "position": "Right Winger"
     },
     {
-      "contract": "Oct 14, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/79.png",
+        "name": "VfB Stuttgart"
+      },
       "dateOfBirth": "Feb 26, 2001",
       "foot": "both",
       "height": "1,85m",
       "id": "518505",
+      "injured": false,
       "marketValue": "€20.00m",
       "name": "Jamie Leweling",
       "position": "Right Winger"
     },
     {
-      "contract": "Nov 11, 2016",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/27.png",
+        "name": "Bayern Munich"
+      },
       "dateOfBirth": "Jul 14, 1995",
       "foot": "right",
       "height": "1,76m",
       "id": "159471",
+      "injured": true,
       "marketValue": "€35.00m",
       "name": "Serge Gnabry",
       "position": "Second Striker"
     },
     {
-      "contract": "Jun 3, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/16.png",
+        "name": "Borussia Dortmund"
+      },
       "dateOfBirth": "Oct 17, 2002",
       "foot": "right",
       "height": "1,85m",
       "id": "578392",
+      "injured": false,
       "marketValue": "€30.00m",
       "name": "Maximilian Beier",
       "position": "Centre-Forward"
     },
     {
-      "contract": "Mar 23, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/79.png",
+        "name": "VfB Stuttgart"
+      },
       "dateOfBirth": "Jul 19, 1996",
       "foot": "both",
       "height": "1,79m",
       "id": "339314",
+      "injured": false,
       "marketValue": "€28.00m",
       "name": "Deniz Undav",
       "position": "Centre-Forward"
     },
     {
-      "contract": "Oct 11, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/24.png",
+        "name": "Eintracht Frankfurt"
+      },
       "dateOfBirth": "Jul 11, 2000",
       "foot": "right",
       "height": "1,81m",
       "id": "333647",
+      "injured": false,
       "marketValue": "€25.00m",
       "name": "Jonathan Burkardt",
       "position": "Centre-Forward"
     },
     {
-      "contract": "Nov 16, 2022",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/5.png",
+        "name": "AC Milan"
+      },
       "dateOfBirth": "Feb 9, 1993",
       "foot": "right",
       "height": "1,89m",
       "id": "75489",
+      "injured": false,
       "marketValue": "€15.00m",
       "name": "Niclas Füllkrug",
       "position": "Centre-Forward"
     },
     {
-      "contract": "Oct 11, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/18.png",
+        "name": "Borussia Mönchengladbach"
+      },
       "dateOfBirth": "Aug 31, 1995",
       "foot": "both",
       "height": "1,94m",
       "id": "193033",
+      "injured": false,
       "marketValue": "€12.00m",
       "name": "Tim Kleindienst",
       "position": "Centre-Forward"
     },
     {
-      "contract": "Jun 4, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/762.png",
+        "name": "Newcastle United"
+      },
       "dateOfBirth": "Feb 14, 2002",
       "foot": "right",
       "height": "1,98m",
       "id": "455661",
+      "injured": false,
       "marketValue": "€7.50m",
       "name": "Nick Woltemade",
       "position": "Centre-Forward"

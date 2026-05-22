@@ -1,372 +1,369 @@
 {
-  "image": "https://tmssl.akamaized.net/images/wappen/big/3435.png",
+  "image": "https://assets.virtuafc.com/crests/3435.png",
   "name": "Japan",
   "players": [
     {
-      "contract": "Jul 19, 2022",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/130.png",
+        "name": "Parma Calcio 1913"
+      },
       "dateOfBirth": "Aug 21, 2002",
       "foot": "right",
       "height": "1,90m",
       "id": "432298",
-      "marketValue": "€9.00m",
+      "injured": false,
+      "marketValue": "€20.00m",
       "name": "Zion Suzuki",
       "position": "Goalkeeper"
     },
     {
-      "dateOfBirth": "Jan 23, 2001",
-      "foot": "right",
-      "height": "1,93m",
-      "id": "501737",
-      "marketValue": "€2.50m",
-      "name": "Leo Kokubo",
-      "number": "12",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Jun 18, 2019",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/2697.png",
+        "name": "Sanfrecce Hiroshima"
+      },
       "dateOfBirth": "Jul 28, 1999",
       "foot": "right",
       "height": "1,90m",
       "id": "415521",
-      "marketValue": "€1.70m",
+      "injured": false,
+      "marketValue": "€2.00m",
       "name": "Keisuke Osako",
       "position": "Goalkeeper"
     },
     {
-      "contract": "Jun 2, 2022",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/2241.png",
+        "name": "Kashima Antlers"
+      },
+      "dateOfBirth": "Mar 3, 1999",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "683271",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Tomoki Hayakawa",
+      "position": "Goalkeeper"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/27.png",
+        "name": "Bayern Munich"
+      },
       "dateOfBirth": "May 12, 1999",
       "foot": "left",
       "height": "1,88m",
       "id": "353892",
-      "marketValue": "€30.00m",
+      "injured": false,
+      "marketValue": "€18.00m",
       "name": "Hiroki Ito",
       "position": "Centre-Back"
     },
     {
-      "contract": "Jun 21, 2019",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/610.png",
+        "name": "Ajax Amsterdam"
+      },
       "dateOfBirth": "Jan 27, 1997",
       "foot": "right",
       "height": "1,88m",
       "id": "355816",
-      "marketValue": "€15.00m",
-      "name": "Ko Itakura",
-      "number": "4",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Sep 12, 2023",
-      "dateOfBirth": "Aug 25, 1997",
-      "foot": "left",
-      "height": "1,90m",
-      "id": "415035",
+      "injured": false,
       "marketValue": "€10.00m",
-      "name": "Koki Machida",
+      "name": "Ko Itakura",
       "position": "Centre-Back"
     },
     {
-      "contract": "Dec 14, 2019",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/234.png",
+        "name": "Feyenoord Rotterdam"
+      },
       "dateOfBirth": "Feb 5, 1997",
       "foot": "right",
       "height": "1,86m",
       "id": "598791",
-      "marketValue": "€9.00m",
+      "injured": false,
+      "marketValue": "€10.00m",
       "name": "Tsuyoshi Watanabe",
-      "number": "5",
       "position": "Centre-Back"
     },
     {
-      "contract": "Jul 24, 2022",
-      "dateOfBirth": "Aug 7, 1996",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/190.png",
+        "name": "FC Copenhagen"
+      },
+      "dateOfBirth": "Jul 12, 2003",
       "foot": "right",
-      "height": "1,86m",
-      "id": "602314",
-      "marketValue": "€1.40m",
-      "name": "Hayato Araki",
+      "height": "1,85m",
+      "id": "848856",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Junnosuke Suzuki",
       "position": "Centre-Back"
     },
     {
-      "contract": "Jun 11, 2015",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/475.png",
+        "name": "Sint-Truidense VV"
+      },
       "dateOfBirth": "Jul 15, 1991",
       "foot": "right",
       "height": "1,83m",
       "id": "307870",
-      "marketValue": "€1.20m",
+      "injured": false,
+      "marketValue": "€800k",
       "name": "Shogo Taniguchi",
-      "number": "3",
       "position": "Centre-Back"
     },
     {
-      "contract": "Oct 9, 2020",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/6631.png",
+        "name": "FC Tokyo"
+      },
+      "dateOfBirth": "Sep 12, 1986",
+      "foot": "both",
+      "height": "1,70m",
+      "id": "79522",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Yuto Nagatomo",
+      "position": "Left-Back"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/610.png",
+        "name": "Ajax Amsterdam"
+      },
+      "dateOfBirth": "Nov 5, 1998",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "331560",
+      "injured": false,
+      "marketValue": "€8.00m",
+      "name": "Takehiro Tomiyasu",
+      "position": "Right-Back"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/86.png",
+        "name": "SV Werder Bremen"
+      },
       "dateOfBirth": "Jun 28, 2000",
       "foot": "right",
       "height": "1,79m",
       "id": "405385",
-      "marketValue": "€12.00m",
+      "injured": false,
+      "marketValue": "€7.50m",
       "name": "Yukinari Sugawara",
-      "number": "2",
       "position": "Right-Back"
     },
     {
-      "contract": "Dec 10, 2019",
-      "dateOfBirth": "May 17, 1999",
-      "foot": "right",
-      "height": "1,84m",
-      "id": "387191",
-      "marketValue": "€2.00m",
-      "name": "Daiki Hashioka",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Aug 2, 2015",
-      "dateOfBirth": "Feb 9, 1993",
-      "foot": "right",
-      "height": "1,78m",
-      "id": "146310",
-      "marketValue": "€12.00m",
-      "name": "Wataru Endo",
-      "number": "6",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Nov 16, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/39.png",
+        "name": "1.FSV Mainz 05"
+      },
       "dateOfBirth": "Dec 30, 2000",
       "foot": "right",
       "height": "1,76m",
       "id": "643574",
-      "marketValue": "€7.00m",
+      "injured": false,
+      "marketValue": "€25.00m",
       "name": "Kaishu Sano",
-      "number": "21",
       "position": "Defensive Midfield"
     },
     {
-      "contract": "Sep 11, 2018",
-      "dateOfBirth": "May 10, 1995",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/31.png",
+        "name": "Liverpool FC"
+      },
+      "dateOfBirth": "Feb 9, 1993",
       "foot": "right",
-      "height": "1,77m",
-      "id": "524315",
-      "marketValue": "€15.00m",
-      "name": "Hidemasa Morita",
-      "position": "Central Midfield"
+      "height": "1,78m",
+      "id": "146310",
+      "injured": false,
+      "marketValue": "€5.00m",
+      "name": "Wataru Endo",
+      "position": "Defensive Midfield"
     },
     {
-      "contract": "Mar 29, 2022",
-      "dateOfBirth": "Nov 21, 1997",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/738.png",
+        "name": "Le Havre AC"
+      },
+      "dateOfBirth": "Jun 7, 2000",
       "foot": "right",
-      "height": "1,72m",
-      "id": "496656",
-      "marketValue": "€11.00m",
-      "name": "Reo Hatate",
-      "position": "Central Midfield"
+      "height": "1,86m",
+      "id": "405389",
+      "injured": false,
+      "marketValue": "€5.00m",
+      "name": "Ayumu Seko",
+      "position": "Defensive Midfield"
     },
     {
-      "contract": "Mar 25, 2021",
-      "dateOfBirth": "Sep 8, 1995",
-      "foot": "right",
-      "height": "1,80m",
-      "id": "262489",
-      "marketValue": "€4.00m",
-      "name": "Hayao Kawabe",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Jun 10, 2025",
-      "dateOfBirth": "Sep 25, 2003",
-      "foot": "right",
-      "height": "1,76m",
-      "id": "957544",
-      "marketValue": "€4.00m",
-      "name": "Kodai Sano",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Dec 14, 2019",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/399.png",
+        "name": "Leeds United"
+      },
       "dateOfBirth": "Sep 10, 1998",
       "foot": "right",
       "height": "1,80m",
       "id": "489359",
-      "marketValue": "€4.00m",
+      "injured": false,
+      "marketValue": "€10.00m",
       "name": "Ao Tanaka",
-      "number": "17",
       "position": "Central Midfield"
     },
     {
-      "contract": "Jul 19, 2022",
-      "dateOfBirth": "Feb 16, 2002",
-      "foot": "right",
-      "height": "1,75m",
-      "id": "697277",
-      "marketValue": "€1.80m",
-      "name": "Joel Chima Fujita",
-      "number": "7",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Mar 22, 2019",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/873.png",
+        "name": "Crystal Palace"
+      },
       "dateOfBirth": "Aug 5, 1996",
       "foot": "right",
       "height": "1,80m",
       "id": "356141",
-      "marketValue": "€15.00m",
-      "name": "Daichi Kamada",
-      "number": "15",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Jun 15, 2023",
-      "dateOfBirth": "Apr 11, 1997",
-      "foot": "right",
-      "height": "1,68m",
-      "id": "679903",
-      "marketValue": "€2.00m",
-      "name": "Ryoya Morishita",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Nov 16, 2021",
-      "dateOfBirth": "May 20, 1997",
-      "foot": "right",
-      "height": "1,78m",
-      "id": "504849",
-      "marketValue": "€45.00m",
-      "name": "Kaoru Mitoma",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "Oct 13, 2015",
-      "dateOfBirth": "Jan 16, 1995",
-      "foot": "right",
-      "height": "1,72m",
-      "id": "165793",
-      "marketValue": "€15.00m",
-      "name": "Takumi Minamino",
-      "number": "8",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "Mar 24, 2023",
-      "dateOfBirth": "Jul 28, 2000",
-      "foot": "right",
-      "height": "1,80m",
-      "id": "405397",
+      "injured": false,
       "marketValue": "€12.00m",
-      "name": "Keito Nakamura",
-      "number": "13",
-      "position": "Left Winger"
+      "name": "Daichi Kamada",
+      "position": "Attacking Midfield"
     },
     {
-      "contract": "Jun 18, 2019",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/371.png",
+        "name": "Celtic FC"
+      },
       "dateOfBirth": "Oct 20, 1997",
       "foot": "right",
       "height": "1,73m",
       "id": "420931",
-      "marketValue": "€8.00m",
+      "injured": false,
+      "marketValue": "€13.00m",
       "name": "Daizen Maeda",
-      "number": "11",
       "position": "Left Winger"
     },
     {
-      "contract": "Oct 10, 2025",
-      "dateOfBirth": "Aug 10, 2001",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1421.png",
+        "name": "Stade Reims"
+      },
+      "dateOfBirth": "Jul 28, 2000",
       "foot": "right",
-      "height": "1,70m",
-      "id": "501743",
-      "marketValue": "€4.00m",
-      "name": "Koki Saito",
+      "height": "1,80m",
+      "id": "405397",
+      "injured": false,
+      "marketValue": "€9.00m",
+      "name": "Keito Nakamura",
       "position": "Left Winger"
     },
     {
-      "contract": "Jun 9, 2019",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/681.png",
+        "name": "Real Sociedad"
+      },
       "dateOfBirth": "Jun 4, 2001",
       "foot": "left",
       "height": "1,73m",
       "id": "405398",
-      "marketValue": "€40.00m",
+      "injured": false,
+      "marketValue": "€30.00m",
       "name": "Takefusa Kubo",
-      "number": "20",
       "position": "Right Winger"
     },
     {
-      "contract": "Sep 11, 2018",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/24.png",
+        "name": "Eintracht Frankfurt"
+      },
       "dateOfBirth": "Jun 16, 1998",
       "foot": "left",
       "height": "1,72m",
       "id": "358504",
-      "marketValue": "€22.00m",
+      "injured": false,
+      "marketValue": "€20.00m",
       "name": "Ritsu Doan",
-      "number": "10",
       "position": "Right Winger"
     },
     {
-      "contract": "Dec 9, 2017",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1184.png",
+        "name": "KRC Genk"
+      },
       "dateOfBirth": "Mar 9, 1993",
       "foot": "right",
       "height": "1,77m",
       "id": "348791",
-      "marketValue": "€8.00m",
+      "injured": false,
+      "marketValue": "€3.50m",
       "name": "Junya Ito",
       "position": "Right Winger"
     },
     {
-      "contract": "Jun 6, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/60.png",
+        "name": "SC Freiburg"
+      },
       "dateOfBirth": "Oct 25, 2001",
       "foot": "right",
       "height": "1,75m",
       "id": "668606",
-      "marketValue": "€7.00m",
+      "injured": false,
+      "marketValue": "€18.00m",
       "name": "Yuito Suzuki",
       "position": "Second Striker"
     },
     {
-      "contract": "Nov 19, 2019",
-      "dateOfBirth": "Jan 20, 1995",
-      "foot": "right",
-      "height": "1,70m",
-      "id": "489463",
-      "marketValue": "€14.00m",
-      "name": "Kyogo Furuhashi",
-      "position": "Centre-Forward"
-    },
-    {
-      "contract": "Jun 18, 2019",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/234.png",
+        "name": "Feyenoord Rotterdam"
+      },
       "dateOfBirth": "Aug 28, 1998",
       "foot": "right",
       "height": "1,82m",
       "id": "589128",
-      "marketValue": "€8.00m",
+      "injured": false,
+      "marketValue": "€15.00m",
       "name": "Ayase Ueda",
-      "number": "18",
       "position": "Centre-Forward"
     },
     {
-      "contract": "Jul 19, 2022",
-      "dateOfBirth": "Sep 30, 1999",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/475.png",
+        "name": "Sint-Truidense VV"
+      },
+      "dateOfBirth": "Jun 3, 2005",
       "foot": "right",
-      "height": "1,85m",
-      "id": "550580",
-      "marketValue": "€3.00m",
-      "name": "Shuto Machino",
-      "number": "9",
+      "height": "1,91m",
+      "id": "916623",
+      "injured": false,
+      "marketValue": "€8.00m",
+      "name": "Keisuke Goto",
       "position": "Centre-Forward"
     },
     {
-      "contract": "Dec 14, 2019",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/82.png",
+        "name": "VfL Wolfsburg"
+      },
+      "dateOfBirth": "Mar 26, 2005",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1144627",
+      "injured": false,
+      "marketValue": "€8.00m",
+      "name": "Kento Shiogai",
+      "position": "Centre-Forward"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/467.png",
+        "name": "NEC Nijmegen"
+      },
       "dateOfBirth": "Aug 8, 1997",
       "foot": "right",
       "height": "1,86m",
       "id": "351567",
-      "marketValue": "€3.00m",
+      "injured": false,
+      "marketValue": "€2.50m",
       "name": "Koki Ogawa",
-      "number": "19",
-      "position": "Centre-Forward"
-    },
-    {
-      "contract": "Jul 24, 2022",
-      "dateOfBirth": "Sep 7, 2001",
-      "foot": "right",
-      "height": "1,78m",
-      "id": "663514",
-      "marketValue": "€1.60m",
-      "name": "Mao Hosoya",
       "position": "Centre-Forward"
     }
   ],
