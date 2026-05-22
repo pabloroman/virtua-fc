@@ -14,6 +14,30 @@ const EVENT_ICONS = Object.freeze({
     substitution: '\uD83D\uDD04',
 });
 
+// Phase strings emitted by the server come from the MatchPhase enum.
+// We treat regulation/ET stoppage as belonging to the same half as the
+// preceding open play, so 45+N' events sit before the half-time line.
+const FIRST_HALF_PHASES     = new Set(['first_half', 'first_half_stoppage']);
+const SECOND_HALF_PHASES    = new Set(['second_half', 'second_half_stoppage']);
+const ET_FIRST_HALF_PHASES  = new Set(['et_first_half', 'et_first_half_stoppage']);
+const ET_SECOND_HALF_PHASES = new Set(['et_second_half', 'et_second_half_stoppage', 'penalties']);
+
+function eventHalf(event) {
+    if (event.phase) {
+        if (FIRST_HALF_PHASES.has(event.phase))     return 'first';
+        if (SECOND_HALF_PHASES.has(event.phase))    return 'second';
+        if (ET_FIRST_HALF_PHASES.has(event.phase))  return 'etFirst';
+        if (ET_SECOND_HALF_PHASES.has(event.phase)) return 'etSecond';
+    }
+    // Fallback for client-injected events with no phase. These all land
+    // on or near a half boundary (45, 45.9, 90, 105) so the simple
+    // threshold check is sufficient.
+    if (event.minute <= MINUTE.FIRST_HALF_END)    return 'first';
+    if (event.minute <= MINUTE.REGULAR_TIME_END)  return 'second';
+    if (event.minute <= MINUTE.ET_FIRST_HALF_END) return 'etFirst';
+    return 'etSecond';
+}
+
 export function createEventFeed(ctx) {
     function groupSubstitutions(events) {
         const result = [];
@@ -44,24 +68,29 @@ export function createEventFeed(ctx) {
 
     return {
         // --- Event grouping by half --------------------------------------
+        // Server-emitted events carry their own `phase` (from the
+        // MatchPhase enum), which is the canonical answer for which half
+        // an event belongs to. Raw `minute` alone is ambiguous in
+        // stoppage time: a FIRST_HALF_STOPPAGE 45+2' event has absolute
+        // minute 47, so a `minute > 45` filter would misclassify it as
+        // second half and render it above the half-time separator.
+        // Client-injected events (atmosphere checkpoints, the stoppage
+        // announcement, in-game substitutions) don't carry a phase, so
+        // we fall back to a minute-threshold check for them.
         get firstHalfEvents() {
-            return groupSubstitutions(ctx().revealedEvents.filter(e => e.minute <= MINUTE.FIRST_HALF_END));
+            return groupSubstitutions(ctx().revealedEvents.filter(e => eventHalf(e) === 'first'));
         },
 
         get secondHalfEvents() {
-            return groupSubstitutions(ctx().revealedEvents.filter(
-                e => e.minute > MINUTE.FIRST_HALF_END && e.minute <= MINUTE.REGULAR_TIME_END,
-            ));
+            return groupSubstitutions(ctx().revealedEvents.filter(e => eventHalf(e) === 'second'));
         },
 
         get etFirstHalfEvents() {
-            return groupSubstitutions(ctx().revealedEvents.filter(
-                e => e.minute > MINUTE.REGULAR_TIME_END && e.minute <= MINUTE.ET_FIRST_HALF_END,
-            ));
+            return groupSubstitutions(ctx().revealedEvents.filter(e => eventHalf(e) === 'etFirst'));
         },
 
         get etSecondHalfEvents() {
-            return groupSubstitutions(ctx().revealedEvents.filter(e => e.minute > MINUTE.ET_FIRST_HALF_END));
+            return groupSubstitutions(ctx().revealedEvents.filter(e => eventHalf(e) === 'etSecond'));
         },
 
         // --- Separators --------------------------------------------------
