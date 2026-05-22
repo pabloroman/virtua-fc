@@ -809,6 +809,113 @@ class CountryPromotionRelegationPlannerTest extends TestCase
         $this->assertTierCountsPreserved($plan, $snapshot, $this->spainConfig);
     }
 
+    public function test_parent_relegating_into_already_relegating_reserve_tier_does_not_double_move_reserve(): void
+    {
+        // Production regression (game 03449aaa, season 2039): parent (e.g.
+        // Real Sociedad) at ESP1 pos 18 is relegating to ESP2. Reserve (Real
+        // Sociedad B) at ESP2 pos 22 is itself relegating to ESP3. The
+        // per-rule cascade for rule #1 would naively emit a cascade move
+        // pushing the reserve from ESP2 to ESP3 (parent's destination ==
+        // reserve's current comp), but buildRuleMoves ALREADY emits a
+        // relegation move for the reserve from rule #2's relegators. Two
+        // moves for the same team trip validatePlan's no-double-move check.
+        //
+        // The reserve's own relegation leaves the collision tier naturally,
+        // so the cascade is redundant — it must be skipped.
+        $esp1 = $this->ids(20, 'a1');
+        $parent = $esp1[17]; // pos 18, relegating to ESP2
+        $reserve = 'reserve-of-' . $parent;
+        // Reserve at the bottom of ESP2 (pos 22) — also relegating.
+        $esp2 = array_merge($this->ids(21, 'a2'), [$reserve]);
+
+        $snapshot = new CountrySeasonSnapshot(
+            countryCode: 'ES',
+            standingsByCompetition: [
+                'ESP1' => $esp1,
+                'ESP2' => $esp2,
+                'ESP3A' => $this->ids(20, 'a3'),
+                'ESP3B' => $this->ids(20, 'b3'),
+            ],
+            reserveToParent: [$reserve => $parent],
+            playoffStates: [
+                'ESP2' => PlayoffState::NotStarted,
+                'ESP3PO' => PlayoffState::NotStarted,
+            ],
+        );
+
+        $plan = $this->planner->planFromSnapshot($snapshot, $this->spainConfig);
+
+        // Reserve has exactly one move: its own relegation ESP2 → ESP3*.
+        $reserveMoves = array_values(array_filter(
+            $plan->moves,
+            fn (PromotionMove $m) => $m->teamId === $reserve,
+        ));
+        $this->assertCount(1, $reserveMoves, 'Reserve should only appear in one move');
+        $this->assertSame(PromotionMove::REASON_RELEGATION, $reserveMoves[0]->reason);
+        $this->assertSame('ESP2', $reserveMoves[0]->fromCompetitionId);
+        $this->assertContains($reserveMoves[0]->toCompetitionId, ['ESP3A', 'ESP3B']);
+
+        // Parent still relegates to ESP2.
+        $parentMove = $this->findMove($plan, $parent);
+        $this->assertNotNull($parentMove);
+        $this->assertSame('ESP2', $parentMove->toCompetitionId);
+
+        $this->assertNoTeamMovedTwice($plan);
+        $this->assertNoReserveParentCoexistenceAfterPlan($plan, $snapshot);
+        $this->assertTierCountsPreserved($plan, $snapshot, $this->spainConfig);
+    }
+
+    public function test_inherited_coexistence_skipped_when_reserve_is_relegating(): void
+    {
+        // Pre-pass companion to the above: reserve and parent already
+        // coexist in ESP2 (data drift), parent is mid-table, but reserve
+        // is at ESP2 pos 22 — relegating to ESP3 under its own rule. The
+        // pre-pass must not cascade the reserve, because rule #2's
+        // relegation move already moves it out of the coexistence tier.
+        $esp1 = $this->ids(20, 'a1');
+        $parent = 'midtable-parent';
+        $reserve = 'relegating-reserve';
+        // Parent mid-table, reserve at bottom (pos 22) — both in ESP2.
+        $esp2 = array_merge(
+            $this->ids(10, 'a2-top'),
+            [$parent],
+            $this->ids(10, 'a2-mid'),
+            [$reserve],
+        );
+
+        $snapshot = new CountrySeasonSnapshot(
+            countryCode: 'ES',
+            standingsByCompetition: [
+                'ESP1' => $esp1,
+                'ESP2' => $esp2,
+                'ESP3A' => $this->ids(20, 'a3'),
+                'ESP3B' => $this->ids(20, 'b3'),
+            ],
+            reserveToParent: [$reserve => $parent],
+            playoffStates: [
+                'ESP2' => PlayoffState::NotStarted,
+                'ESP3PO' => PlayoffState::NotStarted,
+            ],
+        );
+
+        $plan = $this->planner->planFromSnapshot($snapshot, $this->spainConfig);
+
+        // Reserve has exactly one move (its own relegation).
+        $reserveMoves = array_values(array_filter(
+            $plan->moves,
+            fn (PromotionMove $m) => $m->teamId === $reserve,
+        ));
+        $this->assertCount(1, $reserveMoves);
+        $this->assertSame(PromotionMove::REASON_RELEGATION, $reserveMoves[0]->reason);
+
+        // Parent untouched.
+        $this->assertNull($this->findMove($plan, $parent));
+
+        $this->assertNoTeamMovedTwice($plan);
+        $this->assertNoReserveParentCoexistenceAfterPlan($plan, $snapshot);
+        $this->assertTierCountsPreserved($plan, $snapshot, $this->spainConfig);
+    }
+
     public function test_reserve_promotion_blocked_when_parent_in_destination_no_relegation(): void
     {
         // Standard case: parent stays in ESP1, reserve at ESP2 pos 1 — blocked.

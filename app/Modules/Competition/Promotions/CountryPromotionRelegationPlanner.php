@@ -784,10 +784,17 @@ class CountryPromotionRelegationPlanner
             // Skip pairs the per-rule loop will resolve naturally:
             //   - parent being relegated: leaves the coexistence tier.
             //   - parent being promoted: leaves the coexistence tier.
+            //   - reserve being relegated: leaves the coexistence tier.
             //   - reserve being promoted: leaves the coexistence tier.
-            // In all three cases the post-plan finalComp puts the two
-            // teams in different competitions without any repair move.
+            // In all four cases the post-plan finalComp puts the two
+            // teams in different competitions without any repair move —
+            // emitting a cascade move for a team that already has a
+            // relegation/promotion move trips validatePlan's
+            // no-double-move check.
             if (isset($beingRelegated[$parent])) {
+                continue;
+            }
+            if (isset($beingRelegated[$reserve])) {
                 continue;
             }
             if (isset($alreadyPromoted[$parent])) {
@@ -942,6 +949,16 @@ class CountryPromotionRelegationPlanner
                 if ($reserveCurrentComp !== $parentDest) {
                     // Parent landing in a different competition than the reserve.
                     // For sibling tiers (ESP3A/ESP3B), that means no collision at all.
+                    continue;
+                }
+
+                if (isset($beingRelegated[$reserve])) {
+                    // The reserve is itself being relegated out of this tier by
+                    // a deeper rule (e.g. parent relegating ESP1→ESP2 while the
+                    // reserve relegates ESP2→ESP3 on its own merits). The reserve
+                    // leaves the collision tier under its own rule's move, so
+                    // adding a cascade here would emit a second move for the
+                    // same team and trip validatePlan's no-double-move check.
                     continue;
                 }
 
