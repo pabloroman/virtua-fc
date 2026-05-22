@@ -8,6 +8,7 @@ use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Models\GamePlayerTemplate;
 use App\Models\Team;
 use App\Modules\Player\PlayerAge;
 use App\Modules\Player\Services\PlayerDevelopmentService;
@@ -34,6 +35,13 @@ class SquadService
             ->where('game_id', $gameId)
             ->where('team_id', $game->team_id)
             ->get();
+
+        // Tournament mode: enrich each player with their real-world club of
+        // origin (name + crest) from the control-plane template. Issued as a
+        // separate query so we never JOIN across planes.
+        if ($game->isTournamentMode()) {
+            $this->attachClubOfOrigin($allPlayers, $game);
+        }
 
         $seasonEndDate = $game->getSeasonEndDate();
         $nextMatch = $game->next_match;
@@ -222,6 +230,34 @@ class SquadService
             'mvpCounts' => $mvpCounts,
             'playerFlags' => $playerFlags,
         ];
+    }
+
+    /**
+     * Attach `club_name` and `club_crest_url` attributes on each player by
+     * looking up the matching control-plane template (filtered by national
+     * team id, since the same transfermarkt id can exist as both a club and
+     * a national-team template). Runs as one query on the control plane to
+     * avoid cross-plane JOINs.
+     */
+    private function attachClubOfOrigin($players, Game $game): void
+    {
+        $tmIds = $players->pluck('transfermarkt_id')->filter()->unique()->values();
+        if ($tmIds->isEmpty()) {
+            return;
+        }
+
+        $infosByTmId = GamePlayerTemplate::with('tournamentInfo')
+            ->where('team_id', $game->team_id)
+            ->whereIn('transfermarkt_id', $tmIds)
+            ->get()
+            ->keyBy('transfermarkt_id');
+
+        foreach ($players as $player) {
+            $template = $infosByTmId->get($player->transfermarkt_id);
+            $info = $template?->tournamentInfo;
+            $player->setAttribute('club_name', $info?->club_name);
+            $player->setAttribute('club_crest_url', $info?->club_crest_url);
+        }
     }
 
     private function buildDepthChart($players): array
