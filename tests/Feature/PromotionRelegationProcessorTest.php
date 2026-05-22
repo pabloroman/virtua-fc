@@ -4,11 +4,13 @@ namespace Tests\Feature;
 
 use App\Models\Competition;
 use App\Models\CompetitionEntry;
+use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameStanding;
 use App\Models\SimulatedSeason;
 use App\Models\Team;
 use App\Models\User;
+use App\Modules\Competition\Playoffs\PrimeraRFEFPlayoffGenerator;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Processors\PromotionRelegationProcessor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -289,5 +291,116 @@ class PromotionRelegationProcessorTest extends TestCase
         SimulatedSeason::create([
             'game_id' => $this->game->id, 'season' => '2025', 'competition_id' => $competitionId, 'results' => $teamIds,
         ]);
+    }
+
+    /**
+     * Regression for the ESP3PO bracket-winner promotion bug. PlayoffGeneratorFactory
+     * used to register the PrimeraRFEF generator only under its source divisions
+     * (ESP3A, ESP3B), but CountrySeasonSnapshotBuilder looks up the generator by
+     * playoff_competition (ESP3PO). The lookup returned null, the snapshot reported
+     * PlayoffState::NotStarted even after both bracket finals were resolved, and
+     * the planner promoted stand-ins (positions 2–3 of ESP3A) instead of the
+     * teams sitting on completed CupTie.winner_id rows. The fix registers the
+     * generator under the target competition ID too.
+     */
+    public function test_esp3po_bracket_winners_are_promoted_to_esp2_not_standings_standins(): void
+    {
+        $this->seedSimulatedTier('ESP1', 20);
+        $esp2 = $this->seedRealTier('ESP2', 22, userPosition: 11);
+        $esp3a = $this->seedRealTier('ESP3A', 20);
+        $esp3b = $this->seedRealTier('ESP3B', 20);
+
+        // Pick bracket winners deliberately away from the stand-in slots
+        // (ESP3A positions 2 and 3). Bracket A winner = ESP3A pos 4,
+        // Bracket B winner = ESP3B pos 5. With the bug, ESP3A pos 2 and 3
+        // would be promoted instead; the chosen winners would stay in ESP3.
+        $bracketAWinner = $esp3a[4];
+        $bracketBWinner = $esp3b[5];
+
+        // Round 2 (bracket finals). isComplete() only inspects the final
+        // round, so the semifinals are not required to drive the snapshot
+        // builder; seeding only the finals keeps the test focused.
+        CupTie::factory()->forGame($this->game)->inRound(2)
+            ->between($bracketAWinner, $esp3a[2])
+            ->completed($bracketAWinner, 'aggregate')
+            ->create(['competition_id' => 'ESP3PO', 'bracket_position' => PrimeraRFEFPlayoffGenerator::BRACKET_A]);
+        CupTie::factory()->forGame($this->game)->inRound(2)
+            ->between($bracketBWinner, $esp3b[2])
+            ->completed($bracketBWinner, 'aggregate')
+            ->create(['competition_id' => 'ESP3PO', 'bracket_position' => PrimeraRFEFPlayoffGenerator::BRACKET_B]);
+
+        $processor = app(PromotionRelegationProcessor::class);
+        $processor->process($this->game, new SeasonTransitionData(
+            oldSeason: '2025',
+            newSeason: '2026',
+            competitionId: 'ESP2',
+        ));
+
+        $this->assertTrue(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'ESP2')
+                ->where('team_id', $bracketAWinner->id)
+                ->exists(),
+            'Bracket A winner (ESP3A pos 4) should be promoted to ESP2',
+        );
+        $this->assertTrue(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'ESP2')
+                ->where('team_id', $bracketBWinner->id)
+                ->exists(),
+            'Bracket B winner (ESP3B pos 5) should be promoted to ESP2',
+        );
+
+        // The stand-ins the bug picked must not have hitched a ride.
+        $this->assertFalse(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'ESP2')
+                ->whereIn('team_id', [$esp3a[2]->id, $esp3a[3]->id])
+                ->exists(),
+            'ESP3A positions 2 and 3 (the bug-era stand-ins) must remain in ESP3',
+        );
+
+        // Sanity: direct-promotion slots (position 1 of each group) still apply.
+        $this->assertTrue(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'ESP2')
+                ->whereIn('team_id', [$esp3a[1]->id, $esp3b[1]->id])
+                ->count() === 2,
+            'Both ESP3A pos 1 and ESP3B pos 1 should be directly promoted',
+        );
+    }
+
+    /**
+     * @return array<int, Team> 1-indexed by standings position.
+     */
+    private function seedRealTier(string $competitionId, int $count, ?int $userPosition = null): array
+    {
+        $teams = [];
+        for ($i = 1; $i <= $count; $i++) {
+            $team = ($i === $userPosition)
+                ? $this->game->team
+                : Team::factory()->create(['country' => 'ES']);
+            $teams[$i] = $team;
+            CompetitionEntry::create([
+                'game_id' => $this->game->id,
+                'competition_id' => $competitionId,
+                'team_id' => $team->id,
+                'entry_round' => 1,
+            ]);
+            GameStanding::create([
+                'game_id' => $this->game->id,
+                'competition_id' => $competitionId,
+                'team_id' => $team->id,
+                'position' => $i,
+                'played' => max(38, ($count - 1) * 2),
+                'won' => max(0, 25 - $i),
+                'drawn' => 5,
+                'lost' => $i,
+                'goals_for' => max(10, 70 - $i),
+                'goals_against' => 20 + $i,
+                'points' => max(0, 25 - $i) * 3 + 5,
+            ]);
+        }
+        return $teams;
     }
 }

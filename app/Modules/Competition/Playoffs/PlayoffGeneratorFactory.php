@@ -46,6 +46,17 @@ class PlayoffGeneratorFactory
                 foreach ($sourceDivisions as $sourceDivision) {
                     $this->generators[$sourceDivision] = $generator;
                 }
+                // Also register under the target competition ID so callers
+                // that look up by playoff_competition — notably
+                // CountrySeasonSnapshotBuilder reading playoff state at
+                // season close — find the generator. For simple rules where
+                // target equals one of the sources (e.g. ESP1↔ESP2's in-league
+                // bracket) this is a no-op. For split rules with a separate
+                // bracket competition (Primera RFEF's ESP3PO) it's the only
+                // key the snapshot builder will probe.
+                if (!isset($this->generators[$targetCompetitionId])) {
+                    $this->generators[$targetCompetitionId] = $generator;
+                }
             }
         }
     }
