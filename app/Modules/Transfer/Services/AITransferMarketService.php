@@ -225,6 +225,9 @@ class AITransferMarketService
         $teamAverages = $teamRosters->map(fn ($players) => $this->calculateTeamAverage($players));
         $takenNumbers = $this->preloadSquadNumbers($game->id);
         $reputationLevels = TeamReputation::resolveLevels($game->id, $teamRosters->keys()->all());
+        // Needed to filter reserves out of the buy side — reserves are now
+        // in $teamRosters as sellers but must not sign free agents.
+        $teams = Team::whereIn('id', $teamRosters->keys())->get()->keyBy('id');
 
         $freeAgents = $this->loadGamePlayersWithPlayerDob(function ($query) use ($game): void {
             $query->where('game_players.game_id', $game->id)
@@ -259,6 +262,12 @@ class AITransferMarketService
         $teamNeeds = [];
         foreach ($teamRosters as $teamId => $players) {
             if ($players->count() >= self::MAX_SQUAD_SIZE) {
+                continue;
+            }
+
+            // Reserves only appear in $teamRosters as sellers (see
+            // loadAIRosters) — they never sign free agents.
+            if ($teams->get($teamId)?->parent_team_id !== null) {
                 continue;
             }
 
@@ -329,7 +338,7 @@ class AITransferMarketService
                 break;
             }
 
-            $bestTeamId = $this->findBestTeamForSeasonSigning($fa, $teamRosters, $teamAverages, $reputationLevels);
+            $bestTeamId = $this->findBestTeamForSeasonSigning($fa, $teamRosters, $teamAverages, $reputationLevels, $teams);
             if (! $bestTeamId) {
                 continue;
             }
@@ -897,6 +906,12 @@ class AITransferMarketService
                 continue;
             }
 
+            // Reserves only appear in $teamRosters as sellers (see
+            // loadAIRosters) — they never sign senior players.
+            if ($teams->get($teamId)?->parent_team_id !== null) {
+                continue;
+            }
+
             // Skip AI teams configured to rely exclusively on their youth academy
             if ($this->exclusionList->contains($teamId)) {
                 continue;
@@ -976,6 +991,12 @@ class AITransferMarketService
 
         foreach ($teamRosters as $teamId => $players) {
             if ($teamId === $sellerTeamId || $teamId === $game->team_id) {
+                continue;
+            }
+
+            // Reserves only appear in $teamRosters as sellers (see
+            // loadAIRosters) — they never sign senior players.
+            if ($teams->get($teamId)?->parent_team_id !== null) {
                 continue;
             }
 
@@ -1142,6 +1163,12 @@ class AITransferMarketService
 
         foreach ($teamRosters as $teamId => $players) {
             if ($players->count() >= self::MAX_SQUAD_SIZE) {
+                continue;
+            }
+
+            // Reserves only appear in $teamRosters as sellers (see
+            // loadAIRosters) — they never sign free agents.
+            if ($teams->get($teamId)?->parent_team_id !== null) {
                 continue;
             }
 
@@ -1325,7 +1352,7 @@ class AITransferMarketService
      * strongly preferred. Unlike findBestTeamForFreeAgent (used at window close),
      * this method doesn't require specific position group needs.
      */
-    private function findBestTeamForSeasonSigning(GamePlayer $freeAgent, Collection $teamRosters, Collection $teamAverages, Collection $reputationLevels): ?string
+    private function findBestTeamForSeasonSigning(GamePlayer $freeAgent, Collection $teamRosters, Collection $teamAverages, Collection $reputationLevels, Collection $teams): ?string
     {
         $playerAbility = $this->getPlayerAbility($freeAgent);
         $playerTier = $freeAgent->tier ?? 1;
@@ -1335,6 +1362,12 @@ class AITransferMarketService
         foreach ($teamRosters as $teamId => $players) {
             $squadSize = $players->count();
             if ($squadSize >= self::MAX_SQUAD_SIZE) {
+                continue;
+            }
+
+            // Reserves only appear in $teamRosters as sellers (see
+            // loadAIRosters) — they never sign free agents.
+            if ($teams->get($teamId)?->parent_team_id !== null) {
                 continue;
             }
 
@@ -1406,25 +1439,25 @@ class AITransferMarketService
     }
 
     /**
-     * Load all AI team rosters (excludes human player's team and reserve teams).
+     * Load all AI team rosters (excludes every team the user controls —
+     * first team and, in filial mode, their reserve).
      *
-     * Reserve teams (parent_team_id IS NOT NULL) are development pipelines
-     * for their parent club, not transfer-market participants. Excluding
-     * them here keeps them out of both the seller and buyer sides of
-     * AI-to-AI transfers.
+     * Other reserve teams (parent_team_id IS NOT NULL) ARE included so
+     * they appear on the SELL side of AI-to-AI activity — the regen
+     * pipeline (SquadReplenishmentProcessor) keeps refilling them, so
+     * high turnover is the intended development-squad behaviour. The
+     * BUY side is gated separately inside each buyer-matching method
+     * via a `parent_team_id` check against $teams, so reserves never
+     * end up signing senior players or free agents.
      */
     private function loadAIRosters(Game $game): Collection
     {
-        // PLANES-SEAM: teams lookup is cross-plane (control), but we issue
-        // it as a separate query so loadGamePlayersWithPlayerDob keeps
-        // querying game_players directly without ambiguous column joins.
-        $reserveTeamIds = Team::whereNotNull('parent_team_id')->pluck('id')->all();
+        $userTeamIds = $game->userTeamIds();
 
-        return $this->loadGamePlayersWithPlayerDob(function ($query) use ($game, $reserveTeamIds): void {
+        return $this->loadGamePlayersWithPlayerDob(function ($query) use ($game, $userTeamIds): void {
             $query->where('game_players.game_id', $game->id)
                 ->whereNotNull('game_players.team_id')
-                ->where('game_players.team_id', '!=', $game->team_id)
-                ->when(! empty($reserveTeamIds), fn ($q) => $q->whereNotIn('game_players.team_id', $reserveTeamIds));
+                ->whereNotIn('game_players.team_id', $userTeamIds);
         })->groupBy('team_id');
     }
 
