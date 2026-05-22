@@ -115,7 +115,8 @@ class RedCardSimulationTest extends TestCase
         // All goal events should have valid minutes
         foreach ($goalEvents as $event) {
             $this->assertGreaterThanOrEqual(1, $event->minute, 'Goal event minute should be >= 1');
-            $this->assertLessThanOrEqual(93, $event->minute, 'Goal event minute should be <= 93');
+            $this->assertLessThanOrEqual(MatchSimulator::REGULATION_UPPER_BOUND, $event->minute,
+                'Goal event minute should be <= REGULATION_UPPER_BOUND');
         }
 
         // Goal events for home team after minute 30 should NOT involve the red-carded player
@@ -223,7 +224,7 @@ class RedCardSimulationTest extends TestCase
                 foreach ($output->result->redCards() as $event) {
                     $this->assertEquals('red_card', $event->type);
                     $this->assertGreaterThanOrEqual(1, $event->minute);
-                    $this->assertLessThanOrEqual(93, $event->minute);
+                    $this->assertLessThanOrEqual(MatchSimulator::REGULATION_UPPER_BOUND, $event->minute);
                     $this->assertNotEmpty($event->gamePlayerId);
                     $this->assertNotEmpty($event->teamId);
                 }
