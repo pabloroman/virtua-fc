@@ -368,6 +368,110 @@ class ReserveTeamService
         );
     }
 
+    /**
+     * AI-side: at season close, permanently promote the top young prospects
+     * from an AI club's reserve to its parent first team. Ranked per
+     * position group by a blend of current ability and potential; only the
+     * clearest "this kid is going somewhere" profiles are picked (blend
+     * score ≥ MIN_PROSPECT_BLEND), so the typical reserve loses one or two
+     * stars per season rather than its whole squad.
+     *
+     * Permanent move (TYPE_INTERNAL_PROMOTION), so the call-up doesn't
+     * oscillate back to the reserve via LoanReturnProcessor next season.
+     * User-only side effects (UserSquadCareerRecord, notifications,
+     * SquadNumberService) are skipped — this method is invoked only for AI
+     * parent clubs by AIReserveCallUpProcessor.
+     *
+     * @return Collection<int, GamePlayer>
+     */
+    public function autoPromoteAIReserveProspects(
+        Game $game,
+        string $reserveTeamId,
+        string $parentTeamId,
+    ): Collection {
+        // Still-U23 next season: complements the overage promotion that
+        // already moved age-24+ players up at priority 4.
+        $nextSeasonU23Cutoff = $game->getU23BirthCutoff((int) $game->season + 1);
+
+        $candidates = GamePlayer::ownedByTeam($reserveTeamId)
+            ->where('game_id', $game->id)
+            ->where('date_of_birth', '>=', $nextSeasonU23Cutoff)
+            ->whereNotNull('overall_score')
+            ->with(['activeLoan'])
+            ->get();
+
+        if ($candidates->isEmpty()) {
+            return collect();
+        }
+
+        // Blend current ability and potential: catches both ready-now
+        // prospects (high overall) and high-upside ones (modest overall,
+        // huge potential).
+        $scored = $candidates->map(function (GamePlayer $p) {
+            $potential = $p->potential ?? $p->overall_score;
+            $blend = ($p->overall_score + $potential) / 2;
+
+            return ['player' => $p, 'blend' => $blend];
+        });
+
+        $byPosition = $scored->groupBy(fn ($row) => $row['player']->position);
+
+        $picks = collect();
+        foreach ($byPosition as $rows) {
+            $top = collect($rows)->sortByDesc('blend')->first();
+            if ($top !== null && $top['blend'] >= self::MIN_PROSPECT_BLEND) {
+                $picks->push($top);
+            }
+        }
+
+        $picks = $picks->sortByDesc('blend')->take(self::MAX_PROSPECTS_PER_SEASON);
+
+        $promoted = collect();
+        foreach ($picks as $entry) {
+            /** @var GamePlayer $player */
+            $player = $entry['player'];
+
+            // Close any active call-up loan from this reserve first so a
+            // later LoanReturnProcessor sweep (next season) doesn't try to
+            // flip the player back.
+            if ($player->activeLoan && $player->activeLoan->parent_team_id === $reserveTeamId) {
+                $player->activeLoan->update(['status' => Loan::STATUS_COMPLETED]);
+            }
+
+            $player->update(['number' => null, 'team_id' => $parentTeamId]);
+
+            GameTransfer::record(
+                gameId: $game->id,
+                gamePlayerId: $player->id,
+                fromTeamId: $reserveTeamId,
+                toTeamId: $parentTeamId,
+                transferFee: 0,
+                type: GameTransfer::TYPE_INTERNAL_PROMOTION,
+                season: $game->season,
+                window: TransferWindowType::currentValue($game->current_date),
+            );
+
+            $promoted->push($player);
+        }
+
+        return $promoted;
+    }
+
+    /**
+     * Blended score (overall + potential) / 2 floor for promoting a reserve
+     * prospect to the AI parent first team. 76 corresponds to clearly
+     * above-development-squad profiles (e.g. 72 + 80, 70 + 82, 68 + 84);
+     * average reserve players (65/75 blend = 70) stay put.
+     */
+    private const MIN_PROSPECT_BLEND = 76;
+
+    /**
+     * Per-AI-parent cap on prospects promoted in a single season. Prevents
+     * a wholesale gutting of the reserve when several players cross the
+     * blend threshold in the same year.
+     */
+    private const MAX_PROSPECTS_PER_SEASON = 3;
+
     private function assertFilial(Game $game): void
     {
         if ($game->reserve_team_id === null) {
