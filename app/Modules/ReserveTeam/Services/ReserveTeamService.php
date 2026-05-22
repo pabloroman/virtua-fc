@@ -162,22 +162,37 @@ class ReserveTeamService
      * recorded as a GameTransfer of type INTERNAL_PROMOTION. Any active
      * call-up loan for the player is closed first.
      *
+     * Defaults to the user's filial pair ($game->reserve_team_id /
+     * $game->team_id). Pass explicit ids to operate on an AI club's reserve
+     * — in that case the user-only side effects (squad-number assignment via
+     * SquadNumberService, UserSquadCareerRecord, and the user notification)
+     * are skipped, since SquadNumberService is hard-wired to $game->team_id
+     * and the career/notification streams are user-scoped.
+     *
      * Returns the list of promoted players for downstream processors.
      *
      * @return Collection<int, GamePlayer>
      */
-    public function autoPromoteOverageReservePlayers(Game $game): Collection
-    {
-        if ($game->reserve_team_id === null) {
+    public function autoPromoteOverageReservePlayers(
+        Game $game,
+        ?string $reserveTeamId = null,
+        ?string $parentTeamId = null,
+    ): Collection {
+        $reserveTeamId ??= $game->reserve_team_id;
+        $parentTeamId ??= $game->team_id;
+
+        if ($reserveTeamId === null || $parentTeamId === null) {
             return collect();
         }
+
+        $isUserFilial = ($reserveTeamId === $game->reserve_team_id);
 
         // Season close runs before $game->season is incremented, so we evaluate
         // against next season's U-23 cutoff: players who'd be overage (NOT
         // U-23) under next season's rule must move up to the first team now.
         $nextSeasonU23Cutoff = $game->getU23BirthCutoff((int) $game->season + 1);
 
-        $candidates = GamePlayer::ownedByTeam($game->reserve_team_id)
+        $candidates = GamePlayer::ownedByTeam($reserveTeamId)
             ->where('game_id', $game->id)
             ->where('date_of_birth', '<', $nextSeasonU23Cutoff)
             ->with(['activeLoan'])
@@ -188,50 +203,57 @@ class ReserveTeamService
         foreach ($candidates as $player) {
             // Close any active call-up loan first so returnLoan() doesn't
             // later try to flip the player back to the reserve team.
-            if ($player->activeLoan && $player->activeLoan->parent_team_id === $game->reserve_team_id) {
+            if ($player->activeLoan && $player->activeLoan->parent_team_id === $reserveTeamId) {
                 $player->activeLoan->update(['status' => Loan::STATUS_COMPLETED]);
             }
 
             // Permanent move to first team. Null the reserve number first so
             // the (game_id, team_id, number) unique constraint can't fire on
-            // the team_id flip.
-            $reserveTeamName = $game->reserveTeam?->name;
-            $player->update(['number' => null, 'team_id' => $game->team_id]);
-            $number = $this->squadNumberService->assignNumberForNewPlayer($game, $player);
-            if ($number !== null) {
-                $player->update(['number' => $number]);
-            }
+            // the team_id flip. AI promotions leave the number null — AI
+            // squads don't depend on shirt numbers and SquadNumberService is
+            // user-scoped.
+            $player->update(['number' => null, 'team_id' => $parentTeamId]);
 
-            \App\Models\UserSquadCareerRecord::updateOrCreate(
-                ['game_player_id' => $player->id],
-                [
-                    'game_id' => $game->id,
-                    'team_id' => $game->team_id,
-                    'joined_season' => (int) $game->season,
-                    'joined_from' => $reserveTeamName ?? \App\Models\UserSquadCareerRecord::ORIGIN_ACADEMY,
-                ],
-            );
+            if ($isUserFilial) {
+                $reserveTeamName = $game->reserveTeam?->name;
+                $number = $this->squadNumberService->assignNumberForNewPlayer($game, $player);
+                if ($number !== null) {
+                    $player->update(['number' => $number]);
+                }
+
+                \App\Models\UserSquadCareerRecord::updateOrCreate(
+                    ['game_player_id' => $player->id],
+                    [
+                        'game_id' => $game->id,
+                        'team_id' => $parentTeamId,
+                        'joined_season' => (int) $game->season,
+                        'joined_from' => $reserveTeamName ?? \App\Models\UserSquadCareerRecord::ORIGIN_ACADEMY,
+                    ],
+                );
+            }
 
             GameTransfer::record(
                 gameId: $game->id,
                 gamePlayerId: $player->id,
-                fromTeamId: $game->reserve_team_id,
-                toTeamId: $game->team_id,
+                fromTeamId: $reserveTeamId,
+                toTeamId: $parentTeamId,
                 transferFee: 0,
                 type: GameTransfer::TYPE_INTERNAL_PROMOTION,
                 season: $game->season,
                 window: TransferWindowType::currentValue($game->current_date),
             );
 
-            $this->notificationService->create(
-                game: $game,
-                type: \App\Models\GameNotification::TYPE_ACADEMY_PROSPECT,
-                title: __('notifications.reserve_overage_promoted_title'),
-                message: __('notifications.reserve_overage_promoted_message', [
-                    'player' => $player->name ?? '',
-                ]),
-                priority: \App\Models\GameNotification::PRIORITY_INFO,
-            );
+            if ($isUserFilial) {
+                $this->notificationService->create(
+                    game: $game,
+                    type: \App\Models\GameNotification::TYPE_ACADEMY_PROSPECT,
+                    title: __('notifications.reserve_overage_promoted_title'),
+                    message: __('notifications.reserve_overage_promoted_message', [
+                        'player' => $player->name ?? '',
+                    ]),
+                    priority: \App\Models\GameNotification::PRIORITY_INFO,
+                );
+            }
 
             $promoted->push($player);
         }
