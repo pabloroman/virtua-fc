@@ -170,7 +170,7 @@ class PlayerDevelopmentService
     /**
      * Calculate potential bonus based on market value relative to age.
      *
-     * @return int Bonus points to add to potential range (0-10)
+     * @return int Bonus points to add to potential range (0-12)
      */
     private function getValuePotentialBonus(int $age, int $marketValueCents): int
     {
@@ -192,6 +192,24 @@ class PlayerDevelopmentService
         };
 
         $valueRatio = $marketValueCents / max(1, $typicalValueForAge);
+
+        // Young players: PlayerValuationService::adjustAbilityForAge() no
+        // longer raises the age cap on current ability for high-market-value
+        // youngsters — that headroom now lives in potential instead. Bonus
+        // kicks in at lower value ratios so a 19yo who's merely "expensive
+        // for his age" still gains potential, not just the megastars.
+        if ($age <= PlayerAge::YOUNG_END) {
+            return match (true) {
+                $valueRatio >= 100 => 12, // e.g. €120M 17yo (240x typical)
+                $valueRatio >= 50 => 10,
+                $valueRatio >= 20 => 8,
+                $valueRatio >= 10 => 6,
+                $valueRatio >= 5 => 4,
+                $valueRatio >= 2 => 2,
+                $valueRatio >= 1 => 1,
+                default => 0,
+            };
+        }
 
         // Higher ratio = more proven potential
         return match (true) {

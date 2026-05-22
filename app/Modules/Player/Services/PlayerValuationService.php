@@ -177,27 +177,26 @@ class PlayerValuationService
     }
 
     /**
-     * Adjust raw ability for age (young players capped, veterans boosted).
+     * Adjust raw ability for age.
      *
-     * Young players with exceptional market value get higher caps (proven talent).
-     * Veterans with high market value get ability boosts (proven quality).
+     * Young players (< YOUNG_END) are capped by age: market value at this
+     * stage signals POTENTIAL, not current ability — a 17yo worth €120M is
+     * priced for his ceiling, not for being world-class today. The extra
+     * headroom is channelled into potential by
+     * PlayerDevelopmentService::generatePotential(), not into current
+     * overall.
+     *
+     * Veterans (PRIME_END - 2 onwards) get an ability boost when their
+     * market value proves they're still elite. Different signal: a 33yo
+     * worth €40M is staying expensive because he's still delivering at top
+     * level, so the market value does map to current ability.
      */
     private function adjustAbilityForAge(int $rawAbility, int $marketValueCents, int $age): int
     {
         if ($age < PlayerAge::YOUNG_END) {
-            // Base cap increases with age: 17yo = 75, 22yo = 85
+            // Base cap increases with age: 17yo = 75, 22yo = 85. No market-
+            // value boost: the headroom flows into potential, not overall.
             $ageCap = 75 + ($age - 17) * 2;
-
-            // Exceptional market value raises the cap significantly
-            if ($marketValueCents >= 15_000_000_000) {      // €150M+
-                $ageCap += 14;
-            } elseif ($marketValueCents >= 10_000_000_000) { // €100M+
-                $ageCap += 10;
-            } elseif ($marketValueCents >= 5_000_000_000) {  // €50M+
-                $ageCap += 6;
-            } elseif ($marketValueCents >= 2_000_000_000) {  // €20M+
-                $ageCap += 3;
-            }
 
             return min($rawAbility, $ageCap);
         }
