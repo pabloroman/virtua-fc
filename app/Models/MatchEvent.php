@@ -219,6 +219,24 @@ class MatchEvent extends Model
     }
 
     /**
+     * Events that took place during regulation play (any phase before extra
+     * time). Ergonomic counterpart to MatchPhase::regulation() for query sites.
+     */
+    public function scopeInRegulation(Builder $query): Builder
+    {
+        return $query->whereIn('phase', array_map(fn (MatchPhase $p) => $p->value, MatchPhase::regulation()));
+    }
+
+    /**
+     * Events that took place during extra time (any ET half, including stoppage).
+     * Penalty-shootout events are excluded — those are MatchPhase::PENALTIES.
+     */
+    public function scopeInExtraTime(Builder $query): Builder
+    {
+        return $query->whereIn('phase', array_map(fn (MatchPhase $p) => $p->value, MatchPhase::extraTime()));
+    }
+
+    /**
      * Get display string for the event (e.g., "45' Goal - Vinicius Jr.")
      */
     public function getDisplayStringAttribute(): string

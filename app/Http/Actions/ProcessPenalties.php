@@ -23,7 +23,7 @@ class ProcessPenalties
             return response()->json(['error' => 'Match not in progress'], 403);
         }
 
-        if (! $match->is_extra_time) {
+        if (! $match->reachedExtraTime()) {
             return response()->json(['error' => 'Extra time not played'], 400);
         }
 

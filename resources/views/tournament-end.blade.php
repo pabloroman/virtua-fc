@@ -191,7 +191,7 @@ foreach ($positionGroupOrder as $group) {
                             <div class="font-heading text-2xl md:text-3xl font-bold text-white">
                                 {{ $finalHomeTotal }} - {{ $finalAwayTotal }}
                             </div>
-                            @if($finalMatch->is_extra_time)
+                            @if($finalMatch->reachedExtraTime())
                             <div class="text-[10px] text-white/50 mt-0.5">
                                 @if($finalMatch->home_score_penalties !== null)
                                     {{ __('season.aet_abbr') }} &middot; {{ __('season.pens_abbr') }} {{ $finalMatch->home_score_penalties }}-{{ $finalMatch->away_score_penalties }}
@@ -356,7 +356,7 @@ foreach ($positionGroupOrder as $group) {
                                                 </div>
                                                 <div class="shrink-0 text-center">
                                                     <span class="font-heading text-sm font-semibold text-text-primary">{{ $homeScore }} - {{ $awayScore }}</span>
-                                                    @if($match?->is_extra_time)
+                                                    @if($match?->reachedExtraTime())
                                                     <div class="text-[10px] text-text-secondary">
                                                         @if($match->home_score_penalties !== null)
                                                             {{ __('season.pens_abbr') }} {{ $match->home_score_penalties }}-{{ $match->away_score_penalties }}
@@ -481,7 +481,7 @@ foreach ($positionGroupOrder as $group) {
                                             {{ $scored }}-{{ $conceded }}
                                         </div>
 
-                                        @if($match->is_extra_time)
+                                        @if($match->reachedExtraTime())
                                         <span class="shrink-0 text-[10px] text-text-secondary font-medium">
                                             {{ $match->home_score_penalties !== null ? __('season.pens_abbr') : __('season.aet_abbr') }}
                                         </span>

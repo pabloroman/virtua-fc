@@ -25,7 +25,6 @@ use App\Support\PositionSlotMapper;
  * @property int|null $away_score
  * @property bool $played
  * @property string|null $cup_tie_id
- * @property bool $is_extra_time
  * @property int|null $home_score_et
  * @property int|null $away_score_et
  * @property int|null $home_score_penalties
@@ -82,7 +81,6 @@ use App\Support\PositionSlotMapper;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GameMatch whereHomeScorePenalties($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GameMatch whereHomeTeamId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GameMatch whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|GameMatch whereIsExtraTime($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GameMatch wherePlayed($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GameMatch whereRoundName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GameMatch whereRoundNumber($value)
@@ -124,7 +122,6 @@ class GameMatch extends Model
         'home_slot_assignments',
         'away_slot_assignments',
         'cup_tie_id',
-        'is_extra_time',
         'home_score_et',
         'away_score_et',
         'home_score_penalties',
@@ -164,7 +161,6 @@ class GameMatch extends Model
         'home_slot_assignments' => 'array',
         'away_slot_assignments' => 'array',
         'played' => 'boolean',
-        'is_extra_time' => 'boolean',
         'home_score_et' => 'integer',
         'away_score_et' => 'integer',
         'home_score_penalties' => 'integer',
@@ -213,6 +209,15 @@ class GameMatch extends Model
     public function isCupMatch(): bool
     {
         return $this->cup_tie_id !== null;
+    }
+
+    /**
+     * Whether the match progressed into extra time. Derived from the persisted
+     * ET score columns so we don't need a separate boolean flag to keep in sync.
+     */
+    public function reachedExtraTime(): bool
+    {
+        return $this->home_score_et !== null;
     }
 
     public function events(): HasMany

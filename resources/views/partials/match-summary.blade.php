@@ -31,7 +31,7 @@
                 <div class="px-3 py-1.5 md:px-4 md:py-2 rounded-lg bg-surface-700 text-xl md:text-3xl font-heading font-bold text-text-primary tabular-nums">
                     {{ $summary->homeTotal }} - {{ $summary->awayTotal }}
                 </div>
-                @if($match->is_extra_time)
+                @if($match->reachedExtraTime())
                     <div class="text-[9px] md:text-[10px] text-text-muted uppercase tracking-widest tabular-nums">
                         @if($summary->hasPenalties)
                             {{ __('season.aet_abbr') }} &middot; {{ __('season.pens_abbr') }} {{ $match->home_score_penalties }}-{{ $match->away_score_penalties }}
