@@ -65,7 +65,7 @@ class RepairReserveParentCoexistence extends Command
      * the next processor to run. The planner explodes during that processor,
      * which leaves the game checkpointed at the prior step.
      */
-    private const EXPECTED_STEP = 22;
+    private const EXPECTED_STEP = 23;
 
     public function __construct(private readonly CountryConfig $countryConfig)
     {
