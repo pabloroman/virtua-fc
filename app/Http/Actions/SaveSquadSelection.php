@@ -88,6 +88,7 @@ class SaveSquadSelection
                 'team_id' => $teamId,
                 'number' => null,
                 'position' => $positionByTmId[$tmId] ?? 'Central Midfield',
+                'secondary_positions' => $template->getRawOriginal('secondary_positions'),
                 'market_value' => null,
                 'market_value_cents' => 0,
                 'contract_until' => null,
