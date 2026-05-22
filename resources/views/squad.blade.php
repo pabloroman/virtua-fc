@@ -336,6 +336,10 @@
                                                 </div>
                                             </div>
 
+                                            @if($gp->club_crest_url ?? null)
+                                                <img src="{{ $gp->club_crest_url }}" alt="" title="{{ $gp->club_name }}" class="w-4 h-4 shrink-0 object-contain">
+                                            @endif
+
                                             {{-- Rating badge --}}
                                             <x-rating-badge :value="$gp->effective_rating" size="sm" class="shrink-0" />
                                         </div>
@@ -370,6 +374,16 @@
                                                 </div>
                                                 @endif
                                             </div>
+                                            @if(!empty($gp->club_name) || !empty($gp->club_crest_url))
+                                                <div class="ml-auto flex items-center gap-1.5 min-w-0 text-xs text-text-muted" title="{{ $gp->club_name }}">
+                                                    @if($gp->club_crest_url)
+                                                        <img src="{{ $gp->club_crest_url }}" alt="" class="w-4 h-4 shrink-0 object-contain">
+                                                    @endif
+                                                    @if($gp->club_name)
+                                                        <span class="truncate max-w-[140px]">{{ $gp->club_name }}</span>
+                                                    @endif
+                                                </div>
+                                            @endif
                                         </div>
 
                                         {{-- Position badges --}}
