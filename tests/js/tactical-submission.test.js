@@ -1,14 +1,15 @@
 /**
- * Integration tests for tactical-submission.js — covers the call-site
- * contracts between this module and atmosphere-generator.js.
+ * Integration tests for tactical-submission.js — drives confirmAllChanges
+ * end-to-end with the REAL atmosphere glue wired against a mock state.
  *
- * The core regression we guard against: when the user triggers a tactical
- * change (or skip-to-end auto-sub), the server may resimulate the
- * remainder and emit new red cards / injuries inside `result.newEvents`.
- * Before the fix, regenerateShots was called with c.events as
- * availabilityEvents BEFORE the new server events were merged — so a
- * red-carded player at minute 40 was still considered "on the pitch" and
- * could be picked for atmosphere shots at minute 46.
+ * The historical bug this guards against: when the user triggers a
+ * tactical change (or skip-to-end auto-sub), the server may resimulate
+ * the remainder and emit new red cards / injuries inside
+ * `result.newEvents`. Pre-refactor, atmosphere shots for the remaining
+ * period were regenerated BEFORE those new events were merged into the
+ * canonical event list, so a sent-off player could still be picked as
+ * the actor of a later shot. Post-refactor, atmosphere is derived from
+ * `c.realEvents` only after all server events are merged.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createTacticalSubmission } from '@/modules/tactical-submission.js';

@@ -12,9 +12,16 @@ import { PHASE } from './match-phases.js';
  * through `ctx()`. Previously inlined at the bottom of live-match.js.
  */
 export function createRatingsGlue(ctx) {
+    // Ratings are computed from server-truth events only — atmosphere
+    // events (shots, fouls, narratives) are cosmetic and don't contribute
+    // goals, cards, or substitution data. Reading realEvents instead of
+    // the merged view also avoids picking up regenerated atmosphere
+    // numbers after a tactical resimulation.
     function allEvents() {
         const c = ctx();
-        return [...c.events, ...(c.extraTimeEvents || [])];
+        const reg = c.realEvents ?? c.events ?? [];
+        const et = c.realExtraTimeEvents ?? c.extraTimeEvents ?? [];
+        return [...reg, ...et];
     }
 
     return {
