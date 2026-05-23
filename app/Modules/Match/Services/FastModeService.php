@@ -9,10 +9,15 @@ class FastModeService
 {
     public function enter(Game $game): void
     {
-        // Reset fast_mode_entered_on on every (re-)entry so stepping out and
-        // back in clears the "last result" panel — the user should land on
-        // an empty session. The not-null marker also doubles as the
-        // is-fast-mode flag (Game::isFastMode()).
+        // No-op when already in fast mode. current_date is forward-looking
+        // (points to the next unplayed match), so re-snapshotting it mid-
+        // session would advance the marker past the just-played match and
+        // hide the "last result" panel. Exiting first (which nulls the
+        // column) is the supported way to clear the session.
+        if ($game->fast_mode_entered_on !== null) {
+            return;
+        }
+
         $game->update([
             'fast_mode_entered_on' => $game->current_date?->toDateString(),
         ]);

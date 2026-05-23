@@ -174,6 +174,7 @@ return [
     'fast_mode_action_required' => 'Una acción requiere tu atención. Sal del modo rápido para resolverla.',
     'fast_mode_blocked_live_match' => 'Termina el partido actual antes de activar el modo rápido.',
     'fast_mode_blocked_tournament' => 'El modo rápido no está disponible en el modo torneo.',
+    'fast_mode_advance_failed_retry' => 'No se pudo simular la jornada. Inténtalo de nuevo.',
 
     // Budget loan messages
     'budget_loan_approved' => 'Préstamo de :amount aprobado y añadido a tu presupuesto de fichajes.',

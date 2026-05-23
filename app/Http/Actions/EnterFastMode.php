@@ -30,11 +30,30 @@ class EnterFastMode
                 ->with('warning', __('messages.fast_mode_blocked_live_match'));
         }
 
+        $alreadyInFastMode = $game->isFastMode();
         $this->fastModeService->enter($game);
 
         // Simulate the first match immediately so the user lands on a
         // populated view (last result + updated standings) instead of an
         // empty "simulate your first match" screen.
-        return ($this->advanceFastMatchday)($gameId);
+        $playedBefore = $game->matches()->where('played', true)->count();
+        $response = ($this->advanceFastMatchday)($gameId);
+        $playedAfter = $game->matches()->where('played', true)->count();
+
+        // If the inline advance didn't actually simulate anything (claim
+        // contention, swallowed exception, etc.), the user would land on
+        // game.fast-mode with fast_mode_entered_on snapshotted past every
+        // previously-played match — an empty "last result" panel with no
+        // explanation. Roll back the entry and surface a visible warning
+        // on show-game, where flash messages render. Skip the rollback if
+        // the user was already in fast mode before this request: we don't
+        // want to kick a healthy session out on a transient retry.
+        if ($playedAfter === $playedBefore && ! $alreadyInFastMode) {
+            $this->fastModeService->exit($game->fresh());
+            return redirect()->route('show-game', $gameId)
+                ->with('warning', __('messages.fast_mode_advance_failed_retry'));
+        }
+
+        return $response;
     }
 }

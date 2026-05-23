@@ -174,6 +174,7 @@ return [
     'fast_mode_action_required' => 'An action requires your attention. Exit fast mode to resolve it.',
     'fast_mode_blocked_live_match' => 'Finish the current match before enabling fast mode.',
     'fast_mode_blocked_tournament' => 'Fast mode is not available in tournament mode.',
+    'fast_mode_advance_failed_retry' => 'Could not simulate the matchday. Please try again.',
 
     // Budget loan messages
     'budget_loan_approved' => 'Loan of :amount approved and added to your transfer budget.',
