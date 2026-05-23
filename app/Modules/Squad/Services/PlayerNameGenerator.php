@@ -4,6 +4,7 @@ namespace App\Modules\Squad\Services;
 
 use Faker\Factory;
 use Faker\Generator;
+use Faker\Provider\Person;
 use Illuminate\Support\Str;
 
 /**
@@ -133,7 +134,14 @@ class PlayerNameGenerator
             ? $this->fakerForRegion($region)
             : $this->fakerFor($nationality);
 
-        $name = $faker->firstNameMale() . ' ' . $faker->lastName();
+        // Force the male surname pool. In Slavic (and a few other) Faker
+        // locales surnames inflect for gender (Иванов/Иванова, Nowak/Nowakowa,
+        // Novák/Nováková). A bare lastName() picks 50/50 across male and
+        // female pools/formats, so without an explicit gender ~half of male
+        // players would receive a female-inflected surname. Locales whose
+        // lastName() doesn't accept a $gender parameter silently ignore the
+        // extra arg and behave unchanged.
+        $name = $faker->firstNameMale() . ' ' . $faker->lastName(Person::GENDER_MALE);
 
         // Faker ships names in each locale's native script (Greek, Cyrillic,
         // Arabic, CJK, etc.). The game UI assumes Latin script everywhere, so
