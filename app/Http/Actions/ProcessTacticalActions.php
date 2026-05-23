@@ -41,6 +41,7 @@ class ProcessTacticalActions
 
         $validated = $request->validate([
             'minute' => 'required|integer|min:1|max:120',
+            'is_half_time' => 'sometimes|boolean',
             'substitutions' => 'array|max:'.SubstitutionService::MAX_ET_SUBSTITUTIONS,
             'substitutions.*.playerOutId' => 'required|string',
             'substitutions.*.playerInId' => 'required|string',
@@ -109,6 +110,7 @@ class ProcessTacticalActions
                     $validated['defensive_line'] ?? null,
                     isExtraTime: $isExtraTime,
                     manualSlotPins: $validated['manual_slot_pins'] ?? [],
+                    isHalfTime: $validated['is_half_time'] ?? false,
                 );
             }, attempts: 3);
         } catch (\Throwable $e) {

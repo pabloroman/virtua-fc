@@ -8,6 +8,7 @@ use App\Models\GamePlayer;
 use App\Models\GamePlayerMatchState;
 use App\Models\MatchEvent;
 use App\Modules\Lineup\Enums\Formation;
+use App\Modules\Match\Enums\MatchPhase;
 use App\Modules\Match\Support\MinuteCoordinates;
 use App\Modules\Match\Support\StoppageDurations;
 use Illuminate\Support\Str;
@@ -42,6 +43,7 @@ class TacticalChangeService
         bool $isExtraTime = false,
         bool $autoSubUserTeam = false,
         array $manualSlotPins = [],
+        bool $isHalfTime = false,
     ): array {
         $isUserHome = $match->isHomeTeam($game->team_id);
         $prefix = $isUserHome ? 'home' : 'away';
@@ -228,9 +230,27 @@ class TacticalChangeService
         // clock minute into (phase, base minute, stoppage_minute) using the
         // match's persisted stoppage durations — same form the simulator
         // writes via MatchEventRepository.
+        //
+        // Halftime is a special case: stamping at FIRST_HALF_STOPPAGE 45+fhs
+        // would display as "45+4'" and sort into the 1H bucket (before the
+        // halftime divider). The convention for halftime subs is "45'" /
+        // "105'" rendered right after the halftime divider, so we override
+        // the phase to SECOND_HALF / ET_SECOND_HALF with the half-boundary
+        // minute. absoluteMinute round-trips correctly (45+fhs / 105+...)
+        // so resimulation revert windows still preserve the event.
         $substitutionDetails = [];
         if (! empty($newSubstitutions)) {
-            $coords = MinuteCoordinates::decomposeWith($minute, StoppageDurations::fromMatch($match));
+            if ($isHalfTime) {
+                $coords = $isExtraTime
+                    ? ['phase' => MatchPhase::ET_SECOND_HALF, 'minute' => 105, 'stoppage_minute' => null]
+                    : ['phase' => MatchPhase::SECOND_HALF, 'minute' => 45, 'stoppage_minute' => null];
+            } else {
+                $coords = MinuteCoordinates::decomposeWith($minute, StoppageDurations::fromMatch($match));
+            }
+
+            $displayMinute = $coords['stoppage_minute']
+                ? "{$coords['minute']}+{$coords['stoppage_minute']}'"
+                : "{$coords['minute']}'";
 
             $playerIds = [];
             $eventRows = [];
@@ -268,6 +288,8 @@ class TacticalChangeService
                 'playerOutName' => $players->get($sub['playerOutId'])?->name ?? '',
                 'playerInName' => $players->get($sub['playerInId'])?->name ?? '',
                 'minute' => $minute,
+                'displayMinute' => $displayMinute,
+                'phase' => $coords['phase']->value,
                 'teamId' => $game->team_id,
             ], $newSubstitutions);
         }

@@ -6,7 +6,7 @@
  * Isolated from the UI panel (tactical-panel.js) so the network + state-
  * reconciliation flow can be reasoned about on its own.
  */
-import { MINUTE, FREE_SUB_WINDOW_MINUTES, effectiveSubmissionMinute } from './match-phases.js';
+import { MINUTE, FREE_SUB_WINDOW_MINUTES, effectiveSubmissionMinute, isHalfTimeLike } from './match-phases.js';
 import { regenerateShots, regenerateNarratives } from './atmosphere-generator.js';
 import { updateRosterPerformances } from './player-ratings.js';
 
@@ -40,10 +40,12 @@ export function createTacticalSubmission(ctx) {
             // would cause the backend revert and the local event filters
             // below to strip those events.
             const minute = effectiveSubmissionMinute(c);
+            const isHalfTime = isHalfTimeLike(c.phase);
 
             try {
                 const payload = {
                     minute,
+                    is_half_time: isHalfTime,
                     previousSubstitutions: c.substitutionsMade.map(s => ({
                         playerOutId: s.playerOutId,
                         playerInId: s.playerInId,
@@ -179,13 +181,28 @@ export function createTacticalSubmission(ctx) {
 
                 if (result.substitutions) {
                     for (const sub of result.substitutions) {
-                        c.revealedEvents.unshift({
+                        const subRevealEvent = {
                             minute,
                             type: 'substitution',
                             playerName: sub.playerOutName,
                             playerInName: sub.playerInName,
                             teamId: sub.teamId,
-                        });
+                            displayMinute: sub.displayMinute,
+                            phase: sub.phase,
+                        };
+                        // At half-time, unshift would put the sub at the top
+                        // of revealedEvents — above the 1H-stoppage atmosphere
+                        // events still classified into the 2H bucket — so it
+                        // would render furthest from the half-time divider.
+                        // Push appends to the chronologically-oldest end of
+                        // the reverse-chronological feed, so the sub renders
+                        // immediately above the DESCANSO line. During regular
+                        // play it stays unshift = newest-on-top.
+                        if (isHalfTime) {
+                            c.revealedEvents.push(subRevealEvent);
+                        } else {
+                            c.revealedEvents.unshift(subRevealEvent);
+                        }
                     }
 
                     // Also add substitution events to the main events array so
@@ -198,6 +215,8 @@ export function createTacticalSubmission(ctx) {
                         teamId: sub.teamId,
                         gamePlayerId: sub.playerOutId,
                         metadata: { player_in_id: sub.playerInId },
+                        displayMinute: sub.displayMinute,
+                        phase: sub.phase,
                     }));
 
                     if (isET) {
@@ -268,9 +287,17 @@ export function createTacticalSubmission(ctx) {
 
                     // Recalculate after all event modifications (synthesize, narratives)
                     // to avoid stale indices from array insertions and re-sorts.
+                    //
+                    // Compare against `minute` (the effective submission minute)
+                    // rather than c.currentMinute. At half-time enterHalfTime
+                    // snapped currentMinute back to 45, but the user has already
+                    // watched events up through 45+fhs. Using currentMinute here
+                    // leaves the 1H-stoppage events (and the just-pushed sub
+                    // event at minute=45+fhs) past the index, so the next 2H
+                    // tick re-reveals them — duplicating them in revealedEvents.
                     c.lastRevealedIndex = -1;
                     for (let i = 0; i < c.events.length; i++) {
-                        if (c.events[i].minute <= c.currentMinute) {
+                        if (c.events[i].minute <= minute) {
                             c.lastRevealedIndex = i;
                         } else {
                             break;
