@@ -22,19 +22,28 @@ const SECOND_HALF_PHASES    = new Set(['second_half', 'second_half_stoppage']);
 const ET_FIRST_HALF_PHASES  = new Set(['et_first_half', 'et_first_half_stoppage']);
 const ET_SECOND_HALF_PHASES = new Set(['et_second_half', 'et_second_half_stoppage', 'penalties']);
 
-function eventHalf(event) {
+function eventHalf(event, c) {
     if (event.phase) {
         if (FIRST_HALF_PHASES.has(event.phase))     return 'first';
         if (SECOND_HALF_PHASES.has(event.phase))    return 'second';
         if (ET_FIRST_HALF_PHASES.has(event.phase))  return 'etFirst';
         if (ET_SECOND_HALF_PHASES.has(event.phase)) return 'etSecond';
     }
-    // Fallback for client-injected events with no phase. These all land
-    // on or near a half boundary (45, 45.9, 90, 105) so the simple
-    // threshold check is sufficient.
-    if (event.minute <= MINUTE.FIRST_HALF_END)    return 'first';
-    if (event.minute <= MINUTE.REGULAR_TIME_END)  return 'second';
-    if (event.minute <= MINUTE.ET_FIRST_HALF_END) return 'etFirst';
+    // Fallback for client-injected events with no phase (atmosphere
+    // shots/narratives, stoppage announcements). The simulator clock
+    // crosses each half boundary first during the preceding half's
+    // stoppage window — e.g. with fhs=4, the clock hits minute 49 first
+    // at the end of 1H stoppage, so a shot generated for the 46-90
+    // range and revealed there belongs to 1H stoppage, not 2H. Use the
+    // match's sampled stoppage durations to put each fallback event
+    // in the right bucket.
+    const fhs = c.firstHalfStoppage || 0;
+    const shs = c.secondHalfStoppage || 0;
+    const etfhs = c.etFirstHalfStoppage || 0;
+
+    if (event.minute <= MINUTE.FIRST_HALF_END + fhs)      return 'first';
+    if (event.minute <= MINUTE.REGULAR_TIME_END + shs)    return 'second';
+    if (event.minute <= MINUTE.ET_FIRST_HALF_END + etfhs) return 'etFirst';
     return 'etSecond';
 }
 
@@ -78,19 +87,23 @@ export function createEventFeed(ctx) {
         // announcement, in-game substitutions) don't carry a phase, so
         // we fall back to a minute-threshold check for them.
         get firstHalfEvents() {
-            return groupSubstitutions(ctx().revealedEvents.filter(e => eventHalf(e) === 'first'));
+            const c = ctx();
+            return groupSubstitutions(c.revealedEvents.filter(e => eventHalf(e, c) === 'first'));
         },
 
         get secondHalfEvents() {
-            return groupSubstitutions(ctx().revealedEvents.filter(e => eventHalf(e) === 'second'));
+            const c = ctx();
+            return groupSubstitutions(c.revealedEvents.filter(e => eventHalf(e, c) === 'second'));
         },
 
         get etFirstHalfEvents() {
-            return groupSubstitutions(ctx().revealedEvents.filter(e => eventHalf(e) === 'etFirst'));
+            const c = ctx();
+            return groupSubstitutions(c.revealedEvents.filter(e => eventHalf(e, c) === 'etFirst'));
         },
 
         get etSecondHalfEvents() {
-            return groupSubstitutions(ctx().revealedEvents.filter(e => eventHalf(e) === 'etSecond'));
+            const c = ctx();
+            return groupSubstitutions(c.revealedEvents.filter(e => eventHalf(e, c) === 'etSecond'));
         },
 
         // --- Separators --------------------------------------------------
