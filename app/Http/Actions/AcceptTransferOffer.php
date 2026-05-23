@@ -45,14 +45,15 @@ class AcceptTransferOffer
         $fee = $offer->formatted_transfer_fee;
 
         try {
-            $completedImmediately = $this->transferService->acceptOffer($offer);
+            $this->transferService->acceptOffer($offer);
         } catch (SquadMinimumException $e) {
             return redirect()->back()->with('error', $this->formatBreachMessage($e));
         }
 
-        if ($completedImmediately) {
-            $message = __('messages.offer_accepted_sale', [
+        if ($game->isTransferWindowOpen()) {
+            $message = __('messages.offer_accepted_intra_window', [
                 'player' => $playerName,
+                'team' => $team->name,
                 'team_a' => $team->nameWithA(),
                 'fee' => $fee,
             ]);

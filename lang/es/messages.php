@@ -11,9 +11,11 @@ return [
     'offer_rejected' => 'Oferta :team_de rechazada.',
     'offer_accepted_sale' => ':player vendido :team_a por :fee.',
     'offer_accepted_pre_contract' => '¡Acuerdo cerrado! :player fichará por :team por :fee cuando abra la ventana de :window.',
+    'offer_accepted_intra_window' => '¡Acuerdo cerrado! :player se marchará :team_a por :fee tras el próximo partido.',
 
     // Free agent signing
     'free_agent_signed' => '¡:player ha fichado por tu equipo como agente libre!',
+    'free_agent_agreed' => '¡Acuerdo cerrado! :player se incorporará como agente libre tras el próximo partido.',
     'not_free_agent' => 'Este jugador no es agente libre.',
     'free_agent_reputation_too_low' => 'Este jugador no tiene interés en fichar por un club de tu nivel de reputación.',
     'transfer_window_closed' => 'La ventana de fichajes está cerrada.',
@@ -31,7 +33,8 @@ return [
     'loan_search_active' => ':player ya tiene una búsqueda de cesión activa.',
     'loan_search_cancelled' => 'Se ha cancelado la búsqueda de cesión de :player.',
     'loan_offer_accepted' => ':player cedido :team_a.',
-    'loan_offer_accepted_pre_window' => ':player será cedido al :team cuando abra la ventana de :window.',
+    'loan_offer_accepted_pre_window' => ':player será cedido :team_a cuando abra la ventana de :window.',
+    'loan_offer_agreed_intra_window' => ':player será cedido :team_a tras el próximo partido.',
 
     // Contract messages
     'renewal_agreed' => ':player ha aceptado una extensión de :years años a :wage/año (efectivo desde la próxima temporada).',

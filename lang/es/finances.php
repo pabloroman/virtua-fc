@@ -192,10 +192,10 @@ return [
     'upgrade_insufficient_budget' => 'Presupuesto de fichajes insuficiente.',
 
     // Transaction descriptions
-    'tx_free_transfer_out' => ':player se fue libre a :team',
-    'tx_player_sold' => ':player vendido a :team',
-    'tx_player_signed' => ':player fichado de :team',
-    'tx_loan_in' => ':player cedido de :team (salario)',
+    'tx_free_transfer_out' => ':player se fue libre :team_a',
+    'tx_player_sold' => ':player vendido :team_a',
+    'tx_player_signed' => ':player fichado :team_de',
+    'tx_loan_in' => ':player cedido :team_de (salario)',
     'tx_player_released' => ':player liberado (indemnización)',
     'tx_cup_advancement' => ':competition - :round',
     'tx_league_phase_qualification' => ':competition - Fase de liga superada (:positionº)',

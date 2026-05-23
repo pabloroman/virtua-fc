@@ -484,24 +484,18 @@ class LoanService
             $evaluation = $scoutingService->evaluateLoanRequest($offer->gamePlayer, $game);
 
             if ($evaluation['result'] === 'accepted') {
-                if ($game->isTransferWindowOpen()) {
-                    $this->completeLoanIn($offer, $game);
-                    $resolvedOffers->push([
-                        'offer' => $offer->fresh(),
-                        'result' => 'accepted',
-                        'completed' => true,
-                    ]);
-                } else {
-                    $offer->update([
-                        'status' => TransferOffer::STATUS_AGREED,
-                        'resolved_at' => $game->current_date,
-                    ]);
-                    $resolvedOffers->push([
-                        'offer' => $offer->fresh(),
-                        'result' => 'accepted',
-                        'completed' => false,
-                    ]);
-                }
+                // Park as agreed; the loan completes via
+                // CompleteAgreedTransfersOnMatchPlayed (next match) or
+                // CompleteAgreedTransfersOnWindowOpen (next window).
+                $offer->update([
+                    'status' => TransferOffer::STATUS_AGREED,
+                    'resolved_at' => $game->current_date,
+                ]);
+                $resolvedOffers->push([
+                    'offer' => $offer->fresh(),
+                    'result' => 'accepted',
+                    'completed' => false,
+                ]);
             } else {
                 $offer->update([
                     'status' => TransferOffer::STATUS_REJECTED,
@@ -572,6 +566,7 @@ class LoanService
             description: __('finances.tx_loan_in', [
                 'player' => $player->name ?? $player->id,
                 'team' => $parentTeam->name ?? '',
+                'team_de' => $parentTeam?->nameWithDe() ?? '',
             ]),
             transactionDate: $game->current_date,
             relatedPlayerId: $player->id,
@@ -622,18 +617,14 @@ class LoanService
     }
 
     /**
-     * Complete a sync-negotiated loan. Calls completeLoanIn if window open,
-     * otherwise marks as agreed.
+     * Complete a sync-negotiated loan. Always parks as agreed so the player
+     * joins from the next matchday (see CompleteAgreedTransfersOnMatchPlayed)
+     * rather than being immediately available for the current matchday.
      *
      * @return array{result: string, offer: TransferOffer}
      */
     public function completeSyncLoan(TransferOffer $offer, Game $game): array
     {
-        if ($game->isTransferWindowOpen()) {
-            $this->completeLoanIn($offer, $game);
-            return ['result' => 'accepted', 'offer' => $offer->fresh()];
-        }
-
         $offer->update([
             'status' => TransferOffer::STATUS_AGREED,
             'resolved_at' => $game->current_date,
@@ -652,10 +643,10 @@ class LoanService
     }
 
     /**
-     * Accept a pending loan-out offer: completes the loan if the window is
-     * open (moves player, creates Loan), or marks it as agreed so it completes
-     * when the window opens. Any sibling pending offers for the same player
-     * are auto-rejected.
+     * Accept a pending loan-out offer: parks it as agreed so the player
+     * leaves only after the next match has been played (open window) or
+     * when the next window opens (closed window). Sibling pending offers
+     * for the same player are auto-rejected.
      */
     public function acceptLoanOffer(TransferOffer $offer, Game $game): void
     {
@@ -683,15 +674,8 @@ class LoanService
                 'resolved_at' => $game->current_date,
             ]);
 
-        if ($game->isTransferWindowOpen()) {
-            // completeLoanOut already removes the TransferListing
-            $this->completeLoanOut($offer, $game);
-            return;
-        }
-
-        // Window closed: mark as agreed, remove listing (no more offers).
-        // TransferService::completeIncomingTransfers() will finalise the move
-        // when the window opens.
+        // TransferService::completeIncomingTransfers() (invoked via the
+        // match-played or window-open listener) finalises the move.
         $offer->update([
             'status' => TransferOffer::STATUS_AGREED,
             'resolved_at' => $game->current_date,

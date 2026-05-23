@@ -91,7 +91,9 @@ enum NegotiationScenario: string
         return match ($this) {
             self::TRANSFER => [],
             self::PRE_CONTRACT => ['status' => TransferOffer::STATUS_AGREED, 'resolved_at' => $currentDate],
-            self::FREE_AGENT => ['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $currentDate],
+            // Free-agent signings are parked as agreed; they join the squad
+            // after the next match via CompleteAgreedTransfersOnMatchPlayed.
+            self::FREE_AGENT => ['status' => TransferOffer::STATUS_AGREED, 'resolved_at' => $currentDate],
             self::RENEWAL => [],
         };
     }

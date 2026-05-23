@@ -36,7 +36,9 @@ class TransferCompletionService
     {
         $player = $offer->gamePlayer;
         $playerName = $player->name;
-        $buyerName = $offer->offeringTeam->name;
+        $buyer = $offer->offeringTeam;
+        $buyerName = $buyer->name;
+        $buyerNameWithA = $buyer->nameWithA();
         $isLoan = $offer->offer_type === TransferOffer::TYPE_LOAN_OUT;
 
         // Transfer player to the buying team
@@ -87,7 +89,7 @@ class TransferCompletionService
                 gameId: $game->id,
                 category: FinancialTransaction::CATEGORY_TRANSFER_IN,
                 amount: $offer->transfer_fee,
-                description: __('finances.tx_player_sold', ['player' => $playerName, 'team' => $buyerName]),
+                description: __('finances.tx_player_sold', ['player' => $playerName, 'team' => $buyerName, 'team_a' => $buyerNameWithA]),
                 transactionDate: $game->current_date,
                 relatedPlayerId: $player->id,
             );
@@ -113,7 +115,9 @@ class TransferCompletionService
     {
         $player = $offer->gamePlayer;
         $playerName = $player->name;
-        $buyerName = $offer->offeringTeam->name;
+        $buyer = $offer->offeringTeam;
+        $buyerName = $buyer->name;
+        $buyerNameWithA = $buyer->nameWithA();
         $game = $player->game;
         $fromTeamId = $player->team_id;
         $fromTeamName = $player->team->name ?? null;
@@ -150,7 +154,7 @@ class TransferCompletionService
             gameId: $game->id,
             category: FinancialTransaction::CATEGORY_TRANSFER_IN,
             amount: 0,
-            description: __('finances.tx_free_transfer_out', ['player' => $playerName, 'team' => $buyerName]),
+            description: __('finances.tx_free_transfer_out', ['player' => $playerName, 'team' => $buyerName, 'team_a' => $buyerNameWithA]),
             transactionDate: $game->current_date,
             relatedPlayerId: $player->id,
         );
@@ -184,7 +188,9 @@ class TransferCompletionService
 
         $player = $offer->gamePlayer;
         $playerName = $player->name;
-        $sellerName = $offer->sellingTeam->name ?? $player->team->name ?? 'Unknown';
+        $sellerTeam = $offer->sellingTeam ?? $player->team;
+        $sellerName = $sellerTeam->name ?? 'Unknown';
+        $sellerNameWithDe = $sellerTeam?->nameWithDe() ?? 'de Unknown';
         $fromTeamId = $offer->selling_team_id ?? $player->team_id;
 
         // Transfer player to user's team
@@ -230,7 +236,7 @@ class TransferCompletionService
                 gameId: $game->id,
                 category: FinancialTransaction::CATEGORY_TRANSFER_OUT,
                 amount: $offer->transfer_fee,
-                description: __('finances.tx_player_signed', ['player' => $playerName, 'team' => $sellerName]),
+                description: __('finances.tx_player_signed', ['player' => $playerName, 'team' => $sellerName, 'team_de' => $sellerNameWithDe]),
                 transactionDate: $game->current_date,
                 relatedPlayerId: $player->id,
             );

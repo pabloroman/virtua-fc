@@ -193,8 +193,9 @@ class CounterOfferTest extends TestCase
         $response->assertJsonPath('negotiation_status', 'completed');
 
         $this->offer->refresh();
-        // Should be completed (window is open in August)
-        $this->assertEquals(TransferOffer::STATUS_COMPLETED, $this->offer->status);
+        // Deals reached during an open window are parked as STATUS_AGREED
+        // and completed after the next match (CompleteAgreedTransfersOnMatchPlayed).
+        $this->assertEquals(TransferOffer::STATUS_AGREED, $this->offer->status);
     }
 
     public function test_counter_must_be_higher_than_current_bid(): void

@@ -62,6 +62,8 @@ return [
     // Incoming transfers
     'incoming_transfers' => 'Fichajes Entrantes',
     'completing_when_window' => 'se completará cuando abra la ventana de :window',
+    'joining_after_next_match' => 'se incorporará a la plantilla tras el próximo partido',
+    'leaving_after_next_match' => 'abandonará la plantilla tras el próximo partido',
     'deal_agreed' => 'Acuerdo cerrado',
 
     // Unsolicited offers
@@ -413,6 +415,7 @@ return [
     'chat_player_counter_transfer' => 'El agente de :player insiste en :wage/año durante :years años.',
     'chat_transfer_complete' => '¡:player ha firmado! Bienvenido al equipo.',
     'chat_transfer_complete_pending' => '¡:player ha firmado! El jugador se incorporará al equipo en el próximo mercado de fichajes.',
+    'chat_transfer_complete_intra_window' => '¡:player ha firmado! Se incorporará a la plantilla tras el próximo partido.',
     'chat_terms_rejected' => 'El agente de :player se ha marchado. El acuerdo se ha roto.',
 
     // Counter-offer negotiation (user selling)
@@ -423,7 +426,7 @@ return [
     'chat_buyer_counter_resume' => 'La última oferta de :team es :fee.',
     'chat_buyer_accepted' => '¡:team acepta tu precio de :fee por :player!',
     'chat_buyer_rejected' => ':team ha retirado su interés. La negociación ha fracasado.',
-    'chat_buyer_deal_complete' => '¡Venta acordada! :player se unirá a :team por :fee.',
+    'chat_buyer_deal_complete' => '¡Venta acordada! :player se unirá :team_a por :fee.',
     'chat_offer_rejected' => 'Has rechazado la oferta por :player. El jugador no está en venta.',
 
     // Pre-contract negotiation chat
