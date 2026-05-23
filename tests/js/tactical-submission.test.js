@@ -213,4 +213,67 @@ describe('tactical-submission confirmAllChanges', () => {
             ).toBeUndefined();
         }
     });
+
+    it('half-time sub: lastRevealedIndex includes the sub event so the next tick does not re-reveal it', async () => {
+        // Regression for #1130's interaction with the derived-atmosphere
+        // model. At half-time enterHalfTime snaps currentMinute back to 45,
+        // but the user has already watched events through 45+fhs. The sub
+        // event the backend stamps at phase=SECOND_HALF/base=45 has
+        // absolute minute = 45+fhs. recomputeRegularAtmosphere rebuilds
+        // c.events with the sub at minute=45+fhs; lastRevealedIndex must
+        // be computed against the effective submission minute (also 45+fhs),
+        // NOT c.currentMinute (45), otherwise the next 2H tick re-reveals
+        // the sub event and the user sees it twice.
+        const fhs = 4;
+        const submissionMinute = 45 + fhs; // effective minute at half-time
+        const state = createMockState({
+            phase: 'half_time',
+            currentMinute: 45,
+            firstHalfStoppage: fhs,
+        });
+
+        globalThis.fetch = vi.fn(() => Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({
+                isExtraTime: false,
+                substitutions: [{
+                    playerOutId: 'home-fw1',
+                    playerInId: 'home-sub1',
+                    playerOutName: 'home fw1',
+                    playerInName: 'Sub Player',
+                    teamId: 'home-1',
+                    minute: submissionMinute,
+                    displayMinute: "45'",
+                    phase: 'second_half',
+                }],
+                newEvents: [],
+                newScore: { home: 1, away: 0 },
+                homePossession: 50,
+                awayPossession: 50,
+            }),
+        }));
+
+        // Pretend the user added a pending sub (the real flow gates the
+        // POST on `c.pendingSubs.length > 0`, but the mocked fetch ignores
+        // the payload — we just need the function to push through).
+        state.pendingSubs = [{
+            playerOut: { id: 'home-fw1' },
+            playerIn: { id: 'home-sub1' },
+        }];
+
+        const submission = createTacticalSubmission(() => state);
+        await submission.confirmAllChanges();
+
+        const subEvent = state.events.find(e =>
+            e.type === 'substitution' && e.gamePlayerId === 'home-fw1'
+        );
+        expect(subEvent, 'sub event should be in the merged events array').toBeDefined();
+        expect(subEvent.minute).toBe(submissionMinute);
+
+        const subIdx = state.events.indexOf(subEvent);
+        expect(
+            state.lastRevealedIndex,
+            'lastRevealedIndex must include the half-time sub event so it is not re-revealed when 2H starts',
+        ).toBeGreaterThanOrEqual(subIdx);
+    });
 });
