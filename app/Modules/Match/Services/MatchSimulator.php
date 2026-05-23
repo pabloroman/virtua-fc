@@ -429,6 +429,7 @@ class MatchSimulator
                 $homeEntryMinutes, $awayEntryMinutes,
                 $homeSubsUsed, $awaySubsUsed, $homeWindowsUsed, $awayWindowsUsed,
                 $allEvents,
+                $userTeamId,
             );
 
             // Apply AI substitutions at this split minute
@@ -635,6 +636,13 @@ class MatchSimulator
      *
      * The team that received the red card reshapes by bringing on a goalkeeper
      * or defender, sacrificing a random attacker or midfielder.
+     *
+     * The user's team is excluded: the sent-off player is still removed from
+     * the on-pitch collection so the remainder is simulated 10-vs-11, but no
+     * substitution event is emitted — the human picks the reaction (or not)
+     * via the tactical panel. Without this gate, the user silently loses one
+     * of their 5 subs and one of their 3 windows to a server-side choice they
+     * never made and can't cancel.
      */
     private function applyRedCardReactiveSubs(
         Collection $periodEvents,
@@ -651,6 +659,7 @@ class MatchSimulator
         int &$homeWindowsUsed,
         int &$awayWindowsUsed,
         Collection $allEvents,
+        ?string $userTeamId = null,
     ): void {
         $redCards = $periodEvents->filter(fn (MatchEventData $e) => $e->type === 'red_card');
         if ($redCards->isEmpty()) {
@@ -662,14 +671,23 @@ class MatchSimulator
 
         foreach ($redCards as $redCard) {
             $subMinute = $redCard->minute + 2;
+            $isUserTeam = $userTeamId !== null && $redCard->teamId === $userTeamId;
 
             if ($redCard->teamId === $homeTeamId) {
+                if ($isUserTeam) {
+                    $homePlayers = $homePlayers->reject(fn ($p) => $p->id === $redCard->gamePlayerId)->values();
+                    continue;
+                }
                 $this->applyRedCardTeamReactiveSub(
                     $redCard, $subMinute, $maxSubs, $maxWindows,
                     $homeTeamId, $homePlayers, $homeBench, $homeEntryMinutes,
                     $homeSubsUsed, $homeWindowsUsed, $allEvents,
                 );
             } else {
+                if ($isUserTeam) {
+                    $awayPlayers = $awayPlayers->reject(fn ($p) => $p->id === $redCard->gamePlayerId)->values();
+                    continue;
+                }
                 $this->applyRedCardTeamReactiveSub(
                     $redCard, $subMinute, $maxSubs, $maxWindows,
                     $awayTeamId, $awayPlayers, $awayBench, $awayEntryMinutes,
@@ -939,6 +957,7 @@ class MatchSimulator
                 $homeEntryMinutes, $awayEntryMinutes,
                 $homeSubsUsed, $awaySubsUsed, $homeWindowsUsed, $awayWindowsUsed,
                 $allEvents,
+                $userTeamId,
             );
 
             // Apply AI substitutions at this window

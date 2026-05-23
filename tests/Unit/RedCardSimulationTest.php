@@ -455,6 +455,78 @@ class RedCardSimulationTest extends TestCase
             'Player subbed in should be a defender');
     }
 
+    public function test_user_team_red_card_does_not_force_reactive_sub(): void
+    {
+        // direct_red_chance=50 makes red cards near-certain within a handful
+        // of sims. We need a defender red card on the user (home) team to
+        // exercise the gate, since forward red cards don't trigger a reshape.
+        config(['match_simulation.direct_red_chance' => 50]);
+
+        $game = Game::factory()->create(['current_date' => '2025-10-01']);
+        $homeTeam = Team::factory()->create();
+        $awayTeam = Team::factory()->create();
+
+        $homePlayers = $this->createLineup($game, $homeTeam, 11, 75);
+        $awayPlayers = $this->createLineup($game, $awayTeam, 11, 75);
+        $homeBench = $this->createBenchPlayers($game, $homeTeam, 7, 70);
+        $awayBench = $this->createBenchPlayers($game, $awayTeam, 7, 70);
+
+        $defenderPositions = ['Goalkeeper', 'Centre-Back', 'Left-Back', 'Right-Back'];
+        $verifiedUserGate = false;
+        $verifiedAIPath = false;
+
+        for ($i = 0; $i < 200; $i++) {
+            $output = $this->simulator->simulate(
+                $homeTeam, $awayTeam,
+                $homePlayers->values(), $awayPlayers->values(),
+                Formation::F_4_3_3, Formation::F_4_3_3,
+                Mentality::BALANCED, Mentality::BALANCED,
+                $game,
+                PlayingStyle::BALANCED, PlayingStyle::BALANCED,
+                PressingIntensity::STANDARD, PressingIntensity::STANDARD,
+                DefensiveLineHeight::NORMAL, DefensiveLineHeight::NORMAL,
+                $homeBench->values(), $awayBench->values(),
+                userTeamId: $homeTeam->id,
+            );
+
+            $events = $output->result->events;
+            $redCards = $events->filter(fn ($e) => $e->type === 'red_card');
+
+            foreach ($redCards as $rc) {
+                $sentOffPlayer = $homePlayers->merge($awayPlayers)->firstWhere('id', $rc->gamePlayerId);
+                if (! $sentOffPlayer || ! in_array($sentOffPlayer->position, $defenderPositions)) {
+                    // Forward red cards never trigger a reshape sub regardless
+                    // of the gate, so they can't distinguish the fix.
+                    continue;
+                }
+
+                $reactiveSub = $events->first(fn ($e) => $e->type === 'substitution'
+                    && $e->teamId === $rc->teamId
+                    && $e->minute >= $rc->minute
+                    && $e->minute <= $rc->minute + 3);
+
+                if ($rc->teamId === $homeTeam->id) {
+                    $this->assertNull($reactiveSub,
+                        'User-team red card must not trigger a forced reactive substitution');
+                    $verifiedUserGate = true;
+                } else {
+                    $this->assertNotNull($reactiveSub,
+                        'AI-team red card should still trigger a reactive substitution');
+                    $verifiedAIPath = true;
+                }
+            }
+
+            if ($verifiedUserGate && $verifiedAIPath) {
+                break;
+            }
+        }
+
+        $this->assertTrue($verifiedUserGate,
+            'Expected at least one defender red card on the user team across 200 sims');
+        $this->assertTrue($verifiedAIPath,
+            'Expected at least one defender red card on the AI team across 200 sims');
+    }
+
     public function test_forward_red_card_does_not_trigger_reshape_sub(): void
     {
         $aiSubService = new AISubstitutionService;
