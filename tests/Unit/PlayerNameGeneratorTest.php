@@ -111,6 +111,51 @@ class PlayerNameGeneratorTest extends TestCase
         }
     }
 
+    /**
+     * @return iterable<string, array{nationality: string, femalePattern: string}>
+     */
+    public static function slavicFemaleInflectionProvider(): iterable
+    {
+        // Each pattern matches a surname ending that ONLY the female pool /
+        // female-suffix code path in Faker can produce for that locale. No
+        // male-form surname in the Faker pool ends this way, so any match
+        // indicates a regression to the gender-agnostic lastName() call.
+        //
+        // Russian: female surnames append 'а' (→ 'a' after transliteration).
+        //   Male surnames in the Cyrillic pool end in consonants or 'й' — never 'а'.
+        // Polish: female ending '-ska/-cka/-zka' (from -ski/-cki/-zki).
+        // Czech/Slovak: female ending '-ová' (universal "wife of" suffix).
+        //
+        // Bulgarian is excluded: Faker's bg_BG $lastNameMale pool itself
+        // contains a handful of female-form entries ('Пеева', 'Пройкова',
+        // 'Младенова', etc.), so even with the fix a small fraction of names
+        // will look female. The fix still cuts the rate from ~50% to ~8%.
+        yield 'Russian' => ['nationality' => 'Russia',         'femalePattern' => '/a$/i'];
+        yield 'Polish'  => ['nationality' => 'Poland',         'femalePattern' => '/(ska|cka|zka)$/iu'];
+        yield 'Czech'   => ['nationality' => 'Czech Republic', 'femalePattern' => '/ová$/iu'];
+        yield 'Slovak'  => ['nationality' => 'Slovakia',       'femalePattern' => '/ová$/iu'];
+    }
+
+    /**
+     * @dataProvider slavicFemaleInflectionProvider
+     */
+    public function test_slavic_surnames_use_male_inflection(string $nationality, string $femalePattern): void
+    {
+        // 80 draws is enough that the previous 50/50 male/female lastName()
+        // would have produced multiple female-inflected surnames; with the
+        // fix we expect zero.
+        for ($i = 0; $i < 80; $i++) {
+            $name = $this->generator->generate($nationality);
+            [, $surname] = explode(' ', $name, 2);
+
+            $this->assertDoesNotMatchRegularExpression(
+                $femalePattern,
+                $surname,
+                "Surname '{$surname}' for {$nationality} matches female-inflection pattern {$femalePattern}",
+            );
+        }
+    }
+
     public function test_latin_diacritics_are_preserved_for_latin_script_locales(): void
     {
         // Spanish names regularly include ñ, á, é, í, ó, ú. Over 200 draws we
