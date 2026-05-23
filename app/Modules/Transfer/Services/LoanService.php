@@ -566,6 +566,7 @@ class LoanService
             description: __('finances.tx_loan_in', [
                 'player' => $player->name ?? $player->id,
                 'team' => $parentTeam->name ?? '',
+                'team_de' => $parentTeam?->nameWithDe() ?? '',
             ]),
             transactionDate: $game->current_date,
             relatedPlayerId: $player->id,

@@ -175,7 +175,7 @@ class NegotiateCounterOffer
     private function handleAcceptCounter(Game $game, TransferOffer $offer): JsonResponse
     {
         $player = $offer->gamePlayer;
-        $buyerName = $offer->offeringTeam->name;
+        $buyer = $offer->offeringTeam;
 
         try {
             $completedImmediately = $this->transferService->acceptCounterOfferBid($offer);
@@ -199,7 +199,8 @@ class NegotiateCounterOffer
                 $this->agentMessage('accepted', [
                     'text' => __('transfers.chat_buyer_deal_complete', [
                         'player' => $player->name,
-                        'team' => $buyerName,
+                        'team' => $buyer->name,
+                        'team_a' => $buyer->nameWithA(),
                         'fee' => Money::format($offer->transfer_fee),
                     ]),
                     'fee' => (int) ($offer->transfer_fee / 100),

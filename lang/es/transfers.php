@@ -426,7 +426,7 @@ return [
     'chat_buyer_counter_resume' => 'La última oferta de :team es :fee.',
     'chat_buyer_accepted' => '¡:team acepta tu precio de :fee por :player!',
     'chat_buyer_rejected' => ':team ha retirado su interés. La negociación ha fracasado.',
-    'chat_buyer_deal_complete' => '¡Venta acordada! :player se unirá a :team por :fee.',
+    'chat_buyer_deal_complete' => '¡Venta acordada! :player se unirá :team_a por :fee.',
     'chat_offer_rejected' => 'Has rechazado la oferta por :player. El jugador no está en venta.',
 
     // Pre-contract negotiation chat

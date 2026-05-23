@@ -54,6 +54,7 @@ class AcceptTransferOffer
             $message = __('messages.offer_accepted_intra_window', [
                 'player' => $playerName,
                 'team' => $team->name,
+                'team_a' => $team->nameWithA(),
                 'fee' => $fee,
             ]);
         } else {

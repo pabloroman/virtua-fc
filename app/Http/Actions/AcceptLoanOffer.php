@@ -49,11 +49,13 @@ class AcceptLoanOffer
             $message = __('messages.loan_offer_agreed_intra_window', [
                 'player' => $playerName,
                 'team' => $team->name,
+                'team_a' => $team->nameWithA(),
             ]);
         } else {
             $message = __('messages.loan_offer_accepted_pre_window', [
                 'player' => $playerName,
                 'team' => $team->name,
+                'team_a' => $team->nameWithA(),
                 'window' => $game->getNextWindowName(),
             ]);
         }
