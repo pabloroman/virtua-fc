@@ -9,6 +9,7 @@ use App\Models\Game;
 use App\Models\GameStanding;
 use App\Models\ManagerJobOffer;
 use App\Models\Team;
+use App\Models\TeamReputation;
 use App\Modules\Competition\Promotions\PromotionRelegationQuery;
 use App\Modules\Competition\Services\CountryConfig;
 use App\Modules\Manager\ManagerReputation;
@@ -373,7 +374,7 @@ class JobOfferService
         foreach ($plan as $entry) {
             $targetRank = max(0, min($maxRank, $currentRank + $entry['shift']));
 
-            $candidates = $this->eligibleTeamIdsAtRank($targetRank, $usedTeamIds);
+            $candidates = $this->eligibleTeamIdsAtRank($game, $targetRank, $usedTeamIds);
 
             // Fallback: on a disaster the user must end up with offers even
             // if the exact target rank is empty — widen one rank further in
@@ -384,6 +385,7 @@ class JobOfferService
                 if ($fallbackRank !== $targetRank) {
                     $candidates = $candidates->merge(
                         $this->eligibleTeamIdsAtRank(
+                            $game,
                             $fallbackRank,
                             array_merge($usedTeamIds, $candidates->all()),
                         )
@@ -403,11 +405,12 @@ class JobOfferService
                     'offer_type' => $offerType,
                     'status' => ManagerJobOffer::STATUS_PENDING,
                     'source_reputation_level' => $currentReputation,
-                    // The chosen team's actual reputation — may differ from
-                    // the target rank's reputation slot if a fallback widened
-                    // the pool, so read it off the team rather than the plan.
-                    'target_reputation_level' => ClubProfile::where('team_id', $teamId)->value('reputation_level')
-                        ?? $currentReputation,
+                    // The chosen team's actual in-game reputation — may differ
+                    // from the target rank's reputation slot if a fallback
+                    // widened the pool, so read it off the team rather than
+                    // the plan. Sourced from TeamReputation so the snapshot
+                    // matches what the user saw, not the static seed.
+                    'target_reputation_level' => TeamReputation::resolveLevel($game->id, $teamId),
                     'created_on_game_date' => $game->current_date,
                 ]);
                 $created->push($offer);
@@ -476,10 +479,15 @@ class JobOfferService
      * club reputation) matches the given prestige rank. Reserves are
      * filtered out so they can never appear as offers.
      *
+     * Reputation is read from the per-game TeamReputation (with ClubProfile as
+     * fallback for teams whose destination-country rows aren't seeded yet),
+     * so rival clubs that rose or fell in this save are bucketed by their
+     * actual in-game tier rather than the editorial seed.
+     *
      * @param array<int, string> $excludeTeamIds
      * @return Collection<int, string>
      */
-    private function eligibleTeamIdsAtRank(int $rank, array $excludeTeamIds): Collection
+    private function eligibleTeamIdsAtRank(Game $game, int $rank, array $excludeTeamIds): Collection
     {
         [$tier, $reputation] = $this->decomposePrestigeRank($rank);
 
@@ -492,13 +500,19 @@ class JobOfferService
             ->whereIn('team_id', function ($q) {
                 $q->select('id')->from('teams')->whereNull('parent_team_id');
             })
-            ->pluck('team_id')
-            ->unique();
-
-        return ClubProfile::whereIn('team_id', $teamIdsAtTier)
-            ->where('reputation_level', $reputation)
             ->whereNotIn('team_id', $excludeTeamIds)
             ->pluck('team_id')
+            ->unique()
+            ->values();
+
+        if ($teamIdsAtTier->isEmpty()) {
+            return collect();
+        }
+
+        $levels = TeamReputation::resolveLevels($game->id, $teamIdsAtTier->all());
+
+        return $teamIdsAtTier
+            ->filter(fn (string $teamId) => ($levels[$teamId] ?? null) === $reputation)
             ->values();
     }
 
@@ -561,9 +575,15 @@ class JobOfferService
         return $query->pluck('team_id')->values();
     }
 
+    /**
+     * Read the manager's current club reputation from the per-game TeamReputation —
+     * the same source the rest of the codebase uses (finances, transfers, AI market).
+     * resolveLevel() falls back to ClubProfile when no per-game row exists, so newly
+     * created games behave identically while long-running games correctly reflect
+     * the in-game rise (or fall) of the manager's club.
+     */
     private function currentClubReputation(Game $game): string
     {
-        return ClubProfile::where('team_id', $game->team_id)->value('reputation_level')
-            ?? ClubProfile::REPUTATION_LOCAL;
+        return TeamReputation::resolveLevel($game->id, $game->team_id);
     }
 }
