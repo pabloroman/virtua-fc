@@ -695,13 +695,20 @@ export function createMatchSimulation(ctx) {
             _kickoffTimeout = null;
         }
 
-        // Reveal all first-half events (FH + FH stoppage). Phase-aware so a
-        // 45+2' event doesn't get skipped when the user clicks "skip to HT".
-        // Backend uses 'first_half'/'first_half_stoppage' phase strings on
-        // MatchEvent rows — distinct from PHASE.* which model the *clock*.
+        // Reveal all first-half events (FH + FH stoppage). Backend events
+        // carry an explicit phase tuple, so we trust that when present;
+        // client-injected atmosphere events (shots, narratives) don't
+        // have a phase, so we fall back to a minute-based check against
+        // the persisted 1H stoppage. Without the fallback the loop used
+        // to break at the first atmosphere event encountered — usually a
+        // shot near minute 5 — leaving the rest of the half unrevealed
+        // until the 2H tick caught up.
+        const firstHalfEnd = MINUTE.FIRST_HALF_END + (state.firstHalfStoppage || 0);
         for (let i = state.lastRevealedIndex + 1; i < state.events.length; i++) {
             const event = state.events[i];
-            const isFirstHalf = event.phase === 'first_half' || event.phase === 'first_half_stoppage';
+            const isFirstHalf = event.phase
+                ? (event.phase === 'first_half' || event.phase === 'first_half_stoppage')
+                : event.minute <= firstHalfEnd;
             if (!isFirstHalf) break;
             state.lastRevealedIndex = i;
             state.revealedEvents.unshift(event);

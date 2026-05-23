@@ -10,8 +10,14 @@
 import { describe, it, expect } from 'vitest';
 import { createEventFeed } from '@/modules/event-feed.js';
 
-function makeFeed(events) {
-    const state = { revealedEvents: events };
+function makeFeed(events, stoppage = {}) {
+    const state = {
+        revealedEvents: events,
+        firstHalfStoppage: stoppage.firstHalf ?? 0,
+        secondHalfStoppage: stoppage.secondHalf ?? 0,
+        etFirstHalfStoppage: stoppage.etFirstHalf ?? 0,
+        etSecondHalfStoppage: stoppage.etSecondHalf ?? 0,
+    };
     return createEventFeed(() => state);
 }
 
@@ -61,5 +67,20 @@ describe('event-feed partitioning', () => {
 
         expect(feed.firstHalfEvents.map(e => e.type)).toEqual(['stoppage_announcement']);
         expect(feed.secondHalfEvents.map(e => e.type)).toEqual(['contextual', 'substitution']);
+    });
+
+    it('honors phase even when the minute falls inside the previous half stoppage window', () => {
+        // The second-half-start contextual narrative is generated at
+        // minute=firstHalfEnd+0.1 and tagged phase='second_half'. The
+        // minute lands inside the 1H-stoppage range (minute > 45), so
+        // the phase-less fallback in eventHalf would bucket it into
+        // 'first'. The explicit phase tag overrides that, putting it
+        // immediately after the half-time divider where it belongs.
+        const feed = makeFeed([
+            { type: 'contextual', minute: 48.1, phase: 'second_half', atmosphere: true, metadata: { narrative: 'resumed' } },
+        ], { firstHalf: 3 });
+
+        expect(feed.firstHalfEvents).toHaveLength(0);
+        expect(feed.secondHalfEvents.map(e => e.type)).toEqual(['contextual']);
     });
 });

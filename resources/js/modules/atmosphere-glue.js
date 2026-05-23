@@ -44,6 +44,12 @@ export function createAtmosphereGlue(ctx) {
             userTeamId: c.userTeamId,
             isKnockout: c.isKnockout,
             isTwoLeggedTie: c.isTwoLeggedTie,
+            // Per-match stoppage durations — required so the contextual
+            // second-half-start narrative can land just past the end of
+            // 1H stoppage (rather than at the hardcoded 45.9 boundary,
+            // which sits inside the stoppage window when fhs > 0).
+            firstHalfStoppage: c.firstHalfStoppage,
+            secondHalfStoppage: c.secondHalfStoppage,
             tactics: {
                 userPlayingStyle: c.activePlayingStyle,
                 userPressing: c.activePressing,

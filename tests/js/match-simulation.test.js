@@ -331,3 +331,65 @@ describe('needsExtraTime (via skipToEnd)', () => {
         expect(state.phase).toBe('full_time');
     });
 });
+
+// ============================================================================
+// skipToHalfTime — must reveal phase-less atmosphere events too
+// ============================================================================
+
+describe('skipToHalfTime atmosphere reveal', () => {
+    it('reveals first-half events through the end of 1H stoppage, including phase-less atmosphere shots', () => {
+        // Regression: the previous implementation broke the reveal loop
+        // at the first event without a `phase` field, leaving every
+        // event after the first atmosphere shot unrevealed until the
+        // 2H tick caught up minutes later.
+        const state = createMockState({
+            phase: 'first_half',
+            currentMinute: 5,
+            firstHalfStoppage: 3,
+            events: [
+                // Real backend events carry phase.
+                { minute: 10, type: 'yellow_card', phase: 'first_half', gamePlayerId: 'p1', teamId: 'home-1', metadata: {} },
+                // Client-injected atmosphere shot — no phase. This used
+                // to terminate the reveal loop early.
+                { minute: 12, type: 'shot_on_target', atmosphere: true, gamePlayerId: 'p2', teamId: 'away-1', metadata: { narrative: '' } },
+                { minute: 25, type: 'goal', phase: 'first_half', teamId: 'home-1', gamePlayerId: 'p1', metadata: {} },
+                // Atmosphere narrative inside 1H stoppage (fhs=3 → up to minute 48).
+                { minute: 47, type: 'shot_off_target', atmosphere: true, gamePlayerId: 'p3', teamId: 'home-1', metadata: { narrative: '' } },
+                // First event past 1H stoppage — must NOT be revealed.
+                { minute: 60, type: 'goal', phase: 'second_half', teamId: 'away-1', gamePlayerId: 'p4', metadata: {} },
+            ],
+            otherMatches: [],
+        });
+
+        const sim = createMatchSimulation(() => state);
+        sim.skipToHalfTime();
+
+        const revealedMinutes = state.revealedEvents.map(e => e.minute).sort((a, b) => a - b);
+        expect(revealedMinutes).toEqual([10, 12, 25, 47]);
+        expect(state.phase).toBe('half_time');
+        expect(state.homeScore).toBe(1); // goal at minute 25 was tracked
+    });
+
+    it('stops at a second-half event even when its phase is missing (minute-fallback path)', () => {
+        // The second-half-start contextual narrative carries
+        // phase='second_half', so it's classified via the phase check.
+        // But verify the minute-fallback path also catches a phase-less
+        // event placed past firstHalfEnd.
+        const state = createMockState({
+            phase: 'first_half',
+            currentMinute: 5,
+            firstHalfStoppage: 2,
+            events: [
+                { minute: 10, type: 'goal', phase: 'first_half', teamId: 'home-1', gamePlayerId: 'p1', metadata: {} },
+                // Phase-less, past firstHalfEnd (47) — should NOT be revealed.
+                { minute: 47.1, type: 'contextual', atmosphere: true, gamePlayerId: null, teamId: null, metadata: { narrative: '' } },
+            ],
+            otherMatches: [],
+        });
+
+        const sim = createMatchSimulation(() => state);
+        sim.skipToHalfTime();
+
+        expect(state.revealedEvents.map(e => e.minute)).toEqual([10]);
+    });
+});

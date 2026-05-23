@@ -11,6 +11,8 @@
  * @module atmosphere-generator
  */
 
+import { MINUTE } from './match-phases.js';
+
 // Position-group weights for shot attribution (forwards shoot more)
 const SHOT_WEIGHTS = {
     Forward: 25,
@@ -352,6 +354,7 @@ export function generateContextualNarratives(config) {
         venueName, narrativeTemplates, allEvents,
         isKnockout, isTwoLeggedTie,
         isNeutralVenue,
+        firstHalfStoppage,
     } = config;
 
     const venue = venueName || '';
@@ -388,12 +391,17 @@ export function generateContextualNarratives(config) {
         { minute: 85, type: 'end' },
     ];
 
+    // Second-half-start narrative is placed just past the end of 1H stoppage
+    // so the simulator's clock tick reveals it the moment 2H starts (not
+    // during 1H stoppage, where "game resumed" would feel premature). It
+    // also carries phase='second_half' + displayMinute="45'" so event-feed
+    // partitions it into the 2H bucket regardless of `firstHalfStoppage`.
+    const fhs = firstHalfStoppage ?? 0;
+    const secondHalfStartMinute = MINUTE.FIRST_HALF_END + fhs + 0.1;
+
     for (const cp of checkpoints) {
-        // Second-half-start uses 45.9 so it sorts after first-half events
-        // but before minute-46 events, appearing right after the half-time
-        // break in the feed. Displayed as "45'" via Math.floor in the template.
         const m = cp.type === 'second_half_start'
-            ? 45.9
+            ? secondHalfStartMinute
             : uniqueMinute(usedMinutes, cp.minute, cp.minute + 3);
         const score = scoreAtMinute(allEvents, homeTeamId, m);
         const scoreStr = `${score.home}-${score.away}`;
@@ -500,7 +508,7 @@ export function generateContextualNarratives(config) {
         const narrative = pickNarrative(templates, extraReplacements, { excludeVenue: noVenue });
         if (!narrative) continue;
 
-        events.push({
+        const event = {
             minute: m,
             type: 'contextual',
             atmosphere: true,
@@ -508,7 +516,19 @@ export function generateContextualNarratives(config) {
             teamId: null,
             gamePlayerId: null,
             metadata: { narrative },
-        });
+        };
+
+        // Tag the second-half-start narrative so event-feed buckets it
+        // into the 2H section (its absolute minute = 45+fhs+0.1 would
+        // otherwise fall into the 1H-stoppage range when fhs > 0). The
+        // displayed label stays as "45'" to match the convention used
+        // for half-time substitutions persisted at base=45.
+        if (cp.type === 'second_half_start') {
+            event.phase = 'second_half';
+            event.displayMinute = `${MINUTE.FIRST_HALF_END}'`;
+        }
+
+        events.push(event);
     }
 
     return events;
