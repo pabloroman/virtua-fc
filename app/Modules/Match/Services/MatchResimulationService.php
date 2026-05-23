@@ -434,8 +434,9 @@ class MatchResimulationService
         array $allSubstitutions = [],
         ?Collection $homeBenchPlayers = null,
         ?Collection $awayBenchPlayers = null,
+        bool $isHalfTime = false,
     ): ResimulationResult {
-        return DB::transaction(function () use ($match, $game, $minute, $homePlayers, $awayPlayers, $allSubstitutions, $homeBenchPlayers, $awayBenchPlayers) {
+        return DB::transaction(function () use ($match, $game, $minute, $homePlayers, $awayPlayers, $allSubstitutions, $homeBenchPlayers, $awayBenchPlayers, $isHalfTime) {
             $competitionId = $match->competition_id;
             $stoppage = StoppageDurations::fromMatch($match);
 
@@ -447,8 +448,18 @@ class MatchResimulationService
             // end" upward. Pin the cutoff to no earlier than regulation end so
             // a sub stamped at the start of ET first half doesn't accidentally
             // wipe regulation-stoppage events.
+            //
+            // At ET half-time the frontend POSTs minute = 105 + etfhs in
+            // standard notation, but stored ET 1H-stoppage events have raw
+            // absolute minutes = 105 + fhs + shs + stoppage_minute. Using the
+            // frontend value directly as the cutoff would wipe those events
+            // when fhs+shs > 0. Lift to the actual raw end of ET 1H stoppage
+            // so revertEventsAfterMinute preserves everything the user has
+            // already watched.
             $regulationEnd = $stoppage->regulationEnd();
-            $resimAnchor = max($minute, $regulationEnd);
+            $resimAnchor = $isHalfTime
+                ? $stoppage->etFirstHalfEnd()
+                : max($minute, $regulationEnd);
 
             // 2. Revert all events after the cutoff (phase tuple comparison
             // — a 91' ET goal carries phase=ET_FIRST_HALF, not regulation

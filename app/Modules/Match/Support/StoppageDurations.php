@@ -43,6 +43,15 @@ final readonly class StoppageDurations
     }
 
     /**
+     * Last raw absolute minute of ET first half (including its stoppage).
+     * The moment the live clock reaches ET half-time.
+     */
+    public function etFirstHalfEnd(): int
+    {
+        return 105 + $this->firstHalf + $this->secondHalf + ($this->etFirstHalf ?? 0);
+    }
+
+    /**
      * Last raw absolute minute of extra time (regulation end + 30 + ET stoppage).
      */
     public function extraTimeEnd(): int

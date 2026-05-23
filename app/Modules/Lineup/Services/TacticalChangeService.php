@@ -170,7 +170,17 @@ class TacticalChangeService
 
         // Single re-simulation with all changes applied
         if ($isExtraTime) {
-            $result = $this->resimulationService->resimulateExtraTime($match, $game, $minute, $homePlayers, $awayPlayers, $allSubs, $homeBench, $awayBench);
+            $result = $this->resimulationService->resimulateExtraTime(
+                $match,
+                $game,
+                $minute,
+                $homePlayers,
+                $awayPlayers,
+                $allSubs,
+                $homeBench,
+                $awayBench,
+                isHalfTime: $isHalfTime,
+            );
         } else {
             $result = $this->resimulationService->resimulate(
                 $match,
