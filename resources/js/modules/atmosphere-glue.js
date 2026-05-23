@@ -44,12 +44,20 @@ export function createAtmosphereGlue(ctx) {
             userTeamId: c.userTeamId,
             isKnockout: c.isKnockout,
             isTwoLeggedTie: c.isTwoLeggedTie,
-            // Per-match stoppage durations — required so the contextual
-            // second-half-start narrative can land just past the end of
-            // 1H stoppage (rather than at the hardcoded 45.9 boundary,
-            // which sits inside the stoppage window when fhs > 0).
+            // Per-match stoppage durations. Used to:
+            //   - place the contextual second-half-start narrative just
+            //     past the end of 1H stoppage (rather than the hardcoded
+            //     45.9 boundary, which sits inside the stoppage window
+            //     when fhs > 0);
+            //   - format atmosphere events' `displayMinute` as "45+N'" /
+            //     "90+N'" / "105+N'" / "120+N'" when their sort-minute
+            //     falls inside a stoppage window, matching the live
+            //     clock at the moment of reveal and the convention used
+            //     by MatchEvent::displayMinute() server-side.
             firstHalfStoppage: c.firstHalfStoppage,
             secondHalfStoppage: c.secondHalfStoppage,
+            etFirstHalfStoppage: c.etFirstHalfStoppage,
+            etSecondHalfStoppage: c.etSecondHalfStoppage,
             tactics: {
                 userPlayingStyle: c.activePlayingStyle,
                 userPressing: c.activePressing,

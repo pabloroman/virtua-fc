@@ -27,6 +27,32 @@ const ON_TARGET_RATIO = 0.3;
 const XG_BASELINE = 1.2; // added to score as xG proxy
 
 /**
+ * Format an atmosphere event's clock-time minute the same way the live
+ * clock would render it at the moment of reveal: stoppage windows of any
+ * half are shown as "45+N'" / "90+N'" / "105+N'" / "120+N'", regular
+ * play as a bare integer minute. Server events get this for free via
+ * MatchEvent::displayMinute() because they carry (phase, base, stoppage)
+ * — atmosphere events only have a sort-minute, so we compute it here
+ * using the persisted per-match stoppage durations.
+ */
+export function formatAtmosphereDisplayMinute(sortMinute, stoppage = {}) {
+    const m = Math.floor(sortMinute);
+    const fhs   = stoppage.firstHalfStoppage   ?? 0;
+    const shs   = stoppage.secondHalfStoppage  ?? 0;
+    const etfhs = stoppage.etFirstHalfStoppage ?? 0;
+    const etshs = stoppage.etSecondHalfStoppage ?? 0;
+
+    if (m <= MINUTE.FIRST_HALF_END)               return `${m}'`;
+    if (m <= MINUTE.FIRST_HALF_END + fhs)         return `${MINUTE.FIRST_HALF_END}+${m - MINUTE.FIRST_HALF_END}'`;
+    if (m <= MINUTE.REGULAR_TIME_END)             return `${m}'`;
+    if (m <= MINUTE.REGULAR_TIME_END + shs)       return `${MINUTE.REGULAR_TIME_END}+${m - MINUTE.REGULAR_TIME_END}'`;
+    if (m <= MINUTE.ET_FIRST_HALF_END)            return `${m}'`;
+    if (m <= MINUTE.ET_FIRST_HALF_END + etfhs)    return `${MINUTE.ET_FIRST_HALF_END}+${m - MINUTE.ET_FIRST_HALF_END}'`;
+    if (m <= MINUTE.ET_END)                       return `${m}'`;
+    return `${MINUTE.ET_END}+${m - MINUTE.ET_END}'`;
+}
+
+/**
  * Build a set of player IDs that are OFF the pitch at a given minute,
  * by scanning events for red cards and substitutions.
  *
@@ -200,6 +226,7 @@ export function generateAtmosphereForPeriod(config) {
         narrativeTemplates, allEvents,
         minMinute, maxMinute,
     } = config;
+    const displayMinuteFor = (m) => formatAtmosphereDisplayMinute(m, config);
 
     const totalMinutes = maxMinute - minMinute + 1;
     const matchFraction = totalMinutes / 90;
@@ -245,6 +272,7 @@ export function generateAtmosphereForPeriod(config) {
 
             events.push({
                 minute,
+                displayMinute: displayMinuteFor(minute),
                 type: 'shot_on_target',
                 atmosphere: true,
                 playerName: player.name,
@@ -271,6 +299,7 @@ export function generateAtmosphereForPeriod(config) {
 
             events.push({
                 minute,
+                displayMinute: displayMinuteFor(minute),
                 type: 'shot_off_target',
                 atmosphere: true,
                 playerName: player.name,
@@ -510,6 +539,7 @@ export function generateContextualNarratives(config) {
 
         const event = {
             minute: m,
+            displayMinute: formatAtmosphereDisplayMinute(m, config),
             type: 'contextual',
             atmosphere: true,
             playerName: '',
@@ -522,7 +552,9 @@ export function generateContextualNarratives(config) {
         // into the 2H section (its absolute minute = 45+fhs+0.1 would
         // otherwise fall into the 1H-stoppage range when fhs > 0). The
         // displayed label stays as "45'" to match the convention used
-        // for half-time substitutions persisted at base=45.
+        // for half-time substitutions persisted at base=45 — override
+        // the stoppage-formatted default ("45+N'") that would otherwise
+        // come out of formatAtmosphereDisplayMinute.
         if (cp.type === 'second_half_start') {
             event.phase = 'second_half';
             event.displayMinute = `${MINUTE.FIRST_HALF_END}'`;
@@ -632,6 +664,7 @@ export function generateTacticalNarratives(config) {
 
         events.push({
             minute: m,
+            displayMinute: formatAtmosphereDisplayMinute(m, config),
             type: 'contextual',
             atmosphere: true,
             playerName: '',

@@ -9,6 +9,7 @@ import { describe, it, expect } from 'vitest';
 import {
     generateAtmosphereForPeriod,
     generateRegularTimeAtmosphere,
+    formatAtmosphereDisplayMinute,
 } from '@/modules/atmosphere-generator.js';
 
 function makeRoster(prefix) {
@@ -47,6 +48,51 @@ function baseConfig(overrides = {}) {
         ...overrides,
     };
 }
+
+describe('formatAtmosphereDisplayMinute', () => {
+    it('renders regular-play minutes as bare integers', () => {
+        expect(formatAtmosphereDisplayMinute(1)).toBe("1'");
+        expect(formatAtmosphereDisplayMinute(30)).toBe("30'");
+        expect(formatAtmosphereDisplayMinute(45)).toBe("45'");
+        expect(formatAtmosphereDisplayMinute(60)).toBe("60'");
+        expect(formatAtmosphereDisplayMinute(90)).toBe("90'");
+    });
+
+    it('renders 1H-stoppage minutes as "45+N\'" using firstHalfStoppage', () => {
+        // Regression: a shot at sort-minute 47 with fhs=3 used to render
+        // as "47'" because atmosphere events fell through to the
+        // Math.floor(minute) fallback in the template. The live clock at
+        // that moment shows "45+2'", and the event display should match.
+        const stoppage = { firstHalfStoppage: 3 };
+        expect(formatAtmosphereDisplayMinute(46, stoppage)).toBe("45+1'");
+        expect(formatAtmosphereDisplayMinute(47, stoppage)).toBe("45+2'");
+        expect(formatAtmosphereDisplayMinute(48, stoppage)).toBe("45+3'");
+        // Just past 1H stoppage — back to bare integer minute.
+        expect(formatAtmosphereDisplayMinute(49, stoppage)).toBe("49'");
+    });
+
+    it('falls back to bare integer when no stoppage info is provided', () => {
+        // fhs=0 default: minute 46 is regular 2H, not 1H stoppage.
+        expect(formatAtmosphereDisplayMinute(46)).toBe("46'");
+        expect(formatAtmosphereDisplayMinute(47)).toBe("47'");
+    });
+
+    it('renders 2H-stoppage / ET / ET-stoppage windows correctly', () => {
+        const stoppage = {
+            firstHalfStoppage: 2,
+            secondHalfStoppage: 4,
+            etFirstHalfStoppage: 1,
+            etSecondHalfStoppage: 3,
+        };
+        expect(formatAtmosphereDisplayMinute(91, stoppage)).toBe("90+1'");
+        expect(formatAtmosphereDisplayMinute(94, stoppage)).toBe("90+4'");
+        expect(formatAtmosphereDisplayMinute(100, stoppage)).toBe("100'");
+        expect(formatAtmosphereDisplayMinute(105, stoppage)).toBe("105'");
+        expect(formatAtmosphereDisplayMinute(106, stoppage)).toBe("105+1'");
+        expect(formatAtmosphereDisplayMinute(120, stoppage)).toBe("120'");
+        expect(formatAtmosphereDisplayMinute(123, stoppage)).toBe("120+3'");
+    });
+});
 
 describe('atmosphere-generator off-pitch player filtering', () => {
     it('never picks a red-carded player for shot events placed after the red card', () => {
