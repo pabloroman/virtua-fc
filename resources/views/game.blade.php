@@ -202,6 +202,71 @@
                 </x-primary-button>
             </form>
         </div>
+        @else
+        {{-- Season Complete Preview State.
+             All matches are played but the user has not yet clicked "Start
+             New Season" on the summary page (the irreversible step that
+             closes the season). Show a card that points to the summary, but
+             leave the rest of the dashboard browsable so the user can take
+             one last look at the squad, finances, transfers, and standings. --}}
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
+            <div class="md:col-span-2 space-y-8">
+                <x-section-card>
+                    <div class="p-4 md:p-6 text-center">
+                        <div class="text-accent-gold mb-3 inline-flex">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.32.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.32-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                            </svg>
+                        </div>
+                        <h2 class="text-2xl md:text-3xl font-bold text-text-primary mb-2">{{ __('season.complete_title') }}</h2>
+                        <p class="text-text-muted mb-6 max-w-xl mx-auto">{{ __('season.complete_body') }}</p>
+                        <x-primary-button-link color="amber" :href="route('game.season-end', $game->id)">
+                            {{ __('game.view_season_summary') }}
+                        </x-primary-button-link>
+                    </div>
+                </x-section-card>
+            </div>
+
+            <hr class="border-border-strong md:hidden" />
+
+            {{-- Right Column - Notifications (standings panel is hidden when
+                 there is no next match; the user can still reach it via the
+                 Competitions nav). --}}
+            <div class="space-y-8">
+                <x-section-card :title="__('notifications.inbox')">
+                    <x-slot name="badge">
+                        <div class="flex items-center gap-2">
+                            @if($unreadNotificationCount > 0)
+                            <span class="px-1.5 py-0.5 rounded-full bg-accent-blue/10 text-[9px] font-semibold text-accent-blue">
+                                {{ $unreadNotificationCount }} {{ __('notifications.new') }}
+                            </span>
+                            @endif
+                            <form action="{{ route('game.notifications.read-all', $game->id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="text-[10px] text-accent-blue hover:text-blue-400 transition-colors">{{ __('notifications.mark_all_read') }}</button>
+                            </form>
+                        </div>
+                    </x-slot>
+
+                    @if($groupedNotifications->isEmpty())
+                    <div class="text-center py-8 px-4">
+                        <div class="text-text-faint mb-2">
+                            <svg class="w-8 h-8 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <p class="text-xs text-text-muted">{{ __('notifications.all_caught_up') }}</p>
+                    </div>
+                    @else
+                    <div class="divide-y divide-border-default">
+                        @foreach($groupedNotifications->flatten() as $notification)
+                            <x-notification-row :notification="$notification" :game="$game" />
+                        @endforeach
+                    </div>
+                    @endif
+                </x-section-card>
+            </div>
+        </div>
         @endif
     </div>
 

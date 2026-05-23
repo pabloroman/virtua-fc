@@ -128,6 +128,8 @@ return [
     // Start new season
     'start_new_season' => 'Comenzar Temporada :season',
     'new_season_coming_soon' => 'La próxima temporada estará disponible próximamente.',
+    'complete_title' => 'Temporada finalizada',
+    'complete_body' => 'Echa un último vistazo al club. Cuando estés listo, abre el resumen de temporada para confirmar los resultados y comenzar la próxima temporada.',
 
     // Tournament end
     'tournament_champion' => '¡Campeones del Mundo!',

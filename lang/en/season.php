@@ -128,6 +128,8 @@ return [
     // Start new season
     'start_new_season' => 'Start Season :season',
     'new_season_coming_soon' => 'Next season will be available soon.',
+    'complete_title' => 'Season complete',
+    'complete_body' => 'Take a final look around the club. When you\'re ready, open the season summary to confirm the results and start the next season.',
 
     // Tournament end
     'tournament_champion' => 'World Champions!',
