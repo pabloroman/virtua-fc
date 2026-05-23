@@ -724,14 +724,20 @@ export function addGoalNarratives(events, config) {
  * Regenerate shot atmosphere for [minMinute..maxMinute] and merge into the
  * target array (sorted by minute).
  *
- * Call BEFORE merging any server-resimulated real events so fresh shots
- * aren't influenced by just-added goals — this matches the long-standing
- * ordering used by the tactical-change flow.
+ * The target array is typically still missing the just-resimulated server
+ * events (the tactical-change flow appends them AFTER this call, so that
+ * regenerateNarratives can attach goal narratives in a separate pass).
+ * `availabilityEvents` is therefore separate from `target`: callers MUST
+ * include the about-to-be-merged server events here, otherwise a red card
+ * or substitution emitted by the resimulation won't filter the affected
+ * player out of subsequent shot placements.
  *
  * @param {object}   params.config              _atmosphereConfig() payload
  * @param {object[]} params.target              array to mutate (events or extraTimeEvents)
- * @param {object[]} params.availabilityEvents  full context for who's on the pitch
- *                                              (regular + ET when mutating extraTimeEvents)
+ * @param {object[]} params.availabilityEvents  full context for who's on the pitch —
+ *                                              must include any server-resimulated events
+ *                                              not yet merged into `target` (regular + ET
+ *                                              when mutating extraTimeEvents)
  * @param {number}   params.minMinute
  * @param {number}   params.maxMinute           90 for regular time, 120 for extra time
  */

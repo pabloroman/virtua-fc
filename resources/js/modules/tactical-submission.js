@@ -227,12 +227,20 @@ export function createTacticalSubmission(ctx) {
                 }
 
                 // Regenerate atmosphere shot events for the remaining match
-                // period, now aware of substitutions.
+                // period, now aware of substitutions AND any cards/injuries
+                // emitted by the resimulation. We pass `result.newEvents`
+                // alongside c.events even though they haven't been merged
+                // yet — otherwise a red card or injury in the resimulated
+                // remainder wouldn't filter the player out, and we'd place
+                // a shot on a sent-off teammate at a later minute.
                 const atmCfg = c._atmosphereConfig();
+                const newEvents = result.newEvents || [];
                 regenerateShots({
                     config: atmCfg,
                     target: isET ? c.extraTimeEvents : c.events,
-                    availabilityEvents: isET ? [...c.events, ...c.extraTimeEvents] : c.events,
+                    availabilityEvents: isET
+                        ? [...c.events, ...c.extraTimeEvents, ...newEvents]
+                        : [...c.events, ...newEvents],
                     minMinute: minute + 1,
                     maxMinute: isET ? MINUTE.ET_END : MINUTE.REGULAR_TIME_END,
                 });
@@ -407,11 +415,15 @@ export function createTacticalSubmission(ctx) {
 
             // Regenerate shots for the skipped-over window BEFORE merging the
             // server's resimulated events, matching the tactical-change ordering.
+            // availabilityEvents must include `result.newEvents` (not yet merged)
+            // so a red card / injury inside the resimulated remainder filters
+            // the player out of subsequent shot placements.
             const atmCfg = c._atmosphereConfig();
+            const newEvents = result.newEvents || [];
             regenerateShots({
                 config: atmCfg,
                 target: c.events,
-                availabilityEvents: c.events,
+                availabilityEvents: [...c.events, ...newEvents],
                 minMinute: minute + 1,
                 maxMinute: MINUTE.REGULAR_TIME_END,
             });
