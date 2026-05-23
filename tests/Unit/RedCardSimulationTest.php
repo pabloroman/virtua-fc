@@ -509,9 +509,13 @@ class RedCardSimulationTest extends TestCase
                     $this->assertNull($reactiveSub,
                         'User-team red card must not trigger a forced reactive substitution');
                     $verifiedUserGate = true;
-                } else {
-                    $this->assertNotNull($reactiveSub,
-                        'AI-team red card should still trigger a reactive substitution');
+                } elseif ($reactiveSub !== null) {
+                    // AI-team defender red cards normally trigger a reactive
+                    // sub, but applyRedCardTeamReactiveSub skips when subs or
+                    // windows are exhausted (3 windows / 5 subs total). With
+                    // direct_red_chance=50 the AI can run out before some
+                    // red cards land, so we only need to confirm the AI path
+                    // fires at least once across the run.
                     $verifiedAIPath = true;
                 }
             }
@@ -524,7 +528,7 @@ class RedCardSimulationTest extends TestCase
         $this->assertTrue($verifiedUserGate,
             'Expected at least one defender red card on the user team across 200 sims');
         $this->assertTrue($verifiedAIPath,
-            'Expected at least one defender red card on the AI team across 200 sims');
+            'Expected at least one defender red card on the AI team to trigger a reactive sub across 200 sims');
     }
 
     public function test_forward_red_card_does_not_trigger_reshape_sub(): void
