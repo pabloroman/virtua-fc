@@ -79,7 +79,18 @@ class MatchResimulationService
         // Phases give us this for free: anywhere in regulation maps to a
         // SECOND_HALF_STOPPAGE-or-earlier tuple, and the simulator's remainder
         // restarts from the corresponding raw minute.
-        $resimAnchor = $minute >= 90 ? $stoppage->regulationEnd() : $minute;
+        //
+        // Same idea at half-time: a tactical action stamped at minute 45 must
+        // not wipe goals/cards that landed in 1H stoppage (raw minute 46..45+fhs).
+        // The live clock snaps back to 45 when entering half-time, so the
+        // frontend POSTs minute=45 even though the user has already watched
+        // events from the stoppage window — those events would be reverted
+        // without this lift.
+        $resimAnchor = match (true) {
+            $minute >= 90 => $stoppage->regulationEnd(),
+            $minute === 45 => 45 + $stoppage->firstHalf,
+            default => $minute,
+        };
 
         // 2. Revert all events that happened after the cutoff. Uses phase
         // tuple comparison so a 91' ET goal (phase=ET_FIRST_HALF) is not

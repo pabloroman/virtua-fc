@@ -52,3 +52,21 @@ export function isHalfTimeLike(phase) {
     return phase === PHASE.HALF_TIME || phase === PHASE.EXTRA_TIME_HALF_TIME;
 }
 
+// Cutoff minute for "everything that has happened so far" when the user
+// submits a tactical action. During play, that's just the live clock. At
+// half-time the live clock has been snapped back to the half boundary
+// (45 / 105), which loses the stoppage-time events the user already
+// watched — so we lift the cutoff to the end of the half's stoppage
+// window. Used for both the POST payload to the resimulation endpoint
+// and the client-side event/feed filters; keeping them in sync prevents
+// stoppage goals from being reverted server-side or stripped client-side.
+export function effectiveSubmissionMinute(state) {
+    if (state.phase === PHASE.HALF_TIME) {
+        return MINUTE.FIRST_HALF_END + (state.firstHalfStoppage || 0);
+    }
+    if (state.phase === PHASE.EXTRA_TIME_HALF_TIME) {
+        return MINUTE.ET_FIRST_HALF_END + (state.etFirstHalfStoppage || 0);
+    }
+    return Math.floor(state.currentMinute);
+}
+

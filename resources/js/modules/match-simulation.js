@@ -1,4 +1,4 @@
-import { PHASE, MINUTE } from './match-phases.js';
+import { PHASE, MINUTE, effectiveSubmissionMinute } from './match-phases.js';
 
 /**
  * Match simulation module.
@@ -825,7 +825,7 @@ export function createMatchSimulation(ctx) {
         // The top-level _skipToEndFired guard ensures this can only fire once.
         // When the response arrives, autoSubUserTeamBeforeSkip replaces
         // state.events and rebuilds revealedEvents in one synchronous pass.
-        const skipMinute = Math.max(1, Math.min(89, Math.floor(state.currentMinute)));
+        const skipMinute = Math.max(1, Math.min(89, effectiveSubmissionMinute(state)));
         const skipPromise = (typeof state.autoSubUserTeamBeforeSkip === 'function')
             ? state.autoSubUserTeamBeforeSkip(skipMinute)
             : Promise.resolve(false);

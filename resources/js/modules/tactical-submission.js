@@ -6,7 +6,7 @@
  * Isolated from the UI panel (tactical-panel.js) so the network + state-
  * reconciliation flow can be reasoned about on its own.
  */
-import { MINUTE, FREE_SUB_WINDOW_MINUTES } from './match-phases.js';
+import { MINUTE, FREE_SUB_WINDOW_MINUTES, effectiveSubmissionMinute } from './match-phases.js';
 import { regenerateShots, regenerateNarratives } from './atmosphere-generator.js';
 import { updateRosterPerformances } from './player-ratings.js';
 
@@ -34,7 +34,12 @@ export function createTacticalSubmission(ctx) {
             c.tacticalError = null;
             c.applyingChanges = true;
 
-            const minute = Math.floor(c.currentMinute);
+            // At half-time, c.currentMinute has been snapped back to 45 by
+            // enterHalfTime, but events revealed during 1H stoppage have
+            // absolute minutes > 45. Using floor(currentMinute) directly
+            // would cause the backend revert and the local event filters
+            // below to strip those events.
+            const minute = effectiveSubmissionMinute(c);
 
             try {
                 const payload = {
