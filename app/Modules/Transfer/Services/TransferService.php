@@ -585,11 +585,12 @@ class TransferService
     }
 
     /**
-     * Accept a transfer offer.
-     * If transfer window is open, completes immediately.
-     * If outside window, marks as agreed and completes when next window opens.
+     * Accept a transfer offer. Parks the deal as STATUS_AGREED; the player
+     * does not change teams until either the next match finalises (open
+     * window) or the next window opens (closed window). The intra-window
+     * delay solves the "sign during the matchday, use immediately" exploit.
      *
-     * @return bool True if transfer completed immediately, false if waiting for window
+     * @return bool Always false — completion is now deferred to a listener.
      */
     public function acceptOffer(TransferOffer $offer): bool
     {
@@ -611,20 +612,6 @@ class TransferService
             ->where('status', TransferOffer::STATUS_PENDING)
             ->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
 
-        // Pre-contract transfers always wait until end of season — the player's
-        // current contract is still valid until June regardless of window status.
-        if ($offer->isPreContract()) {
-            $offer->update(['status' => TransferOffer::STATUS_AGREED, 'resolved_at' => $game->current_date]);
-            return false;
-        }
-
-        // If transfer window is open, complete immediately
-        if ($game->isTransferWindowOpen()) {
-            $this->completeTransfer($offer, $game);
-            return true;
-        }
-
-        // Otherwise, mark as agreed (waiting for next transfer window)
         $offer->update(['status' => TransferOffer::STATUS_AGREED, 'resolved_at' => $game->current_date]);
         return false;
     }
@@ -1003,7 +990,8 @@ class TransferService
 
     /**
      * Complete all agreed incoming transfers (user buying/loaning players).
-     * Called when transfer window opens.
+     * Invoked both when a window opens (cross-window agreements) and when a
+     * match finalises during an open window (intra-window agreements).
      */
     public function completeIncomingTransfers(Game $game): Collection
     {
@@ -1030,6 +1018,11 @@ class TransferService
         foreach ($agreedIncoming as $offer) {
             if ($offer->offer_type === TransferOffer::TYPE_LOAN_IN) {
                 $this->loanService->completeLoanIn($offer, $game);
+            } elseif ($this->isFreeAgentOffer($offer)) {
+                // Free-agent signings (no selling club) need the free-agent
+                // completion path so the GameTransfer is logged as
+                // TYPE_FREE_AGENT and the career record uses ORIGIN_FREE_AGENT.
+                $this->completionService->completeFreeAgentSigning($game, $offer->gamePlayer, $offer);
             } else {
                 $this->completeIncomingTransfer($offer, $game);
             }
@@ -1044,28 +1037,23 @@ class TransferService
         return $completedTransfers;
     }
 
+    private function isFreeAgentOffer(TransferOffer $offer): bool
+    {
+        return $offer->offer_type === TransferOffer::TYPE_USER_BID
+            && $offer->selling_team_id === null
+            && (int) $offer->transfer_fee === 0;
+    }
+
     /**
-     * Accept an incoming transfer offer (user buying a player).
-     * If transfer window is open, completes immediately.
-     * If outside window, marks as agreed and completes when next window opens.
-     *
-     * @return bool True if transfer completed immediately, false if waiting for window
-     */
-    /**
-     * Sign a free agent: assign to team, create offer/transfer records.
+     * Sign a free agent: park a STATUS_AGREED offer so the player joins
+     * from the next matchday after the agreement (see
+     * CompleteAgreedTransfersOnMatchPlayed). The player record is not
+     * touched here — completion handles team_id, squad number, contract
+     * length and the GameTransfer entry.
      */
     public function signFreeAgent(Game $game, GamePlayer $player, int $wageDemand): TransferOffer
     {
-        $seasonYear = (int) $game->season;
         $contractYears = $player->age($game->current_date) >= 32 ? 1 : mt_rand(2, 3);
-        $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
-
-        $player->update([
-            'team_id' => $game->team_id,
-            'number' => $this->squadNumberService->assignNumberForNewPlayer($game, $player),
-            'contract_until' => $newContractEnd,
-            'annual_wage' => $wageDemand,
-        ]);
 
         $offer = TransferOffer::create([
             'game_id' => $game->id,
@@ -1076,51 +1064,25 @@ class TransferService
             'direction' => TransferOffer::DIRECTION_INCOMING,
             'transfer_fee' => 0,
             'offered_wage' => $wageDemand,
-            'status' => TransferOffer::STATUS_COMPLETED,
+            'offered_years' => $contractYears,
+            'status' => TransferOffer::STATUS_AGREED,
             'resolved_at' => $game->current_date,
             'expires_at' => $game->current_date,
             'game_date' => $game->current_date,
         ]);
 
-        GameTransfer::record(
-            gameId: $game->id,
-            gamePlayerId: $player->id,
-            fromTeamId: null,
-            toTeamId: $game->team_id,
-            transferFee: 0,
-            type: GameTransfer::TYPE_FREE_AGENT,
-            season: $game->season,
-            window: TransferWindowType::currentValue($game->current_date),
-        );
-
-        ShortlistedPlayer::removeForPlayer($game->id, $player->id);
-
         return $offer;
-    }
-
-    /**
-     * Complete a free agent signing from a negotiated offer (wage already agreed).
-     */
-    public function completeFreeAgentSigning(Game $game, GamePlayer $player, TransferOffer $offer): void
-    {
-        $this->completionService->completeFreeAgentSigning($game, $player, $offer);
     }
 
     public function acceptIncomingOffer(TransferOffer $offer): bool
     {
         $game = $offer->game;
 
-        // If transfer window is open, complete immediately
-        if ($game->isTransferWindowOpen()) {
-            if ($offer->offer_type === TransferOffer::TYPE_LOAN_IN) {
-                $this->loanService->completeLoanIn($offer, $game);
-                return true;
-            }
-
-            return $this->completeIncomingTransfer($offer, $game);
-        }
-
-        // Otherwise, mark as agreed (waiting for next transfer window)
+        // Park as agreed regardless of window state. Completion is handled
+        // by CompleteAgreedTransfersOnMatchPlayed (intra-window) or
+        // CompleteAgreedTransfersOnWindowOpen (cross-window) so that newly
+        // signed players never become available for the matchday they were
+        // signed during.
         $offer->update(['status' => TransferOffer::STATUS_AGREED, 'resolved_at' => $game->current_date]);
         return false;
     }

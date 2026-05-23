@@ -62,6 +62,8 @@ return [
     // Incoming transfers
     'incoming_transfers' => 'Incoming Transfers',
     'completing_when_window' => 'will be completed when the :window window opens',
+    'joining_after_next_match' => 'will join the squad after the next match is played',
+    'leaving_after_next_match' => 'will leave the squad after the next match is played',
     'deal_agreed' => 'Deal agreed',
 
     // Unsolicited offers
@@ -408,6 +410,7 @@ return [
     'chat_player_counter_transfer' => ':player\'s agent insists on :wage/year for :years years.',
     'chat_transfer_complete' => ':player has signed! Welcome to the team.',
     'chat_transfer_complete_pending' => ':player has signed! The player will join the team in the next transfer window.',
+    'chat_transfer_complete_intra_window' => ':player has signed! The player will join the squad after the next match.',
     'chat_terms_rejected' => ':player\'s agent has walked away. The deal is off.',
 
     // Counter-offer negotiation (user selling)

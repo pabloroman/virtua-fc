@@ -247,8 +247,13 @@ class NegotiateFreeAgent
 
     private function completeFreeAgentSigning(TransferOffer $offer, Game $game, GamePlayer $player): JsonResponse
     {
-        $this->transferService->completeFreeAgentSigning($game, $player, $offer);
-        $this->notificationService->notifyTransferComplete($game, $offer->refresh());
+        // Park the agreement; the player joins after the next match
+        // (CompleteAgreedTransfersOnMatchPlayed) or when the window opens
+        // (CompleteAgreedTransfersOnWindowOpen).
+        $offer->update([
+            'status' => TransferOffer::STATUS_AGREED,
+            'resolved_at' => $game->current_date,
+        ]);
 
         return response()->json([
             'status' => 'ok',

@@ -38,7 +38,6 @@ class AcceptLoanOffer
 
         $playerName = $offer->gamePlayer->name;
         $team = $offer->offeringTeam;
-        $windowOpen = $game->isTransferWindowOpen();
 
         try {
             $this->loanService->acceptLoanOffer($offer, $game);
@@ -46,10 +45,10 @@ class AcceptLoanOffer
             return redirect()->back()->with('error', $this->formatBreachMessage($e));
         }
 
-        if ($windowOpen) {
-            $message = __('messages.loan_offer_accepted', [
+        if ($game->isTransferWindowOpen()) {
+            $message = __('messages.loan_offer_agreed_intra_window', [
                 'player' => $playerName,
-                'team_a' => $team->nameWithA(),
+                'team' => $team->name,
             ]);
         } else {
             $message = __('messages.loan_offer_accepted_pre_window', [

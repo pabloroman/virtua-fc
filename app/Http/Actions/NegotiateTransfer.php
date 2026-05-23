@@ -516,10 +516,13 @@ class NegotiateTransfer
 
     private function completeTransferNegotiation(TransferOffer $offer, Game $game, GamePlayer $player): JsonResponse
     {
-        $completedImmediately = $this->transferService->acceptIncomingOffer($offer);
+        $this->transferService->acceptIncomingOffer($offer);
 
-        // Transfer was rejected by a safety check (budget exceeded)
-        if ($completedImmediately === false && $offer->refresh()->status === TransferOffer::STATUS_REJECTED) {
+        // Defensive: re-check status in case acceptIncomingOffer flipped it
+        // (e.g. a sibling guard rejected the deal). Today acceptIncomingOffer
+        // only parks as agreed, but keep the check so a future safety net
+        // surfaces in the UI immediately.
+        if ($offer->refresh()->status === TransferOffer::STATUS_REJECTED) {
             $reason = __('messages.transfer_failed');
 
             return response()->json([
@@ -535,12 +538,8 @@ class NegotiateTransfer
             ]);
         }
 
-        if ($completedImmediately) {
-            $this->notificationService->notifyTransferComplete($game, $offer->refresh());
-        }
-
-        $messageKey = $completedImmediately
-            ? 'transfers.chat_transfer_complete'
+        $messageKey = $game->isTransferWindowOpen()
+            ? 'transfers.chat_transfer_complete_intra_window'
             : 'transfers.chat_transfer_complete_pending';
 
         return response()->json([

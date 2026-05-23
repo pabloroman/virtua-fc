@@ -11,9 +11,11 @@ return [
     'offer_rejected' => ':team_de offer rejected.',
     'offer_accepted_sale' => ':player sold :team_a for :fee.',
     'offer_accepted_pre_contract' => 'Deal agreed! :player will sign for :team for :fee when the :window window opens.',
+    'offer_accepted_intra_window' => 'Deal agreed! :player will leave for :team for :fee after the next match.',
 
     // Free agent signing
     'free_agent_signed' => ':player has signed for your team as a free agent!',
+    'free_agent_agreed' => 'Deal agreed! :player will join your team as a free agent after the next match.',
     'not_free_agent' => 'This player is not a free agent.',
     'free_agent_reputation_too_low' => 'This player has no interest in joining a club of your reputation level.',
     'transfer_window_closed' => 'The transfer window is closed.',
@@ -31,6 +33,7 @@ return [
     'loan_search_active' => ':player already has an active loan search.',
     'loan_offer_accepted' => ':player loaned :team_a.',
     'loan_offer_accepted_pre_window' => ':player will be loaned to :team when the :window window opens.',
+    'loan_offer_agreed_intra_window' => ':player will be loaned to :team after the next match.',
     'loan_search_cancelled' => ':player loan search has been cancelled.',
 
     // Contract messages

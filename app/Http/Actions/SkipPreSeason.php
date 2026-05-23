@@ -4,6 +4,7 @@ namespace App\Http\Actions;
 
 use App\Models\Game;
 use App\Models\GameMatch;
+use App\Modules\Match\Events\GameDateAdvanced;
 use App\Modules\Match\Jobs\ProcessCareerActions;
 use Illuminate\Support\Facades\Log;
 
@@ -29,12 +30,21 @@ class SkipPreSeason
             ->orderBy('scheduled_date')
             ->first();
 
+        $previousDate = $game->current_date;
         $updates = ['pre_season' => false];
         if ($earliestMatch) {
             $updates['current_date'] = $earliestMatch->scheduled_date->toDateString();
         }
 
         $game->update($updates);
+
+        // Notify listeners that the date jumped from pre-season to matchday 1.
+        // This lets the transfer subsystem flush summer signings (parked as
+        // STATUS_AGREED) and lets the AI window-close handler run before the
+        // first competitive match.
+        if ($earliestMatch && $earliestMatch->scheduled_date->gt($previousDate)) {
+            GameDateAdvanced::dispatch($game->refresh(), $previousDate, $earliestMatch->scheduled_date);
+        }
 
         // Run career action ticks in the background to simulate pre-season transfer activity
         $updated = Game::where('id', $game->id)

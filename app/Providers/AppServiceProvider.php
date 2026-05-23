@@ -41,6 +41,7 @@ use App\Modules\Season\Listeners\SoftDeleteCompletedTournamentGame;
 use App\Modules\Squad\Listeners\CheckRecoveredPlayers;
 use App\Modules\Squad\Listeners\EnforceSquadRegistration;
 use App\Modules\Transfer\Listeners\ApplyWageGapMoraleDrip;
+use App\Modules\Transfer\Listeners\CompleteAgreedTransfersOnMatchPlayed;
 use App\Modules\Transfer\Listeners\CompleteAgreedTransfersOnWindowOpen;
 use App\Modules\Transfer\Listeners\ProcessTransferWindowClose;
 use App\Modules\Transfer\Listeners\RollAIContractRenewals;
@@ -183,6 +184,7 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(GameDateAdvanced::class, CheckRecoveredPlayers::class);
         Event::listen(GameDateAdvanced::class, NotifyTransferWindowOpen::class);
         Event::listen(GameDateAdvanced::class, CompleteAgreedTransfersOnWindowOpen::class);
+        Event::listen(GameDateAdvanced::class, CompleteAgreedTransfersOnMatchPlayed::class);
         Event::listen(GameDateAdvanced::class, NotifyTransferWindowClosing::class);
         Event::listen(GameDateAdvanced::class, NotifyUnenrolledPlayersBeforeWindowClose::class);
         Event::listen(GameDateAdvanced::class, ProcessTransferWindowClose::class);

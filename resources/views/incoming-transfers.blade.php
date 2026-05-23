@@ -167,7 +167,13 @@
                             @if($incomingAgreedTransfers->isNotEmpty())
                             <div class="border-l-4 border-l-accent-green pl-5">
                                 <h4 class="font-semibold text-lg text-text-primary mb-1">{{ __('transfers.incoming_transfers') }}</h4>
-                                <p class="text-sm text-text-muted mb-3">{{ __('transfers.completing_when_window', ['window' => $game->getNextWindowName()]) }}</p>
+                                <p class="text-sm text-text-muted mb-3">
+                                    @if($game->isTransferWindowOpen())
+                                        {{ __('transfers.joining_after_next_match') }}
+                                    @else
+                                        {{ __('transfers.completing_when_window', ['window' => $game->getNextWindowName()]) }}
+                                    @endif
+                                </p>
                                 <div class="space-y-3">
                                     @foreach($incomingAgreedTransfers as $transfer)
                                     <div class="bg-accent-green/10 border border-accent-green/20 rounded-xl p-4">
