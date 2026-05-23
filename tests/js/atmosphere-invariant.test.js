@@ -27,6 +27,7 @@ import {
     addGoalNarratives,
 } from '@/modules/atmosphere-generator.js';
 import { createTacticalSubmission } from '@/modules/tactical-submission.js';
+import { createAtmosphereGlue } from '@/modules/atmosphere-glue.js';
 
 // =============================================================================
 // Contract — independent definition, NOT calling into atmosphere-generator's
@@ -164,6 +165,24 @@ function createMockState(overrides = {}) {
         benchPlayers: [],
         opponentBenchPlayers: [],
 
+        // Atmosphere-glue inputs (used when atmosphere is recomputed
+        // against the live state, e.g. inside tactical-submission).
+        homeArticle: 'el',
+        awayArticle: 'el',
+        narrativeTemplates: {
+            shotOnTarget: ['Shot by :player'],
+            shotOffTarget: ['Wide by :player'],
+            goalAssisted: ['Goal by :player'],
+            goalSolo: ['Goal by :player'],
+            goalPrefix: [''],
+        },
+        isKnockout: false,
+        isTwoLeggedTie: false,
+        opponentPlayingStyle: 'balanced',
+        opponentPressing: 'standard',
+        opponentDefLine: 'normal',
+        opponentMentality: 'balanced',
+
         pendingSubs: [],
         pendingFormation: null,
         pendingMentality: null,
@@ -205,10 +224,15 @@ function createMockState(overrides = {}) {
             };
         },
 
+        realEvents: [],
+        realExtraTimeEvents: [],
+        atmosphereEvents: [],
+        atmosphereExtraTimeEvents: [],
         events: [],
         extraTimeEvents: [],
         revealedEvents: [],
         lastRevealedIndex: -1,
+        lastRevealedETIndex: -1,
 
         addPendingSub: vi.fn(),
         closeTacticalPanel: vi.fn(),
@@ -217,7 +241,18 @@ function createMockState(overrides = {}) {
         recalculatePlayerRatings: vi.fn(),
         synthesizeGoalsIfNeeded: (events) => events,
     };
-    return Object.assign(state, overrides);
+    Object.assign(state, overrides);
+
+    // Wire real atmosphere glue so recompute calls exercise the actual
+    // generator. The invariant test must run against the real code path
+    // it's supposed to lock down.
+    const ctx = () => state;
+    const glue = createAtmosphereGlue(ctx);
+    state._atmosphereConfig = glue._atmosphereConfig;
+    state.recomputeRegularAtmosphere = glue.recomputeRegularAtmosphere;
+    state.recomputeETAtmosphere = glue.recomputeETAtmosphere;
+
+    return state;
 }
 
 // =============================================================================
@@ -251,6 +286,7 @@ function runETInjectionScenario(regularEvents, etEvents, label) {
 async function runTacticalChangeScenario(initialEvents, tacticalMinute, newEvents, label) {
     const state = createMockState({
         currentMinute: tacticalMinute,
+        realEvents: [...initialEvents],
         events: [...initialEvents],
     });
     globalThis.fetch = vi.fn(() => Promise.resolve({
@@ -266,6 +302,10 @@ async function runTacticalChangeScenario(initialEvents, tacticalMinute, newEvent
     }));
     const submission = createTacticalSubmission(() => state);
     await submission.confirmAllChanges();
+
+    if (state.tacticalError) {
+        throw new Error(`${label}: tactical-submission errored — ${state.tacticalError}`);
+    }
     assertAtmosphereInvariant(state.events, label);
 }
 

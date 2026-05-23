@@ -1,14 +1,29 @@
 /**
  * Tactical-actions POST pipeline: applies user substitutions and/or
- * tactics server-side, merges the resimulated events back into the feed,
- * and refreshes scores/possession/ratings.
+ * tactics server-side, merges the resimulated events back into the
+ * canonical `realEvents` list, and refreshes scores/possession/ratings.
+ * Atmosphere events are then re-derived in one shot from the updated
+ * real-event list — there is no longer a "regenerate-then-merge"
+ * coordination dance that earlier versions of this module had to do by
+ * hand.
  *
  * Isolated from the UI panel (tactical-panel.js) so the network + state-
  * reconciliation flow can be reasoned about on its own.
  */
 import { MINUTE, FREE_SUB_WINDOW_MINUTES, effectiveSubmissionMinute, isHalfTimeLike } from './match-phases.js';
-import { regenerateShots, regenerateNarratives } from './atmosphere-generator.js';
 import { updateRosterPerformances } from './player-ratings.js';
+
+function recomputeLastRevealedIndex(events, currentMinute) {
+    let idx = -1;
+    for (let i = 0; i < events.length; i++) {
+        if (events[i].minute <= currentMinute) {
+            idx = i;
+        } else {
+            break;
+        }
+    }
+    return idx;
+}
 
 export function createTacticalSubmission(ctx) {
     return {
@@ -166,16 +181,16 @@ export function createTacticalSubmission(ctx) {
                 if (result.pressing) c.activePressing = result.pressing;
                 if (result.defensiveLine) c.activeDefLine = result.defensiveLine;
 
-                // Filter server events up to current minute. Atmosphere events
-                // (shots/fouls) beyond this minute are discarded and regenerated
-                // below so they reflect substitutions and tactical changes.
+                // Drop the resimulated portion of realEvents and stale
+                // atmosphere — both will be reseeded from the server's
+                // newEvents + the regenerator below. The revealed feed
+                // keeps everything ≤ minute except contextual narratives
+                // (which reflected the pre-resimulation score and need to
+                // be redrawn from the new score timeline).
                 if (isET) {
-                    c.extraTimeEvents = c.extraTimeEvents.filter(e => e.minute <= minute);
+                    c.realExtraTimeEvents = c.realExtraTimeEvents.filter(e => e.minute <= minute);
                 } else {
-                    c.events = c.events.filter(e => e.minute <= minute);
-                    // Remove contextual narratives — they'll be freshly regenerated
-                    // below to reflect the post-resimulation score.
-                    c.events = c.events.filter(e => e.type !== 'contextual');
+                    c.realEvents = c.realEvents.filter(e => e.minute <= minute);
                 }
                 c.revealedEvents = c.revealedEvents.filter(e => e.minute <= minute && e.type !== 'contextual');
 
@@ -205,8 +220,9 @@ export function createTacticalSubmission(ctx) {
                         }
                     }
 
-                    // Also add substitution events to the main events array so
-                    // the atmosphere generator can track who is on/off the pitch.
+                    // Client-injected substitution events ARE real events:
+                    // they change who is on the pitch, and atmosphere must
+                    // honor them when picking shot actors.
                     const subEvents = result.substitutions.map(sub => ({
                         minute,
                         type: 'substitution',
@@ -220,97 +236,55 @@ export function createTacticalSubmission(ctx) {
                     }));
 
                     if (isET) {
-                        c.extraTimeEvents.push(...subEvents);
+                        c.realExtraTimeEvents.push(...subEvents);
                     } else {
-                        c.events.push(...subEvents);
+                        c.realEvents.push(...subEvents);
                     }
                 }
 
-                // Regenerate atmosphere shot events for the remaining match
-                // period, now aware of substitutions AND any cards/injuries
-                // emitted by the resimulation. We pass `result.newEvents`
-                // alongside c.events even though they haven't been merged
-                // yet — otherwise a red card or injury in the resimulated
-                // remainder wouldn't filter the player out, and we'd place
-                // a shot on a sent-off teammate at a later minute.
-                const atmCfg = c._atmosphereConfig();
-                const newEvents = result.newEvents || [];
-                regenerateShots({
-                    config: atmCfg,
-                    target: isET ? c.extraTimeEvents : c.events,
-                    availabilityEvents: isET
-                        ? [...c.events, ...c.extraTimeEvents, ...newEvents]
-                        : [...c.events, ...newEvents],
-                    minMinute: minute + 1,
-                    maxMinute: isET ? MINUTE.ET_END : MINUTE.REGULAR_TIME_END,
-                });
-
-                // Append new events and update scores
+                // Merge the server's resimulated events into the canonical
+                // real-event list. Atmosphere is regenerated from this
+                // list below, so any red card / injury / sub in
+                // result.newEvents is visible to the shot generator.
                 if (isET) {
                     if (result.newEvents && result.newEvents.length > 0) {
-                        c.extraTimeEvents.push(...result.newEvents);
-                        c.extraTimeEvents.sort((a, b) => a.minute - b.minute);
+                        c.realExtraTimeEvents.push(...result.newEvents);
                     }
-
-                    regenerateNarratives({
-                        config: c._atmosphereConfig(),
-                        target: c.extraTimeEvents,
-                        availabilityEvents: [...c.events, ...c.extraTimeEvents],
-                        minMinute: minute + 1,
-                    });
-
-                    c.lastRevealedETIndex = -1;
-                    for (let i = 0; i < c.extraTimeEvents.length; i++) {
-                        if (c.extraTimeEvents[i].minute <= c.currentMinute) {
-                            c.lastRevealedETIndex = i;
-                        } else {
-                            break;
-                        }
-                    }
+                    c.realExtraTimeEvents.sort((a, b) => a.minute - b.minute);
 
                     c.etHomeScore = result.newScore.home;
                     c.etAwayScore = result.newScore.away;
                     c._needsPenalties = result.needsPenalties || false;
+
+                    c.recomputeETAtmosphere();
+
+                    c.lastRevealedETIndex = recomputeLastRevealedIndex(c.extraTimeEvents, c.currentMinute);
                 } else {
                     if (result.newEvents && result.newEvents.length > 0) {
-                        c.events.push(...result.newEvents);
-                        c.events.sort((a, b) => a.minute - b.minute);
+                        c.realEvents.push(...result.newEvents);
                     }
+                    c.realEvents.sort((a, b) => a.minute - b.minute);
 
                     c.finalHomeScore = result.newScore.home;
                     c.finalAwayScore = result.newScore.away;
 
-                    c.events = c.synthesizeGoalsIfNeeded(c.events);
+                    // Synthesize ghost goals into the canonical list so the
+                    // displayed score matches even when the server omitted
+                    // goal events. Recomputed atmosphere then sees them.
+                    c.realEvents = c.synthesizeGoalsIfNeeded(c.realEvents);
 
-                    // Regenerate narratives: goal text for new server goals + contextual
-                    // commentary for checkpoints after the tactical minute (old ones were
-                    // removed because they reflected the pre-resimulation score).
-                    regenerateNarratives({
-                        config: c._atmosphereConfig(),
-                        target: c.events,
-                        availabilityEvents: c.events,
-                        minMinute: minute + 1,
-                        includeContextual: true,
-                    });
+                    c.recomputeRegularAtmosphere();
 
-                    // Recalculate after all event modifications (synthesize, narratives)
-                    // to avoid stale indices from array insertions and re-sorts.
-                    //
-                    // Compare against `minute` (the effective submission minute)
-                    // rather than c.currentMinute. At half-time enterHalfTime
-                    // snapped currentMinute back to 45, but the user has already
-                    // watched events up through 45+fhs. Using currentMinute here
-                    // leaves the 1H-stoppage events (and the just-pushed sub
-                    // event at minute=45+fhs) past the index, so the next 2H
-                    // tick re-reveals them — duplicating them in revealedEvents.
-                    c.lastRevealedIndex = -1;
-                    for (let i = 0; i < c.events.length; i++) {
-                        if (c.events[i].minute <= minute) {
-                            c.lastRevealedIndex = i;
-                        } else {
-                            break;
-                        }
-                    }
+                    // Compare against `minute` (the effective submission
+                    // minute) rather than c.currentMinute. At half-time
+                    // enterHalfTime snapped currentMinute back to 45, but
+                    // the user has already watched events up through
+                    // 45+fhs. Using currentMinute here would leave the
+                    // 1H-stoppage events (and the just-pushed sub event
+                    // at minute=45+fhs) past the index, so the next 2H
+                    // tick would re-reveal them — duplicating them in
+                    // revealedEvents.
+                    c.lastRevealedIndex = recomputeLastRevealedIndex(c.events, minute);
                 }
 
                 c.recalculateScore();
@@ -411,45 +385,22 @@ export function createTacticalSubmission(ctx) {
 
             // Merge: drop pre-computed events after the skip minute and
             // replace them with the freshly-simulated remainder.
-            c.events = c.events.filter(e => e.minute <= minute);
+            c.realEvents = c.realEvents.filter(e => e.minute <= minute);
 
-            // Regenerate shots for the skipped-over window BEFORE merging the
-            // server's resimulated events, matching the tactical-change ordering.
-            // availabilityEvents must include `result.newEvents` (not yet merged)
-            // so a red card / injury inside the resimulated remainder filters
-            // the player out of subsequent shot placements.
-            const atmCfg = c._atmosphereConfig();
-            const newEvents = result.newEvents || [];
-            regenerateShots({
-                config: atmCfg,
-                target: c.events,
-                availabilityEvents: [...c.events, ...newEvents],
-                minMinute: minute + 1,
-                maxMinute: MINUTE.REGULAR_TIME_END,
-            });
-
+            // Merge server-resimulated events into realEvents and update
+            // scores BEFORE regenerating atmosphere — atmosphere is derived
+            // from the up-to-date realEvents in a single pass.
             if (result.newEvents && result.newEvents.length > 0) {
-                c.events.push(...result.newEvents);
-                c.events.sort((a, b) => a.minute - b.minute);
+                c.realEvents.push(...result.newEvents);
             }
+            c.realEvents.sort((a, b) => a.minute - b.minute);
 
-            // Update final score (the resimulation may have changed it).
             if (result.newScore) {
                 c.finalHomeScore = result.newScore.home;
                 c.finalAwayScore = result.newScore.away;
             }
 
-            // Regenerate narratives AFTER the newEvents merge so goal narratives
-            // attach to the fresh server goals, plus contextual + tactical
-            // commentary for post-skip checkpoints.
-            regenerateNarratives({
-                config: atmCfg,
-                target: c.events,
-                availabilityEvents: c.events,
-                minMinute: minute + 1,
-                includeContextual: true,
-                includeTactical: true,
-            });
+            c.recomputeRegularAtmosphere();
 
             // Reset the revealed-events feed and substitution tracking,
             // then re-reveal ALL events in one synchronous pass.

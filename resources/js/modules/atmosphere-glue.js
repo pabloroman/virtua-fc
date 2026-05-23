@@ -1,7 +1,17 @@
 /**
  * Glue layer around atmosphere-generator.js and match-summary-generator.js.
- * Owns the 30-field config object that previously lived inline in live-match.js
- * and the inject/summary methods that dispatched to the generator modules.
+ *
+ * Atmosphere events (shots, fouls, contextual + tactical narratives) are a
+ * DERIVED VIEW of the canonical server-truth event list. Callers mutate
+ * `c.realEvents` / `c.realExtraTimeEvents` and then call
+ * `recomputeRegularAtmosphere()` / `recomputeETAtmosphere()`; this module
+ * runs the generators against the fresh real-event list and rebuilds the
+ * merged `c.events` / `c.extraTimeEvents` arrays in lockstep.
+ *
+ * The "regenerate-then-merge" race window that produced the original
+ * sent-off-player atmosphere bugs cannot exist here: there is no separate
+ * `availabilityEvents` parameter to keep in sync — atmosphere only ever
+ * runs after `realEvents` is fully up to date.
  */
 import {
     generateRegularTimeAtmosphere,
@@ -47,40 +57,46 @@ export function createAtmosphereGlue(ctx) {
         };
     }
 
+    function mergeSorted(a, b) {
+        return [...a, ...b].sort((x, y) => x.minute - y.minute);
+    }
+
     return {
         _atmosphereConfig() {
             return atmosphereConfig();
         },
 
         /**
-         * Generate atmosphere events and narratives for regular time,
-         * merging them into the events array.
+         * Rebuild regular-time atmosphere from `c.realEvents`. Writes
+         * `c.atmosphereEvents` and `c.events` (merged sorted view).
+         * Idempotent: calling repeatedly with the same realEvents yields
+         * the same merged shape (atmosphere RNG is non-deterministic, so
+         * the specific atmosphere events differ, but the invariant holds).
          */
-        _injectAtmosphere() {
+        recomputeRegularAtmosphere() {
             const c = ctx();
             const cfg = atmosphereConfig();
-            addGoalNarratives(c.events, cfg);
-            const atmosphere = generateRegularTimeAtmosphere({ ...cfg, allEvents: c.events });
-            const tactical = generateTacticalNarratives({ ...cfg, allEvents: c.events });
-            const allAtmosphere = [...atmosphere, ...tactical];
-            if (allAtmosphere.length) {
-                c.events = [...c.events, ...allAtmosphere].sort((a, b) => a.minute - b.minute);
-            }
+            addGoalNarratives(c.realEvents, cfg);
+            const atmosphere = generateRegularTimeAtmosphere({ ...cfg, allEvents: c.realEvents });
+            const tactical = generateTacticalNarratives({ ...cfg, allEvents: c.realEvents });
+            c.atmosphereEvents = [...atmosphere, ...tactical];
+            c.events = mergeSorted(c.realEvents, c.atmosphereEvents);
         },
 
         /**
-         * Generate atmosphere events and narratives for extra time,
-         * merging them into the extraTimeEvents array.
+         * Rebuild extra-time atmosphere from `c.realExtraTimeEvents`,
+         * using the regular-time realEvents as additional availability
+         * context. Writes `c.atmosphereExtraTimeEvents` and
+         * `c.extraTimeEvents`.
          */
-        _injectETAtmosphere() {
+        recomputeETAtmosphere() {
             const c = ctx();
             const cfg = atmosphereConfig();
-            addGoalNarratives(c.extraTimeEvents, cfg);
-            const allEvents = [...c.events, ...c.extraTimeEvents];
-            const atmosphere = generateExtraTimeAtmosphere({ ...cfg, allEvents });
-            if (atmosphere.length) {
-                c.extraTimeEvents = [...c.extraTimeEvents, ...atmosphere].sort((a, b) => a.minute - b.minute);
-            }
+            addGoalNarratives(c.realExtraTimeEvents, cfg);
+            const allRealEvents = [...c.realEvents, ...c.realExtraTimeEvents];
+            const atmosphere = generateExtraTimeAtmosphere({ ...cfg, allEvents: allRealEvents });
+            c.atmosphereExtraTimeEvents = atmosphere;
+            c.extraTimeEvents = mergeSorted(c.realExtraTimeEvents, c.atmosphereExtraTimeEvents);
         },
 
         _generateMatchSummary() {

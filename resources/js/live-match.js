@@ -57,7 +57,17 @@ export default function liveMatch(config) {
     const pitchLayout = createPitchLayout(ctx);
 
     const component = {
-        // Config (from server)
+        // Canonical server-truth events. Atmosphere events (shots, fouls,
+        // narratives) are derived from this list, NOT stored alongside it.
+        // Mutators update `realEvents`/`realExtraTimeEvents` and then call
+        // `recomputeRegularAtmosphere()` / `recomputeETAtmosphere()`.
+        realEvents: config.events || [],
+        realExtraTimeEvents: [],
+        atmosphereEvents: [],
+        atmosphereExtraTimeEvents: [],
+
+        // Merged-sorted view (real + atmosphere). Rebuilt by the recompute
+        // helpers; consumers (reveal loop, ratings, feed) read this.
         events: config.events || [],
         homeTeamId: config.homeTeamId,
         awayTeamId: config.awayTeamId,
@@ -381,9 +391,12 @@ export default function liveMatch(config) {
                 this.recalculatePlayerRatings();
             }
 
-            // If ET data was preloaded (page refresh during ET), set it up
+            // If ET data was preloaded (page refresh during ET), seed the
+            // canonical ET real-event list. Atmosphere is derived from it
+            // below (recomputeETAtmosphere) once the rest of the init has
+            // wired up the necessary state.
             if (this.preloadedExtraTimeData) {
-                this.extraTimeEvents = this.preloadedExtraTimeData.extraTimeEvents || [];
+                this.realExtraTimeEvents = this.preloadedExtraTimeData.extraTimeEvents || [];
                 this.etHomeScore = this.preloadedExtraTimeData.homeScoreET || 0;
                 this.etAwayScore = this.preloadedExtraTimeData.awayScoreET || 0;
                 this.penaltyResult = this.preloadedExtraTimeData.penalties || null;
@@ -405,10 +418,11 @@ export default function liveMatch(config) {
             if (this.animationSeen && this._restoreEventsFromCache()) {
                 this.skipToFullTimeImmediate();
             } else {
-                // Generate client-side atmosphere events (shots, fouls) and narratives
-                this._injectAtmosphere();
+                // Derive client-side atmosphere events (shots, fouls,
+                // narratives) from the server-truth realEvents list.
+                this.recomputeRegularAtmosphere();
                 if (this.preloadedExtraTimeData) {
-                    this._injectETAtmosphere();
+                    this.recomputeETAtmosphere();
                 }
 
                 if (this.animationSeen) {
@@ -426,8 +440,15 @@ export default function liveMatch(config) {
          * immediately instead of replaying the live experience.
          */
         skipToFullTimeImmediate() {
-            // Synthesize any missing goal events so the event list is complete
-            this.events = this.synthesizeGoalsIfNeeded(this.events);
+            // Synthesize any missing goal events into the canonical real
+            // list, then rebuild the merged view if anything was added.
+            // Skipped when the merged feed came from cache (atmosphere is
+            // already baked in and we don't want to RNG-re-roll it).
+            const synthesized = this.synthesizeGoalsIfNeeded(this.realEvents);
+            if (synthesized.length !== this.realEvents.length) {
+                this.realEvents = synthesized;
+                this.events = [...this.realEvents, ...this.atmosphereEvents].sort((a, b) => a.minute - b.minute);
+            }
 
             // Reveal all regular-time events and track substitutions
             for (let i = 0; i < this.events.length; i++) {
@@ -512,8 +533,19 @@ export default function liveMatch(config) {
         _restoreEventsFromCache() {
             const cached = eventCache.restore();
             if (!cached) return false;
-            if (cached.events) this.events = cached.events;
-            if (cached.extraTimeEvents) this.extraTimeEvents = cached.extraTimeEvents;
+            if (cached.events) {
+                this.events = cached.events;
+                // The cache holds the merged view. Split it back into the
+                // canonical real/atmosphere buckets so any consumer that
+                // reads them after restore sees a consistent state.
+                this.realEvents = cached.events.filter(e => !e.atmosphere);
+                this.atmosphereEvents = cached.events.filter(e => e.atmosphere);
+            }
+            if (cached.extraTimeEvents) {
+                this.extraTimeEvents = cached.extraTimeEvents;
+                this.realExtraTimeEvents = cached.extraTimeEvents.filter(e => !e.atmosphere);
+                this.atmosphereExtraTimeEvents = cached.extraTimeEvents.filter(e => e.atmosphere);
+            }
             if (cached.matchSummary) this.matchSummary = cached.matchSummary;
             return true;
         },

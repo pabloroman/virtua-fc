@@ -554,14 +554,15 @@ export function createMatchSimulation(ctx) {
                 return;
             }
 
-            state.extraTimeEvents = result.extraTimeEvents || [];
+            state.realExtraTimeEvents = result.extraTimeEvents || [];
             state.etHomeScore = result.homeScoreET || 0;
             state.etAwayScore = result.awayScoreET || 0;
             state._needsPenalties = result.needsPenalties || false;
 
-            // Generate client-side atmosphere for extra time
-            if (typeof state._injectETAtmosphere === 'function') {
-                state._injectETAtmosphere();
+            // Derive ET atmosphere from the freshly-loaded ET real events
+            // (mirrors recomputeRegularAtmosphere at initial load).
+            if (typeof state.recomputeETAtmosphere === 'function') {
+                state.recomputeETAtmosphere();
             }
 
             if (result.homePossession !== undefined) {
@@ -877,8 +878,17 @@ export function createMatchSimulation(ctx) {
     function start() {
         const state = ctx();
 
-        // Synthesize goals if events are empty but there's a final score
-        state.events = synthesizeGoalsIfNeeded(state.events);
+        // Synthesize ghost goals into the canonical real-event list so any
+        // goals the server omitted (because they were generated for an AI
+        // team without an event row) still appear in the feed. Atmosphere
+        // is then re-derived to merge the synthesized goals into c.events.
+        const synthesized = synthesizeGoalsIfNeeded(state.realEvents);
+        if (synthesized.length !== state.realEvents.length) {
+            state.realEvents = synthesized;
+            if (typeof state.recomputeRegularAtmosphere === 'function') {
+                state.recomputeRegularAtmosphere();
+            }
+        }
 
         // Brief delay before kickoff
         _kickoffTimeout = setTimeout(() => {

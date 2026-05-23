@@ -12,6 +12,7 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createTacticalSubmission } from '@/modules/tactical-submission.js';
+import { createAtmosphereGlue } from '@/modules/atmosphere-glue.js';
 
 function makeRoster(prefix, teamId) {
     const positions = [
@@ -30,7 +31,7 @@ function makeRoster(prefix, teamId) {
 }
 
 function createMockState(overrides = {}) {
-    return {
+    const state = {
         // Network
         tacticalActionsUrl: '/tactical-actions',
         csrfToken: 'test-token',
@@ -77,9 +78,27 @@ function createMockState(overrides = {}) {
         activePressing: 'standard',
         activeDefLine: 'normal',
 
-        // Atmosphere config — atmosphereConfig() uses these and the
-        // lineup rosters. We provide the bare minimum needed for the
-        // shot generator to work.
+        // Atmosphere-glue inputs (the real glue is wired against this
+        // state below, so it reads these directly).
+        homeArticle: 'el',
+        awayArticle: 'el',
+        narrativeTemplates: {
+            shotOnTarget: ['Shot by :player'],
+            shotOffTarget: ['Wide by :player'],
+            goalAssisted: ['Goal by :player'],
+            goalSolo: ['Goal by :player'],
+            goalPrefix: [''],
+        },
+        isKnockout: false,
+        isTwoLeggedTie: false,
+        opponentPlayingStyle: 'balanced',
+        opponentPressing: 'standard',
+        opponentDefLine: 'normal',
+        opponentMentality: 'balanced',
+
+        // Legacy mock _atmosphereConfig — overwritten by the real glue
+        // wiring below so tests exercise the production code path. Kept
+        // as a defensive fallback for callers that read it directly.
         _atmosphereConfig() {
             return {
                 homeTeamId: 'home-1',
@@ -104,11 +123,18 @@ function createMockState(overrides = {}) {
             };
         },
 
-        // Events
+        // Canonical real events + derived atmosphere buckets. The merged
+        // `events` / `extraTimeEvents` arrays are rebuilt by the recompute
+        // helpers (mocked below).
+        realEvents: [],
+        realExtraTimeEvents: [],
+        atmosphereEvents: [],
+        atmosphereExtraTimeEvents: [],
         events: [],
         extraTimeEvents: [],
         revealedEvents: [],
         lastRevealedIndex: -1,
+        lastRevealedETIndex: -1,
 
         // Method stubs
         addPendingSub: vi.fn(),
@@ -117,9 +143,19 @@ function createMockState(overrides = {}) {
         resetPossessionTarget: vi.fn(),
         recalculatePlayerRatings: vi.fn(),
         synthesizeGoalsIfNeeded: (events) => events,
-
         ...overrides,
     };
+
+    // Wire the REAL atmosphere glue against this state so recompute
+    // exercises the actual shot generator. Stubbing these away would
+    // bypass the code path that historically had the bug.
+    const ctx = () => state;
+    const glue = createAtmosphereGlue(ctx);
+    state._atmosphereConfig = glue._atmosphereConfig;
+    state.recomputeRegularAtmosphere = glue.recomputeRegularAtmosphere;
+    state.recomputeETAtmosphere = glue.recomputeETAtmosphere;
+
+    return state;
 }
 
 describe('tactical-submission confirmAllChanges', () => {
