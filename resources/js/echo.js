@@ -1,40 +1,27 @@
 /**
  * Build an Echo instance configured for Laravel Reverb.
  *
- * The package imports are routed through a variable expression + a
- * /* @vite-ignore *​/ comment so Vite's dep-optimizer doesn't try to
- * pre-bundle laravel-echo / pusher-js at module-load time. Without that,
- * a fresh checkout (where npm install hasn't been run for these new deps
- * yet) crashes the whole live-duel module chain and Alpine never sees
- * the liveDuel factory.
+ * This module never imports `laravel-echo` or `pusher-js` directly — that
+ * confused Vite's dep-optimizer when the packages weren't yet in
+ * node_modules and the resulting module-load failure cascaded into the
+ * whole live-duel chain (Alpine never saw the liveDuel factory).
  *
- * Returns null when:
- *  - the Reverb key isn't configured (no BROADCAST_CONNECTION=reverb), or
- *  - laravel-echo / pusher-js aren't installed.
- * In both cases the rest of the page still renders — the user just
- * doesn't get real-time push updates. Fetch-based action endpoints
- * (queue-sub, ack-pause) keep working.
+ * Instead the duel views drop CDN script tags that publish `window.Echo`
+ * and `window.Pusher` as globals. We consume them here. Returns null when
+ * either the Reverb key isn't configured or the globals haven't loaded
+ * yet — the page still renders, only real-time push is disabled.
  */
-export async function createEcho({ key, host, port, scheme }) {
+export function createEcho({ key, host, port, scheme }) {
     if (!key) {
         console.warn('[live-duel] Reverb key missing; skipping Echo wiring.');
         return null;
     }
-
-    let Echo, Pusher;
-    try {
-        const echoPkg = 'laravel-echo';
-        const pusherPkg = 'pusher-js';
-        ({ default: Echo } = await import(/* @vite-ignore */ echoPkg));
-        ({ default: Pusher } = await import(/* @vite-ignore */ pusherPkg));
-    } catch (e) {
-        console.warn('[live-duel] laravel-echo or pusher-js not installed; real-time updates disabled.', e);
+    if (typeof window.Echo === 'undefined' || typeof window.Pusher === 'undefined') {
+        console.warn('[live-duel] Echo / Pusher globals not loaded; real-time updates disabled.');
         return null;
     }
 
-    window.Pusher = Pusher;
-
-    return new Echo({
+    return new window.Echo({
         broadcaster: 'reverb',
         key,
         wsHost: host ?? window.location.hostname,
