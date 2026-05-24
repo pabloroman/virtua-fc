@@ -212,6 +212,16 @@
                             <span x-show="submitting" x-cloak>{{ __('game.processing_short') }}</span>
                         </x-primary-button>
                     </form>
+                @else
+                    {{-- Season complete: fast mode is done. Continue exits fast
+                         mode and lands on the dashboard preview, which has its
+                         own "View Season Summary" CTA. --}}
+                    <form action="{{ route('game.fast-mode.exit', $game->id) }}" method="POST" class="flex-1">
+                        @csrf
+                        <x-primary-button color="amber" class="w-full">
+                            {{ __('app.continue') }}
+                        </x-primary-button>
+                    </form>
                 @endif
             </div>
         </div>

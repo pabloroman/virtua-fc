@@ -53,11 +53,13 @@ class ShowFastMode
         $lastMatch = $this->fastModeService->getLastPlayerMatch($game);
         $nextMatch = $this->loadNextPlayerMatch($game);
 
-        // No more matches — send the user to the season/tournament end screen.
-        if (! $nextMatch && ! $game->matches()->where('played', false)->exists()) {
-            return $game->isTournamentMode()
-                ? redirect()->route('game.tournament-end', $gameId)
-                : redirect()->route('game.season-end', $gameId);
+        // Tournament mode jumps straight to tournament-end. Season-based
+        // modes fall through and render the page so the user can see the
+        // score of their final simulated match; the template swaps the
+        // Advance CTA for a Continue button that exits fast mode and lands
+        // on the season-complete dashboard preview.
+        if (! $nextMatch && ! $game->matches()->where('played', false)->exists() && $game->isTournamentMode()) {
+            return redirect()->route('game.tournament-end', $gameId);
         }
 
         // Focus the standings panel on the competition just played; fall

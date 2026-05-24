@@ -42,10 +42,13 @@ class AdvanceFastMatchday
             // exhaustiveness. `blocked` only reaches here on the transient
             // career-actions-in-progress race, which ShowFastMode handles.
             'live_match', 'done', 'blocked' => redirect()->route('game.fast-mode', $gameId),
-            'season_complete' => redirect()->route(
-                $game->isTournamentMode() ? 'game.tournament-end' : 'game.season-end',
-                $gameId,
-            ),
+            // Tournament mode goes straight to tournament-end. Season-based
+            // modes return to fast-mode so the user can see the score of the
+            // just-simulated final match before being offered a Continue CTA
+            // (handled by fast-mode.blade.php when $nextMatch is null).
+            'season_complete' => $game->isTournamentMode()
+                ? redirect()->route('game.tournament-end', $gameId)
+                : redirect()->route('game.fast-mode', $gameId),
         };
     }
 }
