@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\LiveDuel;
 
-use App\Models\Game;
-use App\Models\GamePlayer;
+use App\Models\GamePlayerTemplate;
 use App\Models\LiveMatchSession;
+use App\Models\Team;
 use App\Models\User;
 use App\Modules\LiveMatch\Enums\LiveMatchPhase;
 use App\Modules\LiveMatch\Exceptions\LiveMatchStateException;
@@ -96,26 +96,46 @@ class LiveMatchOrchestratorTest extends TestCase
     }
 
     /**
-     * Seed N users, each with an active Game containing 23 eligible players
-     * of the corresponding nationality.
+     * Seed N users plus a shared pool of GamePlayerTemplate rows for every
+     * requested nationality (23 each). Templates live on the control plane
+     * and are shared across users — matches the production prototype's
+     * data source.
      *
-     * @param  array<int, string>  $isos  one ISO per user
+     * @param  array<int, string>  $nationalities  one per user; also used
+     *                                             as the template pool to seed
      * @return array<int, User>
      */
-    private function seedUsersWithEligiblePlayers(array $isos): array
+    private function seedUsersWithEligiblePlayers(array $nationalities): array
     {
-        $users = [];
-        foreach ($isos as $iso) {
-            $user = User::factory()->create();
-            $game = Game::factory()->create(['user_id' => $user->id]);
+        $team = Team::factory()->create();
+        $positions = ['Goalkeeper', 'Centre-Back', 'Left-Back', 'Right-Back', 'Central Midfield', 'Attacking Midfield', 'Left Winger', 'Right Winger', 'Centre-Forward'];
+
+        foreach (array_unique($nationalities) as $nationality) {
             for ($i = 0; $i < 23; $i++) {
-                GamePlayer::factory()->create([
-                    'game_id' => $game->id,
-                    'nationality' => [$iso],
+                GamePlayerTemplate::create([
+                    'season' => '2025/2026',
+                    'player_id' => (string) \Illuminate\Support\Str::uuid(),
+                    'transfermarkt_id' => 'tm-'.\Illuminate\Support\Str::random(8),
+                    'name' => "{$nationality} Player {$i}",
+                    'date_of_birth' => '1995-01-01',
+                    'nationality' => [$nationality],
+                    'foot' => 'right',
+                    'team_id' => $team->id,
+                    'number' => $i + 1,
+                    'position' => $positions[$i % count($positions)],
                     'overall_score' => 70 + ($i % 15),
+                    'durability' => 70,
+                    'tier' => 3,
+                    'potential' => 80,
+                    'potential_low' => 75,
+                    'potential_high' => 85,
                 ]);
             }
-            $users[] = $user;
+        }
+
+        $users = [];
+        foreach ($nationalities as $_) {
+            $users[] = User::factory()->create();
         }
 
         return $users;

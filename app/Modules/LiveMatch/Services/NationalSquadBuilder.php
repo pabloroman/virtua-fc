@@ -2,8 +2,8 @@
 
 namespace App\Modules\LiveMatch\Services;
 
-use App\Models\Game;
 use App\Models\GamePlayer;
+use App\Models\GamePlayerTemplate;
 use App\Models\User;
 use App\Modules\LiveMatch\Exceptions\NoEligibleSquadException;
 use Illuminate\Support\Collection;
@@ -15,66 +15,49 @@ class NationalSquadBuilder
     public const MIN_FOR_VIABLE_SQUAD = 11;
 
     /**
-     * Build a frozen national-team squad for the given user and ISO code.
+     * Build a frozen national-team squad for the given user and nationality.
      *
-     * Pulls from the user's most recent active Game on the tenant plane —
-     * top SQUAD_SIZE players whose nationality JSON array contains $iso. This
-     * is the single explicit cross-plane read; everything downstream operates
-     * on the snapshot.
+     * For the prototype the data source is `GamePlayerTemplate` (the canonical
+     * real-world roster, control-plane, shared across every user). This lets
+     * the duel run between any two logged-in users without each of them having
+     * their own active save with eligible players.
      *
-     * @return array{game_id: string, players: array<int, array<string, mixed>>}
+     * A future iteration can switch this to per-save player pools when the
+     * tournament feature lands and we want "your career develops your national
+     * team" semantics. The User param stays in the signature for that.
+     *
+     * @return array{game_id: ?string, players: array<int, array<string, mixed>>}
      */
-    public function buildFor(User $user, string $iso): array
+    public function buildFor(User $user, string $nationality): array
     {
-        $game = Game::where('user_id', $user->id)
-            ->whereNull('deleting_at')
-            ->latest('updated_at')
-            ->first();
-
-        if ($game === null) {
-            throw NoEligibleSquadException::noActiveGame($iso);
-        }
-
-        $players = GamePlayer::where('game_id', $game->id)
-            ->whereJsonContains('nationality', $iso)
+        $templates = $this->queryTemplates($nationality)
             ->orderByDesc('overall_score')
             ->limit(self::SQUAD_SIZE)
             ->get();
 
-        if ($players->count() < self::MIN_FOR_VIABLE_SQUAD) {
-            throw NoEligibleSquadException::tooFewPlayers($iso, $players->count());
+        if ($templates->count() < self::MIN_FOR_VIABLE_SQUAD) {
+            throw NoEligibleSquadException::tooFewPlayers($nationality, $templates->count());
         }
 
         return [
-            'game_id' => $game->id,
-            'players' => $players->map(fn (GamePlayer $p) => $this->serializePlayer($p))->all(),
+            'game_id' => null,
+            'players' => $templates->map(fn (GamePlayerTemplate $t) => $this->serializeTemplate($t))->all(),
         ];
     }
 
     /**
-     * Count of eligible players in the user's current save for a given ISO.
-     * Cheap query for the lobby's "X eligible in your save" hint.
+     * Eligible-player count for a nation. Used to surface the "X eligible"
+     * hint on the team picker.
      */
-    public function eligibleCountFor(User $user, string $iso): int
+    public function eligibleCountFor(User $user, string $nationality): int
     {
-        $game = Game::where('user_id', $user->id)
-            ->whereNull('deleting_at')
-            ->latest('updated_at')
-            ->first();
-
-        if ($game === null) {
-            return 0;
-        }
-
-        return GamePlayer::where('game_id', $game->id)
-            ->whereJsonContains('nationality', $iso)
-            ->count();
+        return $this->queryTemplates($nationality)->count();
     }
 
     /**
      * Rehydrate stored player records as unsaved GamePlayer instances. The
-     * simulator only reads attributes, never relationships, so unsaved
-     * instances are fine.
+     * simulator only reads attributes (never relationships), so unsaved
+     * instances work fine.
      *
      * @param  array<int, array<string, mixed>>  $records
      */
@@ -107,26 +90,45 @@ class NationalSquadBuilder
         });
     }
 
-    private function serializePlayer(GamePlayer $p): array
+    /**
+     * Shared query: latest season of GamePlayerTemplate filtered by
+     * nationality. `season` is a string column on the templates table —
+     * pulling only the latest avoids mixing multiple Spains across years.
+     */
+    private function queryTemplates(string $nationality)
+    {
+        $latestSeason = GamePlayerTemplate::max('season');
+        $query = GamePlayerTemplate::query()->whereJsonContains('nationality', $nationality);
+        if ($latestSeason !== null) {
+            $query->where('season', $latestSeason);
+        }
+
+        return $query;
+    }
+
+    private function serializeTemplate(GamePlayerTemplate $t): array
     {
         return [
-            'id' => $p->id,
-            'game_id' => $p->game_id,
-            'team_id' => $p->team_id,
-            'name' => $p->name,
-            'position' => $p->position,
-            'secondary_positions' => $p->secondary_positions ?? [],
-            'nationality' => $p->nationality ?? [],
-            'overall_score' => $p->overall_score,
-            'durability' => $p->durability,
-            'number' => $p->number,
-            'foot' => $p->foot,
-            'height' => $p->height,
-            'date_of_birth' => $p->date_of_birth?->toDateString(),
-            'tier' => $p->tier,
-            'potential' => $p->potential,
-            'potential_low' => $p->potential_low,
-            'potential_high' => $p->potential_high,
+            // GamePlayer has UUID PKs; templates have bigint id + a stable
+            // UUID `player_id`. Use the UUID so rehydrated instances carry
+            // the same identifier shape the simulator expects.
+            'id' => $t->player_id,
+            'game_id' => null,
+            'team_id' => $t->team_id,
+            'name' => $t->name,
+            'position' => $t->position,
+            'secondary_positions' => $t->secondary_positions ?? [],
+            'nationality' => $t->nationality ?? [],
+            'overall_score' => $t->overall_score,
+            'durability' => $t->durability,
+            'number' => $t->number,
+            'foot' => $t->foot,
+            'height' => $t->height,
+            'date_of_birth' => $t->date_of_birth?->toDateString(),
+            'tier' => $t->tier,
+            'potential' => $t->potential,
+            'potential_low' => $t->potential_low,
+            'potential_high' => $t->potential_high,
         ];
     }
 }
