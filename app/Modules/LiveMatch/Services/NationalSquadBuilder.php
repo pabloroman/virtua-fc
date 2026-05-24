@@ -108,6 +108,17 @@ class NationalSquadBuilder
 
     private function serializeTemplate(GamePlayerTemplate $t): array
     {
+        // GamePlayerTemplate doesn't cast `secondary_positions` to array
+        // even though the column exists (the cast lives on GamePlayer only),
+        // so reading the attribute hands back a raw JSON string. Decode here
+        // before we hand the record off to the rehydrate → forceFill chain
+        // — otherwise GamePlayer's array cast double-encodes the string and
+        // every read downstream blows up `foreach (... as $secondary)`.
+        $secondary = $t->getRawOriginal('secondary_positions');
+        if (is_string($secondary)) {
+            $secondary = json_decode($secondary, true) ?: [];
+        }
+
         return [
             // GamePlayer has UUID PKs; templates have bigint id + a stable
             // UUID `player_id`. Use the UUID so rehydrated instances carry
@@ -117,7 +128,7 @@ class NationalSquadBuilder
             'team_id' => $t->team_id,
             'name' => $t->name,
             'position' => $t->position,
-            'secondary_positions' => $t->secondary_positions ?? [],
+            'secondary_positions' => is_array($secondary) ? $secondary : [],
             'nationality' => $t->nationality ?? [],
             'overall_score' => $t->overall_score,
             'durability' => $t->durability,
