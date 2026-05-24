@@ -345,6 +345,7 @@ Route::middleware('auth')->prefix('live/duel')->name('live.duel.')->group(functi
     Route::get('/', \App\Http\Actions\LiveDuel\ShowLiveDuelEntry::class)->name('entry');
     Route::post('/', \App\Http\Actions\LiveDuel\CreateLiveDuelSession::class)->name('create');
     Route::get('/{session}', \App\Http\Actions\LiveDuel\ShowLiveDuel::class)->name('show');
+    Route::get('/{session}/state', \App\Http\Actions\LiveDuel\GetLiveDuelState::class)->name('state');
     Route::post('/{session}/pick-team', \App\Http\Actions\LiveDuel\PickGuestTeam::class)->name('pick-team');
     Route::post('/{session}/actions', \App\Http\Actions\LiveDuel\QueueAction::class)->name('actions');
     Route::post('/{session}/ack', \App\Http\Actions\LiveDuel\AcknowledgePause::class)->name('ack');

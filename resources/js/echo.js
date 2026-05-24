@@ -1,11 +1,19 @@
 /**
  * Build an Echo instance configured for Laravel Reverb.
  *
- * Imports of laravel-echo and pusher-js are deliberately dynamic so the
- * rest of the live-duel module loads even if those packages aren't yet
- * installed. Without Echo, the views still render — they just don't
- * receive real-time push updates. The fetch-based action endpoints (sub
- * queue, pause ack) still work because they don't depend on Echo.
+ * The package imports are routed through a variable expression + a
+ * /* @vite-ignore *​/ comment so Vite's dep-optimizer doesn't try to
+ * pre-bundle laravel-echo / pusher-js at module-load time. Without that,
+ * a fresh checkout (where npm install hasn't been run for these new deps
+ * yet) crashes the whole live-duel module chain and Alpine never sees
+ * the liveDuel factory.
+ *
+ * Returns null when:
+ *  - the Reverb key isn't configured (no BROADCAST_CONNECTION=reverb), or
+ *  - laravel-echo / pusher-js aren't installed.
+ * In both cases the rest of the page still renders — the user just
+ * doesn't get real-time push updates. Fetch-based action endpoints
+ * (queue-sub, ack-pause) keep working.
  */
 export async function createEcho({ key, host, port, scheme }) {
     if (!key) {
@@ -15,8 +23,10 @@ export async function createEcho({ key, host, port, scheme }) {
 
     let Echo, Pusher;
     try {
-        ({ default: Echo } = await import('laravel-echo'));
-        ({ default: Pusher } = await import('pusher-js'));
+        const echoPkg = 'laravel-echo';
+        const pusherPkg = 'pusher-js';
+        ({ default: Echo } = await import(/* @vite-ignore */ echoPkg));
+        ({ default: Pusher } = await import(/* @vite-ignore */ pusherPkg));
     } catch (e) {
         console.warn('[live-duel] laravel-echo or pusher-js not installed; real-time updates disabled.', e);
         return null;
