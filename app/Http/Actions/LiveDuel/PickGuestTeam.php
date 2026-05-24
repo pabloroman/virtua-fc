@@ -18,7 +18,7 @@ class PickGuestTeam
     public function __invoke(Request $request, string $session)
     {
         $data = $request->validate([
-            'iso' => ['required', 'string', 'size:2', 'max:3'],
+            'iso' => ['required', 'string', 'max:64'],
         ]);
 
         $nation = null;

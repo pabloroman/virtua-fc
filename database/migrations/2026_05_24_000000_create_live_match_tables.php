@@ -18,8 +18,11 @@ return new class extends Migration
             $table->string('phase', 20)->default('lobby');
             $table->foreignId('host_user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('guest_user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->char('host_iso_code', 3)->nullable();
-            $table->char('guest_iso_code', 3)->nullable();
+            // Nationality value as stored on game_players.nationality (the
+            // codebase uses full country names like 'Spain', not ISO codes).
+            // Column kept as *_iso_code in code for historical reasons.
+            $table->string('host_iso_code', 64)->nullable();
+            $table->string('guest_iso_code', 64)->nullable();
             // source_game_id columns intentionally have no FK — games is a
             // tenant-plane table and a duel must survive deletion of either
             // user's save.

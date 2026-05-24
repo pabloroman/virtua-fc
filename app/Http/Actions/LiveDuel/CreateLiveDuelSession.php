@@ -16,7 +16,7 @@ class CreateLiveDuelSession
     public function __invoke(Request $request)
     {
         $data = $request->validate([
-            'iso' => ['required', 'string', 'size:2', 'max:3'],
+            'iso' => ['required', 'string', 'max:64'],
         ]);
 
         $nation = $this->resolveNation($data['iso']);

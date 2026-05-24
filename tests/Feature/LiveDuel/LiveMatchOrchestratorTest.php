@@ -25,14 +25,14 @@ class LiveMatchOrchestratorTest extends TestCase
     public function test_create_session_snapshots_host_squad_and_remains_in_lobby(): void
     {
         Queue::fake();
-        [$host] = $this->seedUsersWithEligiblePlayers(['ES']);
+        [$host] = $this->seedUsersWithEligiblePlayers(['Spain']);
 
         $orchestrator = $this->makeOrchestrator();
-        $session = $orchestrator->createSession($host, 'ES', 'Spain');
+        $session = $orchestrator->createSession($host, 'Spain', 'Spain');
 
         $this->assertSame(LiveMatchPhase::Lobby, $session->phase);
         $this->assertSame($host->id, $session->host_user_id);
-        $this->assertSame('ES', $session->host_iso_code);
+        $this->assertSame('Spain', $session->host_iso_code);
         $this->assertNull($session->guest_user_id);
         $this->assertNotNull($session->host_squad);
         $this->assertCount(11, $session->host_squad['starting_xi']);
@@ -41,9 +41,9 @@ class LiveMatchOrchestratorTest extends TestCase
 
     public function test_first_non_host_visitor_claims_guest_slot(): void
     {
-        [$host, $guest] = $this->seedUsersWithEligiblePlayers(['ES', 'BR']);
+        [$host, $guest] = $this->seedUsersWithEligiblePlayers(['Spain', 'Brazil']);
         $orchestrator = $this->makeOrchestrator();
-        $session = $orchestrator->createSession($host, 'ES', 'Spain');
+        $session = $orchestrator->createSession($host, 'Spain', 'Spain');
 
         $orchestrator->claimGuestSlot($session, $guest);
 
@@ -52,9 +52,9 @@ class LiveMatchOrchestratorTest extends TestCase
 
     public function test_host_cannot_claim_guest_slot(): void
     {
-        [$host] = $this->seedUsersWithEligiblePlayers(['ES']);
+        [$host] = $this->seedUsersWithEligiblePlayers(['Spain']);
         $orchestrator = $this->makeOrchestrator();
-        $session = $orchestrator->createSession($host, 'ES', 'Spain');
+        $session = $orchestrator->createSession($host, 'Spain', 'Spain');
 
         $this->expectException(LiveMatchStateException::class);
         $orchestrator->claimGuestSlot($session, $host);
@@ -62,9 +62,9 @@ class LiveMatchOrchestratorTest extends TestCase
 
     public function test_third_visitor_cannot_take_guest_slot(): void
     {
-        [$host, $guest, $third] = $this->seedUsersWithEligiblePlayers(['ES', 'BR', 'AR']);
+        [$host, $guest, $third] = $this->seedUsersWithEligiblePlayers(['Spain', 'Brazil', 'Argentina']);
         $orchestrator = $this->makeOrchestrator();
-        $session = $orchestrator->createSession($host, 'ES', 'Spain');
+        $session = $orchestrator->createSession($host, 'Spain', 'Spain');
         $orchestrator->claimGuestSlot($session, $guest);
 
         $this->expectException(LiveMatchStateException::class);
@@ -74,12 +74,12 @@ class LiveMatchOrchestratorTest extends TestCase
     public function test_guest_picking_team_with_both_users_present_starts_the_match(): void
     {
         Queue::fake();
-        [$host, $guest] = $this->seedUsersWithEligiblePlayers(['ES', 'BR']);
+        [$host, $guest] = $this->seedUsersWithEligiblePlayers(['Spain', 'Brazil']);
         $orchestrator = $this->makeOrchestrator();
-        $session = $orchestrator->createSession($host, 'ES', 'Spain');
+        $session = $orchestrator->createSession($host, 'Spain', 'Spain');
         $orchestrator->claimGuestSlot($session, $guest);
 
-        $session = $orchestrator->pickGuestTeam($session->fresh(), $guest, 'BR', 'Brazil');
+        $session = $orchestrator->pickGuestTeam($session->fresh(), $guest, 'Brazil', 'Brazil');
 
         $this->assertSame(LiveMatchPhase::Live, $session->phase);
         $this->assertNotNull($session->context_state);

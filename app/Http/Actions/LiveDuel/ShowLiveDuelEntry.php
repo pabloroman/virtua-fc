@@ -31,26 +31,31 @@ class ShowLiveDuelEntry
     }
 
     /**
-     * Prototype catalog of pickable national teams. ISO codes match the
-     * `nationality` array stored on GamePlayer.
+     * Prototype catalog of pickable national teams. The `iso` value is the
+     * exact string stored in game_players.nationality (full country names —
+     * see PlayerNameGenerator::NATIONALITY_LOCALES).
      *
      * @return array<int, array{iso: string, name: string, flag: string}>
      */
     public static function nationCatalog(): array
     {
         return [
-            ['iso' => 'ES', 'name' => 'Spain', 'flag' => 'es'],
-            ['iso' => 'BR', 'name' => 'Brazil', 'flag' => 'br'],
-            ['iso' => 'AR', 'name' => 'Argentina', 'flag' => 'ar'],
-            ['iso' => 'FR', 'name' => 'France', 'flag' => 'fr'],
-            ['iso' => 'DE', 'name' => 'Germany', 'flag' => 'de'],
-            ['iso' => 'IT', 'name' => 'Italy', 'flag' => 'it'],
-            ['iso' => 'PT', 'name' => 'Portugal', 'flag' => 'pt'],
-            ['iso' => 'EN', 'name' => 'England', 'flag' => 'gb-eng'],
-            ['iso' => 'NL', 'name' => 'Netherlands', 'flag' => 'nl'],
-            ['iso' => 'BE', 'name' => 'Belgium', 'flag' => 'be'],
-            ['iso' => 'CR', 'name' => 'Croatia', 'flag' => 'hr'],
-            ['iso' => 'UY', 'name' => 'Uruguay', 'flag' => 'uy'],
+            ['iso' => 'Spain', 'name' => 'Spain', 'flag' => '🇪🇸'],
+            ['iso' => 'Brazil', 'name' => 'Brazil', 'flag' => '🇧🇷'],
+            ['iso' => 'Argentina', 'name' => 'Argentina', 'flag' => '🇦🇷'],
+            ['iso' => 'France', 'name' => 'France', 'flag' => '🇫🇷'],
+            ['iso' => 'Germany', 'name' => 'Germany', 'flag' => '🇩🇪'],
+            ['iso' => 'Italy', 'name' => 'Italy', 'flag' => '🇮🇹'],
+            ['iso' => 'Portugal', 'name' => 'Portugal', 'flag' => '🇵🇹'],
+            ['iso' => 'England', 'name' => 'England', 'flag' => '🏴󠁧󠁢󠁥󠁮󠁧󠁿'],
+            ['iso' => 'Netherlands', 'name' => 'Netherlands', 'flag' => '🇳🇱'],
+            ['iso' => 'Belgium', 'name' => 'Belgium', 'flag' => '🇧🇪'],
+            ['iso' => 'Croatia', 'name' => 'Croatia', 'flag' => '🇭🇷'],
+            ['iso' => 'Uruguay', 'name' => 'Uruguay', 'flag' => '🇺🇾'],
+            ['iso' => 'Colombia', 'name' => 'Colombia', 'flag' => '🇨🇴'],
+            ['iso' => 'Mexico', 'name' => 'Mexico', 'flag' => '🇲🇽'],
+            ['iso' => 'Morocco', 'name' => 'Morocco', 'flag' => '🇲🇦'],
+            ['iso' => 'Senegal', 'name' => 'Senegal', 'flag' => '🇸🇳'],
         ];
     }
 }
