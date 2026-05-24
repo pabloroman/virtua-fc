@@ -7,7 +7,6 @@ use App\Models\ActivationEvent;
 use App\Models\InviteCode;
 use App\Models\User;
 use App\Models\WaitlistEntry;
-use App\Modules\Migration\MigrationStatus;
 use App\Modules\Season\Services\ActivationTracker;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -75,7 +74,6 @@ class RegisteredUserController extends Controller
         $invite->consume();
         $user->forceFill([
             'email_verified_at' => now(),
-            ...$this->migrationStatusForNewUser(),
         ])->save();
 
         event(new Registered($user));
@@ -108,11 +106,6 @@ class RegisteredUserController extends Controller
             'has_tournament_access' => true,
         ]);
 
-        $extra = $this->migrationStatusForNewUser();
-        if ($extra !== []) {
-            $user->forceFill($extra)->save();
-        }
-
         event(new Registered($user));
 
         app(ActivationTracker::class)->record($user->id, ActivationEvent::EVENT_REGISTERED);
@@ -120,24 +113,5 @@ class RegisteredUserController extends Controller
         Password::sendResetLink(['email' => $user->email]);
 
         return redirect()->route('activation.sent');
-    }
-
-    /**
-     * Migration-status override for a freshly-created user.
-     *
-     * On the import-side deployment, mark new sign-ups as migration-completed
-     * so RequireMigrationOnImport doesn't trap them on the import page — they
-     * have nothing to migrate. Pre-imported users (control-plane rows copied
-     * from beta) keep the default `pending` and get redirected as expected.
-     *
-     * @return array<string, mixed>
-     */
-    private function migrationStatusForNewUser(): array
-    {
-        if (config('migration.mode') === 'import') {
-            return ['migration_status' => MigrationStatus::COMPLETED];
-        }
-
-        return [];
     }
 }

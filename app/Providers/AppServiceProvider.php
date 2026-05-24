@@ -33,7 +33,6 @@ use App\Modules\Notification\Listeners\SendMatchNotifications;
 use App\Modules\Match\Listeners\UpdateGoalkeeperStats;
 use App\Modules\Match\Listeners\UpdateLeagueStandings;
 use App\Modules\Match\Listeners\UpdateManagerStats;
-use App\Modules\Migration\Services\SignedHandoff;
 use App\Modules\Report\Listeners\CreateTournamentSnapshot;
 use App\Modules\Season\Listeners\GrantCareerAccessToChampion;
 use App\Modules\Season\Listeners\RecordTournamentCompletedActivation;
@@ -74,10 +73,6 @@ class AppServiceProvider extends ServiceProvider
             $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
             $this->app->register(TelescopeServiceProvider::class);
         }
-
-        $this->app->singleton(SignedHandoff::class, function () {
-            return new SignedHandoff((string) config('migration.handoff_secret', ''));
-        });
 
         // Register competition handler resolver as singleton
         $this->app->singleton(CompetitionHandlerResolver::class, function ($app) {

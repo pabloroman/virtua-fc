@@ -2,7 +2,7 @@
     'message' => null,
 ])
 
-@if(config('beta.enabled') && config('migration.mode') !== 'export')
+@if(config('beta.enabled'))
     <div class="bg-amber-500 text-amber-950 text-center text-xs py-1.5 px-4">
         <span class="font-semibold">{{ __('beta.badge') }}</span>
         —

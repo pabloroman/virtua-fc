@@ -376,38 +376,4 @@ Route::middleware(['auth', 'database.editor'])->prefix('editor')->name('editor.'
     Route::post('/player-templates/{id}/restore/{auditId}', RestorePlayerTemplate::class)->name('player-templates.restore');
 });
 
-// Beta→prod migration. The same routes file is shipped on both deployments;
-// the `migration.mode:<role>` middleware 404s if the deployment isn't acting
-// in that role. See config/migration.php.
-Route::middleware(['auth', 'migration.mode:export'])->group(function () {
-    Route::get('/migration/required', \App\Http\Views\Migration\ShowRequired::class)
-        ->name('migration.required');
-    Route::post('/migration/start', \App\Http\Actions\Migration\StartMigration::class)
-        ->name('migration.start');
-});
-
-// Terminal page on the export side for users whose migration is sealed.
-// Reachable even when sealed (BlockMigratedUsersOnExport allows this path).
-Route::middleware('migration.mode:export')->group(function () {
-    Route::get('/migration/completed', \App\Http\Views\Migration\ShowCompleted::class)
-        ->name('migration.completed');
-});
-
-Route::middleware('migration.mode:import')->group(function () {
-    // Public landing page that consumes a handoff token and logs the user in.
-    Route::get('/migration/land', \App\Http\Actions\Migration\LandMigration::class)
-        ->name('migration.land');
-
-    Route::middleware('auth')->group(function () {
-        Route::get('/migration/import', \App\Http\Views\Migration\ShowImport::class)
-            ->name('migration.import.show');
-        Route::post('/migration/import', \App\Http\Actions\Migration\StartImport::class)
-            ->name('migration.import.start');
-        Route::post('/migration/skip', \App\Http\Actions\Migration\SkipImport::class)
-            ->name('migration.import.skip');
-        Route::get('/migration/status', \App\Http\Actions\Migration\MigrationStatusEndpoint::class)
-            ->name('migration.import.status');
-    });
-});
-
 require __DIR__.'/auth.php';

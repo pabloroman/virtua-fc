@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Modules\Migration\MigrationStatus;
 use App\Notifications\ActivateAccount;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -32,8 +31,6 @@ use Illuminate\Support\Facades\Storage;
  * @property string|null $avatar
  * @property string|null $country
  * @property string|null $province
- * @property MigrationStatus $migration_status
- * @property \Illuminate\Support\Carbon|null $migration_completed_at
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
@@ -128,8 +125,6 @@ class User extends Authenticatable
             'has_tournament_access' => 'boolean',
             'can_edit_database' => 'boolean',
             'is_profile_public' => 'boolean',
-            'migration_status' => MigrationStatus::class,
-            'migration_completed_at' => 'datetime',
         ];
     }
 
