@@ -144,6 +144,26 @@ function createMockState(overrides = {}) {
         resetPossessionTarget: vi.fn(),
         recalculatePlayerRatings: vi.fn(),
         synthesizeGoalsIfNeeded: (events) => events,
+        // Real implementation (mirrors match-simulation's exported helper) so
+        // the single-writer invariant for substitutionsMade is exercised here
+        // rather than masked behind a vi.fn().
+        trackSubstitutionIfNeeded(event) {
+            if (event.type !== 'substitution' || event.teamId !== this.userTeamId) return;
+            this.substitutionsMade.push({
+                playerOutId: event.gamePlayerId,
+                playerInId: event.metadata?.player_in_id ?? '',
+                minute: event.minute,
+                playerOutName: event.playerName ?? '',
+                playerInName: event.playerInName ?? '',
+            });
+            const playerInId = event.metadata?.player_in_id;
+            if (playerInId) {
+                const benchPlayer = this.benchPlayers.find(p => p.id === playerInId);
+                if (benchPlayer) {
+                    benchPlayer.minuteEntered = event.minute;
+                }
+            }
+        },
         ...overrides,
     };
 
@@ -275,5 +295,72 @@ describe('tactical-submission confirmAllChanges', () => {
             state.lastRevealedIndex,
             'lastRevealedIndex must include the half-time sub event so it is not re-revealed when 2H starts',
         ).toBeGreaterThanOrEqual(subIdx);
+    });
+
+    it('records a confirmed user sub in substitutionsMade exactly once', async () => {
+        // Regression for the duplicated row in the "SUSTITUCIONES REALIZADAS"
+        // panel: a user-confirmed sub at minute 95 (2H stoppage) used to be
+        // pushed once by confirmAllChanges' eager response handler AND a
+        // second time when the reveal loop later processed the same event.
+        // Now trackSubstitutionIfNeeded is the only writer; the eager path
+        // calls it inline at injection time.
+        const shs = 5;
+        const submissionMinute = 90 + shs;
+        const state = createMockState({
+            phase: 'second_half',
+            currentMinute: submissionMinute,
+            secondHalfStoppage: shs,
+        });
+
+        globalThis.fetch = vi.fn(() => Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({
+                isExtraTime: false,
+                substitutions: [{
+                    playerOutId: 'home-cb1',
+                    playerInId: 'home-sub1',
+                    playerOutName: 'home cb1',
+                    playerInName: 'Sub Player',
+                    teamId: 'home-1',
+                    minute: submissionMinute,
+                    displayMinute: "90+5'",
+                    phase: 'second_half_stoppage',
+                }],
+                newEvents: [],
+                newScore: { home: 1, away: 0 },
+                homePossession: 50,
+                awayPossession: 50,
+            }),
+        }));
+
+        state.pendingSubs = [{
+            playerOut: { id: 'home-cb1' },
+            playerIn: { id: 'home-sub1' },
+        }];
+
+        const submission = createTacticalSubmission(() => state);
+        await submission.confirmAllChanges();
+
+        const homeSubs = state.substitutionsMade.filter(s => s.playerOutId === 'home-cb1');
+        expect(homeSubs.length, 'sub should be recorded exactly once').toBe(1);
+        expect(homeSubs[0].playerInId).toBe('home-sub1');
+        expect(homeSubs[0].minute).toBe(submissionMinute);
+
+        // Simulate the reveal-loop helper firing again for the same event
+        // (which is what happens when enterRegularTimeEnd / enterFullTime /
+        // skipToFullTimeImmediate walk c.events). With the single-writer
+        // invariant intact, lastRevealedIndex covers this event so the
+        // helper would never actually be called here in production — but
+        // exercising it directly catches a regression where the eager path
+        // and the reveal path both populate the array unconditionally.
+        const subEvent = state.events.find(e =>
+            e.type === 'substitution' && e.gamePlayerId === 'home-cb1'
+        );
+        expect(subEvent, 'sub event should be in the merged events array').toBeDefined();
+        // The production fix relies on lastRevealedIndex covering this event;
+        // verify that contract so the reveal loop's `for (i = lastRevealedIndex + 1; ...)`
+        // genuinely skips it on subsequent ticks.
+        const subIdx = state.events.indexOf(subEvent);
+        expect(state.lastRevealedIndex).toBeGreaterThanOrEqual(subIdx);
     });
 });

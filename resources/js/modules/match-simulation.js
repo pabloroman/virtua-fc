@@ -937,5 +937,6 @@ export function createMatchSimulation(ctx) {
         synthesizeGoalsIfNeeded,
         recalculateScore,
         resetPossessionTarget,
+        trackSubstitutionIfNeeded,
     };
 }

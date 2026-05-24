@@ -131,24 +131,6 @@ export function createTacticalSubmission(ctx) {
                 const result = await response.json();
                 const isET = result.isExtraTime || false;
 
-                // Record substitutions if any
-                if (result.substitutions && result.substitutions.length > 0) {
-                    for (const sub of result.substitutions) {
-                        c.substitutionsMade.push({
-                            playerOutId: sub.playerOutId,
-                            playerInId: sub.playerInId,
-                            playerOutName: sub.playerOutName,
-                            playerInName: sub.playerInName,
-                            minute,
-                        });
-
-                        const benchPlayer = c.benchPlayers.find(p => p.id === sub.playerInId);
-                        if (benchPlayer) {
-                            benchPlayer.minuteEntered = minute;
-                        }
-                    }
-                }
-
                 // Update active tactics
                 if (result.formation) {
                     // Custom pitch positions are keyed by slot IDs whose
@@ -195,34 +177,14 @@ export function createTacticalSubmission(ctx) {
                 c.revealedEvents = c.revealedEvents.filter(e => e.minute <= minute && e.type !== 'contextual');
 
                 if (result.substitutions) {
-                    for (const sub of result.substitutions) {
-                        const subRevealEvent = {
-                            minute,
-                            type: 'substitution',
-                            playerName: sub.playerOutName,
-                            playerInName: sub.playerInName,
-                            teamId: sub.teamId,
-                            displayMinute: sub.displayMinute,
-                            phase: sub.phase,
-                        };
-                        // At half-time, unshift would put the sub at the top
-                        // of revealedEvents — above the 1H-stoppage atmosphere
-                        // events still classified into the 2H bucket — so it
-                        // would render furthest from the half-time divider.
-                        // Push appends to the chronologically-oldest end of
-                        // the reverse-chronological feed, so the sub renders
-                        // immediately above the DESCANSO line. During regular
-                        // play it stays unshift = newest-on-top.
-                        if (isHalfTime) {
-                            c.revealedEvents.push(subRevealEvent);
-                        } else {
-                            c.revealedEvents.unshift(subRevealEvent);
-                        }
-                    }
-
                     // Client-injected substitution events ARE real events:
                     // they change who is on the pitch, and atmosphere must
-                    // honor them when picking shot actors.
+                    // honor them when picking shot actors. The same object is
+                    // routed into revealedEvents (live feed), realEvents
+                    // (canonical list for atmosphere), and
+                    // trackSubstitutionIfNeeded (substitutionsMade + bench
+                    // entry-minute bookkeeping) so a single conceptual sub
+                    // can't be counted twice.
                     const subEvents = result.substitutions.map(sub => ({
                         minute,
                         type: 'substitution',
@@ -234,6 +196,30 @@ export function createTacticalSubmission(ctx) {
                         displayMinute: sub.displayMinute,
                         phase: sub.phase,
                     }));
+
+                    for (const subEvent of subEvents) {
+                        // At half-time, unshift would put the sub at the top
+                        // of revealedEvents — above the 1H-stoppage atmosphere
+                        // events still classified into the 2H bucket — so it
+                        // would render furthest from the half-time divider.
+                        // Push appends to the chronologically-oldest end of
+                        // the reverse-chronological feed, so the sub renders
+                        // immediately above the DESCANSO line. During regular
+                        // play it stays unshift = newest-on-top.
+                        if (isHalfTime) {
+                            c.revealedEvents.push(subEvent);
+                        } else {
+                            c.revealedEvents.unshift(subEvent);
+                        }
+                        // Sole writer for newly-confirmed user subs:
+                        // lastRevealedIndex (recomputed below) covers this
+                        // event, so the reveal-loop helper won't fire for it
+                        // later. Invoking it here keeps substitutionsMade and
+                        // bench bookkeeping in lockstep with every other code
+                        // path that surfaces a sub (AI subs, injury auto-subs,
+                        // skip-to-end, page-refresh replay).
+                        c.trackSubstitutionIfNeeded(subEvent);
+                    }
 
                     if (isET) {
                         c.realExtraTimeEvents.push(...subEvents);
