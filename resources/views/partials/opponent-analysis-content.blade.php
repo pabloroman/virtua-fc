@@ -242,13 +242,27 @@
                                     $rating >= 60 => 'bg-accent-gold text-white',
                                     default => 'bg-accent-orange text-white',
                                 };
+                                // The opponent's squad numbers are rarely complete, so we
+                                // show initials derived from the player's name instead —
+                                // a stable identifier that doesn't fall back to a generic
+                                // position abbreviation (e.g., "MCD") when data is sparse.
+                                $shirtLabel = $slot['displayLabel'];
+                                if ($player) {
+                                    $initials = collect(preg_split('/\s+/', trim($player->name)))
+                                        ->filter()
+                                        ->map(fn ($w) => mb_substr($w, 0, 1))
+                                        ->join('');
+                                    $shirtLabel = mb_strlen($initials) > 2
+                                        ? mb_substr($initials, 0, 1) . mb_substr($initials, -1)
+                                        : $initials;
+                                }
                             @endphp
                             <div class="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
                                  style="left: {{ $xPct }}%; top: {{ $yPct }}%;">
                                 <div class="relative w-10 h-10 rounded-xl shadow-lg border border-white/20" style="{{ $shirtStyle }}">
                                     <div class="absolute inset-0 flex items-center justify-center">
                                         <span class="font-bold text-xs leading-none inline-flex items-center justify-center w-7 h-7 rounded-full" style="{{ $numberStyle }}">
-                                            {{ $player?->number ?? $slot['displayLabel'] }}
+                                            {{ $shirtLabel }}
                                         </span>
                                     </div>
                                     @if($rating !== null)
