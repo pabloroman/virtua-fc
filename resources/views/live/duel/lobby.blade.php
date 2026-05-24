@@ -1,4 +1,13 @@
 <x-app-layout>
+    @php
+        $catalog = App\Http\Actions\LiveDuel\ShowLiveDuelEntry::nationCatalog();
+        $hostNation = collect($catalog)->firstWhere('iso', $session->host_iso_code);
+        $guestNation = collect($catalog)->firstWhere('iso', $session->guest_iso_code);
+        $waitingForGuest = $viewerRole === 'host' && $session->guest_iso_code === null;
+        $opponentChoosing = $viewerRole === 'host' && $session->guest_iso_code !== null;
+        $waitingForKickoff = $viewerRole === 'guest' && $session->guest_iso_code !== null;
+    @endphp
+
     <div
         x-data="liveDuelLobby({
             sessionId: @js($session->id),
@@ -8,61 +17,60 @@
             reverbHost: @js($reverbHost),
             reverbPort: @js($reverbPort),
             reverbScheme: @js($reverbScheme),
-            hostIsoCode: @js($session->host_iso_code),
-            guestIsoCode: @js($session->guest_iso_code),
-            hostName: @js($session->host->name ?? ''),
-            guestName: @js($session->guest?->name ?? ''),
         })"
         class="max-w-3xl mx-auto p-6 md:p-10"
     >
         <div class="bg-surface-800 border border-border-default rounded-2xl p-6 md:p-10 text-center">
-            <h1 class="text-2xl md:text-3xl font-bold text-text-primary mb-2">
+            <h1 class="text-2xl md:text-3xl font-bold text-text-primary mb-6">
                 {{ __('live_duel.title') }}
             </h1>
 
-            <template x-if="viewerRole === 'host' && !guestIsoCode">
-                <div class="space-y-6 mt-6">
+            @if ($waitingForGuest)
+                <div class="space-y-6">
                     <p class="text-text-muted">{{ __('live_duel.waiting_for_opponent') }}</p>
-                    <div class="text-5xl">{{ collect(App\Http\Actions\LiveDuel\ShowLiveDuelEntry::nationCatalog())->firstWhere('iso', $session->host_iso_code)['flag'] ?? '' }}</div>
-                    <p class="text-text-primary font-semibold">
-                        @php $hostNation = collect(App\Http\Actions\LiveDuel\ShowLiveDuelEntry::nationCatalog())->firstWhere('iso', $session->host_iso_code); @endphp
+                    <div class="text-6xl">{{ $hostNation['flag'] ?? '' }}</div>
+                    <p class="text-text-primary font-semibold text-lg">
                         {{ $hostNation['name'] ?? $session->host_iso_code }}
                     </p>
 
-                    <div class="pt-4 border-t border-border-default">
+                    <div class="pt-6 border-t border-border-default text-left">
                         <p class="text-sm text-text-muted mb-2">{{ __('live_duel.share_link') }}</p>
                         <div class="flex gap-2">
                             <input
                                 type="text"
                                 readonly
-                                :value="shareUrl"
+                                value="{{ url()->current() }}"
                                 class="flex-1 px-3 py-2 bg-surface-700 border border-border-default rounded-lg text-sm text-text-primary"
                                 @click="$event.target.select()"
                             >
                             <button
                                 type="button"
                                 @click="copyShareUrl"
-                                class="px-4 py-2 bg-accent-blue text-white rounded-lg font-semibold hover:bg-accent-blue/80 transition"
+                                class="px-4 py-2 bg-accent-blue text-white rounded-lg font-semibold hover:bg-accent-blue/80 transition whitespace-nowrap"
                                 x-text="copied ? @js(__('live_duel.link_copied')) : @js(__('live_duel.copy_link'))"
                             ></button>
                         </div>
                     </div>
                 </div>
-            </template>
-
-            <template x-if="viewerRole === 'host' && guestIsoCode">
-                <div class="space-y-4 mt-6">
-                    <p class="text-text-muted" x-text="guestName ? @js(__('live_duel.opponent_choosing_team', ['name' => ''])) + ' ' + guestName : @js(__('live_duel.opponent_choosing_team', ['name' => 'Opponent']))"></p>
-                    <div class="animate-pulse">⚽</div>
+            @elseif ($opponentChoosing)
+                <div class="space-y-4">
+                    <p class="text-text-muted">
+                        {{ __('live_duel.opponent_choosing_team', ['name' => $session->guest->name ?? 'Opponent']) }}
+                    </p>
+                    <div class="text-3xl animate-pulse">⚽</div>
                 </div>
-            </template>
-
-            <template x-if="viewerRole === 'guest'">
-                <div class="space-y-4 mt-6">
+            @elseif ($waitingForKickoff)
+                <div class="space-y-4">
                     <p class="text-text-muted">{{ __('live_duel.waiting_for_kickoff') }}</p>
-                    <div class="animate-pulse text-3xl">⚽</div>
+                    <div class="text-6xl">{{ $guestNation['flag'] ?? '' }}</div>
+                    <p class="text-text-primary font-semibold text-lg">
+                        {{ $guestNation['name'] ?? $session->guest_iso_code }}
+                    </p>
+                    <div class="text-3xl animate-pulse">⚽</div>
                 </div>
-            </template>
+            @else
+                <p class="text-text-muted">{{ __('live_duel.connecting') }}</p>
+            @endif
         </div>
     </div>
 </x-app-layout>
