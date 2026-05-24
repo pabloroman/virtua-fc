@@ -574,6 +574,20 @@
       "marketValue": "€50.00m",
       "name": "Samu Aghehowa",
       "position": "Centre-Forward"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1050.png",
+        "name": "Villarreal CF"
+      },
+      "dateOfBirth": "Jul 29, 1993",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "246968",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Ayoze Pérez",
+      "position": "Centre-Forward"
     }
   ],
   "stadiumName": null,
