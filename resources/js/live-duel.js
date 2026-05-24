@@ -51,12 +51,12 @@ export default function liveDuel(config) {
         channel: null,
         clockTimer: null,
 
-        init() {
+        async init() {
             this.seedFromEventLog(config.initial.eventLog || []);
             this.computeOnPitchFromSquads();
             this.startClockInterpolation();
 
-            this.echo = createEcho({
+            this.echo = await createEcho({
                 key: this.reverbKey,
                 host: this.reverbHost,
                 port: this.reverbPort ? Number(this.reverbPort) : undefined,

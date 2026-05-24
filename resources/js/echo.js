@@ -1,19 +1,28 @@
-import Echo from 'laravel-echo';
-import Pusher from 'pusher-js';
-
-window.Pusher = Pusher;
-
 /**
- * Build an Echo instance configured for Laravel Reverb. Returns null if the
- * required env keys aren't set so consumers can degrade gracefully (the
- * live duel renders state from the server and just won't receive push
- * updates).
+ * Build an Echo instance configured for Laravel Reverb.
+ *
+ * Imports of laravel-echo and pusher-js are deliberately dynamic so the
+ * rest of the live-duel module loads even if those packages aren't yet
+ * installed. Without Echo, the views still render — they just don't
+ * receive real-time push updates. The fetch-based action endpoints (sub
+ * queue, pause ack) still work because they don't depend on Echo.
  */
-export function createEcho({ key, host, port, scheme }) {
+export async function createEcho({ key, host, port, scheme }) {
     if (!key) {
         console.warn('[live-duel] Reverb key missing; skipping Echo wiring.');
         return null;
     }
+
+    let Echo, Pusher;
+    try {
+        ({ default: Echo } = await import('laravel-echo'));
+        ({ default: Pusher } = await import('pusher-js'));
+    } catch (e) {
+        console.warn('[live-duel] laravel-echo or pusher-js not installed; real-time updates disabled.', e);
+        return null;
+    }
+
+    window.Pusher = Pusher;
 
     return new Echo({
         broadcaster: 'reverb',

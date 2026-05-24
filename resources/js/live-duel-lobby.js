@@ -18,8 +18,8 @@ export default function liveDuelLobby(config) {
         echo: null,
         channel: null,
 
-        init() {
-            this.echo = createEcho({
+        async init() {
+            this.echo = await createEcho({
                 key: this.reverbKey,
                 host: this.reverbHost,
                 port: this.reverbPort ? Number(this.reverbPort) : undefined,
