@@ -27,7 +27,7 @@ class NationalSquadBuilder
     public function buildFor(User $user, string $iso): array
     {
         $game = Game::where('user_id', $user->id)
-            ->where('status', 'active')
+            ->whereNull('deleting_at')
             ->latest('updated_at')
             ->first();
 
@@ -58,7 +58,7 @@ class NationalSquadBuilder
     public function eligibleCountFor(User $user, string $iso): int
     {
         $game = Game::where('user_id', $user->id)
-            ->where('status', 'active')
+            ->whereNull('deleting_at')
             ->latest('updated_at')
             ->first();
 

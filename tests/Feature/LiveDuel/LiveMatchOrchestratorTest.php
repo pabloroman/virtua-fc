@@ -35,9 +35,8 @@ class LiveMatchOrchestratorTest extends TestCase
         $this->assertSame('ES', $session->host_iso_code);
         $this->assertNull($session->guest_user_id);
         $this->assertNotNull($session->host_squad);
-        $this->assertCount(NationalSquadBuilder::SQUAD_SIZE, $session->host_squad['starting_xi'] ?? []) === false
-            ? $this->assertGreaterThanOrEqual(11, count($session->host_squad['starting_xi'])) // starting xi is 11
-            : null;
+        $this->assertCount(11, $session->host_squad['starting_xi']);
+        $this->assertGreaterThanOrEqual(7, count($session->host_squad['bench']));
     }
 
     public function test_first_non_host_visitor_claims_guest_slot(): void
@@ -108,7 +107,7 @@ class LiveMatchOrchestratorTest extends TestCase
         $users = [];
         foreach ($isos as $iso) {
             $user = User::factory()->create();
-            $game = Game::factory()->create(['user_id' => $user->id, 'status' => 'active']);
+            $game = Game::factory()->create(['user_id' => $user->id]);
             for ($i = 0; $i < 23; $i++) {
                 GamePlayer::factory()->create([
                     'game_id' => $game->id,
