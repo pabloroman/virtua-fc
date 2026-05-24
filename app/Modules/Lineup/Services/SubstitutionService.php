@@ -7,6 +7,8 @@ use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\MatchEvent;
 use App\Models\PlayerSuspension;
+use App\Modules\Match\Support\MinuteCoordinates;
+use App\Modules\Match\Support\StoppageDurations;
 
 class SubstitutionService
 {
@@ -66,12 +68,17 @@ class SubstitutionService
         // Pre-load all suspended player IDs for this competition (single query)
         $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($match->game_id, $match->competition_id);
 
-        // Pre-load red-carded player IDs up to this minute (single query instead of N)
+        // Pre-load red-carded player IDs up to this minute (single query instead of N).
+        // Filter by phase tuple in PHP — a 90+2' red card lives at
+        // phase=SECOND_HALF_STOPPAGE, minute=90, so a SQL `minute <= 90` would
+        // silently include it and a `minute <= 89` would silently exclude it.
         $playerOutIds = array_column($newSubstitutions, 'playerOutId');
+        $stoppageDurations = StoppageDurations::fromMatch($match);
         $redCardedPlayerIds = MatchEvent::where('game_match_id', $match->id)
             ->whereIn('game_player_id', $playerOutIds)
             ->where('event_type', 'red_card')
-            ->where('minute', '<=', $minute)
+            ->get()
+            ->filter(fn (MatchEvent $e) => self::absoluteMinuteFor($e, $stoppageDurations) <= $minute)
             ->pluck('game_player_id')
             ->all();
 
@@ -191,13 +198,21 @@ class SubstitutionService
         // and is not updated by subsequent resimulations. Filtering by minute ensures
         // the reconstructed lineup matches the actual state at $minute — any sub events
         // at minute > $minute will be reverted by doResimulate() anyway.
-        $opponentSubEventsQuery = MatchEvent::where('game_match_id', $match->id)
+        // Load opponent sub events ordered by phase tuple. If $minute is given,
+        // filter in PHP using absolute (phase-aware) minutes so stoppage-time
+        // subs are bucketed correctly. See the red-card filter above for the
+        // same reason.
+        $opponentSubEvents = MatchEvent::where('game_match_id', $match->id)
             ->where('team_id', $opponentTeamId)
-            ->where('event_type', 'substitution');
+            ->where('event_type', 'substitution')
+            ->orderedChronologically()
+            ->get();
         if ($minute !== null) {
-            $opponentSubEventsQuery->where('minute', '<=', $minute);
+            $stoppageDurations = StoppageDurations::fromMatch($match);
+            $opponentSubEvents = $opponentSubEvents
+                ->filter(fn (MatchEvent $e) => self::absoluteMinuteFor($e, $stoppageDurations) <= $minute)
+                ->values();
         }
-        $opponentSubEvents = $opponentSubEventsQuery->orderBy('minute')->get();
 
         // Track subbed-out players explicitly so they are excluded from the bench.
         // Without this, a starter who was subbed out ends up back on the bench
@@ -253,4 +268,19 @@ class SubstitutionService
         ];
     }
 
+    /**
+     * Phase-aware absolute minute for an event, used to compare event timing
+     * against a raw "current minute" supplied by the caller. Necessary because
+     * stoppage-time events store `minute` as the base (e.g. 90) with stoppage
+     * carried separately, so a SQL `where minute <=` filter would misclassify.
+     */
+    private static function absoluteMinuteFor(MatchEvent $event, StoppageDurations $stoppage): int
+    {
+        return MinuteCoordinates::toAbsoluteWith(
+            $event->phase,
+            (int) $event->minute,
+            $event->stoppage_minute,
+            $stoppage,
+        );
+    }
 }

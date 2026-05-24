@@ -53,7 +53,7 @@ class SkipMatchToEnd
 
         // Extra time is out of scope for this iteration — the existing
         // client-only skipToEnd handles ET and penalties.
-        if ($match->is_extra_time) {
+        if ($match->reachedExtraTime()) {
             return $this->noop();
         }
 

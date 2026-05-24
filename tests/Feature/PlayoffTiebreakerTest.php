@@ -456,7 +456,6 @@ class PlayoffTiebreakerTest extends TestCase
         ];
 
         if ($withExtraTime) {
-            $secondLegAttrs['is_extra_time'] = true;
             $secondLegAttrs['home_score_et'] = 0;
             $secondLegAttrs['away_score_et'] = 0;
         }

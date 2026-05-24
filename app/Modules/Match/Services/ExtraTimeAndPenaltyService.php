@@ -80,7 +80,6 @@ class ExtraTimeAndPenaltyService
         );
 
         $match->update([
-            'is_extra_time' => true,
             'home_score_et' => $extraTimeResult->homeScore,
             'away_score_et' => $extraTimeResult->awayScore,
             'home_possession' => $extraTimeResult->homePossession,

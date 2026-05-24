@@ -249,7 +249,7 @@ class CupTie extends Model
 
         $display = "agg: {$aggregate['home']}-{$aggregate['away']}";
 
-        if ($secondLeg->is_extra_time) {
+        if ($secondLeg->reachedExtraTime()) {
             $display .= ' (AET)';
         }
 

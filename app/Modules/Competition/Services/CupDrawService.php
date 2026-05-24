@@ -107,7 +107,6 @@ class CupDrawService
                 'scheduled_date' => $roundConfig->firstLegDate,
                 'cup_tie_id' => $tieId,
                 'played' => false,
-                'is_extra_time' => false,
             ];
 
             if ($roundConfig->twoLegged) {
@@ -122,7 +121,6 @@ class CupDrawService
                     'scheduled_date' => $roundConfig->secondLegDate,
                     'cup_tie_id' => $tieId,
                     'played' => false,
-                    'is_extra_time' => false,
                 ];
             }
 

@@ -173,7 +173,7 @@ class ManagerStatsRebuilder
                             'away_team_id' => $match->away_team_id,
                             'home_score' => $match->home_score,
                             'away_score' => $match->away_score,
-                            'is_extra_time' => $match->is_extra_time,
+                            'is_extra_time' => $match->reachedExtraTime(),
                             'home_score_et' => $match->home_score_et,
                             'away_score_et' => $match->away_score_et,
                             'home_score_penalties' => $match->home_score_penalties,

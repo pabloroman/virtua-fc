@@ -71,7 +71,7 @@ class UpdateManagerStats implements ShouldQueueAfterCommit
         }
 
         // Check extra time
-        if ($match->is_extra_time && $match->home_score_et !== null && $match->away_score_et !== null) {
+        if ($match->reachedExtraTime() && $match->away_score_et !== null) {
             $teamScore = $isHome ? $match->home_score_et : $match->away_score_et;
             $opponentScore = $isHome ? $match->away_score_et : $match->home_score_et;
 

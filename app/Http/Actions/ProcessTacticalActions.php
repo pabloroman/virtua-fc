@@ -70,7 +70,7 @@ class ProcessTacticalActions
             return response()->json(['error' => __('game.tactical_no_changes')], 422);
         }
 
-        $isExtraTime = $match->is_extra_time;
+        $isExtraTime = $match->reachedExtraTime();
 
         // Validate substitutions if present
         if ($hasSubs) {

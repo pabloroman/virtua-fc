@@ -94,7 +94,6 @@ class ExtraTimePenaltyDecisionTest extends TestCase
 
         // Simulate ET already played with a decisive result
         $match->update([
-            'is_extra_time' => true,
             'home_score_et' => 1,
             'away_score_et' => 0,
             // home_score_penalties is null — penalties not played
@@ -126,7 +125,6 @@ class ExtraTimePenaltyDecisionTest extends TestCase
 
         // Simulate ET already played with a draw
         $match->update([
-            'is_extra_time' => true,
             'home_score_et' => 0,
             'away_score_et' => 0,
         ]);
