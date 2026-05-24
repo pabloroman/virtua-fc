@@ -339,6 +339,17 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Live duel — real-time human-vs-human matches. Sits outside the game-shell
+// scope because a duel does not belong to either player's Game.
+Route::middleware('auth')->prefix('live/duel')->name('live.duel.')->group(function () {
+    Route::get('/', \App\Http\Actions\LiveDuel\ShowLiveDuelEntry::class)->name('entry');
+    Route::post('/', \App\Http\Actions\LiveDuel\CreateLiveDuelSession::class)->name('create');
+    Route::get('/{session}', \App\Http\Actions\LiveDuel\ShowLiveDuel::class)->name('show');
+    Route::post('/{session}/pick-team', \App\Http\Actions\LiveDuel\PickGuestTeam::class)->name('pick-team');
+    Route::post('/{session}/actions', \App\Http\Actions\LiveDuel\QueueAction::class)->name('actions');
+    Route::post('/{session}/ack', \App\Http\Actions\LiveDuel\AcknowledgePause::class)->name('ack');
+});
+
 // Admin routes
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     // Accessible while impersonating (impersonated user may not be admin)
