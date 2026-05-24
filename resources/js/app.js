@@ -13,6 +13,8 @@ import seasonSummary from './season-summary';
 import squadRegistration from './squad-registration';
 import explore from './explore';
 import seasonTicketEditor from './season-ticket-editor';
+import liveDuel from './live-duel';
+import liveDuelLobby from './live-duel-lobby';
 
 Alpine.plugin(Collapse);
 Alpine.plugin(Tooltip);
@@ -32,6 +34,8 @@ Alpine.data('tournamentSummary', tournamentSummary);
 Alpine.data('seasonSummary', seasonSummary);
 Alpine.data('explore', explore);
 Alpine.data('seasonTicketEditor', seasonTicketEditor);
+Alpine.data('liveDuel', liveDuel);
+Alpine.data('liveDuelLobby', liveDuelLobby);
 
 window.Alpine = Alpine;
 
