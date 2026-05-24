@@ -122,11 +122,15 @@ class ShowGame
                 ]);
             }
 
+            // User's team has finished the season but other competitions
+            // still have AI-only fixtures to simulate. Use a generic screen —
+            // no club crest, no "teams warming up" copy — because the user
+            // isn't playing.
             return view('game-loading', [
                 'game' => $game,
-                'title' => __('game.simulating_matches'),
-                'message' => __('game.simulating_matches_message'),
-                'showCrest' => true,
+                'title' => __('game.simulating_other_matches'),
+                'message' => __('game.simulating_other_matches_message'),
+                'showCrest' => false,
             ]);
         }
 

@@ -262,6 +262,8 @@ return [
     'processing_career_actions_message' => 'Esto solo tardará un momento.',
     'simulating_matches' => 'Calentamiento...',
     'simulating_matches_message' => 'Los equipos están calentando...',
+    'simulating_other_matches' => 'Simulando partidos pendientes...',
+    'simulating_other_matches_message' => 'Terminando las jornadas de las otras competiciones aún en curso.',
 
     // Live match
     'live_pre_match' => 'Previo al partido',
