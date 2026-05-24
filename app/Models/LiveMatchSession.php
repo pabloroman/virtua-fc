@@ -19,8 +19,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property LiveMatchPhase $phase
  * @property int $host_user_id
  * @property int|null $guest_user_id
- * @property string|null $host_iso_code
- * @property string|null $guest_iso_code
+ * @property string|null $host_team_id
+ * @property string|null $guest_team_id
  * @property string|null $host_source_game_id
  * @property string|null $guest_source_game_id
  * @property array|null $host_squad
@@ -95,7 +95,7 @@ class LiveMatchSession extends Model
 
     public function bothTeamsPicked(): bool
     {
-        return $this->host_iso_code !== null && $this->guest_iso_code !== null;
+        return $this->host_team_id !== null && $this->guest_team_id !== null;
     }
 
     public function isBot(string $side): bool

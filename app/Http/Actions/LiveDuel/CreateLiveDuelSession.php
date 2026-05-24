@@ -2,6 +2,7 @@
 
 namespace App\Http\Actions\LiveDuel;
 
+use App\Models\Team;
 use App\Modules\LiveMatch\Exceptions\NoEligibleSquadException;
 use App\Modules\LiveMatch\Services\LiveMatchOrchestrator;
 use Illuminate\Http\Request;
@@ -16,35 +17,20 @@ class CreateLiveDuelSession
     public function __invoke(Request $request)
     {
         $data = $request->validate([
-            'iso' => ['required', 'string', 'max:64'],
+            'team_id' => ['required', 'uuid'],
         ]);
 
-        $nation = $this->resolveNation($data['iso']);
-        if ($nation === null) {
-            return back()->withErrors(['iso' => __('live_duel.unknown_nation')]);
+        $team = Team::query()->worldCupEligible()->find($data['team_id']);
+        if ($team === null) {
+            return back()->withErrors(['team_id' => __('live_duel.unknown_nation')]);
         }
 
         try {
-            $session = $this->orchestrator->createSession(
-                Auth::user(),
-                $nation['iso'],
-                $nation['name'],
-            );
+            $session = $this->orchestrator->createSession(Auth::user(), $team);
         } catch (NoEligibleSquadException $e) {
-            return back()->withErrors(['iso' => $e->getMessage()]);
+            return back()->withErrors(['team_id' => $e->getMessage()]);
         }
 
         return redirect()->route('live.duel.show', ['session' => $session->id]);
-    }
-
-    private function resolveNation(string $iso): ?array
-    {
-        foreach (ShowLiveDuelEntry::nationCatalog() as $nation) {
-            if ($nation['iso'] === $iso) {
-                return $nation;
-            }
-        }
-
-        return null;
     }
 }

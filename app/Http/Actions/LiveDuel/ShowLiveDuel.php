@@ -67,22 +67,21 @@ class ShowLiveDuel
     private function renderLobby(LiveMatchSession $session, $user, string $viewerRole)
     {
         $iAmReady = $viewerRole === 'host'
-            ? $session->host_iso_code !== null
-            : $session->guest_iso_code !== null;
+            ? $session->host_team_id !== null
+            : $session->guest_team_id !== null;
 
         // Guest needs to pick a team — show the team picker with host's team marked taken.
         if ($viewerRole === 'guest' && ! $iAmReady) {
-            $nations = ShowLiveDuelEntry::nationCatalog();
-            $eligibility = [];
-            foreach ($nations as $nation) {
-                $eligibility[$nation['iso']] = $this->squadBuilder->eligibleCountFor($user, $nation['iso']);
-            }
+            $teams = ShowLiveDuelEntry::availableNationalTeams();
+            $eligibility = $teams->mapWithKeys(
+                fn ($t) => [$t->id => $this->squadBuilder->eligibleCountFor($user, $t)],
+            )->all();
 
             return view('live.duel.entry', [
-                'nations' => $nations,
+                'teams' => $teams,
                 'eligibility' => $eligibility,
                 'role' => 'guest',
-                'takenIso' => $session->host_iso_code,
+                'takenTeamId' => $session->host_team_id,
                 'session' => $session,
             ]);
         }

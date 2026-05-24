@@ -3,6 +3,7 @@
 namespace App\Modules\LiveMatch\Services;
 
 use App\Models\LiveMatchSession;
+use App\Models\Team;
 use App\Models\User;
 use App\Modules\LiveMatch\Enums\LiveMatchPhase;
 use App\Modules\LiveMatch\Events\LiveMatchBotTakeoverBroadcast;
@@ -48,17 +49,16 @@ class LiveMatchOrchestrator
      * Host picks a national team. Creates the session and snapshots the
      * host's squad in one shot. The session UUID is the share token.
      */
-    public function createSession(User $host, string $iso, string $teamName): LiveMatchSession
+    public function createSession(User $host, Team $team): LiveMatchSession
     {
-        $build = $this->squadBuilder->buildFor($host, $iso);
+        $build = $this->squadBuilder->buildFor($host, $team);
         $rehydrated = $this->squadBuilder->rehydrate($build['players']);
-        $snapshot = $this->autoLineupBuilder->build($iso, $teamName, $rehydrated);
+        $snapshot = $this->autoLineupBuilder->build($team, $rehydrated);
 
         return LiveMatchSession::create([
             'phase' => LiveMatchPhase::Lobby,
             'host_user_id' => $host->id,
-            'host_iso_code' => $iso,
-            'host_source_game_id' => $build['game_id'],
+            'host_team_id' => $team->id,
             'host_squad' => $snapshot->toArray(),
             'match_seed' => Str::random(16),
         ]);
@@ -96,7 +96,7 @@ class LiveMatchOrchestrator
      * are now picked AND both clients are present, kickoff fires from the
      * presence-channel listener via attemptKickoff().
      */
-    public function pickGuestTeam(LiveMatchSession $session, User $user, string $iso, string $teamName): LiveMatchSession
+    public function pickGuestTeam(LiveMatchSession $session, User $user, Team $team): LiveMatchSession
     {
         if (! $session->isGuest($user->id)) {
             throw new LiveMatchStateException('Only the guest can set the guest team.');
@@ -105,13 +105,12 @@ class LiveMatchOrchestrator
             throw new LiveMatchStateException('Cannot change team once the match has started.');
         }
 
-        $build = $this->squadBuilder->buildFor($user, $iso);
+        $build = $this->squadBuilder->buildFor($user, $team);
         $rehydrated = $this->squadBuilder->rehydrate($build['players']);
-        $snapshot = $this->autoLineupBuilder->build($iso, $teamName, $rehydrated);
+        $snapshot = $this->autoLineupBuilder->build($team, $rehydrated);
 
         $session->update([
-            'guest_iso_code' => $iso,
-            'guest_source_game_id' => $build['game_id'],
+            'guest_team_id' => $team->id,
             'guest_squad' => $snapshot->toArray(),
         ]);
 

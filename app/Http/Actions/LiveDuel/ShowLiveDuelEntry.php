@@ -2,7 +2,9 @@
 
 namespace App\Http\Actions\LiveDuel;
 
+use App\Models\Team;
 use App\Modules\LiveMatch\Services\NationalSquadBuilder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,48 +16,31 @@ class ShowLiveDuelEntry
 
     public function __invoke(Request $request)
     {
+        $teams = self::availableNationalTeams();
         $user = Auth::user();
-        $nations = self::nationCatalog();
-
-        $eligibility = [];
-        foreach ($nations as $nation) {
-            $eligibility[$nation['iso']] = $this->squadBuilder->eligibleCountFor($user, $nation['iso']);
-        }
+        $eligibility = $teams->mapWithKeys(
+            fn (Team $t) => [$t->id => $this->squadBuilder->eligibleCountFor($user, $t)],
+        )->all();
 
         return view('live.duel.entry', [
-            'nations' => $nations,
+            'teams' => $teams,
             'eligibility' => $eligibility,
             'role' => 'host',
-            'takenIso' => null,
+            'takenTeamId' => null,
         ]);
     }
 
     /**
-     * Prototype catalog of pickable national teams. The `iso` value is the
-     * exact string stored in game_players.nationality (full country names —
-     * see PlayerNameGenerator::NATIONALITY_LOCALES).
+     * National teams eligible for tournament mode — same scope used by
+     * SetupTournamentGame (Team::worldCupEligible).
      *
-     * @return array<int, array{iso: string, name: string, flag: string}>
+     * @return Collection<int, Team>
      */
-    public static function nationCatalog(): array
+    public static function availableNationalTeams(): Collection
     {
-        return [
-            ['iso' => 'Spain', 'name' => 'Spain', 'flag' => '🇪🇸'],
-            ['iso' => 'Brazil', 'name' => 'Brazil', 'flag' => '🇧🇷'],
-            ['iso' => 'Argentina', 'name' => 'Argentina', 'flag' => '🇦🇷'],
-            ['iso' => 'France', 'name' => 'France', 'flag' => '🇫🇷'],
-            ['iso' => 'Germany', 'name' => 'Germany', 'flag' => '🇩🇪'],
-            ['iso' => 'Italy', 'name' => 'Italy', 'flag' => '🇮🇹'],
-            ['iso' => 'Portugal', 'name' => 'Portugal', 'flag' => '🇵🇹'],
-            ['iso' => 'England', 'name' => 'England', 'flag' => '🏴󠁧󠁢󠁥󠁮󠁧󠁿'],
-            ['iso' => 'Netherlands', 'name' => 'Netherlands', 'flag' => '🇳🇱'],
-            ['iso' => 'Belgium', 'name' => 'Belgium', 'flag' => '🇧🇪'],
-            ['iso' => 'Croatia', 'name' => 'Croatia', 'flag' => '🇭🇷'],
-            ['iso' => 'Uruguay', 'name' => 'Uruguay', 'flag' => '🇺🇾'],
-            ['iso' => 'Colombia', 'name' => 'Colombia', 'flag' => '🇨🇴'],
-            ['iso' => 'Mexico', 'name' => 'Mexico', 'flag' => '🇲🇽'],
-            ['iso' => 'Morocco', 'name' => 'Morocco', 'flag' => '🇲🇦'],
-            ['iso' => 'Senegal', 'name' => 'Senegal', 'flag' => '🇸🇳'],
-        ];
+        return Team::query()
+            ->worldCupEligible()
+            ->orderBy('name')
+            ->get();
     }
 }

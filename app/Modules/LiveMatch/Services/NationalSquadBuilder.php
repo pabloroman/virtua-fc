@@ -4,6 +4,7 @@ namespace App\Modules\LiveMatch\Services;
 
 use App\Models\GamePlayer;
 use App\Models\GamePlayerTemplate;
+use App\Models\Team;
 use App\Models\User;
 use App\Modules\LiveMatch\Exceptions\NoEligibleSquadException;
 use Illuminate\Support\Collection;
@@ -15,43 +16,42 @@ class NationalSquadBuilder
     public const MIN_FOR_VIABLE_SQUAD = 11;
 
     /**
-     * Build a frozen national-team squad for the given user and nationality.
+     * Build a frozen national-team squad for the given Team.
      *
      * For the prototype the data source is `GamePlayerTemplate` (the canonical
-     * real-world roster, control-plane, shared across every user). This lets
-     * the duel run between any two logged-in users without each of them having
-     * their own active save with eligible players.
+     * real-world roster, control-plane, shared across every user) — the same
+     * source tournament mode uses (see SetupTournamentGame). Players are
+     * linked to their national team via game_player_templates.team_id.
      *
-     * A future iteration can switch this to per-save player pools when the
-     * tournament feature lands and we want "your career develops your national
-     * team" semantics. The User param stays in the signature for that.
+     * The User param stays in the signature for the eventual per-save switch
+     * when the live duel feature wraps into tournament play.
      *
-     * @return array{game_id: ?string, players: array<int, array<string, mixed>>}
+     * @return array{team_id: string, players: array<int, array<string, mixed>>}
      */
-    public function buildFor(User $user, string $nationality): array
+    public function buildFor(User $user, Team $team): array
     {
-        $templates = $this->queryTemplates($nationality)
+        $templates = $this->queryTemplates($team->id)
             ->orderByDesc('overall_score')
             ->limit(self::SQUAD_SIZE)
             ->get();
 
         if ($templates->count() < self::MIN_FOR_VIABLE_SQUAD) {
-            throw NoEligibleSquadException::tooFewPlayers($nationality, $templates->count());
+            throw NoEligibleSquadException::tooFewPlayers($team->name, $templates->count());
         }
 
         return [
-            'game_id' => null,
+            'team_id' => $team->id,
             'players' => $templates->map(fn (GamePlayerTemplate $t) => $this->serializeTemplate($t))->all(),
         ];
     }
 
     /**
-     * Eligible-player count for a nation. Used to surface the "X eligible"
-     * hint on the team picker.
+     * Eligible-player count for a team in the squad pool. Used to surface
+     * the "X eligible" hint on the team picker.
      */
-    public function eligibleCountFor(User $user, string $nationality): int
+    public function eligibleCountFor(User $user, Team $team): int
     {
-        return $this->queryTemplates($nationality)->count();
+        return $this->queryTemplates($team->id)->count();
     }
 
     /**
@@ -91,14 +91,14 @@ class NationalSquadBuilder
     }
 
     /**
-     * Shared query: latest season of GamePlayerTemplate filtered by
-     * nationality. `season` is a string column on the templates table —
-     * pulling only the latest avoids mixing multiple Spains across years.
+     * Shared query: latest season of GamePlayerTemplate filtered by the
+     * picked national team. `season` is a string column on templates —
+     * pulling only the latest avoids mixing seasons.
      */
-    private function queryTemplates(string $nationality)
+    private function queryTemplates(string $teamId)
     {
-        $latestSeason = GamePlayerTemplate::max('season');
-        $query = GamePlayerTemplate::query()->whereJsonContains('nationality', $nationality);
+        $latestSeason = GamePlayerTemplate::where('team_id', $teamId)->max('season');
+        $query = GamePlayerTemplate::query()->where('team_id', $teamId);
         if ($latestSeason !== null) {
             $query->where('season', $latestSeason);
         }
@@ -109,11 +109,9 @@ class NationalSquadBuilder
     private function serializeTemplate(GamePlayerTemplate $t): array
     {
         // GamePlayerTemplate doesn't cast `secondary_positions` to array
-        // even though the column exists (the cast lives on GamePlayer only),
-        // so reading the attribute hands back a raw JSON string. Decode here
-        // before we hand the record off to the rehydrate → forceFill chain
-        // — otherwise GamePlayer's array cast double-encodes the string and
-        // every read downstream blows up `foreach (... as $secondary)`.
+        // (the cast lives on GamePlayer only). Reading the attribute hands
+        // back the raw JSON string — decode here so the rehydrate →
+        // forceFill chain doesn't double-encode through GamePlayer's cast.
         $secondary = $t->getRawOriginal('secondary_positions');
         if (is_string($secondary)) {
             $secondary = json_decode($secondary, true) ?: [];

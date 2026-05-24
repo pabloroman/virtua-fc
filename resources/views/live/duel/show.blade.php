@@ -1,7 +1,7 @@
 <x-app-layout>
     @php
-        $hostNation = collect(App\Http\Actions\LiveDuel\ShowLiveDuelEntry::nationCatalog())->firstWhere('iso', $session->host_iso_code);
-        $guestNation = collect(App\Http\Actions\LiveDuel\ShowLiveDuelEntry::nationCatalog())->firstWhere('iso', $session->guest_iso_code);
+        $hostTeam = $session->host_team_id ? \App\Models\Team::find($session->host_team_id) : null;
+        $guestTeam = $session->guest_team_id ? \App\Models\Team::find($session->guest_team_id) : null;
     @endphp
 
     <div
@@ -49,8 +49,10 @@
         <div class="bg-surface-800 border-b border-border-default px-4 py-3">
             <div class="max-w-5xl mx-auto flex items-center justify-between gap-4">
                 <div class="flex items-center gap-3 flex-1">
-                    <div class="text-3xl">{{ $hostNation['flag'] ?? '' }}</div>
-                    <div class="font-semibold text-text-primary truncate">{{ $hostNation['name'] ?? $session->host_iso_code }}</div>
+                    @if ($hostTeam?->image)
+                        <img src="{{ $hostTeam->image }}" alt="{{ $hostTeam->name }}" class="w-8 h-8 object-contain">
+                    @endif
+                    <div class="font-semibold text-text-primary truncate">{{ $hostTeam?->name ?? '' }}</div>
                     <span x-show="hostBot" class="text-xs px-2 py-0.5 bg-accent-amber/20 text-accent-amber rounded">BOT</span>
                 </div>
                 <div class="text-center">
@@ -65,8 +67,10 @@
                 </div>
                 <div class="flex items-center gap-3 flex-1 justify-end">
                     <span x-show="guestBot" class="text-xs px-2 py-0.5 bg-accent-amber/20 text-accent-amber rounded">BOT</span>
-                    <div class="font-semibold text-text-primary truncate text-right">{{ $guestNation['name'] ?? $session->guest_iso_code }}</div>
-                    <div class="text-3xl">{{ $guestNation['flag'] ?? '' }}</div>
+                    <div class="font-semibold text-text-primary truncate text-right">{{ $guestTeam?->name ?? '' }}</div>
+                    @if ($guestTeam?->image)
+                        <img src="{{ $guestTeam->image }}" alt="{{ $guestTeam->name }}" class="w-8 h-8 object-contain">
+                    @endif
                 </div>
             </div>
         </div>

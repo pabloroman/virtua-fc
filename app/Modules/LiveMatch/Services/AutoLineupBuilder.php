@@ -2,6 +2,7 @@
 
 namespace App\Modules\LiveMatch\Services;
 
+use App\Models\Team;
 use App\Modules\LiveMatch\DTOs\SquadSnapshot;
 use App\Modules\Lineup\Enums\DefensiveLineHeight;
 use App\Modules\Lineup\Enums\Formation;
@@ -24,7 +25,7 @@ class AutoLineupBuilder
      *
      * @param  Collection  $rehydratedPlayers  Result of NationalSquadBuilder::rehydrate().
      */
-    public function build(string $isoCode, string $teamName, Collection $rehydratedPlayers): SquadSnapshot
+    public function build(Team $team, Collection $rehydratedPlayers): SquadSnapshot
     {
         $formation = $this->formationRecommender->getBestFormation($rehydratedPlayers);
         $bestXi = $this->formationRecommender->bestXIFor($formation, $rehydratedPlayers);
@@ -56,8 +57,9 @@ class AutoLineupBuilder
             ->all();
 
         return new SquadSnapshot(
-            isoCode: $isoCode,
-            teamName: $teamName,
+            teamId: $team->id,
+            teamName: $team->name,
+            country: $team->getAttributes()['country'] ?? null,
             formation: $formation->value,
             mentality: Mentality::BALANCED->value,
             playingStyle: PlayingStyle::BALANCED->value,

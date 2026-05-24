@@ -16,6 +16,7 @@ use App\Modules\LiveMatch\Services\NationalSquadBuilder;
 use App\Modules\Match\Services\MatchSimulator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class LiveMatchOrchestratorTest extends TestCase
@@ -25,14 +26,15 @@ class LiveMatchOrchestratorTest extends TestCase
     public function test_create_session_snapshots_host_squad_and_remains_in_lobby(): void
     {
         Queue::fake();
-        [$host] = $this->seedUsersWithEligiblePlayers(['Spain']);
+        $host = User::factory()->create();
+        $team = $this->seedNationalTeam('Spain', 'ES');
 
         $orchestrator = $this->makeOrchestrator();
-        $session = $orchestrator->createSession($host, 'Spain', 'Spain');
+        $session = $orchestrator->createSession($host, $team);
 
         $this->assertSame(LiveMatchPhase::Lobby, $session->phase);
         $this->assertSame($host->id, $session->host_user_id);
-        $this->assertSame('Spain', $session->host_iso_code);
+        $this->assertSame($team->id, $session->host_team_id);
         $this->assertNull($session->guest_user_id);
         $this->assertNotNull($session->host_squad);
         $this->assertCount(11, $session->host_squad['starting_xi']);
@@ -41,9 +43,11 @@ class LiveMatchOrchestratorTest extends TestCase
 
     public function test_first_non_host_visitor_claims_guest_slot(): void
     {
-        [$host, $guest] = $this->seedUsersWithEligiblePlayers(['Spain', 'Brazil']);
+        $host = User::factory()->create();
+        $guest = User::factory()->create();
+        $team = $this->seedNationalTeam('Spain', 'ES');
         $orchestrator = $this->makeOrchestrator();
-        $session = $orchestrator->createSession($host, 'Spain', 'Spain');
+        $session = $orchestrator->createSession($host, $team);
 
         $orchestrator->claimGuestSlot($session, $guest);
 
@@ -52,9 +56,10 @@ class LiveMatchOrchestratorTest extends TestCase
 
     public function test_host_cannot_claim_guest_slot(): void
     {
-        [$host] = $this->seedUsersWithEligiblePlayers(['Spain']);
+        $host = User::factory()->create();
+        $team = $this->seedNationalTeam('Spain', 'ES');
         $orchestrator = $this->makeOrchestrator();
-        $session = $orchestrator->createSession($host, 'Spain', 'Spain');
+        $session = $orchestrator->createSession($host, $team);
 
         $this->expectException(LiveMatchStateException::class);
         $orchestrator->claimGuestSlot($session, $host);
@@ -62,9 +67,12 @@ class LiveMatchOrchestratorTest extends TestCase
 
     public function test_third_visitor_cannot_take_guest_slot(): void
     {
-        [$host, $guest, $third] = $this->seedUsersWithEligiblePlayers(['Spain', 'Brazil', 'Argentina']);
+        $host = User::factory()->create();
+        $guest = User::factory()->create();
+        $third = User::factory()->create();
+        $team = $this->seedNationalTeam('Spain', 'ES');
         $orchestrator = $this->makeOrchestrator();
-        $session = $orchestrator->createSession($host, 'Spain', 'Spain');
+        $session = $orchestrator->createSession($host, $team);
         $orchestrator->claimGuestSlot($session, $guest);
 
         $this->expectException(LiveMatchStateException::class);
@@ -74,12 +82,16 @@ class LiveMatchOrchestratorTest extends TestCase
     public function test_guest_picking_team_with_both_users_present_starts_the_match(): void
     {
         Queue::fake();
-        [$host, $guest] = $this->seedUsersWithEligiblePlayers(['Spain', 'Brazil']);
+        $host = User::factory()->create();
+        $guest = User::factory()->create();
+        $hostTeam = $this->seedNationalTeam('Spain', 'ES');
+        $guestTeam = $this->seedNationalTeam('Brazil', 'BR');
+
         $orchestrator = $this->makeOrchestrator();
-        $session = $orchestrator->createSession($host, 'Spain', 'Spain');
+        $session = $orchestrator->createSession($host, $hostTeam);
         $orchestrator->claimGuestSlot($session, $guest);
 
-        $session = $orchestrator->pickGuestTeam($session->fresh(), $guest, 'Brazil', 'Brazil');
+        $session = $orchestrator->pickGuestTeam($session->fresh(), $guest, $guestTeam);
 
         $this->assertSame(LiveMatchPhase::Live, $session->phase);
         $this->assertNotNull($session->context_state);
@@ -96,48 +108,41 @@ class LiveMatchOrchestratorTest extends TestCase
     }
 
     /**
-     * Seed N users plus a shared pool of GamePlayerTemplate rows for every
-     * requested nationality (23 each). Templates live on the control plane
-     * and are shared across users — matches the production prototype's
-     * data source.
-     *
-     * @param  array<int, string>  $nationalities  one per user; also used
-     *                                             as the template pool to seed
-     * @return array<int, User>
+     * Seed a national Team and 23 GamePlayerTemplate rows linked to it.
+     * Mirrors what tournament mode expects: type=national + fifa_code +
+     * templates with team_id pointing at the Team.
      */
-    private function seedUsersWithEligiblePlayers(array $nationalities): array
+    private function seedNationalTeam(string $name, string $country): Team
     {
-        $team = Team::factory()->create();
+        $team = Team::factory()->create([
+            'type' => 'national',
+            'name' => $name,
+            'country' => $country,
+            'fifa_code' => strtoupper(substr($name, 0, 3)),
+        ]);
+
         $positions = ['Goalkeeper', 'Centre-Back', 'Left-Back', 'Right-Back', 'Central Midfield', 'Attacking Midfield', 'Left Winger', 'Right Winger', 'Centre-Forward'];
-
-        foreach (array_unique($nationalities) as $nationality) {
-            for ($i = 0; $i < 23; $i++) {
-                GamePlayerTemplate::create([
-                    'season' => '2025/2026',
-                    'player_id' => (string) \Illuminate\Support\Str::uuid(),
-                    'transfermarkt_id' => 'tm-'.\Illuminate\Support\Str::random(8),
-                    'name' => "{$nationality} Player {$i}",
-                    'date_of_birth' => '1995-01-01',
-                    'nationality' => [$nationality],
-                    'foot' => 'right',
-                    'team_id' => $team->id,
-                    'number' => $i + 1,
-                    'position' => $positions[$i % count($positions)],
-                    'overall_score' => 70 + ($i % 15),
-                    'durability' => 70,
-                    'tier' => 3,
-                    'potential' => 80,
-                    'potential_low' => 75,
-                    'potential_high' => 85,
-                ]);
-            }
+        for ($i = 0; $i < 23; $i++) {
+            GamePlayerTemplate::create([
+                'season' => '2025/2026',
+                'player_id' => (string) Str::uuid(),
+                'transfermarkt_id' => 'tm-'.Str::random(8),
+                'name' => "{$name} Player {$i}",
+                'date_of_birth' => '1995-01-01',
+                'nationality' => [$name],
+                'foot' => 'right',
+                'team_id' => $team->id,
+                'number' => $i + 1,
+                'position' => $positions[$i % count($positions)],
+                'overall_score' => 70 + ($i % 15),
+                'durability' => 70,
+                'tier' => 3,
+                'potential' => 80,
+                'potential_low' => 75,
+                'potential_high' => 85,
+            ]);
         }
 
-        $users = [];
-        foreach ($nationalities as $_) {
-            $users[] = User::factory()->create();
-        }
-
-        return $users;
+        return $team;
     }
 }

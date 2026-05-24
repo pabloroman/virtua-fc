@@ -31,8 +31,8 @@ class LiveMatchTeamPickedBroadcast implements ShouldBroadcastNow
     {
         return [
             'session_id' => $this->session->id,
-            'host_iso_code' => $this->session->host_iso_code,
-            'guest_iso_code' => $this->session->guest_iso_code,
+            'host_team_id' => $this->session->host_team_id,
+            'guest_team_id' => $this->session->guest_team_id,
             'both_picked' => $this->session->bothTeamsPicked(),
         ];
     }

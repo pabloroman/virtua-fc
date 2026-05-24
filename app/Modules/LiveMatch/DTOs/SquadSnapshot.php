@@ -18,8 +18,9 @@ readonly class SquadSnapshot
      * @param  array<string, string>             $playerSlotMap   playerId → slot code (Formation::pitchSlots()).
      */
     public function __construct(
-        public string $isoCode,
+        public string $teamId,
         public string $teamName,
+        public ?string $country,
         public string $formation,
         public string $mentality,
         public string $playingStyle,
@@ -33,8 +34,9 @@ readonly class SquadSnapshot
     public function toArray(): array
     {
         return [
-            'iso_code' => $this->isoCode,
+            'team_id' => $this->teamId,
             'team_name' => $this->teamName,
+            'country' => $this->country,
             'formation' => $this->formation,
             'mentality' => $this->mentality,
             'playing_style' => $this->playingStyle,
@@ -49,8 +51,9 @@ readonly class SquadSnapshot
     public static function fromArray(array $data): self
     {
         return new self(
-            isoCode: $data['iso_code'],
+            teamId: $data['team_id'],
             teamName: $data['team_name'],
+            country: $data['country'] ?? null,
             formation: $data['formation'],
             mentality: $data['mentality'],
             playingStyle: $data['playing_style'],

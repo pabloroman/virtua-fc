@@ -24,31 +24,31 @@
         >
             @csrf
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                @foreach ($nations as $nation)
+                @foreach ($teams as $team)
                     @php
-                        $count = $eligibility[$nation['iso']] ?? 0;
-                        $taken = $takenIso === $nation['iso'];
+                        $count = $eligibility[$team->id] ?? 0;
+                        $taken = $takenTeamId === $team->id;
                         $disabled = $taken || $count < \App\Modules\LiveMatch\Services\NationalSquadBuilder::MIN_FOR_VIABLE_SQUAD;
                     @endphp
                     <button
                         type="submit"
-                        name="iso"
-                        value="{{ $nation['iso'] }}"
+                        name="team_id"
+                        value="{{ $team->id }}"
                         @if ($disabled) disabled @endif
                         class="group flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all
                             {{ $disabled
                                 ? 'bg-surface-800 border-border-default opacity-50 cursor-not-allowed'
                                 : 'bg-surface-700 border-border-default hover:border-accent-blue hover:bg-accent-blue/10 cursor-pointer' }}"
                     >
-                        <div class="text-3xl">{{ $nation['flag'] }}</div>
-                        <div class="font-semibold text-text-primary">{{ $nation['name'] }}</div>
-                        <div class="text-xs {{ $count < 11 ? 'text-accent-red' : 'text-text-muted' }}">
-                            @if ($taken)
-                                {{ __('live_duel.taken') }}
-                            @else
-                                {{ __('live_duel.eligible_count', ['count' => $count]) }}
-                            @endif
-                        </div>
+                        @if ($team->image)
+                            <img src="{{ $team->image }}" alt="{{ $team->name }}" class="w-12 h-12 object-contain" />
+                        @else
+                            <div class="text-3xl">⚽</div>
+                        @endif
+                        <div class="font-semibold text-text-primary">{{ $team->name }}</div>
+                        @if ($taken)
+                            <div class="text-xs text-text-muted">{{ __('live_duel.taken') }}</div>
+                        @endif
                     </button>
                 @endforeach
             </div>

@@ -1,11 +1,10 @@
 <x-app-layout>
     @php
-        $catalog = App\Http\Actions\LiveDuel\ShowLiveDuelEntry::nationCatalog();
-        $hostNation = collect($catalog)->firstWhere('iso', $session->host_iso_code);
-        $guestNation = collect($catalog)->firstWhere('iso', $session->guest_iso_code);
-        $waitingForGuest = $viewerRole === 'host' && $session->guest_iso_code === null;
-        $opponentChoosing = $viewerRole === 'host' && $session->guest_iso_code !== null;
-        $waitingForKickoff = $viewerRole === 'guest' && $session->guest_iso_code !== null;
+        $hostTeam = $session->host_team_id ? \App\Models\Team::find($session->host_team_id) : null;
+        $guestTeam = $session->guest_team_id ? \App\Models\Team::find($session->guest_team_id) : null;
+        $waitingForGuest = $viewerRole === 'host' && $session->guest_team_id === null;
+        $opponentChoosing = $viewerRole === 'host' && $session->guest_team_id !== null;
+        $waitingForKickoff = $viewerRole === 'guest' && $session->guest_team_id !== null;
     @endphp
 
     <div
@@ -25,13 +24,13 @@
                 {{ __('live_duel.title') }}
             </h1>
 
-            @if ($waitingForGuest)
+            @if ($waitingForGuest && $hostTeam)
                 <div class="space-y-6">
                     <p class="text-text-muted">{{ __('live_duel.waiting_for_opponent') }}</p>
-                    <div class="text-6xl">{{ $hostNation['flag'] ?? '' }}</div>
-                    <p class="text-text-primary font-semibold text-lg">
-                        {{ $hostNation['name'] ?? $session->host_iso_code }}
-                    </p>
+                    @if ($hostTeam->image)
+                        <img src="{{ $hostTeam->image }}" alt="{{ $hostTeam->name }}" class="w-24 h-24 mx-auto object-contain" />
+                    @endif
+                    <p class="text-text-primary font-semibold text-lg">{{ $hostTeam->name }}</p>
 
                     <div class="pt-6 border-t border-border-default text-left">
                         <p class="text-sm text-text-muted mb-2">{{ __('live_duel.share_link') }}</p>
@@ -59,13 +58,13 @@
                     </p>
                     <div class="text-3xl animate-pulse">⚽</div>
                 </div>
-            @elseif ($waitingForKickoff)
+            @elseif ($waitingForKickoff && $guestTeam)
                 <div class="space-y-4">
                     <p class="text-text-muted">{{ __('live_duel.waiting_for_kickoff') }}</p>
-                    <div class="text-6xl">{{ $guestNation['flag'] ?? '' }}</div>
-                    <p class="text-text-primary font-semibold text-lg">
-                        {{ $guestNation['name'] ?? $session->guest_iso_code }}
-                    </p>
+                    @if ($guestTeam->image)
+                        <img src="{{ $guestTeam->image }}" alt="{{ $guestTeam->name }}" class="w-24 h-24 mx-auto object-contain" />
+                    @endif
+                    <p class="text-text-primary font-semibold text-lg">{{ $guestTeam->name }}</p>
                     <div class="text-3xl animate-pulse">⚽</div>
                 </div>
             @else
