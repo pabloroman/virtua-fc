@@ -1,4 +1,11 @@
 <x-app-layout>
+    {{-- Echo + Pusher loaded from CDN so we don't have to ship them through Vite.
+         Loading them in <script> (not type=module) executes before app.js's
+         deferred module, so window.Echo / window.Pusher are ready when the
+         liveDuel Alpine factory's init() runs. --}}
+    <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.js"></script>
+
     @php
         $hostTeam = $session->host_team_id ? \App\Models\Team::find($session->host_team_id) : null;
         $guestTeam = $session->guest_team_id ? \App\Models\Team::find($session->guest_team_id) : null;

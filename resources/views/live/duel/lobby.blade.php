@@ -1,4 +1,8 @@
 <x-app-layout>
+    {{-- Echo + Pusher loaded from CDN (see show.blade.php for rationale). --}}
+    <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.js"></script>
+
     @php
         $hostTeam = $session->host_team_id ? \App\Models\Team::find($session->host_team_id) : null;
         $guestTeam = $session->guest_team_id ? \App\Models\Team::find($session->guest_team_id) : null;
