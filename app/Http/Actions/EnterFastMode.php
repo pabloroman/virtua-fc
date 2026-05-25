@@ -3,7 +3,10 @@
 namespace App\Http\Actions;
 
 use App\Models\Game;
+use App\Modules\Lineup\RotationPolicy;
 use App\Modules\Match\Services\FastModeService;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\Enum;
 
 class EnterFastMode
 {
@@ -12,7 +15,7 @@ class EnterFastMode
         private readonly AdvanceFastMatchday $advanceFastMatchday,
     ) {}
 
-    public function __invoke(string $gameId)
+    public function __invoke(string $gameId, Request $request)
     {
         $game = Game::findOrFail($gameId);
 
@@ -28,6 +31,16 @@ class EnterFastMode
         if ($game->pending_finalization_match_id) {
             return redirect()->route('show-game', $gameId)
                 ->with('warning', __('messages.fast_mode_blocked_live_match'));
+        }
+
+        $validated = $request->validate([
+            'rotation_policy' => ['nullable', new Enum(RotationPolicy::class)],
+        ]);
+
+        if (! empty($validated['rotation_policy'])) {
+            $tactics = $game->tactics()->firstOrCreate([]);
+            $tactics->default_rotation_policy = RotationPolicy::from($validated['rotation_policy']);
+            $tactics->save();
         }
 
         $alreadyInFastMode = $game->isFastMode();

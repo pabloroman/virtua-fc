@@ -532,6 +532,15 @@ return [
     'fast_mode_active_badge' => 'Modo rápido · toca para salir',
     'fast_mode_no_last_match' => 'Simula tu próximo partido para ver el resultado aquí.',
     'fast_mode_menu_title' => 'Delegar en el entrenador asistente',
+    'fast_mode_rotation_policy' => 'Rotación de plantilla',
+    'fast_mode_rotation' => [
+        'conservative' => 'Conservadora',
+        'conservative_desc' => 'Mantiene tu once de gala en el campo el mayor tiempo posible. Solo recurre a un suplente cuando un titular está claramente agotado.',
+        'balanced' => 'Equilibrada',
+        'balanced_desc' => 'Saca del once a los titulares cansados en favor de suplentes frescos durante los calendarios apretados. Recomendada para la mayoría de plantillas.',
+        'aggressive' => 'Agresiva',
+        'aggressive_desc' => 'Prioriza las piernas frescas. Los suplentes serán titulares con frecuencia por delante de estrellas cansadas, repartiendo minutos por toda la plantilla.',
+    ],
     'last_result' => 'Último resultado',
 
     // Pre-season
