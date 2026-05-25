@@ -930,15 +930,18 @@ class LineupService
                 continue;
             }
 
-            // Head-to-head rotation: when a rotation policy is active,
-            // compare the preferred starter's effective score against the
-            // best compat-100 alternative for the slot. If the alternative
-            // wins by more than a thrash-guard margin (1.0 effective pts),
-            // skip the pin so Pass 1 picks the alternative. Without a
-            // compat-100 alternative we keep the preferred starter — a
-            // fresh out-of-position fill-in is still worse than a tired
+            // Head-to-head rotation: when a rotation policy is active and
+            // the preferred starter is below the policy's fatigue
+            // threshold, compare their effective score against the best
+            // compat-100 alternative for the slot. If the alternative
+            // wins by more than a thrash-guard margin (1.0 effective
+            // pts), skip the pin so Pass 1 picks the alternative. Fresh
+            // preferred starters are always pinned — the user chose them
+            // and they're not tired enough to rotate. Without a compat-100
+            // alternative we keep the preferred starter — a fresh
+            // out-of-position fill-in is still worse than a tired
             // specialist.
-            if ($rotationPolicy !== null) {
+            if ($rotationPolicy !== null && $this->isTired($player, $rotationPolicy)) {
                 $slotLabel = $slotIdToLabel[$chosenSlotId];
                 $starterEffective = $this->effectiveScore($player, $rotationPolicy);
                 $usedPlayerIds = array_values($manualPins);
