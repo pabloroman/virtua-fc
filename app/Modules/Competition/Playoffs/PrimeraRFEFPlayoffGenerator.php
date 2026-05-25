@@ -6,6 +6,7 @@ use App\Modules\Competition\Contracts\PlayoffGenerator;
 use App\Modules\Competition\DTOs\PlayoffRoundConfig;
 use App\Modules\Competition\Enums\PlayoffState;
 use App\Modules\Competition\Services\LeagueFixtureGenerator;
+use App\Modules\Competition\Services\PlayoffTiebreakerService;
 use App\Modules\Competition\Services\ReserveTeamFilter;
 use App\Modules\Finance\Services\SeasonSimulationService;
 use App\Models\Competition;
@@ -214,6 +215,15 @@ class PrimeraRFEFPlayoffGenerator implements PlayoffGenerator
      * Round 2 (Bracket Finals). The two semifinal winners inside each bracket
      * play a two-legged final. Both winners are promoted — one per bracket.
      *
+     * Home/away is determined dynamically by the regular-season finishing
+     * position of each winner (across both groups — a bracket-final pair can
+     * mix winners from either group). The lower-finishing team hosts leg 1
+     * so the higher finisher's stadium gets leg 2 (the deciding leg). This
+     * matches the Spanish rule: "la vuelta será en el estadio de aquel que
+     * finalizó la liga regular en un mejor puesto". Cross-group brackets
+     * make same-position pairings impossible, so the position lookup is
+     * always decisive.
+     *
      * @return array<array{0: string, 1: string, 2: int}>
      */
     private function generateBracketFinalMatchups(Game $game): array
@@ -227,6 +237,8 @@ class PrimeraRFEFPlayoffGenerator implements PlayoffGenerator
             ->get();
 
         $byBracket = $semifinals->groupBy('bracket_position');
+        $tiebreakerService = app(PlayoffTiebreakerService::class);
+        $sourceGroups = [self::GROUP_A_ID, self::GROUP_B_ID];
 
         $matchups = [];
         foreach ([self::BRACKET_A, self::BRACKET_B] as $bracket) {
@@ -246,10 +258,21 @@ class PrimeraRFEFPlayoffGenerator implements PlayoffGenerator
                 );
             }
 
-            // Insertion order of $ties matches bracket seeding: the first tie
-            // in the bracket was the lower-seed (5 vs 2 or 4 vs 3) matchup.
-            // Its winner hosts the first leg of the bracket final.
-            $matchups[] = [$winners[0], $winners[1], $bracket];
+            $posA = $tiebreakerService->positionInSource($game, $winners[0], $sourceGroups);
+            $posB = $tiebreakerService->positionInSource($game, $winners[1], $sourceGroups);
+
+            // Lower finisher (larger position number) hosts leg 1. If a
+            // position can't be resolved (shouldn't happen — both winners
+            // have group standings), preserve insertion order rather than
+            // throwing, so the bracket can still complete.
+            $homeFirst = $winners[0];
+            $awaySecond = $winners[1];
+            if ($posA !== null && $posB !== null && $posB > $posA) {
+                $homeFirst = $winners[1];
+                $awaySecond = $winners[0];
+            }
+
+            $matchups[] = [$homeFirst, $awaySecond, $bracket];
         }
 
         return $matchups;

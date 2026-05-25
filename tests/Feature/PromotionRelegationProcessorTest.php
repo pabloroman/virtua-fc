@@ -371,6 +371,184 @@ class PromotionRelegationProcessorTest extends TestCase
     }
 
     /**
+     * Locks in Rule 1: exactly three teams (positions 18-20) relegate from
+     * Primera División to Segunda División at season close.
+     */
+    public function test_esp1_bottom_three_are_relegated_to_esp2(): void
+    {
+        $esp1 = $this->seedRealTier('ESP1', 20);
+        $this->seedRealTier('ESP2', 22, userPosition: 11);
+        $this->seedSimulatedTier('ESP3A', 20);
+        $this->seedSimulatedTier('ESP3B', 20);
+
+        $relegated = [$esp1[18], $esp1[19], $esp1[20]];
+        $stayed = [$esp1[1], $esp1[17]];
+
+        $processor = app(PromotionRelegationProcessor::class);
+        $processor->process($this->game, new SeasonTransitionData(
+            oldSeason: '2025',
+            newSeason: '2026',
+            competitionId: 'ESP2',
+        ));
+
+        foreach ($relegated as $team) {
+            $this->assertTrue(
+                CompetitionEntry::where('game_id', $this->game->id)
+                    ->where('competition_id', 'ESP2')
+                    ->where('team_id', $team->id)
+                    ->exists(),
+                "ESP1 bottom-three team {$team->id} should land in ESP2",
+            );
+        }
+        foreach ($stayed as $team) {
+            $this->assertTrue(
+                CompetitionEntry::where('game_id', $this->game->id)
+                    ->where('competition_id', 'ESP1')
+                    ->where('team_id', $team->id)
+                    ->exists(),
+                "ESP1 mid-table team {$team->id} should remain in ESP1",
+            );
+        }
+
+        $this->assertSame(20, CompetitionEntry::where('game_id', $this->game->id)->where('competition_id', 'ESP1')->count());
+    }
+
+    /**
+     * Locks in Rule 3: exactly four teams (positions 19-22) relegate from
+     * Segunda División to Primera Federación, distributed across ESP3A/ESP3B.
+     */
+    public function test_esp2_bottom_four_are_relegated_to_primera_rfef(): void
+    {
+        $this->seedRealTier('ESP1', 20);
+        $esp2 = $this->seedRealTier('ESP2', 22, userPosition: 11);
+        $this->seedSimulatedTier('ESP3A', 20);
+        $this->seedSimulatedTier('ESP3B', 20);
+
+        $relegated = [$esp2[19], $esp2[20], $esp2[21], $esp2[22]];
+
+        $processor = app(PromotionRelegationProcessor::class);
+        $processor->process($this->game, new SeasonTransitionData(
+            oldSeason: '2025',
+            newSeason: '2026',
+            competitionId: 'ESP2',
+        ));
+
+        foreach ($relegated as $team) {
+            $landedIn = CompetitionEntry::where('game_id', $this->game->id)
+                ->whereIn('competition_id', ['ESP3A', 'ESP3B'])
+                ->where('team_id', $team->id)
+                ->value('competition_id');
+            $this->assertNotNull($landedIn, "ESP2 bottom-four team {$team->id} should land in ESP3A or ESP3B");
+        }
+
+        $this->assertSame(22, CompetitionEntry::where('game_id', $this->game->id)->where('competition_id', 'ESP2')->count());
+        $this->assertSame(20, CompetitionEntry::where('game_id', $this->game->id)->where('competition_id', 'ESP3A')->count());
+        $this->assertSame(20, CompetitionEntry::where('game_id', $this->game->id)->where('competition_id', 'ESP3B')->count());
+    }
+
+    /**
+     * End-to-end invariant covering Rules 1-4 simultaneously: after a full
+     * Spanish season closing, exactly 3 teams move into ESP1 (2 direct from
+     * ESP2 + 1 ESP2 playoff winner), exactly 4 teams move into ESP2 (1 from
+     * each ESP3 group + 2 ESP3PO bracket winners), and tier sizes are
+     * preserved.
+     */
+    public function test_full_spanish_cycle_promotes_3_to_esp1_and_4_to_esp2(): void
+    {
+        $esp1 = $this->seedRealTier('ESP1', 20);
+        $esp2 = $this->seedRealTier('ESP2', 22, userPosition: 11);
+        $esp3a = $this->seedRealTier('ESP3A', 20);
+        $esp3b = $this->seedRealTier('ESP3B', 20);
+
+        // ESP2 playoff (round 2): ESP2 pos 5 wins the playoff (3rd promotion).
+        // Choosing pos 5 (not the natural stand-in pos 3) catches a bug where
+        // the planner would ignore CupTie winners and just take the next
+        // available standings position.
+        CupTie::factory()->forGame($this->game)->inRound(2)
+            ->between($esp2[6], $esp2[5])
+            ->completed($esp2[5], 'aggregate')
+            ->create(['competition_id' => 'ESP2', 'bracket_position' => 1]);
+
+        // ESP3PO bracket finals: ESP3A pos 4 wins bracket A, ESP3B pos 5 wins bracket B.
+        CupTie::factory()->forGame($this->game)->inRound(2)
+            ->between($esp3a[4], $esp3a[2])
+            ->completed($esp3a[4], 'aggregate')
+            ->create(['competition_id' => 'ESP3PO', 'bracket_position' => PrimeraRFEFPlayoffGenerator::BRACKET_A]);
+        CupTie::factory()->forGame($this->game)->inRound(2)
+            ->between($esp3b[5], $esp3b[2])
+            ->completed($esp3b[5], 'aggregate')
+            ->create(['competition_id' => 'ESP3PO', 'bracket_position' => PrimeraRFEFPlayoffGenerator::BRACKET_B]);
+
+        $processor = app(PromotionRelegationProcessor::class);
+        $processor->process($this->game, new SeasonTransitionData(
+            oldSeason: '2025',
+            newSeason: '2026',
+            competitionId: 'ESP2',
+        ));
+
+        // Promoted to ESP1: ESP2 pos 1, 2 (direct) and pos 5 (playoff winner).
+        foreach ([$esp2[1], $esp2[2], $esp2[5]] as $team) {
+            $this->assertTrue(
+                CompetitionEntry::where('game_id', $this->game->id)
+                    ->where('competition_id', 'ESP1')
+                    ->where('team_id', $team->id)
+                    ->exists(),
+                "ESP2 team {$team->id} should be promoted to ESP1",
+            );
+        }
+
+        // ESP2 pos 3, 4, 6 stayed (they were in the playoff bracket but didn't
+        // win — confirms the planner respected the CupTie winner over standings).
+        foreach ([$esp2[3], $esp2[4], $esp2[6]] as $team) {
+            $this->assertFalse(
+                CompetitionEntry::where('game_id', $this->game->id)
+                    ->where('competition_id', 'ESP1')
+                    ->where('team_id', $team->id)
+                    ->exists(),
+                "ESP2 playoff loser {$team->id} should NOT be promoted",
+            );
+        }
+
+        // Promoted to ESP2: ESP3A pos 1 (direct), ESP3B pos 1 (direct),
+        // ESP3A pos 4 (bracket A winner), ESP3B pos 5 (bracket B winner).
+        foreach ([$esp3a[1], $esp3b[1], $esp3a[4], $esp3b[5]] as $team) {
+            $this->assertTrue(
+                CompetitionEntry::where('game_id', $this->game->id)
+                    ->where('competition_id', 'ESP2')
+                    ->where('team_id', $team->id)
+                    ->exists(),
+                "Primera RFEF team {$team->id} should be promoted to ESP2",
+            );
+        }
+
+        // Relegated from ESP1: positions 18-20.
+        foreach ([$esp1[18], $esp1[19], $esp1[20]] as $team) {
+            $this->assertTrue(
+                CompetitionEntry::where('game_id', $this->game->id)
+                    ->where('competition_id', 'ESP2')
+                    ->where('team_id', $team->id)
+                    ->exists(),
+                "ESP1 team {$team->id} should be relegated to ESP2",
+            );
+        }
+
+        // Relegated from ESP2: positions 19-22 land in ESP3A or ESP3B.
+        foreach ([$esp2[19], $esp2[20], $esp2[21], $esp2[22]] as $team) {
+            $landed = CompetitionEntry::where('game_id', $this->game->id)
+                ->whereIn('competition_id', ['ESP3A', 'ESP3B'])
+                ->where('team_id', $team->id)
+                ->exists();
+            $this->assertTrue($landed, "ESP2 team {$team->id} should be relegated to Primera RFEF");
+        }
+
+        // Tier sizes preserved.
+        $this->assertSame(20, CompetitionEntry::where('game_id', $this->game->id)->where('competition_id', 'ESP1')->count());
+        $this->assertSame(22, CompetitionEntry::where('game_id', $this->game->id)->where('competition_id', 'ESP2')->count());
+        $this->assertSame(20, CompetitionEntry::where('game_id', $this->game->id)->where('competition_id', 'ESP3A')->count());
+        $this->assertSame(20, CompetitionEntry::where('game_id', $this->game->id)->where('competition_id', 'ESP3B')->count());
+    }
+
+    /**
      * @return array<int, Team> 1-indexed by standings position.
      */
     private function seedRealTier(string $competitionId, int $count, ?int $userPosition = null): array

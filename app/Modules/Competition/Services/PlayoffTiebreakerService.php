@@ -41,8 +41,8 @@ class PlayoffTiebreakerService
             return null;
         }
 
-        $homePos = $this->regularSeasonPosition($game, $tie->home_team_id, $sources);
-        $awayPos = $this->regularSeasonPosition($game, $tie->away_team_id, $sources);
+        $homePos = $this->positionInSource($game, $tie->home_team_id, $sources);
+        $awayPos = $this->positionInSource($game, $tie->away_team_id, $sources);
 
         if ($homePos === null || $awayPos === null || $homePos === $awayPos) {
             return null;
@@ -57,9 +57,13 @@ class PlayoffTiebreakerService
      * so sister-group standings (e.g. the group the player isn't in under
      * Primera RFEF's split format) are still usable.
      *
+     * Public so playoff generators can reuse the same lookup when seeding
+     * later rounds — keeps the bracket draw and the in-match tiebreaker
+     * reading positions the same way.
+     *
      * @param string[] $sourceCompetitionIds
      */
-    private function regularSeasonPosition(Game $game, string $teamId, array $sourceCompetitionIds): ?int
+    public function positionInSource(Game $game, string $teamId, array $sourceCompetitionIds): ?int
     {
         foreach ($sourceCompetitionIds as $sourceId) {
             $standing = GameStanding::where('game_id', $game->id)

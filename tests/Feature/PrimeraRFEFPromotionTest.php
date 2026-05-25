@@ -120,23 +120,24 @@ class PrimeraRFEFPromotionTest extends TestCase
         return $teams;
     }
 
-    private function createCompletedSemifinals(array $groupATeams, array $groupBTeams): void
+    private function createCompletedSemifinals(array $groupATeams, array $groupBTeams, array $bracketAWinners = ['high', 'high'], array $bracketBWinners = ['high', 'high']): void
     {
         $bracketASemiTies = [
-            [$groupBTeams[5], $groupATeams[2], PrimeraRFEFPlayoffGenerator::BRACKET_A],
-            [$groupBTeams[4], $groupATeams[3], PrimeraRFEFPlayoffGenerator::BRACKET_A],
+            [$groupBTeams[5], $groupATeams[2], PrimeraRFEFPlayoffGenerator::BRACKET_A, $bracketAWinners[0]],
+            [$groupBTeams[4], $groupATeams[3], PrimeraRFEFPlayoffGenerator::BRACKET_A, $bracketAWinners[1]],
         ];
         $bracketBSemiTies = [
-            [$groupATeams[5], $groupBTeams[2], PrimeraRFEFPlayoffGenerator::BRACKET_B],
-            [$groupATeams[4], $groupBTeams[3], PrimeraRFEFPlayoffGenerator::BRACKET_B],
+            [$groupATeams[5], $groupBTeams[2], PrimeraRFEFPlayoffGenerator::BRACKET_B, $bracketBWinners[0]],
+            [$groupATeams[4], $groupBTeams[3], PrimeraRFEFPlayoffGenerator::BRACKET_B, $bracketBWinners[1]],
         ];
 
-        foreach (array_merge($bracketASemiTies, $bracketBSemiTies) as [$home, $away, $bracket]) {
+        foreach (array_merge($bracketASemiTies, $bracketBSemiTies) as [$home, $away, $bracket, $winnerSide]) {
+            $winner = $winnerSide === 'low' ? $home : $away;
             CupTie::factory()
                 ->forGame($this->game)
                 ->inRound(1)
                 ->between($home, $away)
-                ->completed($away, 'aggregate')
+                ->completed($winner, 'aggregate')
                 ->create([
                     'competition_id' => 'ESP3PO',
                     'bracket_position' => $bracket,
@@ -281,6 +282,78 @@ class PrimeraRFEFPromotionTest extends TestCase
         $bracketBTeamIds = [$matchups[1][0], $matchups[1][1]];
         $this->assertContains($groupB[2]->id, $bracketBTeamIds);
         $this->assertContains($groupB[3]->id, $bracketBTeamIds);
+    }
+
+    public function test_round_2_bracket_final_lower_finisher_hosts_first_leg_when_higher_seeds_win(): void
+    {
+        $groupA = $this->createStandings('ESP3A', 20);
+        $groupB = $this->createStandings('ESP3B', 20);
+        // Default: higher seeds win all semis. Bracket A final = A2 vs A3 → A3 hosts leg 1.
+        $this->createCompletedSemifinals($groupA, $groupB);
+
+        $generator = new PrimeraRFEFPlayoffGenerator();
+        $matchups = $generator->generateMatchups($this->game, 2);
+
+        $this->assertEquals($groupA[3]->id, $matchups[0][0], 'A3 (lower finisher) should host leg 1');
+        $this->assertEquals($groupA[2]->id, $matchups[0][1]);
+        $this->assertEquals($groupB[3]->id, $matchups[1][0], 'B3 (lower finisher) should host leg 1');
+        $this->assertEquals($groupB[2]->id, $matchups[1][1]);
+    }
+
+    public function test_round_2_bracket_final_lower_finisher_hosts_first_leg_when_lower_seed_wins_one_semifinal(): void
+    {
+        $groupA = $this->createStandings('ESP3A', 20);
+        $groupB = $this->createStandings('ESP3B', 20);
+        // Bracket A: B5 beats A2 (low wins semi 1), A3 beats B4 (high wins semi 2)
+        // Final: B5 vs A3 → A3 (pos 3) is higher finisher, B5 (pos 5) hosts leg 1.
+        $this->createCompletedSemifinals($groupA, $groupB, ['low', 'high']);
+
+        $generator = new PrimeraRFEFPlayoffGenerator();
+        $matchups = $generator->generateMatchups($this->game, 2);
+
+        $bracketAFinal = $matchups[0];
+        $this->assertEquals($groupB[5]->id, $bracketAFinal[0], 'B5 (lower finisher) should host leg 1');
+        $this->assertEquals($groupA[3]->id, $bracketAFinal[1]);
+    }
+
+    public function test_round_2_bracket_final_lower_finisher_hosts_first_leg_when_both_lower_seeds_win(): void
+    {
+        $groupA = $this->createStandings('ESP3A', 20);
+        $groupB = $this->createStandings('ESP3B', 20);
+        // Bracket A: B5 beats A2, B4 beats A3. Final: B5 vs B4 → B4 (pos 4) higher, B5 (pos 5) hosts leg 1.
+        // Bracket B: A5 beats B2, A4 beats B3. Final: A5 vs A4 → A4 higher, A5 hosts leg 1.
+        $this->createCompletedSemifinals($groupA, $groupB, ['low', 'low'], ['low', 'low']);
+
+        $generator = new PrimeraRFEFPlayoffGenerator();
+        $matchups = $generator->generateMatchups($this->game, 2);
+
+        $this->assertEquals($groupB[5]->id, $matchups[0][0], 'B5 should host bracket A leg 1');
+        $this->assertEquals($groupB[4]->id, $matchups[0][1]);
+        $this->assertEquals($groupA[5]->id, $matchups[1][0], 'A5 should host bracket B leg 1');
+        $this->assertEquals($groupA[4]->id, $matchups[1][1]);
+    }
+
+    public function test_round_2_bracket_final_uses_simulated_standings_for_sister_group(): void
+    {
+        $groupA = $this->createStandings('ESP3A', 20);
+        $simulatedBTeams = $this->createSimulatedTeams(20);
+        $this->createSimulatedSeason('ESP3B', $simulatedBTeams);
+
+        // Build group B map by 1-indexed position to mirror createStandings' shape.
+        $groupB = [];
+        foreach ($simulatedBTeams as $index => $team) {
+            $groupB[$index + 1] = $team;
+        }
+
+        $this->createCompletedSemifinals($groupA, $groupB);
+
+        $generator = new PrimeraRFEFPlayoffGenerator();
+        $matchups = $generator->generateMatchups($this->game, 2);
+
+        // Bracket B final = B2 vs B3 (both from simulated standings). Position
+        // lookup must hit the SimulatedSeason fallback and pick B3 as host.
+        $this->assertEquals($groupB[3]->id, $matchups[1][0], 'B3 (sim pos 3) should host leg 1 against B2');
+        $this->assertEquals($groupB[2]->id, $matchups[1][1]);
     }
 
     // ──────────────────────────────────────────────────

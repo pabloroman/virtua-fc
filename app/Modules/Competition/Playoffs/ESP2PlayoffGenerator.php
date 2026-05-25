@@ -10,6 +10,7 @@ use App\Modules\Competition\Services\LeagueFixtureGenerator;
 use App\Models\Competition;
 use App\Models\CupTie;
 use App\Models\Game;
+use App\Models\GameStanding;
 
 /**
  * Playoff generator for a two-round promotion playoff (semifinal + final).
@@ -138,7 +139,17 @@ class ESP2PlayoffGenerator implements PlayoffGenerator
 
     /**
      * Final matchup: Winners of the two semifinals.
-     * The winner from the higher-seed tie hosts the second leg.
+     *
+     * Spanish rule: "La ida se juega en el campo del equipo que acabó la
+     * competición en un puesto inferior" — first leg hosted by the team
+     * that finished lower in the regular-season table. Equivalently, the
+     * higher-finishing winner hosts the deciding second leg.
+     *
+     * Home/away can't be derived from bracket position alone because either
+     * semifinal can be won by the lower seed (e.g. pos 6 beats pos 3),
+     * which would flip which winner is the lower finisher. Look up each
+     * winner's actual ESP2 position and assign home of leg 1 to the one
+     * with the larger position number.
      */
     private function generateFinalMatchup(Game $game): array
     {
@@ -154,7 +165,25 @@ class ESP2PlayoffGenerator implements PlayoffGenerator
             throw new \RuntimeException('Cannot generate final: semifinals not complete');
         }
 
-        // Winner of lower-seed tie hosts first leg, winner of higher-seed tie hosts second leg
+        $positions = GameStanding::where('game_id', $game->id)
+            ->where('competition_id', $this->competitionId)
+            ->whereIn('team_id', $semifinalWinners)
+            ->pluck('position', 'team_id');
+
+        $posFirst = $positions[$semifinalWinners[0]] ?? null;
+        $posSecond = $positions[$semifinalWinners[1]] ?? null;
+
+        if ($posFirst === null || $posSecond === null) {
+            throw new \RuntimeException(
+                "Missing ESP2 standings for semifinal winner(s) when building playoff final."
+            );
+        }
+
+        // Lower finisher (larger position number) hosts leg 1.
+        if ($posFirst > $posSecond) {
+            return [[$semifinalWinners[0], $semifinalWinners[1]]];
+        }
+
         return [[$semifinalWinners[1], $semifinalWinners[0]]];
     }
 
