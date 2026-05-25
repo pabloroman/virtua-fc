@@ -135,54 +135,51 @@ class PenaltyShootoutTest extends TestCase
         $this->assertTrue($sawSuddenDeath, 'Expected sudden death to occur in at least one of 100 shootouts');
     }
 
-    public function test_kicker_queue_caps_at_eleven_players(): void
+    public function test_sudden_death_recycles_kickers_only_after_all_have_kicked(): void
     {
-        // Pass a full squad (25 players) — only the best 11 should be eligible.
-        $home = $this->buildSquad('H', 25);
-        $away = $this->buildSquad('A', 25);
+        // 11 distinct players — once everyone has kicked, the same order
+        // restarts. We verify recycling kicks in at kick 12 (not earlier).
+        $home = $this->buildTeamPlayers('H');
+        $away = $this->buildTeamPlayers('A');
 
-        $sawSuddenDeath = false;
+        $sawRecycle = false;
 
-        for ($i = 0; $i < 200 && ! $sawSuddenDeath; $i++) {
+        for ($i = 0; $i < 200 && ! $sawRecycle; $i++) {
             $result = $this->simulator->simulatePenaltyShootout($home, $away);
 
-            $homePlayerIds = collect($result['kicks'])
+            $homeIdsByOrder = collect($result['kicks'])
                 ->where('side', 'home')
                 ->pluck('playerId')
-                ->unique();
+                ->values();
 
-            $awayPlayerIds = collect($result['kicks'])
-                ->where('side', 'away')
-                ->pluck('playerId')
-                ->unique();
-
-            $this->assertLessThanOrEqual(11, $homePlayerIds->count(), 'More than 11 distinct home kickers used');
-            $this->assertLessThanOrEqual(11, $awayPlayerIds->count(), 'More than 11 distinct away kickers used');
-
-            $maxRound = collect($result['kicks'])->max('round') ?? 0;
-            if ($maxRound > 5) {
-                $sawSuddenDeath = true;
+            if ($homeIdsByOrder->count() >= 12) {
+                $this->assertSame(
+                    $homeIdsByOrder->take(11)->unique()->count(),
+                    $homeIdsByOrder->take(11)->count(),
+                    'The first 11 home kickers must all be distinct',
+                );
+                $this->assertSame(
+                    $homeIdsByOrder->get(0),
+                    $homeIdsByOrder->get(11),
+                    'Kicker #12 must be the same as kicker #1 (recycle)',
+                );
+                $sawRecycle = true;
             }
         }
 
-        $this->assertTrue($sawSuddenDeath, 'Expected at least one sudden-death shootout to validate the cap');
+        $this->assertTrue($sawRecycle, 'Expected at least one shootout to reach the 12th kick to validate recycling');
     }
 
     /**
-     * Build a balanced squad of outfield players + a goalkeeper.
+     * Build a balanced squad of 11 players (10 outfield + 1 GK).
      */
     private function buildTeamPlayers(string $prefix): Collection
-    {
-        return $this->buildSquad($prefix, 11);
-    }
-
-    private function buildSquad(string $prefix, int $size): Collection
     {
         $players = collect();
 
         $players->push($this->makePlayer($prefix.'-gk', 'Goalkeeper', 70));
 
-        for ($i = 1; $i < $size; $i++) {
+        for ($i = 1; $i <= 10; $i++) {
             $players->push($this->makePlayer($prefix.'-out-'.$i, 'Forward', 70));
         }
 

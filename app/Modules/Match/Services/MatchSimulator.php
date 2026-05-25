@@ -3148,16 +3148,15 @@ class MatchSimulator
      * When an explicit order is given, those players go first, followed by
      * remaining players sorted by technical ability. Goalkeepers go last.
      *
-     * The queue is capped at 11 players — the maximum eligible to kick under
-     * real-football rules (the players on the field at the end of extra time).
-     * Once everyone in the queue has kicked, kickers cycle from the top.
+     * Callers are responsible for passing only the players on the pitch at
+     * the end of extra time — those are the only ones eligible under FIFA
+     * rules. The queue then wraps around once every kicker has taken one
+     * penalty (sudden death).
      *
      * @return list<GamePlayer>
      */
     private function buildKickerQueue(Collection $players, ?array $order = null): array
     {
-        $maxKickers = 11;
-
         if ($order) {
             $ordered = collect($order)
                 ->map(fn ($id) => $players->firstWhere('id', $id))
@@ -3169,7 +3168,7 @@ class MatchSimulator
                 ->sortByDesc(fn ($p) => $p->overall_score)
                 ->values();
 
-            return $ordered->merge($remaining)->take($maxKickers)->all();
+            return $ordered->merge($remaining)->all();
         }
 
         // Default: outfield sorted by technical ability desc, GK last
@@ -3183,7 +3182,6 @@ class MatchSimulator
 
                 return $b->overall_score - $a->overall_score;
             })
-            ->take($maxKickers)
             ->values()
             ->all();
     }

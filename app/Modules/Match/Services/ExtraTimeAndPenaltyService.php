@@ -5,7 +5,6 @@ namespace App\Modules\Match\Services;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
-use App\Models\GamePlayer;
 use App\Models\MatchEvent;
 use App\Modules\Competition\Services\PlayoffTiebreakerService;
 use App\Modules\Match\DTOs\ExtraTimeProcessResult;
@@ -21,6 +20,7 @@ class ExtraTimeAndPenaltyService
         private readonly MatchSimulator $matchSimulator,
         private readonly MatchEventRepository $matchEventRepository,
         private readonly PlayoffTiebreakerService $playoffTiebreakerService,
+        private readonly MatchLineupResolver $lineupResolver = new MatchLineupResolver,
         private readonly StoppageCalculator $stoppageCalculator = new StoppageCalculator,
     ) {}
 
@@ -139,37 +139,7 @@ class ExtraTimeAndPenaltyService
      */
     private function loadPlayersByTeam(GameMatch $match): array
     {
-        $homeIds = $match->home_lineup ?? [];
-        $awayIds = $match->away_lineup ?? [];
-
-        foreach ($match->substitutions ?? [] as $sub) {
-            $isHome = $sub['team_id'] === $match->home_team_id;
-
-            if ($isHome) {
-                $homeIds = array_values(array_filter($homeIds, fn ($id) => $id !== $sub['player_out_id']));
-                $homeIds[] = $sub['player_in_id'];
-            } else {
-                $awayIds = array_values(array_filter($awayIds, fn ($id) => $id !== $sub['player_out_id']));
-                $awayIds[] = $sub['player_in_id'];
-            }
-        }
-
-        // Exclude red-carded players (from regular time and extra time)
-        $redCardedIds = MatchEvent::where('game_match_id', $match->id)
-            ->where('event_type', MatchEvent::TYPE_RED_CARD)
-            ->pluck('game_player_id')
-            ->all();
-
-        $homeIds = array_values(array_filter($homeIds, fn ($id) => ! in_array($id, $redCardedIds)));
-        $awayIds = array_values(array_filter($awayIds, fn ($id) => ! in_array($id, $redCardedIds)));
-
-        $allIds = array_merge($homeIds, $awayIds);
-        $players = GamePlayer::with(['matchState'])->whereIn('id', $allIds)->get()->keyBy('id');
-
-        return [
-            $players->only($homeIds)->values(),
-            $players->only($awayIds)->values(),
-        ];
+        return $this->lineupResolver->playersOnPitchAtEnd($match);
     }
 
     /**

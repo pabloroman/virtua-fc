@@ -19,6 +19,7 @@ class CupTieResolver
         private readonly MatchSimulator $matchSimulator,
         private readonly MatchEventRepository $matchEventRepository,
         private readonly PlayoffTiebreakerService $playoffTiebreakerService,
+        private readonly MatchLineupResolver $lineupResolver = new MatchLineupResolver,
         private readonly StoppageCalculator $stoppageCalculator = new StoppageCalculator,
     ) {}
 
@@ -130,10 +131,10 @@ class CupTieResolver
             $homePens = $match->home_score_penalties;
             $awayPens = $match->away_score_penalties;
         } else {
-            $homePlayers = $homePlayers ?? $allPlayers->get($match->home_team_id, collect());
-            $awayPlayers = $awayPlayers ?? $allPlayers->get($match->away_team_id, collect());
+            // Only players on the pitch at the final whistle of ET can take penalties.
+            [$homePitch, $awayPitch] = $this->lineupResolver->playersOnPitchAtEnd($match);
 
-            [$homePens, $awayPens] = $this->matchSimulator->simulatePenalties($homePlayers, $awayPlayers);
+            [$homePens, $awayPens] = $this->matchSimulator->simulatePenalties($homePitch, $awayPitch);
 
             $match->update([
                 'home_score_penalties' => $homePens,
@@ -257,10 +258,10 @@ class CupTieResolver
             $homePens = $secondLeg->home_score_penalties;
             $awayPens = $secondLeg->away_score_penalties;
         } else {
-            $homePlayers = $homePlayers ?? $allPlayers->get($secondLeg->home_team_id, collect());
-            $awayPlayers = $awayPlayers ?? $allPlayers->get($secondLeg->away_team_id, collect());
+            // Only players on the pitch at the final whistle of ET can take penalties.
+            [$homePitch, $awayPitch] = $this->lineupResolver->playersOnPitchAtEnd($secondLeg);
 
-            [$homePens, $awayPens] = $this->matchSimulator->simulatePenalties($homePlayers, $awayPlayers);
+            [$homePens, $awayPens] = $this->matchSimulator->simulatePenalties($homePitch, $awayPitch);
 
             $secondLeg->update([
                 'home_score_penalties' => $homePens,
