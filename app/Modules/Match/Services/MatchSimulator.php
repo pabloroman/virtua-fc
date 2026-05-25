@@ -2999,7 +2999,9 @@ class MatchSimulator
      *     kicks are taken, the shootout ends early.
      *   - If still tied after 5 rounds, sudden death: both teams kick once per
      *     round and the round in which one team scores and the other misses
-     *     decides the winner. Kickers cycle through the queue.
+     *     decides the winner. A kicker cannot kick a second time until every
+     *     eligible player on the field has kicked once (queue capped at 11
+     *     in {@see self::buildKickerQueue()}, then it wraps around).
      *
      * @param  array<string>|null  $homeOrder  Ordered game_player IDs for home kickers
      * @param  array<string>|null  $awayOrder  Ordered game_player IDs for away kickers
@@ -3146,10 +3148,16 @@ class MatchSimulator
      * When an explicit order is given, those players go first, followed by
      * remaining players sorted by technical ability. Goalkeepers go last.
      *
+     * The queue is capped at 11 players — the maximum eligible to kick under
+     * real-football rules (the players on the field at the end of extra time).
+     * Once everyone in the queue has kicked, kickers cycle from the top.
+     *
      * @return list<GamePlayer>
      */
     private function buildKickerQueue(Collection $players, ?array $order = null): array
     {
+        $maxKickers = 11;
+
         if ($order) {
             $ordered = collect($order)
                 ->map(fn ($id) => $players->firstWhere('id', $id))
@@ -3161,7 +3169,7 @@ class MatchSimulator
                 ->sortByDesc(fn ($p) => $p->overall_score)
                 ->values();
 
-            return $ordered->merge($remaining)->all();
+            return $ordered->merge($remaining)->take($maxKickers)->all();
         }
 
         // Default: outfield sorted by technical ability desc, GK last
@@ -3175,6 +3183,7 @@ class MatchSimulator
 
                 return $b->overall_score - $a->overall_score;
             })
+            ->take($maxKickers)
             ->values()
             ->all();
     }

@@ -135,18 +135,56 @@ class PenaltyShootoutTest extends TestCase
         $this->assertTrue($sawSuddenDeath, 'Expected sudden death to occur in at least one of 100 shootouts');
     }
 
+    public function test_kicker_queue_caps_at_eleven_players(): void
+    {
+        // Pass a full squad (25 players) — only the best 11 should be eligible.
+        $home = $this->buildSquad('H', 25);
+        $away = $this->buildSquad('A', 25);
+
+        $sawSuddenDeath = false;
+
+        for ($i = 0; $i < 200 && ! $sawSuddenDeath; $i++) {
+            $result = $this->simulator->simulatePenaltyShootout($home, $away);
+
+            $homePlayerIds = collect($result['kicks'])
+                ->where('side', 'home')
+                ->pluck('playerId')
+                ->unique();
+
+            $awayPlayerIds = collect($result['kicks'])
+                ->where('side', 'away')
+                ->pluck('playerId')
+                ->unique();
+
+            $this->assertLessThanOrEqual(11, $homePlayerIds->count(), 'More than 11 distinct home kickers used');
+            $this->assertLessThanOrEqual(11, $awayPlayerIds->count(), 'More than 11 distinct away kickers used');
+
+            $maxRound = collect($result['kicks'])->max('round') ?? 0;
+            if ($maxRound > 5) {
+                $sawSuddenDeath = true;
+            }
+        }
+
+        $this->assertTrue($sawSuddenDeath, 'Expected at least one sudden-death shootout to validate the cap');
+    }
+
     /**
      * Build a balanced squad of outfield players + a goalkeeper.
      */
     private function buildTeamPlayers(string $prefix): Collection
     {
+        return $this->buildSquad($prefix, 11);
+    }
+
+    private function buildSquad(string $prefix, int $size): Collection
+    {
         $players = collect();
 
-        for ($i = 1; $i <= 10; $i++) {
+        $players->push($this->makePlayer($prefix.'-gk', 'Goalkeeper', 70));
+
+        for ($i = 1; $i < $size; $i++) {
             $players->push($this->makePlayer($prefix.'-out-'.$i, 'Forward', 70));
         }
-
-        $players->push($this->makePlayer($prefix.'-gk', 'Goalkeeper', 70));
 
         return $players;
     }
