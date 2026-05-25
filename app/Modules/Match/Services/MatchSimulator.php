@@ -2991,10 +2991,15 @@ class MatchSimulator
     }
 
     /**
-     * Simulate a detailed penalty shootout with kick-by-kick results (max 5 rounds).
+     * Simulate a detailed penalty shootout with kick-by-kick results.
      *
-     * Each kick is a kicker-vs-goalkeeper duel. If still tied after 5 rounds,
-     * round 5 is rigged so one team scores and the other misses.
+     * Mirrors real-football rules:
+     *   - A coin flip decides which side kicks first.
+     *   - 5 regular rounds. If a result is mathematically decided before all
+     *     kicks are taken, the shootout ends early.
+     *   - If still tied after 5 rounds, sudden death: both teams kick once per
+     *     round and the round in which one team scores and the other misses
+     *     decides the winner. Kickers cycle through the queue.
      *
      * @param  array<string>|null  $homeOrder  Ordered game_player IDs for home kickers
      * @param  array<string>|null  $awayOrder  Ordered game_player IDs for away kickers
@@ -3021,106 +3026,99 @@ class MatchSimulator
         }
 
         // Extract goalkeepers — home kickers face the away GK and vice versa
-        $homeGk = $homePlayers->firstWhere('position', 'Goalkeeper');
-        $awayGk = $awayPlayers->firstWhere('position', 'Goalkeeper');
+        $opponentGk = [
+            'home' => $awayPlayers->firstWhere('position', 'Goalkeeper'),
+            'away' => $homePlayers->firstWhere('position', 'Goalkeeper'),
+        ];
+        $kickerQueues = ['home' => $homeKickers, 'away' => $awayKickers];
 
-        $homeScore = 0;
-        $awayScore = 0;
+        // Coin flip decides who kicks first — mirrors the real-football coin toss
+        $firstSide = random_int(0, 1) === 0 ? 'home' : 'away';
+        $secondSide = $firstSide === 'home' ? 'away' : 'home';
+
+        $scores = ['home' => 0, 'away' => 0];
+        $taken = ['home' => 0, 'away' => 0];
         $kicks = [];
-        $round = 1;
-        $maxRounds = 5;
-        $homeIdx = 0;
-        $awayIdx = 0;
 
-        // 5 penalties each
-        for ($i = 0; $i < $maxRounds; $i++) {
-            $homeKicker = $homeKickers[$homeIdx % count($homeKickers)];
-            $homeScored = $this->penaltyScored($homeKicker, $awayGk);
-            if ($homeScored) {
-                $homeScore++;
+        $regularRounds = 5;
+        // Safety cap for sudden death. P(round doesn't end) ≈ 0.625 per round with
+        // 75% conversion, so reaching 50 rounds has probability ~1e-10.
+        $hardCap = 50;
+
+        for ($round = 1; $round <= $hardCap; $round++) {
+            $decided = false;
+
+            foreach ([$firstSide, $secondSide] as $side) {
+                $queue = $kickerQueues[$side];
+                $kicker = $queue[$taken[$side] % count($queue)];
+                $scored = $this->penaltyScored($kicker, $opponentGk[$side]);
+
+                if ($scored) {
+                    $scores[$side]++;
+                }
+                $taken[$side]++;
+
+                $kicks[] = [
+                    'round' => $round,
+                    'side' => $side,
+                    'playerId' => $kicker->id,
+                    'playerName' => $kicker->name ?? '',
+                    'scored' => $scored,
+                ];
+
+                // Mathematical early termination only applies in regular rounds
+                if ($round <= $regularRounds && $this->hasPenaltyShootoutWinner(
+                    $scores['home'],
+                    $scores['away'],
+                    $taken['home'],
+                    $taken['away'],
+                    $regularRounds,
+                )) {
+                    $decided = true;
+                    break;
+                }
             }
-            $kicks[] = [
-                'round' => $round,
-                'side' => 'home',
-                'playerId' => $homeKicker->id,
-                'playerName' => $homeKicker->name ?? '',
-                'scored' => $homeScored,
-            ];
-            $homeIdx++;
 
-            if ($this->hasPenaltyShootoutWinner($homeScore, $awayScore, $i + 1, $i, $maxRounds)) {
+            if ($decided) {
                 break;
             }
 
-            $awayKicker = $awayKickers[$awayIdx % count($awayKickers)];
-            $awayScored = $this->penaltyScored($awayKicker, $homeGk);
-            if ($awayScored) {
-                $awayScore++;
-            }
-            $kicks[] = [
-                'round' => $round,
-                'side' => 'away',
-                'playerId' => $awayKicker->id,
-                'playerName' => $awayKicker->name ?? '',
-                'scored' => $awayScored,
-            ];
-            $awayIdx++;
-
-            if ($this->hasPenaltyShootoutWinner($homeScore, $awayScore, $i + 1, $i + 1, $maxRounds)) {
+            // After both teams have completed the round: regular round 5 onwards,
+            // any non-tied score ends the shootout (sudden death from round 6+)
+            if ($round >= $regularRounds && $scores['home'] !== $scores['away']) {
                 break;
             }
-
-            $round++;
         }
 
-        // If still tied after 5 rounds, rig round 5 so one team wins
-        if ($homeScore === $awayScore) {
-            $homeWins = (bool) random_int(0, 1);
-            $winnerSide = $homeWins ? 'home' : 'away';
-            $loserSide = $homeWins ? 'away' : 'home';
+        // Astronomically rare safety net: hard cap hit while still tied. Coin-flip
+        // the last kick in the most recent round so we never return a tied result.
+        if ($scores['home'] === $scores['away'] && ! empty($kicks)) {
+            $winnerSide = random_int(0, 1) === 0 ? 'home' : 'away';
+            $loserSide = $winnerSide === 'home' ? 'away' : 'home';
 
-            // Find round-5 kicks
-            $r5WinnerIdx = null;
-            $r5LoserIdx = null;
-            foreach ($kicks as $idx => $kick) {
-                if ($kick['round'] === 5 && $kick['side'] === $winnerSide) {
-                    $r5WinnerIdx = $idx;
-                }
-                if ($kick['round'] === 5 && $kick['side'] === $loserSide) {
-                    $r5LoserIdx = $idx;
+            for ($i = count($kicks) - 1; $i >= 0; $i--) {
+                if ($kicks[$i]['side'] === $loserSide && $kicks[$i]['scored']) {
+                    $kicks[$i]['scored'] = false;
+                    $scores[$loserSide]--;
+                    break;
                 }
             }
 
-            // Set winner's R5 to scored, loser's R5 to missed
-            if ($r5WinnerIdx !== null) {
-                $kicks[$r5WinnerIdx]['scored'] = true;
-            }
-            if ($r5LoserIdx !== null) {
-                $kicks[$r5LoserIdx]['scored'] = false;
-            }
-
-            // Recalculate scores from the kicks array
-            $homeScore = collect($kicks)->where('side', 'home')->where('scored', true)->count();
-            $awayScore = collect($kicks)->where('side', 'away')->where('scored', true)->count();
-
-            // Edge case: still tied if earlier rounds compensated — flip one loser scored kick
-            if ($homeScore === $awayScore) {
-                foreach ($kicks as $idx => $kick) {
-                    if ($kick['side'] === $loserSide && $kick['scored'] && $kick['round'] < 5) {
-                        $kicks[$idx]['scored'] = false;
-
+            // Still tied? Flip the most recent winner-side miss to scored.
+            if ($scores['home'] === $scores['away']) {
+                for ($i = count($kicks) - 1; $i >= 0; $i--) {
+                    if ($kicks[$i]['side'] === $winnerSide && ! $kicks[$i]['scored']) {
+                        $kicks[$i]['scored'] = true;
+                        $scores[$winnerSide]++;
                         break;
                     }
                 }
-
-                $homeScore = collect($kicks)->where('side', 'home')->where('scored', true)->count();
-                $awayScore = collect($kicks)->where('side', 'away')->where('scored', true)->count();
             }
         }
 
         return [
-            'homeScore' => $homeScore,
-            'awayScore' => $awayScore,
+            'homeScore' => $scores['home'],
+            'awayScore' => $scores['away'],
             'kicks' => $kicks,
         ];
     }
