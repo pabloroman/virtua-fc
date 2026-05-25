@@ -39,33 +39,40 @@ final class DevelopmentCurve
      * the headline trajectory (growth → plateau → decline) is preserved
      * after the flatten to a single overall_score column.
      *
-     * - 16-19: Growth phase (young players improve if they play)
-     * - 20-21: Late development (smaller gains)
-     * - 22-24: Plateau (no growth, no decline — peak maintenance)
-     * - 25-26: Mild decline begins
-     * - 27+: Decline accelerates with age
+     * - 16-18: Strongest growth (young players improve fastest if they play)
+     * - 19-22: Steady growth (developing into prime form)
+     * - 23-25: Late development (smaller gains, still climbing)
+     * - 26-27: Plateau (no growth, no decline — peak maintenance)
+     * - 28-29: Mild decline begins
+     * - 30+: Decline accelerates with age
      */
     public const AGE_CURVES = [
         16 => 3,
         17 => 3,
-        18 => 2,
+        18 => 3,
         19 => 2,
-        20 => 1,
-        21 => 1,
-        22 => 1,
-        23 => 0,
-        24 => 0,
-        25 => -1,
-        26 => -1,
-        27 => -1,
-        28 => -2,
+        20 => 2,
+        21 => 2,
+        22 => 2,
+        23 => 1,
+        24 => 1,
+        25 => 1,
+        26 => 0,
+        27 => 0,
+        28 => -1,
         29 => -2,
-        30 => -3,
+        30 => -2,
         31 => -3,
-        32 => -4,
+        32 => -3,
         33 => -4,
         34 => -5,
     ];
+
+    /**
+     * Last age where a player can still receive growth from the curve and the
+     * quality-gap bonus. Plateau begins immediately after this age.
+     */
+    public const GROWTH_WINDOW_END_AGE = 25;
 
     /**
      * Get the development change for a given age.
@@ -120,5 +127,65 @@ final class DevelopmentCurve
         }
 
         return 0;
+    }
+
+    /**
+     * Quality-gap bonus for young players still climbing toward their potential.
+     *
+     * Tiered by gap size so prospects with more headroom develop faster,
+     * partially counteracting the curve's diminishing-returns shape.
+     * Only applies during the growth window (age <= GROWTH_WINDOW_END_AGE).
+     */
+    public static function gapBonus(int $age, int $currentAbility, int $potential): int
+    {
+        if ($age > self::GROWTH_WINDOW_END_AGE) {
+            return 0;
+        }
+
+        $gap = $potential - $currentAbility;
+
+        if ($gap >= 25) {
+            return 2;
+        }
+
+        if ($gap >= 15) {
+            return 1;
+        }
+
+        return 0;
+    }
+
+    /**
+     * Upper bound on the lifetime growth a player can earn from this age
+     * onward, assuming full playtime and a sustained max-tier gap bonus.
+     *
+     * Used to clamp generated potential so the displayed ceiling is actually
+     * reachable. Without this clamp the curve can deliver at most ~40 points
+     * of growth to a 16yo, but generatePotential could otherwise emit ceilings
+     * 50+ points above current ability.
+     */
+    public static function maxLifetimeGrowth(int $age): int
+    {
+        if ($age > self::GROWTH_WINDOW_END_AGE) {
+            return 0;
+        }
+
+        $effectiveAge = max(16, $age);
+
+        return self::baseGrowthFromAge($effectiveAge)
+            + (self::GROWTH_WINDOW_END_AGE - $effectiveAge + 1) * 2;
+    }
+
+    /**
+     * Sum of positive AGE_CURVES entries from $age through GROWTH_WINDOW_END_AGE.
+     */
+    private static function baseGrowthFromAge(int $age): int
+    {
+        $sum = 0;
+        for ($a = max(16, $age); $a <= self::GROWTH_WINDOW_END_AGE; $a++) {
+            $sum += max(0, self::AGE_CURVES[$a] ?? 0);
+        }
+
+        return $sum;
     }
 }

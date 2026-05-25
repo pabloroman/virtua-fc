@@ -344,49 +344,6 @@ class PlayerGeneratorService
     private const ABILITY_STD_DEV = 6;
 
     /**
-     * Average potential upside (points above current ability) per reputation tier.
-     *
-     * Aligned with YouthAcademyService::POTENTIAL_UPSIDE_MEAN — the two pools
-     * should produce comparable distributions. Earlier values were too
-     * conservative for the AI side, leaving aggregate synthetic p90_potential
-     * ~8 points below originals and starving the league of replacement stars.
-     */
-    private const POTENTIAL_UPSIDE_MEAN = [
-        0 => 12,
-        1 => 15,
-        2 => 15,
-        3 => 14,
-        4 => 16,
-    ];
-
-    private const POTENTIAL_UPSIDE_STD_DEV = 5;
-
-    /**
-     * Absolute minimum potential guaranteed by reputation tier.
-     */
-    private const POTENTIAL_FLOOR = [
-        0 => 42,
-        1 => 45,
-        2 => 52,
-        3 => 58,
-        4 => 62,
-    ];
-
-    /**
-     * Maximum potential allowed for AI-generated replenishment players.
-     * Elite clubs can produce future world-class talent; lower tiers cannot.
-     * Without per-tier caps, every replacement player league-wide would clamp
-     * at 88 and erode the league ceiling over many seasons.
-     */
-    private const POTENTIAL_MAX = [
-        0 => 86,
-        1 => 88,
-        2 => 90,
-        3 => 93,
-        4 => 95,
-    ];
-
-    /**
      * Build a GeneratedPlayerData for an AI academy graduate (young, reputation-based ability).
      *
      * Simulates a player being promoted from an AI team's academy to the first team.
@@ -402,10 +359,9 @@ class PlayerGeneratorService
         $reputationIndex = ClubProfile::getReputationTierIndex($reputationLevel);
         $abilityMean = self::REPUTATION_BASE_QUALITY[$reputationIndex];
 
-        // Spawn academy graduates inside the dev-curve growth window (17-20)
-        // rather than past it (20-23), so the existing DevelopmentCurve has
-        // enough runway to deliver players to their potential. A 17-year-old
-        // gets ~6 development years before plateau; a 23-year-old gets zero.
+        // Spawn academy graduates inside the early growth window (17-20) so
+        // the DevelopmentCurve has the full growth phase ahead of them to
+        // deliver players to their potential before plateau at age 26.
         $ageRoll = mt_rand(1, 100);
         $age = match (true) {
             $ageRoll <= 20 => 17,
@@ -425,16 +381,14 @@ class PlayerGeneratorService
         };
         $overallScore = $this->sampler->sampleAbility($abilityMean, self::ABILITY_STD_DEV, 30, $ageCap);
 
-        $potentialData = $this->sampler->generatePotentialFromAbility(
-            $overallScore,
-            self::POTENTIAL_UPSIDE_MEAN[$reputationIndex],
-            self::POTENTIAL_UPSIDE_STD_DEV,
-            self::POTENTIAL_FLOOR[$reputationIndex],
-            self::POTENTIAL_MAX[$reputationIndex],
-        );
+        // Single potential pipeline: value the rolled prospect, then hand to
+        // PlayerDevelopmentService so academy graduates follow the same logic
+        // (incl. reachable cap) as every other player generated mid-game.
+        $marketValue = $this->valuationService->overallScoreToMarketValue($overallScore, $age, null, $position);
+        $potentialData = $this->developmentService->generatePotential($age, $overallScore, $marketValue);
         $potential = $potentialData['potential'];
-        $potentialLow = $potentialData['potentialLow'];
-        $potentialHigh = $potentialData['potentialHigh'];
+        $potentialLow = $potentialData['low'];
+        $potentialHigh = $potentialData['high'];
 
         $dateOfBirth = $game->current_date->copy()->subYears($age)->subDays(mt_rand(0, 364));
 

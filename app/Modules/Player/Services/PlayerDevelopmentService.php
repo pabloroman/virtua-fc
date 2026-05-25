@@ -73,28 +73,14 @@ class PlayerDevelopmentService
     }
 
     /**
-     * Flat bonus for young players far from their potential.
+     * Tiered bonus for young players still climbing toward potential.
      *
-     * Returns +1 for young players with a significant gap to potential,
-     * representing accelerated development from coaching and opportunity.
-     *
-     * @return int Bonus points (0 or 1)
+     * Delegates to DevelopmentCurve::gapBonus so the rule lives in one place
+     * (also called by PlayerDevelopmentProcessor).
      */
     private function calculateQualityGapBonus(int $currentAbility, int $potential, int $age): int
     {
-        // Only for young developing players (under 23)
-        if ($age >= 23) {
-            return 0;
-        }
-
-        $gap = $potential - $currentAbility;
-
-        // +1 bonus for high-potential youngsters with significant room to grow
-        if ($gap >= 15) {
-            return 1;
-        }
-
-        return 0;
+        return DevelopmentCurve::gapBonus($age, $currentAbility, $potential);
     }
 
     /**
@@ -153,12 +139,15 @@ class PlayerDevelopmentService
             $uncertainty = (int) round($uncertainty * $taperFactor);
         }
 
-        // True potential (hidden from user)
-        $truePotential = min(99, $currentAbility + $potentialRange);
+        // True potential (hidden from user). Clamp to what the development
+        // curve can actually deliver from this age — otherwise displayed
+        // potentials in the 90s become structurally unreachable.
+        $reachableCeiling = min(99, $currentAbility + DevelopmentCurve::maxLifetimeGrowth($age));
+        $truePotential = min(99, $reachableCeiling, $currentAbility + $potentialRange);
 
         // Scouted range (visible to user) — adds uncertainty around true value
         $low = max($currentAbility, $truePotential - $uncertainty);
-        $high = min(99, $truePotential + $uncertainty);
+        $high = min(99, $reachableCeiling, $truePotential + $uncertainty);
 
         return [
             'potential' => $truePotential,

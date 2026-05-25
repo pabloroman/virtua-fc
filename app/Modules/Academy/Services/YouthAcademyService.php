@@ -10,6 +10,8 @@ use App\Models\GamePlayer;
 use App\Modules\Player\PlayerAge;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use App\Modules\Player\Services\PlayerDevelopmentService;
+use App\Modules\Player\Services\PlayerValuationService;
 use App\Modules\Squad\Services\PlayerAttributeSampler;
 use App\Modules\Squad\Services\PlayerGeneratorService;
 use App\Modules\Squad\Services\SquadNumberService;
@@ -57,47 +59,6 @@ class YouthAcademyService
      */
     private const ABILITY_STD_DEV = 6;
 
-    /**
-     * Average potential upside (points above current ability) per academy tier.
-     */
-    private const POTENTIAL_UPSIDE_MEAN = [
-        0 => 12,
-        1 => 15,
-        2 => 15,
-        3 => 14,
-        4 => 16,
-    ];
-
-    /**
-     * Standard deviation for potential upside sampling.
-     */
-    private const POTENTIAL_UPSIDE_STD_DEV = 5;
-
-    /**
-     * Absolute minimum potential guaranteed by academy tier, regardless of team level.
-     */
-    private const POTENTIAL_FLOOR = [
-        0 => 40,
-        1 => 45,
-        2 => 50,
-        3 => 55,
-        4 => 60,
-    ];
-
-    /**
-     * Maximum potential allowed for academy prospects per tier.
-     * Without per-tier caps, world-class academies can never produce
-     * a future elite player above 88 — a ceiling that compounds league-wide
-     * as original-seed elites retire.
-     */
-    private const POTENTIAL_MAX = [
-        0 => 86,
-        1 => 88,
-        2 => 90,
-        3 => 93,
-        4 => 95,
-    ];
-
     private const ESTIMATED_MATCHDAYS = 38;
 
     /**
@@ -122,6 +83,8 @@ class YouthAcademyService
         private readonly PlayerGeneratorService $playerGenerator,
         private readonly SquadNumberService $squadNumberService,
         private readonly PlayerAttributeSampler $sampler,
+        private readonly PlayerDevelopmentService $developmentService,
+        private readonly PlayerValuationService $valuationService,
     ) {}
 
     /**
@@ -442,13 +405,11 @@ class YouthAcademyService
         };
         $overallScore = $this->sampler->sampleAbility($abilityMean, self::ABILITY_STD_DEV, 50, $ageCap);
 
-        $potentialData = $this->sampler->generatePotentialFromAbility(
-            $overallScore,
-            self::POTENTIAL_UPSIDE_MEAN[$academyTier],
-            self::POTENTIAL_UPSIDE_STD_DEV,
-            self::POTENTIAL_FLOOR[$academyTier],
-            self::POTENTIAL_MAX[$academyTier],
-        );
+        // Single potential pipeline: value the rolled prospect, then hand to
+        // PlayerDevelopmentService so academy prospects follow the same logic
+        // (incl. reachable cap) as every other player generated mid-game.
+        $marketValue = $this->valuationService->overallScoreToMarketValue($overallScore, $age, null, $position);
+        $potentialData = $this->developmentService->generatePotential($age, $overallScore, $marketValue);
 
         $dateOfBirth = $game->current_date->copy()->subYears($age)->subDays(rand(0, 364));
 
@@ -471,8 +432,8 @@ class YouthAcademyService
             'dateOfBirth' => $dateOfBirth,
             'overallScore' => $overallScore,
             'potential' => $potentialData['potential'],
-            'potentialLow' => $potentialData['potentialLow'],
-            'potentialHigh' => $potentialData['potentialHigh'],
+            'potentialLow' => $potentialData['low'],
+            'potentialHigh' => $potentialData['high'],
             'name' => $identity['name'],
             'nationality' => $identity['nationality'],
         ];

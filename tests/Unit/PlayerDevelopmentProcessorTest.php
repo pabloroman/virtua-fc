@@ -7,6 +7,7 @@ use App\Models\GamePlayer;
 use App\Models\GamePlayerMatchState;
 use App\Models\Team;
 use App\Modules\Player\Services\PlayerTierService;
+use App\Modules\Player\Services\PlayerValuationService;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Processors\PlayerDevelopmentProcessor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -32,28 +33,28 @@ class PlayerDevelopmentProcessorTest extends TestCase
 
     public function test_young_player_with_appearances_grows_and_gets_gap_bonus(): void
     {
-        // 18yo, 20 apps, big gap to potential → +1 gap bonus on top of curve growth.
+        // 18yo, 20 apps, big gap to potential → tiered gap bonus on top of curve growth.
         $player = $this->makePlayer(age: 18, overall: 60, potential: 85, appearances: 20);
 
         $this->processor->process($this->game, $this->transitionData());
 
         $player->refresh();
-        // Curve growth at age 18: +2. calculateChange(2, 20) = round(2 * 20/25) = 2.
-        // Gap bonus (+1) applies: pot - overall = 85 - 60 = 25 >= 15, age < 23.
-        $this->assertSame(63, $player->overall_score);
+        // Curve growth at age 18: +3. calculateChange(3, 20) = round(3 * 20/25) = 2.
+        // Gap bonus (+2) applies: pot - overall = 85 - 60 = 25, tier-2 threshold, age <= 25.
+        $this->assertSame(64, $player->overall_score);
     }
 
     public function test_young_player_without_enough_appearances_grows_at_training_rate(): void
     {
         // 18yo, 5 apps (below MIN_APPEARANCES_FOR_GROWTH=10).
-        // Curve at 18: +2 → training-only halves to +1.
-        // Gap bonus (+1) still applies when delta > 0 and pot - overall >= 15, age < 23.
+        // Curve at 18: +3 → training-only halves to round(3 * 0.5) = 2.
+        // Gap bonus (+2) still applies when delta > 0 and gap >= 25, age <= 25.
         $player = $this->makePlayer(age: 18, overall: 60, potential: 85, appearances: 5);
 
         $this->processor->process($this->game, $this->transitionData());
 
         $player->refresh();
-        $this->assertSame(62, $player->overall_score);
+        $this->assertSame(64, $player->overall_score);
     }
 
     public function test_inactive_veteran_declines_at_full_rate(): void
@@ -117,11 +118,12 @@ class PlayerDevelopmentProcessorTest extends TestCase
         $this->processor->process($this->game, $this->transitionData());
 
         $player->refresh();
-        // After development: overall=63 (anchored at €2M base in
-        // PlayerValuationService::ABILITY_VALUE_ANCHORS).
-        // Age 18 multiplier 1.30, trend multiplier 1.10 (change=+3, young).
-        // 200M * 1.30 * 1.10 = 286M cents.
-        $expectedMV = 286_000_000;
+        // After development: overall=64 (change=+4 — see gap-bonus test above).
+        // Lock the expected MV to whatever PlayerValuationService produces
+        // for that ability/age/trend combo, so this test stays accurate when
+        // anchor points or multipliers are tuned elsewhere.
+        $expectedMV = app(PlayerValuationService::class)
+            ->overallScoreToMarketValue(64, 18, previousOverall: 60, position: $player->position);
 
         $this->assertSame($expectedMV, $player->market_value_cents);
         $this->assertSame(PlayerTierService::tierFromMarketValue($expectedMV), $player->tier);

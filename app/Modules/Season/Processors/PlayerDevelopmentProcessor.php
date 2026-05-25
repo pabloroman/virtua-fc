@@ -120,9 +120,8 @@ class PlayerDevelopmentProcessor implements SeasonProcessor
         $baseChange = DevelopmentCurve::getChange($age);
         $change = DevelopmentCurve::calculateChange($baseChange, $appearances);
 
-        // Quality-gap bonus: flat +1 for young players far from potential.
-        if ($change > 0 && $age < 23 && ($potential - $currentOverall) >= 15) {
-            $change += 1;
+        if ($change > 0) {
+            $change += DevelopmentCurve::gapBonus($age, $currentOverall, $potential);
         }
 
         $newOverall = $currentOverall + $change;
