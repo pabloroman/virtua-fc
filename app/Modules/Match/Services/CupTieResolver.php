@@ -9,7 +9,9 @@ use App\Models\CupTie;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\Team;
+use App\Modules\Match\Support\ScoreEventsAuditor;
 use App\Modules\Match\Support\StoppageCalculator;
+use App\Modules\Match\Support\StoppageDurations;
 use Illuminate\Support\Collection;
 use App\Modules\Match\Services\MatchSimulator;
 
@@ -83,7 +85,7 @@ class CupTieResolver
                 neutralVenue: $match->isNeutralVenue(),
                 homePlayerSlots: $match->playerSlotMap('home'),
                 awayPlayerSlots: $match->playerSlotMap('away'),
-                regulationStoppage: (int) ($match->second_half_stoppage ?? 0),
+                stoppage: StoppageDurations::fromMatch($match),
             );
 
             $homeScoreEt = $extraTimeResult->homeScore;
@@ -92,7 +94,8 @@ class CupTieResolver
             // Derive ET stoppage from events, persist before event-insert.
             $etStoppage = $this->stoppageCalculator->calculateExtraTime(
                 $extraTimeResult->events,
-                regulationStoppage: (int) ($match->second_half_stoppage ?? 0),
+                regulationStoppage: (int) ($match->first_half_stoppage ?? 0)
+                    + (int) ($match->second_half_stoppage ?? 0),
             );
 
             $match->update([
@@ -112,6 +115,8 @@ class CupTieResolver
                 $match->game_id,
                 $match->id,
             );
+
+            ScoreEventsAuditor::audit($match->refresh(), 'cup_tie_single_leg_extra_time');
         }
 
         $totalHome = $homeScore + $homeScoreEt;
@@ -197,7 +202,7 @@ class CupTieResolver
                 neutralVenue: $secondLeg->isNeutralVenue(),
                 homePlayerSlots: $secondLeg->playerSlotMap('home'),
                 awayPlayerSlots: $secondLeg->playerSlotMap('away'),
-                regulationStoppage: (int) ($secondLeg->second_half_stoppage ?? 0),
+                stoppage: StoppageDurations::fromMatch($secondLeg),
             );
 
             $homeScoreEt = $extraTimeResult->homeScore;
@@ -205,7 +210,8 @@ class CupTieResolver
 
             $etStoppage = $this->stoppageCalculator->calculateExtraTime(
                 $extraTimeResult->events,
-                regulationStoppage: (int) ($secondLeg->second_half_stoppage ?? 0),
+                regulationStoppage: (int) ($secondLeg->first_half_stoppage ?? 0)
+                    + (int) ($secondLeg->second_half_stoppage ?? 0),
             );
 
             $secondLeg->update([
@@ -225,6 +231,8 @@ class CupTieResolver
                 $secondLeg->game_id,
                 $secondLeg->id,
             );
+
+            ScoreEventsAuditor::audit($secondLeg->refresh(), 'cup_tie_two_leg_extra_time');
         }
 
         // Extra time goals affect aggregate

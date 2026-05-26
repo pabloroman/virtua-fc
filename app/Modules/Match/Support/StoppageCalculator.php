@@ -46,9 +46,13 @@ final class StoppageCalculator
      * stoppage to the second half for simplicity (etfhs = 0).
      *
      * @param  Collection|iterable  $events  ET events only.
-     * @param  int  $regulationStoppage  Persisted 2H stoppage value; ET 2H
-     *                                   officially ends at raw minute
-     *                                   (120 + regulationStoppage).
+     * @param  int  $regulationStoppage  Total persisted regulation stoppage
+     *                                   (first + second half). ET 2H ends at
+     *                                   raw minute (120 + regulationStoppage).
+     *                                   Both halves are required: omitting the
+     *                                   first-half value pulls the boundary
+     *                                   into ET 2H and inflates the overflow
+     *                                   estimate.
      * @return array{et_first_half:int, et_second_half:int}
      */
     public function calculateExtraTime($events, int $regulationStoppage = 0): array

@@ -11,7 +11,9 @@ use App\Modules\Match\DTOs\ExtraTimeProcessResult;
 use App\Modules\Match\DTOs\PenaltyProcessResult;
 use App\Modules\Match\DTOs\TacticalConfig;
 use App\Modules\Match\Enums\MatchPhase;
+use App\Modules\Match\Support\ScoreEventsAuditor;
 use App\Modules\Match\Support\StoppageCalculator;
+use App\Modules\Match\Support\StoppageDurations;
 use Illuminate\Support\Collection;
 
 class ExtraTimeAndPenaltyService
@@ -69,14 +71,15 @@ class ExtraTimeAndPenaltyService
             neutralVenue: $match->isNeutralVenue(),
             homePlayerSlots: $homePlayerSlots,
             awayPlayerSlots: $awayPlayerSlots,
-            regulationStoppage: (int) ($match->second_half_stoppage ?? 0),
+            stoppage: StoppageDurations::fromMatch($match),
         );
 
         // Derive ET stoppage from the event mix; persist before storing events
         // so MatchEventRepository decomposes raw minutes correctly.
         $etStoppage = $this->stoppageCalculator->calculateExtraTime(
             $extraTimeResult->events,
-            regulationStoppage: (int) ($match->second_half_stoppage ?? 0),
+            regulationStoppage: (int) ($match->first_half_stoppage ?? 0)
+                + (int) ($match->second_half_stoppage ?? 0),
         );
 
         $match->update([
@@ -90,6 +93,8 @@ class ExtraTimeAndPenaltyService
         ]);
 
         $storedEvents = $this->storeExtraTimeEvents($match, $game, $extraTimeResult->events);
+
+        ScoreEventsAuditor::audit($match->refresh(), 'process_extra_time');
 
         $needsPenalties = $this->checkNeedsPenalties($match, $extraTimeResult->homeScore, $extraTimeResult->awayScore);
 
