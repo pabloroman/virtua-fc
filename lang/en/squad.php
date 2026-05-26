@@ -235,6 +235,8 @@ return [
     'call_up_to_first_team' => 'Call up to first team',
     'send_back' => 'Send back',
     'send_back_to_reserve' => 'Send back to reserve',
+    'send_down_to_reserve' => 'Send down to reserve',
+    'send_down_to_reserve_confirm' => 'Send this U23 player down to the reserve team?',
     'called_up_indicator' => 'Called up',
     'homegrown_indicator' => 'Homegrown',
     'actions' => 'Actions',

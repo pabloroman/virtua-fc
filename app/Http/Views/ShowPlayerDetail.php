@@ -69,6 +69,17 @@ class ShowPlayerDetail
         $isOnReserve = $game->reserve_team_id !== null
             && $gamePlayer->team_id === $game->reserve_team_id;
 
+        // U23 first-team players (not currently called up from the reserve)
+        // can be sent down to the reserve squad for development. Players on
+        // an active call-up loan have their own "send back" path which closes
+        // the loan cleanly; both can't be offered at the same time.
+        $canSendDownToReserve = $game->isCareerMode()
+            && $game->reserve_team_id !== null
+            && $gamePlayer->team_id === $game->team_id
+            && !$isCalledUpFromReserve
+            && $gamePlayer->date_of_birth !== null
+            && $gamePlayer->date_of_birth >= $game->getU23BirthCutoff();
+
         // Release is permitted for any user-owned player physically present
         // on a user roster (first team or reserve, including filial call-ups
         // who sit on the first team via internal loan). The team_id check
@@ -95,6 +106,7 @@ class ShowPlayerDetail
             'severance' => $severance,
             'isOnReserve' => $isOnReserve,
             'isCalledUpFromReserve' => $isCalledUpFromReserve,
+            'canSendDownToReserve' => $canSendDownToReserve,
             'incomingPreContract' => $incomingPreContract,
         ]);
     }

@@ -235,6 +235,8 @@ return [
     'call_up_to_first_team' => 'Subir al primer equipo',
     'send_back' => 'Bajar',
     'send_back_to_reserve' => 'Bajar al filial',
+    'send_down_to_reserve' => 'Bajar al filial',
+    'send_down_to_reserve_confirm' => '¿Bajar este jugador sub-23 al filial?',
     'called_up_indicator' => 'En el primer equipo',
     'homegrown_indicator' => 'Canterano',
     'actions' => 'Acciones',

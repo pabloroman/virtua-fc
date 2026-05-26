@@ -157,6 +157,66 @@ class ReserveTeamService
     }
 
     /**
+     * Permanently send a U23 first-team player down to the reserve squad.
+     * Flips team_id, nulls the squad number, and records the move as
+     * TYPE_INTERNAL_DEMOTION. Bringing the player back later goes through
+     * the regular callUpToFirstTeam() flow (which creates a new Loan).
+     *
+     * Strictly U23: birth date must fall on/after the current season's
+     * U23 cutoff. Players currently on an active call-up loan from the
+     * reserve must use sendBackToReserve() instead, so the loan closes
+     * cleanly.
+     *
+     * @throws FirstTeamSquadMinimumException when the first team would
+     *         fall below its squad-composition minimum after the move
+     */
+    public function sendDownToReserve(GamePlayer $player, Game $game): void
+    {
+        $this->assertFilial($game);
+
+        if ($player->team_id !== $game->team_id) {
+            throw new \DomainException('Player is not currently registered to the first team.');
+        }
+
+        if ($player->date_of_birth === null || $player->date_of_birth < $game->getU23BirthCutoff()) {
+            throw new \DomainException('Only U23 players can be sent down to the reserve.');
+        }
+
+        // Called-up reserve players have an open Loan (parent = reserve);
+        // closing that loan is what sendBackToReserve() is for. Don't
+        // shadow it here — otherwise the loan would be orphaned.
+        $existingCallUp = Loan::where('game_player_id', $player->id)
+            ->where('status', Loan::STATUS_ACTIVE)
+            ->where('parent_team_id', $game->reserve_team_id)
+            ->where('loan_team_id', $game->team_id)
+            ->exists();
+        if ($existingCallUp) {
+            throw new \DomainException('Player is on a reserve call-up loan; use sendBackToReserve() to return them.');
+        }
+
+        $breach = $this->squadMinimumService->validateRemoval($game, $player, $game->team_id);
+        if ($breach !== null) {
+            throw new FirstTeamSquadMinimumException($breach);
+        }
+
+        // Null the number first so flipping team_id can't violate the
+        // (game_id, team_id, number) unique constraint when a reserve
+        // player already wears the same shirt.
+        $player->update(['number' => null, 'team_id' => $game->reserve_team_id]);
+
+        GameTransfer::record(
+            gameId: $game->id,
+            gamePlayerId: $player->id,
+            fromTeamId: $game->team_id,
+            toTeamId: $game->reserve_team_id,
+            transferFee: 0,
+            type: GameTransfer::TYPE_INTERNAL_DEMOTION,
+            season: $game->season,
+            window: TransferWindowType::currentValue($game->current_date),
+        );
+    }
+
+    /**
      * At season close, permanently promote any reserve player who has aged
      * past the reserve cutoff (over 23) to the first team. One-way move,
      * recorded as a GameTransfer of type INTERNAL_PROMOTION. Any active

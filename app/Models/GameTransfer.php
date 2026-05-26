@@ -31,6 +31,7 @@ class GameTransfer extends Model
     public const TYPE_FREE_AGENT = 'free_agent';
     public const TYPE_LOAN = 'loan';
     public const TYPE_INTERNAL_PROMOTION = 'internal_promotion';
+    public const TYPE_INTERNAL_DEMOTION = 'internal_demotion';
 
     /**
      * Record a completed transfer in the ledger.

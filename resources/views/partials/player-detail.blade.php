@@ -4,6 +4,7 @@
 
     $isCareerMode = $game->isCareerMode();
     $isCalledUpFromReserve = $isCalledUpFromReserve ?? false;
+    $canSendDownToReserve = $canSendDownToReserve ?? false;
     $incomingPreContract = $incomingPreContract ?? false;
 
     // Transfer listing belongs to the player's owning club. For a pre-contract
@@ -303,7 +304,7 @@
 @endif
 
 {{-- Actions --}}
-@if($showActions || $canRenew || $renewalNegotiation || $renewalCooldown || ($isOnReserve ?? false) || $isCalledUpFromReserve)
+@if($showActions || $canRenew || $renewalNegotiation || $renewalCooldown || ($isOnReserve ?? false) || $isCalledUpFromReserve || $canSendDownToReserve)
     <div class="px-5 py-4 border-t border-border-default flex flex-wrap items-center gap-2">
         @if(($isOnReserve ?? false) && $isCareerMode)
             <form method="POST" action="{{ route('game.reserve.call-up', [$game->id, $gamePlayer->id]) }}">
@@ -324,6 +325,17 @@
                         <path fill-rule="evenodd" d="M8 2a.75.75 0 0 1 .75.75v8.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-1.06 0l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.22 3.22V2.75A.75.75 0 0 1 8 2Z" clip-rule="evenodd" />
                     </svg>
                     {{ __('squad.send_back_to_reserve') }}
+                </x-action-button>
+            </form>
+        @endif
+        @if($canSendDownToReserve)
+            <form method="POST" action="{{ route('game.squad.send-down', [$game->id, $gamePlayer->id]) }}" onsubmit="return confirm('{{ __('squad.send_down_to_reserve_confirm') }}')">
+                @csrf
+                <x-action-button color="violet">
+                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8 2a.75.75 0 0 1 .75.75v8.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-1.06 0l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.22 3.22V2.75A.75.75 0 0 1 8 2Z" clip-rule="evenodd" />
+                    </svg>
+                    {{ __('squad.send_down_to_reserve') }}
                 </x-action-button>
             </form>
         @endif

@@ -139,6 +139,7 @@ use App\Http\Actions\ProcessTacticalActions;
 use App\Http\Actions\PromoteAcademyPlayer;
 use App\Http\Actions\CallUpReservePlayer;
 use App\Http\Actions\SendBackReservePlayer;
+use App\Http\Actions\SendDownToReserve;
 use App\Http\Views\ShowReserveTeam;
 use App\Http\Actions\SkipMatchToEnd;
 use App\Http\Actions\StartNewSeason;
@@ -188,6 +189,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/game/{gameId}/squad/reserve', ShowReserveTeam::class)->name('game.squad.reserve');
         Route::post('/game/{gameId}/reserve/{playerId}/call-up', CallUpReservePlayer::class)->name('game.reserve.call-up');
         Route::post('/game/{gameId}/reserve/{playerId}/send-back', SendBackReservePlayer::class)->name('game.reserve.send-back');
+        Route::post('/game/{gameId}/squad/{playerId}/send-down', SendDownToReserve::class)->name('game.squad.send-down');
         // Club hub — Finances, Stadium, Reputation (and future non-sporting tenants)
         Route::get('/game/{gameId}/club', fn (string $gameId) => redirect()->route('game.club.finances', $gameId))->name('game.club');
         Route::get('/game/{gameId}/club/finances', ShowFinances::class)->name('game.club.finances');

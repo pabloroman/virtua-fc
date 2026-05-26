@@ -101,6 +101,10 @@ return [
     'reserve_player_sent_back' => ':player has been sent back to the reserve team.',
     'reserve_player_call_up_blocked_full' => 'First-team squad is full. Release a player before calling up another.',
     'reserve_player_promoted' => ':player has been promoted to the first team.',
+    'player_sent_down_to_reserve' => ':player has been sent down to the reserve team.',
+    'send_down_not_allowed' => 'This player cannot be sent down to the reserve team.',
+    'send_down_squad_too_small' => 'Cannot send down — the first team must have at least :min players.',
+    'send_down_position_minimum' => 'Cannot send down — the first team needs at least :min :group.',
 
     // Player release messages
     'player_released' => ':player has been released. Severance paid: :severance.',
