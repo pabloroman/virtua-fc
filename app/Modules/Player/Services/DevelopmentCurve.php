@@ -101,13 +101,29 @@ final class DevelopmentCurve
      *
      * Decline (negative baseChange) happens regardless, but active players decline slower.
      *
+     * When $randomize is true, $seasonAppearances is ignored and the play
+     * factor is drawn uniformly from [TRAINING_ONLY_GROWTH_FACTOR, 1.0].
+     * This is used for players outside the user's team, where real
+     * appearance counts aren't reliably tracked (AI-only matchdays and
+     * synthetic foreign leagues never feed into season_appearances), so
+     * every non-user-team player would otherwise be stuck at the
+     * training-only floor. Decliners are treated as active (half rate).
+     *
      * @param int $baseChange The age-based change (from AGE_CURVES)
      * @param int $seasonAppearances Number of appearances this season
+     * @param bool $randomize Use a randomized play factor in lieu of $seasonAppearances
      * @return int The final change in ability points
      */
-    public static function calculateChange(int $baseChange, int $seasonAppearances): int
+    public static function calculateChange(int $baseChange, int $seasonAppearances, bool $randomize = false): int
     {
         if ($baseChange > 0) {
+            if ($randomize) {
+                $playFactor = self::TRAINING_ONLY_GROWTH_FACTOR
+                    + mt_rand() / mt_getrandmax() * (1.0 - self::TRAINING_ONLY_GROWTH_FACTOR);
+
+                return (int) round($baseChange * $playFactor);
+            }
+
             if ($seasonAppearances < self::MIN_APPEARANCES_FOR_GROWTH) {
                 return (int) round($baseChange * self::TRAINING_ONLY_GROWTH_FACTOR);
             }
@@ -118,8 +134,11 @@ final class DevelopmentCurve
         }
 
         if ($baseChange < 0) {
-            // Decline happens regardless, but active players decline at half rate
-            if ($seasonAppearances >= self::MIN_APPEARANCES_FOR_GROWTH) {
+            // Decline happens regardless, but active players decline at half rate.
+            // Randomized players are always treated as active so non-user-team
+            // veterans don't get crushed by full-rate decline just because their
+            // appearances aren't tracked.
+            if ($randomize || $seasonAppearances >= self::MIN_APPEARANCES_FOR_GROWTH) {
                 return (int) round($baseChange * 0.5);
             }
 

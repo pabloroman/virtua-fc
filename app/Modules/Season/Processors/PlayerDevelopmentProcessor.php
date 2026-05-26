@@ -55,6 +55,7 @@ class PlayerDevelopmentProcessor implements SeasonProcessor
             ->whereNotNull('gp.date_of_birth')
             ->select([
                 'gp.id',
+                'gp.team_id',
                 'gp.date_of_birth',
                 'gp.overall_score',
                 'gp.potential',
@@ -64,6 +65,8 @@ class PlayerDevelopmentProcessor implements SeasonProcessor
                 DB::raw('COALESCE(gpms.season_appearances, 0) AS season_appearances'),
             ])
             ->get();
+
+        $userTeamId = $game->team_id;
 
         if ($inputs->isEmpty()) {
             return $data;
@@ -82,8 +85,15 @@ class PlayerDevelopmentProcessor implements SeasonProcessor
             $previousOverall = (int) $row->overall_score;
             $potential = $row->potential !== null ? (int) $row->potential : 99;
             $appearances = (int) $row->season_appearances;
+            // Only the user's team accumulates accurate season_appearances. For
+            // every other team — sibling AI clubs whose matchdays the user
+            // doesn't share, foreign leagues run by the synthetic resolver,
+            // and the user's reserve in a lower division — the real count is
+            // 0 or near-zero noise. Substitute a randomized play factor so
+            // those players don't all get stuck at the training-only floor.
+            $randomize = $row->team_id !== $userTeamId;
 
-            $newOverall = $this->computeNewOverall($age, $appearances, $previousOverall, $potential);
+            $newOverall = $this->computeNewOverall($age, $appearances, $previousOverall, $potential, $randomize);
             $newMarketValue = $this->valuationService->overallScoreToMarketValue($newOverall, $age, $previousOverall, $row->position ?? null);
             $newTier = PlayerTierService::tierFromMarketValue($newMarketValue);
 
@@ -115,10 +125,10 @@ class PlayerDevelopmentProcessor implements SeasonProcessor
      * Apply development arithmetic without hydrating a GamePlayer model.
      * Mirrors PlayerDevelopmentService::calculateDevelopment().
      */
-    private function computeNewOverall(int $age, int $appearances, int $currentOverall, int $potential): int
+    private function computeNewOverall(int $age, int $appearances, int $currentOverall, int $potential, bool $randomize = false): int
     {
         $baseChange = DevelopmentCurve::getChange($age);
-        $change = DevelopmentCurve::calculateChange($baseChange, $appearances);
+        $change = DevelopmentCurve::calculateChange($baseChange, $appearances, $randomize);
 
         if ($change > 0) {
             $change += DevelopmentCurve::gapBonus($age, $currentOverall, $potential);

@@ -189,7 +189,12 @@ class PlayerDevelopmentProcessorTest extends TestCase
         ?int $marketValueCents = null,
         ?Game $game = null,
     ): GamePlayer {
-        $team = Team::factory()->create();
+        // Default to the game's own team so the deterministic real-appearances
+        // path is exercised. Non-user-team players hit the randomized play
+        // factor (see DevelopmentCurve::calculateChange), which is intentional
+        // but unsuitable for tests that lock specific output values.
+        $targetGame = $game ?? $this->game;
+        $team = Team::findOrFail($targetGame->team_id);
 
         $attributes = [
             'overall_score' => $overall,
@@ -202,7 +207,7 @@ class PlayerDevelopmentProcessorTest extends TestCase
         }
 
         return GamePlayer::factory()
-            ->forGame($game ?? $this->game)
+            ->forGame($targetGame)
             ->forTeam($team)
             ->age($age, self::SEASON_END)
             ->create($attributes);
@@ -210,7 +215,7 @@ class PlayerDevelopmentProcessorTest extends TestCase
 
     private function makePoolPlayer(int $age, int $overall, int $potential): GamePlayer
     {
-        $team = Team::factory()->create();
+        $team = Team::findOrFail($this->game->team_id);
 
         return GamePlayer::factory()
             ->forGame($this->game)
