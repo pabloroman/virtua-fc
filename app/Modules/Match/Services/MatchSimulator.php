@@ -20,6 +20,7 @@ use App\Support\PositionMapper;
 use App\Support\PositionSlotMapper;
 use App\Modules\Player\Services\InjuryService;
 use App\Modules\Match\Services\EnergyCalculator;
+use App\Modules\Match\Support\StoppageDurations;
 
 class MatchSimulator
 {
@@ -2829,15 +2830,19 @@ class MatchSimulator
         bool $neutralVenue = false,
         ?array $homePlayerSlots = null,
         ?array $awayPlayerSlots = null,
-        int $regulationStoppage = 0,
+        ?StoppageDurations $stoppage = null,
     ): MatchResult {
-        // ET begins right after regulation finishes. Caller passes the
-        // *persisted* regulation stoppage so events generated here don't
-        // collide with regulation-stoppage events that occupy those raw
-        // minutes. Actual ET stoppage is computed from event mix after
-        // simulation by StoppageCalculator::calculateExtraTime.
-        $regulationEnd = 90 + $regulationStoppage;
-        $extraTimeEnd = self::EXTRA_TIME_NOMINAL_END + $regulationStoppage + self::EXTRA_TIME_HEADROOM;
+        // ET begins right after regulation finishes, in raw absolute minutes.
+        // The caller passes the *persisted* regulation stoppage (both halves)
+        // so events generated here don't collide with regulation-stoppage
+        // events that occupy those raw minutes — without first-half stoppage,
+        // ET events would be placed at raw minutes that decompose back into
+        // second-half stoppage and surface as phantom "90+N'" goals in the
+        // event feed. ET stoppage minutes are still computed after simulation
+        // by StoppageCalculator::calculateExtraTime.
+        $stoppage ??= new StoppageDurations(0, 0);
+        $regulationEnd = $stoppage->regulationEnd();
+        $extraTimeEnd = $regulationEnd + 30 + self::EXTRA_TIME_HEADROOM;
         $fromMinute ??= $regulationEnd;
         if ($homePlayerSlots !== null) {
             $this->homePlayerSlotMap = $homePlayerSlots;

@@ -8,6 +8,7 @@ use App\Modules\Match\DTOs\ResimulationResult;
 use App\Modules\Match\DTOs\TacticalConfig;
 use App\Modules\Match\Enums\MatchPhase;
 use App\Modules\Match\Support\MinuteCoordinates;
+use App\Modules\Match\Support\ScoreEventsAuditor;
 use App\Modules\Match\Support\StoppageDurations;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -413,6 +414,8 @@ class MatchResimulationService
             'mvp_player_id' => $mvpPlayerId,
         ]);
 
+        ScoreEventsAuditor::audit($match->refresh(), 'resimulate_regulation');
+
         return new ResimulationResult(
             $newHomeScore, $newAwayScore, $oldHomeScore, $oldAwayScore,
             $remainderResult->homePossession, $remainderResult->awayPossession,
@@ -573,7 +576,7 @@ class MatchResimulationService
                 neutralVenue: $match->isNeutralVenue(),
                 homePlayerSlots: $homePlayerSlots,
                 awayPlayerSlots: $awayPlayerSlots,
-                regulationStoppage: $stoppage->secondHalf,
+                stoppage: $stoppage,
             );
 
             // 8. Calculate new ET score
@@ -626,6 +629,8 @@ class MatchResimulationService
                 'away_possession' => $remainderResult->awayPossession,
                 'mvp_player_id' => $mvpPlayerId,
             ]);
+
+            ScoreEventsAuditor::audit($match->refresh(), 'resimulate_extra_time');
 
             return new ResimulationResult(
                 $newHomeScore, $newAwayScore, $oldHomeScore, $oldAwayScore,

@@ -260,7 +260,7 @@ return [
     'goal_possession' => [
         ':team mueve el balón con paciencia hasta que :player encuentra el hueco. Posesión de manual',
         'Elaboración paciente de :team y :player elige el momento perfecto para golpear',
-        'Jugada trenzada de :del_team — :player pone el broche final',
+        'Jugada trenzada :del_team — :player pone el broche final',
     ],
     'goal_direct' => [
         '¡Balón largo y :player está ahí para definir por :team!',
