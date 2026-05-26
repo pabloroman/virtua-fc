@@ -532,6 +532,15 @@ return [
     'fast_mode_active_badge' => 'Fast mode · tap to exit',
     'fast_mode_no_last_match' => 'Simulate your next match to see the result here.',
     'fast_mode_menu_title' => 'Delegate to assistant coach',
+    'fast_mode_rotation_policy' => 'Squad rotation',
+    'fast_mode_rotation' => [
+        'conservative' => 'Conservative',
+        'conservative_desc' => 'Keeps your top XI on the pitch as long as possible. Only swaps in a sub when a starter is clearly exhausted.',
+        'balanced' => 'Balanced',
+        'balanced_desc' => 'Rotates tired starters out for fresher backups during congested fixture spells. Recommended for most squads.',
+        'aggressive' => 'Aggressive',
+        'aggressive_desc' => 'Heavily favours fresh legs. Backup players will frequently start over tired stars, spreading minutes across the squad.',
+    ],
     'last_result' => 'Last result',
 
     // Pre-season

@@ -3,6 +3,7 @@
 namespace App\Modules\Lineup\Services;
 
 use App\Modules\Lineup\Enums\Formation;
+use App\Modules\Lineup\RotationPolicy;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
@@ -207,7 +208,7 @@ class LineupService
      * position-group-based selection which could exclude natural-fit players
      * when a group's top-rated players didn't match the specific slots needed.
      */
-    public function selectBestXI(Collection $availablePlayers, ?Formation $formation = null, bool $applyFitnessRotation = false): Collection
+    public function selectBestXI(Collection $availablePlayers, ?Formation $formation = null, ?RotationPolicy $rotationPolicy = null): Collection
     {
         $formation = $formation ?? Formation::F_4_3_3;
 
@@ -215,13 +216,13 @@ class LineupService
             return $availablePlayers;
         }
 
-        // When fitness rotation is active, adjust overall_score before passing
+        // When a rotation policy is active, adjust overall_score before passing
         // to the recommender so it accounts for fatigue in its rating-based ranking.
         $pool = $availablePlayers;
-        if ($applyFitnessRotation) {
-            $pool = $availablePlayers->map(function ($player) {
+        if ($rotationPolicy !== null) {
+            $pool = $availablePlayers->map(function ($player) use ($rotationPolicy) {
                 $clone = clone $player;
-                $clone->overall_score = (int) round($this->effectiveScore($player));
+                $clone->overall_score = (int) round($this->effectiveScore($player, $rotationPolicy));
 
                 return $clone;
             });
@@ -240,33 +241,35 @@ class LineupService
 
     /**
      * Calculate effective score for AI rotation: penalizes low-fitness players.
-     * Players above the threshold are unaffected. Below it, score degrades linearly.
-     * With threshold 70 and floor 0.60: 85-rated player at fitness 30 → effective ~64.6,
-     * which is now beatable by a fresh same-position sub in the high 60s / low 70s.
+     * Players above the policy's threshold are unaffected. Below it, score
+     * degrades linearly down to (overall_score × floor) at fitness 0.
+     *
+     * Example: under Aggressive (threshold 90, floor 0.30) an 85-rated player
+     * at fitness 40 → 85 × (0.30 + 40/90 × 0.70) = 85 × 0.611 ≈ 52, which is
+     * easily beaten by a fresh same-position sub rated in the 60s.
      */
-    private function effectiveScore(GamePlayer $player): float
+    private function effectiveScore(GamePlayer $player, RotationPolicy $policy): float
     {
-        $threshold = (int) config('player.condition.ai_rotation_threshold', 80);
+        $threshold = $policy->threshold();
 
         if ($player->fitness >= $threshold) {
             return (float) $player->overall_score;
         }
 
-        // Linear penalty: 1.0 at threshold, 0.60 at fitness 0
-        $fitnessMultiplier = 0.60 + ($player->fitness / $threshold) * 0.40;
+        $floor = $policy->floor();
+        $fitnessMultiplier = $floor + ($player->fitness / $threshold) * (1.0 - $floor);
 
         return $player->overall_score * $fitnessMultiplier;
     }
 
     /**
-     * True when a player's fitness is below the rotation threshold and they
-     * should be swapped out in favour of a rested alternative when possible.
+     * True when a player's fitness is below the policy's rotation threshold —
+     * tired enough that a fresher same-position sub should be considered
+     * before pinning them as a preferred starter.
      */
-    private function isTired(GamePlayer $player): bool
+    private function isTired(GamePlayer $player, RotationPolicy $policy): bool
     {
-        $threshold = (int) config('player.condition.ai_rotation_threshold', 80);
-
-        return $player->fitness < $threshold;
+        return $player->fitness < $policy->threshold();
     }
 
     /**
@@ -605,6 +608,7 @@ class LineupService
         $playerPlayingStyle = $tactics?->default_playing_style ?? 'balanced';
         $playerPressing = $tactics?->default_pressing ?? 'standard';
         $playerDefLine = $tactics?->default_defensive_line ?? 'normal';
+        $playerRotationPolicy = $tactics?->default_rotation_policy ?? RotationPolicy::Balanced;
 
         foreach ($matches as $match) {
             $matchDate = $match->scheduled_date;
@@ -626,6 +630,7 @@ class LineupService
                 $playerPlayingStyle,
                 $playerPressing,
                 $playerDefLine,
+                $playerRotationPolicy,
             );
 
             $this->ensureTeamLineup(
@@ -643,6 +648,7 @@ class LineupService
                 $playerPlayingStyle,
                 $playerPressing,
                 $playerDefLine,
+                $playerRotationPolicy,
             );
 
             // Save once per match (covers lineup, formation, mentality for both sides)
@@ -674,7 +680,12 @@ class LineupService
         string $playerPlayingStyle = 'balanced',
         string $playerPressing = 'standard',
         string $playerDefLine = 'normal',
+        ?RotationPolicy $playerRotationPolicy = null,
     ): void {
+        // AI teams always rotate at a fixed Balanced cadence — the user's
+        // policy only governs their own team's automated XI selection.
+        $aiRotationPolicy = RotationPolicy::Balanced;
+        $effectivePlayerPolicy = $playerRotationPolicy ?? RotationPolicy::Balanced;
         $lineupField = $side . '_lineup';
         $teamIdField = $side . '_team_id';
         $teamId = $match->$teamIdField;
@@ -746,9 +757,9 @@ class LineupService
 
         if ($isPlayerTeam && !empty($playerPreferredLineup)) {
             // Select lineup with preferences using pre-loaded data. Applies
-            // fitness rotation so tired preferred starters get swapped for
-            // rested same-position subs during automated (e.g. fast-mode) runs,
-            // matching AI behaviour and preventing squad exhaustion.
+            // the user's rotation policy so tired preferred starters get
+            // swapped for fresher same-position subs during automated
+            // (e.g. fast-mode) runs.
             $availableIds = $availablePlayers->pluck('id')->toArray();
             $allTeamPlayers = $allPlayersGrouped !== null
                 ? $allPlayersGrouped->get($teamId, collect())
@@ -759,19 +770,21 @@ class LineupService
                 $playerFormation,
                 $playerPreferredLineup,
                 $availableIds,
-                applyFitnessRotation: true,
+                $effectivePlayerPolicy,
             );
             $lineup = $preferenceResult['lineup'];
             $preComputedSlotAssignments = $preferenceResult['slot_assignments'];
         } elseif ($isPlayerTeam) {
-            // Player team without preferred lineup — auto-select with fitness
-            // rotation so automated matchday prep doesn't burn out the squad.
-            $lineup = $this->selectBestXI($availablePlayers, $playerFormation, applyFitnessRotation: true)->pluck('id')->toArray();
+            // Player team without preferred lineup — auto-select with the
+            // user's rotation policy so automated matchday prep doesn't
+            // burn out the squad.
+            $lineup = $this->selectBestXI($availablePlayers, $playerFormation, $effectivePlayerPolicy)->pluck('id')->toArray();
         } else {
-            // AI team: use squad-fitted formation with fitness rotation,
-            // biased toward the team's curated tactical identity.
+            // AI team: use squad-fitted formation with a fixed Balanced
+            // rotation cadence, biased toward the team's curated tactical
+            // identity.
             $aiFormation = $this->aiTactics->selectAIFormation($availablePlayers, $game->id, $teamId);
-            $aiSelectedXI = $this->selectBestXI($availablePlayers, $aiFormation, applyFitnessRotation: true);
+            $aiSelectedXI = $this->selectBestXI($availablePlayers, $aiFormation, $aiRotationPolicy);
             $lineup = $aiSelectedXI->pluck('id')->toArray();
         }
 
@@ -855,13 +868,17 @@ class LineupService
      * rather than the highest-OVR-from-any-position fallback that used to
      * land goalkeepers at fullback during fast-mode runs.
      *
-     * When $applyFitnessRotation is true, tired preferred starters are
-     * dropped from the pin set whenever a rested compat-100 sub exists for
-     * their slot — letting Pass 1 pick up the rested specialist. If no
-     * such sub exists, the tired starter is still pinned (a tired
-     * specialist beats a fresh out-of-position fill-in). Score adjustment
-     * via effectiveScore further biases the recommender toward rested
-     * players in unpinned slots.
+     * When $rotationPolicy is set, each preferred starter is compared
+     * head-to-head against the best available compat-100 alternative for
+     * their slot using effective score (overall × fatigue multiplier
+     * from the policy). If an alternative's effective score beats the
+     * preferred starter by more than a small thrash-guard margin, the
+     * pin is skipped so Pass 1 can pick the alternative. This handles
+     * the congested-fixture case where the whole squad sits below the
+     * fatigue threshold — the marginally fresher backup still wins on
+     * effective score instead of falling off a binary tired/rested
+     * cliff. Score adjustment via effectiveScore further biases the
+     * recommender toward fresher players in unpinned slots.
      *
      * @param Collection $availablePlayers Players available for selection (not injured/suspended)
      * @param Collection $allTeamPlayers All team players (including unavailable) for position lookups
@@ -873,7 +890,7 @@ class LineupService
         ?Formation $formation,
         array $preferredLineup,
         array $availableIds,
-        bool $applyFitnessRotation = false,
+        ?RotationPolicy $rotationPolicy = null,
     ): array {
         $formation = $formation ?? Formation::F_4_3_3;
 
@@ -886,9 +903,10 @@ class LineupService
         $allPlayersById = $allTeamPlayers->keyBy('id');
 
         // Build manual pins from the preferred lineup. Injured/suspended
-        // players are dropped (no pin); tired starters with a viable rested
-        // compat-100 alternative are also dropped so the recommender's Pass 1
-        // can pick the rested specialist.
+        // players are dropped (no pin); when a rotation policy is active,
+        // tired starters that lose a head-to-head effective-score check
+        // against the best compat-100 alternative are also dropped so the
+        // recommender's Pass 1 can pick the alternative.
         $manualPins = [];
         $usedSlotIds = [];
 
@@ -912,24 +930,41 @@ class LineupService
                 continue;
             }
 
-            // Tired-starter rotation: skip pinning when a rested compat-100
-            // sub exists for the slot. Without a compat-100 alternative we
-            // keep the tired specialist — a fresh out-of-position fill-in
-            // is worse.
-            if ($applyFitnessRotation && $this->isTired($player)) {
+            // Head-to-head rotation: when a rotation policy is active and
+            // the preferred starter is below the policy's fatigue
+            // threshold, compare their effective score against the best
+            // compat-100 alternative for the slot. If the alternative
+            // wins by more than a thrash-guard margin (1.0 effective
+            // pts), skip the pin so Pass 1 picks the alternative. Fresh
+            // preferred starters are always pinned — the user chose them
+            // and they're not tired enough to rotate. Without a compat-100
+            // alternative we keep the preferred starter — a fresh
+            // out-of-position fill-in is still worse than a tired
+            // specialist.
+            if ($rotationPolicy !== null && $this->isTired($player, $rotationPolicy)) {
                 $slotLabel = $slotIdToLabel[$chosenSlotId];
-                $restedSubExists = $availablePlayers->contains(function ($candidate) use ($player, $slotLabel) {
-                    if ($candidate->id === $player->id || $this->isTired($candidate)) {
-                        return false;
-                    }
-                    return PositionSlotMapper::getPlayerCompatibilityScore(
-                        $candidate->position,
-                        $candidate->secondary_positions,
-                        $slotLabel,
-                    ) === 100;
-                });
+                $starterEffective = $this->effectiveScore($player, $rotationPolicy);
+                $usedPlayerIds = array_values($manualPins);
 
-                if ($restedSubExists) {
+                $bestAlternative = $availablePlayers
+                    ->filter(function ($candidate) use ($player, $slotLabel, $usedPlayerIds) {
+                        if ($candidate->id === $player->id || in_array($candidate->id, $usedPlayerIds, true)) {
+                            return false;
+                        }
+                        return PositionSlotMapper::getPlayerCompatibilityScore(
+                            $candidate->position,
+                            $candidate->secondary_positions,
+                            $slotLabel,
+                        ) === 100;
+                    })
+                    ->map(fn ($candidate) => [
+                        'player' => $candidate,
+                        'effective' => $this->effectiveScore($candidate, $rotationPolicy),
+                    ])
+                    ->sortByDesc('effective')
+                    ->first();
+
+                if ($bestAlternative !== null && $bestAlternative['effective'] > $starterEffective + 1.0) {
                     continue;
                 }
             }
@@ -941,10 +976,10 @@ class LineupService
         // Apply fitness-adjusted ratings so the recommender's score-ranked
         // passes weigh fresh players over tired ones in unpinned slots.
         $pool = $availablePlayers;
-        if ($applyFitnessRotation) {
-            $pool = $availablePlayers->map(function ($p) {
+        if ($rotationPolicy !== null) {
+            $pool = $availablePlayers->map(function ($p) use ($rotationPolicy) {
                 $clone = clone $p;
-                $clone->overall_score = (int) round($this->effectiveScore($p));
+                $clone->overall_score = (int) round($this->effectiveScore($p, $rotationPolicy));
 
                 return $clone;
             });
