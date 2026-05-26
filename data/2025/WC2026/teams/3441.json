@@ -1,253 +1,438 @@
 {
-  "image": "https://tmssl.akamaized.net/images/wappen/big/3441.png",
+  "image": "https://assets.virtuafc.com/crests/3441.png",
   "name": "Ghana",
   "players": [
     {
-      "contract": "Jun 7, 2018",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/257.png",
+        "name": "FC St. Gallen 1879"
+      },
       "dateOfBirth": "Nov 29, 1996",
       "foot": "right",
       "height": "1,88m",
       "id": "254285",
+      "injured": false,
       "marketValue": "€1.50m",
       "name": "Lawrence Ati Zigi",
       "position": "Goalkeeper"
     },
     {
-      "contract": "Nov 14, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1189.png",
+        "name": "St. Patrick's Athletic"
+      },
       "dateOfBirth": "Jun 8, 2000",
       "foot": "right",
       "height": "1,90m",
       "id": "576099",
+      "injured": false,
       "marketValue": "€275k",
       "name": "Joseph Anang",
       "position": "Goalkeeper"
     },
     {
-      "contract": "Mar 21, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/3601.png",
+        "name": "Hearts of Oak"
+      },
       "dateOfBirth": "Jul 13, 1992",
       "foot": "right",
       "height": "1,88m",
       "id": "837368",
+      "injured": false,
       "marketValue": "€100k",
       "name": "Benjamin Asare",
       "position": "Goalkeeper"
     },
     {
-      "contract": "Sep 23, 2022",
-      "dateOfBirth": "Apr 17, 1999",
-      "foot": "left",
-      "height": "1,88m",
-      "id": "563963",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/417.png",
+        "name": "OGC Nice"
+      },
+      "dateOfBirth": "Jun 4, 2004",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "1113451",
+      "injured": false,
       "marketValue": "€10.00m",
-      "name": "Mohammed Salisu",
+      "name": "Kojo Peprah Oppong",
       "position": "Centre-Back"
     },
     {
-      "contract": "Oct 15, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/82.png",
+        "name": "VfL Wolfsburg"
+      },
       "dateOfBirth": "Dec 13, 2003",
       "foot": "right",
       "height": "1,88m",
       "id": "734676",
+      "injured": false,
       "marketValue": "€7.00m",
       "name": "Jonas Adjetey",
       "position": "Centre-Back"
     },
     {
-      "contract": "Jun 10, 2022",
-      "dateOfBirth": "Jun 4, 2000",
-      "foot": "right",
-      "height": "1,73m",
-      "id": "798404",
-      "marketValue": "€6.00m",
-      "name": "Alidu Seidu",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Oct 18, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/6890.png",
+        "name": "Basaksehir FK"
+      },
       "dateOfBirth": "Oct 14, 1998",
       "foot": "left",
       "height": "1,97m",
       "id": "408563",
+      "injured": false,
       "marketValue": "€5.00m",
       "name": "Jerome Opoku",
       "position": "Centre-Back"
     },
     {
-      "contract": "Oct 12, 2025",
-      "dateOfBirth": "Jun 4, 2004",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/232.png",
+        "name": "Spartak Moscow"
+      },
+      "dateOfBirth": "Aug 9, 1994",
       "foot": "right",
-      "height": "1,85m",
-      "id": "1113451",
+      "height": "1,82m",
+      "id": "250844",
+      "injured": false,
       "marketValue": "€4.00m",
-      "name": "Kojo Peprah Oppong",
+      "name": "Alexander Djiku",
       "position": "Centre-Back"
     },
     {
-      "contract": "Nov 14, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/114977.png",
+        "name": "San Diego FC"
+      },
+      "dateOfBirth": "Jun 5, 2005",
+      "height": "1,93m",
+      "id": "1355954",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Manu Duah",
+      "position": "Centre-Back"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/105.png",
+        "name": "SV Darmstadt 98"
+      },
+      "dateOfBirth": "Aug 20, 1999",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "391742",
+      "injured": false,
+      "marketValue": "€1.80m",
+      "name": "Patric Pfeiffer",
+      "position": "Centre-Back"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/89.png",
+        "name": "1.FC Union Berlin"
+      },
       "dateOfBirth": "Feb 4, 1999",
       "foot": "left",
       "height": "1,80m",
       "id": "391780",
+      "injured": false,
       "marketValue": "€4.00m",
       "name": "Derrick Köhn",
       "position": "Left-Back"
     },
     {
-      "contract": "Nov 14, 2019",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/290.png",
+        "name": "AJ Auxerre"
+      },
       "dateOfBirth": "Jul 18, 1998",
       "foot": "left",
       "height": "1,78m",
       "id": "397171",
+      "injured": false,
       "marketValue": "€3.50m",
       "name": "Gideon Mensah",
       "position": "Left-Back"
     },
     {
-      "contract": "Mar 22, 2024",
-      "dateOfBirth": "Aug 21, 2002",
-      "foot": "left",
-      "height": "1,78m",
-      "id": "861221",
-      "marketValue": "€2.50m",
-      "name": "Ebenezer Annan",
-      "position": "Left-Back"
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/290.png",
+        "name": "AJ Auxerre"
+      },
+      "dateOfBirth": "Jan 28, 2001",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "830890",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Marvin Senaya",
+      "position": "Right-Back"
     },
     {
-      "contract": "Jun 5, 2016",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/64.png",
+        "name": "SV 07 Elversberg"
+      },
+      "dateOfBirth": "Jun 18, 1995",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "192840",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Jan Gyamerah",
+      "position": "Right-Back"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1390.png",
+        "name": "Cagliari Calcio"
+      },
+      "dateOfBirth": "May 22, 2003",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "982267",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Ibrahim Sulemana",
+      "position": "Defensive Midfield"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/290.png",
+        "name": "AJ Auxerre"
+      },
+      "dateOfBirth": "Nov 7, 1997",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "395695",
+      "injured": false,
+      "marketValue": "€3.50m",
+      "name": "Elisha Owusu",
+      "position": "Defensive Midfield"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1050.png",
+        "name": "Villarreal CF"
+      },
       "dateOfBirth": "Jun 13, 1993",
       "foot": "right",
       "height": "1,85m",
       "id": "230784",
-      "marketValue": "€5.00m",
+      "injured": false,
+      "marketValue": "€2.50m",
       "name": "Thomas Partey",
       "position": "Defensive Midfield"
     },
     {
-      "contract": "May 28, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/2778.png",
+        "name": "FC Nordsjaelland"
+      },
       "dateOfBirth": "Jan 15, 2006",
       "foot": "right",
       "height": "1,82m",
       "id": "1240763",
-      "marketValue": "€6.00m",
+      "injured": false,
+      "marketValue": "€10.00m",
       "name": "Caleb Yirenkyi",
       "position": "Central Midfield"
     },
     {
-      "contract": "Mar 26, 2024",
-      "dateOfBirth": "Apr 27, 2001",
-      "foot": "right",
-      "height": "1,82m",
-      "id": "658533",
-      "marketValue": "€2.00m",
-      "name": "Abu Francis",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Sep 8, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/2497.png",
+        "name": "Real Oviedo"
+      },
       "dateOfBirth": "Jun 24, 1998",
       "foot": "right",
       "height": "1,83m",
       "id": "538006",
-      "marketValue": "€1.40m",
+      "injured": false,
+      "marketValue": "€1.50m",
       "name": "Kwasi Sibo",
       "position": "Central Midfield"
     },
     {
-      "contract": "Oct 8, 2025",
-      "dateOfBirth": "Oct 8, 2004",
-      "id": "1328036",
-      "marketValue": "€75k",
-      "name": "Prince Owusu",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/618.png",
+        "name": "AS Saint-Étienne"
+      },
+      "dateOfBirth": "Nov 3, 2000",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "579263",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Augustine Boakye",
       "position": "Attacking Midfield"
     },
     {
-      "contract": "Oct 9, 2020",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/800.png",
+        "name": "Atalanta BC"
+      },
       "dateOfBirth": "Feb 15, 2002",
       "foot": "right",
       "height": "1,75m",
       "id": "746695",
+      "injured": false,
       "marketValue": "€18.00m",
       "name": "Kamaldeen Sulemana",
       "position": "Left Winger"
     },
     {
-      "contract": "May 28, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/26069.png",
+        "name": "Al-Qadsiah FC"
+      },
       "dateOfBirth": "Dec 14, 2004",
       "foot": "left",
       "height": "1,72m",
       "id": "1119447",
-      "marketValue": "€10.00m",
+      "injured": false,
+      "marketValue": "€12.00m",
       "name": "Christopher Bonsu Baah",
       "position": "Left Winger"
     },
     {
-      "contract": "Jun 1, 2022",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/210.png",
+        "name": "Grêmio Foot-Ball Porto Alegrense"
+      },
+      "dateOfBirth": "Aug 23, 1999",
+      "foot": "right",
+      "height": "1,69m",
+      "id": "423604",
+      "injured": false,
+      "marketValue": "€7.00m",
+      "name": "Francis Amuzu",
+      "position": "Left Winger"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/281.png",
+        "name": "Manchester City"
+      },
       "dateOfBirth": "Jan 7, 2000",
       "foot": "right",
       "height": "1,85m",
       "id": "583255",
-      "marketValue": "€65.00m",
+      "injured": false,
+      "marketValue": "€75.00m",
       "name": "Antoine Semenyo",
       "position": "Right Winger"
     },
     {
-      "contract": "Nov 14, 2019",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/148.png",
+        "name": "Tottenham Hotspur"
+      },
       "dateOfBirth": "Aug 2, 2000",
       "foot": "left",
       "height": "1,77m",
       "id": "543499",
+      "injured": true,
       "marketValue": "€55.00m",
       "name": "Mohammed Kudus",
       "position": "Right Winger"
     },
     {
-      "contract": "Oct 9, 2021",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1003.png",
+        "name": "Leicester City"
+      },
       "dateOfBirth": "Mar 8, 2004",
       "foot": "left",
       "height": "1,77m",
       "id": "864121",
+      "injured": false,
       "marketValue": "€24.00m",
       "name": "Abdul Fatawu",
       "position": "Right Winger"
     },
     {
-      "contract": "Sep 23, 2022",
-      "dateOfBirth": "Jun 15, 1994",
-      "foot": "right",
-      "height": "1,86m",
-      "id": "255508",
-      "marketValue": "€10.00m",
-      "name": "Iñaki Williams",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/512.png",
+        "name": "Stoke City"
+      },
+      "dateOfBirth": "Oct 5, 2002",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "586834",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Jesurun Rak-Sakyi",
       "position": "Right Winger"
     },
     {
-      "contract": "Jun 10, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/120.png",
+        "name": "Kocaelispor"
+      },
+      "dateOfBirth": "Jun 1, 1997",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "367195",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Dan Agyei",
+      "position": "Right Winger"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/990.png",
+        "name": "Coventry City"
+      },
       "dateOfBirth": "Dec 29, 1998",
       "foot": "right",
       "height": "1,82m",
       "id": "451747",
+      "injured": false,
       "marketValue": "€14.00m",
       "name": "Brandon Thomas-Asante",
       "position": "Centre-Forward"
     },
     {
-      "contract": "Nov 14, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/41.png",
+        "name": "Hamburger SV"
+      },
+      "dateOfBirth": "Sep 13, 2001",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "470038",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Ransford Königsdörffer",
+      "position": "Centre-Forward"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/941.png",
+        "name": "FC Viktoria Plzen"
+      },
       "dateOfBirth": "Sep 23, 2003",
       "foot": "right",
       "height": "1,79m",
       "id": "734799",
-      "marketValue": "€3.50m",
+      "injured": false,
+      "marketValue": "€3.00m",
       "name": "Prince Adu",
       "position": "Centre-Forward"
     },
     {
-      "contract": "Nov 14, 2025",
-      "dateOfBirth": "Jan 7, 1997",
-      "foot": "left",
-      "height": "1,90m",
-      "id": "207593",
-      "marketValue": "€3.00m",
-      "name": "Prince Owusu",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1003.png",
+        "name": "Leicester City"
+      },
+      "dateOfBirth": "Sep 11, 1991",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "108354",
+      "injured": false,
+      "marketValue": "€1.80m",
+      "name": "Jordan Ayew",
       "position": "Centre-Forward"
     }
   ],

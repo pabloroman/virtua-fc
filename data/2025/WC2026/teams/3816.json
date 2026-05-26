@@ -1,328 +1,369 @@
 {
-  "image": "https://tmssl.akamaized.net/images/wappen/big/3816.png",
+  "image": "https://assets.virtuafc.com/crests/3816.png",
   "name": "Colombia",
   "players": [
     {
-      "contract": "Jun 4, 2019",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1029.png",
+        "name": "CA Vélez Sarsfield"
+      },
       "dateOfBirth": "Mar 29, 1995",
       "foot": "right",
       "height": "1,99m",
       "id": "292985",
+      "injured": false,
       "marketValue": "€2.50m",
       "name": "Álvaro Montero",
       "position": "Goalkeeper"
     },
     {
-      "contract": "Oct 11, 2014",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/8590.png",
+        "name": "Atlas Guadalajara"
+      },
       "dateOfBirth": "Mar 9, 1989",
       "foot": "left",
       "height": "1,83m",
       "id": "74113",
-      "marketValue": "€500k",
+      "injured": false,
+      "marketValue": "€450k",
       "name": "Camilo Vargas",
       "position": "Goalkeeper"
     },
     {
-      "contract": "Feb 7, 2007",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/8172.png",
+        "name": "Atlético Nacional"
+      },
       "dateOfBirth": "Aug 31, 1988",
       "foot": "right",
       "height": "1,83m",
       "id": "73396",
+      "injured": false,
       "marketValue": "€200k",
       "name": "David Ospina",
-      "number": "1",
       "position": "Goalkeeper"
     },
     {
-      "contract": "Jun 4, 2019",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1025.png",
+        "name": "Bologna FC 1909"
+      },
       "dateOfBirth": "Jun 26, 1998",
       "foot": "left",
       "height": "1,87m",
       "id": "413565",
+      "injured": false,
       "marketValue": "€25.00m",
       "name": "Jhon Lucumí",
-      "number": "3",
       "position": "Centre-Back"
     },
     {
-      "contract": "Nov 16, 2016",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/141.png",
+        "name": "Galatasaray"
+      },
       "dateOfBirth": "Jun 12, 1996",
       "foot": "right",
       "height": "1,87m",
       "id": "341429",
-      "marketValue": "€18.00m",
+      "injured": false,
+      "marketValue": "€16.00m",
       "name": "Davinson Sánchez",
-      "number": "23",
       "position": "Centre-Back"
     },
     {
-      "contract": "Oct 12, 2023",
-      "dateOfBirth": "May 2, 2001",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/3711.png",
+        "name": "CD Cruz Azul"
+      },
+      "dateOfBirth": "Jan 23, 1998",
       "foot": "right",
-      "height": "1,88m",
-      "id": "716276",
-      "marketValue": "€12.00m",
-      "name": "Yerson Mosquera",
+      "height": "1,80m",
+      "id": "609255",
+      "injured": false,
+      "marketValue": "€5.50m",
+      "name": "Willer Ditta",
       "position": "Centre-Back"
     },
     {
-      "contract": "Sep 10, 2021",
-      "dateOfBirth": "Mar 9, 1999",
-      "foot": "right",
-      "height": "1,79m",
-      "id": "474589",
-      "marketValue": "€7.00m",
-      "name": "Carlos Cuesta",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Jun 8, 2016",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1390.png",
+        "name": "Cagliari Calcio"
+      },
       "dateOfBirth": "Sep 23, 1994",
       "foot": "right",
       "height": "1,95m",
       "id": "289446",
+      "injured": false,
       "marketValue": "€3.00m",
       "name": "Yerry Mina",
       "position": "Centre-Back"
     },
     {
-      "contract": "Sep 10, 2024",
-      "dateOfBirth": "Jan 8, 2001",
-      "foot": "left",
-      "height": "1,86m",
-      "id": "686965",
-      "marketValue": "€9.00m",
-      "name": "Juan Cabal",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Jan 16, 2022",
-      "dateOfBirth": "Mar 6, 1997",
-      "foot": "left",
-      "height": "1,76m",
-      "id": "366324",
-      "marketValue": "€2.80m",
-      "name": "Álvaro Angulo",
-      "number": "8",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Sep 12, 2018",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/995.png",
+        "name": "FC Nantes"
+      },
       "dateOfBirth": "Sep 2, 1993",
       "foot": "left",
       "height": "1,80m",
       "id": "332560",
-      "marketValue": "€2.50m",
+      "injured": true,
+      "marketValue": "€2.00m",
       "name": "Deiver Machado",
       "position": "Left-Back"
     },
     {
-      "contract": "Mar 26, 2015",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/237.png",
+        "name": "RCD Mallorca"
+      },
       "dateOfBirth": "Aug 21, 1992",
       "foot": "left",
       "height": "1,85m",
       "id": "262939",
+      "injured": false,
       "marketValue": "€1.80m",
       "name": "Johan Mojica",
-      "number": "14",
       "position": "Left-Back"
     },
     {
-      "contract": "Jun 4, 2021",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/873.png",
+        "name": "Crystal Palace"
+      },
       "dateOfBirth": "May 26, 1996",
       "foot": "right",
       "height": "1,81m",
       "id": "493003",
+      "injured": false,
       "marketValue": "€27.00m",
       "name": "Daniel Muñoz",
-      "number": "21",
       "position": "Right-Back"
     },
     {
-      "contract": "Oct 16, 2013",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1234.png",
+        "name": "CA Independiente"
+      },
       "dateOfBirth": "Jan 13, 1992",
       "foot": "right",
       "height": "1,78m",
       "id": "120443",
-      "marketValue": "€1.50m",
+      "injured": false,
+      "marketValue": "€1.20m",
       "name": "Santiago Arias",
       "position": "Right-Back"
     },
     {
-      "contract": "Oct 12, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/294.png",
+        "name": "SL Benfica"
+      },
       "dateOfBirth": "Jun 2, 2000",
       "foot": "right",
       "height": "1,87m",
       "id": "735573",
+      "injured": false,
       "marketValue": "€22.00m",
       "name": "Richard Ríos",
-      "number": "6",
       "position": "Defensive Midfield"
     },
     {
-      "contract": "Nov 10, 2017",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/873.png",
+        "name": "Crystal Palace"
+      },
       "dateOfBirth": "Oct 25, 1994",
       "foot": "right",
       "height": "1,79m",
       "id": "262980",
+      "injured": false,
       "marketValue": "€8.00m",
       "name": "Jefferson Lerma",
-      "number": "16",
       "position": "Defensive Midfield"
     },
     {
-      "contract": "Jan 29, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/209.png",
+        "name": "CA River Plate"
+      },
       "dateOfBirth": "Sep 29, 2000",
       "foot": "right",
       "height": "1,77m",
       "id": "857948",
-      "marketValue": "€6.50m",
+      "injured": false,
+      "marketValue": "€5.00m",
       "name": "Kevin Castaño",
-      "number": "5",
       "position": "Defensive Midfield"
     },
     {
-      "contract": "Nov 16, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/630.png",
+        "name": "Racing Santander"
+      },
       "dateOfBirth": "Jul 23, 2003",
       "foot": "right",
-      "height": "1,73m",
+      "height": "1,74m",
       "id": "936981",
+      "injured": false,
       "marketValue": "€5.00m",
       "name": "Gustavo Puerta",
       "position": "Central Midfield"
     },
     {
-      "contract": "Sep 10, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/679.png",
+        "name": "Club Athletico Paranaense"
+      },
       "dateOfBirth": "Sep 12, 1998",
       "foot": "right",
       "height": "1,83m",
       "id": "585747",
-      "marketValue": "€3.30m",
+      "injured": false,
+      "marketValue": "€4.00m",
       "name": "Juan Portilla",
-      "number": "15",
       "position": "Central Midfield"
     },
     {
-      "contract": "Sep 25, 2022",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/614.png",
+        "name": "CR Flamengo"
+      },
       "dateOfBirth": "May 25, 1998",
       "foot": "right",
       "height": "1,80m",
       "id": "354145",
+      "injured": false,
       "marketValue": "€11.00m",
       "name": "Jorge Carrascal",
       "position": "Attacking Midfield"
     },
     {
-      "contract": "Oct 17, 2012",
-      "dateOfBirth": "Jan 18, 1993",
-      "foot": "left",
-      "height": "1,68m",
-      "id": "122582",
-      "marketValue": "€2.00m",
-      "name": "Juan Fernando Quintero",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Oct 11, 2011",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/56089.png",
+        "name": "Minnesota United FC"
+      },
       "dateOfBirth": "Jul 12, 1991",
       "foot": "left",
       "height": "1,80m",
       "id": "88103",
+      "injured": false,
       "marketValue": "€2.00m",
       "name": "James Rodríguez",
-      "number": "10",
       "position": "Attacking Midfield"
     },
     {
-      "contract": "Sep 12, 2018",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/209.png",
+        "name": "CA River Plate"
+      },
+      "dateOfBirth": "Jan 18, 1993",
+      "foot": "left",
+      "height": "1,68m",
+      "id": "122582",
+      "injured": false,
+      "marketValue": "€1.80m",
+      "name": "Juan Fernando Quintero",
+      "position": "Attacking Midfield"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/27.png",
+        "name": "Bayern Munich"
+      },
       "dateOfBirth": "Jan 13, 1997",
       "foot": "right",
       "height": "1,80m",
       "id": "480692",
+      "injured": false,
       "marketValue": "€70.00m",
       "name": "Luis Díaz",
-      "number": "7",
       "position": "Left Winger"
     },
     {
-      "contract": "Dec 10, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/978.png",
+        "name": "Clube de Regatas Vasco da Gama"
+      },
       "dateOfBirth": "Sep 12, 2002",
       "foot": "right",
       "height": "1,71m",
       "id": "957461",
+      "injured": false,
       "marketValue": "€8.00m",
       "name": "Andrés Gómez",
       "position": "Left Winger"
     },
     {
-      "contract": "Jun 17, 2021",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1418.png",
+        "name": "CA Rosario Central"
+      },
       "dateOfBirth": "May 24, 2000",
       "foot": "left",
       "height": "1,65m",
       "id": "491553",
+      "injured": false,
       "marketValue": "€5.50m",
       "name": "Jáminton Campaz",
       "position": "Left Winger"
     },
     {
-      "contract": "Oct 12, 2025",
-      "dateOfBirth": "Jul 20, 1999",
-      "foot": "right",
-      "height": "1,70m",
-      "id": "572042",
-      "marketValue": "€4.00m",
-      "name": "Johan Carbonero",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "Jun 5, 2022",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1023.png",
+        "name": "Sociedade Esportiva Palmeiras"
+      },
       "dateOfBirth": "Sep 21, 1997",
       "foot": "right",
       "height": "1,68m",
       "id": "588989",
+      "injured": false,
       "marketValue": "€15.00m",
       "name": "Jhon Arias",
       "position": "Right Winger"
     },
     {
-      "contract": "Jan 16, 2022",
-      "dateOfBirth": "Nov 19, 2003",
-      "foot": "left",
-      "height": "1,76m",
-      "id": "857818",
-      "marketValue": "€14.00m",
-      "name": "Yáser Asprilla",
-      "position": "Right Winger"
-    },
-    {
-      "contract": "Nov 17, 2020",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/336.png",
+        "name": "Sporting CP"
+      },
       "dateOfBirth": "Dec 2, 1997",
       "foot": "right",
       "height": "1,81m",
       "id": "424784",
+      "injured": false,
       "marketValue": "€28.00m",
       "name": "Luis Suárez",
-      "number": "19",
       "position": "Centre-Forward"
     },
     {
-      "contract": "Nov 17, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/150.png",
+        "name": "Real Betis Balompié"
+      },
+      "dateOfBirth": "Apr 20, 1999",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "459463",
+      "injured": false,
+      "marketValue": "€18.00m",
+      "name": "Cucho Hernández",
+      "position": "Centre-Forward"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/16704.png",
+        "name": "FC Krasnodar"
+      },
       "dateOfBirth": "May 11, 1993",
       "foot": "right",
       "height": "1,88m",
       "id": "185245",
+      "injured": false,
       "marketValue": "€10.00m",
       "name": "Jhon Córdoba",
-      "position": "Centre-Forward"
-    },
-    {
-      "contract": "Sep 7, 2019",
-      "dateOfBirth": "Sep 15, 1995",
-      "foot": "right",
-      "height": "1,74m",
-      "id": "323831",
-      "marketValue": "€4.00m",
-      "name": "Rafael Borré",
       "position": "Centre-Forward"
     }
   ],
