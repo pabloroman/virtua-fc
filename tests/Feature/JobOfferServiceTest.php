@@ -4,13 +4,19 @@ namespace Tests\Feature;
 
 use App\Models\ClubProfile;
 use App\Models\Competition;
+use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\ManagerJobOffer;
 use App\Models\Team;
 use App\Models\TeamReputation;
 use App\Models\User;
+use App\Modules\Competition\Promotions\PromotionMove;
+use App\Modules\Competition\Promotions\PromotionRelegationPlan;
+use App\Modules\Competition\Promotions\PromotionRelegationQuery;
 use App\Modules\Manager\Services\JobOfferService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Tests\TestCase;
 
 /**
@@ -26,6 +32,7 @@ use Tests\TestCase;
  */
 class JobOfferServiceTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
     use RefreshDatabase;
 
     /**
@@ -113,6 +120,284 @@ class JobOfferServiceTest extends TestCase
                 );
             }
         }
+    }
+
+    /**
+     * League-label bug #1215: a rival whose CompetitionEntry already says
+     * "second division" because the planner is about to promote them this
+     * season must have that destination league stamped onto the offer — not
+     * the league they finished the season in. Drives the card under their
+     * name on /season-offers.
+     */
+    public function test_offer_stamp_uses_planner_destination_for_team_being_promoted_this_season(): void
+    {
+        [$game] = $this->seedScenario(
+            userClubProfileReputation: ClubProfile::REPUTATION_ELITE,
+            userTeamReputation: ClubProfile::REPUTATION_ELITE,
+        );
+
+        // Rival's seed (CompetitionTeam) sits them at tier-1 elite so they're
+        // in the bucketing pool. Their per-game entry says ESP2 — the league
+        // they actually played in this season after a prior relegation.
+        $rival = $this->seedRivalInEntry(
+            $game,
+            clubProfileReputation: ClubProfile::REPUTATION_ELITE,
+            teamReputation: ClubProfile::REPUTATION_ELITE,
+            seedCompetitionId: 'ESP1',
+            entryCompetitionId: 'ESP2',
+        );
+
+        $this->stubPlanWithMoves($game, [
+            new PromotionMove(
+                teamId: $rival->id,
+                fromCompetitionId: 'ESP2',
+                toCompetitionId: 'ESP1',
+                reason: PromotionMove::REASON_PROMOTION,
+            ),
+        ]);
+
+        $offers = app(JobOfferService::class)
+            ->generateEndOfSeasonOffers($game->refresh(), 'exceptional');
+
+        $rivalOffer = $offers->first(fn (ManagerJobOffer $o) => $o->team_id === $rival->id);
+        $this->assertNotNull($rivalOffer, 'Rival should have been picked for a lateral elite offer.');
+        $this->assertSame('ESP1', $rivalOffer->competition_id, 'Offer must be stamped with the planner destination (ESP1), not the league played this season (ESP2).');
+    }
+
+    /**
+     * Symmetric case: a rival currently in ESP1 but about to be relegated at
+     * the end of this season should have ESP2 stamped on the offer — not
+     * ESP1, even though that's what their CompetitionEntry still says
+     * (PromotionRelegationProcessor hasn't run yet at offer generation time).
+     */
+    public function test_offer_stamp_uses_planner_destination_for_team_being_relegated_this_season(): void
+    {
+        [$game] = $this->seedScenario(
+            userClubProfileReputation: ClubProfile::REPUTATION_ELITE,
+            userTeamReputation: ClubProfile::REPUTATION_ELITE,
+        );
+
+        $rival = $this->seedRivalInEntry(
+            $game,
+            clubProfileReputation: ClubProfile::REPUTATION_ELITE,
+            teamReputation: ClubProfile::REPUTATION_ELITE,
+            seedCompetitionId: 'ESP1',
+            entryCompetitionId: 'ESP1',
+        );
+
+        $this->stubPlanWithMoves($game, [
+            new PromotionMove(
+                teamId: $rival->id,
+                fromCompetitionId: 'ESP1',
+                toCompetitionId: 'ESP2',
+                reason: PromotionMove::REASON_RELEGATION,
+            ),
+        ]);
+
+        $offers = app(JobOfferService::class)
+            ->generateEndOfSeasonOffers($game->refresh(), 'exceptional');
+
+        $rivalOffer = $offers->first(fn (ManagerJobOffer $o) => $o->team_id === $rival->id);
+        $this->assertNotNull($rivalOffer);
+        $this->assertSame('ESP2', $rivalOffer->competition_id, 'Offer must be stamped with the planner destination (ESP2), not the league still recorded on the rival CompetitionEntry (ESP1).');
+    }
+
+    /**
+     * Baseline / regression guard: when the rival has no pending move and
+     * their CompetitionEntry matches the static seed, the stamped
+     * competition_id matches both. The fix must not regress the common case.
+     */
+    public function test_offer_stamp_matches_current_entry_when_no_pending_move(): void
+    {
+        [$game] = $this->seedScenario(
+            userClubProfileReputation: ClubProfile::REPUTATION_ELITE,
+            userTeamReputation: ClubProfile::REPUTATION_ELITE,
+        );
+
+        $rival = $this->seedRivalInEntry(
+            $game,
+            clubProfileReputation: ClubProfile::REPUTATION_ELITE,
+            teamReputation: ClubProfile::REPUTATION_ELITE,
+            seedCompetitionId: 'ESP1',
+            entryCompetitionId: 'ESP1',
+        );
+
+        $this->stubPlanWithMoves($game, []);
+
+        $offers = app(JobOfferService::class)
+            ->generateEndOfSeasonOffers($game->refresh(), 'exceptional');
+
+        $rivalOffer = $offers->first(fn (ManagerJobOffer $o) => $o->team_id === $rival->id);
+        $this->assertNotNull($rivalOffer);
+        $this->assertSame('ESP1', $rivalOffer->competition_id);
+    }
+
+    /**
+     * Cross-country regression for #1215: when a foreign club's
+     * CompetitionEntry has drifted from its editorial seed (e.g. they were
+     * moved between leagues in a previous save-session that ran the engine
+     * for their country, or the seed simply differs from the per-game state)
+     * the offer card must reflect the entry, not the seed. Planner only
+     * covers $game->country, so the entry-read path is what fires here.
+     */
+    public function test_offer_stamp_uses_current_entry_for_foreign_team_that_moved_leagues(): void
+    {
+        [$game] = $this->seedScenario(
+            userClubProfileReputation: ClubProfile::REPUTATION_ELITE,
+            userTeamReputation: ClubProfile::REPUTATION_ELITE,
+        );
+
+        // English tier-1 league exists separately so the foreign rival can sit
+        // in its own country's pool without polluting Spain.
+        Competition::factory()->league()->create([
+            'id' => 'ENG1',
+            'name' => 'Premier League',
+            'country' => 'EN',
+            'flag' => 'gb',
+            'tier' => 1,
+            'season' => $game->season,
+        ]);
+        // A second English league at a lower tier so the entry-vs-seed drift
+        // is observable.
+        Competition::factory()->league()->create([
+            'id' => 'ENG2',
+            'name' => 'Championship',
+            'country' => 'EN',
+            'flag' => 'gb',
+            'tier' => 2,
+            'season' => $game->season,
+        ]);
+
+        $rival = Team::factory()->create(['country' => 'EN']);
+
+        ClubProfile::create([
+            'team_id' => $rival->id,
+            'reputation_level' => ClubProfile::REPUTATION_ELITE,
+        ]);
+
+        // Seed pivot: ENG1 (editorial home). Per-game entry: ENG2 (drifted).
+        $rival->competitions()->attach('ENG1', ['season' => $game->season]);
+        CompetitionEntry::create([
+            'game_id' => $game->id,
+            'competition_id' => 'ENG2',
+            'team_id' => $rival->id,
+            'entry_round' => 1,
+        ]);
+
+        TeamReputation::create([
+            'game_id' => $game->id,
+            'team_id' => $rival->id,
+            'reputation_level' => ClubProfile::REPUTATION_ELITE,
+            'base_reputation_level' => ClubProfile::REPUTATION_ELITE,
+            'reputation_points' => TeamReputation::pointsForTier(ClubProfile::REPUTATION_ELITE),
+        ]);
+        TeamReputation::flushCacheFor($game->id, $rival->id);
+
+        // Planner only sees the user's country (ES); foreign team should not
+        // appear in any move. Stub explicitly so the test doesn't depend on
+        // the real snapshot builder, which would need full ES tier seeding.
+        $this->stubPlanWithMoves($game, []);
+
+        $offers = app(JobOfferService::class)
+            ->generateEndOfSeasonOffers($game->refresh(), 'exceptional');
+
+        $rivalOffer = $offers->first(fn (ManagerJobOffer $o) => $o->team_id === $rival->id);
+        $this->assertNotNull($rivalOffer, 'Foreign elite rival should be eligible for a lateral elite offer.');
+        $this->assertSame('ENG2', $rivalOffer->competition_id, 'Foreign rival should be stamped with their per-game CompetitionEntry (ENG2), not the seed (ENG1).');
+    }
+
+    /**
+     * Replace the bound PromotionRelegationQuery with a stub whose
+     * planForGame() returns a hand-built plan. Keeps tests deterministic and
+     * isolated from the (much heavier) real snapshot builder, which would
+     * require seeding every tier of the country to satisfy size assertions.
+     *
+     * @param array<int, PromotionMove> $moves
+     */
+    private function stubPlanWithMoves(Game $game, array $moves): void
+    {
+        $plan = new PromotionRelegationPlan(
+            countryCode: $game->country ?? 'ES',
+            moves: $moves,
+        );
+
+        $stub = Mockery::mock(PromotionRelegationQuery::class);
+        $stub->shouldReceive('planForGame')->andReturn($plan);
+        $stub->shouldReceive('wasTeamPromoted')->andReturn(false);
+        $stub->shouldReceive('predictedCompetitionIdForTeam')->andReturnUsing(
+            function (Game $g, string $teamId) use ($moves): ?string {
+                foreach ($moves as $move) {
+                    if ($move->teamId === $teamId) {
+                        return $move->toCompetitionId;
+                    }
+                }
+                return null;
+            }
+        );
+
+        $this->app->instance(PromotionRelegationQuery::class, $stub);
+    }
+
+    /**
+     * Variant of seedRival() that also creates the per-game CompetitionEntry
+     * row needed by the offer-stamp resolver. The seed competition (via the
+     * CompetitionTeam pivot) decides which bucket the rival lands in;
+     * $entryCompetitionId decides what the resolver reads when no plan
+     * override applies.
+     */
+    private function seedRivalInEntry(
+        Game $game,
+        string $clubProfileReputation,
+        string $teamReputation,
+        string $seedCompetitionId,
+        string $entryCompetitionId,
+    ): Team {
+        // Make sure both competitions exist — seedScenario only seeds ESP1.
+        if ($entryCompetitionId !== 'ESP1' && Competition::find($entryCompetitionId) === null) {
+            Competition::factory()->league()->create([
+                'id' => $entryCompetitionId,
+                'name' => $entryCompetitionId,
+                'country' => 'ES',
+                'tier' => $entryCompetitionId === 'ESP2' ? 2 : 3,
+                'season' => $game->season,
+            ]);
+        }
+        if ($seedCompetitionId !== 'ESP1' && Competition::find($seedCompetitionId) === null) {
+            Competition::factory()->league()->create([
+                'id' => $seedCompetitionId,
+                'name' => $seedCompetitionId,
+                'country' => 'ES',
+                'tier' => $seedCompetitionId === 'ESP2' ? 2 : 3,
+                'season' => $game->season,
+            ]);
+        }
+
+        $team = Team::factory()->create(['country' => 'ES']);
+
+        ClubProfile::create([
+            'team_id' => $team->id,
+            'reputation_level' => $clubProfileReputation,
+        ]);
+
+        $team->competitions()->attach($seedCompetitionId, ['season' => $game->season]);
+
+        CompetitionEntry::create([
+            'game_id' => $game->id,
+            'competition_id' => $entryCompetitionId,
+            'team_id' => $team->id,
+            'entry_round' => 1,
+        ]);
+
+        TeamReputation::create([
+            'game_id' => $game->id,
+            'team_id' => $team->id,
+            'reputation_level' => $teamReputation,
+            'base_reputation_level' => $clubProfileReputation,
+            'reputation_points' => TeamReputation::pointsForTier($teamReputation),
+        ]);
+        TeamReputation::flushCacheFor($game->id, $team->id);
+
+        return $team;
     }
 
     /**

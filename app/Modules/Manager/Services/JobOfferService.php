@@ -4,12 +4,14 @@ namespace App\Modules\Manager\Services;
 
 use App\Models\ClubProfile;
 use App\Models\Competition;
+use App\Models\CompetitionEntry;
 use App\Models\CompetitionTeam;
 use App\Models\Game;
 use App\Models\GameStanding;
 use App\Models\ManagerJobOffer;
 use App\Models\Team;
 use App\Models\TeamReputation;
+use App\Modules\Competition\Promotions\PromotionRelegationPlan;
 use App\Modules\Competition\Promotions\PromotionRelegationQuery;
 use App\Modules\Competition\Services\CountryConfig;
 use App\Modules\Manager\ManagerReputation;
@@ -371,6 +373,13 @@ class JobOfferService
         $usedTeamIds = [$game->team_id];
         $created = collect();
 
+        // Pre-build the pending promotion/relegation plan once per generation
+        // so the stamped competition_id reflects the league each candidate
+        // will play in next season, not the one they finished this season in.
+        // ShowSeasonOffers blocks rendering until all playoffs have resolved,
+        // so the planner is safe to run here.
+        $promotionPlan = $this->promotionRelegationQuery->planForGame($game);
+
         foreach ($plan as $entry) {
             $targetRank = max(0, min($maxRank, $currentRank + $entry['shift']));
 
@@ -400,7 +409,7 @@ class JobOfferService
                     'user_id' => $game->user_id,
                     'game_id' => $game->id,
                     'team_id' => $teamId,
-                    'competition_id' => $this->resolveAcceptedCompetitionId($teamId),
+                    'competition_id' => $this->resolveOfferStampCompetitionId($game, $promotionPlan, $teamId),
                     'season' => $game->season,
                     'offer_type' => $offerType,
                     'status' => ManagerJobOffer::STATUS_PENDING,
@@ -419,6 +428,60 @@ class JobOfferService
         }
 
         return $created;
+    }
+
+    /**
+     * Resolve the competition_id to stamp onto a freshly generated offer.
+     *
+     * Three-tier chain, in order of priority:
+     *   1. The team's destination in the pending promotion/relegation plan —
+     *      covers teams about to move at the end of this season (the season
+     *      whose offers are being generated). Only fires for teams in the
+     *      user's country, since PromotionRelegationProcessor only runs
+     *      there.
+     *   2. The team's current CompetitionEntry for any league competition in
+     *      its own country — covers teams whose entry already reflects truth:
+     *      prior-season movements, foreign teams, unchanged teams.
+     *   3. The static seed cascade in resolveAcceptedCompetitionId() — final
+     *      defensive backstop for the rare team with no CompetitionEntry at
+     *      all (e.g. data drift from an aborted setup).
+     *
+     * The Competition query (control plane) and CompetitionEntry query
+     * (tenant plane) are issued separately to avoid a cross-plane JOIN.
+     */
+    private function resolveOfferStampCompetitionId(
+        Game $game,
+        ?PromotionRelegationPlan $promotionPlan,
+        string $teamId,
+    ): ?string {
+        if ($promotionPlan !== null) {
+            foreach ($promotionPlan->moves as $move) {
+                if ($move->teamId === $teamId) {
+                    return $move->toCompetitionId;
+                }
+            }
+        }
+
+        $team = Team::find($teamId);
+        if ($team !== null) {
+            $leagueIds = Competition::where('role', Competition::ROLE_LEAGUE)
+                ->where('country', $team->country)
+                ->pluck('id')
+                ->all();
+
+            if ($leagueIds !== []) {
+                $entryCompetitionId = CompetitionEntry::where('game_id', $game->id)
+                    ->where('team_id', $teamId)
+                    ->whereIn('competition_id', $leagueIds)
+                    ->value('competition_id');
+
+                if ($entryCompetitionId !== null) {
+                    return $entryCompetitionId;
+                }
+            }
+        }
+
+        return $this->resolveAcceptedCompetitionId($teamId);
     }
 
     /**

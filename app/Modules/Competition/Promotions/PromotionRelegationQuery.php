@@ -66,6 +66,54 @@ class PromotionRelegationQuery
     }
 
     /**
+     * Where will $teamId be after this season's pending promotion/relegation
+     * has been applied? Returns the destination competition_id if the team has
+     * a pending move in the plan, or null otherwise (no move, country has no
+     * promotion rules, or planning failed).
+     *
+     * Used by JobOfferService to stamp the league a candidate team will play
+     * in next season — the value the offer card displays. Foreign teams (any
+     * country other than $game->country) always return null since
+     * PromotionRelegationProcessor only runs for the user's country, and
+     * callers should fall back to the team's current CompetitionEntry.
+     */
+    public function predictedCompetitionIdForTeam(Game $game, string $teamId): ?string
+    {
+        $plan = $this->planForGame($game);
+        if ($plan === null) {
+            return null;
+        }
+
+        foreach ($plan->moves as $move) {
+            if ($move->teamId === $teamId) {
+                return $move->toCompetitionId;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Build the promotion/relegation plan as it stands right now, or null when
+     * it can't be built (no country, no promotion rules, planner can't run —
+     * e.g. playoff in progress or incomplete snapshot). Callers that need to
+     * answer questions about many teams in one pass should hold onto the
+     * returned plan rather than calling predictedCompetitionIdForTeam() per
+     * team — that helper rebuilds the snapshot on every call.
+     */
+    public function planForGame(Game $game): ?PromotionRelegationPlan
+    {
+        if ($game->country === null) {
+            return null;
+        }
+
+        try {
+            return $this->planFor($game);
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    /**
      * Build the promoted/relegated team summary the season-end view renders.
      * Returns null when there are no moves to show or when planning isn't
      * possible (e.g. playoff in progress).
