@@ -177,6 +177,19 @@ class JobOfferServiceTest extends TestCase
             userTeamReputation: ClubProfile::REPUTATION_ELITE,
         );
 
+        // The planner stub below points the move at ESP2, which is the
+        // competition_id that ends up on the offer row. seedRivalInEntry
+        // only creates ESP2 when the *entry* lives there — here the entry
+        // is ESP1, so we have to seed ESP2 explicitly to satisfy the
+        // manager_job_offers FK.
+        Competition::factory()->league()->create([
+            'id' => 'ESP2',
+            'name' => 'LaLiga 2',
+            'country' => 'ES',
+            'tier' => 2,
+            'season' => $game->season,
+        ]);
+
         $rival = $this->seedRivalInEntry(
             $game,
             clubProfileReputation: ClubProfile::REPUTATION_ELITE,
