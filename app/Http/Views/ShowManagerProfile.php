@@ -18,10 +18,6 @@ class ShowManagerProfile
             ->where('is_profile_public', true)
             ->firstOrFail();
 
-        // Games live on the tenant plane; resolved as a separate query and
-        // attached as a relation so the view's `$user->games` access keeps
-        // working. Replaces a `User::load(['games.team', 'games.competition'])`
-        // that crossed the control/tenant plane boundary.
         $games = Game::with(['team', 'competition'])
             ->where('user_id', $user->id)
             ->get();

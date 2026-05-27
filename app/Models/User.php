@@ -54,12 +54,6 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * Identity is part of the control plane. See CLAUDE.md → "Control plane /
-     * tenant plane".
-     */
-    protected $connection = 'pgsql_control';
-
     public const AVATARS = ['blue', 'green', 'orange', 'pink', 'purple', 'red', 'sky', 'turquoise', 'wine', 'yellow'];
 
     /**

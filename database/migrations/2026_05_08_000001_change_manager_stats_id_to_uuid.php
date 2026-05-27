@@ -9,10 +9,6 @@ use Illuminate\Support\Facades\DB;
  * migration when two users on different beta databases happen to share an id.
  * Nothing FKs into manager_stats.id and no app code reads it externally, so
  * the conversion is local to this table.
- *
- * Lives on the control plane, but per CLAUDE.md migrations currently run on
- * the default connection (the two planes share one physical Postgres until
- * they're split).
  */
 return new class extends Migration
 {

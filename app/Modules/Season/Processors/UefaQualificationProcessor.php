@@ -385,10 +385,6 @@ class UefaQualificationProcessor implements SeasonProcessor
             ->filter(fn (string $code) => !empty($this->countryConfig->continentalSlots($code)))
             ->all();
 
-        // PLANES-SEAM: cross-plane JOIN. competition_entries=tenant, teams=control.
-        // Restored while both planes share one physical Postgres. Re-split
-        // before the planes are physically separated. See CLAUDE.md →
-        // "Control plane / tenant plane".
         $replaceable = CompetitionEntry::where('competition_entries.game_id', $game->id)
             ->where('competition_entries.competition_id', 'UCL')
             ->join('teams', 'competition_entries.team_id', '=', 'teams.id')

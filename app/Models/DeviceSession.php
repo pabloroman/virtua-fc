@@ -10,12 +10,6 @@ class DeviceSession extends Model
 {
     use HasUuids;
 
-    /**
-     * Auth lives on the control plane. See CLAUDE.md → "Control plane /
-     * tenant plane".
-     */
-    protected $connection = 'pgsql_control';
-
     public $timestamps = false;
 
     protected $fillable = [

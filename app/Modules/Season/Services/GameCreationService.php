@@ -63,11 +63,10 @@ class GameCreationService
         // Create default tactical settings
         GameTactics::create(['game_id' => $gameId, 'default_formation' => Formation::F_4_3_3->value]);
 
-        // Snapshot the user team's stadium capacity. Team.stadium_seats
-        // lives on the control plane and is immutable per-game; this row
-        // becomes the per-game source of truth for capacity once the user
-        // starts upgrading. Skipped for tournament mode, which has no
-        // stadium upgrade flow.
+        // Snapshot the user team's stadium capacity. Team.stadium_seats is
+        // immutable per-game; this row becomes the per-game source of truth
+        // for capacity once the user starts upgrading. Skipped for tournament
+        // mode, which has no stadium upgrade flow.
         if ($gameMode !== Game::MODE_TOURNAMENT) {
             GameStadium::create([
                 'game_id' => $gameId,

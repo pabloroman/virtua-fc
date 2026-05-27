@@ -37,7 +37,7 @@ php artisan app:unstick-season-transition       # Unblock a stuck season transit
 ## Testing
 
 - **PHPUnit 11** (no Pest). Tests live in `tests/Unit/` and `tests/Feature/`.
-- The base `tests/TestCase.php` sets `protected $connectionsToTransact = ['pgsql']` and calls `$this->withoutVite()` in `setUp()`. **Do not add `pgsql_control` to `$connectionsToTransact`** — the test environment aliases it to the same PDO handle (see `AppServiceProvider::boot()`), and listing both opens a second transaction on the same connection and breaks teardown.
+- The base `tests/TestCase.php` sets `protected $connectionsToTransact = ['pgsql']` and calls `$this->withoutVite()` in `setUp()`.
 - **Factories use fluent helpers** — prefer them over manual wiring. Examples: `Game::factory()->forTeam($team)->create()`, `GamePlayer::factory()->forTeam($team)->create()`, `Game::factory()->inCompetition($id)->create()`.
 - Parallel runs via `paratest` are available (`php artisan test --parallel`) but not the default.
 - Static analysis: Larastan at level 1 (`./vendor/bin/phpstan analyse`). Strict where it matters; permissive elsewhere.
@@ -122,22 +122,6 @@ These are non-obvious rules that prevent bugs. Read carefully.
 - **`current_date` is forward-looking.** It is updated during match finalization to the `scheduled_date` of the next unplayed match. This means `current_date` always represents the date of the upcoming match the user is about to play, **not** the date of the match just played. The `GameDateAdvanced` event carries `previousDate` (old `current_date` / the match just finalized) and `newDate` (the next match to be played). Listeners that need to act "before the user plays match X" should key on `newDate`, not `previousDate`.
 - **No `current_matchday` on Game.** The league matchday number is derived from match data (e.g., `round_number` on `GameMatch`). Use `$game->nextLeagueMatchday` accessor to get the next unplayed league round number.
 - **`currentFinances` and `currentInvestment`** relationships use `$this->season` internally. Always use lazy loading — never eager load with `with()`.
-
-### Control plane / tenant plane
-
-Two logical database planes share one physical Postgres today, with separate connections so they can be split onto separate instances later without code changes:
-
-- **Tenant plane** (`pgsql` connection, default): per-game state — every model with a `game_id`. Write-heavy, hot path. `Game`, `GameMatch`, `GamePlayer`, `GameStanding`, `GameFinances`, transfers, lineups, etc.
-- **Control plane** (`pgsql_control` connection): cross-tenant data — identity, leaderboards, reference data, game directory. Read-heavy, small. `User`, `ManagerStats`, `TournamentSummary`, `Team`, `Competition`, `GamePlayerTemplate` (real-world roster source, source of player biography) and its audits, onboarding tables.
-
-**Rules:**
-- New cross-tenant models declare `protected $connection = 'pgsql_control'`.
-- New per-game models stay on the default connection.
-- **Goal: never JOIN across planes** in new code. Even though both connections currently resolve to the same physical DB, JOINs that cross the boundary will break the moment they're split. Use a service-layer call that issues separate queries on each connection.
-- **No Eloquent relationships across planes** (`belongsTo`/`hasMany` between models on different connections). Eloquent's eager loading does not work reliably across connections. Replace with explicit service calls.
-- Migrations target a specific plane; control-plane schema goes in `database/migrations/control/`, tenant in `database/migrations/tenant/` (paths are introduced in a later phase — until then, all migrations are on the default connection).
-
-**Existing seams:** several pre-existing cross-plane sites (search `PLANES-SEAM`) still use JOINs / correlated subqueries because the two-step rewrites caused OOM/timeout regressions. They work today because both planes share one physical Postgres. Each seam needs to be re-split — without the perf regression — before the planes are physically separated. The runtime guard (`config/database_planes.php` → `guard_enabled`, env `DATABASE_PLANES_GUARD_ENABLED`) is opt-in for this reason; flip it on when working on a seam to verify your fix is single-plane.
 
 ### Match Event Ordering
 

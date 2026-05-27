@@ -21,8 +21,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        DB::connection('pgsql_control')
-            ->table('users')
+        DB::table('users')
             ->whereIn('migration_status', ['pending', 'in_progress', 'failed'])
             ->update([
                 'migration_status' => 'completed',

@@ -7,10 +7,9 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Phase 1 of the player-data planes refactor: add nullable biographical
-     * columns to game_player_templates. Once populated, templates become the
-     * canonical real-world roster source and replace the players table
-     * entirely (the table itself moves to the control plane in a later phase).
+     * Phase 1 of the player-data refactor: add nullable biographical columns
+     * to game_player_templates. Once populated, templates become the canonical
+     * real-world roster source and replace the players table entirely.
      *
      * Columns are nullable here; backfill from players lands in Phase 2.
      */

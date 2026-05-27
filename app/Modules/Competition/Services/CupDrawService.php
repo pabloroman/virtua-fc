@@ -371,10 +371,6 @@ class CupDrawService
      */
     private function getTeamTierMap(string $gameId, Collection $teamIds): array
     {
-        // PLANES-SEAM: cross-plane JOIN. competition_entries=tenant,
-        // competitions=control. Restored while both planes share one
-        // physical Postgres. Re-split before the planes are physically
-        // separated. See CLAUDE.md → "Control plane / tenant plane".
         return DB::table('competition_entries')
             ->join('competitions', 'competition_entries.competition_id', '=', 'competitions.id')
             ->where('competition_entries.game_id', $gameId)

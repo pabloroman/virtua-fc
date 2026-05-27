@@ -101,24 +101,6 @@ return [
             'sslmode' => env('DB_SSLMODE', 'require'),
         ],
 
-        // Control plane: cross-tenant data (users, leaderboards, reference data, game directory).
-        // Falls back to the same physical database as `pgsql` until the planes are split onto
-        // separate instances. See CLAUDE.md → "Control plane / tenant plane" for the boundary.
-        'pgsql_control' => [
-            'driver' => 'pgsql',
-            'url' => env('CONTROL_DB_URL', env('DB_URL')),
-            'host' => env('CONTROL_DB_HOST', env('DB_HOST', '127.0.0.1')),
-            'port' => env('CONTROL_DB_PORT', env('DB_PORT', '5432')),
-            'database' => env('CONTROL_DB_DATABASE', env('DB_DATABASE', 'laravel')),
-            'username' => env('CONTROL_DB_USERNAME', env('DB_USERNAME', 'root')),
-            'password' => env('CONTROL_DB_PASSWORD', env('DB_PASSWORD', '')),
-            'charset' => env('DB_CHARSET', 'utf8'),
-            'prefix' => '',
-            'prefix_indexes' => true,
-            'search_path' => 'public',
-            'sslmode' => env('CONTROL_DB_SSLMODE', env('DB_SSLMODE', 'require')),
-        ],
-
         'sqlsrv' => [
             'driver' => 'sqlsrv',
             'url' => env('DB_URL'),

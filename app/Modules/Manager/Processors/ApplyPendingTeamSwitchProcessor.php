@@ -181,8 +181,7 @@ class ApplyPendingTeamSwitchProcessor implements SeasonProcessor
 
     /**
      * Return the league competition the team is currently entered in for this
-     * game. Reads competition_entries (tenant) and the cached set of league
-     * competition_ids (control) separately to avoid a planes-seam JOIN.
+     * game.
      */
     private function resolveCurrentLeagueForTeam(string $gameId, string $teamId): ?string
     {

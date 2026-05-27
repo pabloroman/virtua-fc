@@ -14,9 +14,9 @@ return new class extends Migration
             $table->uuid('game_id');
             $table->uuid('team_id');
 
-            // Snapshot of Team.stadium_seats at game creation. Team lives on
-            // the control plane and is immutable per-game; base_capacity is
-            // the per-game starting point for this team's stadium.
+            // Snapshot of Team.stadium_seats at game creation. Immutable
+            // per-game; base_capacity is the per-game starting point for
+            // this team's stadium.
             $table->unsignedInteger('base_capacity');
 
             // Permanent supplementary stands ("gradas supletorias"). Capped
