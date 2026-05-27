@@ -201,6 +201,94 @@ class UefaQualificationTest extends TestCase
         );
     }
 
+    public function test_ucl_winner_qualifies_for_next_ucl(): void
+    {
+        // Pick an EUR pool team as the UCL winner (not in any configured country's league)
+        $uclWinner = $this->eurPoolTeams[0];
+
+        // Make sure they are NOT already in next season's UCL
+        CompetitionEntry::where('game_id', $this->game->id)
+            ->where('competition_id', 'UCL')
+            ->where('team_id', $uclWinner->id)
+            ->delete();
+
+        $data = $this->makeTransitionData();
+        $data->setMetadata(SeasonTransitionData::META_UCL_WINNER, $uclWinner->id);
+
+        $processor = app(UefaQualificationProcessor::class);
+        $processor->process($this->game, $data);
+
+        $this->assertTrue(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'UCL')
+                ->where('team_id', $uclWinner->id)
+                ->exists(),
+            'Defending UCL winner should auto-qualify for next season UCL'
+        );
+
+        $uclCount = CompetitionEntry::where('game_id', $this->game->id)
+            ->where('competition_id', 'UCL')
+            ->count();
+        $this->assertEquals(36, $uclCount, "UCL should still have exactly 36 entries, got {$uclCount}");
+    }
+
+    public function test_ucl_winner_already_qualified_via_league_is_not_duplicated(): void
+    {
+        // Position 1 in ESP1 — already qualifies for UCL via league finish
+        $uclWinner = $this->teamsByCountry['ES'][0];
+
+        $data = $this->makeTransitionData();
+        $data->setMetadata(SeasonTransitionData::META_UCL_WINNER, $uclWinner->id);
+
+        $processor = app(UefaQualificationProcessor::class);
+        $processor->process($this->game, $data);
+
+        $uclCount = CompetitionEntry::where('game_id', $this->game->id)
+            ->where('competition_id', 'UCL')
+            ->count();
+
+        $this->assertEquals(36, $uclCount, "UCL should still have exactly 36 entries, got {$uclCount}");
+    }
+
+    public function test_ucl_winner_in_uel_via_league_is_upgraded_and_uel_spot_cascades(): void
+    {
+        // Position 6 in ESP1 — qualifies for UEL via league. If they also win
+        // the UCL, they must move up to UCL and the vacated UEL spot must
+        // cascade to the next non-qualified Spanish team (position 8).
+        $uclWinner = $this->teamsByCountry['ES'][5]; // position 6 = UEL
+
+        $data = $this->makeTransitionData();
+        $data->setMetadata(SeasonTransitionData::META_UCL_WINNER, $uclWinner->id);
+
+        $processor = app(UefaQualificationProcessor::class);
+        $processor->process($this->game, $data);
+
+        $this->assertTrue(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'UCL')
+                ->where('team_id', $uclWinner->id)
+                ->exists(),
+            'UCL winner from UEL slot should be upgraded to UCL'
+        );
+
+        $this->assertFalse(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'UEL')
+                ->where('team_id', $uclWinner->id)
+                ->exists(),
+            'UCL winner should not still hold a UEL spot'
+        );
+
+        $nextTeam = $this->teamsByCountry['ES'][7]; // position 8
+        $this->assertTrue(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'UEL')
+                ->where('team_id', $nextTeam->id)
+                ->exists(),
+            'Vacated UEL spot should cascade to next non-qualified Spanish team'
+        );
+    }
+
     public function test_uel_winner_already_in_ucl_is_not_duplicated(): void
     {
         // Pick a team that's already in UCL (from standings-based qualification)

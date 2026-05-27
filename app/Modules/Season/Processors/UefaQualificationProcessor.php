@@ -30,6 +30,12 @@ use Illuminate\Support\Facades\Log;
  *   cascades to the next non-qualified team in standings.
  * - If cup winner qualifies for UECL via league, they get upgraded to UEL and
  *   the UECL spot cascades to the next non-qualified team.
+ *
+ * European holder rules:
+ * - The defending UCL winner auto-qualifies for next season's UCL.
+ * - The UEL winner is promoted into next season's UCL.
+ * In both cases, if the holder already has a UEL/UECL spot, that spot is
+ * vacated and cascades to the next non-qualified team from the same country.
  */
 class UefaQualificationProcessor implements SeasonProcessor
 {
@@ -59,6 +65,7 @@ class UefaQualificationProcessor implements SeasonProcessor
             }
         }
 
+        $this->qualifyUclWinner($game, $data);
         $this->qualifyUelWinner($game, $data);
         $this->fillRemainingContinentalSlots($game, $swissCompetitionIds);
 
@@ -315,6 +322,24 @@ class UefaQualificationProcessor implements SeasonProcessor
     }
 
     /**
+     * Qualify the defending UCL winner into next season's UCL.
+     *
+     * Mirrors qualifyUelWinner: if the holder did not already secure a UCL
+     * spot via their league finish, they are inserted in place of a
+     * non-configured-country filler, and any UEL/UECL spot they held
+     * cascades to the next non-qualified team from their country's league.
+     */
+    private function qualifyUclWinner(Game $game, SeasonTransitionData $data): void
+    {
+        $uclWinnerId = $data->getMetadata(SeasonTransitionData::META_UCL_WINNER);
+        if (!$uclWinnerId) {
+            return;
+        }
+
+        $this->promoteWinnerToUcl($game, $uclWinnerId);
+    }
+
+    /**
      * Qualify the UEL winner into next season's UCL.
      *
      * If the winner is already in UCL, do nothing.
@@ -329,15 +354,26 @@ class UefaQualificationProcessor implements SeasonProcessor
             return;
         }
 
+        $this->promoteWinnerToUcl($game, $uelWinnerId);
+    }
+
+    /**
+     * Insert a European holder into next season's UCL, replacing a
+     * non-configured-country filler to keep the field size stable, and
+     * cascade any UEL/UECL spot they previously held.
+     *
+     * No-op if UCL isn't seeded yet or the team is already in UCL.
+     */
+    private function promoteWinnerToUcl(Game $game, string $winnerId): void
+    {
         $uclCompetition = Competition::find('UCL');
         if (!$uclCompetition) {
             return;
         }
 
-        // Check if already in UCL
         $alreadyInUcl = CompetitionEntry::where('game_id', $game->id)
             ->where('competition_id', 'UCL')
-            ->where('team_id', $uelWinnerId)
+            ->where('team_id', $winnerId)
             ->exists();
 
         if ($alreadyInUcl) {
@@ -369,22 +405,21 @@ class UefaQualificationProcessor implements SeasonProcessor
                 ->delete();
         }
 
-        // Add UEL winner to UCL
         CompetitionEntry::updateOrCreate(
             [
                 'game_id' => $game->id,
                 'competition_id' => 'UCL',
-                'team_id' => $uelWinnerId,
+                'team_id' => $winnerId,
             ],
             [
                 'entry_round' => 1,
             ]
         );
 
-        // Cascade: if the UEL winner had a UEL or UECL spot (e.g. from cup winner),
-        // remove it and give that spot to the next non-qualified team from the
-        // same country's league standings.
-        $this->cascadeVacatedSpot($game, $uelWinnerId);
+        // Cascade: if the holder had a UEL or UECL spot (e.g. via league or cup
+        // winner cascade), remove it and give that spot to the next non-qualified
+        // team from the same country's league standings.
+        $this->cascadeVacatedSpot($game, $winnerId);
     }
 
     /**
