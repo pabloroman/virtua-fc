@@ -6,6 +6,8 @@ VirtuaFC is a football manager simulation game built with Laravel 12. Players ma
 
 The frontend uses Blade templates with Tailwind CSS and Alpine.js. The app defaults to Spanish (`APP_LOCALE=es`).
 
+**Stack versions:** PHP 8.5, Laravel 12, PHPUnit 11. Tailwind CSS 4.x (via `@tailwindcss/vite`), Alpine.js 3.x, Vite 7.x, Vitest 4.x. No ESLint/Prettier — only `.editorconfig` (4-space indent, LF, UTF-8) and Laravel Pint for PHP.
+
 ## Development Commands
 
 ```bash
@@ -16,11 +18,29 @@ php artisan app:seed-reference-data             # Seed reference data (--fresh t
 php artisan app:simulate-match                  # Simulate a match (debugging)
 php artisan app:simulate-season                 # Simulate a full season
 php artisan config:clear                        # Clear config cache after changes
+./vendor/bin/phpstan analyse                    # Larastan static analysis (level 1)
 ```
 
 The queue worker must be running for background jobs. `composer dev` handles this via `php artisan queue:listen --tries=1`.
 
-**Do not run tests automatically after making changes.** Tests run in CI after pushing to a branch. Only run tests locally when explicitly asked.
+**Do not run tests or static analysis automatically after making changes.** Both run in CI after pushing to a branch. Only run them locally when explicitly asked.
+
+**Game-state debugging commands** (full list in `app/Console/Commands/`):
+
+```bash
+php artisan app:diagnose-stuck-game {game}      # Investigate a stalled game
+php artisan app:cleanup-games                   # Remove orphaned/abandoned games
+php artisan app:refresh-player-templates        # Reseed player biography source
+php artisan app:unstick-season-transition       # Unblock a stuck season transition
+```
+
+## Testing
+
+- **PHPUnit 11** (no Pest). Tests live in `tests/Unit/` and `tests/Feature/`.
+- The base `tests/TestCase.php` sets `protected $connectionsToTransact = ['pgsql']` and calls `$this->withoutVite()` in `setUp()`. **Do not add `pgsql_control` to `$connectionsToTransact`** — the test environment aliases it to the same PDO handle (see `AppServiceProvider::boot()`), and listing both opens a second transaction on the same connection and breaks teardown.
+- **Factories use fluent helpers** — prefer them over manual wiring. Examples: `Game::factory()->forTeam($team)->create()`, `GamePlayer::factory()->forTeam($team)->create()`, `Game::factory()->inCompetition($id)->create()`.
+- Parallel runs via `paratest` are available (`php artisan test --parallel`) but not the default.
+- Static analysis: Larastan at level 1 (`./vendor/bin/phpstan analyse`). Strict where it matters; permissive elsewhere.
 
 ## Architecture
 
@@ -34,36 +54,48 @@ Uses invokable single-action classes instead of controllers:
 
 **Views and Actions must stay thin.** They only orchestrate: validate input, call a service, return a response. Business logic, database queries, and data transformations belong in service classes (`app/Modules/*/Services/`). Never put domain logic in a View or Action.
 
+**Route wiring** (`routes/web.php`): routes bind invokable Actions/Views directly — `Route::get('/manager/{username}', ShowManagerProfile::class)`. No controller classes for game flows. Route names use dot notation (`leaderboard.teams`, `tournament-summary.show`). Game-scoped routes go behind the `game.owner` middleware (defined in `bootstrap/app.php`, implemented by `App\Http\Middleware\EnsureGameOwnership`). Any new route that operates on a specific game must be inside that middleware group.
+
 ### Modular Monolith
 
-Domain logic is organized into modules under `app/Modules/`, each with services, contracts, DTOs, and events:
+Domain logic is organized into modules under `app/Modules/`, each with services, contracts, DTOs, and events. Conceptual mechanics for many of these modules are documented in `docs/game-systems/` (index: `docs/game-systems/README.md`) — cross-references are noted below.
 
-| Module | Purpose | Key services |
-|--------|---------|-------------|
-| **Match** | Match simulation engine | `MatchSimulator`, `MatchdayService`, `CupTieResolver`, handlers |
-| **Lineup** | Tactical layer | `LineupService`, `SubstitutionService`, `FormationRecommender` |
-| **Player** | Player lifecycle | `PlayerDevelopmentService`, `PlayerConditionService`, `PlayerValuationService`, `InjuryService`, `PlayerRetirementService` |
-| **Squad** | Squad composition | `PlayerGeneratorService`, `EligibilityService` |
-| **Transfer** | Market operations | `TransferService`, `ContractService`, `LoanService`, `ScoutingService` |
-| **Competition** | Structure & config | `CountryConfig`, `StandingsCalculator`, `CupDrawService` |
-| **Finance** | Economic model | `BudgetProjectionService`, `SeasonSimulationService` |
-| **Season** | Lifecycle orchestration | `SeasonClosingPipeline`, `SeasonSetupPipeline`, `GameCreationService` |
-| **Manager** | Profile, trophies & leaderboard | `ManagerProfileService`, `LeaderboardService` |
-| **Notification** | In-game messaging | `NotificationService` |
-| **Academy** | Youth development | `YouthAcademyService` |
-| **Report** | End-of-season/tournament reports & awards | `SeasonSummaryService`, `CompetitionSummaryService`, `AwardService` |
+| Module | Purpose | Key services | Deep dives in `docs/game-systems/` |
+|--------|---------|-------------|------------------------------------|
+| **Match** | Match simulation engine | `MatchSimulator`, `MatchdayService`, `CupTieResolver`, handlers | `match-simulation.md`, `matchday-advancement.md` |
+| **Lineup** | Tactical layer | `LineupService`, `SubstitutionService`, `FormationRecommender` | — |
+| **Player** | Player lifecycle | `PlayerDevelopmentService`, `PlayerConditionService`, `PlayerValuationService`, `InjuryService`, `PlayerRetirementService` | `player-development.md`, `player-abilities.md`, `player-potential.md`, `injury-system.md` |
+| **Squad** | Squad composition | `PlayerGeneratorService`, `EligibilityService` | `squad-page-redesign.md` |
+| **ReserveTeam** | Reserve / B-team and U23 cascades | `ReserveTeamService` | — |
+| **Transfer** | Market operations | `TransferService`, `ContractService`, `LoanService`, `ScoutingService` | `transfer-market.md`, `market-value-dynamics.md` |
+| **Competition** | Structure & config | `CountryConfig`, `StandingsCalculator`, `CupDrawService` | — |
+| **Finance** | Economic model | `BudgetProjectionService`, `SeasonSimulationService` | `club-economy-system.md` |
+| **Stadium** | Capacity, attendance & upgrades | `StadiumCapacityResolver`, `StadiumUpgradeService`, `MatchAttendanceService`, `FanLoyaltyService`, `SeasonTicketPricingService`, `DemandCurveService` | `stadium-and-facilities.md` |
+| **Reputation** | Club & competition reputation | `ReputationSummaryService` | `reputation-system.md` |
+| **Season** | Lifecycle orchestration | `SeasonClosingPipeline`, `SeasonSetupPipeline`, `GameCreationService` | `season-lifecycle.md` |
+| **Manager** | Profile, trophies & leaderboard | `ManagerProfileService`, `LeaderboardService` | — |
+| **Notification** | In-game messaging | `NotificationService` | — |
+| **Academy** | Youth development | `YouthAcademyService` | `academy-redesign.md` |
+| **Report** | End-of-season/tournament reports & awards | `SeasonSummaryService`, `CompetitionSummaryService`, `AwardService` | — |
+| **Analytics** | Internal usage/engagement analytics | `ActivationFunnelService`, `DashboardStatsService`, `GameStatsService`, `DeviceStatsService` | — |
+| **Editor** | Admin tools for reference data (player templates, etc.) | `PlayerTemplateAdminService` | — |
 
-**Dependency direction:** Season (orchestrator) → Match, Transfer, Finance → Player, Squad, Competition → Notification (leaf). No circular dependencies.
+**Dependency direction:** Season (orchestrator) → Match, Transfer, Finance → Player, Squad, ReserveTeam, Competition, Stadium, Reputation → Notification (leaf). No circular dependencies.
 
 Models stay in `app/Models/` (shared). The HTTP layer stays in `app/Http/` as thin orchestrators.
 
+**Events as the cross-module seam.** Events extend Laravel's `Dispatchable` and dispatch **synchronously** by default. Listeners use constructor injection; event payloads are readonly properties. Cross-module communication should go through events — don't reach into another module's services directly when an event already exists. Example: `GameDateAdvanced` is the canonical hook for "the user just played a match."
+
+**DTOs and pipeline metadata.** DTOs live in `app/Modules/*/DTOs/` as plain readonly PHP classes (no Spatie); some implement `JsonSerializable`. The Season pipelines thread a single DTO (`SeasonTransitionData`) through every processor; it carries a `metadata` bag (keys like `META_SWISS_POT_DATA`, `META_UCL_WINNER`, `META_UEL_WINNER`) so processors can publish data for later stages without changing the DTO surface. When adding a new processor that needs to share state downstream, prefer a new metadata key over expanding the DTO's typed properties.
+
 ### Competition Handlers
 
-Handlers implement `App\Modules\Competition\Contracts\CompetitionHandler`, resolved via `CompetitionHandlerResolver` based on `handler_type`:
+Competition format is implemented in **handler classes in `app/Modules/Match/Handlers/`** (not under the Competition module, despite the name), resolved via `CompetitionHandlerResolver` based on `handler_type`:
 
-- `LeagueHandler`, `KnockoutCupHandler`, `LeagueWithPlayoffHandler`, `SwissFormatHandler`
+- `LeagueHandler`, `KnockoutCupHandler`, `LeagueWithPlayoffHandler`, `SwissFormatHandler`, `GroupStageCupHandler`, `PreSeasonHandler`
+- `CupCompetitionHandler` is the shared base class for cup-style handlers.
 
-Competition-specific config (revenue rates, etc.) lives in `App\Modules\Competition\Configs\*` (e.g., `LaLigaConfig`, `ChampionsLeagueConfig`).
+Competition-specific config (revenue rates, etc.) lives in `App\Modules\Competition\Configs\*` (e.g., `LaLigaConfig`, `ChampionsLeagueConfig`). The handler/config split is intentional: handlers describe *how a competition runs*, configs describe *what a competition pays out and qualifies for*.
 
 ### Season Pipelines
 
@@ -106,6 +138,14 @@ Two logical database planes share one physical Postgres today, with separate con
 - Migrations target a specific plane; control-plane schema goes in `database/migrations/control/`, tenant in `database/migrations/tenant/` (paths are introduced in a later phase — until then, all migrations are on the default connection).
 
 **Existing seams:** several pre-existing cross-plane sites (search `PLANES-SEAM`) still use JOINs / correlated subqueries because the two-step rewrites caused OOM/timeout regressions. They work today because both planes share one physical Postgres. Each seam needs to be re-split — without the perf regression — before the planes are physically separated. The runtime guard (`config/database_planes.php` → `guard_enabled`, env `DATABASE_PLANES_GUARD_ENABLED`) is opt-in for this reason; flip it on when working on a seam to verify your fix is single-plane.
+
+### Match Event Ordering
+
+Match-simulation event ordering is non-obvious and is the source of several recurring bug classes (phantom ET goals, half-time event sequencing, substitution timing around red cards). Events have an `EXPECTED_STEP` that controls sequencing within a minute, and half-time / extra-time boundaries have specific rules. Before modifying simulation logic, read `docs/game-systems/match-simulation.md` and look at how existing handlers in `app/Modules/Match/Handlers/` sequence events. When you change ordering, add a test with explicit minute/step assertions — implicit "next event" assumptions silently regress.
+
+### Reserve Team & U23 Cascades
+
+The `ReserveTeam` module (filial / B-team) owns reserve rosters and the call-up / send-down / permanent-promotion lifecycle (`ReserveTeamService::callUpToFirstTeam`, `sendBackToReserve`, `sendDownToReserve`, `autoPromoteOverageReservePlayers`, `permanentlyPromoteCalledUpPlayers`). Always go through `ReserveTeamService` when moving players between a first team and its reserve — it enforces filial-relationship checks and the cascading effects on loans, contracts, and eligibility. Don't reimplement these moves in calling code, and don't bypass them in seeders or migrations.
 
 ### Player Age Boundaries
 
