@@ -5,6 +5,9 @@ services:
       target: dev
     ports:
       - "8000:8000"
+      # Reverb shares this container's network namespace (see the `reverb`
+      # service below), so its WebSocket port is published here.
+      - "8080:8080"
     env_file: .env.docker
     environment:
       APP_ENV: local
@@ -41,11 +44,17 @@ services:
       - /app/node_modules
     restart: unless-stopped
 
+  # The queue worker runs AdvanceLiveMatchWindowJob, which broadcasts live-match
+  # events. It shares the `app` container's network namespace (same as `reverb`)
+  # so its broadcaster reaches the Reverb server at localhost:8080 — matching
+  # REVERB_HOST/REVERB_PORT. Without this, `localhost` from a standalone horizon
+  # container points at itself and broadcasts silently fail to publish.
   horizon:
     build:
       context: .
       target: dev
     command: ["php", "artisan", "horizon"]
+    network_mode: "service:app"
     env_file: .env.docker
     environment:
       APP_ENV: local
@@ -58,10 +67,42 @@ services:
       DB_SSLMODE: disable
       REDIS_HOST: redis
     depends_on:
+      app:
+        condition: service_started
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
+    volumes:
+      - .:/app
+      - /app/vendor
+      - /app/node_modules
+    restart: unless-stopped
+
+  # Reverb WebSocket server. It shares the `app` container's network namespace
+  # so the browser and the PHP broadcaster both reach it at localhost:8080 —
+  # matching REVERB_HOST/REVERB_PORT in .env. The published 8080 port lives on
+  # the `app` service (a service using `network_mode: service:*` cannot declare
+  # its own ports).
+  reverb:
+    build:
+      context: .
+      target: dev
+    command: ["php", "artisan", "reverb:start", "--host=0.0.0.0", "--port=8080"]
+    network_mode: "service:app"
+    env_file: .env.docker
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: virtua_fc
+      DB_USERNAME: virtua_fc
+      DB_PASSWORD: password
+      DB_SSLMODE: disable
+      REDIS_HOST: redis
+    depends_on:
+      - app
     volumes:
       - .:/app
       - /app/vendor
