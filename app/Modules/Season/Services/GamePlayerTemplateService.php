@@ -448,10 +448,14 @@ class GamePlayerTemplateService
         // ability baseline and a non-zero transfer price.
         $marketValueForOverall = $marketValueCents > 0 ? $marketValueCents : 10_000_000;
         $position = $playerData['position'] ?? null;
-        $overallScore = $this->valuationService->marketValueToOverallScore($marketValueForOverall, $age, $position);
+        $overallScore = $this->resolveExplicitAbility($playerData['overall_score'] ?? null)
+            ?? $this->valuationService->marketValueToOverallScore($marketValueForOverall, $age, $position);
         $annualWage = $this->contractService->calculateAnnualWage($marketValueCents, $minimumWage, $age);
 
-        $potentialData = $this->developmentService->generatePotential($age, $overallScore);
+        $explicitPotential = $this->resolveExplicitPotential($playerData['potential'] ?? null, $overallScore);
+        $potentialData = $explicitPotential !== null
+            ? $this->developmentService->scoutedRangeForKnownPotential($age, $overallScore, $explicitPotential)
+            : $this->developmentService->generatePotential($age, $overallScore);
 
         $secondaryPositions = $this->getSecondaryPositions($playerData['id']);
 
@@ -537,6 +541,36 @@ class GamePlayerTemplateService
             return $matches[1];
         }
         return null;
+    }
+
+    /**
+     * Validate a hand-curated `overall_score` from source JSON.
+     * Returns the clamped int, or null to signal "fall back to the heuristic".
+     */
+    private function resolveExplicitAbility(mixed $raw): ?int
+    {
+        if ($raw === null || $raw === '') {
+            return null;
+        }
+        $value = filter_var($raw, FILTER_VALIDATE_INT);
+        if ($value === false || $value < 1 || $value > 99) {
+            return null;
+        }
+        return $value;
+    }
+
+    /**
+     * Validate a hand-curated `potential` from source JSON. Must be a valid
+     * 1–99 integer and at least the current `overall_score` — a potential
+     * below current ability is meaningless and would break development math.
+     */
+    private function resolveExplicitPotential(mixed $raw, int $overallScore): ?int
+    {
+        $value = $this->resolveExplicitAbility($raw);
+        if ($value === null || $value < $overallScore) {
+            return null;
+        }
+        return $value;
     }
 
     /**

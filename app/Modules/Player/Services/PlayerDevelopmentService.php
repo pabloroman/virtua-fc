@@ -106,23 +106,19 @@ class PlayerDevelopmentService
             // Base range 8-20, plus value bonus for proven youngsters
             $basePotentialRange = rand(8, 20);
             $potentialRange = $basePotentialRange + $valueBonus;
-            $uncertainty = rand(5, 10); // Higher uncertainty for young players
         } elseif ($age <= 24) {
             // Developing players: moderate potential
             $basePotentialRange = rand(4, 12);
             $potentialRange = $basePotentialRange + (int) ($valueBonus * 0.6);
-            $uncertainty = rand(4, 7);
         } elseif ($age <= PlayerAge::PRIME_END) {
             // Peak players: small headroom over current ability — elite peak
             // players (high market value) get a slightly higher visible ceiling.
             $basePotentialRange = rand(0, 2);
             $potentialRange = $basePotentialRange + (int) ($valueBonus * 0.3);
-            $uncertainty = rand(1, 2);
         } else {
             // Veterans: no upside left — current ability IS the ceiling.
             // UI hides the potential row for this branch (see player-detail view).
             $potentialRange = 0;
-            $uncertainty = 0;
         }
 
         // Diminishing returns for high-rated players past their growing
@@ -130,14 +126,10 @@ class PlayerDevelopmentService
         // many already-strong players to 95-99 ceilings, which is unrealistic
         // on a population basis.
         if ($age > PlayerAge::YOUNG_END && $currentAbility >= 80) {
-            $taperFactor = match (true) {
-                $currentAbility >= 88 => 0.25,
-                $currentAbility >= 84 => 0.5,
-                default => 0.75,
-            };
-            $potentialRange = (int) round($potentialRange * $taperFactor);
-            $uncertainty = (int) round($uncertainty * $taperFactor);
+            $potentialRange = (int) round($potentialRange * $this->highAbilityTaper($currentAbility));
         }
+
+        $uncertainty = $this->uncertaintyForAge($age, $currentAbility);
 
         // True potential (hidden from user). Clamp to what the development
         // curve can actually deliver from this age — otherwise displayed
@@ -154,6 +146,66 @@ class PlayerDevelopmentService
             'low' => $low,
             'high' => $high,
         ];
+    }
+
+    /**
+     * Build the scouted potential band around an explicit, known true potential
+     * (e.g. supplied by a hand-curated source JSON during template import).
+     *
+     * Skips the random potential-range/value-bonus derivation but reuses the
+     * same age-based uncertainty and reachable-ceiling clamp as
+     * generatePotential() so explicit and heuristic players sit on the same
+     * curve.
+     *
+     * @return array{potential: int, low: int, high: int}
+     */
+    public function scoutedRangeForKnownPotential(int $age, int $currentAbility, int $truePotential): array
+    {
+        $reachableCeiling = min(99, $currentAbility + DevelopmentCurve::maxLifetimeGrowth($age));
+        $clampedTrue = min(99, $reachableCeiling, max($currentAbility, $truePotential));
+
+        $uncertainty = $this->uncertaintyForAge($age, $currentAbility);
+
+        $low = max($currentAbility, $clampedTrue - $uncertainty);
+        $high = min(99, $reachableCeiling, $clampedTrue + $uncertainty);
+
+        return [
+            'potential' => $clampedTrue,
+            'low' => $low,
+            'high' => $high,
+        ];
+    }
+
+    /**
+     * Age-based scouted-range uncertainty, with the same high-ability taper
+     * generatePotential() applies to its potential range.
+     */
+    private function uncertaintyForAge(int $age, int $currentAbility): int
+    {
+        if ($age <= PlayerAge::ACADEMY_END) {
+            $uncertainty = rand(5, 10);
+        } elseif ($age <= 24) {
+            $uncertainty = rand(4, 7);
+        } elseif ($age <= PlayerAge::PRIME_END) {
+            $uncertainty = rand(1, 2);
+        } else {
+            $uncertainty = 0;
+        }
+
+        if ($age > PlayerAge::YOUNG_END && $currentAbility >= 80) {
+            $uncertainty = (int) round($uncertainty * $this->highAbilityTaper($currentAbility));
+        }
+
+        return $uncertainty;
+    }
+
+    private function highAbilityTaper(int $currentAbility): float
+    {
+        return match (true) {
+            $currentAbility >= 88 => 0.25,
+            $currentAbility >= 84 => 0.5,
+            default => 0.75,
+        };
     }
 
     /**
