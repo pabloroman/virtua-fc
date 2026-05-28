@@ -14,7 +14,9 @@
       "id": "561613",
       "marketValue": "€40.00m",
       "name": "Joan García",
-      "position": "Goalkeeper"
+      "position": "Goalkeeper",
+      "overall_score": 86,
+      "potential": 89
     },
     {
       "calledUp": true,
@@ -28,7 +30,9 @@
       "id": "262749",
       "marketValue": "€35.00m",
       "name": "David Raya",
-      "position": "Goalkeeper"
+      "position": "Goalkeeper",
+      "overall_score": 87,
+      "potential": 87
     },
     {
       "calledUp": true,
@@ -42,7 +46,9 @@
       "id": "262396",
       "marketValue": "€25.00m",
       "name": "Unai Simón",
-      "position": "Goalkeeper"
+      "position": "Goalkeeper",
+      "overall_score": 84,
+      "potential": 85
     },
     {
       "calledUp": false,
@@ -84,7 +90,9 @@
       "id": "562742",
       "marketValue": "€6.00m",
       "name": "Leo Román",
-      "position": "Goalkeeper"
+      "position": "Goalkeeper",
+      "overall_score": 77,
+      "potential": 83
     },
     {
       "calledUp": true,
@@ -98,7 +106,9 @@
       "id": "962110",
       "marketValue": "€80.00m",
       "name": "Pau Cubarsí",
-      "position": "Centre-Back"
+      "position": "Centre-Back",
+      "overall_score": 83,
+      "potential": 89
     },
     {
       "calledUp": false,
@@ -112,7 +122,9 @@
       "id": "1018938",
       "marketValue": "€20.00m",
       "name": "Jon Martín",
-      "position": "Centre-Back"
+      "position": "Centre-Back",
+      "overall_score": 77,
+      "potential": 86
     },
     {
       "calledUp": false,
@@ -126,7 +138,9 @@
       "id": "1076815",
       "marketValue": "€15.00m",
       "name": "Javi Rodríguez",
-      "position": "Centre-Back"
+      "position": "Centre-Back",
+      "overall_score": 76,
+      "potential": 82
     },
     {
       "calledUp": false,
@@ -182,7 +196,9 @@
       "id": "176553",
       "marketValue": "€9.00m",
       "name": "Aymeric Laporte",
-      "position": "Centre-Back"
+      "position": "Centre-Back",
+      "overall_score": 82,
+      "potential": 82
     },
     {
       "calledUp": false,
@@ -224,7 +240,9 @@
       "id": "466794",
       "marketValue": "€35.00m",
       "name": "Eric García",
-      "position": "Centre-Back"
+      "position": "Centre-Back",
+      "overall_score": 83,
+      "potential": 86
     },
     {
       "calledUp": true,
@@ -238,7 +256,9 @@
       "id": "284857",
       "marketValue": "€50.00m",
       "name": "Marc Cucurella",
-      "position": "Left-Back"
+      "position": "Left-Back",
+      "overall_score": 85,
+      "potential": 85
     },
     {
       "calledUp": true,
@@ -252,7 +272,9 @@
       "id": "193082",
       "marketValue": "€24.00m",
       "name": "Alejandro Grimaldo",
-      "position": "Left-Back"
+      "position": "Left-Back",
+      "overall_score": 85,
+      "potential": 85
     },
     {
       "calledUp": true,
@@ -266,7 +288,9 @@
       "id": "553875",
       "marketValue": "€40.00m",
       "name": "Pedro Porro",
-      "position": "Right-Back"
+      "position": "Right-Back",
+      "overall_score": 82,
+      "potential": 85
     },
     {
       "calledUp": true,
@@ -280,7 +304,9 @@
       "id": "282411",
       "marketValue": "€22.00m",
       "name": "Marcos Llorente",
-      "position": "Right-Back"
+      "position": "Right-Back",
+      "overall_score": 85,
+      "potential": 85
     },
     {
       "calledUp": true,
@@ -294,7 +320,9 @@
       "id": "844637",
       "marketValue": "€15.00m",
       "name": "Marc Pubill",
-      "position": "Centre-Back"
+      "position": "Centre-Back",
+      "overall_score": 80,
+      "potential": 87
     },
     {
       "calledUp": false,
@@ -308,7 +336,9 @@
       "id": "366930",
       "marketValue": "€15.00m",
       "name": "Sergio Gómez",
-      "position": "Left-Back"
+      "position": "Left-Back",
+      "overall_score": 78,
+      "potential": 81
     },
     {
       "calledUp": false,
@@ -336,7 +366,9 @@
       "id": "423440",
       "marketValue": "€80.00m",
       "name": "Martín Zubimendi",
-      "position": "Defensive Midfield"
+      "position": "Defensive Midfield",
+      "overall_score": 85,
+      "potential": 87
     },
     {
       "calledUp": true,
@@ -350,7 +382,9 @@
       "id": "357565",
       "marketValue": "€65.00m",
       "name": "Rodri",
-      "position": "Defensive Midfield"
+      "position": "Defensive Midfield",
+      "overall_score": 89,
+      "potential": 89
     },
     {
       "calledUp": true,
@@ -364,7 +398,9 @@
       "id": "338424",
       "marketValue": "€30.00m",
       "name": "Mikel Merino",
-      "position": "Central Midfield"
+      "position": "Central Midfield",
+      "overall_score": 83,
+      "potential": 83
     },
     {
       "calledUp": false,
@@ -378,7 +414,9 @@
       "id": "1018920",
       "marketValue": "€30.00m",
       "name": "Marc Bernal",
-      "position": "Defensive Midfield"
+      "position": "Defensive Midfield",
+      "overall_score": 75,
+      "potential": 86
     },
     {
       "calledUp": false,
@@ -392,7 +430,9 @@
       "id": "834764",
       "marketValue": "€25.00m",
       "name": "Javi Guerra",
-      "position": "Central Midfield"
+      "position": "Central Midfield",
+      "overall_score": 76,
+      "potential": 84
     },
     {
       "calledUp": true,
@@ -406,7 +446,9 @@
       "id": "683840",
       "marketValue": "€150.00m",
       "name": "Pedri",
-      "position": "Central Midfield"
+      "position": "Central Midfield",
+      "overall_score": 90,
+      "potential": 93
     },
     {
       "calledUp": false,
@@ -476,7 +518,9 @@
       "id": "350219",
       "marketValue": "€40.00m",
       "name": "Fabián Ruiz",
-      "position": "Central Midfield"
+      "position": "Central Midfield",
+      "overall_score": 85,
+      "potential": 85
     },
     {
       "calledUp": false,
@@ -505,7 +549,9 @@
       "id": "646740",
       "marketValue": "€80.00m",
       "name": "Gavi",
-      "position": "Central Midfield"
+      "position": "Central Midfield",
+      "overall_score": 83,
+      "potential": 87
     },
     {
       "calledUp": false,
@@ -519,7 +565,9 @@
       "id": "634431",
       "marketValue": "€10.00m",
       "name": "Beñat Turrientes",
-      "position": "Central Midfield"
+      "position": "Central Midfield",
+      "overall_score": 76,
+      "potential": 82
     },
     {
       "calledUp": true,
@@ -533,7 +581,9 @@
       "id": "293385",
       "marketValue": "€60.00m",
       "name": "Dani Olmo",
-      "position": "Attacking Midfield"
+      "position": "Attacking Midfield",
+      "overall_score": 84,
+      "potential": 84
     },
     {
       "calledUp": true,
@@ -547,7 +597,9 @@
       "id": "548111",
       "marketValue": "€45.00m",
       "name": "Álex Baena",
-      "position": "Left Winger"
+      "position": "Left Winger",
+      "overall_score": 82,
+      "potential": 87
     },
     {
       "calledUp": true,
@@ -561,7 +613,9 @@
       "id": "935231",
       "marketValue": "€20.00m",
       "name": "Víctor Muñoz",
-      "position": "Left Winger"
+      "position": "Left Winger",
+      "overall_score": 78,
+      "potential": 86
     },
     {
       "calledUp": false,
@@ -589,7 +643,9 @@
       "id": "937958",
       "marketValue": "€200.00m",
       "name": "Lamine Yamal",
-      "position": "Right Winger"
+      "position": "Right Winger",
+      "overall_score": 89,
+      "potential": 95
     },
     {
       "calledUp": false,
@@ -617,7 +673,9 @@
       "id": "568157",
       "marketValue": "€35.00m",
       "name": "Yéremy Pino",
-      "position": "Right Winger"
+      "position": "Right Winger",
+      "overall_score": 79,
+      "potential": 86
     },
     {
       "calledUp": false,
@@ -631,7 +689,9 @@
       "id": "1190411",
       "marketValue": "€30.00m",
       "name": "Jesús Rodríguez",
-      "position": "Left Winger"
+      "position": "Left Winger",
+      "overall_score": 76,
+      "potential": 85
     },
     {
       "calledUp": true,
@@ -645,7 +705,9 @@
       "id": "709187",
       "marketValue": "€50.00m",
       "name": "Nico Williams",
-      "position": "Left Winger"
+      "position": "Left Winger",
+      "overall_score": 85,
+      "potential": 88
     },
     {
       "calledUp": true,
@@ -659,7 +721,9 @@
       "id": "398184",
       "marketValue": "€50.00m",
       "name": "Ferran Torres",
-      "position": "Centre-Forward"
+      "position": "Centre-Forward",
+      "overall_score": 84,
+      "potential": 86
     },
     {
       "calledUp": true,
@@ -673,7 +737,9 @@
       "id": "351478",
       "marketValue": "€25.00m",
       "name": "Mikel Oyarzabal",
-      "position": "Centre-Forward"
+      "position": "Centre-Forward",
+      "overall_score": 83,
+      "potential": 83
     },
     {
       "calledUp": true,
@@ -687,7 +753,9 @@
       "id": "278359",
       "marketValue": "€3.00m",
       "name": "Borja Iglesias",
-      "position": "Centre-Forward"
+      "position": "Centre-Forward",
+      "overall_score": 80,
+      "potential": 80
     },
     {
       "calledUp": false,
@@ -745,7 +813,9 @@
       "id": "935230",
       "marketValue": "€30.00m",
       "name": "Gonzalo García",
-      "position": "Centre-Forward"
+      "position": "Centre-Forward",
+      "overall_score": 74,
+      "potential": 84
     },
     {
       "calledUp": false,
