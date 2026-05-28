@@ -35,9 +35,6 @@ class AIReserveCallUpProcessor implements SeasonProcessor
         $promoted = collect();
         $userTeamIds = $game->userTeamIds();
 
-        // Reserves Team lookup is single-plane (control); per-reserve
-        // promotion runs only tenant-plane queries internally. No
-        // cross-plane JOIN.
         $aiReserves = Team::whereNotNull('parent_team_id')
             ->when(! empty($userTeamIds), fn ($q) => $q
                 ->whereNotIn('id', $userTeamIds)

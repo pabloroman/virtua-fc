@@ -393,9 +393,6 @@ class TransferMarketService
             return collect();
         }
 
-        // PLANES-SEAM: cross-plane JOIN against teams (for parent_team_id).
-        // game_players biography is read locally post-Phase-6, so the players
-        // join is gone; the teams join remains until that seam is split.
         $rows = DB::table('game_players')
             ->join('teams', 'teams.id', '=', 'game_players.team_id')
             ->where('game_players.game_id', $game->id)

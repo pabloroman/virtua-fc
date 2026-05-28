@@ -21,7 +21,7 @@ class FetchTeamCrests extends Command
             mkdir($crestsDir, 0755, true);
         }
 
-        $transfermarktIds = DB::connection('pgsql_control')->table('teams')
+        $transfermarktIds = DB::table('teams')
             ->whereNotNull('transfermarkt_id')
             ->where('type', '=', 'club')
             ->distinct()

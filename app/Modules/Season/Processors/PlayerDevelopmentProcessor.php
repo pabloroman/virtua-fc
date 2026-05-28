@@ -14,15 +14,15 @@ use Illuminate\Support\Facades\DB;
  * Applies player development, market revaluation, and tier recompute at
  * season end.
  *
- * Strategy: read inputs in one tenant-side SELECT, resolve biographical
- * fields (date_of_birth) on the control plane, compute the new ability /
- * market value / tier in PHP via the existing services, and write back in
- * 500-row UPDATE…FROM (VALUES …) chunks. PHP-side computation keeps the
- * planner cost of every statement low (no JIT trigger), the chunked writes
- * keep peak bindings small (Telescope-friendly), and using
- * PlayerValuationService restores the original log-linear interpolation
- * and performance-trend multiplier that the prior single-statement CTE
- * approach had simplified to ~±15% banded approximations.
+ * Strategy: read inputs in one SELECT, resolve biographical fields
+ * (date_of_birth) separately, compute the new ability / market value / tier
+ * in PHP via the existing services, and write back in 500-row UPDATE…FROM
+ * (VALUES …) chunks. PHP-side computation keeps the planner cost of every
+ * statement low (no JIT trigger), the chunked writes keep peak bindings
+ * small (Telescope-friendly), and using PlayerValuationService restores the
+ * original log-linear interpolation and performance-trend multiplier that
+ * the prior single-statement CTE approach had simplified to ~±15% banded
+ * approximations.
  */
 class PlayerDevelopmentProcessor implements SeasonProcessor
 {

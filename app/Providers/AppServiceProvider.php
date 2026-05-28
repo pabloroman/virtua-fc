@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Database\CrossPlaneQueryGuard;
 use App\Http\View\Composers\TacticalGuideComposer;
 use App\Events\SeasonCompleted;
 use App\Events\SeasonStarted;
@@ -56,7 +55,6 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\View;
@@ -100,38 +98,6 @@ class AppServiceProvider extends ServiceProvider
         });
 
         \Illuminate\Support\Number::useLocale(config('app.locale'));
-
-        // Runtime guard: fail loudly in dev/staging when a query crosses
-        // the control/tenant plane boundary. Currently opt-in via
-        // `database_planes.guard_enabled` (default false) because several
-        // cross-plane sites are temporarily un-refactored — see the
-        // PLANES-SEAM comments. Flip it on locally when working on a seam.
-        // Skipped in production (overhead) and in testing (the alias below
-        // collapses both connection names onto the same Connection, so the
-        // guard can't distinguish them). See CLAUDE.md → "Control plane /
-        // tenant plane".
-        if (! $this->app->environment(['production', 'testing']) && config('database_planes.guard_enabled', false)) {
-            $crossPlaneGuard = new CrossPlaneQueryGuard(config('database_planes.control', []));
-            DB::listen(fn ($event) => $crossPlaneGuard($event));
-        }
-
-        // Tests run against a single physical Postgres, but the control and
-        // tenant planes use distinct connection NAMES — and two PDO handles
-        // means two independent transactions, which breaks FK consistency
-        // between, say, `games.user_id` (tenant) and `users.id` (control)
-        // during a `RefreshDatabase` test where the user is inserted via
-        // pgsql_control before the game is inserted via pgsql.
-        //
-        // Alias pgsql_control to pgsql in the testing environment so both
-        // connection names resolve to the same Connection instance (one PDO
-        // handle, one transaction). Eloquent models still declare their
-        // logical connection — the alias is transparent — but transactional
-        // integrity is preserved.
-        if ($this->app->environment('testing')) {
-            $this->app['db']->extend('pgsql_control', function () {
-                return $this->app['db']->connection('pgsql');
-            });
-        }
 
         // Static reference data for the tactical-guide modal — composed lazily
         // so view actions that include the partial don't rebuild it on every

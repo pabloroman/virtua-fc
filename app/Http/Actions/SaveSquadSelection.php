@@ -58,9 +58,6 @@ class SaveSquadSelection
 
     public static function createTournamentGamePlayers(string $gameId, string $teamId, array $tmIds, array $positionByTmId): void
     {
-        // Templates carry biography directly post-Phase-5 and live on the
-        // control plane alongside the rest of the cross-tenant reference
-        // data. Read from there instead of the now-deprecated Player table.
         $templates = GamePlayerTemplate::whereIn('transfermarkt_id', $tmIds)
             ->get()
             ->keyBy('transfermarkt_id');

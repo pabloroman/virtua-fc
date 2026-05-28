@@ -11,8 +11,6 @@ class GameStatsService
 {
     public function getClubPopularity(int $limit = 15): Collection
     {
-        // Resolve club team ids on the control plane first, then count Game
-        // picks on the tenant plane. Avoids a cross-plane whereHas('team').
         $clubTeamIds = Team::where('type', '!=', 'national')->pluck('id');
 
         return Game::select('team_id', DB::raw('COUNT(*) as picks'))

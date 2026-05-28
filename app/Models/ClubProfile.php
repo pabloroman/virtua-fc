@@ -27,12 +27,6 @@ class ClubProfile extends Model
 {
     use HasUuids;
 
-    /**
-     * Reference data lives on the control plane. See CLAUDE.md → "Control
-     * plane / tenant plane".
-     */
-    protected $connection = 'pgsql_control';
-
     public $timestamps = false;
 
     protected $fillable = [

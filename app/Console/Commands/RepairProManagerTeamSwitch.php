@@ -92,8 +92,6 @@ class RepairProManagerTeamSwitch extends Command
      */
     private function findAffectedGameIds(): array
     {
-        // Cache the league competition_ids on the control plane so the per-game
-        // scan stays on the tenant connection.
         $leagueIds = Competition::where('role', Competition::ROLE_LEAGUE)->pluck('id')->all();
 
         $games = Game::query()

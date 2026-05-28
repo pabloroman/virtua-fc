@@ -94,8 +94,7 @@ class NationalTeamStatsService
         $nameToId = []; // Maps player_name → player_id for merging legacy entries
         $totalTournaments = 0;
 
-        DB::connection('pgsql_control')
-            ->table('tournament_summaries')
+        DB::table('tournament_summaries')
             ->where('team_id', $teamId)
             ->selectRaw("id, summary_data->'your_squad_stats' as squad_stats")
             ->orderBy('id')

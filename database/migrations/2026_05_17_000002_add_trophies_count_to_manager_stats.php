@@ -16,12 +16,7 @@ return new class extends Migration
             $table->index(['trophies_count', 'matches_played'], 'ms_trophies_mp');
         });
 
-        // Backfill from manager_trophies. PLANES-SEAM: manager_stats lives on
-        // the control plane and manager_trophies on the tenant plane, but
-        // today both connections resolve to the same Postgres so a single
-        // UPDATE ... FROM is fine. When the planes are physically split this
-        // backfill will need to become a two-step service call; it is a
-        // one-shot migration so no re-run risk.
+        // Backfill from manager_trophies.
         DB::statement(<<<'SQL'
             UPDATE manager_stats
             SET trophies_count = sub.cnt

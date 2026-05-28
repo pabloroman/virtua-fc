@@ -25,9 +25,7 @@ return new class extends Migration
             $table->unsignedTinyInteger('rebuilt_uefa_level')->nullable()->after('rebuilt_capacity');
         });
 
-        // Backfill existing rows by reading from Teams. Stay single-plane:
-        // pluck team_id → category map from the control plane, then update
-        // each tenant row in a separate batch. No JOIN across planes.
+        // Backfill existing game_stadiums rows from Teams.
         $teamIds = DB::table('game_stadiums')
             ->whereNull('base_uefa_level')
             ->pluck('team_id')
@@ -38,7 +36,7 @@ return new class extends Migration
             return;
         }
 
-        $categoriesByTeam = DB::connection('pgsql_control')->table('teams')
+        $categoriesByTeam = DB::table('teams')
             ->whereIn('id', $teamIds)
             ->pluck('uefa_stadium_category', 'id');
 

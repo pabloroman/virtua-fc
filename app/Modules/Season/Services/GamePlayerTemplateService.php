@@ -30,7 +30,7 @@ class GamePlayerTemplateService
      */
     public function clearTemplates(string $season): void
     {
-        DB::connection('pgsql_control')->table('game_player_templates')
+        DB::table('game_player_templates')
             ->where('season', $season)
             ->whereNotIn('team_id', function ($query) {
                 $query->select('id')->from('teams')->where('type', 'national');
@@ -43,7 +43,7 @@ class GamePlayerTemplateService
      */
     public function clearTemplatesForCountry(string $season, string $countryCode): void
     {
-        DB::connection('pgsql_control')->table('game_player_templates')
+        DB::table('game_player_templates')
             ->where('season', $season)
             ->whereIn('team_id', function ($query) use ($countryCode) {
                 $query->select('id')->from('teams')->where('country', $countryCode);
@@ -56,7 +56,7 @@ class GamePlayerTemplateService
      */
     public function clearTemplatesForNationalTeams(string $season): void
     {
-        DB::connection('pgsql_control')->table('game_player_templates')
+        DB::table('game_player_templates')
             ->where('season', $season)
             ->whereIn('team_id', function ($query) {
                 $query->select('id')->from('teams')->where('type', 'national');
@@ -124,7 +124,7 @@ class GamePlayerTemplateService
         }
 
         foreach (array_chunk($rows, 500) as $chunk) {
-            DB::connection('pgsql_control')->table('game_player_templates')->insert($chunk);
+            DB::table('game_player_templates')->insert($chunk);
         }
 
         $this->upsertTournamentInfo($season, $tournamentInfoByPlayerId, $nationalTeams->pluck('id')->all());
@@ -147,8 +147,7 @@ class GamePlayerTemplateService
             return;
         }
 
-        $templateIdsByPlayerId = DB::connection('pgsql_control')
-            ->table('game_player_templates')
+        $templateIdsByPlayerId = DB::table('game_player_templates')
             ->where('season', $season)
             ->whereIn('team_id', $nationalTeamIds)
             ->whereIn('player_id', array_keys($tournamentInfoByPlayerId))
@@ -176,8 +175,7 @@ class GamePlayerTemplateService
         }
 
         foreach (array_chunk($satelliteRows, 500) as $chunk) {
-            DB::connection('pgsql_control')
-                ->table('game_player_template_tournament_info')
+            DB::table('game_player_template_tournament_info')
                 ->upsert(
                     $chunk,
                     ['game_player_template_id'],
@@ -194,8 +192,7 @@ class GamePlayerTemplateService
      */
     private function clearOrphanTournamentInfo(): void
     {
-        DB::connection('pgsql_control')
-            ->table('game_player_template_tournament_info')
+        DB::table('game_player_template_tournament_info')
             ->whereIn('game_player_template_id', function ($query) {
                 $query->select('id')
                     ->from('game_player_templates')
@@ -229,7 +226,7 @@ class GamePlayerTemplateService
         // Exclude national teams so their players can still get club templates
         $nationalTeamIds = Team::where('type', 'national')->pluck('id');
 
-        $processedTeamIds = DB::connection('pgsql_control')->table('game_player_templates')
+        $processedTeamIds = DB::table('game_player_templates')
             ->where('season', $season)
             ->whereNotIn('team_id', $nationalTeamIds)
             ->distinct()
@@ -238,7 +235,7 @@ class GamePlayerTemplateService
             ->toArray();
 
         // Track already-processed players to avoid duplicates across club teams
-        $processedPlayerIds = DB::connection('pgsql_control')->table('game_player_templates')
+        $processedPlayerIds = DB::table('game_player_templates')
             ->where('season', $season)
             ->whereNotIn('team_id', $nationalTeamIds)
             ->distinct()
@@ -272,7 +269,7 @@ class GamePlayerTemplateService
         }
 
         foreach (array_chunk($rows, 500) as $chunk) {
-            DB::connection('pgsql_control')->table('game_player_templates')->insert($chunk);
+            DB::table('game_player_templates')->insert($chunk);
         }
 
         return count($rows);

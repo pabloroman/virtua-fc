@@ -234,10 +234,9 @@ class SquadService
 
     /**
      * Attach `club_name` and `club_crest_url` attributes on each player by
-     * looking up the matching control-plane template (filtered by national
-     * team id, since the same transfermarkt id can exist as both a club and
-     * a national-team template). Runs as one query on the control plane to
-     * avoid cross-plane JOINs.
+     * looking up the matching template (filtered by national team id, since
+     * the same transfermarkt id can exist as both a club and a national-team
+     * template).
      */
     private function attachClubOfOrigin($players, Game $game): void
     {

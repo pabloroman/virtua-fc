@@ -40,9 +40,6 @@ class ReserveOveragePromotionProcessor implements SeasonProcessor
             );
         }
 
-        // Reserves Team lookup is single-plane (control); the per-reserve
-        // promotion runs only tenant-plane queries internally. No cross-plane
-        // JOIN.
         $userTeamIds = $game->userTeamIds();
         $aiReserves = Team::whereNotNull('parent_team_id')
             ->when(! empty($userTeamIds), fn ($q) => $q

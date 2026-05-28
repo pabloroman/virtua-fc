@@ -12,8 +12,6 @@ class GamePlayerTemplateTournamentInfo extends Model
 
     protected $table = 'game_player_template_tournament_info';
 
-    protected $connection = 'pgsql_control';
-
     public $timestamps = false;
 
     protected $fillable = [
