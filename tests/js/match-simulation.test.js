@@ -393,3 +393,114 @@ describe('skipToHalfTime atmosphere reveal', () => {
         expect(state.revealedEvents.map(e => e.minute)).toEqual([10]);
     });
 });
+
+// ============================================================================
+// tick() phase-aware clock clamp — regression for issue #1158
+// ============================================================================
+
+describe('tick() phase-aware clock clamp (#1158)', () => {
+    it('clamps currentMinute to firstHalfEnd when rAF stalls mid-first-half', () => {
+        // Regression: a backgrounded mobile tab (or any rAF stall) used to
+        // produce a giant deltaMs on the first resume tick. The clock was
+        // clamped to secondHalfEnd (90+stoppage) instead of firstHalfEnd
+        // (45+stoppage), so processEvents() revealed every regular-time
+        // event in one shot — including second-half goals, which then
+        // incremented homeScore/awayScore via updateScore — before the
+        // half-time check finally fired. The user was left looking at a
+        // HALF_TIME pause with the FINAL score and second-half events on
+        // screen. The fix clamps the clock to the END OF THE CURRENT HALF.
+        const capturedTicks = [];
+        const originalRaf = globalThis.requestAnimationFrame;
+        globalThis.requestAnimationFrame = vi.fn((cb) => {
+            capturedTicks.push(cb);
+            return capturedTicks.length;
+        });
+
+        const originalNow = globalThis.performance.now;
+        let mockNow = 0;
+        globalThis.performance.now = () => mockNow;
+
+        // Use fake timers BEFORE startSimulation so its 1000ms kickoff
+        // setTimeout is scheduled against the fake clock and can be
+        // advanced synchronously below.
+        vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+
+        try {
+            const state = createMockState({
+                phase: 'pre_match',
+                currentMinute: 0,
+                firstHalfStoppage: 2,   // firstHalfEnd = 47
+                secondHalfStoppage: 3,  // secondHalfEnd = 93
+                finalHomeScore: 2,
+                finalAwayScore: 4,
+                events: [
+                    { minute: 30, type: 'goal', phase: 'first_half',  teamId: 'home-1', gamePlayerId: 'p1', metadata: {} },
+                    { minute: 40, type: 'goal', phase: 'first_half',  teamId: 'home-1', gamePlayerId: 'p2', metadata: {} },
+                    // Second-half goals — must NOT be revealed during 1H.
+                    { minute: 50, type: 'goal', phase: 'second_half', teamId: 'away-1', gamePlayerId: 'p3', metadata: {} },
+                    { minute: 60, type: 'goal', phase: 'second_half', teamId: 'away-1', gamePlayerId: 'p4', metadata: {} },
+                    { minute: 70, type: 'goal', phase: 'second_half', teamId: 'away-1', gamePlayerId: 'p5', metadata: {} },
+                    { minute: 80, type: 'goal', phase: 'second_half', teamId: 'away-1', gamePlayerId: 'p6', metadata: {} },
+                ],
+                otherMatches: [],
+                otherMatchScores: [],
+                speed: 4,
+                speedRates: { 1: 1.5, 2: 3.0, 4: 6.0 },
+                narrativeTemplates: {},
+                // Skip the "fourth official adds N" announcement so the
+                // tick falls straight through to the half-time check —
+                // we're testing the clamp, not the announcement path.
+                _announcedFirstHalfStoppage: true,
+            });
+
+            // realEvents = events: synthesizeGoalsIfNeeded would otherwise
+            // inject random ghost goals into realEvents based on the score
+            // gap. Aligning realEvents with the test's seeded score (2 home
+            // + 4 away = 2-4) makes the synthesizer a no-op so we control
+            // the event timeline exactly.
+            state.realEvents = [...state.events];
+
+            const sim = createMatchSimulation(() => state);
+            sim.startSimulation();
+            vi.advanceTimersByTime(1100); // fire the 1000ms kickoff
+
+            // Kickoff set phase=FIRST_HALF, _lastTick=performance.now()=0,
+            // and scheduled the first tick via rAF.
+            expect(state.phase).toBe('first_half');
+            expect(capturedTicks.length).toBeGreaterThan(0);
+            const tick = capturedTicks[capturedTicks.length - 1];
+
+            // Simulate a 20-second stall (mobile tab throttling resume,
+            // OS suspension, GC pause). At speed=4 that's 120 game-minutes
+            // worth of deltaMinutes — enough to vault past secondHalfEnd
+            // (93) pre-fix, exposing every regular-time event in one tick.
+            mockNow = 20000;
+            tick(mockNow);
+
+            // 1) The clock never went past firstHalfEnd. (enterHalfTime
+            // snaps currentMinute back to MINUTE.FIRST_HALF_END=45 once
+            // the boundary is crossed, but the key invariant — the clock
+            // was clamped during the tick before processEvents ran — is
+            // demonstrated by the score/feed assertions below.)
+            expect(state.currentMinute).toBeLessThanOrEqual(47);
+
+            // 2) No second-half goal leaked into revealedEvents.
+            const revealedMinutes = state.revealedEvents.map((e) => e.minute);
+            expect(revealedMinutes.length).toBeGreaterThan(0);
+            for (const m of revealedMinutes) {
+                expect(m).toBeLessThanOrEqual(47);
+            }
+
+            // 3) Score reflects only the two first-half home goals.
+            expect(state.homeScore).toBe(2);
+            expect(state.awayScore).toBe(0);
+
+            // 4) Phase transitioned to HALF_TIME (the boundary check fired).
+            expect(state.phase).toBe('half_time');
+        } finally {
+            vi.useRealTimers();
+            globalThis.requestAnimationFrame = originalRaf;
+            globalThis.performance.now = originalNow;
+        }
+    });
+});
