@@ -14,14 +14,14 @@ use App\Models\GameMatch;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use App\Modules\Competition\Services\FinalVenueResolver;
+use App\Modules\Competition\Services\NeutralVenueResolver;
 use App\Modules\Competition\Services\LeagueFixtureGenerator;
 
 class CupDrawService
 {
     public function __construct(
         private readonly CountryConfig $countryConfig,
-        private readonly FinalVenueResolver $finalVenueResolver,
+        private readonly NeutralVenueResolver $neutralVenueResolver,
     ) {}
 
     /**
@@ -143,7 +143,7 @@ class CupDrawService
             }
         }
 
-        $this->maybeAssignFinalVenues($gameId, $roundConfig, $firstLegRows);
+        $this->assignNeutralVenues($firstLegRows);
 
         // Return loaded ties
         return CupTie::where('game_id', $gameId)
@@ -153,25 +153,21 @@ class CupDrawService
     }
 
     /**
-     * Assign a neutral venue to every match in the just-drawn final round.
-     * Only applies to career-mode games; no-op otherwise.
+     * Assign a neutral venue to every just-drawn match that should be played
+     * away from a finalist's home ground. The resolver decides per match
+     * (cup finals at La Cartuja / a rotating UEFA ground, and every Spanish
+     * Supercup game in Saudi Arabia); matches that stay at the home ground
+     * get no override. Applies to all game modes — finals are neutral
+     * regardless of how the game was created.
      *
      * @param  array<int, array<string, mixed>>  $firstLegRows
      */
-    private function maybeAssignFinalVenues(string $gameId, PlayoffRoundConfig $roundConfig, array $firstLegRows): void
+    private function assignNeutralVenues(array $firstLegRows): void
     {
-        if ($roundConfig->name !== 'cup.final') {
-            return;
-        }
-
-        $game = Game::find($gameId);
-        if (!$game?->isCareerMode()) {
-            return;
-        }
-
         foreach ($firstLegRows as $row) {
-            $venue = $this->finalVenueResolver->resolve(
+            $venue = $this->neutralVenueResolver->resolve(
                 $row['competition_id'],
+                $row['round_name'],
                 $row['home_team_id'],
                 $row['away_team_id'],
             );

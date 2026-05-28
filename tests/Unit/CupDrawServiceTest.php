@@ -6,6 +6,7 @@ use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\CupTie;
 use App\Models\Game;
+use App\Models\GameMatch;
 use App\Models\Team;
 use App\Models\User;
 use App\Modules\Competition\Exceptions\OddCupDrawPoolException;
@@ -210,6 +211,67 @@ class CupDrawServiceTest extends TestCase
         $ties = $this->service->conductDraw($this->game->id, 'ESPSUP', 1);
 
         $this->assertCount(2, $ties);
+    }
+
+    public function test_spanish_supercup_semi_finals_are_drawn_at_the_neutral_venue(): void
+    {
+        Competition::factory()->knockoutCup()->create([
+            'id' => 'ESPSUP',
+            'name' => 'Supercopa',
+            'season' => '2025',
+        ]);
+
+        $teams = Team::factory()->count(4)->create();
+        foreach ($teams as $team) {
+            CompetitionEntry::create([
+                'game_id' => $this->game->id,
+                'competition_id' => 'ESPSUP',
+                'team_id' => $team->id,
+                'entry_round' => 1,
+            ]);
+        }
+
+        $ties = $this->service->conductDraw($this->game->id, 'ESPSUP', 1);
+        $this->assertCount(2, $ties);
+
+        // Both semi-finals (round 1) must be played in Saudi Arabia, not at
+        // either team's home ground.
+        foreach ($ties as $tie) {
+            $match = GameMatch::find($tie->first_leg_match_id);
+            $this->assertSame('cup.semi_finals', $match->round_name);
+            $this->assertSame('King Abdullah Sports City Stadium', $match->neutral_venue_name);
+            $this->assertSame(62345, $match->neutral_venue_capacity);
+        }
+    }
+
+    public function test_neutral_venue_is_assigned_outside_career_mode(): void
+    {
+        // Finals/supercups are neutral regardless of game mode — the draw
+        // must not gate venue assignment on career mode.
+        $this->game->update(['game_mode' => Game::MODE_TOURNAMENT]);
+
+        Competition::factory()->knockoutCup()->create([
+            'id' => 'ESPSUP',
+            'name' => 'Supercopa',
+            'season' => '2025',
+        ]);
+
+        $teams = Team::factory()->count(4)->create();
+        foreach ($teams as $team) {
+            CompetitionEntry::create([
+                'game_id' => $this->game->id,
+                'competition_id' => 'ESPSUP',
+                'team_id' => $team->id,
+                'entry_round' => 1,
+            ]);
+        }
+
+        $ties = $this->service->conductDraw($this->game->id, 'ESPSUP', 1);
+
+        foreach ($ties as $tie) {
+            $match = GameMatch::find($tie->first_leg_match_id);
+            $this->assertSame('King Abdullah Sports City Stadium', $match->neutral_venue_name);
+        }
     }
 
     // ---------------------------------------------------------------------
