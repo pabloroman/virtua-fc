@@ -83,6 +83,70 @@ class ApplyPendingTeamSwitchProcessorTest extends TestCase
     }
 
     /**
+     * Regression for #1220: BudgetProjectionProcessor reads
+     * META_PRO_MANAGER_TEAM_SWITCHED to know whether to start the new club
+     * on a fresh-club baseline (no carry-overs). The flag must be set
+     * exactly when a team switch was actually applied.
+     */
+    public function test_publishes_team_switch_metadata_on_successful_switch(): void
+    {
+        [$processor, $game] = $this->buildScenario(
+            offerCompetitionId: 'ESP2',
+            actualEntryCompetitionId: 'ESP2',
+        );
+
+        $data = new SeasonTransitionData(
+            oldSeason: '2027',
+            newSeason: '2028',
+            competitionId: $game->competition_id,
+        );
+
+        $processor->process($game->refresh(), $data);
+
+        $this->assertTrue(
+            $data->getMetadata(SeasonTransitionData::META_PRO_MANAGER_TEAM_SWITCHED),
+            'A successful team switch must publish the metadata flag so the budget processor skips old-club carry-overs.',
+        );
+    }
+
+    /**
+     * If the game has no pending switch (or the switch is aborted because
+     * the offer/team/competition can't be resolved), the metadata flag must
+     * stay unset so BudgetProjectionProcessor keeps carry-overs intact.
+     */
+    public function test_does_not_publish_metadata_when_no_pending_switch(): void
+    {
+        $team = Team::factory()->create();
+        $competition = Competition::factory()->create([
+            'id' => 'ESP1',
+            'tier' => 1,
+            'role' => Competition::ROLE_LEAGUE,
+            'handler_type' => 'league',
+        ]);
+        $game = Game::factory()->create([
+            'game_mode' => Game::MODE_CAREER_PRO,
+            'team_id' => $team->id,
+            'competition_id' => $competition->id,
+            'pending_team_switch' => null,
+        ]);
+
+        $processor = new ApplyPendingTeamSwitchProcessor(
+            Mockery::mock(JobOfferService::class),
+            Mockery::mock(TeamReputationSeeder::class)->shouldIgnoreMissing(),
+        );
+
+        $data = new SeasonTransitionData(
+            oldSeason: '2027',
+            newSeason: '2028',
+            competitionId: $game->competition_id,
+        );
+
+        $processor->process($game, $data);
+
+        $this->assertNull($data->getMetadata(SeasonTransitionData::META_PRO_MANAGER_TEAM_SWITCHED));
+    }
+
+    /**
      * @return array{0: ApplyPendingTeamSwitchProcessor, 1: Game, 2: Team, 3: ManagerJobOffer, 4: Competition, 5: Competition}
      */
     private function buildScenario(string $offerCompetitionId, string $actualEntryCompetitionId): array

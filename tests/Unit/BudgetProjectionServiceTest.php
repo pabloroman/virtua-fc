@@ -6,20 +6,22 @@ use App\Models\BudgetLoan;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GameFinances;
-use App\Models\ManagerJobHistory;
 use App\Models\Team;
 use App\Modules\Finance\Services\BudgetProjectionService;
+use App\Modules\Finance\Services\StadiumLoanService;
+use App\Modules\Squad\Services\SquadService;
+use App\Modules\Stadium\Services\MatchAttendanceService;
+use App\Modules\Stadium\Services\SeasonTicketPricingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use ReflectionMethod;
+use Mockery;
 use Tests\TestCase;
 
 /**
- * Regression tests for issue #1220 — Pro Manager financial carry-overs
- * must stay with the previous club after a team switch.
- *
- * GameFinances / BudgetLoan are keyed by (game_id, season) only, so the
- * service relies on ManagerJobHistory to detect when the previous-season
- * row belongs to a different club.
+ * Regression tests for issue #1220. The previous season's carry-overs must
+ * not follow a Pro Manager across a team switch — the BudgetProjectionService
+ * receives an explicit $freshClub signal (published by
+ * ApplyPendingTeamSwitchProcessor, forwarded by BudgetProjectionProcessor)
+ * and skips carry-overs / prior-actual commercial revenue when set.
  */
 class BudgetProjectionServiceTest extends TestCase
 {
@@ -27,138 +29,60 @@ class BudgetProjectionServiceTest extends TestCase
 
     private const PREV_SEASON = 2025;
     private const CUR_SEASON = '2026';
-    private const ACTUAL_SURPLUS = 10_000_000_00;        // €100K
-    private const CARRIED_SURPLUS = 2_000_000_00;        // €20K
+    private const ACTUAL_SURPLUS = 10_000_000_00;
+    private const CARRIED_SURPLUS = 2_000_000_00;
     private const ACTUAL_COMMERCIAL_REVENUE = 50_000_000_00;
     private const ACTUAL_TOTAL_REVENUE = 200_000_000_00;
     private const LOAN_REPAYMENT = 5_000_000_00;
 
-    public function test_pro_manager_switch_to_new_club_resets_carry_overs(): void
+    public function test_fresh_club_skips_carry_overs_and_uses_stadium_commercial_baseline(): void
     {
-        $oldClub = Team::factory()->create();
-        $newClub = Team::factory()->create();
-        $competition = Competition::factory()->league()->create();
+        [$service, $game, $team] = $this->buildScenario();
 
+        $finances = $service->generateProjections($game, freshClub: true);
+
+        $this->assertSame(0, $finances->carried_surplus);
+        $this->assertSame(0, $finances->carried_debt);
+        $this->assertSame(0, $finances->previous_loan_repayment);
+
+        // First-season commercial baseline: stadium-seats × per-seat config
+        // (default reputation = 'local' → 24_000 cents/seat, league tier 1
+        // multiplier = 1.0). The exact figure depends on faker's seat count,
+        // so we assert against the formula and confirm it isn't the prior
+        // actual.
+        $expectedCommercial = $team->stadium_seats * 24_000;
+        $this->assertSame($expectedCommercial, $finances->projected_commercial_revenue);
+        $this->assertNotSame(self::ACTUAL_COMMERCIAL_REVENUE, $finances->projected_commercial_revenue);
+    }
+
+    public function test_default_call_preserves_carry_overs_from_previous_season(): void
+    {
+        [$service, $game] = $this->buildScenario();
+
+        $finances = $service->generateProjections($game);
+
+        $expectedSurplus = self::ACTUAL_SURPLUS + self::CARRIED_SURPLUS;
+        $this->assertSame($expectedSurplus, $finances->carried_surplus);
+        $this->assertSame(0, $finances->carried_debt);
+        $this->assertSame(self::LOAN_REPAYMENT, $finances->previous_loan_repayment);
+        $this->assertSame(self::ACTUAL_COMMERCIAL_REVENUE, $finances->projected_commercial_revenue);
+    }
+
+    /**
+     * @return array{0: BudgetProjectionService, 1: Game, 2: Team}
+     */
+    private function buildScenario(): array
+    {
+        $team = Team::factory()->create(['stadium_seats' => 30_000]);
+        $competition = Competition::factory()->league()->create();
         $game = Game::factory()
-            ->forTeam($newClub)
+            ->forTeam($team)
             ->inCompetition($competition->id)
             ->create([
                 'season' => self::CUR_SEASON,
                 'game_mode' => Game::MODE_CAREER_PRO,
             ]);
 
-        $this->seedPreviousSeasonFinances($game);
-        $this->seedPreviousSeasonRepaidLoan($game);
-
-        // Manager was at the old club for season 2025, then switched to the
-        // new club for season 2026.
-        ManagerJobHistory::create([
-            'game_id' => $game->id,
-            'user_id' => $game->user_id,
-            'team_id' => $oldClub->id,
-            'competition_id' => $competition->id,
-            'season_start' => (string) self::PREV_SEASON,
-            'season_end' => (string) self::PREV_SEASON,
-            'end_reason' => ManagerJobHistory::REASON_LEFT_VOLUNTARILY,
-        ]);
-        ManagerJobHistory::create([
-            'game_id' => $game->id,
-            'user_id' => $game->user_id,
-            'team_id' => $newClub->id,
-            'competition_id' => $competition->id,
-            'season_start' => self::CUR_SEASON,
-            'season_end' => null,
-            'end_reason' => ManagerJobHistory::REASON_STILL_ACTIVE,
-        ]);
-
-        $service = $this->makeService();
-
-        $this->assertSame(0, $service->getCarriedSurplus($game));
-        $this->assertSame(0, $service->getCarriedDebt($game));
-        $this->assertSame(0, $service->getPreviousSeasonLoanRepayment($game));
-
-        // AC #3: commercial revenue must fall back to the first-season
-        // stadium-based calc, NOT inherit the old club's actual figure.
-        $commercial = $this->invokeBaseCommercialRevenue($service, $game, $newClub, $competition);
-        $this->assertNotSame(self::ACTUAL_COMMERCIAL_REVENUE, $commercial);
-        $this->assertGreaterThan(0, $commercial);
-    }
-
-    public function test_pro_manager_continuous_tenure_keeps_carry_overs(): void
-    {
-        $club = Team::factory()->create();
-        $competition = Competition::factory()->league()->create();
-
-        $game = Game::factory()
-            ->forTeam($club)
-            ->inCompetition($competition->id)
-            ->create([
-                'season' => self::CUR_SEASON,
-                'game_mode' => Game::MODE_CAREER_PRO,
-            ]);
-
-        $this->seedPreviousSeasonFinances($game);
-        $this->seedPreviousSeasonRepaidLoan($game);
-
-        // Manager has been at this club since season 2025, no switch.
-        ManagerJobHistory::create([
-            'game_id' => $game->id,
-            'user_id' => $game->user_id,
-            'team_id' => $club->id,
-            'competition_id' => $competition->id,
-            'season_start' => (string) self::PREV_SEASON,
-            'season_end' => null,
-            'end_reason' => ManagerJobHistory::REASON_STILL_ACTIVE,
-        ]);
-
-        $service = $this->makeService();
-
-        // Net position = actual_surplus + carried_surplus = 120K → positive
-        $expectedSurplus = self::ACTUAL_SURPLUS + self::CARRIED_SURPLUS;
-        $this->assertSame($expectedSurplus, $service->getCarriedSurplus($game));
-        $this->assertSame(0, $service->getCarriedDebt($game));
-        $this->assertSame(self::LOAN_REPAYMENT, $service->getPreviousSeasonLoanRepayment($game));
-
-        $commercial = $this->invokeBaseCommercialRevenue($service, $game, $club, $competition);
-        $this->assertSame(self::ACTUAL_COMMERCIAL_REVENUE, $commercial);
-    }
-
-    public function test_club_manager_mode_carry_overs_flow_through(): void
-    {
-        $club = Team::factory()->create();
-        $competition = Competition::factory()->league()->create();
-
-        $game = Game::factory()
-            ->forTeam($club)
-            ->inCompetition($competition->id)
-            ->create([
-                'season' => self::CUR_SEASON,
-                'game_mode' => Game::MODE_CAREER,
-            ]);
-
-        $this->seedPreviousSeasonFinances($game);
-        $this->seedPreviousSeasonRepaidLoan($game);
-
-        // No ManagerJobHistory rows — Club Manager mode doesn't write them,
-        // and the helper must not require them for non-pro-manager games.
-
-        $service = $this->makeService();
-
-        $expectedSurplus = self::ACTUAL_SURPLUS + self::CARRIED_SURPLUS;
-        $this->assertSame($expectedSurplus, $service->getCarriedSurplus($game));
-        $this->assertSame(self::LOAN_REPAYMENT, $service->getPreviousSeasonLoanRepayment($game));
-
-        $commercial = $this->invokeBaseCommercialRevenue($service, $game, $club, $competition);
-        $this->assertSame(self::ACTUAL_COMMERCIAL_REVENUE, $commercial);
-    }
-
-    private function makeService(): BudgetProjectionService
-    {
-        return app(BudgetProjectionService::class);
-    }
-
-    private function seedPreviousSeasonFinances(Game $game): void
-    {
         GameFinances::create([
             'game_id' => $game->id,
             'season' => self::PREV_SEASON,
@@ -168,10 +92,7 @@ class BudgetProjectionServiceTest extends TestCase
             'actual_commercial_revenue' => self::ACTUAL_COMMERCIAL_REVENUE,
             'actual_total_revenue' => self::ACTUAL_TOTAL_REVENUE,
         ]);
-    }
 
-    private function seedPreviousSeasonRepaidLoan(Game $game): void
-    {
         BudgetLoan::create([
             'game_id' => $game->id,
             'season' => self::PREV_SEASON,
@@ -180,20 +101,36 @@ class BudgetProjectionServiceTest extends TestCase
             'repayment_amount' => self::LOAN_REPAYMENT,
             'status' => BudgetLoan::STATUS_REPAID,
         ]);
+
+        $squadService = Mockery::mock(SquadService::class);
+        $squadService->shouldReceive('calculateLeagueStrengths')->andReturn([]);
+        $squadService->shouldReceive('getProjectedPosition')->andReturn(10);
+
+        $seasonTicketPricingService = Mockery::mock(SeasonTicketPricingService::class);
+        $seasonTicketPricingService->shouldReceive('walkupRelevantSoldForGame')->andReturn(0);
+        $seasonTicketPricingService->shouldReceive('getCurrent')->andReturn(null);
+
+        $stadiumLoanService = Mockery::mock(StadiumLoanService::class);
+        $stadiumLoanService->shouldReceive('activePaymentsForGame')->andReturn(0);
+
+        // MatchAttendanceService is unused on this path — no league home
+        // matches are scheduled, so calculateMatchdayRevenue returns 0
+        // before touching it. shouldIgnoreMissing() guards future changes.
+        $matchAttendanceService = Mockery::mock(MatchAttendanceService::class)->shouldIgnoreMissing(0);
+
+        $service = new BudgetProjectionService(
+            $squadService,
+            $matchAttendanceService,
+            $seasonTicketPricingService,
+            $stadiumLoanService,
+        );
+
+        return [$service, $game, $team];
     }
 
-    /**
-     * getBaseCommercialRevenue is private; invoke via reflection so we can
-     * directly assert AC #3 (first-season fallback after a team switch).
-     */
-    private function invokeBaseCommercialRevenue(
-        BudgetProjectionService $service,
-        Game $game,
-        Team $team,
-        Competition $competition,
-    ): int|float {
-        $method = new ReflectionMethod($service, 'getBaseCommercialRevenue');
-
-        return $method->invoke($service, $game, $team, $competition);
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
     }
 }

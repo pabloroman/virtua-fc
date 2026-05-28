@@ -39,8 +39,13 @@ class BudgetProjectionProcessor implements SeasonProcessor
 
         $game->update(['season_goal' => $seasonGoal]);
 
+        // If ApplyPendingTeamSwitchProcessor signaled a Pro Manager team
+        // switch this transition, the previous season's finances belong to
+        // the old club — start the new club from a fresh-club baseline.
+        $freshClub = (bool) $data->getMetadata(SeasonTransitionData::META_PRO_MANAGER_TEAM_SWITCHED, false);
+
         // Generate projections for the new season
-        $finances = $this->projectionService->generateProjections($game);
+        $finances = $this->projectionService->generateProjections($game, $freshClub);
 
         // Store projections in metadata for season display
         $data->setMetadata('new_season_projections', [

@@ -108,6 +108,93 @@ class BudgetProjectionProcessorTest extends TestCase
         $this->assertSame('survival', $game->fresh()->season_goal);
     }
 
+    /**
+     * Regression for #1220: when ApplyPendingTeamSwitchProcessor sets the
+     * team-switch flag earlier in the pipeline, the budget processor must
+     * forward it as $freshClub so the service skips carry-overs.
+     */
+    public function test_forwards_pro_manager_team_switch_flag_to_service(): void
+    {
+        $team = Team::factory()->create();
+        $competition = Competition::factory()->league()->create();
+        $game = Game::factory()
+            ->forTeam($team)
+            ->inCompetition($competition->id)
+            ->create();
+
+        $seasonGoalService = Mockery::mock(SeasonGoalService::class);
+        $seasonGoalService->shouldReceive('determineGoalForTeam')
+            ->andReturn('champion');
+
+        $projectionService = Mockery::mock(BudgetProjectionService::class);
+        $projectionService->shouldReceive('generateProjections')
+            ->once()
+            ->with(Mockery::on(fn (Game $g) => $g->id === $game->id), true)
+            ->andReturn(new GameFinances([
+                'projected_position' => 10,
+                'projected_total_revenue' => 0,
+                'projected_wages' => 0,
+                'projected_surplus' => 0,
+                'carried_debt' => 0,
+                'carried_surplus' => 0,
+                'available_surplus' => 0,
+            ]));
+
+        $processor = new BudgetProjectionProcessor($projectionService, $seasonGoalService);
+
+        $data = new SeasonTransitionData(
+            oldSeason: '2025',
+            newSeason: '2026',
+            competitionId: $competition->id,
+        );
+        $data->setMetadata(SeasonTransitionData::META_PRO_MANAGER_TEAM_SWITCHED, true);
+
+        $processor->process($game, $data);
+    }
+
+    /**
+     * Absence of the team-switch flag must default to the existing carry-over
+     * behaviour (freshClub=false). Guards against accidental "always reset"
+     * regressions.
+     */
+    public function test_defaults_to_false_when_team_switch_flag_absent(): void
+    {
+        $team = Team::factory()->create();
+        $competition = Competition::factory()->league()->create();
+        $game = Game::factory()
+            ->forTeam($team)
+            ->inCompetition($competition->id)
+            ->create();
+
+        $seasonGoalService = Mockery::mock(SeasonGoalService::class);
+        $seasonGoalService->shouldReceive('determineGoalForTeam')
+            ->andReturn('champion');
+
+        $projectionService = Mockery::mock(BudgetProjectionService::class);
+        $projectionService->shouldReceive('generateProjections')
+            ->once()
+            ->with(Mockery::on(fn (Game $g) => $g->id === $game->id), false)
+            ->andReturn(new GameFinances([
+                'projected_position' => 10,
+                'projected_total_revenue' => 0,
+                'projected_wages' => 0,
+                'projected_surplus' => 0,
+                'carried_debt' => 0,
+                'carried_surplus' => 0,
+                'available_surplus' => 0,
+            ]));
+
+        $processor = new BudgetProjectionProcessor($projectionService, $seasonGoalService);
+
+        $data = new SeasonTransitionData(
+            oldSeason: '2025',
+            newSeason: '2026',
+            competitionId: $competition->id,
+        );
+
+        $processor->process($game, $data);
+    }
+
     protected function tearDown(): void
     {
         Mockery::close();

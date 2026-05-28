@@ -11,7 +11,6 @@ use App\Models\GameFinances;
 use App\Models\GameInvestment;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
-use App\Models\ManagerJobHistory;
 use App\Models\Team;
 use App\Models\TeamReputation;
 use App\Modules\Squad\Services\SquadService;
@@ -79,8 +78,16 @@ class BudgetProjectionService
     /**
      * Generate season projections for a game.
      * Called at the start of each season during pre-season.
+     *
+     * When $freshClub is true, the projection treats the team as if this were
+     * its first season in the game: no carry-overs, no loan repayments, and
+     * commercial revenue uses the stadium-based baseline instead of the prior
+     * season's actuals. This is set during a Pro Manager team switch — the
+     * previous season's finances belong to the old club and must not follow
+     * the manager. See ApplyPendingTeamSwitchProcessor and
+     * BudgetProjectionProcessor for the signal flow.
      */
-    public function generateProjections(Game $game): GameFinances
+    public function generateProjections(Game $game, bool $freshClub = false): GameFinances
     {
         // Get user's team and league
         $team = $game->team;
@@ -96,7 +103,9 @@ class BudgetProjectionService
         $projectedTvRevenue = $this->calculateTvRevenue($projectedPosition, $league);
         $projectedMatchdayRevenue = $this->calculateMatchdayRevenue($team, $game);
         $projectedSolidarityFundsRevenue = self::SOLIDARITY_FUNDS_BY_TIER[$game->competition->tier] ?? 0;
-        $projectedCommercialRevenue = $this->getBaseCommercialRevenue($game, $team, $league);
+        $projectedCommercialRevenue = $freshClub
+            ? $this->firstSeasonCommercialRevenue($game, $team, $league)
+            : $this->getBaseCommercialRevenue($game, $team, $league);
         $projectedSeasonTicketRevenue = $this->seasonTicketPricingService->getCurrent($game)?->total_revenue ?? 0;
 
         $projectedTotalRevenue = $projectedTvRevenue
@@ -117,10 +126,12 @@ class BudgetProjectionService
         // Calculate projected surplus
         $projectedSurplus = $projectedTotalRevenue - $projectedWages - $projectedOperatingExpenses;
 
-        // Get carried debt, surplus, and loan repayment from previous season
-        $carriedDebt = $this->getCarriedDebt($game);
-        $carriedSurplus = $this->getCarriedSurplus($game);
-        $previousLoanRepayment = $this->getPreviousSeasonLoanRepayment($game);
+        // Get carried debt, surplus, and loan repayment from previous season.
+        // After a Pro Manager team switch the previous season's GameFinances
+        // and BudgetLoan rows belong to the old club, so we skip them.
+        $carriedDebt = $freshClub ? 0 : $this->getCarriedDebt($game);
+        $carriedSurplus = $freshClub ? 0 : $this->getCarriedSurplus($game);
+        $previousLoanRepayment = $freshClub ? 0 : $this->getPreviousSeasonLoanRepayment($game);
 
         // Stadium debt service: next instalment of every active stadium
         // loan. Treated like previous_loan_repayment — reduces available
@@ -304,39 +315,6 @@ class BudgetProjectionService
     }
 
     /**
-     * Whether the manager was at the current team during the previous season.
-     *
-     * GameFinances and BudgetLoan rows are keyed by (game_id, season) only —
-     * they don't carry a team_id. In Pro Manager mode the manager can change
-     * clubs between seasons, so the prior-season row may belong to a different
-     * club. ManagerJobHistory is the authority on which team the manager held
-     * in each season; if the previous season's tenure was at a different team
-     * (or no tenure covers it), the carry-overs don't belong to the current
-     * club and the service should fall back to first-season defaults.
-     *
-     * Always true outside Pro Manager mode, where the team never changes.
-     */
-    private function previousSeasonBelongsToCurrentTeam(Game $game): bool
-    {
-        if (!$game->isProManagerMode()) {
-            return true;
-        }
-
-        $previousSeason = (int) $game->season - 1;
-
-        $tenureTeamId = ManagerJobHistory::where('game_id', $game->id)
-            ->whereRaw('CAST(season_start AS INTEGER) <= ?', [$previousSeason])
-            ->where(function ($q) use ($previousSeason) {
-                $q->whereNull('season_end')
-                    ->orWhereRaw('CAST(season_end AS INTEGER) >= ?', [$previousSeason]);
-            })
-            ->orderByRaw('CAST(season_start AS INTEGER) DESC')
-            ->value('team_id');
-
-        return $tenureTeamId !== null && $tenureTeamId === $game->team_id;
-    }
-
-    /**
      * Calculate the net cash position at the end of the previous season.
      *
      * Net = actual_surplus + carried_surplus - carried_debt - infrastructure - transfer_purchases
@@ -346,13 +324,6 @@ class BudgetProjectionService
      */
     private function getPreviousSeasonNetPosition(Game $game): int
     {
-        // Pro Manager carry-overs stay with the previous club. If the manager
-        // managed a different team last season, the prior GameFinances row
-        // belongs to that club and must not bleed into the new club's budget.
-        if (!$this->previousSeasonBelongsToCurrentTeam($game)) {
-            return 0;
-        }
-
         $previousSeason = (int) $game->season - 1;
 
         $previousFinances = GameFinances::where('game_id', $game->id)
@@ -393,12 +364,6 @@ class BudgetProjectionService
      */
     public function getPreviousSeasonLoanRepayment(Game $game): int
     {
-        // The previous club's loan obligations don't follow the manager
-        // across a Pro Manager team switch.
-        if (!$this->previousSeasonBelongsToCurrentTeam($game)) {
-            return 0;
-        }
-
         $previousSeason = (int) $game->season - 1;
 
         return (int) BudgetLoan::where('game_id', $game->id)
@@ -414,21 +379,26 @@ class BudgetProjectionService
      */
     private function getBaseCommercialRevenue(Game $game, Team $team, Competition $league): int|float
     {
-        // Skip the prior-actual branch after a Pro Manager team switch: the
-        // previous season's commercial revenue was earned by the old club,
-        // so the new club starts from the stadium-based first-season calc.
-        if ($this->previousSeasonBelongsToCurrentTeam($game)) {
-            $previousSeason = (int) $game->season - 1;
-            $previousFinances = GameFinances::where('game_id', $game->id)
-                ->where('season', $previousSeason)
-                ->first();
+        // Check for prior season actual commercial revenue
+        $previousSeason = (int) $game->season - 1;
+        $previousFinances = GameFinances::where('game_id', $game->id)
+            ->where('season', $previousSeason)
+            ->first();
 
-            if ($previousFinances && $previousFinances->actual_commercial_revenue > 0) {
-                return $previousFinances->actual_commercial_revenue;
-            }
+        if ($previousFinances && $previousFinances->actual_commercial_revenue > 0) {
+            return $previousFinances->actual_commercial_revenue;
         }
 
-        // First season: calculate from stadium seats × config rate (capped)
+        return $this->firstSeasonCommercialRevenue($game, $team, $league);
+    }
+
+    /**
+     * Commercial revenue baseline when there is no prior-season actual to
+     * carry forward — used for season 1 of a new game and for the first
+     * season at a new club after a Pro Manager team switch.
+     */
+    private function firstSeasonCommercialRevenue(Game $game, Team $team, Competition $league): int|float
+    {
         $reputation = TeamReputation::resolveLevel($game->id, $team->id);
         $seats = min($team->stadium_seats, self::MAX_COMMERCIAL_SEATS);
 

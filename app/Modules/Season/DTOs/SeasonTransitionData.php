@@ -11,6 +11,14 @@ final class SeasonTransitionData implements \JsonSerializable
     public const META_UCL_WINNER = 'uclWinner';
     public const META_UEL_WINNER = 'uelWinner';
 
+    /**
+     * Set by ApplyPendingTeamSwitchProcessor when a Pro Manager accepted an
+     * end-of-season offer and the pipeline just moved the game to the new
+     * club. Read by BudgetProjectionProcessor so the new season's projection
+     * skips the previous club's carry-overs.
+     */
+    public const META_PRO_MANAGER_TEAM_SWITCHED = 'proManagerTeamSwitched';
+
     public function __construct(
         public readonly string $oldSeason,
         public readonly string $newSeason,

@@ -130,6 +130,10 @@ class ApplyPendingTeamSwitchProcessor implements SeasonProcessor
         // of the setup pipeline regenerate against the new club's league.
         $data->competitionId = $newCompetitionId;
 
+        // Signal the switch so BudgetProjectionProcessor knows to skip the
+        // previous club's carry-overs when projecting the new season.
+        $data->setMetadata(SeasonTransitionData::META_PRO_MANAGER_TEAM_SWITCHED, true);
+
         return $data;
     }
 
