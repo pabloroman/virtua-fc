@@ -9,24 +9,20 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Live match sessions live on the control plane — see CLAUDE.md
-        // "Control plane / tenant plane". A live duel doesn't belong to either
-        // user's tenant Game; squads are snapshotted at team-pick time and
-        // the match runs entirely on those snapshots.
+        // A live duel doesn't belong to either user's Game; squads are
+        // snapshotted at team-pick time and the match runs entirely on those
+        // snapshots, so the session row holds everything it needs.
         Schema::create('live_match_sessions', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('phase', 20)->default('lobby');
             $table->foreignId('host_user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('guest_user_id')->nullable()->constrained('users')->nullOnDelete();
             // National team UUIDs (Team::worldCupEligible) per side. No FK
-            // to keep the duel session insulated from team-row deletion
-            // (and to mirror the same plane-discipline stance we apply to
-            // *_source_game_id below).
+            // so the session survives team-row deletion.
             $table->uuid('host_team_id')->nullable();
             $table->uuid('guest_team_id')->nullable();
-            // source_game_id columns intentionally have no FK — games is a
-            // tenant-plane table and a duel must survive deletion of either
-            // user's save.
+            // source_game_id columns intentionally have no FK — a duel must
+            // survive deletion of either user's save.
             $table->uuid('host_source_game_id')->nullable();
             $table->uuid('guest_source_game_id')->nullable();
             $table->jsonb('host_squad')->nullable();
@@ -45,7 +41,6 @@ return new class extends Migration
             $table->timestampTz('paused_at')->nullable();
             $table->timestampTz('finished_at')->nullable();
             $table->integer('clock_version')->default(0);
-            $table->timestampsTz();
 
             $table->index('phase');
             $table->index('host_user_id');
@@ -66,7 +61,6 @@ return new class extends Migration
             $table->smallInteger('applied_at_minute')->nullable();
             $table->string('status', 15)->default('queued');
             $table->string('reject_reason', 80)->nullable();
-            $table->timestampsTz();
 
             $table->index(['session_id', 'status']);
         });

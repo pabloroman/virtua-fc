@@ -21,13 +21,20 @@ export function createEcho({ key, host, port, scheme }) {
         return null;
     }
 
+    // Pick the right default per scheme so a single REVERB_PORT (e.g. 8080)
+    // doesn't get used for both wss and ws ports unrelated to the configured
+    // scheme.
+    const isHttps = scheme === 'https';
+    const defaultPort = isHttps ? 443 : 80;
+    const effectivePort = port ?? defaultPort;
+
     return new window.Echo({
         broadcaster: 'reverb',
         key,
         wsHost: host ?? window.location.hostname,
-        wsPort: port ?? 80,
-        wssPort: port ?? 443,
-        forceTLS: scheme === 'https',
+        wsPort: isHttps ? 80 : effectivePort,
+        wssPort: isHttps ? effectivePort : 443,
+        forceTLS: isHttps,
         enabledTransports: ['ws', 'wss'],
     });
 }

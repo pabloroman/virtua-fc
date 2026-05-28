@@ -8,20 +8,19 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * Returns the current state of a live duel as JSON. The lobby and the
- * live-match Alpine components poll this endpoint to drive their UI; we
- * use polling instead of WebSockets in the prototype to keep the setup
- * surface minimal (no Reverb / laravel-echo install required).
+ * Returns the current state of a live duel as JSON. Used as the canonical
+ * read after each Reverb event and as a recovery path when the WebSocket
+ * is unreachable.
  */
 class GetLiveDuelState
 {
     public function __invoke(Request $request, string $session): JsonResponse
     {
         $live = LiveMatchSession::find($session);
-        if ($live === null) {
-            return response()->json(['error' => 'not_found'], 404);
-        }
-        if (! $live->isParticipant(Auth::id())) {
+        // Collapse "missing" and "not a participant" into the same response
+        // so an unauthenticated attacker can't enumerate session UUIDs by
+        // probing the endpoint.
+        if ($live === null || ! $live->isParticipant(Auth::id())) {
             return response()->json(['error' => 'forbidden'], 403);
         }
 

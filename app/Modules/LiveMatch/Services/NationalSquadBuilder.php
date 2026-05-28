@@ -18,10 +18,10 @@ class NationalSquadBuilder
     /**
      * Build a frozen national-team squad for the given Team.
      *
-     * For the prototype the data source is `GamePlayerTemplate` (the canonical
-     * real-world roster, control-plane, shared across every user) — the same
-     * source tournament mode uses (see SetupTournamentGame). Players are
-     * linked to their national team via game_player_templates.team_id.
+     * Data source is `GamePlayerTemplate` (the canonical real-world roster,
+     * shared across every user) — the same source tournament mode uses (see
+     * SetupTournamentGame). Players are linked to their national team via
+     * game_player_templates.team_id.
      *
      * The User param stays in the signature for the eventual per-save switch
      * when the live duel feature wraps into tournament play.

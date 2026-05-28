@@ -50,6 +50,7 @@ return [
     'opponent_preparing_sub' => 'El rival está preparando un cambio…',
     'final_score' => 'Marcador final',
     'connecting' => 'Conectando…',
+    'realtime_unavailable' => 'Las actualizaciones en tiempo real no están disponibles. Recarga la página si el partido parece estancado.',
 
     // Errors
     'no_active_game' => 'Necesitas una partida activa para crear un duelo.',

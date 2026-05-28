@@ -47,6 +47,7 @@
                 pickPlayerIn: @js(__('live_duel.pick_player_in')),
                 opponentPreparingSub: @js(__('live_duel.opponent_preparing_sub')),
                 connecting: @js(__('live_duel.connecting')),
+                realtimeUnavailable: @js(__('live_duel.realtime_unavailable')),
             },
         })"
         x-init="init()"
@@ -83,8 +84,11 @@
         </div>
 
         <!-- Connection banner -->
-        <div x-show="!connected" class="bg-accent-amber/10 border-b border-accent-amber/30 px-4 py-2 text-center text-sm text-text-primary">
+        <div x-show="!connected && !realtimeDisabled" class="bg-accent-amber/10 border-b border-accent-amber/30 px-4 py-2 text-center text-sm text-text-primary">
             <span x-text="labels.connecting"></span>
+        </div>
+        <div x-show="realtimeDisabled" class="bg-accent-red/10 border-b border-accent-red/30 px-4 py-2 text-center text-sm text-text-primary">
+            <span x-text="labels.realtimeUnavailable"></span>
         </div>
 
         <div class="max-w-5xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -141,6 +145,8 @@
         <div
             x-show="phase === 'paused'"
             x-transition.opacity
+            role="dialog"
+            aria-modal="true"
             class="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4"
         >
             <div class="bg-surface-800 border border-border-default rounded-2xl p-6 md:p-8 max-w-md w-full text-center">
@@ -162,6 +168,8 @@
             x-show="subModalOpen"
             x-transition.opacity
             @keydown.escape.window="subModalOpen = false"
+            role="dialog"
+            aria-modal="true"
             class="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4"
         >
             <div class="bg-surface-800 border border-border-default rounded-2xl p-6 max-w-md w-full">
@@ -205,6 +213,8 @@
         <div
             x-show="phase === 'finished'"
             x-transition.opacity
+            role="dialog"
+            aria-modal="true"
             class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
         >
             <div class="bg-surface-800 border border-border-default rounded-2xl p-8 max-w-md w-full text-center">

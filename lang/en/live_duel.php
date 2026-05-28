@@ -50,6 +50,7 @@ return [
     'opponent_preparing_sub' => 'Opponent is preparing a substitution…',
     'final_score' => 'Final score',
     'connecting' => 'Connecting…',
+    'realtime_unavailable' => 'Real-time updates are unavailable. Reload the page if the match looks stalled.',
 
     // Errors
     'no_active_game' => 'You need an active save game to create a duel.',

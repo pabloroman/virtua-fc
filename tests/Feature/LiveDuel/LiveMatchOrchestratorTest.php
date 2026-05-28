@@ -7,9 +7,12 @@ use App\Models\LiveMatchSession;
 use App\Models\Team;
 use App\Models\User;
 use App\Modules\LiveMatch\Enums\LiveMatchPhase;
+use App\Modules\LiveMatch\Enums\QueuedActionType;
+use App\Modules\LiveMatch\Exceptions\InvalidLiveActionException;
 use App\Modules\LiveMatch\Exceptions\LiveMatchStateException;
 use App\Modules\LiveMatch\Jobs\AdvanceLiveMatchWindowJob;
 use App\Modules\LiveMatch\Services\AutoLineupBuilder;
+use App\Modules\LiveMatch\Services\LiveMatchActionQueue;
 use App\Modules\LiveMatch\Services\LiveMatchEngineAdapter;
 use App\Modules\LiveMatch\Services\LiveMatchOrchestrator;
 use App\Modules\LiveMatch\Services\NationalSquadBuilder;
@@ -96,6 +99,63 @@ class LiveMatchOrchestratorTest extends TestCase
         $this->assertSame(LiveMatchPhase::Live, $session->phase);
         $this->assertNotNull($session->context_state);
         Queue::assertPushed(AdvanceLiveMatchWindowJob::class);
+    }
+
+    public function test_acknowledge_pause_only_resumes_once_when_acks_race(): void
+    {
+        Queue::fake();
+        $host = User::factory()->create();
+        $guest = User::factory()->create();
+        $hostTeam = $this->seedNationalTeam('Spain', 'ES');
+        $guestTeam = $this->seedNationalTeam('Brazil', 'BR');
+
+        $orchestrator = $this->makeOrchestrator();
+        $session = $orchestrator->createSession($host, $hostTeam);
+        $orchestrator->claimGuestSlot($session, $guest);
+        $session = $orchestrator->pickGuestTeam($session->fresh(), $guest, $guestTeam);
+        Queue::assertPushed(AdvanceLiveMatchWindowJob::class, 1);
+
+        // Force the session into a halftime-style pause to exercise the ack path.
+        $session->update([
+            'phase' => LiveMatchPhase::Paused,
+            'pause_reason' => 'halftime',
+            'pause_acked_by_host' => false,
+            'pause_acked_by_guest' => false,
+            'current_minute' => 50,
+        ]);
+
+        // Both acks arrive. Even though the second one observes both flags
+        // truthy, only the *first* commit transitions Paused→Live, so the
+        // adapter should only dispatch one advance job.
+        $orchestrator->acknowledgePause($session->fresh(), $host);
+        $orchestrator->acknowledgePause($session->fresh(), $guest);
+
+        $this->assertSame(LiveMatchPhase::Live, $session->fresh()->phase);
+        // 1 kickoff job + 1 resume job = 2 total.
+        Queue::assertPushed(AdvanceLiveMatchWindowJob::class, 2);
+    }
+
+    public function test_queue_rejects_invalid_formation_payload(): void
+    {
+        Queue::fake();
+        $host = User::factory()->create();
+        $guest = User::factory()->create();
+        $hostTeam = $this->seedNationalTeam('Spain', 'ES');
+        $guestTeam = $this->seedNationalTeam('Brazil', 'BR');
+
+        $orchestrator = $this->makeOrchestrator();
+        $session = $orchestrator->createSession($host, $hostTeam);
+        $orchestrator->claimGuestSlot($session, $guest);
+        $session = $orchestrator->pickGuestTeam($session->fresh(), $guest, $guestTeam);
+        $session->update([
+            'phase' => LiveMatchPhase::Paused,
+            'pause_reason' => 'halftime',
+        ]);
+
+        $queue = new LiveMatchActionQueue;
+
+        $this->expectException(InvalidLiveActionException::class);
+        $queue->queue($session->fresh(), $host, QueuedActionType::Formation, ['formation' => 'not-a-real-formation']);
     }
 
     private function makeOrchestrator(): LiveMatchOrchestrator

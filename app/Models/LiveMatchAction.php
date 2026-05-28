@@ -11,10 +11,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * Single queued in-match action (sub / formation / mentality change).
  *
- * Lives alongside LiveMatchSession on the control plane. Inserted by the
- * action queue endpoint while a match is running; applied at the start of
- * the next simulation window by LiveMatchEngineAdapter, then marked
- * applied|rejected.
+ * Inserted by the action queue endpoint while a match is running; applied at
+ * the start of the next simulation window by LiveMatchEngineAdapter, then
+ * marked applied|rejected.
  *
  * @property string $id
  * @property string $session_id
@@ -31,7 +30,7 @@ class LiveMatchAction extends Model
 {
     use HasUuids;
 
-    protected $connection = 'pgsql_control';
+    public $timestamps = false;
 
     protected $guarded = [];
 

@@ -33,7 +33,9 @@ export default function liveDuel(config) {
         events: [],
         myAcked: false,
         opponentPreparingSub: false,
+        opponentSubTimer: null,
         connected: false,
+        realtimeDisabled: false,
 
         // Squads
         hostSquad: config.initial.hostSquad || {},
@@ -64,6 +66,7 @@ export default function liveDuel(config) {
             });
 
             if (!this.echo) {
+                this.realtimeDisabled = true;
                 return;
             }
 
@@ -76,12 +79,13 @@ export default function liveDuel(config) {
                 .listen('.match.started', (e) => {
                     this.phase = 'live';
                     this.currentMinute = e.current_minute ?? 0;
-                    this.displayMinute = this.currentMinute;
+                    this.displayMinute = this.clampMinute(this.currentMinute);
                 })
                 .listen('.match.event', (e) => {
                     this.homeScore = e.home_score;
                     this.awayScore = e.away_score;
                     this.currentMinute = e.current_minute ?? this.currentMinute;
+                    this.displayMinute = this.clampMinute(this.currentMinute);
                     this.appendEvent(e.event);
                 })
                 .listen('.match.paused', (e) => {
@@ -94,11 +98,13 @@ export default function liveDuel(config) {
                     this.pauseReason = null;
                     this.myAcked = false;
                     this.currentMinute = e.current_minute ?? this.currentMinute;
+                    this.displayMinute = this.clampMinute(this.currentMinute);
                 })
                 .listen('.match.ended', (e) => {
                     this.phase = 'finished';
                     this.homeScore = e.home_score;
                     this.awayScore = e.away_score;
+                    this.stopClockInterpolation();
                 })
                 .listen('.match.bot_takeover', (e) => {
                     if (e.side === 'home') this.hostBot = true;
@@ -107,9 +113,20 @@ export default function liveDuel(config) {
                 .listen('.match.action_queued', (e) => {
                     if (e.side !== this.viewerSide) {
                         this.opponentPreparingSub = true;
-                        setTimeout(() => { this.opponentPreparingSub = false; }, 4000);
+                        if (this.opponentSubTimer) clearTimeout(this.opponentSubTimer);
+                        this.opponentSubTimer = setTimeout(() => {
+                            this.opponentPreparingSub = false;
+                            this.opponentSubTimer = null;
+                        }, 4000);
                     }
                 });
+        },
+
+        clampMinute(value) {
+            // Hard ceiling for the displayed clock — regular time runs to 93;
+            // an event after that should still display, but the interpolator
+            // can't tick past it.
+            return Math.min(Math.max(value, 0), 120);
         },
 
         seedFromEventLog(log) {
@@ -233,6 +250,13 @@ export default function liveDuel(config) {
                     this.displayMinute = Math.min(this.displayMinute + 0.25, 93);
                 }
             }, 250);
+        },
+
+        stopClockInterpolation() {
+            if (this.clockTimer) {
+                clearInterval(this.clockTimer);
+                this.clockTimer = null;
+            }
         },
 
         openSubModal() {

@@ -15,7 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->booting(function () {
         $uuidPattern = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
-        foreach (['gameId', 'matchId', 'playerId', 'offerId', 'reportId', 'teamId', 'presetId', 'notificationId', 'summaryId', 'auditId'] as $param) {
+        foreach (['gameId', 'matchId', 'playerId', 'offerId', 'reportId', 'teamId', 'presetId', 'notificationId', 'summaryId', 'auditId', 'session'] as $param) {
             Route::pattern($param, $uuidPattern);
         }
     })

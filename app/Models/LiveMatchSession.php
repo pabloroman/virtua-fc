@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Modules\LiveMatch\Enums\LiveMatchPhase;
+use App\Modules\LiveMatch\Enums\LiveMatchSide;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,9 +12,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * Live (real-time) human-vs-human match session.
  *
- * Lives on the control plane (cross-tenant). The session does not belong to
- * either player's Game; squads are snapshotted at team-pick time and the
- * match runs entirely on those snapshots.
+ * A duel does not belong to either player's Game; squads are snapshotted at
+ * team-pick time and the match runs entirely on those snapshots.
  *
  * @property string $id
  * @property LiveMatchPhase $phase
@@ -42,7 +42,7 @@ class LiveMatchSession extends Model
 {
     use HasUuids;
 
-    protected $connection = 'pgsql_control';
+    public $timestamps = false;
 
     protected $guarded = [];
 
@@ -98,8 +98,8 @@ class LiveMatchSession extends Model
         return $this->host_team_id !== null && $this->guest_team_id !== null;
     }
 
-    public function isBot(string $side): bool
+    public function isBot(LiveMatchSide $side): bool
     {
-        return $side === 'home' ? $this->host_bot : $this->guest_bot;
+        return $side === LiveMatchSide::Home ? $this->host_bot : $this->guest_bot;
     }
 }

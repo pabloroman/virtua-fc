@@ -71,7 +71,7 @@ class LiveMatchOrchestrator
      */
     public function claimGuestSlot(LiveMatchSession $session, User $user): LiveMatchSession
     {
-        return DB::connection('pgsql_control')->transaction(function () use ($session, $user) {
+        return DB::transaction(function () use ($session, $user) {
             $fresh = LiveMatchSession::lockForUpdate()->findOrFail($session->id);
 
             if ($fresh->isHost($user->id)) {
@@ -92,9 +92,9 @@ class LiveMatchOrchestrator
     }
 
     /**
-     * Guest picks their national team. Snapshots their squad; if both teams
-     * are now picked AND both clients are present, kickoff fires from the
-     * presence-channel listener via attemptKickoff().
+     * Guest picks their national team. Snapshots their squad and, since the
+     * guest must be on the page to make this call, kicks off immediately
+     * rather than wait for a presence-channel handshake.
      */
     public function pickGuestTeam(LiveMatchSession $session, User $user, Team $team): LiveMatchSession
     {
@@ -117,11 +117,6 @@ class LiveMatchOrchestrator
         $session->refresh();
         LiveMatchTeamPickedBroadcast::dispatch($session);
 
-        // Prototype: when both teams are picked, kick off immediately rather
-        // than wait for a presence-channel "both members joined" handshake.
-        // The guest must be on the page to make this call, and the host is
-        // expected to be on the lobby page receiving broadcasts. A follow-up
-        // can switch to real presence-based gating.
         $this->attemptKickoff($session, bothPresent: true);
 
         return $session->refresh();
@@ -145,14 +140,28 @@ class LiveMatchOrchestrator
         }
 
         $initial = $this->engineAdapter->buildInitialContextState($session);
-        $newVersion = $session->clock_version + 1;
 
-        $session->update([
-            'phase' => LiveMatchPhase::Live,
-            'context_state' => $initial,
-            'current_minute' => 0,
-            'clock_version' => $newVersion,
-        ]);
+        // Row lock + DB-side increment so two concurrent kickoff calls (e.g.
+        // simultaneous presence and pick-team triggers) can't both transition
+        // Lobby → Live and dispatch two AdvanceLiveMatchWindowJobs.
+        $newVersion = DB::transaction(function () use ($session, $initial) {
+            $locked = LiveMatchSession::lockForUpdate()->findOrFail($session->id);
+            if ($locked->phase !== LiveMatchPhase::Lobby) {
+                return null;
+            }
+            $locked->update([
+                'phase' => LiveMatchPhase::Live,
+                'context_state' => $initial,
+                'current_minute' => 0,
+                'clock_version' => DB::raw('clock_version + 1'),
+            ]);
+
+            return $locked->fresh()->clock_version;
+        });
+
+        if ($newVersion === null) {
+            return;
+        }
 
         LiveMatchStartedBroadcast::dispatch($session->fresh());
 
@@ -175,12 +184,13 @@ class LiveMatchOrchestrator
         $session->refresh();
 
         // Broadcast new events for this window.
+        $homeTeamId = $this->engineAdapter->homeTeamIdFor($session);
         foreach ($window->newEvents as $event) {
             LiveMatchEventBroadcast::dispatch($session, [
                 'minute' => $event->minute,
                 'type' => $event->type,
                 'team_id' => $event->teamId,
-                'side' => $event->teamId === $session->id . ':home' ? 'home' : 'away',
+                'side' => $event->teamId === $homeTeamId ? 'home' : 'away',
                 'game_player_id' => $event->gamePlayerId,
                 'metadata' => $event->metadata,
             ]);
@@ -233,50 +243,73 @@ class LiveMatchOrchestrator
      */
     public function acknowledgePause(LiveMatchSession $session, User $user): LiveMatchSession
     {
-        if ($session->phase !== LiveMatchPhase::Paused) {
-            throw new LiveMatchStateException('Match is not paused.');
-        }
         if (! $session->isParticipant($user->id)) {
             throw new LiveMatchStateException('You are not a participant.');
         }
 
-        $patch = $session->isHost($user->id)
-            ? ['pause_acked_by_host' => true]
-            : ['pause_acked_by_guest' => true];
+        // Lock to serialize concurrent acks — without it, both sides can read
+        // each other as not-yet-acked and both trigger resume(), dispatching
+        // duplicate AdvanceLiveMatchWindowJobs.
+        [$resumePayload, $session] = DB::transaction(function () use ($session, $user) {
+            $locked = LiveMatchSession::lockForUpdate()->findOrFail($session->id);
 
-        $session->update($patch);
-        $session->refresh();
+            if ($locked->phase !== LiveMatchPhase::Paused) {
+                throw new LiveMatchStateException('Match is not paused.');
+            }
 
-        $hostReady = $session->pause_acked_by_host || $session->host_bot;
-        $guestReady = $session->pause_acked_by_guest || $session->guest_bot;
+            $patch = $locked->isHost($user->id)
+                ? ['pause_acked_by_host' => true]
+                : ['pause_acked_by_guest' => true];
+            $locked->update($patch);
+            $locked->refresh();
 
-        if ($hostReady && $guestReady) {
-            $this->resume($session);
+            $hostReady = $locked->pause_acked_by_host || $locked->host_bot;
+            $guestReady = $locked->pause_acked_by_guest || $locked->guest_bot;
+
+            if ($hostReady && $guestReady) {
+                $payload = $this->applyResume($locked);
+
+                return [$payload, $locked->fresh()];
+            }
+
+            return [null, $locked];
+        });
+
+        if ($resumePayload !== null) {
+            LiveMatchResumedBroadcast::dispatch($session);
+            AdvanceLiveMatchWindowJob::dispatch(
+                $resumePayload['session_id'],
+                $resumePayload['clock_version'],
+                $resumePayload['from_minute'],
+            );
         }
 
         return $session;
     }
 
-    private function resume(LiveMatchSession $session): void
+    /**
+     * Transition Paused → Live and bump clock_version atomically. Caller must
+     * hold the row lock; returns the payload the post-commit dispatcher needs.
+     *
+     * @return array{session_id: string, clock_version: int, from_minute: int}
+     */
+    private function applyResume(LiveMatchSession $session): array
     {
-        $newVersion = $session->clock_version + 1;
-
         $session->update([
             'phase' => LiveMatchPhase::Live,
             'pause_reason' => null,
             'pause_acked_by_host' => false,
             'pause_acked_by_guest' => false,
             'paused_at' => null,
-            'clock_version' => $newVersion,
+            'clock_version' => DB::raw('clock_version + 1'),
         ]);
+        $session->refresh();
 
-        LiveMatchResumedBroadcast::dispatch($session->fresh());
-
-        AdvanceLiveMatchWindowJob::dispatch(
-            $session->id,
-            $newVersion,
-            $session->current_minute,
-        );
+        return [
+            'session_id' => $session->id,
+            'clock_version' => $session->clock_version,
+            'from_minute' => $session->current_minute,
+        ];
     }
 
     /**
@@ -299,25 +332,42 @@ class LiveMatchOrchestrator
 
     public function markAsBot(LiveMatchSession $session, int $userId): void
     {
-        if ($session->isHost($userId)) {
-            $session->update(['host_bot' => true]);
-        } elseif ($session->isGuest($userId)) {
-            $session->update(['guest_bot' => true]);
-        } else {
-            return;
-        }
+        // Flip the bot flag + maybe-resume under the same row lock as the ack
+        // path; if the displaced user's pause-ack was the only thing blocking
+        // resume, this transition fires it.
+        $resumePayload = DB::transaction(function () use ($session, $userId) {
+            $locked = LiveMatchSession::lockForUpdate()->findOrFail($session->id);
+
+            if ($locked->isHost($userId)) {
+                $locked->update(['host_bot' => true]);
+            } elseif ($locked->isGuest($userId)) {
+                $locked->update(['guest_bot' => true]);
+            } else {
+                return null;
+            }
+            $locked->refresh();
+
+            if ($locked->phase !== LiveMatchPhase::Paused) {
+                return null;
+            }
+            $hostReady = $locked->pause_acked_by_host || $locked->host_bot;
+            $guestReady = $locked->pause_acked_by_guest || $locked->guest_bot;
+            if (! ($hostReady && $guestReady)) {
+                return null;
+            }
+
+            return $this->applyResume($locked);
+        });
 
         LiveMatchBotTakeoverBroadcast::dispatch($session->fresh(), $userId);
 
-        // If we were paused waiting for this user's ack, the resume path is
-        // unblocked now that they count as bot-ready.
-        if ($session->phase === LiveMatchPhase::Paused) {
-            $session->refresh();
-            $hostReady = $session->pause_acked_by_host || $session->host_bot;
-            $guestReady = $session->pause_acked_by_guest || $session->guest_bot;
-            if ($hostReady && $guestReady) {
-                $this->resume($session);
-            }
+        if ($resumePayload !== null) {
+            LiveMatchResumedBroadcast::dispatch($session->fresh());
+            AdvanceLiveMatchWindowJob::dispatch(
+                $resumePayload['session_id'],
+                $resumePayload['clock_version'],
+                $resumePayload['from_minute'],
+            );
         }
     }
 

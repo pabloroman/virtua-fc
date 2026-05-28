@@ -9,6 +9,8 @@ use App\Modules\LiveMatch\Enums\LiveMatchPhase;
 use App\Modules\LiveMatch\Enums\LiveMatchSide;
 use App\Modules\LiveMatch\Enums\QueuedActionType;
 use App\Modules\LiveMatch\Exceptions\InvalidLiveActionException;
+use App\Modules\Lineup\Enums\Formation;
+use App\Modules\Lineup\Enums\Mentality;
 
 class LiveMatchActionQueue
 {
@@ -46,8 +48,8 @@ class LiveMatchActionQueue
         if ($type === QueuedActionType::Substitution) {
             $this->validateSub($state, $sideKey, $payload);
         } else {
-            // Formation / mentality changes are halftime-only.
-            if ($session->pause_reason !== 'halftime') {
+            // Tactical changes are only allowed at a halftime pause.
+            if ($session->phase !== LiveMatchPhase::Paused || $session->pause_reason !== 'halftime') {
                 throw new InvalidLiveActionException('Tactical changes are only allowed at halftime.');
             }
             $this->validateTacticalChange($type, $payload);
@@ -88,11 +90,20 @@ class LiveMatchActionQueue
 
     private function validateTacticalChange(QueuedActionType $type, array $payload): void
     {
-        if ($type === QueuedActionType::Formation && empty($payload['formation'])) {
-            throw new InvalidLiveActionException('Formation change requires a formation code.');
+        // Validate enum values here — the adapter calls Formation::from() /
+        // Mentality::from() on the next window and any unknown string would
+        // throw a ValueError that crashes the simulation job.
+        if ($type === QueuedActionType::Formation) {
+            $value = $payload['formation'] ?? null;
+            if (! is_string($value) || Formation::tryFrom($value) === null) {
+                throw new InvalidLiveActionException('Formation change requires a valid formation code.');
+            }
         }
-        if ($type === QueuedActionType::Mentality && empty($payload['mentality'])) {
-            throw new InvalidLiveActionException('Mentality change requires a mentality code.');
+        if ($type === QueuedActionType::Mentality) {
+            $value = $payload['mentality'] ?? null;
+            if (! is_string($value) || Mentality::tryFrom($value) === null) {
+                throw new InvalidLiveActionException('Mentality change requires a valid mentality code.');
+            }
         }
     }
 }
