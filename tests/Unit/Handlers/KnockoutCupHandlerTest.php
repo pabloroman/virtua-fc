@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Handlers;
 
-use App\Modules\Competition\Services\FinalVenueResolver;
+use App\Modules\Competition\Services\NeutralVenueResolver;
 use App\Modules\Match\Handlers\KnockoutCupHandler;
 use App\Modules\Match\Services\CupTieResolver;
 use App\Modules\Squad\Services\EligibilityService;
@@ -37,7 +37,7 @@ class KnockoutCupHandlerTest extends TestCase
         $this->handler = new KnockoutCupHandler(
             $this->cupTieResolverMock,
             new EligibilityService(),
-            new FinalVenueResolver(),
+            new NeutralVenueResolver(),
         );
 
         $user = User::factory()->create();
