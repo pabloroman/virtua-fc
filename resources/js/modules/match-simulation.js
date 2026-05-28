@@ -87,11 +87,27 @@ export function createMatchSimulation(ctx) {
         const etFirstHalfEnd = MINUTE.ET_FIRST_HALF_END + (state.etFirstHalfStoppage || 0);
         const etSecondHalfEnd = MINUTE.ET_END + (state.etSecondHalfStoppage || 0);
 
-        if (isExtraTime) {
-            state.currentMinute = Math.min(state.currentMinute + deltaMinutes, etSecondHalfEnd);
-        } else {
-            state.currentMinute = Math.min(state.currentMinute + deltaMinutes, secondHalfEnd);
+        // Clamp the clock to the END OF THE CURRENT HALF, not the end of the
+        // match. If rAF stalls (mobile tab throttling, OS suspension, GC pause,
+        // CPU starvation at 4× speed) the next tick's deltaMs can be huge.
+        // Clamping to the match-wide end let a single tick jump from minute 30
+        // to minute 95 — processEvents() (called below) would then reveal every
+        // regular-time event in one shot, increment scores via updateScore for
+        // each goal, and only after that would the half-time / full-time check
+        // notice the phase boundary had been crossed. The result was a
+        // half-time pause with the final scoreboard and second-half events
+        // already on screen (issue #1158). Clamping per half makes the reveal
+        // loop terminate at the boundary; the subsequent phase check still
+        // fires because currentMinute is allowed to reach exactly the half end.
+        let clockCap;
+        switch (state.phase) {
+            case PHASE.FIRST_HALF:               clockCap = firstHalfEnd;    break;
+            case PHASE.SECOND_HALF:              clockCap = secondHalfEnd;   break;
+            case PHASE.EXTRA_TIME_FIRST_HALF:    clockCap = etFirstHalfEnd;  break;
+            case PHASE.EXTRA_TIME_SECOND_HALF:   clockCap = etSecondHalfEnd; break;
+            default:                             clockCap = isExtraTime ? etSecondHalfEnd : secondHalfEnd;
         }
+        state.currentMinute = Math.min(state.currentMinute + deltaMinutes, clockCap);
 
         // Reveal events
         if (isExtraTime) {

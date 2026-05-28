@@ -4,6 +4,7 @@ namespace App\Modules\Match\Support;
 
 use App\Models\GameMatch;
 use App\Models\MatchEvent;
+use App\Modules\Match\Enums\MatchPhase;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -20,23 +21,47 @@ final class ScoreEventsAuditor
 {
     public static function audit(GameMatch $match, string $stage): void
     {
-        $eventCount = MatchEvent::where('game_match_id', $match->id)
+        $regulationPhases = array_map(fn (MatchPhase $p) => $p->value, MatchPhase::regulation());
+
+        $totalEventCount = MatchEvent::where('game_match_id', $match->id)
             ->whereIn('event_type', ['goal', 'own_goal'])
             ->count();
 
-        $expected = (int) $match->home_score + (int) $match->away_score
+        $regulationEventCount = MatchEvent::where('game_match_id', $match->id)
+            ->whereIn('event_type', ['goal', 'own_goal'])
+            ->whereIn('phase', $regulationPhases)
+            ->count();
+
+        $expectedTotal = (int) $match->home_score + (int) $match->away_score
             + (int) ($match->home_score_et ?? 0) + (int) ($match->away_score_et ?? 0);
 
-        if ($eventCount !== $expected) {
+        $expectedRegulation = (int) $match->home_score + (int) $match->away_score;
+
+        if ($totalEventCount !== $expectedTotal) {
             Log::warning('Match score/events mismatch', [
                 'stage' => $stage,
                 'match_id' => $match->id,
-                'goal_events' => $eventCount,
-                'expected_total' => $expected,
+                'goal_events' => $totalEventCount,
+                'expected_total' => $expectedTotal,
                 'home_score' => $match->home_score,
                 'away_score' => $match->away_score,
                 'home_score_et' => $match->home_score_et,
                 'away_score_et' => $match->away_score_et,
+            ]);
+        }
+
+        // Regulation-only check: catches drift between the regulation
+        // scoreboard and regulation-phase events even when the total
+        // happens to balance because of an offsetting mistake in ET.
+        // This is the regression check requested by issue #1158.
+        if ($regulationEventCount !== $expectedRegulation) {
+            Log::warning('Match regulation score/events mismatch', [
+                'stage' => $stage,
+                'match_id' => $match->id,
+                'regulation_goal_events' => $regulationEventCount,
+                'expected_regulation' => $expectedRegulation,
+                'home_score' => $match->home_score,
+                'away_score' => $match->away_score,
             ]);
         }
     }
