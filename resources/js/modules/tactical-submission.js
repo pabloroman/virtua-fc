@@ -99,6 +99,16 @@ export function createTacticalSubmission(ctx) {
                     if (Object.keys(c._manualSlotPins).length > 0) {
                         payload.manual_slot_pins = { ...c._manualSlotPins };
                     }
+                    // For a formation change, lock in the EXACT arrangement
+                    // the user is looking at. previewSlotMap is the rendered
+                    // preview (server best-fit + any drag-swaps applied on top
+                    // of it); pinning every slot makes FormationRecommender
+                    // reproduce it verbatim instead of re-solving the shape and
+                    // scrambling positions at kickoff (#1161). This supersedes
+                    // the partial drag-only pins above.
+                    if (payload.formation && c.previewSlotMap) {
+                        payload.manual_slot_pins = { ...c.previewSlotMap };
+                    }
                 }
 
                 const response = await fetch(c.tacticalActionsUrl, {

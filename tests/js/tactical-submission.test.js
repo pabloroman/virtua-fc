@@ -363,4 +363,57 @@ describe('tactical-submission confirmAllChanges', () => {
         const subIdx = state.events.indexOf(subEvent);
         expect(state.lastRevealedIndex).toBeGreaterThanOrEqual(subIdx);
     });
+
+    it('half-time formation change pins the full displayed XI so kickoff is not re-solved', async () => {
+        // Regression for #1161. Changing formation at half-time used to send
+        // only the partial drag-swap pins (or none), letting the server
+        // re-solve the new shape — so the kickoff XI could differ from the
+        // arrangement the user was looking at. confirmAllChanges now sends the
+        // FULL previewSlotMap (the rendered preview) as manual_slot_pins, so
+        // FormationRecommender reproduces it verbatim.
+        const previewSlotMap = {
+            0: 'home-gk',
+            1: 'home-lb', 2: 'home-cb1', 3: 'home-cb2', 4: 'home-rb',
+            5: 'home-cm1', 6: 'home-cm2', 7: 'home-cm3',
+            8: 'home-fw1', 9: 'home-fw2', 10: 'home-fw3',
+        };
+        const state = createMockState({
+            phase: 'half_time',
+            currentMinute: 45,
+            firstHalfStoppage: 0,
+            hasTacticalChanges: true,
+            pendingFormation: '5-3-2',
+            activeFormation: '4-3-3',
+            previewSlotMap,
+            // A partial drag-swap pin that must be SUPERSEDED by the full map.
+            _manualSlotPins: { 4: 'home-rb', 1: 'home-lb' },
+        });
+
+        let capturedPayload = null;
+        globalThis.fetch = vi.fn((url, opts) => {
+            capturedPayload = JSON.parse(opts.body);
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({
+                    isExtraTime: false,
+                    formation: '5-3-2',
+                    slot_assignments: previewSlotMap,
+                    substitutions: [],
+                    newEvents: [],
+                    newScore: { home: 1, away: 0 },
+                    homePossession: 50,
+                    awayPossession: 50,
+                }),
+            });
+        });
+
+        const submission = createTacticalSubmission(() => state);
+        await submission.confirmAllChanges();
+
+        expect(capturedPayload).not.toBeNull();
+        expect(capturedPayload.formation).toBe('5-3-2');
+        expect(capturedPayload.is_half_time).toBe(true);
+        // The full displayed map is pinned — not just the two drag-swapped slots.
+        expect(capturedPayload.manual_slot_pins).toEqual(previewSlotMap);
+    });
 });

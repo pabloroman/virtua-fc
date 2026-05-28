@@ -356,14 +356,40 @@ export default function liveMatch(config) {
                         [String(draggedSlot.id)]: occupyingPlayerId,
                         [String(occupyingSlot.id)]: draggedPlayerId,
                     };
-                    // Mirror the swap in startingSlotMap so the no-pending-
-                    // subs render path (which reads it directly) reflects
-                    // the drag without going through bestFit.
-                    this.startingSlotMap = swapSlots(
-                        this.startingSlotMap,
-                        draggedSlot.id,
-                        occupyingSlot.id,
-                    );
+
+                    // While a formation change is staged the pitch renders
+                    // from `previewSlotMap` (see pitch-layout selectSlotMap),
+                    // NOT `startingSlotMap`. Mirroring the swap into
+                    // startingSlotMap here would leave the rendered preview
+                    // untouched, so the drag would visibly snap back and the
+                    // user couldn't rearrange the new shape before kickoff
+                    // (#1161). Swap within previewSlotMap so the rendered map
+                    // reflects the drag. previewSlotMap and currentPitchSlots
+                    // share the pending-formation slot-id space, so the swap
+                    // is valid. If previewSlotMap is still null (drag during
+                    // the brief /compute-slots fetch window), seed it from the
+                    // currently-rendered assignments first.
+                    const isFormationPreview =
+                        (this.pendingFormation ?? this.activeFormation) !== this._pitchPositionsFormation;
+                    if (isFormationPreview) {
+                        let baseMap = this.previewSlotMap;
+                        if (!baseMap) {
+                            baseMap = {};
+                            for (const a of assignments) {
+                                if (a.player) baseMap[String(a.id)] = a.player.id;
+                            }
+                        }
+                        this.previewSlotMap = swapSlots(baseMap, draggedSlot.id, occupyingSlot.id);
+                    } else {
+                        // Mirror the swap in startingSlotMap so the no-pending-
+                        // subs render path (which reads it directly) reflects
+                        // the drag without going through bestFit.
+                        this.startingSlotMap = swapSlots(
+                            this.startingSlotMap,
+                            draggedSlot.id,
+                            occupyingSlot.id,
+                        );
+                    }
                 },
                 swapOnly: true,
                 pitchElementId: 'live-pitch-field',

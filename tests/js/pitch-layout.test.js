@@ -81,7 +81,16 @@ function p(id, position, secondaryPositions = []) {
     };
 }
 
-function makeCtx({ startingSlotMap, lineupPlayers, benchPlayers, pendingSubs = [], manualSlotPins = {} }) {
+function makeCtx({
+    startingSlotMap,
+    lineupPlayers,
+    benchPlayers,
+    pendingSubs = [],
+    manualSlotPins = {},
+    pendingFormation = null,
+    previewSlotMap = null,
+    formationSlots = { '4-3-3': F_4_3_3_SLOTS },
+}) {
     return {
         lineupPlayers,
         benchPlayers,
@@ -91,9 +100,10 @@ function makeCtx({ startingSlotMap, lineupPlayers, benchPlayers, pendingSubs = [
         selectedPlayerIn: null,
         redCardedPlayerIds: [],
         activeFormation: '4-3-3',
-        pendingFormation: null,
+        pendingFormation,
+        previewSlotMap,
         _pitchPositionsFormation: '4-3-3',
-        formationSlots: { '4-3-3': F_4_3_3_SLOTS },
+        formationSlots,
         slotCompatibility: SLOT_COMPATIBILITY,
         startingSlotMap,
         _manualSlotPins: manualSlotPins,
@@ -313,5 +323,41 @@ describe('pitch-layout slotAssignments', () => {
         expect(mapById[1]).toBe(lb.id);
         expect(mapById[8]).toBe(lw.id);
         expect(mapById[10]).toBe(rw.id);
+    });
+
+    it('renders from previewSlotMap (not startingSlotMap) during a formation preview', () => {
+        // Regression for #1161. While a formation change is staged the pitch
+        // renders from previewSlotMap, so the drag-swap handler must mutate
+        // previewSlotMap (not startingSlotMap) for the swap to be visible.
+        // This guards that render-source invariant: a swap applied to
+        // previewSlotMap shows up, while startingSlotMap is ignored.
+        const scenario = setupPostDragSwapScenario();
+        const { playerA, playerB } = scenario.players;
+
+        // previewSlotMap = the new-shape best-fit with A and B swapped vs
+        // startingSlotMap (A at slot 4, B at slot 6). Reuse the 4-3-3 slot
+        // geometry under the pending '5-3-2' key — only slot-id placement
+        // matters for this assertion.
+        const previewSlotMap = {
+            ...scenario.startingSlotMap,
+            4: playerA.id,
+            6: playerB.id,
+        };
+
+        const ctx = makeCtx({
+            ...scenario,
+            pendingSubs: [],
+            pendingFormation: '5-3-2',
+            previewSlotMap,
+            formationSlots: { '4-3-3': F_4_3_3_SLOTS, '5-3-2': F_4_3_3_SLOTS },
+        });
+        const layout = createPitchLayout(() => ctx);
+        const mapById = Object.fromEntries(
+            layout.slotAssignments.map(a => [a.id, a.player?.id ?? null]),
+        );
+
+        // The render reflects previewSlotMap's swap, not startingSlotMap.
+        expect(mapById[4]).toBe(playerA.id);
+        expect(mapById[6]).toBe(playerB.id);
     });
 });
