@@ -36,7 +36,7 @@ class SeedReferenceData extends Command
         }
 
         if (App::environment('local')) {
-            $this->createDefaultUser();
+            $this->createDefaultUsers();
         }
 
         $countryConfig = app(CountryConfig::class);
@@ -331,23 +331,30 @@ class SeedReferenceData extends Command
         $this->linkReserveTeams($config);
     }
 
-    private function createDefaultUser(): void
+    private function createDefaultUsers(): void
     {
-        $user = User::firstOrCreate(
-            ['email' => 'test@test.com'],
-            [
-                'name' => 'Test User',
-                'password' => Hash::make('password'),
-            ]
-        );
+        $defaultUsers = [
+            ['email' => 'test@test.com', 'name' => 'Test User'],
+            ['email' => 'test2@test.com', 'name' => 'Test User 2'],
+        ];
 
-        $user->forceFill([
-            'email_verified_at' => $user->email_verified_at ?? now(),
-            'has_career_access' => true,
-            'has_tournament_access' => true,
-        ])->save();
+        foreach ($defaultUsers as $defaultUser) {
+            $user = User::firstOrCreate(
+                ['email' => $defaultUser['email']],
+                [
+                    'name' => $defaultUser['name'],
+                    'password' => Hash::make('password'),
+                ]
+            );
 
-        $this->line("Default user: test@test.com / password");
+            $user->forceFill([
+                'email_verified_at' => $user->email_verified_at ?? now(),
+                'has_career_access' => true,
+                'has_tournament_access' => true,
+            ])->save();
+
+            $this->line("Default user: {$defaultUser['email']} / password");
+        }
     }
 
     private function clearExistingData(): void
