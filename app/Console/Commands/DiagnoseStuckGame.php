@@ -133,21 +133,61 @@ class DiagnoseStuckGame extends Command
         }
 
         $this->line('');
-        $this->line('=== ESP1 entries missing from standings ===');
-        $esp1Entries = CompetitionEntry::where('game_id', $gameId)
-            ->where('competition_id', 'ESP1')
-            ->pluck('team_id')->all();
-        $esp1Standings = GameStanding::where('game_id', $gameId)
-            ->where('competition_id', 'ESP1')
-            ->pluck('team_id')->all();
-        $missing = array_diff($esp1Entries, $esp1Standings);
-        if (empty($missing)) {
-            $this->line('  (none)');
-        } else {
+        $this->line('=== League entries missing from standings (entry + matches exist, standings row gone) ===');
+        $anyMissing = false;
+        foreach (['ESP1', 'ESP2', 'ESP3A', 'ESP3B'] as $c) {
+            $entryIds = CompetitionEntry::where('game_id', $gameId)
+                ->where('competition_id', $c)
+                ->pluck('team_id')->all();
+            $standingIds = GameStanding::where('game_id', $gameId)
+                ->where('competition_id', $c)
+                ->pluck('team_id')->all();
+            $missing = array_diff($entryIds, $standingIds);
             foreach ($missing as $teamId) {
-                $name = Team::where('id', $teamId)->value('name');
-                $this->line("  {$teamId}  {$name}");
+                $anyMissing = true;
+                $team = Team::find($teamId);
+                $name = $team->name ?? 'Unknown';
+                // Matches this team actually played in this competition — if > 0,
+                // the standings row is rebuildable from results (no team invented).
+                $playedMatches = GameMatch::where('game_id', $gameId)
+                    ->where('competition_id', $c)
+                    ->whereNotNull('home_score')
+                    ->where(function ($q) use ($teamId) {
+                        $q->where('home_team_id', $teamId)
+                          ->orWhere('away_team_id', $teamId);
+                    })
+                    ->count();
+                $reserveFlag = '';
+                if ($team && $team->parent_team_id) {
+                    $parentName = Team::where('id', $team->parent_team_id)->value('name');
+                    $reserveFlag = "  <-- RESERVE of {$parentName}";
+                }
+                $this->line("  {$c}: {$teamId}  {$name}  finalised_matches_for_team={$playedMatches}{$reserveFlag}");
             }
+        }
+        if (!$anyMissing) {
+            $this->line('  (none)');
+        }
+
+        $this->line('');
+        $this->line('=== Standings rows with no matching entry (orphan standings) ===');
+        $anyOrphan = false;
+        foreach (['ESP1', 'ESP2', 'ESP3A', 'ESP3B'] as $c) {
+            $entryIds = CompetitionEntry::where('game_id', $gameId)
+                ->where('competition_id', $c)
+                ->pluck('team_id')->all();
+            $standingIds = GameStanding::where('game_id', $gameId)
+                ->where('competition_id', $c)
+                ->pluck('team_id')->all();
+            $orphans = array_diff($standingIds, $entryIds);
+            foreach ($orphans as $teamId) {
+                $anyOrphan = true;
+                $name = Team::where('id', $teamId)->value('name');
+                $this->line("  {$c}: {$teamId}  {$name}");
+            }
+        }
+        if (!$anyOrphan) {
+            $this->line('  (none)');
         }
 
         $this->line('');
