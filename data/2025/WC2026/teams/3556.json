@@ -14,7 +14,9 @@
       "injured": false,
       "marketValue": "€6.00m",
       "name": "Dominik Kotarski",
-      "position": "Goalkeeper"
+      "overall_score": 75,
+      "position": "Goalkeeper",
+      "potential": 78
     },
     {
       "club": {
@@ -28,7 +30,9 @@
       "injured": false,
       "marketValue": "€4.00m",
       "name": "Dominik Livakovic",
-      "position": "Goalkeeper"
+      "overall_score": 78,
+      "position": "Goalkeeper",
+      "potential": 78
     },
     {
       "club": {
@@ -42,7 +46,9 @@
       "injured": false,
       "marketValue": "€3.50m",
       "name": "Ivor Pandur",
-      "position": "Goalkeeper"
+      "overall_score": 72,
+      "position": "Goalkeeper",
+      "potential": 77
     },
     {
       "club": {
@@ -56,7 +62,9 @@
       "injured": false,
       "marketValue": "€70.00m",
       "name": "Josko Gvardiol",
-      "position": "Centre-Back"
+      "overall_score": 85,
+      "position": "Centre-Back",
+      "potential": 88
     },
     {
       "club": {
@@ -70,7 +78,9 @@
       "injured": false,
       "marketValue": "€60.00m",
       "name": "Luka Vuskovic",
-      "position": "Centre-Back"
+      "overall_score": 78,
+      "position": "Centre-Back",
+      "potential": 88
     },
     {
       "club": {
@@ -84,7 +94,9 @@
       "injured": true,
       "marketValue": "€15.00m",
       "name": "Josip Sutalo",
-      "position": "Centre-Back"
+      "overall_score": 77,
+      "position": "Centre-Back",
+      "potential": 81
     },
     {
       "club": {
@@ -98,7 +110,9 @@
       "injured": false,
       "marketValue": "€7.50m",
       "name": "Marin Pongracic",
-      "position": "Centre-Back"
+      "overall_score": 73,
+      "position": "Centre-Back",
+      "potential": 75
     },
     {
       "club": {
@@ -112,7 +126,9 @@
       "injured": false,
       "marketValue": "€4.00m",
       "name": "Martin Erlić",
-      "position": "Centre-Back"
+      "overall_score": 73,
+      "position": "Centre-Back",
+      "potential": 74
     },
     {
       "club": {
@@ -126,7 +142,9 @@
       "injured": false,
       "marketValue": "€3.00m",
       "name": "Duje Caleta-Car",
-      "position": "Centre-Back"
+      "overall_score": 74,
+      "position": "Centre-Back",
+      "potential": 74
     },
     {
       "club": {
@@ -140,7 +158,9 @@
       "injured": false,
       "marketValue": "€35.00m",
       "name": "Josip Stanisic",
-      "position": "Right-Back"
+      "overall_score": 79,
+      "position": "Right-Back",
+      "potential": 82
     },
     {
       "club": {
@@ -154,7 +174,9 @@
       "injured": false,
       "marketValue": "€6.50m",
       "name": "Nikola Moro",
-      "position": "Defensive Midfield"
+      "overall_score": 75,
+      "position": "Defensive Midfield",
+      "potential": 75
     },
     {
       "club": {
@@ -168,7 +190,9 @@
       "injured": false,
       "marketValue": "€6.00m",
       "name": "Kristijan Jakic",
-      "position": "Defensive Midfield"
+      "overall_score": 75,
+      "position": "Defensive Midfield",
+      "potential": 75
     },
     {
       "club": {
@@ -182,7 +206,9 @@
       "injured": false,
       "marketValue": "€30.00m",
       "name": "Petar Sučić",
-      "position": "Central Midfield"
+      "overall_score": 77,
+      "position": "Central Midfield",
+      "potential": 83
     },
     {
       "club": {
@@ -196,7 +222,9 @@
       "injured": false,
       "marketValue": "€12.00m",
       "name": "Mateo Kovacic",
-      "position": "Central Midfield"
+      "overall_score": 82,
+      "position": "Central Midfield",
+      "potential": 82
     },
     {
       "club": {
@@ -210,7 +238,9 @@
       "injured": false,
       "marketValue": "€10.00m",
       "name": "Luka Sucic",
-      "position": "Central Midfield"
+      "overall_score": 76,
+      "position": "Central Midfield",
+      "potential": 81
     },
     {
       "club": {
@@ -224,7 +254,9 @@
       "injured": false,
       "marketValue": "€7.00m",
       "name": "Mario Pašalić",
-      "position": "Central Midfield"
+      "overall_score": 79,
+      "position": "Central Midfield",
+      "potential": 79
     },
     {
       "club": {
@@ -238,7 +270,9 @@
       "injured": false,
       "marketValue": "€4.00m",
       "name": "Luka Modrić",
-      "position": "Central Midfield"
+      "overall_score": 85,
+      "position": "Central Midfield",
+      "potential": 85
     },
     {
       "club": {
@@ -252,7 +286,9 @@
       "injured": false,
       "marketValue": "€24.00m",
       "name": "Martin Baturina",
-      "position": "Attacking Midfield"
+      "overall_score": 79,
+      "position": "Attacking Midfield",
+      "potential": 84
     },
     {
       "club": {
@@ -266,7 +302,9 @@
       "injured": false,
       "marketValue": "€9.00m",
       "name": "Nikola Vlašić",
-      "position": "Attacking Midfield"
+      "overall_score": 80,
+      "position": "Attacking Midfield",
+      "potential": 80
     },
     {
       "club": {
@@ -280,7 +318,9 @@
       "injured": false,
       "marketValue": "€9.00m",
       "name": "Toni Fruk",
-      "position": "Attacking Midfield"
+      "overall_score": 77,
+      "position": "Attacking Midfield",
+      "potential": 82
     },
     {
       "club": {
@@ -294,7 +334,9 @@
       "injured": false,
       "marketValue": "€3.00m",
       "name": "Andrej Kramaric",
-      "position": "Attacking Midfield"
+      "overall_score": 81,
+      "position": "Attacking Midfield",
+      "potential": 81
     },
     {
       "club": {
@@ -308,7 +350,9 @@
       "injured": false,
       "marketValue": "€1.30m",
       "name": "Ivan Perišić",
-      "position": "Left Winger"
+      "overall_score": 81,
+      "position": "Left Winger",
+      "potential": 81
     },
     {
       "club": {
@@ -322,7 +366,9 @@
       "injured": false,
       "marketValue": "€6.50m",
       "name": "Marco Pašalić",
-      "position": "Right Winger"
+      "overall_score": 72,
+      "position": "Right Winger",
+      "potential": 75
     },
     {
       "club": {
@@ -336,7 +382,9 @@
       "injured": false,
       "marketValue": "€10.00m",
       "name": "Igor Matanovic",
-      "position": "Centre-Forward"
+      "overall_score": 74,
+      "position": "Centre-Forward",
+      "potential": 78
     },
     {
       "club": {
@@ -350,7 +398,9 @@
       "injured": false,
       "marketValue": "€8.00m",
       "name": "Petar Musa",
-      "position": "Centre-Forward"
+      "overall_score": 77,
+      "position": "Centre-Forward",
+      "potential": 77
     },
     {
       "club": {
@@ -364,7 +414,9 @@
       "injured": false,
       "marketValue": "€3.00m",
       "name": "Ante Budimir",
-      "position": "Centre-Forward"
+      "overall_score": 82,
+      "position": "Centre-Forward",
+      "potential": 82
     }
   ],
   "stadiumName": null,

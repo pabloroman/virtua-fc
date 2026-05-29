@@ -15,7 +15,9 @@
       "injured": false,
       "marketValue": "€25.00m",
       "name": "Mike Maignan",
-      "position": "Goalkeeper"
+      "overall_score": 87,
+      "position": "Goalkeeper",
+      "potential": 88
     },
     {
       "calledUp": false,
@@ -45,7 +47,9 @@
       "injured": false,
       "marketValue": "€8.00m",
       "name": "Brice Samba",
-      "position": "Goalkeeper"
+      "overall_score": 80,
+      "position": "Goalkeeper",
+      "potential": 80
     },
     {
       "calledUp": true,
@@ -60,7 +64,9 @@
       "injured": false,
       "marketValue": "€25.00m",
       "name": "Robin Risser",
-      "position": "Goalkeeper"
+      "overall_score": 78,
+      "position": "Goalkeeper",
+      "potential": 85
     },
     {
       "calledUp": true,
@@ -75,7 +81,9 @@
       "injured": false,
       "marketValue": "€90.00m",
       "name": "William Saliba",
-      "position": "Centre-Back"
+      "overall_score": 88,
+      "position": "Centre-Back",
+      "potential": 90
     },
     {
       "calledUp": true,
@@ -90,7 +98,9 @@
       "injured": false,
       "marketValue": "€70.00m",
       "name": "Dayot Upamecano",
-      "position": "Centre-Back"
+      "overall_score": 86,
+      "position": "Centre-Back",
+      "potential": 88
     },
     {
       "calledUp": true,
@@ -105,7 +115,9 @@
       "injured": false,
       "marketValue": "€50.00m",
       "name": "Ibrahima Konaté",
-      "position": "Centre-Back"
+      "overall_score": 84,
+      "position": "Centre-Back",
+      "potential": 85
     },
     {
       "calledUp": false,
@@ -180,7 +192,9 @@
       "injured": false,
       "marketValue": "€28.00m",
       "name": "Theo Hernández",
-      "position": "Left-Back"
+      "overall_score": 84,
+      "position": "Left-Back",
+      "potential": 84
     },
     {
       "calledUp": true,
@@ -195,7 +209,9 @@
       "injured": false,
       "marketValue": "€20.00m",
       "name": "Lucas Hernández",
-      "position": "Left-Back"
+      "overall_score": 81,
+      "position": "Left-Back",
+      "potential": 81
     },
     {
       "calledUp": true,
@@ -210,7 +226,9 @@
       "injured": false,
       "marketValue": "€8.00m",
       "name": "Lucas Digne",
-      "position": "Left-Back"
+      "overall_score": 80,
+      "position": "Left-Back",
+      "potential": 80
     },
     {
       "calledUp": true,
@@ -225,7 +243,9 @@
       "injured": false,
       "marketValue": "€65.00m",
       "name": "Jules Koundé",
-      "position": "Right-Back"
+      "overall_score": 86,
+      "position": "Right-Back",
+      "potential": 87
     },
     {
       "calledUp": true,
@@ -240,7 +260,9 @@
       "injured": false,
       "marketValue": "€35.00m",
       "name": "Malo Gusto",
-      "position": "Right-Back"
+      "overall_score": 79,
+      "position": "Right-Back",
+      "potential": 84
     },
     {
       "calledUp": false,
@@ -270,7 +292,9 @@
       "injured": false,
       "marketValue": "€40.00m",
       "name": "Maxence Lacroix",
-      "position": "Centre-Back"
+      "overall_score": 81,
+      "position": "Centre-Back",
+      "potential": 83
     },
     {
       "calledUp": true,
@@ -285,7 +309,9 @@
       "injured": false,
       "marketValue": "€75.00m",
       "name": "Aurélien Tchouaméni",
-      "position": "Defensive Midfield"
+      "overall_score": 84,
+      "position": "Defensive Midfield",
+      "potential": 87
     },
     {
       "calledUp": true,
@@ -300,7 +326,9 @@
       "injured": false,
       "marketValue": "€4.00m",
       "name": "N'Golo Kanté",
-      "position": "Defensive Midfield"
+      "overall_score": 84,
+      "position": "Defensive Midfield",
+      "potential": 84
     },
     {
       "calledUp": false,
@@ -330,7 +358,9 @@
       "injured": false,
       "marketValue": "€60.00m",
       "name": "Warren Zaïre-Emery",
-      "position": "Central Midfield"
+      "overall_score": 83,
+      "position": "Central Midfield",
+      "potential": 89
     },
     {
       "calledUp": false,
@@ -375,7 +405,9 @@
       "injured": false,
       "marketValue": "€50.00m",
       "name": "Manu Koné",
-      "position": "Central Midfield"
+      "overall_score": 80,
+      "position": "Central Midfield",
+      "potential": 84
     },
     {
       "calledUp": true,
@@ -390,7 +422,9 @@
       "injured": false,
       "marketValue": "€20.00m",
       "name": "Adrien Rabiot",
-      "position": "Central Midfield"
+      "overall_score": 85,
+      "position": "Central Midfield",
+      "potential": 85
     },
     {
       "calledUp": true,
@@ -405,7 +439,9 @@
       "injured": false,
       "marketValue": "€65.00m",
       "name": "Rayan Cherki",
-      "position": "Attacking Midfield"
+      "overall_score": 84,
+      "position": "Attacking Midfield",
+      "potential": 88
     },
     {
       "calledUp": true,
@@ -420,7 +456,9 @@
       "injured": false,
       "marketValue": "€70.00m",
       "name": "Bradley Barcola",
-      "position": "Left Winger"
+      "overall_score": 84,
+      "position": "Left Winger",
+      "potential": 88
     },
     {
       "calledUp": false,
@@ -450,7 +488,9 @@
       "injured": false,
       "marketValue": "€140.00m",
       "name": "Michael Olise",
-      "position": "Right Winger"
+      "overall_score": 89,
+      "position": "Right Winger",
+      "potential": 91
     },
     {
       "calledUp": true,
@@ -465,7 +505,9 @@
       "injured": false,
       "marketValue": "€50.00m",
       "name": "Maghnes Akliouche",
-      "position": "Right Winger"
+      "overall_score": 80,
+      "position": "Right Winger",
+      "potential": 86
     },
     {
       "calledUp": true,
@@ -480,7 +522,9 @@
       "injured": false,
       "marketValue": "€90.00m",
       "name": "Désiré Doué",
-      "position": "Right Winger"
+      "overall_score": 86,
+      "position": "Right Winger",
+      "potential": 91
     },
     {
       "calledUp": false,
@@ -510,7 +554,9 @@
       "injured": false,
       "marketValue": "€200.00m",
       "name": "Kylian Mbappé",
-      "position": "Centre-Forward"
+      "overall_score": 91,
+      "position": "Centre-Forward",
+      "potential": 92
     },
     {
       "calledUp": true,
@@ -525,7 +571,9 @@
       "injured": false,
       "marketValue": "€50.00m",
       "name": "Marcus Thuram",
-      "position": "Centre-Forward"
+      "overall_score": 85,
+      "position": "Centre-Forward",
+      "potential": 85
     },
     {
       "calledUp": true,
@@ -540,7 +588,9 @@
       "injured": false,
       "marketValue": "€100.00m",
       "name": "Ousmane Dembélé",
-      "position": "Centre-Forward"
+      "overall_score": 90,
+      "position": "Centre-Forward",
+      "potential": 90
     },
     {
       "calledUp": false,
@@ -600,7 +650,9 @@
       "injured": false,
       "marketValue": "€35.00m",
       "name": "Jean-Philippe Mateta",
-      "position": "Centre-Forward"
+      "overall_score": 82,
+      "position": "Centre-Forward",
+      "potential": 82
     }
   ],
   "stadiumName": null,

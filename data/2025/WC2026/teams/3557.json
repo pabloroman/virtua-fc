@@ -14,7 +14,9 @@
       "injured": false,
       "marketValue": "€12.00m",
       "name": "Viktor Johansson",
-      "position": "Goalkeeper"
+      "overall_score": 74,
+      "position": "Goalkeeper",
+      "potential": 76
     },
     {
       "club": {
@@ -28,7 +30,9 @@
       "injured": false,
       "marketValue": "€2.50m",
       "name": "Jacob Widell Zetterström",
-      "position": "Goalkeeper"
+      "overall_score": 73,
+      "position": "Goalkeeper",
+      "potential": 76
     },
     {
       "club": {
@@ -42,7 +46,9 @@
       "injured": false,
       "marketValue": "€175k",
       "name": "Kristoffer Nordfeldt",
-      "position": "Goalkeeper"
+      "overall_score": 70,
+      "position": "Goalkeeper",
+      "potential": 70
     },
     {
       "club": {
@@ -56,7 +62,9 @@
       "injured": false,
       "marketValue": "€22.00m",
       "name": "Isak Hien",
-      "position": "Centre-Back"
+      "overall_score": 78,
+      "position": "Centre-Back",
+      "potential": 81
     },
     {
       "club": {
@@ -70,7 +78,9 @@
       "injured": false,
       "marketValue": "€6.00m",
       "name": "Victor Lindelöf",
-      "position": "Centre-Back"
+      "overall_score": 76,
+      "position": "Centre-Back",
+      "potential": 76
     },
     {
       "club": {
@@ -84,7 +94,9 @@
       "injured": false,
       "marketValue": "€6.00m",
       "name": "Hjalmar Ekdal",
-      "position": "Centre-Back"
+      "overall_score": 71,
+      "position": "Centre-Back",
+      "potential": 73
     },
     {
       "club": {
@@ -98,7 +110,9 @@
       "injured": false,
       "marketValue": "€5.00m",
       "name": "Gustaf Lagerbielke",
-      "position": "Centre-Back"
+      "overall_score": 73,
+      "position": "Centre-Back",
+      "potential": 77
     },
     {
       "club": {
@@ -112,7 +126,9 @@
       "injured": false,
       "marketValue": "€5.00m",
       "name": "Carl Starfelt",
-      "position": "Centre-Back"
+      "overall_score": 78,
+      "position": "Centre-Back",
+      "potential": 78
     },
     {
       "club": {
@@ -126,7 +142,9 @@
       "injured": false,
       "marketValue": "€5.00m",
       "name": "Eric Smith",
-      "position": "Centre-Back"
+      "overall_score": 74,
+      "position": "Centre-Back",
+      "potential": 74
     },
     {
       "club": {
@@ -140,7 +158,9 @@
       "injured": false,
       "marketValue": "€22.00m",
       "name": "Daniel Svensson",
-      "position": "Left-Back"
+      "overall_score": 79,
+      "position": "Left-Back",
+      "potential": 83
     },
     {
       "club": {
@@ -154,7 +174,9 @@
       "injured": false,
       "marketValue": "€20.00m",
       "name": "Gabriel Gudmundsson",
-      "position": "Left-Back"
+      "overall_score": 77,
+      "position": "Left-Back",
+      "potential": 78
     },
     {
       "club": {
@@ -168,7 +190,9 @@
       "injured": false,
       "marketValue": "€1.00m",
       "name": "Ken Sema",
-      "position": "Left-Back"
+      "overall_score": 70,
+      "position": "Left-Back",
+      "potential": 70
     },
     {
       "club": {
@@ -182,7 +206,9 @@
       "injured": false,
       "marketValue": "€13.00m",
       "name": "Emil Holm",
-      "position": "Right-Back"
+      "overall_score": 75,
+      "position": "Right-Back",
+      "potential": 78
     },
     {
       "club": {
@@ -196,7 +222,9 @@
       "injured": false,
       "marketValue": "€4.00m",
       "name": "Jesper Karlström",
-      "position": "Defensive Midfield"
+      "overall_score": 75,
+      "position": "Defensive Midfield",
+      "potential": 75
     },
     {
       "club": {
@@ -210,7 +238,9 @@
       "injured": false,
       "marketValue": "€40.00m",
       "name": "Lucas Bergvall",
-      "position": "Central Midfield"
+      "overall_score": 78,
+      "position": "Central Midfield",
+      "potential": 87
     },
     {
       "club": {
@@ -224,7 +254,9 @@
       "injured": false,
       "marketValue": "€30.00m",
       "name": "Yasin Ayari",
-      "position": "Central Midfield"
+      "overall_score": 79,
+      "position": "Central Midfield",
+      "potential": 85
     },
     {
       "club": {
@@ -238,7 +270,9 @@
       "injured": false,
       "marketValue": "€9.00m",
       "name": "Mattias Svanberg",
-      "position": "Central Midfield"
+      "overall_score": 76,
+      "position": "Central Midfield",
+      "potential": 77
     },
     {
       "club": {
@@ -252,7 +286,9 @@
       "injured": false,
       "marketValue": "€4.50m",
       "name": "Besfort Zeneli",
-      "position": "Central Midfield"
+      "overall_score": 72,
+      "position": "Central Midfield",
+      "potential": 79
     },
     {
       "club": {
@@ -266,7 +302,9 @@
       "injured": false,
       "marketValue": "€3.00m",
       "name": "Elliot Stroud",
-      "position": "Left Midfield"
+      "overall_score": 73,
+      "position": "Left Midfield",
+      "potential": 79
     },
     {
       "club": {
@@ -280,7 +318,9 @@
       "injured": false,
       "marketValue": "€1.20m",
       "name": "Taha Ali",
-      "position": "Left Winger"
+      "overall_score": 69,
+      "position": "Left Winger",
+      "potential": 69
     },
     {
       "club": {
@@ -294,7 +334,9 @@
       "injured": false,
       "marketValue": "€40.00m",
       "name": "Anthony Elanga",
-      "position": "Right Winger"
+      "overall_score": 79,
+      "position": "Right Winger",
+      "potential": 82
     },
     {
       "club": {
@@ -308,7 +350,9 @@
       "injured": false,
       "marketValue": "€14.00m",
       "name": "Benjamin Nygren",
-      "position": "Right Winger"
+      "overall_score": 74,
+      "position": "Right Winger",
+      "potential": 80
     },
     {
       "club": {
@@ -322,7 +366,9 @@
       "injured": false,
       "marketValue": "€3.00m",
       "name": "Alexander Bernhardsson",
-      "position": "Right Winger"
+      "overall_score": 73,
+      "position": "Right Winger",
+      "potential": 73
     },
     {
       "club": {
@@ -336,7 +382,9 @@
       "injured": false,
       "marketValue": "€100.00m",
       "name": "Alexander Isak",
-      "position": "Centre-Forward"
+      "overall_score": 87,
+      "position": "Centre-Forward",
+      "potential": 88
     },
     {
       "club": {
@@ -350,7 +398,9 @@
       "injured": false,
       "marketValue": "€65.00m",
       "name": "Viktor Gyökeres",
-      "position": "Centre-Forward"
+      "overall_score": 86,
+      "position": "Centre-Forward",
+      "potential": 87
     },
     {
       "club": {
@@ -364,7 +414,9 @@
       "injured": false,
       "marketValue": "€2.00m",
       "name": "Gustaf Nilsson",
-      "position": "Centre-Forward"
+      "overall_score": 73,
+      "position": "Centre-Forward",
+      "potential": 73
     }
   ],
   "stadiumName": null,

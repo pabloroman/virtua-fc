@@ -15,7 +15,9 @@
       "injured": false,
       "marketValue": "€40.00m",
       "name": "Diogo Costa",
-      "position": "Goalkeeper"
+      "overall_score": 84,
+      "position": "Goalkeeper",
+      "potential": 89
     },
     {
       "calledUp": true,
@@ -30,7 +32,9 @@
       "injured": false,
       "marketValue": "€5.00m",
       "name": "José Sá",
-      "position": "Goalkeeper"
+      "overall_score": 76,
+      "position": "Goalkeeper",
+      "potential": 76
     },
     {
       "calledUp": true,
@@ -45,7 +49,9 @@
       "injured": false,
       "marketValue": "€7.00m",
       "name": "Rui Silva",
-      "position": "Goalkeeper"
+      "overall_score": 81,
+      "position": "Goalkeeper",
+      "potential": 81
     },
     {
       "calledUp": false,
@@ -74,7 +80,9 @@
       "injured": false,
       "marketValue": "€60.00m",
       "name": "Rúben Dias",
-      "position": "Centre-Back"
+      "overall_score": 87,
+      "position": "Centre-Back",
+      "potential": 87
     },
     {
       "calledUp": true,
@@ -89,7 +97,9 @@
       "injured": false,
       "marketValue": "€40.00m",
       "name": "Gonçalo Inácio",
-      "position": "Centre-Back"
+      "overall_score": 81,
+      "position": "Centre-Back",
+      "potential": 86
     },
     {
       "calledUp": false,
@@ -119,7 +129,9 @@
       "injured": false,
       "marketValue": "€25.00m",
       "name": "Renato Veiga",
-      "position": "Centre-Back"
+      "overall_score": 78,
+      "position": "Centre-Back",
+      "potential": 83
     },
     {
       "calledUp": true,
@@ -134,7 +146,9 @@
       "injured": false,
       "marketValue": "€75.00m",
       "name": "Nuno Mendes",
-      "position": "Left-Back"
+      "overall_score": 88,
+      "position": "Left-Back",
+      "potential": 91
     },
     {
       "calledUp": false,
@@ -164,7 +178,9 @@
       "injured": false,
       "marketValue": "€30.00m",
       "name": "Diogo Dalot",
-      "position": "Right-Back"
+      "overall_score": 78,
+      "position": "Right-Back",
+      "potential": 79
     },
     {
       "calledUp": true,
@@ -179,7 +195,9 @@
       "injured": false,
       "marketValue": "€45.00m",
       "name": "Matheus Nunes",
-      "position": "Right-Back"
+      "overall_score": 82,
+      "position": "Right-Back",
+      "potential": 83
     },
     {
       "calledUp": true,
@@ -194,7 +212,9 @@
       "injured": false,
       "marketValue": "€9.00m",
       "name": "João Cancelo",
-      "position": "Right-Back"
+      "overall_score": 84,
+      "position": "Right-Back",
+      "potential": 84
     },
     {
       "calledUp": true,
@@ -209,7 +229,9 @@
       "injured": false,
       "marketValue": "€6.00m",
       "name": "Nélson Semedo",
-      "position": "Right-Back"
+      "overall_score": 78,
+      "position": "Right-Back",
+      "potential": 78
     },
     {
       "calledUp": true,
@@ -224,7 +246,9 @@
       "injured": false,
       "marketValue": "€28.00m",
       "name": "Tomás Araújo",
-      "position": "Centre-Back"
+      "overall_score": 78,
+      "position": "Centre-Back",
+      "potential": 86
     },
     {
       "calledUp": true,
@@ -239,7 +263,9 @@
       "injured": false,
       "marketValue": "€110.00m",
       "name": "Vitinha",
-      "position": "Defensive Midfield"
+      "overall_score": 90,
+      "position": "Defensive Midfield",
+      "potential": 92
     },
     {
       "calledUp": false,
@@ -269,7 +295,9 @@
       "injured": false,
       "marketValue": "€25.00m",
       "name": "Rúben Neves",
-      "position": "Defensive Midfield"
+      "overall_score": 85,
+      "position": "Defensive Midfield",
+      "potential": 85
     },
     {
       "calledUp": true,
@@ -284,7 +312,9 @@
       "injured": false,
       "marketValue": "€110.00m",
       "name": "João Neves",
-      "position": "Central Midfield"
+      "overall_score": 88,
+      "position": "Central Midfield",
+      "potential": 93
     },
     {
       "calledUp": true,
@@ -299,7 +329,9 @@
       "injured": false,
       "marketValue": "€27.00m",
       "name": "Bernardo Silva",
-      "position": "Attacking Midfield"
+      "overall_score": 83,
+      "position": "Attacking Midfield",
+      "potential": 83
     },
     {
       "calledUp": true,
@@ -314,7 +346,9 @@
       "injured": false,
       "marketValue": "€40.00m",
       "name": "Bruno Fernandes",
-      "position": "Attacking Midfield"
+      "overall_score": 88,
+      "position": "Attacking Midfield",
+      "potential": 88
     },
     {
       "calledUp": true,
@@ -329,7 +363,9 @@
       "injured": false,
       "marketValue": "€35.00m",
       "name": "Francisco Trincão",
-      "position": "Attacking Midfield"
+      "overall_score": 83,
+      "position": "Attacking Midfield",
+      "potential": 85
     },
     {
       "calledUp": false,
@@ -359,7 +395,9 @@
       "injured": false,
       "marketValue": "€15.00m",
       "name": "Samú Costa",
-      "position": "Defensive Midfield"
+      "overall_score": 78,
+      "position": "Defensive Midfield",
+      "potential": 82
     },
     {
       "calledUp": true,
@@ -374,7 +412,9 @@
       "injured": false,
       "marketValue": "€65.00m",
       "name": "Rafael Leão",
-      "position": "Left Winger"
+      "overall_score": 84,
+      "position": "Left Winger",
+      "potential": 85
     },
     {
       "calledUp": false,
@@ -404,7 +444,9 @@
       "injured": false,
       "marketValue": "€60.00m",
       "name": "Pedro Neto",
-      "position": "Right Winger"
+      "overall_score": 82,
+      "position": "Right Winger",
+      "potential": 83
     },
     {
       "calledUp": true,
@@ -419,7 +461,9 @@
       "injured": false,
       "marketValue": "€30.00m",
       "name": "Francisco Conceição",
-      "position": "Right Winger"
+      "overall_score": 79,
+      "position": "Right Winger",
+      "potential": 86
     },
     {
       "calledUp": false,
@@ -464,7 +508,9 @@
       "injured": false,
       "marketValue": "€25.00m",
       "name": "João Félix",
-      "position": "Second Striker"
+      "overall_score": 81,
+      "position": "Second Striker",
+      "potential": 84
     },
     {
       "calledUp": true,
@@ -479,7 +525,9 @@
       "injured": false,
       "marketValue": "€35.00m",
       "name": "Gonçalo Ramos",
-      "position": "Centre-Forward"
+      "overall_score": 80,
+      "position": "Centre-Forward",
+      "potential": 84
     },
     {
       "calledUp": true,
@@ -494,7 +542,9 @@
       "injured": false,
       "marketValue": "€12.00m",
       "name": "Cristiano Ronaldo",
-      "position": "Centre-Forward"
+      "overall_score": 85,
+      "position": "Centre-Forward",
+      "potential": 85
     },
     {
       "calledUp": true,
@@ -509,7 +559,9 @@
       "injured": false,
       "marketValue": "€6.00m",
       "name": "Gonçalo Guedes",
-      "position": "Left Winger"
+      "overall_score": 78,
+      "position": "Left Winger",
+      "potential": 78
     }
   ],
   "stadiumName": null,

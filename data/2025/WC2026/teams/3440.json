@@ -14,7 +14,9 @@
       "injured": false,
       "marketValue": "€3.00m",
       "name": "Sander Tangvik",
-      "position": "Goalkeeper"
+      "overall_score": 70,
+      "position": "Goalkeeper",
+      "potential": 79
     },
     {
       "club": {
@@ -28,7 +30,9 @@
       "injured": false,
       "marketValue": "€1.30m",
       "name": "Egil Selvik",
-      "position": "Goalkeeper"
+      "overall_score": 70,
+      "position": "Goalkeeper",
+      "potential": 73
     },
     {
       "club": {
@@ -42,7 +46,9 @@
       "injured": false,
       "marketValue": "€900k",
       "name": "Ørjan Nyland",
-      "position": "Goalkeeper"
+      "overall_score": 74,
+      "position": "Goalkeeper",
+      "potential": 74
     },
     {
       "club": {
@@ -56,7 +62,9 @@
       "injured": false,
       "marketValue": "€18.00m",
       "name": "Kristoffer Ajer",
-      "position": "Centre-Back"
+      "overall_score": 76,
+      "position": "Centre-Back",
+      "potential": 77
     },
     {
       "club": {
@@ -70,7 +78,9 @@
       "injured": false,
       "marketValue": "€14.00m",
       "name": "Torbjørn Heggem",
-      "position": "Centre-Back"
+      "overall_score": 74,
+      "position": "Centre-Back",
+      "potential": 76
     },
     {
       "club": {
@@ -84,7 +94,9 @@
       "injured": false,
       "marketValue": "€10.00m",
       "name": "Leo Østigård",
-      "position": "Centre-Back"
+      "overall_score": 75,
+      "position": "Centre-Back",
+      "potential": 80
     },
     {
       "club": {
@@ -98,7 +110,9 @@
       "injured": false,
       "marketValue": "€4.00m",
       "name": "Henrik Falchener",
-      "position": "Centre-Back"
+      "overall_score": 69,
+      "position": "Centre-Back",
+      "potential": 80
     },
     {
       "club": {
@@ -112,7 +126,9 @@
       "injured": false,
       "marketValue": "€3.50m",
       "name": "Sondre Langås",
-      "position": "Centre-Back"
+      "overall_score": 71,
+      "position": "Centre-Back",
+      "potential": 77
     },
     {
       "club": {
@@ -126,7 +142,9 @@
       "injured": false,
       "marketValue": "€10.00m",
       "name": "David Møller Wolfe",
-      "position": "Left-Back"
+      "overall_score": 73,
+      "position": "Left-Back",
+      "potential": 78
     },
     {
       "club": {
@@ -140,7 +158,9 @@
       "injured": false,
       "marketValue": "€3.50m",
       "name": "Fredrik Bjørkan",
-      "position": "Left-Back"
+      "overall_score": 75,
+      "position": "Left-Back",
+      "potential": 76
     },
     {
       "club": {
@@ -154,7 +174,9 @@
       "injured": false,
       "marketValue": "€25.00m",
       "name": "Julian Ryerson",
-      "position": "Right-Back"
+      "overall_score": 80,
+      "position": "Right-Back",
+      "potential": 80
     },
     {
       "club": {
@@ -168,7 +190,9 @@
       "injured": false,
       "marketValue": "€3.50m",
       "name": "Marcus Pedersen",
-      "position": "Right-Back"
+      "overall_score": 73,
+      "position": "Right-Back",
+      "potential": 75
     },
     {
       "club": {
@@ -182,7 +206,9 @@
       "injured": false,
       "marketValue": "€25.00m",
       "name": "Sander Berge",
-      "position": "Defensive Midfield"
+      "overall_score": 79,
+      "position": "Defensive Midfield",
+      "potential": 80
     },
     {
       "club": {
@@ -196,7 +222,9 @@
       "injured": false,
       "marketValue": "€8.00m",
       "name": "Patrick Berg",
-      "position": "Defensive Midfield"
+      "overall_score": 79,
+      "position": "Defensive Midfield",
+      "potential": 80
     },
     {
       "club": {
@@ -210,7 +238,9 @@
       "injured": false,
       "marketValue": "€17.00m",
       "name": "Fredrik Aursnes",
-      "position": "Central Midfield"
+      "overall_score": 80,
+      "position": "Central Midfield",
+      "potential": 80
     },
     {
       "club": {
@@ -224,7 +254,9 @@
       "injured": false,
       "marketValue": "€10.00m",
       "name": "Kristian Thorstvedt",
-      "position": "Central Midfield"
+      "overall_score": 76,
+      "position": "Central Midfield",
+      "potential": 76
     },
     {
       "club": {
@@ -238,7 +270,9 @@
       "injured": false,
       "marketValue": "€3.00m",
       "name": "Morten Thorsby",
-      "position": "Central Midfield"
+      "overall_score": 72,
+      "position": "Central Midfield",
+      "potential": 72
     },
     {
       "club": {
@@ -252,7 +286,9 @@
       "injured": false,
       "marketValue": "€65.00m",
       "name": "Martin Ødegaard",
-      "position": "Attacking Midfield"
+      "overall_score": 86,
+      "position": "Attacking Midfield",
+      "potential": 87
     },
     {
       "club": {
@@ -266,7 +302,9 @@
       "injured": false,
       "marketValue": "€2.80m",
       "name": "Thelo Aasgaard",
-      "position": "Attacking Midfield"
+      "overall_score": 71,
+      "position": "Attacking Midfield",
+      "potential": 78
     },
     {
       "club": {
@@ -280,7 +318,9 @@
       "injured": false,
       "marketValue": "€32.00m",
       "name": "Antonio Nusa",
-      "position": "Left Winger"
+      "overall_score": 78,
+      "position": "Left Winger",
+      "potential": 88
     },
     {
       "club": {
@@ -294,7 +334,9 @@
       "injured": false,
       "marketValue": "€20.00m",
       "name": "Andreas Schjelderup",
-      "position": "Left Winger"
+      "overall_score": 77,
+      "position": "Left Winger",
+      "potential": 86
     },
     {
       "club": {
@@ -308,7 +350,9 @@
       "injured": false,
       "marketValue": "€12.00m",
       "name": "Jens Petter Hauge",
-      "position": "Left Winger"
+      "overall_score": 76,
+      "position": "Left Winger",
+      "potential": 77
     },
     {
       "club": {
@@ -322,7 +366,9 @@
       "injured": false,
       "marketValue": "€30.00m",
       "name": "Oscar Bobb",
-      "position": "Right Winger"
+      "overall_score": 76,
+      "position": "Right Winger",
+      "potential": 84
     },
     {
       "club": {
@@ -336,7 +382,9 @@
       "injured": false,
       "marketValue": "€200.00m",
       "name": "Erling Haaland",
-      "position": "Centre-Forward"
+      "overall_score": 91,
+      "position": "Centre-Forward",
+      "potential": 93
     },
     {
       "club": {
@@ -350,7 +398,9 @@
       "injured": false,
       "marketValue": "€45.00m",
       "name": "Jørgen Strand Larsen",
-      "position": "Centre-Forward"
+      "overall_score": 77,
+      "position": "Centre-Forward",
+      "potential": 80
     },
     {
       "club": {
@@ -364,7 +414,9 @@
       "injured": false,
       "marketValue": "€20.00m",
       "name": "Alexander Sørloth",
-      "position": "Centre-Forward"
+      "overall_score": 83,
+      "position": "Centre-Forward",
+      "potential": 83
     }
   ],
   "stadiumName": null,

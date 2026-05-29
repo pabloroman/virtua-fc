@@ -14,7 +14,9 @@
       "injured": false,
       "marketValue": "€2.50m",
       "name": "Álvaro Montero",
-      "position": "Goalkeeper"
+      "overall_score": 76,
+      "position": "Goalkeeper",
+      "potential": 76
     },
     {
       "club": {
@@ -28,7 +30,9 @@
       "injured": false,
       "marketValue": "€450k",
       "name": "Camilo Vargas",
-      "position": "Goalkeeper"
+      "overall_score": 77,
+      "position": "Goalkeeper",
+      "potential": 77
     },
     {
       "club": {
@@ -42,7 +46,9 @@
       "injured": false,
       "marketValue": "€200k",
       "name": "David Ospina",
-      "position": "Goalkeeper"
+      "overall_score": 75,
+      "position": "Goalkeeper",
+      "potential": 75
     },
     {
       "club": {
@@ -56,7 +62,9 @@
       "injured": false,
       "marketValue": "€25.00m",
       "name": "Jhon Lucumí",
-      "position": "Centre-Back"
+      "overall_score": 76,
+      "position": "Centre-Back",
+      "potential": 78
     },
     {
       "club": {
@@ -70,7 +78,9 @@
       "injured": false,
       "marketValue": "€16.00m",
       "name": "Davinson Sánchez",
-      "position": "Centre-Back"
+      "overall_score": 81,
+      "position": "Centre-Back",
+      "potential": 81
     },
     {
       "club": {
@@ -84,7 +94,9 @@
       "injured": false,
       "marketValue": "€5.50m",
       "name": "Willer Ditta",
-      "position": "Centre-Back"
+      "overall_score": 77,
+      "position": "Centre-Back",
+      "potential": 78
     },
     {
       "club": {
@@ -98,7 +110,9 @@
       "injured": false,
       "marketValue": "€3.00m",
       "name": "Yerry Mina",
-      "position": "Centre-Back"
+      "overall_score": 76,
+      "position": "Centre-Back",
+      "potential": 76
     },
     {
       "club": {
@@ -112,7 +126,9 @@
       "injured": true,
       "marketValue": "€2.00m",
       "name": "Deiver Machado",
-      "position": "Left-Back"
+      "overall_score": 74,
+      "position": "Left-Back",
+      "potential": 74
     },
     {
       "club": {
@@ -126,7 +142,9 @@
       "injured": false,
       "marketValue": "€1.80m",
       "name": "Johan Mojica",
-      "position": "Left-Back"
+      "overall_score": 77,
+      "position": "Left-Back",
+      "potential": 77
     },
     {
       "club": {
@@ -140,7 +158,9 @@
       "injured": false,
       "marketValue": "€27.00m",
       "name": "Daniel Muñoz",
-      "position": "Right-Back"
+      "overall_score": 82,
+      "position": "Right-Back",
+      "potential": 82
     },
     {
       "club": {
@@ -154,7 +174,9 @@
       "injured": false,
       "marketValue": "€1.20m",
       "name": "Santiago Arias",
-      "position": "Right-Back"
+      "overall_score": 74,
+      "position": "Right-Back",
+      "potential": 74
     },
     {
       "club": {
@@ -168,7 +190,9 @@
       "injured": false,
       "marketValue": "€22.00m",
       "name": "Richard Ríos",
-      "position": "Defensive Midfield"
+      "overall_score": 78,
+      "position": "Defensive Midfield",
+      "potential": 82
     },
     {
       "club": {
@@ -182,7 +206,9 @@
       "injured": false,
       "marketValue": "€8.00m",
       "name": "Jefferson Lerma",
-      "position": "Defensive Midfield"
+      "overall_score": 77,
+      "position": "Defensive Midfield",
+      "potential": 77
     },
     {
       "club": {
@@ -196,7 +222,9 @@
       "injured": false,
       "marketValue": "€5.00m",
       "name": "Kevin Castaño",
-      "position": "Defensive Midfield"
+      "overall_score": 74,
+      "position": "Defensive Midfield",
+      "potential": 75
     },
     {
       "club": {
@@ -210,7 +238,9 @@
       "injured": false,
       "marketValue": "€5.00m",
       "name": "Gustavo Puerta",
-      "position": "Central Midfield"
+      "overall_score": 71,
+      "position": "Central Midfield",
+      "potential": 82
     },
     {
       "club": {
@@ -224,7 +254,9 @@
       "injured": false,
       "marketValue": "€4.00m",
       "name": "Juan Portilla",
-      "position": "Central Midfield"
+      "overall_score": 73,
+      "position": "Central Midfield",
+      "potential": 76
     },
     {
       "club": {
@@ -238,7 +270,9 @@
       "injured": false,
       "marketValue": "€11.00m",
       "name": "Jorge Carrascal",
-      "position": "Attacking Midfield"
+      "overall_score": 78,
+      "position": "Attacking Midfield",
+      "potential": 78
     },
     {
       "club": {
@@ -252,7 +286,9 @@
       "injured": false,
       "marketValue": "€2.00m",
       "name": "James Rodríguez",
-      "position": "Attacking Midfield"
+      "overall_score": 80,
+      "position": "Attacking Midfield",
+      "potential": 80
     },
     {
       "club": {
@@ -266,7 +302,9 @@
       "injured": false,
       "marketValue": "€1.80m",
       "name": "Juan Fernando Quintero",
-      "position": "Attacking Midfield"
+      "overall_score": 76,
+      "position": "Attacking Midfield",
+      "potential": 76
     },
     {
       "club": {
@@ -280,7 +318,9 @@
       "injured": false,
       "marketValue": "€70.00m",
       "name": "Luis Díaz",
-      "position": "Left Winger"
+      "overall_score": 87,
+      "position": "Left Winger",
+      "potential": 87
     },
     {
       "club": {
@@ -294,7 +334,9 @@
       "injured": false,
       "marketValue": "€8.00m",
       "name": "Andrés Gómez",
-      "position": "Left Winger"
+      "overall_score": 73,
+      "position": "Left Winger",
+      "potential": 82
     },
     {
       "club": {
@@ -308,7 +350,9 @@
       "injured": false,
       "marketValue": "€5.50m",
       "name": "Jáminton Campaz",
-      "position": "Left Winger"
+      "overall_score": 76,
+      "position": "Left Winger",
+      "potential": 77
     },
     {
       "club": {
@@ -322,7 +366,9 @@
       "injured": false,
       "marketValue": "€15.00m",
       "name": "Jhon Arias",
-      "position": "Right Winger"
+      "overall_score": 77,
+      "position": "Right Winger",
+      "potential": 77
     },
     {
       "club": {
@@ -336,7 +382,9 @@
       "injured": false,
       "marketValue": "€28.00m",
       "name": "Luis Suárez",
-      "position": "Centre-Forward"
+      "overall_score": 80,
+      "position": "Centre-Forward",
+      "potential": 80
     },
     {
       "club": {
@@ -350,7 +398,9 @@
       "injured": false,
       "marketValue": "€18.00m",
       "name": "Cucho Hernández",
-      "position": "Centre-Forward"
+      "overall_score": 79,
+      "position": "Centre-Forward",
+      "potential": 80
     },
     {
       "club": {
@@ -364,7 +414,9 @@
       "injured": false,
       "marketValue": "€10.00m",
       "name": "Jhon Córdoba",
-      "position": "Centre-Forward"
+      "overall_score": 79,
+      "position": "Centre-Forward",
+      "potential": 79
     }
   ],
   "stadiumName": null,

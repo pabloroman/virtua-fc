@@ -14,7 +14,9 @@
       "injured": false,
       "marketValue": "€7.00m",
       "name": "Yehvann Diouf",
-      "position": "Goalkeeper"
+      "overall_score": 77,
+      "position": "Goalkeeper",
+      "potential": 82
     },
     {
       "club": {
@@ -28,7 +30,9 @@
       "injured": false,
       "marketValue": "€4.50m",
       "name": "Edouard Mendy",
-      "position": "Goalkeeper"
+      "overall_score": 81,
+      "position": "Goalkeeper",
+      "potential": 81
     },
     {
       "club": {
@@ -42,7 +46,9 @@
       "injured": false,
       "marketValue": "€1.00m",
       "name": "Mory Diaw",
-      "position": "Goalkeeper"
+      "overall_score": 72,
+      "position": "Goalkeeper",
+      "potential": 72
     },
     {
       "club": {
@@ -56,7 +62,9 @@
       "injured": false,
       "marketValue": "€25.00m",
       "name": "Mamadou Sarr",
-      "position": "Centre-Back"
+      "overall_score": 77,
+      "position": "Centre-Back",
+      "potential": 84
     },
     {
       "club": {
@@ -70,7 +78,9 @@
       "injured": false,
       "marketValue": "€18.00m",
       "name": "Moussa Niakhaté",
-      "position": "Centre-Back"
+      "overall_score": 80,
+      "position": "Centre-Back",
+      "potential": 80
     },
     {
       "club": {
@@ -84,7 +94,9 @@
       "injured": false,
       "marketValue": "€6.00m",
       "name": "Moustapha Mbow",
-      "position": "Centre-Back"
+      "overall_score": 73,
+      "position": "Centre-Back",
+      "potential": 76
     },
     {
       "club": {
@@ -98,7 +110,9 @@
       "injured": false,
       "marketValue": "€6.00m",
       "name": "Antoine Mendy",
-      "position": "Centre-Back"
+      "overall_score": 72,
+      "position": "Centre-Back",
+      "potential": 81
     },
     {
       "club": {
@@ -112,7 +126,9 @@
       "injured": true,
       "marketValue": "€5.00m",
       "name": "Kalidou Koulibaly",
-      "position": "Centre-Back"
+      "overall_score": 82,
+      "position": "Centre-Back",
+      "potential": 82
     },
     {
       "club": {
@@ -140,7 +156,9 @@
       "injured": false,
       "marketValue": "€28.00m",
       "name": "El Hadji Malick Diouf",
-      "position": "Left-Back"
+      "overall_score": 78,
+      "position": "Left-Back",
+      "potential": 84
     },
     {
       "club": {
@@ -154,7 +172,9 @@
       "injured": false,
       "marketValue": "€8.00m",
       "name": "Ismail Jakobs",
-      "position": "Left-Back"
+      "overall_score": 75,
+      "position": "Left-Back",
+      "potential": 78
     },
     {
       "club": {
@@ -168,7 +188,9 @@
       "injured": false,
       "marketValue": "€4.00m",
       "name": "Ilay Camara",
-      "position": "Right-Back"
+      "overall_score": 69,
+      "position": "Right-Back",
+      "potential": 78
     },
     {
       "club": {
@@ -182,7 +204,9 @@
       "injured": false,
       "marketValue": "€1.00m",
       "name": "Idrissa Gueye",
-      "position": "Defensive Midfield"
+      "overall_score": 79,
+      "position": "Defensive Midfield",
+      "potential": 79
     },
     {
       "club": {
@@ -196,7 +220,9 @@
       "injured": false,
       "marketValue": "€40.00m",
       "name": "Pape Gueye",
-      "position": "Central Midfield"
+      "overall_score": 80,
+      "position": "Central Midfield",
+      "potential": 81
     },
     {
       "club": {
@@ -210,7 +236,9 @@
       "injured": false,
       "marketValue": "€35.00m",
       "name": "Lamine Camara",
-      "position": "Central Midfield"
+      "overall_score": 79,
+      "position": "Central Midfield",
+      "potential": 85
     },
     {
       "club": {
@@ -224,7 +252,9 @@
       "injured": false,
       "marketValue": "€32.00m",
       "name": "Pape Matar Sarr",
-      "position": "Central Midfield"
+      "overall_score": 80,
+      "position": "Central Midfield",
+      "potential": 85
     },
     {
       "club": {
@@ -238,7 +268,9 @@
       "injured": false,
       "marketValue": "€32.00m",
       "name": "Habib Diarra",
-      "position": "Central Midfield"
+      "overall_score": 77,
+      "position": "Central Midfield",
+      "potential": 83
     },
     {
       "club": {
@@ -252,7 +284,9 @@
       "injured": false,
       "marketValue": "€2.00m",
       "name": "Pathé Ciss",
-      "position": "Central Midfield"
+      "overall_score": 77,
+      "position": "Central Midfield",
+      "potential": 77
     },
     {
       "club": {
@@ -266,7 +300,9 @@
       "injured": false,
       "marketValue": "€300k",
       "name": "Bara Sapoko Ndiaye",
-      "position": "Central Midfield"
+      "overall_score": 61,
+      "position": "Central Midfield",
+      "potential": 81
     },
     {
       "club": {
@@ -280,7 +316,9 @@
       "injured": false,
       "marketValue": "€6.00m",
       "name": "Krépin Diatta",
-      "position": "Right Midfield"
+      "overall_score": 74,
+      "position": "Right Midfield",
+      "potential": 74
     },
     {
       "club": {
@@ -294,7 +332,9 @@
       "injured": false,
       "marketValue": "€30.00m",
       "name": "Assane Diao",
-      "position": "Left Winger"
+      "overall_score": 76,
+      "position": "Left Winger",
+      "potential": 87
     },
     {
       "club": {
@@ -308,7 +348,9 @@
       "injured": false,
       "marketValue": "€7.00m",
       "name": "Sadio Mané",
-      "position": "Left Winger"
+      "overall_score": 83,
+      "position": "Left Winger",
+      "potential": 83
     },
     {
       "club": {
@@ -322,7 +364,9 @@
       "injured": false,
       "marketValue": "€50.00m",
       "name": "Iliman Ndiaye",
-      "position": "Right Winger"
+      "overall_score": 82,
+      "position": "Right Winger",
+      "potential": 83
     },
     {
       "club": {
@@ -336,7 +380,9 @@
       "injured": false,
       "marketValue": "€35.00m",
       "name": "Ismaïla Sarr",
-      "position": "Right Winger"
+      "overall_score": 81,
+      "position": "Right Winger",
+      "potential": 81
     },
     {
       "club": {
@@ -350,7 +396,9 @@
       "injured": false,
       "marketValue": "€30.00m",
       "name": "Ibrahim Mbaye",
-      "position": "Right Winger"
+      "overall_score": 74,
+      "position": "Right Winger",
+      "potential": 85
     },
     {
       "club": {
@@ -364,7 +412,9 @@
       "injured": false,
       "marketValue": "€40.00m",
       "name": "Nicolas Jackson",
-      "position": "Centre-Forward"
+      "overall_score": 79,
+      "position": "Centre-Forward",
+      "potential": 82
     },
     {
       "club": {
@@ -378,7 +428,9 @@
       "injured": false,
       "marketValue": "€6.00m",
       "name": "Bamba Dieng",
-      "position": "Centre-Forward"
+      "overall_score": 74,
+      "position": "Centre-Forward",
+      "potential": 77
     },
     {
       "club": {
@@ -392,7 +444,9 @@
       "injured": false,
       "marketValue": "€5.00m",
       "name": "Cherif Ndiaye",
-      "position": "Centre-Forward"
+      "overall_score": 69,
+      "position": "Centre-Forward",
+      "potential": 69
     }
   ],
   "stadiumName": null,

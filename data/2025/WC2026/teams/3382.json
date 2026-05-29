@@ -14,7 +14,9 @@
       "injured": false,
       "marketValue": "€30.00m",
       "name": "Senne Lammens",
-      "position": "Goalkeeper"
+      "overall_score": 81,
+      "position": "Goalkeeper",
+      "potential": 87
     },
     {
       "club": {
@@ -28,7 +30,9 @@
       "injured": false,
       "marketValue": "€22.00m",
       "name": "Mike Penders",
-      "position": "Goalkeeper"
+      "overall_score": 77,
+      "position": "Goalkeeper",
+      "potential": 86
     },
     {
       "club": {
@@ -42,7 +46,9 @@
       "injured": false,
       "marketValue": "€18.00m",
       "name": "Thibaut Courtois",
-      "position": "Goalkeeper"
+      "overall_score": 90,
+      "position": "Goalkeeper",
+      "potential": 90
     },
     {
       "club": {
@@ -56,7 +62,9 @@
       "injured": false,
       "marketValue": "€30.00m",
       "name": "Zeno Debast",
-      "position": "Centre-Back"
+      "overall_score": 78,
+      "position": "Centre-Back",
+      "potential": 86
     },
     {
       "club": {
@@ -70,7 +78,9 @@
       "injured": false,
       "marketValue": "€23.00m",
       "name": "Koni De Winter",
-      "position": "Centre-Back"
+      "overall_score": 75,
+      "position": "Centre-Back",
+      "potential": 84
     },
     {
       "club": {
@@ -84,7 +94,9 @@
       "injured": false,
       "marketValue": "€20.00m",
       "name": "Arthur Theate",
-      "position": "Centre-Back"
+      "overall_score": 78,
+      "position": "Centre-Back",
+      "potential": 83
     },
     {
       "club": {
@@ -98,7 +110,9 @@
       "injured": false,
       "marketValue": "€20.00m",
       "name": "Nathan Ngoy",
-      "position": "Centre-Back"
+      "overall_score": 75,
+      "position": "Centre-Back",
+      "potential": 83
     },
     {
       "club": {
@@ -112,7 +126,9 @@
       "injured": false,
       "marketValue": "€3.00m",
       "name": "Brandon Mechele",
-      "position": "Centre-Back"
+      "overall_score": 78,
+      "position": "Centre-Back",
+      "potential": 78
     },
     {
       "club": {
@@ -126,7 +142,9 @@
       "injured": false,
       "marketValue": "€22.00m",
       "name": "Maxim De Cuyper",
-      "position": "Left-Back"
+      "overall_score": 79,
+      "position": "Left-Back",
+      "potential": 83
     },
     {
       "club": {
@@ -140,7 +158,9 @@
       "injured": false,
       "marketValue": "€17.00m",
       "name": "Joaquin Seys",
-      "position": "Left-Back"
+      "overall_score": 74,
+      "position": "Left-Back",
+      "potential": 87
     },
     {
       "club": {
@@ -154,7 +174,9 @@
       "injured": false,
       "marketValue": "€10.00m",
       "name": "Timothy Castagne",
-      "position": "Right-Back"
+      "overall_score": 75,
+      "position": "Right-Back",
+      "potential": 75
     },
     {
       "club": {
@@ -168,7 +190,9 @@
       "injured": false,
       "marketValue": "€1.80m",
       "name": "Thomas Meunier",
-      "position": "Right-Back"
+      "overall_score": 77,
+      "position": "Right-Back",
+      "potential": 77
     },
     {
       "club": {
@@ -182,7 +206,9 @@
       "injured": false,
       "marketValue": "€45.00m",
       "name": "Amadou Onana",
-      "position": "Defensive Midfield"
+      "overall_score": 81,
+      "position": "Defensive Midfield",
+      "potential": 84
     },
     {
       "club": {
@@ -196,7 +222,9 @@
       "injured": false,
       "marketValue": "€12.00m",
       "name": "Nicolas Raskin",
-      "position": "Defensive Midfield"
+      "overall_score": 78,
+      "position": "Defensive Midfield",
+      "potential": 83
     },
     {
       "club": {
@@ -210,7 +238,9 @@
       "injured": false,
       "marketValue": "€1.40m",
       "name": "Axel Witsel",
-      "position": "Defensive Midfield"
+      "overall_score": 76,
+      "position": "Defensive Midfield",
+      "potential": 76
     },
     {
       "club": {
@@ -224,7 +254,9 @@
       "injured": false,
       "marketValue": "€35.00m",
       "name": "Youri Tielemans",
-      "position": "Central Midfield"
+      "overall_score": 85,
+      "position": "Central Midfield",
+      "potential": 85
     },
     {
       "club": {
@@ -238,7 +270,9 @@
       "injured": false,
       "marketValue": "€25.00m",
       "name": "Alexis Saelemaekers",
-      "position": "Right Midfield"
+      "overall_score": 80,
+      "position": "Right Midfield",
+      "potential": 80
     },
     {
       "club": {
@@ -252,7 +286,9 @@
       "injured": false,
       "marketValue": "€25.00m",
       "name": "Diego Moreira",
-      "position": "Left Midfield"
+      "overall_score": 78,
+      "position": "Left Midfield",
+      "potential": 84
     },
     {
       "club": {
@@ -266,7 +302,9 @@
       "injured": false,
       "marketValue": "€35.00m",
       "name": "Charles De Ketelaere",
-      "position": "Attacking Midfield"
+      "overall_score": 82,
+      "position": "Attacking Midfield",
+      "potential": 86
     },
     {
       "club": {
@@ -280,7 +318,9 @@
       "injured": false,
       "marketValue": "€10.00m",
       "name": "Kevin De Bruyne",
-      "position": "Attacking Midfield"
+      "overall_score": 87,
+      "position": "Attacking Midfield",
+      "potential": 87
     },
     {
       "club": {
@@ -294,7 +334,9 @@
       "injured": false,
       "marketValue": "€6.00m",
       "name": "Hans Vanaken",
-      "position": "Attacking Midfield"
+      "overall_score": 81,
+      "position": "Attacking Midfield",
+      "potential": 81
     },
     {
       "club": {
@@ -308,7 +350,9 @@
       "injured": false,
       "marketValue": "€65.00m",
       "name": "Jérémy Doku",
-      "position": "Left Winger"
+      "overall_score": 83,
+      "position": "Left Winger",
+      "potential": 86
     },
     {
       "club": {
@@ -322,7 +366,9 @@
       "injured": false,
       "marketValue": "€20.00m",
       "name": "Leandro Trossard",
-      "position": "Left Winger"
+      "overall_score": 83,
+      "position": "Left Winger",
+      "potential": 83
     },
     {
       "club": {
@@ -336,7 +382,9 @@
       "injured": false,
       "marketValue": "€20.00m",
       "name": "Dodi Lukébakio",
-      "position": "Right Winger"
+      "overall_score": 81,
+      "position": "Right Winger",
+      "potential": 81
     },
     {
       "club": {
@@ -350,7 +398,9 @@
       "injured": false,
       "marketValue": "€30.00m",
       "name": "Matias Fernandez-Pardo",
-      "position": "Centre-Forward"
+      "overall_score": 76,
+      "position": "Centre-Forward",
+      "potential": 84
     },
     {
       "club": {
@@ -364,7 +414,9 @@
       "injured": false,
       "marketValue": "€12.00m",
       "name": "Romelu Lukaku",
-      "position": "Centre-Forward"
+      "overall_score": 83,
+      "position": "Centre-Forward",
+      "potential": 83
     }
   ],
   "stadiumName": null,
