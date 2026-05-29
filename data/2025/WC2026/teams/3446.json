@@ -14,7 +14,9 @@
       "injured": false,
       "marketValue": "€4.50m",
       "name": "Nikola Vasilj",
-      "position": "Goalkeeper"
+      "overall_score": 75,
+      "position": "Goalkeeper",
+      "potential": 75
     },
     {
       "club": {
@@ -28,7 +30,9 @@
       "injured": false,
       "marketValue": "€2.00m",
       "name": "Martin Zlomislic",
-      "position": "Goalkeeper"
+      "overall_score": 72,
+      "position": "Goalkeeper",
+      "potential": 75
     },
     {
       "club": {
@@ -42,7 +46,9 @@
       "injured": false,
       "marketValue": "€400k",
       "name": "Osman Hadzikic",
-      "position": "Goalkeeper"
+      "overall_score": 67,
+      "position": "Goalkeeper",
+      "potential": 67
     },
     {
       "club": {
@@ -56,7 +62,9 @@
       "injured": false,
       "marketValue": "€20.00m",
       "name": "Tarik Muharemović",
-      "position": "Centre-Back"
+      "overall_score": 74,
+      "position": "Centre-Back",
+      "potential": 80
     },
     {
       "club": {
@@ -70,7 +78,9 @@
       "injured": false,
       "marketValue": "€6.00m",
       "name": "Sead Kolasinac",
-      "position": "Centre-Back"
+      "overall_score": 78,
+      "position": "Centre-Back",
+      "potential": 78
     },
     {
       "club": {
@@ -84,7 +94,9 @@
       "injured": false,
       "marketValue": "€4.00m",
       "name": "Nidal Celik",
-      "position": "Centre-Back"
+      "overall_score": 66,
+      "position": "Centre-Back",
+      "potential": 79
     },
     {
       "club": {
@@ -98,7 +110,9 @@
       "injured": false,
       "marketValue": "€2.80m",
       "name": "Stjepan Radeljic",
-      "position": "Centre-Back"
+      "overall_score": 71,
+      "position": "Centre-Back",
+      "potential": 72
     },
     {
       "club": {
@@ -112,7 +126,9 @@
       "injured": false,
       "marketValue": "€1.80m",
       "name": "Nikola Katic",
-      "position": "Centre-Back"
+      "overall_score": 72,
+      "position": "Centre-Back",
+      "potential": 73
     },
     {
       "club": {
@@ -126,7 +142,9 @@
       "injured": false,
       "marketValue": "€1.30m",
       "name": "Dennis Hadzikadunic",
-      "position": "Centre-Back"
+      "overall_score": 69,
+      "position": "Centre-Back",
+      "potential": 71
     },
     {
       "club": {
@@ -140,7 +158,9 @@
       "injured": false,
       "marketValue": "€1.20m",
       "name": "Nihad Mujakic",
-      "position": "Centre-Back"
+      "overall_score": 67,
+      "position": "Centre-Back",
+      "potential": 69
     },
     {
       "club": {
@@ -154,7 +174,9 @@
       "injured": false,
       "marketValue": "€15.00m",
       "name": "Amar Dedić",
-      "position": "Right-Back"
+      "overall_score": 76,
+      "position": "Right-Back",
+      "potential": 82
     },
     {
       "club": {
@@ -168,7 +190,9 @@
       "injured": false,
       "marketValue": "€4.20m",
       "name": "Amir Hadziahmetovic",
-      "position": "Defensive Midfield"
+      "overall_score": 71,
+      "position": "Defensive Midfield",
+      "potential": 71
     },
     {
       "club": {
@@ -182,7 +206,9 @@
       "injured": false,
       "marketValue": "€1.80m",
       "name": "Ivan Sunjic",
-      "position": "Defensive Midfield"
+      "overall_score": 69,
+      "position": "Defensive Midfield",
+      "potential": 69
     },
     {
       "club": {
@@ -196,7 +222,9 @@
       "injured": false,
       "marketValue": "€1.20m",
       "name": "Dzenis Burnic",
-      "position": "Defensive Midfield"
+      "overall_score": 69,
+      "position": "Defensive Midfield",
+      "potential": 69
     },
     {
       "club": {
@@ -210,7 +238,9 @@
       "injured": false,
       "marketValue": "€4.50m",
       "name": "Benjamin Tahirović",
-      "position": "Central Midfield"
+      "overall_score": 69,
+      "position": "Central Midfield",
+      "potential": 77
     },
     {
       "club": {
@@ -224,7 +254,9 @@
       "injured": false,
       "marketValue": "€2.50m",
       "name": "Armin Gigovic",
-      "position": "Central Midfield"
+      "overall_score": 71,
+      "position": "Central Midfield",
+      "potential": 78
     },
     {
       "club": {
@@ -238,7 +270,9 @@
       "injured": false,
       "marketValue": "€1.20m",
       "name": "Ivan Basic",
-      "position": "Central Midfield"
+      "overall_score": 69,
+      "position": "Central Midfield",
+      "potential": 75
     },
     {
       "club": {
@@ -252,7 +286,9 @@
       "injured": false,
       "marketValue": "€4.50m",
       "name": "Amar Memić",
-      "position": "Right Midfield"
+      "overall_score": 72,
+      "position": "Right Midfield",
+      "potential": 74
     },
     {
       "club": {
@@ -266,7 +302,9 @@
       "injured": false,
       "marketValue": "€5.00m",
       "name": "Ermin Mahmic",
-      "position": "Attacking Midfield"
+      "overall_score": 69,
+      "position": "Attacking Midfield",
+      "potential": 81
     },
     {
       "club": {
@@ -280,7 +318,9 @@
       "injured": false,
       "marketValue": "€15.00m",
       "name": "Kerim Alajbegovic",
-      "position": "Left Winger"
+      "overall_score": 68,
+      "position": "Left Winger",
+      "potential": 83
     },
     {
       "club": {
@@ -294,7 +334,9 @@
       "injured": false,
       "marketValue": "€5.00m",
       "name": "Esmir Bajraktarevic",
-      "position": "Right Winger"
+      "overall_score": 72,
+      "position": "Right Winger",
+      "potential": 84
     },
     {
       "club": {
@@ -308,7 +350,9 @@
       "injured": false,
       "marketValue": "€22.00m",
       "name": "Ermedin Demirovic",
-      "position": "Centre-Forward"
+      "overall_score": 79,
+      "position": "Centre-Forward",
+      "potential": 79
     },
     {
       "club": {
@@ -322,7 +366,9 @@
       "injured": false,
       "marketValue": "€3.00m",
       "name": "Haris Tabakovic",
-      "position": "Centre-Forward"
+      "overall_score": 75,
+      "position": "Centre-Forward",
+      "potential": 75
     },
     {
       "club": {
@@ -336,7 +382,9 @@
       "injured": false,
       "marketValue": "€1.50m",
       "name": "Jovo Lukić",
-      "position": "Centre-Forward"
+      "overall_score": 68,
+      "position": "Centre-Forward",
+      "potential": 69
     },
     {
       "club": {
@@ -350,7 +398,9 @@
       "injured": false,
       "marketValue": "€1.50m",
       "name": "Samed Bazdar",
-      "position": "Centre-Forward"
+      "overall_score": 67,
+      "position": "Centre-Forward",
+      "potential": 78
     },
     {
       "club": {
@@ -364,7 +414,9 @@
       "injured": false,
       "marketValue": "€1.50m",
       "name": "Edin Dzeko",
-      "position": "Centre-Forward"
+      "overall_score": 78,
+      "position": "Centre-Forward",
+      "potential": 78
     }
   ],
   "stadiumName": null,

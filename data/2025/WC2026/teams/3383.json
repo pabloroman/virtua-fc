@@ -14,7 +14,9 @@
       "injured": false,
       "marketValue": "€2.50m",
       "name": "Alexander Schlager",
-      "position": "Goalkeeper"
+      "overall_score": 72,
+      "position": "Goalkeeper",
+      "potential": 73
     },
     {
       "club": {
@@ -28,7 +30,9 @@
       "injured": false,
       "marketValue": "€2.20m",
       "name": "Florian Wiegele",
-      "position": "Goalkeeper"
+      "overall_score": 69,
+      "position": "Goalkeeper",
+      "potential": 74
     },
     {
       "club": {
@@ -42,7 +46,9 @@
       "injured": false,
       "marketValue": "€2.20m",
       "name": "Patrick Pentz",
-      "position": "Goalkeeper"
+      "overall_score": 72,
+      "position": "Goalkeeper",
+      "potential": 74
     },
     {
       "club": {
@@ -56,7 +62,9 @@
       "injured": false,
       "marketValue": "€20.00m",
       "name": "Kevin Danso",
-      "position": "Centre-Back"
+      "overall_score": 79,
+      "position": "Centre-Back",
+      "potential": 82
     },
     {
       "club": {
@@ -70,7 +78,9 @@
       "injured": false,
       "marketValue": "€12.00m",
       "name": "Philipp Lienhart",
-      "position": "Centre-Back"
+      "overall_score": 78,
+      "position": "Centre-Back",
+      "potential": 78
     },
     {
       "club": {
@@ -84,7 +94,9 @@
       "injured": false,
       "marketValue": "€12.00m",
       "name": "Marco Friedl",
-      "position": "Centre-Back"
+      "overall_score": 77,
+      "position": "Centre-Back",
+      "potential": 79
     },
     {
       "club": {
@@ -98,7 +110,9 @@
       "injured": false,
       "marketValue": "€9.00m",
       "name": "David Affengruber",
-      "position": "Centre-Back"
+      "overall_score": 75,
+      "position": "Centre-Back",
+      "potential": 82
     },
     {
       "club": {
@@ -112,7 +126,9 @@
       "injured": false,
       "marketValue": "€5.50m",
       "name": "Stefan Posch",
-      "position": "Centre-Back"
+      "overall_score": 78,
+      "position": "Centre-Back",
+      "potential": 78
     },
     {
       "club": {
@@ -126,7 +142,9 @@
       "injured": false,
       "marketValue": "€3.50m",
       "name": "David Alaba",
-      "position": "Centre-Back"
+      "overall_score": 80,
+      "position": "Centre-Back",
+      "potential": 80
     },
     {
       "club": {
@@ -140,7 +158,9 @@
       "injured": false,
       "marketValue": "€3.00m",
       "name": "Michael Svoboda",
-      "position": "Centre-Back"
+      "overall_score": 72,
+      "position": "Centre-Back",
+      "potential": 72
     },
     {
       "club": {
@@ -154,7 +174,9 @@
       "injured": false,
       "marketValue": "€1.50m",
       "name": "Phillipp Mwene",
-      "position": "Left-Back"
+      "overall_score": 75,
+      "position": "Left-Back",
+      "potential": 75
     },
     {
       "club": {
@@ -168,7 +190,9 @@
       "injured": false,
       "marketValue": "€32.00m",
       "name": "Konrad Laimer",
-      "position": "Right-Back"
+      "overall_score": 84,
+      "position": "Right-Back",
+      "potential": 84
     },
     {
       "club": {
@@ -182,7 +206,9 @@
       "injured": false,
       "marketValue": "€22.00m",
       "name": "Nicolas Seiwald",
-      "position": "Defensive Midfield"
+      "overall_score": 80,
+      "position": "Defensive Midfield",
+      "potential": 85
     },
     {
       "club": {
@@ -196,7 +222,9 @@
       "injured": false,
       "marketValue": "€2.00m",
       "name": "Florian Grillitsch",
-      "position": "Defensive Midfield"
+      "overall_score": 76,
+      "position": "Defensive Midfield",
+      "potential": 76
     },
     {
       "club": {
@@ -210,7 +238,9 @@
       "injured": false,
       "marketValue": "€20.00m",
       "name": "Carney Chukwuemeka",
-      "position": "Central Midfield"
+      "overall_score": 78,
+      "position": "Central Midfield",
+      "potential": 84
     },
     {
       "club": {
@@ -224,7 +254,9 @@
       "injured": false,
       "marketValue": "€10.00m",
       "name": "Xaver Schlager",
-      "position": "Central Midfield"
+      "overall_score": 78,
+      "position": "Central Midfield",
+      "potential": 79
     },
     {
       "club": {
@@ -238,7 +270,9 @@
       "injured": false,
       "marketValue": "€7.00m",
       "name": "Marcel Sabitzer",
-      "position": "Central Midfield"
+      "overall_score": 81,
+      "position": "Central Midfield",
+      "potential": 81
     },
     {
       "club": {
@@ -252,7 +286,9 @@
       "injured": false,
       "marketValue": "€900k",
       "name": "Alessandro Schöpf",
-      "position": "Central Midfield"
+      "overall_score": 68,
+      "position": "Central Midfield",
+      "potential": 68
     },
     {
       "club": {
@@ -266,7 +302,9 @@
       "injured": false,
       "marketValue": "€7.00m",
       "name": "Alexander Prass",
-      "position": "Left Midfield"
+      "overall_score": 75,
+      "position": "Left Midfield",
+      "potential": 77
     },
     {
       "club": {
@@ -280,7 +318,9 @@
       "injured": false,
       "marketValue": "€30.00m",
       "name": "Christoph Baumgartner",
-      "position": "Attacking Midfield"
+      "overall_score": 81,
+      "position": "Attacking Midfield",
+      "potential": 83
     },
     {
       "club": {
@@ -294,7 +334,9 @@
       "injured": false,
       "marketValue": "€18.00m",
       "name": "Paul Wanner",
-      "position": "Attacking Midfield"
+      "overall_score": 75,
+      "position": "Attacking Midfield",
+      "potential": 86
     },
     {
       "club": {
@@ -308,7 +350,9 @@
       "injured": false,
       "marketValue": "€15.00m",
       "name": "Romano Schmid",
-      "position": "Attacking Midfield"
+      "overall_score": 78,
+      "position": "Attacking Midfield",
+      "potential": 81
     },
     {
       "club": {
@@ -322,7 +366,9 @@
       "injured": true,
       "marketValue": "€15.00m",
       "name": "Patrick Wimmer",
-      "position": "Right Winger"
+      "overall_score": 77,
+      "position": "Right Winger",
+      "potential": 83
     },
     {
       "club": {
@@ -336,7 +382,9 @@
       "injured": false,
       "marketValue": "€2.50m",
       "name": "Marko Arnautovic",
-      "position": "Centre-Forward"
+      "overall_score": 77,
+      "position": "Centre-Forward",
+      "potential": 77
     },
     {
       "club": {
@@ -350,7 +398,9 @@
       "injured": false,
       "marketValue": "€2.00m",
       "name": "Sasa Kalajdzic",
-      "position": "Centre-Forward"
+      "overall_score": 73,
+      "position": "Centre-Forward",
+      "potential": 73
     },
     {
       "club": {
@@ -364,7 +414,9 @@
       "injured": false,
       "marketValue": "€1.50m",
       "name": "Michael Gregoritsch",
-      "position": "Centre-Forward"
+      "overall_score": 75,
+      "position": "Centre-Forward",
+      "potential": 75
     }
   ],
   "stadiumName": null,

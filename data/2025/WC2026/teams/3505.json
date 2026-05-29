@@ -14,7 +14,9 @@
       "injured": false,
       "marketValue": "€2.50m",
       "name": "Matt Turner",
-      "position": "Goalkeeper"
+      "overall_score": 74,
+      "position": "Goalkeeper",
+      "potential": 74
     },
     {
       "club": {
@@ -27,7 +29,9 @@
       "injured": false,
       "marketValue": "€2.50m",
       "name": "Chris Brady",
-      "position": "Goalkeeper"
+      "overall_score": 69,
+      "position": "Goalkeeper",
+      "potential": 80
     },
     {
       "club": {
@@ -40,7 +44,9 @@
       "injured": false,
       "marketValue": "€2.00m",
       "name": "Matt Freese",
-      "position": "Goalkeeper"
+      "overall_score": 71,
+      "position": "Goalkeeper",
+      "potential": 74
     },
     {
       "club": {
@@ -54,7 +60,9 @@
       "injured": false,
       "marketValue": "€25.00m",
       "name": "Chris Richards",
-      "position": "Centre-Back"
+      "overall_score": 79,
+      "position": "Centre-Back",
+      "potential": 81
     },
     {
       "club": {
@@ -68,7 +76,9 @@
       "injured": false,
       "marketValue": "€6.00m",
       "name": "Auston Trusty",
-      "position": "Centre-Back"
+      "overall_score": 74,
+      "position": "Centre-Back",
+      "potential": 77
     },
     {
       "club": {
@@ -82,7 +92,9 @@
       "injured": false,
       "marketValue": "€6.00m",
       "name": "Mark McKenzie",
-      "position": "Centre-Back"
+      "overall_score": 74,
+      "position": "Centre-Back",
+      "potential": 77
     },
     {
       "club": {
@@ -96,7 +108,9 @@
       "injured": false,
       "marketValue": "€3.50m",
       "name": "Miles Robinson",
-      "position": "Centre-Back"
+      "overall_score": 73,
+      "position": "Centre-Back",
+      "potential": 74
     },
     {
       "club": {
@@ -110,7 +124,9 @@
       "injured": false,
       "marketValue": "€200k",
       "name": "Tim Ream",
-      "position": "Centre-Back"
+      "overall_score": 72,
+      "position": "Centre-Back",
+      "potential": 72
     },
     {
       "club": {
@@ -124,7 +140,9 @@
       "injured": false,
       "marketValue": "€25.00m",
       "name": "Antonee Robinson",
-      "position": "Left-Back"
+      "overall_score": 81,
+      "position": "Left-Back",
+      "potential": 81
     },
     {
       "club": {
@@ -138,7 +156,9 @@
       "injured": false,
       "marketValue": "€18.00m",
       "name": "Sergiño Dest",
-      "position": "Right-Back"
+      "overall_score": 79,
+      "position": "Right-Back",
+      "potential": 83
     },
     {
       "club": {
@@ -152,7 +172,9 @@
       "injured": false,
       "marketValue": "€7.00m",
       "name": "Joe Scally",
-      "position": "Right-Back"
+      "overall_score": 75,
+      "position": "Right-Back",
+      "potential": 78
     },
     {
       "club": {
@@ -165,7 +187,9 @@
       "injured": false,
       "marketValue": "€3.50m",
       "name": "Alex Freeman",
-      "position": "Right-Back"
+      "overall_score": 73,
+      "position": "Right-Back",
+      "potential": 81
     },
     {
       "club": {
@@ -179,7 +203,9 @@
       "injured": false,
       "marketValue": "€25.00m",
       "name": "Tyler Adams",
-      "position": "Defensive Midfield"
+      "overall_score": 79,
+      "position": "Defensive Midfield",
+      "potential": 81
     },
     {
       "club": {
@@ -193,7 +219,9 @@
       "injured": false,
       "marketValue": "€30.00m",
       "name": "Weston McKennie",
-      "position": "Central Midfield"
+      "overall_score": 79,
+      "position": "Central Midfield",
+      "potential": 79
     },
     {
       "club": {
@@ -207,7 +235,9 @@
       "injured": false,
       "marketValue": "€5.00m",
       "name": "Sebastian Berhalter",
-      "position": "Central Midfield"
+      "overall_score": 70,
+      "position": "Central Midfield",
+      "potential": 75
     },
     {
       "club": {
@@ -221,7 +251,9 @@
       "injured": false,
       "marketValue": "€3.50m",
       "name": "Cristian Roldán",
-      "position": "Central Midfield"
+      "overall_score": 75,
+      "position": "Central Midfield",
+      "potential": 75
     },
     {
       "club": {
@@ -235,7 +267,9 @@
       "injured": false,
       "marketValue": "€20.00m",
       "name": "Timothy Weah",
-      "position": "Right Midfield"
+      "overall_score": 77,
+      "position": "Right Midfield",
+      "potential": 78
     },
     {
       "club": {
@@ -249,7 +283,9 @@
       "injured": false,
       "marketValue": "€30.00m",
       "name": "Malik Tillman",
-      "position": "Attacking Midfield"
+      "overall_score": 79,
+      "position": "Attacking Midfield",
+      "potential": 84
     },
     {
       "club": {
@@ -263,7 +299,9 @@
       "injured": false,
       "marketValue": "€18.00m",
       "name": "Brenden Aaronson",
-      "position": "Attacking Midfield"
+      "overall_score": 76,
+      "position": "Attacking Midfield",
+      "potential": 79
     },
     {
       "club": {
@@ -277,7 +315,9 @@
       "injured": false,
       "marketValue": "€4.00m",
       "name": "Giovanni Reyna",
-      "position": "Attacking Midfield"
+      "overall_score": 73,
+      "position": "Attacking Midfield",
+      "potential": 78
     },
     {
       "club": {
@@ -291,7 +331,9 @@
       "injured": false,
       "marketValue": "€4.50m",
       "name": "Max Arfsten",
-      "position": "Left Winger"
+      "overall_score": 72,
+      "position": "Left Winger",
+      "potential": 75
     },
     {
       "club": {
@@ -305,7 +347,9 @@
       "injured": false,
       "marketValue": "€50.00m",
       "name": "Christian Pulisic",
-      "position": "Right Winger"
+      "overall_score": 85,
+      "position": "Right Winger",
+      "potential": 85
     },
     {
       "club": {
@@ -319,7 +363,9 @@
       "injured": false,
       "marketValue": "€10.00m",
       "name": "Álex Zendejas",
-      "position": "Right Winger"
+      "overall_score": 77,
+      "position": "Right Winger",
+      "potential": 77
     },
     {
       "club": {
@@ -333,7 +379,9 @@
       "injured": false,
       "marketValue": "€30.00m",
       "name": "Folarin Balogun",
-      "position": "Centre-Forward"
+      "overall_score": 79,
+      "position": "Centre-Forward",
+      "potential": 83
     },
     {
       "club": {
@@ -347,7 +395,9 @@
       "injured": false,
       "marketValue": "€25.00m",
       "name": "Ricardo Pepi",
-      "position": "Centre-Forward"
+      "overall_score": 76,
+      "position": "Centre-Forward",
+      "potential": 84
     },
     {
       "club": {
@@ -361,7 +411,9 @@
       "injured": false,
       "marketValue": "€14.00m",
       "name": "Haji Wright",
-      "position": "Centre-Forward"
+      "overall_score": 74,
+      "position": "Centre-Forward",
+      "potential": 74
     }
   ],
   "stadiumName": null,

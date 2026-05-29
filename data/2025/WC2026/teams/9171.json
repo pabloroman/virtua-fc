@@ -14,7 +14,9 @@
       "injured": false,
       "marketValue": "€1.00m",
       "name": "Max Crocombe",
-      "position": "Goalkeeper"
+      "overall_score": 69,
+      "position": "Goalkeeper",
+      "potential": 69
     },
     {
       "club": {
@@ -28,7 +30,9 @@
       "injured": false,
       "marketValue": "€750k",
       "name": "Alex Paulsen",
-      "position": "Goalkeeper"
+      "overall_score": 68,
+      "position": "Goalkeeper",
+      "potential": 77
     },
     {
       "club": {
@@ -42,7 +46,9 @@
       "injured": false,
       "marketValue": "€300k",
       "name": "Michael Woud",
-      "position": "Goalkeeper"
+      "overall_score": 61,
+      "position": "Goalkeeper",
+      "potential": 65
     },
     {
       "club": {
@@ -56,7 +62,9 @@
       "injured": false,
       "marketValue": "€1.50m",
       "name": "Tyler Bindon",
-      "position": "Centre-Back"
+      "overall_score": 70,
+      "position": "Centre-Back",
+      "potential": 80
     },
     {
       "club": {
@@ -70,7 +78,9 @@
       "injured": false,
       "marketValue": "€1.50m",
       "name": "Finn Surman",
-      "position": "Centre-Back"
+      "overall_score": 68,
+      "position": "Centre-Back",
+      "potential": 75
     },
     {
       "club": {
@@ -84,7 +94,9 @@
       "injured": false,
       "marketValue": "€400k",
       "name": "Nando Pijnaker",
-      "position": "Centre-Back"
+      "overall_score": 67,
+      "position": "Centre-Back",
+      "potential": 69
     },
     {
       "club": {
@@ -98,7 +110,9 @@
       "injured": false,
       "marketValue": "€150k",
       "name": "Michael Boxall",
-      "position": "Centre-Back"
+      "overall_score": 71,
+      "position": "Centre-Back",
+      "potential": 71
     },
     {
       "club": {
@@ -112,7 +126,9 @@
       "injured": false,
       "marketValue": "€100k",
       "name": "Tommy Smith",
-      "position": "Centre-Back"
+      "overall_score": 64,
+      "position": "Centre-Back",
+      "potential": 64
     },
     {
       "club": {
@@ -126,7 +142,9 @@
       "injured": false,
       "marketValue": "€3.00m",
       "name": "Liberato Cacace",
-      "position": "Left-Back"
+      "overall_score": 72,
+      "position": "Left-Back",
+      "potential": 76
     },
     {
       "club": {
@@ -140,7 +158,9 @@
       "injured": false,
       "marketValue": "€1.20m",
       "name": "Ben Old",
-      "position": "Left-Back"
+      "overall_score": 68,
+      "position": "Left-Back",
+      "potential": 77
     },
     {
       "club": {
@@ -154,7 +174,9 @@
       "injured": false,
       "marketValue": "€600k",
       "name": "Francis de Vries",
-      "position": "Left-Back"
+      "overall_score": 70,
+      "position": "Left-Back",
+      "potential": 70
     },
     {
       "club": {
@@ -168,7 +190,9 @@
       "injured": false,
       "marketValue": "€400k",
       "name": "Tim Payne",
-      "position": "Right-Back"
+      "overall_score": 63,
+      "position": "Right-Back",
+      "potential": 63
     },
     {
       "club": {
@@ -182,7 +206,9 @@
       "injured": false,
       "marketValue": "€375k",
       "name": "Callan Elliot",
-      "position": "Right-Back"
+      "overall_score": 63,
+      "position": "Right-Back",
+      "potential": 66
     },
     {
       "club": {
@@ -196,7 +222,9 @@
       "injured": false,
       "marketValue": "€3.00m",
       "name": "Joe Bell",
-      "position": "Defensive Midfield"
+      "overall_score": 75,
+      "position": "Defensive Midfield",
+      "potential": 78
     },
     {
       "club": {
@@ -210,7 +238,9 @@
       "injured": false,
       "marketValue": "€700k",
       "name": "Ryan Thomas",
-      "position": "Defensive Midfield"
+      "overall_score": 66,
+      "position": "Defensive Midfield",
+      "potential": 66
     },
     {
       "club": {
@@ -224,7 +254,9 @@
       "injured": false,
       "marketValue": "€600k",
       "name": "Alex Rufer",
-      "position": "Defensive Midfield"
+      "overall_score": 66,
+      "position": "Defensive Midfield",
+      "potential": 66
     },
     {
       "club": {
@@ -238,7 +270,9 @@
       "injured": false,
       "marketValue": "€3.00m",
       "name": "Marko Stamenić",
-      "position": "Central Midfield"
+      "overall_score": 71,
+      "position": "Central Midfield",
+      "potential": 76
     },
     {
       "club": {
@@ -252,7 +286,9 @@
       "injured": false,
       "marketValue": "€450k",
       "name": "Matthew Garbett",
-      "position": "Central Midfield"
+      "overall_score": 65,
+      "position": "Central Midfield",
+      "potential": 71
     },
     {
       "club": {
@@ -266,7 +302,9 @@
       "injured": false,
       "marketValue": "€350k",
       "name": "Lachlan Bayliss",
-      "position": "Central Midfield"
+      "overall_score": 63,
+      "position": "Central Midfield",
+      "potential": 72
     },
     {
       "club": {
@@ -280,7 +318,9 @@
       "injured": false,
       "marketValue": "€2.00m",
       "name": "Callum McCowatt",
-      "position": "Attacking Midfield"
+      "overall_score": 69,
+      "position": "Attacking Midfield",
+      "potential": 70
     },
     {
       "club": {
@@ -294,7 +334,9 @@
       "injured": false,
       "marketValue": "€500k",
       "name": "Sarpreet Singh",
-      "position": "Attacking Midfield"
+      "overall_score": 68,
+      "position": "Attacking Midfield",
+      "potential": 69
     },
     {
       "club": {
@@ -308,7 +350,9 @@
       "injured": false,
       "marketValue": "€600k",
       "name": "Jesse Randall",
-      "position": "Left Winger"
+      "overall_score": 67,
+      "position": "Left Winger",
+      "potential": 76
     },
     {
       "club": {
@@ -322,7 +366,9 @@
       "injured": false,
       "marketValue": "€2.50m",
       "name": "Elijah Just",
-      "position": "Right Winger"
+      "overall_score": 69,
+      "position": "Right Winger",
+      "potential": 72
     },
     {
       "club": {
@@ -336,7 +382,9 @@
       "injured": false,
       "marketValue": "€6.00m",
       "name": "Chris Wood",
-      "position": "Centre-Forward"
+      "overall_score": 81,
+      "position": "Centre-Forward",
+      "potential": 81
     },
     {
       "club": {
@@ -350,7 +398,9 @@
       "injured": false,
       "marketValue": "€400k",
       "name": "Ben Waine",
-      "position": "Centre-Forward"
+      "overall_score": 62,
+      "position": "Centre-Forward",
+      "potential": 67
     },
     {
       "club": {
@@ -364,7 +414,9 @@
       "injured": false,
       "marketValue": "€325k",
       "name": "Kosta Barbarouses",
-      "position": "Centre-Forward"
+      "overall_score": 67,
+      "position": "Centre-Forward",
+      "potential": 67
     }
   ],
   "stadiumName": null,

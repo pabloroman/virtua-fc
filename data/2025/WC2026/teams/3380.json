@@ -14,7 +14,9 @@
       "injured": false,
       "marketValue": "€1.50m",
       "name": "Angus Gunn",
-      "position": "Goalkeeper"
+      "overall_score": 72,
+      "position": "Goalkeeper",
+      "potential": 73
     },
     {
       "club": {
@@ -28,7 +30,9 @@
       "injured": false,
       "marketValue": "€800k",
       "name": "Liam Kelly",
-      "position": "Goalkeeper"
+      "overall_score": 67,
+      "position": "Goalkeeper",
+      "potential": 67
     },
     {
       "club": {
@@ -42,7 +46,9 @@
       "injured": false,
       "marketValue": "€25k",
       "name": "Craig Gordon",
-      "position": "Goalkeeper"
+      "overall_score": 67,
+      "position": "Goalkeeper",
+      "potential": 67
     },
     {
       "club": {
@@ -56,7 +62,9 @@
       "injured": false,
       "marketValue": "€4.00m",
       "name": "Scott McKenna",
-      "position": "Centre-Back"
+      "overall_score": 75,
+      "position": "Centre-Back",
+      "potential": 75
     },
     {
       "club": {
@@ -70,7 +78,9 @@
       "injured": false,
       "marketValue": "€2.50m",
       "name": "Dominic Hyam",
-      "position": "Centre-Back"
+      "overall_score": 71,
+      "position": "Centre-Back",
+      "potential": 71
     },
     {
       "club": {
@@ -84,7 +94,9 @@
       "injured": false,
       "marketValue": "€2.50m",
       "name": "Jack Hendry",
-      "position": "Centre-Back"
+      "overall_score": 72,
+      "position": "Centre-Back",
+      "potential": 72
     },
     {
       "club": {
@@ -98,7 +110,9 @@
       "injured": false,
       "marketValue": "€2.00m",
       "name": "John Souttar",
-      "position": "Centre-Back"
+      "overall_score": 74,
+      "position": "Centre-Back",
+      "potential": 75
     },
     {
       "club": {
@@ -112,7 +126,9 @@
       "injured": false,
       "marketValue": "€200k",
       "name": "Grant Hanley",
-      "position": "Centre-Back"
+      "overall_score": 70,
+      "position": "Centre-Back",
+      "potential": 70
     },
     {
       "club": {
@@ -126,7 +142,9 @@
       "injured": false,
       "marketValue": "€10.00m",
       "name": "Andrew Robertson",
-      "position": "Left-Back"
+      "overall_score": 81,
+      "position": "Left-Back",
+      "potential": 81
     },
     {
       "club": {
@@ -140,7 +158,9 @@
       "injured": false,
       "marketValue": "€8.00m",
       "name": "Kieran Tierney",
-      "position": "Left-Back"
+      "overall_score": 77,
+      "position": "Left-Back",
+      "potential": 77
     },
     {
       "club": {
@@ -154,7 +174,9 @@
       "injured": false,
       "marketValue": "€16.00m",
       "name": "Aaron Hickey",
-      "position": "Right-Back"
+      "overall_score": 75,
+      "position": "Right-Back",
+      "potential": 79
     },
     {
       "club": {
@@ -168,7 +190,9 @@
       "injured": false,
       "marketValue": "€10.00m",
       "name": "Nathan Patterson",
-      "position": "Right-Back"
+      "overall_score": 71,
+      "position": "Right-Back",
+      "potential": 76
     },
     {
       "club": {
@@ -182,7 +206,9 @@
       "injured": false,
       "marketValue": "€1.50m",
       "name": "Anthony Ralston",
-      "position": "Right-Back"
+      "overall_score": 70,
+      "position": "Right-Back",
+      "potential": 71
     },
     {
       "club": {
@@ -196,7 +222,9 @@
       "injured": false,
       "marketValue": "€20.00m",
       "name": "Billy Gilmour",
-      "position": "Defensive Midfield"
+      "overall_score": 75,
+      "position": "Defensive Midfield",
+      "potential": 79
     },
     {
       "club": {
@@ -210,7 +238,9 @@
       "injured": false,
       "marketValue": "€45.00m",
       "name": "Scott McTominay",
-      "position": "Central Midfield"
+      "overall_score": 86,
+      "position": "Central Midfield",
+      "potential": 86
     },
     {
       "club": {
@@ -224,7 +254,9 @@
       "injured": false,
       "marketValue": "€18.00m",
       "name": "Lewis Ferguson",
-      "position": "Central Midfield"
+      "overall_score": 78,
+      "position": "Central Midfield",
+      "potential": 81
     },
     {
       "club": {
@@ -238,7 +270,9 @@
       "injured": false,
       "marketValue": "€15.00m",
       "name": "John McGinn",
-      "position": "Central Midfield"
+      "overall_score": 81,
+      "position": "Central Midfield",
+      "potential": 81
     },
     {
       "club": {
@@ -252,7 +286,9 @@
       "injured": false,
       "marketValue": "€9.00m",
       "name": "Ryan Christie",
-      "position": "Central Midfield"
+      "overall_score": 78,
+      "position": "Central Midfield",
+      "potential": 78
     },
     {
       "club": {
@@ -266,7 +302,9 @@
       "injured": false,
       "marketValue": "€500k",
       "name": "Kenny McLean",
-      "position": "Central Midfield"
+      "overall_score": 73,
+      "position": "Central Midfield",
+      "potential": 73
     },
     {
       "club": {
@@ -280,7 +318,9 @@
       "injured": false,
       "marketValue": "€2.00m",
       "name": "Findlay Curtis",
-      "position": "Left Winger"
+      "overall_score": 66,
+      "position": "Left Winger",
+      "potential": 85
     },
     {
       "club": {
@@ -294,7 +334,9 @@
       "injured": false,
       "marketValue": "€16.00m",
       "name": "Ben Gannon-Doak",
-      "position": "Right Winger"
+      "overall_score": 71,
+      "position": "Right Winger",
+      "potential": 84
     },
     {
       "club": {
@@ -308,7 +350,9 @@
       "injured": false,
       "marketValue": "€8.50m",
       "name": "Ché Adams",
-      "position": "Centre-Forward"
+      "overall_score": 78,
+      "position": "Centre-Forward",
+      "potential": 78
     },
     {
       "club": {
@@ -322,7 +366,9 @@
       "injured": false,
       "marketValue": "€8.00m",
       "name": "George Hirst",
-      "position": "Centre-Forward"
+      "overall_score": 72,
+      "position": "Centre-Forward",
+      "potential": 73
     },
     {
       "club": {
@@ -336,7 +382,9 @@
       "injured": false,
       "marketValue": "€3.00m",
       "name": "Lawrence Shankland",
-      "position": "Centre-Forward"
+      "overall_score": 76,
+      "position": "Centre-Forward",
+      "potential": 76
     },
     {
       "club": {
@@ -350,7 +398,9 @@
       "injured": false,
       "marketValue": "€2.80m",
       "name": "Ross Stewart",
-      "position": "Centre-Forward"
+      "overall_score": 71,
+      "position": "Centre-Forward",
+      "potential": 71
     },
     {
       "club": {
@@ -364,7 +414,9 @@
       "injured": false,
       "marketValue": "€1.00m",
       "name": "Lyndon Dykes",
-      "position": "Centre-Forward"
+      "overall_score": 69,
+      "position": "Centre-Forward",
+      "potential": 69
     }
   ],
   "stadiumName": null,

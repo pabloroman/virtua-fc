@@ -14,7 +14,9 @@
       "injured": false,
       "marketValue": "€1.20m",
       "name": "CJ dos Santos",
-      "position": "Goalkeeper"
+      "overall_score": 63,
+      "position": "Goalkeeper",
+      "potential": 67
     },
     {
       "club": {
@@ -28,7 +30,9 @@
       "injured": false,
       "marketValue": "€300k",
       "name": "Márcio Rosa",
-      "position": "Goalkeeper"
+      "overall_score": 64,
+      "position": "Goalkeeper",
+      "potential": 65
     },
     {
       "club": {
@@ -42,7 +46,9 @@
       "injured": false,
       "marketValue": "€50k",
       "name": "Vozinha",
-      "position": "Goalkeeper"
+      "overall_score": 68,
+      "position": "Goalkeeper",
+      "potential": 68
     },
     {
       "club": {
@@ -56,7 +62,9 @@
       "injured": false,
       "marketValue": "€18.00m",
       "name": "Logan Costa",
-      "position": "Centre-Back"
+      "overall_score": 77,
+      "position": "Centre-Back",
+      "potential": 84
     },
     {
       "club": {
@@ -70,7 +78,9 @@
       "injured": false,
       "marketValue": "€1.00m",
       "name": "Diney Borges",
-      "position": "Centre-Back"
+      "overall_score": 66,
+      "position": "Centre-Back",
+      "potential": 66
     },
     {
       "club": {
@@ -84,7 +94,9 @@
       "injured": false,
       "marketValue": "€300k",
       "name": "Kelvin Pires",
-      "position": "Centre-Back"
+      "overall_score": 66,
+      "position": "Centre-Back",
+      "potential": 73
     },
     {
       "club": {
@@ -98,7 +110,9 @@
       "injured": false,
       "marketValue": "€250k",
       "name": "Roberto Lopes",
-      "position": "Centre-Back"
+      "overall_score": 68,
+      "position": "Centre-Back",
+      "potential": 68
     },
     {
       "club": {
@@ -112,7 +126,9 @@
       "injured": false,
       "marketValue": "€50k",
       "name": "Stopira",
-      "position": "Centre-Back"
+      "overall_score": 62,
+      "position": "Centre-Back",
+      "potential": 62
     },
     {
       "club": {
@@ -126,7 +142,9 @@
       "injured": false,
       "marketValue": "€11.00m",
       "name": "Wagner Pina",
-      "position": "Right-Back"
+      "overall_score": 72,
+      "position": "Right-Back",
+      "potential": 81
     },
     {
       "club": {
@@ -140,7 +158,9 @@
       "injured": false,
       "marketValue": "€5.00m",
       "name": "Sidny Lopes Cabral",
-      "position": "Right-Back"
+      "overall_score": 68,
+      "position": "Right-Back",
+      "potential": 75
     },
     {
       "club": {
@@ -154,7 +174,9 @@
       "injured": false,
       "marketValue": "€1.50m",
       "name": "Steven Moreira",
-      "position": "Right-Back"
+      "overall_score": 71,
+      "position": "Right-Back",
+      "potential": 71
     },
     {
       "club": {
@@ -168,7 +190,9 @@
       "injured": false,
       "marketValue": "€4.50m",
       "name": "Kevin Lenini",
-      "position": "Defensive Midfield"
+      "overall_score": 74,
+      "position": "Defensive Midfield",
+      "potential": 75
     },
     {
       "club": {
@@ -182,7 +206,9 @@
       "injured": false,
       "marketValue": "€1.00m",
       "name": "Laros Duarte",
-      "position": "Defensive Midfield"
+      "overall_score": 70,
+      "position": "Defensive Midfield",
+      "potential": 70
     },
     {
       "club": {
@@ -196,7 +222,9 @@
       "injured": false,
       "marketValue": "€700k",
       "name": "João Paulo",
-      "position": "Defensive Midfield"
+      "overall_score": 66,
+      "position": "Defensive Midfield",
+      "potential": 67
     },
     {
       "club": {
@@ -210,7 +238,9 @@
       "injured": false,
       "marketValue": "€1.80m",
       "name": "Deroy Duarte",
-      "position": "Central Midfield"
+      "overall_score": 71,
+      "position": "Central Midfield",
+      "potential": 74
     },
     {
       "club": {
@@ -224,7 +254,9 @@
       "injured": false,
       "marketValue": "€750k",
       "name": "Jamiro Monteiro",
-      "position": "Central Midfield"
+      "overall_score": 69,
+      "position": "Central Midfield",
+      "potential": 69
     },
     {
       "club": {
@@ -238,7 +270,9 @@
       "injured": false,
       "marketValue": "€300k",
       "name": "Yannick Semedo",
-      "position": "Central Midfield"
+      "overall_score": 64,
+      "position": "Central Midfield",
+      "potential": 64
     },
     {
       "club": {
@@ -252,7 +286,9 @@
       "injured": false,
       "marketValue": "€1.20m",
       "name": "Hélio Varela",
-      "position": "Left Winger"
+      "overall_score": 68,
+      "position": "Left Winger",
+      "potential": 74
     },
     {
       "club": {
@@ -266,7 +302,9 @@
       "injured": false,
       "marketValue": "€1.00m",
       "name": "Willy Semedo",
-      "position": "Left Winger"
+      "overall_score": 71,
+      "position": "Left Winger",
+      "potential": 71
     },
     {
       "club": {
@@ -280,7 +318,9 @@
       "injured": false,
       "marketValue": "€800k",
       "name": "Jovane Cabral",
-      "position": "Left Winger"
+      "overall_score": 70,
+      "position": "Left Winger",
+      "potential": 70
     },
     {
       "club": {
@@ -294,7 +334,9 @@
       "injured": false,
       "marketValue": "€200k",
       "name": "Ryan Mendes",
-      "position": "Left Winger"
+      "overall_score": 72,
+      "position": "Left Winger",
+      "potential": 72
     },
     {
       "club": {
@@ -308,7 +350,9 @@
       "injured": false,
       "marketValue": "€3.00m",
       "name": "Telmo Arcanjo",
-      "position": "Right Winger"
+      "overall_score": 71,
+      "position": "Right Winger",
+      "potential": 76
     },
     {
       "club": {
@@ -322,7 +366,9 @@
       "injured": false,
       "marketValue": "€325k",
       "name": "Garry Rodrigues",
-      "position": "Right Winger"
+      "overall_score": 72,
+      "position": "Right Winger",
+      "potential": 72
     },
     {
       "club": {
@@ -336,7 +382,9 @@
       "injured": false,
       "marketValue": "€900k",
       "name": "Benchimol",
-      "position": "Centre-Forward"
+      "overall_score": 69,
+      "position": "Centre-Forward",
+      "potential": 73
     },
     {
       "club": {
@@ -350,7 +398,9 @@
       "injured": false,
       "marketValue": "€800k",
       "name": "Dailon Livramento",
-      "position": "Centre-Forward"
+      "overall_score": 69,
+      "position": "Centre-Forward",
+      "potential": 74
     },
     {
       "club": {
@@ -364,7 +414,9 @@
       "injured": false,
       "marketValue": "€400k",
       "name": "Nuno Da Costa",
-      "position": "Centre-Forward"
+      "overall_score": 70,
+      "position": "Centre-Forward",
+      "potential": 70
     }
   ],
   "stadiumName": null,

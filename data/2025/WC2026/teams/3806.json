@@ -45,20 +45,6 @@
     },
     {
       "club": {
-        "image": "https://assets.virtuafc.com/crests/568.png",
-        "name": "Kaizer Chiefs"
-      },
-      "dateOfBirth": "Sep 22, 1994",
-      "foot": "right",
-      "height": "1,85m",
-      "id": "268567",
-      "injured": false,
-      "marketValue": "€50k",
-      "name": "Brandon Petersen",
-      "position": "Goalkeeper"
-    },
-    {
-      "club": {
         "image": "https://assets.virtuafc.com/crests/432.png",
         "name": "Chicago Fire FC"
       },
@@ -136,7 +122,7 @@
       "height": "1,81m",
       "id": "1175086",
       "injured": false,
-      "marketValue": "€2.00m",
+      "marketValue": "€2.50m",
       "name": "Samukele Kabini",
       "position": "Left-Back"
     },
@@ -184,20 +170,6 @@
     },
     {
       "club": {
-        "image": "https://assets.virtuafc.com/crests/568.png",
-        "name": "Kaizer Chiefs"
-      },
-      "dateOfBirth": "Apr 30, 2000",
-      "foot": "right",
-      "height": "1,67m",
-      "id": "579037",
-      "injured": false,
-      "marketValue": "€900k",
-      "name": "Thabiso Monyane",
-      "position": "Right-Back"
-    },
-    {
-      "club": {
         "image": "https://assets.virtuafc.com/crests/21202.png",
         "name": "Polokwane City FC"
       },
@@ -207,20 +179,6 @@
       "injured": false,
       "marketValue": "€900k",
       "name": "Thabang Matuludi",
-      "position": "Right-Back"
-    },
-    {
-      "club": {
-        "image": "https://assets.virtuafc.com/crests/6356.png",
-        "name": "Mamelodi Sundowns FC"
-      },
-      "dateOfBirth": "Aug 6, 1993",
-      "foot": "right",
-      "height": "1,70m",
-      "id": "297509",
-      "injured": false,
-      "marketValue": "€900k",
-      "name": "Thapelo Morena",
       "position": "Right-Back"
     },
     {
@@ -248,19 +206,6 @@
       "injured": false,
       "marketValue": "€2.50m",
       "name": "Teboho Mokoena",
-      "position": "Defensive Midfield"
-    },
-    {
-      "club": {
-        "image": "https://assets.virtuafc.com/crests/14187.png",
-        "name": "Durban City Football Club"
-      },
-      "dateOfBirth": "Oct 3, 1999",
-      "foot": "right",
-      "id": "533547",
-      "injured": false,
-      "marketValue": "€450k",
-      "name": "Brooklyn Poggenpoel",
       "position": "Defensive Midfield"
     },
     {
@@ -304,34 +249,6 @@
       "marketValue": "€600k",
       "name": "Yaya Sithole",
       "position": "Central Midfield"
-    },
-    {
-      "club": {
-        "image": "https://assets.virtuafc.com/crests/568.png",
-        "name": "Kaizer Chiefs"
-      },
-      "dateOfBirth": "Sep 17, 1994",
-      "foot": "right",
-      "height": "1,72m",
-      "id": "420543",
-      "injured": false,
-      "marketValue": "€400k",
-      "name": "Lebohang Maboe",
-      "position": "Central Midfield"
-    },
-    {
-      "club": {
-        "image": "https://assets.virtuafc.com/crests/2557.png",
-        "name": "Orlando Pirates"
-      },
-      "dateOfBirth": "Apr 4, 1998",
-      "foot": "left",
-      "height": "1,78m",
-      "id": "555606",
-      "injured": false,
-      "marketValue": "€1.20m",
-      "name": "Patrick Maswanganyi",
-      "position": "Attacking Midfield"
     },
     {
       "club": {
@@ -400,20 +317,6 @@
       "marketValue": "€750k",
       "name": "Thapelo Maseko",
       "position": "Left Winger"
-    },
-    {
-      "club": {
-        "image": "https://assets.virtuafc.com/crests/56089.png",
-        "name": "Minnesota United FC"
-      },
-      "dateOfBirth": "Jun 20, 2000",
-      "foot": "right",
-      "height": "1,82m",
-      "id": "669202",
-      "injured": false,
-      "marketValue": "€3.50m",
-      "name": "Bongokuhle Hlongwane",
-      "position": "Right Winger"
     },
     {
       "club": {

@@ -14,7 +14,9 @@
       "injured": false,
       "marketValue": "€5.00m",
       "name": "Yahia Fofana",
-      "position": "Goalkeeper"
+      "overall_score": 73,
+      "position": "Goalkeeper",
+      "potential": 78
     },
     {
       "club": {
@@ -28,7 +30,9 @@
       "injured": false,
       "marketValue": "€3.00m",
       "name": "Alban Lafont",
-      "position": "Goalkeeper"
+      "overall_score": 74,
+      "position": "Goalkeeper",
+      "potential": 76
     },
     {
       "club": {
@@ -42,7 +46,9 @@
       "injured": false,
       "marketValue": "€800k",
       "name": "Mohamed Koné",
-      "position": "Goalkeeper"
+      "overall_score": 68,
+      "position": "Goalkeeper",
+      "potential": 75
     },
     {
       "club": {
@@ -56,7 +62,9 @@
       "injured": false,
       "marketValue": "€45.00m",
       "name": "Ousmane Diomande",
-      "position": "Centre-Back"
+      "overall_score": 80,
+      "position": "Centre-Back",
+      "potential": 87
     },
     {
       "club": {
@@ -70,7 +78,9 @@
       "injured": false,
       "marketValue": "€35.00m",
       "name": "Evan Ndicka",
-      "position": "Centre-Back"
+      "overall_score": 81,
+      "position": "Centre-Back",
+      "potential": 83
     },
     {
       "club": {
@@ -84,7 +94,9 @@
       "injured": false,
       "marketValue": "€23.00m",
       "name": "Wilfried Singo",
-      "position": "Centre-Back"
+      "overall_score": 78,
+      "position": "Centre-Back",
+      "potential": 84
     },
     {
       "club": {
@@ -98,7 +110,9 @@
       "injured": false,
       "marketValue": "€18.00m",
       "name": "Odilon Kossounou",
-      "position": "Centre-Back"
+      "overall_score": 80,
+      "position": "Centre-Back",
+      "potential": 85
     },
     {
       "club": {
@@ -112,7 +126,9 @@
       "injured": false,
       "marketValue": "€16.00m",
       "name": "Emmanuel Agbadou",
-      "position": "Centre-Back"
+      "overall_score": 77,
+      "position": "Centre-Back",
+      "potential": 78
     },
     {
       "club": {
@@ -126,7 +142,9 @@
       "injured": false,
       "marketValue": "€9.00m",
       "name": "Clément Akpa",
-      "position": "Centre-Back"
+      "overall_score": 74,
+      "position": "Centre-Back",
+      "potential": 80
     },
     {
       "club": {
@@ -140,7 +158,9 @@
       "injured": false,
       "marketValue": "€3.00m",
       "name": "Ghislain Konan",
-      "position": "Left-Back"
+      "overall_score": 73,
+      "position": "Left-Back",
+      "potential": 73
     },
     {
       "club": {
@@ -154,7 +174,9 @@
       "injured": false,
       "marketValue": "€18.00m",
       "name": "Guéla Doué",
-      "position": "Right-Back"
+      "overall_score": 77,
+      "position": "Right-Back",
+      "potential": 82
     },
     {
       "club": {
@@ -168,7 +190,9 @@
       "injured": false,
       "marketValue": "€22.00m",
       "name": "Ibrahim Sangaré",
-      "position": "Defensive Midfield"
+      "overall_score": 78,
+      "position": "Defensive Midfield",
+      "potential": 79
     },
     {
       "club": {
@@ -182,7 +206,9 @@
       "injured": false,
       "marketValue": "€100k",
       "name": "Jean Michaël Seri",
-      "position": "Defensive Midfield"
+      "overall_score": 69,
+      "position": "Defensive Midfield",
+      "potential": 69
     },
     {
       "club": {
@@ -196,7 +222,9 @@
       "injured": false,
       "marketValue": "€23.00m",
       "name": "Christ Inao Oulaï",
-      "position": "Central Midfield"
+      "overall_score": 70,
+      "position": "Central Midfield",
+      "potential": 84
     },
     {
       "club": {
@@ -210,7 +238,9 @@
       "injured": false,
       "marketValue": "€12.00m",
       "name": "Franck Kessié",
-      "position": "Central Midfield"
+      "overall_score": 79,
+      "position": "Central Midfield",
+      "potential": 79
     },
     {
       "club": {
@@ -224,7 +254,9 @@
       "injured": false,
       "marketValue": "€8.00m",
       "name": "Seko Fofana",
-      "position": "Central Midfield"
+      "overall_score": 77,
+      "position": "Central Midfield",
+      "potential": 77
     },
     {
       "club": {
@@ -238,7 +270,9 @@
       "injured": false,
       "marketValue": "€75.00m",
       "name": "Yan Diomande",
-      "position": "Left Winger"
+      "overall_score": 81,
+      "position": "Left Winger",
+      "potential": 89
     },
     {
       "club": {
@@ -252,7 +286,9 @@
       "injured": false,
       "marketValue": "€35.00m",
       "name": "Bazoumana Touré",
-      "position": "Left Winger"
+      "overall_score": 77,
+      "position": "Left Winger",
+      "potential": 86
     },
     {
       "club": {
@@ -266,7 +302,9 @@
       "injured": false,
       "marketValue": "€25.00m",
       "name": "Simon Adingra",
-      "position": "Left Winger"
+      "overall_score": 76,
+      "position": "Left Winger",
+      "potential": 82
     },
     {
       "club": {
@@ -280,7 +318,9 @@
       "injured": false,
       "marketValue": "€5.00m",
       "name": "Parfait Guiagon",
-      "position": "Left Winger"
+      "overall_score": 74,
+      "position": "Left Winger",
+      "potential": 77
     },
     {
       "club": {
@@ -294,7 +334,9 @@
       "injured": false,
       "marketValue": "€50.00m",
       "name": "Amad Diallo",
-      "position": "Right Winger"
+      "overall_score": 80,
+      "position": "Right Winger",
+      "potential": 85
     },
     {
       "club": {
@@ -308,7 +350,9 @@
       "injured": false,
       "marketValue": "€28.00m",
       "name": "Evann Guessand",
-      "position": "Right Winger"
+      "overall_score": 78,
+      "position": "Right Winger",
+      "potential": 83
     },
     {
       "club": {
@@ -322,7 +366,9 @@
       "injured": false,
       "marketValue": "€6.00m",
       "name": "Nicolas Pépé",
-      "position": "Right Winger"
+      "overall_score": 81,
+      "position": "Right Winger",
+      "potential": 81
     },
     {
       "club": {
@@ -336,7 +382,9 @@
       "injured": false,
       "marketValue": "€35.00m",
       "name": "Ange-Yoan Bonny",
-      "position": "Centre-Forward"
+      "overall_score": 78,
+      "position": "Centre-Forward",
+      "potential": 86
     },
     {
       "club": {
@@ -350,7 +398,9 @@
       "injured": false,
       "marketValue": "€12.00m",
       "name": "Elye Wahi",
-      "position": "Centre-Forward"
+      "overall_score": 74,
+      "position": "Centre-Forward",
+      "potential": 81
     },
     {
       "club": {
@@ -364,7 +414,9 @@
       "injured": false,
       "marketValue": "€5.00m",
       "name": "Oumar Diakité",
-      "position": "Centre-Forward"
+      "overall_score": 72,
+      "position": "Centre-Forward",
+      "potential": 82
     }
   ],
   "stadiumName": null,

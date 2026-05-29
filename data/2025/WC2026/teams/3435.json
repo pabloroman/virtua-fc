@@ -14,7 +14,9 @@
       "injured": false,
       "marketValue": "€20.00m",
       "name": "Zion Suzuki",
-      "position": "Goalkeeper"
+      "overall_score": 74,
+      "position": "Goalkeeper",
+      "potential": 80
     },
     {
       "club": {
@@ -28,7 +30,9 @@
       "injured": false,
       "marketValue": "€2.00m",
       "name": "Keisuke Osako",
-      "position": "Goalkeeper"
+      "overall_score": 69,
+      "position": "Goalkeeper",
+      "potential": 73
     },
     {
       "club": {
@@ -42,7 +46,9 @@
       "injured": false,
       "marketValue": "€1.50m",
       "name": "Tomoki Hayakawa",
-      "position": "Goalkeeper"
+      "overall_score": 71,
+      "position": "Goalkeeper",
+      "potential": 75
     },
     {
       "club": {
@@ -56,7 +62,9 @@
       "injured": false,
       "marketValue": "€18.00m",
       "name": "Hiroki Ito",
-      "position": "Centre-Back"
+      "overall_score": 78,
+      "position": "Centre-Back",
+      "potential": 81
     },
     {
       "club": {
@@ -70,7 +78,9 @@
       "injured": false,
       "marketValue": "€10.00m",
       "name": "Ko Itakura",
-      "position": "Centre-Back"
+      "overall_score": 76,
+      "position": "Centre-Back",
+      "potential": 77
     },
     {
       "club": {
@@ -84,7 +94,9 @@
       "injured": false,
       "marketValue": "€10.00m",
       "name": "Tsuyoshi Watanabe",
-      "position": "Centre-Back"
+      "overall_score": 77,
+      "position": "Centre-Back",
+      "potential": 77
     },
     {
       "club": {
@@ -98,7 +110,9 @@
       "injured": false,
       "marketValue": "€2.00m",
       "name": "Junnosuke Suzuki",
-      "position": "Centre-Back"
+      "overall_score": 70,
+      "position": "Centre-Back",
+      "potential": 80
     },
     {
       "club": {
@@ -112,7 +126,9 @@
       "injured": false,
       "marketValue": "€800k",
       "name": "Shogo Taniguchi",
-      "position": "Centre-Back"
+      "overall_score": 72,
+      "position": "Centre-Back",
+      "potential": 72
     },
     {
       "club": {
@@ -126,7 +142,9 @@
       "injured": false,
       "marketValue": "€100k",
       "name": "Yuto Nagatomo",
-      "position": "Left-Back"
+      "overall_score": 68,
+      "position": "Left-Back",
+      "potential": 68
     },
     {
       "club": {
@@ -140,7 +158,9 @@
       "injured": false,
       "marketValue": "€8.00m",
       "name": "Takehiro Tomiyasu",
-      "position": "Right-Back"
+      "overall_score": 77,
+      "position": "Right-Back",
+      "potential": 78
     },
     {
       "club": {
@@ -154,7 +174,9 @@
       "injured": false,
       "marketValue": "€7.50m",
       "name": "Yukinari Sugawara",
-      "position": "Right-Back"
+      "overall_score": 75,
+      "position": "Right-Back",
+      "potential": 79
     },
     {
       "club": {
@@ -168,7 +190,9 @@
       "injured": false,
       "marketValue": "€25.00m",
       "name": "Kaishu Sano",
-      "position": "Defensive Midfield"
+      "overall_score": 80,
+      "position": "Defensive Midfield",
+      "potential": 83
     },
     {
       "club": {
@@ -182,7 +206,9 @@
       "injured": false,
       "marketValue": "€5.00m",
       "name": "Wataru Endo",
-      "position": "Defensive Midfield"
+      "overall_score": 79,
+      "position": "Defensive Midfield",
+      "potential": 79
     },
     {
       "club": {
@@ -196,7 +222,9 @@
       "injured": false,
       "marketValue": "€5.00m",
       "name": "Ayumu Seko",
-      "position": "Defensive Midfield"
+      "overall_score": 72,
+      "position": "Defensive Midfield",
+      "potential": 77
     },
     {
       "club": {
@@ -210,7 +238,9 @@
       "injured": false,
       "marketValue": "€10.00m",
       "name": "Ao Tanaka",
-      "position": "Central Midfield"
+      "overall_score": 76,
+      "position": "Central Midfield",
+      "potential": 78
     },
     {
       "club": {
@@ -224,7 +254,9 @@
       "injured": false,
       "marketValue": "€12.00m",
       "name": "Daichi Kamada",
-      "position": "Attacking Midfield"
+      "overall_score": 78,
+      "position": "Attacking Midfield",
+      "potential": 78
     },
     {
       "club": {
@@ -238,7 +270,9 @@
       "injured": false,
       "marketValue": "€13.00m",
       "name": "Daizen Maeda",
-      "position": "Left Winger"
+      "overall_score": 78,
+      "position": "Left Winger",
+      "potential": 78
     },
     {
       "club": {
@@ -252,7 +286,9 @@
       "injured": false,
       "marketValue": "€9.00m",
       "name": "Keito Nakamura",
-      "position": "Left Winger"
+      "overall_score": 76,
+      "position": "Left Winger",
+      "potential": 79
     },
     {
       "club": {
@@ -266,7 +302,9 @@
       "injured": false,
       "marketValue": "€30.00m",
       "name": "Takefusa Kubo",
-      "position": "Right Winger"
+      "overall_score": 81,
+      "position": "Right Winger",
+      "potential": 84
     },
     {
       "club": {
@@ -280,7 +318,9 @@
       "injured": false,
       "marketValue": "€20.00m",
       "name": "Ritsu Doan",
-      "position": "Right Winger"
+      "overall_score": 81,
+      "position": "Right Winger",
+      "potential": 81
     },
     {
       "club": {
@@ -294,7 +334,9 @@
       "injured": false,
       "marketValue": "€3.50m",
       "name": "Junya Ito",
-      "position": "Right Winger"
+      "overall_score": 76,
+      "position": "Right Winger",
+      "potential": 76
     },
     {
       "club": {
@@ -308,7 +350,9 @@
       "injured": false,
       "marketValue": "€18.00m",
       "name": "Yuito Suzuki",
-      "position": "Second Striker"
+      "overall_score": 75,
+      "position": "Second Striker",
+      "potential": 78
     },
     {
       "club": {
@@ -322,7 +366,9 @@
       "injured": false,
       "marketValue": "€15.00m",
       "name": "Ayase Ueda",
-      "position": "Centre-Forward"
+      "overall_score": 78,
+      "position": "Centre-Forward",
+      "potential": 79
     },
     {
       "club": {
@@ -336,7 +382,9 @@
       "injured": false,
       "marketValue": "€8.00m",
       "name": "Keisuke Goto",
-      "position": "Centre-Forward"
+      "overall_score": 64,
+      "position": "Centre-Forward",
+      "potential": 80
     },
     {
       "club": {
@@ -350,7 +398,9 @@
       "injured": false,
       "marketValue": "€8.00m",
       "name": "Kento Shiogai",
-      "position": "Centre-Forward"
+      "overall_score": 68,
+      "position": "Centre-Forward",
+      "potential": 82
     },
     {
       "club": {
@@ -364,7 +414,9 @@
       "injured": false,
       "marketValue": "€2.50m",
       "name": "Koki Ogawa",
-      "position": "Centre-Forward"
+      "overall_score": 69,
+      "position": "Centre-Forward",
+      "potential": 69
     }
   ],
   "stadiumName": null,

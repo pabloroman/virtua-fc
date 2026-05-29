@@ -14,7 +14,9 @@
       "injured": false,
       "marketValue": "€1.00m",
       "name": "Bum-keun Song",
-      "position": "Goalkeeper"
+      "overall_score": 74,
+      "position": "Goalkeeper",
+      "potential": 77
     },
     {
       "club": {
@@ -28,7 +30,9 @@
       "injured": false,
       "marketValue": "€650k",
       "name": "Hyeon-woo Jo",
-      "position": "Goalkeeper"
+      "overall_score": 74,
+      "position": "Goalkeeper",
+      "potential": 74
     },
     {
       "club": {
@@ -42,7 +46,9 @@
       "injured": false,
       "marketValue": "€600k",
       "name": "Seung-gyu Kim",
-      "position": "Goalkeeper"
+      "overall_score": 73,
+      "position": "Goalkeeper",
+      "potential": 73
     },
     {
       "club": {
@@ -56,7 +62,9 @@
       "injured": false,
       "marketValue": "€25.00m",
       "name": "Min-jae Kim",
-      "position": "Centre-Back"
+      "overall_score": 82,
+      "position": "Centre-Back",
+      "potential": 82
     },
     {
       "club": {
@@ -70,7 +78,9 @@
       "injured": false,
       "marketValue": "€1.80m",
       "name": "Yu-min Cho",
-      "position": "Centre-Back"
+      "overall_score": 70,
+      "position": "Centre-Back",
+      "potential": 71
     },
     {
       "club": {
@@ -84,7 +94,9 @@
       "injured": false,
       "marketValue": "€1.80m",
       "name": "Han-beom Lee",
-      "position": "Centre-Back"
+      "overall_score": 71,
+      "position": "Centre-Back",
+      "potential": 80
     },
     {
       "club": {
@@ -98,7 +110,9 @@
       "injured": false,
       "marketValue": "€800k",
       "name": "Gi-hyuk Lee",
-      "position": "Centre-Back"
+      "overall_score": 70,
+      "position": "Centre-Back",
+      "potential": 77
     },
     {
       "club": {
@@ -112,7 +126,9 @@
       "injured": false,
       "marketValue": "€700k",
       "name": "Tae-hyeon Kim",
-      "position": "Centre-Back"
+      "overall_score": 66,
+      "position": "Centre-Back",
+      "potential": 73
     },
     {
       "club": {
@@ -126,7 +142,9 @@
       "injured": false,
       "marketValue": "€1.50m",
       "name": "Tae-seok Lee",
-      "position": "Left-Back"
+      "overall_score": 69,
+      "position": "Left-Back",
+      "potential": 75
     },
     {
       "club": {
@@ -140,7 +158,9 @@
       "injured": false,
       "marketValue": "€5.00m",
       "name": "Young-woo Seol",
-      "position": "Right-Back"
+      "overall_score": 73,
+      "position": "Right-Back",
+      "potential": 74
     },
     {
       "club": {
@@ -154,7 +174,9 @@
       "injured": false,
       "marketValue": "€750k",
       "name": "Moon-hwan Kim",
-      "position": "Right-Back"
+      "overall_score": 69,
+      "position": "Right-Back",
+      "potential": 69
     },
     {
       "club": {
@@ -168,7 +190,9 @@
       "injured": false,
       "marketValue": "€8.00m",
       "name": "In-beom Hwang",
-      "position": "Defensive Midfield"
+      "overall_score": 76,
+      "position": "Defensive Midfield",
+      "potential": 76
     },
     {
       "club": {
@@ -182,7 +206,9 @@
       "injured": false,
       "marketValue": "€1.00m",
       "name": "Jin-seob Park",
-      "position": "Defensive Midfield"
+      "overall_score": 74,
+      "position": "Defensive Midfield",
+      "potential": 74
     },
     {
       "club": {
@@ -196,7 +222,9 @@
       "injured": false,
       "marketValue": "€6.00m",
       "name": "Jens Castrop",
-      "position": "Central Midfield"
+      "overall_score": 74,
+      "position": "Central Midfield",
+      "potential": 81
     },
     {
       "club": {
@@ -210,7 +238,9 @@
       "injured": false,
       "marketValue": "€2.50m",
       "name": "Seung-ho Paik",
-      "position": "Central Midfield"
+      "overall_score": 72,
+      "position": "Central Midfield",
+      "potential": 72
     },
     {
       "club": {
@@ -224,7 +254,9 @@
       "injured": false,
       "marketValue": "€1.20m",
       "name": "Jin-gyu Kim",
-      "position": "Central Midfield"
+      "overall_score": 73,
+      "position": "Central Midfield",
+      "potential": 73
     },
     {
       "club": {
@@ -238,7 +270,9 @@
       "injured": false,
       "marketValue": "€28.00m",
       "name": "Kang-in Lee",
-      "position": "Attacking Midfield"
+      "overall_score": 80,
+      "position": "Attacking Midfield",
+      "potential": 83
     },
     {
       "club": {
@@ -252,7 +286,9 @@
       "injured": false,
       "marketValue": "€3.00m",
       "name": "Jun-ho Bae",
-      "position": "Attacking Midfield"
+      "overall_score": 71,
+      "position": "Attacking Midfield",
+      "potential": 80
     },
     {
       "club": {
@@ -266,7 +302,9 @@
       "injured": false,
       "marketValue": "€2.00m",
       "name": "Jae-sung Lee",
-      "position": "Attacking Midfield"
+      "overall_score": 76,
+      "position": "Attacking Midfield",
+      "potential": 76
     },
     {
       "club": {
@@ -280,7 +318,9 @@
       "injured": false,
       "marketValue": "€1.60m",
       "name": "Dong-gyeong Lee",
-      "position": "Attacking Midfield"
+      "overall_score": 75,
+      "position": "Attacking Midfield",
+      "potential": 75
     },
     {
       "club": {
@@ -294,7 +334,9 @@
       "injured": false,
       "marketValue": "€17.00m",
       "name": "Heung-min Son",
-      "position": "Left Winger"
+      "overall_score": 84,
+      "position": "Left Winger",
+      "potential": 84
     },
     {
       "club": {
@@ -308,7 +350,9 @@
       "injured": false,
       "marketValue": "€1.40m",
       "name": "Ji-sung Eom",
-      "position": "Left Winger"
+      "overall_score": 71,
+      "position": "Left Winger",
+      "potential": 77
     },
     {
       "club": {
@@ -322,7 +366,9 @@
       "injured": false,
       "marketValue": "€5.00m",
       "name": "Hyun-jun Yang",
-      "position": "Right Winger"
+      "overall_score": 72,
+      "position": "Right Winger",
+      "potential": 78
     },
     {
       "club": {
@@ -336,7 +382,9 @@
       "injured": false,
       "marketValue": "€15.00m",
       "name": "Hyeon-gyu Oh",
-      "position": "Centre-Forward"
+      "overall_score": 73,
+      "position": "Centre-Forward",
+      "potential": 78
     },
     {
       "club": {
@@ -350,7 +398,9 @@
       "injured": false,
       "marketValue": "€8.00m",
       "name": "Hee-chan Hwang",
-      "position": "Centre-Forward"
+      "overall_score": 74,
+      "position": "Centre-Forward",
+      "potential": 74
     },
     {
       "club": {
@@ -364,7 +414,9 @@
       "injured": false,
       "marketValue": "€3.00m",
       "name": "Gue-sung Cho",
-      "position": "Centre-Forward"
+      "overall_score": 68,
+      "position": "Centre-Forward",
+      "potential": 68
     }
   ],
   "stadiumName": null,

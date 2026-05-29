@@ -14,7 +14,9 @@
       "injured": false,
       "marketValue": "€150k",
       "name": "Eloy Room",
-      "position": "Goalkeeper"
+      "overall_score": 66,
+      "position": "Goalkeeper",
+      "potential": 66
     },
     {
       "club": {
@@ -28,7 +30,9 @@
       "injured": false,
       "marketValue": "€50k",
       "name": "Trevor Doornbusch",
-      "position": "Goalkeeper"
+      "overall_score": 63,
+      "position": "Goalkeeper",
+      "potential": 73
     },
     {
       "club": {
@@ -42,7 +46,9 @@
       "injured": false,
       "marketValue": "€25k",
       "name": "Tyrick Bodak",
-      "position": "Goalkeeper"
+      "overall_score": 60,
+      "position": "Goalkeeper",
+      "potential": 68
     },
     {
       "club": {
@@ -56,7 +62,9 @@
       "injured": false,
       "marketValue": "€4.00m",
       "name": "Armando Obispo",
-      "position": "Centre-Back"
+      "overall_score": 74,
+      "position": "Centre-Back",
+      "potential": 77
     },
     {
       "club": {
@@ -70,7 +78,9 @@
       "injured": false,
       "marketValue": "€1.50m",
       "name": "Riechedly Bazoer",
-      "position": "Centre-Back"
+      "overall_score": 71,
+      "position": "Centre-Back",
+      "potential": 72
     },
     {
       "club": {
@@ -84,7 +94,9 @@
       "injured": false,
       "marketValue": "€1.00m",
       "name": "Deveron Fonville",
-      "position": "Centre-Back"
+      "overall_score": 65,
+      "position": "Centre-Back",
+      "potential": 72
     },
     {
       "club": {
@@ -98,7 +110,9 @@
       "injured": false,
       "marketValue": "€400k",
       "name": "Juriën Gaari",
-      "position": "Centre-Back"
+      "overall_score": 65,
+      "position": "Centre-Back",
+      "potential": 65
     },
     {
       "club": {
@@ -112,7 +126,9 @@
       "injured": false,
       "marketValue": "€375k",
       "name": "Roshon van Eijma",
-      "position": "Centre-Back"
+      "overall_score": 65,
+      "position": "Centre-Back",
+      "potential": 66
     },
     {
       "club": {
@@ -126,7 +142,9 @@
       "injured": false,
       "marketValue": "€800k",
       "name": "Sherel Floranus",
-      "position": "Left-Back"
+      "overall_score": 65,
+      "position": "Left-Back",
+      "potential": 66
     },
     {
       "club": {
@@ -140,7 +158,9 @@
       "injured": false,
       "marketValue": "€1.50m",
       "name": "Shurandy Sambo",
-      "position": "Right-Back"
+      "overall_score": 67,
+      "position": "Right-Back",
+      "potential": 74
     },
     {
       "club": {
@@ -154,7 +174,9 @@
       "injured": false,
       "marketValue": "€1.00m",
       "name": "Joshua Brenet",
-      "position": "Right-Back"
+      "overall_score": 68,
+      "position": "Right-Back",
+      "potential": 68
     },
     {
       "club": {
@@ -168,7 +190,9 @@
       "injured": false,
       "marketValue": "€700k",
       "name": "Livano Comenencia",
-      "position": "Right-Back"
+      "overall_score": 62,
+      "position": "Right-Back",
+      "potential": 73
     },
     {
       "club": {
@@ -182,7 +206,9 @@
       "injured": false,
       "marketValue": "€400k",
       "name": "Kevin Felida",
-      "position": "Defensive Midfield"
+      "overall_score": 64,
+      "position": "Defensive Midfield",
+      "potential": 69
     },
     {
       "club": {
@@ -196,7 +222,9 @@
       "injured": false,
       "marketValue": "€350k",
       "name": "Godfried Roemeratoe",
-      "position": "Defensive Midfield"
+      "overall_score": 65,
+      "position": "Defensive Midfield",
+      "potential": 69
     },
     {
       "club": {
@@ -210,7 +238,9 @@
       "injured": false,
       "marketValue": "€2.20m",
       "name": "Juninho Bacuna",
-      "position": "Central Midfield"
+      "overall_score": 69,
+      "position": "Central Midfield",
+      "potential": 69
     },
     {
       "club": {
@@ -224,7 +254,9 @@
       "injured": false,
       "marketValue": "€250k",
       "name": "Leandro Bacuna",
-      "position": "Central Midfield"
+      "overall_score": 67,
+      "position": "Central Midfield",
+      "potential": 67
     },
     {
       "club": {
@@ -238,7 +270,9 @@
       "injured": false,
       "marketValue": "€750k",
       "name": "Tyrese Noslin",
-      "position": "Right Midfield"
+      "overall_score": 66,
+      "position": "Right Midfield",
+      "potential": 73
     },
     {
       "club": {
@@ -252,7 +286,9 @@
       "injured": false,
       "marketValue": "€4.50m",
       "name": "Tahith Chong",
-      "position": "Attacking Midfield"
+      "overall_score": 70,
+      "position": "Attacking Midfield",
+      "potential": 73
     },
     {
       "club": {
@@ -266,7 +302,9 @@
       "injured": false,
       "marketValue": "€1.00m",
       "name": "Jearl Margaritha",
-      "position": "Left Winger"
+      "overall_score": 67,
+      "position": "Left Winger",
+      "potential": 67
     },
     {
       "club": {
@@ -280,7 +318,9 @@
       "injured": false,
       "marketValue": "€800k",
       "name": "Jeremy Antonisse",
-      "position": "Left Winger"
+      "overall_score": 65,
+      "position": "Left Winger",
+      "potential": 74
     },
     {
       "club": {
@@ -294,7 +334,9 @@
       "injured": false,
       "marketValue": "€650k",
       "name": "Kenji Gorré",
-      "position": "Left Winger"
+      "overall_score": 69,
+      "position": "Left Winger",
+      "potential": 69
     },
     {
       "club": {
@@ -308,7 +350,9 @@
       "injured": false,
       "marketValue": "€4.00m",
       "name": "Sontje Hansen",
-      "position": "Right Winger"
+      "overall_score": 69,
+      "position": "Right Winger",
+      "potential": 75
     },
     {
       "club": {
@@ -322,7 +366,9 @@
       "injured": false,
       "marketValue": "€700k",
       "name": "Ar'jany Martha",
-      "position": "Right Winger"
+      "overall_score": 64,
+      "position": "Right Winger",
+      "potential": 74
     },
     {
       "club": {
@@ -336,7 +382,9 @@
       "injured": false,
       "marketValue": "€300k",
       "name": "Brandley Kuwas",
-      "position": "Right Winger"
+      "overall_score": 67,
+      "position": "Right Winger",
+      "potential": 67
     },
     {
       "club": {
@@ -350,7 +398,9 @@
       "injured": false,
       "marketValue": "€200k",
       "name": "Jürgen Locadia",
-      "position": "Centre-Forward"
+      "overall_score": 69,
+      "position": "Centre-Forward",
+      "potential": 69
     },
     {
       "club": {
@@ -364,7 +414,9 @@
       "injured": false,
       "marketValue": "€175k",
       "name": "Gervane Kastaneer",
-      "position": "Centre-Forward"
+      "overall_score": 64,
+      "position": "Centre-Forward",
+      "potential": 66
     }
   ],
   "stadiumName": null,

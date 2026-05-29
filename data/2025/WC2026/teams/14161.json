@@ -14,7 +14,9 @@
       "injured": false,
       "marketValue": "€500k",
       "name": "Alexandre Pierre",
-      "position": "Goalkeeper"
+      "overall_score": 62,
+      "position": "Goalkeeper",
+      "potential": 68
     },
     {
       "club": {
@@ -28,7 +30,9 @@
       "injured": false,
       "marketValue": "€150k",
       "name": "Johny Placide",
-      "position": "Goalkeeper"
+      "overall_score": 69,
+      "position": "Goalkeeper",
+      "potential": 69
     },
     {
       "club": {
@@ -41,7 +45,9 @@
       "id": "490369",
       "injured": false,
       "name": "Josué Duverger",
-      "position": "Goalkeeper"
+      "overall_score": 60,
+      "position": "Goalkeeper",
+      "potential": 65
     },
     {
       "club": {
@@ -55,7 +61,9 @@
       "injured": false,
       "marketValue": "€2.00m",
       "name": "Hannes Delcroix",
-      "position": "Centre-Back"
+      "overall_score": 70,
+      "position": "Centre-Back",
+      "potential": 73
     },
     {
       "club": {
@@ -69,7 +77,9 @@
       "injured": false,
       "marketValue": "€2.00m",
       "name": "Jean-Kévin Duverne",
-      "position": "Centre-Back"
+      "overall_score": 72,
+      "position": "Centre-Back",
+      "potential": 72
     },
     {
       "club": {
@@ -83,7 +93,9 @@
       "injured": false,
       "marketValue": "€300k",
       "name": "Ricardo Adé",
-      "position": "Centre-Back"
+      "overall_score": 72,
+      "position": "Centre-Back",
+      "potential": 72
     },
     {
       "club": {
@@ -97,7 +109,9 @@
       "injured": false,
       "marketValue": "€25k",
       "name": "Keeto Thermoncy",
-      "position": "Centre-Back"
+      "overall_score": 57,
+      "position": "Centre-Back",
+      "potential": 70
     },
     {
       "club": {
@@ -111,7 +125,9 @@
       "injured": false,
       "marketValue": "€400k",
       "name": "Martin Expérience",
-      "position": "Left-Back"
+      "overall_score": 63,
+      "position": "Left-Back",
+      "potential": 64
     },
     {
       "club": {
@@ -125,7 +141,9 @@
       "injured": false,
       "marketValue": "€125k",
       "name": "Duke Lacroix",
-      "position": "Left-Back"
+      "overall_score": 60,
+      "position": "Left-Back",
+      "potential": 60
     },
     {
       "club": {
@@ -139,7 +157,9 @@
       "injured": false,
       "marketValue": "€1.80m",
       "name": "Carlens Arcus",
-      "position": "Right-Back"
+      "overall_score": 72,
+      "position": "Right-Back",
+      "potential": 72
     },
     {
       "club": {
@@ -153,7 +173,9 @@
       "injured": false,
       "marketValue": "€600k",
       "name": "Wilguens Paugain",
-      "position": "Right-Back"
+      "overall_score": 61,
+      "position": "Right-Back",
+      "potential": 65
     },
     {
       "club": {
@@ -167,7 +189,9 @@
       "injured": false,
       "marketValue": "€3.00m",
       "name": "Danley Jean Jacques",
-      "position": "Defensive Midfield"
+      "overall_score": 70,
+      "position": "Defensive Midfield",
+      "potential": 73
     },
     {
       "club": {
@@ -181,7 +205,9 @@
       "injured": false,
       "marketValue": "€200k",
       "name": "Leverton Pierre",
-      "position": "Defensive Midfield"
+      "overall_score": 64,
+      "position": "Defensive Midfield",
+      "potential": 65
     },
     {
       "club": {
@@ -195,7 +221,9 @@
       "injured": false,
       "marketValue": "€200k",
       "name": "Dominique Simon",
-      "position": "Defensive Midfield"
+      "overall_score": 62,
+      "position": "Defensive Midfield",
+      "potential": 67
     },
     {
       "club": {
@@ -209,7 +237,9 @@
       "injured": false,
       "marketValue": "€125k",
       "name": "Carl Sainté",
-      "position": "Defensive Midfield"
+      "overall_score": 60,
+      "position": "Defensive Midfield",
+      "potential": 70
     },
     {
       "club": {
@@ -222,7 +252,9 @@
       "id": "1017735",
       "injured": false,
       "name": "Woodensky Pierre",
-      "position": "Defensive Midfield"
+      "overall_score": 57,
+      "position": "Defensive Midfield",
+      "potential": 66
     },
     {
       "club": {
@@ -236,7 +268,9 @@
       "injured": false,
       "marketValue": "€16.00m",
       "name": "Jean-Ricner Bellegarde",
-      "position": "Central Midfield"
+      "overall_score": 75,
+      "position": "Central Midfield",
+      "potential": 76
     },
     {
       "club": {
@@ -250,7 +284,9 @@
       "injured": false,
       "marketValue": "€800k",
       "name": "Derrick Etienne Jr.",
-      "position": "Left Winger"
+      "overall_score": 65,
+      "position": "Left Winger",
+      "potential": 65
     },
     {
       "club": {
@@ -264,7 +300,9 @@
       "injured": false,
       "marketValue": "€300k",
       "name": "Ruben Providence",
-      "position": "Left Winger"
+      "overall_score": 67,
+      "position": "Left Winger",
+      "potential": 73
     },
     {
       "club": {
@@ -278,7 +316,9 @@
       "injured": false,
       "marketValue": "€3.50m",
       "name": "Josué Casimir",
-      "position": "Right Winger"
+      "overall_score": 71,
+      "position": "Right Winger",
+      "potential": 76
     },
     {
       "club": {
@@ -292,7 +332,9 @@
       "injured": false,
       "marketValue": "€1.20m",
       "name": "Louicius Deedson",
-      "position": "Right Winger"
+      "overall_score": 64,
+      "position": "Right Winger",
+      "potential": 67
     },
     {
       "club": {
@@ -306,7 +348,9 @@
       "injured": false,
       "marketValue": "€18.00m",
       "name": "Wilson Isidor",
-      "position": "Centre-Forward"
+      "overall_score": 75,
+      "position": "Centre-Forward",
+      "potential": 78
     },
     {
       "club": {
@@ -320,7 +364,9 @@
       "injured": false,
       "marketValue": "€2.00m",
       "name": "Lenny Joseph",
-      "position": "Centre-Forward"
+      "overall_score": 68,
+      "position": "Centre-Forward",
+      "potential": 71
     },
     {
       "club": {
@@ -334,7 +380,9 @@
       "injured": false,
       "marketValue": "€1.50m",
       "name": "Frantzdy Pierrot",
-      "position": "Centre-Forward"
+      "overall_score": 69,
+      "position": "Centre-Forward",
+      "potential": 69
     },
     {
       "club": {
@@ -348,7 +396,9 @@
       "injured": false,
       "marketValue": "€800k",
       "name": "Duckens Nazon",
-      "position": "Centre-Forward"
+      "overall_score": 68,
+      "position": "Centre-Forward",
+      "potential": 68
     },
     {
       "club": {
@@ -362,7 +412,9 @@
       "injured": false,
       "marketValue": "€200k",
       "name": "Yassin Fortuné",
-      "position": "Centre-Forward"
+      "overall_score": 60,
+      "position": "Centre-Forward",
+      "potential": 61
     }
   ],
   "stadiumName": null,

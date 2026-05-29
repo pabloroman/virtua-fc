@@ -15,7 +15,9 @@
       "injured": false,
       "marketValue": "€10.00m",
       "name": "Ederson",
-      "position": "Goalkeeper"
+      "overall_score": 83,
+      "position": "Goalkeeper",
+      "potential": 83
     },
     {
       "calledUp": true,
@@ -30,7 +32,9 @@
       "injured": false,
       "marketValue": "€17.00m",
       "name": "Alisson",
-      "position": "Goalkeeper"
+      "overall_score": 88,
+      "position": "Goalkeeper",
+      "potential": 88
     },
     {
       "calledUp": false,
@@ -105,7 +109,9 @@
       "injured": false,
       "marketValue": "€700k",
       "name": "Weverton",
-      "position": "Goalkeeper"
+      "overall_score": 77,
+      "position": "Goalkeeper",
+      "potential": 77
     },
     {
       "calledUp": true,
@@ -120,7 +126,9 @@
       "injured": false,
       "marketValue": "€75.00m",
       "name": "Gabriel",
-      "position": "Centre-Back"
+      "overall_score": 89,
+      "position": "Centre-Back",
+      "potential": 90
     },
     {
       "calledUp": false,
@@ -165,7 +173,9 @@
       "injured": false,
       "marketValue": "€30.00m",
       "name": "Marquinhos",
-      "position": "Centre-Back"
+      "overall_score": 87,
+      "position": "Centre-Back",
+      "potential": 87
     },
     {
       "calledUp": false,
@@ -239,8 +249,10 @@
       "id": "145707",
       "injured": false,
       "marketValue": "€2.50m",
-      "name": "Danilo",
-      "position": "Centre-Back"
+      "name": "Danilo Luiz",
+      "overall_score": 75,
+      "position": "Centre-Back",
+      "potential": 75
     },
     {
       "calledUp": false,
@@ -300,7 +312,9 @@
       "injured": false,
       "marketValue": "€8.00m",
       "name": "Douglas Santos",
-      "position": "Left-Back"
+      "overall_score": 77,
+      "position": "Left-Back",
+      "potential": 77
     },
     {
       "calledUp": false,
@@ -330,7 +344,9 @@
       "injured": false,
       "marketValue": "€1.50m",
       "name": "Alex Sandro",
-      "position": "Left-Back"
+      "overall_score": 77,
+      "position": "Left-Back",
+      "potential": 77
     },
     {
       "calledUp": false,
@@ -360,7 +376,9 @@
       "injured": false,
       "marketValue": "€40.00m",
       "name": "Wesley",
-      "position": "Right-Back"
+      "overall_score": 79,
+      "position": "Right-Back",
+      "potential": 85
     },
     {
       "calledUp": false,
@@ -405,7 +423,9 @@
       "injured": false,
       "marketValue": "€35.00m",
       "name": "Bremer",
-      "position": "Centre-Back"
+      "overall_score": 86,
+      "position": "Centre-Back",
+      "potential": 86
     },
     {
       "calledUp": true,
@@ -420,7 +440,9 @@
       "injured": false,
       "marketValue": "€17.00m",
       "name": "Roger Ibañez",
-      "position": "Centre-Back"
+      "overall_score": 82,
+      "position": "Centre-Back",
+      "potential": 84
     },
     {
       "calledUp": true,
@@ -435,7 +457,9 @@
       "injured": false,
       "marketValue": "€10.00m",
       "name": "Léo Pereira",
-      "position": "Centre-Back"
+      "overall_score": 76,
+      "position": "Centre-Back",
+      "potential": 76
     },
     {
       "calledUp": false,
@@ -465,7 +489,9 @@
       "injured": false,
       "marketValue": "€13.00m",
       "name": "Fabinho",
-      "position": "Defensive Midfield"
+      "overall_score": 82,
+      "position": "Defensive Midfield",
+      "potential": 82
     },
     {
       "calledUp": true,
@@ -480,7 +506,9 @@
       "injured": false,
       "marketValue": "€8.00m",
       "name": "Casemiro",
-      "position": "Defensive Midfield"
+      "overall_score": 82,
+      "position": "Defensive Midfield",
+      "potential": 82
     },
     {
       "calledUp": true,
@@ -495,7 +523,9 @@
       "injured": false,
       "marketValue": "€75.00m",
       "name": "Bruno Guimarães",
-      "position": "Central Midfield"
+      "overall_score": 86,
+      "position": "Central Midfield",
+      "potential": 86
     },
     {
       "calledUp": false,
@@ -615,7 +645,9 @@
       "injured": false,
       "marketValue": "€35.00m",
       "name": "Lucas Paquetá",
-      "position": "Attacking Midfield"
+      "overall_score": 79,
+      "position": "Attacking Midfield",
+      "potential": 79
     },
     {
       "calledUp": true,
@@ -629,8 +661,10 @@
       "id": "808509",
       "injured": false,
       "marketValue": "€24.00m",
-      "name": "Danilo",
-      "position": "Central Midfield"
+      "name": "Danilo Santos",
+      "overall_score": 76,
+      "position": "Central Midfield",
+      "potential": 80
     },
     {
       "calledUp": true,
@@ -645,7 +679,9 @@
       "injured": true,
       "marketValue": "€10.00m",
       "name": "Neymar",
-      "position": "Attacking Midfield"
+      "overall_score": 85,
+      "position": "Attacking Midfield",
+      "potential": 85
     },
     {
       "calledUp": true,
@@ -660,7 +696,9 @@
       "injured": false,
       "marketValue": "€150.00m",
       "name": "Vinicius Junior",
-      "position": "Left Winger"
+      "overall_score": 89,
+      "position": "Left Winger",
+      "potential": 92
     },
     {
       "calledUp": true,
@@ -675,7 +713,9 @@
       "injured": false,
       "marketValue": "€80.00m",
       "name": "Raphinha",
-      "position": "Left Winger"
+      "overall_score": 89,
+      "position": "Left Winger",
+      "potential": 89
     },
     {
       "calledUp": false,
@@ -705,7 +745,9 @@
       "injured": false,
       "marketValue": "€45.00m",
       "name": "Gabriel Martinelli",
-      "position": "Left Winger"
+      "overall_score": 81,
+      "position": "Left Winger",
+      "potential": 84
     },
     {
       "calledUp": false,
@@ -765,7 +807,9 @@
       "injured": false,
       "marketValue": "€24.00m",
       "name": "Luiz Henrique",
-      "position": "Right Winger"
+      "overall_score": 78,
+      "position": "Right Winger",
+      "potential": 81
     },
     {
       "calledUp": false,
@@ -810,7 +854,9 @@
       "injured": false,
       "marketValue": "€70.00m",
       "name": "Matheus Cunha",
-      "position": "Centre-Forward"
+      "overall_score": 83,
+      "position": "Centre-Forward",
+      "potential": 84
     },
     {
       "calledUp": true,
@@ -825,7 +871,9 @@
       "injured": false,
       "marketValue": "€35.00m",
       "name": "Endrick",
-      "position": "Centre-Forward"
+      "overall_score": 78,
+      "position": "Centre-Forward",
+      "potential": 89
     },
     {
       "calledUp": false,
@@ -900,7 +948,9 @@
       "injured": false,
       "marketValue": "€40.00m",
       "name": "Rayan",
-      "position": "Right Winger"
+      "overall_score": 78,
+      "position": "Right Winger",
+      "potential": 88
     },
     {
       "calledUp": true,
@@ -915,7 +965,9 @@
       "injured": false,
       "marketValue": "€50.00m",
       "name": "Igor Thiago",
-      "position": "Centre-Forward"
+      "overall_score": 81,
+      "position": "Centre-Forward",
+      "potential": 85
     }
   ],
   "stadiumName": null,

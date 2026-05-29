@@ -14,7 +14,9 @@
       "injured": false,
       "marketValue": "€800k",
       "name": "Aymen Dahmen",
-      "position": "Goalkeeper"
+      "overall_score": 67,
+      "position": "Goalkeeper",
+      "potential": 68
     },
     {
       "club": {
@@ -28,7 +30,9 @@
       "injured": false,
       "marketValue": "€450k",
       "name": "Abdelmouhib Chamakh",
-      "position": "Goalkeeper"
+      "overall_score": 66,
+      "position": "Goalkeeper",
+      "potential": 71
     },
     {
       "club": {
@@ -42,7 +46,9 @@
       "injured": false,
       "marketValue": "€400k",
       "name": "Sabri Ben Hessen",
-      "position": "Goalkeeper"
+      "overall_score": 65,
+      "position": "Goalkeeper",
+      "potential": 66
     },
     {
       "club": {
@@ -56,7 +62,9 @@
       "injured": false,
       "marketValue": "€7.00m",
       "name": "Montassar Talbi",
-      "position": "Centre-Back"
+      "overall_score": 75,
+      "position": "Centre-Back",
+      "potential": 77
     },
     {
       "club": {
@@ -70,7 +78,9 @@
       "injured": false,
       "marketValue": "€4.00m",
       "name": "Adem Arous",
-      "position": "Centre-Back"
+      "overall_score": 67,
+      "position": "Centre-Back",
+      "potential": 76
     },
     {
       "club": {
@@ -84,7 +94,9 @@
       "injured": false,
       "marketValue": "€800k",
       "name": "Dylan Bronn",
-      "position": "Centre-Back"
+      "overall_score": 68,
+      "position": "Centre-Back",
+      "potential": 68
     },
     {
       "club": {
@@ -98,7 +110,9 @@
       "injured": false,
       "marketValue": "€500k",
       "name": "Omar Rekik",
-      "position": "Centre-Back"
+      "overall_score": 65,
+      "position": "Centre-Back",
+      "potential": 70
     },
     {
       "club": {
@@ -112,7 +126,9 @@
       "injured": false,
       "marketValue": "€250k",
       "name": "Raed Chikhaoui",
-      "position": "Centre-Back"
+      "overall_score": 62,
+      "position": "Centre-Back",
+      "potential": 70
     },
     {
       "club": {
@@ -126,7 +142,9 @@
       "injured": false,
       "marketValue": "€2.50m",
       "name": "Ali Abdi",
-      "position": "Left-Back"
+      "overall_score": 75,
+      "position": "Left-Back",
+      "potential": 75
     },
     {
       "club": {
@@ -140,7 +158,9 @@
       "injured": false,
       "marketValue": "€700k",
       "name": "Mohamed Amine Ben Hamida",
-      "position": "Left-Back"
+      "overall_score": 69,
+      "position": "Left-Back",
+      "potential": 69
     },
     {
       "club": {
@@ -154,7 +174,9 @@
       "injured": false,
       "marketValue": "€1.30m",
       "name": "Yan Valery",
-      "position": "Right-Back"
+      "overall_score": 71,
+      "position": "Right-Back",
+      "potential": 72
     },
     {
       "club": {
@@ -167,7 +189,9 @@
       "injured": false,
       "marketValue": "€900k",
       "name": "Moutaz Neffati",
-      "position": "Right-Back"
+      "overall_score": 65,
+      "position": "Right-Back",
+      "potential": 76
     },
     {
       "club": {
@@ -179,9 +203,11 @@
       "height": "1,85m",
       "id": "290587",
       "injured": false,
-      "marketValue": "€6.00m",
+      "marketValue": "€5.00m",
       "name": "Ellyes Skhiri",
-      "position": "Defensive Midfield"
+      "overall_score": 77,
+      "position": "Defensive Midfield",
+      "potential": 77
     },
     {
       "club": {
@@ -195,7 +221,9 @@
       "injured": false,
       "marketValue": "€2.50m",
       "name": "Mohamed Belhadj Mahmoud",
-      "position": "Defensive Midfield"
+      "overall_score": 67,
+      "position": "Defensive Midfield",
+      "potential": 72
     },
     {
       "club": {
@@ -209,7 +237,9 @@
       "injured": false,
       "marketValue": "€2.00m",
       "name": "Rani Khedira",
-      "position": "Defensive Midfield"
+      "overall_score": 76,
+      "position": "Defensive Midfield",
+      "potential": 76
     },
     {
       "club": {
@@ -221,9 +251,11 @@
       "height": "1,88m",
       "id": "546712",
       "injured": false,
-      "marketValue": "€3.00m",
+      "marketValue": "€4.00m",
       "name": "Anis Ben Slimane",
-      "position": "Central Midfield"
+      "overall_score": 70,
+      "position": "Central Midfield",
+      "potential": 74
     },
     {
       "club": {
@@ -237,7 +269,9 @@
       "injured": false,
       "marketValue": "€16.00m",
       "name": "Hannibal",
-      "position": "Attacking Midfield"
+      "overall_score": 76,
+      "position": "Attacking Midfield",
+      "potential": 83
     },
     {
       "club": {
@@ -251,7 +285,9 @@
       "injured": false,
       "marketValue": "€5.00m",
       "name": "Sebastian Tounekti",
-      "position": "Left Winger"
+      "overall_score": 73,
+      "position": "Left Winger",
+      "potential": 80
     },
     {
       "club": {
@@ -265,7 +301,9 @@
       "injured": false,
       "marketValue": "€5.00m",
       "name": "Ismaël Gharbi",
-      "position": "Left Winger"
+      "overall_score": 72,
+      "position": "Left Winger",
+      "potential": 80
     },
     {
       "club": {
@@ -277,9 +315,11 @@
       "height": "1,77m",
       "id": "645589",
       "injured": false,
-      "marketValue": "€3.50m",
+      "marketValue": "€3.00m",
       "name": "Elias Achouri",
-      "position": "Left Winger"
+      "overall_score": 70,
+      "position": "Left Winger",
+      "potential": 70
     },
     {
       "club": {
@@ -293,7 +333,9 @@
       "injured": false,
       "marketValue": "€2.50m",
       "name": "Elias Saad",
-      "position": "Left Winger"
+      "overall_score": 71,
+      "position": "Left Winger",
+      "potential": 72
     },
     {
       "club": {
@@ -307,7 +349,9 @@
       "injured": false,
       "marketValue": "€1.50m",
       "name": "Mortadha Ben Ouanes",
-      "position": "Left Winger"
+      "overall_score": 68,
+      "position": "Left Winger",
+      "potential": 68
     },
     {
       "club": {
@@ -321,7 +365,25 @@
       "injured": false,
       "marketValue": "€800k",
       "name": "Khalil Ayari",
-      "position": "Right Winger"
+      "overall_score": 66,
+      "position": "Right Winger",
+      "potential": 79
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/75231.png",
+        "name": "Dinamo Makhachkala"
+      },
+      "dateOfBirth": "Jun 18, 1997",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "953150",
+      "injured": false,
+      "marketValue": "€900k",
+      "name": "Hazem Mastouri",
+      "overall_score": 68,
+      "position": "Centre-Forward",
+      "potential": 68
     },
     {
       "club": {
@@ -335,21 +397,9 @@
       "injured": false,
       "marketValue": "€850k",
       "name": "Firas Chaouat",
-      "position": "Centre-Forward"
-    },
-    {
-      "club": {
-        "image": "https://assets.virtuafc.com/crests/75231.png",
-        "name": "Dinamo Makhachkala"
-      },
-      "dateOfBirth": "Jun 18, 1997",
-      "foot": "right",
-      "height": "1,91m",
-      "id": "953150",
-      "injured": false,
-      "marketValue": "€700k",
-      "name": "Hazem Mastouri",
-      "position": "Centre-Forward"
+      "overall_score": 70,
+      "position": "Centre-Forward",
+      "potential": 70
     },
     {
       "club": {
@@ -362,7 +412,9 @@
       "injured": false,
       "marketValue": "€600k",
       "name": "Rayan Elloumi",
-      "position": "Centre-Forward"
+      "overall_score": 59,
+      "position": "Centre-Forward",
+      "potential": 79
     }
   ],
   "stadiumName": null,

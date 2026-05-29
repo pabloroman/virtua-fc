@@ -14,7 +14,9 @@
       "injured": false,
       "marketValue": "€5.00m",
       "name": "Matthieu Epolo",
-      "position": "Goalkeeper"
+      "overall_score": 75,
+      "position": "Goalkeeper",
+      "potential": 85
     },
     {
       "club": {
@@ -26,9 +28,11 @@
       "height": "1,92m",
       "id": "541420",
       "injured": false,
-      "marketValue": "€1.00m",
+      "marketValue": "€800k",
       "name": "Timothy Fayulu",
-      "position": "Goalkeeper"
+      "overall_score": 69,
+      "position": "Goalkeeper",
+      "potential": 74
     },
     {
       "club": {
@@ -42,7 +46,9 @@
       "injured": false,
       "marketValue": "€400k",
       "name": "Lionel Mpasi-Nzau",
-      "position": "Goalkeeper"
+      "overall_score": 70,
+      "position": "Goalkeeper",
+      "potential": 70
     },
     {
       "club": {
@@ -56,7 +62,9 @@
       "injured": false,
       "marketValue": "€5.00m",
       "name": "Axel Tuanzebe",
-      "position": "Centre-Back"
+      "overall_score": 73,
+      "position": "Centre-Back",
+      "potential": 73
     },
     {
       "club": {
@@ -70,7 +78,9 @@
       "injured": false,
       "marketValue": "€2.50m",
       "name": "Chancel Mbemba",
-      "position": "Centre-Back"
+      "overall_score": 76,
+      "position": "Centre-Back",
+      "potential": 76
     },
     {
       "club": {
@@ -84,7 +94,9 @@
       "injured": false,
       "marketValue": "€2.50m",
       "name": "Steve Kapuadi",
-      "position": "Centre-Back"
+      "overall_score": 70,
+      "position": "Centre-Back",
+      "potential": 70
     },
     {
       "club": {
@@ -98,7 +110,9 @@
       "injured": false,
       "marketValue": "€700k",
       "name": "Dylan Batubinsika",
-      "position": "Centre-Back"
+      "overall_score": 69,
+      "position": "Centre-Back",
+      "potential": 70
     },
     {
       "club": {
@@ -112,7 +126,9 @@
       "injured": false,
       "marketValue": "€2.50m",
       "name": "Joris Kayembe",
-      "position": "Left-Back"
+      "overall_score": 74,
+      "position": "Left-Back",
+      "potential": 74
     },
     {
       "club": {
@@ -126,7 +142,9 @@
       "injured": false,
       "marketValue": "€2.50m",
       "name": "Arthur Masuaku",
-      "position": "Left-Back"
+      "overall_score": 74,
+      "position": "Left-Back",
+      "potential": 74
     },
     {
       "club": {
@@ -140,7 +158,9 @@
       "injured": false,
       "marketValue": "€22.00m",
       "name": "Aaron Wan-Bissaka",
-      "position": "Right-Back"
+      "overall_score": 79,
+      "position": "Right-Back",
+      "potential": 79
     },
     {
       "club": {
@@ -154,7 +174,9 @@
       "injured": false,
       "marketValue": "€1.30m",
       "name": "Gédéon Kalulu",
-      "position": "Right-Back"
+      "overall_score": 71,
+      "position": "Right-Back",
+      "potential": 71
     },
     {
       "club": {
@@ -168,7 +190,9 @@
       "injured": false,
       "marketValue": "€12.00m",
       "name": "Ngal'ayel Mukau",
-      "position": "Defensive Midfield"
+      "overall_score": 74,
+      "position": "Defensive Midfield",
+      "potential": 82
     },
     {
       "club": {
@@ -182,7 +206,9 @@
       "injured": false,
       "marketValue": "€2.50m",
       "name": "Charles Pickel",
-      "position": "Defensive Midfield"
+      "overall_score": 70,
+      "position": "Defensive Midfield",
+      "potential": 70
     },
     {
       "club": {
@@ -196,7 +222,9 @@
       "injured": false,
       "marketValue": "€30.00m",
       "name": "Noah Sadiki",
-      "position": "Central Midfield"
+      "overall_score": 79,
+      "position": "Central Midfield",
+      "potential": 85
     },
     {
       "club": {
@@ -210,7 +238,9 @@
       "injured": false,
       "marketValue": "€4.00m",
       "name": "Edo Kayembe",
-      "position": "Central Midfield"
+      "overall_score": 71,
+      "position": "Central Midfield",
+      "potential": 72
     },
     {
       "club": {
@@ -224,7 +254,9 @@
       "injured": false,
       "marketValue": "€1.20m",
       "name": "Samuel Moutoussamy",
-      "position": "Central Midfield"
+      "overall_score": 70,
+      "position": "Central Midfield",
+      "potential": 70
     },
     {
       "club": {
@@ -238,7 +270,9 @@
       "injured": false,
       "marketValue": "€150k",
       "name": "Aaron Tshibola",
-      "position": "Central Midfield"
+      "overall_score": 64,
+      "position": "Central Midfield",
+      "potential": 64
     },
     {
       "club": {
@@ -252,7 +286,9 @@
       "injured": false,
       "marketValue": "€1.50m",
       "name": "Meschack Elia",
-      "position": "Attacking Midfield"
+      "overall_score": 67,
+      "position": "Attacking Midfield",
+      "potential": 67
     },
     {
       "club": {
@@ -266,7 +302,9 @@
       "injured": false,
       "marketValue": "€300k",
       "name": "Gaël Kakuta",
-      "position": "Attacking Midfield"
+      "overall_score": 68,
+      "position": "Attacking Midfield",
+      "potential": 68
     },
     {
       "club": {
@@ -280,7 +318,9 @@
       "injured": false,
       "marketValue": "€2.00m",
       "name": "Nathanaël Mbuku",
-      "position": "Left Winger"
+      "overall_score": 70,
+      "position": "Left Winger",
+      "potential": 76
     },
     {
       "club": {
@@ -294,7 +334,9 @@
       "injured": false,
       "marketValue": "€2.00m",
       "name": "Brian Cipenga",
-      "position": "Left Winger"
+      "overall_score": 73,
+      "position": "Left Winger",
+      "potential": 73
     },
     {
       "club": {
@@ -306,9 +348,11 @@
       "height": "1,75m",
       "id": "280701",
       "injured": false,
-      "marketValue": "€4.00m",
+      "marketValue": "€3.00m",
       "name": "Théo Bongonda",
-      "position": "Right Winger"
+      "overall_score": 74,
+      "position": "Right Winger",
+      "potential": 74
     },
     {
       "club": {
@@ -322,7 +366,9 @@
       "injured": false,
       "marketValue": "€30.00m",
       "name": "Yoane Wissa",
-      "position": "Centre-Forward"
+      "overall_score": 81,
+      "position": "Centre-Forward",
+      "potential": 81
     },
     {
       "club": {
@@ -334,9 +380,11 @@
       "height": "1,89m",
       "id": "344869",
       "injured": false,
-      "marketValue": "€11.00m",
+      "marketValue": "€10.00m",
       "name": "Simon Banza",
-      "position": "Centre-Forward"
+      "overall_score": 80,
+      "position": "Centre-Forward",
+      "potential": 80
     },
     {
       "club": {
@@ -350,7 +398,9 @@
       "injured": false,
       "marketValue": "€1.80m",
       "name": "Fiston Mayele",
-      "position": "Centre-Forward"
+      "overall_score": 73,
+      "position": "Centre-Forward",
+      "potential": 73
     },
     {
       "club": {
@@ -364,7 +414,9 @@
       "injured": false,
       "marketValue": "€1.40m",
       "name": "Cédric Bakambu",
-      "position": "Centre-Forward"
+      "overall_score": 75,
+      "position": "Centre-Forward",
+      "potential": 75
     }
   ],
   "stadiumName": null,

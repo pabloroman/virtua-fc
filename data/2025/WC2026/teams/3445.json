@@ -14,7 +14,9 @@
       "injured": false,
       "marketValue": "€15.00m",
       "name": "Lukas Hornicek",
-      "position": "Goalkeeper"
+      "overall_score": 75,
+      "position": "Goalkeeper",
+      "potential": 83
     },
     {
       "club": {
@@ -28,7 +30,9 @@
       "injured": false,
       "marketValue": "€7.00m",
       "name": "Matej Kovar",
-      "position": "Goalkeeper"
+      "overall_score": 77,
+      "position": "Goalkeeper",
+      "potential": 81
     },
     {
       "club": {
@@ -42,7 +46,9 @@
       "injured": false,
       "marketValue": "€2.00m",
       "name": "Jindrich Stanek",
-      "position": "Goalkeeper"
+      "overall_score": 76,
+      "position": "Goalkeeper",
+      "potential": 76
     },
     {
       "club": {
@@ -56,7 +62,9 @@
       "injured": false,
       "marketValue": "€22.00m",
       "name": "Ladislav Krejčí",
-      "position": "Centre-Back"
+      "overall_score": 78,
+      "position": "Centre-Back",
+      "potential": 81
     },
     {
       "club": {
@@ -70,7 +78,9 @@
       "injured": false,
       "marketValue": "€10.00m",
       "name": "Robin Hranac",
-      "position": "Centre-Back"
+      "overall_score": 76,
+      "position": "Centre-Back",
+      "potential": 77
     },
     {
       "club": {
@@ -84,7 +94,9 @@
       "injured": false,
       "marketValue": "€10.00m",
       "name": "Stepan Chaloupek",
-      "position": "Centre-Back"
+      "overall_score": 74,
+      "position": "Centre-Back",
+      "potential": 80
     },
     {
       "club": {
@@ -98,7 +110,9 @@
       "injured": false,
       "marketValue": "€7.00m",
       "name": "David Zima",
-      "position": "Centre-Back"
+      "overall_score": 75,
+      "position": "Centre-Back",
+      "potential": 77
     },
     {
       "club": {
@@ -112,7 +126,9 @@
       "injured": false,
       "marketValue": "€1.00m",
       "name": "Tomas Holes",
-      "position": "Centre-Back"
+      "overall_score": 76,
+      "position": "Centre-Back",
+      "potential": 76
     },
     {
       "club": {
@@ -126,7 +142,9 @@
       "injured": false,
       "marketValue": "€600k",
       "name": "Jaroslav Zelený",
-      "position": "Centre-Back"
+      "overall_score": 73,
+      "position": "Centre-Back",
+      "potential": 73
     },
     {
       "club": {
@@ -140,7 +158,9 @@
       "injured": false,
       "marketValue": "€5.00m",
       "name": "David Jurásek",
-      "position": "Left-Back"
+      "overall_score": 73,
+      "position": "Left-Back",
+      "potential": 75
     },
     {
       "club": {
@@ -154,7 +174,9 @@
       "injured": false,
       "marketValue": "€2.70m",
       "name": "Vladimír Coufal",
-      "position": "Right-Back"
+      "overall_score": 78,
+      "position": "Right-Back",
+      "potential": 78
     },
     {
       "club": {
@@ -168,7 +190,9 @@
       "injured": false,
       "marketValue": "€12.00m",
       "name": "Tomáš Souček",
-      "position": "Defensive Midfield"
+      "overall_score": 76,
+      "position": "Defensive Midfield",
+      "potential": 76
     },
     {
       "club": {
@@ -182,7 +206,9 @@
       "injured": false,
       "marketValue": "€8.00m",
       "name": "Michal Sadílek",
-      "position": "Central Midfield"
+      "overall_score": 77,
+      "position": "Central Midfield",
+      "potential": 79
     },
     {
       "club": {
@@ -195,7 +221,9 @@
       "injured": false,
       "marketValue": "€6.00m",
       "name": "Lukas Cerv",
-      "position": "Central Midfield"
+      "overall_score": 74,
+      "position": "Central Midfield",
+      "potential": 78
     },
     {
       "club": {
@@ -209,7 +237,9 @@
       "injured": false,
       "marketValue": "€4.00m",
       "name": "Pavel Bucha",
-      "position": "Central Midfield"
+      "overall_score": 74,
+      "position": "Central Midfield",
+      "potential": 74
     },
     {
       "club": {
@@ -236,7 +266,9 @@
       "injured": false,
       "marketValue": "€2.30m",
       "name": "Alexandr Sojka",
-      "position": "Central Midfield"
+      "overall_score": 65,
+      "position": "Central Midfield",
+      "potential": 73
     },
     {
       "club": {
@@ -250,7 +282,9 @@
       "injured": false,
       "marketValue": "€375k",
       "name": "Vladimír Darida",
-      "position": "Central Midfield"
+      "overall_score": 71,
+      "position": "Central Midfield",
+      "potential": 71
     },
     {
       "club": {
@@ -264,7 +298,9 @@
       "injured": false,
       "marketValue": "€3.50m",
       "name": "David Doudera",
-      "position": "Right Midfield"
+      "overall_score": 73,
+      "position": "Right Midfield",
+      "potential": 73
     },
     {
       "club": {
@@ -278,7 +314,9 @@
       "injured": false,
       "marketValue": "€20.00m",
       "name": "Pavel Sulc",
-      "position": "Attacking Midfield"
+      "overall_score": 78,
+      "position": "Attacking Midfield",
+      "potential": 81
     },
     {
       "club": {
@@ -292,7 +330,9 @@
       "injured": false,
       "marketValue": "€3.00m",
       "name": "Denis Visinsky",
-      "position": "Attacking Midfield"
+      "overall_score": 69,
+      "position": "Attacking Midfield",
+      "potential": 75
     },
     {
       "club": {
@@ -306,7 +346,9 @@
       "injured": false,
       "marketValue": "€1.30m",
       "name": "Tomas Ladra",
-      "position": "Attacking Midfield"
+      "overall_score": 73,
+      "position": "Attacking Midfield",
+      "potential": 73
     },
     {
       "club": {
@@ -320,7 +362,9 @@
       "injured": false,
       "marketValue": "€8.00m",
       "name": "Lukas Provod",
-      "position": "Left Winger"
+      "overall_score": 79,
+      "position": "Left Winger",
+      "potential": 79
     },
     {
       "club": {
@@ -334,7 +378,9 @@
       "injured": false,
       "marketValue": "€20.00m",
       "name": "Patrik Schick",
-      "position": "Centre-Forward"
+      "overall_score": 85,
+      "position": "Centre-Forward",
+      "potential": 85
     },
     {
       "club": {
@@ -348,7 +394,9 @@
       "injured": false,
       "marketValue": "€12.00m",
       "name": "Adam Hlozek",
-      "position": "Centre-Forward"
+      "overall_score": 77,
+      "position": "Centre-Forward",
+      "potential": 83
     },
     {
       "club": {
@@ -362,7 +410,9 @@
       "injured": false,
       "marketValue": "€4.00m",
       "name": "Mojmír Chytil",
-      "position": "Centre-Forward"
+      "overall_score": 74,
+      "position": "Centre-Forward",
+      "potential": 75
     },
     {
       "club": {
@@ -376,7 +426,9 @@
       "injured": false,
       "marketValue": "€2.70m",
       "name": "Tomas Chory",
-      "position": "Centre-Forward"
+      "overall_score": 75,
+      "position": "Centre-Forward",
+      "potential": 75
     },
     {
       "club": {

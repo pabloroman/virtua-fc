@@ -14,7 +14,9 @@
       "injured": false,
       "marketValue": "€40.00m",
       "name": "Gregor Kobel",
-      "position": "Goalkeeper"
+      "overall_score": 86,
+      "position": "Goalkeeper",
+      "potential": 89
     },
     {
       "club": {
@@ -28,7 +30,9 @@
       "injured": false,
       "marketValue": "€7.00m",
       "name": "Marvin Keller",
-      "position": "Goalkeeper"
+      "overall_score": 72,
+      "position": "Goalkeeper",
+      "potential": 81
     },
     {
       "club": {
@@ -42,7 +46,9 @@
       "injured": false,
       "marketValue": "€3.00m",
       "name": "Yvon Mvogo",
-      "position": "Goalkeeper"
+      "overall_score": 76,
+      "position": "Goalkeeper",
+      "potential": 76
     },
     {
       "club": {
@@ -56,7 +62,9 @@
       "injured": false,
       "marketValue": "€18.00m",
       "name": "Manuel Akanji",
-      "position": "Centre-Back"
+      "overall_score": 83,
+      "position": "Centre-Back",
+      "potential": 83
     },
     {
       "club": {
@@ -70,7 +78,9 @@
       "injured": false,
       "marketValue": "€10.00m",
       "name": "Luca Jaquez",
-      "position": "Centre-Back"
+      "overall_score": 71,
+      "position": "Centre-Back",
+      "potential": 79
     },
     {
       "club": {
@@ -84,7 +94,9 @@
       "injured": false,
       "marketValue": "€8.00m",
       "name": "Nico Elvedi",
-      "position": "Centre-Back"
+      "overall_score": 76,
+      "position": "Centre-Back",
+      "potential": 76
     },
     {
       "club": {
@@ -98,7 +110,9 @@
       "injured": false,
       "marketValue": "€8.00m",
       "name": "Aurèle Amenda",
-      "position": "Centre-Back"
+      "overall_score": 74,
+      "position": "Centre-Back",
+      "potential": 80
     },
     {
       "club": {
@@ -112,7 +126,9 @@
       "injured": false,
       "marketValue": "€2.50m",
       "name": "Eray Cömert",
-      "position": "Centre-Back"
+      "overall_score": 73,
+      "position": "Centre-Back",
+      "potential": 74
     },
     {
       "club": {
@@ -126,7 +142,9 @@
       "injured": false,
       "marketValue": "€5.00m",
       "name": "Miro Muheim",
-      "position": "Left-Back"
+      "overall_score": 75,
+      "position": "Left-Back",
+      "potential": 75
     },
     {
       "club": {
@@ -140,7 +158,9 @@
       "injured": false,
       "marketValue": "€1.50m",
       "name": "Ricardo Rodríguez",
-      "position": "Left-Back"
+      "overall_score": 73,
+      "position": "Left-Back",
+      "potential": 73
     },
     {
       "club": {
@@ -154,7 +174,9 @@
       "injured": false,
       "marketValue": "€800k",
       "name": "Silvan Widmer",
-      "position": "Right-Back"
+      "overall_score": 73,
+      "position": "Right-Back",
+      "potential": 73
     },
     {
       "club": {
@@ -168,7 +190,9 @@
       "injured": false,
       "marketValue": "€30.00m",
       "name": "Ardon Jashari",
-      "position": "Defensive Midfield"
+      "overall_score": 77,
+      "position": "Defensive Midfield",
+      "potential": 86
     },
     {
       "club": {
@@ -182,7 +206,9 @@
       "injured": false,
       "marketValue": "€25.00m",
       "name": "Denis Zakaria",
-      "position": "Defensive Midfield"
+      "overall_score": 81,
+      "position": "Defensive Midfield",
+      "potential": 81
     },
     {
       "club": {
@@ -196,7 +222,9 @@
       "injured": false,
       "marketValue": "€10.00m",
       "name": "Granit Xhaka",
-      "position": "Defensive Midfield"
+      "overall_score": 85,
+      "position": "Defensive Midfield",
+      "potential": 85
     },
     {
       "club": {
@@ -210,7 +238,9 @@
       "injured": false,
       "marketValue": "€35.00m",
       "name": "Johan Manzambi",
-      "position": "Central Midfield"
+      "overall_score": 77,
+      "position": "Central Midfield",
+      "potential": 86
     },
     {
       "club": {
@@ -224,7 +254,9 @@
       "injured": false,
       "marketValue": "€7.50m",
       "name": "Djibril Sow",
-      "position": "Central Midfield"
+      "overall_score": 75,
+      "position": "Central Midfield",
+      "potential": 75
     },
     {
       "club": {
@@ -238,7 +270,9 @@
       "injured": false,
       "marketValue": "€4.50m",
       "name": "Michel Aebischer",
-      "position": "Central Midfield"
+      "overall_score": 74,
+      "position": "Central Midfield",
+      "potential": 74
     },
     {
       "club": {
@@ -252,7 +286,9 @@
       "injured": false,
       "marketValue": "€4.00m",
       "name": "Remo Freuler",
-      "position": "Central Midfield"
+      "overall_score": 82,
+      "position": "Central Midfield",
+      "potential": 82
     },
     {
       "club": {
@@ -266,7 +302,9 @@
       "injured": false,
       "marketValue": "€8.00m",
       "name": "Fabian Rieder",
-      "position": "Attacking Midfield"
+      "overall_score": 74,
+      "position": "Attacking Midfield",
+      "potential": 81
     },
     {
       "club": {
@@ -280,7 +318,9 @@
       "injured": false,
       "marketValue": "€2.00m",
       "name": "Christian Fassnacht",
-      "position": "Attacking Midfield"
+      "overall_score": 73,
+      "position": "Attacking Midfield",
+      "potential": 73
     },
     {
       "club": {
@@ -294,7 +334,9 @@
       "injured": false,
       "marketValue": "€18.00m",
       "name": "Noah Okafor",
-      "position": "Left Winger"
+      "overall_score": 76,
+      "position": "Left Winger",
+      "potential": 79
     },
     {
       "club": {
@@ -308,7 +350,9 @@
       "injured": false,
       "marketValue": "€12.00m",
       "name": "Rubén Vargas",
-      "position": "Left Winger"
+      "overall_score": 78,
+      "position": "Left Winger",
+      "potential": 78
     },
     {
       "club": {
@@ -322,7 +366,9 @@
       "injured": false,
       "marketValue": "€35.00m",
       "name": "Dan Ndoye",
-      "position": "Right Winger"
+      "overall_score": 77,
+      "position": "Right Winger",
+      "potential": 80
     },
     {
       "club": {
@@ -336,7 +382,9 @@
       "injured": false,
       "marketValue": "€12.00m",
       "name": "Breel Embolo",
-      "position": "Centre-Forward"
+      "overall_score": 77,
+      "position": "Centre-Forward",
+      "potential": 77
     },
     {
       "club": {
@@ -350,7 +398,9 @@
       "injured": false,
       "marketValue": "€9.00m",
       "name": "Zeki Amdouni",
-      "position": "Centre-Forward"
+      "overall_score": 74,
+      "position": "Centre-Forward",
+      "potential": 78
     },
     {
       "club": {
@@ -364,7 +414,9 @@
       "injured": false,
       "marketValue": "€1.80m",
       "name": "Cedric Itten",
-      "position": "Centre-Forward"
+      "overall_score": 70,
+      "position": "Centre-Forward",
+      "potential": 70
     }
   ],
   "stadiumName": null,
