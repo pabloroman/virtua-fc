@@ -133,6 +133,42 @@ class DiagnoseStuckGame extends Command
         }
 
         $this->line('');
+        $this->line('=== Phantom standings rows (played = 0) — likely leftover from a prior incomplete transition ===');
+        $leagueIdsForPhantoms = ['ESP1', 'ESP2', 'ESP3A', 'ESP3B'];
+        $anyPhantom = false;
+        foreach ($leagueIdsForPhantoms as $c) {
+            $phantoms = GameStanding::where('game_id', $gameId)
+                ->where('competition_id', $c)
+                ->where('played', '=', 0)
+                ->orderBy('position')
+                ->get(['team_id', 'position']);
+
+            foreach ($phantoms as $p) {
+                $anyPhantom = true;
+                $name = Team::where('id', $p->team_id)->value('name');
+                // Where else does this team hold a league entry? A phantom that is
+                // ALSO entered in another tier is a double-entry (safe to drop here);
+                // a phantom that is the team's ONLY league entry means a real
+                // competitor's result was lost (needs ranking, not deletion).
+                $otherEntries = CompetitionEntry::where('game_id', $gameId)
+                    ->where('team_id', $p->team_id)
+                    ->whereIn('competition_id', $leagueIdsForPhantoms)
+                    ->where('competition_id', '!=', $c)
+                    ->pluck('competition_id')->all();
+                $hasEntryHere = CompetitionEntry::where('game_id', $gameId)
+                    ->where('competition_id', $c)
+                    ->where('team_id', $p->team_id)
+                    ->exists();
+                $otherStr = empty($otherEntries) ? 'none' : implode(',', $otherEntries);
+                $entryHereStr = $hasEntryHere ? 'yes' : 'NO (orphan standing)';
+                $this->line("  {$c} pos={$p->position}  {$p->team_id}  {$name}  entry_here={$entryHereStr}  also_entered_in=[{$otherStr}]");
+            }
+        }
+        if (!$anyPhantom) {
+            $this->line('  (none)');
+        }
+
+        $this->line('');
         $this->line('=== League entries missing from standings (entry + matches exist, standings row gone) ===');
         $anyMissing = false;
         foreach (['ESP1', 'ESP2', 'ESP3A', 'ESP3B'] as $c) {
