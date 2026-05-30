@@ -11,6 +11,16 @@ return [
         'local'        =>    600_000_000, // €6M
     ],
 
+    // Squad wage-bill ceiling as a fraction of projected RECURRING revenue
+    // ("Límite de Coste de Plantilla"). The cap is tied to recurring income, so
+    // one-time cash (unspent transfer budget, player-sale proceeds, carried
+    // surplus) can never inflate the wage ceiling — this closes the free-signing
+    // exploit. ~0.70 mirrors UEFA's squad-cost ratio and leaves a thin-but-
+    // positive surplus for transfers/infrastructure even at maximum wages across
+    // every tier. May be replaced with a per-reputation array (keyed
+    // elite/continental/established/modest/local) if tuning calls for it.
+    'wage_cap_ratio' => 0.70,
+
     // Commercial revenue per seat per season by reputation level (in cents).
     'commercial_per_seat' => [
         'elite'        => 170_000, // €1,700/seat

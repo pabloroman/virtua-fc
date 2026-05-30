@@ -70,6 +70,9 @@
                     <span class="font-heading text-xl font-bold {{ $wageRevenueRatio > 70 ? 'text-accent-red' : ($wageRevenueRatio > 55 ? 'text-accent-gold' : 'text-text-primary') }}">{{ $wageRevenueRatio }}%</span>
                 </div>
             </x-summary-card>
+            <x-summary-card :label="__('finances.salary_cap')" class="min-w-[180px]">
+                <x-salary-cap-meter :bill="$salaryCapBill" :cap="$salaryCap" :status="$salaryCapStatus" :room="$salaryCapRoom" :tooltip="__('finances.tooltip_salary_cap')" />
+            </x-summary-card>
             @if($investment)
             <x-summary-card :label="__('finances.transfer_budget')" :value="$investment->formatted_transfer_budget" value-class="text-accent-blue" />
             @endif

@@ -14,6 +14,7 @@ use App\Models\Team;
 use App\Models\TeamReputation;
 use App\Models\TransferListing;
 use App\Models\TransferOffer;
+use App\Modules\Finance\Services\SalaryCapService;
 use App\Modules\Squad\Services\SquadMinimumService;
 use App\Modules\Squad\Services\SquadNumberService;
 use App\Modules\Transfer\Enums\TransferWindowType;
@@ -31,6 +32,7 @@ class LoanService
         private readonly SquadNumberService $squadNumberService,
         private readonly AIExclusionList $exclusionList,
         private readonly SquadMinimumService $squadMinimumService,
+        private readonly SalaryCapService $salaryCapService,
     ) {}
 
     /**
@@ -439,6 +441,9 @@ class LoanService
             'offer_type' => TransferOffer::TYPE_LOAN_IN,
             'direction' => TransferOffer::DIRECTION_INCOMING,
             'transfer_fee' => 0,
+            // The borrowing club pays the loaned-in player's full wage (no
+            // subsidy), so stamp it on the offer for the salary-cap accounting.
+            'offered_wage' => $player->annual_wage,
             'status' => TransferOffer::STATUS_PENDING,
             'expires_at' => $game->current_date->addDays(30),
             'game_date' => $game->current_date,
@@ -522,6 +527,16 @@ class LoanService
         $parentTeamId = $offer->selling_team_id ?? $player->team_id;
 
         if ($parentTeamId === null) {
+            $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
+            return;
+        }
+
+        // Salary cap safety net: a loaned-in player's full wage counts against
+        // the cap (no loan subsidy). Reject rather than breach it if room
+        // vanished since the request was approved. completionWouldExceedCap
+        // excludes this very offer from the committed bill, so the agreed
+        // loan's wage isn't double-counted against itself.
+        if ($this->salaryCapService->completionWouldExceedCap($game, $offer)) {
             $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
             return;
         }

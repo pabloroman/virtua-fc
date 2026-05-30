@@ -92,6 +92,10 @@ return [
 
     // Quick stats
     'wage_revenue_ratio' => 'Wage/Revenue Ratio',
+    'salary_cap' => 'Salary Limit',
+    'wage_room' => 'Cap Room',
+    'over_cap' => 'Over Limit',
+    'tooltip_salary_cap' => 'The most your club can commit to wages — a fraction of your projected recurring revenue. One-time cash (transfer surplus, player sales) does not raise it; grow your income to lift the limit.',
     'income' => 'income',
     'expenses' => 'expenses',
 

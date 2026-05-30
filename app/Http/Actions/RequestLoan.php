@@ -2,6 +2,7 @@
 
 namespace App\Http\Actions;
 
+use App\Modules\Finance\Services\SalaryCapService;
 use App\Modules\ReserveTeam\Services\ReserveTeamService;
 use App\Modules\Transfer\Exceptions\SquadMinimumException;
 use App\Modules\Transfer\Services\LoanService;
@@ -14,6 +15,7 @@ class RequestLoan
     public function __construct(
         private readonly LoanService $loanService,
         private readonly ReserveTeamService $reserveTeamService,
+        private readonly SalaryCapService $salaryCapService,
     ) {}
 
     public function __invoke(Request $request, string $gameId, string $playerId)
@@ -47,6 +49,13 @@ class RequestLoan
         if ($player->team_id === null) {
             return redirect()->back()
                 ->with('error', __('messages.cannot_loan_free_agent'));
+        }
+
+        // Salary cap: the borrowing club pays a loaned-in player's full wage
+        // (there is no loan subsidy), so it counts in full against the cap.
+        if (! $this->salaryCapService->canCommitWage($game, (int) $player->annual_wage)) {
+            return redirect()->back()
+                ->with('error', $this->salaryCapService->blockMessage($game, $player->name, (int) $player->annual_wage));
         }
 
         $this->loanService->requestLoanIn($game, $player);

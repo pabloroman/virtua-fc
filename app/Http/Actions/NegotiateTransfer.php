@@ -6,6 +6,7 @@ use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\TransferOffer;
 use App\Modules\Finance\Services\BudgetLoanService;
+use App\Modules\Finance\Services\SalaryCapService;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Transfer\Enums\NegotiationScenario;
 use App\Modules\Transfer\Services\ContractService;
@@ -26,6 +27,7 @@ class NegotiateTransfer
         private readonly ScoutingService $scoutingService,
         private readonly NotificationService $notificationService,
         private readonly BudgetLoanService $budgetLoanService,
+        private readonly SalaryCapService $salaryCapService,
     ) {}
 
     public function __invoke(Request $request, string $gameId, string $playerId): JsonResponse
@@ -446,6 +448,14 @@ class NegotiateTransfer
         $offerWageCents = $validated['wage'] * 100;
         $offeredYears = $validated['years'];
 
+        // Salary cap: block the personal-terms offer before the player accepts.
+        if (! $this->salaryCapService->canCommitWage($game, $offerWageCents)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $this->salaryCapService->blockMessage($game, $player->name, $offerWageCents),
+            ], 422);
+        }
+
         $result = $this->contractService->negotiateTermsSync(
             $offer, $offerWageCents, $offeredYears, NegotiationScenario::TRANSFER, $game,
         );
@@ -501,10 +511,20 @@ class NegotiateTransfer
             ->where('terms_status', 'countered')
             ->first();
 
-        if (!$offer) {
+        // Bail if the offer is gone or, defensively, has no counter wage —
+        // a null counter would otherwise cast to 0 and slip past the cap.
+        if (!$offer || $offer->wage_counter_offer === null) {
             return response()->json([
                 'status' => 'error',
                 'message' => __('messages.transfer_failed'),
+            ], 422);
+        }
+
+        // Salary cap: re-check against the wage the player is holding out for.
+        if (! $this->salaryCapService->canCommitWage($game, (int) $offer->wage_counter_offer)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $this->salaryCapService->blockMessage($game, $player->name, (int) $offer->wage_counter_offer),
             ], 422);
         }
 

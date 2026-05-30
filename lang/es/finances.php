@@ -92,6 +92,10 @@ return [
 
     // Quick stats
     'wage_revenue_ratio' => 'Ratio Salarios/Ingresos',
+    'salary_cap' => 'Límite Salarial',
+    'wage_room' => 'Margen Salarial',
+    'over_cap' => 'Límite Superado',
+    'tooltip_salary_cap' => 'Lo máximo que tu club puede destinar a salarios — una fracción de tus ingresos recurrentes proyectados. El dinero puntual (superávit de fichajes, ventas de jugadores) no lo aumenta; haz crecer tus ingresos para elevar el límite.',
     'income' => 'ingresos',
     'expenses' => 'gastos',
 

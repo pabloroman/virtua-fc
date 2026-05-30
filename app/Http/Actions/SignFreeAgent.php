@@ -4,6 +4,7 @@ namespace App\Http\Actions;
 
 use App\Models\Game;
 use App\Models\GamePlayer;
+use App\Modules\Finance\Services\SalaryCapService;
 use App\Modules\Transfer\Enums\NegotiationScenario;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\DispositionService;
@@ -16,6 +17,7 @@ class SignFreeAgent
         private readonly ContractService $contractService,
         private readonly DispositionService $dispositionService,
         private readonly TransferService $transferService,
+        private readonly SalaryCapService $salaryCapService,
     ) {}
 
     public function __invoke(Request $request, string $gameId, string $playerId)
@@ -41,6 +43,13 @@ class SignFreeAgent
         }
 
         $demand = $this->contractService->calculateWageDemand($player, NegotiationScenario::FREE_AGENT, $game->team);
+
+        // Salary cap: a free signing costs no transfer fee but commits wages —
+        // block it if the wage bill would breach the cap.
+        if (! $this->salaryCapService->canCommitWage($game, $demand['wage'])) {
+            return redirect()->route('game.transfers', $gameId)
+                ->with('error', $this->salaryCapService->blockMessage($game, $player->name, $demand['wage']));
+        }
 
         $this->transferService->signFreeAgent($game, $player, $demand['wage']);
 

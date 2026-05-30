@@ -4,6 +4,7 @@ namespace App\Http\Views;
 
 use App\Modules\Finance\Services\BudgetLoanService;
 use App\Modules\Finance\Services\BudgetProjectionService;
+use App\Modules\Finance\Services\SalaryCapService;
 use App\Models\FinancialTransaction;
 use App\Models\Game;
 use App\Models\GameInvestment;
@@ -15,6 +16,7 @@ class ShowFinances
     public function __construct(
         private readonly BudgetProjectionService $projectionService,
         private readonly BudgetLoanService $loanService,
+        private readonly SalaryCapService $salaryCapService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -60,6 +62,13 @@ class ShowFinances
         $wageRevenueRatio = $finances->projected_total_revenue > 0
             ? round(($finances->projected_wages / $finances->projected_total_revenue) * 100)
             : 0;
+
+        // Salary cap ("Límite de Coste de Plantilla"): the committed wage bill
+        // measured against the cap derived from recurring revenue.
+        $salaryCap = $this->salaryCapService->cap($game);
+        $salaryCapBill = $this->salaryCapService->committedWageBill($game);
+        $salaryCapRoom = $this->salaryCapService->remainingRoom($game);
+        $salaryCapStatus = $this->salaryCapService->status($game);
 
         // Available transfer budget for infrastructure upgrades
         $availableBudget = $investment
@@ -114,6 +123,10 @@ class ShowFinances
             'totalIncome' => $totalIncome,
             'totalExpenses' => $totalExpenses,
             'wageRevenueRatio' => $wageRevenueRatio,
+            'salaryCap' => $salaryCap,
+            'salaryCapBill' => $salaryCapBill,
+            'salaryCapRoom' => $salaryCapRoom,
+            'salaryCapStatus' => $salaryCapStatus,
             'tierThresholds' => GameInvestment::thresholdsForCompetitionTier((int) ($game->competition->tier ?? 1)),
             'availableBudget' => $availableBudget,
             'initialTransferBudget' => $initialTransferBudget,

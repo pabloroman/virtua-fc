@@ -5,6 +5,7 @@ namespace App\Http\Actions;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\RenewalNegotiation;
+use App\Modules\Finance\Services\SalaryCapService;
 use App\Modules\Transfer\Enums\NegotiationScenario;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\DispositionService;
@@ -20,6 +21,7 @@ class NegotiateRenewal
     public function __construct(
         private readonly ContractService $contractService,
         private readonly DispositionService $dispositionService,
+        private readonly SalaryCapService $salaryCapService,
     ) {}
 
     public function __invoke(Request $request, string $gameId, string $playerId): JsonResponse
@@ -43,7 +45,7 @@ class NegotiateRenewal
         return match ($action) {
             'start' => $this->handleStart($game, $player),
             'offer' => $this->handleOffer($request, $game, $player),
-            'accept_counter' => $this->handleAcceptCounter($player),
+            'accept_counter' => $this->handleAcceptCounter($game, $player),
             default => response()->json(['status' => 'error', 'message' => 'Invalid action'], 400),
         };
     }
@@ -158,6 +160,16 @@ class NegotiateRenewal
         $offeredYears = $validated['years'];
         $offerWageCents = $offerWageEuros * 100;
 
+        // Salary cap: a renewal replaces the player's current wage, so only the
+        // increase is charged against the cap. Wage cuts always pass.
+        $freedWage = $this->salaryCapService->effectiveWageFor($player);
+        if (! $this->salaryCapService->canCommitWage($game, $offerWageCents, $freedWage)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $this->salaryCapService->blockMessage($game, $player->name, $offerWageCents, $freedWage),
+            ], 422);
+        }
+
         $result = $this->contractService->negotiateSync($player, $offerWageCents, $offeredYears);
         $negotiation = $result['negotiation'];
 
@@ -217,7 +229,7 @@ class NegotiateRenewal
         };
     }
 
-    private function handleAcceptCounter(GamePlayer $player): JsonResponse
+    private function handleAcceptCounter(Game $game, GamePlayer $player): JsonResponse
     {
         $negotiation = RenewalNegotiation::where('game_player_id', $player->id)
             ->where('status', RenewalNegotiation::STATUS_PLAYER_COUNTERED)
@@ -227,6 +239,15 @@ class NegotiateRenewal
             return response()->json([
                 'status' => 'error',
                 'message' => __('messages.renewal_failed'),
+            ], 422);
+        }
+
+        // Salary cap: re-check against the wage the player is holding out for.
+        $freedWage = $this->salaryCapService->effectiveWageFor($player);
+        if (! $this->salaryCapService->canCommitWage($game, (int) $negotiation->counter_offer, $freedWage)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $this->salaryCapService->blockMessage($game, $player->name, (int) $negotiation->counter_offer, $freedWage),
             ], 422);
         }
 
