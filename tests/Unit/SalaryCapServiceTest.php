@@ -131,20 +131,6 @@ class SalaryCapServiceTest extends TestCase
         $this->assertSame('over', $this->service->status($game));
     }
 
-    public function test_completion_would_exceed_cap_excludes_the_offer_being_completed(): void
-    {
-        $game = $this->makeGame(projectedRevenue: 1_000_000_000); // cap €7M
-        $this->squadPlayer($game, annualWage: 650_000_000); // €6.5M
-
-        $tooBig = $this->agreedIncomingOffer($game, offeredWage: 100_000_000); // +€1M → €7.5M
-        $fits = $this->agreedIncomingOffer($game, offeredWage: 40_000_000);    // +€0.4M → €6.9M
-
-        // Each is judged on its own marginal wage, not double-counted against
-        // the other agreed offer.
-        $this->assertTrue($this->service->completionWouldExceedCap($game, $tooBig->fresh()));
-        $this->assertFalse($this->service->completionWouldExceedCap($game, $fits->fresh()));
-    }
-
     public function test_hoarded_cash_does_not_raise_the_wage_ceiling(): void
     {
         // The exploit: a club at its cap with huge one-time cash should still be

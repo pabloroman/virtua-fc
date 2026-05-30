@@ -12,7 +12,6 @@ use App\Models\ShortlistedPlayer;
 use App\Models\TransferListing;
 use App\Models\TransferOffer;
 use App\Models\UserSquadCareerRecord;
-use App\Modules\Finance\Services\SalaryCapService;
 use App\Modules\Player\PlayerAge;
 use App\Modules\Squad\Services\SquadNumberService;
 use App\Modules\Transfer\Enums\TransferWindowType;
@@ -29,7 +28,6 @@ class TransferCompletionService
 {
     public function __construct(
         private readonly SquadNumberService $squadNumberService,
-        private readonly SalaryCapService $salaryCapService,
     ) {}
     /**
      * Complete an outgoing transfer (user's player sold to AI team).
@@ -188,14 +186,6 @@ class TransferCompletionService
             return false;
         }
 
-        // Salary cap safety net: revenue or the squad may have changed since the
-        // deal was agreed (e.g. relegation). Reject rather than breach the cap —
-        // the early guards on the signing Actions catch the normal case.
-        if ($this->salaryCapService->completionWouldExceedCap($game, $offer)) {
-            $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
-            return false;
-        }
-
         $player = $offer->gamePlayer;
         $playerName = $player->name;
         $sellerTeam = $offer->sellingTeam ?? $player->team;
@@ -265,18 +255,6 @@ class TransferCompletionService
      */
     public function completeFreeAgentSigning(Game $game, GamePlayer $player, TransferOffer $offer): void
     {
-        // Salary cap safety net: reject rather than breach the cap if revenue
-        // or the squad changed since the deal was agreed. The early guards on
-        // the signing Actions catch the normal case.
-        if ($this->salaryCapService->completionWouldExceedCap($game, $offer)) {
-            $offer->update([
-                'status' => TransferOffer::STATUS_REJECTED,
-                'resolved_at' => $game->current_date,
-            ]);
-
-            return;
-        }
-
         $seasonYear = (int) $game->season;
         $contractYears = $offer->offered_years ?? ($player->age($game->current_date) >= 32 ? 1 : 3);
         $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);

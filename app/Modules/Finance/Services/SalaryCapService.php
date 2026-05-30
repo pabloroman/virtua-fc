@@ -19,8 +19,9 @@ use App\Support\Money;
  * income (league position, promotion, commercial growth, a bigger stadium).
  *
  * Wage commitments are gated at the point of signing/renewal (see the
- * wage-commitment Actions) and re-validated at completion (TransferCompletion
- * Service / LoanService) as a safety net.
+ * wage-commitment Actions). Once a deal is agreed it is honoured even if it
+ * tips the club over the cap — an agreed deal can't be unilaterally cancelled
+ * — so the club simply enters the displayed "over the cap" state.
  */
 class SalaryCapService
 {
@@ -59,12 +60,8 @@ class SalaryCapService
      * Counting agreed-but-pending commitments stops a manager from stacking
      * several signings/renewals in one window that each fit individually but
      * blow past the cap once they all apply.
-     *
-     * @param  string|null  $excludeOfferId  An offer to omit (used by the
-     *         completion safety net so an offer being finalised isn't counted
-     *         twice — once as an agreed offer and once as a squad wage).
      */
-    public function committedWageBill(Game $game, ?string $excludeOfferId = null): int
+    public function committedWageBill(Game $game): int
     {
         $squadWages = (int) GamePlayer::query()
             ->where('game_id', $game->id)
@@ -85,7 +82,6 @@ class SalaryCapService
                 // stamps offered_wage with the player's annual_wage).
                 TransferOffer::TYPE_LOAN_IN,
             ])
-            ->when($excludeOfferId, fn ($q) => $q->where('id', '!=', $excludeOfferId))
             ->sum('offered_wage');
 
         return $squadWages + $agreedIncoming;
@@ -134,19 +130,6 @@ class SalaryCapService
     public function canCommitWage(Game $game, int $newWage, int $freedWage = 0): bool
     {
         return ($this->committedWageBill($game) - $freedWage + $newWage) <= $this->cap($game);
-    }
-
-    /**
-     * Re-check at completion time: would finalising $offer leave the club over
-     * its cap? Excludes the offer from the committed bill before adding its
-     * wage so it isn't double-counted. True means the signing must be blocked.
-     */
-    public function completionWouldExceedCap(Game $game, TransferOffer $offer): bool
-    {
-        $prospectiveWage = $offer->offered_wage ?? 0;
-        $billExcludingOffer = $this->committedWageBill($game, excludeOfferId: $offer->id);
-
-        return ($billExcludingOffer + $prospectiveWage) > $this->cap($game);
     }
 
     /**
