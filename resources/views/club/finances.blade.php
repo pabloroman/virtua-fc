@@ -58,23 +58,16 @@
         </div>
         @endif
 
-        {{-- KPI Cards --}}
-        <div class="flex flex-wrap gap-3 mb-6">
-            <x-summary-card :label="__('finances.squad_value')" :value="\App\Support\Money::format($squadValue)" />
-            <x-summary-card :label="__('finances.annual_wage_bill')" :value="\App\Support\Money::format($wageBill) . __('squad.per_year')" />
-            <x-summary-card :label="__('finances.wage_revenue_ratio')">
-                <div class="flex items-center gap-2 mt-1">
-                    <div class="w-16 h-1.5 bg-surface-600 rounded-full overflow-hidden">
-                        <div class="h-full rounded-full {{ $wageRevenueRatio > 70 ? 'bg-accent-red' : ($wageRevenueRatio > 55 ? 'bg-accent-gold' : 'bg-accent-green') }}" style="width: {{ min($wageRevenueRatio, 100) }}%"></div>
-                    </div>
-                    <span class="font-heading text-xl font-bold {{ $wageRevenueRatio > 70 ? 'text-accent-red' : ($wageRevenueRatio > 55 ? 'text-accent-gold' : 'text-text-primary') }}">{{ $wageRevenueRatio }}%</span>
-                </div>
-            </x-summary-card>
-            <x-summary-card :label="__('finances.salary_cap')" class="min-w-[180px]">
-                <x-salary-cap-meter :bill="$salaryCapBill" :cap="$salaryCap" :status="$salaryCapStatus" :room="$salaryCapRoom" :tooltip="__('finances.tooltip_salary_cap')" />
+        {{-- KPI Cards: asset (squad value) → constraint (salary cap) → spending power (transfer budget).
+             Equal-height grid so the cards share one shape; the cap card consolidates the wage
+             bill and wage/revenue ratio that used to be separate, duplicate cards. --}}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+            <x-summary-card :label="__('finances.squad_value')" :value="\App\Support\Money::format($squadValue)" :caption="__('finances.squad_size', ['count' => $squadSize])" />
+            <x-summary-card :label="__('finances.salary_cap')" :tooltip="__('finances.tooltip_salary_cap', ['percent' => $salaryCapRatioPercent])">
+                <x-salary-cap-meter :bill="$salaryCapBill" :cap="$salaryCap" :status="$salaryCapStatus" :room="$salaryCapRoom" />
             </x-summary-card>
             @if($investment)
-            <x-summary-card :label="__('finances.transfer_budget')" :value="$investment->formatted_transfer_budget" value-class="text-accent-blue" />
+            <x-summary-card :label="__('finances.transfer_budget')" :value="$investment->formatted_transfer_budget" value-class="text-accent-blue" :caption="__('finances.initial_budget_caption', ['amount' => \App\Support\Money::format($initialTransferBudget)])" />
             @endif
         </div>
 

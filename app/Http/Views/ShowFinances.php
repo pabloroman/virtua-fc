@@ -33,14 +33,13 @@ class ShowFinances
             $finances = $this->projectionService->generateProjections($game);
         }
 
-        // Calculate current squad metrics
-        $squadValue = GamePlayer::where('game_id', $game->id)
+        // Calculate current squad metrics (value + headcount in a single query)
+        $squadMetrics = GamePlayer::where('game_id', $game->id)
             ->where('team_id', $game->team_id)
-            ->sum('market_value_cents');
-
-        $wageBill = GamePlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->sum('annual_wage');
+            ->selectRaw('COALESCE(SUM(market_value_cents), 0) as squad_value, COUNT(*) as squad_size')
+            ->first();
+        $squadValue = (int) $squadMetrics->squad_value;
+        $squadSize = (int) $squadMetrics->squad_size;
 
         // Get transactions for the current season (July 1 → June 30)
         $seasonYear = (int) $game->season;
@@ -58,17 +57,19 @@ class ShowFinances
         $totalIncome = $transactions->where('type', FinancialTransaction::TYPE_INCOME)->sum('amount');
         $totalExpenses = $transactions->where('type', FinancialTransaction::TYPE_EXPENSE)->sum('amount');
 
-        // Wage-to-revenue ratio
-        $wageRevenueRatio = $finances->projected_total_revenue > 0
-            ? round(($finances->projected_wages / $finances->projected_total_revenue) * 100)
-            : 0;
-
         // Salary cap ("Límite de Coste de Plantilla"): the committed wage bill
         // measured against the cap derived from recurring revenue.
         $salaryCap = $this->salaryCapService->cap($game);
         $salaryCapBill = $this->salaryCapService->committedWageBill($game);
         $salaryCapRoom = $this->salaryCapService->remainingRoom($game);
         $salaryCapStatus = $this->salaryCapService->status($game);
+
+        // The cap as a % of projected revenue (≈70%), surfaced in the help text.
+        // Derived from the actual cap so it stays correct if the ratio is ever
+        // tuned per-reputation rather than the flat config scalar.
+        $salaryCapRatioPercent = $finances->projected_total_revenue > 0
+            ? (int) round($salaryCap / $finances->projected_total_revenue * 100)
+            : (int) round(config('finances.wage_cap_ratio', 0.70) * 100);
 
         // Available transfer budget for infrastructure upgrades
         $availableBudget = $investment
@@ -118,12 +119,12 @@ class ShowFinances
             'finances' => $finances,
             'investment' => $investment,
             'squadValue' => $squadValue,
-            'wageBill' => $wageBill,
+            'squadSize' => $squadSize,
             'transactions' => $transactions,
             'totalIncome' => $totalIncome,
             'totalExpenses' => $totalExpenses,
-            'wageRevenueRatio' => $wageRevenueRatio,
             'salaryCap' => $salaryCap,
+            'salaryCapRatioPercent' => $salaryCapRatioPercent,
             'salaryCapBill' => $salaryCapBill,
             'salaryCapRoom' => $salaryCapRoom,
             'salaryCapStatus' => $salaryCapStatus,

@@ -133,7 +133,7 @@
                 <x-summary-card label="AVG AGE" value="26.3" />
                 <x-summary-card label="FITNESS" value="87%" value-class="text-accent-green" />
                 <x-summary-card label="MORALE" value="78" />
-                <x-summary-card label="BUDGET" value="€12.5M" class="min-w-[130px]" />
+                <x-summary-card label="BUDGET" value="€12.5M" caption="of €25M initial" class="min-w-[130px]" />
             </div>
         </div>
 
@@ -151,6 +151,9 @@
 
 &lt;!-- With custom width --&gt;
 &lt;x-summary-card label="BUDGET" value="€12.5M" class="min-w-[130px]" /&gt;
+
+&lt;!-- With a faint caption line under the value --&gt;
+&lt;x-summary-card label="BUDGET" value="€12.5M" caption="of €25M initial" /&gt;
 
 &lt;!-- With slot content --&gt;
 &lt;x-summary-card label="STATUS" value="Active"&gt;
@@ -187,6 +190,12 @@
                         <td class="py-2 pr-4 text-text-secondary">string</td>
                         <td class="py-2 pr-4 font-mono text-xs text-text-muted">'text-white'</td>
                         <td class="py-2 text-text-secondary">CSS class for value color (e.g. text-accent-green)</td>
+                    </tr>
+                    <tr class="border-b border-border-default">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">caption</td>
+                        <td class="py-2 pr-4 text-text-secondary">string</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-muted">null</td>
+                        <td class="py-2 text-text-secondary">Optional faint secondary line under the value (e.g. context or a sub-figure)</td>
                     </tr>
                 </tbody>
             </table>
