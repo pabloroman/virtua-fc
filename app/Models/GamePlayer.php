@@ -134,6 +134,7 @@ class GamePlayer extends Model
         'contract_until',
         'annual_wage',
         'pending_annual_wage',
+        'release_clause',
         'salary_unhappy_since',
         'durability',
         'overall_score',
@@ -153,6 +154,7 @@ class GamePlayer extends Model
         'contract_until' => 'date',
         'annual_wage' => 'integer',
         'pending_annual_wage' => 'integer',
+        'release_clause' => 'integer',
         'salary_unhappy_since' => 'date',
         'durability' => 'integer',
         // Development fields
@@ -659,6 +661,15 @@ class GamePlayer extends Model
     }
 
     /**
+     * Whether this player carries a release clause (cláusula de rescisión).
+     * Non-null ⟺ under a clause-bearing contract.
+     */
+    public function hasReleaseClause(): bool
+    {
+        return $this->release_clause !== null;
+    }
+
+    /**
      * Check if player can be offered a contract renewal.
      * Any squad player can be renewed (early or expiring), unless blocked by another condition.
      *
@@ -721,6 +732,19 @@ class GamePlayer extends Model
         }
 
         return Money::format($this->pending_annual_wage);
+    }
+
+    /**
+     * Get the formatted release clause for display, or null when there is none.
+     * Null-guarded because Money::format has a strict int hint and throws on null.
+     */
+    public function getFormattedReleaseClauseAttribute(): ?string
+    {
+        if ($this->release_clause === null) {
+            return null;
+        }
+
+        return Money::format($this->release_clause);
     }
 
     /**

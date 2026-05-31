@@ -108,7 +108,9 @@ class GamePlayerTemplateService
 
         foreach ($teamRosters as $roster) {
             foreach ($roster['players'] as $playerData) {
-                $row = $this->prepareTemplateRow($season, $roster['team_id'], $playerData, 0);
+                // National-team World Cup rosters are not club contracts, so
+                // they carry no release clause (null country → no clause).
+                $row = $this->prepareTemplateRow($season, $roster['team_id'], null, $playerData, 0);
                 if ($row && !isset($processedPlayerIds[$row['player_id']])) {
                     $row['number'] = null; // WC templates must not store squad numbers
                     $rows[] = $row;
@@ -215,6 +217,15 @@ class GamePlayerTemplateService
             ->pluck('id', 'transfermarkt_id')
             ->toArray();
 
+        // team_id → country (uppercase 2-char) map, resolved once so the
+        // mandatory-release-clause seed can be derived per template without an
+        // N+1 Team load. A single generateTemplates() run spans clubs from
+        // multiple countries (continental/Swiss opponents), so the per-team
+        // country — not the $countryCode argument — drives the ES predicate.
+        $teamCountries = Team::whereNotNull('transfermarkt_id')
+            ->pluck('country', 'id')
+            ->toArray();
+
         $countryConfig = app(CountryConfig::class);
         $competitionIds = $countryConfig->playerInitializationOrder($countryCode);
         $continentalIds = $countryConfig->continentalSupportIds($countryCode);
@@ -249,12 +260,12 @@ class GamePlayerTemplateService
                 continue;
             }
 
-            $rows = $this->generateForCompetition($competitionId, $season, $allTeamIds, $processedTeamIds, $processedPlayerIds);
+            $rows = $this->generateForCompetition($competitionId, $season, $allTeamIds, $teamCountries, $processedTeamIds, $processedPlayerIds);
             $totalCount += $this->insertAndTrack($rows, $processedTeamIds, $processedPlayerIds);
         }
 
         foreach ($swissIds as $competitionId) {
-            $rows = $this->generateForSwissGapTeams($competitionId, $season, $allTeamIds, $processedTeamIds, $processedPlayerIds);
+            $rows = $this->generateForSwissGapTeams($competitionId, $season, $allTeamIds, $teamCountries, $processedTeamIds, $processedPlayerIds);
             $totalCount += $this->insertAndTrack($rows, $processedTeamIds, $processedPlayerIds);
         }
 
@@ -282,6 +293,7 @@ class GamePlayerTemplateService
         string $competitionId,
         string $season,
         array $allTeamIds,
+        array $teamCountries = [],
         array $processedTeamIds = [],
         array $processedPlayerIds = [],
     ): array {
@@ -317,10 +329,11 @@ class GamePlayerTemplateService
             }
 
             $minimumWage = $this->contractService->getMinimumWageForCompetition($competitionId, $teamId);
+            $clubCountry = $teamCountries[$teamId] ?? null;
 
             foreach ($club['players'] ?? [] as $playerData) {
                 $playerData = $this->applyMarketValueFallback($playerData, $competitionId);
-                $row = $this->prepareTemplateRow($season, $teamId, $playerData, $minimumWage);
+                $row = $this->prepareTemplateRow($season, $teamId, $clubCountry, $playerData, $minimumWage);
                 if ($row && !isset($processedPlayerIds[$row['player_id']])) {
                     $rows[] = $row;
                     $processedPlayerIds[$row['player_id']] = true;
@@ -355,6 +368,7 @@ class GamePlayerTemplateService
         string $competitionId,
         string $season,
         array $allTeamIds,
+        array $teamCountries,
         array $processedTeamIds,
         array $processedPlayerIds = [],
     ): array {
@@ -384,9 +398,10 @@ class GamePlayerTemplateService
             }
 
             $minimumWage = $this->contractService->getMinimumWageForCompetition($competitionId, $teamId);
+            $clubCountry = $teamCountries[$teamId] ?? null;
 
             foreach ($club['players'] ?? [] as $playerData) {
-                $row = $this->prepareTemplateRow($season, $teamId, $playerData, $minimumWage);
+                $row = $this->prepareTemplateRow($season, $teamId, $clubCountry, $playerData, $minimumWage);
                 if ($row && !isset($processedPlayerIds[$row['player_id']])) {
                     $rows[] = $row;
                     $processedPlayerIds[$row['player_id']] = true;
@@ -404,6 +419,7 @@ class GamePlayerTemplateService
     private function prepareTemplateRow(
         string $season,
         string $teamId,
+        ?string $clubCountry,
         array $playerData,
         int $minimumWage,
     ): ?array {
@@ -487,6 +503,9 @@ class GamePlayerTemplateService
             'market_value_cents' => $marketValueCents,
             'contract_until' => $contractUntil,
             'annual_wage' => $annualWage,
+            // Mandatory floor for ES clubs (= es_floor_multiplier × MV), null
+            // elsewhere. Seeded at baseline wages, so the floor IS the default.
+            'release_clause' => $this->contractService->calculateReleaseClause($marketValueCents, null, null, $clubCountry),
             'fitness' => 80,
             'morale' => 80,
             'durability' => InjuryService::generateDurability(),

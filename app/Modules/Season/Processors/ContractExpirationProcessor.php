@@ -114,7 +114,10 @@ class ContractExpirationProcessor implements SeasonProcessor
         // Bulk operations
         $freeAgentIds = array_merge($userTeamFreeAgentIds, $veteranFreeAgentIds);
         if (!empty($freeAgentIds)) {
-            GamePlayer::whereIn('id', $freeAgentIds)->update(['team_id' => null, 'number' => null]);
+            // A release clause is a contract attribute: non-null ⟺ under
+            // contract. Becoming a free agent nulls it (harmless no-op for saves
+            // where the feature is off, since the column is already null).
+            GamePlayer::whereIn('id', $freeAgentIds)->update(['team_id' => null, 'number' => null, 'release_clause' => null]);
         }
         if (!empty($veteranAutoRenewedIds)) {
             GamePlayer::whereIn('id', $veteranAutoRenewedIds)->update(['contract_until' => $newContractEnd]);

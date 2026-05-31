@@ -463,4 +463,7 @@ return [
     'market_asking_price' => 'Asking Price',
     'market_free' => 'Free',
     'market_window_closed_notice' => 'The transfer window is closed. You can still negotiate with clubs — any agreed signings will join your team when the next window opens.',
+
+    // Release clauses (cláusulas de rescisión)
+    'release_clause' => 'Release clause',
 ];

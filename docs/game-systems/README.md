@@ -18,5 +18,6 @@ High-level documentation of the game systems that power VirtuaFC. These document
 | [Stadium & Facilities](stadium-and-facilities.md) | Long-term vision: attendance, fan base, ticketing, sponsor portfolio, capital upgrades |
 | [Reputation System](reputation-system.md) | Dynamic reputation tiers based on sustained performance |
 | [Transfer Market](transfer-market.md) | Scouting, buying, selling, loans, contracts |
+| [Release Clauses](release-clauses.md) | Buyout clauses (build plan): golden-handcuffs amount, ES-mandatory, user/AI triggers, new-games-only rollout |
 | [Youth Academy](academy-redesign.md) | Phased stat reveals, development, evaluations |
 | [Squad Page Redesign](squad-page-redesign.md) | UI/UX design reference |

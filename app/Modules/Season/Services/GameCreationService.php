@@ -58,6 +58,7 @@ class GameCreationService
             'season_goal' => null,
             'setup_completed_at' => null,
             'squad_registration_enabled' => true,
+            'release_clauses_enabled' => true,
         ]);
 
         // Create default tactical settings

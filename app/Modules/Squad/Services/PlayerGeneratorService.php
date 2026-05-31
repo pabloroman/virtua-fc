@@ -109,6 +109,12 @@ class PlayerGeneratorService
         $seasonYear = (int) $game->season;
         $contractUntil = Carbon::createFromDate($seasonYear + $data->contractYears, 6, 30);
 
+        // Mandatory floor for ES clubs, null elsewhere. Resolve the team country
+        // only when the feature is on, so flag-off saves incur no extra query.
+        $releaseClause = $game->release_clauses_enabled
+            ? $this->contractService->calculateReleaseClause($marketValue, null, null, $this->resolveTeamCountry($data->teamId))
+            : null;
+
         $gamePlayer = GamePlayer::create([
             'id' => Str::uuid()->toString(),
             'game_id' => $game->id,
@@ -125,6 +131,7 @@ class PlayerGeneratorService
             'market_value_cents' => $marketValue,
             'contract_until' => $contractUntil,
             'annual_wage' => $annualWage,
+            'release_clause' => $releaseClause,
             'durability' => InjuryService::generateDurability(),
             'overall_score' => $data->overallScore,
             'potential' => $potential,
@@ -189,9 +196,13 @@ class PlayerGeneratorService
         // One query resolves every team's regional-naming flag for the batch,
         // so Basque / Catalan clubs get appropriate names without per-player
         // team lookups inside the hot loop.
-        $teamRegions = $this->resolveTeamRegions(
-            array_unique(array_filter(array_map(fn ($d) => $d->teamId, $dataItems)))
-        );
+        $teamIds = array_unique(array_filter(array_map(fn ($d) => $d->teamId, $dataItems)));
+        $teamRegions = $this->resolveTeamRegions($teamIds);
+
+        // team_id → country map for the mandatory-clause seed, resolved once for
+        // the batch (and only when the feature is on — flag-off saves skip it).
+        $releaseClausesEnabled = $game->release_clauses_enabled;
+        $teamCountries = $releaseClausesEnabled ? $this->resolveTeamCountries($teamIds) : [];
 
         // Build the excluded-names set once; pickRandomIdentity below mutates
         // this hash directly via gameNamesCache, so subsequent iterations see
@@ -230,6 +241,10 @@ class PlayerGeneratorService
             $annualWage = $this->contractService->calculateAnnualWage($marketValue, $minimumWage, $age);
             $contractUntil = Carbon::createFromDate($seasonYear + $data->contractYears, 6, 30);
 
+            $releaseClause = $releaseClausesEnabled
+                ? $this->contractService->calculateReleaseClause($marketValue, null, null, $teamCountries[$data->teamId] ?? null)
+                : null;
+
             $gamePlayerRows[] = [
                 'id' => $gamePlayerId,
                 'game_id' => $game->id,
@@ -245,6 +260,7 @@ class PlayerGeneratorService
                 'market_value_cents' => $marketValue,
                 'contract_until' => $contractUntil->format('Y-m-d'),
                 'annual_wage' => $annualWage,
+                'release_clause' => $releaseClause,
                 'durability' => InjuryService::generateDurability(),
                 'overall_score' => $data->overallScore,
                 'potential' => $potential,
@@ -554,6 +570,33 @@ class PlayerGeneratorService
         }
 
         return $regions;
+    }
+
+    /**
+     * Look up a single team's country (uppercase 2-char) for the ES release-clause check.
+     */
+    private function resolveTeamCountry(?string $teamId): ?string
+    {
+        if ($teamId === null) {
+            return null;
+        }
+
+        return Team::whereKey($teamId)->value('country');
+    }
+
+    /**
+     * Bulk-resolve team countries for a set of teamIds in a single query.
+     *
+     * @param  string[]  $teamIds
+     * @return array<string, string|null>  Map of teamId → country (uppercase 2-char).
+     */
+    private function resolveTeamCountries(array $teamIds): array
+    {
+        if (empty($teamIds)) {
+            return [];
+        }
+
+        return Team::whereIn('id', $teamIds)->pluck('country', 'id')->all();
     }
 
     /**

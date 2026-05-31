@@ -338,7 +338,7 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
                 id, game_id, player_id,
                 transfermarkt_id, name, date_of_birth, nationality, height, foot,
                 team_id, number, position, secondary_positions,
-                market_value, market_value_cents, contract_until, annual_wage, durability,
+                market_value, market_value_cents, contract_until, annual_wage, release_clause, durability,
                 overall_score,
                 potential, potential_low, potential_high, tier
             )
@@ -346,7 +346,7 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
                 gen_random_uuid(), ?, t.player_id,
                 t.transfermarkt_id, t.name, t.date_of_birth, t.nationality, t.height, t.foot,
                 t.team_id, t.number, t.position, t.secondary_positions,
-                t.market_value, t.market_value_cents, t.contract_until, t.annual_wage, t.durability,
+                t.market_value, t.market_value_cents, t.contract_until, t.annual_wage, t.release_clause, t.durability,
                 t.overall_score,
                 t.potential, t.potential_low, t.potential_high, t.tier
             FROM game_player_templates t

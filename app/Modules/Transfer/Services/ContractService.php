@@ -36,6 +36,13 @@ class ContractService
     private const DEFAULT_MINIMUM_WAGE = 10_000_000; // €100K
 
     /**
+     * Country whose clubs MUST carry a release clause on every contract
+     * (mirrors Royal Decree 1006/1985 — buyout clauses are mandatory in Spain).
+     * Team.country stores uppercase 2-char codes (England is 'EN').
+     */
+    private const RELEASE_CLAUSE_MANDATORY_COUNTRY = 'ES';
+
+    /**
      * Club reputation multiplier on top of the competition tier baseline.
      * Applied only at tier 3+ because La Liga and La Liga 2 have sector-wide
      * minimums that don't meaningfully vary by club ambition — tier-3 wages,
@@ -348,6 +355,89 @@ class ContractService
     }
 
     // =========================================
+    // RELEASE CLAUSE (CLÁUSULA DE RESCISIÓN)
+    // =========================================
+
+    /**
+     * Resolve a player's release clause (in cents) for a given club at a
+     * contract agreement. Pure function — takes primitives so bulk seeding and
+     * generation paths can call it without loading a Team per player.
+     *
+     * Mandatory for ES clubs (defaults to the floor); optional elsewhere
+     * (null unless the manager opts in via $userRequestedCents). A manager's
+     * requested amount is clamped to [floor, maxTolerable], where the upper
+     * bound rises with the wage premium offered over the player's demand
+     * ("golden handcuffs"). Returns null when no clause applies.
+     *
+     * @param int $marketValueCents Player's market value in cents
+     * @param int|null $offeredWageCents Agreed/offered wage in cents (for the tolerance cap)
+     * @param int|null $wageDemandCents Player's wage demand in cents (for the tolerance cap)
+     * @param string|null $clubCountry Owning club's country (uppercase 2-char, e.g. 'ES')
+     * @param int|null $userRequestedCents Manager-requested clause; null = derived default
+     * @return int|null Clause in cents, or null when no clause applies
+     */
+    public function calculateReleaseClause(
+        int $marketValueCents,
+        ?int $offeredWageCents,
+        ?int $wageDemandCents,
+        ?string $clubCountry,
+        ?int $userRequestedCents = null,
+    ): ?int {
+        // Optional (non-ES) clubs only carry a clause when the manager opts in.
+        if (!$this->isReleaseClauseMandatory($clubCountry) && $userRequestedCents === null) {
+            return null;
+        }
+
+        // No meaningful market value → no clause (avoids a €0 buyout).
+        if ($marketValueCents <= 0) {
+            return null;
+        }
+
+        $floor = (int) round($marketValueCents * (float) config('finances.release_clause.es_floor_multiplier', 1.25));
+
+        // Derived default at agreement = the floor.
+        if ($userRequestedCents === null) {
+            return $floor;
+        }
+
+        // Manager set/raised the clause: clamp into [floor, maxTolerable].
+        $maxTolerable = max($floor, $this->maxTolerableReleaseClause($marketValueCents, $offeredWageCents, $wageDemandCents));
+
+        return max($floor, min($userRequestedCents, $maxTolerable));
+    }
+
+    /**
+     * Highest clause (in cents) the player will tolerate for a given wage offer.
+     * Rises with the wage premium over the player's demand and is hard-capped.
+     *
+     * tolerance(ratio) = clamp(base + premium_slope * max(0, ratio - 1), base, hard_cap)
+     * where ratio = offeredWage / wageDemand (defaults to wage parity when unknown).
+     */
+    public function maxTolerableReleaseClause(int $marketValueCents, ?int $offeredWageCents, ?int $wageDemandCents): int
+    {
+        $base = (float) config('finances.release_clause.tolerance.base', 1.25);
+        $slope = (float) config('finances.release_clause.tolerance.premium_slope', 2.5);
+        $hardCap = (float) config('finances.release_clause.tolerance.hard_cap', 2.5);
+
+        $ratio = 1.0;
+        if ($offeredWageCents !== null && $wageDemandCents !== null && $wageDemandCents > 0) {
+            $ratio = $offeredWageCents / $wageDemandCents;
+        }
+
+        $multiplier = min($hardCap, $base + $slope * max(0.0, $ratio - 1.0));
+
+        return (int) round($marketValueCents * $multiplier);
+    }
+
+    /**
+     * Whether clubs of this country must carry a release clause on every contract.
+     */
+    private function isReleaseClauseMandatory(?string $clubCountry): bool
+    {
+        return $clubCountry === self::RELEASE_CLAUSE_MANDATORY_COUNTRY;
+    }
+
+    // =========================================
     // CONTRACT RENEWAL
     // =========================================
 
@@ -391,6 +481,19 @@ class ContractService
             'contract_until' => $newContractEnd,
             'pending_annual_wage' => $newWage,
         ];
+
+        // Release clause refreshes at every agreement. Renewals only happen for
+        // the manager's own players, so the owning club is the user's team and
+        // its country is $game->country. ES clubs get the mandatory floor; other
+        // countries get null (the optional user-raise lever lands in Phase 4).
+        if ($game->release_clauses_enabled) {
+            $updates['release_clause'] = $this->calculateReleaseClause(
+                $player->market_value_cents,
+                null,
+                null,
+                $game->country,
+            );
+        }
 
         // Synchronous flag clear: if the new effective wage lifts the player
         // out of the wage-gap band (>= 60% of peer median), drop the flag now
@@ -779,6 +882,9 @@ class ContractService
         $player->update([
             'team_id' => null,
             'number' => null,
+            // Free agent → no contract → no release clause (non-null ⟺ under
+            // contract). Mirrors the contract-expiry free-agent path.
+            'release_clause' => null,
         ]);
 
         // Cancel any active renewal negotiations

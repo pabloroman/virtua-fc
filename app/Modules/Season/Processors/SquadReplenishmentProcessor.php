@@ -175,7 +175,9 @@ class SquadReplenishmentProcessor implements SeasonProcessor
 
         // Batch release old/weak players
         if (!empty($releaseIds)) {
-            GamePlayer::whereIn('id', $releaseIds)->update(['team_id' => null]);
+            // Released players become free agents — no contract, so no clause
+            // (non-null ⟺ under contract).
+            GamePlayer::whereIn('id', $releaseIds)->update(['team_id' => null, 'release_clause' => null]);
         }
 
         // Preseed the generator's game-wide name cache from data we already

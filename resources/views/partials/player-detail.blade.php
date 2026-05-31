@@ -184,6 +184,12 @@
                         <span class="text-xs font-semibold text-text-primary">{{ $gamePlayer->contract_expiry_year }}</span>
                     </div>
                 @endif
+                @if($game->release_clauses_enabled && $gamePlayer->hasReleaseClause())
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] text-text-muted uppercase tracking-wide">{{ __('transfers.release_clause') }}</span>
+                        <span class="text-xs font-semibold text-text-primary">{{ $gamePlayer->formatted_release_clause }}</span>
+                    </div>
+                @endif
                 @if($gamePlayer->careerRecord)
                     @php
                         $cr = $gamePlayer->careerRecord;

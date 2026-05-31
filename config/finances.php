@@ -21,6 +21,28 @@ return [
     // elite/continental/established/modest/local) if tuning calls for it.
     'wage_cap_ratio' => 0.70,
 
+    // Release clauses (cláusulas de rescisión). The amount is a "golden
+    // handcuffs" model anchored to market value. Mandatory for Spanish (ES)
+    // clubs, optional elsewhere. Multipliers are bare floats (multiples of
+    // market value), NOT cents.
+    'release_clause' => [
+        // Mandatory minimum clause for ES clubs, as a multiple of market value.
+        // The derived default at every agreement equals this floor.
+        'es_floor_multiplier' => 1.25,
+
+        // Player resistance to a high clause, expressed as a CAP (multiple of
+        // market value) that rises with the wage premium offered over the
+        // player's demand. The manager may raise the clause up to this cap by
+        // paying a bigger wage; going higher requires a bigger wage still.
+        //   tolerance(ratio) = clamp(base + premium_slope * max(0, ratio - 1), base, hard_cap)
+        //   where ratio = offered_wage / wage_demand.
+        'tolerance' => [
+            'base'          => 1.25, // cap at wage parity (offered == demand)
+            'premium_slope' => 2.5,  // extra MV multiple per +1.0 of wage premium
+            'hard_cap'      => 2.5,  // absolute ceiling on the MV multiple
+        ],
+    ],
+
     // Commercial revenue per seat per season by reputation level (in cents).
     'commercial_per_seat' => [
         'elite'        => 170_000, // €1,700/seat

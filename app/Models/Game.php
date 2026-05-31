@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Builder;
  * @property bool $needs_welcome
  * @property bool $pre_season
  * @property bool $squad_registration_enabled
+ * @property bool $release_clauses_enabled
  * @property string|null $season_goal
  * @property string $competition_id
  * @property string $game_mode
@@ -124,6 +125,7 @@ class Game extends Model
         'needs_welcome',
         'pre_season',
         'squad_registration_enabled',
+        'release_clauses_enabled',
         'fast_mode_entered_on',
         'pending_actions',
         'setup_completed_at',
@@ -147,6 +149,7 @@ class Game extends Model
         'needs_welcome' => 'boolean',
         'pre_season' => 'boolean',
         'squad_registration_enabled' => 'boolean',
+        'release_clauses_enabled' => 'boolean',
         'fast_mode_entered_on' => 'date',
         'pending_actions' => 'array',
         'setup_completed_at' => 'datetime',

@@ -28,6 +28,7 @@ class TransferCompletionService
 {
     public function __construct(
         private readonly SquadNumberService $squadNumberService,
+        private readonly ContractService $contractService,
     ) {}
     /**
      * Complete an outgoing transfer (user's player sold to AI team).
@@ -129,6 +130,12 @@ class TransferCompletionService
             'number' => null,
             // Extend their contract with the new team
             'contract_until' => Carbon::createFromDate((int) $game->season + rand(2, 4) + 1, 6, 30),
+            // Recompute the clause for the new club. This path writes no
+            // annual_wage, so the wage signal is the offer's offered_wage. ES
+            // default = floor; null elsewhere (and for flag-off saves).
+            'release_clause' => $game->release_clauses_enabled
+                ? $this->contractService->calculateReleaseClause($player->market_value_cents, $offer->offered_wage, null, $buyer->country)
+                : null,
         ]);
 
         $this->syncCareerRecordOnOwnershipChange(
@@ -206,6 +213,11 @@ class TransferCompletionService
             'number' => $this->squadNumberService->assignNumberForNewPlayer($game, $player),
             'contract_until' => $newContractEnd,
             'annual_wage' => $offer->offered_wage ?? $player->annual_wage,
+            // Recompute the clause for the buying (user's) club — mandatory
+            // floor for ES, null elsewhere (and for flag-off saves).
+            'release_clause' => $game->release_clauses_enabled
+                ? $this->contractService->calculateReleaseClause($player->market_value_cents, null, null, $game->country)
+                : null,
         ]);
 
         $this->syncCareerRecordOnOwnershipChange(
@@ -267,6 +279,11 @@ class TransferCompletionService
             'number' => $this->squadNumberService->assignNumberForNewPlayer($game, $player),
             'contract_until' => $newContractEnd,
             'annual_wage' => $offer->offered_wage,
+            // Recompute the clause for the signing (user's) club — mandatory
+            // floor for ES, null elsewhere (and for flag-off saves).
+            'release_clause' => $game->release_clauses_enabled
+                ? $this->contractService->calculateReleaseClause($player->market_value_cents, null, null, $game->country)
+                : null,
         ]);
 
         $this->syncCareerRecordOnOwnershipChange(
