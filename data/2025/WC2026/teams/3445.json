@@ -3,6 +3,7 @@
   "name": "Czechia",
   "players": [
     {
+      "calledUp": true,
       "club": {
         "image": "https://assets.virtuafc.com/crests/1075.png",
         "name": "SC Braga"
@@ -19,6 +20,7 @@
       "potential": 83
     },
     {
+      "calledUp": true,
       "club": {
         "image": "https://assets.virtuafc.com/crests/383.png",
         "name": "PSV Eindhoven"
@@ -35,6 +37,7 @@
       "potential": 81
     },
     {
+      "calledUp": true,
       "club": {
         "image": "https://assets.virtuafc.com/crests/62.png",
         "name": "SK Slavia Prague"
@@ -51,6 +54,7 @@
       "potential": 76
     },
     {
+      "calledUp": true,
       "club": {
         "image": "https://assets.virtuafc.com/crests/543.png",
         "name": "Wolverhampton Wanderers"
@@ -67,6 +71,7 @@
       "potential": 81
     },
     {
+      "calledUp": true,
       "club": {
         "image": "https://assets.virtuafc.com/crests/533.png",
         "name": "TSG 1899 Hoffenheim"
@@ -83,6 +88,7 @@
       "potential": 77
     },
     {
+      "calledUp": true,
       "club": {
         "image": "https://assets.virtuafc.com/crests/62.png",
         "name": "SK Slavia Prague"
@@ -99,6 +105,7 @@
       "potential": 80
     },
     {
+      "calledUp": true,
       "club": {
         "image": "https://assets.virtuafc.com/crests/62.png",
         "name": "SK Slavia Prague"
@@ -115,6 +122,7 @@
       "potential": 77
     },
     {
+      "calledUp": true,
       "club": {
         "image": "https://assets.virtuafc.com/crests/62.png",
         "name": "SK Slavia Prague"
@@ -131,6 +139,7 @@
       "potential": 76
     },
     {
+      "calledUp": true,
       "club": {
         "image": "https://assets.virtuafc.com/crests/197.png",
         "name": "AC Sparta Prague"
@@ -147,6 +156,7 @@
       "potential": 73
     },
     {
+      "calledUp": true,
       "club": {
         "image": "https://assets.virtuafc.com/crests/62.png",
         "name": "SK Slavia Prague"
@@ -163,6 +173,7 @@
       "potential": 75
     },
     {
+      "calledUp": true,
       "club": {
         "image": "https://assets.virtuafc.com/crests/533.png",
         "name": "TSG 1899 Hoffenheim"
@@ -179,6 +190,7 @@
       "potential": 78
     },
     {
+      "calledUp": true,
       "club": {
         "image": "https://assets.virtuafc.com/crests/379.png",
         "name": "West Ham United"
@@ -195,6 +207,7 @@
       "potential": 76
     },
     {
+      "calledUp": true,
       "club": {
         "image": "https://assets.virtuafc.com/crests/62.png",
         "name": "SK Slavia Prague"
@@ -211,6 +224,7 @@
       "potential": 79
     },
     {
+      "calledUp": true,
       "club": {
         "image": "https://assets.virtuafc.com/crests/941.png",
         "name": "FC Viktoria Plzen"
@@ -226,6 +240,7 @@
       "potential": 78
     },
     {
+      "calledUp": false,
       "club": {
         "image": "https://assets.virtuafc.com/crests/51772.png",
         "name": "FC Cincinnati"
@@ -242,6 +257,7 @@
       "potential": 74
     },
     {
+      "calledUp": true,
       "club": {
         "image": "https://assets.virtuafc.com/crests/197.png",
         "name": "AC Sparta Prague"
@@ -256,6 +272,7 @@
       "position": "Central Midfield"
     },
     {
+      "calledUp": true,
       "club": {
         "image": "https://assets.virtuafc.com/crests/941.png",
         "name": "FC Viktoria Plzen"
@@ -271,6 +288,7 @@
       "potential": 73
     },
     {
+      "calledUp": true,
       "club": {
         "image": "https://assets.virtuafc.com/crests/1897.png",
         "name": "FC Hradec Kralove"
@@ -287,6 +305,7 @@
       "potential": 71
     },
     {
+      "calledUp": true,
       "club": {
         "image": "https://assets.virtuafc.com/crests/62.png",
         "name": "SK Slavia Prague"
@@ -303,6 +322,7 @@
       "potential": 73
     },
     {
+      "calledUp": true,
       "club": {
         "image": "https://assets.virtuafc.com/crests/1041.png",
         "name": "Olympique Lyon"
@@ -319,6 +339,7 @@
       "potential": 81
     },
     {
+      "calledUp": true,
       "club": {
         "image": "https://assets.virtuafc.com/crests/941.png",
         "name": "FC Viktoria Plzen"
@@ -335,6 +356,7 @@
       "potential": 75
     },
     {
+      "calledUp": false,
       "club": {
         "image": "https://assets.virtuafc.com/crests/941.png",
         "name": "FC Viktoria Plzen"
@@ -351,6 +373,7 @@
       "potential": 73
     },
     {
+      "calledUp": true,
       "club": {
         "image": "https://assets.virtuafc.com/crests/62.png",
         "name": "SK Slavia Prague"
@@ -367,6 +390,7 @@
       "potential": 79
     },
     {
+      "calledUp": true,
       "club": {
         "image": "https://assets.virtuafc.com/crests/15.png",
         "name": "Bayer 04 Leverkusen"
@@ -383,6 +407,7 @@
       "potential": 85
     },
     {
+      "calledUp": true,
       "club": {
         "image": "https://assets.virtuafc.com/crests/533.png",
         "name": "TSG 1899 Hoffenheim"
@@ -399,6 +424,7 @@
       "potential": 83
     },
     {
+      "calledUp": true,
       "club": {
         "image": "https://assets.virtuafc.com/crests/62.png",
         "name": "SK Slavia Prague"
@@ -415,6 +441,7 @@
       "potential": 75
     },
     {
+      "calledUp": true,
       "club": {
         "image": "https://assets.virtuafc.com/crests/62.png",
         "name": "SK Slavia Prague"
@@ -431,6 +458,7 @@
       "potential": 75
     },
     {
+      "calledUp": true,
       "club": {
         "image": "https://assets.virtuafc.com/crests/197.png",
         "name": "AC Sparta Prague"
@@ -445,6 +473,7 @@
       "position": "Centre-Forward"
     },
     {
+      "calledUp": false,
       "club": {
         "image": "https://assets.virtuafc.com/crests/5546.png",
         "name": "FK Mlada Boleslav"

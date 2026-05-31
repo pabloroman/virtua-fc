@@ -53,7 +53,7 @@
       "foot": "right",
       "height": "1,90m",
       "id": "1089202",
-      "injured": true,
+      "injured": false,
       "marketValue": "€8.00m",
       "name": "Moïse Bombito",
       "position": "Centre-Back"
@@ -67,15 +67,15 @@
       "foot": "right",
       "height": "1,91m",
       "id": "340990",
-      "injured": true,
+      "injured": false,
       "marketValue": "€6.00m",
       "name": "Alfie Jones",
       "position": "Centre-Back"
     },
     {
       "club": {
-        "image": "https://assets.virtuafc.com/crests/124.png",
-        "name": "Rangers FC"
+        "image": "https://assets.virtuafc.com/crests/244.png",
+        "name": "Olympique Marseille"
       },
       "dateOfBirth": "Nov 25, 1997",
       "foot": "left",
@@ -109,23 +109,9 @@
       "foot": "right",
       "height": "1,83m",
       "id": "921995",
-      "injured": true,
+      "injured": false,
       "marketValue": "€1.00m",
       "name": "Luc De Fougerolles",
-      "position": "Centre-Back"
-    },
-    {
-      "club": {
-        "image": "https://assets.virtuafc.com/crests/352.png",
-        "name": "Swindon Town"
-      },
-      "dateOfBirth": "Dec 24, 2004",
-      "foot": "right",
-      "height": "1,88m",
-      "id": "1002286",
-      "injured": false,
-      "marketValue": "€300k",
-      "name": "Jamie Knight-Lebel",
       "position": "Centre-Back"
     },
     {
@@ -137,8 +123,8 @@
       "foot": "left",
       "height": "1,85m",
       "id": "424204",
-      "injured": true,
-      "marketValue": "€45.00m",
+      "injured": false,
+      "marketValue": "€40.00m",
       "name": "Alphonso Davies",
       "position": "Left-Back"
     },
@@ -165,7 +151,7 @@
       "foot": "right",
       "height": "1,75m",
       "id": "417348",
-      "injured": true,
+      "injured": false,
       "marketValue": "€1.00m",
       "name": "Richie Laryea",
       "position": "Right-Back"
@@ -186,20 +172,6 @@
     },
     {
       "club": {
-        "image": "https://assets.virtuafc.com/crests/6321.png",
-        "name": "Vancouver Whitecaps FC"
-      },
-      "dateOfBirth": "Aug 2, 2002",
-      "foot": "left",
-      "height": "1,75m",
-      "id": "657271",
-      "injured": false,
-      "marketValue": "€800k",
-      "name": "Ralph Priso",
-      "position": "Defensive Midfield"
-    },
-    {
-      "club": {
         "image": "https://assets.virtuafc.com/crests/6574.png",
         "name": "US Sassuolo"
       },
@@ -208,7 +180,7 @@
       "height": "1,88m",
       "id": "921655",
       "injured": false,
-      "marketValue": "€20.00m",
+      "marketValue": "€25.00m",
       "name": "Ismaël Koné",
       "position": "Central Midfield"
     },
@@ -256,20 +228,6 @@
     },
     {
       "club": {
-        "image": "https://assets.virtuafc.com/crests/4284.png",
-        "name": "Sporting Kansas City"
-      },
-      "dateOfBirth": "May 7, 1999",
-      "foot": "left",
-      "height": "1,80m",
-      "id": "531835",
-      "injured": false,
-      "marketValue": "€1.00m",
-      "name": "Zorhan Bassong",
-      "position": "Central Midfield"
-    },
-    {
-      "club": {
         "image": "https://assets.virtuafc.com/crests/51828.png",
         "name": "Los Angeles FC"
       },
@@ -292,7 +250,7 @@
       "height": "1,80m",
       "id": "995642",
       "injured": false,
-      "marketValue": "€4.00m",
+      "marketValue": "€5.00m",
       "name": "Ali Ahmed",
       "position": "Left Midfield"
     },
@@ -312,6 +270,20 @@
     },
     {
       "club": {
+        "image": "https://assets.virtuafc.com/crests/3008.png",
+        "name": "Hull City"
+      },
+      "dateOfBirth": "Sep 27, 1999",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "487417",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Liam Millar",
+      "position": "Left Winger"
+    },
+    {
+      "club": {
         "image": "https://assets.virtuafc.com/crests/51828.png",
         "name": "Los Angeles FC"
       },
@@ -322,34 +294,6 @@
       "injured": false,
       "marketValue": "€3.00m",
       "name": "Jacob Shaffelburg",
-      "position": "Left Winger"
-    },
-    {
-      "club": {
-        "image": "https://assets.virtuafc.com/crests/3008.png",
-        "name": "Hull City"
-      },
-      "dateOfBirth": "Sep 27, 1999",
-      "foot": "right",
-      "height": "1,81m",
-      "id": "487417",
-      "injured": false,
-      "marketValue": "€2.80m",
-      "name": "Liam Millar",
-      "position": "Left Winger"
-    },
-    {
-      "club": {
-        "image": "https://assets.virtuafc.com/crests/72309.png",
-        "name": "Austin FC"
-      },
-      "dateOfBirth": "Sep 26, 2002",
-      "foot": "right",
-      "height": "1,70m",
-      "id": "635445",
-      "injured": false,
-      "marketValue": "€2.00m",
-      "name": "Jayden Nelson",
       "position": "Left Winger"
     },
     {
@@ -376,7 +320,7 @@
       "height": "1,78m",
       "id": "533738",
       "injured": false,
-      "marketValue": "€35.00m",
+      "marketValue": "€30.00m",
       "name": "Jonathan David",
       "position": "Centre-Forward"
     },
@@ -389,7 +333,7 @@
       "foot": "right",
       "height": "1,95m",
       "id": "888785",
-      "injured": true,
+      "injured": false,
       "marketValue": "€17.00m",
       "name": "Promise David",
       "position": "Centre-Forward"
@@ -410,20 +354,6 @@
     },
     {
       "club": {
-        "image": "https://assets.virtuafc.com/crests/466.png",
-        "name": "Preston North End"
-      },
-      "dateOfBirth": "Aug 13, 2003",
-      "foot": "right",
-      "height": "1,90m",
-      "id": "746740",
-      "injured": false,
-      "marketValue": "€6.00m",
-      "name": "Daniel Jebbison",
-      "position": "Centre-Forward"
-    },
-    {
-      "club": {
         "image": "https://assets.virtuafc.com/crests/180.png",
         "name": "Southampton FC"
       },
@@ -432,22 +362,8 @@
       "height": "1,88m",
       "id": "343463",
       "injured": false,
-      "marketValue": "€3.50m",
+      "marketValue": "€2.50m",
       "name": "Cyle Larin",
-      "position": "Centre-Forward"
-    },
-    {
-      "club": {
-        "image": "https://assets.virtuafc.com/crests/415.png",
-        "name": "FC Toulouse"
-      },
-      "dateOfBirth": "Sep 13, 2002",
-      "foot": "right",
-      "height": "1,83m",
-      "id": "683625",
-      "injured": false,
-      "marketValue": "€3.50m",
-      "name": "Jacen Russell-Rowe",
       "position": "Centre-Forward"
     }
   ],

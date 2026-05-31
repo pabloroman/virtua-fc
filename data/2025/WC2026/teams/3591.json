@@ -132,19 +132,19 @@
     },
     {
       "club": {
-        "image": "https://assets.virtuafc.com/crests/290.png",
-        "name": "AJ Auxerre"
+        "image": "https://assets.virtuafc.com/crests/6890.png",
+        "name": "Basaksehir FK"
       },
-      "dateOfBirth": "Nov 24, 2001",
+      "dateOfBirth": "Apr 29, 1998",
       "foot": "left",
-      "height": "1,81m",
-      "id": "806793",
+      "height": "1,83m",
+      "id": "469976",
       "injured": false,
-      "marketValue": "€9.00m",
-      "name": "Clément Akpa",
-      "overall_score": 74,
-      "position": "Centre-Back",
-      "potential": 80
+      "marketValue": "€4.00m",
+      "name": "Christopher Operi",
+      "overall_score": 73,
+      "position": "Left-Back",
+      "potential": 73
     },
     {
       "club": {

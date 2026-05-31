@@ -1,8 +1,9 @@
 {
-  "image": "https://tmssl.akamaized.net/images/wappen/big/3449.png",
+  "image": "https://assets.virtuafc.com/crests/3449.png",
   "name": "Uruguay",
   "players": [
     {
+      "calledUp": false,
       "contract": "Jun 15, 2023",
       "dateOfBirth": "Apr 22, 2000",
       "foot": "right",
@@ -13,28 +14,37 @@
       "position": "Goalkeeper"
     },
     {
-      "contract": "Jan 28, 2022",
+      "calledUp": true,
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/6600.png",
+        "name": "Sport Club Internacional"
+      },
       "dateOfBirth": "Mar 23, 1993",
       "foot": "right",
       "height": "1,90m",
       "id": "264014",
-      "marketValue": "€4.00m",
+      "injured": true,
+      "marketValue": "€1.80m",
       "name": "Sergio Rochet",
-      "number": "1",
       "position": "Goalkeeper"
     },
     {
-      "contract": "Mar 28, 2023",
+      "calledUp": true,
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/2407.png",
+        "name": "CF Monterrey"
+      },
       "dateOfBirth": "Sep 6, 1997",
       "foot": "right",
       "height": "1,84m",
       "id": "320739",
-      "marketValue": "€2.50m",
+      "injured": false,
+      "marketValue": "€2.00m",
       "name": "Santiago Mele",
-      "number": "23",
       "position": "Goalkeeper"
     },
     {
+      "calledUp": false,
       "contract": "Oct 10, 2025",
       "dateOfBirth": "Jan 1, 1998",
       "foot": "right",
@@ -45,6 +55,7 @@
       "position": "Goalkeeper"
     },
     {
+      "calledUp": false,
       "dateOfBirth": "Nov 26, 2005",
       "foot": "right",
       "height": "1,92m",
@@ -53,6 +64,7 @@
       "position": "Goalkeeper"
     },
     {
+      "calledUp": false,
       "dateOfBirth": "Jun 13, 2008",
       "foot": "right",
       "height": "1,80m",
@@ -61,47 +73,82 @@
       "position": "Goalkeeper"
     },
     {
-      "contract": "Oct 13, 2020",
+      "calledUp": true,
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/288.png",
+        "name": "Club Estudiantes de La Plata"
+      },
+      "dateOfBirth": "Jun 16, 1986",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "58088",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Fernando Muslera",
+      "position": "Goalkeeper"
+    },
+    {
+      "calledUp": true,
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/131.png",
+        "name": "FC Barcelona"
+      },
       "dateOfBirth": "Mar 7, 1999",
       "foot": "right",
       "height": "1,92m",
       "id": "480267",
-      "marketValue": "€55.00m",
+      "injured": false,
+      "marketValue": "€20.00m",
       "name": "Ronald Araujo",
       "position": "Centre-Back"
     },
     {
-      "contract": "Sep 11, 2013",
+      "calledUp": true,
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/13.png",
+        "name": "Atlético de Madrid"
+      },
       "dateOfBirth": "Jan 20, 1995",
       "foot": "right",
       "height": "1,85m",
       "id": "250845",
-      "marketValue": "€20.00m",
+      "injured": false,
+      "marketValue": "€12.00m",
       "name": "José María Giménez",
       "position": "Centre-Back"
     },
     {
-      "contract": "Mar 24, 2023",
+      "calledUp": true,
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/543.png",
+        "name": "Wolverhampton Wanderers"
+      },
       "dateOfBirth": "Nov 9, 1998",
       "foot": "right",
       "height": "1,90m",
       "id": "438001",
-      "marketValue": "€8.00m",
+      "injured": false,
+      "marketValue": "€10.00m",
       "name": "Santiago Bueno",
-      "number": "2",
       "position": "Centre-Back"
     },
     {
-      "contract": "Sep 23, 2022",
+      "calledUp": true,
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/3631.png",
+        "name": "CF América"
+      },
       "dateOfBirth": "Aug 18, 1999",
       "foot": "right",
       "height": "1,82m",
       "id": "532389",
-      "marketValue": "€6.50m",
+      "injured": true,
+      "marketValue": "€4.50m",
       "name": "Sebastián Cáceres",
       "position": "Centre-Back"
     },
     {
+      "calledUp": false,
       "contract": "Sep 7, 2024",
       "dateOfBirth": "Mar 17, 2001",
       "foot": "right",
@@ -112,6 +159,7 @@
       "position": "Centre-Back"
     },
     {
+      "calledUp": false,
       "dateOfBirth": "May 14, 2008",
       "height": "1,80m",
       "id": "1339498",
@@ -119,58 +167,82 @@
       "position": "Centre-Back"
     },
     {
-      "contract": "Jan 28, 2022",
+      "calledUp": true,
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/6195.png",
+        "name": "SSC Napoli"
+      },
       "dateOfBirth": "Oct 31, 1997",
       "foot": "left",
       "height": "1,85m",
       "id": "376514",
-      "marketValue": "€18.00m",
+      "injured": false,
+      "marketValue": "€15.00m",
       "name": "Mathías Olivera",
-      "number": "16",
       "position": "Left-Back"
     },
     {
-      "contract": "Jun 15, 2023",
+      "calledUp": true,
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/336.png",
+        "name": "Sporting CP"
+      },
       "dateOfBirth": "Feb 15, 2000",
       "foot": "left",
       "height": "1,79m",
       "id": "572675",
-      "marketValue": "€14.00m",
+      "injured": false,
+      "marketValue": "€35.00m",
       "name": "Maxi Araújo",
       "position": "Left-Back"
     },
     {
-      "contract": "Sep 3, 2021",
+      "calledUp": true,
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1023.png",
+        "name": "Sociedade Esportiva Palmeiras"
+      },
       "dateOfBirth": "Aug 24, 1998",
       "foot": "left",
       "height": "1,84m",
       "id": "496268",
+      "injured": true,
       "marketValue": "€12.00m",
       "name": "Joaquín Piquerez",
       "position": "Left-Back"
     },
     {
-      "contract": "Sep 7, 2019",
+      "calledUp": true,
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/209.png",
+        "name": "CA River Plate"
+      },
       "dateOfBirth": "Nov 9, 1997",
       "foot": "left",
       "height": "1,80m",
       "id": "439072",
-      "marketValue": "€10.00m",
+      "injured": true,
+      "marketValue": "€3.50m",
       "name": "Matías Viña",
       "position": "Left-Back"
     },
     {
-      "contract": "Oct 10, 2025",
+      "calledUp": true,
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/6643.png",
+        "name": "Real Salt Lake City"
+      },
       "dateOfBirth": "Mar 29, 2000",
       "foot": "left",
       "height": "1,72m",
       "id": "446106",
-      "marketValue": "€8.00m",
+      "injured": false,
+      "marketValue": "€4.50m",
       "name": "Juan Manuel Sanabria",
-      "number": "18",
       "position": "Left-Back"
     },
     {
+      "calledUp": false,
       "contract": "Oct 12, 2018",
       "dateOfBirth": "Apr 23, 1998",
       "foot": "left",
@@ -181,6 +253,7 @@
       "position": "Left-Back"
     },
     {
+      "calledUp": false,
       "contract": "Oct 10, 2025",
       "dateOfBirth": "Feb 13, 2002",
       "foot": "right",
@@ -191,6 +264,7 @@
       "position": "Right-Back"
     },
     {
+      "calledUp": false,
       "contract": "Mar 28, 2023",
       "dateOfBirth": "Mar 14, 1997",
       "foot": "right",
@@ -202,17 +276,22 @@
       "position": "Right-Back"
     },
     {
-      "contract": "Nov 10, 2017",
+      "calledUp": true,
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/614.png",
+        "name": "CR Flamengo"
+      },
       "dateOfBirth": "Mar 24, 1993",
       "foot": "right",
       "height": "1,73m",
       "id": "188862",
-      "marketValue": "€1.50m",
+      "injured": false,
+      "marketValue": "€1.00m",
       "name": "Guillermo Varela",
-      "number": "13",
       "position": "Right-Back"
     },
     {
+      "calledUp": false,
       "contract": "Sep 10, 2025",
       "dateOfBirth": "Mar 3, 2004",
       "foot": "right",
@@ -223,26 +302,37 @@
       "position": "Right-Back"
     },
     {
-      "contract": "Sep 6, 2021",
+      "calledUp": true,
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/985.png",
+        "name": "Manchester United"
+      },
       "dateOfBirth": "Apr 11, 2001",
       "foot": "right",
       "height": "1,82m",
       "id": "476701",
-      "marketValue": "€50.00m",
+      "injured": false,
+      "marketValue": "€30.00m",
       "name": "Manuel Ugarte",
       "position": "Defensive Midfield"
     },
     {
-      "contract": "Oct 5, 2017",
+      "calledUp": true,
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/148.png",
+        "name": "Tottenham Hotspur"
+      },
       "dateOfBirth": "Jun 25, 1997",
       "foot": "right",
       "height": "1,87m",
       "id": "354362",
-      "marketValue": "€35.00m",
+      "injured": false,
+      "marketValue": "€22.00m",
       "name": "Rodrigo Bentancur",
       "position": "Defensive Midfield"
     },
     {
+      "calledUp": false,
       "contract": "Mar 23, 2018",
       "dateOfBirth": "Feb 11, 1996",
       "foot": "right",
@@ -253,17 +343,22 @@
       "position": "Defensive Midfield"
     },
     {
-      "contract": "Jun 15, 2023",
+      "calledUp": true,
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1023.png",
+        "name": "Sociedade Esportiva Palmeiras"
+      },
       "dateOfBirth": "Aug 17, 1999",
       "foot": "right",
       "height": "1,85m",
       "id": "707447",
-      "marketValue": "€4.50m",
+      "injured": false,
+      "marketValue": "€6.50m",
       "name": "Emiliano Martínez",
-      "number": "5",
       "position": "Defensive Midfield"
     },
     {
+      "calledUp": false,
       "contract": "Sep 11, 2024",
       "dateOfBirth": "Oct 19, 1998",
       "foot": "right",
@@ -275,6 +370,7 @@
       "position": "Defensive Midfield"
     },
     {
+      "calledUp": false,
       "dateOfBirth": "Aug 30, 2003",
       "foot": "left",
       "height": "1,85m",
@@ -284,6 +380,7 @@
       "position": "Defensive Midfield"
     },
     {
+      "calledUp": false,
       "contract": "Oct 10, 2025",
       "dateOfBirth": "Feb 22, 2008",
       "foot": "right",
@@ -293,6 +390,7 @@
       "position": "Defensive Midfield"
     },
     {
+      "calledUp": false,
       "dateOfBirth": "Nov 10, 2008",
       "height": "1,83m",
       "id": "1379676",
@@ -300,38 +398,52 @@
       "position": "Defensive Midfield"
     },
     {
-      "contract": "Sep 6, 2017",
+      "calledUp": true,
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/418.png",
+        "name": "Real Madrid"
+      },
       "dateOfBirth": "Jul 22, 1998",
       "foot": "right",
       "height": "1,82m",
       "id": "369081",
-      "marketValue": "€130.00m",
+      "injured": false,
+      "marketValue": "€120.00m",
       "name": "Federico Valverde",
-      "number": "15",
       "position": "Central Midfield"
     },
     {
-      "contract": "Oct 9, 2020",
+      "calledUp": true,
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/614.png",
+        "name": "CR Flamengo"
+      },
       "dateOfBirth": "Jun 1, 1997",
       "foot": "right",
       "height": "1,67m",
       "id": "397458",
-      "marketValue": "€18.00m",
+      "injured": false,
+      "marketValue": "€8.00m",
       "name": "Nicolás de la Cruz",
-      "number": "7",
       "position": "Central Midfield"
     },
     {
-      "contract": "Jun 15, 2023",
+      "calledUp": true,
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1075.png",
+        "name": "SC Braga"
+      },
       "dateOfBirth": "Aug 12, 1999",
       "foot": "right",
       "height": "1,78m",
       "id": "606752",
-      "marketValue": "€16.00m",
+      "injured": false,
+      "marketValue": "€30.00m",
       "name": "Rodrigo Zalazar",
-      "position": "Central Midfield"
+      "position": "Attacking Midfield"
     },
     {
+      "calledUp": false,
       "contract": "Sep 9, 2015",
       "dateOfBirth": "Dec 28, 1995",
       "foot": "right",
@@ -342,26 +454,37 @@
       "position": "Central Midfield"
     },
     {
-      "contract": "Sep 8, 2014",
+      "calledUp": true,
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/614.png",
+        "name": "CR Flamengo"
+      },
       "dateOfBirth": "Jun 1, 1994",
       "foot": "right",
       "height": "1,74m",
       "id": "248410",
+      "injured": true,
       "marketValue": "€14.00m",
       "name": "Giorgian de Arrascaeta",
       "position": "Attacking Midfield"
     },
     {
-      "contract": "Sep 7, 2019",
+      "calledUp": true,
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/3631.png",
+        "name": "CF América"
+      },
       "dateOfBirth": "May 20, 2000",
       "foot": "right",
       "height": "1,76m",
       "id": "465818",
-      "marketValue": "€6.00m",
+      "injured": false,
+      "marketValue": "€8.00m",
       "name": "Brian Rodríguez",
       "position": "Left Winger"
     },
     {
+      "calledUp": false,
       "dateOfBirth": "Feb 4, 2008",
       "foot": "left",
       "height": "1,64m",
@@ -370,6 +493,7 @@
       "position": "Left Winger"
     },
     {
+      "calledUp": false,
       "contract": "Jun 4, 2021",
       "dateOfBirth": "Apr 13, 2000",
       "foot": "left",
@@ -381,16 +505,22 @@
       "position": "Right Winger"
     },
     {
-      "contract": "Jan 28, 2022",
+      "calledUp": true,
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/265.png",
+        "name": "Panathinaikos"
+      },
       "dateOfBirth": "Dec 20, 2001",
       "foot": "right",
       "height": "1,75m",
       "id": "676318",
-      "marketValue": "€10.00m",
+      "injured": true,
+      "marketValue": "€6.00m",
       "name": "Facundo Pellistri",
       "position": "Right Winger"
     },
     {
+      "calledUp": false,
       "contract": "Sep 12, 2023",
       "dateOfBirth": "Apr 17, 2002",
       "foot": "right",
@@ -401,6 +531,7 @@
       "position": "Right Winger"
     },
     {
+      "calledUp": false,
       "contract": "Oct 10, 2025",
       "dateOfBirth": "Feb 1, 1999",
       "foot": "right",
@@ -411,16 +542,22 @@
       "position": "Right Winger"
     },
     {
-      "contract": "Oct 16, 2019",
+      "calledUp": true,
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1114.png",
+        "name": "Al-Hilal SFC"
+      },
       "dateOfBirth": "Jun 24, 1999",
       "foot": "right",
       "height": "1,87m",
       "id": "546543",
-      "marketValue": "€65.00m",
+      "injured": false,
+      "marketValue": "€25.00m",
       "name": "Darwin Núñez",
       "position": "Centre-Forward"
     },
     {
+      "calledUp": false,
       "contract": "Mar 26, 2024",
       "dateOfBirth": "Jul 16, 2003",
       "foot": "right",
@@ -431,6 +568,7 @@
       "position": "Centre-Forward"
     },
     {
+      "calledUp": false,
       "contract": "Sep 6, 2021",
       "dateOfBirth": "May 19, 2001",
       "foot": "right",
@@ -442,27 +580,37 @@
       "position": "Centre-Forward"
     },
     {
-      "contract": "Nov 17, 2023",
+      "calledUp": true,
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/2497.png",
+        "name": "Real Oviedo"
+      },
       "dateOfBirth": "Jun 30, 1998",
       "foot": "left",
       "height": "1,82m",
       "id": "578419",
+      "injured": false,
       "marketValue": "€4.00m",
       "name": "Federico Viñas",
-      "number": "13",
       "position": "Centre-Forward"
     },
     {
-      "contract": "Nov 16, 2024",
+      "calledUp": true,
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/7055.png",
+        "name": "Tigres UANL"
+      },
       "dateOfBirth": "Oct 1, 1994",
       "foot": "left",
       "height": "1,82m",
       "id": "189410",
-      "marketValue": "€3.00m",
+      "injured": false,
+      "marketValue": "€2.30m",
       "name": "Rodrigo Aguirre",
       "position": "Centre-Forward"
     },
     {
+      "calledUp": false,
       "dateOfBirth": "Jan 1, 2006",
       "foot": "right",
       "height": "1,79m",
@@ -471,12 +619,28 @@
       "position": "Centre-Forward"
     },
     {
+      "calledUp": false,
       "dateOfBirth": "Mar 28, 2008",
       "foot": "right",
       "height": "1,70m",
       "id": "1339511",
       "name": "Nicolas Azambuja",
       "position": "Centre-Forward"
+    },
+    {
+      "calledUp": true,
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/2462.png",
+        "name": "Fluminense Football Club"
+      },
+      "dateOfBirth": "Oct 1, 1998",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "457533",
+      "injured": false,
+      "marketValue": "€8.00m",
+      "name": "Agustín Canobbio",
+      "position": "Left Winger"
     }
   ],
   "stadiumName": null,

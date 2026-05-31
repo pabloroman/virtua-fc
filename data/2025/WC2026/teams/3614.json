@@ -1,290 +1,366 @@
 {
-  "image": "https://tmssl.akamaized.net/images/wappen/big/3614.png",
+  "image": "https://assets.virtuafc.com/crests/3614.png",
   "name": "Algeria",
   "players": [
     {
-      "contract": "Oct 14, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/16795.png",
+        "name": "Granada CF"
+      },
       "dateOfBirth": "May 13, 1998",
       "foot": "right",
       "height": "1,83m",
       "id": "283489",
+      "injured": false,
       "marketValue": "€1.00m",
       "name": "Luca Zidane",
-      "number": "23",
       "position": "Goalkeeper"
     },
     {
-      "contract": "Jun 12, 2022",
-      "dateOfBirth": "Dec 25, 1996",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/6772.png",
+        "name": "USM Alger"
+      },
+      "dateOfBirth": "Oct 11, 1994",
+      "height": "1,90m",
+      "id": "437982",
+      "injured": false,
+      "marketValue": "€850k",
+      "name": "Oussama Benbout",
+      "position": "Goalkeeper"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/5507.png",
+        "name": "FC Stade Nyonnais"
+      },
+      "dateOfBirth": "Feb 19, 2000",
       "foot": "right",
-      "height": "1,86m",
-      "id": "290559",
-      "marketValue": "€500k",
-      "name": "Anthony Mandréa",
-      "number": "1",
+      "height": "1,94m",
+      "id": "534398",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Melvin Mastil",
       "position": "Goalkeeper"
     },
     {
-      "contract": "Jan 7, 2017",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/16.png",
+        "name": "Borussia Dortmund"
+      },
       "dateOfBirth": "Apr 16, 1995",
       "foot": "left",
       "height": "1,87m",
       "id": "284732",
+      "injured": false,
       "marketValue": "€7.00m",
       "name": "Ramy Bensebaini",
-      "number": "21",
       "position": "Centre-Back"
     },
     {
-      "contract": "Oct 14, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/10004.png",
+        "name": "Paris FC"
+      },
       "dateOfBirth": "Feb 6, 1999",
       "foot": "right",
       "height": "1,85m",
       "id": "668167",
+      "injured": false,
       "marketValue": "€3.00m",
       "name": "Samir Chergui",
-      "number": "26",
       "position": "Centre-Back"
     },
     {
-      "contract": "Dec 4, 2021",
-      "dateOfBirth": "Jan 22, 2000",
-      "foot": "right",
-      "height": "1,91m",
-      "id": "592396",
-      "marketValue": "€1.30m",
-      "name": "Mohamed Amine Tougai",
-      "number": "4",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Jan 13, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/13366.png",
+        "name": "JS Kabylie"
+      },
       "dateOfBirth": "Mar 20, 1999",
       "foot": "right",
       "height": "1,87m",
       "id": "625142",
-      "marketValue": "€1.20m",
+      "injured": false,
+      "marketValue": "€1.50m",
       "name": "Zineddine Belaid",
-      "number": "5",
       "position": "Centre-Back"
     },
     {
-      "contract": "Mar 5, 2014",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/3342.png",
+        "name": "Esperance Tunis"
+      },
+      "dateOfBirth": "Jan 22, 2000",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "592396",
+      "injured": false,
+      "marketValue": "€1.30m",
+      "name": "Mohamed Amine Tougai",
+      "position": "Centre-Back"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1082.png",
+        "name": "LOSC Lille"
+      },
       "dateOfBirth": "Oct 22, 1991",
       "foot": "right",
       "height": "1,86m",
       "id": "80293",
+      "injured": false,
       "marketValue": "€1.00m",
       "name": "Aïssa Mandi",
-      "number": "2",
       "position": "Centre-Back"
     },
     {
-      "contract": "Mar 23, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/6772.png",
+        "name": "USM Alger"
+      },
+      "dateOfBirth": "Jun 15, 1999",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "949929",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Achref Abada",
+      "position": "Centre-Back"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/281.png",
+        "name": "Manchester City"
+      },
       "dateOfBirth": "Jun 6, 2001",
       "foot": "left",
       "height": "1,80m",
       "id": "578391",
+      "injured": false,
       "marketValue": "€40.00m",
       "name": "Rayan Aït-Nouri",
-      "number": "15",
       "position": "Left-Back"
     },
     {
-      "contract": "Mar 27, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/452.png",
+        "name": "BSC Young Boys"
+      },
       "dateOfBirth": "Mar 26, 2003",
       "foot": "left",
       "height": "1,85m",
       "id": "750903",
+      "injured": false,
       "marketValue": "€8.00m",
       "name": "Jaouen Hadjam",
-      "number": "13",
       "position": "Left-Back"
     },
     {
-      "contract": "Oct 14, 2025",
-      "dateOfBirth": "Feb 9, 2001",
-      "foot": "both",
-      "height": "1,76m",
-      "id": "784575",
-      "marketValue": "€2.40m",
-      "name": "Mehdi Dorval",
-      "number": "3",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Oct 9, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/276.png",
+        "name": "Hellas Verona"
+      },
       "dateOfBirth": "Jun 7, 2002",
       "foot": "right",
       "height": "1,80m",
       "id": "864306",
+      "injured": false,
       "marketValue": "€7.00m",
       "name": "Rafik Belghali",
-      "number": "25",
       "position": "Right-Back"
     },
     {
-      "contract": "Jun 6, 2017",
-      "dateOfBirth": "May 17, 1996",
-      "foot": "right",
-      "height": "1,76m",
-      "id": "416108",
-      "marketValue": "€2.70m",
-      "name": "Youcef Atal",
-      "number": "20",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Sep 4, 2016",
-      "dateOfBirth": "Dec 1, 1997",
-      "foot": "left",
-      "height": "1,75m",
-      "id": "351816",
-      "marketValue": "€9.00m",
-      "name": "Ismaël Bennacer",
-      "number": "10",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Mar 25, 2021",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/317.png",
+        "name": "FC Twente Enschede"
+      },
       "dateOfBirth": "May 26, 1998",
       "foot": "right",
       "height": "1,83m",
       "id": "416660",
-      "marketValue": "€5.00m",
+      "injured": false,
+      "marketValue": "€6.50m",
       "name": "Ramiz Zerrouki",
-      "number": "6",
       "position": "Defensive Midfield"
     },
     {
-      "contract": "Dec 27, 2018",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/1082.png",
+        "name": "LOSC Lille"
+      },
+      "dateOfBirth": "Nov 24, 1994",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "245537",
+      "injured": false,
+      "marketValue": "€5.00m",
+      "name": "Nabil Bentaleb",
+      "position": "Defensive Midfield"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/417.png",
+        "name": "OGC Nice"
+      },
       "dateOfBirth": "Sep 23, 1999",
       "foot": "right",
       "height": "1,75m",
       "id": "560593",
+      "injured": false,
       "marketValue": "€12.00m",
       "name": "Hicham Boudaoui",
-      "number": "14",
       "position": "Central Midfield"
     },
     {
-      "contract": "Sep 21, 2019",
-      "dateOfBirth": "Jan 6, 2000",
-      "foot": "right",
-      "height": "1,84m",
-      "id": "592403",
-      "marketValue": "€9.00m",
-      "name": "Adem Zorgane",
-      "number": "19",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/172.png",
+        "name": "Royal Charleroi SC"
+      },
+      "dateOfBirth": "Jul 26, 2003",
+      "height": "1,70m",
+      "id": "748445",
+      "injured": false,
+      "marketValue": "€7.00m",
+      "name": "Yassine Titraoui",
       "position": "Central Midfield"
     },
     {
-      "contract": "Oct 10, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/15.png",
+        "name": "Bayer 04 Leverkusen"
+      },
       "dateOfBirth": "Nov 24, 2005",
       "foot": "right",
       "height": "1,80m",
       "id": "905011",
-      "marketValue": "€25.00m",
+      "injured": false,
+      "marketValue": "€45.00m",
       "name": "Ibrahim Maza",
-      "number": "22",
       "position": "Attacking Midfield"
     },
     {
-      "contract": "Mar 23, 2023",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/24.png",
+        "name": "Eintracht Frankfurt"
+      },
       "dateOfBirth": "Nov 28, 2002",
       "foot": "right",
       "height": "1,83m",
       "id": "855015",
+      "injured": false,
       "marketValue": "€15.00m",
       "name": "Farès Chaïbi",
-      "number": "17",
       "position": "Attacking Midfield"
     },
     {
-      "contract": "Jun 18, 2023",
-      "dateOfBirth": "Nov 17, 1999",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/8023.png",
+        "name": "Al-Ittihad Club"
+      },
+      "dateOfBirth": "Jun 30, 1998",
       "foot": "right",
-      "height": "1,85m",
-      "id": "592979",
-      "marketValue": "€7.00m",
-      "name": "Himad Abdelli",
-      "number": "17",
+      "height": "1,75m",
+      "id": "395693",
+      "injured": false,
+      "marketValue": "€8.00m",
+      "name": "Houssem Aouar",
       "position": "Attacking Midfield"
     },
     {
-      "contract": "Dec 3, 2025",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/26091.png",
+        "name": "Al-Duhail SC"
+      },
       "dateOfBirth": "May 2, 2003",
       "foot": "right",
       "id": "748443",
-      "marketValue": "€3.20m",
+      "injured": false,
+      "marketValue": "€3.00m",
       "name": "Adil Boulbina",
-      "number": "27",
       "position": "Left Winger"
     },
     {
-      "contract": "Mar 22, 2024",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/234.png",
+        "name": "Feyenoord Rotterdam"
+      },
       "dateOfBirth": "Feb 11, 2002",
       "foot": "left",
       "height": "1,76m",
       "id": "917911",
-      "marketValue": "€20.00m",
+      "injured": false,
+      "marketValue": "€23.00m",
       "name": "Anis Hadj Moussa",
-      "number": "11",
       "position": "Right Winger"
     },
     {
-      "contract": "Oct 14, 2025",
-      "dateOfBirth": "Jul 10, 1998",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/18487.png",
+        "name": "Al-Ahli SFC"
+      },
+      "dateOfBirth": "Feb 21, 1991",
       "foot": "left",
-      "height": "1,69m",
-      "id": "739769",
-      "marketValue": "€12.00m",
-      "name": "Ilan Kebbal",
-      "number": "24",
+      "height": "1,79m",
+      "id": "171424",
+      "injured": false,
+      "marketValue": "€7.00m",
+      "name": "Riyad Mahrez",
       "position": "Right Winger"
     },
     {
-      "contract": "Oct 8, 2021",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/8970.png",
+        "name": "Frosinone Calcio"
+      },
+      "dateOfBirth": "Sep 6, 2002",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "888738",
+      "injured": false,
+      "marketValue": "€5.50m",
+      "name": "Farès Ghedjemis",
+      "position": "Right Winger"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/244.png",
+        "name": "Olympique Marseille"
+      },
+      "dateOfBirth": "Feb 16, 2000",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "418659",
+      "injured": false,
+      "marketValue": "€28.00m",
+      "name": "Amine Gouiri",
+      "position": "Centre-Forward"
+    },
+    {
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/82.png",
+        "name": "VfL Wolfsburg"
+      },
       "dateOfBirth": "May 9, 2000",
       "foot": "right",
       "height": "1,70m",
       "id": "746910",
-      "marketValue": "€32.00m",
+      "injured": false,
+      "marketValue": "€20.00m",
       "name": "Mohamed Amoura",
-      "number": "18",
       "position": "Centre-Forward"
     },
     {
-      "contract": "May 25, 2013",
-      "dateOfBirth": "Nov 24, 1991",
-      "foot": "right",
-      "height": "1,84m",
-      "id": "209992",
-      "marketValue": "€2.20m",
-      "name": "Baghdad Bounedjah",
-      "number": "9",
-      "position": "Centre-Forward"
-    },
-    {
-      "contract": "Mar 22, 2024",
-      "dateOfBirth": "Jan 13, 2001",
-      "foot": "right",
-      "height": "1,83m",
-      "id": "854382",
-      "marketValue": "€2.00m",
-      "name": "Monsef Bakrar",
-      "number": "12",
-      "position": "Centre-Forward"
-    },
-    {
-      "contract": "Dec 3, 2025",
-      "dateOfBirth": "Jul 7, 2003",
-      "foot": "right",
-      "height": "1,93m",
-      "id": "1156479",
-      "marketValue": "€800k",
-      "name": "Redouane Berkane",
-      "number": "28",
+      "club": {
+        "image": "https://assets.virtuafc.com/crests/6055.png",
+        "name": "ETO FC"
+      },
+      "dateOfBirth": "Apr 17, 2000",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "840254",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Nadhir Benbouali",
       "position": "Centre-Forward"
     }
   ],
