@@ -156,20 +156,15 @@ class SquadService
         // --- Squad Health Alerts ---
         $alerts = $this->buildAlerts($allPlayers, $game, $depthChart, $injuredCount, $lowFitnessCount, $lowMoraleCount, $isCareerMode, $windowCountdown);
 
-        // Compute peer-median wages per tier once for the whole squad — reused
-        // by the renewal loop and the squad-flags builder so both avoid the
-        // per-player `peerMedianWage()` query that would otherwise fire.
-        $mediansByTier = $isCareerMode
-            ? $this->dispositionService->peerMedianWagesByTier($allPlayers)
-            : [];
-
         // --- Renewal data (career mode) ---
         $renewalData = [];
         if ($isCareerMode) {
             $renewalEligible = $allPlayers->filter(fn ($p) => $p->canBeOfferedRenewal($seasonEndDate))
                 ->sortBy('contract_until');
             foreach ($renewalEligible as $player) {
-                $peerMedian = $mediansByTier[$player->tier] ?? null;
+                // Compute the ability-band peer median in-memory from the
+                // already-loaded squad to avoid a per-player query.
+                $peerMedian = $this->dispositionService->abilityPeerMedian($player, $allPlayers);
                 $demand = $this->contractService->calculateWageDemand(
                     $player,
                     NegotiationScenario::RENEWAL,
