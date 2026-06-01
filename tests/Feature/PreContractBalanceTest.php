@@ -147,11 +147,16 @@ class PreContractBalanceTest extends TestCase
             'competition_id' => $this->competition->id,
         ]);
 
-        // €50M player → 1.45x premium
-        $player = GamePlayer::factory()->create([
+        // €50M player → 1.45x premium. Base wage is now anchored to current
+        // ability, so pin overall_score (~83 ≈ €50M) and a prime age so the
+        // base matches the market value; keep the current wage low so neither
+        // the current-wage nor minimum-wage floor distorts the premium ratio.
+        $player = GamePlayer::factory()->age(27)->create([
             'game_id' => $game->id,
             'team_id' => $sourceTeam->id,
             'market_value_cents' => 5_000_000_000,
+            'overall_score' => 83,
+            'annual_wage' => 100_000_00,
         ]);
 
         // Run multiple times to account for wage variance and check average ratio
