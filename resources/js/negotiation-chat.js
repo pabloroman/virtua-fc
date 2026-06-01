@@ -60,6 +60,16 @@ export default function negotiationChat() {
             return this.mode === 'transfer_fee' && this.availableBudget > 0 && this.offerWage >= this.availableBudget;
         },
 
+        // Offer is at (or above) the release clause: submitting force-buys the
+        // player — the club can't refuse the fee. Drives the gold "Pagar
+        // cláusula" button state and hint in the transfer-fee submit area.
+        get isPayingClause() {
+            return this.mode === 'transfer_fee'
+                && this.phase === 'club_fee'
+                && this.playerInfo?.releaseClauseEuros > 0
+                && this.offerWage >= this.playerInfo.releaseClauseEuros;
+        },
+
         get wageStep() {
             if (this.mode === 'transfer_fee' || this.phase === 'counter_offer') {
                 if (this.offerWage >= 10000000) return 1000000;  // >= €10M: €1M steps
@@ -78,9 +88,16 @@ export default function negotiationChat() {
 
         incrementWage() {
             const newValue = this.offerWage + this.wageStep;
-            if (this.mode === 'transfer_fee' && this.availableBudget > 0 && newValue > this.availableBudget) {
-                this.offerWage = this.availableBudget;
-                return;
+            if (this.mode === 'transfer_fee') {
+                // Cap a transfer bid at the lower of the available budget and the
+                // release clause — there's never a reason to offer past the buyout.
+                let cap = Infinity;
+                if (this.availableBudget > 0) cap = Math.min(cap, this.availableBudget);
+                if (this.playerInfo?.releaseClauseEuros > 0) cap = Math.min(cap, this.playerInfo.releaseClauseEuros);
+                if (newValue > cap) {
+                    this.offerWage = cap;
+                    return;
+                }
             }
             this.offerWage = newValue;
         },
@@ -452,8 +469,9 @@ export default function negotiationChat() {
             }
             if (lastMsg?.options?.suggestedFee) {
                 let fee = lastMsg.options.suggestedFee;
-                if (this.mode === 'transfer_fee' && this.availableBudget > 0 && fee > this.availableBudget) {
-                    fee = this.availableBudget;
+                if (this.mode === 'transfer_fee') {
+                    if (this.availableBudget > 0) fee = Math.min(fee, this.availableBudget);
+                    if (this.playerInfo?.releaseClauseEuros > 0) fee = Math.min(fee, this.playerInfo.releaseClauseEuros);
                 }
                 this.offerWage = fee;
             }

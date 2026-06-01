@@ -87,6 +87,7 @@ class NegotiateTransfer
             $disposition = $this->transferService->calculateClubDisposition($player, $this->scoutingService);
             $mood = $this->transferService->getClubMoodIndicator($disposition);
             $teamName = $player->team?->name ?? 'Unknown';
+            $askingPrice = $this->clampAskingToClause((int) $existing->asking_price, $game, $player);
 
             return response()->json([
                 'status' => 'ok',
@@ -100,13 +101,13 @@ class NegotiateTransfer
                     $this->agentMessage('counter', [
                         'text' => __('transfers.chat_club_counter_resume', [
                             'team' => $teamName,
-                            'fee' => Money::format($existing->asking_price),
+                            'fee' => Money::format($askingPrice),
                         ]),
-                        'fee' => (int) ($existing->asking_price / 100),
+                        'fee' => (int) ($askingPrice / 100),
                         'mood' => $mood,
                     ], [
                         'canAccept' => true,
-                        'suggestedFee' => $this->calculateMidpointInEuros($existing->transfer_fee, $existing->asking_price),
+                        'suggestedFee' => $this->calculateMidpointInEuros($existing->transfer_fee, $askingPrice),
                     ]),
                 ],
             ]);
@@ -164,6 +165,7 @@ class NegotiateTransfer
 
         // New negotiation — show asking price
         $askingPrice = $this->scoutingService->calculateAskingPrice($player, $game->current_date);
+        $askingPrice = $this->clampAskingToClause($askingPrice, $game, $player);
         $disposition = $this->transferService->calculateClubDisposition($player, $this->scoutingService);
         $mood = $this->transferService->getClubMoodIndicator($disposition);
         $teamName = $player->team?->name ?? 'Unknown';
@@ -203,6 +205,42 @@ class NegotiateTransfer
 
         $bidCents = $validated['bid'] * 100;
         $teamName = $player->team?->name ?? 'Unknown';
+
+        // Release clause: a bid that meets or exceeds the buyout is non-refusable.
+        // Route it through triggerReleaseClause (forced FEE_AGREED, escrowed and
+        // flagged) instead of the haggle — this takes precedence over the normal
+        // disposition check. The frontend's existing fee_agreed handling then
+        // transitions straight into personal terms, exactly as after a normally
+        // accepted fee (the player may still reject those terms).
+        if ($game->release_clauses_enabled
+            && $player->hasReleaseClause()
+            && $bidCents >= (int) $player->release_clause) {
+            try {
+                $offer = $this->transferService->triggerReleaseClause($game, $player);
+            } catch (\InvalidArgumentException $e) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+
+            return response()->json([
+                'status' => 'ok',
+                'negotiation_status' => 'fee_agreed',
+                'round' => $offer->negotiation_round,
+                'max_rounds' => self::MAX_ROUNDS,
+                'messages' => [
+                    $this->agentMessage('accepted', [
+                        'text' => __('transfers.chat_clause_paid', [
+                            'team' => $teamName,
+                            'fee' => Money::format($offer->transfer_fee),
+                            'player' => $player->name,
+                        ]),
+                        'fee' => (int) ($offer->transfer_fee / 100),
+                    ]),
+                ],
+            ]);
+        }
 
         try {
             $result = $this->transferService->negotiateTransferFeeSync($game, $player, $bidCents, $this->scoutingService);
@@ -592,5 +630,19 @@ class NegotiateTransfer
     private function calculateMidpointInEuros(int $centsA, int $centsB): int
     {
         return (int) (ceil(($centsA + $centsB) / 2 / 100 / 10000) * 10000);
+    }
+
+    /**
+     * The release clause is the ceiling of the fee negotiation: a club never asks
+     * for more than the buyout, since the buyer could just pay the clause instead.
+     * No-op when clauses are off or the player carries none.
+     */
+    private function clampAskingToClause(int $askingCents, Game $game, GamePlayer $player): int
+    {
+        if ($game->release_clauses_enabled && $player->hasReleaseClause()) {
+            return min($askingCents, (int) $player->release_clause);
+        }
+
+        return $askingCents;
     }
 }

@@ -398,6 +398,7 @@ return [
     'chat_club_counter' => ':team insists on :fee.',
     'chat_club_counter_resume' => ':team is still asking :fee.',
     'chat_club_accepted' => ':team has accepted :fee for :player!',
+    'chat_clause_paid' => ':team can\'t refuse the clause. :player is yours for :fee — now agree personal terms.',
     'chat_club_rejected' => ':team has rejected the offer. Negotiations have broken down.',
     'chat_player_not_interested' => ':player is not interested in joining your club.',
     'chat_your_bid' => 'Your bid',
@@ -450,6 +451,7 @@ return [
     'chat_player_salary' => 'Salary',
     'chat_player_value' => 'Value',
     'chat_player_contract' => 'Contract',
+    'chat_player_clause' => 'Clause',
 
     'mood_willing_loan' => 'Willing to loan',
     'mood_open_loan' => 'Open to loan',
@@ -466,4 +468,7 @@ return [
 
     // Release clauses (cláusulas de rescisión)
     'release_clause' => 'Release clause',
+    'pay_release_clause' => 'Pay release clause',
+    'clause_not_available' => 'This player has no release clause you can trigger.',
+    'clause_exceeds_budget' => 'The release clause exceeds your available transfer budget.',
 ];

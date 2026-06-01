@@ -18,6 +18,7 @@ use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\GameTransfer;
 use App\Models\Loan;
+use App\Models\RenewalNegotiation;
 use App\Models\ShortlistedPlayer;
 use App\Models\Team;
 use App\Models\TeamReputation;
@@ -25,6 +26,7 @@ use App\Models\TransferListing;
 use App\Models\TransferOffer;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class TransferService
@@ -1255,6 +1257,125 @@ class TransferService
         ]);
     }
 
+    /**
+     * Trigger a release clause: the user pays the pre-agreed buyout on an
+     * AI-owned player. The selling club cannot refuse the fee, so the offer is
+     * created directly at STATUS_FEE_AGREED (the fee is forced) — the only thing
+     * left is the personal-terms negotiation, which the player may still reject.
+     *
+     * The fee is escrowed the instant the FEE_AGREED offer exists, because
+     * committedBudget() reserves it; affordability is therefore checked against
+     * availableBudget(). The personal-terms phase, salary-cap enforcement, the
+     * FEE_AGREED → AGREED transition, and completion all reuse the normal
+     * transfer pipeline (NegotiateTransfer + AgreedTransferCompletionProcessor),
+     * so no clause-specific negotiation or completion code is needed here.
+     *
+     * @throws \InvalidArgumentException when the trigger is not permitted.
+     */
+    public function triggerReleaseClause(Game $game, GamePlayer $player): TransferOffer
+    {
+        if (!$game->release_clauses_enabled) {
+            throw new \InvalidArgumentException(__('transfers.clause_not_available'));
+        }
+
+        if ($player->isUserOwned($game)) {
+            throw new \InvalidArgumentException(__('transfers.cannot_target_own_player'));
+        }
+
+        if (!$player->hasReleaseClause()) {
+            throw new \InvalidArgumentException(__('transfers.clause_not_available'));
+        }
+
+        // Loaned / called-up players can't be clause-triggered in v1: the parent
+        // club retains authority and the loan destination can't be forced to sell.
+        if ($this->playerHasActiveLoan($player)) {
+            throw new \InvalidArgumentException(__('transfers.player_on_loan_unavailable'));
+        }
+
+        $clauseCents = (int) $player->release_clause;
+
+        // Serialize the whole check-expire-create sequence so two near-
+        // simultaneous triggers (e.g. a double-clicked confirm) can't both pass
+        // the affordability guard and create duplicate FEE_AGREED offers /
+        // double-escrow. The row lock on the player makes a concurrent trigger
+        // block until the first commits; it then expires the first's offer below
+        // before creating its own, so only one live offer ever exists.
+        return DB::transaction(function () use ($game, $player, $clauseCents) {
+            GamePlayer::where('id', $player->id)->lockForUpdate()->first();
+
+            // The fee is reserved via committedBudget() the moment the FEE_AGREED
+            // offer exists, so guard affordability against the same pool a normal
+            // bid would draw from. Add back any reservation this player already
+            // holds (e.g. a prior bid or an earlier clause trigger) — it is
+            // expired and replaced below, so it must not count against this buy.
+            $existingReservation = (int) TransferOffer::where('game_id', $game->id)
+                ->where('game_player_id', $player->id)
+                ->where('offering_team_id', $game->team_id)
+                ->where('direction', TransferOffer::DIRECTION_INCOMING)
+                ->whereIn('offer_type', [TransferOffer::TYPE_USER_BID, TransferOffer::TYPE_LOAN_IN])
+                ->whereIn('status', [
+                    TransferOffer::STATUS_PENDING,
+                    TransferOffer::STATUS_FEE_AGREED,
+                    TransferOffer::STATUS_AGREED,
+                ])
+                ->get()
+                ->sum(fn (TransferOffer $o) => $o->committedAmount());
+
+            if ($clauseCents > $this->availableBudget($game) + $existingReservation) {
+                throw new \InvalidArgumentException(__('transfers.clause_exceeds_budget'));
+            }
+
+            // A release clause is non-refusable: unlike negotiateTransferFeeSync
+            // we deliberately skip assertSellerCanPartWith() — once the clause is
+            // paid the seller cannot block the sale on squad-minimum grounds.
+
+            // Exclusivity + clean slate: expire any other live offer this club
+            // has for the player (e.g. a half-finished normal bid) so the
+            // FEE_AGREED clause offer is the single negotiation handleStart()/
+            // handleStartTerms resolve — they fetch with ->first() and a
+            // duplicate would shadow it.
+            TransferOffer::where('game_id', $game->id)
+                ->where('game_player_id', $player->id)
+                ->where('offering_team_id', $game->team_id)
+                ->whereIn('status', [
+                    TransferOffer::STATUS_PENDING,
+                    TransferOffer::STATUS_FEE_AGREED,
+                    TransferOffer::STATUS_AGREED,
+                ])
+                ->update(['status' => TransferOffer::STATUS_EXPIRED, 'resolved_at' => $game->current_date]);
+
+            // Defensive: an AI player won't carry a user renewal negotiation, but
+            // cancel one if it somehow exists so no stale negotiation lingers.
+            $activeRenewal = $player->activeRenewalNegotiation;
+            if ($activeRenewal) {
+                $activeRenewal->update(['status' => RenewalNegotiation::STATUS_CLUB_DECLINED]);
+            }
+
+            // Bootstrap the personal-terms phase from the player's wage demand,
+            // exactly like the sync-bid builder, so the negotiation chat opens
+            // cleanly into terms negotiation.
+            $transferDemand = $this->contractService->calculateWageDemand($player, NegotiationScenario::TRANSFER, $game->team);
+
+            return TransferOffer::create([
+                'game_id' => $game->id,
+                'game_player_id' => $player->id,
+                'offering_team_id' => $game->team_id,
+                'selling_team_id' => $player->team_id,
+                'offer_type' => TransferOffer::TYPE_USER_BID,
+                'direction' => TransferOffer::DIRECTION_INCOMING,
+                'transfer_fee' => $clauseCents,
+                'offered_wage' => $transferDemand['wage'],
+                'offered_years' => $transferDemand['contractYears'],
+                'status' => TransferOffer::STATUS_FEE_AGREED,
+                'triggered_release_clause' => true,
+                'expires_at' => $game->current_date->addDays(30),
+                'game_date' => $game->current_date,
+                'negotiation_round' => 1,
+                'resolved_at' => $game->current_date,
+            ]);
+        });
+    }
+
     // =========================================
     // SYNCHRONOUS TRANSFER NEGOTIATION
     // =========================================
@@ -1335,6 +1456,19 @@ class TransferService
         // Immediately evaluate — pass previous counter as ceiling so the club never raises
         $previousCounter = $existing ? $existing->asking_price : null;
         $evaluation = $scoutingService->evaluateBid($player, $offer->transfer_fee, $game, $previousCounter);
+
+        // The release clause caps the whole fee negotiation: a club never asks or
+        // counters above the buyout, so the displayed/stored ask stays reachable
+        // under the slider cap (a bid that meets the clause force-buys upstream).
+        if ($game->release_clauses_enabled && $player->hasReleaseClause()) {
+            $clauseCents = (int) $player->release_clause;
+            if (isset($evaluation['asking_price'])) {
+                $evaluation['asking_price'] = min((int) $evaluation['asking_price'], $clauseCents);
+            }
+            if (isset($evaluation['counter_amount'])) {
+                $evaluation['counter_amount'] = min((int) $evaluation['counter_amount'], $clauseCents);
+            }
+        }
 
         if ($evaluation['result'] === 'accepted') {
             $offer->update([

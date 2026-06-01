@@ -102,13 +102,16 @@
                                                     <div class="text-sm text-text-secondary">
                                                         {{ $offer->gamePlayer->position_name }} &middot; {{ $offer->gamePlayer->age($game->current_date) }} {{ __('app.years') }}
                                                     </div>
-                                                    <div class="mt-1">
+                                                    <div class="mt-1 flex flex-wrap items-center gap-1">
                                                         @if($offer->isFeeAgreed())
                                                             <span class="inline-flex items-center gap-1 text-xs font-medium text-accent-green bg-accent-green/10 px-2 py-0.5 rounded-full">{{ __('transfers.chat_club_agreement') }}</span>
                                                         @elseif($offer->asking_price && $offer->asking_price > $offer->transfer_fee)
                                                             <span class="inline-flex items-center gap-1 text-xs font-medium text-accent-gold bg-accent-gold/10 px-2 py-0.5 rounded-full">{{ __('transfers.counter_offer_received') }}</span>
                                                         @else
                                                             <span class="inline-flex items-center gap-1 text-xs font-medium text-accent-blue bg-accent-blue/10 px-2 py-0.5 rounded-full">{{ __('transfers.bid_awaiting_response') }}</span>
+                                                        @endif
+                                                        @if($offer->triggered_release_clause)
+                                                            <span class="inline-flex items-center gap-1 text-xs font-medium text-accent-gold bg-accent-gold/10 px-2 py-0.5 rounded-full">{{ __('transfers.release_clause') }}</span>
                                                         @endif
                                                     </div>
                                                 </div>

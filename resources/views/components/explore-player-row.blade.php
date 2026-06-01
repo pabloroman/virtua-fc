@@ -23,6 +23,15 @@ $hasUserPreContract = $userPreContractStatus !== null;
 $canOffer = !$isUserOwned && !$hasUserPreContract && $player->team_id !== null && !$isOnLoan;
 $isFreeAgent = $player->team_id === null;
 $canNegotiateFreeAgent = $isFreeAgent && !$isUserOwned && !$hasUserPreContract;
+// Release clause: pay the buyout to force a sale of an AI-owned, contracted,
+// non-loaned player. Gated on the per-game feature flag and the player carrying
+// a clause; the server re-checks every condition in TransferService.
+$canPayClause = ($game->release_clauses_enabled ?? false)
+    && !$isUserOwned
+    && !$hasUserPreContract
+    && !$isFreeAgent
+    && !$isOnLoan
+    && $player->hasReleaseClause();
 // Default: contract column shown when the team column isn't rendered.
 $showContract = $showContract ?? !$showTeam;
 // When rendering alongside listings, the asking-price cell must always be
@@ -134,6 +143,7 @@ $showAskingPrice = $showAskingPrice ?? ($askingPrice !== null);
     @endif
     {{-- Offer button --}}
     <td class="py-2 pr-1 text-center">
+        <div class="flex items-center justify-center gap-1">
         @if($canOffer)
             @php
                 $posDisp = $player->position_display;
@@ -143,14 +153,21 @@ $showAskingPrice = $showAskingPrice ?? ($askingPrice !== null);
                     'mode' => 'transfer_fee',
                     'phase' => 'club_fee',
                     'chatTitle' => __('transfers.chat_transfer_title'),
-                    'playerInfo' => [
+                    // Release clause folds into the negotiation modal: a formatted
+                    // value for the info strip, plus a numeric euro cap for the slider
+                    // (release_clause is stored in cents). The server re-checks the
+                    // clause when an offer meets it, so these are display/UX only.
+                    'playerInfo' => array_merge([
                         'age' => $player->age($game->current_date),
                         'position' => $posDisp['abbreviation'],
                         'positionBg' => $posDisp['bg'],
                         'positionText' => $posDisp['text'],
                         'marketValue' => \App\Support\Money::format($player->market_value_cents),
                         'contractYear' => $player->contract_until?->year,
-                    ],
+                    ], $canPayClause ? [
+                        'releaseClause' => \App\Support\Money::format($player->release_clause),
+                        'releaseClauseEuros' => (int) ($player->release_clause / 100),
+                    ] : []),
                 ]);
             @endphp
             <x-icon-button
@@ -192,6 +209,7 @@ $showAskingPrice = $showAskingPrice ?? ($askingPrice !== null);
                 </svg>
             </x-icon-button>
         @endif
+        </div>
     </td>
     {{-- Shortlist star (hidden for players the user already owns) --}}
     @if($isUserOwned)

@@ -46,6 +46,8 @@ return [
     'transfer_complete_incoming_message' => ':player has joined your squad :team_de for :fee.',
     'transfer_complete_outgoing_title' => ':player sold',
     'transfer_complete_outgoing_message' => ':player has been transferred :team_a for :fee.',
+    'transfer_failed_title' => 'Transfer fell through: :player',
+    'transfer_failed_message' => 'The agreed move for :player could not be completed and any reserved budget has been released.',
     'loan_out_complete_title' => ':player loaned out',
     'loan_out_complete_message' => ':player has been loaned :team_a until the end of the season.',
 

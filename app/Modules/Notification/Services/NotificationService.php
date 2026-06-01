@@ -320,6 +320,30 @@ class NotificationService
     }
 
     /**
+     * Create a high-priority notification when an agreed incoming transfer
+     * can't be completed (e.g. the player is no longer at the expected seller,
+     * or a budget guard fired). The reserved budget is released by rejecting the
+     * offer; this tells the user why the signing did not go through.
+     */
+    public function notifyTransferFellThrough(Game $game, GamePlayer $player, ?Team $seller = null): GameNotification
+    {
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_TRANSFER_FAILED,
+            title: __('notifications.transfer_failed_title', ['player' => $player->name]),
+            message: __('notifications.transfer_failed_message', [
+                'player' => $player->name,
+                'team' => $seller?->name ?? '',
+            ]),
+            priority: GameNotification::PRIORITY_CRITICAL,
+            metadata: [
+                'player_id' => $player->id,
+                'team_id' => $seller?->id,
+            ],
+        );
+    }
+
+    /**
      * Create a notification for a pre-contract offer result.
      */
     public function notifyPreContractResult(Game $game, TransferOffer $offer): GameNotification
@@ -931,6 +955,7 @@ class NotificationService
             GameNotification::TYPE_COMPETITION_ELIMINATION => 'eliminated',
             GameNotification::TYPE_ACADEMY_PROSPECT => 'academy',
             GameNotification::TYPE_TRANSFER_COMPLETE => 'transfer_complete',
+            GameNotification::TYPE_TRANSFER_FAILED => 'transfer',
             GameNotification::TYPE_LOAN_REQUEST_RESULT => 'loan',
             GameNotification::TYPE_TOURNAMENT_WELCOME => 'trophy',
             GameNotification::TYPE_AI_TRANSFER_ACTIVITY => 'transfer',

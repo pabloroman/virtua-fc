@@ -84,6 +84,14 @@
                         </span>
                     </template>
 
+                    {{-- Release clause (the buyout ceiling for this negotiation) --}}
+                    <template x-if="playerInfo?.releaseClause">
+                        <span class="text-text-secondary">
+                            <span class="text-text-muted">{{ __('transfers.chat_player_clause') }}</span>
+                            <span class="font-semibold text-accent-gold" x-text="playerInfo.releaseClause"></span>
+                        </span>
+                    </template>
+
                     {{-- Overall (exact) --}}
                     <template x-if="playerInfo?.overall != null">
                         <span class="text-text-secondary">
@@ -314,12 +322,15 @@
 
                 <button type="button" @click="submitOffer()"
                     :disabled="!canSubmit"
-                    :class="!canSubmit ? 'opacity-40 cursor-not-allowed' : 'hover:bg-accent-green/80'"
-                    class="w-full h-[36px] rounded-lg bg-accent-green text-white text-xs font-semibold transition-colors min-h-[36px] flex items-center justify-center gap-1.5">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    :class="(isPayingClause ? 'bg-accent-gold' : 'bg-accent-green') + ' ' + (!canSubmit ? 'opacity-40 cursor-not-allowed' : (isPayingClause ? 'hover:bg-accent-gold/80' : 'hover:bg-accent-green/80'))"
+                    class="w-full h-[36px] rounded-lg text-white text-xs font-semibold transition-colors min-h-[36px] flex items-center justify-center gap-1.5">
+                    <svg x-show="!isPayingClause" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                     </svg>
-                    {{ __('transfers.chat_send_offer') }}
+                    <svg x-show="isPayingClause" x-cloak class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                    </svg>
+                    <span x-text="isPayingClause ? @js(__('transfers.pay_release_clause')) : @js(__('transfers.chat_send_offer'))"></span>
                 </button>
             </div>
 

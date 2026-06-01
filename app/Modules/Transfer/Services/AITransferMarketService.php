@@ -8,6 +8,7 @@ use App\Models\GamePlayer;
 use App\Models\GameTransfer;
 use App\Models\Team;
 use App\Models\TeamReputation;
+use App\Models\TransferOffer;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Player\PlayerAge;
 use Carbon\Carbon;
@@ -1423,6 +1424,21 @@ class AITransferMarketService
             ->where('season', $game->season)
             ->get(['id', 'game_id', 'game_player_id', 'from_team_id', 'to_team_id', 'transfer_fee', 'window']);
         $alreadyTransferredSet = array_flip($seasonTransfers->pluck('game_player_id')->all());
+
+        // Players the user has locked in with a paid release clause must not be
+        // sold out from under them by AI churn — the clause is non-refusable.
+        // Folding their ids into $alreadyTransferredSet excludes them from every
+        // AI sell path that already honours that set (buildSellOffers etc.).
+        $clauseLockedIds = TransferOffer::where('game_id', $game->id)
+            ->where('direction', TransferOffer::DIRECTION_INCOMING)
+            ->where('triggered_release_clause', true)
+            ->whereIn('status', [TransferOffer::STATUS_FEE_AGREED, TransferOffer::STATUS_AGREED])
+            ->pluck('game_player_id')
+            ->all();
+        foreach ($clauseLockedIds as $lockedId) {
+            $alreadyTransferredSet[$lockedId] = true;
+        }
+
         $windowTransfers = $seasonTransfers->where('window', $window);
         $completedFinancials = $this->buildCompletedFinancials($windowTransfers, $game->team_id);
 

@@ -46,6 +46,8 @@ return [
     'transfer_complete_incoming_message' => ':player se ha unido a tu plantilla procedente :team_de por :fee.',
     'transfer_complete_outgoing_title' => ':player vendido',
     'transfer_complete_outgoing_message' => ':player ha sido traspasado :team_a por :fee.',
+    'transfer_failed_title' => 'Fichaje frustrado: :player',
+    'transfer_failed_message' => 'El traspaso acordado de :player no pudo completarse y se ha liberado el presupuesto reservado.',
     'loan_out_complete_title' => ':player cedido',
     'loan_out_complete_message' => ':player ha sido cedido :team_a hasta final de temporada.',
 

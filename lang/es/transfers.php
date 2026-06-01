@@ -403,6 +403,7 @@ return [
     'chat_club_counter' => ':team insiste en :fee.',
     'chat_club_counter_resume' => ':team sigue pidiendo :fee.',
     'chat_club_accepted' => '¡:team ha aceptado :fee por :player!',
+    'chat_clause_paid' => ':team no puede rechazar la cláusula. :player es tuyo por :fee — ahora negocia sus términos personales.',
     'chat_club_rejected' => ':team ha rechazado la oferta. Las negociaciones se han roto.',
     'chat_player_not_interested' => ':player no está interesado en fichar por tu club.',
     'chat_your_bid' => 'Tu oferta',
@@ -455,6 +456,7 @@ return [
     'chat_player_salary' => 'Salario',
     'chat_player_value' => 'Valor',
     'chat_player_contract' => 'Contrato',
+    'chat_player_clause' => 'Cláusula',
 
     'mood_willing_loan' => 'Dispuesto a ceder',
     'mood_open_loan' => 'Abierto a cesión',
@@ -471,4 +473,7 @@ return [
 
     // Release clauses (cláusulas de rescisión)
     'release_clause' => 'Cláusula de rescisión',
+    'pay_release_clause' => 'Pagar cláusula de rescisión',
+    'clause_not_available' => 'Este jugador no tiene una cláusula de rescisión que puedas activar.',
+    'clause_exceeds_budget' => 'La cláusula de rescisión supera tu presupuesto de fichajes disponible.',
 ];

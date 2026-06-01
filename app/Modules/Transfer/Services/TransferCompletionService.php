@@ -12,6 +12,7 @@ use App\Models\ShortlistedPlayer;
 use App\Models\TransferListing;
 use App\Models\TransferOffer;
 use App\Models\UserSquadCareerRecord;
+use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Player\PlayerAge;
 use App\Modules\Squad\Services\SquadNumberService;
 use App\Modules\Transfer\Enums\TransferWindowType;
@@ -29,6 +30,7 @@ class TransferCompletionService
     public function __construct(
         private readonly SquadNumberService $squadNumberService,
         private readonly ContractService $contractService,
+        private readonly NotificationService $notificationService,
     ) {}
     /**
      * Complete an outgoing transfer (user's player sold to AI team).
@@ -47,6 +49,16 @@ class TransferCompletionService
         $player->update([
             'team_id' => $offer->offering_team_id,
             'number' => null,
+            // On a permanent sale, recompute the clause for the new AI owner so
+            // it reflects their country (ES floor / null elsewhere) rather than
+            // staying stale at the value computed for the user's club — this
+            // matters now that the user can buy AI players back via their clause.
+            // Loans keep the user as owner, so their clause is left untouched.
+            ...(! $isLoan && $game->release_clauses_enabled ? [
+                'release_clause' => $this->contractService->calculateReleaseClause(
+                    $player->market_value_cents, null, null, $buyer->country,
+                ),
+            ] : []),
         ]);
 
         // For loan-out offers, create a loan record so the player returns at season end
@@ -187,9 +199,13 @@ class TransferCompletionService
             ])
             : null;
 
-        // Safety net: reject if budget would go negative
+        // Safety net: reject if budget would go negative. Clause offers escrow
+        // the fee at trigger time so this should never fire for them, but if any
+        // path does leave the buyer short, surface it loudly rather than
+        // dropping an agreed deal in silence.
         if ($investment && $offer->transfer_fee > $investment->transfer_budget) {
             $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
+            $this->notificationService->notifyTransferFellThrough($game, $offer->gamePlayer, $offer->sellingTeam);
             return false;
         }
 
@@ -199,6 +215,19 @@ class TransferCompletionService
         $sellerName = $sellerTeam->name ?? 'Unknown';
         $sellerNameWithDe = $sellerTeam?->nameWithDe() ?? 'de Unknown';
         $fromTeamId = $offer->selling_team_id ?? $player->team_id;
+
+        // Re-assert ownership before mutating: between agreement and completion
+        // an AI-to-AI move (or a parallel deal) could have relocated the player.
+        // Finalising anyway would conjure them out of whichever club now holds
+        // them — a phantom double-sale. Fail the deal loudly instead so the
+        // escrowed fee is released (rejected offers drop out of committedBudget())
+        // and the user is told why. Free-agent signings (no selling club) take a
+        // different completion path, so selling_team_id is always set here.
+        if ($offer->selling_team_id !== null && $player->team_id !== $offer->selling_team_id) {
+            $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
+            $this->notificationService->notifyTransferFellThrough($game, $player, $sellerTeam);
+            return false;
+        }
 
         // Transfer player to user's team
         $age = $player->age($game->current_date);
