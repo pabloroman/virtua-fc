@@ -21,6 +21,20 @@ return [
     // elite/continental/established/modest/local) if tuning calls for it.
     'wage_cap_ratio' => 0.70,
 
+    // Wage-demand "market rate" comparison. A player renewing (or being flagged
+    // as underpaid) is compared against squadmates of similar CURRENT ability —
+    // overall_score within ±this band — rather than against their market-value
+    // tier. Grouping by ability stops a benchwarmer or a developing youngster
+    // (whose market value is inflated by potential) from demanding a star's wage.
+    'wage_peer_ability_band' => 5,
+
+    // How far a renewal demand is pulled toward that peer median when the
+    // player is paid below it. A *partial* pull (not a hard floor): 0 ignores
+    // peers entirely, 1.0 matches the median exactly. 0.5 closes half the gap,
+    // so equally-able players don't fully converge and a manager can still run
+    // a salary scale.
+    'renewal_peer_pull_factor' => 0.5,
+
     // Release clauses (cláusulas de rescisión). The amount is a "golden
     // handcuffs" model anchored to market value. Mandatory for Spanish (ES)
     // clubs, optional elsewhere. Multipliers are bare floats (multiples of

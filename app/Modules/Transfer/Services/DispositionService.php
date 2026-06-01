@@ -880,34 +880,77 @@ class DispositionService
     }
 
     /**
-     * Median annual wage of same-tier squad peers (excluding the player).
-     * Returns 0 if there are no comparable teammates.
+     * Median annual wage of squad peers of similar *current* ability
+     * (overall_score within ±band), excluding the player. Returns 0 if there
+     * are no comparable teammates.
+     *
+     * Grouping by ability rather than market-value tier is what stops a
+     * benchwarmer or developing youngster from being priced against the
+     * squad's stars: he only competes with squadmates who are as good as he
+     * is today.
      */
     public function peerMedianWage(GamePlayer $player): int
     {
-        if (!$player->team_id || !$player->tier) {
+        if (!$player->team_id) {
             return 0;
         }
 
+        $band = (int) config('finances.wage_peer_ability_band', 5);
+
         $wages = GamePlayer::where('game_id', $player->game_id)
             ->where('team_id', $player->team_id)
-            ->where('tier', $player->tier)
+            ->whereBetween('overall_score', [$player->overall_score - $band, $player->overall_score + $band])
             ->where('id', '!=', $player->id)
             ->where('annual_wage', '>', 0)
             ->pluck('annual_wage')
             ->sort()
             ->values();
 
-        if ($wages->isEmpty()) {
+        return $this->median($wages);
+    }
+
+    /**
+     * In-memory equivalent of peerMedianWage() for an already-loaded squad:
+     * median annual wage of squadmates whose overall_score is within ±band of
+     * the player's (excluding self, excluding zero wages). Lets batch callers
+     * (the per-matchday unhappiness roll, the squad-page renewal loop) avoid a
+     * per-player query.
+     *
+     * @param Collection<int, GamePlayer> $squad
+     */
+    public function abilityPeerMedian(GamePlayer $player, Collection $squad): int
+    {
+        $band = (int) config('finances.wage_peer_ability_band', 5);
+
+        $wages = $squad
+            ->filter(fn (GamePlayer $p) => $p->id !== $player->id
+                && $p->annual_wage > 0
+                && abs($p->overall_score - $player->overall_score) <= $band)
+            ->pluck('annual_wage')
+            ->sort()
+            ->values();
+
+        return $this->median($wages);
+    }
+
+    /**
+     * Median of an ascending-sorted, reindexed numeric collection. Returns 0
+     * when empty.
+     *
+     * @param Collection<int, int> $sortedWages
+     */
+    private function median(Collection $sortedWages): int
+    {
+        if ($sortedWages->isEmpty()) {
             return 0;
         }
 
-        $count = $wages->count();
+        $count = $sortedWages->count();
         if ($count % 2 === 1) {
-            return (int) $wages[intdiv($count, 2)];
+            return (int) $sortedWages[intdiv($count, 2)];
         }
 
-        return (int) (($wages[$count / 2 - 1] + $wages[$count / 2]) / 2);
+        return (int) (($sortedWages[$count / 2 - 1] + $sortedWages[$count / 2]) / 2);
     }
 
     /**
@@ -960,13 +1003,11 @@ class DispositionService
             ->where('team_id', $game->team_id)
             ->get();
 
-        $mediansByTier = $this->peerMedianWagesByTier($squad);
-
         $flagged = 0;
         $cleared = 0;
 
         foreach ($squad as $player) {
-            $isEligible = $this->hasWageGapAgainst($player, $mediansByTier[$player->tier] ?? 0);
+            $isEligible = $this->hasWageGapAgainst($player, $this->abilityPeerMedian($player, $squad));
             $isFlagged = $player->salary_unhappy_since !== null;
 
             if ($isFlagged && !$isEligible) {
@@ -1017,39 +1058,10 @@ class DispositionService
     }
 
     /**
-     * Compute median annual wage per tier from an already-loaded squad collection.
-     * Excludes zero-wage entries; a player is excluded from their own tier median
-     * by the caller (hasWageGapAgainst handles the comparison vs $effectiveWage).
-     *
-     * @param Collection<int, GamePlayer> $squad
-     * @return array<int|string, int> tier => median wage
-     */
-    public function peerMedianWagesByTier(Collection $squad): array
-    {
-        $medians = [];
-        foreach ($squad->groupBy('tier') as $tier => $group) {
-            $wages = $group->pluck('annual_wage')
-                ->filter(fn ($w) => $w > 0)
-                ->sort()
-                ->values();
-            if ($wages->isEmpty()) {
-                continue;
-            }
-            $count = $wages->count();
-            $medians[$tier] = $count % 2 === 1
-                ? (int) $wages[intdiv($count, 2)]
-                : (int) (($wages[$count / 2 - 1] + $wages[$count / 2]) / 2);
-        }
-        return $medians;
-    }
-
-    /**
      * Underlying wage-gap eligibility check: is this player materially
-     * underpaid vs same-tier squad peers? Drives both the per-tick
-     * salary-unhappiness roll and renewal pricing (peer-median demand
-     * floor). The median includes the player's own wage; for typical
-     * squad sizes (>3 same-tier peers) self-inclusion shifts the median
-     * by less than one slot and does not change the gap outcome.
+     * underpaid vs similar-ability squad peers? Drives both the per-tick
+     * salary-unhappiness roll and renewal pricing (the peer-median pull on
+     * the demand). The peer median excludes the player's own wage.
      *
      * For "has the player *announced* their unhappiness?", use
      * `isSalaryUnhappy()` instead — that reads the stochastic flag.

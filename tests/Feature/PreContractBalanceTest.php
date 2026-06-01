@@ -237,10 +237,16 @@ class PreContractBalanceTest extends TestCase
         // the factory's random 16-40 birthdate makes ~30% of runs land in
         // academy/young bands (modifier 0.25/0.65) and the market-based
         // demand falls below the assertion threshold.
+        //
+        // The base wage is anchored to *current ability*, so pin overall_score
+        // to a value (~61) whose ability-derived value matches the €1.5M market
+        // value — otherwise the factory's random 40-90 score decouples the
+        // demand from the market-based baseline this test asserts against.
         $player = GamePlayer::factory()->age(25)->create([
             'game_id' => $game->id,
             'team_id' => $sourceTeam->id,
             'market_value_cents' => 150_000_000,
+            'overall_score' => 61,
             'annual_wage' => 1_000_000, // €10K — well below market
         ]);
 

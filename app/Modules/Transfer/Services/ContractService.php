@@ -5,6 +5,7 @@ namespace App\Modules\Transfer\Services;
 use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Modules\Player\PlayerAge;
+use App\Modules\Player\Services\PlayerValuationService;
 use App\Modules\Transfer\Enums\NegotiationScenario;
 use App\Models\FinancialTransaction;
 use App\Models\Game;
@@ -66,6 +67,7 @@ class ContractService
         private readonly WageNegotiationEvaluator $wageNegotiationEvaluator,
         private readonly DispositionService $dispositionService,
         private readonly SquadMinimumService $squadMinimumService,
+        private readonly PlayerValuationService $valuationService,
     ) {}
 
     /**
@@ -293,13 +295,24 @@ class ContractService
 
         $age = $player->age($player->game->current_date);
 
+        // Anchor the demand to the player's *current* ability, not his
+        // market value: market value (and the tier derived from it) carries a
+        // youth premium that prices in potential, which is what makes a
+        // developing youngster demand a star's wage. wageBaseValue() strips
+        // that youth premium so the base wage tracks who the player is today.
+        $abilityValue = $this->valuationService->wageBaseValue($player->overall_score, $age, $player->position);
+
         $baseWage = $this->calculateAnnualWage(
-            $player->market_value_cents,
+            $abilityValue,
             $minimumWage,
             $age,
             deterministic: true,
         );
 
+        // The premium is a scenario markup tied to the player's market stature
+        // (what rival clubs would pay / the Bosman leverage), so it stays keyed
+        // off market value and tier — only the *base wage* is re-anchored to
+        // current ability above.
         $premium = $scenario->wagePremium($player->market_value_cents, $player->tier);
         $demandedWage = (int) ($baseWage * $premium);
 
@@ -316,17 +329,19 @@ class ContractService
             $demandedWage = max($demandedWage, $currentWageWithPremium);
         }
 
-        // Renewals: peg the demand at peer-median ("market rate") for every
-        // player, not just those who've voiced their unhappiness. An unflagged
-        // underpaid player hasn't *announced* anything but still negotiates at
-        // market — the salary_unhappy_since flag drives morale drip and the UI
-        // signal, it does not change renewal pricing. When the caller has
-        // already computed the peer median for the squad (e.g. squad page
-        // renewal loop), reuse it to avoid an N+1 of squad-wide queries.
+        // Renewals: nudge the demand toward the peer-median ("market rate") of
+        // similar-ability squadmates, for every player — not just those who've
+        // voiced their unhappiness (the salary_unhappy_since flag drives morale
+        // drip and the UI signal, not pricing). This is a *partial* pull, not a
+        // hard floor: it closes only a fraction of the gap so equally-able
+        // players don't fully converge and a manager can still run a wage
+        // scale. When the caller has already computed the peer median for the
+        // squad (e.g. squad page renewal loop), reuse it to avoid an N+1.
         if ($scenario === NegotiationScenario::RENEWAL) {
             $resolvedMedian = $peerMedian ?? $this->dispositionService->peerMedianWage($player);
             if ($resolvedMedian > $demandedWage) {
-                $demandedWage = $resolvedMedian;
+                $pullFactor = (float) config('finances.renewal_peer_pull_factor', 0.5);
+                $demandedWage += (int) round($pullFactor * ($resolvedMedian - $demandedWage));
             }
         }
 

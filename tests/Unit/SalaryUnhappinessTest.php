@@ -111,9 +111,9 @@ class SalaryUnhappinessTest extends TestCase
         $this->assertSame(80, $unflagged->fresh()->morale);
     }
 
-    public function test_renewal_demands_peer_median_for_unflagged_underpaid_player(): void
+    public function test_renewal_pulls_demand_partway_toward_peer_median_for_unflagged_player(): void
     {
-        // Build a tier of well-paid peers so peer median is high.
+        // Build a band of well-paid same-ability peers so the peer median is high.
         $this->buildPeers(wage: 1_000_000_00, count: 4);
         $player = $this->makePlayer(
             annualWage: 200_000_00,
@@ -122,14 +122,22 @@ class SalaryUnhappinessTest extends TestCase
 
         $demand = $this->contractService->calculateWageDemand($player, NegotiationScenario::RENEWAL);
 
-        $this->assertGreaterThanOrEqual(
+        // Partial pull (not a hard floor): the demand rises above the player's
+        // current wage toward the peer median, but stops short of fully matching
+        // it so a manager can still run a wage scale.
+        $this->assertGreaterThan(
+            200_000_00,
+            $demand['wage'],
+            'An underpaid player should demand a raise toward the peer median',
+        );
+        $this->assertLessThan(
             1_000_000_00,
             $demand['wage'],
-            'Even an unflagged underpaid player should demand at least the peer median at renewal',
+            'The peer median is a partial pull, not a hard floor — demand should stop short of it',
         );
     }
 
-    public function test_renewal_demands_peer_median_for_flagged_player(): void
+    public function test_renewal_pulls_demand_partway_toward_peer_median_for_flagged_player(): void
     {
         $this->buildPeers(wage: 1_000_000_00, count: 4);
         $player = $this->makePlayer(
@@ -139,7 +147,45 @@ class SalaryUnhappinessTest extends TestCase
 
         $demand = $this->contractService->calculateWageDemand($player, NegotiationScenario::RENEWAL);
 
-        $this->assertGreaterThanOrEqual(1_000_000_00, $demand['wage']);
+        $this->assertGreaterThan(200_000_00, $demand['wage']);
+        $this->assertLessThan(1_000_000_00, $demand['wage']);
+    }
+
+    public function test_low_ability_youth_is_not_priced_against_star_squadmates(): void
+    {
+        // A squad of well-paid stars (high ability) plus a modest-ability
+        // youngster on a youth wage. Grouping by current ability means the
+        // youth is NOT compared to the stars, so his renewal stays sane rather
+        // than exploding to the star median.
+        for ($i = 0; $i < 4; $i++) {
+            GamePlayer::factory()
+                ->forGame($this->game)
+                ->forTeam($this->team)
+                ->create([
+                    'overall_score' => 88,
+                    'date_of_birth' => self::PRIME_DOB,
+                    'annual_wage' => 1_400_000_00, // €14M stars
+                ]);
+        }
+
+        $youth = GamePlayer::factory()
+            ->forGame($this->game)
+            ->forTeam($this->team)
+            ->create([
+                'overall_score' => 58, // modest current ability
+                'date_of_birth' => '2006-06-01', // ~20yo
+                'annual_wage' => 7_000_00, // €70K youth wage
+            ]);
+
+        $demand = $this->contractService->calculateWageDemand($youth, NegotiationScenario::RENEWAL);
+
+        // Sanity, not savagery: a raise, but nowhere near the €14M star median.
+        $this->assertGreaterThan(7_000_00, $demand['wage']);
+        $this->assertLessThan(
+            1_400_000_00,
+            $demand['wage'],
+            'A low-ability youth must not be priced against high-ability squadmates',
+        );
     }
 
     public function test_renewal_clears_flag_synchronously_when_gap_closes(): void
@@ -178,13 +224,20 @@ class SalaryUnhappinessTest extends TestCase
 
     // ── helpers ──
 
+    // Peer medians are grouped by current ability (overall_score ± band), so
+    // every player/peer is pinned to the same score and a prime age (stable
+    // wage modifier) to keep the comparison deterministic.
+    private const PEER_OVERALL_SCORE = 70;
+    private const PRIME_DOB = '1997-06-01';
+
     private function makePlayer(
         int $annualWage,
         ?string $salaryUnhappySince = null,
         ?int $morale = null,
     ): GamePlayer {
         $attrs = [
-            'tier' => 3,
+            'overall_score' => self::PEER_OVERALL_SCORE,
+            'date_of_birth' => self::PRIME_DOB,
             'annual_wage' => $annualWage,
             'salary_unhappy_since' => $salaryUnhappySince,
         ];
@@ -204,7 +257,8 @@ class SalaryUnhappinessTest extends TestCase
                 ->forGame($this->game)
                 ->forTeam($this->team)
                 ->create([
-                    'tier' => 3,
+                    'overall_score' => self::PEER_OVERALL_SCORE,
+                    'date_of_birth' => self::PRIME_DOB,
                     'annual_wage' => $wage,
                 ]);
         }

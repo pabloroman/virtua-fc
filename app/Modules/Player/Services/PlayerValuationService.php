@@ -75,17 +75,7 @@ class PlayerValuationService
         $baseValue = $this->abilityToBaseValue($overallScore);
 
         // Age multiplier (reduced youth premiums for realistic valuations)
-        $ageMultiplier = match (true) {
-            $age <= 19 => 1.3,
-            $age <= 21 => 1.2,
-            $age <= 23 => 1.1,
-            $age <= 26 => 1.05,
-            $age <= 31 => 1.0,
-            $age <= 33 => 0.75,
-            $age <= 35 => 0.45,
-            $age <= 37 => 0.30,
-            default => 0.15,
-        };
+        $ageMultiplier = $this->ageValueMultiplier($age);
 
         // Performance trend multiplier (only during season-end)
         $trendMultiplier = 1.0;
@@ -119,6 +109,53 @@ class PlayerValuationService
 
         // Clamp to reasonable range: €100K to €150M
         return max(100_000_00, min(150_000_000_00, $newValue));
+    }
+
+    /**
+     * Value used to anchor WAGE demands to a player's *current* ability rather
+     * than their (potential-inflated) market value.
+     *
+     * Identical to overallScoreToMarketValue() except the youth premium is
+     * stripped: the age multiplier is capped at 1.0 so a wonderkid is priced
+     * for who he is today, not for his ceiling — the headroom lives in
+     * potential, and wages should not pay for it. The veteran decline is
+     * deliberately preserved (multiplier < 1.0), because the veteran wage
+     * modifier in ContractService is calibrated against that depressed value.
+     *
+     * @param int $overallScore Player's current overall ability score
+     * @param int $age Player's current age
+     * @param string|null $position Primary position; goalkeepers are scaled like market value
+     * @return int Wage-anchoring value in cents
+     */
+    public function wageBaseValue(int $overallScore, int $age, ?string $position = null): int
+    {
+        $value = (int) round($this->abilityToBaseValue($overallScore) * min(1.0, $this->ageValueMultiplier($age)));
+
+        if ($this->isGoalkeeper($position)) {
+            $value = (int) round($value / self::GOALKEEPER_VALUE_MULTIPLIER);
+        }
+
+        // Clamp to the same range as overallScoreToMarketValue().
+        return max(100_000_00, min(150_000_000_00, $value));
+    }
+
+    /**
+     * Age multiplier applied to a player's ability-derived base value. Young
+     * players carry a premium (priced for their ceiling), veterans a discount.
+     */
+    private function ageValueMultiplier(int $age): float
+    {
+        return match (true) {
+            $age <= 19 => 1.3,
+            $age <= 21 => 1.2,
+            $age <= 23 => 1.1,
+            $age <= 26 => 1.05,
+            $age <= 31 => 1.0,
+            $age <= 33 => 0.75,
+            $age <= 35 => 0.45,
+            $age <= 37 => 0.30,
+            default => 0.15,
+        };
     }
 
     private function applyPositionMultiplier(int $marketValueCents, ?string $position): int
