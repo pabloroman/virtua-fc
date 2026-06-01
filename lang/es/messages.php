@@ -20,7 +20,8 @@ return [
     'free_agent_reputation_too_low' => 'Este jugador no tiene interés en fichar por un club de tu nivel de reputación.',
     'transfer_window_closed' => 'La ventana de fichajes está cerrada.',
     'wage_budget_exceeded' => 'Fichar a este jugador superaría tu presupuesto salarial.',
-    'signing_exceeds_salary_cap' => 'Fichar a :player por :wage/año elevaría tu masa salarial a :total, por encima de tu límite salarial de :cap. Libera :shortfall vendiendo o liberando jugadores primero.',
+    'signing_exceeds_salary_cap' => 'Fichar a :player por :wage/año elevaría tu masa salarial a :total, por encima de tu límite salarial de :cap. Libera :shortfall vendiendo jugadores primero.',
+    'salary_cap_locked' => 'Estás por encima de tu límite salarial. Vende jugadores para volver por debajo del límite antes de fichar o renovar.',
 
     // Bid/loan submission confirmations
     'bid_already_exists' => 'Ya tienes una oferta pendiente por este jugador.',

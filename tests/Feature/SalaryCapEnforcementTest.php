@@ -88,6 +88,53 @@ class SalaryCapEnforcementTest extends TestCase
         ]);
     }
 
+    public function test_over_cap_locks_signing_with_the_locked_message(): void
+    {
+        // Revenue €10M → cap €7M, but the squad already commits €8M → over cap.
+        [$user, $game] = $this->makeGame(projectedRevenue: 1_000_000_000, squadWage: 800_000_000);
+
+        $freeAgent = $this->freeAgent($game);
+
+        $response = $this->actingAs($user)->post(
+            route('game.scouting.sign-free-agent', [$game->id, $freeAgent->id])
+        );
+
+        $response->assertRedirect();
+        $response->assertSessionHas('error', __('messages.salary_cap_locked'));
+
+        $this->assertDatabaseMissing('transfer_offers', [
+            'game_id' => $game->id,
+            'game_player_id' => $freeAgent->id,
+        ]);
+    }
+
+    public function test_market_unlocks_once_the_bill_is_back_under_the_cap(): void
+    {
+        // Squad starts over the cap (€8M vs €7M cap).
+        [$user, $game] = $this->makeGame(projectedRevenue: 1_000_000_000, squadWage: 800_000_000);
+
+        // Simulate selling the high earner down to €1M — the bill is now under cap.
+        GamePlayer::query()
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->update(['annual_wage' => 100_000_000]);
+
+        $freeAgent = $this->freeAgent($game);
+
+        $response = $this->actingAs($user)->post(
+            route('game.scouting.sign-free-agent', [$game->id, $freeAgent->id])
+        );
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('transfer_offers', [
+            'game_id' => $game->id,
+            'game_player_id' => $freeAgent->id,
+            'status' => TransferOffer::STATUS_AGREED,
+        ]);
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────
 
     /**

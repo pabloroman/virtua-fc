@@ -103,6 +103,32 @@ class SalaryCapServiceTest extends TestCase
         $this->assertFalse($this->service->canCommitWage($game, 200_000_001)); // €1 over blocks
     }
 
+    public function test_over_cap_locks_the_market_for_every_move(): void
+    {
+        $game = $this->makeGame(projectedRevenue: 1_000_000_000); // cap €7M
+        $player = $this->squadPlayer($game, annualWage: 800_000_000); // €8M committed → over
+
+        $this->assertTrue($this->service->isOverCap($game));
+
+        // No new commitment passes while over the cap — not a tiny signing…
+        $this->assertFalse($this->service->canCommitWage($game, 1));
+        // …and not even a wage-cut renewal that lowers the bill (the recovery
+        // path is selling, not renewing down).
+        $freed = $this->service->effectiveWageFor($player);
+        $this->assertFalse($this->service->canCommitWage($game, 100_000_000, $freed));
+    }
+
+    public function test_block_message_uses_locked_variant_when_over_cap(): void
+    {
+        $game = $this->makeGame(projectedRevenue: 1_000_000_000); // cap €7M
+        $this->squadPlayer($game, annualWage: 800_000_000); // over
+
+        $this->assertSame(
+            __('messages.salary_cap_locked'),
+            $this->service->blockMessage($game, 'Some Player', 100_000_000),
+        );
+    }
+
     public function test_renewal_freed_wage_charges_only_the_increase(): void
     {
         $game = $this->makeGame(projectedRevenue: 1_000_000_000); // cap €7M

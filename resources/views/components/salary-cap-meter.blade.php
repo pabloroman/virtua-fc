@@ -35,3 +35,6 @@
         <span class="text-text-faint">{{ \App\Support\Money::format($room) }} {{ __('finances.wage_room') }}</span>
     @endif
 </div>
+@if($status === 'over')
+    <div class="text-[11px] text-accent-red mt-1">{{ __('finances.over_cap_lock_notice') }}</div>
+@endif

@@ -120,7 +120,22 @@ class SalaryCapService
     }
 
     /**
+     * Whether the club is currently over its cap — the transfer market is then
+     * locked (see canCommitWage). This is also the unlock threshold: as soon as
+     * the committed bill is back at/under the cap the lock lifts.
+     */
+    public function isOverCap(Game $game): bool
+    {
+        return $this->committedWageBill($game) > $this->cap($game);
+    }
+
+    /**
      * Whether committing $newWage would keep the club within its cap.
+     *
+     * While the club is already over the cap the market is frozen — no new wage
+     * commitment of any kind passes until the bill is back under the cap. The
+     * intended recovery path is selling players (which lowers committedWageBill),
+     * never being forced to release them for free.
      *
      * @param  int  $newWage    The wage being added (cents).
      * @param  int  $freedWage  Wage simultaneously freed by the same move
@@ -129,7 +144,14 @@ class SalaryCapService
      */
     public function canCommitWage(Game $game, int $newWage, int $freedWage = 0): bool
     {
-        return ($this->committedWageBill($game) - $freedWage + $newWage) <= $this->cap($game);
+        $committed = $this->committedWageBill($game);
+        $cap = $this->cap($game);
+
+        if ($committed > $cap) {
+            return false;
+        }
+
+        return ($committed - $freedWage + $newWage) <= $cap;
     }
 
     /**
@@ -144,9 +166,17 @@ class SalaryCapService
 
     /**
      * Localised "this would breach the cap" message for blocked signings.
+     *
+     * Two cases: if the club is already over the cap the market is locked, so we
+     * return the "sell players to get back under your limit" message; otherwise
+     * the move itself would tip the club over, so we spell out the shortfall.
      */
     public function blockMessage(Game $game, string $playerName, int $newWage, int $freedWage = 0): string
     {
+        if ($this->isOverCap($game)) {
+            return __('messages.salary_cap_locked');
+        }
+
         $projectedBill = $this->committedWageBill($game) - $freedWage + $newWage;
         $cap = $this->cap($game);
 

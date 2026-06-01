@@ -20,7 +20,8 @@ return [
     'free_agent_reputation_too_low' => 'This player has no interest in joining a club of your reputation level.',
     'transfer_window_closed' => 'The transfer window is closed.',
     'wage_budget_exceeded' => 'Signing this player would exceed your wage budget.',
-    'signing_exceeds_salary_cap' => 'Signing :player at :wage/yr would push your wage bill to :total, over your :cap salary limit. Free up :shortfall by selling or releasing players first.',
+    'signing_exceeds_salary_cap' => 'Signing :player at :wage/yr would push your wage bill to :total, over your :cap salary limit. Free up :shortfall by selling players first.',
+    'salary_cap_locked' => "You're over your salary limit. Sell players to get back under the limit before signing or renewing.",
 
     // Bid/loan submission confirmations
     'bid_already_exists' => 'You already have a pending bid for this player.',

@@ -95,6 +95,7 @@ return [
     'salary_cap' => 'Límite Salarial',
     'wage_room' => 'Margen Salarial',
     'over_cap' => 'Límite Superado',
+    'over_cap_lock_notice' => 'Mercado bloqueado — vende jugadores para volver bajo tu límite.',
     'squad_size' => ':count jugadores',
     'initial_budget_caption' => 'de :amount inicial',
     'tooltip_salary_cap' => 'Lo máximo que tu club puede destinar a salarios: el :percent% de tus ingresos recurrentes proyectados. El dinero puntual (superávit de fichajes, ventas de jugadores) no lo aumenta; haz crecer tus ingresos para elevar el límite.',
