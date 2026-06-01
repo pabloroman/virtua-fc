@@ -10,18 +10,19 @@ class EuropaLeagueConfig implements CompetitionConfig
      * UEL knockout round prize money (in cents).
      */
     private const KNOCKOUT_PRIZE_MONEY = [
-        1 => 50_000_000,       // €500K - Knockout Playoff
-        2 => 100_000_000,      // €1M - Round of 16
-        3 => 150_000_000,      // €1.5M - Quarter-finals
-        4 => 250_000_000,      // €2.5M - Semi-finals
-        5 => 500_000_000,      // €5M - Final (winner)
+        1 => 550_000_000,      // €5.5M  — win Knockout Playoff = reach R16
+        2 => 625_000_000,      // €6.25M — win R16 = reach QF
+        3 => 750_000_000,      // €7.5M  — win QF = reach SF
+        4 => 925_000_000,      // €9.25M — win SF = reach Final
+        5 => 1_250_000_000,    // €12.5M — win Final (champion)
     ];
 
     public function getTvRevenue(int $position): int
     {
-        // Europa League prize money is roughly 50-60% of UCL
-        $base = 500_000_000; // €5M base
-        $positionBonus = max(0, 37 - $position) * 100_000_000; // €1M per position
+        // Europa League prize money is roughly 50% of UCL.
+        // Bundles the flat participation fee + league-phase performance + final-ranking bonus.
+        $base = 1_000_000_000; // €10M floor
+        $positionBonus = max(0, 37 - $position) * 20_000_000; // €0.2M per position
 
         return $base + $positionBonus;
     }
@@ -56,10 +57,10 @@ class EuropaLeagueConfig implements CompetitionConfig
     public function getLeaguePhaseQualificationBonus(int $position): int
     {
         if ($position <= 8) {
-            return 200_000_000; // €2M — direct R16
+            return 650_000_000; // €6.5M = €1M top-8 finish + €5.5M reach-R16 (direct, skips the playoff)
         }
         if ($position <= 24) {
-            return 50_000_000;  // €500K — qualified to knockout playoff
+            return 50_000_000;  // €500K — these teams earn the €5.5M reach-R16 by winning the playoff (round 1)
         }
 
         return 0; // Eliminated
