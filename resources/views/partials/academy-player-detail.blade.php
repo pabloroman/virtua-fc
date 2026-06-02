@@ -63,16 +63,6 @@
 
         <div class="space-y-3">
             <x-stat-bar :label="__('squad.overall_full')" :value="$academyPlayer->overall_score" />
-
-            <div class="flex items-center justify-between pt-3 border-t border-border-default">
-                <span class="text-[11px] text-text-muted uppercase tracking-wide font-semibold">{{ __('squad.overall_short') }}</span>
-                <span class="text-xs font-semibold tabular-nums
-                    @if($academyPlayer->overall_score >= 80) text-accent-green
-                    @elseif($academyPlayer->overall_score >= 70) text-lime-500
-                    @elseif($academyPlayer->overall_score >= 60) text-accent-gold
-                    @else text-text-muted
-                    @endif">{{ $academyPlayer->overall_score }}</span>
-            </div>
         </div>
     </div>
 
