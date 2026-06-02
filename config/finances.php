@@ -62,6 +62,18 @@ return [
             'premium_slope' => 2.5,  // extra MV multiple per +1.0 of wage premium
             'hard_cap'      => 2.5,  // absolute ceiling on the MV multiple
         ],
+
+        // Per-matchday probability that an AI club triggers the clause on one of
+        // the user's players (Phase 3), keyed by player tier (5 = world class …
+        // 1 = low). Deliberately well below the unsolicited-offer chances: a
+        // forced buyout is rare and dramatic. Tune from season simulation.
+        'ai_trigger_chance_by_tier' => [
+            5 => 0.003,
+            4 => 0.004,
+            3 => 0.003,
+            2 => 0.0015,
+            1 => 0.0005,
+        ],
     ],
 
     // Commercial revenue per seat per season by reputation level (in cents).

@@ -184,24 +184,44 @@ layer. Confirm via `<x-modal>`. Flash `messages.*` + `transfers.*` es/en.
 
 ## Phase 3 — AI triggers a clause on the user's player
 
+> **Status: coded.** `TransferService::generateAIReleaseClauseTriggers(Game $game, ?array $buyerPool): Collection`,
+> called from `CareerActionProcessor` in the open-window block beside `generateUnsolicitedOffers`.
+
 **Scope:** AI-buys-user-player only. **AI-to-AI stays on the existing `GameTransfer` path,
 untouched** (AI-to-AI transfers never create `TransferOffer` rows and cap fees at market value,
 so they cannot reuse this pipeline — and are out of scope).
 
-- Daily generation: low-probability, affordability-gated **on the clause amount**
-  (`AITeamBudgetCalculator` available ≥ clause, **not** market value); pick a user-owned player
-  with a clause an eligible AI club wants and can afford; skip players that already have a
-  non-terminal offer (exclusivity).
-- Create an **OUTGOING offer directly at `STATUS_AGREED`** (skip `PENDING` — it is
-  non-consensual), `triggered_release_clause = true`, `selling_team_id = user team`. Consciously
-  replicate `acceptOffer` side-effects: reject the player's other pending offers; **clause
-  overrides squad minimums** (skip `validateRemoval`, with a comment).
+- Daily generation (open windows only): low-probability per-player roll
+  (`config('finances.release_clause.ai_trigger_chance_by_tier')`), affordability-gated **on the
+  clause amount, not market value** — reuses `getEligibleBuyersWithSquadValues` with a new
+  `minAffordableCents` override (the squad-value cap that already governs AI offers on user
+  players), so only clubs that could meet the buyout qualify. Targets the user's **first-team**
+  players (`team_id == game.team_id`, matching the completion filter — reserves out of scope in
+  v1); skips loaned-in / on-loan / retiring players and any player with a non-terminal offer
+  (exclusivity).
+- Creates an **OUTGOING offer directly at `STATUS_AGREED`** (skip `PENDING` — it is
+  non-consensual), `triggered_release_clause = true`, `selling_team_id = user team`,
+  `offer_type = TYPE_UNSOLICITED`. Replicates `acceptOffer` side-effects: rejects the player's
+  other pending offers; **clause overrides squad minimums** (skips `validateRemoval`, with a comment).
 - Completes via the existing outgoing pipeline (`completeAgreedTransfers` already filters to
   user-owned players).
-- **Notification:** new `GameNotification::TYPE_PLAYER_LEFT_VIA_RELEASE_CLAUSE` wired into
-  `getTypeClasses()`, `getDefaultIcon()`, and `NAVIGATION_MAP` (→ transfer-activity); dedup keyed
-  on `player_id`; `notifications.*_title`/`_message` pair es/en; metadata
-  `{clause_amount, buying_team_id, player_id}`.
+- **Notification — at trigger time.** `notifyPlayerLeftViaReleaseClause` fires when the agreed
+  offer is created (not at completion), so the loss is announced even if the deal completes at
+  season end (where the completion path emits no notification). New
+  `GameNotification::TYPE_PLAYER_LEFT_VIA_RELEASE_CLAUSE` wired into `getTypeClasses()`,
+  `getDefaultIcon()`, and `NAVIGATION_MAP` (→ transfer-activity); **`PRIORITY_CRITICAL`** so it
+  surfaces as the blocking critical-alert popup (see below); dedup keyed on `player_id`;
+  `notifications.player_left_via_release_clause_{title,message}` es/en; metadata
+  `{clause_amount, buying_team_id, player_id}`. The generic completion notice
+  (`notifyTransferComplete`) returns `null` for triggered-clause outgoing offers to avoid a
+  duplicate. (No `messages.*` flash — this is background AI activity with no user action to flash.)
+
+**Critical-alert popup (shipped alongside Phase 3).** `PRIORITY_CRITICAL` was repurposed as a
+"must-dismiss" tier: the eight pre-existing critical notifications were downgraded to `WARNING`,
+and unacknowledged `CRITICAL` notifications now surface as a blocking popup
+(`components/critical-alert-modal.blade.php`, rendered from `game-header`) that the user dismisses
+via `AcknowledgeCriticalAlerts` (`markCriticalAsRead`). Closing it without acknowledging re-pops it
+next page load, so a clause loss can't be missed.
 
 ## Phase 4 — Renewals raise the clause (strategic lever)
 

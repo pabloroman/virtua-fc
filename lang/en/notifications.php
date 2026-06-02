@@ -62,6 +62,10 @@ return [
     'loan_out_complete_title' => ':player loaned out',
     'loan_out_complete_message' => ':player has been loaned :team_a until the end of the season.',
 
+    // Release clause triggered against the user (Phase 3)
+    'player_left_via_release_clause_title' => 'Release clause triggered: :player is leaving',
+    'player_left_via_release_clause_message' => ':player has moved :team_a after their release clause was triggered. Your club received :fee.',
+
     // Expiring offers
     'offer_expiring_title' => 'Offer for :player expiring soon',
     'offer_expiring_message' => '{0}The offer :team_de for :player expires today.|{1}The offer :team_de for :player expires in :count day.|[2,*]The offer :team_de for :player expires in :count days.',
