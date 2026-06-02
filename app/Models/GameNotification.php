@@ -79,6 +79,10 @@ class GameNotification extends Model
 
     // Priorities
     public const PRIORITY_MILESTONE = 'milestone';
+    // CRITICAL interrupts the user with a blocking, must-dismiss popup on the
+    // next page load (see the critical-alert modal in game-header). Reserve it
+    // for the rare highest-stakes events the user must not miss (e.g. losing a
+    // player to a release clause); everything merely important is WARNING.
     public const PRIORITY_CRITICAL = 'critical';
     public const PRIORITY_WARNING = 'warning';
     public const PRIORITY_INFO = 'info';

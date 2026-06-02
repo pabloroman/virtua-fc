@@ -7,6 +7,10 @@ return [
     'mark_all_read' => 'Mark all as read',
     'all_caught_up' => 'You\'re all caught up',
 
+    // Critical-alert popup (blocking, must-dismiss)
+    'alert_heading' => 'Important alert',
+    'alert_dismiss' => 'Got it',
+
     // Injury types
     'injury_muscle_fatigue' => 'muscle fatigue',
     'injury_muscle_strain' => 'muscle strain',

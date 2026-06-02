@@ -41,6 +41,7 @@ use App\Http\Actions\ExitFastMode;
 use App\Http\Actions\SimulateTournament;
 use App\Http\Actions\CancelLoanSearch;
 use App\Http\Actions\CancelScoutSearch;
+use App\Http\Actions\AcknowledgeCriticalAlerts;
 use App\Http\Actions\MarkAllNotificationsRead;
 use App\Http\Actions\MarkNotificationRead;
 use App\Http\Actions\PreviewSeasonTicketPricing;
@@ -330,6 +331,7 @@ Route::middleware('auth')->group(function () {
         // Notifications
         Route::post('/game/{gameId}/notifications/{notificationId}/read', MarkNotificationRead::class)->name('game.notifications.read');
         Route::post('/game/{gameId}/notifications/read-all', MarkAllNotificationsRead::class)->name('game.notifications.read-all');
+        Route::post('/game/{gameId}/notifications/acknowledge-critical', AcknowledgeCriticalAlerts::class)->name('game.notifications.acknowledge-critical');
     });
 });
 

@@ -72,6 +72,19 @@ class NotificationService
     }
 
     /**
+     * Acknowledge (mark read) all unread CRITICAL notifications for a game.
+     * Backs the critical-alert popup's dismiss button: once acknowledged the
+     * alert no longer pops on subsequent page loads.
+     */
+    public function markCriticalAsRead(string $gameId): int
+    {
+        return GameNotification::where('game_id', $gameId)
+            ->unread()
+            ->where('priority', GameNotification::PRIORITY_CRITICAL)
+            ->update(['read_at' => now()]);
+    }
+
+    /**
      * Get unread count for a game.
      */
     public function getUnreadCount(string $gameId): int
@@ -142,7 +155,7 @@ class NotificationService
                 'location' => $translatedLocation,
                 'date' => $player->injury_until?->translatedFormat('j M Y'),
             ]),
-            priority: GameNotification::PRIORITY_CRITICAL,
+            priority: GameNotification::PRIORITY_WARNING,
             metadata: [
                 'player_id' => $player->id,
                 'injury_type' => $injuryType,
@@ -166,7 +179,7 @@ class NotificationService
                 'reason' => $reason,
                 'competition' => __($competition),
             ]),
-            priority: GameNotification::PRIORITY_CRITICAL,
+            priority: GameNotification::PRIORITY_WARNING,
             metadata: [
                 'player_id' => $player->id,
                 'matches' => $matches,
@@ -335,7 +348,7 @@ class NotificationService
                 'player' => $player->name,
                 'team' => $seller?->name ?? '',
             ]),
-            priority: GameNotification::PRIORITY_CRITICAL,
+            priority: GameNotification::PRIORITY_WARNING,
             metadata: [
                 'player_id' => $player->id,
                 'team_id' => $seller?->id,
@@ -469,7 +482,7 @@ class NotificationService
                 'player' => $player->name,
                 'months' => $monthsLeft,
             ]),
-            priority: $monthsLeft <= 3 ? GameNotification::PRIORITY_CRITICAL : GameNotification::PRIORITY_WARNING,
+            priority: GameNotification::PRIORITY_WARNING,
             metadata: [
                 'player_id' => $player->id,
                 'months_left' => $monthsLeft,
@@ -664,7 +677,7 @@ class NotificationService
             type: GameNotification::TYPE_JOB_OFFER_RECEIVED,
             title: __($titleKey, ['count' => $offerCount]),
             message: __('notifications.job_offer_received_message', ['count' => $offerCount]),
-            priority: $fired ? GameNotification::PRIORITY_CRITICAL : GameNotification::PRIORITY_MILESTONE,
+            priority: $fired ? GameNotification::PRIORITY_WARNING : GameNotification::PRIORITY_MILESTONE,
             metadata: [
                 'offer_count' => $offerCount,
                 'fired' => $fired,
@@ -790,7 +803,7 @@ class NotificationService
                 'count' => count($playerNames),
                 'players' => implode(', ', $playerNames),
             ]),
-            priority: GameNotification::PRIORITY_CRITICAL,
+            priority: GameNotification::PRIORITY_WARNING,
         );
     }
 
@@ -804,7 +817,7 @@ class NotificationService
             type: GameNotification::TYPE_MATCH_FORFEIT,
             title: __('notifications.match_forfeit_title'),
             message: __('notifications.match_forfeit_message'),
-            priority: GameNotification::PRIORITY_CRITICAL,
+            priority: GameNotification::PRIORITY_WARNING,
         );
     }
 
@@ -910,7 +923,7 @@ class NotificationService
             type: GameNotification::TYPE_SQUAD_REGISTRATION_REQUIRED,
             title: __('notifications.squad_registration_required_title'),
             message: __('notifications.squad_registration_required_message', ['count' => $unenrolledCount]),
-            priority: GameNotification::PRIORITY_CRITICAL,
+            priority: GameNotification::PRIORITY_WARNING,
         );
     }
 

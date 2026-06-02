@@ -7,6 +7,10 @@ return [
     'mark_all_read' => 'Marcar todo como leído',
     'all_caught_up' => 'Estás al día',
 
+    // Critical-alert popup (blocking, must-dismiss)
+    'alert_heading' => 'Aviso importante',
+    'alert_dismiss' => 'Entendido',
+
     // Injury types
     'injury_muscle_fatigue' => 'fatiga muscular',
     'injury_muscle_strain' => 'distensión muscular',
