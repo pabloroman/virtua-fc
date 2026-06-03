@@ -169,5 +169,26 @@ class CriticalAlertPopupTest extends TestCase
             $withAlert,
         );
         $this->assertStringContainsString('name="notification_id" value="' . $alert->id . '"', $withAlert);
+        // A transfer offer is not celebratory, so it uses the danger frame.
+        $this->assertStringNotContainsString(__('notifications.celebration_heading'), $withAlert);
+    }
+
+    public function test_celebratory_critical_renders_the_celebration_frame(): void
+    {
+        // Positive competition events (advancement / trophy share this type) swap
+        // the red "important alert" frame for the green "congratulations" one.
+        $alert = $this->makeNotification(
+            GameNotification::PRIORITY_CRITICAL,
+            type: GameNotification::TYPE_COMPETITION_ADVANCEMENT,
+        );
+
+        $html = Blade::render(
+            '<x-critical-alert-modal :alert="$alert" :game="$game" />',
+            ['alert' => $alert, 'game' => $this->game],
+        );
+
+        $this->assertStringContainsString(__('notifications.celebration_heading'), $html);
+        $this->assertStringContainsString(__('notifications.alert_continue'), $html);
+        $this->assertStringNotContainsString(__('notifications.alert_heading'), $html);
     }
 }

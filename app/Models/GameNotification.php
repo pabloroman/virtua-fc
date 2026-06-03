@@ -220,6 +220,16 @@ class GameNotification extends Model
     }
 
     /**
+     * Positive critical alerts (qualifying for the next round, winning a cup —
+     * both use TYPE_COMPETITION_ADVANCEMENT) render as a celebration in the
+     * critical-alert popup rather than as a red "important alert".
+     */
+    public function isCelebratory(): bool
+    {
+        return $this->type === self::TYPE_COMPETITION_ADVANCEMENT;
+    }
+
+    /**
      * Get the route name for navigation based on notification type.
      */
     public function getNavigationRoute(): string

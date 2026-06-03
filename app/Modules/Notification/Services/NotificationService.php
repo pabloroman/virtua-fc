@@ -409,7 +409,7 @@ class NotificationService
                     'team' => $teamName,
                     'player' => $player->name,
                 ]),
-                priority: GameNotification::PRIORITY_CRITICAL,
+                priority: GameNotification::PRIORITY_MILESTONE,
                 metadata: ['offer_id' => $offer->id, 'player_id' => $player->id, 'result' => 'accepted'],
             ),
             'rejected' => $this->create(
@@ -420,7 +420,7 @@ class NotificationService
                     'team' => $teamName,
                     'player' => $player->name,
                 ]),
-                priority: GameNotification::PRIORITY_CRITICAL,
+                priority: GameNotification::PRIORITY_WARNING,
                 metadata: ['offer_id' => $offer->id, 'player_id' => $player->id, 'result' => 'rejected'],
             ),
             default => throw new \InvalidArgumentException("Unexpected loan request result: {$result}"),
@@ -583,7 +583,7 @@ class NotificationService
             type: GameNotification::TYPE_COMPETITION_ADVANCEMENT,
             title: __('notifications.competition_advancement_title', ['competition' => __($competitionName)]),
             message: __('notifications.competition_advancement_message', ['stage' => __($nextStage)]),
-            priority: GameNotification::PRIORITY_CRITICAL,
+            priority: GameNotification::PRIORITY_MILESTONE,
             metadata: [
                 'competition_id' => $competitionId,
             ],
@@ -619,7 +619,7 @@ class NotificationService
             type: GameNotification::TYPE_COMPETITION_ELIMINATION,
             title: __('notifications.competition_elimination_title', ['competition' => __($competitionName)]),
             message: __('notifications.competition_elimination_message', ['stage' => __($stage)]),
-            priority: GameNotification::PRIORITY_CRITICAL,
+            priority: GameNotification::PRIORITY_MILESTONE,
             metadata: [
                 'competition_id' => $competitionId,
             ],
@@ -766,7 +766,7 @@ class NotificationService
             type: GameNotification::TYPE_TOURNAMENT_WELCOME,
             title: __('notifications.tournament_welcome_title'),
             message: __('notifications.tournament_welcome_message'),
-            priority: GameNotification::PRIORITY_CRITICAL,
+            priority: GameNotification::PRIORITY_MILESTONE,
             metadata: [
                 'competition_id' => $competitionId,
             ],
