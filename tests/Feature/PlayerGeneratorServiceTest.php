@@ -287,6 +287,70 @@ class PlayerGeneratorServiceTest extends TestCase
         }
     }
 
+    public function test_single_create_assigns_secondary_positions_array(): void
+    {
+        $service = app(PlayerGeneratorService::class);
+
+        $gamePlayer = $service->create($this->game, new GeneratedPlayerData(
+            teamId: $this->team->id,
+            position: 'Left-Back',
+            overallScore: 60,
+            dateOfBirth: Carbon::createFromDate(2002, 6, 15),
+            contractYears: 3,
+        ));
+
+        // The stored array always leads with the primary position; the accessor
+        // de-dupes it back out for display.
+        $this->assertIsArray($gamePlayer->secondary_positions);
+        $this->assertSame('Left-Back', $gamePlayer->secondary_positions[0]);
+    }
+
+    public function test_bulk_create_assigns_well_shaped_secondary_positions(): void
+    {
+        $service = app(PlayerGeneratorService::class);
+
+        $primary = 'Left-Back';
+        $adjacent = \App\Support\PositionSlotMapper::getAdjacentPositions($primary);
+
+        $dataItems = [];
+        for ($i = 0; $i < 60; $i++) {
+            $dataItems[] = new GeneratedPlayerData(
+                teamId: $this->team->id,
+                position: $primary,
+                overallScore: 55,
+                dateOfBirth: Carbon::createFromDate(2002, 6, 15),
+                contractYears: 3,
+            );
+        }
+
+        $results = $service->createBulk($this->game, $dataItems);
+        $this->assertCount(60, $results);
+
+        $players = GamePlayer::whereIn('id', array_column($results, 'playerId'))->get();
+        $sawExtraPosition = false;
+
+        foreach ($players as $player) {
+            // Bulk-generated regens must carry a secondary_positions array, not NULL.
+            $this->assertIsArray($player->secondary_positions, 'Regen has no secondary_positions array');
+            $this->assertNotEmpty($player->secondary_positions);
+            $this->assertSame($primary, $player->secondary_positions[0]);
+
+            // 1 primary + 0–2 secondaries = at most 3 entries.
+            $this->assertLessThanOrEqual(3, count($player->secondary_positions));
+
+            // Any extra position must be football-adjacent to the primary —
+            // never a nonsensical pairing like Left-Back + Centre-Forward.
+            $extras = array_slice($player->secondary_positions, 1);
+            foreach ($extras as $extra) {
+                $sawExtraPosition = true;
+                $this->assertContains($extra, $adjacent, "Secondary {$extra} is not adjacent to {$primary}");
+            }
+        }
+
+        // Across 60 players (~50% get extras) at least one should have a secondary.
+        $this->assertTrue($sawExtraPosition, 'Expected at least one bulk regen to gain a secondary position');
+    }
+
     /**
      * @return string[]
      */

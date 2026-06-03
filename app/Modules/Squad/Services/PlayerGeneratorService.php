@@ -257,6 +257,7 @@ class PlayerGeneratorService
                 'foot' => $identity['foot'] ?? null,
                 'team_id' => $data->teamId,
                 'position' => $data->position,
+                'secondary_positions' => json_encode($this->generatePositions($data->position)),
                 'market_value_cents' => $marketValue,
                 'contract_until' => $contractUntil->format('Y-m-d'),
                 'annual_wage' => $annualWage,
