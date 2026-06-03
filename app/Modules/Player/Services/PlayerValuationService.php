@@ -3,6 +3,7 @@
 namespace App\Modules\Player\Services;
 
 use App\Modules\Player\PlayerAge;
+use App\Support\Money;
 
 /**
  * Single source of truth for all overall_score <-> market value conversions.
@@ -107,8 +108,8 @@ class PlayerValuationService
             $newValue = (int) round($newValue / self::GOALKEEPER_VALUE_MULTIPLIER);
         }
 
-        // Clamp to reasonable range: €100K to €150M
-        return max(100_000_00, min(150_000_000_00, $newValue));
+        // Clamp to reasonable range (€100K to €150M), then snap to a "nice" round number.
+        return Money::roundPrice(max(100_000_00, min(150_000_000_00, $newValue)));
     }
 
     /**

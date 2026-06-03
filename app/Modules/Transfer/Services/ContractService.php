@@ -408,7 +408,7 @@ class ContractService
             return null;
         }
 
-        $floor = (int) round($marketValueCents * (float) config('finances.release_clause.es_floor_multiplier', 1.25));
+        $floor = Money::roundPrice((int) round($marketValueCents * (float) config('finances.release_clause.es_floor_multiplier', 1.25)));
 
         // Derived default at agreement = the floor.
         if ($userRequestedCents === null) {
@@ -441,7 +441,7 @@ class ContractService
 
         $multiplier = min($hardCap, $base + $slope * max(0.0, $ratio - 1.0));
 
-        return (int) round($marketValueCents * $multiplier);
+        return Money::roundPrice((int) round($marketValueCents * $multiplier));
     }
 
     /**

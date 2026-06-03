@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Modules\Transfer\Services\ContractService;
+use App\Support\Money;
 use Tests\TestCase;
 
 /**
@@ -103,5 +104,18 @@ class ReleaseClauseCalculationTest extends TestCase
             12_500_000_000,
             $this->service->maxTolerableReleaseClause(self::MV, 10_000_000_000, 1_000_000_000),
         );
+    }
+
+    public function test_clause_is_snapped_to_a_nice_round_number(): void
+    {
+        // Regression: an un-round market value (€453,340.43) used to yield an
+        // un-round €566,675.54 floor. The floor is now snapped via
+        // Money::roundPrice — €453,340 × 1.25 = €566,675 → nearest €50K = €550K.
+        $marketValue = 45_334_043; // cents
+
+        $clause = $this->service->calculateReleaseClause($marketValue, null, null, 'ES');
+
+        $this->assertSame(55_000_000, $clause);
+        $this->assertSame(Money::roundPrice($clause), $clause, 'Clause must already be a round price.');
     }
 }
