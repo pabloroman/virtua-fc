@@ -134,14 +134,22 @@
                                                             'mode' => 'transfer_fee',
                                                             'phase' => 'counter_offer',
                                                             'chatTitle' => __('transfers.counter_offer_title'),
-                                                            'playerInfo' => [
+                                                            // The release clause is the ceiling on what the user can
+                                                            // demand here — a buyer would just pay the buyout rather
+                                                            // than negotiate above it. Formatted value for the info
+                                                            // strip, plus a numeric euro cap for the slider
+                                                            // (release_clause is stored in cents). Display/UX only.
+                                                            'playerInfo' => array_merge([
                                                                 'age' => $gp->age($game->current_date),
                                                                 'wage' => $gp->formatted_wage,
                                                                 'overall' => $gp->effective_rating,
                                                                 'position' => $posDisp['abbreviation'],
                                                                 'positionBg' => $posDisp['bg'],
                                                                 'positionText' => $posDisp['text'],
-                                                            ],
+                                                            ], ($game->release_clauses_enabled && $gp->hasReleaseClause()) ? [
+                                                                'releaseClause' => $gp->formatted_release_clause,
+                                                                'releaseClauseEuros' => (int) ($gp->release_clause / 100),
+                                                            ] : []),
                                                         ]);
                                                     @endphp
                                                     <x-primary-button type="button" size="sm" x-on:click="$dispatch('open-negotiation', {{ $counterOfferDetail }})">
@@ -256,14 +264,22 @@
                                                             'mode' => 'transfer_fee',
                                                             'phase' => 'counter_offer',
                                                             'chatTitle' => __('transfers.counter_offer_title'),
-                                                            'playerInfo' => [
+                                                            // The release clause is the ceiling on what the user can
+                                                            // demand here — a buyer would just pay the buyout rather
+                                                            // than negotiate above it. Formatted value for the info
+                                                            // strip, plus a numeric euro cap for the slider
+                                                            // (release_clause is stored in cents). Display/UX only.
+                                                            'playerInfo' => array_merge([
                                                                 'age' => $gp->age($game->current_date),
                                                                 'wage' => $gp->formatted_wage,
                                                                 'overall' => $gp->effective_rating,
                                                                 'position' => $posDisp['abbreviation'],
                                                                 'positionBg' => $posDisp['bg'],
                                                                 'positionText' => $posDisp['text'],
-                                                            ],
+                                                            ], ($game->release_clauses_enabled && $gp->hasReleaseClause()) ? [
+                                                                'releaseClause' => $gp->formatted_release_clause,
+                                                                'releaseClauseEuros' => (int) ($gp->release_clause / 100),
+                                                            ] : []),
                                                         ]);
                                                     @endphp
                                                     <x-primary-button type="button" size="sm" x-on:click="$dispatch('open-negotiation', {{ $counterOfferDetail }})">
