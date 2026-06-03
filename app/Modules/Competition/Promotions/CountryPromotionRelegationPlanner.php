@@ -4,6 +4,7 @@ namespace App\Modules\Competition\Promotions;
 
 use App\Modules\Competition\Enums\PlayoffState;
 use App\Modules\Competition\Exceptions\PlayoffInProgressException;
+use App\Modules\Competition\Exceptions\ReserveParentCoexistenceException;
 
 /**
  * Pure country-aware planner for end-of-season promotion/relegation.
@@ -1394,15 +1395,23 @@ class CountryPromotionRelegationPlanner
         foreach ($plan->moves as $m) {
             $finalComp[$m->teamId] = $m->toCompetitionId;
         }
+        // Collect every coexistence so the typed exception carries all pairs in
+        // one pass — the repairer that catches it can then resolve them together.
+        $violations = [];
         foreach ($snapshot->reserveToParent as $reserve => $parent) {
             if (!isset($finalComp[$reserve], $finalComp[$parent])) {
                 continue;
             }
             if ($finalComp[$reserve] === $finalComp[$parent]) {
-                throw new \LogicException(
-                    "Planner produced a coexistence violation: reserve={$reserve} parent={$parent} competition={$finalComp[$reserve]}.",
-                );
+                $violations[] = [
+                    'reserve' => (string) $reserve,
+                    'parent' => (string) $parent,
+                    'competition' => (string) $finalComp[$reserve],
+                ];
             }
+        }
+        if (!empty($violations)) {
+            throw ReserveParentCoexistenceException::forViolations($violations);
         }
     }
 }

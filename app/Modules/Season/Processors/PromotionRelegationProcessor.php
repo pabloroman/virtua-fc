@@ -9,15 +9,20 @@ use App\Models\GameMatch;
 use App\Models\GameStanding;
 use App\Modules\Competition\Enums\PlayoffState;
 use App\Modules\Competition\Exceptions\PlayoffInProgressException;
+use App\Modules\Competition\Exceptions\ReserveParentCoexistenceException;
 use App\Modules\Competition\Playoffs\PlayoffGeneratorFactory;
 use App\Modules\Competition\Promotions\CountryPromotionRelegationPlanner;
 use App\Modules\Competition\Promotions\CountrySeasonSnapshotBuilder;
 use App\Modules\Competition\Promotions\PromotionMove;
 use App\Modules\Competition\Promotions\PromotionRelegationExecutor;
 use App\Modules\Competition\Promotions\PromotionRelegationPlan;
+use App\Modules\Competition\Promotions\RepairOutcome;
+use App\Modules\Competition\Promotions\ReserveParentCoexistenceRepairer;
 use App\Modules\Competition\Services\CountryConfig;
+use App\Modules\Season\Alerts\ReserveCoexistenceHealAlert;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Closing-pipeline processor for promotion/relegation.
@@ -51,6 +56,8 @@ class PromotionRelegationProcessor implements SeasonProcessor
         private readonly PromotionRelegationExecutor $executor,
         private readonly PlayoffGeneratorFactory $playoffFactory,
         private readonly CountryConfig $countryConfig,
+        private readonly ReserveParentCoexistenceRepairer $coexistenceRepairer,
+        private readonly ReserveCoexistenceHealAlert $healAlert,
     ) {}
 
     public function priority(): int
@@ -77,7 +84,37 @@ class PromotionRelegationProcessor implements SeasonProcessor
         }
 
         $snapshot = $this->snapshotBuilder->build($game);
-        $plan = $this->planner->planFromSnapshot($snapshot, $config);
+
+        try {
+            $plan = $this->planner->planFromSnapshot($snapshot, $config);
+        } catch (ReserveParentCoexistenceException $e) {
+            // In-band self-heal: a prior incomplete transition can leave a
+            // reserve coexisting with (or inverted above) its parent in the
+            // snapshot, which the planner refuses to plan around. Attempt a
+            // single deterministic repair, then replan exactly once. Everything
+            // here runs inside the pipeline's per-processor DB::transaction, so
+            // the repair is atomic with the rest of the processor.
+            $result = $this->coexistenceRepairer->repair($game);
+
+            if ($result->outcome !== RepairOutcome::Repaired) {
+                // Nothing safe to do (ambiguous corruption, or no fixable issue
+                // detected). Alert and rethrow the original so the job fails and
+                // the operator's manual repair path takes over.
+                $this->healAlert->unhealable($game, $e, $result);
+                throw $e;
+            }
+
+            // Replan against the repaired DB state. Deliberately NOT wrapped:
+            // if the swap did not actually resolve the violation, this throws
+            // again and propagates — single-shot, never a retry loop.
+            $snapshot = $this->snapshotBuilder->build($game);
+            $plan = $this->planner->planFromSnapshot($snapshot, $config);
+
+            // Fire the success alert only once the transaction commits, so a
+            // later rollback (e.g. the post-execution invariant below) doesn't
+            // leave us claiming a heal that was undone.
+            DB::afterCommit(fn () => $this->healAlert->healed($game, $result));
+        }
 
         $this->executor->apply($plan, $game);
 
