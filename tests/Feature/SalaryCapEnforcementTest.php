@@ -178,11 +178,18 @@ class SalaryCapEnforcementTest extends TestCase
         // is always a willing destination and the reputation gate passes —
         // isolating the salary cap as the only thing that can block the deal.
         // (The factory derives `tier` from a random value, so pin it explicitly.)
+        //
+        // Pin `overall_score` too: the factory randomises it (40–90) and the
+        // wage demand is computed deterministically off ability, so an unpinned
+        // overall makes the demand swing wildly and can intermittently breach
+        // the modest (€6M) cap room the "allowed" cases rely on. A low ability
+        // keeps the demand comfortably under that room.
         return GamePlayer::factory()->age(26)->create([
             'game_id' => $game->id,
             'team_id' => null,
             'market_value_cents' => 20_000_000, // €200K
             'tier' => 1,
+            'overall_score' => 50,
         ]);
     }
 }
