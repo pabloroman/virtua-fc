@@ -473,6 +473,9 @@ return [
 
     // Release clauses (cláusulas de rescisión)
     'release_clause' => 'Cláusula de rescisión',
+    // Shown in place of market value on list surfaces for mandatory-clause clubs.
+    'clause_short' => 'Cláusula',
+    'market_reference_is_clause' => 'Se muestra la cláusula de rescisión, el importe con el que opera este mercado.',
     'pay_release_clause' => 'Pagar cláusula de rescisión',
     'clause_not_available' => 'Este jugador no tiene una cláusula de rescisión que puedas activar.',
     'clause_exceeds_budget' => 'La cláusula de rescisión supera tu presupuesto de fichajes disponible.',

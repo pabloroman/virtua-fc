@@ -206,7 +206,7 @@ class ExploreService
     {
         $players = GamePlayer::where('game_id', $game->id)
             ->where('team_id', $teamId)
-            ->with(['team'])
+            ->with(['team', 'activeLoan.parentTeam'])
             ->get();
 
         $playerIds = $players->pluck('id')->toArray();
@@ -306,7 +306,7 @@ class ExploreService
     public function advancedSearch(Game $game, array $filters): array
     {
         $query = GamePlayer::where('game_id', $game->id)
-            ->with(['team']);
+            ->with(['team', 'activeLoan.parentTeam']);
 
         if (!empty($filters['name']) && mb_strlen($filters['name']) >= 2) {
             $needle = mb_strtolower($filters['name']);

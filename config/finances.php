@@ -40,6 +40,13 @@ return [
     // clubs, optional elsewhere. Multipliers are bare floats (multiples of
     // market value), NOT cents.
     'release_clause' => [
+        // Countries whose clubs MUST carry a release clause on every contract
+        // (mirrors Royal Decree 1006/1985 — buyout clauses are mandatory in
+        // Spain). In these countries the clause, not the market value, is the
+        // figure the transfer market operates on, so list surfaces display it
+        // in place of market value. Team.country stores uppercase 2-char codes.
+        'mandatory_countries' => ['ES'],
+
         // Mandatory minimum clause for ES clubs, as a multiple of market value.
         // The derived default at every agreement equals this floor.
         'es_floor_multiplier' => 1.25,

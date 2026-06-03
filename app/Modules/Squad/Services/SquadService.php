@@ -30,8 +30,10 @@ class SquadService
         $isCareerMode = $game->isCareerMode();
         $gameId = $game->id;
 
-        // Get all players for user's team with relationships
-        $allPlayers = GamePlayer::with(['game', 'team', 'matchState', 'activeLoan', 'transferOffers', 'suspensions', 'activeRenewalNegotiation', 'latestRenewalNegotiation', 'careerRecord', 'transferListing'])
+        // Get all players for user's team with relationships. `activeLoan.parentTeam`
+        // is loaded so GamePlayer::ownerCountry() (used for the clause-vs-market-value
+        // display) resolves the owning club without a per-row query.
+        $allPlayers = GamePlayer::with(['game', 'team', 'matchState', 'activeLoan.parentTeam', 'transferOffers', 'suspensions', 'activeRenewalNegotiation', 'latestRenewalNegotiation', 'careerRecord', 'transferListing'])
             ->where('game_id', $gameId)
             ->where('team_id', $game->team_id)
             ->get();
@@ -224,6 +226,11 @@ class SquadService
             'academyCount' => $academyCount,
             'mvpCounts' => $mvpCounts,
             'playerFlags' => $playerFlags,
+            // Whether the user's club operates under mandatory release clauses
+            // (e.g. Spain): the squad is uniformly owned, so the value column
+            // relabels its header to "Cláusula" rather than tagging each row.
+            'squadUsesClauses' => $game->release_clauses_enabled
+                && in_array($game->country, config('finances.release_clause.mandatory_countries', []), true),
         ];
     }
 

@@ -670,6 +670,60 @@ class GamePlayer extends Model
     }
 
     /**
+     * The country of the club that OWNS this player (uppercase 2-char code).
+     * Ownership follows the loan parent: a loaned-in player is owned by the club
+     * he is on loan FROM, not the club he currently plays for. Mirrors the
+     * relationLoaded() guard in isUserOwned() so it never lazy-loads in a loop —
+     * callers rendering lists must eager-load `activeLoan.parentTeam` and `team`.
+     */
+    public function ownerCountry(): ?string
+    {
+        $loan = $this->relationLoaded('activeLoan')
+            ? $this->activeLoan
+            : $this->activeLoan()->first();
+
+        if ($loan) {
+            $parent = $loan->relationLoaded('parentTeam')
+                ? $loan->parentTeam
+                : $loan->parentTeam()->first();
+
+            if ($parent) {
+                return $parent->country;
+            }
+        }
+
+        return $this->team?->country;
+    }
+
+    /**
+     * Whether list surfaces should display this player's release clause in place
+     * of his market value. True only when the feature is enabled for the game,
+     * the player carries a clause (⟹ under contract), AND his owning club sits in
+     * a country where clauses are mandatory (config-driven, currently only ES).
+     * Gated on the mandatory-country list rather than merely "has a clause" so a
+     * non-mandatory club that opts into an optional clause still shows market
+     * value — the clause is the market reference only where it is mandatory.
+     */
+    public function displaysReleaseClauseAsMarketReference(Game $game): bool
+    {
+        return $game->release_clauses_enabled
+            && $this->hasReleaseClause()
+            && in_array($this->ownerCountry(), config('finances.release_clause.mandatory_countries', []), true);
+    }
+
+    /**
+     * The formatted value to show wherever a player's market value is listed: the
+     * release clause in mandatory-clause countries (see
+     * displaysReleaseClauseAsMarketReference), otherwise the market value.
+     */
+    public function marketReferenceValue(Game $game): string
+    {
+        return $this->displaysReleaseClauseAsMarketReference($game)
+            ? ($this->formatted_release_clause ?? $this->formatted_market_value)
+            : $this->formatted_market_value;
+    }
+
+    /**
      * Check if player can be offered a contract renewal.
      * Any squad player can be renewed (early or expiring), unless blocked by another condition.
      *

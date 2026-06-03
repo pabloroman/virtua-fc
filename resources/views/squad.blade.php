@@ -191,7 +191,7 @@
                                 </template>
                                 @if($isCareerMode)
                                 <template x-if="viewMode === 'tactical'">
-                                    <span class="text-right">{{ __('app.value') }}</span>
+                                    <span class="text-right">{{ $squadUsesClauses ? __('transfers.clause_short') : __('app.value') }}</span>
                                 </template>
                                 <template x-if="viewMode === 'tactical'">
                                     <span class="text-right">{{ __('app.wage') }}</span>
@@ -207,7 +207,7 @@
                                     <span class="text-center">{{ __('squad.potential') }}</span>
                                 </template>
                                 <template x-if="viewMode === 'planning'">
-                                    <span class="text-right">{{ __('app.value') }}</span>
+                                    <span class="text-right">{{ $squadUsesClauses ? __('transfers.clause_short') : __('app.value') }}</span>
                                 </template>
                                 <template x-if="viewMode === 'planning'">
                                     <span class="text-right">{{ __('app.wage') }}</span>
@@ -410,7 +410,7 @@
                                         </template>
                                         @if($isCareerMode)
                                         <template x-if="viewMode === 'tactical'">
-                                            <span class="text-xs text-text-body text-right tabular-nums">{{ $gp->formatted_market_value }}</span>
+                                            <span class="text-xs text-text-body text-right tabular-nums">{{ $gp->marketReferenceValue($game) }}</span>
                                         </template>
                                         <template x-if="viewMode === 'tactical'">
                                             <span class="text-xs text-text-muted text-right tabular-nums">{{ $gp->formatted_wage }}</span>
@@ -433,7 +433,7 @@
                                             </div>
                                         </template>
                                         <template x-if="viewMode === 'planning'">
-                                            <span class="text-xs text-text-body text-right tabular-nums">{{ $gp->formatted_market_value }}</span>
+                                            <span class="text-xs text-text-body text-right tabular-nums">{{ $gp->marketReferenceValue($game) }}</span>
                                         </template>
                                         <template x-if="viewMode === 'planning'">
                                             <span class="text-xs text-text-muted text-right tabular-nums">{{ $gp->formatted_wage }}</span>

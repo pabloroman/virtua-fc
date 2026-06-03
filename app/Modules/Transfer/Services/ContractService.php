@@ -37,13 +37,6 @@ class ContractService
     private const DEFAULT_MINIMUM_WAGE = 10_000_000; // €100K
 
     /**
-     * Country whose clubs MUST carry a release clause on every contract
-     * (mirrors Royal Decree 1006/1985 — buyout clauses are mandatory in Spain).
-     * Team.country stores uppercase 2-char codes (England is 'EN').
-     */
-    private const RELEASE_CLAUSE_MANDATORY_COUNTRY = 'ES';
-
-    /**
      * Club reputation multiplier on top of the competition tier baseline.
      * Applied only at tier 3+ because La Liga and La Liga 2 have sector-wide
      * minimums that don't meaningfully vary by club ambition — tier-3 wages,
@@ -445,11 +438,15 @@ class ContractService
     }
 
     /**
-     * Whether clubs of this country must carry a release clause on every contract.
+     * Whether clubs of this country must carry a release clause on every contract
+     * (mirrors Royal Decree 1006/1985 — buyout clauses are mandatory in Spain).
+     * The mandatory-country list is shared with the display layer
+     * (GamePlayer::displaysReleaseClauseAsMarketReference) via config so the two
+     * never diverge. Team.country stores uppercase 2-char codes (England is 'EN').
      */
     private function isReleaseClauseMandatory(?string $clubCountry): bool
     {
-        return $clubCountry === self::RELEASE_CLAUSE_MANDATORY_COUNTRY;
+        return in_array($clubCountry, config('finances.release_clause.mandatory_countries', []), true);
     }
 
     // =========================================

@@ -32,7 +32,7 @@ class ShowOutgoingTransfers
         $this->transferService->expireOffers($game);
 
         // Get all pending offers for user's players
-        $pendingOffers = TransferOffer::with(['gamePlayer.team', 'offeringTeam'])
+        $pendingOffers = TransferOffer::with(['gamePlayer.team', 'gamePlayer.activeLoan.parentTeam', 'offeringTeam'])
             ->where('game_id', $gameId)
             ->where('status', TransferOffer::STATUS_PENDING)
             ->whereHas('gamePlayer', function ($query) use ($game) {
@@ -82,6 +82,7 @@ class ShowOutgoingTransfers
         // Get listed players (even those without offers, excluding those with agreed deals)
         $agreedPlayerIds = $agreedTransfers->pluck('game_player_id')->toArray();
         $listedPlayers = GamePlayer::query()
+            ->with(['team', 'activeLoan.parentTeam'])
             ->where('game_id', $gameId)
             ->where('team_id', $game->team_id)
             ->whereHas('transferListing', fn ($q) => $q->where('status', TransferListing::STATUS_LISTED))
@@ -109,7 +110,7 @@ class ShowOutgoingTransfers
 
         // Pending loan-out offers for the "Loan Offers Received" section.
         // Each offer is a separate card, same UX as sale offers.
-        $loanOffers = TransferOffer::with(['offeringTeam', 'gamePlayer'])
+        $loanOffers = TransferOffer::with(['offeringTeam', 'gamePlayer.team', 'gamePlayer.activeLoan.parentTeam'])
             ->where('game_id', $gameId)
             ->where('direction', TransferOffer::DIRECTION_OUTGOING)
             ->where('offer_type', TransferOffer::TYPE_LOAN_OUT)

@@ -83,7 +83,7 @@ $showAskingPrice = $showAskingPrice ?? ($askingPrice !== null);
             @endif
             <span>{{ $player->age($game->current_date) }} {{ __('app.years') }}</span>
             <span>&middot;</span>
-            <span>{{ \App\Support\Money::format($player->market_value_cents) }}</span>
+            <span><x-player-market-value :player="$player" :game="$game" /></span>
             @if($showOvr)
                 <span>&middot;</span>
                 <span>OVR {{ $player->effective_rating }}</span>
@@ -125,8 +125,8 @@ $showAskingPrice = $showAskingPrice ?? ($askingPrice !== null);
         </div>
     </td>
     @endif
-    {{-- Market value --}}
-    <td class="py-2 pr-3 hidden md:table-cell text-text-secondary tabular-nums">{{ \App\Support\Money::format($player->market_value_cents) }}</td>
+    {{-- Market value (release clause where mandatory) --}}
+    <td class="py-2 pr-3 hidden md:table-cell text-text-secondary tabular-nums"><x-player-market-value :player="$player" :game="$game" /></td>
     @if($showContract)
     {{-- Contract --}}
     <td class="py-2 pr-3 hidden md:table-cell text-text-secondary tabular-nums">{{ $isFreeAgent ? '—' : ($player->contract_until?->year ?? '—') }}</td>

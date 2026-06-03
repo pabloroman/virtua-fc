@@ -33,7 +33,7 @@ class ShowScoutReportResults
         ];
 
         if (!empty($report->player_ids)) {
-            $players = GamePlayer::with(['team'])
+            $players = GamePlayer::with(['team', 'activeLoan.parentTeam'])
                 ->whereIn('id', $report->player_ids)
                 ->where(fn ($q) => $q
                     ->whereNull('team_id')

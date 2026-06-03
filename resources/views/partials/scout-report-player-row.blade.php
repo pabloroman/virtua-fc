@@ -121,10 +121,11 @@
                             <span class="text-xs text-text-muted w-16 shrink-0">{{ __('squad.overall_full') }}</span>
                             <x-ability-bar :range="$overallRange" size="sm" class="text-xs font-semibold tabular-nums text-text-body" />
                         </div>
-                        {{-- Market Value --}}
+                        {{-- Market value — or the release clause where it is the
+                             market reference (mandatory-clause clubs, e.g. Spain). --}}
                         <div class="flex items-center justify-between pt-1">
-                            <span class="text-xs text-text-muted">{{ __('transfers.market_value') }}</span>
-                            <span class="text-xs font-semibold text-text-body">{{ $player->formatted_market_value }}</span>
+                            <span class="text-xs text-text-muted">{{ $player->displaysReleaseClauseAsMarketReference($game) ? __('transfers.release_clause') : __('transfers.market_value') }}</span>
+                            <span class="text-xs font-semibold text-text-body">{{ $player->marketReferenceValue($game) }}</span>
                         </div>
                         {{-- Contract --}}
                         @if(!$isFreeAgent && $player->contract_until)

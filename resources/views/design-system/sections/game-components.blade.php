@@ -122,6 +122,73 @@
         </div>
     </div>
 
+    {{-- Player Market Value --}}
+    <div class="mb-12">
+        <h3 class="text-lg font-semibold text-text-primary mb-2">Player Market Value <code class="text-xs text-accent-blue font-mono">&lt;x-player-market-value&gt;</code></h3>
+        <p class="text-sm text-text-secondary mb-4">Renders a player's "market reference" figure for list surfaces: the <strong>release clause</strong> in countries where clauses are mandatory (e.g. Spain), otherwise the <strong>market value</strong>. The swap decision and the formatted value both come from the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">GamePlayer</code> model, so display and clause-calculation never diverge. On mixed-owner lists (explore, scouting) a swapped value is flagged with an info-icon tooltip; on a uniform own-squad list pass <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">:tooltip="false"</code> and relabel the column header to "Cláusula" instead.</p>
+
+        {{-- Visual anatomy --}}
+        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
+            <div class="flex items-center gap-10">
+                <div class="text-center">
+                    <div class="text-text-secondary tabular-nums">&euro; 45M</div>
+                    <div class="text-[10px] text-text-muted mt-1.5">Market value (non-mandatory club)</div>
+                </div>
+                <div class="text-center">
+                    <div class="inline-flex items-center gap-1 text-text-secondary tabular-nums">&euro; 80M <x-info-icon :tooltip="__('transfers.market_reference_is_clause')" /></div>
+                    <div class="text-[10px] text-text-muted mt-1.5">Release clause (mandatory club, tooltip on)</div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Props table --}}
+        <div class="overflow-x-auto mt-4 mb-3">
+            <table class="w-full text-sm">
+                <thead class="text-left border-b border-border-strong">
+                    <tr>
+                        <th class="text-[10px] text-text-muted uppercase tracking-wider font-semibold py-2 pr-4">Prop</th>
+                        <th class="text-[10px] text-text-muted uppercase tracking-wider font-semibold py-2 pr-4">Type</th>
+                        <th class="text-[10px] text-text-muted uppercase tracking-wider font-semibold py-2 pr-4">Default</th>
+                        <th class="text-[10px] text-text-muted uppercase tracking-wider font-semibold py-2">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-border-default">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">player</td>
+                        <td class="py-2 pr-4 text-text-secondary">GamePlayer</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-muted">—</td>
+                        <td class="py-2 text-text-secondary">Player to value. Eager-load <code class="text-xs">team</code> + <code class="text-xs">activeLoan.parentTeam</code> to avoid N+1.</td>
+                    </tr>
+                    <tr class="border-b border-border-default">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">game</td>
+                        <td class="py-2 pr-4 text-text-secondary">Game</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-muted">—</td>
+                        <td class="py-2 text-text-secondary">Game (provides the release_clauses_enabled flag)</td>
+                    </tr>
+                    <tr class="border-b border-border-default">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">tooltip</td>
+                        <td class="py-2 pr-4 text-text-secondary">bool</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-muted">true</td>
+                        <td class="py-2 text-text-secondary">Show the info-icon on swapped values (mixed lists). Pass false on uniform lists that relabel the header.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div x-data="{ copied: false }" class="relative">
+            <button @click="navigator.clipboard.writeText($refs.marketValueCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-text-secondary hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
+                <span x-show="!copied">Copy</span>
+                <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
+            </button>
+            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="marketValueCode">&lt;!-- Mixed-owner list (explore, scouting): tooltip flags swapped values --&gt;
+&lt;x-player-market-value :player="$player" :game="$game" /&gt;
+
+&lt;!-- Uniform own-squad list: no per-row icon, relabel the column header instead --&gt;
+&lt;x-player-market-value :player="$gp" :game="$game" :tooltip="false" /&gt;</code></pre>
+        </div>
+    </div>
+
     {{-- Summary Card --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-text-primary mb-2">Summary Card</h3>

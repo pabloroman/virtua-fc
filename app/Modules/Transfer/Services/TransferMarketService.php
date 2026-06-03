@@ -178,7 +178,7 @@ class TransferMarketService
             ->where('status', TransferOffer::STATUS_AGREED)
             ->pluck('game_player_id');
 
-        return TransferListing::with(['gamePlayer.team'])
+        return TransferListing::with(['gamePlayer.team', 'gamePlayer.activeLoan.parentTeam'])
             ->where('game_id', $game->id)
             ->whereNotIn('team_id', $game->userTeamIds())
             ->where('status', TransferListing::STATUS_LISTED)

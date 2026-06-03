@@ -115,7 +115,7 @@
                                                     </div>
                                                     <div class="text-sm text-text-secondary">
                                                         {{ $offer->gamePlayer->position_name }} &middot; {{ $offer->gamePlayer->age($game->current_date) }} {{ __('app.years') }} &middot;
-                                                        {{ __('app.value') }}: {{ $offer->gamePlayer->formatted_market_value }}
+                                                        {{ $offer->gamePlayer->displaysReleaseClauseAsMarketReference($game) ? __('transfers.release_clause') : __('app.value') }}: {{ $offer->gamePlayer->marketReferenceValue($game) }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -237,7 +237,7 @@
                                                     </div>
                                                     <div class="text-sm text-text-secondary">
                                                         {{ $offer->gamePlayer->position_name }} &middot; {{ $offer->gamePlayer->age($game->current_date) }} {{ __('app.years') }} &middot;
-                                                        {{ __('app.value') }}: {{ $offer->gamePlayer->formatted_market_value }}
+                                                        {{ $offer->gamePlayer->displaysReleaseClauseAsMarketReference($game) ? __('transfers.release_clause') : __('app.value') }}: {{ $offer->gamePlayer->marketReferenceValue($game) }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -363,7 +363,7 @@
                                                     </div>
                                                     <div class="text-sm text-text-secondary">
                                                         {{ $offer->gamePlayer->position_name }} &middot; {{ $offer->gamePlayer->age($game->current_date) }} {{ __('app.years') }} &middot;
-                                                        {{ __('app.value') }}: {{ $offer->gamePlayer->formatted_market_value }}
+                                                        {{ $offer->gamePlayer->displaysReleaseClauseAsMarketReference($game) ? __('transfers.release_clause') : __('app.value') }}: {{ $offer->gamePlayer->marketReferenceValue($game) }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -448,7 +448,7 @@
                                                     <div class="font-semibold text-text-primary">{{ $player->name }}</div>
                                                     <div class="text-sm text-text-secondary">
                                                         {{ $player->position_name }} &middot; {{ $player->age($game->current_date) }} {{ __('app.years') }} &middot;
-                                                        {{ __('app.value') }}: {{ $player->formatted_market_value }}
+                                                        {{ $player->displaysReleaseClauseAsMarketReference($game) ? __('transfers.release_clause') : __('app.value') }}: {{ $player->marketReferenceValue($game) }}
                                                     </div>
                                                 </div>
                                             </div>

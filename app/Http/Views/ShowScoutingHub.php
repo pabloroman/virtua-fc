@@ -36,7 +36,7 @@ class ShowScoutingHub
 
         // Shortlisted players with intel-gated data
         $shortlistedEntries = ShortlistedPlayer::where('game_id', $gameId)
-            ->with(['gamePlayer.team'])
+            ->with(['gamePlayer.team', 'gamePlayer.activeLoan.parentTeam'])
             ->get();
 
         $shortlistedPlayers = [];
@@ -96,8 +96,15 @@ class ShowScoutingHub
                 'isFreeAgent' => $gp->team_id === null,
                 'isExpiring' => $gp->team_id !== null && $gp->contract_until && $gp->contract_until <= $game->getSeasonEndDate(),
                 'contractYear' => $gp->contract_until?->format('Y'),
+                // `marketValue` (cents) drives client-side sorting and
+                // `formattedMarketValue` feeds the negotiation modal — both stay
+                // the TRUE market value. The shortlist's displayed figure uses
+                // `marketReference`, which swaps to the release clause where that
+                // is the market reference (mandatory-clause clubs, e.g. Spain).
                 'marketValue' => $gp->market_value_cents,
                 'formattedMarketValue' => Money::format($gp->market_value_cents),
+                'marketReference' => $gp->marketReferenceValue($game),
+                'showsClause' => $gp->displaysReleaseClauseAsMarketReference($game),
                 'intelLevel' => $entry->intel_level,
                 'isTracking' => $entry->is_tracking,
                 'matchdaysTracked' => $entry->matchdays_tracked,

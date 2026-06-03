@@ -355,7 +355,7 @@
                                                                     </div>
                                                                 </template>
                                                                 <div class="flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-text-muted mb-3">
-                                                                    <span>{{ __('transfers.market_value') }}: <span class="font-semibold text-text-body" x-text="player.formattedMarketValue"></span></span>
+                                                                    <span><span x-text="player.showsClause ? @js(__('transfers.release_clause')) : @js(__('transfers.market_value'))"></span>: <span class="font-semibold text-text-body" x-text="player.marketReference"></span></span>
                                                                     <template x-if="!player.isFreeAgent && player.contractYear">
                                                                         <span>{{ __('transfers.contract_until') }}: <span class="font-semibold text-text-body" x-text="player.contractYear"></span></span>
                                                                     </template>

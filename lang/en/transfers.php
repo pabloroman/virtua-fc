@@ -468,6 +468,9 @@ return [
 
     // Release clauses (cláusulas de rescisión)
     'release_clause' => 'Release clause',
+    // Shown in place of market value on list surfaces for mandatory-clause clubs.
+    'clause_short' => 'Clause',
+    'market_reference_is_clause' => 'Shown as the release clause — the buyout this market operates on.',
     'pay_release_clause' => 'Pay release clause',
     'clause_not_available' => 'This player has no release clause you can trigger.',
     'clause_exceeds_budget' => 'The release clause exceeds your available transfer budget.',
