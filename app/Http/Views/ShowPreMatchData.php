@@ -3,7 +3,6 @@
 namespace App\Http\Views;
 
 use App\Modules\Lineup\Services\LineupService;
-use App\Modules\Stadium\Services\MatchAttendanceService;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\PlayerSuspension;
@@ -12,7 +11,6 @@ class ShowPreMatchData
 {
     public function __construct(
         private readonly LineupService $lineupService,
-        private readonly MatchAttendanceService $matchAttendanceService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -80,25 +78,11 @@ class ShowPreMatchData
             return response()->json(['lineupReady' => true]);
         }
 
-        // Show a projected attendance alongside the venue. The modal renders
-        // before advance() runs, so no MatchAttendance row exists yet — the
-        // orchestrator will persist the row (using the same demand curve) at
-        // the start of processBatch when the user commits to the match.
-        $attendance = $this->matchAttendanceService->describeForMatch($match, $game);
-        $attendanceFigure = $attendance['attendance'] ?? null;
-        $attendanceCapacity = $attendance['capacity'] ?? null;
-        $attendancePercent = $attendanceFigure !== null && $attendanceCapacity
-            ? (int) round(($attendanceFigure / $attendanceCapacity) * 100)
-            : null;
-
         return view('partials.pre-match-modal-content', [
             'game' => $game,
             'match' => $match,
             'issueMessage' => $issueMessage,
             'hasIssues' => $hasIssues,
-            'attendance' => $attendanceFigure,
-            'attendanceCapacity' => $attendanceCapacity,
-            'attendancePercent' => $attendancePercent,
         ]);
     }
 }

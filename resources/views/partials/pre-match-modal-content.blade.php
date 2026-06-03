@@ -9,9 +9,6 @@
     @endif
     <span class="text-xs text-text-muted">
         {{ $match->venueName() ?? '' }}
-        @if(!empty($attendance ?? null))
-            &middot; {{ __('game.attendance') }}: {{ number_format($attendance) }} ({{ $attendancePercent }}%)
-        @endif
         &middot; {{ $match->scheduled_date->locale(app()->getLocale())->translatedFormat('d M Y') }}
     </span>
 </div>
