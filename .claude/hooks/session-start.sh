@@ -12,6 +12,11 @@
 #   - a running PostgreSQL with the virtua_fc role/database, migrated
 #
 # Idempotent: safe to re-run. Only provisions in the remote (web) environment.
+#
+# Runs in async mode: the session starts immediately while this provisions in
+# the background. Trade-off: the agent could briefly outrun setup (e.g. try a
+# test before composer install finishes) — the steps below are ordered and
+# idempotent to keep that window small.
 set -euo pipefail
 
 # Only run in Claude Code on the web. Locally, developers manage their own env.
@@ -19,6 +24,10 @@ set -euo pipefail
 if [ "${CLAUDE_CODE_REMOTE:-}" != "true" ]; then
     exit 0
 fi
+
+# Signal async mode: this must be the first line written to stdout. The session
+# proceeds without waiting; provisioning continues in the background.
+echo '{"async": true, "asyncTimeout": 600000}'
 
 cd "${CLAUDE_PROJECT_DIR:-$(pwd)}"
 
