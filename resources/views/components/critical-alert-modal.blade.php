@@ -1,42 +1,49 @@
-@props(['alerts', 'game'])
+@props(['alert', 'game'])
 
 {{-- Blocking, must-dismiss popup for the highest-stakes notifications
-     (PRIORITY_CRITICAL — see GameNotification). Auto-opens on page load via
-     <x-modal :show>. The "Got it" button posts the acknowledge action, which
-     marks these alerts read so they don't pop again. Closing via backdrop/escape
+     (PRIORITY_CRITICAL — see GameNotification). Shows one alert at a time (the
+     most recent unread critical) and auto-opens on page load via <x-modal :show>.
+
+     The primary button is contextual to the alert type ("Review offer", "View
+     competition", …): it posts game.notifications.read, which marks this alert
+     read and redirects to the relevant page (reusing MarkNotificationRead). The
+     quieter "Dismiss" marks this alert read without navigating. Either way, any
+     other pending critical surfaces on the next load. Closing via backdrop/escape
      only hides it for this page view, so an unacknowledged alert returns on the
      next page — by design, so a critical event can't be silently missed. --}}
-@if($alerts->isNotEmpty())
+@if($alert)
 <div x-data>
     <x-modal name="critical-alert" :show="true" maxWidth="md">
-        <div class="flex items-center gap-3 px-5 py-4 border-b border-border-default">
-            <span class="flex h-9 w-9 items-center justify-center rounded-full bg-red-600/15 shrink-0">
-                <svg class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        {{-- Header banner (no close button: must-act). The red icon + "important
+             alert" eyebrow carry the severity, divided from the notification below
+             so the alert content reads as the focal point. --}}
+        <x-modal-header tone="danger" eyebrow>
+            <x-slot:icon>
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
                 </svg>
-            </span>
-            <h3 class="font-heading text-lg font-semibold text-text-primary">{{ __('notifications.alert_heading') }}</h3>
+            </x-slot:icon>
+            {{ __('notifications.alert_heading') }}
+        </x-modal-header>
+
+        <div class="px-5 py-4">
+            <p class="font-heading text-lg font-semibold text-text-primary">{{ $alert->title }}</p>
+            @if($alert->message)
+            <p class="mt-1.5 text-sm text-text-muted leading-relaxed">{{ $alert->message }}</p>
+            @endif
         </div>
 
-        <div class="max-h-[60vh] overflow-y-auto divide-y divide-border-default">
-            @foreach($alerts as $alert)
-                @php $classes = $alert->getTypeClasses(); @endphp
-                <div class="flex items-start gap-3 px-5 py-4">
-                    <x-notification-icon :icon="$alert->icon" :icon-bg="$classes['icon_bg']" :icon-text="$classes['icon_text']" />
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-semibold text-text-primary">{{ $alert->title }}</p>
-                        @if($alert->message)
-                        <p class="text-xs text-text-muted mt-1 leading-relaxed">{{ $alert->message }}</p>
-                        @endif
-                    </div>
-                </div>
-            @endforeach
-        </div>
-
-        <div class="flex justify-end px-5 py-4 border-t border-border-default">
+        <div class="flex items-center justify-end gap-3 px-5 py-4 border-t border-border-default">
+            {{-- Quiet dismiss: marks this alert read without navigating. --}}
             <form action="{{ route('game.notifications.acknowledge-critical', $game->id) }}" method="POST">
                 @csrf
-                <x-primary-button type="submit" color="red">{{ __('notifications.alert_dismiss') }}</x-primary-button>
+                <input type="hidden" name="notification_id" value="{{ $alert->id }}">
+                <x-secondary-button type="submit">{{ __('notifications.alert_dismiss') }}</x-secondary-button>
+            </form>
+            {{-- Contextual action: marks this alert read and jumps to its page. --}}
+            <form action="{{ route('game.notifications.read', [$game->id, $alert->id]) }}" method="POST">
+                @csrf
+                <x-primary-button type="submit">{{ $alert->getActionLabel() }}</x-primary-button>
             </form>
         </div>
     </x-modal>

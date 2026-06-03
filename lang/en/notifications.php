@@ -9,7 +9,10 @@ return [
 
     // Critical-alert popup (blocking, must-dismiss)
     'alert_heading' => 'Important alert',
-    'alert_dismiss' => 'Got it',
+    'alert_dismiss' => 'Dismiss',
+    'action_review_offer' => 'Review offer',
+    'action_view_competition' => 'View competition',
+    'action_view_details' => 'View details',
 
     // Injury types
     'injury_muscle_fatigue' => 'muscle fatigue',

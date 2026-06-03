@@ -1,4 +1,5 @@
 <x-modal name="add-player" maxWidth="3xl">
+    <x-modal-header modal-name="add-player">{{ __('admin.add_player') }}</x-modal-header>
     <div x-data="{
         form: {
             season: @js($selectedSeason),
@@ -22,10 +23,6 @@
             return !this.form.team_id;
         },
     }" class="p-6">
-        <h2 class="font-heading text-lg font-bold uppercase tracking-wide text-text-primary mb-4">
-            {{ __('admin.add_player') }}
-        </h2>
-
         <form method="POST" action="{{ route('editor.player-templates.store') }}">
             @csrf
             <input type="hidden" name="season" x-bind:value="form.season">

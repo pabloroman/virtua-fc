@@ -72,16 +72,25 @@ class NotificationService
     }
 
     /**
-     * Acknowledge (mark read) all unread CRITICAL notifications for a game.
+     * Acknowledge (mark read) unread CRITICAL notifications for a game.
      * Backs the critical-alert popup's dismiss button: once acknowledged the
-     * alert no longer pops on subsequent page loads.
+     * alert no longer pops on subsequent page loads. The popup shows one alert
+     * at a time, so it passes the shown alert's id to scope the dismiss to that
+     * single notification; with no id (legacy callers) every critical is cleared.
+     * Always game- and critical-scoped, so a foreign id posted in the form is a
+     * no-op rather than a way to clear unrelated notifications.
      */
-    public function markCriticalAsRead(string $gameId): int
+    public function markCriticalAsRead(string $gameId, ?string $notificationId = null): int
     {
-        return GameNotification::where('game_id', $gameId)
+        $query = GameNotification::where('game_id', $gameId)
             ->unread()
-            ->where('priority', GameNotification::PRIORITY_CRITICAL)
-            ->update(['read_at' => now()]);
+            ->where('priority', GameNotification::PRIORITY_CRITICAL);
+
+        if ($notificationId !== null) {
+            $query->where('id', $notificationId);
+        }
+
+        return $query->update(['read_at' => now()]);
     }
 
     /**
@@ -249,7 +258,7 @@ class NotificationService
                 'team_el' => Str::ucfirst($offer->offeringTeam->nameWithEl()),
                 'fee' => $fee,
             ]),
-            priority: GameNotification::PRIORITY_INFO,
+            priority: GameNotification::PRIORITY_CRITICAL,
             metadata: [
                 'offer_id' => $offer->id,
                 'player_id' => $player->id,
@@ -400,7 +409,7 @@ class NotificationService
                     'team' => $teamName,
                     'player' => $player->name,
                 ]),
-                priority: GameNotification::PRIORITY_MILESTONE,
+                priority: GameNotification::PRIORITY_CRITICAL,
                 metadata: ['offer_id' => $offer->id, 'player_id' => $player->id, 'result' => 'accepted'],
             ),
             'rejected' => $this->create(
@@ -411,7 +420,7 @@ class NotificationService
                     'team' => $teamName,
                     'player' => $player->name,
                 ]),
-                priority: GameNotification::PRIORITY_WARNING,
+                priority: GameNotification::PRIORITY_CRITICAL,
                 metadata: ['offer_id' => $offer->id, 'player_id' => $player->id, 'result' => 'rejected'],
             ),
             default => throw new \InvalidArgumentException("Unexpected loan request result: {$result}"),
@@ -574,7 +583,7 @@ class NotificationService
             type: GameNotification::TYPE_COMPETITION_ADVANCEMENT,
             title: __('notifications.competition_advancement_title', ['competition' => __($competitionName)]),
             message: __('notifications.competition_advancement_message', ['stage' => __($nextStage)]),
-            priority: GameNotification::PRIORITY_MILESTONE,
+            priority: GameNotification::PRIORITY_CRITICAL,
             metadata: [
                 'competition_id' => $competitionId,
             ],
@@ -592,7 +601,7 @@ class NotificationService
             type: GameNotification::TYPE_COMPETITION_ADVANCEMENT,
             title: __('notifications.trophy_won_title', ['competition' => __($competitionName)]),
             message: __('cup.champion_message', ['competition' => __($competitionName)]),
-            priority: GameNotification::PRIORITY_MILESTONE,
+            priority: GameNotification::PRIORITY_CRITICAL,
             metadata: [
                 'competition_id' => $competitionId,
             ],
@@ -610,7 +619,7 @@ class NotificationService
             type: GameNotification::TYPE_COMPETITION_ELIMINATION,
             title: __('notifications.competition_elimination_title', ['competition' => __($competitionName)]),
             message: __('notifications.competition_elimination_message', ['stage' => __($stage)]),
-            priority: GameNotification::PRIORITY_MILESTONE,
+            priority: GameNotification::PRIORITY_CRITICAL,
             metadata: [
                 'competition_id' => $competitionId,
             ],
@@ -757,7 +766,7 @@ class NotificationService
             type: GameNotification::TYPE_TOURNAMENT_WELCOME,
             title: __('notifications.tournament_welcome_title'),
             message: __('notifications.tournament_welcome_message'),
-            priority: GameNotification::PRIORITY_MILESTONE,
+            priority: GameNotification::PRIORITY_CRITICAL,
             metadata: [
                 'competition_id' => $competitionId,
             ],

@@ -9,15 +9,12 @@
     >{{ __('profile.delete_account') }}</x-danger-button>
 
     <x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" focusable>
+        <x-modal-header modal-name="confirm-user-deletion">{{ __('profile.delete_confirm_title') }}</x-modal-header>
         <form method="post" action="{{ route('profile.destroy') }}" class="p-6">
             @csrf
             @method('delete')
 
-            <h2 class="text-lg font-medium text-text-primary">
-                {{ __('profile.delete_confirm_title') }}
-            </h2>
-
-            <p class="mt-1 text-sm text-text-secondary">
+            <p class="text-sm text-text-secondary">
                 {{ __('profile.delete_confirm_description') }}
             </p>
 

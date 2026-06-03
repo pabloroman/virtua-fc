@@ -1,14 +1,6 @@
 <x-modal name="audit-{{ $template->id }}" maxWidth="2xl">
+    <x-modal-header modal-name="audit-{{ $template->id }}">{{ __('admin.history') }} — {{ $template->name }}</x-modal-header>
     <div class="p-6">
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="font-heading text-lg font-bold uppercase tracking-wide text-text-primary">
-                {{ __('admin.history') }} — {{ $template->name }}
-            </h2>
-            <button @click="$dispatch('close-modal', 'audit-{{ $template->id }}')" class="text-text-muted hover:text-text-secondary">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
-        </div>
-
         @if($template->audits->isEmpty())
             <p class="text-sm text-text-muted">{{ __('admin.no_history') }}</p>
         @else

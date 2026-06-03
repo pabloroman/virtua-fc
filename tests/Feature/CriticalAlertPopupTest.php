@@ -41,14 +41,18 @@ class CriticalAlertPopupTest extends TestCase
         ]);
     }
 
-    private function makeNotification(string $priority, ?string $readAt = null): GameNotification
-    {
-        // The popup is type-agnostic — it keys on priority, not type — so any
-        // existing type works here. Phase 3 adds the first real CRITICAL producer.
+    private function makeNotification(
+        string $priority,
+        ?string $readAt = null,
+        string $type = GameNotification::TYPE_TRANSFER_COMPLETE,
+    ): GameNotification {
+        // The popup is type-agnostic — it keys on priority, not type — but the
+        // primary button's label IS type-driven (getActionLabel), so tests that
+        // assert the label pass a concrete type.
         return GameNotification::create([
             'id' => fake()->uuid(),
             'game_id' => $this->game->id,
-            'type' => GameNotification::TYPE_TRANSFER_COMPLETE,
+            'type' => $type,
             'title' => 'Alert',
             'priority' => $priority,
             'read_at' => $readAt,
@@ -96,24 +100,74 @@ class CriticalAlertPopupTest extends TestCase
         $this->assertNotNull($critical->fresh()->read_at);
     }
 
-    public function test_popup_component_renders_only_when_critical_alerts_are_present(): void
+    public function test_dismiss_with_notification_id_scopes_to_that_single_alert(): void
+    {
+        // The popup shows one alert at a time and posts its id, so dismissing
+        // should clear only that alert — the other critical stays pending.
+        $this->withoutMiddleware(ValidateCsrfToken::class);
+        $shown = $this->makeNotification(GameNotification::PRIORITY_CRITICAL);
+        $other = $this->makeNotification(GameNotification::PRIORITY_CRITICAL);
+
+        $this->actingAs($this->user)->post(
+            route('game.notifications.acknowledge-critical', $this->game->id),
+            ['notification_id' => $shown->id],
+        );
+
+        $this->assertNotNull($shown->fresh()->read_at);
+        $this->assertNull($other->fresh()->read_at, 'only the posted alert should be dismissed');
+    }
+
+    public function test_action_label_is_contextual_to_the_notification_type(): void
+    {
+        $offer = $this->makeNotification(
+            GameNotification::PRIORITY_CRITICAL,
+            type: GameNotification::TYPE_TRANSFER_OFFER_RECEIVED,
+        );
+        $advancement = $this->makeNotification(
+            GameNotification::PRIORITY_CRITICAL,
+            type: GameNotification::TYPE_COMPETITION_ADVANCEMENT,
+        );
+        $other = $this->makeNotification(
+            GameNotification::PRIORITY_CRITICAL,
+            type: GameNotification::TYPE_LOAN_REQUEST_RESULT,
+        );
+
+        $this->assertSame(__('notifications.action_review_offer'), $offer->getActionLabel());
+        $this->assertSame(__('notifications.action_view_competition'), $advancement->getActionLabel());
+        $this->assertSame(__('notifications.action_view_details'), $other->getActionLabel());
+    }
+
+    public function test_popup_renders_only_when_a_critical_alert_is_present(): void
     {
         $heading = __('notifications.alert_heading');
 
         $empty = Blade::render(
-            '<x-critical-alert-modal :alerts="$alerts" :game="$game" />',
-            ['alerts' => collect(), 'game' => $this->game],
+            '<x-critical-alert-modal :alert="$alert" :game="$game" />',
+            ['alert' => null, 'game' => $this->game],
         );
         $this->assertStringNotContainsString($heading, $empty);
 
-        $withAlert = Blade::render(
-            '<x-critical-alert-modal :alerts="$alerts" :game="$game" />',
-            ['alerts' => collect([$this->makeNotification(GameNotification::PRIORITY_CRITICAL)]), 'game' => $this->game],
+        $alert = $this->makeNotification(
+            GameNotification::PRIORITY_CRITICAL,
+            type: GameNotification::TYPE_TRANSFER_OFFER_RECEIVED,
         );
+        $withAlert = Blade::render(
+            '<x-critical-alert-modal :alert="$alert" :game="$game" />',
+            ['alert' => $alert, 'game' => $this->game],
+        );
+
         $this->assertStringContainsString($heading, $withAlert);
+        // Contextual primary button navigates via the mark-read route...
+        $this->assertStringContainsString(__('notifications.action_review_offer'), $withAlert);
+        $this->assertStringContainsString(
+            route('game.notifications.read', [$this->game->id, $alert->id]),
+            $withAlert,
+        );
+        // ...and the quiet dismiss posts the acknowledge route scoped to this alert.
         $this->assertStringContainsString(
             route('game.notifications.acknowledge-critical', $this->game->id),
             $withAlert,
         );
+        $this->assertStringContainsString('name="notification_id" value="' . $alert->id . '"', $withAlert);
     }
 }

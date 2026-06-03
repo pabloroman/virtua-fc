@@ -9,7 +9,10 @@ return [
 
     // Critical-alert popup (blocking, must-dismiss)
     'alert_heading' => 'Aviso importante',
-    'alert_dismiss' => 'Entendido',
+    'alert_dismiss' => 'Descartar',
+    'action_review_offer' => 'Revisar oferta',
+    'action_view_competition' => 'Ver competición',
+    'action_view_details' => 'Ver detalles',
 
     // Injury types
     'injury_muscle_fatigue' => 'fatiga muscular',

@@ -263,6 +263,23 @@ class GameNotification extends Model
     }
 
     /**
+     * Contextual call-to-action label for the critical-alert popup's primary
+     * button. Mirrors getNavigationRoute(): it tells the user what acting on the
+     * alert will do (e.g. a purchase offer → "Review offer"). Any type without a
+     * bespoke label (including loan-request results) falls back to "View details".
+     */
+    public function getActionLabel(): string
+    {
+        return match ($this->type) {
+            self::TYPE_TRANSFER_OFFER_RECEIVED => __('notifications.action_review_offer'),
+            self::TYPE_COMPETITION_ADVANCEMENT,
+            self::TYPE_COMPETITION_ELIMINATION,
+            self::TYPE_TOURNAMENT_WELCOME => __('notifications.action_view_competition'),
+            default => __('notifications.action_view_details'),
+        };
+    }
+
+    /**
      * Get the CSS classes for type-based styling.
      * Each notification type has its own unique color identity.
      */
