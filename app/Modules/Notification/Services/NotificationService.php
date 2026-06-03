@@ -73,24 +73,47 @@ class NotificationService
 
     /**
      * Acknowledge (mark read) unread CRITICAL notifications for a game.
-     * Backs the critical-alert popup's dismiss button: once acknowledged the
-     * alert no longer pops on subsequent page loads. The popup shows one alert
-     * at a time, so it passes the shown alert's id to scope the dismiss to that
-     * single notification; with no id (legacy callers) every critical is cleared.
-     * Always game- and critical-scoped, so a foreign id posted in the form is a
+     * Backs the critical-alert popup's dismiss/action buttons: once acknowledged
+     * the alert no longer pops on subsequent page loads. The popup groups all
+     * pending criticals of one type, so it passes that type to clear the whole
+     * group at once; with no type (safe fallback) every critical is cleared.
+     * Always game- and critical-scoped, so a foreign type posted in the form is a
      * no-op rather than a way to clear unrelated notifications.
      */
-    public function markCriticalAsRead(string $gameId, ?string $notificationId = null): int
+    public function markCriticalAsRead(string $gameId, ?string $type = null): int
     {
         $query = GameNotification::where('game_id', $gameId)
             ->unread()
             ->where('priority', GameNotification::PRIORITY_CRITICAL);
 
-        if ($notificationId !== null) {
-            $query->where('id', $notificationId);
+        if ($type !== null) {
+            $query->where('type', $type);
         }
 
         return $query->update(['read_at' => now()]);
+    }
+
+    /**
+     * The pending critical-alert group to surface in the blocking popup: all
+     * unread CRITICAL notifications sharing the type of the most-recent one.
+     * Same-type criticals (e.g. several purchase offers) are shown together with
+     * a single dismiss/action since they all route to the same page; criticals of
+     * other types surface as their own group on a later load. Returns an empty
+     * collection when nothing is pending.
+     */
+    public function pendingCriticalAlertGroup(string $gameId): Collection
+    {
+        $criticals = GameNotification::where('game_id', $gameId)
+            ->unread()
+            ->where('priority', GameNotification::PRIORITY_CRITICAL)
+            ->orderByDesc('game_date')
+            ->get();
+
+        if ($criticals->isEmpty()) {
+            return $criticals;
+        }
+
+        return $criticals->where('type', $criticals->first()->type)->values();
     }
 
     /**

@@ -13,10 +13,11 @@ use Illuminate\Support\Facades\Blade;
 use Tests\TestCase;
 
 /**
- * Covers the critical-alert popup mechanism: PRIORITY_CRITICAL is now reserved
- * as the must-dismiss popup tier, so previously-critical notifications must have
- * been downgraded to WARNING, and the popup/acknowledge plumbing must target
- * only unread CRITICAL notifications.
+ * Covers the critical-alert popup mechanism: PRIORITY_CRITICAL is the must-dismiss
+ * popup tier, so previously-critical notifications must have been downgraded to
+ * WARNING. The popup groups all pending criticals of one type (the most recent),
+ * showing them together with a single dismiss/action since they route to the same
+ * page; criticals of other types surface as their own group on a later load.
  */
 class CriticalAlertPopupTest extends TestCase
 {
@@ -45,16 +46,20 @@ class CriticalAlertPopupTest extends TestCase
         string $priority,
         ?string $readAt = null,
         string $type = GameNotification::TYPE_TRANSFER_COMPLETE,
+        string $title = 'Alert',
+        ?string $gameDate = null,
     ): GameNotification {
-        // The popup is type-agnostic — it keys on priority, not type — but the
-        // primary button's label IS type-driven (getActionLabel), so tests that
-        // assert the label pass a concrete type.
+        // The popup is type-agnostic — it keys on priority/type, not the type's
+        // semantics — but the primary button's label IS type-driven (getActionLabel),
+        // so tests that assert the label pass a concrete type. game_date drives the
+        // "most recent type" grouping, so tests that exercise grouping set it.
         return GameNotification::create([
             'id' => fake()->uuid(),
             'game_id' => $this->game->id,
             'type' => $type,
-            'title' => 'Alert',
+            'title' => $title,
             'priority' => $priority,
+            'game_date' => $gameDate,
             'read_at' => $readAt,
         ]);
     }
@@ -88,6 +93,42 @@ class CriticalAlertPopupTest extends TestCase
         $this->assertEquals($readAtBefore, $alreadyReadCritical->fresh()->read_at, 'already-read criticals untouched');
     }
 
+    public function test_mark_critical_as_read_scopes_to_the_given_type(): void
+    {
+        $offer = $this->makeNotification(GameNotification::PRIORITY_CRITICAL, type: GameNotification::TYPE_TRANSFER_OFFER_RECEIVED);
+        $advancement = $this->makeNotification(GameNotification::PRIORITY_CRITICAL, type: GameNotification::TYPE_COMPETITION_ADVANCEMENT);
+
+        $affected = $this->service->markCriticalAsRead($this->game->id, GameNotification::TYPE_TRANSFER_OFFER_RECEIVED);
+
+        $this->assertSame(1, $affected);
+        $this->assertNotNull($offer->fresh()->read_at);
+        $this->assertNull($advancement->fresh()->read_at, 'a different type must stay pending');
+    }
+
+    public function test_pending_critical_alert_group_returns_only_the_most_recent_type(): void
+    {
+        // Older celebratory advancement, then two newer offers of the same type,
+        // plus noise (a warning and an already-read critical) that must be ignored.
+        $this->makeNotification(GameNotification::PRIORITY_CRITICAL, type: GameNotification::TYPE_COMPETITION_ADVANCEMENT, gameDate: '2024-09-10');
+        $offerA = $this->makeNotification(GameNotification::PRIORITY_CRITICAL, type: GameNotification::TYPE_TRANSFER_OFFER_RECEIVED, gameDate: '2024-09-15');
+        $offerB = $this->makeNotification(GameNotification::PRIORITY_CRITICAL, type: GameNotification::TYPE_TRANSFER_OFFER_RECEIVED, gameDate: '2024-09-14');
+        $this->makeNotification(GameNotification::PRIORITY_WARNING, type: GameNotification::TYPE_TRANSFER_OFFER_RECEIVED, gameDate: '2024-09-15');
+        $this->makeNotification(GameNotification::PRIORITY_CRITICAL, type: GameNotification::TYPE_TRANSFER_OFFER_RECEIVED, readAt: '2024-09-15', gameDate: '2024-09-15');
+
+        $group = $this->service->pendingCriticalAlertGroup($this->game->id);
+
+        $this->assertCount(2, $group);
+        $this->assertEqualsCanonicalizing([$offerA->id, $offerB->id], $group->pluck('id')->all());
+        $this->assertTrue($group->every(fn ($n) => $n->type === GameNotification::TYPE_TRANSFER_OFFER_RECEIVED));
+    }
+
+    public function test_pending_critical_alert_group_is_empty_when_nothing_pending(): void
+    {
+        $this->makeNotification(GameNotification::PRIORITY_WARNING);
+
+        $this->assertTrue($this->service->pendingCriticalAlertGroup($this->game->id)->isEmpty());
+    }
+
     public function test_acknowledge_route_marks_critical_notifications_read(): void
     {
         $this->withoutMiddleware(ValidateCsrfToken::class);
@@ -100,21 +141,41 @@ class CriticalAlertPopupTest extends TestCase
         $this->assertNotNull($critical->fresh()->read_at);
     }
 
-    public function test_dismiss_with_notification_id_scopes_to_that_single_alert(): void
+    public function test_dismiss_scopes_to_the_posted_type(): void
     {
-        // The popup shows one alert at a time and posts its id, so dismissing
-        // should clear only that alert — the other critical stays pending.
+        // The popup groups by type and posts that type, so dismissing clears the
+        // whole same-type group while criticals of other types stay pending.
         $this->withoutMiddleware(ValidateCsrfToken::class);
-        $shown = $this->makeNotification(GameNotification::PRIORITY_CRITICAL);
-        $other = $this->makeNotification(GameNotification::PRIORITY_CRITICAL);
+        $offerA = $this->makeNotification(GameNotification::PRIORITY_CRITICAL, type: GameNotification::TYPE_TRANSFER_OFFER_RECEIVED);
+        $offerB = $this->makeNotification(GameNotification::PRIORITY_CRITICAL, type: GameNotification::TYPE_TRANSFER_OFFER_RECEIVED);
+        $advancement = $this->makeNotification(GameNotification::PRIORITY_CRITICAL, type: GameNotification::TYPE_COMPETITION_ADVANCEMENT);
 
         $this->actingAs($this->user)->post(
             route('game.notifications.acknowledge-critical', $this->game->id),
-            ['notification_id' => $shown->id],
+            ['type' => GameNotification::TYPE_TRANSFER_OFFER_RECEIVED],
         );
 
-        $this->assertNotNull($shown->fresh()->read_at);
-        $this->assertNull($other->fresh()->read_at, 'only the posted alert should be dismissed');
+        $this->assertNotNull($offerA->fresh()->read_at, 'all of the posted type are cleared together');
+        $this->assertNotNull($offerB->fresh()->read_at, 'all of the posted type are cleared together');
+        $this->assertNull($advancement->fresh()->read_at, 'a different type should stay pending');
+    }
+
+    public function test_view_critical_route_clears_the_type_and_redirects_to_its_page(): void
+    {
+        $this->withoutMiddleware(ValidateCsrfToken::class);
+        $offerA = $this->makeNotification(GameNotification::PRIORITY_CRITICAL, type: GameNotification::TYPE_TRANSFER_OFFER_RECEIVED);
+        $offerB = $this->makeNotification(GameNotification::PRIORITY_CRITICAL, type: GameNotification::TYPE_TRANSFER_OFFER_RECEIVED);
+
+        $response = $this->actingAs($this->user)->post(
+            route('game.notifications.view-critical', $this->game->id),
+            ['type' => GameNotification::TYPE_TRANSFER_OFFER_RECEIVED],
+        );
+
+        // Transfer offers route to the outgoing transfers page; the whole group is
+        // cleared so it does not re-pop on the destination.
+        $response->assertRedirect(route('game.transfers.outgoing', ['gameId' => $this->game->id]));
+        $this->assertNotNull($offerA->fresh()->read_at);
+        $this->assertNotNull($offerB->fresh()->read_at);
     }
 
     public function test_action_label_is_contextual_to_the_notification_type(): void
@@ -142,8 +203,8 @@ class CriticalAlertPopupTest extends TestCase
         $heading = __('notifications.alert_heading');
 
         $empty = Blade::render(
-            '<x-critical-alert-modal :alert="$alert" :game="$game" />',
-            ['alert' => null, 'game' => $this->game],
+            '<x-critical-alert-modal :alerts="$alerts" :game="$game" />',
+            ['alerts' => collect(), 'game' => $this->game],
         );
         $this->assertStringNotContainsString($heading, $empty);
 
@@ -152,25 +213,59 @@ class CriticalAlertPopupTest extends TestCase
             type: GameNotification::TYPE_TRANSFER_OFFER_RECEIVED,
         );
         $withAlert = Blade::render(
-            '<x-critical-alert-modal :alert="$alert" :game="$game" />',
-            ['alert' => $alert, 'game' => $this->game],
+            '<x-critical-alert-modal :alerts="$alerts" :game="$game" />',
+            ['alerts' => collect([$alert]), 'game' => $this->game],
         );
 
         $this->assertStringContainsString($heading, $withAlert);
-        // Contextual primary button navigates via the mark-read route...
+        // Contextual primary button navigates via the type-scoped view route...
         $this->assertStringContainsString(__('notifications.action_review_offer'), $withAlert);
         $this->assertStringContainsString(
-            route('game.notifications.read', [$this->game->id, $alert->id]),
+            route('game.notifications.view-critical', $this->game->id),
             $withAlert,
         );
-        // ...and the quiet dismiss posts the acknowledge route scoped to this alert.
+        // ...and the quiet dismiss posts the acknowledge route scoped to this type.
         $this->assertStringContainsString(
             route('game.notifications.acknowledge-critical', $this->game->id),
             $withAlert,
         );
-        $this->assertStringContainsString('name="notification_id" value="' . $alert->id . '"', $withAlert);
+        $this->assertStringContainsString('name="type" value="' . $alert->type . '"', $withAlert);
         // A transfer offer is not celebratory, so it uses the danger frame.
         $this->assertStringNotContainsString(__('notifications.celebration_heading'), $withAlert);
+    }
+
+    public function test_grouped_popup_lists_all_same_type_alerts(): void
+    {
+        $offerA = $this->makeNotification(
+            GameNotification::PRIORITY_CRITICAL,
+            type: GameNotification::TYPE_TRANSFER_OFFER_RECEIVED,
+            title: 'Offer for Pedri',
+        );
+        $offerB = $this->makeNotification(
+            GameNotification::PRIORITY_CRITICAL,
+            type: GameNotification::TYPE_TRANSFER_OFFER_RECEIVED,
+            title: 'Offer for Gavi',
+        );
+
+        $html = Blade::render(
+            '<x-critical-alert-modal :alerts="$alerts" :game="$game" />',
+            ['alerts' => collect([$offerA, $offerB]), 'game' => $this->game],
+        );
+
+        // Count-aware grouped heading, both alert titles, and a single shared
+        // dismiss/action pair scoped to the group's type.
+        $this->assertStringContainsString(__('notifications.alerts_heading', ['count' => 2]), $html);
+        $this->assertStringContainsString('Offer for Pedri', $html);
+        $this->assertStringContainsString('Offer for Gavi', $html);
+        $this->assertStringContainsString(__('notifications.dismiss_all'), $html);
+        $this->assertStringContainsString(__('notifications.action_review_offer'), $html);
+        $this->assertStringContainsString(
+            route('game.notifications.view-critical', $this->game->id),
+            $html,
+        );
+        $this->assertStringContainsString('name="type" value="' . GameNotification::TYPE_TRANSFER_OFFER_RECEIVED . '"', $html);
+        // The dismiss form posts a type, never a single notification id.
+        $this->assertStringNotContainsString('name="notification_id"', $html);
     }
 
     public function test_celebratory_critical_renders_the_celebration_frame(): void
@@ -183,8 +278,8 @@ class CriticalAlertPopupTest extends TestCase
         );
 
         $html = Blade::render(
-            '<x-critical-alert-modal :alert="$alert" :game="$game" />',
-            ['alert' => $alert, 'game' => $this->game],
+            '<x-critical-alert-modal :alerts="$alerts" :game="$game" />',
+            ['alerts' => collect([$alert]), 'game' => $this->game],
         );
 
         $this->assertStringContainsString(__('notifications.celebration_heading'), $html);

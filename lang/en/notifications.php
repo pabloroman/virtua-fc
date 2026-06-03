@@ -9,8 +9,10 @@ return [
 
     // Critical-alert popup (blocking, must-dismiss)
     'alert_heading' => 'Important alert',
+    'alerts_heading' => ':count important alerts',
     'celebration_heading' => 'Congratulations!',
     'alert_dismiss' => 'Dismiss',
+    'dismiss_all' => 'Dismiss all',
     'alert_continue' => 'Continue',
     'action_review_offer' => 'Review offer',
     'action_view_competition' => 'View competition',

@@ -45,6 +45,7 @@ use App\Http\Actions\AcknowledgeCriticalAlerts;
 use App\Http\Actions\MarkAllNotificationsRead;
 use App\Http\Actions\MarkNotificationRead;
 use App\Http\Actions\PreviewSeasonTicketPricing;
+use App\Http\Actions\ViewCriticalAlerts;
 use App\Http\Actions\SaveBudgetAllocation;
 use App\Http\Actions\SaveSeasonTicketPricing;
 use App\Http\Views\ShowBudgetAllocation;
@@ -332,6 +333,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/game/{gameId}/notifications/{notificationId}/read', MarkNotificationRead::class)->name('game.notifications.read');
         Route::post('/game/{gameId}/notifications/read-all', MarkAllNotificationsRead::class)->name('game.notifications.read-all');
         Route::post('/game/{gameId}/notifications/acknowledge-critical', AcknowledgeCriticalAlerts::class)->name('game.notifications.acknowledge-critical');
+        Route::post('/game/{gameId}/notifications/view-critical', ViewCriticalAlerts::class)->name('game.notifications.view-critical');
     });
 });
 

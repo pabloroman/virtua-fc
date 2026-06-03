@@ -14,14 +14,12 @@
 
     // Highest-stakes (CRITICAL) notifications that haven't been acknowledged yet
     // surface as a blocking, must-dismiss popup on the next page load so they
-    // can't be missed (e.g. a purchase offer for one of your players). Shown one
-    // at a time — the most recent — so each gets its own contextual action; any
-    // others follow on subsequent loads.
-    $criticalAlert = $game->notifications()
-        ->whereNull('read_at')
-        ->where('priority', \App\Models\GameNotification::PRIORITY_CRITICAL)
-        ->orderByDesc('game_date')
-        ->first();
+    // can't be missed (e.g. a purchase offer for one of your players). All pending
+    // criticals of the most-recent type are shown together as one group (single
+    // dismiss + single action, since they route to the same page); other types
+    // follow as their own group on subsequent loads.
+    $criticalAlerts = app(\App\Modules\Notification\Services\NotificationService::class)
+        ->pendingCriticalAlertGroup($game->id);
 @endphp
 
 <div x-data>
@@ -334,7 +332,7 @@
 
     {{-- Critical-alert popup: blocking, must-dismiss alert for the highest-stakes
          (PRIORITY_CRITICAL) notifications. Renders nothing when none are pending. --}}
-    <x-critical-alert-modal :alert="$criticalAlert" :game="$game" />
+    <x-critical-alert-modal :alerts="$criticalAlerts" :game="$game" />
 
     {{-- Mobile Bottom Tab Bar --}}
     <x-bottom-tab-bar :game="$game" :next-match="$nextMatch" :team-competitions="$teamCompetitions" />
