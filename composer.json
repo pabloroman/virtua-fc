@@ -14,6 +14,7 @@
         "laravel/nightwatch": "^1.22",
         "laravel/octane": "^2.13",
         "laravel/pulse": "^1.7",
+        "laravel/reverb": "^1.0",
         "laravel/telescope": "^5.17",
         "resend/resend-laravel": "^1.1"
     },

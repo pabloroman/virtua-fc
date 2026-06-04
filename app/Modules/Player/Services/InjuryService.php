@@ -200,7 +200,7 @@ class InjuryService
         $baseProbability = (float) config('match_simulation.injury_chance', self::BASE_INJURY_CHANCE);
         // Get multipliers
         $durabilityMultiplier = $this->getDurabilityMultiplier($player);
-        $ageMultiplier = $this->getAgeMultiplier($player->age($player->game->current_date));
+        $ageMultiplier = $this->getAgeMultiplier($this->ageFor($player, $game));
         $fitnessMultiplier = $this->getFitnessMultiplier($player->fitness);
         $congestionMultiplier = $this->getCongestionMultiplier($lastMatchDate, $currentMatchDate);
         $medicalMultiplier = $this->getMedicalInjuryMultiplier($game);
@@ -233,6 +233,22 @@ class InjuryService
         $probability = $this->calculateInjuryProbability($player, $lastMatchDate, $currentMatchDate, $game);
 
         return $this->percentChance($probability);
+    }
+
+    /**
+     * Player age for injury math, resolved against the best available date.
+     *
+     * Prefer the game the caller already has (this is the authoritative match
+     * context and avoids an N+1 lazy-load of every player's `game` relation).
+     * Fall back to the player's own game, then to now() — live-duel players
+     * have no backing Game at all, and their national-squad DOBs make
+     * age-from-now correct.
+     */
+    private function ageFor(GamePlayer $player, ?Game $game): int
+    {
+        $referenceDate = $game?->current_date ?? $player->game?->current_date ?? now();
+
+        return $player->age($referenceDate);
     }
 
     /**
@@ -286,7 +302,7 @@ class InjuryService
         $baseWeeks = rand($minWeeks, $maxWeeks);
 
         // Older players take longer to recover (+1 or +2 extra weeks)
-        $age = $player->age($player->game->current_date);
+        $age = $this->ageFor($player, $game);
         if ($age > PlayerAge::PRIME_END) {
             $baseWeeks += 2;
         } elseif ($age > PlayerAge::YOUNG_END) {
@@ -507,7 +523,7 @@ class InjuryService
         $baseProbability = self::TRAINING_INJURY_CHANCE;
 
         $durabilityMultiplier = $this->getDurabilityMultiplier($player);
-        $ageMultiplier = $this->getAgeMultiplier($player->age($player->game->current_date));
+        $ageMultiplier = $this->getAgeMultiplier($this->ageFor($player, $game));
         $fitnessMultiplier = $this->getFitnessMultiplier($player->fitness);
         $medicalMultiplier = $this->getMedicalInjuryMultiplier($game);
 

@@ -10,11 +10,12 @@ return Application::configure(basePath: dirname(__DIR__))
         web: __DIR__.'/../routes/web.php',
         api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
+        channels: __DIR__.'/../routes/channels.php',
         health: '/up',
     )
     ->booting(function () {
         $uuidPattern = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
-        foreach (['gameId', 'matchId', 'playerId', 'offerId', 'reportId', 'teamId', 'presetId', 'notificationId', 'summaryId', 'auditId'] as $param) {
+        foreach (['gameId', 'matchId', 'playerId', 'offerId', 'reportId', 'teamId', 'presetId', 'notificationId', 'summaryId', 'auditId', 'session'] as $param) {
             Route::pattern($param, $uuidPattern);
         }
     })

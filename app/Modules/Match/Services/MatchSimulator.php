@@ -4,7 +4,9 @@ namespace App\Modules\Match\Services;
 
 use App\Modules\Match\DTOs\MatchEventData;
 use App\Modules\Match\DTOs\MatchResult;
+use App\Modules\Match\DTOs\MatchSimulationContext;
 use App\Modules\Match\DTOs\MatchSimulationOutput;
+use App\Modules\Match\DTOs\WindowResult;
 use App\Modules\Lineup\Enums\DefensiveLineHeight;
 use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Enums\Mentality;
@@ -238,6 +240,110 @@ class MatchSimulator
             neutralVenue: $neutralVenue,
             toMinute: $regulationEnd,
             userTeamId: $userTeamId,
+        );
+    }
+
+    /**
+     * Simulate a single window [from, to] of a match using a stateful context.
+     *
+     * Thin context-driven wrapper around simulateRemainder(). Lets callers run
+     * a match window by window — each call hydrates instance state from the
+     * context, delegates to simulateRemainder, and writes mutated state
+     * (performance cache, score, accumulated events, injury/yellow trackers)
+     * back into the context so the next window picks up where this one left off.
+     *
+     * Designed for live multiplayer matches where each window runs in a
+     * separate queued job and the context is persisted between calls. The
+     * existing batch entry points (simulate, simulateRemainder,
+     * simulateWithAISubstitutions) are unaffected.
+     *
+     * Caller responsibilities between windows:
+     *  - Apply queued substitutions / tactical changes to ctx->homePlayers,
+     *    ctx->awayPlayers, ctx->*BenchPlayers (use SubstitutionService::buildActiveLineup).
+     *  - Optionally fork ctx->matchSeed per window (e.g. "$seed:$from-$to") if
+     *    deterministic-per-window noise is desired. simulateWindow uses the
+     *    seed as-is.
+     */
+    public function simulateWindow(
+        MatchSimulationContext $ctx,
+        int $fromMinute,
+        int $toMinute,
+    ): WindowResult {
+        // Hydrate per-call instance state from the context. simulateRemainder
+        // reads from these fields directly (rather than just its parameters)
+        // for the slot maps and performance cache.
+        $this->homePlayerSlotMap = $ctx->homePlayerSlotMap;
+        $this->awayPlayerSlotMap = $ctx->awayPlayerSlotMap;
+        $this->matchPerformance = $ctx->matchPerformance;
+
+        $output = $this->simulateRemainder(
+            homeTeam: $ctx->homeTeam,
+            awayTeam: $ctx->awayTeam,
+            homePlayers: $ctx->homePlayers,
+            awayPlayers: $ctx->awayPlayers,
+            homeFormation: $ctx->homeFormation,
+            awayFormation: $ctx->awayFormation,
+            homeMentality: $ctx->homeMentality,
+            awayMentality: $ctx->awayMentality,
+            fromMinute: $fromMinute,
+            game: $ctx->game,
+            existingInjuryTeamIds: $ctx->existingInjuryTeamIds,
+            existingYellowPlayerIds: $ctx->existingYellowPlayerIds,
+            homeEntryMinutes: $ctx->homeEntryMinutes,
+            awayEntryMinutes: $ctx->awayEntryMinutes,
+            homePlayingStyle: $ctx->homePlayingStyle,
+            awayPlayingStyle: $ctx->awayPlayingStyle,
+            homePressing: $ctx->homePressing,
+            awayPressing: $ctx->awayPressing,
+            homeDefLine: $ctx->homeDefLine,
+            awayDefLine: $ctx->awayDefLine,
+            homeBenchPlayers: $ctx->homeBenchPlayers,
+            awayBenchPlayers: $ctx->awayBenchPlayers,
+            matchSeed: $ctx->matchSeed,
+            homeExistingSubstitutions: $ctx->homeSubsUsed,
+            awayExistingSubstitutions: $ctx->awaySubsUsed,
+            neutralVenue: $ctx->neutralVenue,
+            preservePerformance: true,
+            toMinute: $toMinute,
+            skipXGAdjustment: true,
+            userTeamId: $ctx->userTeamId,
+        );
+
+        $window = $output->result;
+
+        // Performance cache: simulateRemainder mutates instance state; write back.
+        $ctx->matchPerformance = $this->matchPerformance;
+
+        // Cumulative totals.
+        $ctx->homeScore += $window->homeScore;
+        $ctx->awayScore += $window->awayScore;
+        $ctx->homeXGTotal += $window->homeXG;
+        $ctx->awayXGTotal += $window->awayXG;
+
+        $ctx->accumulatedEvents = $ctx->accumulatedEvents->merge($window->events);
+
+        // First-injury-per-team and yellow-carded-players accumulators mirror
+        // what simulateWithAISubstitutions threads between simulateRemainder
+        // calls — without this the next window may regenerate them.
+        foreach ($window->events as $event) {
+            if ($event->type === 'injury' && ! in_array($event->teamId, $ctx->existingInjuryTeamIds, true)) {
+                $ctx->existingInjuryTeamIds[] = $event->teamId;
+            }
+            if ($event->type === 'yellow_card' && ! in_array($event->gamePlayerId, $ctx->existingYellowPlayerIds, true)) {
+                $ctx->existingYellowPlayerIds[] = $event->gamePlayerId;
+            }
+        }
+
+        return new WindowResult(
+            newEvents: $window->events,
+            homeScoreDelta: $window->homeScore,
+            awayScoreDelta: $window->awayScore,
+            homeXG: $window->homeXG,
+            awayXG: $window->awayXG,
+            homePossession: $window->homePossession,
+            awayPossession: $window->awayPossession,
+            fromMinute: $fromMinute,
+            toMinute: $toMinute,
         );
     }
 
