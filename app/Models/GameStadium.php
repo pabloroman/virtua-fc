@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $id
  * @property string $game_id
  * @property string $team_id
+ * @property string|null $stadium_name
+ * @property int|null $name_changed_season
  * @property int $base_capacity
  * @property int $supplementary_seats
  * @property int|null $rebuilt_capacity
@@ -40,6 +42,8 @@ class GameStadium extends Model
     protected $fillable = [
         'game_id',
         'team_id',
+        'stadium_name',
+        'name_changed_season',
         'base_capacity',
         'supplementary_seats',
         'rebuilt_capacity',
@@ -48,6 +52,7 @@ class GameStadium extends Model
     ];
 
     protected $casts = [
+        'name_changed_season' => 'integer',
         'base_capacity' => 'integer',
         'supplementary_seats' => 'integer',
         'rebuilt_capacity' => 'integer',

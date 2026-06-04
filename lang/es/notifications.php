@@ -196,6 +196,8 @@ return [
     'stadium_loan_drawn_message' => 'El banco ha financiado el proyecto con :amount, a devolver en :years cuotas anuales.',
     'stadium_loan_repaid_title' => 'Préstamo del estadio devuelto',
     'stadium_loan_repaid_message' => 'El préstamo de :amount ha sido devuelto en su totalidad.',
+    'naming_rights_offers_title' => 'Ofertas de derechos de nombre del estadio',
+    'naming_rights_offers_message' => 'Hay patrocinadores pujando por dar nombre a tu estadio. Revisa las ofertas en la página del estadio antes de que arranque la temporada.',
 
     // Squad registration
     'squad_registration_required_title' => 'Inscripción de plantilla requerida',

@@ -101,6 +101,22 @@ class FanLoyaltyService
     }
 
     /**
+     * Apply a one-off loyalty delta to a single club and persist it. Used by
+     * out-of-band events such as signing a stadium naming-rights deal, which
+     * inflicts an immediate fan-support shock. The change respects the same
+     * base_loyalty − MAX_LOYALTY_DROP_BELOW_BASE floor as the season-end
+     * drift, so the hit is sharp but recoverable rather than bottomless.
+     */
+    public function applyDelta(TeamReputation $rep, int $delta): void
+    {
+        $rep->loyalty_points = $this->clampWithBaseFloor(
+            ((int) $rep->loyalty_points) + $delta,
+            (int) $rep->base_loyalty,
+        );
+        $rep->save();
+    }
+
+    /**
      * @return array<string, int> team_id => final league position
      */
     private function collectFinalPositions(Game $game): array

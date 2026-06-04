@@ -1,0 +1,471 @@
+<?php
+
+namespace App\Modules\Stadium\Services;
+
+use App\Models\Game;
+use App\Models\GameMatch;
+use App\Models\GameNotification;
+use App\Models\GameStadium;
+use App\Models\GameStadiumNamingDeal;
+use App\Models\Team;
+use App\Models\TeamReputation;
+use App\Modules\Notification\Services\NotificationService;
+use InvalidArgumentException;
+
+/**
+ * Orchestrates stadium naming: cosmetic renames and naming-rights
+ * sponsorship deals.
+ *
+ * Both levers are gated to the pre-season identity window (pre-season
+ * through the first league matchday). A naming-rights deal pays recurring
+ * income that settles proportional to stadium fill, in exchange for a
+ * one-time fan-loyalty shock at signing. A cosmetic rename has no fan
+ * effect and is limited to once per season.
+ *
+ * Income math lives here (projection + settlement) so the Finance and
+ * Season modules call into Stadium rather than the other way around,
+ * preserving the module dependency direction.
+ */
+class NamingRightsService
+{
+    public function __construct(
+        private readonly MatchAttendanceService $matchAttendanceService,
+        private readonly StadiumCapacityResolver $capacityResolver,
+        private readonly GameStadiumNameResolver $nameResolver,
+        private readonly FanLoyaltyService $fanLoyaltyService,
+        private readonly NotificationService $notificationService,
+    ) {}
+
+    // ── Window ──────────────────────────────────────────────────────────
+
+    /**
+     * Stadium identity can only change in the pre-season window: from the
+     * start of pre-season through the first league matchday. Once the
+     * league is under way (next unplayed league round > 1) the window shuts
+     * until next pre-season. Mirrors how season-ticket pricing locks.
+     */
+    public function windowOpen(Game $game): bool
+    {
+        if ($game->pre_season) {
+            return true;
+        }
+
+        return $game->nextLeagueMatchday === 1;
+    }
+
+    // ── Offer generation (pre-season processor) ──────────────────────────
+
+    /**
+     * Refresh naming-rights offers for the new pre-season: expire any deal
+     * that has run its term (reverting the stadium name), clear stale
+     * pending offers, and generate a fresh batch of competing offers. Skips
+     * generation when a deal is already active (you can't sign a second).
+     * Idempotent — safe to re-run within the same season setup.
+     */
+    public function generateOffers(Game $game): void
+    {
+        $season = (int) $game->season;
+
+        // Expire a deal that ended last season and hand the name back.
+        $active = GameStadiumNamingDeal::activeForGame($game->id, $game->team_id);
+        if ($active && $active->end_season !== null && $active->end_season < $season) {
+            $active->update(['status' => GameStadiumNamingDeal::STATUS_EXPIRED]);
+            $this->revertStadiumNameIfMatches($game, $active->proposed_stadium_name);
+            $active = null;
+        }
+
+        // Clear unaccepted offers from previous pre-seasons.
+        GameStadiumNamingDeal::query()
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->where('status', GameStadiumNamingDeal::STATUS_PENDING)
+            ->where('offered_season', '<', $season)
+            ->update(['status' => GameStadiumNamingDeal::STATUS_EXPIRED]);
+
+        // A live deal locks the name; no new offers while it runs.
+        if ($active) {
+            return;
+        }
+
+        // Idempotency: don't regenerate if this season's offers already exist.
+        $alreadyOffered = GameStadiumNamingDeal::query()
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->where('status', GameStadiumNamingDeal::STATUS_PENDING)
+            ->where('offered_season', $season)
+            ->exists();
+
+        if ($alreadyOffered) {
+            return;
+        }
+
+        $created = $this->createOffers($game, $season);
+
+        if ($created > 0) {
+            $this->notifyOffers($game);
+        }
+    }
+
+    /**
+     * @return int number of offers created
+     */
+    private function createOffers(Game $game, int $season): int
+    {
+        $reputation = TeamReputation::resolveLevel($game->id, $game->team_id);
+
+        $valueRange = config("finances.naming_rights.annual_value.{$reputation}")
+            ?? config('finances.naming_rights.annual_value.local', [50_000_00, 200_000_00]);
+        [$minValue, $maxValue] = $valueRange;
+
+        $count = (int) config('finances.naming_rights.offers_per_preseason', 3);
+        $minSeasons = (int) config('finances.naming_rights.min_contract_seasons', 1);
+        $maxSeasons = (int) config('finances.naming_rights.max_contract_seasons', 5);
+
+        $sponsors = config('finances.naming_rights.sponsors', []);
+        if (empty($sponsors)) {
+            return 0;
+        }
+
+        shuffle($sponsors);
+        $picked = array_slice($sponsors, 0, min($count, count($sponsors)));
+
+        foreach ($picked as $sponsor) {
+            GameStadiumNamingDeal::create([
+                'game_id' => $game->id,
+                'team_id' => $game->team_id,
+                'sponsor_name' => $sponsor['name'],
+                'proposed_stadium_name' => $sponsor['stadium'],
+                'annual_value_cents' => random_int((int) $minValue, (int) $maxValue),
+                'contract_seasons' => random_int($minSeasons, $maxSeasons),
+                'status' => GameStadiumNamingDeal::STATUS_PENDING,
+                'offered_season' => $season,
+            ]);
+        }
+
+        return count($picked);
+    }
+
+    private function notifyOffers(Game $game): void
+    {
+        $this->notificationService->create(
+            game: $game,
+            type: GameNotification::TYPE_STADIUM,
+            title: __('notifications.naming_rights_offers_title'),
+            message: __('notifications.naming_rights_offers_message'),
+            priority: GameNotification::PRIORITY_INFO,
+        );
+    }
+
+    // ── Player actions ───────────────────────────────────────────────────
+
+    /**
+     * Accept a pending naming-rights offer: activate it, reject the rest,
+     * brand the stadium, inflict the one-time loyalty shock, and fold the
+     * projected income into the current season's finances.
+     */
+    public function acceptOffer(Game $game, string $dealId): GameStadiumNamingDeal
+    {
+        if (! $this->windowOpen($game)) {
+            throw new InvalidArgumentException('messages.naming_rights_window_closed');
+        }
+
+        if (GameStadiumNamingDeal::activeForGame($game->id, $game->team_id)) {
+            throw new InvalidArgumentException('messages.naming_rights_deal_active');
+        }
+
+        $deal = GameStadiumNamingDeal::query()
+            ->where('id', $dealId)
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->where('status', GameStadiumNamingDeal::STATUS_PENDING)
+            ->first();
+
+        if (! $deal) {
+            throw new InvalidArgumentException('messages.naming_rights_offer_unavailable');
+        }
+
+        $season = (int) $game->season;
+
+        $deal->update([
+            'status' => GameStadiumNamingDeal::STATUS_ACTIVE,
+            'start_season' => $season,
+            'end_season' => $season + $deal->contract_seasons - 1,
+        ]);
+
+        // Reject the competing offers the player passed over.
+        GameStadiumNamingDeal::query()
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->where('status', GameStadiumNamingDeal::STATUS_PENDING)
+            ->where('id', '!=', $deal->id)
+            ->update(['status' => GameStadiumNamingDeal::STATUS_REJECTED]);
+
+        // Brand the ground (the sponsor takes the pen — manual rename locks).
+        $this->setStadiumName($game, $deal->proposed_stadium_name);
+
+        $this->applyLoyaltyShock($game);
+        $this->refreshProjectedNamingRights($game);
+
+        return $deal;
+    }
+
+    /**
+     * Cosmetic rename. No fan effect; just the pre-season window and a
+     * once-per-season cooldown. Blocked while a naming-rights deal owns the
+     * name.
+     */
+    public function rename(Game $game, string $name): void
+    {
+        if (! $this->windowOpen($game)) {
+            throw new InvalidArgumentException('messages.naming_rights_window_closed');
+        }
+
+        if (GameStadiumNamingDeal::activeForGame($game->id, $game->team_id)) {
+            throw new InvalidArgumentException('messages.naming_rights_deal_active');
+        }
+
+        $season = (int) $game->season;
+        $stadium = GameStadium::query()
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->first();
+
+        if ($stadium && $stadium->name_changed_season === $season) {
+            throw new InvalidArgumentException('messages.stadium_already_renamed');
+        }
+
+        $this->setStadiumName($game, $name, $season);
+    }
+
+    // ── Revenue (called by Finance projection / Season settlement) ────────
+
+    /**
+     * Projected naming-rights income for the season: the active deal's
+     * headline value scaled by the stadium's expected fill. Zero when no
+     * deal is active.
+     */
+    public function projectedRevenueForGame(Game $game): int
+    {
+        $deal = GameStadiumNamingDeal::activeForGame($game->id, $game->team_id);
+        if (! $deal) {
+            return 0;
+        }
+
+        return (int) round($deal->annual_value_cents * $this->expectedFill($game, $game->team));
+    }
+
+    /**
+     * Settled naming-rights income: the headline value scaled by the
+     * REALISED average fill across the season's home league fixtures. An
+     * emptier ground — for example after the loyalty shock or a relegation
+     * — pays the sponsor less. Falls back to the expected fill when no
+     * attendance has been recorded.
+     */
+    public function settledRevenueForGame(Game $game): int
+    {
+        $deal = GameStadiumNamingDeal::activeForGame($game->id, $game->team_id);
+        if (! $deal) {
+            return 0;
+        }
+
+        $homeMatches = GameMatch::query()
+            ->where('game_id', $game->id)
+            ->where('competition_id', $game->competition_id)
+            ->where('home_team_id', $game->team_id)
+            ->where('played', true)
+            ->get();
+
+        $attendance = 0;
+        $capacity = 0;
+        foreach ($homeMatches as $match) {
+            $row = $this->matchAttendanceService->resolveForMatch($match, $game);
+            if ($row === null) {
+                continue;
+            }
+            $attendance += (int) $row->attendance;
+            $capacity += (int) $row->capacity_at_match;
+        }
+
+        $fill = $capacity > 0
+            ? min(1.0, $attendance / $capacity)
+            : $this->expectedFill($game, $game->team);
+
+        return (int) round($deal->annual_value_cents * $fill);
+    }
+
+    // ── Panel payload (read side for the stadium hub) ─────────────────────
+
+    /**
+     * @return array{namingRights: array<string, mixed>}
+     */
+    public function buildPanel(Game $game): array
+    {
+        $season = (int) $game->season;
+        $windowOpen = $this->windowOpen($game);
+
+        $active = GameStadiumNamingDeal::activeForGame($game->id, $game->team_id);
+        $stadium = GameStadium::query()
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->first();
+
+        $currentName = $this->nameResolver->effectiveName(
+            $game->id,
+            $game->team_id,
+            $game->team?->stadium_name,
+        );
+
+        $source = $active !== null
+            ? 'sponsor'
+            : (($stadium && $stadium->stadium_name !== null) ? 'custom' : 'historic');
+
+        $activeDeal = null;
+        if ($active !== null) {
+            $activeDeal = [
+                'sponsor_name' => $active->sponsor_name,
+                'annual_value_cents' => $active->annual_value_cents,
+                'estimated_annual_cents' => $this->projectedRevenueForGame($game),
+                'end_season' => $active->end_season,
+                'seasons_remaining' => max(0, ($active->end_season ?? $season) - $season + 1),
+            ];
+        }
+
+        $offers = [];
+        if ($active === null) {
+            $offers = GameStadiumNamingDeal::query()
+                ->where('game_id', $game->id)
+                ->where('team_id', $game->team_id)
+                ->where('status', GameStadiumNamingDeal::STATUS_PENDING)
+                ->where('offered_season', $season)
+                ->orderByDesc('annual_value_cents')
+                ->get()
+                ->map(fn (GameStadiumNamingDeal $deal) => [
+                    'id' => $deal->id,
+                    'sponsor_name' => $deal->sponsor_name,
+                    'proposed_stadium_name' => $deal->proposed_stadium_name,
+                    'annual_value_cents' => $deal->annual_value_cents,
+                    'contract_seasons' => $deal->contract_seasons,
+                ])
+                ->all();
+        }
+
+        $canRename = $windowOpen
+            && $active === null
+            && ! ($stadium && $stadium->name_changed_season === $season);
+
+        return [
+            'namingRights' => [
+                'currentName' => $currentName,
+                'source' => $source,
+                'windowOpen' => $windowOpen,
+                'canRename' => $canRename,
+                'activeDeal' => $activeDeal,
+                'offers' => $offers,
+            ],
+        ];
+    }
+
+    // ── Internals ─────────────────────────────────────────────────────────
+
+    private function applyLoyaltyShock(Game $game): void
+    {
+        $rep = TeamReputation::query()
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->first();
+
+        if (! $rep) {
+            return;
+        }
+
+        $factor = (float) config('finances.naming_rights.loyalty_shock_factor', 0.12);
+        $delta = -(int) round($rep->base_loyalty * $factor);
+
+        $this->fanLoyaltyService->applyDelta($rep, $delta);
+    }
+
+    /**
+     * Recompute the projected naming-rights line on the current finances row
+     * and fold the difference into projected totals/surplus. Keeps the
+     * budget consistent whether a deal is signed before or after the
+     * pre-season projection ran. No-op when there's no finances row yet.
+     */
+    private function refreshProjectedNamingRights(Game $game): void
+    {
+        $finances = $game->currentFinances;
+        if (! $finances) {
+            return;
+        }
+
+        $new = $this->projectedRevenueForGame($game);
+        $delta = $new - (int) $finances->projected_naming_rights_revenue;
+        if ($delta === 0) {
+            return;
+        }
+
+        $finances->projected_naming_rights_revenue = $new;
+        $finances->projected_total_revenue += $delta;
+        $finances->projected_surplus += $delta;
+        $finances->save();
+    }
+
+    /**
+     * Expected stadium fill (0–1): the projected baseline gate over capacity.
+     * Reuses the demand-curve baseline so projection and the live demand
+     * model stay in step.
+     */
+    private function expectedFill(Game $game, Team $team): float
+    {
+        $capacity = $this->capacityResolver->effectiveCapacity(
+            $game->id,
+            $team->id,
+            (int) ($team->stadium_seats ?? 0),
+        );
+
+        if ($capacity <= 0) {
+            return 0.0;
+        }
+
+        $baseline = $this->matchAttendanceService->projectBaselineForTeam($game->id, $team);
+
+        return min(1.0, $baseline / $capacity);
+    }
+
+    private function setStadiumName(Game $game, string $name, ?int $renameSeason = null): void
+    {
+        $stadium = GameStadium::query()
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->first();
+
+        if (! $stadium) {
+            $stadium = new GameStadium([
+                'game_id' => $game->id,
+                'team_id' => $game->team_id,
+                'base_capacity' => (int) ($game->team?->stadium_seats ?? 0),
+            ]);
+        }
+
+        $stadium->stadium_name = $name;
+        if ($renameSeason !== null) {
+            $stadium->name_changed_season = $renameSeason;
+        }
+        $stadium->save();
+
+        $this->nameResolver->clearCache();
+    }
+
+    private function revertStadiumNameIfMatches(Game $game, string $sponsorName): void
+    {
+        $stadium = GameStadium::query()
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->first();
+
+        if ($stadium && $stadium->stadium_name === $sponsorName) {
+            $stadium->stadium_name = null;
+            $stadium->save();
+            $this->nameResolver->clearCache();
+        }
+    }
+}

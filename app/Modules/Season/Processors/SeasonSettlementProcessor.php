@@ -6,6 +6,7 @@ use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Finance\Services\BudgetLoanService;
 use App\Modules\Stadium\Services\MatchAttendanceService;
+use App\Modules\Stadium\Services\NamingRightsService;
 use App\Modules\Stadium\Services\SeasonTicketPricingService;
 use App\Models\BudgetLoan;
 use App\Models\FinancialTransaction;
@@ -29,6 +30,7 @@ class SeasonSettlementProcessor implements SeasonProcessor
     public function __construct(
         private readonly MatchAttendanceService $matchAttendanceService,
         private readonly SeasonTicketPricingService $seasonTicketPricingService,
+        private readonly NamingRightsService $namingRightsService,
     ) {}
 
     public function priority(): int
@@ -61,6 +63,10 @@ class SeasonSettlementProcessor implements SeasonProcessor
         $actualTransferIncome = $this->calculateTransferIncome($game);
         $actualCupBonusRevenue = $this->calculateCupBonusRevenue($game);
 
+        // Naming-rights income settles proportional to the realised gate, so
+        // a season of empty seats earns the sponsor's lower end.
+        $actualNamingRightsRevenue = $this->namingRightsService->settledRevenueForGame($game);
+
         // Guaranteed income — same amount as projected. Season ticket
         // revenue is collected up front at the season's start so it stays
         // locked to the projected figure (no variance).
@@ -72,6 +78,7 @@ class SeasonSettlementProcessor implements SeasonProcessor
             + $actualMatchdayRevenue
             + $actualSeasonTicketRevenue
             + $actualCommercialRevenue
+            + $actualNamingRightsRevenue
             + $actualSubsidyRevenue
             + $actualSolidarityFundsRevenue
             + $actualCupBonusRevenue
@@ -97,6 +104,7 @@ class SeasonSettlementProcessor implements SeasonProcessor
             'actual_matchday_revenue' => $actualMatchdayRevenue,
             'actual_season_ticket_revenue' => $actualSeasonTicketRevenue,
             'actual_commercial_revenue' => $actualCommercialRevenue,
+            'actual_naming_rights_revenue' => $actualNamingRightsRevenue,
             'actual_subsidy_revenue' => $actualSubsidyRevenue,
             'actual_transfer_income' => $actualTransferIncome,
             'actual_total_revenue' => $actualTotalRevenue,

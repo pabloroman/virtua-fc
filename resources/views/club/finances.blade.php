@@ -86,6 +86,7 @@
                             $revenueLines = [
                                 ['label' => __('finances.tv_rights'), 'tooltip' => __('finances.tooltip_tv_rights'), 'value' => $finances->formatted_projected_tv_revenue, 'show' => true],
                                 ['label' => __('finances.commercial'), 'tooltip' => __('finances.tooltip_commercial'), 'value' => $finances->formatted_projected_commercial_revenue, 'show' => true],
+                                ['label' => __('finances.naming_rights'), 'tooltip' => __('finances.tooltip_naming_rights'), 'value' => $finances->formatted_projected_naming_rights_revenue, 'show' => $finances->projected_naming_rights_revenue > 0],
                                 ['label' => __('finances.matchday'), 'tooltip' => __('finances.tooltip_matchday'), 'value' => $finances->formatted_projected_matchday_revenue, 'show' => true],
                                 ['label' => __('finances.solidarity_funds'), 'tooltip' => __('finances.tooltip_solidarity_funds'), 'value' => $finances->formatted_projected_solidarity_funds_revenue, 'show' => $finances->projected_solidarity_funds_revenue > 0],
                                 ['label' => __('finances.public_subsidy'), 'tooltip' => __('finances.tooltip_public_subsidy'), 'value' => $finances->formatted_projected_subsidy_revenue, 'show' => $finances->projected_subsidy_revenue > 0],

@@ -168,6 +168,37 @@ return [
                 'palco'         => 'Palco',
             ],
         ],
+
+        'naming_rights' => [
+            'title' => 'Identidad del estadio y derechos de nombre',
+            'subtitle' => 'Renombra tu estadio o vende su nombre a un patrocinador a cambio de ingresos recurrentes. Los acuerdos pagan más cuanto más lleno esté el estadio, pero vender el nombre resta apoyo de la afición. Se decide en pretemporada, hasta el primer partido de liga.',
+            'current_name' => 'Nombre actual',
+            'source_historic' => 'Histórico',
+            'source_custom' => 'Renombrado',
+            'source_sponsor' => 'Patrocinado',
+
+            'headline_value' => 'Valor nominal',
+            'estimated_this_season' => 'Estimado esta temporada',
+            'estimated_tooltip' => 'El patrocinador paga en proporción a la asistencia, así que la cifra real varía según lo lleno que esté el estadio.',
+            'seasons_remaining' => '{1} queda :count temporada|[2,*] quedan :count temporadas',
+
+            'offers_title' => 'Ofertas de patrocinio',
+            'no_offers' => 'No hay ofertas de derechos de nombre esta pretemporada.',
+            'becomes' => 'El estadio pasa a llamarse «:name»',
+            'annual_value' => 'Valor anual',
+            'contract_length' => 'Contrato',
+            'seasons' => '{1} :count temporada|[2,*] :count temporadas',
+            'fan_cost_warning' => 'Vender el nombre cuesta apoyo de la afición, y el golpe es mayor en clubes cuyos aficionados más aprecian el estadio.',
+            'accept_button' => 'Aceptar acuerdo',
+            'accept_confirm' => '¿Vender los derechos de nombre a :sponsor? Esto bloquea el nombre del estadio durante el contrato y resta apoyo de la afición.',
+
+            'rename_button' => 'Renombrar estadio',
+            'rename_placeholder' => 'Nuevo nombre del estadio',
+            'rename_save' => 'Guardar nombre',
+            'rename_locked_season' => 'El estadio ya se ha renombrado esta temporada.',
+
+            'window_closed_notice' => 'La identidad del estadio se fija en pretemporada. Los acuerdos y renombres se reabren antes del primer partido de liga de la próxima temporada.',
+        ],
     ],
 
     'reputation' => [

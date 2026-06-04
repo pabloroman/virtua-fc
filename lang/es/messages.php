@@ -207,4 +207,11 @@ return [
     'stadium_uefa_already_max' => 'Tu estadio ya está en la máxima categoría UEFA.',
     'stadium_uefa_capacity_floor' => 'El aforo actual no alcanza el mínimo exigido por la siguiente categoría UEFA.',
     'stadium_uefa_no_base_level' => 'Tu estadio no tiene categoría UEFA asignada. Amplía el aforo primero.',
+
+    'naming_rights_accepted' => 'Acuerdo de derechos de nombre firmado con :sponsor. El estadio ha sido renombrado.',
+    'stadium_renamed' => 'Estadio renombrado a :name.',
+    'naming_rights_window_closed' => 'La identidad del estadio solo puede cambiarse en pretemporada, hasta el primer partido de liga.',
+    'naming_rights_deal_active' => 'Ya hay un acuerdo de derechos de nombre activo: el patrocinador posee el nombre del estadio hasta que expire.',
+    'naming_rights_offer_unavailable' => 'Esa oferta de derechos de nombre ya no está disponible.',
+    'stadium_already_renamed' => 'El estadio ya se ha renombrado esta temporada.',
 ];

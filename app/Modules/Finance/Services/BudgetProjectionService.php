@@ -15,6 +15,7 @@ use App\Models\Team;
 use App\Models\TeamReputation;
 use App\Modules\Squad\Services\SquadService;
 use App\Modules\Stadium\Services\MatchAttendanceService;
+use App\Modules\Stadium\Services\NamingRightsService;
 use App\Modules\Stadium\Services\SeasonTicketPricingService;
 use App\Modules\Finance\Services\StadiumLoanService;
 use Carbon\Carbon;
@@ -26,6 +27,7 @@ class BudgetProjectionService
         private readonly MatchAttendanceService $matchAttendanceService,
         private readonly SeasonTicketPricingService $seasonTicketPricingService,
         private readonly StadiumLoanService $stadiumLoanService,
+        private readonly NamingRightsService $namingRightsService,
     ) {}
     /**
      * UEFA / RFEF solidarity funds by competition tier (in cents).
@@ -108,11 +110,16 @@ class BudgetProjectionService
             : $this->getBaseCommercialRevenue($game, $team, $league);
         $projectedSeasonTicketRevenue = $this->seasonTicketPricingService->getCurrent($game)?->total_revenue ?? 0;
 
+        // Naming-rights income from an active stadium sponsorship, scaled to
+        // the ground's expected fill. Zero when no deal is active.
+        $projectedNamingRightsRevenue = $this->namingRightsService->projectedRevenueForGame($game);
+
         $projectedTotalRevenue = $projectedTvRevenue
             + $projectedMatchdayRevenue
             + $projectedSolidarityFundsRevenue
             + $projectedCommercialRevenue
-            + $projectedSeasonTicketRevenue;
+            + $projectedSeasonTicketRevenue
+            + $projectedNamingRightsRevenue;
 
         // Calculate projected wages
         $projectedWages = $this->calculateProjectedWages($game);
@@ -160,6 +167,7 @@ class BudgetProjectionService
                 'projected_matchday_revenue' => $projectedMatchdayRevenue,
                 'projected_season_ticket_revenue' => $projectedSeasonTicketRevenue,
                 'projected_commercial_revenue' => $projectedCommercialRevenue,
+                'projected_naming_rights_revenue' => $projectedNamingRightsRevenue,
                 'projected_subsidy_revenue' => $projectedSubsidyRevenue,
                 'projected_total_revenue' => $projectedTotalRevenue,
                 'projected_wages' => $projectedWages,

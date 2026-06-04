@@ -192,11 +192,30 @@ Deliverable: multi-season progression arc.
 - **Financial distress states** (debt, transfer bans) beyond the current subsidy floor. Revisit when/if gameplay needs a harder failure mode.
 - **Marquee-player merchandising surface.** In Phase 4, merch is a flat fan-base multiplier; a proper star-power attribute on Player is deferred to a later phase.
 
+## Implemented: Stadium Naming Mechanics (v1)
+
+A first slice of the naming-rights pillar, shipped ahead of the broader Phase 4/5 commercial rework. Two manager levers, both gated to the **pre-season identity window** (pre-season through the first league matchday, mirroring how season-ticket pricing locks):
+
+- **Cosmetic rename** — change the stadium name freely, once per season. No fan-support effect; pure identity. Blocked while a naming-rights deal owns the name.
+- **Naming-rights sponsorship** — accept one of several competing pre-season offers (1–5 season terms). Pays **recurring income proportional to attendance** and inflicts a **one-time fan-loyalty shock** at signing, scaled by `base_loyalty` (cult clubs pay most). The shock respects the existing `base_loyalty − 15` loyalty floor, so it's sharp but recovers through results.
+
+**The self-balancing loop:** the loyalty shock lowers the demand-curve fill rate → lower attendance → smaller gate revenue *and* a smaller naming cheque (the deal settles on realised fill). Selling the name erodes the value of what was sold.
+
+**Income math** lives in `NamingRightsService` (Stadium module), so Finance and Season call into Stadium, preserving dependency direction:
+- *Projected* = `annual_value × expected fill` (baseline gate ÷ capacity), folded into commercial-adjacent revenue by `BudgetProjectionService`.
+- *Settled* = `annual_value × realised fill` (Σ attendance ÷ Σ capacity over home league fixtures), by `SeasonSettlementProcessor`. The expected-vs-realised gap is the intended variance.
+
+**Game-scoped name:** the in-game name lives on `game_stadiums.stadium_name` (set by rename or active deal), resolved by `GameStadiumNameResolver` (mirrors `StadiumCapacityResolver`) and surfaced through `GameMatch::venueName()`. `Team.stadium_name` remains the fallback. Offers are generated each pre-season by `GenerateNamingRightsOffersProcessor` (priority 105, before budget projection), which also expires ended deals and hands the name back.
+
 ## Key Files
 
 | File | Role |
 |------|------|
-| `app/Modules/Finance/Services/BudgetProjectionService.php` | Matchday + commercial projection (replaced progressively) |
+| `app/Modules/Stadium/Services/NamingRightsService.php` | Naming mechanics orchestrator: window, offer generation, accept/rename, projection + settlement math |
+| `app/Modules/Stadium/Services/GameStadiumNameResolver.php` | Resolves the game-scoped stadium name (override → `Team.stadium_name` fallback) |
+| `app/Modules/Season/Processors/GenerateNamingRightsOffersProcessor.php` | Pre-season offer generation + ended-deal expiry (priority 105) |
+| `app/Models/GameStadiumNamingDeal.php` | Offer/active/history rows for naming-rights deals |
+| `app/Modules/Finance/Services/BudgetProjectionService.php` | Matchday + commercial projection (replaced progressively); now also projects naming-rights income |
 | `app/Modules/Season/Processors/SeasonSettlementProcessor.php` | Revenue settlement (replaced progressively) |
 | `app/Modules/Season/Services/SeasonClosingPipeline.php` | New processors: fan-base update, stadium-construction tick |
 | `app/Modules/Season/Services/SeasonSetupPipeline.php` | New processor: sponsor-offer generation, before `BudgetProjectionProcessor` (Phase 4) |

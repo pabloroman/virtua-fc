@@ -7,6 +7,7 @@ use App\Models\Team;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Processors\SeasonSettlementProcessor;
 use App\Modules\Stadium\Services\MatchAttendanceService;
+use App\Modules\Stadium\Services\NamingRightsService;
 use App\Modules\Stadium\Services\SeasonTicketPricingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
@@ -28,7 +29,10 @@ class SeasonSettlementProcessorTest extends TestCase
         $seasonTicketPricingService = Mockery::mock(SeasonTicketPricingService::class);
         $seasonTicketPricingService->shouldNotReceive('soldSeasonTicketsForGame');
 
-        $processor = new SeasonSettlementProcessor($attendanceService, $seasonTicketPricingService);
+        $namingRightsService = Mockery::mock(NamingRightsService::class);
+        $namingRightsService->shouldNotReceive('settledRevenueForGame');
+
+        $processor = new SeasonSettlementProcessor($attendanceService, $seasonTicketPricingService, $namingRightsService);
 
         $data = new SeasonTransitionData(
             oldSeason: '2025',

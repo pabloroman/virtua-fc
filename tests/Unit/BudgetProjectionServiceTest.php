@@ -11,6 +11,7 @@ use App\Modules\Finance\Services\BudgetProjectionService;
 use App\Modules\Finance\Services\StadiumLoanService;
 use App\Modules\Squad\Services\SquadService;
 use App\Modules\Stadium\Services\MatchAttendanceService;
+use App\Modules\Stadium\Services\NamingRightsService;
 use App\Modules\Stadium\Services\SeasonTicketPricingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
@@ -113,6 +114,10 @@ class BudgetProjectionServiceTest extends TestCase
         $stadiumLoanService = Mockery::mock(StadiumLoanService::class);
         $stadiumLoanService->shouldReceive('activePaymentsForGame')->andReturn(0);
 
+        // No active naming-rights deal in these scenarios.
+        $namingRightsService = Mockery::mock(NamingRightsService::class);
+        $namingRightsService->shouldReceive('projectedRevenueForGame')->andReturn(0);
+
         // MatchAttendanceService is unused on this path — no league home
         // matches are scheduled, so calculateMatchdayRevenue returns 0
         // before touching it. shouldIgnoreMissing() guards future changes.
@@ -123,6 +128,7 @@ class BudgetProjectionServiceTest extends TestCase
             $matchAttendanceService,
             $seasonTicketPricingService,
             $stadiumLoanService,
+            $namingRightsService,
         );
 
         return [$service, $game, $team];

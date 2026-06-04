@@ -207,4 +207,11 @@ return [
     'stadium_uefa_already_max' => 'Your stadium is already at the top UEFA category.',
     'stadium_uefa_capacity_floor' => 'Current capacity is below the minimum required by the next UEFA category.',
     'stadium_uefa_no_base_level' => 'Your stadium has no UEFA category yet. Expand the capacity first.',
+
+    'naming_rights_accepted' => 'Naming-rights deal signed with :sponsor. The stadium has been renamed.',
+    'stadium_renamed' => 'Stadium renamed to :name.',
+    'naming_rights_window_closed' => 'Stadium identity can only be changed in pre-season, up to the first league match.',
+    'naming_rights_deal_active' => 'A naming-rights deal is already active — the sponsor owns the stadium name until it expires.',
+    'naming_rights_offer_unavailable' => 'That naming-rights offer is no longer available.',
+    'stadium_already_renamed' => 'The stadium has already been renamed this season.',
 ];

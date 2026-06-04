@@ -21,6 +21,7 @@ class StadiumSummaryService
 {
     public function __construct(
         private readonly SeasonTicketPricingService $seasonTicketPricingService,
+        private readonly GameStadiumNameResolver $stadiumNameResolver,
     ) {}
 
     /**
@@ -95,7 +96,7 @@ class StadiumSummaryService
         $lockedTotalRevenue = $lockedSeasonTicketRevenue + $lockedMatchdayRevenue;
 
         return [
-            'stadiumName' => $team->stadium_name,
+            'stadiumName' => $this->stadiumNameResolver->effectiveName($game->id, $game->team_id, $team->stadium_name),
             'capacity' => $capacity,
             'uefaLevel' => $uefaLevel,
             'loyaltyPoints' => $loyaltyPoints,

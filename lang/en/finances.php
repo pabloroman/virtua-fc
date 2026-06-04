@@ -15,6 +15,7 @@ return [
     'tv_rights' => 'TV Rights',
     'matchday' => 'Matchday',
     'commercial' => 'Commercial',
+    'naming_rights' => 'Naming rights',
     'solidarity_funds' => 'FA/UEFA Solidarity Funds',
     'public_subsidy' => 'Public Subsidies',
     'total_revenue' => 'Total Revenue',
@@ -67,6 +68,7 @@ return [
     // Budget flow tooltips
     'tooltip_tv_rights' => 'TV revenue distribution based on your final league position. The higher you finish, the larger your share.',
     'tooltip_commercial' => 'Sponsorship and merchandising income. Depends on your stadium capacity and club reputation.',
+    'tooltip_naming_rights' => 'Income from selling your stadium name to a sponsor. Scales with attendance, so a fuller ground earns more.',
     'tooltip_matchday' => 'Ticket sales revenue. Improves with facilities investment and a good league position.',
     'tooltip_solidarity_funds' => 'FA/UEFA solidarity funds for lower-division clubs to promote competitiveness.',
     'tooltip_public_subsidy' => 'Public subsidy guaranteeing a minimum viable budget for infrastructure and transfers.',

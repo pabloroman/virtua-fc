@@ -168,6 +168,37 @@ return [
                 'palco'         => 'Skybox',
             ],
         ],
+
+        'naming_rights' => [
+            'title' => 'Stadium identity & naming rights',
+            'subtitle' => 'Rename your ground, or sell its name to a sponsor for recurring income. Naming deals pay more the fuller the stadium — but selling the name dents fan support. Set in pre-season, up to the first league match.',
+            'current_name' => 'Current name',
+            'source_historic' => 'Historic',
+            'source_custom' => 'Renamed',
+            'source_sponsor' => 'Sponsored',
+
+            'headline_value' => 'Headline value',
+            'estimated_this_season' => 'Estimated this season',
+            'estimated_tooltip' => 'The sponsor pays in proportion to attendance, so the realised figure scales with how full the stadium is.',
+            'seasons_remaining' => '{1} :count season left|[2,*] :count seasons left',
+
+            'offers_title' => 'Sponsor offers',
+            'no_offers' => 'No naming-rights offers this pre-season.',
+            'becomes' => 'Stadium becomes “:name”',
+            'annual_value' => 'Annual value',
+            'contract_length' => 'Contract',
+            'seasons' => '{1} :count season|[2,*] :count seasons',
+            'fan_cost_warning' => 'Selling the name costs fan support — the hit is bigger at clubs whose fans most cherish the ground.',
+            'accept_button' => 'Accept deal',
+            'accept_confirm' => 'Sell the naming rights to :sponsor? This locks the stadium name for the contract and dents fan support.',
+
+            'rename_button' => 'Rename stadium',
+            'rename_placeholder' => 'New stadium name',
+            'rename_save' => 'Save name',
+            'rename_locked_season' => 'The stadium has already been renamed this season.',
+
+            'window_closed_notice' => 'Stadium identity is set in pre-season. Naming deals and renames reopen before next season’s first league match.',
+        ],
     ],
 
     'reputation' => [

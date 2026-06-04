@@ -245,7 +245,16 @@ class GameMatch extends Model
 
     public function venueName(): ?string
     {
-        return $this->neutral_venue_name ?? $this->homeTeam?->stadium_name;
+        if ($this->neutral_venue_name !== null) {
+            return $this->neutral_venue_name;
+        }
+
+        // Resolve the game-scoped name (manual rename / naming-rights sponsor)
+        // with the control-plane Team.stadium_name as the fallback. The
+        // resolver caches per request, so calling this across a fixture list
+        // doesn't fan out into an N+1.
+        return app(\App\Modules\Stadium\Services\GameStadiumNameResolver::class)
+            ->effectiveName($this->game_id, $this->home_team_id, $this->homeTeam?->stadium_name);
     }
 
     public function venueCapacity(): ?int

@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $projected_matchday_revenue
  * @property int $projected_season_ticket_revenue
  * @property int $projected_commercial_revenue
+ * @property int $projected_naming_rights_revenue
  * @property int $projected_total_revenue
  * @property int $projected_wages
  * @property int $projected_surplus
@@ -25,6 +26,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $actual_matchday_revenue
  * @property int $actual_season_ticket_revenue
  * @property int $actual_commercial_revenue
+ * @property int $actual_naming_rights_revenue
  * @property int $actual_transfer_income
  * @property int $actual_total_revenue
  * @property int $actual_wages
@@ -112,6 +114,7 @@ class GameFinances extends Model
         'projected_matchday_revenue',
         'projected_season_ticket_revenue',
         'projected_commercial_revenue',
+        'projected_naming_rights_revenue',
         'projected_subsidy_revenue',
         'projected_total_revenue',
         'projected_wages',
@@ -124,6 +127,7 @@ class GameFinances extends Model
         'actual_matchday_revenue',
         'actual_season_ticket_revenue',
         'actual_commercial_revenue',
+        'actual_naming_rights_revenue',
         'actual_subsidy_revenue',
         'actual_transfer_income',
         'actual_total_revenue',
@@ -147,6 +151,7 @@ class GameFinances extends Model
         'projected_matchday_revenue' => 'integer',
         'projected_season_ticket_revenue' => 'integer',
         'projected_commercial_revenue' => 'integer',
+        'projected_naming_rights_revenue' => 'integer',
         'projected_subsidy_revenue' => 'integer',
         'projected_total_revenue' => 'integer',
         'projected_wages' => 'integer',
@@ -160,6 +165,7 @@ class GameFinances extends Model
         'actual_matchday_revenue' => 'integer',
         'actual_season_ticket_revenue' => 'integer',
         'actual_commercial_revenue' => 'integer',
+        'actual_naming_rights_revenue' => 'integer',
         'actual_subsidy_revenue' => 'integer',
         'actual_transfer_income' => 'integer',
         'actual_total_revenue' => 'integer',
@@ -246,6 +252,11 @@ class GameFinances extends Model
         return Money::format($this->projected_commercial_revenue);
     }
 
+    public function getFormattedProjectedNamingRightsRevenueAttribute(): string
+    {
+        return Money::format($this->projected_naming_rights_revenue);
+    }
+
     public function getFormattedProjectedSubsidyRevenueAttribute(): string
     {
         return Money::format($this->projected_subsidy_revenue);
@@ -295,6 +306,11 @@ class GameFinances extends Model
     public function getFormattedActualCommercialRevenueAttribute(): string
     {
         return Money::format($this->actual_commercial_revenue);
+    }
+
+    public function getFormattedActualNamingRightsRevenueAttribute(): string
+    {
+        return Money::format($this->actual_naming_rights_revenue);
     }
 
     public function getFormattedActualSolidarityFundsRevenueAttribute(): string

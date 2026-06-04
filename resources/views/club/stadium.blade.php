@@ -220,6 +220,9 @@
                 </x-section-card>
                 @endif
 
+                {{-- Stadium identity & naming rights --}}
+                @include('club.partials.stadium-naming-rights')
+
             </div>
 
             {{-- RIGHT column (1/3): Last home-match attendance --}}

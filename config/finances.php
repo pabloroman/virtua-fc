@@ -275,6 +275,48 @@ return [
         'gravity'             => -1, // Applied unconditionally each season
     ],
 
+    // ── Stadium Naming Rights ──────────────────────────────────────────
+    // Selling the stadium name to a sponsor: recurring income that settles
+    // proportional to attendance, paid for in a one-time fan-loyalty shock.
+    // Offers are generated each pre-season and can only be signed in the
+    // pre-season window (through the first league matchday).
+    'naming_rights' => [
+        // Competing offers presented to the player each pre-season.
+        'offers_per_preseason' => 3,
+
+        // One-time loyalty hit at signing = round(base_loyalty × factor),
+        // floored by the existing base_loyalty − 15 loyalty floor. Scaling by
+        // base_loyalty makes cult clubs (high base) pay the steepest price.
+        'loyalty_shock_factor' => 0.12,
+
+        // [min, max] annual headline value by reputation tier (in cents).
+        // The realised payout scales down from here with stadium fill.
+        'annual_value' => [
+            'elite'        => [3_000_000_00, 8_000_000_00], // €3M–€8M
+            'continental'  => [1_500_000_00, 4_000_000_00], // €1.5M–€4M
+            'established'  => [  600_000_00, 1_800_000_00], // €600K–€1.8M
+            'modest'       => [  200_000_00,   700_000_00], // €200K–€700K
+            'local'        => [   50_000_00,   200_000_00], // €50K–€200K
+        ],
+
+        // Contract length bounds (seasons), chosen per offer.
+        'min_contract_seasons' => 1,
+        'max_contract_seasons' => 5,
+
+        // Brand pool. Each generated offer picks one at random; `stadium` is
+        // the name imposed on the ground while the deal is active.
+        'sponsors' => [
+            ['name' => 'Aerolux',     'stadium' => 'Aerolux Arena'],
+            ['name' => 'Banca Iberia','stadium' => 'Estadio Banca Iberia'],
+            ['name' => 'Voltia',      'stadium' => 'Voltia Stadium'],
+            ['name' => 'NovaFon',     'stadium' => 'NovaFon Park'],
+            ['name' => 'Solmar',      'stadium' => 'Solmar Arena'],
+            ['name' => 'Quantia',     'stadium' => 'Estadio Quantia'],
+            ['name' => 'Velocita',    'stadium' => 'Velocita Stadium'],
+            ['name' => 'Montaña Seguros', 'stadium' => 'Estadio Montaña'],
+        ],
+    ],
+
     // ── AI Team Financial Model ────────────────────────────────────────
 
     // Transfer spending envelopes per season by reputation level (in cents).

@@ -4,6 +4,7 @@ namespace App\Http\Views;
 
 use App\Modules\Finance\Services\BudgetAllocationService;
 use App\Modules\Season\Services\SeasonGoalService;
+use App\Modules\Stadium\Services\GameStadiumNameResolver;
 use App\Modules\Stadium\Services\StadiumCapacityResolver;
 use App\Models\Competition;
 use App\Models\Game;
@@ -17,6 +18,7 @@ class ShowNewSeason
         private readonly BudgetAllocationService $budgetService,
         private readonly SeasonGoalService $seasonGoalService,
         private readonly StadiumCapacityResolver $stadiumCapacityResolver,
+        private readonly GameStadiumNameResolver $stadiumNameResolver,
     ) {}
 
     public function __invoke(string $gameId)
@@ -80,9 +82,16 @@ class ShowNewSeason
             (int) ($game->team?->stadium_seats ?? 0),
         );
 
+        $stadiumName = $this->stadiumNameResolver->effectiveName(
+            $game->id,
+            $game->team_id,
+            $game->team?->stadium_name,
+        );
+
         return view('new-season', [
             ...$budgetData,
             'game' => $game,
+            'stadiumName' => $stadiumName,
             'seasonGoal' => $seasonGoal,
             'seasonGoalLabel' => $seasonGoalLabel,
             'seasonGoalTarget' => $seasonGoalTarget,
