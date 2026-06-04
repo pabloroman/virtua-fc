@@ -25,11 +25,26 @@
         <div class="relative overflow-hidden bg-surface-800 border border-border-default rounded-xl mt-6">
 
             <div class="relative px-5 py-6 md:px-7 md:py-8 flex flex-col md:flex-row md:items-end md:justify-between gap-5">
-                <div class="min-w-0">
+                <div class="min-w-0" x-data>
                     <div class="text-[10px] text-text-muted uppercase tracking-widest mb-2">{{ __('club.stadium.home_ground') }}</div>
-                    <h3 class="font-heading text-2xl md:text-2xl lg:text-3xl font-bold uppercase text-text-primary">
-                        {{ $stadiumName ?? '—' }}
-                    </h3>
+                    <div class="flex items-center gap-2 min-w-0">
+                        <h3 class="font-heading text-2xl md:text-2xl lg:text-3xl font-bold uppercase text-text-primary truncate">
+                            {{ $stadiumName ?? '—' }}
+                        </h3>
+                        <x-icon-button
+                            type="button"
+                            size="sm"
+                            class="shrink-0"
+                            :aria-label="__('club.stadium.naming_rights.title')"
+                            x-tooltip.raw="{{ __('club.stadium.naming_rights.title') }}"
+                            @click="$dispatch('open-modal', 'stadium-identity')">
+                            {{-- heroicons pencil-square (outline) --}}
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                            </svg>
+                        </x-icon-button>
+                    </div>
                 </div>
 
                 {{-- Stacked label-on-top metrics, separated by a middot.
@@ -220,9 +235,6 @@
                 </x-section-card>
                 @endif
 
-                {{-- Stadium identity & naming rights --}}
-                @include('club.partials.stadium-naming-rights')
-
             </div>
 
             {{-- RIGHT column (1/3): Last home-match attendance --}}
@@ -269,6 +281,13 @@
                 </x-section-card>
             </div>
         </div>
+
+        {{-- Stadium identity & naming rights — opened from the pencil next to the
+             stadium name in the hero above (dispatch 'open-modal', 'stadium-identity'). --}}
+        <x-modal name="stadium-identity" maxWidth="3xl">
+            <x-modal-header modalName="stadium-identity">{{ __('club.stadium.naming_rights.title') }}</x-modal-header>
+            @include('club.partials.stadium-naming-rights')
+        </x-modal>
     </div>
 
 </x-app-layout>
