@@ -83,6 +83,7 @@ class ScoutingService
     public function __construct(
         private readonly ContractService $contractService,
         private readonly DispositionService $dispositionService,
+        private readonly SquadNeedService $squadNeedService,
     ) {}
 
     /**
@@ -632,10 +633,35 @@ class ScoutingService
     }
 
     /**
+     * Counter-offer willingness premium curve, applied to market value:
+     *   desire 0.0 → 0.85× MV  (no need: rejects premium counters, can go below market)
+     *   desire 1.0 → 1.50× MV  (clear need/upgrade: pays a real premium)
+     */
+    private const COUNTER_PREMIUM_FLOOR = 0.85;
+    private const COUNTER_PREMIUM_CEIL = 1.50;
+
+    /** Reproducible ±band variance on the premium, seeded from the offer uuid. */
+    private const COUNTER_PREMIUM_JITTER = 0.05;
+
+    /** Below this desire, the buyer won't floor its willingness at its current bid. */
+    private const COUNTER_FLOOR_DESIRE_THRESHOLD = 0.40;
+
+    /** A club won't spend more than this fraction of its squad value on one player. */
+    private const COUNTER_SQUAD_VALUE_RATIO = 0.25;
+
+    /**
      * Evaluate the user's counter-offer from the AI buyer's perspective.
      *
      * Called when the user counters an unsolicited or listed offer with a higher asking price.
      * The AI club evaluates whether to accept, counter, or walk away.
+     *
+     * The buyer's max willingness is market_value × a premium that scales with
+     * how badly it wants the player (SquadNeedService::desireScore), clamped by
+     * an affordability ceiling. A club that needs the player and is upgrading
+     * pays a real premium; a deep-squad club with no need won't be talked up to
+     * (or even back up to) market value — so a countered offer no longer always
+     * beats market. This is the buyer-side counterpart to calculateAskingPrice's
+     * seller-side reluctance model; keep the two axes separate.
      *
      * @return array{result: string, counter_amount: int|null}
      */
@@ -644,18 +670,28 @@ class ScoutingService
         $player = $offer->gamePlayer;
         $marketValue = $player->market_value_cents;
 
-        // Calculate AI club's squad value to determine budget ceiling
-        $offeringTeamSquadValue = GamePlayer::where('game_id', $game->id)
+        // Load the buyer roster once (rows, not a SUM): both the affordability
+        // clamp and the desire score derive from it, keeping this to one query.
+        $buyerRoster = GamePlayer::where('game_id', $game->id)
             ->where('team_id', $offer->offering_team_id)
-            ->sum('market_value_cents');
+            ->get(['id', 'team_id', 'position', 'overall_score', 'market_value_cents']);
 
-        // AI club's max willingness: min of squad-value ceiling and market-value ceiling
-        $squadValueCeiling = (int) ($offeringTeamSquadValue * 0.25);
-        $marketValueCeiling = (int) ($marketValue * 1.30);
-        $maxWillingness = min($squadValueCeiling, $marketValueCeiling);
+        $squadValueCeiling = (int) ($buyerRoster->sum('market_value_cents') * self::COUNTER_SQUAD_VALUE_RATIO);
 
-        // Ensure max willingness is at least the current offer
-        $maxWillingness = max($maxWillingness, $offer->transfer_fee);
+        // Desire (0..1) drives how far above — or below — market the buyer goes.
+        $desire = $this->squadNeedService->desireScore($buyerRoster, $player);
+        $premium = self::COUNTER_PREMIUM_FLOOR + $desire * (self::COUNTER_PREMIUM_CEIL - self::COUNTER_PREMIUM_FLOOR);
+        $premium += $this->squadNeedService->jitter($offer->id, self::COUNTER_PREMIUM_JITTER);
+        $premium = max(self::COUNTER_PREMIUM_FLOOR - self::COUNTER_PREMIUM_JITTER, $premium);
+
+        $maxWillingness = min($squadValueCeiling, (int) ($marketValue * $premium));
+
+        // Only floor at the club's current bid when it genuinely wants the
+        // player. This lets a low-desire buyer settle below its own (possibly
+        // pre-change) opening bid rather than being forced above market.
+        if ($desire >= self::COUNTER_FLOOR_DESIRE_THRESHOLD) {
+            $maxWillingness = max($maxWillingness, $offer->transfer_fee);
+        }
 
         if ($userAskingPrice <= (int) ($maxWillingness * 0.95)) {
             return [

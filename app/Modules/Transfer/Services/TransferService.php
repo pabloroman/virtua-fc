@@ -38,19 +38,24 @@ class TransferService
         private readonly DispositionService $dispositionService,
         private readonly SquadNumberService $squadNumberService,
         private readonly SquadMinimumService $squadMinimumService,
+        private readonly SquadNeedService $squadNeedService,
     ) {}
 
     /**
-     * Discount range for listed players (buyer has leverage).
+     * Opening-offer price curve, applied to market value. A single need-driven
+     * curve (listed and unsolicited are priced the same): the AI opens with an
+     * aggressive lowball when it has little use for the player and only nears
+     * market value when it genuinely needs them. The ceiling sits below the
+     * counter-offer premium ceiling (ScoutingService::COUNTER_PREMIUM_CEIL) so
+     * there is always room to be negotiated upward.
+     *   desire 0.0 → 0.70× MV
+     *   desire 1.0 → 1.10× MV
      */
-    private const LISTED_PRICE_MIN = 0.85;
-    private const LISTED_PRICE_MAX = 0.95;
+    private const OPEN_PRICE_FLOOR = 0.70;
+    private const OPEN_PRICE_CEIL = 1.10;
 
-    /**
-     * Premium range for unsolicited offers (tempting the seller).
-     */
-    private const UNSOLICITED_PRICE_MIN = 1.00;
-    private const UNSOLICITED_PRICE_MAX = 1.15;
+    /** Reproducible ±band variance on the opening price, seeded per pairing. */
+    private const OPEN_PRICE_JITTER = 0.03;
 
     /**
      * Age adjustments for transfer pricing.
@@ -626,9 +631,18 @@ class TransferService
         // Sorted by game_player_id so the per-player UPDATE locks are
         // acquired in PK order, keeping lock acquisition deterministic
         // across concurrent writers and avoiding cross-session deadlocks.
+        //
+        // Pre-contracts are excluded here: they are free transfers that take
+        // effect when the player's current contract expires (season end), not
+        // mid-window. PreContractTransferProcessor completes them at season
+        // end via completePreContractTransfers(). Without this guard a poached
+        // player would leave the moment the next match is played, while the
+        // symmetric incoming case (completeIncomingTransfers, which carries the
+        // same filter) correctly waits until summer.
         $agreedOffers = TransferOffer::with(['gamePlayer', 'offeringTeam'])
             ->where('game_id', $game->id)
             ->where('status', TransferOffer::STATUS_AGREED)
+            ->where('offer_type', '!=', TransferOffer::TYPE_PRE_CONTRACT)
             ->whereHas('gamePlayer', function ($query) use ($game) {
                 $query->where('team_id', $game->team_id);
             })
@@ -680,7 +694,16 @@ class TransferService
      */
     private function createOffer(GamePlayer $player, Team $offeringTeam, string $offerType): TransferOffer
     {
-        $transferFee = $this->calculateOfferPrice($player, $offerType);
+        // The buyer's roster drives how badly it wants this player (desire),
+        // which sets the opening price. Loaded for just the selected buyer —
+        // offers per tick are few, so this is bounded, not an N+1 over the
+        // (foreign-league-inclusive) buyer pool.
+        $buyerRoster = GamePlayer::where('game_id', $player->game_id)
+            ->where('team_id', $offeringTeam->id)
+            ->get(['id', 'team_id', 'position', 'overall_score', 'market_value_cents']);
+
+        $desire = $this->squadNeedService->desireScore($buyerRoster, $player);
+        $transferFee = $this->calculateOfferPrice($player, $desire, $offeringTeam->id);
         $expiryDays = $offerType === TransferOffer::TYPE_LISTED
             ? self::LISTED_OFFER_EXPIRY_DAYS
             : self::UNSOLICITED_OFFER_EXPIRY_DAYS;
@@ -699,18 +722,26 @@ class TransferService
     }
 
     /**
-     * Calculate offer price based on player and offer type.
+     * Opening offer price for a listed or unsolicited approach. A single
+     * need-driven curve (both offer types are priced the same): the AI opens
+     * with an aggressive lowball when it has little use for the player and only
+     * nears market value when it genuinely needs them. Always opens below the
+     * counter-offer ceiling (ScoutingService::COUNTER_PREMIUM_*) so there is
+     * room to be negotiated upward.
+     *
+     * @param  float  $desire  0..1 from SquadNeedService::desireScore.
      */
-    private function calculateOfferPrice(GamePlayer $player, string $offerType): int
+    private function calculateOfferPrice(GamePlayer $player, float $desire, string $buyerTeamId): int
     {
         $baseValue = $player->market_value_cents;
 
-        // Type modifier
-        if ($offerType === TransferOffer::TYPE_LISTED) {
-            $typeModifier = self::LISTED_PRICE_MIN + (mt_rand() / mt_getrandmax()) * (self::LISTED_PRICE_MAX - self::LISTED_PRICE_MIN);
-        } else {
-            $typeModifier = self::UNSOLICITED_PRICE_MIN + (mt_rand() / mt_getrandmax()) * (self::UNSOLICITED_PRICE_MAX - self::UNSOLICITED_PRICE_MIN);
-        }
+        $multiplier = self::OPEN_PRICE_FLOOR + $desire * (self::OPEN_PRICE_CEIL - self::OPEN_PRICE_FLOOR);
+
+        // Deterministic per-pairing jitter so two similar approaches differ
+        // without breaking reproducibility. Seeded from player + buyer + date.
+        $seed = $player->id . $buyerTeamId . $player->game->current_date->format('Y-m-d');
+        $multiplier += $this->squadNeedService->jitter($seed, self::OPEN_PRICE_JITTER);
+        $multiplier = max(self::OPEN_PRICE_FLOOR - self::OPEN_PRICE_JITTER, $multiplier);
 
         // Age modifier
         $age = $player->age($player->game->current_date);
@@ -723,7 +754,7 @@ class TransferService
             $ageModifier = max(0.5, 1.0 - ($yearsOverMidPrime * self::AGE_DECLINE_PENALTY_PER_YEAR));
         }
 
-        $finalPrice = (int) ($baseValue * $typeModifier * $ageModifier);
+        $finalPrice = (int) ($baseValue * $multiplier * $ageModifier);
 
         return Money::roundPrice($finalPrice);
     }

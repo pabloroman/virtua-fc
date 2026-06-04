@@ -35,13 +35,10 @@ class AITransferMarketService
     /** Chance of foreign departure when no domestic buyer is found */
     private const FOREIGN_FALLBACK_CHANCE = 50;
 
-    /** Ideal squad depth per position group */
-    private const IDEAL_GROUP_COUNTS = [
-        'Goalkeeper' => 3,
-        'Defender' => 6,
-        'Midfielder' => 6,
-        'Forward' => 4,
-    ];
+    /**
+     * Ideal squad depth per position group lives on SquadNeedService — the
+     * single source of truth shared with the user-selling negotiation path.
+     */
 
     /** Minimum group counts — never sell below this */
     private const MIN_GROUP_COUNTS = [
@@ -289,7 +286,7 @@ class AITransferMarketService
                 }
             }
 
-            foreach (self::IDEAL_GROUP_COUNTS as $group => $ideal) {
+            foreach (SquadNeedService::IDEAL_GROUP_COUNTS as $group => $ideal) {
                 $current = $groupCounts->get($group, 0);
                 $deficit = $ideal - $current;
                 // Only add ideal needs for slots above the minimum
@@ -735,7 +732,7 @@ class AITransferMarketService
         $score = 0;
 
         // Position surplus: more surplus = more expendable
-        $surplus = $groupCount - (self::IDEAL_GROUP_COUNTS[$group] ?? 4);
+        $surplus = $groupCount - (SquadNeedService::IDEAL_GROUP_COUNTS[$group] ?? 4);
         if ($surplus > 0) {
             $score += $surplus * 3;
         }
@@ -832,7 +829,7 @@ class AITransferMarketService
         }
 
         // Surplus bonus — easier to let go if position group is stocked
-        $surplus = $groupCount - (self::IDEAL_GROUP_COUNTS[$group] ?? 4);
+        $surplus = $groupCount - (SquadNeedService::IDEAL_GROUP_COUNTS[$group] ?? 4);
         if ($surplus > 0) {
             $score += min(4, $surplus * 2);
         }
@@ -950,7 +947,7 @@ class AITransferMarketService
             // Position need (groupCounts is kept accurate via adjustGroupCount)
             $buyerGroupCounts = $groupCounts->get($teamId, collect());
             $currentGroupCount = $buyerGroupCounts->get($posGroup, 0);
-            $need = max(0, (self::IDEAL_GROUP_COUNTS[$posGroup] ?? 4) - $currentGroupCount);
+            $need = max(0, (SquadNeedService::IDEAL_GROUP_COUNTS[$posGroup] ?? 4) - $currentGroupCount);
 
             $score = $need * 10;
             // Reputation proximity bonus (closer = more realistic)
@@ -1038,7 +1035,7 @@ class AITransferMarketService
             // Position need (groupCounts is kept accurate via adjustGroupCount)
             $buyerGroupCounts = $groupCounts->get($teamId, collect());
             $currentGroupCount = $buyerGroupCounts->get($posGroup, 0);
-            $need = max(0, (self::IDEAL_GROUP_COUNTS[$posGroup] ?? 4) - $currentGroupCount);
+            $need = max(0, (SquadNeedService::IDEAL_GROUP_COUNTS[$posGroup] ?? 4) - $currentGroupCount);
 
             $score = $need * 10;
             // Reputation distance bonus: one step up is most common
@@ -1198,7 +1195,7 @@ class AITransferMarketService
             )->count();
 
             $groupNeed = max(0, (self::MIN_GROUP_COUNTS[$positionGroup] ?? 2) - $groupCount);
-            $idealNeed = max(0, (self::IDEAL_GROUP_COUNTS[$positionGroup] ?? 3) - $groupCount);
+            $idealNeed = max(0, (SquadNeedService::IDEAL_GROUP_COUNTS[$positionGroup] ?? 3) - $groupCount);
             $squadSpaceBonus = max(0, 26 - $players->count());
             $abilityFit = max(0, 10 - abs($playerAbility - $teamAvg));
 

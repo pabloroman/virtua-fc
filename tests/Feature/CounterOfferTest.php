@@ -45,11 +45,14 @@ class CounterOfferTest extends TestCase
             'current_date' => '2025-08-01',
         ]);
 
+        // Position defaults to Central Midfield (Midfielder group). overall_score
+        // is set high so the player reads as a clear upgrade for the buyer below.
         $this->gamePlayer = GamePlayer::factory()->create([
             'game_id' => $this->game->id,
             'team_id' => $this->userTeam->id,
             'date_of_birth' => '1998-01-01',
             'market_value_cents' => 10_000_000_00, // €10M
+            'overall_score' => 85,
             'contract_until' => '2027-06-30',
         ]);
 
@@ -74,11 +77,18 @@ class CounterOfferTest extends TestCase
             }
         }
 
-        // Create buyer team players to give them squad value (€100M total)
+        // Buyer squad: 10 forwards (€100M total), ZERO midfielders. For the
+        // midfield target above this is a high-need, clear-upgrade signing, so
+        // SquadNeedService::desireScore ≈ 0.93 and the buyer's max willingness
+        // lands near 1.45× market value (≈ €14.5M, within the ±5% premium jitter
+        // band [€14.0M, €15.0M]). The €25M squad-value clamp (0.25 × €100M) does
+        // not bind.
         for ($i = 0; $i < 10; $i++) {
             GamePlayer::factory()->create([
                 'game_id' => $this->game->id,
                 'team_id' => $this->buyerTeam->id,
+                'position' => 'Centre-Forward',
+                'overall_score' => 60,
                 'market_value_cents' => 10_000_000_00, // €10M each = €100M total
             ]);
         }
@@ -112,8 +122,9 @@ class CounterOfferTest extends TestCase
 
     public function test_counter_accepted_when_asking_within_willingness(): void
     {
-        // Buyer squad value = €100M, so max willingness = min(€25M, €13M) = €13M
-        // 95% of €13M = €12.35M. Ask for €12M → should be accepted
+        // High-need buyer: max willingness ≈ €14–15M. 95% of the low end
+        // (€14.0M) = €13.3M, so an above-market ask of €12M is comfortably
+        // accepted regardless of the premium jitter.
         $this->actingAs($this->user)->postJson(
             route('game.negotiate.counter-offer', [$this->game->id, $this->offer->id]),
             ['action' => 'start']
@@ -130,7 +141,8 @@ class CounterOfferTest extends TestCase
 
     public function test_counter_rejected_when_asking_far_above_willingness(): void
     {
-        // Buyer max willingness = €13M. 115% of €13M = €14.95M. Ask for €30M → rejected
+        // Buyer max willingness ≈ €14–15M. 115% of the high end (€15M) = €17.3M.
+        // Ask for €30M → far above any plausible willingness → rejected.
         $this->actingAs($this->user)->postJson(
             route('game.negotiate.counter-offer', [$this->game->id, $this->offer->id]),
             ['action' => 'start']
@@ -150,7 +162,10 @@ class CounterOfferTest extends TestCase
 
     public function test_counter_results_in_ai_counter_when_moderately_above(): void
     {
-        // Max willingness = €13M. Ask for €14M (between 95% and 115% of €13M) → countered
+        // Max willingness ≈ €14–15M. €15M sits robustly in the counter band for
+        // the whole jitter range: above 95% of the high end (€14.3M) so it is
+        // not auto-accepted, and at/below 115% of the low end (€16.1M) so it is
+        // not rejected → the buyer counters with a raised bid.
         $this->actingAs($this->user)->postJson(
             route('game.negotiate.counter-offer', [$this->game->id, $this->offer->id]),
             ['action' => 'start']
@@ -158,7 +173,7 @@ class CounterOfferTest extends TestCase
 
         $response = $this->actingAs($this->user)->postJson(
             route('game.negotiate.counter-offer', [$this->game->id, $this->offer->id]),
-            ['action' => 'counter', 'bid' => 14_000_000] // €14M
+            ['action' => 'counter', 'bid' => 15_000_000] // €15M
         );
 
         $response->assertOk();
