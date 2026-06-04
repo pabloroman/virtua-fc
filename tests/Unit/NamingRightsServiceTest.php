@@ -174,39 +174,125 @@ class NamingRightsServiceTest extends TestCase
         $this->assertSame(0, $this->service->settledRevenueForGame($game));
     }
 
-    public function test_generate_offers_creates_a_batch_of_pending_offers(): void
+    public function test_maybe_generate_offer_mints_one_pending_offer_when_the_roll_lands(): void
+    {
+        $game = $this->preSeasonGame();
+        $this->seedLoyalty($game, base: 60, current: 60); // tier 'established'
+        config()->set('finances.naming_rights.offer_chance_per_tick.established', 1.0);
+
+        $deal = $this->service->maybeGenerateOffer($game);
+
+        $this->assertNotNull($deal);
+        $this->assertSame(GameStadiumNamingDeal::STATUS_PENDING, $deal->status);
+        $this->assertSame(2026, $deal->offered_season);
+        $this->assertSame(1, GameStadiumNamingDeal::where('game_id', $game->id)
+            ->where('status', GameStadiumNamingDeal::STATUS_PENDING)->count());
+    }
+
+    public function test_maybe_generate_offer_does_nothing_outside_the_window(): void
+    {
+        // Not pre-season and no fixtures → next league matchday null → closed.
+        $game = Game::factory()->forTeam($this->team)->inCompetition($this->league->id)
+            ->create(['pre_season' => false, 'season' => 2026]);
+        $this->seedLoyalty($game, base: 60, current: 60);
+        config()->set('finances.naming_rights.offer_chance_per_tick.established', 1.0);
+
+        $this->assertNull($this->service->maybeGenerateOffer($game));
+        $this->assertSame(0, GameStadiumNamingDeal::where('game_id', $game->id)->count());
+    }
+
+    public function test_maybe_generate_offer_skips_when_a_deal_is_active(): void
     {
         $game = $this->preSeasonGame();
         $this->seedLoyalty($game, base: 60, current: 60);
+        $this->seedOffer($game, status: GameStadiumNamingDeal::STATUS_ACTIVE);
+        config()->set('finances.naming_rights.offer_chance_per_tick.established', 1.0);
 
-        $this->service->generateOffers($game);
-
-        $offers = GameStadiumNamingDeal::where('game_id', $game->id)
-            ->where('status', GameStadiumNamingDeal::STATUS_PENDING)
-            ->get();
-
-        $this->assertSame((int) config('finances.naming_rights.offers_per_preseason'), $offers->count());
-        $this->assertTrue($offers->every(fn ($o) => $o->offered_season === 2026));
+        $this->assertNull($this->service->maybeGenerateOffer($game));
     }
 
-    public function test_generate_offers_expires_an_ended_deal_and_reverts_the_name(): void
+    public function test_offers_never_exceed_the_pending_cap_or_duplicate_a_sponsor(): void
+    {
+        $game = $this->preSeasonGame();
+        $this->seedLoyalty($game, base: 60, current: 60);
+        config()->set('finances.naming_rights.max_pending_offers', 3);
+
+        // Force as many as possible; the cap and sponsor-dedupe bound it.
+        for ($i = 0; $i < 10; $i++) {
+            $this->service->forceOffer($game);
+        }
+
+        $pending = GameStadiumNamingDeal::where('game_id', $game->id)
+            ->where('status', GameStadiumNamingDeal::STATUS_PENDING)->get();
+
+        $this->assertSame(3, $pending->count());
+        $this->assertSame($pending->count(), $pending->pluck('sponsor_name')->unique()->count());
+    }
+
+    public function test_rollover_expires_an_ended_deal_and_restores_the_pre_deal_name(): void
     {
         $game = $this->preSeasonGame();
         $stadium = $this->seedStadium($game);
 
         $ended = $this->seedOffer($game, status: GameStadiumNamingDeal::STATUS_ACTIVE);
-        $ended->update(['start_season' => 2022, 'end_season' => 2025]); // ended before 2026
+        $ended->update([
+            'start_season' => 2022,
+            'end_season' => 2025, // ended before 2026
+            'previous_stadium_name' => 'Catedral del Norte', // a custom rename predating the deal
+        ]);
         $stadium->update(['stadium_name' => $ended->proposed_stadium_name]);
 
-        $this->service->generateOffers($game);
+        $this->service->rolloverForNewSeason($game);
 
         $this->assertSame(GameStadiumNamingDeal::STATUS_EXPIRED, $ended->fresh()->status);
-        // Name handed back to the club default.
+        // Name reverts to the manager's own rename, not the historic default.
+        $this->assertSame('Catedral del Norte', $stadium->fresh()->stadium_name);
+        // Rollover mints no offers — they arrive per-tick.
+        $this->assertSame(0, GameStadiumNamingDeal::where('game_id', $game->id)
+            ->where('status', GameStadiumNamingDeal::STATUS_PENDING)->count());
+    }
+
+    public function test_accepting_after_a_rename_restores_the_custom_name_when_the_deal_expires(): void
+    {
+        $game = $this->preSeasonGame();
+        $this->seedLoyalty($game, base: 60, current: 60);
+        $this->seedStadium($game);
+
+        // Manager renames the ground first.
+        $this->service->rename($game, 'Mi Estadio');
+
+        // A one-season sponsor offer arrives and is accepted.
+        $offer = $this->seedOffer($game, status: GameStadiumNamingDeal::STATUS_PENDING, seasons: 1);
+        $this->service->acceptOffer($game, $offer->id);
+
+        $offer->refresh();
+        $this->assertSame('Mi Estadio', $offer->previous_stadium_name);
+        $this->assertSame($offer->proposed_stadium_name, $this->stadiumFor($game)->stadium_name);
+
+        // Next season the deal has ended; the ground reverts to the rename,
+        // not the historic name.
+        $game->update(['season' => 2027]);
+        $this->service->rolloverForNewSeason($game);
+
+        $this->assertSame('Mi Estadio', $this->stadiumFor($game)->stadium_name);
+    }
+
+    public function test_expiry_restores_the_historic_name_when_there_was_no_rename(): void
+    {
+        $game = $this->preSeasonGame();
+        $stadium = $this->seedStadium($game); // no custom name → historic
+
+        $ended = $this->seedOffer($game, status: GameStadiumNamingDeal::STATUS_ACTIVE);
+        $ended->update([
+            'start_season' => 2022,
+            'end_season' => 2025,
+            'previous_stadium_name' => null, // no rename predated the deal
+        ]);
+        $stadium->update(['stadium_name' => $ended->proposed_stadium_name]);
+
+        $this->service->rolloverForNewSeason($game);
+
         $this->assertNull($stadium->fresh()->stadium_name);
-        // With the deal gone, a fresh batch of offers is generated.
-        $this->assertTrue(GameStadiumNamingDeal::where('game_id', $game->id)
-            ->where('status', GameStadiumNamingDeal::STATUS_PENDING)
-            ->exists());
     }
 
     public function test_accepting_folds_projected_income_into_current_finances(): void

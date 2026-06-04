@@ -53,25 +53,27 @@ class NamingRightsService
         return $game->nextLeagueMatchday === 1;
     }
 
-    // ── Offer generation (pre-season processor) ──────────────────────────
+    // ── Season rollover (pre-season processor) ───────────────────────────
 
     /**
-     * Refresh naming-rights offers for the new pre-season: expire any deal
-     * that has run its term (reverting the stadium name), clear stale
-     * pending offers, and generate a fresh batch of competing offers. Skips
-     * generation when a deal is already active (you can't sign a second).
-     * Idempotent — safe to re-run within the same season setup.
+     * Roll naming-rights deals over into a new season: expire any deal that
+     * has run its term (handing the stadium name back to whatever it was
+     * before the sponsorship — a custom rename, or the historic name) and
+     * clear unaccepted offers left over from previous pre-seasons.
+     *
+     * Offers themselves are NOT minted here. They arrive probabilistically
+     * over the pre-season window via maybeGenerateOffer(), rolled on each
+     * date-advance tick. Idempotent — safe to re-run within the same setup.
      */
-    public function generateOffers(Game $game): void
+    public function rolloverForNewSeason(Game $game): void
     {
         $season = (int) $game->season;
 
-        // Expire a deal that ended last season and hand the name back.
+        // Expire a deal that ended last season and restore the pre-deal name.
         $active = GameStadiumNamingDeal::activeForGame($game->id, $game->team_id);
         if ($active && $active->end_season !== null && $active->end_season < $season) {
             $active->update(['status' => GameStadiumNamingDeal::STATUS_EXPIRED]);
-            $this->revertStadiumNameIfMatches($game, $active->proposed_stadium_name);
-            $active = null;
+            $this->restorePreDealName($game, $active);
         }
 
         // Clear unaccepted offers from previous pre-seasons.
@@ -81,77 +83,161 @@ class NamingRightsService
             ->where('status', GameStadiumNamingDeal::STATUS_PENDING)
             ->where('offered_season', '<', $season)
             ->update(['status' => GameStadiumNamingDeal::STATUS_EXPIRED]);
+    }
 
-        // A live deal locks the name; no new offers while it runs.
-        if ($active) {
-            return;
+    // ── Offer arrival (per date-advance tick) ────────────────────────────
+
+    /**
+     * Maybe mint a single naming-rights offer this tick. Mirrors the
+     * unsolicited player-offer mechanic: a reputation-weighted dice roll on
+     * each pre-season tick, so higher-reputation clubs attract sponsors more
+     * often and small clubs may go a whole pre-season without a suitor.
+     *
+     * Returns the new offer, or null when the window is shut, a deal is
+     * already running, the pending-offer cap is full, or the roll misses.
+     */
+    public function maybeGenerateOffer(Game $game): ?GameStadiumNamingDeal
+    {
+        if (! $this->canReceiveOffer($game)) {
+            return null;
         }
 
-        // Idempotency: don't regenerate if this season's offers already exist.
-        $alreadyOffered = GameStadiumNamingDeal::query()
+        $tier = TeamReputation::resolveLevel($game->id, $game->team_id);
+
+        $chance = (float) (config("finances.naming_rights.offer_chance_per_tick.{$tier}")
+            ?? config('finances.naming_rights.offer_chance_per_tick.local', 0.05));
+
+        if ($chance <= 0.0 || mt_rand() / mt_getrandmax() >= $chance) {
+            return null;
+        }
+
+        return $this->createOffer($game, $tier);
+    }
+
+    /**
+     * Mint an offer regardless of the dice roll, still respecting the window,
+     * active-deal, cap and sponsor-dedupe gates. For the debug command and
+     * tests, where deterministic arrival is needed.
+     */
+    public function forceOffer(Game $game): ?GameStadiumNamingDeal
+    {
+        if (! $this->canReceiveOffer($game)) {
+            return null;
+        }
+
+        $tier = TeamReputation::resolveLevel($game->id, $game->team_id);
+
+        return $this->createOffer($game, $tier);
+    }
+
+    /**
+     * Whether the club is open to a new offer this tick: the identity window
+     * is open, no deal is already running, and there's room under the
+     * simultaneous-pending cap.
+     */
+    private function canReceiveOffer(Game $game): bool
+    {
+        if (! $this->windowOpen($game)) {
+            return false;
+        }
+
+        if (GameStadiumNamingDeal::activeForGame($game->id, $game->team_id)) {
+            return false;
+        }
+
+        $cap = (int) config('finances.naming_rights.max_pending_offers', 3);
+
+        $pending = GameStadiumNamingDeal::query()
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->where('status', GameStadiumNamingDeal::STATUS_PENDING)
+            ->where('offered_season', (int) $game->season)
+            ->count();
+
+        return $pending < $cap;
+    }
+
+    /**
+     * Create one pending offer: a sponsor not already on the table, a random
+     * headline value within the club's reputation tier, and a random term.
+     * Notifies the manager. Returns null when every brand is already pending.
+     */
+    private function createOffer(Game $game, string $tier): ?GameStadiumNamingDeal
+    {
+        $season = (int) $game->season;
+
+        $sponsor = $this->pickAvailableSponsor($game, $season);
+        if ($sponsor === null) {
+            return null;
+        }
+
+        $valueRange = config("finances.naming_rights.annual_value.{$tier}")
+            ?? config('finances.naming_rights.annual_value.local', [50_000_00, 200_000_00]);
+        [$minValue, $maxValue] = $valueRange;
+
+        $minSeasons = (int) config('finances.naming_rights.min_contract_seasons', 1);
+        $maxSeasons = (int) config('finances.naming_rights.max_contract_seasons', 5);
+
+        $deal = GameStadiumNamingDeal::create([
+            'game_id' => $game->id,
+            'team_id' => $game->team_id,
+            'sponsor_name' => $sponsor['name'],
+            'proposed_stadium_name' => $sponsor['stadium'],
+            'annual_value_cents' => random_int((int) $minValue, (int) $maxValue),
+            'contract_seasons' => random_int($minSeasons, $maxSeasons),
+            'status' => GameStadiumNamingDeal::STATUS_PENDING,
+            'offered_season' => $season,
+        ]);
+
+        $this->notifyOffer($game, $deal);
+
+        return $deal;
+    }
+
+    /**
+     * Pick a sponsor brand not already pending this pre-season, so competing
+     * offers never duplicate the same name. Null when every configured
+     * sponsor is already on the table.
+     *
+     * @return array{name: string, stadium: string}|null
+     */
+    private function pickAvailableSponsor(Game $game, int $season): ?array
+    {
+        $sponsors = config('finances.naming_rights.sponsors', []);
+        if (empty($sponsors)) {
+            return null;
+        }
+
+        $taken = GameStadiumNamingDeal::query()
             ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->where('status', GameStadiumNamingDeal::STATUS_PENDING)
             ->where('offered_season', $season)
-            ->exists();
+            ->pluck('sponsor_name')
+            ->all();
 
-        if ($alreadyOffered) {
-            return;
+        $available = array_values(array_filter(
+            $sponsors,
+            fn (array $sponsor) => ! in_array($sponsor['name'], $taken, true),
+        ));
+
+        if (empty($available)) {
+            return null;
         }
 
-        $created = $this->createOffers($game, $season);
-
-        if ($created > 0) {
-            $this->notifyOffers($game);
-        }
+        return $available[random_int(0, count($available) - 1)];
     }
 
-    /**
-     * @return int number of offers created
-     */
-    private function createOffers(Game $game, int $season): int
-    {
-        $reputation = TeamReputation::resolveLevel($game->id, $game->team_id);
-
-        $valueRange = config("finances.naming_rights.annual_value.{$reputation}")
-            ?? config('finances.naming_rights.annual_value.local', [50_000_00, 200_000_00]);
-        [$minValue, $maxValue] = $valueRange;
-
-        $count = (int) config('finances.naming_rights.offers_per_preseason', 3);
-        $minSeasons = (int) config('finances.naming_rights.min_contract_seasons', 1);
-        $maxSeasons = (int) config('finances.naming_rights.max_contract_seasons', 5);
-
-        $sponsors = config('finances.naming_rights.sponsors', []);
-        if (empty($sponsors)) {
-            return 0;
-        }
-
-        shuffle($sponsors);
-        $picked = array_slice($sponsors, 0, min($count, count($sponsors)));
-
-        foreach ($picked as $sponsor) {
-            GameStadiumNamingDeal::create([
-                'game_id' => $game->id,
-                'team_id' => $game->team_id,
-                'sponsor_name' => $sponsor['name'],
-                'proposed_stadium_name' => $sponsor['stadium'],
-                'annual_value_cents' => random_int((int) $minValue, (int) $maxValue),
-                'contract_seasons' => random_int($minSeasons, $maxSeasons),
-                'status' => GameStadiumNamingDeal::STATUS_PENDING,
-                'offered_season' => $season,
-            ]);
-        }
-
-        return count($picked);
-    }
-
-    private function notifyOffers(Game $game): void
+    private function notifyOffer(Game $game, GameStadiumNamingDeal $deal): void
     {
         $this->notificationService->create(
             game: $game,
             type: GameNotification::TYPE_STADIUM,
-            title: __('notifications.naming_rights_offers_title'),
-            message: __('notifications.naming_rights_offers_message'),
+            title: __('notifications.naming_rights_offer_title'),
+            message: __('notifications.naming_rights_offer_message', [
+                'sponsor' => $deal->sponsor_name,
+                'stadium' => $deal->proposed_stadium_name,
+            ]),
             priority: GameNotification::PRIORITY_INFO,
         );
     }
@@ -186,10 +272,19 @@ class NamingRightsService
 
         $season = (int) $game->season;
 
+        // Capture the name in effect now (a custom rename, or null = historic)
+        // so the ground can revert to it when the sponsorship expires instead
+        // of always dropping back to the historic name.
+        $previousName = GameStadium::query()
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->value('stadium_name');
+
         $deal->update([
             'status' => GameStadiumNamingDeal::STATUS_ACTIVE,
             'start_season' => $season,
             'end_season' => $season + $deal->contract_seasons - 1,
+            'previous_stadium_name' => $previousName,
         ]);
 
         // Reject the competing offers the player passed over.
@@ -455,15 +550,21 @@ class NamingRightsService
         $this->nameResolver->clearCache();
     }
 
-    private function revertStadiumNameIfMatches(Game $game, string $sponsorName): void
+    /**
+     * Hand the stadium name back when a sponsorship expires: restore whatever
+     * it was before the deal (a custom rename, or null = historic). Only acts
+     * when the sponsor still owns the name — a manager who renamed the ground
+     * again after the deal ended keeps their newer choice.
+     */
+    private function restorePreDealName(Game $game, GameStadiumNamingDeal $deal): void
     {
         $stadium = GameStadium::query()
             ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->first();
 
-        if ($stadium && $stadium->stadium_name === $sponsorName) {
-            $stadium->stadium_name = null;
+        if ($stadium && $stadium->stadium_name === $deal->proposed_stadium_name) {
+            $stadium->stadium_name = $deal->previous_stadium_name;
             $stadium->save();
             $this->nameResolver->clearCache();
         }

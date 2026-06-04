@@ -183,7 +183,7 @@ return [
             'seasons_remaining' => '{1} :count season left|[2,*] :count seasons left',
 
             'offers_title' => 'Sponsor offers',
-            'no_offers' => 'No naming-rights offers this pre-season.',
+            'no_offers' => 'No naming-rights offers yet — sponsors may still approach before the first league match.',
             'becomes' => 'Stadium becomes “:name”',
             'annual_value' => 'Annual value',
             'contract_length' => 'Contract',

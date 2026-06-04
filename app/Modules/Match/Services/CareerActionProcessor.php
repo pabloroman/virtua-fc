@@ -9,6 +9,7 @@ use App\Models\RenewalNegotiation;
 use App\Models\TransferOffer;
 use App\Modules\Academy\Services\YouthAcademyService;
 use App\Modules\Notification\Services\NotificationService;
+use App\Modules\Stadium\Services\NamingRightsService;
 use App\Modules\Transfer\Enums\TransferWindowType;
 use App\Modules\Transfer\Services\AITransferMarketService;
 use App\Modules\Transfer\Services\LoanService;
@@ -48,6 +49,7 @@ class CareerActionProcessor
         private readonly NotificationService $notificationService,
         private readonly AITransferMarketService $aiTransferMarketService,
         private readonly TransferMarketService $transferMarketService,
+        private readonly NamingRightsService $namingRightsService,
     ) {}
 
     /**
@@ -140,6 +142,14 @@ class CareerActionProcessor
             $this->notificationService->notifyTransferOffer($game, $offer);
         }
         $mark('pre_contract_offers');
+
+        // Naming-rights offers trickle in over the pre-season window (the
+        // service no-ops once the league is under way or a deal is active).
+        // Tournament-mode games have no club economy / stadium hub.
+        if (! $game->isTournamentMode()) {
+            $this->namingRightsService->maybeGenerateOffer($game);
+        }
+        $mark('naming_rights');
 
         // Resolve pending incoming pre-contract offers (after response delay)
         $resolvedPreContracts = $this->transferService->resolveIncomingPreContractOffers($game, $this->scoutingService);

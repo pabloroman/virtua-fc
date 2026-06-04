@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $team_id
  * @property string $sponsor_name
  * @property string $proposed_stadium_name
+ * @property string|null $previous_stadium_name
  * @property int $annual_value_cents
  * @property int $contract_seasons
  * @property string $status
@@ -44,6 +45,7 @@ class GameStadiumNamingDeal extends Model
         'team_id',
         'sponsor_name',
         'proposed_stadium_name',
+        'previous_stadium_name',
         'annual_value_cents',
         'contract_seasons',
         'status',

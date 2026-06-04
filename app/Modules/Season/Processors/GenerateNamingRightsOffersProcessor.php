@@ -8,10 +8,14 @@ use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Stadium\Services\NamingRightsService;
 
 /**
- * Generates the pre-season batch of stadium naming-rights offers (and
- * expires any deal that has run its term). Runs before
- * BudgetProjectionProcessor (107) so an expired deal is dropped from the
- * projection and an unchanged active deal is still counted.
+ * Rolls stadium naming-rights deals over into the new season: expires any
+ * deal that has run its term (restoring the pre-deal stadium name) and clears
+ * stale unaccepted offers. Runs before BudgetProjectionProcessor (107) so an
+ * expired deal is dropped from the projection and an unchanged active deal is
+ * still counted.
+ *
+ * New offers are NOT minted here — they arrive probabilistically across the
+ * pre-season via CareerActionProcessor (see NamingRightsService::maybeGenerateOffer).
  */
 class GenerateNamingRightsOffersProcessor implements SeasonProcessor
 {
@@ -31,7 +35,7 @@ class GenerateNamingRightsOffersProcessor implements SeasonProcessor
             return $data;
         }
 
-        $this->namingRightsService->generateOffers($game);
+        $this->namingRightsService->rolloverForNewSeason($game);
 
         return $data;
     }

@@ -183,7 +183,7 @@ return [
             'seasons_remaining' => '{1} queda :count temporada|[2,*] quedan :count temporadas',
 
             'offers_title' => 'Ofertas de patrocinio',
-            'no_offers' => 'No hay ofertas de derechos de nombre esta pretemporada.',
+            'no_offers' => 'Aún no hay ofertas de derechos de nombre — pueden llegar patrocinadores antes del primer partido de liga.',
             'becomes' => 'El estadio pasa a llamarse «:name»',
             'annual_value' => 'Valor anual',
             'contract_length' => 'Contrato',

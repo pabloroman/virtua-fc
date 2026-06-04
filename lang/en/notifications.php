@@ -196,8 +196,8 @@ return [
     'stadium_loan_drawn_message' => 'The bank has financed the project with :amount, repayable over :years annual instalments.',
     'stadium_loan_repaid_title' => 'Stadium loan repaid',
     'stadium_loan_repaid_message' => 'The :amount stadium loan has been fully repaid.',
-    'naming_rights_offers_title' => 'Stadium naming-rights offers',
-    'naming_rights_offers_message' => 'Sponsors are bidding to put their name on your stadium. Review the offers on the stadium page before the season kicks off.',
+    'naming_rights_offer_title' => 'Naming-rights offer from :sponsor',
+    'naming_rights_offer_message' => ':sponsor wants to rename your stadium ":stadium". Review the offer on the stadium page before the season kicks off.',
 
     // Squad registration
     'squad_registration_required_title' => 'Squad registration required',
