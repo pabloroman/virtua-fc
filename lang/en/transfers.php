@@ -474,8 +474,10 @@ return [
     'pay_release_clause' => 'Pay release clause',
     'clause_not_available' => 'This player has no release clause you can trigger.',
     'clause_exceeds_budget' => 'The release clause exceeds your available transfer budget.',
-    // Renewal clause control advisory: the wage the player holds out for given the
-    // chosen clause (golden handcuffs), or confirmation the current offer covers it.
+    // Clause control advisory (renewals + incoming signings): the wage the player
+    // holds out for given the chosen clause (golden handcuffs), confirmation the
+    // current offer covers it, or a poaching warning when set below market value.
     'clause_wants_wage' => 'Will want ~:wage/yr for this clause',
     'clause_wage_covered' => 'Your wage covers this clause',
+    'clause_below_market_value' => 'Below market value — easy for rivals to poach',
 ];

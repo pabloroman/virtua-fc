@@ -479,8 +479,11 @@ return [
     'pay_release_clause' => 'Pagar cláusula de rescisión',
     'clause_not_available' => 'Este jugador no tiene una cláusula de rescisión que puedas activar.',
     'clause_exceeds_budget' => 'La cláusula de rescisión supera tu presupuesto de fichajes disponible.',
-    // Renewal clause control advisory: the wage the player holds out for given the
-    // chosen clause (golden handcuffs), or confirmation the current offer covers it.
+    // Clause control advisory (renovaciones + fichajes entrantes): el salario que
+    // el jugador exigirá según la cláusula elegida (golden handcuffs), la confirmación
+    // de que la oferta actual la cubre, o un aviso de vulnerabilidad si está por
+    // debajo del valor de mercado.
     'clause_wants_wage' => 'Pedirá ~:wage/año por esta cláusula',
     'clause_wage_covered' => 'Tu salario cubre esta cláusula',
+    'clause_below_market_value' => 'Por debajo del valor de mercado: vulnerable a fichajes rivales',
 ];

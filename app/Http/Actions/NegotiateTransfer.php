@@ -377,7 +377,7 @@ class NegotiateTransfer
             $disposition = $this->contractService->calculateDisposition($player, NegotiationScenario::TRANSFER, $game, $offer->terms_round ?? 1);
             $mood = $this->contractService->getMoodIndicator($disposition, 'transfer');
 
-            return response()->json([
+            return response()->json(array_merge($this->contractService->releaseClausePayload($game, $player, (int) $offer->player_demand), [
                 'status' => 'ok',
                 'negotiation_status' => 'terms_open',
                 'round' => $offer->terms_round ?? 0,
@@ -399,7 +399,7 @@ class NegotiateTransfer
                         'preferredYears' => $offer->preferred_years,
                     ]),
                 ],
-            ]);
+            ]));
         }
 
         // Reputation gate: player may refuse to negotiate with a lower-reputation club
@@ -438,7 +438,7 @@ class NegotiateTransfer
         $disposition = $this->contractService->calculateDisposition($player, NegotiationScenario::TRANSFER, $game);
         $mood = $this->contractService->getMoodIndicator($disposition, 'transfer');
 
-        return response()->json([
+        return response()->json(array_merge($this->contractService->releaseClausePayload($game, $player, (int) $demand['wage']), [
             'status' => 'ok',
             'negotiation_status' => 'terms_open',
             'round' => 0,
@@ -460,7 +460,7 @@ class NegotiateTransfer
                     'preferredYears' => $demand['contractYears'],
                 ]),
             ],
-        ]);
+        ]));
     }
 
     private function handleOfferTerms(Request $request, Game $game, GamePlayer $player): JsonResponse
@@ -468,6 +468,7 @@ class NegotiateTransfer
         $validated = $request->validate([
             'wage' => ['required', 'integer', 'min:1'],
             'years' => ['required', 'integer', 'min:1', 'max:5'],
+            'clause' => ['nullable', 'integer', 'min:0'],
         ]);
 
         $offer = TransferOffer::where('game_id', $game->id)
@@ -485,6 +486,7 @@ class NegotiateTransfer
 
         $offerWageCents = $validated['wage'] * 100;
         $offeredYears = $validated['years'];
+        $requestedClauseCents = $this->contractService->resolveRequestedClauseCents($validated['clause'] ?? null, $game);
 
         // Salary cap: block the personal-terms offer before the player accepts.
         if (! $this->salaryCapService->canCommitWage($game, $offerWageCents)) {
@@ -495,7 +497,7 @@ class NegotiateTransfer
         }
 
         $result = $this->contractService->negotiateTermsSync(
-            $offer, $offerWageCents, $offeredYears, NegotiationScenario::TRANSFER, $game,
+            $offer, $offerWageCents, $offeredYears, NegotiationScenario::TRANSFER, $game, $requestedClauseCents,
         );
 
         $offer = $result['offer'];

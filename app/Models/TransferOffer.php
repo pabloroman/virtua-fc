@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $selling_team_id
  * @property int|null $asking_price
  * @property int|null $offered_wage
+ * @property int|null $release_clause_requested
  * @property bool $triggered_release_clause
  * @property-read \App\Models\Game $game
  * @property-read \App\Models\GamePlayer $gamePlayer
@@ -82,6 +83,7 @@ class TransferOffer extends Model
         'preferred_years',
         'offered_years',
         'wage_counter_offer',
+        'release_clause_requested',
         'triggered_release_clause',
     ];
 
@@ -100,6 +102,7 @@ class TransferOffer extends Model
         'preferred_years' => 'integer',
         'offered_years' => 'integer',
         'wage_counter_offer' => 'integer',
+        'release_clause_requested' => 'integer',
         'triggered_release_clause' => 'boolean',
     ];
 

@@ -38,6 +38,7 @@ export default function negotiationChat() {
         clauseEnabled: false,
         offerClause: 0,
         clauseFloorEuros: 0,
+        clauseMinEuros: 0,
         clauseMarketValueEuros: 0,
         clauseDemandEuros: 0,
         clausePremiumSlope: 2.5,
@@ -98,9 +99,20 @@ export default function negotiationChat() {
             return '€ ' + new Intl.NumberFormat('es-ES').format(this.offerWage);
         },
 
-        // Mandatory minimum clause (the floor); the manager can only raise from here.
+        // Hard lower bound for the clause slider. The floor (1.25× value) is the
+        // default/start, but the manager may drag down to this minimum (below market
+        // value) for a cheap buyout — see clauseBelowMarketValue for the warning.
         get clauseMin() {
-            return this.clauseFloorEuros;
+            return this.clauseMinEuros;
+        },
+
+        // The clause is set below the player's market value: no golden-handcuffs wage
+        // effect, but it makes the player far easier for AI clubs to poach. Drives the
+        // amber warning in the clause advisory.
+        get clauseBelowMarketValue() {
+            return this.clauseEnabled
+                && this.clauseMarketValueEuros > 0
+                && this.offerClause < this.clauseMarketValueEuros;
         },
 
         // Wage (euros/yr) the player will hold out for given the chosen clause —
@@ -205,6 +217,7 @@ export default function negotiationChat() {
             this.clauseEnabled = false;
             this.offerClause = 0;
             this.clauseFloorEuros = 0;
+            this.clauseMinEuros = 0;
             this.clauseMarketValueEuros = 0;
             this.clauseDemandEuros = 0;
             this.availableBudget = 0;
@@ -222,15 +235,11 @@ export default function negotiationChat() {
                 if (data.budget_loan_available !== undefined) this.budgetLoanAvailable = data.budget_loan_available;
                 if (data.budget_loan_url) this.budgetLoanUrl = data.budget_loan_url;
                 if (data.wage_floor !== undefined) this.wageFloor = data.wage_floor;
-                if (data.clause_enabled) {
-                    this.clauseEnabled = true;
-                    this.clauseFloorEuros = data.clause_floor || 0;
-                    this.clauseMarketValueEuros = data.clause_market_value || 0;
-                    this.clauseDemandEuros = data.clause_demand || 0;
-                    if (data.clause_premium_slope) this.clausePremiumSlope = data.clause_premium_slope;
-                    // Default the clause to the mandatory floor.
-                    this.offerClause = this.clauseFloorEuros;
-                }
+                // Renewals, pre-contracts and free agents carry clause data on the
+                // `start` response. Buy transfers carry it on `start_terms` instead
+                // (the clause is a personal-terms concept, reached after the fee is
+                // agreed), so applyClausePayload is also called in transitionToPersonalTerms.
+                this.applyClausePayload(data);
                 this.appendMessages(data.messages);
 
                 // Fee already agreed from a previous session — go straight to personal terms
@@ -308,6 +317,7 @@ export default function negotiationChat() {
                 const data = await this.sendAction('offer_terms', {
                     wage: this.offerWage,
                     years: this.offerYears,
+                    clause: this.clauseEnabled ? Math.round(this.offerClause) : null,
                 });
                 if (data) {
                     this.negotiationStatus = data.negotiation_status;
@@ -479,10 +489,26 @@ export default function negotiationChat() {
                 this.round = data.round || 0;
                 this.maxRounds = data.max_rounds || 3;
                 if (data.wage_floor !== undefined) this.wageFloor = data.wage_floor;
+                // Buy transfers surface the clause control here, once the fee is agreed.
+                this.applyClausePayload(data);
                 this.appendMessages(data.messages);
                 this.prefillFromOptions();
             }
             this.loading = false;
+        },
+
+        // Adopt release-clause data from a server response (renewal/personal-terms
+        // `start` or transfer `start_terms`). Absent ⇒ clauseEnabled stays false and
+        // no control renders. Defaults the clause to the mandatory floor.
+        applyClausePayload(data) {
+            if (!data?.clause_enabled) return;
+            this.clauseEnabled = true;
+            this.clauseFloorEuros = data.clause_floor || 0;
+            this.clauseMinEuros = data.clause_min || 0;
+            this.clauseMarketValueEuros = data.clause_market_value || 0;
+            this.clauseDemandEuros = data.clause_demand || 0;
+            if (data.clause_premium_slope) this.clausePremiumSlope = data.clause_premium_slope;
+            this.offerClause = this.clauseFloorEuros;
         },
 
         closeChat() {

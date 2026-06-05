@@ -61,7 +61,7 @@ class NegotiateRenewal
             $disposition = $this->contractService->calculateDisposition($player, NegotiationScenario::RENEWAL, round: $existing->round);
             $mood = $this->contractService->getMoodIndicator($disposition);
 
-            return response()->json(array_merge($this->clausePayload($game, $player, (int) $existing->player_demand), [
+            return response()->json(array_merge($this->contractService->releaseClausePayload($game, $player, (int) $existing->player_demand), [
                 'status' => 'ok',
                 'negotiation_status' => 'open',
                 'round' => $existing->round,
@@ -124,7 +124,7 @@ class NegotiateRenewal
         $mood = $this->contractService->getMoodIndicator($disposition);
         $wageFloorEuros = (int) ($this->contractService->getMinimumWageForTeam($game->team) / 100);
 
-        return response()->json(array_merge($this->clausePayload($game, $player, (int) $demand['wage']), [
+        return response()->json(array_merge($this->contractService->releaseClausePayload($game, $player, (int) $demand['wage']), [
             'status' => 'ok',
             'negotiation_status' => 'open',
             'round' => 0,
@@ -161,17 +161,7 @@ class NegotiateRenewal
         $offeredYears = $validated['years'];
         $offerWageCents = $offerWageEuros * 100;
 
-        // The clause control only exists for mandatory-clause (ES) clubs with the
-        // feature on; everywhere else a clause is impossible, so any incoming value
-        // is ignored. There is no upper cap — a clause above the floor just raises
-        // the wage the player demands (ContractService::effectiveDemandWithReleaseClause),
-        // so this layer forwards the manager's intent and the floor stays the only
-        // server-side clamp.
-        $requestedClauseCents = ($game->release_clauses_enabled
-            && isset($validated['clause'])
-            && in_array($game->country, config('finances.release_clause.mandatory_countries', []), true))
-            ? $validated['clause'] * 100
-            : null;
+        $requestedClauseCents = $this->contractService->resolveRequestedClauseCents($validated['clause'] ?? null, $game);
 
         // Salary cap: a renewal replaces the player's current wage, so only the
         // increase is charged against the cap. Wage cuts always pass.
@@ -292,40 +282,6 @@ class NegotiateRenewal
                 ]),
             ],
         ]);
-    }
-
-    /**
-     * Release-clause data for the renewal chat's clause control. Returned only for
-     * mandatory-clause (ES) clubs with the feature on; non-ES clubs get nothing, so
-     * the client never shows the control and never sends a clause. The client uses
-     * market value + demand + the premium slope to advise the wage the player will
-     * want for a given clause, but the server (effectiveDemandWithReleaseClause)
-     * stays authoritative.
-     *
-     * @return array<string, mixed>
-     */
-    private function clausePayload(Game $game, GamePlayer $player, int $demandWageCents): array
-    {
-        if (! $game->release_clauses_enabled
-            || ! in_array($game->country, config('finances.release_clause.mandatory_countries', []), true)) {
-            return [];
-        }
-
-        $marketValueCents = (int) $player->market_value_cents;
-
-        // Reuse the service for the floor so the es_floor_multiplier lives in one place.
-        $floorCents = $this->contractService->releaseClauseFloorCents($marketValueCents);
-
-        return [
-            'clause_enabled' => true,
-            'clause_floor' => (int) ($floorCents / 100),
-            'clause_market_value' => (int) ($marketValueCents / 100),
-            'clause_demand' => (int) ($demandWageCents / 100),
-            // Homegrown players accept a higher clause for a smaller wage bump:
-            // send their steepened slope so the client advisory matches the
-            // server's effectiveDemandWithReleaseClause evaluation.
-            'clause_premium_slope' => $this->contractService->releaseClausePremiumSlope($player->isHomegrown()),
-        ];
     }
 
     private function agentMessage(string $type, array $content, ?array $options = null): array

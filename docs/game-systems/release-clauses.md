@@ -66,13 +66,18 @@ real Spanish clauses get out of date.
 
 **Amount — "golden handcuffs" as a wage cost.** No cap on the clause; the cost is paid in wages.
 
-- `ES floor = MV × es_floor_multiplier` (~1.25×, tunable) — the mandatory minimum and the only
-  lower bound on a request.
+- `ES floor = MV × es_floor_multiplier` (~1.25×, tunable) — the **default** clause (seeding,
+  untouched agreements) and where the negotiation slider starts. *Not* a hard lower bound any more.
+- `ES min = MV × es_min_multiplier` (~0.25×, tunable) — the **absolute** lower bound on a manager
+  request, kept above zero so a contract never carries a €0 buyout.
 - **Derived default** at agreement = ES floor (ES) / `null` (non-ES).
-- **User may raise the clause to any value above the floor.** A clause above the floor lifts the
-  wage the player demands to re-sign by `(clause − floor) / (premium_slope × MV)`, so the player
-  weighs the whole package and counters/rejects if the wage doesn't cover the clause asked. The
-  clause itself is stored unclamped — the wage that justifies it is what the negotiation settles.
+- **User may raise the clause to any value above the floor**, or **lower it below the floor (and
+  below market value) down to the min.** Above the floor a clause lifts the wage the player demands
+  to re-sign by `(clause − floor) / (premium_slope × MV)`, so the player weighs the whole package
+  and counters/rejects if the wage doesn't cover the clause asked. At/below the floor there is no
+  wage effect; below market value the cost is instead **heavier AI poaching** (the Phase-3
+  underprice trigger multiplier ramps up as the clause falls under MV). The clause is stored
+  unclamped between min and ∞.
 
 > Phase 4 folds the clause into the existing chat negotiation: a raised clause flows through the
 > normal accept/counter/reject loop via the player's wage demand (it is **not** a separate cap or
@@ -86,7 +91,7 @@ calculateReleaseClause(
     int $marketValueCents,
     ?string $clubCountry,          // a country string, NOT a Team — bulk paths need no per-player Team load
     ?int $userRequestedCents = null
-): ?int;                            // max(floor, requested) for ES / opt-in; null otherwise
+): ?int;                            // max(min, requested ?? floor) for ES / opt-in; null otherwise
 
 effectiveDemandWithReleaseClause(
     int $baseDemandCents,
@@ -280,6 +285,56 @@ UI** plus the threading that carries the request to the agreement:
   on close surfaces the new clause everywhere Phase 1 already displays it.
 - i18n: `transfers.clause_wants_wage`, `transfers.clause_wage_covered` (es + en).
   Tests: `tests/Feature/ReleaseClausePhase4Test.php`, `tests/Unit/ReleaseClauseCalculationTest.php`.
+
+---
+
+## Phase 5 — Negotiate the clause when signing a player (all incoming routes)
+
+> **Status: coded.** Branch `release-clause-phase-4`. Phase 4 let a manager set the clause when
+> *re-signing* their own player; Phase 5 extends the same lever to **every way a player joins the
+> (ES) club** — a paid buy transfer, a Bosman pre-contract, and a free-agent signing. During
+> personal terms the manager picks the new clause — anywhere from the absolute minimum
+> (`es_min_multiplier × MV`, below market value) up with no cap; a clause above the floor raises the
+> wage the player demands (golden handcuffs), priced by the normal accept/counter/reject loop, while
+> a clause below market value trades a cheap buyout for heavier AI poaching. Previously every signing
+> just got the auto floor at completion.
+
+This is the *buy-side* counterpart of Phase 4 and reuses its service maths verbatim — the only new
+state is where the request is parked (a `TransferOffer`, not a `RenewalNegotiation`).
+
+- **Persistence:** new nullable `release_clause_requested` (cents) on `transfer_offers` (mirrors the
+  Phase-4 `renewal_negotiations` column) carries the chosen clause across personal-terms rounds and
+  into completion (the `accept_terms_counter` action has no payload). Written by `negotiateTermsSync`
+  in both the fresh and countered branches.
+- **Service:** `negotiateTermsSync(offer, wage, years, scenario, buyingClubGame, ?requestedClause)`
+  gains the clause arg and feeds `effectiveDemandWithReleaseClause(player_demand, MV, requestedClause,
+  buyingClubGame->country, isHomegrown)` into the wage evaluator as the effective demand — exactly
+  like the renewal `evaluateOffer`. The buyer is always the user's team, so the mandatory-clause
+  check uses `$buyingClubGame->country`. Shared helpers `releaseClausePayload(game, player, demand)`
+  and `resolveRequestedClauseCents(?euros, game)` were factored onto `ContractService` and now back
+  the renewal action too (its private copies were removed).
+- **Actions:** `NegotiateTransfer` (clause payload in `start_terms`, clause arg in `offer_terms`),
+  `NegotiatePreContract` and `NegotiateFreeAgent` (clause payload in `start`, clause arg in
+  `offer_terms`). Each validates `nullable|integer|min:0` `clause` and resolves it through the
+  shared gate (flag + ES). The salary cap still only charges the *offered wage*, not the clause.
+- **Completion:** `completeIncomingTransfer`, `completePreContractTransfer`, and
+  `completeFreeAgentSigning` now pass `$offer->release_clause_requested` to `calculateReleaseClause`,
+  so the agreed clause is written through (`max(floor, requested)`); a `null` request reproduces the
+  old floor-only result exactly.
+- **UI:** the shared clause stepper in `negotiation-chat-modal.blade.php` now renders whenever
+  `clauseEnabled` (the server sets it only for ES signing flows), not just renewals. `negotiation-chat.js`
+  factors the clause-state adoption into `applyClausePayload(data)`, called from both `openChat`
+  (pre-contract / free agent, where it rides the `start` response) and `transitionToPersonalTerms`
+  (buy transfers, where the clause appears on `start_terms` after the fee is agreed); the chosen
+  value is sent on the `offer_terms` payload.
+- **Below-floor minimum (added 2026-06-05):** the floor became the *default*, not a hard minimum.
+  `es_min_multiplier` (config, 0.25×) is the absolute lower bound; `calculateReleaseClause` now
+  returns `max(min, requested ?? floor)`, the slider drops to a server-sent `clause_min`, and the
+  advisory shows an amber "below market value — easy to poach" warning (`transfers.clause_below_market_value`)
+  when the clause is set under MV. Applies to renewals too (shared modal/service).
+- i18n: reuses `transfers.release_clause`, `transfers.clause_wants_wage`, `transfers.clause_wage_covered`;
+  adds `transfers.clause_below_market_value` (es + en). Tests: `tests/Feature/IncomingSigningClauseTest.php`,
+  `tests/Unit/ReleaseClauseCalculationTest.php`.
 
 ---
 

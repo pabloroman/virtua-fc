@@ -81,7 +81,7 @@ class NegotiateFreeAgent
         if ($existing) {
             $mood = $this->dispositionService->willingnessMoodIndicator($player, $game);
 
-            return response()->json([
+            return response()->json(array_merge($this->contractService->releaseClausePayload($game, $player, (int) $existing->player_demand), [
                 'status' => 'ok',
                 'negotiation_status' => 'terms_open',
                 'round' => $existing->terms_round,
@@ -103,7 +103,7 @@ class NegotiateFreeAgent
                         'preferredYears' => $existing->preferred_years,
                     ]),
                 ],
-            ]);
+            ]));
         }
 
         // Prevent duplicate pending/agreed offers
@@ -134,7 +134,7 @@ class NegotiateFreeAgent
         $mood = $this->dispositionService->willingnessMoodIndicator($player, $game);
         $demandInEuros = (int) ($demand['wage'] / 100);
 
-        return response()->json([
+        return response()->json(array_merge($this->contractService->releaseClausePayload($game, $player, (int) $demand['wage']), [
             'status' => 'ok',
             'negotiation_status' => 'terms_open',
             'round' => 0,
@@ -156,7 +156,7 @@ class NegotiateFreeAgent
                     'preferredYears' => $demand['contractYears'],
                 ]),
             ],
-        ]);
+        ]));
     }
 
     private function handleOfferTerms(Request $request, Game $game, GamePlayer $player): JsonResponse
@@ -164,6 +164,7 @@ class NegotiateFreeAgent
         $validated = $request->validate([
             'wage' => ['required', 'integer', 'min:1'],
             'years' => ['required', 'integer', 'min:1', 'max:5'],
+            'clause' => ['nullable', 'integer', 'min:0'],
         ]);
 
         // Salary cap: block the offer before the player can accept it.
@@ -193,8 +194,10 @@ class NegotiateFreeAgent
             ]);
         }
 
+        $requestedClauseCents = $this->contractService->resolveRequestedClauseCents($validated['clause'] ?? null, $game);
+
         $result = $this->contractService->negotiateTermsSync(
-            $offer, $validated['wage'] * 100, $validated['years'], NegotiationScenario::FREE_AGENT, $game,
+            $offer, $validated['wage'] * 100, $validated['years'], NegotiationScenario::FREE_AGENT, $game, $requestedClauseCents,
         );
 
         $offer = $result['offer'];

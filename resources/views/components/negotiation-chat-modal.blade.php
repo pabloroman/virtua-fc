@@ -375,10 +375,13 @@
                     </div>
                 </div>
 
-                {{-- Release clause stepper (renewal, mandatory-clause clubs only).
+                {{-- Release clause stepper (mandatory-clause clubs only): shown for
+                     renewals and for every incoming signing into the club — buy
+                     transfer, Bosman pre-contract, free agent. clauseEnabled is set
+                     by the server only for those ES flows, so it's the whole guard.
                      Min is the mandatory floor; there is no upper cap — raising the
                      clause raises the wage the player wants (the advisory below). --}}
-                <div x-show="clauseEnabled && mode === 'renewal'" x-cloak class="space-y-1">
+                <div x-show="clauseEnabled" x-cloak class="space-y-1">
                     <label class="block text-[10px] text-text-muted uppercase tracking-wider">{{ __('transfers.release_clause') }}</label>
                     <div class="inline-flex items-stretch border border-border-strong rounded-lg overflow-hidden h-[36px] w-full">
                         <button type="button"
@@ -398,16 +401,20 @@
                             @touchstart.prevent="startHold(() => incrementClause())" @touchend="stopHold()"
                         >+</button>
                     </div>
-                    {{-- Live golden-handcuffs advisory: green when the current wage offer
-                         already covers what the player wants for this clause, amber (with
-                         the wage they'll hold out for) when it doesn't. Never blocks. --}}
+                    {{-- Live advisory. Below market value: amber poaching warning (a
+                         cheap buyout has no wage effect, just exposure). At/above the
+                         floor: golden-handcuffs wage advisory — green when the current
+                         wage offer covers what the player wants for the clause, amber
+                         (with the wage they'll hold out for) when it doesn't. Never blocks. --}}
                     <div class="flex items-start gap-1.5 text-[10px] leading-tight">
                         <span class="w-1.5 h-1.5 mt-1 rounded-full shrink-0"
-                            :class="clauseWageCovered ? 'bg-accent-green' : 'bg-accent-gold'"></span>
+                            :class="(clauseBelowMarketValue || !clauseWageCovered) ? 'bg-accent-gold' : 'bg-accent-green'"></span>
                         <span class="text-text-muted"
-                            x-text="clauseWageCovered
-                                ? @js(__('transfers.clause_wage_covered'))
-                                : @js(__('transfers.clause_wants_wage')).replace(':wage', clauseAdjustedDemandDisplay)"></span>
+                            x-text="clauseBelowMarketValue
+                                ? @js(__('transfers.clause_below_market_value'))
+                                : (clauseWageCovered
+                                    ? @js(__('transfers.clause_wage_covered'))
+                                    : @js(__('transfers.clause_wants_wage')).replace(':wage', clauseAdjustedDemandDisplay))"></span>
                     </div>
                 </div>
 

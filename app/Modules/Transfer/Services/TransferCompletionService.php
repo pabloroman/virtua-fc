@@ -142,10 +142,11 @@ class TransferCompletionService
             'number' => null,
             // Extend their contract with the new team
             'contract_until' => Carbon::createFromDate((int) $game->season + rand(2, 4) + 1, 6, 30),
-            // Recompute the clause for the new club. ES default = floor; null
-            // elsewhere (and for flag-off saves).
+            // Set the clause for the new club: the value the manager negotiated in
+            // personal terms (honoured as-is above the floor), or the ES floor when
+            // untouched. Null elsewhere (and for flag-off saves).
             'release_clause' => $game->release_clauses_enabled
-                ? $this->contractService->calculateReleaseClause($player->market_value_cents, $buyer->country)
+                ? $this->contractService->calculateReleaseClause($player->market_value_cents, $buyer->country, $offer->release_clause_requested)
                 : null,
         ]);
 
@@ -241,10 +242,12 @@ class TransferCompletionService
             'number' => $this->squadNumberService->assignNumberForNewPlayer($game, $player),
             'contract_until' => $newContractEnd,
             'annual_wage' => $offer->offered_wage ?? $player->annual_wage,
-            // Recompute the clause for the buying (user's) club — mandatory
-            // floor for ES, null elsewhere (and for flag-off saves).
+            // Set the clause for the buying (user's) club: the value the manager
+            // negotiated in personal terms (honoured as-is above the floor — its
+            // golden-handcuffs wage cost was already paid in the agreed wage), or
+            // the mandatory floor when untouched. Null for non-ES and flag-off saves.
             'release_clause' => $game->release_clauses_enabled
-                ? $this->contractService->calculateReleaseClause($player->market_value_cents, $game->country)
+                ? $this->contractService->calculateReleaseClause($player->market_value_cents, $game->country, $offer->release_clause_requested)
                 : null,
         ]);
 
@@ -307,10 +310,11 @@ class TransferCompletionService
             'number' => $this->squadNumberService->assignNumberForNewPlayer($game, $player),
             'contract_until' => $newContractEnd,
             'annual_wage' => $offer->offered_wage,
-            // Recompute the clause for the signing (user's) club — mandatory
-            // floor for ES, null elsewhere (and for flag-off saves).
+            // Set the clause for the signing (user's) club: the value the manager
+            // negotiated in personal terms (honoured as-is above the floor), or the
+            // mandatory floor when untouched. Null for non-ES and flag-off saves.
             'release_clause' => $game->release_clauses_enabled
-                ? $this->contractService->calculateReleaseClause($player->market_value_cents, $game->country)
+                ? $this->contractService->calculateReleaseClause($player->market_value_cents, $game->country, $offer->release_clause_requested)
                 : null,
         ]);
 

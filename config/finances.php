@@ -47,9 +47,17 @@ return [
         // in place of market value. Team.country stores uppercase 2-char codes.
         'mandatory_countries' => ['ES'],
 
-        // Mandatory minimum clause for ES clubs, as a multiple of market value.
-        // The derived default at every agreement equals this floor.
+        // Default clause for ES clubs, as a multiple of market value. The derived
+        // default at every agreement (seeding, untouched renewals/signings) equals
+        // this floor, and it's where the negotiation slider starts.
         'es_floor_multiplier' => 1.25,
+
+        // Absolute minimum a manager may set the clause to during a renewal or an
+        // incoming signing, as a multiple of market value. Below es_floor_multiplier
+        // (and below 1.0 = below market value) so managers can deliberately set a
+        // cheap buyout — at the cost of making the player far easier for AI clubs to
+        // poach (the underprice trigger multiplier ramps up as clause falls under MV).
+        'es_min_multiplier' => 0.25,
 
         // Golden handcuffs: a clause raised above the mandatory floor isn't capped,
         // it raises the WAGE the player demands to be locked in. There is no

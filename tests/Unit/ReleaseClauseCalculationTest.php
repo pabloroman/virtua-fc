@@ -12,10 +12,11 @@ use Tests\TestCase;
  * pinned in setUp() so the assertions survive balance tweaks to
  * config/finances.php.
  *
- * The manager-set clause is no longer capped: above the mandatory floor it is
- * honoured as-is (calculateReleaseClause), and the cost is paid in wages — a
- * clause above the floor raises the player's wage demand
- * (effectiveDemandWithReleaseClause).
+ * The manager-set clause is no longer capped in either direction: above the
+ * default floor it is honoured as-is (calculateReleaseClause) and the cost is
+ * paid in wages (effectiveDemandWithReleaseClause raises the demand); below the
+ * floor it is honoured down to a configurable absolute minimum (es_min_multiplier),
+ * a cheap buyout whose cost is heavier AI poaching rather than a clamp.
  */
 class ReleaseClauseCalculationTest extends TestCase
 {
@@ -31,6 +32,7 @@ class ReleaseClauseCalculationTest extends TestCase
 
         // Pin the curve so the maths below stays deterministic.
         config()->set('finances.release_clause.es_floor_multiplier', 1.25);
+        config()->set('finances.release_clause.es_min_multiplier', 0.25);
         config()->set('finances.release_clause.tolerance.premium_slope', 2.5);
     }
 
@@ -52,12 +54,24 @@ class ReleaseClauseCalculationTest extends TestCase
         $this->assertNull($this->service->calculateReleaseClause(0, 'ES'));
     }
 
-    public function test_user_request_below_floor_is_clamped_up_to_the_floor(): void
+    public function test_user_request_between_the_minimum_and_floor_is_honoured(): void
     {
-        // €10M request < €62.5M floor → clamped up to the floor.
+        // €30M request: below the €62.5M floor but above the €12.5M minimum (and
+        // below the €50M market value) → honoured as-is. The manager has chosen a
+        // cheap buyout; the cost is poaching exposure, not a clamp.
         $this->assertSame(
-            6_250_000_000,
-            $this->service->calculateReleaseClause(self::MV, 'ES', 1_000_000_000),
+            3_000_000_000,
+            $this->service->calculateReleaseClause(self::MV, 'ES', 3_000_000_000),
+        );
+    }
+
+    public function test_user_request_below_the_minimum_is_clamped_up_to_the_minimum(): void
+    {
+        // €5M request < €12.5M minimum (0.25 × €50M) → clamped up to the minimum so
+        // a contract never carries a near-zero buyout.
+        $this->assertSame(
+            1_250_000_000,
+            $this->service->calculateReleaseClause(self::MV, 'ES', 500_000_000),
         );
     }
 

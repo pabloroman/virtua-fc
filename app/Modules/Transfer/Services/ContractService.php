@@ -427,18 +427,32 @@ class ContractService
 
         $floor = $this->releaseClauseFloorCents($marketValueCents);
 
-        // Derived default at agreement = the floor; a manager request only ever
-        // raises it (never below the mandatory floor), with no upper bound.
-        return max($floor, $userRequestedCents ?? $floor);
+        // Derived default at agreement = the floor. A manager request is honoured
+        // both ways: above the floor with no upper bound (golden handcuffs, paid in
+        // wages), and below it down to the absolute minimum (a cheap buyout the
+        // manager accepts in exchange for far easier AI poaching). No request ⇒ floor.
+        return max($this->releaseClauseMinCents($marketValueCents), $userRequestedCents ?? $floor);
     }
 
     /**
-     * Mandatory minimum clause (in cents) for a given market value: the floor a
-     * derived/default clause sits at, and the lower bound on any manager request.
+     * Default clause (in cents) for a given market value: where a derived/default
+     * clause sits, and where the negotiation slider starts. NOT a hard minimum any
+     * more — see releaseClauseMinCents for the floor a manager request is clamped to.
      */
     public function releaseClauseFloorCents(int $marketValueCents): int
     {
         return Money::roundPrice((int) round($marketValueCents * (float) config('finances.release_clause.es_floor_multiplier', 1.25)));
+    }
+
+    /**
+     * Absolute minimum clause (in cents) a manager may set, as a multiple of market
+     * value (config es_min_multiplier, below 1.0 = below market value). Lets a
+     * manager set a deliberately cheap buyout; the cost is poaching exposure, not a
+     * clamp. Kept above zero so a contract never carries a €0 buyout.
+     */
+    public function releaseClauseMinCents(int $marketValueCents): int
+    {
+        return Money::roundPrice((int) round($marketValueCents * (float) config('finances.release_clause.es_min_multiplier', 0.25)));
     }
 
     /**
@@ -499,6 +513,61 @@ class ContractService
         }
 
         return $slope;
+    }
+
+    /**
+     * Release-clause data for a negotiation chat's clause control. Returned only
+     * when the feature is on and the signing club (always the user's team for
+     * every flow that calls this — renewals, buy transfers, pre-contracts, free
+     * agents) sits in a mandatory-clause country; otherwise an empty array, so the
+     * client never shows the control and never sends a clause. The client uses the
+     * market value + base demand + premium slope to advise the wage the player
+     * will want for a chosen clause, but the server (effectiveDemandWithReleaseClause)
+     * stays authoritative. $demandWageCents is the player's BASE wage demand (the
+     * ask shown in chat), not a counter.
+     *
+     * @return array<string, mixed>
+     */
+    public function releaseClausePayload(Game $game, GamePlayer $player, int $demandWageCents): array
+    {
+        if (! $game->release_clauses_enabled || ! $this->isReleaseClauseMandatory($game->country)) {
+            return [];
+        }
+
+        $marketValueCents = (int) $player->market_value_cents;
+
+        return [
+            'clause_enabled' => true,
+            'clause_floor' => (int) ($this->releaseClauseFloorCents($marketValueCents) / 100),
+            // The slider's hard lower bound — managers may go below the floor (and
+            // below market value) down to here, accepting heavier AI poaching.
+            'clause_min' => (int) ($this->releaseClauseMinCents($marketValueCents) / 100),
+            'clause_market_value' => (int) ($marketValueCents / 100),
+            'clause_demand' => (int) ($demandWageCents / 100),
+            // Homegrown players accept a higher clause for a smaller wage bump:
+            // send their steepened slope so the client advisory matches the
+            // server's effectiveDemandWithReleaseClause evaluation.
+            'clause_premium_slope' => $this->releaseClausePremiumSlope($player->isHomegrown()),
+        ];
+    }
+
+    /**
+     * Normalise a clause value (in euros) submitted from a negotiation chat into
+     * cents, or null when no clause can apply. The control only exists for
+     * mandatory-clause (ES) clubs with the feature on; everywhere else any
+     * incoming value is ignored. There is no upper cap — a clause above the floor
+     * just raises the wage the player demands (effectiveDemandWithReleaseClause),
+     * so this only converts and gates; the floor stays the single server-side clamp.
+     */
+    public function resolveRequestedClauseCents(?int $clauseEuros, Game $game): ?int
+    {
+        if (! $game->release_clauses_enabled
+            || $clauseEuros === null
+            || ! $this->isReleaseClauseMandatory($game->country)) {
+            return null;
+        }
+
+        return $clauseEuros * 100;
     }
 
     /**
@@ -1290,6 +1359,7 @@ class ContractService
         int $offeredYears,
         NegotiationScenario $scenario,
         Game $buyingClubGame,
+        ?int $requestedClauseCents = null,
     ): array {
         $player = $offer->gamePlayer;
         $buyingClubFloor = $this->getMinimumWageForTeam($buyingClubGame->team);
@@ -1299,6 +1369,7 @@ class ContractService
                 'terms_round' => min(($offer->terms_round ?? 1) + 1, self::MAX_NEGOTIATION_ROUNDS),
                 'offered_wage' => $offerWageCents,
                 'offered_years' => $offeredYears,
+                'release_clause_requested' => $requestedClauseCents,
             ]);
         } else {
             $demand = $this->calculateWageDemand($player, $scenario, $buyingClubGame->team);
@@ -1309,6 +1380,7 @@ class ContractService
                 'preferred_years' => $demand['contractYears'],
                 'offered_wage' => $offerWageCents,
                 'offered_years' => $offeredYears,
+                'release_clause_requested' => $requestedClauseCents,
             ]);
         }
 
@@ -1317,10 +1389,26 @@ class ContractService
         );
         $offer->update(['terms_disposition' => $disposition]);
 
+        // A release clause raised above the mandatory floor is golden handcuffs:
+        // the player holds out for a higher wage to be locked in. Feed the
+        // clause-adjusted demand into the evaluator so the whole accept/counter/
+        // reject ladder (and the counter wage) reflects the clause cost. The
+        // stored player_demand (the base ask shown in chat) is left untouched.
+        // Mirrors the renewal path (evaluateOffer). For buy transfers, pre-
+        // contracts, and free agents the signing club is the user's team, so the
+        // mandatory-clause check uses $buyingClubGame->country.
+        $effectiveDemand = $this->effectiveDemandWithReleaseClause(
+            $offer->player_demand,
+            $player->market_value_cents,
+            $requestedClauseCents,
+            $buyingClubGame->country,
+            $player->isHomegrown(),
+        );
+
         $evaluation = $this->wageNegotiationEvaluator->evaluate(
             offerWage: $offer->offered_wage,
             offeredYears: $offer->offered_years,
-            playerDemand: $offer->player_demand,
+            playerDemand: $effectiveDemand,
             preferredYears: $offer->preferred_years,
             disposition: $disposition,
             round: $offer->terms_round,
