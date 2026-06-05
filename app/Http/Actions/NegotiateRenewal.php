@@ -61,7 +61,7 @@ class NegotiateRenewal
             $disposition = $this->contractService->calculateDisposition($player, NegotiationScenario::RENEWAL, round: $existing->round);
             $mood = $this->contractService->getMoodIndicator($disposition);
 
-            return response()->json([
+            return response()->json(array_merge($this->clausePayload($game, $player, (int) $existing->player_demand), [
                 'status' => 'ok',
                 'negotiation_status' => 'open',
                 'round' => $existing->round,
@@ -83,7 +83,7 @@ class NegotiateRenewal
                         'preferredYears' => $existing->preferred_years,
                     ]),
                 ],
-            ]);
+            ]));
         }
 
         // Cooldown: must wait at least one matchday after a rejected negotiation
@@ -124,7 +124,7 @@ class NegotiateRenewal
         $mood = $this->contractService->getMoodIndicator($disposition);
         $wageFloorEuros = (int) ($this->contractService->getMinimumWageForTeam($game->team) / 100);
 
-        return response()->json([
+        return response()->json(array_merge($this->clausePayload($game, $player, (int) $demand['wage']), [
             'status' => 'ok',
             'negotiation_status' => 'open',
             'round' => 0,
@@ -146,7 +146,7 @@ class NegotiateRenewal
                     'preferredYears' => $demand['contractYears'],
                 ]),
             ],
-        ]);
+        ]));
     }
 
     private function handleOffer(Request $request, Game $game, GamePlayer $player): JsonResponse
@@ -154,11 +154,22 @@ class NegotiateRenewal
         $validated = $request->validate([
             'wage' => ['required', 'integer', 'min:1'],
             'years' => ['required', 'integer', 'min:1', 'max:5'],
+            'clause' => ['nullable', 'integer', 'min:0'],
         ]);
 
         $offerWageEuros = $validated['wage'];
         $offeredYears = $validated['years'];
         $offerWageCents = $offerWageEuros * 100;
+
+        // The clause control only exists for mandatory-clause (ES) clubs with the
+        // feature on; everywhere else a clause is impossible, so any incoming value
+        // is ignored. ContractService::calculateReleaseClause clamps the request to
+        // [floor, maxTolerable(wage)] — this layer just forwards the manager's intent.
+        $requestedClauseCents = ($game->release_clauses_enabled
+            && isset($validated['clause'])
+            && in_array($game->country, config('finances.release_clause.mandatory_countries', []), true))
+            ? $validated['clause'] * 100
+            : null;
 
         // Salary cap: a renewal replaces the player's current wage, so only the
         // increase is charged against the cap. Wage cuts always pass.
@@ -170,7 +181,7 @@ class NegotiateRenewal
             ], 422);
         }
 
-        $result = $this->contractService->negotiateSync($player, $offerWageCents, $offeredYears);
+        $result = $this->contractService->negotiateSync($player, $offerWageCents, $offeredYears, $requestedClauseCents);
         $negotiation = $result['negotiation'];
 
         return match ($result['result']) {
@@ -279,6 +290,45 @@ class NegotiateRenewal
                 ]),
             ],
         ]);
+    }
+
+    /**
+     * Release-clause data for the renewal chat's clause control. Returned only for
+     * mandatory-clause (ES) clubs with the feature on; non-ES clubs get nothing, so
+     * the client never shows the control and never sends a clause. The client derives
+     * the live max from market value + demand + the tolerance curve, but the server
+     * clamp in ContractService::calculateReleaseClause stays authoritative.
+     *
+     * @return array<string, mixed>
+     */
+    private function clausePayload(Game $game, GamePlayer $player, int $demandWageCents): array
+    {
+        if (! $game->release_clauses_enabled
+            || ! in_array($game->country, config('finances.release_clause.mandatory_countries', []), true)) {
+            return [];
+        }
+
+        $marketValueCents = (int) $player->market_value_cents;
+
+        // Reuse the service for the floor so the es_floor_multiplier lives in one place.
+        $floorCents = $this->contractService->calculateReleaseClause(
+            $marketValueCents,
+            null,
+            null,
+            $game->country,
+        ) ?? 0;
+
+        return [
+            'clause_enabled' => true,
+            'clause_floor' => (int) ($floorCents / 100),
+            'clause_market_value' => (int) ($marketValueCents / 100),
+            'clause_demand' => (int) ($demandWageCents / 100),
+            'clause_tolerance' => [
+                'base' => (float) config('finances.release_clause.tolerance.base', 1.25),
+                'slope' => (float) config('finances.release_clause.tolerance.premium_slope', 2.5),
+                'hard_cap' => (float) config('finances.release_clause.tolerance.hard_cap', 2.5),
+            ],
+        ];
     }
 
     private function agentMessage(string $type, array $content, ?array $options = null): array

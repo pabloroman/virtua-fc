@@ -374,6 +374,39 @@
                     </div>
                 </div>
 
+                {{-- Release clause stepper (renewal, mandatory-clause clubs only).
+                     Min is the mandatory floor; max rises with the wage premium
+                     offered (live golden-handcuffs cap). --}}
+                <div x-show="clauseEnabled && mode === 'renewal'" x-cloak class="space-y-1">
+                    <div class="flex items-center justify-between gap-2">
+                        <label class="text-[10px] text-text-muted uppercase tracking-wider">{{ __('transfers.release_clause') }}</label>
+                        <span class="text-[10px] text-text-muted">
+                            {{ __('transfers.clause_max_tolerated') }}
+                            <span class="font-semibold text-accent-gold" x-text="formatWage(clauseMax)"></span>
+                        </span>
+                    </div>
+                    <div class="inline-flex items-stretch border border-border-strong rounded-lg overflow-hidden h-[36px] w-full">
+                        <button type="button"
+                            :disabled="offerClause <= clauseMin"
+                            :class="offerClause <= clauseMin ? 'opacity-40 cursor-not-allowed' : 'hover:bg-surface-600'"
+                            class="min-h-[32px] min-w-[32px] flex items-center justify-center bg-surface-700 text-text-body font-bold select-none transition-colors text-sm"
+                            @mousedown.prevent="startHold(() => decrementClause())"
+                            @mouseup="stopHold()" @mouseleave="stopHold()"
+                            @touchstart.prevent="startHold(() => decrementClause())" @touchend="stopHold()"
+                        >&minus;</button>
+                        <input type="text" readonly :value="clauseDisplay"
+                            class="min-h-[32px] flex-1 min-w-0 text-center font-semibold text-accent-gold bg-surface-800 border-x border-y-0 border-border-strong outline-hidden cursor-default focus:outline-hidden focus:ring-0 text-xs">
+                        <button type="button"
+                            :disabled="offerClause >= clauseMax"
+                            :class="offerClause >= clauseMax ? 'opacity-40 cursor-not-allowed' : 'hover:bg-surface-600'"
+                            class="min-h-[32px] min-w-[32px] flex items-center justify-center bg-surface-700 text-text-body font-bold select-none transition-colors text-sm"
+                            @mousedown.prevent="startHold(() => incrementClause())"
+                            @mouseup="stopHold()" @mouseleave="stopHold()"
+                            @touchstart.prevent="startHold(() => incrementClause())" @touchend="stopHold()"
+                        >+</button>
+                    </div>
+                </div>
+
                 {{-- Submit --}}
                 <button type="button" @click="submitOffer()"
                     :disabled="!canSubmit"

@@ -474,4 +474,6 @@ return [
     'pay_release_clause' => 'Pay release clause',
     'clause_not_available' => 'This player has no release clause you can trigger.',
     'clause_exceeds_budget' => 'The release clause exceeds your available transfer budget.',
+    // Renewal clause control: the most the player will tolerate at the offered wage.
+    'clause_max_tolerated' => 'Max',
 ];

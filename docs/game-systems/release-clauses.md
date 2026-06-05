@@ -232,17 +232,37 @@ next page load, so a clause loss can't be missed.
 
 ## Phase 4 — Renewals raise the clause (strategic lever)
 
-Phase 1 already recomputes the mandatory ES clause on renewal, so Phase 4 is the **optional
-user-raise UI**:
+> **Status: coded.** Branch `release-clause-phase-4`. The manager can raise the mandatory ES
+> clause during a renewal; the value is clamped server-side and applied when the renewal is agreed.
 
-- Surface a clause control in the renewal negotiation bound to a live
-  `maxTolerableReleaseClause(offeredWage)`; the user sets the clause in `[floor, max]`; raising
-  it requires a bigger wage. Extend `NegotiateRenewal` (currently validates only `wage` + `years`)
-  to accept + server-validate `clause`.
-- **UI reality:** the renewal modal is a ~387-line **chat** component (wage stepper + years
-  dropdown). Adding the clause control is a distinct sub-workstream; prefer a compact clause
-  stepper bound to the live max over threading it through the chat message state.
-- Non-ES clubs: same control, optional opt-in.
+**Scope decision (locked 2026-06-05): ES = mandatory clause (raisable); non-ES = no clause at
+all.** The spec's earlier "non-ES optional opt-in" was dropped — outside mandatory-clause
+countries a clause is impossible, full stop. So Phase 4 only ever forwards a `userRequestedCents`
+for ES games; non-ES renewals keep returning `null` (unchanged Phase-1 behaviour). The non-ES
+branch of `calculateReleaseClause` stays as defensive code with no live caller.
+
+Phase 1 already recomputes the mandatory ES floor on renewal, so Phase 4 is the **ES user-raise
+UI** plus the threading that carries the request to the agreement:
+
+- **Persistence:** new nullable `release_clause_requested` (cents) on `renewal_negotiations`
+  carries the manager's chosen clause across counter-offer rounds (the `accept_counter` action
+  has no payload, so the value must live on the row). Written by `initiateNegotiation` /
+  `submitNewOffer`; read by `evaluateOffer` (accept) and `acceptCounterOffer`.
+- **Service:** `processRenewal(player, newWage, years, ?requestedClauseCents, ?wageDemandCents)`
+  forwards both the agreed wage and the renewal demand to `calculateReleaseClause`, so the
+  golden-handcuffs cap is sized off the real wage premium. A `null` request reproduces the old
+  floor-only result exactly.
+- **Action:** `NegotiateRenewal` validates a `nullable|integer|min:0` `clause`, gates it on
+  `release_clauses_enabled` **and** ES country (`mandatory_countries`), and ships clause config
+  (`clause_floor` / `clause_market_value` / `clause_demand` / `clause_tolerance`) in the `start`
+  response so the client can render a live max. The server clamp in `calculateReleaseClause`
+  stays authoritative.
+- **UI:** the renewal **chat** modal (`negotiation-chat-modal.blade.php` + `negotiation-chat.js`)
+  gets a compact gold clause stepper (ES-only, `clauseEnabled && mode === 'renewal'`) bound to a
+  live `clauseMax` that mirrors `maxTolerableReleaseClause`; lowering the wage re-clamps the
+  clause down. The chosen value is sent on the `offer` payload (and the round-0 accept-demand
+  path); the page reload on close surfaces the new clause everywhere Phase 1 already displays it.
+- i18n: `transfers.clause_max_tolerated` (es + en). Tests: `tests/Feature/ReleaseClausePhase4Test.php`.
 
 ---
 

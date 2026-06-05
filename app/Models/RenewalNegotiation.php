@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $preferred_years
  * @property int|null $user_offer
  * @property int|null $offered_years
+ * @property int|null $release_clause_requested
  * @property int|null $counter_offer
  * @property int|null $contract_years
  * @property float|null $disposition
@@ -65,6 +66,7 @@ class RenewalNegotiation extends Model
         'preferred_years',
         'user_offer',
         'offered_years',
+        'release_clause_requested',
         'counter_offer',
         'contract_years',
         'disposition',
@@ -77,6 +79,7 @@ class RenewalNegotiation extends Model
         'preferred_years' => 'integer',
         'user_offer' => 'integer',
         'offered_years' => 'integer',
+        'release_clause_requested' => 'integer',
         'counter_offer' => 'integer',
         'contract_years' => 'integer',
         'disposition' => 'float',

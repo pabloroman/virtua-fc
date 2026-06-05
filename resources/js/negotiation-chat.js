@@ -30,6 +30,16 @@ export default function negotiationChat() {
         // not transfer_fee.
         wageFloor: 0,
 
+        // Release-clause control (renewal mode, mandatory-clause clubs only). Set
+        // from the server's `start` response; absent ⇒ clauseEnabled stays false and
+        // no control renders. offerClause is in euros, like offerWage.
+        clauseEnabled: false,
+        offerClause: 0,
+        clauseFloorEuros: 0,
+        clauseMarketValueEuros: 0,
+        clauseDemandEuros: 0,
+        clauseTolerance: { base: 1.25, slope: 2.5, hardCap: 2.5 },
+
         // Budget cap state (transfer fee mode)
         availableBudget: 0,
         budgetLoanAvailable: false,
@@ -86,6 +96,34 @@ export default function negotiationChat() {
             return '€ ' + new Intl.NumberFormat('es-ES').format(this.offerWage);
         },
 
+        // Mandatory minimum clause (the floor); the manager can only raise from here.
+        get clauseMin() {
+            return this.clauseFloorEuros;
+        },
+
+        // Live golden-handcuffs cap: the clause the player tolerates rises with the
+        // wage premium offered over their demand. Mirrors ContractService::
+        // maxTolerableReleaseClause — the server clamp stays authoritative, this is
+        // only the UI ceiling.
+        get clauseMax() {
+            if (!this.clauseEnabled || this.clauseDemandEuros <= 0) return this.clauseFloorEuros;
+            const ratio = this.offerWage / this.clauseDemandEuros;
+            const t = this.clauseTolerance;
+            const mult = Math.min(t.hardCap, t.base + t.slope * Math.max(0, ratio - 1));
+            return Math.max(this.clauseFloorEuros, Math.round(this.clauseMarketValueEuros * mult));
+        },
+
+        get clauseStep() {
+            if (this.offerClause >= 50000000) return 5000000;  // >= €50M: €5M steps
+            if (this.offerClause >= 10000000) return 1000000;  // >= €10M: €1M steps
+            if (this.offerClause >= 1000000) return 100000;    // >= €1M: €100K steps
+            return 50000;                                       // < €1M: €50K steps
+        },
+
+        get clauseDisplay() {
+            return '€ ' + new Intl.NumberFormat('es-ES').format(this.offerClause);
+        },
+
         incrementWage() {
             const newValue = this.offerWage + this.wageStep;
             if (this.mode === 'transfer_fee') {
@@ -100,6 +138,7 @@ export default function negotiationChat() {
                 }
             }
             this.offerWage = newValue;
+            this.clampClause();
         },
 
         decrementWage() {
@@ -110,6 +149,22 @@ export default function negotiationChat() {
                 floor = this.wageFloor || 0;
             }
             this.offerWage = Math.max(this.offerWage - this.wageStep, floor);
+            this.clampClause();
+        },
+
+        incrementClause() {
+            this.offerClause = Math.min(this.offerClause + this.clauseStep, this.clauseMax);
+        },
+
+        decrementClause() {
+            this.offerClause = Math.max(this.offerClause - this.clauseStep, this.clauseMin);
+        },
+
+        // Keep the clause inside [floor, live max] — called whenever the wage moves,
+        // since lowering the wage shrinks the tolerable clause ceiling.
+        clampClause() {
+            if (!this.clauseEnabled) return;
+            this.offerClause = Math.min(Math.max(this.offerClause, this.clauseMin), this.clauseMax);
         },
 
         startHold(fn) {
@@ -137,6 +192,11 @@ export default function negotiationChat() {
             this.offerWage = 0;
             this.offerYears = 3;
             this.wageFloor = 0;
+            this.clauseEnabled = false;
+            this.offerClause = 0;
+            this.clauseFloorEuros = 0;
+            this.clauseMarketValueEuros = 0;
+            this.clauseDemandEuros = 0;
             this.availableBudget = 0;
             this.budgetLoanAvailable = false;
             this.budgetLoanUrl = '';
@@ -152,6 +212,21 @@ export default function negotiationChat() {
                 if (data.budget_loan_available !== undefined) this.budgetLoanAvailable = data.budget_loan_available;
                 if (data.budget_loan_url) this.budgetLoanUrl = data.budget_loan_url;
                 if (data.wage_floor !== undefined) this.wageFloor = data.wage_floor;
+                if (data.clause_enabled) {
+                    this.clauseEnabled = true;
+                    this.clauseFloorEuros = data.clause_floor || 0;
+                    this.clauseMarketValueEuros = data.clause_market_value || 0;
+                    this.clauseDemandEuros = data.clause_demand || 0;
+                    if (data.clause_tolerance) {
+                        this.clauseTolerance = {
+                            base: data.clause_tolerance.base,
+                            slope: data.clause_tolerance.slope,
+                            hardCap: data.clause_tolerance.hard_cap,
+                        };
+                    }
+                    // Default the clause to the mandatory floor.
+                    this.offerClause = this.clauseFloorEuros;
+                }
                 this.appendMessages(data.messages);
 
                 // Fee already agreed from a previous session — go straight to personal terms
@@ -252,6 +327,7 @@ export default function negotiationChat() {
                 const data = await this.sendAction('offer', {
                     wage: this.offerWage,
                     years: this.offerYears,
+                    clause: this.clauseEnabled ? Math.round(this.offerClause) : null,
                 });
                 if (data) {
                     this.negotiationStatus = data.negotiation_status;
@@ -311,6 +387,7 @@ export default function negotiationChat() {
                     const data = await this.sendAction('offer', {
                         wage: this.offerWage,
                         years: this.offerYears,
+                        clause: this.clauseEnabled ? Math.round(this.offerClause) : null,
                     });
                     if (data) {
                         this.negotiationStatus = data.negotiation_status;
@@ -476,6 +553,9 @@ export default function negotiationChat() {
                 this.offerWage = fee;
             }
             if (lastMsg?.options?.preferredYears) this.offerYears = lastMsg.options.preferredYears;
+
+            // A new suggested wage may change the tolerable clause ceiling.
+            this.clampClause();
 
             // Set floor for counter-offer mode to the AI's current bid
             if (this.phase === 'counter_offer' && lastMsg?.content?.fee) {

@@ -478,10 +478,19 @@ class ContractService
      * @param GamePlayer $player
      * @param int $newWage The agreed wage (in cents)
      * @param int $contractYears How many years to extend
+     * @param int|null $requestedClauseCents Clause the manager set in the renewal chat (cents).
+     *                                        Null ⇒ untouched: ES clubs fall back to the mandatory floor.
+     * @param int|null $wageDemandCents The player's renewal wage demand (cents), used with $newWage
+     *                                  to size the golden-handcuffs tolerance cap for a raised clause.
      * @return bool Success
      */
-    public function processRenewal(GamePlayer $player, int $newWage, int $contractYears): bool
-    {
+    public function processRenewal(
+        GamePlayer $player,
+        int $newWage,
+        int $contractYears,
+        ?int $requestedClauseCents = null,
+        ?int $wageDemandCents = null,
+    ): bool {
         $game = $player->game;
         $seasonEndDate = $game->getSeasonEndDate();
 
@@ -514,14 +523,19 @@ class ContractService
 
         // Release clause refreshes at every agreement. Renewals only happen for
         // the manager's own players, so the owning club is the user's team and
-        // its country is $game->country. ES clubs get the mandatory floor; other
-        // countries get null (the optional user-raise lever lands in Phase 4).
+        // its country is $game->country. ES clubs get the mandatory floor by
+        // default, or a higher value the manager set in the renewal chat (clamped
+        // to the wage-scaled tolerance cap); non-ES clubs always get null — no
+        // clause is possible outside mandatory-clause countries. When the clause
+        // was untouched ($requestedClauseCents === null) the wage/demand arguments
+        // are inert and the result is exactly the floor, preserving prior behaviour.
         if ($game->release_clauses_enabled) {
             $updates['release_clause'] = $this->calculateReleaseClause(
                 $player->market_value_cents,
-                null,
-                null,
+                $newWage,
+                $wageDemandCents,
                 $game->country,
+                $requestedClauseCents,
             );
         }
 
@@ -751,7 +765,7 @@ class ContractService
     /**
      * Initiate a new renewal negotiation.
      */
-    public function initiateNegotiation(GamePlayer $player, int $offerWage, int $offeredYears): RenewalNegotiation
+    public function initiateNegotiation(GamePlayer $player, int $offerWage, int $offeredYears, ?int $requestedClauseCents = null): RenewalNegotiation
     {
         $demand = $this->calculateWageDemand($player, NegotiationScenario::RENEWAL);
 
@@ -777,6 +791,7 @@ class ContractService
             'preferred_years' => $demand['contractYears'],
             'user_offer' => $offerWage,
             'offered_years' => $offeredYears,
+            'release_clause_requested' => $requestedClauseCents,
         ]);
     }
 
@@ -819,7 +834,13 @@ class ContractService
             $updateData['contract_years'] = $contractYears;
 
             $negotiation->fill($updateData)->save();
-            $this->processRenewal($player, $negotiation->user_offer, $contractYears);
+            $this->processRenewal(
+                $player,
+                $negotiation->user_offer,
+                $contractYears,
+                $negotiation->release_clause_requested,
+                $negotiation->player_demand,
+            );
 
             return 'accepted';
         }
@@ -857,7 +878,16 @@ class ContractService
             'contract_years' => $contractYears,
         ]);
 
-        $this->processRenewal($player, $negotiation->counter_offer, $contractYears);
+        // The agreed wage is the player's counter (higher than the user's offer),
+        // which gives the clause more headroom; the requested clause persisted on
+        // the negotiation row is clamped against it.
+        $this->processRenewal(
+            $player,
+            $negotiation->counter_offer,
+            $contractYears,
+            $negotiation->release_clause_requested,
+            $negotiation->player_demand,
+        );
 
         return true;
     }
@@ -865,7 +895,7 @@ class ContractService
     /**
      * Submit a new offer in response to a counter (next round).
      */
-    public function submitNewOffer(RenewalNegotiation $negotiation, int $newOfferWage, int $offeredYears): RenewalNegotiation
+    public function submitNewOffer(RenewalNegotiation $negotiation, int $newOfferWage, int $offeredYears, ?int $requestedClauseCents = null): RenewalNegotiation
     {
         if (!$negotiation->isCountered()) {
             return $negotiation;
@@ -878,6 +908,7 @@ class ContractService
             'round' => $nextRound,
             'user_offer' => $newOfferWage,
             'offered_years' => $offeredYears,
+            'release_clause_requested' => $requestedClauseCents,
         ]);
 
         return $negotiation;
@@ -927,7 +958,7 @@ class ContractService
      *
      * @return array{result: string, negotiation: RenewalNegotiation}
      */
-    public function negotiateSync(GamePlayer $player, int $offerWage, int $offeredYears): array
+    public function negotiateSync(GamePlayer $player, int $offerWage, int $offeredYears, ?int $requestedClauseCents = null): array
     {
         // Check if continuing from a counter-offer
         $existing = RenewalNegotiation::where('game_player_id', $player->id)
@@ -935,9 +966,9 @@ class ContractService
             ->first();
 
         if ($existing) {
-            $negotiation = $this->submitNewOffer($existing, $offerWage, $offeredYears);
+            $negotiation = $this->submitNewOffer($existing, $offerWage, $offeredYears, $requestedClauseCents);
         } else {
-            $negotiation = $this->initiateNegotiation($player, $offerWage, $offeredYears);
+            $negotiation = $this->initiateNegotiation($player, $offerWage, $offeredYears, $requestedClauseCents);
         }
 
         // Immediately evaluate (instead of waiting for matchday)
