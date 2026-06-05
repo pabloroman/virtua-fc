@@ -426,6 +426,12 @@ class AITransferMarketService
                 'position' => $freeAgent->position,
                 'contract_until' => $newContractEnd->toDateString(),
                 'annual_wage' => $newWage,
+                // Re-establish the clause for the signing club (it was nulled at
+                // contract expiry): ES floor / null elsewhere, mirroring
+                // completeFreeAgentSigning.
+                'release_clause' => $game->release_clauses_enabled
+                    ? $this->contractService->calculateReleaseClause($freeAgent->market_value_cents, null, null, $teams->get($teamId)?->country ?? $game->country)
+                    : null,
             ];
 
             $transferInserts[] = [
@@ -489,7 +495,7 @@ class AITransferMarketService
             ->whereNotIn('id', $teamRosters->keys())
             ->inRandomOrder()
             ->limit(40)
-            ->get(['id', 'name'])
+            ->get(['id', 'name', 'country'])
             ->all();
         $foreignIndex = 0;
 
@@ -548,7 +554,7 @@ class AITransferMarketService
                 $buyerRepIndex = $this->getReputationIndex($buyerTeamId, $teamReputations);
                 $maxFee = self::MAX_FEE_BY_REPUTATION_INDEX[$buyerRepIndex] ?? 500_000_000;
                 $fee = min($player->market_value_cents, $maxFee);
-                $this->prepareTransfer($game, $player, $sellerTeamId, $buyerTeamId, $window, $assignedNumber, $playerUpdates, $transferInserts, buyerReputationIndex: $buyerRepIndex);
+                $this->prepareTransfer($game, $player, $sellerTeamId, $buyerTeamId, $window, $assignedNumber, $playerUpdates, $transferInserts, buyerReputationIndex: $buyerRepIndex, toCountry: $teams->get($buyerTeamId)?->country ?? $game->country);
                 $count++;
                 $transferredPlayerIds[$player->id] = true;
 
@@ -579,7 +585,7 @@ class AITransferMarketService
                     $foreignTeam = $foreignTeams[$foreignIndex % count($foreignTeams)];
                     $foreignIndex++;
 
-                    $this->prepareTransfer($game, $player, $sellerTeamId, $foreignTeam->id, $window, null, $playerUpdates, $transferInserts, maxContractYears: 4, buyerReputationIndex: 1);
+                    $this->prepareTransfer($game, $player, $sellerTeamId, $foreignTeam->id, $window, null, $playerUpdates, $transferInserts, maxContractYears: 4, buyerReputationIndex: 1, toCountry: $foreignTeam->country);
                     $count++;
                     $transferredPlayerIds[$player->id] = true;
                     $this->incrementBudget($teamBudgets, $sellerTeamId, 'sells');
@@ -1111,6 +1117,7 @@ class AITransferMarketService
         int $minContractYears = 2,
         int $maxContractYears = 3,
         int $buyerReputationIndex = 4,
+        ?string $toCountry = null,
     ): void {
         $maxFee = self::MAX_FEE_BY_REPUTATION_INDEX[$buyerReputationIndex] ?? 500_000_000;
         $fee = min($player->market_value_cents, $maxFee);
@@ -1133,6 +1140,14 @@ class AITransferMarketService
             'position' => $player->position,
             'contract_until' => $newContractEnd->toDateString(),
             'annual_wage' => $newWage,
+            // Recompute the clause for the buying club's country (ES floor / null
+            // elsewhere), so a Spanish player moving abroad sheds his stale
+            // clause and an intra-Spain move re-anchors it — matching the
+            // user-facing completion paths. AI-to-AI moves bypass
+            // TransferCompletionService, so the recompute has to live here too.
+            'release_clause' => $game->release_clauses_enabled
+                ? $this->contractService->calculateReleaseClause($player->market_value_cents, null, null, $toCountry)
+                : null,
         ];
 
         $transferInserts[] = [
@@ -1312,6 +1327,13 @@ class AITransferMarketService
             'position' => $bestAgent->position,
             'contract_until' => $newContractEnd->toDateString(),
             'annual_wage' => $newWage,
+            // Re-establish the clause for the signing club (it was nulled at
+            // contract expiry). Free agents only sign for teams in the game's
+            // world, so the buying club's country is the game country: ES floor
+            // / null elsewhere, mirroring completeFreeAgentSigning.
+            'release_clause' => $game->release_clauses_enabled
+                ? $this->contractService->calculateReleaseClause($bestAgent->market_value_cents, null, null, $game->country)
+                : null,
         ];
 
         $transferInserts[] = [
@@ -1570,7 +1592,7 @@ class AITransferMarketService
         usort($playerUpdates, fn ($a, $b) => strcmp($a['id'], $b['id']));
 
         foreach (array_chunk($playerUpdates, 100) as $chunk) {
-            GamePlayer::upsert($chunk, ['id'], ['team_id', 'number', 'contract_until', 'annual_wage']);
+            GamePlayer::upsert($chunk, ['id'], ['team_id', 'number', 'contract_until', 'annual_wage', 'release_clause']);
         }
 
         foreach (array_chunk($transferInserts, 100) as $chunk) {
