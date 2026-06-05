@@ -431,6 +431,11 @@
                         'position' => $posDisp['abbreviation'],
                         'positionBg' => $posDisp['bg'],
                         'positionText' => $posDisp['text'],
+                        // The player's current clause (gold in the info strip). Null when
+                        // the player has no clause, so the strip simply omits it.
+                        'releaseClause' => ($game->release_clauses_enabled && $gamePlayer->hasReleaseClause())
+                            ? $gamePlayer->formatted_release_clause
+                            : null,
                     ],
                 ]);
             @endphp

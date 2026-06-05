@@ -391,21 +391,19 @@ class ContractService
      *
      * Mandatory for ES clubs (defaults to the floor); optional elsewhere
      * (null unless the manager opts in via $userRequestedCents). A manager's
-     * requested amount is clamped to [floor, maxTolerable], where the upper
-     * bound rises with the wage premium offered over the player's demand
-     * ("golden handcuffs"). Returns null when no clause applies.
+     * requested amount is honoured as-is above the floor — there is no upper
+     * cap. The cost of a high clause is paid in wages, not capped here: a clause
+     * above the floor raises the wage the player demands to re-sign (see
+     * effectiveDemandWithReleaseClause), so by the time a renewal is agreed the
+     * wage already justifies the clause. Returns null when no clause applies.
      *
      * @param int $marketValueCents Player's market value in cents
-     * @param int|null $offeredWageCents Agreed/offered wage in cents (for the tolerance cap)
-     * @param int|null $wageDemandCents Player's wage demand in cents (for the tolerance cap)
      * @param string|null $clubCountry Owning club's country (uppercase 2-char, e.g. 'ES')
      * @param int|null $userRequestedCents Manager-requested clause; null = derived default
      * @return int|null Clause in cents, or null when no clause applies
      */
     public function calculateReleaseClause(
         int $marketValueCents,
-        ?int $offeredWageCents,
-        ?int $wageDemandCents,
         ?string $clubCountry,
         ?int $userRequestedCents = null,
     ): ?int {
@@ -419,40 +417,58 @@ class ContractService
             return null;
         }
 
-        $floor = Money::roundPrice((int) round($marketValueCents * (float) config('finances.release_clause.es_floor_multiplier', 1.25)));
+        $floor = $this->releaseClauseFloorCents($marketValueCents);
 
-        // Derived default at agreement = the floor.
-        if ($userRequestedCents === null) {
-            return $floor;
-        }
-
-        // Manager set/raised the clause: clamp into [floor, maxTolerable].
-        $maxTolerable = max($floor, $this->maxTolerableReleaseClause($marketValueCents, $offeredWageCents, $wageDemandCents));
-
-        return max($floor, min($userRequestedCents, $maxTolerable));
+        // Derived default at agreement = the floor; a manager request only ever
+        // raises it (never below the mandatory floor), with no upper bound.
+        return max($floor, $userRequestedCents ?? $floor);
     }
 
     /**
-     * Highest clause (in cents) the player will tolerate for a given wage offer.
-     * Rises with the wage premium over the player's demand and is hard-capped.
-     *
-     * tolerance(ratio) = clamp(base + premium_slope * max(0, ratio - 1), base, hard_cap)
-     * where ratio = offeredWage / wageDemand (defaults to wage parity when unknown).
+     * Mandatory minimum clause (in cents) for a given market value: the floor a
+     * derived/default clause sits at, and the lower bound on any manager request.
      */
-    public function maxTolerableReleaseClause(int $marketValueCents, ?int $offeredWageCents, ?int $wageDemandCents): int
+    public function releaseClauseFloorCents(int $marketValueCents): int
     {
-        $base = (float) config('finances.release_clause.tolerance.base', 1.25);
-        $slope = (float) config('finances.release_clause.tolerance.premium_slope', 2.5);
-        $hardCap = (float) config('finances.release_clause.tolerance.hard_cap', 2.5);
+        return Money::roundPrice((int) round($marketValueCents * (float) config('finances.release_clause.es_floor_multiplier', 1.25)));
+    }
 
-        $ratio = 1.0;
-        if ($offeredWageCents !== null && $wageDemandCents !== null && $wageDemandCents > 0) {
-            $ratio = $offeredWageCents / $wageDemandCents;
+    /**
+     * The wage demand (in cents) a player holds out for once a release clause
+     * above the mandatory floor is on the table — "golden handcuffs". Locking the
+     * player in with a bigger buyout costs more in wages: each market-value
+     * multiple of clause above the floor lifts the demand by 1/premium_slope.
+     *
+     *   factor = 1 + (clause − floor) / (premium_slope × marketValue)
+     *
+     * This is the algebraic inverse of the old tolerance cap, so the same
+     * premium_slope tuning carries over. At clause = floor the factor is 1.0,
+     * leaving the base demand (and prior floor-only behaviour) untouched. There
+     * is no ceiling — the wage requirement just keeps climbing with the clause.
+     *
+     * @return int The clause-adjusted wage demand in cents (≥ base demand)
+     */
+    public function effectiveDemandWithReleaseClause(
+        int $baseDemandCents,
+        int $marketValueCents,
+        ?int $requestedClauseCents,
+        ?string $clubCountry,
+    ): int {
+        if (!$this->isReleaseClauseMandatory($clubCountry)
+            || $requestedClauseCents === null
+            || $marketValueCents <= 0) {
+            return $baseDemandCents;
         }
 
-        $multiplier = min($hardCap, $base + $slope * max(0.0, $ratio - 1.0));
+        $floor = $this->releaseClauseFloorCents($marketValueCents);
+        if ($requestedClauseCents <= $floor) {
+            return $baseDemandCents;
+        }
 
-        return Money::roundPrice((int) round($marketValueCents * $multiplier));
+        $slope = (float) config('finances.release_clause.tolerance.premium_slope', 2.5);
+        $factor = 1.0 + ($requestedClauseCents - $floor) / ($slope * $marketValueCents);
+
+        return (int) round($baseDemandCents * $factor);
     }
 
     /**
@@ -480,8 +496,6 @@ class ContractService
      * @param int $contractYears How many years to extend
      * @param int|null $requestedClauseCents Clause the manager set in the renewal chat (cents).
      *                                        Null ⇒ untouched: ES clubs fall back to the mandatory floor.
-     * @param int|null $wageDemandCents The player's renewal wage demand (cents), used with $newWage
-     *                                  to size the golden-handcuffs tolerance cap for a raised clause.
      * @return bool Success
      */
     public function processRenewal(
@@ -489,7 +503,6 @@ class ContractService
         int $newWage,
         int $contractYears,
         ?int $requestedClauseCents = null,
-        ?int $wageDemandCents = null,
     ): bool {
         $game = $player->game;
         $seasonEndDate = $game->getSeasonEndDate();
@@ -524,16 +537,15 @@ class ContractService
         // Release clause refreshes at every agreement. Renewals only happen for
         // the manager's own players, so the owning club is the user's team and
         // its country is $game->country. ES clubs get the mandatory floor by
-        // default, or a higher value the manager set in the renewal chat (clamped
-        // to the wage-scaled tolerance cap); non-ES clubs always get null — no
-        // clause is possible outside mandatory-clause countries. When the clause
-        // was untouched ($requestedClauseCents === null) the wage/demand arguments
-        // are inert and the result is exactly the floor, preserving prior behaviour.
+        // default, or a higher value the manager set in the renewal chat (honoured
+        // as-is above the floor — the golden-handcuffs cost was already paid in the
+        // agreed wage during negotiation); non-ES clubs always get null — no clause
+        // is possible outside mandatory-clause countries. When the clause was
+        // untouched ($requestedClauseCents === null) the result is exactly the
+        // floor, preserving prior behaviour.
         if ($game->release_clauses_enabled) {
             $updates['release_clause'] = $this->calculateReleaseClause(
                 $player->market_value_cents,
-                $newWage,
-                $wageDemandCents,
                 $game->country,
                 $requestedClauseCents,
             );
@@ -813,10 +825,22 @@ class ContractService
             ? null
             : $player->annual_wage;
 
+        // A release clause raised above the mandatory floor is golden handcuffs:
+        // the player holds out for a higher wage to be locked in. Feed the
+        // clause-adjusted demand into the evaluator so the whole accept/counter/
+        // reject ladder (and the counter wage) reflects the clause cost. The
+        // stored player_demand (the base ask shown in chat) is left untouched.
+        $effectiveDemand = $this->effectiveDemandWithReleaseClause(
+            $negotiation->player_demand,
+            $player->market_value_cents,
+            $negotiation->release_clause_requested,
+            $player->game->country,
+        );
+
         $evaluation = $this->wageNegotiationEvaluator->evaluate(
             offerWage: $negotiation->user_offer,
             offeredYears: $negotiation->offered_years,
-            playerDemand: $negotiation->player_demand,
+            playerDemand: $effectiveDemand,
             preferredYears: $negotiation->preferred_years,
             disposition: $disposition,
             round: $negotiation->round,
@@ -839,7 +863,6 @@ class ContractService
                 $negotiation->user_offer,
                 $contractYears,
                 $negotiation->release_clause_requested,
-                $negotiation->player_demand,
             );
 
             return 'accepted';
@@ -878,15 +901,14 @@ class ContractService
             'contract_years' => $contractYears,
         ]);
 
-        // The agreed wage is the player's counter (higher than the user's offer),
-        // which gives the clause more headroom; the requested clause persisted on
-        // the negotiation row is clamped against it.
+        // The player's counter already priced in the requested clause (it raised
+        // the demand the counter is anchored to), so accepting it means the wage
+        // justifies the clause; store the requested clause as-is above the floor.
         $this->processRenewal(
             $player,
             $negotiation->counter_offer,
             $contractYears,
             $negotiation->release_clause_requested,
-            $negotiation->player_demand,
         );
 
         return true;

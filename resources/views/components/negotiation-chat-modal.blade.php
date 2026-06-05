@@ -84,7 +84,8 @@
                         </span>
                     </template>
 
-                    {{-- Release clause (the buyout ceiling for this negotiation) --}}
+                    {{-- Release clause: the buyout ceiling when buying, or the player's
+                         current clause when renewing their contract. --}}
                     <template x-if="playerInfo?.releaseClause">
                         <span class="text-text-secondary">
                             <span class="text-text-muted">{{ __('transfers.chat_player_clause') }}</span>
@@ -375,16 +376,10 @@
                 </div>
 
                 {{-- Release clause stepper (renewal, mandatory-clause clubs only).
-                     Min is the mandatory floor; max rises with the wage premium
-                     offered (live golden-handcuffs cap). --}}
+                     Min is the mandatory floor; there is no upper cap — raising the
+                     clause raises the wage the player wants (the advisory below). --}}
                 <div x-show="clauseEnabled && mode === 'renewal'" x-cloak class="space-y-1">
-                    <div class="flex items-center justify-between gap-2">
-                        <label class="text-[10px] text-text-muted uppercase tracking-wider">{{ __('transfers.release_clause') }}</label>
-                        <span class="text-[10px] text-text-muted">
-                            {{ __('transfers.clause_max_tolerated') }}
-                            <span class="font-semibold text-accent-gold" x-text="formatWage(clauseMax)"></span>
-                        </span>
-                    </div>
+                    <label class="block text-[10px] text-text-muted uppercase tracking-wider">{{ __('transfers.release_clause') }}</label>
                     <div class="inline-flex items-stretch border border-border-strong rounded-lg overflow-hidden h-[36px] w-full">
                         <button type="button"
                             :disabled="offerClause <= clauseMin"
@@ -397,13 +392,22 @@
                         <input type="text" readonly :value="clauseDisplay"
                             class="min-h-[32px] flex-1 min-w-0 text-center font-semibold text-accent-gold bg-surface-800 border-x border-y-0 border-border-strong outline-hidden cursor-default focus:outline-hidden focus:ring-0 text-xs">
                         <button type="button"
-                            :disabled="offerClause >= clauseMax"
-                            :class="offerClause >= clauseMax ? 'opacity-40 cursor-not-allowed' : 'hover:bg-surface-600'"
-                            class="min-h-[32px] min-w-[32px] flex items-center justify-center bg-surface-700 text-text-body font-bold select-none transition-colors text-sm"
+                            class="min-h-[32px] min-w-[32px] flex items-center justify-center bg-surface-700 text-text-body font-bold select-none transition-colors text-sm hover:bg-surface-600"
                             @mousedown.prevent="startHold(() => incrementClause())"
                             @mouseup="stopHold()" @mouseleave="stopHold()"
                             @touchstart.prevent="startHold(() => incrementClause())" @touchend="stopHold()"
                         >+</button>
+                    </div>
+                    {{-- Live golden-handcuffs advisory: green when the current wage offer
+                         already covers what the player wants for this clause, amber (with
+                         the wage they'll hold out for) when it doesn't. Never blocks. --}}
+                    <div class="flex items-start gap-1.5 text-[10px] leading-tight">
+                        <span class="w-1.5 h-1.5 mt-1 rounded-full shrink-0"
+                            :class="clauseWageCovered ? 'bg-accent-green' : 'bg-accent-gold'"></span>
+                        <span class="text-text-muted"
+                            x-text="clauseWageCovered
+                                ? @js(__('transfers.clause_wage_covered'))
+                                : @js(__('transfers.clause_wants_wage')).replace(':wage', clauseAdjustedDemandDisplay)"></span>
                     </div>
                 </div>
 

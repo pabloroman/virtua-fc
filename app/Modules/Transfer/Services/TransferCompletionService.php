@@ -56,7 +56,7 @@ class TransferCompletionService
             // Loans keep the user as owner, so their clause is left untouched.
             ...(! $isLoan && $game->release_clauses_enabled ? [
                 'release_clause' => $this->contractService->calculateReleaseClause(
-                    $player->market_value_cents, null, null, $buyer->country,
+                    $player->market_value_cents, $buyer->country,
                 ),
             ] : []),
         ]);
@@ -142,11 +142,10 @@ class TransferCompletionService
             'number' => null,
             // Extend their contract with the new team
             'contract_until' => Carbon::createFromDate((int) $game->season + rand(2, 4) + 1, 6, 30),
-            // Recompute the clause for the new club. This path writes no
-            // annual_wage, so the wage signal is the offer's offered_wage. ES
-            // default = floor; null elsewhere (and for flag-off saves).
+            // Recompute the clause for the new club. ES default = floor; null
+            // elsewhere (and for flag-off saves).
             'release_clause' => $game->release_clauses_enabled
-                ? $this->contractService->calculateReleaseClause($player->market_value_cents, $offer->offered_wage, null, $buyer->country)
+                ? $this->contractService->calculateReleaseClause($player->market_value_cents, $buyer->country)
                 : null,
         ]);
 
@@ -245,7 +244,7 @@ class TransferCompletionService
             // Recompute the clause for the buying (user's) club — mandatory
             // floor for ES, null elsewhere (and for flag-off saves).
             'release_clause' => $game->release_clauses_enabled
-                ? $this->contractService->calculateReleaseClause($player->market_value_cents, null, null, $game->country)
+                ? $this->contractService->calculateReleaseClause($player->market_value_cents, $game->country)
                 : null,
         ]);
 
@@ -311,7 +310,7 @@ class TransferCompletionService
             // Recompute the clause for the signing (user's) club — mandatory
             // floor for ES, null elsewhere (and for flag-off saves).
             'release_clause' => $game->release_clauses_enabled
-                ? $this->contractService->calculateReleaseClause($player->market_value_cents, null, null, $game->country)
+                ? $this->contractService->calculateReleaseClause($player->market_value_cents, $game->country)
                 : null,
         ]);
 

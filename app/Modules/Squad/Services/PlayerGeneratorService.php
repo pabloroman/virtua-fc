@@ -112,7 +112,7 @@ class PlayerGeneratorService
         // Mandatory floor for ES clubs, null elsewhere. Resolve the team country
         // only when the feature is on, so flag-off saves incur no extra query.
         $releaseClause = $game->release_clauses_enabled
-            ? $this->contractService->calculateReleaseClause($marketValue, null, null, $this->resolveTeamCountry($data->teamId))
+            ? $this->contractService->calculateReleaseClause($marketValue, $this->resolveTeamCountry($data->teamId))
             : null;
 
         $gamePlayer = GamePlayer::create([
@@ -242,7 +242,7 @@ class PlayerGeneratorService
             $contractUntil = Carbon::createFromDate($seasonYear + $data->contractYears, 6, 30);
 
             $releaseClause = $releaseClausesEnabled
-                ? $this->contractService->calculateReleaseClause($marketValue, null, null, $teamCountries[$data->teamId] ?? null)
+                ? $this->contractService->calculateReleaseClause($marketValue, $teamCountries[$data->teamId] ?? null)
                 : null;
 
             $gamePlayerRows[] = [

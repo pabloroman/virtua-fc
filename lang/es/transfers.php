@@ -479,6 +479,8 @@ return [
     'pay_release_clause' => 'Pagar cláusula de rescisión',
     'clause_not_available' => 'Este jugador no tiene una cláusula de rescisión que puedas activar.',
     'clause_exceeds_budget' => 'La cláusula de rescisión supera tu presupuesto de fichajes disponible.',
-    // Renewal clause control: the most the player will tolerate at the offered wage.
-    'clause_max_tolerated' => 'Máx.',
+    // Renewal clause control advisory: the wage the player holds out for given the
+    // chosen clause (golden handcuffs), or confirmation the current offer covers it.
+    'clause_wants_wage' => 'Pedirá ~:wage/año por esta cláusula',
+    'clause_wage_covered' => 'Tu salario cubre esta cláusula',
 ];

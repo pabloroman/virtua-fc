@@ -14,11 +14,12 @@ use Tests\TestCase;
 
 /**
  * Phase-4 behaviour: during a renewal the manager may raise the mandatory ES
- * clause within [floor, maxTolerable(offeredWage)]. The clause request rides on
- * the negotiation row so it survives counter rounds, and is applied (clamped)
- * when the renewal is agreed. Non-ES clubs can never carry a clause, so the
- * request is ignored there. The golden-handcuffs maths itself is unit-tested in
- * {@see \Tests\Unit\ReleaseClauseCalculationTest}.
+ * clause to any value above the floor — there is no upper cap. The cost is paid
+ * in wages: a clause above the floor raises the wage the player demands to
+ * re-sign (golden handcuffs), so underpaying for a big clause makes the player
+ * counter or reject through the normal loop. Non-ES clubs can never carry a
+ * clause, so the request is ignored there. The clause→demand maths itself is
+ * unit-tested in {@see \Tests\Unit\ReleaseClauseCalculationTest}.
  */
 class ReleaseClausePhase4Test extends TestCase
 {
@@ -27,55 +28,36 @@ class ReleaseClausePhase4Test extends TestCase
     private const MV = 5_000_000_000;        // €50M
     private const ES_FLOOR = 6_250_000_000;  // €50M × 1.25
     private const DEMAND = 1_000_000_000;    // €10M renewal demand
-    private const HIGH_WAGE = 1_500_000_000; // €15M → ratio 1.5 → tolerance hard cap (2.5×)
+    // A clause one full (premium_slope × MV) above the floor doubles the demand:
+    // €62.5M + 2.5 × €50M = €187.5M → demand factor 2.0.
+    private const BIG_CLAUSE = 18_750_000_000; // €187.5M
+    private const COVERING_WAGE = 2_000_000_000; // €20M — covers the €187.5M clause
 
     protected function setUp(): void
     {
         parent::setUp();
 
         config()->set('finances.release_clause.es_floor_multiplier', 1.25);
-        config()->set('finances.release_clause.tolerance.base', 1.25);
         config()->set('finances.release_clause.tolerance.premium_slope', 2.5);
-        config()->set('finances.release_clause.tolerance.hard_cap', 2.5);
 
         Competition::factory()->league()->create(['id' => 'ESP1']);
     }
 
-    public function test_renewal_stores_a_user_raised_clause_within_tolerance(): void
+    public function test_renewal_stores_a_user_raised_clause_unclamped(): void
     {
         [$game, $team] = $this->makeGame(country: 'ES', enabled: true);
         $player = $this->squadPlayer($game, $team);
 
-        // €90M is above the floor (€62.5M) and below the cap (€50M × 2.5 = €125M),
-        // so it is stored verbatim.
+        // €200M is far above the floor (€62.5M) and there is no cap, so it is
+        // stored verbatim. (The wage that justifies it was settled in negotiation.)
         app(ContractService::class)->processRenewal(
             $player,
-            self::HIGH_WAGE,
+            self::COVERING_WAGE,
             3,
-            requestedClauseCents: 9_000_000_000,
-            wageDemandCents: self::DEMAND,
+            requestedClauseCents: 20_000_000_000, // €200M
         );
 
-        $this->assertSame(9_000_000_000, $player->fresh()->release_clause);
-    }
-
-    public function test_renewal_clamps_a_clause_above_the_tolerable_cap(): void
-    {
-        [$game, $team] = $this->makeGame(country: 'ES', enabled: true);
-        $player = $this->squadPlayer($game, $team);
-
-        $service = app(ContractService::class);
-        $service->processRenewal(
-            $player,
-            self::HIGH_WAGE,
-            3,
-            requestedClauseCents: 20_000_000_000, // €200M — well over the cap
-            wageDemandCents: self::DEMAND,
-        );
-
-        // Clamped to the wage-scaled maximum the player tolerates.
-        $expected = $service->maxTolerableReleaseClause(self::MV, self::HIGH_WAGE, self::DEMAND);
-        $this->assertSame($expected, $player->fresh()->release_clause);
+        $this->assertSame(20_000_000_000, $player->fresh()->release_clause);
     }
 
     public function test_renewal_without_a_request_still_yields_the_floor(): void
@@ -83,14 +65,12 @@ class ReleaseClausePhase4Test extends TestCase
         [$game, $team] = $this->makeGame(country: 'ES', enabled: true);
         $player = $this->squadPlayer($game, $team);
 
-        // Real wage/demand are passed but no clause request → unchanged Phase-1
-        // behaviour: the mandatory floor, regardless of the wage premium.
+        // No clause request → unchanged Phase-1 behaviour: the mandatory floor.
         app(ContractService::class)->processRenewal(
             $player,
-            self::HIGH_WAGE,
+            self::COVERING_WAGE,
             3,
             requestedClauseCents: null,
-            wageDemandCents: self::DEMAND,
         );
 
         $this->assertSame(self::ES_FLOOR, $player->fresh()->release_clause);
@@ -103,14 +83,46 @@ class ReleaseClausePhase4Test extends TestCase
 
         app(ContractService::class)->processRenewal(
             $player,
-            self::HIGH_WAGE,
+            self::COVERING_WAGE,
             3,
             requestedClauseCents: 9_000_000_000,
-            wageDemandCents: self::DEMAND,
         );
 
         $this->assertNull($player->fresh()->release_clause,
             'Non-ES clubs can never carry a clause — the request must be ignored');
+    }
+
+    public function test_a_high_clause_at_parity_wage_makes_the_player_counter(): void
+    {
+        [$game, $team] = $this->makeGame(country: 'ES', enabled: true);
+        $player = $this->renewablePlayer($game, $team);
+
+        // Offer exactly the base demand but ask for a €187.5M clause. The clause
+        // doubles what the player will accept, so a parity wage falls short and the
+        // player counters (rounds remain) — it is NOT silently clamped/accepted.
+        $negotiation = $this->openNegotiation($game, $player, userOffer: self::DEMAND, clause: self::BIG_CLAUSE);
+
+        $result = app(ContractService::class)->evaluateOffer($negotiation);
+
+        $this->assertSame('countered', $result);
+        $this->assertGreaterThan(self::DEMAND, (int) $negotiation->fresh()->counter_offer,
+            'The counter must reflect the clause-raised demand, not the base ask');
+        $this->assertNull($player->fresh()->release_clause, 'No clause is written until a deal is struck');
+    }
+
+    public function test_a_high_clause_is_accepted_when_the_wage_covers_it(): void
+    {
+        [$game, $team] = $this->makeGame(country: 'ES', enabled: true);
+        $player = $this->renewablePlayer($game, $team);
+
+        // Pay the wage the clause demands (€20M ≈ 2× base) and the same €187.5M
+        // clause is accepted and stored unclamped.
+        $negotiation = $this->openNegotiation($game, $player, userOffer: self::COVERING_WAGE, clause: self::BIG_CLAUSE);
+
+        $result = app(ContractService::class)->evaluateOffer($negotiation);
+
+        $this->assertSame('accepted', $result);
+        $this->assertSame(self::BIG_CLAUSE, (int) $player->fresh()->release_clause);
     }
 
     public function test_accepting_a_counter_applies_the_persisted_clause_request(): void
@@ -129,12 +141,12 @@ class ReleaseClausePhase4Test extends TestCase
             'user_offer' => 1_200_000_000,
             'offered_years' => 3,
             'release_clause_requested' => 9_000_000_000, // €90M
-            'counter_offer' => self::HIGH_WAGE,          // agreed at the counter wage
+            'counter_offer' => self::COVERING_WAGE,       // agreed at the counter wage
         ]);
 
         app(ContractService::class)->acceptCounterOffer($negotiation);
 
-        // €90M sits inside [floor, cap] at the counter wage, so it is applied as-is.
+        // The counter already priced in the clause, so it is applied as-is.
         $this->assertSame(9_000_000_000, $player->fresh()->release_clause);
     }
 
@@ -153,7 +165,7 @@ class ReleaseClausePhase4Test extends TestCase
             'user_offer' => 1_200_000_000,
             'offered_years' => 3,
             'release_clause_requested' => 7_000_000_000,
-            'counter_offer' => self::HIGH_WAGE,
+            'counter_offer' => self::COVERING_WAGE,
         ]);
 
         app(ContractService::class)->submitNewOffer($negotiation, 1_300_000_000, 3, 8_000_000_000);
@@ -209,8 +221,9 @@ class ReleaseClausePhase4Test extends TestCase
             ->postJson(route('game.negotiate.renewal', [$game->id, $player->id]), ['action' => 'start'])
             ->assertOk()
             ->assertJsonPath('clause_enabled', true)
-            ->assertJsonPath('clause_floor', 62_500_000)        // €62.5M in euros
-            ->assertJsonPath('clause_market_value', 50_000_000); // €50M in euros
+            ->assertJsonPath('clause_floor', 62_500_000)         // €62.5M in euros
+            ->assertJsonPath('clause_market_value', 50_000_000)  // €50M in euros
+            ->assertJsonPath('clause_premium_slope', 2.5);
     }
 
     public function test_start_endpoint_omits_clause_config_for_a_non_es_club(): void
@@ -269,8 +282,38 @@ class ReleaseClausePhase4Test extends TestCase
             'overall_score' => 70,
             'release_clause' => null,
             'pending_annual_wage' => null,
-            'annual_wage' => 1_000_000_000, // €10M
+            'annual_wage' => self::DEMAND, // €10M
             'contract_until' => '2025-06-30',
+        ]);
+    }
+
+    /**
+     * A renewable player whose contract ends this season, so processRenewal will
+     * actually write through when a deal is struck.
+     */
+    private function renewablePlayer(Game $game, Team $team): GamePlayer
+    {
+        return $this->expiringPlayer($game, $team);
+    }
+
+    /**
+     * A fresh, round-1 open negotiation with a pinned base demand so the
+     * clause→demand mechanic can be asserted deterministically (independent of
+     * the wage-demand model).
+     */
+    private function openNegotiation(Game $game, GamePlayer $player, int $userOffer, int $clause): RenewalNegotiation
+    {
+        return RenewalNegotiation::create([
+            'game_id' => $game->id,
+            'game_player_id' => $player->id,
+            'status' => RenewalNegotiation::STATUS_OFFER_PENDING,
+            'round' => 1,
+            'player_demand' => self::DEMAND,
+            'preferred_years' => 3,
+            'user_offer' => $userOffer,
+            'offered_years' => 3, // == preferred → neutral years modifier
+            'release_clause_requested' => $clause,
+            'counter_offer' => null,
         ]);
     }
 }
