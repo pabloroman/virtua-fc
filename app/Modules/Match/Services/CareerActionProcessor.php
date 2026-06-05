@@ -122,6 +122,15 @@ class CareerActionProcessor
             foreach ($unsolicitedOffers as $offer) {
                 $this->notificationService->notifyTransferOffer($game, $offer);
             }
+
+            // AI clubs may (rarely) trigger the release clause on one of the
+            // user's players — a forced, non-consensual sale. The agreed offer
+            // completes via the normal outgoing pipeline; the user is notified
+            // up front (a high-priority popup) so the loss can't be missed.
+            $clauseTriggers = $this->transferService->generateAIReleaseClauseTriggers($game, $buyerPool);
+            foreach ($clauseTriggers as $offer) {
+                $this->notificationService->notifyPlayerLeftViaReleaseClause($game, $offer);
+            }
         }
         $mark('unsolicited_offers');
 

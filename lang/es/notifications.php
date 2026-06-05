@@ -62,6 +62,10 @@ return [
     'loan_out_complete_title' => ':player cedido',
     'loan_out_complete_message' => ':player ha sido cedido :team_a hasta final de temporada.',
 
+    // Release clause triggered against the user (Phase 3)
+    'player_left_via_release_clause_title' => 'Cláusula de rescisión: :player se marcha',
+    'player_left_via_release_clause_message' => ':player se marcha :team_a tras activarse su cláusula de rescisión. Tu club recibe :fee.',
+
     // Expiring offers
     'offer_expiring_title' => 'Oferta por :player expira pronto',
     'offer_expiring_message' => '{0}La oferta :team_de por :player expira hoy.|{1}La oferta :team_de por :player expira en :count día.|[2,*]La oferta :team_de por :player expira en :count días.',

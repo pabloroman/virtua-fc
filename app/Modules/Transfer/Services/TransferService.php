@@ -352,6 +352,172 @@ class TransferService
     }
 
     /**
+     * AI clubs trigger the release clause on the user's players (Phase 3).
+     *
+     * The mirror of Phase 2's triggerReleaseClause: instead of the user paying an
+     * AI player's clause, an AI club rarely pays the user's. The forced sale is
+     * non-consensual, so the offer is created straight at STATUS_AGREED (no
+     * PENDING/negotiation) and completes through the normal outgoing pipeline
+     * (completeAgreedTransfers, which filters to the user's first team).
+     *
+     * Only generates while the window is open. Returns the created offers so the
+     * caller can fire the notification, mirroring generateUnsolicitedOffers.
+     *
+     * @param  array{leagueTeams: Collection, squadValues: Collection, reputationLevels: Collection}|null  $buyerPool
+     */
+    public function generateAIReleaseClauseTriggers(Game $game, ?array $buyerPool = null): Collection
+    {
+        $offers = collect();
+
+        if (!$game->release_clauses_enabled) {
+            return $offers;
+        }
+
+        $chanceByTier = config('finances.release_clause.ai_trigger_chance_by_tier', []);
+
+        // Candidates: the user's first-team players carrying a clause. team_id ==
+        // game.team_id matches the completeAgreedTransfers filter, so reserve-team
+        // players are out of scope in v1. Loaned-out players sit on another team
+        // (excluded by whereDoesntHave('activeLoan')); loaned-in players are
+        // filtered below — neither can be clause-triggered (parent club keeps
+        // authority). Retiring players are skipped too.
+        $candidates = GamePlayer::with('transferOffers')
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->whereNotNull('release_clause')
+            ->whereNull('retiring_at_season')
+            ->whereDoesntHave('activeLoan')
+            ->get()
+            ->filter(fn (GamePlayer $player) => !$player->isLoanedIn($game->team_id));
+
+        foreach ($candidates as $player) {
+            // Exclusivity: never clause-trigger a player who already has a live
+            // deal in flight (a pending bid, an agreed sale, or a prior clause).
+            $hasLiveOffer = $player->transferOffers
+                ->whereIn('status', [
+                    TransferOffer::STATUS_PENDING,
+                    TransferOffer::STATUS_FEE_AGREED,
+                    TransferOffer::STATUS_AGREED,
+                ])
+                ->isNotEmpty();
+
+            if ($hasLiveOffer) {
+                continue;
+            }
+
+            $chance = $chanceByTier[$player->tier] ?? 0;
+            if ($chance <= 0 || mt_rand() / mt_getrandmax() >= $chance) {
+                continue;
+            }
+
+            $clauseCents = (int) $player->release_clause;
+
+            // Affordability gates on the CLAUSE, not market value: only clubs that
+            // could actually meet the (higher) buyout are eligible.
+            ['buyers' => $buyers, 'squadValues' => $squadValues] =
+                $this->getEligibleBuyersWithSquadValues($player, $buyerPool, $clauseCents);
+
+            if ($buyers->isEmpty()) {
+                continue;
+            }
+
+            // selectWeightedBuyer reads $player->game internally — seed the relation
+            // so it doesn't lazy-load per player.
+            $player->setRelation('game', $game);
+
+            // A forced buyout means paying a premium over market, so narrow the
+            // affordability-eligible clubs to those that actually want the player
+            // (positional need + quality upgrade + affordability headroom). If no
+            // club is willing, no clause is triggered for this player.
+            $willingBuyers = $this->filterWillingClauseBuyers($player, $buyers, $squadValues, $clauseCents);
+
+            if ($willingBuyers->isEmpty()) {
+                continue;
+            }
+
+            // Reuse the trajectory-weighted buyer pick (growing stars draw bigger clubs).
+            $buyer = $this->selectWeightedBuyer($willingBuyers, $player, $squadValues);
+
+            $offer = DB::transaction(function () use ($game, $player, $buyer, $clauseCents) {
+                // Replicate acceptOffer's sibling-rejection so no stale pending
+                // offer survives the forced sale.
+                TransferOffer::where('game_player_id', $player->id)
+                    ->where('status', TransferOffer::STATUS_PENDING)
+                    ->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
+
+                // Deliberately skip squadMinimumService->validateRemoval: a paid
+                // clause is non-refusable, so the user can't block it on
+                // squad-minimum grounds — mirrors the user-side triggerReleaseClause.
+                return TransferOffer::create([
+                    'game_id' => $game->id,
+                    'game_player_id' => $player->id,
+                    'offering_team_id' => $buyer->id,
+                    'selling_team_id' => $game->team_id,
+                    'offer_type' => TransferOffer::TYPE_UNSOLICITED,
+                    'direction' => TransferOffer::DIRECTION_OUTGOING,
+                    'transfer_fee' => $clauseCents,
+                    'status' => TransferOffer::STATUS_AGREED,
+                    'triggered_release_clause' => true,
+                    'expires_at' => $game->current_date->copy()->addDays(30),
+                    'game_date' => $game->current_date,
+                    'resolved_at' => $game->current_date,
+                    'negotiation_round' => 1,
+                ]);
+            });
+
+            $offers->push($offer);
+        }
+
+        return $offers;
+    }
+
+    /**
+     * Of the affordability-eligible buyers, the subset that wants the player
+     * enough to pay the (premium) clause. desireScore blends positional need +
+     * quality upgrade with an affordability-headroom finance signal. Rosters
+     * load in one pass — this only runs after the rare per-tier roll, so it is
+     * bounded, not an N+1 over the (foreign-league-inclusive) buyer pool.
+     *
+     * @param  Collection<int, Team>  $buyers
+     * @param  Collection  $squadValues  team_id => total squad market value
+     * @return Collection<int, Team>
+     */
+    private function filterWillingClauseBuyers(GamePlayer $player, Collection $buyers, Collection $squadValues, int $clauseCents): Collection
+    {
+        $minDesire = (float) config('finances.release_clause.ai_trigger_min_desire', 0.55);
+
+        $rostersByTeam = GamePlayer::where('game_id', $player->game_id)
+            ->whereIn('team_id', $buyers->pluck('id'))
+            ->get(['id', 'team_id', 'position', 'overall_score', 'market_value_cents'])
+            ->groupBy('team_id');
+
+        return $buyers->filter(function (Team $buyer) use ($player, $rostersByTeam, $squadValues, $clauseCents, $minDesire) {
+            $roster = $rostersByTeam->get($buyer->id, collect());
+            $headroom = $this->clauseAffordabilityHeadroom((int) $squadValues->get($buyer->id, 0), $clauseCents);
+
+            return $this->squadNeedService->desireScore($roster, $player, $headroom) >= $minDesire;
+        })->values();
+    }
+
+    /**
+     * 0..1 spare capacity a club has beyond the clause, relative to its maximum
+     * clause-affordable spend (squad value × MAX_FEE_TO_SQUAD_VALUE_RATIO — the
+     * same hard eligibility gate). A club stretched to its limit reads ~0; one
+     * with the clause many times over reads ~1. Feeds desireScore's finance
+     * axis so "willing to pay" reflects affordability comfort, not just the
+     * pass/fail eligibility check.
+     */
+    private function clauseAffordabilityHeadroom(int $squadValueCents, int $clauseCents): float
+    {
+        $capacity = $squadValueCents * self::MAX_FEE_TO_SQUAD_VALUE_RATIO;
+        if ($capacity <= 0) {
+            return 0.0;
+        }
+
+        return max(0.0, min(1.0, ($capacity - $clauseCents) / $capacity));
+    }
+
+    /**
      * Get the pre-contract offer chance for a player based on their market value.
      * Higher-value players attract more aggressive AI competition.
      */
@@ -833,11 +999,16 @@ class TransferService
      * @param  array{leagueTeams: Collection, squadValues: Collection}|null  $buyerPool  Pre-loaded pool from loadBuyerPool()
      * @return array{buyers: Collection, squadValues: Collection}
      */
-    private function getEligibleBuyersWithSquadValues(GamePlayer $player, ?array $buyerPool = null): array
+    private function getEligibleBuyersWithSquadValues(GamePlayer $player, ?array $buyerPool = null, ?int $minAffordableCents = null): array
     {
         $playerTeamId = $player->team_id;
         $playerValue = $player->market_value_cents;
         $playerTier = $player->tier;
+
+        // What a buyer must be able to support. Defaults to market value (normal
+        // offers); a clause poach passes the (higher) clause so only clubs that
+        // can actually meet the buyout qualify.
+        $affordabilityFloor = $minAffordableCents ?? $playerValue;
 
         if ($buyerPool) {
             $squadValues = $buyerPool['squadValues'];
@@ -846,7 +1017,7 @@ class TransferService
 
             // Filter to teams whose squad value can support the transfer fee
             $eligibleTeamIds = $squadValues
-                ->filter(fn ($totalValue) => $totalValue * self::MAX_FEE_TO_SQUAD_VALUE_RATIO >= $playerValue)
+                ->filter(fn ($totalValue) => $totalValue * self::MAX_FEE_TO_SQUAD_VALUE_RATIO >= $affordabilityFloor)
                 ->keys()
                 ->toArray();
 
@@ -877,7 +1048,7 @@ class TransferService
         // Filter to teams whose squad value can support the transfer fee
         // A team's max bid is capped at 30% of their total squad value
         $eligibleTeamIds = $squadValues
-            ->filter(fn ($totalValue) => $totalValue * self::MAX_FEE_TO_SQUAD_VALUE_RATIO >= $playerValue)
+            ->filter(fn ($totalValue) => $totalValue * self::MAX_FEE_TO_SQUAD_VALUE_RATIO >= $affordabilityFloor)
             ->keys()
             ->toArray();
 

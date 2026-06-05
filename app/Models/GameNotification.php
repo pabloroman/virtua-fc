@@ -76,6 +76,7 @@ class GameNotification extends Model
     public const TYPE_TRANSFER_WINDOW_CLOSED = 'transfer_window_closed';
     public const TYPE_SQUAD_REGISTRATION_REQUIRED = 'squad_registration_required';
     public const TYPE_JOB_OFFER_RECEIVED = 'job_offer_received';
+    public const TYPE_PLAYER_LEFT_VIA_RELEASE_CLAUSE = 'player_left_via_release_clause';
 
     // Priorities
     public const PRIORITY_MILESTONE = 'milestone';
@@ -120,6 +121,7 @@ class GameNotification extends Model
         self::TYPE_SQUAD_REGISTRATION_REQUIRED => 'registration',
         self::TYPE_STADIUM => 'stadium',
         self::TYPE_JOB_OFFER_RECEIVED => 'season-end',
+        self::TYPE_PLAYER_LEFT_VIA_RELEASE_CLAUSE => 'transfer-activity',
     ];
 
     protected $fillable = [
@@ -430,6 +432,11 @@ class GameNotification extends Model
                 'icon_bg' => 'bg-indigo-500/10',
                 'icon_text' => 'text-indigo-500',
                 'dot' => 'bg-indigo-500',
+            ],
+            self::TYPE_PLAYER_LEFT_VIA_RELEASE_CLAUSE => [
+                'icon_bg' => 'bg-red-500/10',
+                'icon_text' => 'text-red-500',
+                'dot' => 'bg-red-500',
             ],
             default => [
                 'icon_bg' => 'bg-slate-500/10',

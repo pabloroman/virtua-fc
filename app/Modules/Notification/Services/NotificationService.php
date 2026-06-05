@@ -365,6 +365,44 @@ class NotificationService
     }
 
     /**
+     * Notify the user that an AI club triggered the release clause on one of
+     * their players (Phase 3). Fired at trigger time — before the agreed sale
+     * completes — so the loss is announced up front. Uses PRIORITY_CRITICAL so
+     * it surfaces as a blocking, must-dismiss popup the user can't miss. Deduped
+     * on player_id so a player can't generate two clause alerts in a day.
+     */
+    public function notifyPlayerLeftViaReleaseClause(Game $game, TransferOffer $offer): ?GameNotification
+    {
+        $player = $offer->gamePlayer;
+
+        if ($this->hasRecentNotification(
+            $game->id,
+            GameNotification::TYPE_PLAYER_LEFT_VIA_RELEASE_CLAUSE,
+            ['player_id' => $player->id],
+            currentDate: $game->current_date,
+        )) {
+            return null;
+        }
+
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_PLAYER_LEFT_VIA_RELEASE_CLAUSE,
+            title: __('notifications.player_left_via_release_clause_title', ['player' => $player->name]),
+            message: __('notifications.player_left_via_release_clause_message', [
+                'player' => $player->name,
+                'team_a' => $offer->offeringTeam->nameWithA(),
+                'fee' => $offer->formatted_transfer_fee,
+            ]),
+            priority: GameNotification::PRIORITY_CRITICAL,
+            metadata: [
+                'player_id' => $player->id,
+                'buying_team_id' => $offer->offering_team_id,
+                'clause_amount' => $offer->transfer_fee,
+            ],
+        );
+    }
+
+    /**
      * Create a high-priority notification when an agreed incoming transfer
      * can't be completed (e.g. the player is no longer at the expected seller,
      * or a budget guard fired). The reserved budget is released by rejecting the
@@ -1013,6 +1051,7 @@ class NotificationService
             GameNotification::TYPE_TRANSFER_WINDOW_CLOSING => 'clock',
             GameNotification::TYPE_SQUAD_REGISTRATION_REQUIRED => 'squad',
             GameNotification::TYPE_JOB_OFFER_RECEIVED => 'trophy',
+            GameNotification::TYPE_PLAYER_LEFT_VIA_RELEASE_CLAUSE => 'transfer',
             default => 'bell',
         };
     }
