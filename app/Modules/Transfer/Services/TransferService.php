@@ -405,12 +405,24 @@ class TransferService
                 continue;
             }
 
-            $chance = $chanceByTier[$player->tier] ?? 0;
-            if ($chance <= 0 || mt_rand() / mt_getrandmax() >= $chance) {
+            $baseChance = $chanceByTier[$player->tier] ?? 0;
+            if ($baseChance <= 0) {
                 continue;
             }
 
             $clauseCents = (int) $player->release_clause;
+
+            // An underpriced clause (one that has fallen below the player's current
+            // market value, since clauses don't ratchet) is a bargain forced-buy, so
+            // AI clubs pounce more often. A clause at/above market value is unchanged.
+            $chance = min(1.0, $baseChance * $this->underpricedClauseTriggerMultiplier(
+                (int) $player->market_value_cents,
+                $clauseCents,
+            ));
+
+            if (mt_rand() / mt_getrandmax() >= $chance) {
+                continue;
+            }
 
             // Affordability gates on the CLAUSE, not market value: only clubs that
             // could actually meet the (higher) buyout are eligible.
@@ -469,6 +481,31 @@ class TransferService
         }
 
         return $offers;
+    }
+
+    /**
+     * Boost to the AI clause-trigger chance based on how underpriced the clause
+     * is relative to the player's current market value. Clauses don't ratchet, so
+     * a developing player's market value can outgrow his stale clause, turning the
+     * buyout into a bargain — AI clubs pounce on those more often.
+     *
+     *   ratio      = market_value / clause           (> 1 ⇒ clause undershoots MV)
+     *   multiplier = min(max_multiplier, 1 + slope × max(0, ratio − 1))
+     *
+     * A clause at or above market value (e.g. the 1.25× ES floor, or a Phase-4
+     * raised clause) yields ratio ≤ 1 ⇒ multiplier 1.0 (no boost, never reduced).
+     */
+    public function underpricedClauseTriggerMultiplier(int $marketValueCents, int $clauseCents): float
+    {
+        if ($clauseCents <= 0 || $marketValueCents <= 0) {
+            return 1.0;
+        }
+
+        $ratio = $marketValueCents / $clauseCents;
+        $slope = (float) config('finances.release_clause.ai_underprice_slope', 1.0);
+        $maxMultiplier = (float) config('finances.release_clause.ai_underprice_max_multiplier', 5.0);
+
+        return min($maxMultiplier, 1.0 + $slope * max(0.0, $ratio - 1.0));
     }
 
     /**

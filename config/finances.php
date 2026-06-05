@@ -74,6 +74,16 @@ return [
             1 => 0.0005,
         ],
 
+        // AI poach: a clause that has fallen below the player's current market
+        // value is a bargain forced-buy (clauses don't ratchet, so a developing
+        // player outgrows his stale clause), so AI clubs trigger it more often. The
+        // per-matchday base chance above is multiplied by
+        //   1 + ai_underprice_slope × max(0, market_value/clause − 1)
+        // capped at ai_underprice_max_multiplier. A clause at/above market value
+        // gets no boost (multiplier 1). Tune from season simulation.
+        'ai_underprice_slope' => 1.0,
+        'ai_underprice_max_multiplier' => 5.0,
+
         // Minimum SquadNeedService desire (0..1) for an AI club to be willing to
         // pay the premium clause: it must genuinely need/upgrade with the player,
         // with affordability headroom factored in. Below this, no club triggers

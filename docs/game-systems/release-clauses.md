@@ -194,10 +194,16 @@ untouched** (AI-to-AI transfers never create `TransferOffer` rows and cap fees a
 so they cannot reuse this pipeline — and are out of scope).
 
 - Daily generation (open windows only): low-probability per-player roll
-  (`config('finances.release_clause.ai_trigger_chance_by_tier')`), affordability-gated **on the
-  clause amount, not market value** — reuses `getEligibleBuyersWithSquadValues` with a new
-  `minAffordableCents` override (the squad-value cap that already governs AI offers on user
-  players), so only clubs that could meet the buyout qualify. Targets the user's **first-team**
+  (`config('finances.release_clause.ai_trigger_chance_by_tier')`), **scaled up when the clause is
+  underpriced** versus the player's current market value. Clauses don't ratchet, so a developing
+  player outgrows his stale clause — that bargain draws AI buyers more often.
+  `TransferService::underpricedClauseTriggerMultiplier` multiplies the base chance by
+  `min(ai_underprice_max_multiplier, 1 + ai_underprice_slope × max(0, market_value/clause − 1))`;
+  a clause at/above market value (the 1.25× floor, or a Phase-4 raised clause) gets no boost.
+  Affordability-gated **on the clause amount, not market value** — reuses
+  `getEligibleBuyersWithSquadValues` with a new `minAffordableCents` override (the squad-value cap
+  that already governs AI offers on user players), so only clubs that could meet the buyout
+  qualify. Targets the user's **first-team**
   players (`team_id == game.team_id`, matching the completion filter — reserves out of scope in
   v1); skips loaned-in / on-loan / retiring players and any player with a non-terminal offer
   (exclusivity).
