@@ -163,8 +163,10 @@ class NegotiateRenewal
 
         // The clause control only exists for mandatory-clause (ES) clubs with the
         // feature on; everywhere else a clause is impossible, so any incoming value
-        // is ignored. ContractService::calculateReleaseClause clamps the request to
-        // [floor, maxTolerable(wage)] — this layer just forwards the manager's intent.
+        // is ignored. There is no upper cap — a clause above the floor just raises
+        // the wage the player demands (ContractService::effectiveDemandWithReleaseClause),
+        // so this layer forwards the manager's intent and the floor stays the only
+        // server-side clamp.
         $requestedClauseCents = ($game->release_clauses_enabled
             && isset($validated['clause'])
             && in_array($game->country, config('finances.release_clause.mandatory_countries', []), true))
@@ -295,9 +297,10 @@ class NegotiateRenewal
     /**
      * Release-clause data for the renewal chat's clause control. Returned only for
      * mandatory-clause (ES) clubs with the feature on; non-ES clubs get nothing, so
-     * the client never shows the control and never sends a clause. The client derives
-     * the live max from market value + demand + the tolerance curve, but the server
-     * clamp in ContractService::calculateReleaseClause stays authoritative.
+     * the client never shows the control and never sends a clause. The client uses
+     * market value + demand + the premium slope to advise the wage the player will
+     * want for a given clause, but the server (effectiveDemandWithReleaseClause)
+     * stays authoritative.
      *
      * @return array<string, mixed>
      */
@@ -311,23 +314,14 @@ class NegotiateRenewal
         $marketValueCents = (int) $player->market_value_cents;
 
         // Reuse the service for the floor so the es_floor_multiplier lives in one place.
-        $floorCents = $this->contractService->calculateReleaseClause(
-            $marketValueCents,
-            null,
-            null,
-            $game->country,
-        ) ?? 0;
+        $floorCents = $this->contractService->releaseClauseFloorCents($marketValueCents);
 
         return [
             'clause_enabled' => true,
             'clause_floor' => (int) ($floorCents / 100),
             'clause_market_value' => (int) ($marketValueCents / 100),
             'clause_demand' => (int) ($demandWageCents / 100),
-            'clause_tolerance' => [
-                'base' => (float) config('finances.release_clause.tolerance.base', 1.25),
-                'slope' => (float) config('finances.release_clause.tolerance.premium_slope', 2.5),
-                'hard_cap' => (float) config('finances.release_clause.tolerance.hard_cap', 2.5),
-            ],
+            'clause_premium_slope' => (float) config('finances.release_clause.tolerance.premium_slope', 2.5),
         ];
     }
 

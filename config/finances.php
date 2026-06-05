@@ -51,16 +51,15 @@ return [
         // The derived default at every agreement equals this floor.
         'es_floor_multiplier' => 1.25,
 
-        // Player resistance to a high clause, expressed as a CAP (multiple of
-        // market value) that rises with the wage premium offered over the
-        // player's demand. The manager may raise the clause up to this cap by
-        // paying a bigger wage; going higher requires a bigger wage still.
-        //   tolerance(ratio) = clamp(base + premium_slope * max(0, ratio - 1), base, hard_cap)
-        //   where ratio = offered_wage / wage_demand.
+        // Golden handcuffs: a clause raised above the mandatory floor isn't capped,
+        // it raises the WAGE the player demands to be locked in. There is no
+        // ceiling — the wage requirement keeps climbing with the clause:
+        //   demand_factor = 1 + (clause - floor) / (premium_slope * market_value)
+        // premium_slope is the market-value multiple of clause, above the floor, that
+        // each +1.0 of wage premium buys (i.e. a clause of premium_slope × MV above
+        // the floor doubles the player's wage demand).
         'tolerance' => [
-            'base'          => 1.25, // cap at wage parity (offered == demand)
-            'premium_slope' => 2.5,  // extra MV multiple per +1.0 of wage premium
-            'hard_cap'      => 2.5,  // absolute ceiling on the MV multiple
+            'premium_slope' => 2.5,
         ],
 
         // Per-matchday probability that an AI club triggers the clause on one of

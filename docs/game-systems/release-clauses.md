@@ -64,34 +64,36 @@ contract expiry**. **No season-end ratchet**: the clause is frozen between agree
 developing wonderkid keeps his old (cheap) clause until renewed — intentional, matching how
 real Spanish clauses get out of date.
 
-**Amount — hybrid "golden handcuffs."** Reuses the unified
-`ContractService::calculateWageDemand` (`ContractService.php:283-348`). Let
-`ratio = offeredWage / playerDemand`:
+**Amount — "golden handcuffs" as a wage cost.** No cap on the clause; the cost is paid in wages.
 
-- `maxTolerableClause = MV × tolerance(ratio)` — a config curve rising with the wage premium,
-  hard-capped (~2.5×).
-- `ES floor = MV × es_floor_multiplier` (~1.25×, tunable) — the mandatory minimum.
+- `ES floor = MV × es_floor_multiplier` (~1.25×, tunable) — the mandatory minimum and the only
+  lower bound on a request.
 - **Derived default** at agreement = ES floor (ES) / `null` (non-ES).
-- **User may raise** within `[floor, maxTolerableClause]`; going higher requires a bigger wage
-  (which lifts `maxTolerable`). Server validates `requested ≤ maxTolerable(offeredWage)`; the UI
-  clamps the input to the live max.
+- **User may raise the clause to any value above the floor.** A clause above the floor lifts the
+  wage the player demands to re-sign by `(clause − floor) / (premium_slope × MV)`, so the player
+  weighs the whole package and counters/rejects if the wage doesn't cover the clause asked. The
+  clause itself is stored unclamped — the wage that justifies it is what the negotiation settles.
 
-> v1 simplification: player resistance is enforced as a **cap**, not a counter-offer round —
-> this avoids threading a third axis through the chat-style negotiation UI. Full
-> clause-counter-negotiation is a later enhancement.
+> Phase 4 folds the clause into the existing chat negotiation: a raised clause flows through the
+> normal accept/counter/reject loop via the player's wage demand (it is **not** a separate cap or
+> a third negotiation axis). Reuses the unified `ContractService::calculateWageDemand` for the
+> base demand.
 
 New helper signatures on `ContractService`:
 
 ```php
 calculateReleaseClause(
     int $marketValueCents,
-    ?int $offeredWageCents,
-    ?int $wageDemandCents,
     ?string $clubCountry,          // a country string, NOT a Team — bulk paths need no per-player Team load
     ?int $userRequestedCents = null
-): ?int;
+): ?int;                            // max(floor, requested) for ES / opt-in; null otherwise
 
-maxTolerableReleaseClause(/* … */): int;
+effectiveDemandWithReleaseClause(
+    int $baseDemandCents,
+    int $marketValueCents,
+    ?int $requestedClauseCents,
+    ?string $clubCountry
+): int;                             // base demand, raised by the golden-handcuffs factor above the floor
 ```
 
 All multipliers live in a new `config/finances.php` `release_clause` block.
@@ -124,8 +126,8 @@ Used for the country check, the clause value, fee routing, and trigger eligibili
 - `TransferOffer` — `triggered_release_clause` fillable/casts.
 - `Game` — `release_clauses_enabled` fillable/cast/`@property`.
 
-**`ContractService`** — `calculateReleaseClause(...)`, `maxTolerableReleaseClause(...)`, private
-ES-country check, config block.
+**`ContractService`** — `calculateReleaseClause(...)`, `releaseClauseFloorCents(...)`,
+`effectiveDemandWithReleaseClause(...)`, private ES-country check, config block.
 
 **Recompute at in-game contract touchpoints** (all behind the flag):
 - `completeFreeAgentSigning` (`TransferCompletionService.php:288-291`)
@@ -233,7 +235,9 @@ next page load, so a clause loss can't be missed.
 ## Phase 4 — Renewals raise the clause (strategic lever)
 
 > **Status: coded.** Branch `release-clause-phase-4`. The manager can raise the mandatory ES
-> clause during a renewal; the value is clamped server-side and applied when the renewal is agreed.
+> clause during a renewal to **any** value above the floor — there is no cap. A clause above the
+> floor raises the wage the player demands to re-sign (golden handcuffs), so the player weighs the
+> whole package (years + wage + clause) and counters/rejects if underpaid for the clause asked.
 
 **Scope decision (locked 2026-06-05): ES = mandatory clause (raisable); non-ES = no clause at
 all.** The spec's earlier "non-ES optional opt-in" was dropped — outside mandatory-clause
@@ -248,21 +252,28 @@ UI** plus the threading that carries the request to the agreement:
   carries the manager's chosen clause across counter-offer rounds (the `accept_counter` action
   has no payload, so the value must live on the row). Written by `initiateNegotiation` /
   `submitNewOffer`; read by `evaluateOffer` (accept) and `acceptCounterOffer`.
-- **Service:** `processRenewal(player, newWage, years, ?requestedClauseCents, ?wageDemandCents)`
-  forwards both the agreed wage and the renewal demand to `calculateReleaseClause`, so the
-  golden-handcuffs cap is sized off the real wage premium. A `null` request reproduces the old
-  floor-only result exactly.
+- **Service:** the golden handcuffs are a **negotiation** cost, not a clamp.
+  `effectiveDemandWithReleaseClause(baseDemand, MV, ?requestedClause, country)` lifts the player's
+  wage demand by `(clause − floor) / (premium_slope × MV)` (the algebraic inverse of the old
+  tolerance cap; factor 1.0 at the floor) and `evaluateOffer` feeds that into the wage evaluator,
+  so the whole accept/counter/reject ladder — and the counter wage — reflects the clause. There is
+  **no upper cap**: `calculateReleaseClause(MV, country, ?requestedClause)` just returns
+  `max(floor, requested)`, and `processRenewal(player, newWage, years, ?requestedClause)` stores it
+  as-is (the wage that justifies it was already settled in negotiation). A `null` request
+  reproduces the old floor-only result exactly.
 - **Action:** `NegotiateRenewal` validates a `nullable|integer|min:0` `clause`, gates it on
   `release_clauses_enabled` **and** ES country (`mandatory_countries`), and ships clause config
-  (`clause_floor` / `clause_market_value` / `clause_demand` / `clause_tolerance`) in the `start`
-  response so the client can render a live max. The server clamp in `calculateReleaseClause`
+  (`clause_floor` / `clause_market_value` / `clause_demand` / `clause_premium_slope`) in the
+  `start` response so the client can advise the wage the clause will cost. The server evaluation
   stays authoritative.
 - **UI:** the renewal **chat** modal (`negotiation-chat-modal.blade.php` + `negotiation-chat.js`)
-  gets a compact gold clause stepper (ES-only, `clauseEnabled && mode === 'renewal'`) bound to a
-  live `clauseMax` that mirrors `maxTolerableReleaseClause`; lowering the wage re-clamps the
-  clause down. The chosen value is sent on the `offer` payload (and the round-0 accept-demand
-  path); the page reload on close surfaces the new clause everywhere Phase 1 already displays it.
-- i18n: `transfers.clause_max_tolerated` (es + en). Tests: `tests/Feature/ReleaseClausePhase4Test.php`.
+  gets a compact gold clause stepper (ES-only, `clauseEnabled && mode === 'renewal'`) with **no
+  upper cap**, plus a live advisory (`clauseAdjustedDemand`) that turns green when the current wage
+  offer covers the clause and amber (showing the wage the player will want) when it doesn't. The
+  chosen value is sent on the `offer` payload (and the round-0 accept-demand path); the page reload
+  on close surfaces the new clause everywhere Phase 1 already displays it.
+- i18n: `transfers.clause_wants_wage`, `transfers.clause_wage_covered` (es + en).
+  Tests: `tests/Feature/ReleaseClausePhase4Test.php`, `tests/Unit/ReleaseClauseCalculationTest.php`.
 
 ---
 
@@ -284,7 +295,8 @@ UI** plus the threading that carries the request to the agreement:
 ## Internationalization (es + en)
 
 Spanish term: **cláusula de rescisión** (with accents). Keys:
-`transfers.release_clause`, `transfers.pay_release_clause`, `transfers.clause_max_tolerated`;
+`transfers.release_clause`, `transfers.pay_release_clause`, `transfers.clause_wants_wage`,
+`transfers.clause_wage_covered`;
 `messages.clause_triggered_in` / `messages.clause_triggered_out`;
 `notifications.player_left_via_clause_title` / `_message`; a squad column label if shown; plus
 the `GameNotification` type wiring above.
@@ -293,7 +305,8 @@ the `GameNotification` type wiring above.
 
 - Template seeds the ES clause / `null` for non-ES; a new game copies it; an **existing save
   stays all-null with the flag off**; the flag gates every surface.
-- ES floor + golden-handcuffs tolerance math; clause recomputed on transfer-in for the new club.
+- ES floor + golden-handcuffs demand math (a raised clause lifts the wage demand, no cap); clause
+  recomputed on transfer-in for the new club.
 - Money-to-seller for user-incoming **and** AI-outgoing-on-user.
 - Free-agent / loaned / called-up skips; `!isUserOwned` guard.
 - Budget reserved on trigger + an over-budget second trigger blocked.

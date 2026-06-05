@@ -505,7 +505,7 @@ class GamePlayerTemplateService
             'annual_wage' => $annualWage,
             // Mandatory floor for ES clubs (= es_floor_multiplier × MV), null
             // elsewhere. Seeded at baseline wages, so the floor IS the default.
-            'release_clause' => $this->contractService->calculateReleaseClause($marketValueCents, null, null, $clubCountry),
+            'release_clause' => $this->contractService->calculateReleaseClause($marketValueCents, $clubCountry),
             'fitness' => 80,
             'morale' => 80,
             'durability' => InjuryService::generateDurability(),
