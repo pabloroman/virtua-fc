@@ -288,6 +288,8 @@ class ReserveTeamService
                         'team_id' => $parentTeamId,
                         'joined_season' => (int) $game->season,
                         'joined_from' => $reserveTeamName ?? \App\Models\UserSquadCareerRecord::ORIGIN_ACADEMY,
+                        // Came up through the club's own filial/reserve pipeline.
+                        'homegrown' => true,
                     ],
                 );
             }
@@ -403,6 +405,8 @@ class ReserveTeamService
                 'team_id' => $game->team_id,
                 'joined_season' => (int) $game->season,
                 'joined_from' => $reserveTeamName ?? \App\Models\UserSquadCareerRecord::ORIGIN_ACADEMY,
+                // Came up through the club's own filial/reserve pipeline.
+                'homegrown' => true,
             ],
         );
 

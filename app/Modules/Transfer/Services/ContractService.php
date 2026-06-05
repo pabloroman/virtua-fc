@@ -356,6 +356,14 @@ class ContractService
             }
         }
 
+        // Homegrown loyalty: academy/filial-developed players are less greedy
+        // when re-signing. Applied before the raise floor below, so they still
+        // never demand a pay cut — only the size of the raise they ask shrinks.
+        if ($scenario === NegotiationScenario::RENEWAL && $player->isHomegrown()) {
+            $discount = (float) config('finances.homegrown.renewal_demand_discount', 0.15);
+            $demandedWage = (int) round($demandedWage * (1.0 - $discount));
+        }
+
         // Renewals: player wants at least a raise over their current wage
         if ($scenario === NegotiationScenario::RENEWAL) {
             $currentWageWithPremium = (int) ($player->annual_wage * $premium);
@@ -446,6 +454,9 @@ class ContractService
      * leaving the base demand (and prior floor-only behaviour) untouched. There
      * is no ceiling — the wage requirement just keeps climbing with the clause.
      *
+     * Homegrown players accept a higher clause for a smaller wage bump: their
+     * slope is steepened (see releaseClausePremiumSlope), flattening the factor.
+     *
      * @return int The clause-adjusted wage demand in cents (≥ base demand)
      */
     public function effectiveDemandWithReleaseClause(
@@ -453,6 +464,7 @@ class ContractService
         int $marketValueCents,
         ?int $requestedClauseCents,
         ?string $clubCountry,
+        bool $isHomegrown = false,
     ): int {
         if (!$this->isReleaseClauseMandatory($clubCountry)
             || $requestedClauseCents === null
@@ -465,10 +477,28 @@ class ContractService
             return $baseDemandCents;
         }
 
-        $slope = (float) config('finances.release_clause.tolerance.premium_slope', 2.5);
+        $slope = $this->releaseClausePremiumSlope($isHomegrown);
         $factor = 1.0 + ($requestedClauseCents - $floor) / ($slope * $marketValueCents);
 
         return (int) round($baseDemandCents * $factor);
+    }
+
+    /**
+     * The golden-handcuffs premium slope to use for a clause above the floor.
+     * Homegrown players accept a higher clause for less of a wage bump, so their
+     * slope is multiplied up (a steeper slope flattens the wage-demand factor).
+     * Shared by effectiveDemandWithReleaseClause and the renewal chat's client
+     * advisory (NegotiateRenewal::clausePayload) so the two never diverge.
+     */
+    public function releaseClausePremiumSlope(bool $isHomegrown = false): float
+    {
+        $slope = (float) config('finances.release_clause.tolerance.premium_slope', 2.5);
+
+        if ($isHomegrown) {
+            $slope *= (float) config('finances.homegrown.clause_slope_multiplier', 2.0);
+        }
+
+        return $slope;
     }
 
     /**
@@ -835,6 +865,7 @@ class ContractService
             $player->market_value_cents,
             $negotiation->release_clause_requested,
             $player->game->country,
+            $player->isHomegrown(),
         );
 
         $evaluation = $this->wageNegotiationEvaluator->evaluate(

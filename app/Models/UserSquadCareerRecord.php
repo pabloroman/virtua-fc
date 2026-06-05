@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $team_id
  * @property int $joined_season
  * @property string|null $joined_from   'Academy' sentinel or previous team name snapshot
+ * @property bool $homegrown            developed by the club (academy or filial promotion)
  * @property array $season_stats        keyed by season number
  */
 class UserSquadCareerRecord extends Model
@@ -42,11 +43,13 @@ class UserSquadCareerRecord extends Model
         'team_id',
         'joined_season',
         'joined_from',
+        'homegrown',
         'season_stats',
     ];
 
     protected $casts = [
         'joined_season' => 'integer',
+        'homegrown' => 'boolean',
         'season_stats' => 'array',
     ];
 

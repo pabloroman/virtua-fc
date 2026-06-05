@@ -91,6 +91,29 @@ return [
         'ai_trigger_min_desire' => 0.55,
     ],
 
+    // Homegrown loyalty. Players developed by the club's own pipeline — youth
+    // academy or filial/reserve promotion (GamePlayer::isHomegrown()) — are more
+    // willing to STAY: less greedy at renewal, more flexible at the table, and
+    // happier to accept a higher release clause for a smaller wage bump. All
+    // three are RENEWAL-scoped on purpose; applying them to transfers would make
+    // the user's own academy product easier for a rival to poach.
+    'homegrown' => [
+        // Shaves this fraction off the renewal wage demand (0.15 = ask 15% less).
+        // Applied before the "must get a raise" floor, so a pay cut is still
+        // never demanded — only the size of the raise shrinks.
+        'renewal_demand_discount' => 0.15,
+
+        // Flat bonus added to the renewal negotiation disposition (the 0.10–0.95
+        // willingness-to-accept-below-demand scale), so a slightly-low offer
+        // lands where a bought player would counter.
+        'disposition_bonus' => 0.10,
+
+        // Multiplies the release-clause golden-handcuffs premium_slope for
+        // homegrown players: a steeper slope means each € of clause above the
+        // floor costs less in wages. 2.0 = the wage premium grows half as fast.
+        'clause_slope_multiplier' => 2.0,
+    ],
+
     // Commercial revenue per seat per season by reputation level (in cents).
     'commercial_per_seat' => [
         'elite'        => 170_000, // €1,700/seat

@@ -73,8 +73,8 @@ class DispositionService
      * required to flag a stature gap. A gap of 1 is normal stretch; only a
      * 2-tier gap indicates the player has materially outgrown the club.
      *
-     * Academy-origin players are exempt from this check — homegrown players
-     * stay loyal to the club that developed them (see `isAcademyOrigin`).
+     * Homegrown players (academy or filial) are exempt from this check — they
+     * stay loyal to the club that developed them (see `isHomegrown`).
      */
     public const STATURE_GAP_MIN_REPUTATION_GAP = 2;
 
@@ -210,6 +210,10 @@ class DispositionService
             $disposition += $this->appearancesFactor($player);
         }
 
+        // ── Homegrown loyalty (renewal only: academy/filial players are more
+        // willing to accept a below-demand offer to stay) ──
+        $disposition += $this->homegrownFactor($player, $isRenewal);
+
         // ── Age ──
         $disposition += $this->ageFactor($age, $isRenewal);
 
@@ -306,6 +310,21 @@ class DispositionService
         }
 
         return 0.0;
+    }
+
+    /**
+     * Homegrown loyalty bonus: academy/filial-developed players are more willing
+     * to accept a below-demand renewal offer to stay at the club that raised
+     * them. Renewal-scoped — it must never help a rival poach the user's own
+     * academy product, and only the user's players are ever homegrown.
+     */
+    private function homegrownFactor(GamePlayer $player, bool $isRenewal): float
+    {
+        if (!$isRenewal || !$player->isHomegrown()) {
+            return 0.0;
+        }
+
+        return (float) config('finances.homegrown.disposition_bonus', 0.10);
     }
 
     private function ageFactor(int $age, bool $isRenewal): float
@@ -857,7 +876,7 @@ class DispositionService
 
         // Homegrown players stay loyal to the club that developed them,
         // even when their stature has outgrown its reputation.
-        if ($player->isAcademyOrigin()) {
+        if ($player->isHomegrown()) {
             return false;
         }
 
@@ -998,7 +1017,9 @@ class DispositionService
             return ['flagged' => 0, 'cleared' => 0];
         }
 
-        $squad = GamePlayer::with('activeLoan')
+        // careerRecord is eager-loaded so the homegrown check below stays a flag
+        // read rather than a per-player query.
+        $squad = GamePlayer::with(['activeLoan', 'careerRecord'])
             ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->get();
@@ -1007,7 +1028,11 @@ class DispositionService
         $cleared = 0;
 
         foreach ($squad as $player) {
-            $isEligible = $this->hasWageGapAgainst($player, $this->abilityPeerMedian($player, $squad));
+            // Homegrown players (academy/filial) stay loyal — they don't get
+            // wage-gap unhappy. Treating them as ineligible also clears any flag
+            // raised before they became homegrown via the branch below.
+            $isEligible = !$player->isHomegrown()
+                && $this->hasWageGapAgainst($player, $this->abilityPeerMedian($player, $squad));
             $isFlagged = $player->salary_unhappy_since !== null;
 
             if ($isFlagged && !$isEligible) {
@@ -1087,7 +1112,7 @@ class DispositionService
         if (!$player->team_id || $player->isOnLoan()) {
             return false;
         }
-        if ($player->isAcademyOrigin()) {
+        if ($player->isHomegrown()) {
             return false;
         }
         $playerTier = $player->tier ?? PlayerTierService::tierFromMarketValue($player->market_value_cents);

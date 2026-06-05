@@ -241,20 +241,23 @@ class GamePlayer extends Model
     }
 
     /**
-     * Check if this player joined the user's first team from the youth
-     * academy. Homegrown players carry loyalty effects (e.g. they engage
-     * in renewal talks even when their stature outgrows the club's
-     * reputation). Returns false when no career record exists — that's
-     * the AI-vs-AI case, which has no academy concept.
+     * Check if this player was developed by the club's own pipeline — the
+     * youth academy or a filial/reserve promotion. Homegrown players carry
+     * loyalty effects: they engage in renewal talks even when their stature
+     * outgrows the club's reputation, never get wage-gap unhappy, are less
+     * greedy at renewal, accept a higher release clause for less of a wage
+     * bump, and are more flexible at the negotiating table. Returns false when
+     * no career record exists — that's the AI-vs-AI case, which has no
+     * homegrown concept.
      */
-    public function isAcademyOrigin(): bool
+    public function isHomegrown(): bool
     {
         if ($this->relationLoaded('careerRecord')) {
-            return $this->careerRecord?->joined_from === UserSquadCareerRecord::ORIGIN_ACADEMY;
+            return (bool) $this->careerRecord?->homegrown;
         }
 
         return $this->careerRecord()
-            ->where('joined_from', UserSquadCareerRecord::ORIGIN_ACADEMY)
+            ->where('homegrown', true)
             ->exists();
     }
 

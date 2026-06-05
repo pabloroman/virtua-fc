@@ -158,6 +158,10 @@ class PlayerGeneratorService
                 'team_id' => $data->teamId,
                 'joined_season' => (int) $game->season,
                 'joined_from' => $data->joinedFrom,
+                // Academy graduates (and reserve-squad academy intake) are the
+                // only create() path that passes the Academy sentinel; every
+                // other caller passes a team-name snapshot, so they stay false.
+                'homegrown' => $data->joinedFrom === UserSquadCareerRecord::ORIGIN_ACADEMY,
                 'season_stats' => [],
             ]);
         }

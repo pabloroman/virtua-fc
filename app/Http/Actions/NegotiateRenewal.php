@@ -321,7 +321,10 @@ class NegotiateRenewal
             'clause_floor' => (int) ($floorCents / 100),
             'clause_market_value' => (int) ($marketValueCents / 100),
             'clause_demand' => (int) ($demandWageCents / 100),
-            'clause_premium_slope' => (float) config('finances.release_clause.tolerance.premium_slope', 2.5),
+            // Homegrown players accept a higher clause for a smaller wage bump:
+            // send their steepened slope so the client advisory matches the
+            // server's effectiveDemandWithReleaseClause evaluation.
+            'clause_premium_slope' => $this->contractService->releaseClausePremiumSlope($player->isHomegrown()),
         ];
     }
 
