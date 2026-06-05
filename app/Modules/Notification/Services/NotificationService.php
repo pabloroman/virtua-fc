@@ -318,15 +318,8 @@ class NotificationService
     /**
      * Create a notification when a transfer completes and a player joins or leaves the squad.
      */
-    public function notifyTransferComplete(Game $game, TransferOffer $offer): ?GameNotification
+    public function notifyTransferComplete(Game $game, TransferOffer $offer): GameNotification
     {
-        // A clause-triggered outgoing sale is already announced up front by
-        // notifyPlayerLeftViaReleaseClause at trigger time; skip the generic
-        // completion notice so the user isn't told the same thing twice.
-        if ($offer->triggered_release_clause && $offer->direction === TransferOffer::DIRECTION_OUTGOING) {
-            return null;
-        }
-
         $player = $offer->gamePlayer;
         $isIncoming = $offer->direction === TransferOffer::DIRECTION_INCOMING;
 

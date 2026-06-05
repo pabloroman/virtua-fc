@@ -19,9 +19,10 @@ use Tests\TestCase;
 /**
  * Phase-3 behaviour: an AI club triggers the release clause on one of the user's
  * players. The forced, non-consensual sale is created straight at STATUS_AGREED
- * (outgoing), gates affordability on the clause (not market value), respects the
- * usual skips/exclusivity, and announces itself up front via a CRITICAL
- * notification (which also suppresses the generic completion notice).
+ * (outgoing), gates affordability on the clause (not market value), only fires
+ * for a club that genuinely wants the player (SquadNeedService desire), respects
+ * the usual skips/exclusivity, and announces itself up front via a CRITICAL
+ * notification (the generic completion notice still fires on completion too).
  */
 class ReleaseClausePhase3Test extends TestCase
 {
@@ -103,6 +104,27 @@ class ReleaseClausePhase3Test extends TestCase
         $offers = $this->transferService->generateAIReleaseClauseTriggers(
             $this->game,
             $this->buyerPool(squadValueCents: 40_000_000_000),
+        );
+
+        $this->assertCount(0, $offers);
+    }
+
+    public function test_no_trigger_when_no_club_wants_the_player(): void
+    {
+        $this->userPlayerWithClause(); // Central Midfield, overall 80
+
+        // The only affordable club already has a full, stronger midfield — no
+        // positional need and no quality upgrade — so SquadNeedService desire
+        // falls below the willingness threshold and the clause is left
+        // untriggered even though the club could afford the buyout.
+        GamePlayer::factory()->forGame($this->game)->forTeam($this->buyer)->count(6)->create([
+            'position' => 'Central Midfield',
+            'overall_score' => 85,
+        ]);
+
+        $offers = $this->transferService->generateAIReleaseClauseTriggers(
+            $this->game,
+            $this->buyerPool(squadValueCents: 50_000_000_000),
         );
 
         $this->assertCount(0, $offers);
@@ -192,15 +214,19 @@ class ReleaseClausePhase3Test extends TestCase
             ->where('type', GameNotification::TYPE_PLAYER_LEFT_VIA_RELEASE_CLAUSE)->count());
     }
 
-    public function test_completion_notification_is_suppressed_for_clause_offers(): void
+    public function test_completion_notification_still_fires_for_clause_offers(): void
     {
         $player = $this->userPlayerWithClause();
         $offer = $this->clauseOffer($player);
 
         $result = $this->notificationService->notifyTransferComplete($this->game, $offer);
 
-        $this->assertNull($result, 'The generic completion notice is skipped for a triggered clause.');
-        $this->assertDatabaseMissing('game_notifications', [
+        // A clause loss is announced twice on purpose: the up-front CRITICAL
+        // popup at trigger time, then the generic completion notice when the
+        // agreed sale completes. A double notification is acceptable.
+        $this->assertNotNull($result);
+        $this->assertSame(GameNotification::TYPE_TRANSFER_COMPLETE, $result->type);
+        $this->assertDatabaseHas('game_notifications', [
             'game_id' => $this->game->id,
             'type' => GameNotification::TYPE_TRANSFER_COMPLETE,
         ]);
@@ -226,10 +252,15 @@ class ReleaseClausePhase3Test extends TestCase
 
     private function userPlayerWithClause(array $overrides = []): GamePlayer
     {
+        // overall_score is pinned (the factory default is random 40–90) so the
+        // SquadNeedService desire gate is deterministic: against the buyer's
+        // empty roster this reads as a clear need + upgrade, comfortably clearing
+        // the willingness threshold in the trigger tests.
         return GamePlayer::factory()->forGame($this->game)->forTeam($this->userTeam)->create(array_merge([
             'market_value_cents' => self::MV,
             'release_clause' => self::CLAUSE,
             'tier' => self::PLAYER_TIER,
+            'overall_score' => 80,
         ], $overrides));
     }
 

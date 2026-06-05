@@ -74,6 +74,12 @@ return [
             2 => 0.0015,
             1 => 0.0005,
         ],
+
+        // Minimum SquadNeedService desire (0..1) for an AI club to be willing to
+        // pay the premium clause: it must genuinely need/upgrade with the player,
+        // with affordability headroom factored in. Below this, no club triggers
+        // the clause even if one could afford it. Tune from season simulation.
+        'ai_trigger_min_desire' => 0.55,
     ],
 
     // Commercial revenue per seat per season by reputation level (in cents).

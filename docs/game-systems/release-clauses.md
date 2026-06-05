@@ -199,6 +199,12 @@ so they cannot reuse this pipeline — and are out of scope).
   players (`team_id == game.team_id`, matching the completion filter — reserves out of scope in
   v1); skips loaned-in / on-loan / retiring players and any player with a non-terminal offer
   (exclusivity).
+- **Willingness gate.** Of the affordable clubs, only those that genuinely want the player
+  trigger the clause: `SquadNeedService::desireScore` (positional need + quality upgrade + an
+  affordability-headroom finance signal) must clear
+  `config('finances.release_clause.ai_trigger_min_desire')`. A forced buyout is a premium over
+  market, so a club won't pay it for a player it has no use for; if no affordable club is willing,
+  no clause is triggered for that player.
 - Creates an **OUTGOING offer directly at `STATUS_AGREED`** (skip `PENDING` — it is
   non-consensual), `triggered_release_clause = true`, `selling_team_id = user team`,
   `offer_type = TYPE_UNSOLICITED`. Replicates `acceptOffer` side-effects: rejects the player's
@@ -213,8 +219,9 @@ so they cannot reuse this pipeline — and are out of scope).
   surfaces as the blocking critical-alert popup (see below); dedup keyed on `player_id`;
   `notifications.player_left_via_release_clause_{title,message}` es/en; metadata
   `{clause_amount, buying_team_id, player_id}`. The generic completion notice
-  (`notifyTransferComplete`) returns `null` for triggered-clause outgoing offers to avoid a
-  duplicate. (No `messages.*` flash — this is background AI activity with no user action to flash.)
+  (`notifyTransferComplete`) still fires when the agreed sale completes, so a clause loss is
+  announced twice on purpose — the up-front CRITICAL popup plus the ordinary completion notice.
+  (No `messages.*` flash — this is background AI activity with no user action to flash.)
 
 **Critical-alert popup (shipped alongside Phase 3).** `PRIORITY_CRITICAL` was repurposed as a
 "must-dismiss" tier: the eight pre-existing critical notifications were downgraded to `WARNING`,

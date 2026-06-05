@@ -421,11 +421,22 @@ class TransferService
                 continue;
             }
 
-            // Reuse the trajectory-weighted buyer pick (growing stars draw bigger
-            // clubs). selectWeightedBuyer reads $player->game internally — seed the
-            // relation so it doesn't lazy-load per player.
+            // selectWeightedBuyer reads $player->game internally — seed the relation
+            // so it doesn't lazy-load per player.
             $player->setRelation('game', $game);
-            $buyer = $this->selectWeightedBuyer($buyers, $player, $squadValues);
+
+            // A forced buyout means paying a premium over market, so narrow the
+            // affordability-eligible clubs to those that actually want the player
+            // (positional need + quality upgrade + affordability headroom). If no
+            // club is willing, no clause is triggered for this player.
+            $willingBuyers = $this->filterWillingClauseBuyers($player, $buyers, $squadValues, $clauseCents);
+
+            if ($willingBuyers->isEmpty()) {
+                continue;
+            }
+
+            // Reuse the trajectory-weighted buyer pick (growing stars draw bigger clubs).
+            $buyer = $this->selectWeightedBuyer($willingBuyers, $player, $squadValues);
 
             $offer = DB::transaction(function () use ($game, $player, $buyer, $clauseCents) {
                 // Replicate acceptOffer's sibling-rejection so no stale pending
@@ -458,6 +469,52 @@ class TransferService
         }
 
         return $offers;
+    }
+
+    /**
+     * Of the affordability-eligible buyers, the subset that wants the player
+     * enough to pay the (premium) clause. desireScore blends positional need +
+     * quality upgrade with an affordability-headroom finance signal. Rosters
+     * load in one pass — this only runs after the rare per-tier roll, so it is
+     * bounded, not an N+1 over the (foreign-league-inclusive) buyer pool.
+     *
+     * @param  Collection<int, Team>  $buyers
+     * @param  Collection  $squadValues  team_id => total squad market value
+     * @return Collection<int, Team>
+     */
+    private function filterWillingClauseBuyers(GamePlayer $player, Collection $buyers, Collection $squadValues, int $clauseCents): Collection
+    {
+        $minDesire = (float) config('finances.release_clause.ai_trigger_min_desire', 0.55);
+
+        $rostersByTeam = GamePlayer::where('game_id', $player->game_id)
+            ->whereIn('team_id', $buyers->pluck('id'))
+            ->get(['id', 'team_id', 'position', 'overall_score', 'market_value_cents'])
+            ->groupBy('team_id');
+
+        return $buyers->filter(function (Team $buyer) use ($player, $rostersByTeam, $squadValues, $clauseCents, $minDesire) {
+            $roster = $rostersByTeam->get($buyer->id, collect());
+            $headroom = $this->clauseAffordabilityHeadroom((int) $squadValues->get($buyer->id, 0), $clauseCents);
+
+            return $this->squadNeedService->desireScore($roster, $player, $headroom) >= $minDesire;
+        })->values();
+    }
+
+    /**
+     * 0..1 spare capacity a club has beyond the clause, relative to its maximum
+     * clause-affordable spend (squad value × MAX_FEE_TO_SQUAD_VALUE_RATIO — the
+     * same hard eligibility gate). A club stretched to its limit reads ~0; one
+     * with the clause many times over reads ~1. Feeds desireScore's finance
+     * axis so "willing to pay" reflects affordability comfort, not just the
+     * pass/fail eligibility check.
+     */
+    private function clauseAffordabilityHeadroom(int $squadValueCents, int $clauseCents): float
+    {
+        $capacity = $squadValueCents * self::MAX_FEE_TO_SQUAD_VALUE_RATIO;
+        if ($capacity <= 0) {
+            return 0.0;
+        }
+
+        return max(0.0, min(1.0, ($capacity - $clauseCents) / $capacity));
     }
 
     /**
