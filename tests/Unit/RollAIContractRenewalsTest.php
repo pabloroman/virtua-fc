@@ -225,6 +225,41 @@ class RollAIContractRenewalsTest extends TestCase
         }
     }
 
+    public function test_renewal_recomputes_wage_from_market_value(): void
+    {
+        // A player seeded cheap but worth €50M today must have his wage
+        // re-derived upward when the AI club renews him — not kept frozen.
+        $player = GamePlayer::factory()
+            ->forGame($this->game)
+            ->forTeam($this->aiTeam)
+            ->create([
+                'date_of_birth' => '1998-01-01',
+                'overall_score' => 90,
+                'market_value_cents' => 5_000_000_000, // €50M
+                'annual_wage' => 10_000_000,           // €100K, seeded cheap
+                'contract_until' => self::EXPIRING_CONTRACT,
+            ]);
+
+        // Sole squad member → mid importance (12‰/tick); roll until renewed.
+        for ($i = 0; $i < 3000; $i++) {
+            $this->listener->roll($this->game);
+            if ($player->refresh()->contract_until?->toDateString() === self::RENEWED_CONTRACT) {
+                break;
+            }
+        }
+
+        $this->assertSame(
+            self::RENEWED_CONTRACT,
+            $player->contract_until->toDateString(),
+            'Player should eventually be renewed',
+        );
+        $this->assertGreaterThan(
+            500_000_000, // €5M — far above the €100K seed; €50M @ 15% ≈ €7.5M
+            $player->annual_wage,
+            'Renewal must re-derive the wage from current market value, not keep the frozen seed wage',
+        );
+    }
+
     public function test_handle_invokes_roll(): void
     {
         $this->makeAiSquadOfFiveExpiring();

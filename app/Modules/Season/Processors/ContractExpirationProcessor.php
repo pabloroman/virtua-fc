@@ -26,6 +26,10 @@ use Illuminate\Support\Facades\Log;
  */
 class ContractExpirationProcessor implements SeasonProcessor
 {
+    public function __construct(
+        private readonly ContractService $contractService,
+    ) {}
+
     public function priority(): int
     {
         return 20;
@@ -34,7 +38,7 @@ class ContractExpirationProcessor implements SeasonProcessor
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
         // Clean up any stale renewal negotiations
-        app(ContractService::class)->expireStaleNegotiations($game);
+        $this->contractService->expireStaleNegotiations($game);
 
         // Clean up unsigned free agents from the previous season
         GamePlayer::where('game_id', $game->id)
@@ -47,12 +51,11 @@ class ContractExpirationProcessor implements SeasonProcessor
         $veteranCutoff = PlayerAge::dateOfBirthCutoff(PlayerAge::PRIME_END + 1, $game->current_date);
         $newContractEnd = Carbon::createFromDate($seasonYear + 3, 6, 30);
 
-        // AI non-veterans: auto-renew in a single set-based UPDATE. This is
-        // ~80% of expired contracts — handling them purely in SQL avoids
-        // hydrating hundreds of Eloquent models just to set one column.
-        // Filter mirrors the old PHP branch: not user team, contract expired,
-        // no pending wage, player not yet at the veteran cutoff.
-        $aiAutoRenewedCount = DB::table('game_players')
+        // AI non-veterans: auto-renew (~80% of expired contracts). Select the
+        // rows so the renewal can re-derive each player's wage from his current
+        // market value (renewAiContracts), not just extend contract_until — AI
+        // pay used to stay frozen at the seeded rookie wage for a whole career.
+        $aiNonVeteranRows = DB::table('game_players')
             ->where('game_id', $game->id)
             ->whereNotNull('team_id')
             ->where('team_id', '<>', $game->team_id)
@@ -60,11 +63,12 @@ class ContractExpirationProcessor implements SeasonProcessor
             ->where('contract_until', '<=', $expirationDate)
             ->whereNull('pending_annual_wage')
             ->where('date_of_birth', '>', $veteranCutoff->toDateString())
-            ->update(['contract_until' => $newContractEnd->toDateString()]);
+            ->select('id', 'team_id', 'market_value_cents', 'date_of_birth')
+            ->get();
 
-        // AI veterans: narrow SELECT of just the IDs, then 50% coin flip in
-        // PHP. Typically <30 rows.
-        $aiVeteranIds = DB::table('game_players')
+        // AI veterans: narrow SELECT, then 50% coin flip in PHP. Typically <30
+        // rows. Carries the same columns so the renewed half can be re-priced.
+        $aiVeteranRows = DB::table('game_players')
             ->where('game_id', $game->id)
             ->whereNotNull('team_id')
             ->where('team_id', '<>', $game->team_id)
@@ -72,15 +76,16 @@ class ContractExpirationProcessor implements SeasonProcessor
             ->where('contract_until', '<=', $expirationDate)
             ->whereNull('pending_annual_wage')
             ->where('date_of_birth', '<=', $veteranCutoff->toDateString())
-            ->pluck('id');
+            ->select('id', 'team_id', 'market_value_cents', 'date_of_birth')
+            ->get();
 
         $veteranFreeAgentIds = [];
-        $veteranAutoRenewedIds = [];
-        foreach ($aiVeteranIds as $id) {
+        $veteranAutoRenewedRows = [];
+        foreach ($aiVeteranRows as $row) {
             if (mt_rand(1, 100) <= 50) {
-                $veteranFreeAgentIds[] = $id;
+                $veteranFreeAgentIds[] = $row->id;
             } else {
-                $veteranAutoRenewedIds[] = $id;
+                $veteranAutoRenewedRows[] = $row;
             }
         }
 
@@ -119,12 +124,18 @@ class ContractExpirationProcessor implements SeasonProcessor
             // where the feature is off, since the column is already null).
             GamePlayer::whereIn('id', $freeAgentIds)->update(['team_id' => null, 'number' => null, 'release_clause' => null]);
         }
-        if (!empty($veteranAutoRenewedIds)) {
-            GamePlayer::whereIn('id', $veteranAutoRenewedIds)->update(['contract_until' => $newContractEnd]);
-        }
+
+        // Auto-renew all AI keepers (non-veterans + the renewed half of the
+        // veteran coin flip), re-deriving each wage from current market value.
+        $aiRenewedRows = $aiNonVeteranRows->concat($veteranAutoRenewedRows);
+        $this->contractService->renewAiContracts(
+            $aiRenewedRows,
+            $newContractEnd->toDateString(),
+            $game->current_date->toDateString(),
+        );
 
         Log::info('[ContractExpiration] Free agents created: ' . count($freeAgentIds)
-            . ', auto-renewed: ' . ($aiAutoRenewedCount + count($veteranAutoRenewedIds)));
+            . ', auto-renewed: ' . $aiRenewedRows->count());
 
         return $data;
     }

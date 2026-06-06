@@ -581,6 +581,99 @@ class ContractService
     }
 
     /**
+     * Re-derive annual_wage from current market value and extend the contract
+     * for a batch of AI players being renewed.
+     *
+     * AI wages are seeded once from real market value and were then frozen —
+     * renewals only extended contract_until, so a rival's developing star kept
+     * his cheap rookie wage forever. Here the wage is re-derived from the
+     * player's *current* market value via the same calculateAnnualWage() used to
+     * seed wages, so AI pay tracks the market economy. Wages move both ways (a
+     * developed player earns more, a declining one less); the only downstream
+     * consumer is AITeamBudgetCalculator::financialPressure(), which keeps AI
+     * transfer budgets balanced as wage bills shift.
+     *
+     * @param  Collection<int, object>  $rows  each with id, team_id, market_value_cents, date_of_birth
+     */
+    public function renewAiContracts(Collection $rows, string $newContractEnd, string $referenceDate): void
+    {
+        if ($rows->isEmpty()) {
+            return;
+        }
+
+        // Resolve each distinct team's minimum wage once (the method caches, but
+        // it needs a hydrated Team with its clubProfile to read reputation).
+        // Key by string so lookups match regardless of whether the raw rows
+        // expose team_id as int or string.
+        $teamMinimums = Team::with('clubProfile')
+            ->whereIn('id', $rows->pluck('team_id')->unique()->filter()->all())
+            ->get()
+            ->mapWithKeys(fn (Team $team) => [(string) $team->id => $this->getMinimumWageForTeam($team)]);
+
+        $reference = Carbon::parse($referenceDate);
+
+        $updates = [];
+        foreach ($rows as $row) {
+            $marketValue = (int) $row->market_value_cents;
+            if ($marketValue <= 0 || $row->date_of_birth === null) {
+                // No reliable basis to re-derive a wage — extend the contract
+                // only, leaving the existing wage untouched.
+                $updates[] = ['id' => $row->id, 'wage' => null];
+                continue;
+            }
+
+            // diff()->y is absolute full years (int), avoiding Carbon 3's
+            // signed-float diffInYears().
+            $age = $reference->diff(Carbon::parse($row->date_of_birth))->y;
+            $minimumWage = $teamMinimums[(string) $row->team_id] ?? $this->getDefaultMinimumWage();
+
+            $updates[] = [
+                'id' => $row->id,
+                'wage' => $this->calculateAnnualWage($marketValue, $minimumWage, $age),
+            ];
+        }
+
+        foreach (array_chunk($updates, 500) as $chunk) {
+            $this->applyAiRenewalChunk($chunk, $newContractEnd);
+        }
+    }
+
+    /**
+     * Write one chunk of AI renewals: extend contract_until for every row, and
+     * set annual_wage where a new wage was computed (rows with a null wage keep
+     * their existing wage). Mirrors PlayerDevelopmentProcessor's UPDATE…FROM
+     * (VALUES …) pattern so each statement stays a plan-trivial PK lookup.
+     *
+     * @param  array<int, array{id:string, wage:int|null}>  $chunk
+     */
+    private function applyAiRenewalChunk(array $chunk, string $newContractEnd): void
+    {
+        if ($chunk === []) {
+            return;
+        }
+
+        $valueRows = [];
+        $valueBindings = [];
+        foreach ($chunk as $row) {
+            $valueRows[] = '(?::uuid, ?::bigint)';
+            $valueBindings[] = $row['id'];
+            $valueBindings[] = $row['wage'];
+        }
+        $values = implode(', ', $valueRows);
+
+        // COALESCE keeps the current annual_wage when v.wage is NULL. The
+        // contract_until placeholder binds first (it precedes the VALUES list
+        // in the statement text).
+        DB::update(<<<SQL
+            UPDATE game_players AS gp
+            SET annual_wage    = COALESCE(v.wage, gp.annual_wage),
+                contract_until = ?
+            FROM (VALUES {$values}) AS v(id, wage)
+            WHERE gp.id = v.id
+        SQL, [$newContractEnd, ...$valueBindings]);
+    }
+
+    /**
      * Get players eligible for contract renewal.
      *
      * @param Game $game

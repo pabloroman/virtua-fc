@@ -7,6 +7,7 @@ use App\Models\Loan;
 use App\Models\TransferOffer;
 use App\Modules\Match\Events\GameDateAdvanced;
 use App\Modules\Player\PlayerAge;
+use App\Modules\Transfer\Services\ContractService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -48,6 +49,10 @@ class RollAIContractRenewals
 
     private const TOP_IMPORTANCE_THRESHOLD = 0.70;
     private const MID_IMPORTANCE_THRESHOLD = 0.40;
+
+    public function __construct(
+        private readonly ContractService $contractService,
+    ) {}
 
     public function handle(GameDateAdvanced $event): void
     {
@@ -101,6 +106,7 @@ class RollAIContractRenewals
                 'game_players.overall_score',
                 'game_players.contract_until',
                 'game_players.date_of_birth',
+                'game_players.market_value_cents',
                 'game_players.pending_annual_wage',
                 DB::raw('CASE WHEN loans.id IS NULL THEN 0 ELSE 1 END AS on_loan'),
             )
@@ -149,9 +155,15 @@ class RollAIContractRenewals
         }
 
         if (!empty($renewIds)) {
-            DB::table('game_players')
-                ->whereIn('id', $renewIds)
-                ->update(['contract_until' => $newContractEnd->toDateString()]);
+            // Extend the contract AND re-derive the wage from current market
+            // value — without this AI pay stays frozen at the seeded rookie wage
+            // for the player's whole career while the user's wages track ability.
+            $renewSet = collect($renewIds)->flip();
+            $this->contractService->renewAiContracts(
+                $rows->filter(fn ($row) => $renewSet->has($row->id))->values(),
+                $newContractEnd->toDateString(),
+                $game->current_date->toDateString(),
+            );
         }
 
         return ['considered' => $considered, 'renewed' => count($renewIds)];
