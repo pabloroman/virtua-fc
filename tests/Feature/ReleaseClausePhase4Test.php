@@ -2,11 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\RenewalNegotiation;
 use App\Models\Team;
+use App\Models\TeamReputation;
 use App\Models\User;
 use App\Modules\Transfer\Services\ContractService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -215,6 +217,10 @@ class ReleaseClausePhase4Test extends TestCase
     public function test_start_endpoint_exposes_clause_config_for_an_es_club(): void
     {
         [$game, $team, $user] = $this->makeGame(country: 'ES', enabled: true, withUser: true);
+        // A €50M (tier-5, world-class) player only engages in renewal talks at a
+        // club whose stature matches his — otherwise hasStatureGap() makes him
+        // refuse and the start endpoint never reaches the clause payload.
+        $this->giveTeamReputation($game, $team, ClubProfile::REPUTATION_CONTINENTAL);
         $player = $this->expiringPlayer($game, $team);
 
         $this->actingAs($user)
@@ -259,6 +265,17 @@ class ReleaseClausePhase4Test extends TestCase
         ]);
 
         return [$game, $team, $user];
+    }
+
+    private function giveTeamReputation(Game $game, Team $team, string $reputationLevel): void
+    {
+        TeamReputation::create([
+            'game_id' => $game->id,
+            'team_id' => $team->id,
+            'reputation_level' => $reputationLevel,
+            'base_reputation_level' => $reputationLevel,
+            'reputation_points' => TeamReputation::pointsForTier($reputationLevel),
+        ]);
     }
 
     private function squadPlayer(Game $game, Team $team): GamePlayer

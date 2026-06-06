@@ -430,7 +430,7 @@ class AITransferMarketService
                 // contract expiry): ES floor / null elsewhere, mirroring
                 // completeFreeAgentSigning.
                 'release_clause' => $game->release_clauses_enabled
-                    ? $this->contractService->calculateReleaseClause($freeAgent->market_value_cents, null, null, $teams->get($teamId)?->country ?? $game->country)
+                    ? $this->contractService->calculateReleaseClause($freeAgent->market_value_cents, $teams->get($teamId)?->country ?? $game->country)
                     : null,
             ];
 
@@ -1146,7 +1146,7 @@ class AITransferMarketService
             // user-facing completion paths. AI-to-AI moves bypass
             // TransferCompletionService, so the recompute has to live here too.
             'release_clause' => $game->release_clauses_enabled
-                ? $this->contractService->calculateReleaseClause($player->market_value_cents, null, null, $toCountry)
+                ? $this->contractService->calculateReleaseClause($player->market_value_cents, $toCountry)
                 : null,
         ];
 
@@ -1332,7 +1332,7 @@ class AITransferMarketService
             // world, so the buying club's country is the game country: ES floor
             // / null elsewhere, mirroring completeFreeAgentSigning.
             'release_clause' => $game->release_clauses_enabled
-                ? $this->contractService->calculateReleaseClause($bestAgent->market_value_cents, null, null, $game->country)
+                ? $this->contractService->calculateReleaseClause($bestAgent->market_value_cents, $game->country)
                 : null,
         ];
 

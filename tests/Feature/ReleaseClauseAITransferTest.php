@@ -74,7 +74,7 @@ class ReleaseClauseAITransferTest extends TestCase
 
         $this->runAiTransfer($player, $spanishBuyer, 'ES');
 
-        $expected = $this->contractService->calculateReleaseClause(self::MV, null, null, 'ES');
+        $expected = $this->contractService->calculateReleaseClause(self::MV, 'ES');
 
         $player->refresh();
         $this->assertSame($spanishBuyer->id, $player->team_id);

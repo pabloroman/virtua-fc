@@ -642,11 +642,17 @@ class ContractService
         // is possible outside mandatory-clause countries. When the clause was
         // untouched ($requestedClauseCents === null) the result is exactly the
         // floor, preserving prior behaviour.
+        //
+        // The request is dropped outright for non-mandatory countries: the renewal
+        // chat already gates it via resolveRequestedClauseCents, but this keeps the
+        // "non-ES never carries a clause" guarantee even when processRenewal is
+        // called directly (calculateReleaseClause itself permits non-ES opt-in).
         if ($game->release_clauses_enabled) {
+            $clauseRequest = $this->isReleaseClauseMandatory($game->country) ? $requestedClauseCents : null;
             $updates['release_clause'] = $this->calculateReleaseClause(
                 $player->market_value_cents,
                 $game->country,
-                $requestedClauseCents,
+                $clauseRequest,
             );
         }
 
