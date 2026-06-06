@@ -21,6 +21,7 @@ class GamePlayerTemplate extends Model
         'height',
         'foot',
         'team_id',
+        'loan_from_transfermarkt_id',
         'number',
         'position',
         'market_value',

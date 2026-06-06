@@ -496,6 +496,12 @@ class GamePlayerTemplateService
             'height' => $playerData['height'] ?? null,
             'foot' => $foot,
             'team_id' => $teamId,
+            // Owning club's Transfermarkt id when the player is on loan. He is
+            // listed in the borrowing club's squad (= $teamId), so this points
+            // at loan.from; SetupNewGame materialises it into a loan record.
+            'loan_from_transfermarkt_id' => isset($playerData['loan']['from']['id'])
+                ? (string) $playerData['loan']['from']['id']
+                : null,
             'number' => isset($playerData['number']) ? (int) $playerData['number'] : null,
             'position' => $position ?? 'Unknown',
             'secondary_positions' => json_encode($secondaryPositions),

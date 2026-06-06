@@ -17,6 +17,7 @@ use App\Models\CompetitionTeam;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\GameTactics;
+use App\Models\Loan;
 use App\Models\Team;
 use App\Models\TeamReputation;
 use App\Models\UserSquadCareerRecord;
@@ -103,6 +104,7 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
         // Step 2: Initialize game players from templates (required)
         $this->initializeGamePlayersFromTemplates();
         $this->initializeUserSquadCareerRecords($game);
+        $this->initializeLoansFromTemplates($game);
         $this->markStep(2);
 
         // Step 3: Pick a default formation that fits the user's squad. Runs
@@ -412,6 +414,86 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
               AND gp.team_id IN ($placeholders)
             ON CONFLICT (game_player_id) DO NOTHING
         SQL, [(int) $this->season, $this->gameId, ...$userTeamIds]);
+    }
+
+    /**
+     * Materialise per-game loan records for players the source data marks as
+     * on loan. A loaned player is listed in the BORROWING club's squad (so his
+     * game_player team_id is that club), while the template carries the OWNING
+     * club's Transfermarkt id (loan.from). We create a season-long loan that
+     * LoanReturnProcessor closes at season end: the player returns to the
+     * owning club if it fields a squad in this game, otherwise the loan has no
+     * parent and returnLoan() frees him (team_id = null → free agent).
+     */
+    private function initializeLoansFromTemplates(Game $game): void
+    {
+        // Idempotency: setup is a re-entrant unique job, so skip if loans for
+        // this game already exist.
+        if (Loan::where('game_id', $this->gameId)->exists()) {
+            return;
+        }
+
+        $loanedTemplates = DB::table('game_player_templates')
+            ->where('season', $this->season)
+            ->whereNotNull('loan_from_transfermarkt_id')
+            ->get(['player_id', 'team_id', 'loan_from_transfermarkt_id']);
+
+        if ($loanedTemplates->isEmpty()) {
+            return;
+        }
+
+        // Transfermarkt id → team uuid, so loan.from resolves to an owner.
+        $teamIdByTransfermarktId = Team::whereNotNull('transfermarkt_id')
+            ->pluck('id', 'transfermarkt_id')
+            ->toArray();
+
+        // Teams that actually field a squad in this game. An owner outside this
+        // set (foreign/unknown club, or one excluded from the game) yields a
+        // null parent → the player becomes a free agent when the loan ends.
+        $participatingTeamIds = DB::table('game_players')
+            ->where('game_id', $this->gameId)
+            ->distinct()
+            ->pluck('team_id')
+            ->flip()
+            ->toArray();
+
+        // game_player id keyed by "player_id|team_id" for this game. The loaned
+        // player is listed once (at the borrowing club), so the pair is unique.
+        $gamePlayersByKey = DB::table('game_players')
+            ->where('game_id', $this->gameId)
+            ->whereIn('player_id', $loanedTemplates->pluck('player_id'))
+            ->get(['id', 'player_id', 'team_id'])
+            ->keyBy(fn ($row) => $row->player_id . '|' . $row->team_id);
+
+        $startedAt = $this->currentDate->toDateString();
+        $returnAt = $game->getSeasonEndDateFor($this->currentDate)->toDateString();
+
+        $rows = [];
+        foreach ($loanedTemplates as $template) {
+            $gamePlayer = $gamePlayersByKey->get($template->player_id . '|' . $template->team_id);
+            if (! $gamePlayer) {
+                // Borrowing club isn't materialised in this game — nothing to loan.
+                continue;
+            }
+
+            $ownerTeamId = $teamIdByTransfermarktId[$template->loan_from_transfermarkt_id] ?? null;
+            $ownerInGame = $ownerTeamId !== null && isset($participatingTeamIds[$ownerTeamId]);
+
+            $rows[] = [
+                'id' => Str::uuid()->toString(),
+                'game_id' => $this->gameId,
+                'game_player_id' => $gamePlayer->id,
+                'parent_team_id' => $ownerInGame ? $ownerTeamId : null,
+                'loan_team_id' => $template->team_id,
+                'started_at' => $startedAt,
+                'return_at' => $returnAt,
+                'status' => Loan::STATUS_ACTIVE,
+            ];
+        }
+
+        foreach (array_chunk($rows, 500) as $chunk) {
+            DB::table('loans')->insert($chunk);
+        }
     }
 
     /**
