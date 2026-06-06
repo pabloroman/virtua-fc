@@ -11,13 +11,13 @@ class RefreshPlayerTemplates extends Command
 {
     protected $signature = 'app:refresh-player-templates
                             {--country= : Refresh only a specific country (e.g., ES)}
-                            {--season=2025 : Season to refresh}';
+                            {--season= : Season to refresh (defaults to config season.current)}';
 
     protected $description = 'Regenerate game player templates from JSON data (safe for production)';
 
     public function handle(GamePlayerTemplateService $templateService, CountryConfig $countryConfig): int
     {
-        $season = $this->option('season');
+        $season = $this->option('season') ?: config('season.current');
         $countryFilter = $this->option('country');
 
         $countryCodes = $countryConfig->playableCountryCodes();

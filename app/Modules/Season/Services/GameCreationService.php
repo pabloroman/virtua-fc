@@ -37,7 +37,7 @@ class GameCreationService
             $countryConfig = app(CountryConfig::class);
             $competitionId = $countryConfig->competitionForTier($team->country ?? 'ES', 1);
         }
-        $season = $competitionTeam->season ?? '2025';
+        $season = $competitionTeam->season ?? config('season.current');
 
         // Resolve reserve team (filial) for managers of parent clubs.
         // The user's club becomes filial if it has a reserve team and isn't itself one.

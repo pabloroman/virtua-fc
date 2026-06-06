@@ -198,7 +198,11 @@ class CalendarService
      */
     public function getKnockoutPlaceholders(Game $game, string $competitionId): Collection
     {
-        $schedulePath = base_path("data/2025/{$competitionId}/schedule.json");
+        // Knockout placeholders are read from the seeded base-season folder
+        // (config('season.current')), not $game->season — the latter advances
+        // past the on-disk data folder as a career progresses through seasons.
+        $baseSeason = config('season.current');
+        $schedulePath = base_path("data/{$baseSeason}/{$competitionId}/schedule.json");
 
         if (!file_exists($schedulePath)) {
             return collect();

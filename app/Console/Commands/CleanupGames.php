@@ -12,7 +12,7 @@ class CleanupGames extends Command
                             {--dry-run : Preview what would be deleted without actually deleting}
                             {--days=2 : Number of days of inactivity after which a game is considered stale}
                             {--all : Include all inactive games, not just unstarted ones}
-                            {--stuck : Target stuck games (pending finalization or needing season setup in 2025)}';
+                            {--stuck : Target stuck games (pending finalization or needing setup in the base season)}';
 
     protected $description = 'Delete stale games based on inactivity. By default only unstarted games (setup not completed); use --all to include any inactive game, or --stuck to target stuck games.';
 
@@ -28,7 +28,7 @@ class CleanupGames extends Command
                 ->where(function ($q) {
                     $q->whereNotNull('pending_finalization_match_id')
                         ->orWhere(function ($q2) {
-                            $q2->where('season', 2025)
+                            $q2->where('season', config('season.current'))
                                 ->where('needs_new_season_setup', true);
                         });
                 })->with('team')->get();

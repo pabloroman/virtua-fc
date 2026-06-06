@@ -38,7 +38,7 @@ class CupDrawService
         }
 
         $competition = Competition::find($competitionId);
-        $season = $competition->season ?? '2025';
+        $season = $competition->season ?? config('season.current');
 
         // For domestic cups, lower-category teams get home advantage
         $applyHomeAdvantageRule = $competition->scope === Competition::SCOPE_DOMESTIC

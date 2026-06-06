@@ -18,9 +18,9 @@ use Illuminate\Support\Facades\Log;
  * Finalists are the previous season's Champions League and Europa
  * League winners, captured by SeasonArchiveProcessor during the closing
  * pipeline as META_UCL_WINNER / META_UEL_WINNER. On the initial season
- * there's no prior metadata; the entries copied from data/2025/UEFASUP/
- * teams.json by SetupNewGame::copyCompetitionTeamsToGame are the
- * finalists (PSG and Tottenham, the real 2024/25 winners), so this
+ * there's no prior metadata; the entries copied from the base season's
+ * data/{season}/UEFASUP/teams.json by SetupNewGame::copyCompetitionTeamsToGame
+ * are the finalists (the real prior-season winners), so this
  * processor is a no-op in that case — same seed-data-first pattern used
  * by every other cup.
  *

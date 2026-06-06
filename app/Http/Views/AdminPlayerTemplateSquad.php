@@ -14,7 +14,7 @@ class AdminPlayerTemplateSquad
     {
         $team = Team::findOrFail($teamId);
         $seasons = $service->availableSeasons();
-        $selectedSeason = $request->query('season', $seasons[0] ?? '2025');
+        $selectedSeason = $request->query('season', $seasons[0] ?? config('season.current'));
 
         $grouped = $service->squadForTeam($teamId, $selectedSeason);
         $positions = PlayerTemplateAdminService::allPositions();

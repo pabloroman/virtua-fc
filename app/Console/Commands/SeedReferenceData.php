@@ -22,13 +22,17 @@ class SeedReferenceData extends Command
                             {--fresh : Clear existing data before seeding}
                             {--country= : Seed only a specific country (e.g., ES)}';
 
-    protected $description = 'Seed teams, competitions, fixtures, and players from 2025 season JSON data files';
+    protected $description = 'Seed teams, competitions, fixtures, and players from the current season JSON data files';
 
     /** @var array<string, true> Track competitions already seeded to avoid redundant work */
     private array $seededCompetitions = [];
 
+    /** Base season being seeded (e.g. '2026'); governs the data/{season}/ folder. */
+    private string $season;
+
     public function handle(): int
     {
+        $this->season = config('season.current');
         $countryFilter = $this->option('country');
 
         if ($this->option('fresh')) {
@@ -79,7 +83,7 @@ class SeedReferenceData extends Command
 
         // Generate pre-computed game player templates
         try {
-            $args = ['--season' => '2025'];
+            $args = ['--season' => $this->season];
             if ($countryFilter) {
                 $args['--country'] = $countryFilter;
             }
@@ -129,7 +133,7 @@ class SeedReferenceData extends Command
         foreach ($tierSeedList as [$tier, $tierEntry]) {
             $this->seedCompetition([
                 'code' => $tierEntry['competition'],
-                'path' => "data/2025/{$tierEntry['competition']}",
+                'path' => "data/{$this->season}/{$tierEntry['competition']}",
                 'tier' => $tier,
                 'handler' => $tierEntry['handler'] ?? 'league',
                 'country' => $countryCode,
@@ -177,7 +181,7 @@ class SeedReferenceData extends Command
             $cupConfig = $config['domestic_cups'][$cupId];
             $this->seedCompetition([
                 'code' => $cupId,
-                'path' => "data/2025/{$cupId}",
+                'path' => "data/{$this->season}/{$cupId}",
                 'tier' => 0,
                 'handler' => $cupConfig['handler'] ?? 'knockout_cup',
                 'country' => $countryCode,
@@ -196,7 +200,7 @@ class SeedReferenceData extends Command
             $poolFlag = $countryConfig->flag($poolCountry);
             $this->seedCompetition([
                 'code' => $code,
-                'path' => "data/2025/{$code}",
+                'path' => "data/{$this->season}/{$code}",
                 'tier' => 1,
                 'handler' => $poolConfig['handler'] ?? 'league',
                 'country' => $poolCountry,
@@ -214,7 +218,7 @@ class SeedReferenceData extends Command
             $contFlag = $countryConfig->flag($contCountry);
             $this->seedCompetition([
                 'code' => $code,
-                'path' => "data/2025/{$code}",
+                'path' => "data/{$this->season}/{$code}",
                 'tier' => 0,
                 'handler' => $continentalConfig['handler'] ?? 'swiss_format',
                 'country' => $contCountry,
@@ -236,7 +240,7 @@ class SeedReferenceData extends Command
                 'role' => 'preseason',
                 'scope' => 'domestic',
                 'handler_type' => 'preseason',
-                'season' => '2025',
+                'season' => $this->season,
             ]
         );
     }
@@ -300,7 +304,7 @@ class SeedReferenceData extends Command
                 [$tier, $entry] = $tierLookup[$code];
                 $this->seedCompetition([
                     'code'    => $code,
-                    'path'    => "data/2025/{$code}",
+                    'path'    => "data/{$this->season}/{$code}",
                     'tier'    => $tier,
                     'handler' => $entry['handler'] ?? 'league',
                     'country' => $countryCode,
@@ -429,7 +433,7 @@ class SeedReferenceData extends Command
         $teamsData = $this->loadJson("{$basePath}/teams.json");
 
         // Handle foreign leagues with simpler JSON structure
-        $seasonId = $teamsData['seasonID'] ?? '2025';
+        $seasonId = $teamsData['seasonID'] ?? $this->season;
         $leagueName = $teamsData['name'] ?? $configName ?? $code;
 
         // Normalize teams data for seedCompetitionRecord
@@ -449,7 +453,7 @@ class SeedReferenceData extends Command
     {
         $teamsData = $this->loadJson("{$basePath}/teams.json");
 
-        $season = '2025';
+        $season = $this->season;
 
         // Seed competition record
         $this->seedCompetitionRecord($code, $teamsData, $tier, 'cup', $handler, $country, $flag, $role);
@@ -462,7 +466,7 @@ class SeedReferenceData extends Command
     {
         $teamsData = $this->loadJson("{$basePath}/teams.json");
 
-        $season = $teamsData['seasonID'] ?? '2025';
+        $season = $teamsData['seasonID'] ?? $this->season;
 
         // Swiss format uses 'league' type so standings are updated during league phase
         $this->seedCompetitionRecord($code, $teamsData, $tier, 'league', $handler, $country, $flag, $role);
@@ -482,7 +486,7 @@ class SeedReferenceData extends Command
      */
     private function seedTeamPoolCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $flag, string $role, ?string $configName = null): void
     {
-        $season = '2025';
+        $season = $this->season;
 
         $this->seedCompetitionRecord($code, ['name' => $configName ?? $code, 'seasonID' => $season], $tier, 'league', $handler, $country, $flag, $role);
 
@@ -627,7 +631,7 @@ class SeedReferenceData extends Command
                 'role' => 'domestic_cup',
                 'scope' => 'domestic',
                 'handler_type' => $handler,
-                'season' => '2025',
+                'season' => $this->season,
             ]
         );
 
@@ -636,7 +640,7 @@ class SeedReferenceData extends Command
 
     private function seedCompetitionRecord(string $code, array $data, int $tier, string $type, string $handler, string $country, string $flag, string $role = 'league'): void
     {
-        $season = $data['seasonID'] ?? '2025';
+        $season = $data['seasonID'] ?? $this->season;
         $scope = ($role === 'european') ? 'continental' : 'domestic';
 
         DB::table('competitions')->updateOrInsert(
