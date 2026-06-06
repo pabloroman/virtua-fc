@@ -295,8 +295,26 @@ class ContractService
         // that youth premium so the base wage tracks who the player is today.
         $abilityValue = $this->valuationService->wageBaseValue($player->overall_score, $age, $player->position);
 
+        // Cap the anchor at the player's *real* market value. The ability-derived
+        // value comes from generous anchors (overall 88 ≈ €80M) that sit well above
+        // the real market values rival clubs' wages are priced from — without this
+        // cap an established star renews at double/triple his current wage and far
+        // above what equivalent players earn elsewhere. Taking the lesser of the two
+        // keeps the wonderkid protection above (whose market value is the *higher*,
+        // potential-inflated figure, so the stripped ability value still wins) while
+        // pulling established players back in line with the market economy.
+        //
+        // Veterans (age > PRIME_END) are exempt: wageBaseValue() already preserves
+        // their age decline, and the veteran wage modifier in calculateAnnualWage()
+        // (AGE_WAGE_MODIFIERS['veteran'] = 5.0) is calibrated against that depressed
+        // ability value — capping by market value too would double-count the decline.
+        $anchorValue = $abilityValue;
+        if ($age <= PlayerAge::PRIME_END && $player->market_value_cents > 0) {
+            $anchorValue = min($abilityValue, $player->market_value_cents);
+        }
+
         $baseWage = $this->calculateAnnualWage(
-            $abilityValue,
+            $anchorValue,
             $minimumWage,
             $age,
             deterministic: true,
