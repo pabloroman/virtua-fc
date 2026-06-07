@@ -184,8 +184,8 @@ class NamingRightsServiceTest extends TestCase
         $game->update(['current_date' => '2026-07-01']);
         $this->seedLoyalty($game, base: 60, current: 60); // tier 'established'
         $this->seedInvestment($game, transferBudget: 5_000_000_00);
-        config()->set('finances.naming_rights.max_pending_offers', 3);
-        config()->set('finances.naming_rights.search_fee.established', 80_000_00);
+        config()->set('commercial.naming_rights.max_pending_offers', 3);
+        config()->set('commercial.naming_rights.search_fee.established', 80_000_00);
 
         $minted = $this->service->seekSponsors($game);
 
@@ -235,7 +235,7 @@ class NamingRightsServiceTest extends TestCase
         $game->update(['current_date' => '2026-07-05']);
         $this->seedLoyalty($game, base: 60, current: 60);
         $this->seedInvestment($game, transferBudget: 5_000_000_00);
-        config()->set('finances.naming_rights.search_cooldown_days', 14);
+        config()->set('commercial.naming_rights.search_cooldown_days', 14);
 
         // Sought 5 days ago → still inside the 14-day cooldown.
         $this->seedStadium($game)->update(['naming_rights_last_sought_date' => '2026-06-30']);
@@ -251,7 +251,7 @@ class NamingRightsServiceTest extends TestCase
         $game = $this->preSeasonGame();
         $this->seedLoyalty($game, base: 60, current: 60);
         $this->seedInvestment($game, transferBudget: 10_00); // only €10 of budget
-        config()->set('finances.naming_rights.search_fee.established', 80_000_00);
+        config()->set('commercial.naming_rights.search_fee.established', 80_000_00);
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('messages.naming_rights_search_unaffordable');
@@ -294,7 +294,7 @@ class NamingRightsServiceTest extends TestCase
     {
         $game = $this->preSeasonGame();
         $this->seedLoyalty($game, base: 60, current: 60);
-        config()->set('finances.naming_rights.max_pending_offers', 3);
+        config()->set('commercial.naming_rights.max_pending_offers', 3);
 
         // Force as many as possible; the cap and sponsor-dedupe bound it.
         for ($i = 0; $i < 10; $i++) {

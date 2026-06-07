@@ -141,7 +141,7 @@ class NamingRightsService
             throw new InvalidArgumentException('messages.naming_rights_deal_active');
         }
 
-        $cap = (int) config('finances.naming_rights.max_pending_offers', 3);
+        $cap = (int) config('commercial.naming_rights.max_pending_offers', 3);
         $pending = $this->pendingOfferCount($game);
         if ($pending >= $cap) {
             throw new InvalidArgumentException('messages.naming_rights_board_full');
@@ -193,7 +193,7 @@ class NamingRightsService
             return false;
         }
 
-        $cap = (int) config('finances.naming_rights.max_pending_offers', 3);
+        $cap = (int) config('commercial.naming_rights.max_pending_offers', 3);
         if ($this->pendingOfferCount($game) >= $cap) {
             return false;
         }
@@ -207,7 +207,7 @@ class NamingRightsService
     public function searchFee(Game $game, ?string $tier = null): int
     {
         $tier ??= TeamReputation::resolveLevel($game->id, $game->team_id);
-        $fees = (array) config('finances.naming_rights.search_fee', []);
+        $fees = (array) config('commercial.naming_rights.search_fee', []);
 
         return (int) ($fees[$tier] ?? ($fees['local'] ?? 0));
     }
@@ -223,7 +223,7 @@ class NamingRightsService
             return 0;
         }
 
-        $cooldown = (int) config('finances.naming_rights.search_cooldown_days', 14);
+        $cooldown = (int) config('commercial.naming_rights.search_cooldown_days', 14);
         $nextAllowed = $last->copy()->addDays($cooldown);
 
         // Date-cast values sit at midnight, so a timestamp delta gives whole
@@ -264,7 +264,7 @@ class NamingRightsService
             return false;
         }
 
-        $cap = (int) config('finances.naming_rights.max_pending_offers', 3);
+        $cap = (int) config('commercial.naming_rights.max_pending_offers', 3);
 
         return $this->pendingOfferCount($game) < $cap;
     }
@@ -291,17 +291,17 @@ class NamingRightsService
     {
         $season = (int) $game->season;
 
-        $sponsor = $this->pickAvailableSponsor($game, $season);
+        $sponsor = $this->pickAvailableSponsor($game, $season, $tier);
         if ($sponsor === null) {
             return null;
         }
 
-        $valueRange = config("finances.naming_rights.annual_value.{$tier}")
-            ?? config('finances.naming_rights.annual_value.local', [50_000_00, 200_000_00]);
+        $valueRange = config("commercial.naming_rights.annual_value.{$tier}")
+            ?? config('commercial.naming_rights.annual_value.local', [50_000_00, 200_000_00]);
         [$minValue, $maxValue] = $valueRange;
 
-        $minSeasons = (int) config('finances.naming_rights.min_contract_seasons', 1);
-        $maxSeasons = (int) config('finances.naming_rights.max_contract_seasons', 5);
+        $minSeasons = (int) config('commercial.naming_rights.min_contract_seasons', 1);
+        $maxSeasons = (int) config('commercial.naming_rights.max_contract_seasons', 5);
 
         return GameStadiumNamingDeal::create([
             'game_id' => $game->id,
@@ -316,18 +316,38 @@ class NamingRightsService
     }
 
     /**
-     * Pick a sponsor brand not already pending this pre-season, so competing
-     * offers never duplicate the same name. Null when every configured
-     * sponsor is already on the table.
+     * Pick a sponsor brand eligible for this club that isn't already pending
+     * this pre-season, so competing offers never duplicate the same name. Two
+     * gates narrow the pool:
+     *   1. `reach` must bid for the club's tier (a regional brewer won't chase
+     *      a superclub; a global giant won't bother with a third-tier ground).
+     *      An unmapped tier skips this gate so the board never silently starves.
+     *   2. a non-global brand only operates in its home market, so it can only
+     *      name a ground in its own country; global brands name grounds anywhere
+     *      (Emirates, Coca-Cola) and carry no `country`.
+     * Null when no eligible brand is left.
      *
-     * @return array{name: string, stadium: string}|null
+     * @return array{name: string, reach: string, country?: string, stadium: string}|null
      */
-    private function pickAvailableSponsor(Game $game, int $season): ?array
+    private function pickAvailableSponsor(Game $game, int $season, string $tier): ?array
     {
-        $sponsors = config('finances.naming_rights.sponsors', []);
+        $sponsors = config('commercial.naming_rights.sponsors', []);
         if (empty($sponsors)) {
             return null;
         }
+
+        $eligibleReaches = (array) config("commercial.naming_rights.sponsor_reach_by_tier.{$tier}", []);
+        $country = $game->country;
+        $sponsors = array_filter($sponsors, function (array $sponsor) use ($eligibleReaches, $country) {
+            $reach = $sponsor['reach'] ?? null;
+
+            if (! empty($eligibleReaches) && ! in_array($reach, $eligibleReaches, true)) {
+                return false;
+            }
+
+            // Global brands are country-agnostic; everyone else is home-market only.
+            return $reach === 'global' || ($sponsor['country'] ?? null) === $country;
+        });
 
         $taken = GameStadiumNamingDeal::query()
             ->where('game_id', $game->id)
@@ -573,7 +593,7 @@ class NamingRightsService
                 ->all();
         }
 
-        $cap = (int) config('finances.naming_rights.max_pending_offers', 3);
+        $cap = (int) config('commercial.naming_rights.max_pending_offers', 3);
 
         return [
             'namingRights' => [
@@ -587,7 +607,7 @@ class NamingRightsService
                     'feeCents' => $this->searchFee($game),
                     'availableCashCents' => $this->availableCash($game),
                     'cooldownDays' => $this->seekCooldownRemainingDays($game),
-                    'cooldownLength' => (int) config('finances.naming_rights.search_cooldown_days', 14),
+                    'cooldownLength' => (int) config('commercial.naming_rights.search_cooldown_days', 14),
                     'pendingFull' => $this->pendingOfferCount($game) >= $cap,
                     'maxOffers' => $cap,
                 ],
@@ -608,7 +628,7 @@ class NamingRightsService
             return;
         }
 
-        $factor = (float) config('finances.naming_rights.loyalty_shock_factor', 0.12);
+        $factor = (float) config('commercial.naming_rights.loyalty_shock_factor', 0.12);
         $delta = -(int) round($rep->base_loyalty * $factor);
 
         $this->fanLoyaltyService->applyDelta($rep, $delta);
