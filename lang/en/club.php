@@ -12,16 +12,12 @@ return [
 
     'commercial' => [
         'title' => 'Commercial sponsorships',
-        'intro' => 'Seek sponsors to grow recurring income. Because it counts toward your salary cap, every deal raises the ceiling you can spend on wages.',
-        'wage_ceiling' => 'Current wage ceiling',
-        'wage_ceiling_room' => 'Room available: :amount',
+        'intro' => 'Seek sponsors to grow recurring income that strengthens the club budget.',
         'naming_rights_title' => 'Stadium naming rights',
         'seek_explainer' => 'Hire an agency to canvass sponsors. Each search costs :fee and you must wait :days days between searches.',
         'seek_button' => 'Seek sponsors (:fee)',
         'seek_cooldown' => '{1} You can search again in :days day.|[2,*] You can search again in :days days.',
         'seek_unaffordable' => 'You can\'t afford the agency fee (:fee).',
-        'board_full' => 'You already have the maximum offers on the table. Accept one or pass.',
-        'no_offers' => 'You haven\'t sought sponsors yet. Hire an agency to receive offers.',
     ],
 
     'stadium' => [
@@ -198,11 +194,6 @@ return [
             'source_custom' => 'Renamed',
             'source_sponsor' => 'Sponsored',
 
-            'headline_value' => 'Headline value',
-            'estimated_this_season' => 'Estimated this season',
-            'estimated_tooltip' => 'The sponsor pays in proportion to attendance, so the realised figure scales with how full the stadium is.',
-            'wage_room' => 'Wage room',
-            'wage_room_tooltip' => 'Because this income is recurring, it lifts your salary cap by this much.',
             'seasons_remaining' => '{1} :count season left|[2,*] :count seasons left',
 
             'offers_title' => 'Sponsor offers',
@@ -210,7 +201,6 @@ return [
             'annual_value' => 'Annual value',
             'contract_length' => 'Contract',
             'seasons' => '{1} :count season|[2,*] :count seasons',
-            'fan_cost_warning' => 'Selling the name costs fan support — the hit is bigger at clubs whose fans most cherish the ground.',
             'accept_button' => 'Accept deal',
             'accept_confirm' => 'Sell the naming rights to :sponsor? This locks the stadium name for the contract and dents fan support.',
 

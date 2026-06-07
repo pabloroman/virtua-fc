@@ -12,16 +12,12 @@ return [
 
     'commercial' => [
         'title' => 'Patrocinios comerciales',
-        'intro' => 'Busca patrocinadores para generar ingresos recurrentes. Como cuentan para tu límite salarial, cada acuerdo eleva el tope que puedes gastar en sueldos.',
-        'wage_ceiling' => 'Tope salarial actual',
-        'wage_ceiling_room' => 'Margen disponible: :amount',
+        'intro' => 'Busca patrocinadores para generar ingresos recurrentes que refuercen el presupuesto del club.',
         'naming_rights_title' => 'Derechos de nombre del estadio',
         'seek_explainer' => 'Contrata a una agencia para sondear patrocinadores. Cada búsqueda cuesta :fee y debes esperar :days días entre búsquedas.',
         'seek_button' => 'Buscar patrocinadores (:fee)',
         'seek_cooldown' => '{1} Podrás volver a buscar en :days día.|[2,*] Podrás volver a buscar en :days días.',
         'seek_unaffordable' => 'No tienes presupuesto para la comisión de la agencia (:fee).',
-        'board_full' => 'Ya tienes el máximo de ofertas sobre la mesa. Acepta una o pásalas.',
-        'no_offers' => 'Aún no has buscado patrocinadores. Contrata a una agencia para recibir ofertas.',
     ],
 
     'stadium' => [
@@ -198,11 +194,6 @@ return [
             'source_custom' => 'Renombrado',
             'source_sponsor' => 'Patrocinado',
 
-            'headline_value' => 'Valor nominal',
-            'estimated_this_season' => 'Estimado esta temporada',
-            'estimated_tooltip' => 'El patrocinador paga en proporción a la asistencia, así que la cifra real varía según lo lleno que esté el estadio.',
-            'wage_room' => 'Margen salarial',
-            'wage_room_tooltip' => 'Como este ingreso es recurrente, eleva tu tope salarial en esta proporción.',
             'seasons_remaining' => '{1} queda :count temporada|[2,*] quedan :count temporadas',
 
             'offers_title' => 'Ofertas de patrocinio',
@@ -210,7 +201,6 @@ return [
             'annual_value' => 'Valor anual',
             'contract_length' => 'Contrato',
             'seasons' => '{1} :count temporada|[2,*] :count temporadas',
-            'fan_cost_warning' => 'Vender el nombre cuesta apoyo de la afición, y el golpe es mayor en clubes cuyos aficionados más aprecian el estadio.',
             'accept_button' => 'Aceptar acuerdo',
             'accept_confirm' => '¿Vender los derechos de nombre a :sponsor? Esto bloquea el nombre del estadio durante el contrato y resta apoyo de la afición.',
 

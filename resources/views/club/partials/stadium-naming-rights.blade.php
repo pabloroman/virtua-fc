@@ -1,6 +1,6 @@
 {{-- Stadium identity: the current ground name and the cosmetic rename lever
      (gated to the pre-season window, once per season). The naming-rights
-     *sponsorship* lever — selling the name for recurring, cap-lifting income —
+     *sponsorship* lever — selling the name for recurring income —
      lives on the Commercial page; when a sponsor owns the name this panel just
      points there. Rendered as the body of the `stadium-identity` modal (title
      comes from the modal header), so it has no card wrapper of its own. --}}

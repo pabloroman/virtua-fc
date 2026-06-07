@@ -4,11 +4,9 @@ namespace App\Modules\Stadium\Services;
 
 use App\Models\FinancialTransaction;
 use App\Models\Game;
-use App\Models\GameMatch;
 use App\Models\GameNotification;
 use App\Models\GameStadium;
 use App\Models\GameStadiumNamingDeal;
-use App\Models\Team;
 use App\Models\TeamReputation;
 use App\Models\TransferOffer;
 use App\Modules\Notification\Services\NotificationService;
@@ -19,16 +17,15 @@ use InvalidArgumentException;
  * sponsorship deals.
  *
  * Both levers are gated to the pre-season identity window (pre-season
- * through the first league matchday). A naming-rights deal pays recurring
- * income that settles proportional to stadium fill, in exchange for a
- * one-time fan-loyalty shock at signing. A cosmetic rename has no fan
- * effect and is limited to once per season.
+ * through the first league matchday). A naming-rights deal pays a fixed
+ * recurring annual fee, in exchange for a one-time fan-loyalty shock at
+ * signing. A cosmetic rename has no fan effect and is limited to once per
+ * season.
  *
  * Sponsors do NOT arrive unsolicited. The manager seeks them proactively
  * from the Commercial page (seekSponsors()), which charges a commercial-
  * agency fee and starts a cooldown — the friction that keeps recurring
- * sponsor income (which lifts the salary cap) from becoming free money on
- * tap.
+ * sponsor income from becoming free money on tap.
  *
  * Income math lives here (projection + settlement) so the Finance and
  * Season modules call into Stadium rather than the other way around,
@@ -37,8 +34,6 @@ use InvalidArgumentException;
 class NamingRightsService
 {
     public function __construct(
-        private readonly MatchAttendanceService $matchAttendanceService,
-        private readonly StadiumCapacityResolver $capacityResolver,
         private readonly GameStadiumNameResolver $nameResolver,
         private readonly FanLoyaltyService $fanLoyaltyService,
         private readonly NotificationService $notificationService,
@@ -459,9 +454,8 @@ class NamingRightsService
     // ── Revenue (called by Finance projection / Season settlement) ────────
 
     /**
-     * Projected naming-rights income for the season: the active deal's
-     * headline value scaled by the stadium's expected fill. Zero when no
-     * deal is active.
+     * Projected naming-rights income for the season: the active deal's fixed
+     * annual fee. Zero when no deal is active.
      */
     public function projectedRevenueForGame(Game $game): int
     {
@@ -470,15 +464,14 @@ class NamingRightsService
             return 0;
         }
 
-        return (int) round($deal->annual_value_cents * $this->expectedFill($game, $game->team));
+        return (int) $deal->annual_value_cents;
     }
 
     /**
-     * Settled naming-rights income: the headline value scaled by the
-     * REALISED average fill across the season's home league fixtures. An
-     * emptier ground — for example after the loyalty shock or a relegation
-     * — pays the sponsor less. Falls back to the expected fill when no
-     * attendance has been recorded.
+     * Settled naming-rights income: the active deal's fixed annual fee — the
+     * sponsor pays the same regardless of attendance. Zero when no deal is
+     * active. Mirrors projectedRevenueForGame so projection and settlement
+     * agree exactly.
      */
     public function settledRevenueForGame(Game $game): int
     {
@@ -487,29 +480,7 @@ class NamingRightsService
             return 0;
         }
 
-        $homeMatches = GameMatch::query()
-            ->where('game_id', $game->id)
-            ->where('competition_id', $game->competition_id)
-            ->where('home_team_id', $game->team_id)
-            ->where('played', true)
-            ->get();
-
-        $attendance = 0;
-        $capacity = 0;
-        foreach ($homeMatches as $match) {
-            $row = $this->matchAttendanceService->resolveForMatch($match, $game);
-            if ($row === null) {
-                continue;
-            }
-            $attendance += (int) $row->attendance;
-            $capacity += (int) $row->capacity_at_match;
-        }
-
-        $fill = $capacity > 0
-            ? min(1.0, $attendance / $capacity)
-            : $this->expectedFill($game, $game->team);
-
-        return (int) round($deal->annual_value_cents * $fill);
+        return (int) $deal->annual_value_cents;
     }
 
     // ── Read sides ────────────────────────────────────────────────────────
@@ -545,9 +516,7 @@ class NamingRightsService
     /**
      * Commercial read-side for the Commercial page: the active naming-rights
      * deal (if any), the pending offer board, and the proactive-search state
-     * (whether the manager can seek, the agency fee, and any cooldown). The
-     * per-offer salary-cap impact is layered on in the HTTP View, which can
-     * reach the Finance module's SalaryCapService (Stadium must not).
+     * (whether the manager can seek, the agency fee, and any cooldown).
      *
      * @return array{namingRights: array<string, mixed>}
      */
@@ -563,7 +532,6 @@ class NamingRightsService
             $activeDeal = [
                 'sponsor_name' => $active->sponsor_name,
                 'annual_value_cents' => $active->annual_value_cents,
-                'estimated_annual_cents' => $this->projectedRevenueForGame($game),
                 'end_season' => $active->end_season,
                 'seasons_remaining' => max(0, ($active->end_season ?? $season) - $season + 1),
             ];
@@ -584,16 +552,9 @@ class NamingRightsService
                     'proposed_stadium_name' => $deal->proposed_stadium_name,
                     'annual_value_cents' => $deal->annual_value_cents,
                     'contract_seasons' => $deal->contract_seasons,
-                    // Expected realised income at the current attendance — the
-                    // honest figure the headline value scales down to.
-                    'estimated_annual_cents' => (int) round(
-                        $deal->annual_value_cents * $this->expectedFill($game, $game->team)
-                    ),
                 ])
                 ->all();
         }
-
-        $cap = (int) config('commercial.naming_rights.max_pending_offers', 3);
 
         return [
             'namingRights' => [
@@ -608,8 +569,6 @@ class NamingRightsService
                     'availableCashCents' => $this->availableCash($game),
                     'cooldownDays' => $this->seekCooldownRemainingDays($game),
                     'cooldownLength' => (int) config('commercial.naming_rights.search_cooldown_days', 14),
-                    'pendingFull' => $this->pendingOfferCount($game) >= $cap,
-                    'maxOffers' => $cap,
                 ],
             ],
         ];
@@ -657,28 +616,6 @@ class NamingRightsService
         $finances->projected_total_revenue += $delta;
         $finances->projected_surplus += $delta;
         $finances->save();
-    }
-
-    /**
-     * Expected stadium fill (0–1): the projected baseline gate over capacity.
-     * Reuses the demand-curve baseline so projection and the live demand
-     * model stay in step.
-     */
-    private function expectedFill(Game $game, Team $team): float
-    {
-        $capacity = $this->capacityResolver->effectiveCapacity(
-            $game->id,
-            $team->id,
-            (int) ($team->stadium_seats ?? 0),
-        );
-
-        if ($capacity <= 0) {
-            return 0.0;
-        }
-
-        $baseline = $this->matchAttendanceService->projectBaselineForTeam($game->id, $team);
-
-        return min(1.0, $baseline / $capacity);
     }
 
     /**

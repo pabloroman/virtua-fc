@@ -16,21 +16,10 @@
         <x-flash-message type="success" :message="session('success')" class="mt-4" />
         <x-flash-message type="error" :message="session('error')" class="mt-4" />
 
-        {{-- Intro: this is where you grow recurring income to lift the wage ceiling. --}}
-        <div class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div class="lg:col-span-2 bg-surface-800 border border-border-default rounded-xl px-5 py-5">
-                <h3 class="font-heading text-lg font-bold uppercase tracking-wide text-text-primary">{{ __('club.commercial.title') }}</h3>
-                <p class="mt-2 text-sm text-text-secondary leading-relaxed">{{ __('club.commercial.intro') }}</p>
-            </div>
-
-            {{-- Wage-ceiling context — ties the lever directly to the salary cap. --}}
-            <div class="bg-surface-800 border border-border-default rounded-xl px-5 py-5">
-                <div class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('club.commercial.wage_ceiling') }}</div>
-                <div class="font-heading text-2xl font-bold text-text-primary tabular-nums">{{ Money::format($capCents) }}</div>
-                <div class="mt-1 text-[11px] text-text-secondary">
-                    {{ __('club.commercial.wage_ceiling_room', ['amount' => Money::format($capRemainingCents)]) }}
-                </div>
-            </div>
+        {{-- Intro: this is where you grow recurring income. --}}
+        <div class="mt-6 bg-surface-800 border border-border-default rounded-xl px-5 py-5">
+            <h3 class="font-heading text-lg font-bold uppercase tracking-wide text-text-primary">{{ __('club.commercial.title') }}</h3>
+            <p class="mt-2 text-sm text-text-secondary leading-relaxed">{{ __('club.commercial.intro') }}</p>
         </div>
 
         {{-- Naming rights --}}
@@ -57,70 +46,51 @@
                                 <span class="text-sm font-semibold text-text-primary">{{ $deal['sponsor_name'] }}</span>
                                 <span class="text-[11px] text-text-secondary">{{ trans_choice('club.stadium.naming_rights.seasons_remaining', $deal['seasons_remaining'], ['count' => $deal['seasons_remaining']]) }}</span>
                             </div>
-                            <div class="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-                                <div>
-                                    <div class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('club.stadium.naming_rights.headline_value') }}</div>
-                                    <div class="font-heading text-lg font-bold text-text-primary tabular-nums">{{ Money::format($deal['annual_value_cents']) }}</div>
-                                </div>
-                                <div>
-                                    <div class="text-[10px] text-text-muted uppercase tracking-widest flex items-center gap-1">
-                                        {{ __('club.stadium.naming_rights.estimated_this_season') }}
-                                        <x-info-icon :tooltip="__('club.stadium.naming_rights.estimated_tooltip')" />
-                                    </div>
-                                    <div class="font-heading text-lg font-bold text-accent-green tabular-nums">{{ Money::format($deal['estimated_annual_cents']) }}</div>
-                                </div>
-                                <div>
-                                    <div class="text-[10px] text-text-muted uppercase tracking-widest flex items-center gap-1">
-                                        {{ __('club.stadium.naming_rights.wage_room') }}
-                                        <x-info-icon :tooltip="__('club.stadium.naming_rights.wage_room_tooltip')" />
-                                    </div>
-                                    <div class="font-heading text-lg font-bold text-accent-green tabular-nums">+{{ Money::format($deal['cap_delta_cents']) }}</div>
-                                </div>
+                            <div class="mt-3 text-sm">
+                                <div class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('club.stadium.naming_rights.annual_value') }}</div>
+                                <div class="font-heading text-lg font-bold text-accent-green tabular-nums">{{ Money::format($deal['annual_value_cents']) }}</div>
                             </div>
                         </div>
                     @elseif($namingRights['windowOpen'])
                         @php($seek = $namingRights['seek'])
 
-                        {{-- Seek control --}}
-                        <div class="mt-4 px-4 py-4 bg-surface-700 border border-border-default rounded-lg">
-                            <p class="text-xs text-text-secondary leading-relaxed">
-                                {{ __('club.commercial.seek_explainer', [
-                                    'fee' => Money::format($seek['feeCents']),
-                                    'days' => $seek['cooldownLength'],
-                                ]) }}
-                            </p>
-
-                            <div class="mt-3">
-                                @if(! $seek['pendingFull'] && $seek['canSeek'] && $seek['feeAffordable'])
-                                    <form method="POST" action="{{ route('game.club.commercial.seek', $game->id) }}">
-                                        @csrf
-                                        <x-primary-button color="green">
-                                            {{ __('club.commercial.seek_button', ['fee' => Money::format($seek['feeCents'])]) }}
-                                        </x-primary-button>
-                                    </form>
-                                @elseif($seek['pendingFull'])
-                                    <p class="text-[11px] text-text-muted">{{ __('club.commercial.board_full') }}</p>
-                                @elseif($seek['cooldownDays'] > 0)
-                                    <p class="text-[11px] text-accent-gold">{{ trans_choice('club.commercial.seek_cooldown', $seek['cooldownDays'], ['days' => $seek['cooldownDays']]) }}</p>
-                                @elseif(! $seek['feeAffordable'])
-                                    <p class="text-[11px] text-accent-gold">{{ __('club.commercial.seek_unaffordable', ['fee' => Money::format($seek['feeCents'])]) }}</p>
-                                @endif
-                            </div>
-                        </div>
-
-                        {{-- Offer board --}}
-                        <div class="mt-6">
-                            <div class="text-[10px] text-text-muted uppercase tracking-widest mb-3">{{ __('club.stadium.naming_rights.offers_title') }}</div>
-                            @if(count($namingRights['offers']) > 0)
+                        @if(count($namingRights['offers']) > 0)
+                            {{-- Offer board — once offers are in, the cards speak for
+                                 themselves; the seek/agency control is hidden. --}}
+                            <div class="mt-6">
+                                <div class="text-[10px] text-text-muted uppercase tracking-widest mb-3">{{ __('club.stadium.naming_rights.offers_title') }}</div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     @foreach($namingRights['offers'] as $offer)
                                         <x-naming-rights-offer-card :offer="$offer" :game="$game" />
                                     @endforeach
                                 </div>
-                            @else
-                                <p class="text-sm text-text-muted">{{ __('club.commercial.no_offers') }}</p>
-                            @endif
-                        </div>
+                            </div>
+                        @else
+                            {{-- Seek control — shown only while the board is empty --}}
+                            <div class="mt-4 px-4 py-4 bg-surface-700 border border-border-default rounded-lg">
+                                <p class="text-xs text-text-secondary leading-relaxed">
+                                    {{ __('club.commercial.seek_explainer', [
+                                        'fee' => Money::format($seek['feeCents']),
+                                        'days' => $seek['cooldownLength'],
+                                    ]) }}
+                                </p>
+
+                                <div class="mt-3">
+                                    @if($seek['canSeek'] && $seek['feeAffordable'])
+                                        <form method="POST" action="{{ route('game.club.commercial.seek', $game->id) }}">
+                                            @csrf
+                                            <x-primary-button color="green">
+                                                {{ __('club.commercial.seek_button', ['fee' => Money::format($seek['feeCents'])]) }}
+                                            </x-primary-button>
+                                        </form>
+                                    @elseif($seek['cooldownDays'] > 0)
+                                        <p class="text-[11px] text-accent-gold">{{ trans_choice('club.commercial.seek_cooldown', $seek['cooldownDays'], ['days' => $seek['cooldownDays']]) }}</p>
+                                    @elseif(! $seek['feeAffordable'])
+                                        <p class="text-[11px] text-accent-gold">{{ __('club.commercial.seek_unaffordable', ['fee' => Money::format($seek['feeCents'])]) }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                        @endif
                     @else
                         {{-- Window closed (league under way) --}}
                         <p class="mt-4 text-[11px] text-accent-gold leading-relaxed">{{ __('club.stadium.naming_rights.window_closed_notice') }}</p>

@@ -10,7 +10,6 @@ use App\Models\GameInvestment;
 use App\Models\GameMatch;
 use App\Models\GameStadium;
 use App\Models\GameStadiumNamingDeal;
-use App\Models\MatchAttendance;
 use App\Models\Team;
 use App\Models\TeamReputation;
 use App\Modules\Finance\Services\BudgetProjectionService;
@@ -18,9 +17,7 @@ use App\Modules\Finance\Services\SalaryCapService;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Stadium\Services\FanLoyaltyService;
 use App\Modules\Stadium\Services\GameStadiumNameResolver;
-use App\Modules\Stadium\Services\MatchAttendanceService;
 use App\Modules\Stadium\Services\NamingRightsService;
-use App\Modules\Stadium\Services\StadiumCapacityResolver;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use InvalidArgumentException;
 use Mockery;
@@ -32,8 +29,6 @@ class NamingRightsServiceTest extends TestCase
     use MockeryPHPUnitIntegration;
     use RefreshDatabase;
 
-    private MatchAttendanceService $attendance;
-    private StadiumCapacityResolver $capacity;
     private NotificationService $notifications;
     private NamingRightsService $service;
     private Competition $league;
@@ -43,14 +38,10 @@ class NamingRightsServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->attendance = Mockery::mock(MatchAttendanceService::class);
-        $this->capacity = Mockery::mock(StadiumCapacityResolver::class);
         $this->notifications = Mockery::mock(NotificationService::class);
         $this->notifications->shouldReceive('create')->byDefault();
 
         $this->service = new NamingRightsService(
-            $this->attendance,
-            $this->capacity,
             new GameStadiumNameResolver(),
             new FanLoyaltyService(),
             $this->notifications,
@@ -135,39 +126,23 @@ class NamingRightsServiceTest extends TestCase
         $this->service->rename($game, 'Fan Owned Park');
     }
 
-    public function test_settled_revenue_scales_with_realised_attendance(): void
+    public function test_settled_revenue_is_the_fixed_annual_fee(): void
     {
         $game = $this->preSeasonGame();
         $deal = $this->seedOffer($game, status: GameStadiumNamingDeal::STATUS_ACTIVE, value: 1_000_000_00, seasons: 3);
         $deal->update(['start_season' => 2026, 'end_season' => 2028]);
 
-        // Two played home league fixtures, each 80% full (8,000 / 10,000).
-        $matches = collect([
-            $this->homeLeagueMatch($game),
-            $this->homeLeagueMatch($game),
-        ]);
-
-        foreach ($matches as $match) {
-            $this->attendance->shouldReceive('resolveForMatch')
-                ->with(Mockery::on(fn ($m) => $m->id === $match->id), $game)
-                ->andReturn(new MatchAttendance(['attendance' => 8_000, 'capacity_at_match' => 10_000]));
-        }
-
-        // 1,000,000,00 cents × 0.8 = 800,000,00.
-        $this->assertSame(800_000_00, $this->service->settledRevenueForGame($game));
+        // The sponsor pays the headline fee in full, regardless of attendance.
+        $this->assertSame(1_000_000_00, $this->service->settledRevenueForGame($game));
     }
 
-    public function test_projected_revenue_scales_by_expected_fill(): void
+    public function test_projected_revenue_is_the_fixed_annual_fee(): void
     {
         $game = $this->preSeasonGame();
         $deal = $this->seedOffer($game, status: GameStadiumNamingDeal::STATUS_ACTIVE, value: 1_000_000_00);
         $deal->update(['start_season' => 2026, 'end_season' => 2030]);
 
-        $this->capacity->shouldReceive('effectiveCapacity')->andReturn(10_000);
-        $this->attendance->shouldReceive('projectBaselineForTeam')->andReturn(7_000);
-
-        // 1,000,000,00 × 0.7 = 700,000,00.
-        $this->assertSame(700_000_00, $this->service->projectedRevenueForGame($game));
+        $this->assertSame(1_000_000_00, $this->service->projectedRevenueForGame($game));
     }
 
     public function test_projected_and_settled_revenue_are_zero_without_an_active_deal(): void
@@ -275,10 +250,6 @@ class NamingRightsServiceTest extends TestCase
 
         $offer = $this->seedOffer($game, status: GameStadiumNamingDeal::STATUS_PENDING, value: 1_000_000_00);
 
-        // Expected fill 0.7 → projected naming rights = 700,000.00.
-        $this->capacity->shouldReceive('effectiveCapacity')->andReturn(10_000);
-        $this->attendance->shouldReceive('projectBaselineForTeam')->andReturn(7_000);
-
         config()->set('finances.wage_cap_ratio', 0.70);
         $salaryCap = new SalaryCapService(Mockery::mock(BudgetProjectionService::class));
 
@@ -286,8 +257,8 @@ class NamingRightsServiceTest extends TestCase
         $this->service->acceptOffer($game, $offer->id);
         $capAfter = $salaryCap->cap($game->fresh());
 
-        // Recurring naming income lifts the ceiling by 700,000.00 × 0.70.
-        $this->assertSame(490_000_00, $capAfter - $capBefore);
+        // The fixed 1,000,000.00 naming fee lifts the ceiling by × 0.70.
+        $this->assertSame(700_000_00, $capAfter - $capBefore);
     }
 
     public function test_offers_never_exceed_the_pending_cap_or_duplicate_a_sponsor(): void
@@ -390,16 +361,13 @@ class NamingRightsServiceTest extends TestCase
 
         $offer = $this->seedOffer($game, status: GameStadiumNamingDeal::STATUS_PENDING, value: 1_000_000_00);
 
-        // Expected fill 0.7 → projected naming rights = 700,000,00.
-        $this->capacity->shouldReceive('effectiveCapacity')->andReturn(10_000);
-        $this->attendance->shouldReceive('projectBaselineForTeam')->andReturn(7_000);
-
+        // Fixed annual fee folds into the projection in full: 1,000,000,00.
         $this->service->acceptOffer($game, $offer->id);
 
         $finances->refresh();
-        $this->assertSame(700_000_00, $finances->projected_naming_rights_revenue);
-        $this->assertSame(10_700_000_00, $finances->projected_total_revenue);
-        $this->assertSame(2_700_000_00, $finances->projected_surplus);
+        $this->assertSame(1_000_000_00, $finances->projected_naming_rights_revenue);
+        $this->assertSame(11_000_000_00, $finances->projected_total_revenue);
+        $this->assertSame(3_000_000_00, $finances->projected_surplus);
     }
 
     public function test_venue_name_reflects_the_game_scoped_override(): void

@@ -68,7 +68,7 @@ return [
     // Budget flow tooltips
     'tooltip_tv_rights' => 'Distribución televisiva basada en tu posición final en liga. Cuanto más alto termines, mayor será tu reparto.',
     'tooltip_commercial' => 'Ingresos por patrocinios y merchandising. Dependen del tamaño de tu estadio y la reputación del club.',
-    'tooltip_naming_rights' => 'Ingresos por vender el nombre de tu estadio a un patrocinador. Varían con la asistencia: cuanto más lleno el estadio, más se ingresa.',
+    'tooltip_naming_rights' => 'Ingresos por vender el nombre de tu estadio a un patrocinador. Es una cuota anual fija mientras dure el acuerdo.',
     'tooltip_matchday' => 'Recaudación por venta de entradas. Mejora con la inversión en instalaciones y una buena posición en liga.',
     'tooltip_solidarity_funds' => 'Ayudas de la RFEF/UEFA destinadas a clubes de divisiones inferiores para fomentar la competitividad.',
     'tooltip_public_subsidy' => 'Subvención pública que garantiza un presupuesto mínimo viable para infraestructura y fichajes.',
