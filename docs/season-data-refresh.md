@@ -23,7 +23,8 @@ progresses, so a new season is mostly a **data drop plus one config bump**.
 ## Runbook (e.g. releasing 2026/27)
 
 1. **Bump the base season.** Set `GAME_SEASON=2026` in the environment (and
-   `.env`). Default in `config/season.php` is already `2026`.
+   `.env`), and update the default in `config/season.php`. (It ships set to
+   `2025` so the engine keeps using `data/2025/` until the new season is ready.)
 
 2. **Scaffold the data folder** (creates dirs, bootstraps `schedule.json` for
    every competition by shifting last season's dates forward one year):
