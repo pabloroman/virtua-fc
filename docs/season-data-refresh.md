@@ -55,7 +55,10 @@ add/remove line, not a reshuffled roster.
 > The scraper only needs to write valid JSON to the right `data/2026/{COMP}/`
 > path; CI's normalize step is the formatting authority, so the extension does
 > not have to match byte-for-byte. The push uses a fine-grained PAT scoped to
-> this repo (Contents + Pull requests, read/write).
+> this repo (Contents + Pull requests, read/write). Configure it once in the
+> extension popup (**⚙ GitHub Settings**) and drive a full refresh from
+> **Season Refresh → Refresh all leagues** — see
+> `scripts/transfermarkt-scraper/README.md`.
 
 ## Helper commands
 
