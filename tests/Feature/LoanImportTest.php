@@ -32,6 +32,7 @@ class LoanImportTest extends TestCase
     private Team $ownerInGame;    // an owning club that fields a squad in the game
     private Team $ownerOutOfGame; // an owning club with no squad in the game
     private Game $game;
+    private int $nextSquadNumber = 7; // keep squad numbers unique per borrowing team
 
     protected function setUp(): void
     {
@@ -156,7 +157,7 @@ class LoanImportTest extends TestCase
         return GamePlayer::factory()
             ->forGame($this->game)
             ->forTeam($this->borrowingTeam)
-            ->create(['number' => 7]);
+            ->create(['number' => $this->nextSquadNumber++]);
     }
 
     private function createTemplate(string $playerId, ?string $loanFrom): GamePlayerTemplate
