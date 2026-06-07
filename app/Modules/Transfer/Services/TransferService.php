@@ -48,10 +48,10 @@ class TransferService
      * market value when it genuinely needs them. The ceiling sits below the
      * counter-offer premium ceiling (ScoutingService::COUNTER_PREMIUM_CEIL) so
      * there is always room to be negotiated upward.
-     *   desire 0.0 → 0.70× MV
+     *   desire 0.0 → 0.80× MV
      *   desire 1.0 → 1.10× MV
      */
-    private const OPEN_PRICE_FLOOR = 0.70;
+    private const OPEN_PRICE_FLOOR = 0.80;
     private const OPEN_PRICE_CEIL = 1.10;
 
     /** Reproducible ±band variance on the opening price, seeded per pairing. */
