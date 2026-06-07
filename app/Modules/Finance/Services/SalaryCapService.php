@@ -48,6 +48,17 @@ class SalaryCapService
     }
 
     /**
+     * How much the wage ceiling would move if recurring revenue changed by
+     * `$recurringRevenueDelta` cents. Lets a UI show the cap impact of a new
+     * income stream (e.g. a naming-rights offer) — "+€X wage room" — without
+     * re-projecting the whole budget. Pure function of the cap ratio.
+     */
+    public function capDelta(Game $game, int $recurringRevenueDelta): int
+    {
+        return (int) round($recurringRevenueDelta * $this->capRatio($game));
+    }
+
+    /**
      * The total annual wage the club is *committed* to, in cents.
      *
      * Counts every player currently on the roster (including loaned-in players,

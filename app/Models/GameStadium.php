@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $team_id
  * @property string|null $stadium_name
  * @property int|null $name_changed_season
+ * @property \Illuminate\Support\Carbon|null $naming_rights_last_sought_date
  * @property int $base_capacity
  * @property int $supplementary_seats
  * @property int|null $rebuilt_capacity
@@ -44,6 +45,7 @@ class GameStadium extends Model
         'team_id',
         'stadium_name',
         'name_changed_season',
+        'naming_rights_last_sought_date',
         'base_capacity',
         'supplementary_seats',
         'rebuilt_capacity',
@@ -53,6 +55,7 @@ class GameStadium extends Model
 
     protected $casts = [
         'name_changed_season' => 'integer',
+        'naming_rights_last_sought_date' => 'date',
         'base_capacity' => 'integer',
         'supplementary_seats' => 'integer',
         'rebuilt_capacity' => 'integer',

@@ -13,6 +13,11 @@
             'active' => $active === 'stadium',
         ],
         [
+            'href' => route('game.club.commercial', $game->id),
+            'label' => __('club.nav.commercial'),
+            'active' => $active === 'commercial',
+        ],
+        [
             'href' => route('game.club.reputation', $game->id),
             'label' => __('club.nav.reputation'),
             'active' => $active === 'reputation',

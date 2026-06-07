@@ -14,8 +14,10 @@ use App\Modules\Stadium\Services\NamingRightsService;
  * expired deal is dropped from the projection and an unchanged active deal is
  * still counted.
  *
- * New offers are NOT minted here — they arrive probabilistically across the
- * pre-season via CareerActionProcessor (see NamingRightsService::maybeGenerateOffer).
+ * New offers are NOT minted here, nor do they arrive on their own — the
+ * manager seeks them from the Commercial page. This processor only drops a
+ * once-per-pre-season nudge that the commercial window is open, so the
+ * proactive lever is discoverable.
  */
 class GenerateNamingRightsOffersProcessor implements SeasonProcessor
 {
@@ -36,6 +38,7 @@ class GenerateNamingRightsOffersProcessor implements SeasonProcessor
         }
 
         $this->namingRightsService->rolloverForNewSeason($game);
+        $this->namingRightsService->notifyCommercialWindowOpen($game);
 
         return $data;
     }

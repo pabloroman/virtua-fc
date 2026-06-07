@@ -71,6 +71,7 @@ class FinancialTransaction extends Model
     public const CATEGORY_SEVERANCE = 'severance';           // Contract termination payment
     public const CATEGORY_INFRASTRUCTURE = 'infrastructure'; // Mid-season infrastructure upgrade
     public const CATEGORY_STADIUM = 'stadium';               // Stadium rebuild / expansion / supplementary stands
+    public const CATEGORY_AGENT_FEE = 'agent_fee';           // Commercial-agency fee (e.g. seeking naming-rights sponsors)
     public const CATEGORY_BUDGET_LOAN = 'budget_loan';       // Budget loan received
     public const CATEGORY_LOAN_REPAYMENT = 'loan_repayment'; // Budget loan repayment
 
@@ -121,6 +122,7 @@ class FinancialTransaction extends Model
             self::CATEGORY_SEVERANCE => __('finances.category_severance'),
             self::CATEGORY_INFRASTRUCTURE => __('finances.category_infrastructure'),
             self::CATEGORY_STADIUM => __('finances.category_stadium'),
+            self::CATEGORY_AGENT_FEE => __('finances.category_agent_fee'),
             self::CATEGORY_BUDGET_LOAN => __('finances.category_budget_loan'),
             self::CATEGORY_LOAN_REPAYMENT => __('finances.category_loan_repayment'),
             default => ucfirst(str_replace('_', ' ', $this->category)),

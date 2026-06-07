@@ -214,4 +214,8 @@ return [
     'naming_rights_deal_active' => 'Ya hay un acuerdo de derechos de nombre activo: el patrocinador posee el nombre del estadio hasta que expire.',
     'naming_rights_offer_unavailable' => 'Esa oferta de derechos de nombre ya no está disponible.',
     'stadium_already_renamed' => 'El estadio ya se ha renombrado esta temporada.',
+    'naming_rights_search_complete' => '{0}La agencia no encontró patrocinadores nuevos.|{1}La agencia ha traído :count oferta de patrocinio.|[2,*]La agencia ha traído :count ofertas de patrocinio.',
+    'naming_rights_search_cooldown' => 'Tu agencia comercial aún está sondeando el mercado. Espera unos días antes de volver a buscar.',
+    'naming_rights_search_unaffordable' => 'No tienes presupuesto para la comisión de la agencia comercial.',
+    'naming_rights_board_full' => 'Ya tienes el máximo de ofertas sobre la mesa. Acepta una o pásalas antes de buscar más.',
 ];

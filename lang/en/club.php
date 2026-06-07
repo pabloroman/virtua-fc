@@ -6,7 +6,22 @@ return [
     'nav' => [
         'finances' => 'Finances',
         'stadium' => 'Stadium',
+        'commercial' => 'Commercial',
         'reputation' => 'Reputation',
+    ],
+
+    'commercial' => [
+        'title' => 'Commercial sponsorships',
+        'intro' => 'Seek sponsors to grow recurring income. Because it counts toward your salary cap, every deal raises the ceiling you can spend on wages.',
+        'wage_ceiling' => 'Current wage ceiling',
+        'wage_ceiling_room' => 'Room available: :amount',
+        'naming_rights_title' => 'Stadium naming rights',
+        'seek_explainer' => 'Hire an agency to canvass sponsors. Each search costs :fee and you must wait :days days between searches.',
+        'seek_button' => 'Seek sponsors (:fee)',
+        'seek_cooldown' => '{1} You can search again in :days day.|[2,*] You can search again in :days days.',
+        'seek_unaffordable' => 'You can\'t afford the agency fee (:fee).',
+        'board_full' => 'You already have the maximum offers on the table. Accept one or pass.',
+        'no_offers' => 'You haven\'t sought sponsors yet. Hire an agency to receive offers.',
     ],
 
     'stadium' => [
@@ -169,9 +184,15 @@ return [
             ],
         ],
 
+        'identity' => [
+            'subtitle' => 'Rename your ground for free (once per season, in pre-season). Selling the name to a sponsor is handled on the Commercial page.',
+            'sponsor_owns_name' => 'A sponsor (:sponsor) owns the stadium name until the deal expires, so it can\'t be renamed.',
+            'manage_in_commercial' => 'Manage in Commercial',
+            'sell_naming_rights' => 'Sell the naming rights',
+        ],
+
         'naming_rights' => [
             'title' => 'Stadium identity & naming rights',
-            'subtitle' => 'Rename your ground, or sell its name to a sponsor for recurring income. Naming deals pay more the fuller the stadium — but selling the name dents fan support. Set in pre-season, up to the first league match.',
             'current_name' => 'Current name',
             'source_historic' => 'Historic',
             'source_custom' => 'Renamed',
@@ -180,10 +201,11 @@ return [
             'headline_value' => 'Headline value',
             'estimated_this_season' => 'Estimated this season',
             'estimated_tooltip' => 'The sponsor pays in proportion to attendance, so the realised figure scales with how full the stadium is.',
+            'wage_room' => 'Wage room',
+            'wage_room_tooltip' => 'Because this income is recurring, it lifts your salary cap by this much.',
             'seasons_remaining' => '{1} :count season left|[2,*] :count seasons left',
 
             'offers_title' => 'Sponsor offers',
-            'no_offers' => 'No naming-rights offers yet — sponsors may still approach before the first league match.',
             'becomes' => 'Stadium becomes “:name”',
             'annual_value' => 'Annual value',
             'contract_length' => 'Contract',

@@ -82,7 +82,7 @@
                     @endif
                     @if($game->isCareerMode())
                     @php
-                        $clubRoutes = ['game.club', 'game.club.finances', 'game.club.stadium', 'game.club.reputation'];
+                        $clubRoutes = ['game.club', 'game.club.finances', 'game.club.stadium', 'game.club.commercial', 'game.club.reputation'];
                         $clubActive = in_array(Route::currentRouteName(), $clubRoutes);
                     @endphp
                     <div class="relative" x-data="{ open: false }" @click.outside="open = false">
@@ -96,6 +96,7 @@
                             <div class="py-1">
                                 <a href="{{ route('game.club.finances', $game->id) }}" class="block px-4 py-2 text-sm {{ Route::currentRouteName() == 'game.club.finances' ? 'bg-surface-700 text-text-primary font-semibold' : 'text-text-body hover:bg-surface-700 hover:text-text-primary' }}">{{ __('club.nav.finances') }}</a>
                                 <a href="{{ route('game.club.stadium', $game->id) }}" class="block px-4 py-2 text-sm {{ Route::currentRouteName() == 'game.club.stadium' ? 'bg-surface-700 text-text-primary font-semibold' : 'text-text-body hover:bg-surface-700 hover:text-text-primary' }}">{{ __('club.nav.stadium') }}</a>
+                                <a href="{{ route('game.club.commercial', $game->id) }}" class="block px-4 py-2 text-sm {{ Route::currentRouteName() == 'game.club.commercial' ? 'bg-surface-700 text-text-primary font-semibold' : 'text-text-body hover:bg-surface-700 hover:text-text-primary' }}">{{ __('club.nav.commercial') }}</a>
                                 <a href="{{ route('game.club.reputation', $game->id) }}" class="block px-4 py-2 text-sm {{ Route::currentRouteName() == 'game.club.reputation' ? 'bg-surface-700 text-text-primary font-semibold' : 'text-text-body hover:bg-surface-700 hover:text-text-primary' }}">{{ __('club.nav.reputation') }}</a>
                             </div>
                         </div>

@@ -9,9 +9,10 @@ use Illuminate\Console\Command;
 
 /**
  * Forces stadium naming-rights offers onto a game so the feature can be
- * inspected without waiting on the per-tick probability roll. Honours the
- * same gates as the real mechanic (open window, no active deal, pending cap,
- * sponsor dedupe), so it can't manufacture impossible states.
+ * inspected without going through the Commercial page's "seek sponsors"
+ * search (and its fee / cooldown). Honours the same board gates as the real
+ * mechanic (open window, no active deal, pending cap, sponsor dedupe), so it
+ * can't manufacture impossible states.
  */
 class ForceNamingRightsOffer extends Command
 {

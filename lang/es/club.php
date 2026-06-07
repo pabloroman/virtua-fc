@@ -6,7 +6,22 @@ return [
     'nav' => [
         'finances' => 'Finanzas',
         'stadium' => 'Estadio',
+        'commercial' => 'Comercial',
         'reputation' => 'Reputación',
+    ],
+
+    'commercial' => [
+        'title' => 'Patrocinios comerciales',
+        'intro' => 'Busca patrocinadores para generar ingresos recurrentes. Como cuentan para tu límite salarial, cada acuerdo eleva el tope que puedes gastar en sueldos.',
+        'wage_ceiling' => 'Tope salarial actual',
+        'wage_ceiling_room' => 'Margen disponible: :amount',
+        'naming_rights_title' => 'Derechos de nombre del estadio',
+        'seek_explainer' => 'Contrata a una agencia para sondear patrocinadores. Cada búsqueda cuesta :fee y debes esperar :days días entre búsquedas.',
+        'seek_button' => 'Buscar patrocinadores (:fee)',
+        'seek_cooldown' => '{1} Podrás volver a buscar en :days día.|[2,*] Podrás volver a buscar en :days días.',
+        'seek_unaffordable' => 'No tienes presupuesto para la comisión de la agencia (:fee).',
+        'board_full' => 'Ya tienes el máximo de ofertas sobre la mesa. Acepta una o pásalas.',
+        'no_offers' => 'Aún no has buscado patrocinadores. Contrata a una agencia para recibir ofertas.',
     ],
 
     'stadium' => [
@@ -169,9 +184,15 @@ return [
             ],
         ],
 
+        'identity' => [
+            'subtitle' => 'Renombra tu estadio sin coste (una vez por temporada, en pretemporada). Vender el nombre a un patrocinador se gestiona en la página Comercial.',
+            'sponsor_owns_name' => 'Un patrocinador (:sponsor) posee el nombre del estadio hasta que expire el acuerdo, así que no puedes renombrarlo.',
+            'manage_in_commercial' => 'Gestionar en Comercial',
+            'sell_naming_rights' => 'Vender los derechos de nombre',
+        ],
+
         'naming_rights' => [
             'title' => 'Identidad del estadio y derechos de nombre',
-            'subtitle' => 'Renombra tu estadio o vende su nombre a un patrocinador a cambio de ingresos recurrentes. Los acuerdos pagan más cuanto más lleno esté el estadio, pero vender el nombre resta apoyo de la afición. Se decide en pretemporada, hasta el primer partido de liga.',
             'current_name' => 'Nombre actual',
             'source_historic' => 'Histórico',
             'source_custom' => 'Renombrado',
@@ -180,10 +201,11 @@ return [
             'headline_value' => 'Valor nominal',
             'estimated_this_season' => 'Estimado esta temporada',
             'estimated_tooltip' => 'El patrocinador paga en proporción a la asistencia, así que la cifra real varía según lo lleno que esté el estadio.',
+            'wage_room' => 'Margen salarial',
+            'wage_room_tooltip' => 'Como este ingreso es recurrente, eleva tu tope salarial en esta proporción.',
             'seasons_remaining' => '{1} queda :count temporada|[2,*] quedan :count temporadas',
 
             'offers_title' => 'Ofertas de patrocinio',
-            'no_offers' => 'Aún no hay ofertas de derechos de nombre — pueden llegar patrocinadores antes del primer partido de liga.',
             'becomes' => 'El estadio pasa a llamarse «:name»',
             'annual_value' => 'Valor anual',
             'contract_length' => 'Contrato',

@@ -10,7 +10,7 @@
     $squadActive = Str::startsWith($currentRoute, 'game.squad');
     $lineupActive = $currentRoute === 'game.lineup';
     $transfersActive = in_array($currentRoute, ['game.transfers', 'game.transfers.outgoing', 'game.scouting', 'game.explore', 'game.transfer-activity', 'game.transfers.market']);
-    $clubRoutes = ['game.club', 'game.club.finances', 'game.club.stadium', 'game.club.reputation'];
+    $clubRoutes = ['game.club', 'game.club.finances', 'game.club.stadium', 'game.club.commercial', 'game.club.reputation'];
     $moreActive = in_array($currentRoute, array_merge($clubRoutes, ['game.calendar', 'game.competition', 'game.manager.career']));
 
 @endphp

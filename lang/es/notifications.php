@@ -196,8 +196,8 @@ return [
     'stadium_loan_drawn_message' => 'El banco ha financiado el proyecto con :amount, a devolver en :years cuotas anuales.',
     'stadium_loan_repaid_title' => 'Préstamo del estadio devuelto',
     'stadium_loan_repaid_message' => 'El préstamo de :amount ha sido devuelto en su totalidad.',
-    'naming_rights_offer_title' => 'Oferta de derechos de nombre de :sponsor',
-    'naming_rights_offer_message' => ':sponsor quiere renombrar tu estadio como «:stadium». Revisa la oferta en la página del estadio antes de que arranque la temporada.',
+    'commercial_window_open_title' => 'Ventana comercial abierta',
+    'commercial_window_open_message' => 'Hasta el primer partido de liga puedes buscar patrocinadores en la página Comercial para aumentar tus ingresos y tu tope salarial.',
 
     // Squad registration
     'squad_registration_required_title' => 'Inscripción de plantilla requerida',

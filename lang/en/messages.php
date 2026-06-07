@@ -214,4 +214,8 @@ return [
     'naming_rights_deal_active' => 'A naming-rights deal is already active — the sponsor owns the stadium name until it expires.',
     'naming_rights_offer_unavailable' => 'That naming-rights offer is no longer available.',
     'stadium_already_renamed' => 'The stadium has already been renamed this season.',
+    'naming_rights_search_complete' => '{0}The agency found no new sponsors.|{1}The agency brought in :count sponsorship offer.|[2,*]The agency brought in :count sponsorship offers.',
+    'naming_rights_search_cooldown' => 'Your commercial agency is still canvassing the market. Wait a few days before searching again.',
+    'naming_rights_search_unaffordable' => 'You can\'t afford the commercial agency fee.',
+    'naming_rights_board_full' => 'You already have the maximum offers on the table. Accept one or pass before seeking more.',
 ];

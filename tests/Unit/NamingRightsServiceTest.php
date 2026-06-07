@@ -3,14 +3,18 @@
 namespace Tests\Unit;
 
 use App\Models\Competition;
+use App\Models\FinancialTransaction;
 use App\Models\Game;
 use App\Models\GameFinances;
+use App\Models\GameInvestment;
 use App\Models\GameMatch;
 use App\Models\GameStadium;
 use App\Models\GameStadiumNamingDeal;
 use App\Models\MatchAttendance;
 use App\Models\Team;
 use App\Models\TeamReputation;
+use App\Modules\Finance\Services\BudgetProjectionService;
+use App\Modules\Finance\Services\SalaryCapService;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Stadium\Services\FanLoyaltyService;
 use App\Modules\Stadium\Services\GameStadiumNameResolver;
@@ -174,41 +178,116 @@ class NamingRightsServiceTest extends TestCase
         $this->assertSame(0, $this->service->settledRevenueForGame($game));
     }
 
-    public function test_maybe_generate_offer_mints_one_pending_offer_when_the_roll_lands(): void
+    public function test_seek_sponsors_mints_offers_up_to_the_cap_and_charges_the_fee(): void
     {
         $game = $this->preSeasonGame();
+        $game->update(['current_date' => '2026-07-01']);
         $this->seedLoyalty($game, base: 60, current: 60); // tier 'established'
-        config()->set('finances.naming_rights.offer_chance_per_tick.established', 1.0);
+        $this->seedInvestment($game, transferBudget: 5_000_000_00);
+        config()->set('finances.naming_rights.max_pending_offers', 3);
+        config()->set('finances.naming_rights.search_fee.established', 80_000_00);
 
-        $deal = $this->service->maybeGenerateOffer($game);
+        $minted = $this->service->seekSponsors($game);
 
-        $this->assertNotNull($deal);
-        $this->assertSame(GameStadiumNamingDeal::STATUS_PENDING, $deal->status);
-        $this->assertSame(2026, $deal->offered_season);
-        $this->assertSame(1, GameStadiumNamingDeal::where('game_id', $game->id)
+        $this->assertCount(3, $minted);
+        $this->assertSame(3, GameStadiumNamingDeal::where('game_id', $game->id)
             ->where('status', GameStadiumNamingDeal::STATUS_PENDING)->count());
+
+        // Fee charged: transfer budget decremented + an agency-fee expense logged.
+        $this->assertSame(5_000_000_00 - 80_000_00, (int) GameInvestment::where('game_id', $game->id)->value('transfer_budget'));
+        $this->assertSame(1, FinancialTransaction::where('game_id', $game->id)
+            ->where('category', FinancialTransaction::CATEGORY_AGENT_FEE)->count());
+
+        // Cooldown stamped to the search date.
+        $this->assertSame('2026-07-01', $this->stadiumFor($game)->naming_rights_last_sought_date->toDateString());
     }
 
-    public function test_maybe_generate_offer_does_nothing_outside_the_window(): void
+    public function test_seek_sponsors_is_blocked_outside_the_window(): void
     {
         // Not pre-season and no fixtures → next league matchday null → closed.
         $game = Game::factory()->forTeam($this->team)->inCompetition($this->league->id)
             ->create(['pre_season' => false, 'season' => 2026]);
         $this->seedLoyalty($game, base: 60, current: 60);
-        config()->set('finances.naming_rights.offer_chance_per_tick.established', 1.0);
+        $this->seedInvestment($game, transferBudget: 5_000_000_00);
 
-        $this->assertNull($this->service->maybeGenerateOffer($game));
-        $this->assertSame(0, GameStadiumNamingDeal::where('game_id', $game->id)->count());
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('messages.naming_rights_window_closed');
+
+        $this->service->seekSponsors($game);
     }
 
-    public function test_maybe_generate_offer_skips_when_a_deal_is_active(): void
+    public function test_seek_sponsors_is_blocked_while_a_deal_is_active(): void
     {
         $game = $this->preSeasonGame();
         $this->seedLoyalty($game, base: 60, current: 60);
+        $this->seedInvestment($game, transferBudget: 5_000_000_00);
         $this->seedOffer($game, status: GameStadiumNamingDeal::STATUS_ACTIVE);
-        config()->set('finances.naming_rights.offer_chance_per_tick.established', 1.0);
 
-        $this->assertNull($this->service->maybeGenerateOffer($game));
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('messages.naming_rights_deal_active');
+
+        $this->service->seekSponsors($game);
+    }
+
+    public function test_seek_sponsors_respects_the_cooldown(): void
+    {
+        $game = $this->preSeasonGame();
+        $game->update(['current_date' => '2026-07-05']);
+        $this->seedLoyalty($game, base: 60, current: 60);
+        $this->seedInvestment($game, transferBudget: 5_000_000_00);
+        config()->set('finances.naming_rights.search_cooldown_days', 14);
+
+        // Sought 5 days ago → still inside the 14-day cooldown.
+        $this->seedStadium($game)->update(['naming_rights_last_sought_date' => '2026-06-30']);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('messages.naming_rights_search_cooldown');
+
+        $this->service->seekSponsors($game);
+    }
+
+    public function test_seek_sponsors_is_blocked_when_the_fee_is_unaffordable(): void
+    {
+        $game = $this->preSeasonGame();
+        $this->seedLoyalty($game, base: 60, current: 60);
+        $this->seedInvestment($game, transferBudget: 10_00); // only €10 of budget
+        config()->set('finances.naming_rights.search_fee.established', 80_000_00);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('messages.naming_rights_search_unaffordable');
+
+        $this->service->seekSponsors($game);
+    }
+
+    public function test_accepting_an_offer_raises_the_salary_cap(): void
+    {
+        $game = $this->preSeasonGame();
+        $this->seedLoyalty($game, base: 50, current: 50);
+        $this->seedStadium($game);
+
+        GameFinances::create([
+            'game_id' => $game->id,
+            'season' => 2026,
+            'projected_total_revenue' => 10_000_000_00,
+            'projected_surplus' => 2_000_000_00,
+            'projected_naming_rights_revenue' => 0,
+        ]);
+
+        $offer = $this->seedOffer($game, status: GameStadiumNamingDeal::STATUS_PENDING, value: 1_000_000_00);
+
+        // Expected fill 0.7 → projected naming rights = 700,000.00.
+        $this->capacity->shouldReceive('effectiveCapacity')->andReturn(10_000);
+        $this->attendance->shouldReceive('projectBaselineForTeam')->andReturn(7_000);
+
+        config()->set('finances.wage_cap_ratio', 0.70);
+        $salaryCap = new SalaryCapService(Mockery::mock(BudgetProjectionService::class));
+
+        $capBefore = $salaryCap->cap($game);
+        $this->service->acceptOffer($game, $offer->id);
+        $capAfter = $salaryCap->cap($game->fresh());
+
+        // Recurring naming income lifts the ceiling by 700,000.00 × 0.70.
+        $this->assertSame(490_000_00, $capAfter - $capBefore);
     }
 
     public function test_offers_never_exceed_the_pending_cap_or_duplicate_a_sponsor(): void
@@ -247,7 +326,7 @@ class NamingRightsServiceTest extends TestCase
         $this->assertSame(GameStadiumNamingDeal::STATUS_EXPIRED, $ended->fresh()->status);
         // Name reverts to the manager's own rename, not the historic default.
         $this->assertSame('Catedral del Norte', $stadium->fresh()->stadium_name);
-        // Rollover mints no offers — they arrive per-tick.
+        // Rollover mints no offers — the manager seeks them from the Commercial page.
         $this->assertSame(0, GameStadiumNamingDeal::where('game_id', $game->id)
             ->where('status', GameStadiumNamingDeal::STATUS_PENDING)->count());
     }
@@ -387,6 +466,15 @@ class NamingRightsServiceTest extends TestCase
         return GameStadium::where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->firstOrFail();
+    }
+
+    private function seedInvestment(Game $game, int $transferBudget): GameInvestment
+    {
+        return GameInvestment::create([
+            'game_id' => $game->id,
+            'season' => $game->season,
+            'transfer_budget' => $transferBudget,
+        ]);
     }
 
     private function seedOffer(

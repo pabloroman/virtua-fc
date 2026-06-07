@@ -196,8 +196,8 @@ return [
     'stadium_loan_drawn_message' => 'The bank has financed the project with :amount, repayable over :years annual instalments.',
     'stadium_loan_repaid_title' => 'Stadium loan repaid',
     'stadium_loan_repaid_message' => 'The :amount stadium loan has been fully repaid.',
-    'naming_rights_offer_title' => 'Naming-rights offer from :sponsor',
-    'naming_rights_offer_message' => ':sponsor wants to rename your stadium ":stadium". Review the offer on the stadium page before the season kicks off.',
+    'commercial_window_open_title' => 'Commercial window open',
+    'commercial_window_open_message' => 'Until the first league match you can seek sponsors on the Commercial page to grow your income and lift your salary cap.',
 
     // Squad registration
     'squad_registration_required_title' => 'Squad registration required',

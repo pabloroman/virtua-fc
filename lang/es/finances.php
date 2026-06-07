@@ -191,6 +191,7 @@ return [
     'category_severance' => 'Indemnización',
     'category_infrastructure' => 'Infraestructura',
     'category_stadium' => 'Estadio',
+    'category_agent_fee' => 'Comisión de agencia',
     'category_budget_loan' => 'Préstamo Presupuestario',
     'category_loan_repayment' => 'Devolución de Préstamo',
 
@@ -215,6 +216,7 @@ return [
     'tx_stadium_rebuild_payment' => 'Reforma del estadio (:capacity asientos)',
     'tx_stadium_uefa_upgrade_payment' => 'Mejora a Categoría UEFA :level',
     'tx_stadium_loan_instalment' => 'Cuota anual del préstamo del estadio: :amount',
+    'tx_naming_rights_search_fee' => 'Comisión de agencia comercial (búsqueda de patrocinador)',
 
     'stadium_debt_service' => 'Servicio de Deuda del Estadio',
     'tooltip_stadium_debt_service' => 'Cuota anual del préstamo de reforma del estadio (capital + intereses sobre el saldo). Se descuenta del superávit disponible.',

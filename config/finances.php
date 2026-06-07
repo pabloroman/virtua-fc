@@ -281,22 +281,29 @@ return [
     // Offers are generated each pre-season and can only be signed in the
     // pre-season window (through the first league matchday).
     'naming_rights' => [
-        // Most competing offers that can sit pending at once. Offers arrive
-        // probabilistically over the pre-season (see offer_chance_per_tick),
-        // so this caps how many a club fields while it makes up its mind.
+        // How many offers a single "seek sponsors" search puts on the table —
+        // also the cap on how many can sit pending at once. The manager seeks
+        // proactively from the Commercial page (there is no random arrival);
+        // each search tops the board up to this many reputation-weighted offers.
         'max_pending_offers' => 3,
 
-        // Per-date-advance probability that a naming-rights offer arrives,
-        // by reputation tier. Rolled on each pre-season tick (CareerAction
-        // processor), so over ~4 friendlies an elite club almost always draws
-        // one or two suitors while a local club rarely attracts any.
-        'offer_chance_per_tick' => [
-            'elite'        => 0.45,
-            'continental'  => 0.30,
-            'established'  => 0.18,
-            'modest'       => 0.10,
-            'local'        => 0.05,
+        // Cost of engaging a commercial agency to canvass sponsors, charged
+        // per "seek sponsors" search by reputation tier (cents). Together with
+        // the cooldown this is the friction that stops sponsor income from
+        // becoming free money on tap — a club can't endlessly re-roll the
+        // board for the top headline value at no cost.
+        'search_fee' => [
+            'elite'        => 500_000_00, // €500K
+            'continental'  => 250_000_00, // €250K
+            'established'  =>  80_000_00, // €80K
+            'modest'       =>  25_000_00, // €25K
+            'local'        =>  10_000_00, // €10K
         ],
+
+        // Minimum game-calendar days between two searches. The pre-season
+        // identity window is short, so burning days to re-seek is a real cost
+        // on top of the fee.
+        'search_cooldown_days' => 14,
 
         // One-time loyalty hit at signing = round(base_loyalty × factor),
         // floored by the existing base_loyalty − 15 loyalty floor. Scaling by

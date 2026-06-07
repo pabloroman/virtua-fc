@@ -301,7 +301,7 @@ class ShowClubStadium
             'upgrade' => $upgrade,
             'historyRows' => $historyRows,
             ...$this->stadiumSummaryService->build($game),
-            ...$this->namingRightsService->buildPanel($game),
+            ...$this->namingRightsService->buildIdentityPanel($game),
         ]);
     }
 

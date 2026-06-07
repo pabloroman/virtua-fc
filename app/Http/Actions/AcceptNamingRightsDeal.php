@@ -2,14 +2,14 @@
 
 namespace App\Http\Actions;
 
-use App\Http\Actions\Concerns\HandlesStadiumProjectCommit;
+use App\Http\Actions\Concerns\HandlesCommercialCommit;
 use App\Models\Game;
 use App\Modules\Stadium\Services\NamingRightsService;
 use Illuminate\Http\Request;
 
 class AcceptNamingRightsDeal
 {
-    use HandlesStadiumProjectCommit;
+    use HandlesCommercialCommit;
 
     public function __construct(
         private readonly NamingRightsService $namingRightsService,
@@ -32,7 +32,7 @@ class AcceptNamingRightsDeal
             return $redirect;
         }
 
-        return $this->stadiumSuccess($gameId, 'messages.naming_rights_accepted', [
+        return $this->commercialSuccess($gameId, 'messages.naming_rights_accepted', [
             'sponsor' => $sponsorName,
         ]);
     }
