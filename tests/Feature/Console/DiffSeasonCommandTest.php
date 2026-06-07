@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Console;
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Tests\TestCase;
 
@@ -42,15 +43,20 @@ class DiffSeasonCommandTest extends TestCase
             ['id' => '30', 'name' => 'Promoted Club', 'players' => []],
         ]);
 
-        $this->artisan('app:diff-season', [
+        // The report is emitted in a single write, but expectsOutputToContain
+        // matches per write — so it can only consume one substring per call.
+        // Capture the whole buffer with Artisan::output() and assert on it.
+        $exitCode = Artisan::call('app:diff-season', [
             'season' => $this->season,
             '--from' => $this->from,
-        ])
-            ->expectsOutputToContain('New Signing')
-            ->expectsOutputToContain('Departed Player')
-            ->expectsOutputToContain('Promoted Club')
-            ->expectsOutputToContain('Relegated Club')
-            ->assertSuccessful();
+        ]);
+        $output = Artisan::output();
+
+        $this->assertSame(0, $exitCode);
+        $this->assertStringContainsString('New Signing', $output);
+        $this->assertStringContainsString('Departed Player', $output);
+        $this->assertStringContainsString('Promoted Club', $output);
+        $this->assertStringContainsString('Relegated Club', $output);
     }
 
     public function test_reports_no_changes_when_squads_match(): void
@@ -59,11 +65,13 @@ class DiffSeasonCommandTest extends TestCase
         $this->writeEsp1($this->from, $clubs);
         $this->writeEsp1($this->season, $clubs);
 
-        $this->artisan('app:diff-season', [
+        $exitCode = Artisan::call('app:diff-season', [
             'season' => $this->season,
             '--from' => $this->from,
-        ])
-            ->expectsOutputToContain('No squad changes')
-            ->assertSuccessful();
+        ]);
+        $output = Artisan::output();
+
+        $this->assertSame(0, $exitCode);
+        $this->assertStringContainsString('No squad changes', $output);
     }
 }
