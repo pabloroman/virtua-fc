@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Modules\Competition\Services\CountryConfig;
+use App\Support\SeasonData;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -59,7 +60,7 @@ class ScaffoldSeason extends Command
         $missing = [];
         $shifted = 0;
 
-        foreach ($this->competitions($countryConfig) as [$code, $needs]) {
+        foreach ($this->competitions($countryConfig) as $code => $needs) {
             $srcDir = "{$fromBase}/{$code}";
             $dstDir = base_path("data/{$season}/{$code}");
 
@@ -116,49 +117,27 @@ class ScaffoldSeason extends Command
     }
 
     /**
-     * Enumerate every competition code that owns a data/{season}/ folder,
-     * paired with what squad data it needs: 'teams' (a teams.json), 'pool'
-     * (per-team {id}.json files), or 'none' (bare playoff — schedule only).
+     * Map every competition that owns a data/{season}/ folder to the squad data
+     * it needs from the scraper: 'teams' (a teams.json — leagues, cups and
+     * continental participant lists), 'pool' (per-team {id}.json files for the
+     * EUR/INT pools), or 'none' (bare playoff — schedule only). Derived from the
+     * shared SeasonData enumerator so it stays in lockstep with validate/seed.
      *
-     * @return array<array{0: string, 1: string}>
+     * @return array<string, string>
      */
     private function competitions(CountryConfig $countryConfig): array
     {
+        $needsByType = [
+            'league' => 'teams',
+            'cup' => 'teams',
+            'continental' => 'teams',
+            'pool' => 'pool',
+            'none' => 'none',
+        ];
+
         $out = [];
-        $seen = [];
-
-        $add = function (string $code, string $needs) use (&$out, &$seen): void {
-            if (isset($seen[$code])) {
-                return;
-            }
-            $seen[$code] = true;
-            $out[] = [$code, $needs];
-        };
-
-        foreach ($countryConfig->playableCountryCodes() as $country) {
-            // Playable tiers (+ siblings) and their promotion playoffs.
-            foreach ($countryConfig->flattenedTiers($country) as $tier) {
-                $add($tier['competition'], 'teams');
-            }
-            foreach ($countryConfig->promotionPlayoffIds($country) as $playoffId) {
-                $add($playoffId, 'none');
-            }
-
-            // Domestic cups (participant lists).
-            foreach ($countryConfig->domesticCupIds($country) as $cupId) {
-                $add($cupId, 'teams');
-            }
-
-            // Transfer pool: foreign leagues need teams.json, EUR/INT are pools.
-            $transferPool = $countryConfig->support($country)['transfer_pool'] ?? [];
-            foreach ($transferPool as $code => $poolConfig) {
-                $add($code, ($poolConfig['role'] ?? 'league') === 'team_pool' ? 'pool' : 'teams');
-            }
-
-            // Continental competitions (participant lists linking existing teams).
-            foreach ($countryConfig->continentalSupportIds($country) as $code) {
-                $add($code, 'teams');
-            }
+        foreach (SeasonData::competitions($countryConfig) as ['code' => $code, 'type' => $type]) {
+            $out[$code] = $needsByType[$type];
         }
 
         return $out;
