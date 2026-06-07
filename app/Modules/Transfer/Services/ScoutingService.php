@@ -634,10 +634,10 @@ class ScoutingService
 
     /**
      * Counter-offer willingness premium curve, applied to market value:
-     *   desire 0.0 → 0.85× MV  (no need: rejects premium counters, can go below market)
+     *   desire 0.0 → 0.95× MV  (no need: rejects premium counters, settles just below market)
      *   desire 1.0 → 1.50× MV  (clear need/upgrade: pays a real premium)
      */
-    private const COUNTER_PREMIUM_FLOOR = 0.85;
+    private const COUNTER_PREMIUM_FLOOR = 0.95;
     private const COUNTER_PREMIUM_CEIL = 1.50;
 
     /** Reproducible ±band variance on the premium, seeded from the offer uuid. */

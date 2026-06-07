@@ -98,12 +98,13 @@ class CounterOfferDesireTest extends TestCase
     public function test_low_need_deep_squad_buyer_rejects_above_market_counter(): void
     {
         // Deep at midfield (8) and the target wouldn't improve them →
-        // desire ≈ 0.08, willingness ≈ 0.9× MV. An above-market ask is rejected.
+        // desire ≈ 0.08, willingness ≈ 0.99× MV (just below market). A clearly
+        // above-market ask (1.3× MV) is still rejected: no need, no premium.
         $player = $this->target(overall: 50);
         $buyer = $this->buyer('Central Midfield', 70, 8, 10_000_000_00);
         $offer = $this->offer($player, $buyer, 9_000_000_00); // opened below market
 
-        $result = $this->scoutingService->evaluateCounterOffer($offer, 11_000_000_00, $this->game);
+        $result = $this->scoutingService->evaluateCounterOffer($offer, 13_000_000_00, $this->game);
 
         $this->assertSame('rejected', $result['result']);
     }
