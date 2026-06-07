@@ -1,5 +1,5 @@
 @props([
-    'offer',   // array: id, sponsor_name, proposed_stadium_name, annual_value_cents, contract_seasons
+    'offer',   // array: id, sponsor_name, proposed_stadium_name, annual_value_cents, contract_seasons, is_renewal
     'game',    // Game model (for the accept route)
 ])
 
@@ -8,6 +8,13 @@
 <div class="bg-surface-700 border border-border-default rounded-xl overflow-hidden flex flex-col">
     {{-- Header: sponsor + the stadium name it imposes --}}
     <div class="px-5 pt-5 pb-3">
+        @if($offer['is_renewal'] ?? false)
+            <div class="mb-2">
+                <span class="inline-block text-[10px] uppercase tracking-wide font-semibold px-2 py-0.5 rounded-md bg-accent-blue/10 text-accent-blue">
+                    {{ __('club.stadium.naming_rights.renewal_badge') }}
+                </span>
+            </div>
+        @endif
         <div class="font-heading text-xl font-bold text-text-primary truncate">{{ $offer['sponsor_name'] }}</div>
         <div class="mt-1 text-xs text-text-secondary truncate">
             {{ __('club.stadium.naming_rights.becomes', ['name' => $offer['proposed_stadium_name']]) }}
@@ -29,11 +36,11 @@
     {{-- Accept CTA --}}
     <div class="px-5 pb-5 mt-auto">
         <form method="POST" action="{{ route('game.club.commercial.naming-rights.accept', $game->id) }}"
-              onsubmit="return confirm(@js(__('club.stadium.naming_rights.accept_confirm', ['sponsor' => $offer['sponsor_name']])))">
+              onsubmit="return confirm(@js(__('club.stadium.naming_rights.' . (($offer['is_renewal'] ?? false) ? 'renew_confirm' : 'accept_confirm'), ['sponsor' => $offer['sponsor_name']])))">
             @csrf
             <input type="hidden" name="deal_id" value="{{ $offer['id'] }}">
             <x-primary-button color="green" size="sm" class="w-full">
-                {{ __('club.stadium.naming_rights.accept_button') }}
+                {{ ($offer['is_renewal'] ?? false) ? __('club.stadium.naming_rights.renew_button') : __('club.stadium.naming_rights.accept_button') }}
             </x-primary-button>
         </form>
     </div>

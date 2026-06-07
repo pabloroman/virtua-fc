@@ -11,8 +11,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * holds the whole lifecycle: pre-season offers (`pending`), the accepted
  * contract (`active`), and the trail of expired/rejected rows (history).
  *
- * Income settles proportional to attendance (see NamingRightsService), so a
- * sponsor pays more for a packed ground than an empty one.
+ * The sponsor pays a fixed recurring annual fee for as long as the deal runs
+ * (see NamingRightsService), independent of attendance.
  *
  * @property string $id
  * @property string $game_id
@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $previous_stadium_name
  * @property int $annual_value_cents
  * @property int $contract_seasons
+ * @property bool $is_renewal
  * @property string $status
  * @property int $offered_season
  * @property int|null $start_season
@@ -48,6 +49,7 @@ class GameStadiumNamingDeal extends Model
         'previous_stadium_name',
         'annual_value_cents',
         'contract_seasons',
+        'is_renewal',
         'status',
         'offered_season',
         'start_season',
@@ -57,6 +59,7 @@ class GameStadiumNamingDeal extends Model
     protected $casts = [
         'annual_value_cents' => 'integer',
         'contract_seasons' => 'integer',
+        'is_renewal' => 'boolean',
         'offered_season' => 'integer',
         'start_season' => 'integer',
         'end_season' => 'integer',

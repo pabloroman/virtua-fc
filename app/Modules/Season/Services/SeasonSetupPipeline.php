@@ -12,6 +12,7 @@ use App\Modules\Season\Processors\LeagueFixtureProcessor;
 use App\Modules\Season\Processors\NewSeasonResetProcessor;
 use App\Modules\Season\Processors\PreSeasonFixtureProcessor;
 use App\Modules\Season\Processors\SeasonTicketDefaultsProcessor;
+use App\Modules\Season\Processors\SeedInitialNamingDealProcessor;
 use App\Modules\Season\Processors\SquadRegistrationEnforcementProcessor;
 use App\Modules\Season\Processors\StandingsResetProcessor;
 use App\Modules\Season\Processors\TransferMarketSeedProcessor;
@@ -44,6 +45,7 @@ class SeasonSetupPipeline
         NewSeasonResetProcessor $newSeasonReset,
         TransferMarketSeedProcessor $transferMarketSeed,
         SeasonTicketDefaultsProcessor $seasonTicketDefaults,
+        SeedInitialNamingDealProcessor $seedInitialNamingDeal,
         GenerateNamingRightsOffersProcessor $namingRightsOffers,
     ) {
         $this->processors = [
@@ -59,6 +61,7 @@ class SeasonSetupPipeline
             $newSeasonReset,
             $transferMarketSeed,
             $seasonTicketDefaults,
+            $seedInitialNamingDeal,
             $namingRightsOffers,
         ];
 

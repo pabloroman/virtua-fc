@@ -391,6 +391,140 @@ class NamingRightsServiceTest extends TestCase
         $this->assertSame('Estadio Histórico', $match->venueName());
     }
 
+    public function test_seed_initial_deal_creates_an_active_deal_from_the_overlay(): void
+    {
+        $team = Team::factory()->create([
+            'transfermarkt_id' => 999001,
+            'stadium_name' => 'Spotify Camp Nou',
+            'stadium_seats' => 90_000,
+        ]);
+        config()->set('commercial.preexisting_naming_deals', [
+            999001 => ['sponsor' => 'Spotify', 'clean_name' => 'Camp Nou'],
+        ]);
+        // Pin the 'established' band so the tier-midpoint fee is deterministic.
+        config()->set('commercial.naming_rights.annual_value.established', [4_000_000_00, 4_000_000_00]);
+
+        $game = Game::factory()->forTeam($team)->inCompetition($this->league->id)
+            ->create(['pre_season' => true, 'season' => 2026]);
+        $this->seedLoyalty($game, base: 60, current: 60); // tier 'established'
+        $this->seedStadium($game);
+
+        $deal = $this->service->seedInitialDeal($game);
+
+        $this->assertNotNull($deal);
+        $this->assertSame(GameStadiumNamingDeal::STATUS_ACTIVE, $deal->status);
+        $this->assertSame('Spotify', $deal->sponsor_name);
+        $this->assertSame('Spotify Camp Nou', $deal->proposed_stadium_name);
+        $this->assertSame('Camp Nou', $deal->previous_stadium_name);
+        $this->assertFalse($deal->is_renewal);
+
+        // 1-season term and tier-midpoint fee.
+        $this->assertSame(1, $deal->contract_seasons);
+        $this->assertSame(2026, $deal->start_season);
+        $this->assertSame(2026, $deal->end_season);
+        $this->assertSame(4_000_000_00, $deal->annual_value_cents);
+
+        // Per-game ground is branded with the sponsor name and reads as sponsored.
+        $this->assertSame('Spotify Camp Nou', $this->stadiumFor($game)->stadium_name);
+        $panel = $this->service->buildCommercialPanel($game)['namingRights'];
+        $this->assertSame('sponsor', $panel['source']);
+        $this->assertNotNull($panel['activeDeal']);
+        $this->assertSame(4_000_000_00, $this->service->projectedRevenueForGame($game));
+        $this->assertSame(4_000_000_00, $this->service->settledRevenueForGame($game));
+    }
+
+    public function test_seed_initial_deal_is_idempotent(): void
+    {
+        $team = Team::factory()->create([
+            'transfermarkt_id' => 999002,
+            'stadium_name' => 'Spotify Camp Nou',
+            'stadium_seats' => 90_000,
+        ]);
+        config()->set('commercial.preexisting_naming_deals', [
+            999002 => ['sponsor' => 'Spotify', 'clean_name' => 'Camp Nou'],
+        ]);
+
+        $game = Game::factory()->forTeam($team)->inCompetition($this->league->id)
+            ->create(['pre_season' => true, 'season' => 2026]);
+        $this->seedLoyalty($game, base: 60, current: 60);
+        $this->seedStadium($game);
+
+        $this->assertNotNull($this->service->seedInitialDeal($game));
+        $this->assertNull($this->service->seedInitialDeal($game));
+
+        $this->assertSame(1, GameStadiumNamingDeal::where('game_id', $game->id)->count());
+    }
+
+    public function test_seed_initial_deal_is_a_noop_for_an_unmapped_club(): void
+    {
+        $team = Team::factory()->create([
+            'transfermarkt_id' => 123456, // not in the overlay
+            'stadium_name' => 'Estadio Genérico',
+            'stadium_seats' => 20_000,
+        ]);
+        config()->set('commercial.preexisting_naming_deals', [
+            999003 => ['sponsor' => 'Spotify', 'clean_name' => 'Camp Nou'],
+        ]);
+
+        $game = Game::factory()->forTeam($team)->inCompetition($this->league->id)
+            ->create(['pre_season' => true, 'season' => 2026]);
+        $this->seedLoyalty($game, base: 60, current: 60);
+
+        $this->assertNull($this->service->seedInitialDeal($game));
+        $this->assertSame(0, GameStadiumNamingDeal::where('game_id', $game->id)->count());
+    }
+
+    public function test_rollover_mints_an_incumbent_renewal_offer_when_a_deal_expires(): void
+    {
+        $game = $this->preSeasonGame();
+        $stadium = $this->seedStadium($game);
+        $this->seedLoyalty($game, base: 60, current: 60); // tier 'established'
+        // Pin the band so the re-priced renewal fee is deterministic.
+        config()->set('commercial.naming_rights.annual_value.established', [3_000_000_00, 3_000_000_00]);
+        config()->set('commercial.naming_rights.renewal_seasons', 1);
+
+        $ended = $this->seedOffer($game, status: GameStadiumNamingDeal::STATUS_ACTIVE);
+        $ended->update(['start_season' => 2025, 'end_season' => 2025, 'previous_stadium_name' => null]);
+        $stadium->update(['stadium_name' => $ended->proposed_stadium_name]);
+
+        $this->service->rolloverForNewSeason($game);
+
+        // Old deal expired and the ground reverted to its historic name.
+        $this->assertSame(GameStadiumNamingDeal::STATUS_EXPIRED, $ended->fresh()->status);
+        $this->assertNull($stadium->fresh()->stadium_name);
+
+        // A free renewal offer for the same sponsor is on the board, re-priced
+        // to the current tier and running one more season.
+        $renewal = GameStadiumNamingDeal::where('game_id', $game->id)
+            ->where('status', GameStadiumNamingDeal::STATUS_PENDING)
+            ->where('is_renewal', true)
+            ->first();
+        $this->assertNotNull($renewal);
+        $this->assertSame($ended->sponsor_name, $renewal->sponsor_name);
+        $this->assertSame($ended->proposed_stadium_name, $renewal->proposed_stadium_name);
+        $this->assertSame(1, $renewal->contract_seasons);
+        $this->assertSame(3_000_000_00, $renewal->annual_value_cents);
+        $this->assertSame(2026, $renewal->offered_season);
+    }
+
+    public function test_accepting_a_renewal_rebrands_without_a_loyalty_shock(): void
+    {
+        $game = $this->preSeasonGame();
+        $this->seedLoyalty($game, base: 90, current: 90);
+        $stadium = $this->seedStadium($game);
+
+        $renewal = $this->seedOffer($game, status: GameStadiumNamingDeal::STATUS_PENDING, value: 2_000_000_00, seasons: 1);
+        $renewal->update(['is_renewal' => true]);
+
+        $this->service->acceptOffer($game, $renewal->id);
+
+        $renewal->refresh();
+        $this->assertSame(GameStadiumNamingDeal::STATUS_ACTIVE, $renewal->status);
+        $this->assertSame($renewal->proposed_stadium_name, $stadium->fresh()->stadium_name);
+        // Retaining the same name is no betrayal — fan support is untouched.
+        $this->assertSame(90, $this->loyaltyFor($game));
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────
 
     private function preSeasonGame(): Game

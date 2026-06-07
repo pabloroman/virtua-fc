@@ -203,6 +203,9 @@ return [
             'seasons' => '{1} :count temporada|[2,*] :count temporadas',
             'accept_button' => 'Aceptar acuerdo',
             'accept_confirm' => '¿Vender los derechos de nombre a :sponsor? Esto bloquea el nombre del estadio durante el contrato y resta apoyo de la afición.',
+            'renewal_badge' => 'Renovación',
+            'renew_button' => 'Renovar acuerdo',
+            'renew_confirm' => '¿Renovar el acuerdo con :sponsor? Mantiene el nombre del estadio sin coste de apoyo de la afición.',
 
             'rename_button' => 'Renombrar estadio',
             'rename_placeholder' => 'Nuevo nombre del estadio',

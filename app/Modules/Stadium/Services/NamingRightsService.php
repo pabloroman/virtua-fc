@@ -61,22 +61,28 @@ class NamingRightsService
     /**
      * Roll naming-rights deals over into a new season: expire any deal that
      * has run its term (handing the stadium name back to whatever it was
-     * before the sponsorship — a custom rename, or the historic name) and
-     * clear unaccepted offers left over from previous pre-seasons.
+     * before the sponsorship — a custom rename, or the historic name), offer
+     * the incumbent sponsor a free renewal, and clear unaccepted offers left
+     * over from previous pre-seasons.
      *
-     * Offers themselves are NOT minted here, nor do they arrive on their
-     * own: the manager seeks them from the Commercial page (seekSponsors()).
-     * Idempotent — safe to re-run within the same setup.
+     * Only the incumbent renewal is minted here; fresh sponsor offers are
+     * sought by the manager from the Commercial page (seekSponsors()).
+     * Idempotent — once a deal is expired it is no longer the active deal, so
+     * a re-run mints no second renewal.
      */
     public function rolloverForNewSeason(Game $game): void
     {
         $season = (int) $game->season;
 
-        // Expire a deal that ended last season and restore the pre-deal name.
+        // Expire a deal that ended last season, restore the pre-deal name, and
+        // give the incumbent sponsor a free renewal offer for the new pre-season.
         $active = GameStadiumNamingDeal::activeForGame($game->id, $game->team_id);
         if ($active && $active->end_season !== null && $active->end_season < $season) {
             $active->update(['status' => GameStadiumNamingDeal::STATUS_EXPIRED]);
             $this->restorePreDealName($game, $active);
+
+            $tier = TeamReputation::resolveLevel($game->id, $game->team_id);
+            $this->createRenewalOffer($game, $active, $tier);
         }
 
         // Clear unaccepted offers from previous pre-seasons.
@@ -108,6 +114,80 @@ class NamingRightsService
             message: __('notifications.commercial_window_open_message'),
             priority: GameNotification::PRIORITY_INFO,
         );
+    }
+
+    /**
+     * Materialise the pre-existing real-world naming deal a club starts the
+     * game already wearing (e.g. "Spotify Camp Nou"), if it has one. Runs once
+     * at game setup: creates an ACTIVE deal from the config overlay
+     * (config/commercial.php `preexisting_naming_deals`, keyed by
+     * transfermarkt_id), brands the per-game stadium row, and prices the fee
+     * from the club's reputation tier.
+     *
+     * Idempotent: a no-op once any naming-deal row exists for the club, so it
+     * never re-creates after the seeded deal later expires or the user trades
+     * offers. No fan-loyalty shock (the fans already live with the name) and no
+     * finance refresh — the budget-projection processor that runs afterwards
+     * picks the deal up. Returns null when the club has no pre-existing deal.
+     */
+    public function seedInitialDeal(Game $game): ?GameStadiumNamingDeal
+    {
+        if ($game->isTournamentMode()) {
+            return null;
+        }
+
+        $transfermarktId = $game->team?->transfermarkt_id;
+        if ($transfermarktId === null) {
+            return null;
+        }
+
+        $overlay = (array) config('commercial.preexisting_naming_deals', []);
+        // Config keys may be read as int or string depending on source; accept both.
+        $entry = $overlay[$transfermarktId] ?? $overlay[(string) $transfermarktId] ?? null;
+        if ($entry === null) {
+            return null;
+        }
+
+        // Only at first setup, before any deal exists for the club.
+        $alreadyHasDeal = GameStadiumNamingDeal::query()
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->exists();
+        if ($alreadyHasDeal) {
+            return null;
+        }
+
+        // The sponsored display name lives in the seed data (Team.stadium_name);
+        // the overlay only supplies the brand and the clean revert name.
+        $sponsoredName = $game->team?->stadium_name;
+        if ($sponsoredName === null || $sponsoredName === '') {
+            return null;
+        }
+
+        $season = (int) $game->season;
+        $tier = TeamReputation::resolveLevel($game->id, $game->team_id);
+        $seasons = (int) config('commercial.naming_rights.preexisting_deal_seasons', 1);
+
+        $deal = GameStadiumNamingDeal::create([
+            'game_id' => $game->id,
+            'team_id' => $game->team_id,
+            'sponsor_name' => $entry['sponsor'],
+            'proposed_stadium_name' => $sponsoredName,
+            'previous_stadium_name' => $entry['clean_name'] ?? null,
+            'annual_value_cents' => $this->tierMidpointValue($tier),
+            'contract_seasons' => $seasons,
+            'is_renewal' => false,
+            'status' => GameStadiumNamingDeal::STATUS_ACTIVE,
+            'offered_season' => $season,
+            'start_season' => $season,
+            'end_season' => $season + $seasons - 1,
+        ]);
+
+        // Brand the per-game ground so the resolver shows the sponsor name and
+        // the expiry revert guard (restorePreDealName) can later fire.
+        $this->setStadiumName($game, $sponsoredName);
+
+        return $deal;
     }
 
     // ── Proactive search (Commercial page) ───────────────────────────────
@@ -305,9 +385,56 @@ class NamingRightsService
             'proposed_stadium_name' => $sponsor['stadium'],
             'annual_value_cents' => random_int((int) $minValue, (int) $maxValue),
             'contract_seasons' => random_int($minSeasons, $maxSeasons),
+            'is_renewal' => false,
             'status' => GameStadiumNamingDeal::STATUS_PENDING,
             'offered_season' => $season,
         ]);
+    }
+
+    /**
+     * Mint a free renewal offer for the incumbent sponsor when a deal expires:
+     * same sponsor and stadium name, a fresh fee re-priced from the club's
+     * current reputation tier, and a one-season term so the decision returns
+     * each pre-season. Flagged is_renewal so acceptance skips the loyalty shock
+     * (the name does not change). No agency fee or cooldown — keeping a sponsor
+     * you already have costs nothing; shopping for a different one still goes
+     * through the paid seek flow.
+     */
+    private function createRenewalOffer(Game $game, GameStadiumNamingDeal $expired, string $tier): GameStadiumNamingDeal
+    {
+        $season = (int) $game->season;
+
+        $valueRange = config("commercial.naming_rights.annual_value.{$tier}")
+            ?? config('commercial.naming_rights.annual_value.local', [50_000_00, 200_000_00]);
+        [$minValue, $maxValue] = $valueRange;
+
+        $seasons = (int) config('commercial.naming_rights.renewal_seasons', 1);
+
+        return GameStadiumNamingDeal::create([
+            'game_id' => $game->id,
+            'team_id' => $game->team_id,
+            'sponsor_name' => $expired->sponsor_name,
+            'proposed_stadium_name' => $expired->proposed_stadium_name,
+            'annual_value_cents' => random_int((int) $minValue, (int) $maxValue),
+            'contract_seasons' => $seasons,
+            'is_renewal' => true,
+            'status' => GameStadiumNamingDeal::STATUS_PENDING,
+            'offered_season' => $season,
+        ]);
+    }
+
+    /**
+     * Deterministic fee for a tier: the midpoint of the tier's annual-value
+     * band. Used to price pre-existing deals a club starts the game with — no
+     * per-club value is authored, so the fee simply tracks club stature.
+     */
+    private function tierMidpointValue(string $tier): int
+    {
+        $range = config("commercial.naming_rights.annual_value.{$tier}")
+            ?? config('commercial.naming_rights.annual_value.local', [50_000_00, 200_000_00]);
+        [$min, $max] = $range;
+
+        return intdiv((int) $min + (int) $max, 2);
     }
 
     /**
@@ -420,7 +547,11 @@ class NamingRightsService
         // Brand the ground (the sponsor takes the pen — manual rename locks).
         $this->setStadiumName($game, $deal->proposed_stadium_name);
 
-        $this->applyLoyaltyShock($game);
+        // A renewal keeps the existing name, so there is no fresh betrayal of
+        // the fans — only a new sponsor (a name change) costs loyalty.
+        if (! $deal->is_renewal) {
+            $this->applyLoyaltyShock($game);
+        }
         $this->refreshProjectedNamingRights($game);
 
         return $deal;
@@ -552,6 +683,7 @@ class NamingRightsService
                     'proposed_stadium_name' => $deal->proposed_stadium_name,
                     'annual_value_cents' => $deal->annual_value_cents,
                     'contract_seasons' => $deal->contract_seasons,
+                    'is_renewal' => $deal->is_renewal,
                 ])
                 ->all();
         }

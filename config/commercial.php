@@ -9,10 +9,10 @@
 return [
 
     // ── Stadium Naming Rights ──────────────────────────────────────────
-    // Selling the stadium name to a sponsor: recurring income that settles
-    // proportional to attendance, paid for in a one-time fan-loyalty shock.
-    // Offers are generated each pre-season and can only be signed in the
-    // pre-season window (through the first league matchday).
+    // Selling the stadium name to a sponsor: a fixed recurring annual fee,
+    // paid for in a one-time fan-loyalty shock. Offers are sought from the
+    // Commercial page and can only be signed in the pre-season window (through
+    // the first league matchday).
     'naming_rights' => [
         // How many offers a single "seek sponsors" search puts on the table —
         // also the cap on how many can sit pending at once. The manager seeks
@@ -43,10 +43,9 @@ return [
         // base_loyalty makes cult clubs (high base) pay the steepest price.
         'loyalty_shock_factor' => 0.12,
 
-        // [min, max] annual headline value by reputation tier (in cents),
-        // calibrated to real-world stadium naming-rights benchmarks. The
-        // realised payout scales down from here with stadium fill, so a half-
-        // empty ground pays the sponsor proportionally less than the headline.
+        // [min, max] annual fee by reputation tier (in cents), calibrated to
+        // real-world stadium naming-rights benchmarks. The sponsor pays this
+        // fixed fee for as long as the deal runs, regardless of attendance.
         //
         // The curve is deliberately non-linear: it compresses sharply below the
         // continental elite (Barça's Spotify deal ≈ €20M/yr, Bayern's Allianz
@@ -64,6 +63,16 @@ return [
         // Contract length bounds (seasons), chosen per offer.
         'min_contract_seasons' => 1,
         'max_contract_seasons' => 5,
+
+        // Term (seasons) a seeded real-world deal runs before its first renewal
+        // decision. Short by design: the incumbent re-offers each pre-season, so
+        // keeping the sponsor is a recurring choice rather than a one-off.
+        'preexisting_deal_seasons' => 1,
+
+        // Term (seasons) granted when an incumbent renewal is accepted — an
+        // annual cadence that keeps the renewal decision coming back each
+        // pre-season.
+        'renewal_seasons' => 1,
 
         // Which sponsor reaches bid for each club tier. A brand chases the club
         // stature it can realistically back: global names go after the elite and
@@ -225,6 +234,63 @@ return [
             ['name' => 'San Benedetto',    'reach' => 'regional', 'country' => 'IT', 'stadium' => 'Stadio San Benedetto'],
             ['name' => 'Levissima',        'reach' => 'regional', 'country' => 'IT', 'stadium' => 'Stadio Levissima'],
         ],
+    ],
+
+    // ── Pre-existing real-world naming deals ────────────────────────────
+    // Clubs that begin the game already wearing a sponsor's name. Keyed by
+    // transfermarkt_id (Team.transfermarkt_id). The sponsored display name is
+    // the seed data's Team.stadium_name — left untouched so AI opponents keep
+    // their real branding via GameStadiumNameResolver's fallback. `clean_name`
+    // is the traditional name the ground reverts to when the deal lapses
+    // unrenewed. Fees are tier-derived (no per-club value); SeedInitialNaming
+    // DealProcessor materialises a 1-season active deal at game start, after
+    // which the incumbent re-offers each pre-season (see NamingRightsService).
+    //
+    // Arms-length sponsors only: owner-named grounds (Red Bull Arena,
+    // Volkswagen Arena, BayArena, Mapei), club/venue names (RCDE Stadium,
+    // London Stadium) and born-sponsored grounds with no traditional name
+    // (Europa-Park Stadion, Mewa Arena, WWK Arena) are deliberately excluded.
+    'preexisting_naming_deals' => [
+        // ── Spain — LaLiga ───────────────────────────────────────────────
+        131  => ['sponsor' => 'Spotify',           'clean_name' => 'Camp Nou'],            // FC Barcelona
+        13   => ['sponsor' => 'Riyadh Air',        'clean_name' => 'Metropolitano'],       // Atlético de Madrid
+        681  => ['sponsor' => 'Reale Seguros',     'clean_name' => 'Anoeta'],              // Real Sociedad
+        940  => ['sponsor' => 'Abanca',            'clean_name' => 'Balaídos'],            // RC Celta
+
+        // ── Spain — Segunda ──────────────────────────────────────────────
+        897  => ['sponsor' => 'Abanca',            'clean_name' => 'Riazor'],              // Deportivo de La Coruña
+        142  => ['sponsor' => 'Ibercaja',          'clean_name' => 'La Romareda'],         // Real Zaragoza
+        993  => ['sponsor' => 'Bahrain Victorious', 'clean_name' => 'Nuevo Arcángel'],     // Córdoba CF
+        2502 => ['sponsor' => 'SkyFi',             'clean_name' => 'Castalia'],            // CD Castellón
+
+        // ── England — Premier League ─────────────────────────────────────
+        11   => ['sponsor' => 'Emirates',          'clean_name' => 'Ashburton Grove'],     // Arsenal FC
+        281  => ['sponsor' => 'Etihad',            'clean_name' => 'City of Manchester Stadium'], // Manchester City
+        29   => ['sponsor' => 'Hill Dickinson',    'clean_name' => 'Everton Stadium'],     // Everton FC
+        1237 => ['sponsor' => 'American Express',   'clean_name' => 'Falmer Stadium'],      // Brighton & Hove Albion
+        1148 => ['sponsor' => 'Gtech',             'clean_name' => 'Brentford Community Stadium'], // Brentford FC
+        989  => ['sponsor' => 'Vitality',          'clean_name' => 'Dean Court'],          // AFC Bournemouth
+
+        // ── Germany — Bundesliga ─────────────────────────────────────────
+        16   => ['sponsor' => 'Signal Iduna',      'clean_name' => 'Westfalenstadion'],    // Borussia Dortmund
+        79   => ['sponsor' => 'MHP',               'clean_name' => 'Neckarstadion'],       // VfB Stuttgart
+        24   => ['sponsor' => 'Deutsche Bank',     'clean_name' => 'Waldstadion'],         // Eintracht Frankfurt
+        3    => ['sponsor' => 'RheinEnergie',      'clean_name' => 'Müngersdorfer Stadion'], // 1.FC Köln
+        533  => ['sponsor' => 'PreZero',           'clean_name' => 'Rhein-Neckar-Arena'],  // TSG 1899 Hoffenheim
+        2036 => ['sponsor' => 'Voith',             'clean_name' => 'Albstadion'],          // 1.FC Heidenheim 1846
+
+        // ── France — Ligue 1 ─────────────────────────────────────────────
+        244  => ['sponsor' => 'Orange',            'clean_name' => 'Stade Vélodrome'],     // Olympique Marseille
+        1041 => ['sponsor' => 'Groupama',          'clean_name' => 'Parc Olympique Lyonnais'], // Olympique Lyon
+        1082 => ['sponsor' => 'Decathlon',         'clean_name' => 'Stade Pierre-Mauroy'], // LOSC Lille
+        417  => ['sponsor' => 'Allianz',           'clean_name' => 'Stade de Nice'],       // OGC Nice
+
+        // ── Italy — Serie A ──────────────────────────────────────────────
+        506  => ['sponsor' => 'Allianz',           'clean_name' => 'Juventus Stadium'],    // Juventus FC
+        410  => ['sponsor' => 'Bluenergy',         'clean_name' => 'Stadio Friuli'],       // Udinese Calcio
+        800  => ['sponsor' => 'New Balance',       'clean_name' => "Stadio Atleti Azzurri d'Italia"], // Atalanta BC
+        1390 => ['sponsor' => 'Unipol',            'clean_name' => 'Sardegna Arena'],      // Cagliari Calcio
+        4172 => ['sponsor' => 'Cetilar',           'clean_name' => 'Arena Garibaldi'],     // Pisa Sporting Club
     ],
 
 ];

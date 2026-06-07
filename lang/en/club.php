@@ -203,6 +203,9 @@ return [
             'seasons' => '{1} :count season|[2,*] :count seasons',
             'accept_button' => 'Accept deal',
             'accept_confirm' => 'Sell the naming rights to :sponsor? This locks the stadium name for the contract and dents fan support.',
+            'renewal_badge' => 'Renewal',
+            'renew_button' => 'Renew deal',
+            'renew_confirm' => 'Renew the deal with :sponsor? It keeps the stadium name with no fan-support cost.',
 
             'rename_button' => 'Rename stadium',
             'rename_placeholder' => 'New stadium name',
