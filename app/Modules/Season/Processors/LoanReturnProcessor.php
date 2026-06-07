@@ -43,7 +43,9 @@ class LoanReturnProcessor implements SeasonProcessor
             'playerId' => $loan->game_player_id,
             'playerName' => $loan->gamePlayer->name,
             'parentTeamId' => $loan->parent_team_id,
-            'parentTeamName' => $loan->parentTeam->name,
+            // Null for loans whose owning club isn't in the game — the player
+            // is freed rather than returned, so there is no parent team name.
+            'parentTeamName' => $loan->parentTeam?->name,
             'loanTeamId' => $loan->loan_team_id,
             'loanTeamName' => $loan->loanTeam->name,
         ])->toArray();
