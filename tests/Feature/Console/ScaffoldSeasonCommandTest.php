@@ -7,7 +7,10 @@ use Tests\TestCase;
 
 class ScaffoldSeasonCommandTest extends TestCase
 {
-    // Throwaway season years kept well clear of any real data/{season} folder.
+    // Throwaway season years kept well clear of any real data/{season} folder
+    // AND of the year ValidateSeasonCommandTest uses (2096): both classes write
+    // to the shared base_path('data') tree, so under `test --parallel` they must
+    // stay on disjoint years or they race on the same folder.
     private string $from = '2098';
 
     private string $to = '2099';

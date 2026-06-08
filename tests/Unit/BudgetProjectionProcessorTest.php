@@ -12,10 +12,12 @@ use App\Modules\Season\Processors\BudgetProjectionProcessor;
 use App\Modules\Season\Services\SeasonGoalService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Tests\TestCase;
 
 class BudgetProjectionProcessorTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
     use RefreshDatabase;
 
     public function test_sets_season_goal_and_stores_projections_metadata(): void

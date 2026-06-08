@@ -7,7 +7,12 @@ use Tests\TestCase;
 
 class ValidateSeasonCommandTest extends TestCase
 {
-    private string $season = '2099';
+    // Throwaway season kept clear of any real data/{season} folder AND of the
+    // years ScaffoldSeasonCommandTest uses (2098/2099): both classes write to
+    // the shared base_path('data') tree, so under `test --parallel` they must
+    // not touch the same folder or they race (one's tearDown deletes the
+    // other's freshly-written files). Disjoint years keep them isolated.
+    private string $season = '2096';
 
     protected function tearDown(): void
     {
@@ -35,7 +40,7 @@ class ValidateSeasonCommandTest extends TestCase
         $rounds = $leagueRounds ?? 2 * (count($clubs) - 1);
         $league = [];
         for ($i = 1; $i <= $rounds; $i++) {
-            $league[] = ['round' => $i, 'date' => sprintf('2099-08-%02d', min($i, 28))];
+            $league[] = ['round' => $i, 'date' => sprintf('%s-08-%02d', $this->season, min($i, 28))];
         }
         File::put("{$dir}/schedule.json", json_encode(['league' => $league]));
     }

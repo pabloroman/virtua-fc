@@ -343,8 +343,10 @@ class NamingRightsServiceTest extends TestCase
         $this->assertSame(GameStadiumNamingDeal::STATUS_EXPIRED, $ended->fresh()->status);
         // Name reverts to the manager's own rename, not the historic default.
         $this->assertSame('Catedral del Norte', $stadium->fresh()->stadium_name);
-        // Rollover mints no offers — the manager seeks them from the Commercial page.
-        $this->assertSame(0, GameStadiumNamingDeal::where('game_id', $game->id)
+        // Rollover mints only the incumbent's free renewal — no fresh sponsor
+        // offers (the manager seeks those from the Commercial page). The renewal
+        // itself is asserted in detail by test_rollover_mints_an_incumbent_renewal_offer.
+        $this->assertSame(1, GameStadiumNamingDeal::where('game_id', $game->id)
             ->where('status', GameStadiumNamingDeal::STATUS_PENDING)->count());
     }
 
