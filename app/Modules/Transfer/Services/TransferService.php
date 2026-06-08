@@ -102,24 +102,6 @@ class TransferService
     private const MAX_FEE_TO_SQUAD_VALUE_RATIO = 0.15;
 
     /**
-     * Default chance of pre-contract offer per expiring player per matchday.
-     */
-    private const PRE_CONTRACT_OFFER_CHANCE = 0.10; // 10%
-
-    /**
-     * Value-based pre-contract offer chance per matchday.
-     * Higher-value players attract more aggressive AI competition.
-     * [min_market_value_cents => chance]
-     */
-    private const PRE_CONTRACT_OFFER_CHANCE_BY_VALUE = [
-        5_000_000_000  => 0.35, // €50M+ → 35%
-        2_000_000_000  => 0.25, // €20M+ → 25%
-        1_000_000_000  => 0.20, // €10M+ → 20%
-        500_000_000    => 0.15, // €5M+  → 15%
-        0              => 0.10, // < €5M → 10%
-    ];
-
-    /**
      * Pre-contract offer expiry in days.
      */
     private const PRE_CONTRACT_OFFER_EXPIRY_DAYS = TransferOffer::PRE_CONTRACT_OFFER_EXPIRY_DAYS;
@@ -560,13 +542,15 @@ class TransferService
      */
     public function getPreContractOfferChance(GamePlayer $player): float
     {
-        foreach (self::PRE_CONTRACT_OFFER_CHANCE_BY_VALUE as $minValue => $chance) {
+        // Bands are matched high-to-low by market value (config/transfers.php).
+        $byValue = config('transfers.ai_pre_contract.offer_chance_by_value', []);
+        foreach ($byValue as $minValue => $chance) {
             if ($player->market_value_cents >= $minValue) {
-                return $chance;
+                return (float) $chance;
             }
         }
 
-        return self::PRE_CONTRACT_OFFER_CHANCE;
+        return (float) config('transfers.ai_pre_contract.offer_chance_default', 0.10);
     }
 
     /**

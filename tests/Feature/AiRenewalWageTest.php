@@ -99,6 +99,13 @@ class AiRenewalWageTest extends TestCase
 
     public function test_contract_expiration_recomputes_ai_wages_and_leaves_user_team_alone(): void
     {
+        // Pin the non-renewal chance to 0 so this AI keeper deterministically
+        // renews — the random run-down path is covered by its own tests below.
+        config([
+            'transfers.ai_contract_renewal.non_veteran_non_renewal_base' => 0.0,
+            'transfers.ai_contract_renewal.non_veteran_above_club_bonus' => 0.0,
+        ]);
+
         // AI non-veteran with an expiring contract: auto-renewed AND re-priced.
         $aiPlayer = GamePlayer::factory()->forGame($this->game)->forTeam($this->aiTeam)->create([
             'date_of_birth' => '1996-01-01', // ~30, non-veteran
@@ -133,6 +140,77 @@ class AiRenewalWageTest extends TestCase
 
         $this->assertNull($userPlayer->team_id, 'Expiring user-team player becomes a free agent');
         $this->assertSame(20_000_000, $userPlayer->annual_wage, 'AI wage recompute must never touch the user team');
+    }
+
+    public function test_ai_non_veteran_runs_contract_down_to_free_agency_when_configured(): void
+    {
+        // Force the non-renewal path so an expiring AI non-veteran walks for free
+        // instead of being re-upped — the new supply of quality free agents.
+        config([
+            'transfers.ai_contract_renewal.non_veteran_non_renewal_base' => 1.0,
+            'transfers.ai_contract_renewal.non_veteran_non_renewal_max' => 1.0,
+            'transfers.ai_contract_renewal.non_veteran_above_club_bonus' => 0.0,
+        ]);
+
+        $aiPlayer = GamePlayer::factory()->forGame($this->game)->forTeam($this->aiTeam)->create([
+            'date_of_birth' => '1996-01-01', // ~30, non-veteran
+            'market_value_cents' => 3_000_000_000,
+            'annual_wage' => 20_000_000,
+            'contract_until' => '2027-06-30',
+            'release_clause' => 100_000_000,
+            'pending_annual_wage' => null,
+        ]);
+
+        app(ContractExpirationProcessor::class)->process($this->game, new SeasonTransitionData(
+            oldSeason: '2026',
+            newSeason: '2027',
+            competitionId: $this->game->competition_id,
+        ));
+
+        $aiPlayer->refresh();
+        $this->assertNull($aiPlayer->team_id, 'A non-renewed AI non-veteran becomes a free agent');
+        $this->assertNull($aiPlayer->release_clause, 'A free agent carries no release clause');
+    }
+
+    public function test_non_renewal_chance_rises_for_players_above_their_club_tier(): void
+    {
+        // Base 0 so ONLY the "too good for his club" bonus drives non-renewal.
+        // The AI team has no reputation row → resolves to LOCAL (tier index 0).
+        config([
+            'transfers.ai_contract_renewal.non_veteran_non_renewal_base' => 0.0,
+            'transfers.ai_contract_renewal.non_veteran_above_club_bonus' => 1.0,
+            'transfers.ai_contract_renewal.non_veteran_non_renewal_max' => 1.0,
+        ]);
+
+        $star = GamePlayer::factory()->forGame($this->game)->forTeam($this->aiTeam)->create([
+            'date_of_birth' => '1996-01-01',
+            'market_value_cents' => 3_000_000_000,
+            'annual_wage' => 20_000_000,
+            'contract_until' => '2027-06-30',
+            'tier' => 5, // index 4 — well above a LOCAL club
+            'pending_annual_wage' => null,
+        ]);
+        $squadFiller = GamePlayer::factory()->forGame($this->game)->forTeam($this->aiTeam)->create([
+            'date_of_birth' => '1996-01-01',
+            'market_value_cents' => 50_000_000,
+            'annual_wage' => 20_000_000,
+            'contract_until' => '2027-06-30',
+            'tier' => 1, // index 0 — at the club's level
+            'pending_annual_wage' => null,
+        ]);
+
+        app(ContractExpirationProcessor::class)->process($this->game, new SeasonTransitionData(
+            oldSeason: '2026',
+            newSeason: '2027',
+            competitionId: $this->game->competition_id,
+        ));
+
+        $star->refresh();
+        $squadFiller->refresh();
+
+        $this->assertNull($star->team_id, 'A player far above his club tier runs his contract down to free agency');
+        $this->assertSame($this->aiTeam->id, $squadFiller->team_id, 'An at-tier squad player is auto-renewed');
+        $this->assertSame('2029-06-30', $squadFiller->contract_until->toDateString(), 'The retained player is renewed +3 years');
     }
 
     /**

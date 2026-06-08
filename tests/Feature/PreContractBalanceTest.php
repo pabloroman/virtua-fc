@@ -433,45 +433,82 @@ class PreContractBalanceTest extends TestCase
             'competition_id' => $this->competition->id,
         ]);
 
-        // €50M+ player → 35% chance
+        // Expected chances are the config/transfers.php defaults (softened from
+        // the old 0.10–0.35 ramp to leave the user more room to keep his stars).
+
+        // €50M+ player → 20% chance
         $highValue = GamePlayer::factory()->create([
             'game_id' => $game->id,
             'team_id' => $team->id,
             'market_value_cents' => 6_000_000_000,
         ]);
-        $this->assertEquals(0.35, $this->transferService->getPreContractOfferChance($highValue));
+        $this->assertEquals(0.20, $this->transferService->getPreContractOfferChance($highValue));
 
-        // €20M player → 25% chance
+        // €20M player → 15% chance
         $midValue = GamePlayer::factory()->create([
             'game_id' => $game->id,
             'team_id' => $team->id,
             'market_value_cents' => 2_000_000_000,
         ]);
-        $this->assertEquals(0.25, $this->transferService->getPreContractOfferChance($midValue));
+        $this->assertEquals(0.15, $this->transferService->getPreContractOfferChance($midValue));
 
-        // €10M player → 20% chance
+        // €10M player → 12% chance
         $midLow = GamePlayer::factory()->create([
             'game_id' => $game->id,
             'team_id' => $team->id,
             'market_value_cents' => 1_000_000_000,
         ]);
-        $this->assertEquals(0.20, $this->transferService->getPreContractOfferChance($midLow));
+        $this->assertEquals(0.12, $this->transferService->getPreContractOfferChance($midLow));
 
-        // €5M player → 15% chance
+        // €5M player → 10% chance
         $low = GamePlayer::factory()->create([
             'game_id' => $game->id,
             'team_id' => $team->id,
             'market_value_cents' => 500_000_000,
         ]);
-        $this->assertEquals(0.15, $this->transferService->getPreContractOfferChance($low));
+        $this->assertEquals(0.10, $this->transferService->getPreContractOfferChance($low));
 
-        // €2M player → 10% chance
+        // €2M player → 7% chance (below the €5M band → default)
         $veryLow = GamePlayer::factory()->create([
             'game_id' => $game->id,
             'team_id' => $team->id,
             'market_value_cents' => 200_000_000,
         ]);
-        $this->assertEquals(0.10, $this->transferService->getPreContractOfferChance($veryLow));
+        $this->assertEquals(0.07, $this->transferService->getPreContractOfferChance($veryLow));
+    }
+
+    public function test_pre_contract_offer_chance_reads_from_config(): void
+    {
+        // Custom bands prove the chance is config-driven, not hard-coded.
+        config([
+            'transfers.ai_pre_contract.offer_chance_default' => 0.03,
+            'transfers.ai_pre_contract.offer_chance_by_value' => [
+                1_000_000_000 => 0.50, // €10M+
+                0 => 0.03,
+            ],
+        ]);
+
+        $user = User::factory()->create();
+        $team = Team::factory()->create();
+        $game = Game::factory()->create([
+            'user_id' => $user->id,
+            'team_id' => $team->id,
+            'competition_id' => $this->competition->id,
+        ]);
+
+        $star = GamePlayer::factory()->create([
+            'game_id' => $game->id,
+            'team_id' => $team->id,
+            'market_value_cents' => 2_000_000_000, // ≥ €10M band → 0.50
+        ]);
+        $this->assertEquals(0.50, $this->transferService->getPreContractOfferChance($star));
+
+        $fringe = GamePlayer::factory()->create([
+            'game_id' => $game->id,
+            'team_id' => $team->id,
+            'market_value_cents' => 50_000_000, // below band → default 0.03
+        ]);
+        $this->assertEquals(0.03, $this->transferService->getPreContractOfferChance($fringe));
     }
 
     // =========================================

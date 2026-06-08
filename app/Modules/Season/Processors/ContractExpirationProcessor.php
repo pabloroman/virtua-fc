@@ -6,8 +6,10 @@ use App\Modules\Player\PlayerAge;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Transfer\Services\ContractService;
+use App\Models\ClubProfile;
 use App\Models\Game;
 use App\Models\GamePlayer;
+use App\Models\TeamReputation;
 use App\Models\TransferOffer;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -19,10 +21,12 @@ use Illuminate\Support\Facades\Log;
  *
  * Players with contract_until <= June 30 of the ending season:
  * - User's team: become free agents (team_id = null)
- * - AI teams: veterans (35+) have a 50% chance of non-renewal and become
- *   free agents (team_id = null). All others are auto-renewed.
- *   Free agents may be signed by AI teams when the new season starts
- *   (AIFreeAgentSigningProcessor).
+ * - AI teams: veterans (> PRIME_END) have a tunable chance of non-renewal;
+ *   non-veterans mostly auto-renew but a modest, tier-weighted minority run
+ *   their contracts down to free agency instead. Non-renewed players become
+ *   free agents (team_id = null) and may be signed by AI teams when the new
+ *   season starts (AIFreeAgentSigningProcessor). Rates live in
+ *   config/transfers.php (ai_contract_renewal).
  */
 class ContractExpirationProcessor implements SeasonProcessor
 {
@@ -51,10 +55,20 @@ class ContractExpirationProcessor implements SeasonProcessor
         $veteranCutoff = PlayerAge::dateOfBirthCutoff(PlayerAge::PRIME_END + 1, $game->current_date);
         $newContractEnd = Carbon::createFromDate($seasonYear + 3, 6, 30);
 
-        // AI non-veterans: auto-renew (~80% of expired contracts). Select the
-        // rows so the renewal can re-derive each player's wage from his current
-        // market value (renewAiContracts), not just extend contract_until — AI
-        // pay used to stay frozen at the seeded rookie wage for a whole career.
+        // Tunable AI renewal behaviour (config/transfers.php).
+        $renewalConfig = config('transfers.ai_contract_renewal');
+        $nonVeteranBase = (float) ($renewalConfig['non_veteran_non_renewal_base'] ?? 0.0);
+        $nonVeteranAboveClubBonus = (float) ($renewalConfig['non_veteran_above_club_bonus'] ?? 0.0);
+        $nonVeteranMax = (float) ($renewalConfig['non_veteran_non_renewal_max'] ?? 1.0);
+        $veteranNonRenewal = (float) ($renewalConfig['veteran_non_renewal'] ?? 0.5);
+
+        // AI non-veterans: most auto-renew so the renewal can re-derive each
+        // player's wage from his current market value (renewAiContracts), not just
+        // extend contract_until — AI pay used to stay frozen at the seeded rookie
+        // wage for a whole career. A modest, tier-weighted share instead run their
+        // contracts down to free agency (the non-renewal flip below), keeping a
+        // realistic supply of quality free agents on the market each season. The
+        // tier column feeds that flip's "too good for his club" weighting.
         $aiNonVeteranRows = DB::table('game_players')
             ->where('game_id', $game->id)
             ->whereNotNull('team_id')
@@ -63,11 +77,11 @@ class ContractExpirationProcessor implements SeasonProcessor
             ->where('contract_until', '<=', $expirationDate)
             ->whereNull('pending_annual_wage')
             ->where('date_of_birth', '>', $veteranCutoff->toDateString())
-            ->select('id', 'team_id', 'market_value_cents', 'date_of_birth')
+            ->select('id', 'team_id', 'market_value_cents', 'date_of_birth', 'tier')
             ->get();
 
-        // AI veterans: narrow SELECT, then 50% coin flip in PHP. Typically <30
-        // rows. Carries the same columns so the renewed half can be re-priced.
+        // AI veterans: narrow SELECT, then a tunable coin flip in PHP. Typically
+        // <30 rows. Carries the same columns so the renewed half can be re-priced.
         $aiVeteranRows = DB::table('game_players')
             ->where('game_id', $game->id)
             ->whereNotNull('team_id')
@@ -81,11 +95,33 @@ class ContractExpirationProcessor implements SeasonProcessor
 
         $veteranFreeAgentIds = [];
         $veteranAutoRenewedRows = [];
+        $veteranNonRenewalRoll = (int) round($veteranNonRenewal * 100);
         foreach ($aiVeteranRows as $row) {
-            if (mt_rand(1, 100) <= 50) {
+            if (mt_rand(1, 100) <= $veteranNonRenewalRoll) {
                 $veteranFreeAgentIds[] = $row->id;
             } else {
                 $veteranAutoRenewedRows[] = $row;
+            }
+        }
+
+        // AI non-veterans: a tier-weighted minority run their contracts down to
+        // free agency instead of auto-renewing. The non-renewal chance rises with
+        // how far the player's tier sits ABOVE his club's reputation, so the
+        // departures skew toward genuinely attractive "too good for his club"
+        // free agents rather than fringe squad filler.
+        $clubReputationIndices = $this->resolveClubReputationIndices($game, $aiNonVeteranRows);
+        $nonVeteranFreeAgentIds = [];
+        $nonVeteranRenewedRows = [];
+        foreach ($aiNonVeteranRows as $row) {
+            $playerTierIndex = ((int) ($row->tier ?? 1)) - 1;
+            $clubRepIndex = $clubReputationIndices[$row->team_id] ?? 0;
+            $aboveClubSteps = max(0, $playerTierIndex - $clubRepIndex);
+            $nonRenewalChance = min($nonVeteranMax, $nonVeteranBase + $aboveClubSteps * $nonVeteranAboveClubBonus);
+
+            if ($nonRenewalChance > 0 && mt_rand(1, 100) <= (int) round($nonRenewalChance * 100)) {
+                $nonVeteranFreeAgentIds[] = $row->id;
+            } else {
+                $nonVeteranRenewedRows[] = $row;
             }
         }
 
@@ -117,7 +153,7 @@ class ContractExpirationProcessor implements SeasonProcessor
             ->all();
 
         // Bulk operations
-        $freeAgentIds = array_merge($userTeamFreeAgentIds, $veteranFreeAgentIds);
+        $freeAgentIds = array_merge($userTeamFreeAgentIds, $veteranFreeAgentIds, $nonVeteranFreeAgentIds);
         if (!empty($freeAgentIds)) {
             // A release clause is a contract attribute: non-null ⟺ under
             // contract. Becoming a free agent nulls it (harmless no-op for saves
@@ -125,9 +161,10 @@ class ContractExpirationProcessor implements SeasonProcessor
             GamePlayer::whereIn('id', $freeAgentIds)->update(['team_id' => null, 'number' => null, 'release_clause' => null]);
         }
 
-        // Auto-renew all AI keepers (non-veterans + the renewed half of the
-        // veteran coin flip), re-deriving each wage from current market value.
-        $aiRenewedRows = $aiNonVeteranRows->concat($veteranAutoRenewedRows);
+        // Auto-renew all AI keepers (the non-veterans that didn't run down +
+        // the renewed half of the veteran coin flip), re-deriving each wage from
+        // current market value.
+        $aiRenewedRows = collect($nonVeteranRenewedRows)->concat($veteranAutoRenewedRows);
         $this->contractService->renewAiContracts(
             $aiRenewedRows,
             $newContractEnd->toDateString(),
@@ -138,5 +175,29 @@ class ContractExpirationProcessor implements SeasonProcessor
             . ', auto-renewed: ' . $aiRenewedRows->count());
 
         return $data;
+    }
+
+    /**
+     * Resolve each expiring non-veteran's club reputation to a 0-4 tier index,
+     * keyed by team_id. Mirrors the resolution used by the market services
+     * (TransferMarketService / AITransferMarketService) so a player's tier can
+     * be compared against his club's standing for the non-renewal weighting.
+     *
+     * @param  \Illuminate\Support\Collection<int, \stdClass>  $rows
+     * @return array<string, int>  team_id => reputation tier index (0-4)
+     */
+    private function resolveClubReputationIndices(Game $game, $rows): array
+    {
+        $teamIds = $rows->pluck('team_id')->unique()->values()->all();
+
+        if (empty($teamIds)) {
+            return [];
+        }
+
+        return TeamReputation::resolveLevels($game->id, $teamIds)
+            ->mapWithKeys(fn (string $level, string $teamId) => [
+                $teamId => ClubProfile::getReputationTierIndex($level),
+            ])
+            ->all();
     }
 }
