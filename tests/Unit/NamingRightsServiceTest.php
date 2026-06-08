@@ -279,6 +279,52 @@ class NamingRightsServiceTest extends TestCase
         $this->assertSame($pending->count(), $pending->pluck('sponsor_name')->unique()->count());
     }
 
+    public function test_offers_on_a_board_trade_annual_fee_off_against_term_so_none_dominates(): void
+    {
+        $game = $this->preSeasonGame();
+        $game->update(['current_date' => '2026-07-01']);
+        $this->seedLoyalty($game, base: 60, current: 60); // tier 'established'
+        $this->seedInvestment($game, transferBudget: 5_000_000_00);
+        config()->set('commercial.naming_rights.max_pending_offers', 3);
+        config()->set('commercial.naming_rights.search_fee.established', 80_000_00);
+        // Pin the band so every offer shares one €10M base; the only variable
+        // left is the term, which must drive the annual fee down as it grows.
+        config()->set('commercial.naming_rights.annual_value.established', [10_000_000_00, 10_000_000_00]);
+
+        $minted = $this->service->seekSponsors($game);
+
+        $this->assertCount(3, $minted);
+
+        // Distinct terms, and the longer the deal the lower the annual fee:
+        // sorting by term ascending yields strictly decreasing annual values.
+        $byTerm = collect($minted)->sortBy('contract_seasons')->values();
+        $this->assertSame(
+            $byTerm->pluck('contract_seasons')->all(),
+            $byTerm->pluck('contract_seasons')->unique()->values()->all(),
+        );
+        for ($i = 1; $i < $byTerm->count(); $i++) {
+            $this->assertLessThan(
+                $byTerm[$i - 1]->annual_value_cents,
+                $byTerm[$i]->annual_value_cents,
+                'A longer-term offer must pay a lower annual fee.',
+            );
+        }
+
+        // No offer is better than another on both axes (annual fee AND term).
+        foreach ($minted as $a) {
+            foreach ($minted as $b) {
+                if ($a->id === $b->id) {
+                    continue;
+                }
+                $this->assertFalse(
+                    $a->annual_value_cents >= $b->annual_value_cents
+                        && $a->contract_seasons >= $b->contract_seasons,
+                    'No offer should dominate another on both annual fee and term.',
+                );
+            }
+        }
+    }
+
     public function test_rollover_expires_an_ended_deal_and_restores_the_pre_deal_name(): void
     {
         $game = $this->preSeasonGame();

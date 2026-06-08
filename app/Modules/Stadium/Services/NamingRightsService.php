@@ -10,6 +10,7 @@ use App\Models\GameStadiumNamingDeal;
 use App\Models\TeamReputation;
 use App\Models\TransferOffer;
 use App\Modules\Notification\Services\NotificationService;
+use Illuminate\Support\Collection;
 use InvalidArgumentException;
 
 /**
@@ -358,9 +359,16 @@ class NamingRightsService
     }
 
     /**
-     * Create one pending offer: a sponsor not already on the table, a random
-     * headline value within the club's reputation tier, and a random term.
-     * Returns null when every brand is already pending.
+     * Create one pending offer: a sponsor not already on the table, a term not
+     * already on the board, and an annual fee priced from the board's shared
+     * market-value base scaled down for longer terms. Returns null when every
+     * brand is already pending.
+     *
+     * Anchoring every offer to one base (recovered from any offer already on the
+     * board, or freshly drawn within the tier band when the board is empty) and
+     * giving each a distinct term keeps the board a genuine tradeoff curve — the
+     * longer the deal, the lower the annual fee — so no offer is ever strictly
+     * better than a sibling on both axes.
      */
     private function createOffer(Game $game, string $tier): ?GameStadiumNamingDeal
     {
@@ -371,20 +379,26 @@ class NamingRightsService
             return null;
         }
 
-        $valueRange = config("commercial.naming_rights.annual_value.{$tier}")
-            ?? config('commercial.naming_rights.annual_value.local', [50_000_00, 200_000_00]);
-        [$minValue, $maxValue] = $valueRange;
+        // Competing (non-renewal) offers already on the board fix the shared base
+        // and the terms already taken; renewals stand alone and are excluded.
+        $board = GameStadiumNamingDeal::query()
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->where('status', GameStadiumNamingDeal::STATUS_PENDING)
+            ->where('offered_season', $season)
+            ->where('is_renewal', false)
+            ->get(['annual_value_cents', 'contract_seasons']);
 
-        $minSeasons = (int) config('commercial.naming_rights.min_contract_seasons', 1);
-        $maxSeasons = (int) config('commercial.naming_rights.max_contract_seasons', 5);
+        $base = $this->boardBaseValue($board, $tier);
+        $seasons = $this->pickDistinctTerm($board);
 
         return GameStadiumNamingDeal::create([
             'game_id' => $game->id,
             'team_id' => $game->team_id,
             'sponsor_name' => $sponsor['name'],
             'proposed_stadium_name' => $sponsor['stadium'],
-            'annual_value_cents' => random_int((int) $minValue, (int) $maxValue),
-            'contract_seasons' => random_int($minSeasons, $maxSeasons),
+            'annual_value_cents' => $this->annualForTerm($base, $seasons),
+            'contract_seasons' => $seasons,
             'is_renewal' => false,
             'status' => GameStadiumNamingDeal::STATUS_PENDING,
             'offered_season' => $season,
@@ -404,9 +418,7 @@ class NamingRightsService
     {
         $season = (int) $game->season;
 
-        $valueRange = config("commercial.naming_rights.annual_value.{$tier}")
-            ?? config('commercial.naming_rights.annual_value.local', [50_000_00, 200_000_00]);
-        [$minValue, $maxValue] = $valueRange;
+        [$minValue, $maxValue] = $this->tierBand($tier);
 
         $seasons = (int) config('commercial.naming_rights.renewal_seasons', 1);
 
@@ -430,11 +442,97 @@ class NamingRightsService
      */
     private function tierMidpointValue(string $tier): int
     {
+        [$min, $max] = $this->tierBand($tier);
+
+        return intdiv($min + $max, 2);
+    }
+
+    /**
+     * The [min, max] annual-value band for a tier (cents), falling back to the
+     * local band for an unmapped tier so callers never read an empty range.
+     *
+     * @return array{0: int, 1: int}
+     */
+    private function tierBand(string $tier): array
+    {
         $range = config("commercial.naming_rights.annual_value.{$tier}")
             ?? config('commercial.naming_rights.annual_value.local', [50_000_00, 200_000_00]);
-        [$min, $max] = $range;
 
-        return intdiv((int) $min + (int) $max, 2);
+        return [(int) $range[0], (int) $range[1]];
+    }
+
+    /**
+     * The annual-fee multiplier for a contract length: 1.0 at one season (the
+     * band is the headline rate), discounting toward longer terms so a multi-year
+     * deal pays less per season. An unmapped term defaults to 1.0 (no discount).
+     */
+    private function termMultiplier(int $seasons): float
+    {
+        $curve = (array) config('commercial.naming_rights.term_value_multiplier', []);
+
+        return (float) ($curve[$seasons] ?? 1.0);
+    }
+
+    /**
+     * The annual fee for a term: the shared board base scaled by the term's
+     * multiplier. Longer term ⇒ lower annual fee.
+     */
+    private function annualForTerm(int $base, int $seasons): int
+    {
+        return (int) round($base * $this->termMultiplier($seasons));
+    }
+
+    /**
+     * Recover the board base an existing offer was priced from, inverting
+     * annualForTerm(), so a top-up offer shares the value the rest of the board
+     * was built on instead of re-rolling a fresh one.
+     */
+    private function baseFromAnnual(int $annual, int $seasons): int
+    {
+        $multiplier = $this->termMultiplier($seasons);
+
+        return $multiplier > 0.0 ? (int) round($annual / $multiplier) : $annual;
+    }
+
+    /**
+     * The club's market-value base for the current board: inherited from any
+     * offer already on it (so the whole board shares one value), or a fresh draw
+     * within the tier band when the board is empty.
+     *
+     * @param  Collection<int, GameStadiumNamingDeal>  $board
+     */
+    private function boardBaseValue(Collection $board, string $tier): int
+    {
+        $existing = $board->first();
+        if ($existing !== null) {
+            return $this->baseFromAnnual((int) $existing->annual_value_cents, (int) $existing->contract_seasons);
+        }
+
+        [$min, $max] = $this->tierBand($tier);
+
+        return random_int($min, $max);
+    }
+
+    /**
+     * Pick a contract length not already on the board, so two offers never share
+     * a term (which would leave them differing only by sponsor name). Falls back
+     * to the full range when every term is taken — only reachable if more offer
+     * slots than distinct terms are ever configured.
+     *
+     * @param  Collection<int, GameStadiumNamingDeal>  $board
+     */
+    private function pickDistinctTerm(Collection $board): int
+    {
+        $min = (int) config('commercial.naming_rights.min_contract_seasons', 1);
+        $max = (int) config('commercial.naming_rights.max_contract_seasons', 5);
+
+        $taken = $board->pluck('contract_seasons')->map(fn ($s) => (int) $s)->all();
+        $available = array_values(array_diff(range($min, $max), $taken));
+        if ($available === []) {
+            $available = range($min, $max);
+        }
+
+        return $available[random_int(0, count($available) - 1)];
     }
 
     /**

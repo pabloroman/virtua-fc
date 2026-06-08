@@ -47,6 +47,10 @@ return [
         // real-world stadium naming-rights benchmarks. The sponsor pays this
         // fixed fee for as long as the deal runs, regardless of attendance.
         //
+        // This band is the 1-SEASON HEADLINE rate: a deal that only commits for
+        // one year pays full price. Longer terms discount BELOW the band via
+        // term_value_multiplier (see below), so generated values never exceed it.
+        //
         // The curve is deliberately non-linear: it compresses sharply below the
         // continental elite (Barça's Spotify deal ≈ €20M/yr, Bayern's Allianz
         // ≈ €13M, Atlético/Dortmund/Juve ≈ €10M, RC Lens ≈ €1.6M), then flattens
@@ -63,6 +67,19 @@ return [
         // Contract length bounds (seasons), chosen per offer.
         'min_contract_seasons' => 1,
         'max_contract_seasons' => 5,
+
+        // Annual fee multiplier by contract length. The tier `annual_value` band
+        // is the 1-season headline; committing longer trades a lower annual fee
+        // for more total, guaranteed income. This is what stops a long deal from
+        // also being the highest annual — the two axes deliberately move in
+        // opposite directions, so no offer on the board can dominate another.
+        'term_value_multiplier' => [
+            1 => 1.00,
+            2 => 0.95,
+            3 => 0.90,
+            4 => 0.85,
+            5 => 0.80,
+        ],
 
         // Term (seasons) a seeded real-world deal runs before its first renewal
         // decision. Short by design: the incumbent re-offers each pre-season, so
