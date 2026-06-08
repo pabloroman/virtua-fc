@@ -317,8 +317,8 @@ class NamingRightsService
 
     /**
      * Mint an offer regardless of any cooldown/fee, still respecting the
-     * window, active-deal, board-full and sponsor-dedupe gates. For the debug
-     * command and tests, where deterministic arrival is needed.
+     * window, active-deal, board-full and sponsor-dedupe gates. For tests,
+     * where deterministic arrival is needed.
      */
     public function forceOffer(Game $game): ?GameStadiumNamingDeal
     {
