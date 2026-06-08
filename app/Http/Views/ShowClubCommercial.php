@@ -23,9 +23,6 @@ class ShowClubCommercial
 
         $panel = $this->namingRightsService->buildCommercialPanel($game)['namingRights'];
 
-        $panel['seek']['feeAffordable'] =
-            $panel['seek']['feeCents'] <= $panel['seek']['availableCashCents'];
-
         return view('club.commercial', [
             'game' => $game,
             'namingRights' => $panel,

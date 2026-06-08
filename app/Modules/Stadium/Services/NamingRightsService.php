@@ -261,20 +261,26 @@ class NamingRightsService
      */
     public function canSeek(Game $game): bool
     {
-        if (! $this->windowOpen($game)) {
-            return false;
-        }
+        return $this->seekGateOpen(
+            $this->windowOpen($game),
+            GameStadiumNamingDeal::activeForGame($game->id, $game->team_id),
+            $this->pendingOfferCount($game),
+            $this->seekCooldownRemainingDays($game),
+        );
+    }
 
-        if (GameStadiumNamingDeal::activeForGame($game->id, $game->team_id)) {
-            return false;
-        }
-
+    /**
+     * The seek gate, evaluated from already-fetched state so callers that
+     * have these values in hand (buildCommercialPanel) don't re-query them.
+     */
+    private function seekGateOpen(bool $windowOpen, ?GameStadiumNamingDeal $active, int $pendingOffers, int $cooldownDays): bool
+    {
         $cap = (int) config('commercial.naming_rights.max_pending_offers', 3);
-        if ($this->pendingOfferCount($game) >= $cap) {
-            return false;
-        }
 
-        return $this->seekCooldownRemainingDays($game) === 0;
+        return $windowOpen
+            && $active === null
+            && $pendingOffers < $cap
+            && $cooldownDays === 0;
     }
 
     /**
@@ -704,12 +710,10 @@ class NamingRightsService
      */
     public function settledRevenueForGame(Game $game): int
     {
-        $deal = GameStadiumNamingDeal::activeForGame($game->id, $game->team_id);
-        if (! $deal) {
-            return 0;
-        }
-
-        return (int) $deal->annual_value_cents;
+        // The sponsor pays the same fixed annual fee regardless of attendance,
+        // so settlement equals the projection exactly. Delegating keeps the two
+        // in lockstep instead of relying on the formulas being kept identical.
+        return $this->projectedRevenueForGame($game);
     }
 
     // ── Read sides ────────────────────────────────────────────────────────
@@ -786,6 +790,10 @@ class NamingRightsService
                 ->all();
         }
 
+        $cooldownDays = $this->seekCooldownRemainingDays($game);
+        $feeCents = $this->searchFee($game);
+        $availableCashCents = $this->availableCash($game);
+
         return [
             'namingRights' => [
                 'currentName' => $this->effectiveName($game),
@@ -794,10 +802,11 @@ class NamingRightsService
                 'activeDeal' => $activeDeal,
                 'offers' => $offers,
                 'seek' => [
-                    'canSeek' => $this->canSeek($game),
-                    'feeCents' => $this->searchFee($game),
-                    'availableCashCents' => $this->availableCash($game),
-                    'cooldownDays' => $this->seekCooldownRemainingDays($game),
+                    'canSeek' => $this->seekGateOpen($windowOpen, $active, $this->pendingOfferCount($game), $cooldownDays),
+                    'feeCents' => $feeCents,
+                    'availableCashCents' => $availableCashCents,
+                    'feeAffordable' => $feeCents <= $availableCashCents,
+                    'cooldownDays' => $cooldownDays,
                     'cooldownLength' => (int) config('commercial.naming_rights.search_cooldown_days', 14),
                 ],
             ],
@@ -885,24 +894,14 @@ class NamingRightsService
 
     private function stampLastSought(Game $game): void
     {
-        $stadium = $this->stadiumRow($game) ?? new GameStadium([
-            'game_id' => $game->id,
-            'team_id' => $game->team_id,
-            'base_capacity' => (int) ($game->team?->stadium_seats ?? 0),
-        ]);
-
+        $stadium = $this->getOrCreateStadiumRow($game);
         $stadium->naming_rights_last_sought_date = $game->current_date->toDateString();
         $stadium->save();
     }
 
     private function setStadiumName(Game $game, string $name, ?int $renameSeason = null): void
     {
-        $stadium = $this->stadiumRow($game) ?? new GameStadium([
-            'game_id' => $game->id,
-            'team_id' => $game->team_id,
-            'base_capacity' => (int) ($game->team?->stadium_seats ?? 0),
-        ]);
-
+        $stadium = $this->getOrCreateStadiumRow($game);
         $stadium->stadium_name = $name;
         if ($renameSeason !== null) {
             $stadium->name_changed_season = $renameSeason;
@@ -935,6 +934,19 @@ class NamingRightsService
             ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->first();
+    }
+
+    /**
+     * The stadium row for this game, or a fresh (unsaved) one seeded with the
+     * team's defaults so callers can set a field and save without branching.
+     */
+    private function getOrCreateStadiumRow(Game $game): GameStadium
+    {
+        return $this->stadiumRow($game) ?? new GameStadium([
+            'game_id' => $game->id,
+            'team_id' => $game->team_id,
+            'base_capacity' => (int) ($game->team?->stadium_seats ?? 0),
+        ]);
     }
 
     private function effectiveName(Game $game): ?string
