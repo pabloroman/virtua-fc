@@ -91,6 +91,7 @@ class SeasonSettlementProcessorTest extends TestCase
             'category' => FinancialTransaction::CATEGORY_TRANSFER_IN,
             'type' => FinancialTransaction::TYPE_INCOME,
             'amount' => 40_000_000_00,
+            'description' => 'Player sold',
             'transaction_date' => '2025-08-10',
         ]);
         FinancialTransaction::create([
@@ -98,6 +99,7 @@ class SeasonSettlementProcessorTest extends TestCase
             'category' => FinancialTransaction::CATEGORY_TRANSFER_OUT,
             'type' => FinancialTransaction::TYPE_EXPENSE,
             'amount' => 15_000_000_00,
+            'description' => 'Player bought',
             'transaction_date' => '2026-01-20',
         ]);
         FinancialTransaction::create([
@@ -105,6 +107,7 @@ class SeasonSettlementProcessorTest extends TestCase
             'category' => FinancialTransaction::CATEGORY_TRANSFER_IN,
             'type' => FinancialTransaction::TYPE_INCOME,
             'amount' => 99_000_000_00,
+            'description' => 'Player sold (prior season)',
             'transaction_date' => '2025-05-01', // previous season — excluded
         ]);
 
