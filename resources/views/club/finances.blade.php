@@ -65,6 +65,9 @@
             <x-summary-card :label="__('finances.squad_value')" :value="\App\Support\Money::format($squadValue)" :caption="__('finances.squad_size', ['count' => $squadSize])" />
             <x-summary-card :label="__('finances.salary_cap')" :tooltip="__('finances.tooltip_salary_cap', ['percent' => $salaryCapRatioPercent])">
                 <x-salary-cap-meter :bill="$salaryCapBill" :cap="$salaryCap" :status="$salaryCapStatus" :room="$salaryCapRoom" />
+                @if($tradingAllowanceRoom > 0)
+                    <p class="text-[11px] text-accent-green mt-1">{{ __('finances.salary_cap_includes_trading', ['amount' => \App\Support\Money::format($tradingAllowanceRoom)]) }}</p>
+                @endif
             </x-summary-card>
             @if($investment)
             <x-summary-card :label="__('finances.transfer_budget')" :value="$investment->formatted_transfer_budget" value-class="text-accent-blue" :caption="__('finances.initial_budget_caption', ['amount' => \App\Support\Money::format($initialTransferBudget)])" />

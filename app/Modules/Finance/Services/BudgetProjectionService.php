@@ -154,6 +154,17 @@ class BudgetProjectionService
             $projectedSurplus += $projectedSubsidyRevenue;
         }
 
+        // Trailing player-trading allowance ("plusvalías"): a smoothed measure of
+        // the club's net selling over recent seasons that lifts the WAGE CAP only
+        // — never the projected surplus/budget (the sale cash already reaches the
+        // budget via carried surplus, so it is intentionally absent from
+        // $projectedSurplus above). Zero on a fresh-club switch, since the trading
+        // history belongs to the previous club. Computed against the final
+        // recurring revenue so its guard matches the cap base.
+        $projectedTradingAllowance = $freshClub
+            ? 0
+            : $this->trailingTradingAllowance($game, $projectedTotalRevenue);
+
         // Create or update finances record
         $finances = GameFinances::updateOrCreate(
             [
@@ -168,6 +179,7 @@ class BudgetProjectionService
                 'projected_season_ticket_revenue' => $projectedSeasonTicketRevenue,
                 'projected_commercial_revenue' => $projectedCommercialRevenue,
                 'projected_naming_rights_revenue' => $projectedNamingRightsRevenue,
+                'projected_trading_allowance' => $projectedTradingAllowance,
                 'projected_subsidy_revenue' => $projectedSubsidyRevenue,
                 'projected_total_revenue' => $projectedTotalRevenue,
                 'projected_wages' => $projectedWages,
@@ -293,6 +305,43 @@ class BudgetProjectionService
     }
 
     /**
+     * Trailing player-trading allowance in cents — the smoothed net player-
+     * trading result (sales − purchases) over the last few COMPLETED seasons,
+     * floored at zero (net buyers earn nothing, but pay no penalty) and capped
+     * at a fraction of recurring revenue so trading can't dominate the cap.
+     *
+     * Only completed seasons count, so a club can't sell mid-window to inflate
+     * its own ceiling that same window, and a one-off windfall is averaged down
+     * — which is what keeps the free-signing exploit closed. Feeds the wage cap
+     * only; see SalaryCapService::cap().
+     */
+    private function trailingTradingAllowance(Game $game, int $recurringRevenue): int
+    {
+        $window = (int) config('finances.trading_allowance.window_seasons', 3);
+        if ($window < 1) {
+            return 0;
+        }
+
+        $nets = GameFinances::where('game_id', $game->id)
+            ->where('season', '<', (int) $game->season)
+            ->orderByDesc('season')
+            ->limit($window)
+            ->pluck('net_transfer_result');
+
+        if ($nets->isEmpty()) {
+            return 0;
+        }
+
+        $weighted = max(0.0, (float) $nets->avg())
+            * (float) config('finances.trading_allowance.weight', 1.0);
+
+        $maxAllowance = $recurringRevenue
+            * (float) config('finances.trading_allowance.max_fraction_of_recurring', 0.50);
+
+        return (int) round(min($weighted, $maxAllowance));
+    }
+
+    /**
      * Calculate total squad market value.
      */
     public function calculateSquadValue(Game $game): int
@@ -384,6 +433,11 @@ class BudgetProjectionService
      * Get base commercial revenue for budget projections.
      * Season 2+: uses previous season's actual commercial revenue.
      * Season 1: calculates from stadium_seats × config rate.
+     *
+     * In every case the figure is floored at the club's brand baseline (see
+     * commercialBrandFloor), so a marquee club never carries a sub-brand
+     * commercial number — including existing saves whose prior-season actual
+     * was settled before the brand floor existed.
      */
     private function getBaseCommercialRevenue(Game $game, Team $team, Competition $league): int|float
     {
@@ -394,7 +448,10 @@ class BudgetProjectionService
             ->first();
 
         if ($previousFinances && $previousFinances->actual_commercial_revenue > 0) {
-            return $previousFinances->actual_commercial_revenue;
+            return max(
+                $previousFinances->actual_commercial_revenue,
+                $this->commercialBrandFloor($game, $team, $league),
+            );
         }
 
         return $this->firstSeasonCommercialRevenue($game, $team, $league);
@@ -414,7 +471,34 @@ class BudgetProjectionService
 
         $tierMultiplier = config("finances.commercial_tier_multiplier.{$league->tier}", 1.0);
 
-        return $base * $tierMultiplier;
+        $stadiumDriven = $base * $tierMultiplier;
+
+        // A marquee club's commercial income is brand-led, not stadium-led, so
+        // it can't fall below the reputation's brand floor (tier-scaled the same
+        // way). max() keeps the larger of the two, so a big stadium still earns
+        // its premium wherever it exceeds the floor.
+        return max($stadiumDriven, $this->commercialBrandFloor($game, $team, $league));
+    }
+
+    /**
+     * Brand-driven commercial floor for the club, in cents — the minimum
+     * commercial income its reputation commands regardless of stadium size.
+     * Returns 0 for reputation tiers with no brand premium ('established' and
+     * below), making the floor a no-op for them. Tier-scaled by
+     * commercial_tier_multiplier to mirror the per-seat commercial calculation.
+     */
+    private function commercialBrandFloor(Game $game, Team $team, Competition $league): int
+    {
+        $reputation = TeamReputation::resolveLevel($game->id, $team->id);
+        $floor = (int) config("finances.commercial_brand_floor.{$reputation}", 0);
+
+        if ($floor === 0) {
+            return 0;
+        }
+
+        $tierMultiplier = config("finances.commercial_tier_multiplier.{$league->tier}", 1.0);
+
+        return (int) ($floor * $tierMultiplier);
     }
 
     /**

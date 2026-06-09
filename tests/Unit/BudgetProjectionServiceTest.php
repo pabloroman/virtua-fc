@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\BudgetLoan;
+use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GameFinances;
@@ -67,6 +68,114 @@ class BudgetProjectionServiceTest extends TestCase
         $this->assertSame(0, $finances->carried_debt);
         $this->assertSame(self::LOAN_REPAYMENT, $finances->previous_loan_repayment);
         $this->assertSame(self::ACTUAL_COMMERCIAL_REVENUE, $finances->projected_commercial_revenue);
+    }
+
+    public function test_brand_floor_lifts_elite_commercial_above_the_stadium_baseline(): void
+    {
+        [$service, $game, $team] = $this->buildScenario();
+
+        // Mark the club elite. With a 30K-seat ground the stadium-driven
+        // commercial (30_000 × €1,700 = €51M) sits far below the elite brand
+        // floor (€200M), so a global brand isn't throttled by a small stadium.
+        ClubProfile::create([
+            'team_id' => $team->id,
+            'reputation_level' => ClubProfile::REPUTATION_ELITE,
+        ]);
+
+        $finances = $service->generateProjections($game, freshClub: true);
+
+        $stadiumDriven = $team->stadium_seats * 170_000; // elite per-seat (cents)
+        $brandFloor = config('finances.commercial_brand_floor.elite');
+
+        $this->assertGreaterThan($stadiumDriven, $brandFloor);
+        $this->assertSame($brandFloor, $finances->projected_commercial_revenue);
+    }
+
+    public function test_brand_floor_overrides_a_sub_brand_carried_commercial(): void
+    {
+        [$service, $game, $team] = $this->buildScenario();
+
+        // Existing save: the prior-season actual commercial (€50M, set in
+        // buildScenario) was settled before the brand floor existed. An elite
+        // club must still be floored to its brand baseline at the next
+        // projection rather than carrying the stale sub-brand figure.
+        ClubProfile::create([
+            'team_id' => $team->id,
+            'reputation_level' => ClubProfile::REPUTATION_ELITE,
+        ]);
+
+        $finances = $service->generateProjections($game);
+
+        $this->assertGreaterThan(self::ACTUAL_COMMERCIAL_REVENUE, config('finances.commercial_brand_floor.elite'));
+        $this->assertSame(
+            config('finances.commercial_brand_floor.elite'),
+            $finances->projected_commercial_revenue,
+        );
+    }
+
+    public function test_trailing_trading_allowance_averages_recent_net_sales(): void
+    {
+        // Disable the recurring-revenue guard so the raw average is observable.
+        config(['finances.trading_allowance.max_fraction_of_recurring' => 1000.0]);
+
+        [$service, $game] = $this->buildScenario();
+
+        // Three completed seasons of net player-trading (sales − purchases).
+        // buildScenario created the 2025 row; set its net result and add two
+        // earlier seasons. Average = (€60M + €40M + €50M) / 3 = €50M.
+        GameFinances::where('game_id', $game->id)->where('season', self::PREV_SEASON)
+            ->update(['net_transfer_result' => 60_000_000_00]);
+        GameFinances::create(['game_id' => $game->id, 'season' => 2024, 'net_transfer_result' => 40_000_000_00]);
+        GameFinances::create(['game_id' => $game->id, 'season' => 2023, 'net_transfer_result' => 50_000_000_00]);
+
+        $finances = $service->generateProjections($game);
+
+        $this->assertSame(50_000_000_00, $finances->projected_trading_allowance);
+
+        // Invariant: the allowance widens the cap base ONLY — it must never leak
+        // into the projected surplus/budget.
+        $this->assertSame(
+            $finances->projected_total_revenue - $finances->projected_wages - $finances->projected_operating_expenses,
+            $finances->projected_surplus,
+        );
+    }
+
+    public function test_net_buyers_get_no_trading_allowance(): void
+    {
+        [$service, $game] = $this->buildScenario();
+
+        GameFinances::where('game_id', $game->id)->where('season', self::PREV_SEASON)
+            ->update(['net_transfer_result' => -80_000_000_00]); // bought more than sold
+
+        $finances = $service->generateProjections($game);
+
+        $this->assertSame(0, $finances->projected_trading_allowance);
+    }
+
+    public function test_trading_allowance_is_capped_by_the_recurring_revenue_guard(): void
+    {
+        [$service, $game] = $this->buildScenario();
+
+        // An absurd net-selling history that would dwarf recurring revenue.
+        GameFinances::where('game_id', $game->id)->where('season', self::PREV_SEASON)
+            ->update(['net_transfer_result' => 500_000_000_00]);
+
+        $finances = $service->generateProjections($game);
+
+        $guard = (int) round($finances->projected_total_revenue * 0.50);
+        $this->assertSame($guard, $finances->projected_trading_allowance);
+    }
+
+    public function test_fresh_club_has_no_trading_allowance(): void
+    {
+        [$service, $game] = $this->buildScenario();
+
+        GameFinances::where('game_id', $game->id)->where('season', self::PREV_SEASON)
+            ->update(['net_transfer_result' => 60_000_000_00]);
+
+        $finances = $service->generateProjections($game, freshClub: true);
+
+        $this->assertSame(0, $finances->projected_trading_allowance);
     }
 
     /**

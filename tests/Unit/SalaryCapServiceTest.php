@@ -174,6 +174,21 @@ class SalaryCapServiceTest extends TestCase
         $this->assertFalse($this->service->canCommitWage($game, 1));
     }
 
+    public function test_cap_includes_the_trailing_trading_allowance(): void
+    {
+        $game = $this->makeGame(projectedRevenue: 1_000_000_000); // €10M recurring
+
+        // A €4M trailing player-trading allowance ("plusvalías") widens the base.
+        GameFinances::where('game_id', $game->id)
+            ->update(['projected_trading_allowance' => 400_000_000]);
+
+        // (€10M + €4M) × 0.70 = €9.8M
+        $this->assertSame(980_000_000, $this->service->cap($game));
+
+        // The room attributable to plusvalías is €4M × 0.70 = €2.8M.
+        $this->assertSame(280_000_000, $this->service->tradingAllowanceRoom($game));
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────
 
     private function makeGame(int $projectedRevenue, int $carriedSurplus = 0): Game

@@ -16,9 +16,9 @@ Season end:  Calculate actuals → Settlement → Carry variance to next season
 
 - **TV Rights**: Position-based, defined per competition config (`LaLigaConfig`, `LaLiga2Config`, etc.)
 - **Matchday Revenue**: Stadium seats × revenue-per-seat (by reputation) × facilities multiplier
-- **Commercial Revenue**: Stadium seats (capped at 80K) × commercial-per-seat (by reputation). Season 1 uses base config; subsequent seasons use prior season's actual as base, adjusted by a position-based growth multiplier.
+- **Commercial Revenue**: Stadium seats (capped at 80K) × commercial-per-seat (by reputation), floored at a brand baseline for marquee clubs (`commercial_brand_floor`, elite/continental only) so a global brand's commercial income isn't throttled by a small stadium. Season 1 uses base config; subsequent seasons use prior season's actual as base, adjusted by a position-based growth multiplier.
 - **Competition Prizes**: Cup and European competition prize money, cumulative by round advanced.
-- **Transfer Sales**: Sum of players sold during the season.
+- **Transfer Sales**: Sum of players sold during the season. A *trailing average* of net player-trading (sales − purchases) also feeds the **salary cap** — not the budget — as a "player-trading allowance" (plusvalías), so a sustained selling club can support a higher wage bill. One-off windfalls are smoothed away. See `config/finances.trading_allowance`.
 - **Solidarity Funds**: Tier 2+ clubs receive a fixed annual solidarity payment.
 - **Public Subsidy**: If projected surplus is insufficient for minimum viable infrastructure + transfer budget, a subsidy covers the shortfall.
 

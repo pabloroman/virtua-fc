@@ -100,7 +100,8 @@ return [
     'over_cap_lock_notice' => 'Mercado bloqueado — vende jugadores para volver bajo tu límite.',
     'squad_size' => ':count jugadores',
     'initial_budget_caption' => 'de :amount inicial',
-    'tooltip_salary_cap' => 'Lo máximo que tu club puede destinar a salarios: el :percent% de tus ingresos recurrentes proyectados. El dinero puntual (superávit de fichajes, ventas de jugadores) no lo aumenta; haz crecer tus ingresos para elevar el límite.',
+    'tooltip_salary_cap' => 'Lo máximo que tu club puede destinar a salarios: el :percent% de tus ingresos recurrentes proyectados. El dinero puntual (superávit de fichajes) no lo aumenta, pero vender más de lo que compras de forma sostenida sí (plusvalías). Haz crecer tus ingresos para elevar el límite.',
+    'salary_cap_includes_trading' => 'Incluye +:amount de margen por plusvalías de tus ventas recientes.',
     'income' => 'ingresos',
     'expenses' => 'gastos',
 

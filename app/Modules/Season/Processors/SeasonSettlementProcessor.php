@@ -107,6 +107,7 @@ class SeasonSettlementProcessor implements SeasonProcessor
             'actual_naming_rights_revenue' => $actualNamingRightsRevenue,
             'actual_subsidy_revenue' => $actualSubsidyRevenue,
             'actual_transfer_income' => $actualTransferIncome,
+            'net_transfer_result' => $this->calculateNetTransferResult($game),
             'actual_total_revenue' => $actualTotalRevenue,
             'actual_wages' => $actualWages,
             'actual_operating_expenses' => $actualOperatingExpenses,
@@ -244,6 +245,37 @@ class SeasonSettlementProcessor implements SeasonProcessor
             ->where('category', FinancialTransaction::CATEGORY_TRANSFER_IN)
             ->where('type', FinancialTransaction::TYPE_INCOME)
             ->sum('amount');
+    }
+
+    /**
+     * Net player-trading result for THIS season (sales − purchases), windowed
+     * to the season's July 1 → June 30 span. Stored per season so the trailing
+     * player-trading allowance ("plusvalías") that widens the salary cap reads
+     * a clean, season-scoped history. May be negative for a net buyer.
+     */
+    private function calculateNetTransferResult(Game $game): int
+    {
+        $seasonYear = (int) $game->season;
+        $seasonStart = Carbon::createFromDate($seasonYear, 7, 1);
+        $seasonEnd = Carbon::createFromDate($seasonYear + 1, 6, 30);
+
+        $totals = FinancialTransaction::where('game_id', $game->id)
+            ->whereBetween('transaction_date', [$seasonStart, $seasonEnd])
+            ->whereIn('category', [
+                FinancialTransaction::CATEGORY_TRANSFER_IN,
+                FinancialTransaction::CATEGORY_TRANSFER_OUT,
+            ])
+            ->selectRaw(
+                'COALESCE(SUM(CASE WHEN category = ? AND type = ? THEN amount ELSE 0 END), 0) AS sales,'
+                . ' COALESCE(SUM(CASE WHEN category = ? AND type = ? THEN amount ELSE 0 END), 0) AS purchases',
+                [
+                    FinancialTransaction::CATEGORY_TRANSFER_IN, FinancialTransaction::TYPE_INCOME,
+                    FinancialTransaction::CATEGORY_TRANSFER_OUT, FinancialTransaction::TYPE_EXPENSE,
+                ]
+            )
+            ->first();
+
+        return (int) $totals->sales - (int) $totals->purchases;
     }
 
     private function calculateActualWages(Game $game): int
