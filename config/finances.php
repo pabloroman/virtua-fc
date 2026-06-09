@@ -21,6 +21,25 @@ return [
     // elite/continental/established/modest/local) if tuning calls for it.
     'wage_cap_ratio' => 0.70,
 
+    // Player-trading allowance ("plusvalías"). A trailing average of the club's
+    // NET player-trading result (sales − purchases) over recent completed
+    // seasons is added to the cap base — and ONLY the cap base, never the
+    // projected surplus/budget (the sale cash already reaches the budget via
+    // carried surplus). This lets a sustained selling club (Benfica / Brighton
+    // model) support a higher wage bill, mirroring how real squad-cost rules
+    // count net player trading, while a one-off windfall sale is smoothed away
+    // and so can't reopen the free-signing exploit. Net buyers get nothing
+    // (floored at 0) but pay no penalty.
+    'trading_allowance' => [
+        // Trailing window length, in completed seasons, for the net-trading average.
+        'window_seasons' => 3,
+        // Fraction of the trailing net average that counts toward the cap base.
+        'weight' => 1.0,
+        // Hard guard: the allowance can never exceed this fraction of recurring
+        // revenue, so a pure-trading club can't run an unbounded wage cap.
+        'max_fraction_of_recurring' => 0.50,
+    ],
+
     // Wage-demand "market rate" comparison. A player renewing (or being flagged
     // as underpaid) is compared against squadmates of similar CURRENT ability —
     // overall_score within ±this band — rather than against their market-value
@@ -157,6 +176,22 @@ return [
         1 => 1.0,   // La Liga: full commercial rate
         2 => 0.75,  // Segunda: 75%
         3 => 0.25,  // Primera RFEF: 25%
+    ],
+
+    // Brand-driven commercial floor by reputation level (in cents), expressed
+    // at competition tier 1. Decouples a marquee club's commercial income from
+    // its stadium size: a global brand earns sponsorship + merchandising far
+    // beyond what `stadium_seats × commercial_per_seat` implies (e.g. PSG bills
+    // ~€200M commercial off a 48K-seat ground). Applied as a FLOOR — the club
+    // keeps the higher of the stadium-driven figure and this brand baseline —
+    // so a club that builds a bigger stadium never *loses* commercial income.
+    // Only the top two reputation tiers carry a brand premium; 'established'
+    // and below stay purely stadium-driven, since their commercial income
+    // really is gate-led. Tier-scaled by `commercial_tier_multiplier`, so a
+    // relegated brand's commercial tapers with the division.
+    'commercial_brand_floor' => [
+        'elite'       => 20_000_000_000, // €200M
+        'continental' =>  7_500_000_000, // €75M
     ],
 
     // Budget loan configuration.

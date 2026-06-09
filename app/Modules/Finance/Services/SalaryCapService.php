@@ -12,11 +12,15 @@ use App\Support\Money;
  * Squad salary cap — "Límite de Coste de Plantilla".
  *
  * Single source of truth for the wage ceiling. The cap is a fraction of the
- * club's *recurring* revenue (`projected_total_revenue`), which deliberately
- * excludes one-time cash (carried surplus, player-sale proceeds). That is what
- * closes the free-signing exploit: hoarded cash can never lift the wage
- * ceiling, so the only way to afford a bigger wage bill is to grow recurring
- * income (league position, promotion, commercial growth, a bigger stadium).
+ * club's *recurring* revenue (`projected_total_revenue`) plus a trailing
+ * player-trading allowance (`projected_trading_allowance`). It deliberately
+ * excludes one-time cash (carried surplus, a single window's sale proceeds):
+ * a one-off sale can't lift the ceiling, which is what closes the free-signing
+ * exploit. Only a *sustained* net-selling record (smoothed over several
+ * seasons) raises the cap — mirroring how real squad-cost rules count net
+ * player trading. The way to afford a bigger wage bill is to grow recurring
+ * income (league position, promotion, commercial growth, a bigger stadium) or
+ * to build a durable player-trading model.
  *
  * Wage commitments are gated at the point of signing/renewal (see the
  * wage-commitment Actions). Once a deal is agreed it is honoured even if it
@@ -41,10 +45,24 @@ class SalaryCapService
      */
     public function cap(Game $game): int
     {
-        $revenue = $game->currentFinances?->projected_total_revenue
-            ?? $this->budgetProjectionService->generateProjections($game)->projected_total_revenue;
+        $finances = $game->currentFinances
+            ?? $this->budgetProjectionService->generateProjections($game);
 
-        return (int) round($revenue * $this->capRatio($game));
+        return (int) round($finances->capBase() * $this->capRatio($game));
+    }
+
+    /**
+     * Wage-cap room contributed by the club's trailing player-trading allowance
+     * (plusvalías), in cents — how much higher the cap sits thanks to sustained
+     * net player sales. Zero for net buyers or clubs without trading history.
+     * Surfaced as the "+€X from plusvalías" line on the finances page.
+     */
+    public function tradingAllowanceRoom(Game $game): int
+    {
+        $finances = $game->currentFinances
+            ?? $this->budgetProjectionService->generateProjections($game);
+
+        return $this->capDelta($game, $finances->projected_trading_allowance ?? 0);
     }
 
     /**

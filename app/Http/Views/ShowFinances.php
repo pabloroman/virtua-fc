@@ -58,17 +58,23 @@ class ShowFinances
         $totalExpenses = $transactions->where('type', FinancialTransaction::TYPE_EXPENSE)->sum('amount');
 
         // Salary cap ("Límite de Coste de Plantilla"): the committed wage bill
-        // measured against the cap derived from recurring revenue.
+        // measured against the cap derived from recurring revenue (plus the
+        // trailing player-trading allowance — plusvalías).
         $salaryCap = $this->salaryCapService->cap($game);
         $salaryCapBill = $this->salaryCapService->committedWageBill($game);
         $salaryCapRoom = $this->salaryCapService->remainingRoom($game);
         $salaryCapStatus = $this->salaryCapService->status($game);
+        // Cap room earned from sustained net player sales (0 for net buyers).
+        $tradingAllowanceRoom = $this->salaryCapService->tradingAllowanceRoom($game);
 
-        // The cap as a % of projected revenue (≈70%), surfaced in the help text.
+        // The cap as a % of its base (≈70%), surfaced in the help text. The base
+        // is recurring revenue plus the trading allowance, so the ratio stays
+        // ≈70% rather than drifting above it once plusvalías widen the cap.
         // Derived from the actual cap so it stays correct if the ratio is ever
         // tuned per-reputation rather than the flat config scalar.
-        $salaryCapRatioPercent = $finances->projected_total_revenue > 0
-            ? (int) round($salaryCap / $finances->projected_total_revenue * 100)
+        $capBase = $finances->capBase();
+        $salaryCapRatioPercent = $capBase > 0
+            ? (int) round($salaryCap / $capBase * 100)
             : (int) round(config('finances.wage_cap_ratio', 0.70) * 100);
 
         // Available transfer budget for infrastructure upgrades
@@ -128,6 +134,7 @@ class ShowFinances
             'salaryCapBill' => $salaryCapBill,
             'salaryCapRoom' => $salaryCapRoom,
             'salaryCapStatus' => $salaryCapStatus,
+            'tradingAllowanceRoom' => $tradingAllowanceRoom,
             'tierThresholds' => GameInvestment::thresholdsForCompetitionTier((int) ($game->competition->tier ?? 1)),
             'availableBudget' => $availableBudget,
             'initialTransferBudget' => $initialTransferBudget,

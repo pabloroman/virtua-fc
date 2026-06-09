@@ -115,6 +115,7 @@ class GameFinances extends Model
         'projected_season_ticket_revenue',
         'projected_commercial_revenue',
         'projected_naming_rights_revenue',
+        'projected_trading_allowance',
         'projected_subsidy_revenue',
         'projected_total_revenue',
         'projected_wages',
@@ -130,6 +131,7 @@ class GameFinances extends Model
         'actual_naming_rights_revenue',
         'actual_subsidy_revenue',
         'actual_transfer_income',
+        'net_transfer_result',
         'actual_total_revenue',
         'actual_wages',
         'actual_operating_expenses',
@@ -152,6 +154,7 @@ class GameFinances extends Model
         'projected_season_ticket_revenue' => 'integer',
         'projected_commercial_revenue' => 'integer',
         'projected_naming_rights_revenue' => 'integer',
+        'projected_trading_allowance' => 'integer',
         'projected_subsidy_revenue' => 'integer',
         'projected_total_revenue' => 'integer',
         'projected_wages' => 'integer',
@@ -168,6 +171,7 @@ class GameFinances extends Model
         'actual_naming_rights_revenue' => 'integer',
         'actual_subsidy_revenue' => 'integer',
         'actual_transfer_income' => 'integer',
+        'net_transfer_result' => 'integer',
         'actual_total_revenue' => 'integer',
         'actual_wages' => 'integer',
         'actual_operating_expenses' => 'integer',
@@ -184,6 +188,16 @@ class GameFinances extends Model
     public function game(): BelongsTo
     {
         return $this->belongsTo(Game::class);
+    }
+
+    /**
+     * The salary-cap base in cents: recurring revenue plus the trailing
+     * player-trading allowance (plusvalías). Single source of truth for what
+     * the wage ceiling is a fraction of — see SalaryCapService::cap().
+     */
+    public function capBase(): int
+    {
+        return $this->projected_total_revenue + ($this->projected_trading_allowance ?? 0);
     }
 
     /**

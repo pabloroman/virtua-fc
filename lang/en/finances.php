@@ -100,7 +100,8 @@ return [
     'over_cap_lock_notice' => 'Market locked — sell players to get back under your limit.',
     'squad_size' => ':count players',
     'initial_budget_caption' => 'of :amount initial',
-    'tooltip_salary_cap' => 'The most your club can commit to wages: :percent% of your projected recurring revenue. One-time cash (transfer surplus, player sales) does not raise it; grow your income to lift the limit.',
+    'tooltip_salary_cap' => 'The most your club can commit to wages: :percent% of your projected recurring revenue. One-time cash (transfer surplus) doesn\'t raise it, but consistently selling more than you buy does (player-trading profit). Grow your income to lift the limit.',
+    'salary_cap_includes_trading' => 'Includes +:amount of cap room from recent player-sale profits.',
     'income' => 'income',
     'expenses' => 'expenses',
 
