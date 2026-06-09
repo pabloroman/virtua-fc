@@ -314,6 +314,11 @@ class BudgetProjectionService
      * its own ceiling that same window, and a one-off windfall is averaged down
      * — which is what keeps the free-signing exploit closed. Feeds the wage cap
      * only; see SalaryCapService::cap().
+     *
+     * Seasons with a NULL net_transfer_result are skipped: that marks a season
+     * settled before this feature shipped (or not yet settled), as opposed to a
+     * genuine break-even 0. Counting those back-dated rows as zeros would dilute
+     * an existing save's average for up to `window_seasons` after upgrade.
      */
     private function trailingTradingAllowance(Game $game, int $recurringRevenue): int
     {
@@ -324,6 +329,7 @@ class BudgetProjectionService
 
         $nets = GameFinances::where('game_id', $game->id)
             ->where('season', '<', (int) $game->season)
+            ->whereNotNull('net_transfer_result')
             ->orderByDesc('season')
             ->limit($window)
             ->pluck('net_transfer_result');

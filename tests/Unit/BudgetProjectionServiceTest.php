@@ -140,6 +140,27 @@ class BudgetProjectionServiceTest extends TestCase
         );
     }
 
+    public function test_legacy_seasons_with_null_net_result_do_not_dilute_the_average(): void
+    {
+        // Disable the recurring-revenue guard so the raw average is observable.
+        config(['finances.trading_allowance.max_fraction_of_recurring' => 1000.0]);
+
+        [$service, $game] = $this->buildScenario();
+
+        // An existing save: one freshly-settled season nets +€60M, but the two
+        // older rows predate the feature and carry NULL net_transfer_result.
+        // Those must be skipped, not counted as break-even zeros — otherwise the
+        // average would collapse to (€60M + 0 + 0) / 3 = €20M.
+        GameFinances::where('game_id', $game->id)->where('season', self::PREV_SEASON)
+            ->update(['net_transfer_result' => 60_000_000_00]);
+        GameFinances::create(['game_id' => $game->id, 'season' => 2024, 'net_transfer_result' => null]);
+        GameFinances::create(['game_id' => $game->id, 'season' => 2023, 'net_transfer_result' => null]);
+
+        $finances = $service->generateProjections($game);
+
+        $this->assertSame(60_000_000_00, $finances->projected_trading_allowance);
+    }
+
     public function test_net_buyers_get_no_trading_allowance(): void
     {
         [$service, $game] = $this->buildScenario();
