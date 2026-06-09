@@ -2,7 +2,6 @@
 
 namespace App\Modules\Transfer\Services;
 
-use App\Models\ClubProfile;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\GameTransfer;
@@ -369,11 +368,7 @@ class TransferMarketService
         shuffle($teamIds);
         $sampled = array_slice($teamIds, 0, $sampleSize);
 
-        return TeamReputation::resolveLevels($game->id, $sampled)
-            ->mapWithKeys(fn (string $level, string $teamId) => [
-                $teamId => ClubProfile::getReputationTierIndex($level),
-            ])
-            ->all();
+        return TeamReputation::resolveTierIndices($game->id, $sampled);
     }
 
     /**

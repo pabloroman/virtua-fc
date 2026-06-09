@@ -239,4 +239,26 @@ class TeamReputation extends Model
 
         return $resolved;
     }
+
+    /**
+     * Bulk-resolve reputation tier indices (0 = local … 4 = elite) for multiple
+     * teams in a game, keyed by team_id — resolveLevels() piped through
+     * ClubProfile::getReputationTierIndex. The common shape callers need when
+     * comparing a club's standing against a player or threshold tier.
+     *
+     * @param  array<int, string>  $teamIds
+     * @return array<string, int>  team_id => reputation tier index (0-4)
+     */
+    public static function resolveTierIndices(string $gameId, array $teamIds): array
+    {
+        if (empty($teamIds)) {
+            return [];
+        }
+
+        return self::resolveLevels($gameId, $teamIds)
+            ->mapWithKeys(fn (string $level, string $teamId) => [
+                $teamId => ClubProfile::getReputationTierIndex($level),
+            ])
+            ->all();
+    }
 }

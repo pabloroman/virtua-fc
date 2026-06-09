@@ -191,6 +191,16 @@ class GameFinances extends Model
     }
 
     /**
+     * The salary-cap base in cents: recurring revenue plus the trailing
+     * player-trading allowance (plusvalías). Single source of truth for what
+     * the wage ceiling is a fraction of — see SalaryCapService::cap().
+     */
+    public function capBase(): int
+    {
+        return $this->projected_total_revenue + ($this->projected_trading_allowance ?? 0);
+    }
+
+    /**
      * Check if the club has debt carried from previous season.
      */
     public function hasCarriedDebt(): bool

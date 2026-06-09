@@ -259,23 +259,19 @@ class SeasonSettlementProcessor implements SeasonProcessor
         $seasonStart = Carbon::createFromDate($seasonYear, 7, 1);
         $seasonEnd = Carbon::createFromDate($seasonYear + 1, 6, 30);
 
-        $totals = FinancialTransaction::where('game_id', $game->id)
+        $sales = (int) FinancialTransaction::where('game_id', $game->id)
             ->whereBetween('transaction_date', [$seasonStart, $seasonEnd])
-            ->whereIn('category', [
-                FinancialTransaction::CATEGORY_TRANSFER_IN,
-                FinancialTransaction::CATEGORY_TRANSFER_OUT,
-            ])
-            ->selectRaw(
-                'COALESCE(SUM(CASE WHEN category = ? AND type = ? THEN amount ELSE 0 END), 0) AS sales,'
-                . ' COALESCE(SUM(CASE WHEN category = ? AND type = ? THEN amount ELSE 0 END), 0) AS purchases',
-                [
-                    FinancialTransaction::CATEGORY_TRANSFER_IN, FinancialTransaction::TYPE_INCOME,
-                    FinancialTransaction::CATEGORY_TRANSFER_OUT, FinancialTransaction::TYPE_EXPENSE,
-                ]
-            )
-            ->first();
+            ->where('category', FinancialTransaction::CATEGORY_TRANSFER_IN)
+            ->where('type', FinancialTransaction::TYPE_INCOME)
+            ->sum('amount');
 
-        return (int) $totals->sales - (int) $totals->purchases;
+        $purchases = (int) FinancialTransaction::where('game_id', $game->id)
+            ->whereBetween('transaction_date', [$seasonStart, $seasonEnd])
+            ->where('category', FinancialTransaction::CATEGORY_TRANSFER_OUT)
+            ->where('type', FinancialTransaction::TYPE_EXPENSE)
+            ->sum('amount');
+
+        return $sales - $purchases;
     }
 
     private function calculateActualWages(Game $game): int

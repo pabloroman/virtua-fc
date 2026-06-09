@@ -72,7 +72,7 @@ class ShowFinances
         // ≈70% rather than drifting above it once plusvalías widen the cap.
         // Derived from the actual cap so it stays correct if the ratio is ever
         // tuned per-reputation rather than the flat config scalar.
-        $capBase = $finances->projected_total_revenue + ($finances->projected_trading_allowance ?? 0);
+        $capBase = $finances->capBase();
         $salaryCapRatioPercent = $capBase > 0
             ? (int) round($salaryCap / $capBase * 100)
             : (int) round(config('finances.wage_cap_ratio', 0.70) * 100);

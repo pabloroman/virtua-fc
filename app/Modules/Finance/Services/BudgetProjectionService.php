@@ -469,9 +469,7 @@ class BudgetProjectionService
 
         $base = $seats * config("finances.commercial_per_seat.{$reputation}", 80_000);
 
-        $tierMultiplier = config("finances.commercial_tier_multiplier.{$league->tier}", 1.0);
-
-        $stadiumDriven = $base * $tierMultiplier;
+        $stadiumDriven = $base * $this->commercialTierMultiplier($league);
 
         // A marquee club's commercial income is brand-led, not stadium-led, so
         // it can't fall below the reputation's brand floor (tier-scaled the same
@@ -496,9 +494,16 @@ class BudgetProjectionService
             return 0;
         }
 
-        $tierMultiplier = config("finances.commercial_tier_multiplier.{$league->tier}", 1.0);
+        return (int) ($floor * $this->commercialTierMultiplier($league));
+    }
 
-        return (int) ($floor * $tierMultiplier);
+    /**
+     * Tier multiplier applied to commercial income — scales a club's brand and
+     * per-seat commercial down with the division (config-keyed by league tier).
+     */
+    private function commercialTierMultiplier(Competition $league): float
+    {
+        return (float) config("finances.commercial_tier_multiplier.{$league->tier}", 1.0);
     }
 
     /**

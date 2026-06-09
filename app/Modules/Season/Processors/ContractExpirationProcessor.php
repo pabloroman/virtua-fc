@@ -6,7 +6,6 @@ use App\Modules\Player\PlayerAge;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Transfer\Services\ContractService;
-use App\Models\ClubProfile;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\TeamReputation;
@@ -95,9 +94,8 @@ class ContractExpirationProcessor implements SeasonProcessor
 
         $veteranFreeAgentIds = [];
         $veteranAutoRenewedRows = [];
-        $veteranNonRenewalRoll = (int) round($veteranNonRenewal * 100);
         foreach ($aiVeteranRows as $row) {
-            if (mt_rand(1, 100) <= $veteranNonRenewalRoll) {
+            if ($this->rollSucceeds($veteranNonRenewal)) {
                 $veteranFreeAgentIds[] = $row->id;
             } else {
                 $veteranAutoRenewedRows[] = $row;
@@ -109,7 +107,10 @@ class ContractExpirationProcessor implements SeasonProcessor
         // how far the player's tier sits ABOVE his club's reputation, so the
         // departures skew toward genuinely attractive "too good for his club"
         // free agents rather than fringe squad filler.
-        $clubReputationIndices = $this->resolveClubReputationIndices($game, $aiNonVeteranRows);
+        $clubReputationIndices = TeamReputation::resolveTierIndices(
+            $game->id,
+            $aiNonVeteranRows->pluck('team_id')->unique()->values()->all(),
+        );
         $nonVeteranFreeAgentIds = [];
         $nonVeteranRenewedRows = [];
         foreach ($aiNonVeteranRows as $row) {
@@ -118,7 +119,7 @@ class ContractExpirationProcessor implements SeasonProcessor
             $aboveClubSteps = max(0, $playerTierIndex - $clubRepIndex);
             $nonRenewalChance = min($nonVeteranMax, $nonVeteranBase + $aboveClubSteps * $nonVeteranAboveClubBonus);
 
-            if ($nonRenewalChance > 0 && mt_rand(1, 100) <= (int) round($nonRenewalChance * 100)) {
+            if ($this->rollSucceeds($nonRenewalChance)) {
                 $nonVeteranFreeAgentIds[] = $row->id;
             } else {
                 $nonVeteranRenewedRows[] = $row;
@@ -178,26 +179,12 @@ class ContractExpirationProcessor implements SeasonProcessor
     }
 
     /**
-     * Resolve each expiring non-veteran's club reputation to a 0-4 tier index,
-     * keyed by team_id. Mirrors the resolution used by the market services
-     * (TransferMarketService / AITransferMarketService) so a player's tier can
-     * be compared against his club's standing for the non-renewal weighting.
-     *
-     * @param  \Illuminate\Support\Collection<int, \stdClass>  $rows
-     * @return array<string, int>  team_id => reputation tier index (0-4)
+     * True if a probability `$p` (0.0–1.0) "hits" on a 1–100 roll. Zero or
+     * negative probabilities never hit (no roll, no free agency), so callers
+     * don't need to guard the chance themselves.
      */
-    private function resolveClubReputationIndices(Game $game, $rows): array
+    private function rollSucceeds(float $p): bool
     {
-        $teamIds = $rows->pluck('team_id')->unique()->values()->all();
-
-        if (empty($teamIds)) {
-            return [];
-        }
-
-        return TeamReputation::resolveLevels($game->id, $teamIds)
-            ->mapWithKeys(fn (string $level, string $teamId) => [
-                $teamId => ClubProfile::getReputationTierIndex($level),
-            ])
-            ->all();
+        return $p > 0 && mt_rand(1, 100) <= (int) round($p * 100);
     }
 }

@@ -48,9 +48,7 @@ class SalaryCapService
         $finances = $game->currentFinances
             ?? $this->budgetProjectionService->generateProjections($game);
 
-        $base = $finances->projected_total_revenue + ($finances->projected_trading_allowance ?? 0);
-
-        return (int) round($base * $this->capRatio($game));
+        return (int) round($finances->capBase() * $this->capRatio($game));
     }
 
     /**
