@@ -158,8 +158,9 @@ return [
             'deadline_notice' => 'Plazo: los precios se bloquean al jugarse el primer partido de liga de la temporada.',
             'locked_notice' => 'Los abonos están bloqueados esta temporada. Podrás fijar nuevos precios la próxima pretemporada.',
             'tickets_sold' => 'Abonos vendidos',
-            'predicted_fill' => 'ocupación prevista',
-            'predicted_fill_tooltip' => 'Los precios y el apoyo de tu afición influyen en la venta de abonos.',
+            'projected_season_tickets' => 'Abonos previstos',
+            'projected_season_tickets_tooltip' => 'Abonos que prevés vender (de pago por adelantado). La asistencia a cada partido es distinta: suma las entradas de taquilla y descuenta los abonados que no acuden.',
+            'of_capacity' => 'del aforo',
             'save_button' => 'Guardar',
             'preset' => [
                 'accessible' => 'Accesible',

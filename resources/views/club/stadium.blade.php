@@ -122,17 +122,15 @@
                             <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-3">
                                 <div class="bg-surface-700/50 border border-border-default rounded-lg px-4 py-3">
                                     <div class="text-[10px] text-text-muted uppercase tracking-widest flex items-center gap-1.5">
-                                        {{ __('club.stadium.season_tickets.predicted_fill') }}
-                                        <x-info-icon :tooltip="__('club.stadium.season_tickets.predicted_fill_tooltip')" />
+                                        {{ __('club.stadium.season_tickets.projected_season_tickets') }}
+                                        <x-info-icon :tooltip="__('club.stadium.season_tickets.projected_season_tickets_tooltip')" />
                                     </div>
-                                    <div class="font-heading text-2xl font-bold text-text-primary">
-                                        <span x-text="current.overall_fill"></span>%
-                                    </div>
+                                    <div class="font-heading text-2xl font-bold text-text-primary" x-text="fmt(current.total_sold)"></div>
                                     <div class="mt-2 h-1.5 bg-surface-900/40 rounded-full overflow-hidden">
                                         <div class="h-full bg-accent-blue rounded-full" :style="`width: ${current.overall_fill}%`"></div>
                                     </div>
                                     <div class="text-[11px] text-text-muted mt-1">
-                                        <span x-text="fmt(current.total_sold)"></span> / {{ Number::format($capacity) }}
+                                        <span x-text="current.overall_fill"></span>% {{ __('club.stadium.season_tickets.of_capacity') }}
                                     </div>
                                 </div>
                                 <div class="bg-surface-700/50 border border-border-default rounded-lg px-4 py-3">
@@ -170,7 +168,7 @@
                                 <div class="bg-surface-700/50 border border-border-default rounded-lg px-4 py-3">
                                     <div class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('club.stadium.season_tickets.tickets_sold') }}</div>
                                     <div class="font-heading text-2xl font-bold text-text-primary">{{ Number::format((int) ($pricing->total_sold ?? 0)) }}</div>
-                                    <div class="text-[11px] text-text-muted mt-1">{{ $overallFill }}% {{ __('club.stadium.season_tickets.predicted_fill') }}</div>
+                                    <div class="text-[11px] text-text-muted mt-1">{{ $overallFill }}% {{ __('club.stadium.season_tickets.of_capacity') }}</div>
                                 </div>
                                 <div class="bg-surface-700/50 border border-border-default rounded-lg px-4 py-3">
                                     <div class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('club.stadium.stadium_revenue.title') }}</div>
