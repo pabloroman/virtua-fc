@@ -161,6 +161,7 @@ return [
             'projected_season_tickets' => 'Projected season tickets',
             'projected_season_tickets_tooltip' => 'Season tickets you expect to sell (paid up front). Match-day attendance differs — it adds walk-up buyers and subtracts no-show holders.',
             'of_capacity' => 'of capacity',
+            'matchday_occupancy' => 'match-day occupancy',
             'save_button' => 'Save',
             'preset' => [
                 'accessible' => 'Accessible',

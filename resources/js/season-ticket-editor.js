@@ -9,6 +9,8 @@ export default function seasonTicketEditor(config) {
         // is recomputed here as the user toggles presets — no save round-trip.
         expectedAttendance: config.expectedAttendance,
         perAttendeeCents: config.perAttendeeCents,
+        capacity: config.capacity,
+        noShowRate: config.noShowRate,
 
         // The aggregates (fill, sold, revenue) for the selected preset. Every
         // preset is precomputed server-side, so switching is instant and needs
@@ -27,6 +29,23 @@ export default function seasonTicketEditor(config) {
         get matchday() {
             const walkup = Math.max(0, this.expectedAttendance - (this.current.total_sold ?? 0));
             return Math.trunc(walkup * this.perAttendeeCents);
+        },
+
+        // Projected typical match-day attendance for the selected preset:
+        // attending holders (after no-show) + walk-up demand beyond the abono
+        // base. Mirrors MatchAttendanceService::composeSeasonTicketAttendance,
+        // so the bar shows how full the ground gets — distinct from the abono
+        // penetration. A pricier preset sells fewer abonos but walk-up takes up
+        // the slack, so occupancy moves far less than the abono count.
+        get matchdayAttendance() {
+            const holders = this.current.total_sold ?? 0;
+            const attendingHolders = Math.round(holders * (1 - this.noShowRate));
+            const walkup = Math.max(0, this.expectedAttendance - holders);
+            return Math.min(this.capacity, attendingHolders + walkup);
+        },
+
+        get matchdayFillPercent() {
+            return this.capacity > 0 ? Math.round((this.matchdayAttendance / this.capacity) * 100) : 0;
         },
 
         select(key) {

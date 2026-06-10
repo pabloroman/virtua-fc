@@ -97,6 +97,8 @@
                                 current: @js($currentPreset),
                                 expectedAttendance: @js($matchdayFactors['expected_attendance']),
                                 perAttendeeCents: @js($matchdayFactors['per_attendee_cents']),
+                                capacity: @js($capacity),
+                                noShowRate: @js($seasonTicketNoShowRate),
                              })">
 
                             <p class="text-xs text-text-muted leading-relaxed mb-4">
@@ -126,11 +128,14 @@
                                         <x-info-icon :tooltip="__('club.stadium.season_tickets.projected_season_tickets_tooltip')" />
                                     </div>
                                     <div class="font-heading text-2xl font-bold text-text-primary" x-text="fmt(current.total_sold)"></div>
-                                    <div class="mt-2 h-1.5 bg-surface-900/40 rounded-full overflow-hidden">
-                                        <div class="h-full bg-accent-blue rounded-full" :style="`width: ${current.overall_fill}%`"></div>
+                                    {{-- Stacked: solid = abono penetration, faded = walk-up on top → total match-day occupancy. --}}
+                                    <div class="mt-2 h-1.5 bg-surface-900/40 rounded-full overflow-hidden flex">
+                                        <div class="h-full bg-accent-blue" :style="`width: ${current.overall_fill}%`"></div>
+                                        <div class="h-full bg-accent-blue/40" :style="`width: ${Math.max(0, matchdayFillPercent - current.overall_fill)}%`"></div>
                                     </div>
                                     <div class="text-[11px] text-text-muted mt-1">
                                         <span x-text="current.overall_fill"></span>% {{ __('club.stadium.season_tickets.of_capacity') }}
+                                        · ~<span x-text="matchdayFillPercent"></span>% {{ __('club.stadium.season_tickets.matchday_occupancy') }}
                                     </div>
                                 </div>
                                 <div class="bg-surface-700/50 border border-border-default rounded-lg px-4 py-3">

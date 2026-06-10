@@ -161,6 +161,7 @@ return [
             'projected_season_tickets' => 'Abonos previstos',
             'projected_season_tickets_tooltip' => 'Abonos que prevés vender (de pago por adelantado). La asistencia a cada partido es distinta: suma las entradas de taquilla y descuenta los abonados que no acuden.',
             'of_capacity' => 'del aforo',
+            'matchday_occupancy' => 'ocupación en partido',
             'save_button' => 'Guardar',
             'preset' => [
                 'accessible' => 'Accesible',

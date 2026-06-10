@@ -306,11 +306,17 @@ class ShowClubStadium
         // free of any Finance dependency.
         $matchdayFactors = $this->budgetProjectionService->matchdayProjectionFactors($game->team, $game);
 
+        // No-show rate lets the season-ticket editor project match-day occupancy
+        // client-side (attending holders + walk-up) alongside the abono count,
+        // so the user can see how full the ground actually gets per preset.
+        $seasonTicketNoShowRate = (float) config('stadium.season_ticket_noshow_rate', 0.05);
+
         return view('club.stadium', [
             'game' => $game,
             'upgrade' => $upgrade,
             'historyRows' => $historyRows,
             'matchdayFactors' => $matchdayFactors,
+            'seasonTicketNoShowRate' => $seasonTicketNoShowRate,
             ...$this->stadiumSummaryService->build($game),
             ...$this->namingRightsReadService->buildIdentityPanel($game),
         ]);
