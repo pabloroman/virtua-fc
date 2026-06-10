@@ -44,7 +44,6 @@ use App\Http\Actions\CancelScoutSearch;
 use App\Http\Actions\AcknowledgeCriticalAlerts;
 use App\Http\Actions\MarkAllNotificationsRead;
 use App\Http\Actions\MarkNotificationRead;
-use App\Http\Actions\PreviewSeasonTicketPricing;
 use App\Http\Actions\ViewCriticalAlerts;
 use App\Http\Actions\SaveBudgetAllocation;
 use App\Http\Actions\SaveSeasonTicketPricing;
@@ -201,7 +200,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/game/{gameId}/club/finances', ShowFinances::class)->name('game.club.finances');
         Route::get('/game/{gameId}/club/stadium', ShowClubStadium::class)->name('game.club.stadium');
         Route::post('/game/{gameId}/club/stadium/season-tickets', SaveSeasonTicketPricing::class)->name('game.club.stadium.season-tickets.save');
-        Route::post('/game/{gameId}/club/stadium/season-tickets/preview', PreviewSeasonTicketPricing::class)->name('game.club.stadium.season-tickets.preview');
         Route::post('/game/{gameId}/club/stadium/supplementary', CommitSupplementaryStands::class)->name('game.club.stadium.supplementary');
         Route::post('/game/{gameId}/club/stadium/expansion', CommitStandExpansion::class)->name('game.club.stadium.expansion');
         Route::post('/game/{gameId}/club/stadium/rebuild', CommitStadiumRebuild::class)->name('game.club.stadium.rebuild');

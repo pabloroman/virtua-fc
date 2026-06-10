@@ -154,7 +154,7 @@ return [
 
         'season_tickets' => [
             'title' => 'Precios',
-            'subtitle' => 'Fija el precio de los abonos para cada zona del estadio. Los precios se bloquean en cuanto se juegue el primer partido de liga.',
+            'subtitle' => 'Elige una política de precios para tus abonos. Precios más bajos llenan más el estadio; precios más altos rinden más por asiento. Se bloquea al jugarse el primer partido de liga.',
             'deadline_notice' => 'Plazo: los precios se bloquean al jugarse el primer partido de liga de la temporada.',
             'locked_notice' => 'Los abonos están bloqueados esta temporada. Podrás fijar nuevos precios la próxima pretemporada.',
             'tickets_sold' => 'Abonos vendidos',
@@ -162,8 +162,18 @@ return [
             'predicted_fill_tooltip' => 'Los precios y el apoyo de tu afición influyen en la venta de abonos.',
             'baseline_price' => 'Base',
             'capacity' => 'Aforo',
-            'save_button' => 'Guardar precios',
-            'reset_defaults' => 'Restaurar valores por defecto',
+            'save_button' => 'Guardar',
+            'matchday_recalc_notice' => 'La taquilla se recalcula al guardar.',
+            'preset' => [
+                'accessible' => 'Accesible',
+                'standard' => 'Estándar',
+                'premium' => 'Premium',
+            ],
+            'preset_hint' => [
+                'accessible' => 'Más baratos, estadio más lleno.',
+                'standard' => 'Precios de referencia.',
+                'premium' => 'Más caros, menos ocupación.',
+            ],
 
             'area' => [
                 'general'       => 'General',

@@ -16,7 +16,9 @@ use App\Modules\Finance\Services\BudgetProjectionService;
 use App\Modules\Finance\Services\SalaryCapService;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Stadium\Services\FanLoyaltyService;
-use App\Modules\Stadium\Services\GameStadiumNameResolver;
+use App\Modules\Stadium\Services\GameStadiumResolver;
+use App\Modules\Stadium\Services\NamingOfferFactory;
+use App\Modules\Stadium\Services\NamingRightsReadService;
 use App\Modules\Stadium\Services\NamingRightsService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use InvalidArgumentException;
@@ -31,6 +33,7 @@ class NamingRightsServiceTest extends TestCase
 
     private NotificationService $notifications;
     private NamingRightsService $service;
+    private NamingRightsReadService $readService;
     private Competition $league;
     private Team $team;
 
@@ -42,9 +45,15 @@ class NamingRightsServiceTest extends TestCase
         $this->notifications->shouldReceive('create')->byDefault();
 
         $this->service = new NamingRightsService(
-            new GameStadiumNameResolver(),
+            new GameStadiumResolver(),
             new FanLoyaltyService(),
             $this->notifications,
+            new NamingOfferFactory(),
+        );
+
+        $this->readService = new NamingRightsReadService(
+            $this->service,
+            new GameStadiumResolver(),
         );
 
         $this->league = Competition::factory()->league()->create(['tier' => 1]);
@@ -266,11 +275,11 @@ class NamingRightsServiceTest extends TestCase
         $game = $this->preSeasonGame();
         $this->seedLoyalty($game, base: 60, current: 60);
         config()->set('commercial.naming_rights.max_pending_offers', 3);
+        config()->set('commercial.naming_rights.search_fee.established', 0);
 
-        // Force as many as possible; the cap and sponsor-dedupe bound it.
-        for ($i = 0; $i < 10; $i++) {
-            $this->service->forceOffer($game);
-        }
+        // One seek tops the board up to the cap; the cap and sponsor-dedupe
+        // bound how many distinct offers it can mint.
+        $this->service->seekSponsors($game);
 
         $pending = GameStadiumNamingDeal::where('game_id', $game->id)
             ->where('status', GameStadiumNamingDeal::STATUS_PENDING)->get();
@@ -279,7 +288,7 @@ class NamingRightsServiceTest extends TestCase
         $this->assertSame($pending->count(), $pending->pluck('sponsor_name')->unique()->count());
     }
 
-    public function test_offers_on_a_board_trade_annual_fee_off_against_term_so_none_dominates(): void
+    public function test_each_offer_prices_its_tier_base_by_its_term_multiplier(): void
     {
         $game = $this->preSeasonGame();
         $game->update(['current_date' => '2026-07-01']);
@@ -287,41 +296,28 @@ class NamingRightsServiceTest extends TestCase
         $this->seedInvestment($game, transferBudget: 5_000_000_00);
         config()->set('commercial.naming_rights.max_pending_offers', 3);
         config()->set('commercial.naming_rights.search_fee.established', 80_000_00);
-        // Pin the band so every offer shares one €10M base; the only variable
-        // left is the term, which must drive the annual fee down as it grows.
+        // Pin the band so every offer draws the same €10M base; the only
+        // variable left is each offer's own term multiplier.
         config()->set('commercial.naming_rights.annual_value.established', [10_000_000_00, 10_000_000_00]);
 
         $minted = $this->service->seekSponsors($game);
 
         $this->assertCount(3, $minted);
 
-        // Distinct terms, and the longer the deal the lower the annual fee:
-        // sorting by term ascending yields strictly decreasing annual values.
-        $byTerm = collect($minted)->sortBy('contract_seasons')->values();
+        // Competing offers never duplicate a sponsor brand.
         $this->assertSame(
-            $byTerm->pluck('contract_seasons')->all(),
-            $byTerm->pluck('contract_seasons')->unique()->values()->all(),
+            collect($minted)->pluck('sponsor_name')->all(),
+            collect($minted)->pluck('sponsor_name')->unique()->values()->all(),
         );
-        for ($i = 1; $i < $byTerm->count(); $i++) {
-            $this->assertLessThan(
-                $byTerm[$i - 1]->annual_value_cents,
-                $byTerm[$i]->annual_value_cents,
-                'A longer-term offer must pay a lower annual fee.',
-            );
-        }
 
-        // No offer is better than another on both axes (annual fee AND term).
-        foreach ($minted as $a) {
-            foreach ($minted as $b) {
-                if ($a->id === $b->id) {
-                    continue;
-                }
-                $this->assertFalse(
-                    $a->annual_value_cents >= $b->annual_value_cents
-                        && $a->contract_seasons >= $b->contract_seasons,
-                    'No offer should dominate another on both annual fee and term.',
-                );
-            }
+        // Each offer is priced independently: the tier base scaled by its own
+        // term multiplier, so a longer term pays a lower annual fee.
+        foreach ($minted as $offer) {
+            $multiplier = (float) config("commercial.naming_rights.term_value_multiplier.{$offer->contract_seasons}", 1.0);
+            $this->assertSame(
+                (int) round(10_000_000_00 * $multiplier),
+                (int) $offer->annual_value_cents,
+            );
         }
     }
 
@@ -474,7 +470,7 @@ class NamingRightsServiceTest extends TestCase
 
         // Per-game ground is branded with the sponsor name and reads as sponsored.
         $this->assertSame('Spotify Camp Nou', $this->stadiumFor($game)->stadium_name);
-        $panel = $this->service->buildCommercialPanel($game)['namingRights'];
+        $panel = $this->readService->buildCommercialPanel($game)['namingRights'];
         $this->assertSame('sponsor', $panel['source']);
         $this->assertNotNull($panel['activeDeal']);
         $this->assertSame(4_000_000_00, $this->service->projectedRevenueForGame($game));

@@ -154,7 +154,7 @@ return [
 
         'season_tickets' => [
             'title' => 'Pricing',
-            'subtitle' => 'Set your season ticket prices for each seating area. Pricing is locked once your first league match has been played.',
+            'subtitle' => 'Pick a pricing policy for your season tickets. Lower prices fill more of the ground; higher prices earn more per seat. Locked once your first league match has been played.',
             'deadline_notice' => 'Deadline: prices lock once the first league match of the season has been played.',
             'locked_notice' => 'Season tickets are locked for the season. New prices can be set in pre-season next year.',
             'tickets_sold' => 'Tickets sold',
@@ -162,8 +162,18 @@ return [
             'predicted_fill_tooltip' => 'Pricing and your fans\' support both shape season ticket demand.',
             'baseline_price' => 'Baseline',
             'capacity' => 'Capacity',
-            'save_button' => 'Save prices',
-            'reset_defaults' => 'Reset to defaults',
+            'save_button' => 'Save',
+            'matchday_recalc_notice' => 'Walk-up gate is recalculated when you save.',
+            'preset' => [
+                'accessible' => 'Accessible',
+                'standard' => 'Standard',
+                'premium' => 'Premium',
+            ],
+            'preset_hint' => [
+                'accessible' => 'Cheaper, fuller stadium.',
+                'standard' => 'Baseline prices.',
+                'premium' => 'Pricier, lower attendance.',
+            ],
 
             'area' => [
                 'general'       => 'General',

@@ -197,6 +197,8 @@ return [
     'stadium_active_project_exists' => 'Ya tienes un proyecto en curso. Espera a que termine antes de iniciar otro.',
     'stadium_supplementary_too_few_seats' => 'Debes añadir al menos un asiento supletorio.',
     'stadium_supplementary_exceeds_cap' => 'Supera el límite de gradas supletorias permitidas.',
+    'stadium_stand_expansion_too_few_seats' => 'La ampliación de grada no alcanza el mínimo de asientos exigido.',
+    'stadium_stand_expansion_exceeds_cap' => 'La ampliación de grada supera el tamaño máximo permitido.',
     'stadium_rebuild_reputation_too_low' => 'Tu reputación todavía no permite una reforma integral del estadio.',
     'stadium_rebuild_must_be_larger' => 'El aforo objetivo debe ser mayor que el actual.',
     'stadium_rebuild_exceeds_max_capacity' => 'El aforo objetivo supera el tope que tu reputación e ingresos permiten financiar.',

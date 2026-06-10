@@ -403,7 +403,7 @@ class StadiumUpgradeTest extends TestCase
         $this->seedInvestment($game, transferBudget: 200_000_000_00);
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('messages.stadium_supplementary_too_few_seats');
+        $this->expectExceptionMessage('messages.stadium_stand_expansion_too_few_seats');
 
         app(StadiumUpgradeService::class)->commitStandExpansion(
             $game,
@@ -418,7 +418,7 @@ class StadiumUpgradeTest extends TestCase
         $this->seedInvestment($game, transferBudget: 200_000_000_00);
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('messages.stadium_supplementary_exceeds_cap');
+        $this->expectExceptionMessage('messages.stadium_stand_expansion_exceeds_cap');
 
         app(StadiumUpgradeService::class)->commitStandExpansion(
             $game,

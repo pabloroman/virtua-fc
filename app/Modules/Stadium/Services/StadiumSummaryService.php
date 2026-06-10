@@ -2,13 +2,11 @@
 
 namespace App\Modules\Stadium\Services;
 
-use App\Models\ClubProfile;
 use App\Models\Game;
 use App\Models\GameFinances;
 use App\Models\GameMatch;
 use App\Models\GameStadium;
 use App\Models\MatchAttendance;
-use App\Models\SeasonTicketPricing;
 use App\Models\TeamReputation;
 
 /**
@@ -21,7 +19,7 @@ class StadiumSummaryService
 {
     public function __construct(
         private readonly SeasonTicketPricingService $seasonTicketPricingService,
-        private readonly GameStadiumNameResolver $stadiumNameResolver,
+        private readonly GameStadiumResolver $stadiumResolver,
     ) {}
 
     /**
@@ -60,7 +58,7 @@ class StadiumSummaryService
         $capacity = $stadium?->effective_capacity ?? (int) ($team->stadium_seats ?? 0);
         $uefaLevel = $stadium?->effective_uefa_level ?? $team->uefa_stadium_category;
 
-        $seasonTickets = $this->resolveSeasonTickets($game, $capacity);
+        $seasonTickets = $this->resolveSeasonTickets($game);
 
         $finances = $game->currentFinances;
         $projectedMatchday = (int) ($finances?->projected_matchday_revenue ?? 0);
@@ -68,26 +66,6 @@ class StadiumSummaryService
         $hasActualMatchday = $actualMatchday > 0;
 
         $pricing = $seasonTickets['pricing'];
-        $ticketAreas = $seasonTickets['areas'];
-        $baselineAreas = $seasonTickets['baseline_areas'];
-        $minMultiplier = $seasonTickets['min_price_multiplier'];
-        $maxMultiplier = $seasonTickets['max_price_multiplier'];
-
-        // Alpine seed for the season-ticket editor — per-area current price
-        // + baseline. The component re-fetches predictions from the server,
-        // so this only needs to cover the first render. Per-area slider
-        // bounds (min/max price in cents) are also stamped onto each area
-        // so the template doesn't recompute them at render time.
-        $alpinePrices = [];
-        $alpineBaselines = [];
-        foreach ($ticketAreas as $i => $area) {
-            $alpinePrices[$i] = (int) ($area['price_cents'] ?? $area['baseline_price_cents']);
-            $alpineBaselines[$i] = (int) ($area['baseline_price_cents'] ?? $alpinePrices[$i]);
-
-            $baselineCents = (int) ($baselineAreas[$i]['baseline_price_cents'] ?? $area['baseline_price_cents']);
-            $ticketAreas[$i]['min_price_cents'] = (int) round($baselineCents * $minMultiplier);
-            $ticketAreas[$i]['max_price_cents'] = (int) round($baselineCents * $maxMultiplier);
-        }
 
         // Locked-state aggregates (rendered when season tickets are no
         // longer editable for the season).
@@ -96,7 +74,7 @@ class StadiumSummaryService
         $lockedTotalRevenue = $lockedSeasonTicketRevenue + $lockedMatchdayRevenue;
 
         return [
-            'stadiumName' => $this->stadiumNameResolver->effectiveName($game->id, $game->team_id, $team->stadium_name),
+            'stadiumName' => $this->stadiumResolver->effectiveName($game->id, $game->team_id, $team->stadium_name),
             'capacity' => $capacity,
             'uefaLevel' => $uefaLevel,
             'loyaltyPoints' => $loyaltyPoints,
@@ -109,13 +87,9 @@ class StadiumSummaryService
             'hasActualMatchday' => $hasActualMatchday,
             'canEditTickets' => $seasonTickets['can_edit'],
             'pricing' => $pricing,
-            'ticketAreas' => $ticketAreas,
-            'baselineAreas' => $baselineAreas,
-            'overallFill' => $seasonTickets['overall_fill_rate'],
-            'minMultiplier' => $seasonTickets['min_price_multiplier'],
-            'maxMultiplier' => $seasonTickets['max_price_multiplier'],
-            'alpinePrices' => $alpinePrices,
-            'alpineBaselines' => $alpineBaselines,
+            'currentPreset' => $seasonTickets['current_preset'],
+            'ticketPresets' => $seasonTickets['presets'],
+            'overallFill' => $seasonTickets['overall_fill'],
             'lockedSeasonTicketRevenue' => $lockedSeasonTicketRevenue,
             'lockedMatchdayRevenue' => $lockedMatchdayRevenue,
             'lockedTotalRevenue' => $lockedTotalRevenue,
@@ -167,39 +141,58 @@ class StadiumSummaryService
     }
 
     /**
-     * Build the payload feeding the season ticket pricing UI block.
-     * Returns the persisted pricing row when one exists, plus the area
-     * layout (so the schematic always has something to render) and the
-     * editable flag.
+     * Build the payload feeding the season ticket pricing UI block. The
+     * editor offers a discrete pricing preset, so every preset's outcome
+     * (fill, sold, season-ticket revenue, per-area schematic) is precomputed
+     * here — the front end toggles between them with no server round-trip.
+     *
+     * @return array{
+     *   can_edit: bool,
+     *   pricing: \App\Models\SeasonTicketPricing|null,
+     *   current_preset: string,
+     *   overall_fill: int,
+     *   presets: array<string, array<string, mixed>>,
+     * }
      */
-    private function resolveSeasonTickets(Game $game, int $capacity): array
+    private function resolveSeasonTickets(Game $game): array
     {
         $pricing = $this->seasonTicketPricingService->getCurrent($game);
-        $reputation = TeamReputation::resolveLevel($game->id, $game->team_id);
-        $baselineAreas = $this->seasonTicketPricingService->buildAreas($capacity, $reputation);
+        $currentPreset = $pricing->pricing_preset ?? SeasonTicketPricingService::DEFAULT_PRESET;
 
-        // Areas with persisted sold/fill, or computed defaults so the
-        // schematic still renders before the first save.
-        if ($pricing) {
-            $areas = $pricing->areas;
-            $overallFill = $pricing->fillRatePercent();
-        } else {
-            $defaults = $this->seasonTicketPricingService->buildDefaultPricing($game, $game->team);
-            $areas = $defaults['areas'];
-            $overallFill = SeasonTicketPricing::fillRateFor(
-                $defaults['total_sold'],
-                $defaults['total_capacity'],
-            );
+        $presets = [];
+        foreach (array_keys($this->seasonTicketPricingService->presets()) as $key) {
+            $payload = $this->seasonTicketPricingService->predictForPreset($game, $game->team, $key);
+
+            // Stamp the translated area label so the client-side schematic
+            // (rendered with x-for) doesn't need to resolve translation keys.
+            $areas = array_map(function (array $area) {
+                $area['label'] = __('club.stadium.season_tickets.area.' . ($area['slug'] ?? ''));
+
+                return $area;
+            }, $payload['areas']);
+
+            $presets[$key] = [
+                'key' => $key,
+                'areas' => $areas,
+                'total_sold' => $payload['total_sold'],
+                'total_capacity' => $payload['total_capacity'],
+                'total_revenue' => $payload['total_revenue'],
+                'overall_fill' => $payload['overall_fill_rate'],
+            ];
         }
+
+        // Initial fill reflects the persisted preset (the editor's default
+        // selection); the locked view reads the persisted row's own fill.
+        $overallFill = $pricing
+            ? $pricing->fillRatePercent()
+            : ($presets[$currentPreset]['overall_fill'] ?? 0);
 
         return [
             'can_edit' => $this->seasonTicketPricingService->canEdit($game),
             'pricing' => $pricing,
-            'areas' => $areas,
-            'baseline_areas' => $baselineAreas,
-            'overall_fill_rate' => $overallFill,
-            'min_price_multiplier' => SeasonTicketPricingService::MIN_PRICE_MULTIPLIER,
-            'max_price_multiplier' => SeasonTicketPricingService::MAX_PRICE_MULTIPLIER,
+            'current_preset' => $currentPreset,
+            'overall_fill' => $overallFill,
+            'presets' => $presets,
         ];
     }
 }

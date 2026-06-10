@@ -10,7 +10,6 @@ use App\Models\GameStadiumNamingDeal;
 use App\Models\TeamReputation;
 use App\Models\TransferOffer;
 use App\Modules\Notification\Services\NotificationService;
-use Illuminate\Support\Collection;
 use InvalidArgumentException;
 
 /**
@@ -35,9 +34,10 @@ use InvalidArgumentException;
 class NamingRightsService
 {
     public function __construct(
-        private readonly GameStadiumNameResolver $nameResolver,
+        private readonly GameStadiumResolver $stadiumResolver,
         private readonly FanLoyaltyService $fanLoyaltyService,
         private readonly NotificationService $notificationService,
+        private readonly NamingOfferFactory $offerFactory,
     ) {}
 
     // ── Window ──────────────────────────────────────────────────────────
@@ -83,7 +83,7 @@ class NamingRightsService
             $this->restorePreDealName($game, $active);
 
             $tier = TeamReputation::resolveLevel($game->id, $game->team_id);
-            $this->createRenewalOffer($game, $active, $tier);
+            $this->offerFactory->createRenewalOffer($game, $active, $tier);
         }
 
         // Clear unaccepted offers from previous pre-seasons.
@@ -175,7 +175,7 @@ class NamingRightsService
             'sponsor_name' => $entry['sponsor'],
             'proposed_stadium_name' => $sponsoredName,
             'previous_stadium_name' => $entry['clean_name'] ?? null,
-            'annual_value_cents' => $this->tierMidpointValue($tier),
+            'annual_value_cents' => $this->offerFactory->tierMidpointValue($tier),
             'contract_seasons' => $seasons,
             'is_renewal' => false,
             'status' => GameStadiumNamingDeal::STATUS_ACTIVE,
@@ -241,7 +241,7 @@ class NamingRightsService
         // slot; the loop stops early only if the sponsor pool is exhausted).
         $minted = [];
         for ($slot = $pending; $slot < $cap; $slot++) {
-            $deal = $this->createOffer($game, $tier);
+            $deal = $this->offerFactory->createOffer($game, $tier);
             if ($deal === null) {
                 break;
             }
@@ -316,42 +316,6 @@ class NamingRightsService
     }
 
     /**
-     * Mint an offer regardless of any cooldown/fee, still respecting the
-     * window, active-deal, board-full and sponsor-dedupe gates. For tests,
-     * where deterministic arrival is needed.
-     */
-    public function forceOffer(Game $game): ?GameStadiumNamingDeal
-    {
-        if (! $this->canReceiveOffer($game)) {
-            return null;
-        }
-
-        $tier = TeamReputation::resolveLevel($game->id, $game->team_id);
-
-        return $this->createOffer($game, $tier);
-    }
-
-    /**
-     * Whether the board has room for another offer: the identity window is
-     * open, no deal is already running, and the pending count is under the
-     * cap. (Cooldown/fee are seek-time concerns, not board-capacity ones.)
-     */
-    private function canReceiveOffer(Game $game): bool
-    {
-        if (! $this->windowOpen($game)) {
-            return false;
-        }
-
-        if (GameStadiumNamingDeal::activeForGame($game->id, $game->team_id)) {
-            return false;
-        }
-
-        $cap = (int) config('commercial.naming_rights.max_pending_offers', 3);
-
-        return $this->pendingOfferCount($game) < $cap;
-    }
-
-    /**
      * Pending naming-rights offers on the board for the current season.
      */
     private function pendingOfferCount(Game $game): int
@@ -362,237 +326,6 @@ class NamingRightsService
             ->where('status', GameStadiumNamingDeal::STATUS_PENDING)
             ->where('offered_season', (int) $game->season)
             ->count();
-    }
-
-    /**
-     * Create one pending offer: a sponsor not already on the table, a term not
-     * already on the board, and an annual fee priced from the board's shared
-     * market-value base scaled down for longer terms. Returns null when every
-     * brand is already pending.
-     *
-     * Anchoring every offer to one base (recovered from any offer already on the
-     * board, or freshly drawn within the tier band when the board is empty) and
-     * giving each a distinct term keeps the board a genuine tradeoff curve — the
-     * longer the deal, the lower the annual fee — so no offer is ever strictly
-     * better than a sibling on both axes.
-     */
-    private function createOffer(Game $game, string $tier): ?GameStadiumNamingDeal
-    {
-        $season = (int) $game->season;
-
-        $sponsor = $this->pickAvailableSponsor($game, $season, $tier);
-        if ($sponsor === null) {
-            return null;
-        }
-
-        // Competing (non-renewal) offers already on the board fix the shared base
-        // and the terms already taken; renewals stand alone and are excluded.
-        $board = GameStadiumNamingDeal::query()
-            ->where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->where('status', GameStadiumNamingDeal::STATUS_PENDING)
-            ->where('offered_season', $season)
-            ->where('is_renewal', false)
-            ->get(['annual_value_cents', 'contract_seasons']);
-
-        $base = $this->boardBaseValue($board, $tier);
-        $seasons = $this->pickDistinctTerm($board);
-
-        return GameStadiumNamingDeal::create([
-            'game_id' => $game->id,
-            'team_id' => $game->team_id,
-            'sponsor_name' => $sponsor['name'],
-            'proposed_stadium_name' => $sponsor['stadium'],
-            'annual_value_cents' => $this->annualForTerm($base, $seasons),
-            'contract_seasons' => $seasons,
-            'is_renewal' => false,
-            'status' => GameStadiumNamingDeal::STATUS_PENDING,
-            'offered_season' => $season,
-        ]);
-    }
-
-    /**
-     * Mint a free renewal offer for the incumbent sponsor when a deal expires:
-     * same sponsor and stadium name, a fresh fee re-priced from the club's
-     * current reputation tier, and a one-season term so the decision returns
-     * each pre-season. Flagged is_renewal so acceptance skips the loyalty shock
-     * (the name does not change). No agency fee or cooldown — keeping a sponsor
-     * you already have costs nothing; shopping for a different one still goes
-     * through the paid seek flow.
-     */
-    private function createRenewalOffer(Game $game, GameStadiumNamingDeal $expired, string $tier): GameStadiumNamingDeal
-    {
-        $season = (int) $game->season;
-
-        [$minValue, $maxValue] = $this->tierBand($tier);
-
-        $seasons = (int) config('commercial.naming_rights.renewal_seasons', 1);
-
-        return GameStadiumNamingDeal::create([
-            'game_id' => $game->id,
-            'team_id' => $game->team_id,
-            'sponsor_name' => $expired->sponsor_name,
-            'proposed_stadium_name' => $expired->proposed_stadium_name,
-            'annual_value_cents' => random_int((int) $minValue, (int) $maxValue),
-            'contract_seasons' => $seasons,
-            'is_renewal' => true,
-            'status' => GameStadiumNamingDeal::STATUS_PENDING,
-            'offered_season' => $season,
-        ]);
-    }
-
-    /**
-     * Deterministic fee for a tier: the midpoint of the tier's annual-value
-     * band. Used to price pre-existing deals a club starts the game with — no
-     * per-club value is authored, so the fee simply tracks club stature.
-     */
-    private function tierMidpointValue(string $tier): int
-    {
-        [$min, $max] = $this->tierBand($tier);
-
-        return intdiv($min + $max, 2);
-    }
-
-    /**
-     * The [min, max] annual-value band for a tier (cents), falling back to the
-     * local band for an unmapped tier so callers never read an empty range.
-     *
-     * @return array{0: int, 1: int}
-     */
-    private function tierBand(string $tier): array
-    {
-        $range = config("commercial.naming_rights.annual_value.{$tier}")
-            ?? config('commercial.naming_rights.annual_value.local', [50_000_00, 200_000_00]);
-
-        return [(int) $range[0], (int) $range[1]];
-    }
-
-    /**
-     * The annual-fee multiplier for a contract length: 1.0 at one season (the
-     * band is the headline rate), discounting toward longer terms so a multi-year
-     * deal pays less per season. An unmapped term defaults to 1.0 (no discount).
-     */
-    private function termMultiplier(int $seasons): float
-    {
-        $curve = (array) config('commercial.naming_rights.term_value_multiplier', []);
-
-        return (float) ($curve[$seasons] ?? 1.0);
-    }
-
-    /**
-     * The annual fee for a term: the shared board base scaled by the term's
-     * multiplier. Longer term ⇒ lower annual fee.
-     */
-    private function annualForTerm(int $base, int $seasons): int
-    {
-        return (int) round($base * $this->termMultiplier($seasons));
-    }
-
-    /**
-     * Recover the board base an existing offer was priced from, inverting
-     * annualForTerm(), so a top-up offer shares the value the rest of the board
-     * was built on instead of re-rolling a fresh one.
-     */
-    private function baseFromAnnual(int $annual, int $seasons): int
-    {
-        $multiplier = $this->termMultiplier($seasons);
-
-        return $multiplier > 0.0 ? (int) round($annual / $multiplier) : $annual;
-    }
-
-    /**
-     * The club's market-value base for the current board: inherited from any
-     * offer already on it (so the whole board shares one value), or a fresh draw
-     * within the tier band when the board is empty.
-     *
-     * @param  Collection<int, GameStadiumNamingDeal>  $board
-     */
-    private function boardBaseValue(Collection $board, string $tier): int
-    {
-        $existing = $board->first();
-        if ($existing !== null) {
-            return $this->baseFromAnnual((int) $existing->annual_value_cents, (int) $existing->contract_seasons);
-        }
-
-        [$min, $max] = $this->tierBand($tier);
-
-        return random_int($min, $max);
-    }
-
-    /**
-     * Pick a contract length not already on the board, so two offers never share
-     * a term (which would leave them differing only by sponsor name). Falls back
-     * to the full range when every term is taken — only reachable if more offer
-     * slots than distinct terms are ever configured.
-     *
-     * @param  Collection<int, GameStadiumNamingDeal>  $board
-     */
-    private function pickDistinctTerm(Collection $board): int
-    {
-        $min = (int) config('commercial.naming_rights.min_contract_seasons', 1);
-        $max = (int) config('commercial.naming_rights.max_contract_seasons', 5);
-
-        $taken = $board->pluck('contract_seasons')->map(fn ($s) => (int) $s)->all();
-        $available = array_values(array_diff(range($min, $max), $taken));
-        if ($available === []) {
-            $available = range($min, $max);
-        }
-
-        return $available[random_int(0, count($available) - 1)];
-    }
-
-    /**
-     * Pick a sponsor brand eligible for this club that isn't already pending
-     * this pre-season, so competing offers never duplicate the same name. Two
-     * gates narrow the pool:
-     *   1. `reach` must bid for the club's tier (a regional brewer won't chase
-     *      a superclub; a global giant won't bother with a third-tier ground).
-     *      An unmapped tier skips this gate so the board never silently starves.
-     *   2. a non-global brand only operates in its home market, so it can only
-     *      name a ground in its own country; global brands name grounds anywhere
-     *      (Emirates, Coca-Cola) and carry no `country`.
-     * Null when no eligible brand is left.
-     *
-     * @return array{name: string, reach: string, country?: string, stadium: string}|null
-     */
-    private function pickAvailableSponsor(Game $game, int $season, string $tier): ?array
-    {
-        $sponsors = config('commercial.naming_rights.sponsors', []);
-        if (empty($sponsors)) {
-            return null;
-        }
-
-        $eligibleReaches = (array) config("commercial.naming_rights.sponsor_reach_by_tier.{$tier}", []);
-        $country = $game->country;
-        $sponsors = array_filter($sponsors, function (array $sponsor) use ($eligibleReaches, $country) {
-            $reach = $sponsor['reach'] ?? null;
-
-            if (! empty($eligibleReaches) && ! in_array($reach, $eligibleReaches, true)) {
-                return false;
-            }
-
-            // Global brands are country-agnostic; everyone else is home-market only.
-            return $reach === 'global' || ($sponsor['country'] ?? null) === $country;
-        });
-
-        $taken = GameStadiumNamingDeal::query()
-            ->where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->where('status', GameStadiumNamingDeal::STATUS_PENDING)
-            ->where('offered_season', $season)
-            ->pluck('sponsor_name')
-            ->all();
-
-        $available = array_values(array_filter(
-            $sponsors,
-            fn (array $sponsor) => ! in_array($sponsor['name'], $taken, true),
-        ));
-
-        if (empty($available)) {
-            return null;
-        }
-
-        return $available[random_int(0, count($available) - 1)];
     }
 
     // ── Player actions ───────────────────────────────────────────────────
@@ -716,103 +449,6 @@ class NamingRightsService
         return $this->projectedRevenueForGame($game);
     }
 
-    // ── Read sides ────────────────────────────────────────────────────────
-
-    /**
-     * Identity read-side for the stadium page: the current name, where it
-     * comes from, and whether a cosmetic rename is allowed. The sponsorship
-     * money surface lives on the Commercial page (buildCommercialPanel).
-     *
-     * @return array{stadiumIdentity: array<string, mixed>}
-     */
-    public function buildIdentityPanel(Game $game): array
-    {
-        $season = (int) $game->season;
-        $windowOpen = $this->windowOpen($game);
-        $active = GameStadiumNamingDeal::activeForGame($game->id, $game->team_id);
-        $stadium = $this->stadiumRow($game);
-
-        return [
-            'stadiumIdentity' => [
-                'currentName' => $this->effectiveName($game),
-                'source' => $this->nameSource($active, $stadium),
-                'windowOpen' => $windowOpen,
-                'canRename' => $windowOpen
-                    && $active === null
-                    && ! ($stadium && $stadium->name_changed_season === $season),
-                'hasActiveDeal' => $active !== null,
-                'sponsorName' => $active?->sponsor_name,
-            ],
-        ];
-    }
-
-    /**
-     * Commercial read-side for the Commercial page: the active naming-rights
-     * deal (if any), the pending offer board, and the proactive-search state
-     * (whether the manager can seek, the agency fee, and any cooldown).
-     *
-     * @return array{namingRights: array<string, mixed>}
-     */
-    public function buildCommercialPanel(Game $game): array
-    {
-        $season = (int) $game->season;
-        $windowOpen = $this->windowOpen($game);
-        $active = GameStadiumNamingDeal::activeForGame($game->id, $game->team_id);
-        $stadium = $this->stadiumRow($game);
-
-        $activeDeal = null;
-        if ($active !== null) {
-            $activeDeal = [
-                'sponsor_name' => $active->sponsor_name,
-                'annual_value_cents' => $active->annual_value_cents,
-                'end_season' => $active->end_season,
-                'seasons_remaining' => max(0, ($active->end_season ?? $season) - $season + 1),
-            ];
-        }
-
-        $offers = [];
-        if ($active === null) {
-            $offers = GameStadiumNamingDeal::query()
-                ->where('game_id', $game->id)
-                ->where('team_id', $game->team_id)
-                ->where('status', GameStadiumNamingDeal::STATUS_PENDING)
-                ->where('offered_season', $season)
-                ->orderByDesc('annual_value_cents')
-                ->get()
-                ->map(fn (GameStadiumNamingDeal $deal) => [
-                    'id' => $deal->id,
-                    'sponsor_name' => $deal->sponsor_name,
-                    'proposed_stadium_name' => $deal->proposed_stadium_name,
-                    'annual_value_cents' => $deal->annual_value_cents,
-                    'contract_seasons' => $deal->contract_seasons,
-                    'is_renewal' => $deal->is_renewal,
-                ])
-                ->all();
-        }
-
-        $cooldownDays = $this->seekCooldownRemainingDays($game);
-        $feeCents = $this->searchFee($game);
-        $availableCashCents = $this->availableCash($game);
-
-        return [
-            'namingRights' => [
-                'currentName' => $this->effectiveName($game),
-                'source' => $this->nameSource($active, $stadium),
-                'windowOpen' => $windowOpen,
-                'activeDeal' => $activeDeal,
-                'offers' => $offers,
-                'seek' => [
-                    'canSeek' => $this->seekGateOpen($windowOpen, $active, $this->pendingOfferCount($game), $cooldownDays),
-                    'feeCents' => $feeCents,
-                    'availableCashCents' => $availableCashCents,
-                    'feeAffordable' => $feeCents <= $availableCashCents,
-                    'cooldownDays' => $cooldownDays,
-                    'cooldownLength' => (int) config('commercial.naming_rights.search_cooldown_days', 14),
-                ],
-            ],
-        ];
-    }
-
     // ── Internals ─────────────────────────────────────────────────────────
 
     private function applyLoyaltyShock(Game $game): void
@@ -863,9 +499,10 @@ class NamingRightsService
      * purchases gauge affordability, so the agency fee competes with the
      * transfer kitty rather than being free. Replicated (not delegated to
      * StadiumUpgradeService) to avoid a service-resolution cycle, since
-     * BudgetProjectionService already depends on this service.
+     * BudgetProjectionService already depends on this service. Public so the
+     * commercial read panel (NamingRightsReadService) can show affordability.
      */
-    private function availableCash(Game $game): int
+    public function availableCash(Game $game): int
     {
         $investment = $game->currentInvestment;
         if (! $investment) {
@@ -908,7 +545,7 @@ class NamingRightsService
         }
         $stadium->save();
 
-        $this->nameResolver->clearCache();
+        $this->stadiumResolver->clearCache();
     }
 
     /**
@@ -924,7 +561,7 @@ class NamingRightsService
         if ($stadium && $stadium->stadium_name === $deal->proposed_stadium_name) {
             $stadium->stadium_name = $deal->previous_stadium_name;
             $stadium->save();
-            $this->nameResolver->clearCache();
+            $this->stadiumResolver->clearCache();
         }
     }
 
@@ -949,23 +586,4 @@ class NamingRightsService
         ]);
     }
 
-    private function effectiveName(Game $game): ?string
-    {
-        return $this->nameResolver->effectiveName(
-            $game->id,
-            $game->team_id,
-            $game->team?->stadium_name,
-        );
-    }
-
-    /**
-     * Where the current name comes from: an active sponsorship, a custom
-     * rename, or the historic ground name.
-     */
-    private function nameSource(?GameStadiumNamingDeal $active, ?GameStadium $stadium): string
-    {
-        return $active !== null
-            ? 'sponsor'
-            : (($stadium && $stadium->stadium_name !== null) ? 'custom' : 'historic');
-    }
 }

@@ -68,16 +68,6 @@ class BudgetProjectionService
     private const MAX_COMMERCIAL_SEATS = 80_000;
 
     /**
-     * Fraction of season-ticket holders gained or lost (versus baseline
-     * pricing) that converts to / from walk-up attendance. A pure 1.0
-     * substitution would mean every dropped holder still attends as
-     * walk-up, which is unrealistic and amplifies taquilla swings beyond
-     * what real-world fan behaviour produces. 0.4 reflects that most
-     * fans dropped after a hike disengage entirely.
-     */
-    private const WALKUP_SUBSTITUTION_RATE = 0.4;
-
-    /**
      * Generate season projections for a game.
      * Called at the start of each season during pre-season.
      *
@@ -207,9 +197,11 @@ class BudgetProjectionService
 
     /**
      * Project matchday revenue from walk-up fans and concessions only.
-     * Season ticket holders are excluded so we don't double-count them — they
-     * already paid up front via the season ticket sale, which lives in its
-     * own revenue line.
+     * Season ticket holders are subtracted from the expected gate so we don't
+     * double-count them — they already paid up front via the season ticket
+     * sale, which lives in its own revenue line. This mirrors the settlement
+     * formula (SeasonSettlementProcessor) exactly, so projection and actuals
+     * use the same model.
      *
      * Formula:
      *   walkup_attendance = max(0, baseline_attendance − season_ticket_holders)
@@ -217,9 +209,9 @@ class BudgetProjectionService
      *           × facilities_multiplier
      *
      * The per-seat rate (`finances.revenue_per_seat.<reputation>`) stays
-     * calibrated against real-world matchday revenue. Selling more season
-     * tickets shifts revenue from this bucket to the season-ticket bucket
-     * — total roughly preserved.
+     * calibrated against real-world matchday revenue. A higher-fill pricing
+     * preset sells more season tickets, shifting revenue from this bucket to
+     * the season-ticket bucket — total roughly preserved.
      *
      * Runs at SeasonSetupPipeline priority 107 — after LeagueFixtureProcessor
      * (30) and ContinentalAndCupInitProcessor (106), so the fixture list for
@@ -229,32 +221,6 @@ class BudgetProjectionService
      * how real clubs project revenue conservatively.
      */
     public function calculateMatchdayRevenue(Team $team, Game $game): int
-    {
-        $walkupRelevantHolders = $this->seasonTicketPricingService->walkupRelevantSoldForGame($game);
-
-        return $this->matchdayRevenueWithSeasonTicketHolders($team, $game, $walkupRelevantHolders);
-    }
-
-    /**
-     * Same projection as calculateMatchdayRevenue() but with an explicit
-     * walkup-relevant holder count instead of reading the persisted
-     * value. Lets the live pricing preview show the implied taquilla
-     * figure for candidate prices without persisting them first.
-     *
-     * `$walkupRelevantHolders` excludes premium zones (VIP/palco) — those
-     * seats sell almost exclusively as season-long contracts and have no
-     * meaningful walk-up market, so changes in their holder count
-     * shouldn't ripple into matchday revenue.
-     *
-     * Walk-up attendance uses the baseline TOTAL holder count as the
-     * calibration anchor (at default prices walkup = expected − total
-     * holders, matching the per-seat rate's real-world calibration), but
-     * only the *non-premium* delta is multiplied by
-     * `WALKUP_SUBSTITUTION_RATE` to swing walkup. Premium price moves
-     * therefore leave taquilla flat, which matches how empty VIP boxes
-     * behave in real life.
-     */
-    public function matchdayRevenueWithSeasonTicketHolders(Team $team, Game $game, int $walkupRelevantHolders): int
     {
         $reputation = TeamReputation::resolveLevel($game->id, $team->id);
 
@@ -274,12 +240,8 @@ class BudgetProjectionService
         $perSeatMatchRate = $perSeatSeasonRate / $leagueHomeMatchCount;
 
         $expectedAttendance = $this->matchAttendanceService->projectBaselineForTeam($game->id, $team);
-        $baselineTotalHolders = $this->seasonTicketPricingService->baselineSoldForGame($game, $team);
-        $baselineWalkup = max(0, $expectedAttendance - $baselineTotalHolders);
-
-        $baselineWalkupHolders = $this->seasonTicketPricingService->baselineWalkupRelevantSoldForGame($game, $team);
-        $holderDelta = $walkupRelevantHolders - $baselineWalkupHolders;
-        $walkupAttendance = max(0, $baselineWalkup - $holderDelta * self::WALKUP_SUBSTITUTION_RATE);
+        $seasonTicketHolders = $this->seasonTicketPricingService->soldSeasonTicketsForGame($game);
+        $walkupAttendance = max(0, $expectedAttendance - $seasonTicketHolders);
 
         $total = $walkupAttendance * $perSeatMatchRate * $totalHomeMatchCount;
 
@@ -289,6 +251,40 @@ class BudgetProjectionService
             : 1.0;
 
         return (int) ($total * $facilitiesMultiplier);
+    }
+
+    /**
+     * Targeted refresh of the two ticketing-driven revenue lines after the
+     * user changes the season-ticket preset (or the setup pipeline seeds the
+     * default). Re-reads the persisted holder count and recomputes both the
+     * season-ticket and matchday lines, folding the difference into projected
+     * totals/surplus — without re-running the full (squad-strength) projection.
+     *
+     * One-directional: Stadium persists the pricing row, Finance reads it. The
+     * ticketing service never calls back into Finance, so there is no cycle.
+     * No-op when there's no finances row yet (the setup projection picks the
+     * row up directly).
+     */
+    public function refreshTicketingProjection(Game $game): void
+    {
+        $finances = $game->currentFinances;
+        if (! $finances) {
+            return;
+        }
+
+        $newSeasonTicket = (int) ($this->seasonTicketPricingService->getCurrent($game)?->total_revenue ?? 0);
+        $newMatchday = $this->calculateMatchdayRevenue($game->team, $game);
+
+        $delta = ($newSeasonTicket - (int) $finances->projected_season_ticket_revenue)
+            + ($newMatchday - (int) $finances->projected_matchday_revenue);
+
+        // Season tickets are pre-paid, so projected and actual stay aligned.
+        $finances->projected_season_ticket_revenue = $newSeasonTicket;
+        $finances->actual_season_ticket_revenue = $newSeasonTicket;
+        $finances->projected_matchday_revenue = $newMatchday;
+        $finances->projected_total_revenue = (int) $finances->projected_total_revenue + $delta;
+        $finances->projected_surplus = (int) $finances->projected_surplus + $delta;
+        $finances->save();
     }
 
     /**

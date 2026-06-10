@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $total_capacity
  * @property int $total_sold
  * @property int $total_revenue
+ * @property string $pricing_preset
  * @property bool $is_default
  * @property-read \App\Models\Game $game
  */
@@ -40,6 +41,7 @@ class SeasonTicketPricing extends Model
         'total_capacity',
         'total_sold',
         'total_revenue',
+        'pricing_preset',
         'is_default',
     ];
 

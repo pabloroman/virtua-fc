@@ -197,6 +197,8 @@ return [
     'stadium_active_project_exists' => 'You already have a project in progress. Wait for it to finish before starting another.',
     'stadium_supplementary_too_few_seats' => 'You must add at least one temporary seat.',
     'stadium_supplementary_exceeds_cap' => 'Exceeds the maximum number of temporary stands allowed.',
+    'stadium_stand_expansion_too_few_seats' => 'The stand expansion is below the minimum number of seats.',
+    'stadium_stand_expansion_exceeds_cap' => 'Exceeds the maximum stand-expansion size allowed.',
     'stadium_rebuild_reputation_too_low' => 'Your reputation does not yet allow a full stadium rebuild.',
     'stadium_rebuild_must_be_larger' => 'Target capacity must be larger than the current capacity.',
     'stadium_rebuild_exceeds_max_capacity' => 'Target capacity exceeds what your reputation and projected revenue can finance.',

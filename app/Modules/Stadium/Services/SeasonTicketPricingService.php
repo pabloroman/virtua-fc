@@ -8,15 +8,24 @@ use App\Models\GameMatch;
 use App\Models\SeasonTicketPricing;
 use App\Models\Team;
 use App\Models\TeamReputation;
-use App\Modules\Finance\Services\BudgetProjectionService;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Resolves seating area layouts, baseline prices, and predicted demand for
  * the user's season ticket sale. The schematic on the stadium page reads
  * the same area definitions returned here so labels, capacity proportions,
- * and visual ordering stay in sync between server-rendered defaults and
- * client-side fill predictions.
+ * and visual ordering stay in sync.
+ *
+ * Pricing is a single per-season decision: the manager picks one global
+ * pricing preset (Accessible / Standard / Premium) that scales every area's
+ * baseline price uniformly. Discrete presets — not free-number per-area
+ * sliders — keep the choice legible and the demand model un-gameable, and
+ * let the page precompute every preset's outcome server-side so the UI needs
+ * no live preview round-trip.
+ *
+ * This service only persists the season-ticket sale (the pricing row). It
+ * never writes finances — the budget projection reads the persisted holder
+ * count one-directionally (BudgetProjectionService::refreshTicketingProjection),
+ * so Stadium never depends on Finance.
  *
  * Stand layout scales with capacity. Tiny grounds keep two general zones;
  * mid-size grounds add VIP and split into separate ends; large grounds
@@ -108,22 +117,38 @@ class SeasonTicketPricingService
         ClubProfile::REPUTATION_ELITE        => 50_000,  // €500
     ];
 
-    /**
-     * Allowed price band, expressed as a multiplier of the baseline price.
-     * Bounded to the range where priceFactor() actually produces distinct
-     * demand outcomes — outside roughly [0.5x, 2.0x] the response is clamped
-     * (floor 0.20, ceiling 1.10) and the slider stops doing anything useful.
-     */
-    public const MIN_PRICE_MULTIPLIER = 0.50;
-    public const MAX_PRICE_MULTIPLIER = 2.00;
+    /** The preset applied when the user hasn't chosen one. */
+    public const DEFAULT_PRESET = 'standard';
 
-    /** Per-request memoisation of getCurrent() and buildDefaultPricing(). */
+    /** Per-request memoisation of getCurrent(). */
     private array $currentCache = [];
-    private array $defaultPricingCache = [];
 
     public function __construct(
-        private readonly StadiumCapacityResolver $capacityResolver,
+        private readonly GameStadiumResolver $stadiumResolver,
     ) {}
+
+    /**
+     * The available pricing presets as `key => global price multiplier`.
+     *
+     * @return array<string, float>
+     */
+    public function presets(): array
+    {
+        $presets = (array) config('finances.season_ticket_presets', [self::DEFAULT_PRESET => 1.0]);
+
+        return array_map(fn ($m) => (float) $m, $presets);
+    }
+
+    /**
+     * The global price multiplier for a preset, falling back to the default
+     * preset (then 1.0) for an unknown key.
+     */
+    public function presetMultiplier(string $preset): float
+    {
+        $presets = $this->presets();
+
+        return $presets[$preset] ?? $presets[self::DEFAULT_PRESET] ?? 1.0;
+    }
 
     /**
      * Build the seating layout for a stadium of the given capacity.
@@ -171,64 +196,42 @@ class SeasonTicketPricingService
     }
 
     /**
-     * Build the default pricing record for a team — used both at season
-     * setup and as the form's initial values when the user hasn't priced
-     * yet. Each area is priced at the baseline (multiplier 1.0).
+     * Compose the pricing payload for a team at a given preset. Used at season
+     * setup (default preset), to precompute every preset's outcome for the UI,
+     * and as the persisted payload.
+     *
+     * @return array{areas: array<int, array<string, mixed>>, total_capacity: int, total_sold: int, total_revenue: int}
+     */
+    public function buildFromPreset(Game $game, Team $team, string $preset): array
+    {
+        $reputation = TeamReputation::resolveLevel($game->id, $team->id);
+        $homeRep = $this->resolveReputation($game->id, $team->id, $reputation);
+        $capacity = $this->stadiumResolver->effectiveCapacity(
+            $game->id,
+            $team->id,
+            (int) ($team->stadium_seats ?? 0),
+        );
+
+        $areas = $this->buildAreas($capacity, $reputation);
+
+        return $this->predictAndCompose($areas, $this->presetMultiplier($preset), $homeRep);
+    }
+
+    /**
+     * The default (Standard preset) pricing payload — used at season setup and
+     * as the form's initial values when the user hasn't priced yet.
      *
      * @return array{areas: array<int, array<string, mixed>>, total_capacity: int, total_sold: int, total_revenue: int}
      */
     public function buildDefaultPricing(Game $game, Team $team): array
     {
-        $reputation = TeamReputation::resolveLevel($game->id, $team->id);
-        $homeRep = $this->resolveReputation($game->id, $team->id, $reputation);
-        $capacity = $this->capacityResolver->effectiveCapacity(
-            $game->id,
-            $team->id,
-            (int) ($team->stadium_seats ?? 0),
-        );
-
-        $areas = $this->buildAreas($capacity, $reputation);
-
-        $userPrices = array_map(fn ($a) => $a['baseline_price_cents'], $areas);
-
-        return $this->predictAndCompose($areas, $userPrices, $homeRep);
+        return $this->buildFromPreset($game, $team, self::DEFAULT_PRESET);
     }
 
     /**
-     * Compose a pricing payload from the user's per-area prices. Validates
-     * each price against the allowed band, predicts area-level fill, and
-     * returns aggregates ready to persist on a SeasonTicketPricing row.
+     * Predicted payload for a preset including the overall fill rate. Used by
+     * the read side to precompute every preset's outcome for the selector.
      *
-     * @param  array<int, int>  $userPricesByIndex  Price in cents, keyed by area index.
-     * @return array{areas: array<int, array<string, mixed>>, total_capacity: int, total_sold: int, total_revenue: int}
-     */
-    public function buildFromUserPrices(Game $game, Team $team, array $userPricesByIndex): array
-    {
-        $reputation = TeamReputation::resolveLevel($game->id, $team->id);
-        $homeRep = $this->resolveReputation($game->id, $team->id, $reputation);
-        $capacity = $this->capacityResolver->effectiveCapacity(
-            $game->id,
-            $team->id,
-            (int) ($team->stadium_seats ?? 0),
-        );
-
-        $areas = $this->buildAreas($capacity, $reputation);
-
-        $userPrices = [];
-        foreach ($areas as $i => $area) {
-            $raw = $userPricesByIndex[$i] ?? $area['baseline_price_cents'];
-            $userPrices[] = $this->clampPrice($area['baseline_price_cents'], (int) $raw);
-        }
-
-        return $this->predictAndCompose($areas, $userPrices, $homeRep);
-    }
-
-    /**
-     * Predict fill per area for a given user pricing, without persisting.
-     * Runs the same demand model as buildFromUserPrices() so the live UI
-     * preview stays in sync with what gets saved.
-     *
-     * @param  array<int, int>  $userPricesByIndex
      * @return array{
      *   areas: array<int, array<string, mixed>>,
      *   total_capacity: int,
@@ -237,34 +240,22 @@ class SeasonTicketPricingService
      *   overall_fill_rate: int,
      * }
      */
-    public function predict(Game $game, Team $team, array $userPricesByIndex): array
+    public function predictForPreset(Game $game, Team $team, string $preset): array
     {
-        $payload = $this->buildFromUserPrices($game, $team, $userPricesByIndex);
+        $payload = $this->buildFromPreset($game, $team, $this->normalisePreset($preset));
         $payload['overall_fill_rate'] = SeasonTicketPricing::fillRateFor(
             $payload['total_sold'],
             $payload['total_capacity'],
         );
 
-        // Selling more season tickets reduces walk-up matchday revenue
-        // (and vice versa). Project the implied taquilla figure for the
-        // candidate prices so the UI can keep the totals consistent —
-        // resolved lazily to avoid a circular dependency with
-        // BudgetProjectionService, which depends on this service.
-        $payload['projected_matchday_revenue'] = app(BudgetProjectionService::class)
-            ->matchdayRevenueWithSeasonTicketHolders(
-                $team,
-                $game,
-                $this->walkupRelevantSoldFromAreas($payload['areas']),
-            );
-
         return $payload;
     }
 
     /**
-     * Whether the user can still set or change season ticket prices for
-     * the current season. Locked once any league fixture for the user's
-     * team has been played — cup ties and pre-season friendlies don't
-     * count, so the user has the full pre-season window to decide.
+     * Whether the user can still set or change the season-ticket preset for
+     * the current season. Locked once any league fixture for the user's team
+     * has been played — cup ties and pre-season friendlies don't count, so
+     * the user has the full pre-season window to decide.
      */
     public function canEdit(Game $game): bool
     {
@@ -272,51 +263,45 @@ class SeasonTicketPricingService
     }
 
     /**
-     * Persist the user's pricing for the current season. Throws if a row
-     * already exists and the lock has triggered (defence-in-depth — the
-     * UI hides the form, but the action also re-checks).
-     *
-     * @param  array<int, int>  $userPricesByIndex
+     * Persist the user's chosen preset for the current season. Throws if the
+     * lock has triggered (defence-in-depth — the UI hides the form, but the
+     * action also re-checks). Persists only the season-ticket sale; the budget
+     * is refreshed separately by the caller via
+     * BudgetProjectionService::refreshTicketingProjection.
      */
-    public function apply(Game $game, array $userPricesByIndex, bool $isDefault = false): SeasonTicketPricing
+    public function apply(Game $game, string $preset, bool $isDefault = false): SeasonTicketPricing
     {
         if (! $isDefault && ! $this->canEdit($game)) {
             throw new \DomainException('season_tickets.locked');
         }
 
-        $payload = $this->buildFromUserPrices($game, $game->team, $userPricesByIndex);
+        $preset = $this->normalisePreset($preset);
+        $payload = $this->buildFromPreset($game, $game->team, $preset);
 
-        return DB::transaction(function () use ($game, $payload, $isDefault) {
-            $pricing = SeasonTicketPricing::updateOrCreate(
-                [
-                    'game_id' => $game->id,
-                    'season' => (int) $game->season,
-                ],
-                [
-                    'areas' => $payload['areas'],
-                    'total_capacity' => $payload['total_capacity'],
-                    'total_sold' => $payload['total_sold'],
-                    'total_revenue' => $payload['total_revenue'],
-                    'is_default' => $isDefault,
-                ],
-            );
+        $pricing = SeasonTicketPricing::updateOrCreate(
+            [
+                'game_id' => $game->id,
+                'season' => (int) $game->season,
+            ],
+            [
+                'areas' => $payload['areas'],
+                'total_capacity' => $payload['total_capacity'],
+                'total_sold' => $payload['total_sold'],
+                'total_revenue' => $payload['total_revenue'],
+                'pricing_preset' => $preset,
+                'is_default' => $isDefault,
+            ],
+        );
 
-            $this->currentCache[$game->id . ':' . (int) $game->season] = $pricing;
+        $this->currentCache[$game->id . ':' . (int) $game->season] = $pricing;
 
-            $this->syncFinances(
-                $game,
-                $pricing->total_revenue,
-                $this->walkupRelevantSoldFromAreas($payload['areas']),
-            );
-
-            return $pricing;
-        });
+        return $pricing;
     }
 
     /**
-     * Apply default pricing for a game/season, but only if the user hasn't
-     * already priced manually. Idempotent — safe to call from the season
-     * setup pipeline and as a fallback before the first match.
+     * Apply the default preset for a game/season, but only if the user hasn't
+     * already priced. Idempotent — safe to call from the season setup pipeline
+     * and as a fallback before the first match.
      */
     public function applyDefaultIfMissing(Game $game): ?SeasonTicketPricing
     {
@@ -325,10 +310,7 @@ class SeasonTicketPricingService
             return $existing;
         }
 
-        $defaults = $this->buildDefaultPricing($game, $game->team);
-        $userPrices = array_map(fn ($a) => $a['price_cents'], $defaults['areas']);
-
-        return $this->apply($game, $userPrices, isDefault: true);
+        return $this->apply($game, self::DEFAULT_PRESET, isDefault: true);
     }
 
     public function getCurrent(Game $game): ?SeasonTicketPricing
@@ -342,86 +324,6 @@ class SeasonTicketPricingService
         }
 
         return $this->currentCache[$key];
-    }
-
-    /**
-     * Predicted season-ticket holder count at the *default* (baseline)
-     * pricing for a given game. Used as the reference point for the
-     * matchday-revenue projection — only the delta between current and
-     * baseline holders flows into walk-up attendance, so price moves
-     * don't whipsaw taquilla 1:1 with season-ticket changes.
-     */
-    public function baselineSoldForGame(Game $game, Team $team): int
-    {
-        return (int) $this->defaultPricingForGame($game, $team)['total_sold'];
-    }
-
-    /**
-     * Predicted *non-premium* season-ticket holder count at default
-     * pricing. Premium zones (VIP/palco) sell almost exclusively as
-     * season-long contracts and don't have a meaningful walk-up market,
-     * so changes in their holder count shouldn't flow into the taquilla
-     * projection. The walk-up substitution model uses this number as
-     * its delta-base, leaving premium swings out of matchday revenue.
-     */
-    public function baselineWalkupRelevantSoldForGame(Game $game, Team $team): int
-    {
-        return $this->walkupRelevantSoldFromAreas(
-            $this->defaultPricingForGame($game, $team)['areas']
-        );
-    }
-
-    /**
-     * Sum the `sold` count across non-premium areas only. Premium areas
-     * (VIP/palco) are excluded — there's no walk-up market for those seats.
-     *
-     * @param  array<int, array<string, mixed>>  $areas  Composed area
-     *         shape with `sold` and `is_premium` keys (the format saved
-     *         on SeasonTicketPricing::areas and returned by predict()).
-     */
-    public function walkupRelevantSoldFromAreas(array $areas): int
-    {
-        $sum = 0;
-        foreach ($areas as $area) {
-            if (! $this->isPremiumArea($area)) {
-                $sum += (int) ($area['sold'] ?? 0);
-            }
-        }
-
-        return $sum;
-    }
-
-    /**
-     * Persisted *non-premium* season-ticket holder count for the user's
-     * team in the current season — the figure that actually displaces
-     * walk-up demand. Returns 0 when no pricing row exists yet.
-     */
-    public function walkupRelevantSoldForGame(Game $game): int
-    {
-        $pricing = $this->getCurrent($game);
-        if (! $pricing) {
-            return 0;
-        }
-
-        return $this->walkupRelevantSoldFromAreas($pricing->areas ?? []);
-    }
-
-    /**
-     * Memoised default pricing payload for a game. Both baselineSold and
-     * baselineWalkupRelevantSold derive from this, so we only run the
-     * demand model once per (game, season) per request.
-     *
-     * @return array{areas: array<int, array<string, mixed>>, total_capacity: int, total_sold: int, total_revenue: int}
-     */
-    private function defaultPricingForGame(Game $game, Team $team): array
-    {
-        $key = $game->id . ':' . (int) $game->season;
-
-        if (! isset($this->defaultPricingCache[$key])) {
-            $this->defaultPricingCache[$key] = $this->buildDefaultPricing($game, $team);
-        }
-
-        return $this->defaultPricingCache[$key];
     }
 
     /**
@@ -442,8 +344,9 @@ class SeasonTicketPricingService
 
     /**
      * Number of season ticket holders for the user's team in the current
-     * season — used by budget projections and settlement to subtract from
-     * per-fixture attendance before the walk-up matchday revenue formula.
+     * season — subtracted from per-fixture attendance before the walk-up
+     * matchday revenue formula by both budget projection and settlement, so
+     * holders (who paid up front) are never counted twice.
      */
     public function soldSeasonTicketsForGame(Game $game): int
     {
@@ -453,11 +356,10 @@ class SeasonTicketPricingService
     }
 
     /**
-     * @param  array<int, array{slug: string, capacity: int, baseline_price_cents: int, multiplier: float}>  $areas
-     * @param  array<int, int>  $userPrices
+     * @param  array<int, array{slug: string, capacity: int, baseline_price_cents: int, multiplier: float, is_premium: bool}>  $areas
      * @return array{areas: array<int, array<string, mixed>>, total_capacity: int, total_sold: int, total_revenue: int}
      */
-    private function predictAndCompose(array $areas, array $userPrices, TeamReputation $homeRep): array
+    private function predictAndCompose(array $areas, float $priceMultiplier, TeamReputation $homeRep): array
     {
         $loyaltyFill = $this->loyaltyFillRate($homeRep);
 
@@ -466,10 +368,9 @@ class SeasonTicketPricingService
         $totalRevenue = 0;
         $composed = [];
 
-        foreach ($areas as $i => $area) {
-            $price = $userPrices[$i];
+        foreach ($areas as $area) {
             $baseline = $area['baseline_price_cents'];
-            $priceRatio = $baseline > 0 ? $price / $baseline : 1.0;
+            $price = (int) round($baseline * $priceMultiplier);
 
             // Premium tiers (vip/palco) sell less elastically — they have a
             // smaller, more committed audience that doesn't churn over price
@@ -477,7 +378,7 @@ class SeasonTicketPricingService
             $isPremium = $this->isPremiumArea($area);
             $baseFill = $isPremium ? max(0.55, $loyaltyFill - 0.10) : $loyaltyFill;
 
-            $priceFactor = $this->priceFactor($priceRatio, $isPremium);
+            $priceFactor = $this->priceFactor($priceMultiplier, $isPremium);
             $fillRate = max(0.0, min(0.98, $baseFill * $priceFactor));
 
             $sold = (int) round($area['capacity'] * $fillRate);
@@ -522,9 +423,9 @@ class SeasonTicketPricingService
     }
 
     /**
-     * Demand response to price moves relative to baseline. Free / heavy
-     * discounts give a small bump (capped) while hikes shed fans quickly.
-     * Premium tiers respond less sharply to price changes.
+     * Demand response to the chosen preset relative to baseline. Accessible
+     * pricing (multiplier < 1) gives a small fill bump (capped); premium
+     * pricing (> 1) sheds fans. Premium tiers respond less sharply.
      */
     private function priceFactor(float $priceRatio, bool $isPremium): float
     {
@@ -550,12 +451,14 @@ class SeasonTicketPricingService
         return in_array($area['slug'] ?? null, ['vip', 'palco'], true);
     }
 
-    private function clampPrice(int $baseline, int $proposed): int
+    /**
+     * Coerce an arbitrary preset key to a known one, falling back to the
+     * default. Keeps a stale or hand-crafted form submission from persisting
+     * an unknown preset.
+     */
+    private function normalisePreset(string $preset): string
     {
-        $min = (int) round($baseline * self::MIN_PRICE_MULTIPLIER);
-        $max = (int) round($baseline * self::MAX_PRICE_MULTIPLIER);
-
-        return max($min, min($max, $proposed));
+        return array_key_exists($preset, $this->presets()) ? $preset : self::DEFAULT_PRESET;
     }
 
     /**
@@ -618,45 +521,5 @@ class SeasonTicketPricingService
             })
             ->where('played', true)
             ->exists();
-    }
-
-    /**
-     * Reflect season ticket revenue on the current season's GameFinances.
-     * Season tickets are pre-paid at season start, so projected and actual
-     * stay locked together — no variance row is generated.
-     *
-     * Also re-projects matchday revenue: changing the season-ticket holder
-     * count shifts walk-up demand, so the taquilla projection has to follow.
-     * Without this, the persisted projection would drift from reality every
-     * time the user adjusts prices, only correcting at season settlement.
-     */
-    private function syncFinances(Game $game, int $revenue, int $walkupRelevantHolders): void
-    {
-        $finances = $game->currentFinances;
-        if (! $finances) {
-            return;
-        }
-
-        $previousSeasonTicket = (int) ($finances->projected_season_ticket_revenue ?? 0);
-        $seasonTicketDelta = $revenue - $previousSeasonTicket;
-
-        $previousMatchday = (int) ($finances->projected_matchday_revenue ?? 0);
-        $newMatchday = app(BudgetProjectionService::class)
-            ->matchdayRevenueWithSeasonTicketHolders($game->team, $game, $walkupRelevantHolders);
-        $matchdayDelta = $newMatchday - $previousMatchday;
-
-        $totalDelta = $seasonTicketDelta + $matchdayDelta;
-
-        $finances->projected_season_ticket_revenue = $revenue;
-        $finances->actual_season_ticket_revenue = $revenue;
-        $finances->projected_matchday_revenue = $newMatchday;
-        $finances->projected_total_revenue = (int) $finances->projected_total_revenue + $totalDelta;
-        if ((int) $finances->actual_total_revenue > 0) {
-            // Actuals only get the season-ticket delta — matchday actuals are
-            // computed match-by-match at settlement, so we don't pre-roll them.
-            $finances->actual_total_revenue = (int) $finances->actual_total_revenue + $seasonTicketDelta;
-        }
-        $finances->projected_surplus = (int) $finances->projected_surplus + $totalDelta;
-        $finances->save();
     }
 }

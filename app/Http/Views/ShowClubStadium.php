@@ -9,7 +9,7 @@ use App\Models\TeamReputation;
 use App\Modules\Finance\Services\StadiumLoanService;
 use App\Modules\Stadium\Enums\StadiumProjectStatus;
 use App\Modules\Stadium\Enums\StadiumProjectType;
-use App\Modules\Stadium\Services\NamingRightsService;
+use App\Modules\Stadium\Services\NamingRightsReadService;
 use App\Modules\Stadium\Services\StadiumSummaryService;
 use App\Modules\Stadium\Services\StadiumUpgradeService;
 use App\Modules\Stadium\UefaCategory;
@@ -22,7 +22,7 @@ class ShowClubStadium
         private readonly StadiumSummaryService $stadiumSummaryService,
         private readonly StadiumUpgradeService $stadiumUpgradeService,
         private readonly StadiumLoanService $stadiumLoanService,
-        private readonly NamingRightsService $namingRightsService,
+        private readonly NamingRightsReadService $namingRightsReadService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -301,7 +301,7 @@ class ShowClubStadium
             'upgrade' => $upgrade,
             'historyRows' => $historyRows,
             ...$this->stadiumSummaryService->build($game),
-            ...$this->namingRightsService->buildIdentityPanel($game),
+            ...$this->namingRightsReadService->buildIdentityPanel($game),
         ]);
     }
 

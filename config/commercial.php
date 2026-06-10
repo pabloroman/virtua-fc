@@ -257,7 +257,7 @@ return [
     // Clubs that begin the game already wearing a sponsor's name. Keyed by
     // transfermarkt_id (Team.transfermarkt_id). The sponsored display name is
     // the seed data's Team.stadium_name — left untouched so AI opponents keep
-    // their real branding via GameStadiumNameResolver's fallback. `clean_name`
+    // their real branding via GameStadiumResolver's fallback. `clean_name`
     // is the traditional name the ground reverts to when the deal lapses
     // unrenewed. Fees are tier-derived (no per-club value); SeedInitialNaming
     // DealProcessor materialises a 1-season active deal at game start, after

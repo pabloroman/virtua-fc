@@ -253,7 +253,7 @@ class GameMatch extends Model
         // with the control-plane Team.stadium_name as the fallback. The
         // resolver caches per request, so calling this across a fixture list
         // doesn't fan out into an N+1.
-        return app(\App\Modules\Stadium\Services\GameStadiumNameResolver::class)
+        return app(\App\Modules\Stadium\Services\GameStadiumResolver::class)
             ->effectiveName($this->game_id, $this->home_team_id, $this->homeTeam?->stadium_name);
     }
 

@@ -31,7 +31,7 @@ class MatchAttendanceService
     public function __construct(
         private readonly DemandCurveService $demandCurve,
         private readonly SeasonTicketPricingService $seasonTicketPricingService,
-        private readonly StadiumCapacityResolver $capacityResolver,
+        private readonly GameStadiumResolver $stadiumResolver,
     ) {}
 
     /** Per-request caches — MatchAttendanceService is resolved fresh per request. */
@@ -186,19 +186,19 @@ class MatchAttendanceService
      */
     public function describeForMatch(GameMatch $match, Game $game): ?array
     {
-        if ($this->isSoldOutRound($match)) {
-            $capacity = $this->soldOutCapacity($match, $game);
-            if ($capacity > 0) {
-                return ['attendance' => $capacity, 'capacity' => $capacity];
-            }
+        if ($house = $this->soldOutHouse($match, $game)) {
+            return $house;
         }
 
-        if ($match->isNeutralVenue() && $match->neutral_venue_capacity !== null) {
-            $capacity = (int) $match->neutral_venue_capacity;
-            return ['attendance' => $capacity, 'capacity' => $capacity];
+        if ($match->isNeutralVenue()) {
+            // A designated neutral venue plays to its set capacity; without
+            // one we have no home club to run the demand curve against.
+            return $match->neutral_venue_capacity !== null
+                ? $this->fullHouse((int) $match->neutral_venue_capacity)
+                : null;
         }
 
-        return $this->projectForMatch($match, $game);
+        return $this->projectGeneral($match, $game);
     }
 
     /**
@@ -211,17 +211,26 @@ class MatchAttendanceService
      */
     public function projectForMatch(GameMatch $match, Game $game): ?array
     {
-        if ($this->isSoldOutRound($match)) {
-            $capacity = $this->soldOutCapacity($match, $game);
-            if ($capacity > 0) {
-                return ['attendance' => $capacity, 'capacity' => $capacity];
-            }
+        if ($house = $this->soldOutHouse($match, $game)) {
+            return $house;
         }
 
         if ($match->isNeutralVenue()) {
             return null;
         }
 
+        return $this->projectGeneral($match, $game);
+    }
+
+    /**
+     * General demand-curve projection for a normal home fixture (not a
+     * sold-out round, not a neutral venue — those are resolved by the
+     * callers first). Returns null when the home team can't be resolved.
+     *
+     * @return array{attendance: int, capacity: int}|null
+     */
+    private function projectGeneral(GameMatch $match, Game $game): ?array
+    {
         $home = $this->loadTeam($match->home_team_id);
         if (!$home) {
             return null;
@@ -232,7 +241,7 @@ class MatchAttendanceService
         $homeRep = $this->loadReputation($game->id, $home->id);
         $awayRep = $this->loadReputation($game->id, $match->away_team_id);
 
-        $capacity = $this->capacityResolver->effectiveCapacity(
+        $capacity = $this->stadiumResolver->effectiveCapacity(
             $game->id,
             $home->id,
             (int) ($home->stadium_seats ?? 0),
@@ -289,13 +298,42 @@ class MatchAttendanceService
     public function projectBaselineForTeam(string $gameId, Team $home): int
     {
         $homeRep = $this->loadReputation($gameId, $home->id);
-        $capacity = $this->capacityResolver->effectiveCapacity(
+        $capacity = $this->stadiumResolver->effectiveCapacity(
             $gameId,
             $home->id,
             (int) ($home->stadium_seats ?? 0),
         );
 
         return $this->demandCurve->projectBaseline($home, $homeRep, $capacity);
+    }
+
+    /**
+     * The sold-out full house for a round that always sells out (cup
+     * finals/semis), or null when this isn't such a round or its capacity
+     * can't be resolved. The single source of truth for the sold-out rule,
+     * shared by describeForMatch() and projectForMatch().
+     *
+     * @return array{attendance: int, capacity: int}|null
+     */
+    private function soldOutHouse(GameMatch $match, Game $game): ?array
+    {
+        if (! $this->isSoldOutRound($match)) {
+            return null;
+        }
+
+        $capacity = $this->soldOutCapacity($match, $game);
+
+        return $capacity > 0 ? $this->fullHouse($capacity) : null;
+    }
+
+    /**
+     * A full-capacity house: attendance equals capacity.
+     *
+     * @return array{attendance: int, capacity: int}
+     */
+    private function fullHouse(int $capacity): array
+    {
+        return ['attendance' => $capacity, 'capacity' => $capacity];
     }
 
     private function isSoldOutRound(GameMatch $match): bool
@@ -318,7 +356,7 @@ class MatchAttendanceService
             return 0;
         }
 
-        return $this->capacityResolver->effectiveCapacity(
+        return $this->stadiumResolver->effectiveCapacity(
             $game->id,
             $home->id,
             (int) ($home->stadium_seats ?? 0),

@@ -238,7 +238,7 @@ class BudgetProjectionServiceTest extends TestCase
         $squadService->shouldReceive('getProjectedPosition')->andReturn(10);
 
         $seasonTicketPricingService = Mockery::mock(SeasonTicketPricingService::class);
-        $seasonTicketPricingService->shouldReceive('walkupRelevantSoldForGame')->andReturn(0);
+        $seasonTicketPricingService->shouldReceive('soldSeasonTicketsForGame')->andReturn(0);
         $seasonTicketPricingService->shouldReceive('getCurrent')->andReturn(null);
 
         $stadiumLoanService = Mockery::mock(StadiumLoanService::class);

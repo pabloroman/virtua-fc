@@ -4,8 +4,7 @@ namespace App\Http\Views;
 
 use App\Modules\Finance\Services\BudgetAllocationService;
 use App\Modules\Season\Services\SeasonGoalService;
-use App\Modules\Stadium\Services\GameStadiumNameResolver;
-use App\Modules\Stadium\Services\StadiumCapacityResolver;
+use App\Modules\Stadium\Services\GameStadiumResolver;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GamePlayer;
@@ -17,8 +16,7 @@ class ShowNewSeason
     public function __construct(
         private readonly BudgetAllocationService $budgetService,
         private readonly SeasonGoalService $seasonGoalService,
-        private readonly StadiumCapacityResolver $stadiumCapacityResolver,
-        private readonly GameStadiumNameResolver $stadiumNameResolver,
+        private readonly GameStadiumResolver $stadiumResolver,
     ) {}
 
     public function __invoke(string $gameId)
@@ -76,13 +74,13 @@ class ShowNewSeason
         // Per-game stadium capacity (overlays Team.stadium_seats once the user
         // has expanded or rebuilt the ground); falls back to the team baseline
         // when no overlay row exists.
-        $stadiumCapacity = $this->stadiumCapacityResolver->effectiveCapacity(
+        $stadiumCapacity = $this->stadiumResolver->effectiveCapacity(
             $game->id,
             $game->team_id,
             (int) ($game->team?->stadium_seats ?? 0),
         );
 
-        $stadiumName = $this->stadiumNameResolver->effectiveName(
+        $stadiumName = $this->stadiumResolver->effectiveName(
             $game->id,
             $game->team_id,
             $game->team?->stadium_name,

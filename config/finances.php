@@ -159,6 +159,16 @@ return [
         'local'        =>  9_000, // €90/seat
     ],
 
+    // Season-ticket pricing presets: a single global multiplier on each area's
+    // baseline price. Accessible fills more seats at a lower per-seat price;
+    // Premium does the reverse. Discrete presets (not free-number sliders)
+    // keep the decision legible and the demand model un-gameable.
+    'season_ticket_presets' => [
+        'accessible' => 0.75,
+        'standard'   => 1.00,
+        'premium'    => 1.40,
+    ],
+
     // Operating expense multiplier by competition tier.
     // Tier 1 (La Liga) = full cost, lower tiers scale down to match their
     // much smaller revenue footprint (Primera RFEF TV tops out ~€1.5M).
